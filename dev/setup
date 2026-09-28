@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# Writes .dev/ so stock ssh, proxied tools, and a throwaway Firefox profile reach the
+# monitor without touching ~/.ssh, /etc, or the system trust store.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+dev=$PWD/.dev
+socks_host=127.0.0.1 socks_port=1080
+listen=$(sed -n 's/^listen: *//p' monitor.yml)
+host=${listen%:*} port=${listen##*:}
+[[ -f state/host_key && -f state/ca.pem ]] || { echo "start the monitor once so it writes state/" >&2; exit 1; }
+
+mkdir -p "$dev/firefox"
+[[ -f $dev/id ]] || ssh-keygen -q -t ed25519 -N '' -C monitor-dev -f "$dev/id"
+echo "monitor,*.monitor,[$host]:$port $(ssh-keygen -y -f state/host_key)" > "$dev/known_hosts"
+cp state/ca.pem "$dev/ca.pem"
+
+cat > "$dev/ssh_config" <<CONF
+Host monitor
+  HostName $host
+  Port $port
+Host *.monitor
+  ProxyJump monitor
+Host *
+  User monitor
+  IdentityFile $dev/id
+  IdentitiesOnly yes
+  IdentityAgent none
+  UserKnownHostsFile $dev/known_hosts
+  GlobalKnownHostsFile /dev/null
+  StrictHostKeyChecking yes
+  ControlPath none
+CONF
+
+cat > "$dev/proxychains.conf" <<CONF
+strict_chain
+proxy_dns
+quiet_mode
+[ProxyList]
+socks5 $socks_host $socks_port
+CONF
+
+{
+  proxy=socks5h://$socks_host:$socks_port
+  echo "export ALL_PROXY=$proxy HTTPS_PROXY=$proxy HTTP_PROXY=$proxy NO_PROXY="
+  for var in SSL_CERT_FILE CURL_CA_BUNDLE NODE_EXTRA_CA_CERTS REQUESTS_CA_BUNDLE GIT_SSL_CAINFO PGSSLROOTCERT; do
+    echo "export $var=$dev/ca.pem"
+  done
+  go run . env
+} > "$dev/env"
+
+cat > "$dev/firefox/user.js" <<CONF
+user_pref("network.proxy.type", 1);
+user_pref("network.proxy.socks", "$socks_host");
+user_pref("network.proxy.socks_port", $socks_port);
+user_pref("network.proxy.socks_version", 5);
+user_pref("network.proxy.socks_remote_dns", true);
+user_pref("network.http.http3.enable", false);
+user_pref("network.trr.mode", 5);
+CONF
+certutil() { nix shell nixpkgs#nss.tools -c certutil "$@"; }
+[[ -f $dev/firefox/cert9.db ]] || certutil -N -d "sql:$dev/firefox" --empty-password
+certutil -A -d "sql:$dev/firefox" -n monitor -t C,, -i "$dev/ca.pem"
+
+cat <<USAGE
+ssh -F .dev/ssh_config -N -D $socks_host:$socks_port monitor &
+source .dev/env
+ssh -F .dev/ssh_config <name>.monitor
+nix run nixpkgs#proxychains-ng -- -f .dev/proxychains.conf psql postgres://x:x@<name>.monitor/x
+firefox --no-remote --profile .dev/firefox
+USAGE

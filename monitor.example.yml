@@ -1,0 +1,13 @@
+listen: 127.0.0.1:2223
+# dev/setup writes this key; its private half is what the ssh client presents.
+authorized_keys: .dev/id.pub
+connections:
+  box2:
+    ssh: { host: box2.example.com, user: deploy, key: keys/box2, host_key: "ssh-ed25519 AAAA..." }
+  db:
+    postgres: postgres://app:REAL@db.example.com/app?sslmode=verify-full
+  cache:
+    redis: rediss://default:REAL@cache.example.com:6380
+  github:
+    hosts: [api.github.com, github.com, "*.githubusercontent.com"]
+    secrets: { GITHUB_TOKEN: ghp_REAL }
