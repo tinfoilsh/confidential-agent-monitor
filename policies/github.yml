@@ -1,0 +1,14 @@
+github:
+  writes:
+    - /graphql
+    - /*/*/git-upload-pack
+    - /repos/*/*/issues
+    - /repos/*/*/issues/*
+    - /repos/*/*/issues/*/comments
+    - /repos/*/*/pulls
+    - /repos/*/*/pulls/*
+    - /repos/*/*/pulls/*/reviews
+  mutations:
+    - createPullRequest
+    - updatePullRequest
+    - addComment

@@ -65,6 +65,8 @@ cat <<USAGE
 ssh -F .dev/ssh_config -N -D $socks_host:$socks_port monitor &
 source .dev/env
 ssh -F .dev/ssh_config <name>.monitor
+ssh -F .dev/ssh_config <name>.monitor <command>
+ssh -F .dev/ssh_config -N -L /tmp/agent.sock:<name>.monitor:1 monitor &
 nix run nixpkgs#proxychains-ng -- -f .dev/proxychains.conf psql postgres://x:x@<name>.monitor/x
 firefox --no-remote --profile .dev/firefox
 USAGE

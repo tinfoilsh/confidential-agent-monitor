@@ -1,13 +1,26 @@
 listen: 127.0.0.1:2223
 # dev/setup writes this key; its private half is what the ssh client presents.
 authorized_keys: .dev/id.pub
+policies: policies
 connections:
+  github:
+    hosts: [api.github.com, github.com, "*.githubusercontent.com"]
+    secrets: { GITHUB_TOKEN: ghp_REAL }
   box2:
     ssh: { host: box2.example.com, user: deploy, key: keys/box2, host_key: "ssh-ed25519 AAAA..." }
+  gh:
+    cli: { path: /usr/bin/gh, env: { GH_TOKEN: ghp_REAL, HOME: /var/lib/monitor } }
+  gpg:
+    cli: { path: /usr/bin/gpg, env: { GNUPGHOME: /var/lib/monitor/gnupg }, stdin: git }
+  gpgagent:
+    gpg-agent: /var/lib/monitor/gnupg/S.gpg-agent
+  sshkey:
+    ssh-agent: [keys/signing_ed25519]
+  imap:
+    imap: imaps://user:REAL@imap.fastmail.com
+  smtp:
+    smtp: smtps://user:REAL@smtp.fastmail.com
   db:
     postgres: postgres://app:REAL@db.example.com/app?sslmode=verify-full
   cache:
     redis: rediss://default:REAL@cache.example.com:6380
-  github:
-    hosts: [api.github.com, github.com, "*.githubusercontent.com"]
-    secrets: { GITHUB_TOKEN: ghp_REAL }
