@@ -1,4 +1,4 @@
-package main
+package connector
 
 import (
 	"bytes"
@@ -12,6 +12,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/httputil"
+	"net/url"
 	"path"
 	"strings"
 	"time"
@@ -20,16 +21,50 @@ import (
 	"github.com/vektah/gqlparser/v2/parser"
 )
 
+// httpLayer is the request before substitution; secrets names the placeholders it carried.
+type httpLayer struct {
+	Method  string      `json:"method"`
+	Host    string      `json:"host"`
+	Path    string      `json:"path"`
+	Query   url.Values  `json:"query"`
+	Headers http.Header `json:"headers"`
+	Secrets []string    `json:"secrets"`
+	Body    any         `json:"body,omitempty"`
+}
+
+type graphqlLayer struct {
+	Kind  string   `json:"kind"`
+	Roots []string `json:"roots"`
+}
+
 const (
+	httpsPort         = 443
+	httpPort          = 80
 	maxBodyBytes      = 1 << 20
 	readHeaderTimeout = 30 * time.Second
 	jsonType          = "application/json"
 	jsonSuffix        = "+json"
+	placeholderPrefix = "tfm_"
 )
 
 type connKey struct{}
 
-func (m *monitor) serveHTTP() {
+type HTTP struct {
+	Hosts   []string          `yaml:"hosts"`
+	Secrets map[string]string `yaml:"secrets"`
+	conns   chanListener
+}
+
+func (r *HTTP) Serve(s *Stream) {
+	var c net.Conn = s
+	if s.Port == httpsPort {
+		c = tls.Server(s, s.TLS)
+	}
+	r.conns <- c
+}
+
+func (h *HTTP) Start(*Env) {
+	h.conns = make(chanListener)
 	transport := http.DefaultTransport.(*http.Transport).Clone()
 	transport.Proxy = nil
 	proxy := &httputil.ReverseProxy{
@@ -44,12 +79,11 @@ func (m *monitor) serveHTTP() {
 	}
 	server := &http.Server{
 		ReadHeaderTimeout: readHeaderTimeout,
-		TLSConfig:         m.tls,
 		ConnContext: func(ctx context.Context, c net.Conn) context.Context {
-			return context.WithValue(ctx, connKey{}, channelOf(c))
+			return context.WithValue(ctx, connKey{}, streamOf(c))
 		},
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if err := m.screen(r); err != nil {
+			if err := h.screen(r); err != nil {
 				log.Printf("refused %s %s%s: %v", r.Method, r.Host, r.URL.Path, err)
 				http.Error(w, err.Error(), http.StatusForbidden)
 				return
@@ -57,27 +91,19 @@ func (m *monitor) serveHTTP() {
 			proxy.ServeHTTP(w, r)
 		}),
 	}
-	go server.Serve(m.http)
-	log.Fatal(server.ServeTLS(m.https, "", ""))
-}
-
-func channelOf(c net.Conn) *channelConn {
-	if tc, ok := c.(*tls.Conn); ok {
-		c = tc.NetConn()
-	}
-	return c.(*channelConn)
+	go func() { log.Fatal(server.Serve(h.conns)) }()
 }
 
 // screen snapshots the request for the policy before any secret enters it, swaps placeholders, then asks the gate.
 // The proxy dials the request's host, so it must be the one the channel's gate saw.
-func (m *monitor) screen(r *http.Request) error {
-	cc := r.Context().Value(connKey{}).(*channelConn)
+func (h *HTTP) screen(r *http.Request) error {
+	s := r.Context().Value(connKey{}).(*Stream)
 	host := r.Host
 	if h, _, err := net.SplitHostPort(host); err == nil {
 		host = h
 	}
-	if !strings.EqualFold(host, cc.host) {
-		return fmt.Errorf("a channel to %s cannot carry a request for %s", cc.host, host)
+	if !strings.EqualFold(host, s.Host) {
+		return fmt.Errorf("a channel to %s cannot carry a request for %s", s.Host, host)
 	}
 	body, err := io.ReadAll(io.LimitReader(r.Body, maxBodyBytes))
 	if err != nil {
@@ -90,52 +116,74 @@ func (m *monitor) screen(r *http.Request) error {
 			layer.Body = nil
 		}
 	}
-	if layer.Secrets, err = m.substitute(r, host); err != nil {
+	if layer.Secrets, err = h.substitute(r, s.Name); err != nil {
 		return err
 	}
-	return cc.gate(event{HTTP: layer, GraphQL: graphql(layer.Body)})
+	if r.TLS == nil && len(layer.Secrets) > 0 {
+		return fmt.Errorf("secret placeholders require HTTPS")
+	}
+	return s.Gate(Event{HTTP: layer, GraphQL: graphql(layer.Body)})
 }
 
-// substitute swaps placeholders for secrets in the path, query, headers, and basic auth, and refuses a
-// request that carries a placeholder to a host its connection does not list. Bodies are never rewritten.
-func (m *monitor) substitute(r *http.Request, host string) ([]string, error) {
+func Placeholder(connection, secret string) string {
+	return placeholderPrefix + connection + "_" + secret
+}
+
+// substitute swaps this connection's placeholders in the path, query, headers, and basic auth.
+// It refuses unresolved placeholders. Bodies are never rewritten.
+func (h *HTTP) substitute(r *http.Request, name string) ([]string, error) {
 	used := []string{}
-	for name, c := range m.Connections {
-		for secret, value := range c.Secrets {
-			ph := placeholder(name, secret)
-			found := false
-			swap := func(s string) string {
-				found = found || strings.Contains(s, ph)
-				return strings.ReplaceAll(s, ph, value)
+	for secret, value := range h.Secrets {
+		ph := Placeholder(name, secret)
+		found := false
+		swap := func(s string) string {
+			found = found || strings.Contains(s, ph)
+			return strings.ReplaceAll(s, ph, value)
+		}
+		r.URL.Path, r.URL.RawPath, r.URL.RawQuery = swap(r.URL.Path), swap(r.URL.RawPath), swap(r.URL.RawQuery)
+		for _, values := range r.Header {
+			for i := range values {
+				values[i] = swap(values[i])
 			}
-			r.URL.Path, r.URL.RawPath, r.URL.RawQuery = swap(r.URL.Path), swap(r.URL.RawPath), swap(r.URL.RawQuery)
-			for _, values := range r.Header {
-				for i := range values {
-					values[i] = swap(values[i])
-				}
-			}
-			if user, pass, ok := r.BasicAuth(); ok {
-				r.SetBasicAuth(swap(user), swap(pass))
-			}
-			if !found {
-				continue
-			}
-			if !c.allows(host) {
-				return nil, fmt.Errorf("%s secrets are not bound to %s", name, host)
-			}
+		}
+		if user, pass, ok := r.BasicAuth(); ok {
+			r.SetBasicAuth(swap(user), swap(pass))
+		}
+		if found {
 			used = append(used, secret)
+		}
+	}
+	values := []string{r.URL.Path, r.URL.RawPath, r.URL.RawQuery}
+	for key, entries := range r.URL.Query() {
+		values = append(values, key)
+		values = append(values, entries...)
+	}
+	for key, entries := range r.Header {
+		values = append(values, key)
+		values = append(values, entries...)
+	}
+	if user, pass, ok := r.BasicAuth(); ok {
+		values = append(values, user, pass)
+	}
+	for _, value := range values {
+		if strings.Contains(value, placeholderPrefix) {
+			return nil, fmt.Errorf("unresolved secret placeholder")
 		}
 	}
 	return used, nil
 }
 
-func (c *connection) allows(host string) bool {
-	for _, pattern := range c.Hosts {
+func (h *HTTP) Claim(host string, port uint32) int {
+	if port != httpPort && port != httpsPort {
+		return -1
+	}
+	score := -1
+	for _, pattern := range h.Hosts {
 		if ok, _ := path.Match(pattern, host); ok {
-			return true
+			score = max(score, len(pattern))
 		}
 	}
-	return false
+	return score
 }
 
 // Roots hidden behind a fragment spread yield no layer at all, so a policy can refuse the request.

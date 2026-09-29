@@ -1,20 +1,20 @@
-package main
+package connector
 
 import (
-	"bufio"
 	"context"
 	"crypto/tls"
 	"fmt"
-	"io"
 	"log"
 	"net"
-	"strings"
 	"sync/atomic"
 
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgproto3"
-	"github.com/tidwall/redcon"
 )
+
+type postgresLayer struct {
+	SQL string `json:"sql"`
+}
 
 const (
 	sslAccepted           = 'S'
@@ -25,19 +25,15 @@ const (
 	severityError         = "ERROR"
 	startupUser           = "user"
 	startupDatabase       = "database"
-	redisTLSScheme        = "rediss"
-	redisPort             = "6379"
-	redisDefaultUser      = "default"
-	redisOK               = "+"
 )
 
-// postgresRelay is a connection string for pgconn, which parses it when a session opens.
-type postgresRelay string
+// Postgres is a connection string for pgconn, which parses it when a session opens.
+type Postgres string
 
-// serve answers the client's startup itself, then relays messages on a session opened with the stored URL.
-func (dsn *postgresRelay) serve(cc *channelConn) {
-	defer cc.Close()
-	client, backend, startup, err := startup(cc)
+// Serve answers the client's startup itself, then relays messages on a session opened with the stored URL.
+func (dsn *Postgres) Serve(s *Stream) {
+	defer s.Close()
+	client, backend, startup, err := startup(s)
 	if err != nil {
 		log.Printf("postgres startup: %v", err)
 		return
@@ -60,11 +56,11 @@ func (dsn *postgresRelay) serve(cc *channelConn) {
 	if err := backend.Flush(); err != nil {
 		return
 	}
-	relayQueries(cc, backend, up)
+	relayQueries(s, backend, up)
 }
 
-func startup(cc *channelConn) (net.Conn, *pgproto3.Backend, *pgproto3.StartupMessage, error) {
-	conn := net.Conn(cc)
+func startup(s *Stream) (net.Conn, *pgproto3.Backend, *pgproto3.StartupMessage, error) {
+	conn := net.Conn(s)
 	for {
 		backend := pgproto3.NewBackend(conn, conn)
 		msg, err := backend.ReceiveStartupMessage()
@@ -78,7 +74,7 @@ func startup(cc *channelConn) (net.Conn, *pgproto3.Backend, *pgproto3.StartupMes
 			if _, err := conn.Write([]byte{sslAccepted}); err != nil {
 				return nil, nil, nil, err
 			}
-			conn = tls.Server(conn, cc.m.tls)
+			conn = tls.Server(conn, s.TLS)
 		case *pgproto3.GSSEncRequest:
 			if _, err := conn.Write([]byte{gssRefused}); err != nil {
 				return nil, nil, nil, err
@@ -110,11 +106,11 @@ func connectPostgres(url string, startup *pgproto3.StartupMessage) (*pgconn.Hija
 }
 
 // A refused statement is answered with an error in the client's place, so the session stays usable.
-func relayQueries(cc *channelConn, backend *pgproto3.Backend, up *pgconn.HijackedConn) {
+func relayQueries(s *Stream, backend *pgproto3.Backend, up *pgconn.HijackedConn) {
 	var status atomic.Uint32
 	status.Store(uint32(up.TxStatus))
 	go func() {
-		defer cc.Close()
+		defer s.Close()
 		for {
 			msg, err := up.Frontend.Receive()
 			if err != nil {
@@ -142,7 +138,7 @@ func relayQueries(cc *channelConn, backend *pgproto3.Backend, up *pgconn.Hijacke
 			sql = msg.Query
 		}
 		if sql != "" {
-			if err := cc.gate(event{Postgres: &postgresLayer{SQL: sql}}); err != nil {
+			if err := s.Gate(Event{Postgres: &postgresLayer{SQL: sql}}); err != nil {
 				backend.Send(&pgproto3.ErrorResponse{Severity: severityError, Code: insufficientPrivilege, Message: err.Error()})
 				if _, simple := msg.(*pgproto3.Query); simple {
 					backend.Send(&pgproto3.ReadyForQuery{TxStatus: byte(status.Load())})
@@ -158,100 +154,4 @@ func relayQueries(cc *channelConn, backend *pgproto3.Backend, up *pgconn.Hijacke
 			return
 		}
 	}
-}
-
-type redisRelay struct{ endpoint }
-
-// serve authenticates upstream first, then forwards each command the policy allows, with any
-// AUTH or HELLO AUTH rewritten to the stored credential so the client's own is never sent.
-func (r *redisRelay) serve(cc *channelConn) {
-	defer cc.Close()
-	u := &r.URL
-	up, err := dialURL(u, redisTLSScheme, redisPort, redisPort)
-	if err != nil {
-		log.Printf("redis: %v", err)
-		return
-	}
-	defer up.Close()
-	user, pass := u.User.Username(), ""
-	if p, ok := u.User.Password(); ok {
-		pass = p
-	}
-	replies := bufio.NewReader(up)
-	if pass != "" {
-		if _, err := up.Write(encode(authArgs(user, pass))); err != nil {
-			return
-		}
-		line, err := replies.ReadString('\n')
-		if err != nil || !strings.HasPrefix(line, redisOK) {
-			log.Printf("redis upstream refused the stored credential: %q %v", line, err)
-			return
-		}
-	}
-	go func() {
-		io.Copy(cc, replies)
-		cc.Close()
-	}()
-	commands := redcon.NewReader(cc)
-	for {
-		cmd, err := commands.ReadCommand()
-		if err != nil {
-			return
-		}
-		args := make([]string, len(cmd.Args))
-		for i, arg := range cmd.Args {
-			args[i] = string(arg)
-		}
-		if err := cc.gate(event{Redis: &argvLayer{Argv: args}}); err != nil {
-			if _, err := cc.Write(redcon.AppendError(nil, "ERR "+err.Error())); err != nil {
-				return
-			}
-			continue
-		}
-		out := cmd.Raw
-		if pass != "" {
-			if args, ok := reauthorize(cmd.Args, user, pass); ok {
-				out = encode(args)
-			}
-		}
-		if _, err := up.Write(out); err != nil {
-			return
-		}
-	}
-}
-
-func reauthorize(args [][]byte, user, pass string) ([][]byte, bool) {
-	if len(args) == 0 {
-		return nil, false
-	}
-	switch strings.ToUpper(string(args[0])) {
-	case "AUTH":
-		return authArgs(user, pass), true
-	case "HELLO":
-		if user == "" {
-			user = redisDefaultUser
-		}
-		for i := range args {
-			if strings.EqualFold(string(args[i]), "AUTH") && i+2 < len(args) {
-				args[i+1], args[i+2] = []byte(user), []byte(pass)
-				return args, true
-			}
-		}
-	}
-	return nil, false
-}
-
-func authArgs(user, pass string) [][]byte {
-	if user == "" {
-		return [][]byte{[]byte("AUTH"), []byte(pass)}
-	}
-	return [][]byte{[]byte("AUTH"), []byte(user), []byte(pass)}
-}
-
-func encode(args [][]byte) []byte {
-	out := redcon.AppendArray(nil, len(args))
-	for _, arg := range args {
-		out = redcon.AppendBulk(out, arg)
-	}
-	return out
 }

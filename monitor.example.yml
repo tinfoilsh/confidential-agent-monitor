@@ -4,8 +4,9 @@ authorized_keys: .dev/id.pub
 policies: policies
 connections:
   github:
-    hosts: [api.github.com, github.com, "*.githubusercontent.com"]
-    secrets: { GITHUB_TOKEN: ghp_REAL }
+    http:
+      hosts: [api.github.com, github.com, "*.githubusercontent.com"]
+      secrets: { GITHUB_TOKEN: ghp_REAL }
   box2:
     ssh: { host: box2.example.com, user: deploy, key: keys/box2, host_key: "ssh-ed25519 AAAA..." }
   gh:

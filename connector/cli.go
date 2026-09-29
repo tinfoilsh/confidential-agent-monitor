@@ -1,4 +1,4 @@
-package main
+package connector
 
 import (
 	"bytes"
@@ -12,6 +12,19 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+type gitLayer struct {
+	Type       string   `json:"type"`
+	Tree       string   `json:"tree,omitempty"`
+	Object     string   `json:"object,omitempty"`
+	ObjectType string   `json:"object_type,omitempty"`
+	Tag        string   `json:"tag,omitempty"`
+	Parents    []string `json:"parents"`
+	Author     string   `json:"author,omitempty"`
+	Committer  string   `json:"committer,omitempty"`
+	Tagger     string   `json:"tagger,omitempty"`
+	Message    string   `json:"message"`
+}
+
 const (
 	maxStdinBytes     = 1 << 20
 	exitRefused       = 126
@@ -21,16 +34,16 @@ const (
 	objectTag         = "tag"
 )
 
-type cliRelay struct {
+type CLI struct {
 	Path  string            `yaml:"path"`
 	Env   map[string]string `yaml:"env"`
 	Stdin string            `yaml:"stdin"`
 }
 
-// serve runs the configured binary with argv from the parsed exec string and env from the config alone.
-func (t *cliRelay) serve(cc *channelConn) {
-	defer cc.Close()
-	inner, chans, reqs, err := ssh.NewServerConn(cc, cc.m.inner)
+// Serve runs the configured binary with argv from the parsed exec string and env from the config alone.
+func (t *CLI) Serve(s *Stream) {
+	defer s.Close()
+	inner, chans, reqs, err := innerSSH(s)
 	if err != nil {
 		return
 	}
@@ -45,14 +58,14 @@ func (t *cliRelay) serve(cc *channelConn) {
 		if err != nil {
 			return
 		}
-		go t.session(cc, ch, reqs)
+		go t.session(s, ch, reqs)
 	}
 }
 
-func (t *cliRelay) session(cc *channelConn, ch ssh.Channel, reqs <-chan *ssh.Request) {
+func (t *CLI) session(s *Stream, ch ssh.Channel, reqs <-chan *ssh.Request) {
 	defer ch.Close()
 	for r := range reqs {
-		e := sshEvent(r)
+		e := eventForSSH(r)
 		if r.Type != requestExec || e.Command == nil {
 			r.Reply(false, nil)
 			continue
@@ -64,7 +77,7 @@ func (t *cliRelay) session(cc *channelConn, ch ssh.Channel, reqs <-chan *ssh.Req
 			e.Payload = gitObject(stdin)
 		}
 		status := exitRefused
-		if err := cc.gate(e); err != nil {
+		if err := s.Gate(e); err != nil {
 			fmt.Fprintf(ch.Stderr(), "monitor: %v\n", err)
 		} else {
 			status = t.execute(e.Command.Argv, io.MultiReader(bytes.NewReader(stdin), ch), ch)
@@ -74,7 +87,7 @@ func (t *cliRelay) session(cc *channelConn, ch ssh.Channel, reqs <-chan *ssh.Req
 	}
 }
 
-func (t *cliRelay) execute(args []string, stdin io.Reader, ch ssh.Channel) int {
+func (t *CLI) execute(args []string, stdin io.Reader, ch ssh.Channel) int {
 	cmd := exec.Command(t.Path, args[1:]...)
 	cmd.Env = []string{}
 	for name, value := range t.Env {

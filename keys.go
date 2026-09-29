@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/ecdsa"
+	"crypto/ed25519"
 	"crypto/elliptic"
 	"crypto/rand"
 	"crypto/tls"
@@ -12,7 +13,11 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
+
+	"github.com/tinfoilsh/monitor/connector"
+	"golang.org/x/crypto/ssh"
 )
 
 const (
@@ -24,16 +29,28 @@ const (
 	leafBackdate  = time.Hour
 	pemCert       = "CERTIFICATE"
 	pemPrivateKey = "PRIVATE KEY"
+	hostKeyFile   = "host_key"
 )
 
-func loadCA(dir string) (tls.Certificate, error) {
+type authority struct {
+	ca     tls.Certificate
+	mu     sync.Mutex
+	leaves map[string]*tls.Certificate
+}
+
+func loadCA(dir string) (*tls.Config, error) {
 	certPath, keyPath := filepath.Join(dir, caCertFile), filepath.Join(dir, caKeyFile)
 	if _, err := os.Stat(certPath); errors.Is(err, os.ErrNotExist) {
 		if err := createCA(certPath, keyPath); err != nil {
-			return tls.Certificate{}, err
+			return nil, err
 		}
 	}
-	return tls.LoadX509KeyPair(certPath, keyPath)
+	ca, err := tls.LoadX509KeyPair(certPath, keyPath)
+	if err != nil {
+		return nil, err
+	}
+	a := &authority{ca: ca, leaves: map[string]*tls.Certificate{}}
+	return &tls.Config{GetCertificate: a.certificate}, nil
 }
 
 func createCA(certPath, keyPath string) error {
@@ -65,14 +82,14 @@ func createCA(certPath, keyPath string) error {
 }
 
 // certificate mints a leaf for the SNI name, or for the channel's target when the client sent none.
-func (m *monitor) certificate(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
+func (a *authority) certificate(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
 	name := hello.ServerName
-	if c, ok := hello.Conn.(*channelConn); ok && name == "" {
-		name = c.host
+	if c, ok := hello.Conn.(*connector.Stream); ok && name == "" {
+		name = c.Host
 	}
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	if leaf := m.leaves[name]; leaf != nil && time.Now().Before(leaf.Leaf.NotAfter) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	if leaf := a.leaves[name]; leaf != nil && time.Now().Before(leaf.Leaf.NotAfter) {
 		return leaf, nil
 	}
 	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
@@ -92,7 +109,7 @@ func (m *monitor) certificate(hello *tls.ClientHelloInfo) (*tls.Certificate, err
 	} else {
 		template.DNSNames = []string{name}
 	}
-	der, err := x509.CreateCertificate(rand.Reader, template, m.ca.Leaf, &key.PublicKey, m.ca.PrivateKey)
+	der, err := x509.CreateCertificate(rand.Reader, template, a.ca.Leaf, &key.PublicKey, a.ca.PrivateKey)
 	if err != nil {
 		return nil, err
 	}
@@ -101,6 +118,28 @@ func (m *monitor) certificate(hello *tls.ClientHelloInfo) (*tls.Certificate, err
 		return nil, err
 	}
 	leaf := &tls.Certificate{Certificate: [][]byte{der}, PrivateKey: key, Leaf: parsed}
-	m.leaves[name] = leaf
+	a.leaves[name] = leaf
 	return leaf, nil
+}
+
+func loadHostKey(dir string) (ssh.Signer, error) {
+	path := filepath.Join(dir, hostKeyFile)
+	encoded, err := os.ReadFile(path)
+	if errors.Is(err, os.ErrNotExist) {
+		_, private, err := ed25519.GenerateKey(rand.Reader)
+		if err != nil {
+			return nil, err
+		}
+		block, err := ssh.MarshalPrivateKey(private, "")
+		if err != nil {
+			return nil, err
+		}
+		encoded = pem.EncodeToMemory(block)
+		if err := os.WriteFile(path, encoded, secretMode); err != nil {
+			return nil, err
+		}
+	} else if err != nil {
+		return nil, err
+	}
+	return ssh.ParsePrivateKey(encoded)
 }

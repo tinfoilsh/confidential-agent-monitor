@@ -1,6 +1,7 @@
-package main
+package connector
 
 import (
+	"cmp"
 	"fmt"
 	"io"
 	"log"
@@ -16,6 +17,19 @@ import (
 	"mvdan.cc/sh/v3/syntax"
 )
 
+type sshLayer struct {
+	Request   string  `json:"request"`
+	Command   string  `json:"command,omitempty"`
+	Subsystem string  `json:"subsystem,omitempty"`
+	Term      string  `json:"term,omitempty"`
+	Env       *sshEnv `json:"env,omitempty"`
+}
+
+type sshEnv struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
 const (
 	channelSession   = "session"
 	sshPort          = 22
@@ -27,7 +41,7 @@ const (
 
 var refusedRequests = []string{"auth-agent-req@openssh.com", "x11-req"}
 
-type sshRelay struct {
+type SSH struct {
 	Host    string `yaml:"host"`
 	Port    int    `yaml:"port"`
 	User    string `yaml:"user"`
@@ -35,7 +49,7 @@ type sshRelay struct {
 	HostKey string `yaml:"host_key"`
 }
 
-func (t *sshRelay) dial() (*ssh.Client, error) {
+func (t *SSH) dial() (*ssh.Client, error) {
 	hostKey, _, _, _, err := ssh.ParseAuthorizedKey([]byte(t.HostKey))
 	if err != nil {
 		return nil, fmt.Errorf("host_key: %w", err)
@@ -48,11 +62,7 @@ func (t *sshRelay) dial() (*ssh.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	port := t.Port
-	if port == 0 {
-		port = sshPort
-	}
-	return ssh.Dial("tcp", net.JoinHostPort(t.Host, strconv.Itoa(port)), &ssh.ClientConfig{
+	return ssh.Dial("tcp", net.JoinHostPort(t.Host, strconv.Itoa(cmp.Or(t.Port, sshPort))), &ssh.ClientConfig{
 		User:            t.User,
 		Auth:            []ssh.AuthMethod{ssh.PublicKeys(signer)},
 		HostKeyCallback: ssh.FixedHostKey(hostKey),
@@ -60,10 +70,10 @@ func (t *sshRelay) dial() (*ssh.Client, error) {
 	})
 }
 
-// serve answers as an SSH server that asks for no credential and relays each session upstream.
-func (t *sshRelay) serve(cc *channelConn) {
-	defer cc.Close()
-	inner, chans, reqs, err := ssh.NewServerConn(cc, cc.m.inner)
+// Serve answers as an SSH server that asks for no credential and relays each session upstream.
+func (t *SSH) Serve(s *Stream) {
+	defer s.Close()
+	inner, chans, reqs, err := innerSSH(s)
 	if err != nil {
 		return
 	}
@@ -79,7 +89,7 @@ func (t *sshRelay) serve(cc *channelConn) {
 		up.Wait()
 		inner.Close()
 	}()
-	check := func(r *ssh.Request) error { return cc.gate(sshEvent(r)) }
+	check := func(r *ssh.Request) error { return s.Gate(eventForSSH(r)) }
 	for nc := range chans {
 		go relayChannel(up, nc, check)
 	}
@@ -132,10 +142,10 @@ func forwardRequests(dst ssh.Channel, reqs <-chan *ssh.Request, check func(*ssh.
 	}
 }
 
-// sshEvent is the ssh layer for a channel request, plus the command layer when its exec string is one plain command.
-func sshEvent(r *ssh.Request) event {
+// eventForSSH is the ssh layer for a channel request, plus the command layer when its exec string is one plain command.
+func eventForSSH(r *ssh.Request) Event {
 	layer := &sshLayer{Request: r.Type}
-	e := event{SSH: layer}
+	e := Event{SSH: layer}
 	switch r.Type {
 	case requestExec:
 		var p struct{ Command string }
@@ -157,9 +167,8 @@ func sshEvent(r *ssh.Request) event {
 		}
 	case requestPty:
 		var p struct {
-			Term                         string
-			Columns, Rows, Width, Height uint32
-			Modes                        string
+			Term string
+			Rest []byte `ssh:"rest"`
 		}
 		if ssh.Unmarshal(r.Payload, &p) == nil {
 			layer.Term = p.Term
@@ -204,4 +213,11 @@ func literal(parts []syntax.WordPart) bool {
 		}
 	}
 	return true
+}
+
+// innerSSH answers the client's own ssh session inside a tunnelled stream; the tunnel already checked its key.
+func innerSSH(s *Stream) (*ssh.ServerConn, <-chan ssh.NewChannel, <-chan *ssh.Request, error) {
+	cfg := &ssh.ServerConfig{NoClientAuth: true}
+	cfg.AddHostKey(s.HostKey)
+	return ssh.NewServerConn(s, cfg)
 }
