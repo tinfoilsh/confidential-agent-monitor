@@ -114,7 +114,7 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 		return
 	}
 	go ssh.DiscardRequests(reqs)
-	s.Conn = channelConn{ch}
+	s.Conn = channelConn{ch, p}
 	log.Printf("%s: forwarding %s:%d", p.Name, target.Host, target.Port)
 	c.connector.Serve(s)
 }
@@ -178,7 +178,10 @@ func (m *monitor) gate(in input) error {
 	return errors.New(reason)
 }
 
-type channelConn struct{ ssh.Channel }
+type channelConn struct {
+	ssh.Channel
+	principal principal
+}
 
 func (channelConn) LocalAddr() net.Addr              { return &net.TCPAddr{} }
 func (channelConn) RemoteAddr() net.Addr             { return &net.TCPAddr{} }

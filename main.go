@@ -46,6 +46,7 @@ type config struct {
 	Policies       string                          `yaml:"policies"`
 	AllowNetworks  []netip.Prefix                  `yaml:"allow_networks"`
 	Connections    map[string]map[string]yaml.Node `yaml:"connections"`
+	MCP            map[string]*mcpServer           `yaml:"mcp"`
 }
 
 type connection struct {
@@ -55,6 +56,9 @@ type connection struct {
 
 type monitor struct {
 	connections map[string]*connection
+	mcp         map[string]*mcpServer
+	gateway     connector.Listener
+	state       string
 	policy      *sentinel.Policy
 	connector.Env
 }
@@ -77,8 +81,12 @@ func run(configPath, stateDir string, args []string) error {
 	if err := yaml.Unmarshal(raw, &cfg); err != nil {
 		return fmt.Errorf("%s: %w", configPath, err)
 	}
-	m := &monitor{connections: map[string]*connection{}}
+	m := &monitor{connections: map[string]*connection{}, mcp: cfg.MCP, state: stateDir, gateway: make(connector.Listener)}
+	m.connections[gatewayName] = &connection{name: gatewayName, protocol: protocolMCP, connector: m.gateway}
 	for name, kinds := range cfg.Connections {
+		if m.connections[name] != nil {
+			return fmt.Errorf("%s: connection name %s is reserved", configPath, name)
+		}
 		if len(kinds) != 1 {
 			return fmt.Errorf("%s: connection %s must have one kind", configPath, name)
 		}
@@ -120,10 +128,14 @@ func run(configPath, stateDir string, args []string) error {
 		return err
 	}
 	m.Dialer = connector.NewDialer(cfg.AllowNetworks)
+	if len(args) == 2 && args[0] == "pin" {
+		return m.pin(args[1])
+	}
 	for _, c := range m.connections {
 		if r, ok := c.connector.(connector.Starter); ok {
 			r.Start(&m.Env)
 		}
 	}
+	m.startMCP()
 	return m.serveSSH(cfg.Listen, cfg.AuthorizedKeys)
 }

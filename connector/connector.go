@@ -184,6 +184,7 @@ type Listener chan net.Conn
 func (l Listener) Accept() (net.Conn, error) { return <-l, nil }
 func (Listener) Close() error                { return nil }
 func (Listener) Addr() net.Addr              { return &net.TCPAddr{} }
+func (l Listener) Serve(s *Stream)           { l <- s }
 
 func StreamOf(c net.Conn) *Stream {
 	if tc, ok := c.(*tls.Conn); ok {

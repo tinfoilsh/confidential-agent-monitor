@@ -37,3 +37,8 @@ connections:
     postgres: postgres://app:REAL@db.example.com/app?sslmode=verify-full
   cache:
     redis: rediss://default:REAL@cache.example.com:6380
+# Served together at mcp.monitor; `monitor pin <name>` pins a server's tools.
+mcp:
+  github-mcp:
+    url: https://api.githubcopilot.com/mcp/
+    token: ghp_REAL
