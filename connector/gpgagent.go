@@ -14,14 +14,13 @@ const (
 	assuanNotSupported = 536870981
 )
 
-// agentCommands use a key without moving it. Everything else is answered with an error here.
+// agentCommands use a key without moving it.
 var agentCommands = map[string]bool{
 	"OPTION": true, "RESET": true, "BYE": true, "NOP": true, "GETINFO": true, "HAVEKEY": true,
 	"KEYINFO": true, "READKEY": true, "SIGKEY": true, "SETKEY": true, "SETKEYDESC": true,
 	"SETHASH": true, "PKSIGN": true, "PKDECRYPT": true,
 }
 
-// GPGAgent is the socket of a real gpg-agent, proxied with a gate before each signature or decryption.
 type GPGAgent string
 
 func (socket *GPGAgent) Serve(s *Stream) {

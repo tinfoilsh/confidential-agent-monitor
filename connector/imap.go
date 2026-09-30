@@ -27,11 +27,10 @@ var imapLiteral = regexp.MustCompile(`\{(\d+)(\+?)\}$`)
 
 type IMAP struct{ endpoint }
 
-// Serve logs in upstream with the stored URL and greets the client as already authenticated.
 func (r *IMAP) Serve(s *Stream) {
 	defer s.Close()
 	u := &r.URL
-	up, err := dialURL(u, imapTLSScheme, imapPort, imapsPort)
+	up, err := dialURL(s.Dialer, u, imapTLSScheme, imapPort, imapsPort)
 	if err != nil {
 		log.Printf("imap: %v", err)
 		return

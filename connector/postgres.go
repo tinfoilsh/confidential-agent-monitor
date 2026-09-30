@@ -27,10 +27,8 @@ const (
 	startupDatabase       = "database"
 )
 
-// Postgres is a connection string for pgconn, which parses it when a session opens.
 type Postgres string
 
-// Serve answers the client's startup itself, then relays messages on a session opened with the stored URL.
 func (dsn *Postgres) Serve(s *Stream) {
 	defer s.Close()
 	client, backend, startup, err := startup(s)
@@ -39,7 +37,7 @@ func (dsn *Postgres) Serve(s *Stream) {
 		return
 	}
 	defer client.Close()
-	up, err := connectPostgres(string(*dsn), startup)
+	up, err := connectPostgres(s.Dialer, string(*dsn), startup)
 	if err != nil {
 		log.Printf("postgres: %v", err)
 		backend.Send(&pgproto3.ErrorResponse{Severity: severityFatal, Code: connectionFailure, Message: err.Error()})
@@ -85,12 +83,12 @@ func startup(s *Stream) (net.Conn, *pgproto3.Backend, *pgproto3.StartupMessage, 
 	}
 }
 
-// The client's session parameters are kept; its user and database are replaced by the stored URL's.
-func connectPostgres(url string, startup *pgproto3.StartupMessage) (*pgconn.HijackedConn, error) {
+func connectPostgres(d *net.Dialer, url string, startup *pgproto3.StartupMessage) (*pgconn.HijackedConn, error) {
 	config, err := pgconn.ParseConfig(url)
 	if err != nil {
 		return nil, err
 	}
+	config.DialFunc = d.DialContext
 	for name, value := range startup.Parameters {
 		if name != startupUser && name != startupDatabase {
 			config.RuntimeParams[name] = value

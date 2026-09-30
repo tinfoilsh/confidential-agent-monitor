@@ -49,7 +49,7 @@ type SSH struct {
 	HostKey string `yaml:"host_key"`
 }
 
-func (t *SSH) dial() (*ssh.Client, error) {
+func (t *SSH) dial(d *net.Dialer) (*ssh.Client, error) {
 	hostKey, _, _, _, err := ssh.ParseAuthorizedKey([]byte(t.HostKey))
 	if err != nil {
 		return nil, fmt.Errorf("host_key: %w", err)
@@ -62,15 +62,24 @@ func (t *SSH) dial() (*ssh.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ssh.Dial("tcp", net.JoinHostPort(t.Host, strconv.Itoa(cmp.Or(t.Port, sshPort))), &ssh.ClientConfig{
-		User:            t.User,
-		Auth:            []ssh.AuthMethod{ssh.PublicKeys(signer)},
-		HostKeyCallback: ssh.FixedHostKey(hostKey),
-		Timeout:         dialTimeout,
+	addr := net.JoinHostPort(t.Host, strconv.Itoa(cmp.Or(t.Port, sshPort)))
+	conn, err := d.Dial("tcp", addr)
+	if err != nil {
+		return nil, err
+	}
+	c, chans, reqs, err := ssh.NewClientConn(conn, addr, &ssh.ClientConfig{
+		User:              t.User,
+		Auth:              []ssh.AuthMethod{ssh.PublicKeys(signer)},
+		HostKeyCallback:   ssh.FixedHostKey(hostKey),
+		HostKeyAlgorithms: []string{hostKey.Type()},
 	})
+	if err != nil {
+		conn.Close()
+		return nil, err
+	}
+	return ssh.NewClient(c, chans, reqs), nil
 }
 
-// Serve answers as an SSH server that asks for no credential and relays each session upstream.
 func (t *SSH) Serve(s *Stream) {
 	defer s.Close()
 	inner, chans, reqs, err := innerSSH(s)
@@ -79,7 +88,7 @@ func (t *SSH) Serve(s *Stream) {
 	}
 	defer inner.Close()
 	go ssh.DiscardRequests(reqs)
-	up, err := t.dial()
+	up, err := t.dial(s.Dialer)
 	if err != nil {
 		log.Printf("%s: %v", t.Host, err)
 		return
@@ -142,7 +151,6 @@ func forwardRequests(dst ssh.Channel, reqs <-chan *ssh.Request, check func(*ssh.
 	}
 }
 
-// eventForSSH is the ssh layer for a channel request, plus the command layer when its exec string is one plain command.
 func eventForSSH(r *ssh.Request) Event {
 	layer := &sshLayer{Request: r.Type}
 	e := Event{SSH: layer}
@@ -177,7 +185,7 @@ func eventForSSH(r *ssh.Request) Event {
 	return e
 }
 
-// argv is the words of exactly one plain command: no pipes, redirects, assignments, or expansions.
+// argv is nil for anything but one plain command.
 func argv(command string) []string {
 	file, err := syntax.NewParser().Parse(strings.NewReader(command), "")
 	if err != nil || len(file.Stmts) != 1 {
@@ -215,7 +223,7 @@ func literal(parts []syntax.WordPart) bool {
 	return true
 }
 
-// innerSSH answers the client's own ssh session inside a tunnelled stream; the tunnel already checked its key.
+// NoClientAuth is safe because the tunnel already checked the client's key.
 func innerSSH(s *Stream) (*ssh.ServerConn, <-chan ssh.NewChannel, <-chan *ssh.Request, error) {
 	cfg := &ssh.ServerConfig{NoClientAuth: true}
 	cfg.AddHostKey(s.HostKey)

@@ -8,6 +8,8 @@ import (
 	"log"
 	"net"
 	"os"
+	"path"
+	"slices"
 	"strings"
 	"time"
 
@@ -21,7 +23,7 @@ type tcpLayer struct {
 	Port uint32 `json:"port"`
 }
 
-// input is one policy event: the stream's identity plus the tunnel's tcp layer or a connector's layers.
+// input carries either the tunnel's tcp layer or a connector's layers, never both.
 type input struct {
 	Principal  principal `json:"principal"`
 	Connection string    `json:"connection"`
@@ -31,18 +33,26 @@ type input struct {
 }
 
 type principal struct {
-	Key  string `json:"key"`
-	Name string `json:"name"`
+	Key         string   `json:"key"`
+	Name        string   `json:"name"`
+	Connections []string `json:"connections"`
 }
 
+func (p principal) reaches(name string) bool {
+	return slices.ContainsFunc(p.Connections, func(pattern string) bool {
+		ok, _ := path.Match(pattern, name)
+		return ok
+	})
+}
+
+type principalKey struct{}
+
 const (
-	extensionName = "name"
-	extensionKey  = "key"
-	channelDirect = "direct-tcpip"
-	monitorSuffix = ".monitor"
+	optionConnections = "connections="
+	channelDirect     = "direct-tcpip"
+	monitorSuffix     = ".monitor"
 )
 
-// serveSSH owns the SSH tunnel and forwards each accepted channel to a connector.
 func (m *monitor) serveSSH(listen, authorizedKeys string) error {
 	front := &ssh.ServerConfig{PublicKeyCallback: authorized(authorizedKeys)}
 	front.AddHostKey(m.HostKey)
@@ -65,7 +75,7 @@ func (m *monitor) serveSSH(listen, authorizedKeys string) error {
 			}
 			defer conn.Close()
 			go ssh.DiscardRequests(reqs)
-			p := principal{Key: conn.Permissions.Extensions[extensionKey], Name: conn.Permissions.Extensions[extensionName]}
+			p := conn.Permissions.ExtraData[principalKey{}].(principal)
 			for nc := range chans {
 				go m.forward(p, nc)
 			}
@@ -73,7 +83,6 @@ func (m *monitor) serveSSH(listen, authorizedKeys string) error {
 	}
 }
 
-// forward routes and gates a channel's target before accepting it, then hands the channel to its connector.
 func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 	if nc.ChannelType() != channelDirect {
 		nc.Reject(ssh.Prohibited, "only direct-tcpip channels are forwarded")
@@ -88,7 +97,7 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 		nc.Reject(ssh.ConnectionFailed, "malformed direct-tcpip request")
 		return
 	}
-	c := m.route(target.Host, target.Port)
+	c := m.route(p, target.Host, target.Port)
 	if c == nil {
 		log.Printf("%s: dropped %s:%d", p.Name, target.Host, target.Port)
 		nc.Reject(ssh.Prohibited, "the monitor does not forward this target")
@@ -107,15 +116,14 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 	go ssh.DiscardRequests(reqs)
 	s.Conn = channelConn{ch}
 	log.Printf("%s: forwarding %s:%d", p.Name, target.Host, target.Port)
-	// Serve owns ch, even when it returns before the stream ends.
 	c.connector.Serve(s)
 }
 
-// route selects a named connection for .monitor, or the unique highest claim for another host.
-func (m *monitor) route(host string, port uint32) *connection {
+// Only connections the principal reaches are routed, so their claims never tie with another principal's.
+func (m *monitor) route(p principal, host string, port uint32) *connection {
 	if name, ok := strings.CutSuffix(host, monitorSuffix); ok {
 		c := m.connections[name]
-		if c == nil {
+		if c == nil || !p.reaches(name) {
 			return nil
 		}
 		if _, ok := c.connector.(connector.Claimer); ok {
@@ -127,7 +135,7 @@ func (m *monitor) route(host string, port uint32) *connection {
 	var selected *connection
 	for _, c := range m.connections {
 		r, ok := c.connector.(connector.Claimer)
-		if !ok {
+		if !ok || !p.reaches(c.name) {
 			continue
 		}
 		score := r.Claim(host, port)
@@ -147,7 +155,6 @@ func (m *monitor) route(host string, port uint32) *connection {
 	return selected
 }
 
-// gate evaluates one event.
 func (m *monitor) gate(in input) error {
 	encoded, err := json.Marshal(in)
 	if err != nil {
@@ -171,7 +178,6 @@ func (m *monitor) gate(in input) error {
 	return errors.New(reason)
 }
 
-// channelConn adapts an SSH channel to net.Conn.
 type channelConn struct{ ssh.Channel }
 
 func (channelConn) LocalAddr() net.Addr              { return &net.TCPAddr{} }
@@ -181,6 +187,7 @@ func (channelConn) SetReadDeadline(time.Time) error  { return nil }
 func (channelConn) SetWriteDeadline(time.Time) error { return nil }
 
 // authorized rereads the key file on every attempt, so keys change without a restart.
+// A key reaches only the connections its connections="a,b" option names.
 func authorized(path string) func(ssh.ConnMetadata, ssh.PublicKey) (*ssh.Permissions, error) {
 	return func(_ ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
 		rest, err := os.ReadFile(path)
@@ -188,12 +195,18 @@ func authorized(path string) func(ssh.ConnMetadata, ssh.PublicKey) (*ssh.Permiss
 			return nil, err
 		}
 		for len(rest) > 0 {
-			listed, comment, _, next, err := ssh.ParseAuthorizedKey(rest)
+			listed, comment, options, next, err := ssh.ParseAuthorizedKey(rest)
 			if err != nil {
 				break
 			}
 			if bytes.Equal(listed.Marshal(), key.Marshal()) {
-				return &ssh.Permissions{Extensions: map[string]string{extensionName: comment, extensionKey: ssh.FingerprintSHA256(key)}}, nil
+				p := principal{Key: ssh.FingerprintSHA256(key), Name: comment, Connections: []string{}}
+				for _, option := range options {
+					if names, ok := strings.CutPrefix(option, optionConnections); ok {
+						p.Connections = strings.Split(strings.Trim(names, `"`), ",")
+					}
+				}
+				return &ssh.Permissions{ExtraData: map[any]any{principalKey{}: p}}, nil
 			}
 			rest = next
 		}

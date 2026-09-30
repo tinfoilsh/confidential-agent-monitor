@@ -18,12 +18,10 @@ const (
 
 type Redis struct{ endpoint }
 
-// Serve authenticates upstream first, then forwards each command the policy allows, with any
-// AUTH or HELLO AUTH rewritten to the stored credential so the client's own is never sent.
 func (r *Redis) Serve(s *Stream) {
 	defer s.Close()
 	u := &r.URL
-	up, err := dialURL(u, redisTLSScheme, redisPort, redisPort)
+	up, err := dialURL(s.Dialer, u, redisTLSScheme, redisPort, redisPort)
 	if err != nil {
 		log.Printf("redis: %v", err)
 		return

@@ -11,6 +11,7 @@ host=${listen%:*} port=${listen##*:}
 
 mkdir -p "$dev/firefox"
 [[ -f $dev/id ]] || ssh-keygen -q -t ed25519 -N '' -C monitor-dev -f "$dev/id"
+echo "connections=\"*\" $(cat "$dev/id.pub")" > "$dev/authorized_keys"
 echo "monitor,*.monitor,[$host]:$port $(ssh-keygen -y -f state/host_key)" > "$dev/known_hosts"
 cp state/ca.pem "$dev/ca.pem"
 

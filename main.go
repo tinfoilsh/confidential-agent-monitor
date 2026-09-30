@@ -1,5 +1,3 @@
-// Command monitor forwards streams through connectors that terminate each protocol,
-// ask the policy before each operation, and attach stored credentials.
 package main
 
 import (
@@ -8,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net/netip"
 	"os"
 
 	"github.com/open-policy-agent/opa/v1/rego"
@@ -26,10 +25,10 @@ type config struct {
 	Listen         string                          `yaml:"listen"`
 	AuthorizedKeys string                          `yaml:"authorized_keys"`
 	Policies       string                          `yaml:"policies"`
+	AllowNetworks  []netip.Prefix                  `yaml:"allow_networks"`
 	Connections    map[string]map[string]yaml.Node `yaml:"connections"`
 }
 
-// connection selects exactly one connector.
 type connection struct {
 	name, protocol string
 	connector      connector.Connector
@@ -101,6 +100,7 @@ func run(configPath, stateDir string, args []string) error {
 	if m.HostKey, err = loadHostKey(stateDir); err != nil {
 		return err
 	}
+	m.Dialer = connector.NewDialer(cfg.AllowNetworks)
 	for _, c := range m.connections {
 		if r, ok := c.connector.(connector.Starter); ok {
 			r.Start(&m.Env)

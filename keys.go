@@ -81,7 +81,7 @@ func createCA(certPath, keyPath string) error {
 	return os.WriteFile(certPath, pem.EncodeToMemory(&pem.Block{Type: pemCert, Bytes: der}), secretMode)
 }
 
-// certificate mints a leaf for the SNI name, or for the channel's target when the client sent none.
+// Without SNI, the leaf is minted for the channel's target.
 func (a *authority) certificate(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
 	name := hello.ServerName
 	if c, ok := hello.Conn.(*connector.Stream); ok && name == "" {

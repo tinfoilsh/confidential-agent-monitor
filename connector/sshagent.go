@@ -30,10 +30,8 @@ const (
 
 var errAgentSignsOnly = errors.New("the monitor's agent only signs")
 
-// SSHAgent is the private key files of a keyring that only signs.
 type SSHAgent []string
 
-// gatedAgent asks the policy before each signature.
 type gatedAgent struct {
 	agent.ExtendedAgent
 	s *Stream
@@ -78,7 +76,6 @@ func (gatedAgent) Extension(string, []byte) ([]byte, error) {
 	return nil, agent.ErrExtensionUnsupported
 }
 
-// signEvent names what a signature is for: an SSHSIG namespace, a user authentication, or something else.
 func signEvent(key ssh.PublicKey, data []byte) *signLayer {
 	sign := &signLayer{Agent: agentSSH, Key: ssh.FingerprintSHA256(key), Purpose: purposeOther}
 	var sig struct {

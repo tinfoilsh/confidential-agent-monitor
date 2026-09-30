@@ -1,7 +1,9 @@
 listen: 127.0.0.1:2223
 # dev/setup writes this key; its private half is what the ssh client presents.
-authorized_keys: .dev/id.pub
+authorized_keys: .dev/authorized_keys
 policies: policies
+# Special-purpose ranges upstreams may still dial.
+allow_networks: [100.64.0.0/10]
 connections:
   github:
     http:

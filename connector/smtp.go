@@ -2,10 +2,12 @@ package connector
 
 import (
 	"bytes"
+	"crypto/tls"
 	"io"
 	"log"
 	"mime"
 	"mime/multipart"
+	"net"
 	"net/mail"
 	"net/url"
 	"strings"
@@ -81,20 +83,19 @@ func (s *smtpSession) Data(r io.Reader) error {
 	if err := s.stream.Gate(Event{SMTP: &smtpLayer{From: s.from, To: s.to}, Mail: mailHeaders(message)}); err != nil {
 		return &smtp.SMTPError{Code: smtpRefused, EnhancedCode: smtp.EnhancedCode{5, 7, 1}, Message: err.Error()}
 	}
-	return submit(&s.relay.URL, s.from, s.to, message)
+	return submit(s.stream.Dialer, &s.relay.URL, s.from, s.to, message)
 }
 
-func submit(u *url.URL, from string, to []string, message []byte) error {
-	target := address(u, smtpTLSScheme, smtpPort, smtpsPort)
-	var c *smtp.Client
-	var err error
-	if u.Scheme == smtpTLSScheme {
-		c, err = smtp.DialTLS(target, nil)
-	} else {
-		c, err = smtp.DialStartTLS(target, nil)
-	}
+func submit(d *net.Dialer, u *url.URL, from string, to []string, message []byte) error {
+	conn, err := dialURL(d, u, smtpTLSScheme, smtpPort, smtpsPort)
 	if err != nil {
 		return err
+	}
+	c := smtp.NewClient(conn)
+	if u.Scheme != smtpTLSScheme {
+		if c, err = smtp.NewClientStartTLS(conn, &tls.Config{ServerName: u.Hostname()}); err != nil {
+			return err
+		}
 	}
 	defer c.Close()
 	pass, _ := u.User.Password()
@@ -109,7 +110,7 @@ func submit(u *url.URL, from string, to []string, message []byte) error {
 
 const multipartPrefix = "multipart/"
 
-// mailHeaders is the mail layer: the addressing headers and the names of top-level attachments.
+// Only top-level attachments are named.
 func mailHeaders(message []byte) *mailLayer {
 	msg, err := mail.ReadMessage(bytes.NewReader(message))
 	if err != nil {

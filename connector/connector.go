@@ -1,34 +1,31 @@
-// Package connector terminates each protocol a tunnelled stream speaks, asks the policy
-// before each operation, and attaches the stored credential upstream.
 package connector
 
 import (
-	"context"
 	"crypto/tls"
 	"net"
+	"net/netip"
 	"net/url"
 	"time"
 
+	"code.dny.dev/ssrf"
 	"golang.org/x/crypto/ssh"
 )
 
 const dialTimeout = 30 * time.Second
 
-// Connector owns each stream it receives, closing it directly or handing it to a protocol server.
-// Returning from Serve does not end the stream's lifetime.
+// Serve owns the stream, but returning does not end its lifetime.
 type Connector interface {
 	Serve(s *Stream)
 }
 
-// Starter initializes its listener and server before launching the serving goroutine.
-// When Start returns, the connector is ready to receive streams.
+// Start runs once, before the connector receives any stream.
 type Starter interface{ Start(*Env) }
 
 type Claimer interface {
 	Claim(host string, port uint32) int
 }
 
-// Kinds maps each connection kind to its config type. The kind is also the protocol policies see.
+// The kind is also the protocol policies see.
 var Kinds = map[string]func() Connector{
 	"http":      func() Connector { return new(HTTP) },
 	"ssh":       func() Connector { return new(SSH) },
@@ -44,20 +41,33 @@ var Kinds = map[string]func() Connector{
 type Env struct {
 	TLS     *tls.Config
 	HostKey ssh.Signer
+	Dialer  *net.Dialer
 }
 
-// Stream is one channel the tunnel opened to Host:Port for the connection Name.
+// The guard checks the resolved address, so DNS cannot steer an upstream into a refused range.
+func NewDialer(allowed []netip.Prefix) *net.Dialer {
+	var v4, v6 []netip.Prefix
+	for _, p := range allowed {
+		if p.Addr().Is4() {
+			v4 = append(v4, p)
+		} else {
+			v6 = append(v6, p)
+		}
+	}
+	guard := ssrf.New(ssrf.WithAnyPort(), ssrf.WithAllowedV4Prefixes(v4...), ssrf.WithAllowedV6Prefixes(v6...))
+	return &net.Dialer{Timeout: dialTimeout, Control: guard.Safe}
+}
+
 type Stream struct {
 	net.Conn
 	*Env
 	Name string
 	Host string
 	Port uint32
-	// Gate evaluates one event on this stream. The error carries the message of every rule that denied it.
+	// The error joins the message of every rule that denied the event.
 	Gate func(Event) error
 }
 
-// Event is the layers of one policy input; each connector fills the ones it terminates.
 type Event struct {
 	HTTP     *httpLayer     `json:"http,omitempty"`
 	GraphQL  *graphqlLayer  `json:"graphql,omitempty"`
@@ -76,7 +86,6 @@ type argvLayer struct {
 	Argv []string `json:"argv"`
 }
 
-// endpoint is an upstream URL holding the stored credential, parsed when the config loads.
 type endpoint struct{ url.URL }
 
 func (e *endpoint) UnmarshalText(text []byte) error {
@@ -88,7 +97,6 @@ func (e *endpoint) UnmarshalText(text []byte) error {
 	return nil
 }
 
-// address fills in the scheme's default port when the URL names none.
 func address(u *url.URL, secure, port, securePort string) string {
 	if u.Port() != "" {
 		return u.Host
@@ -99,17 +107,15 @@ func address(u *url.URL, secure, port, securePort string) string {
 	return net.JoinHostPort(u.Hostname(), port)
 }
 
-func dialURL(u *url.URL, secure, port, securePort string) (net.Conn, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), dialTimeout)
-	defer cancel()
+func dialURL(d *net.Dialer, u *url.URL, secure, port, securePort string) (net.Conn, error) {
 	target := address(u, secure, port, securePort)
 	if u.Scheme == secure {
-		return (&tls.Dialer{Config: &tls.Config{ServerName: u.Hostname()}}).DialContext(ctx, "tcp", target)
+		return tls.DialWithDialer(d, "tcp", target, &tls.Config{ServerName: u.Hostname()})
 	}
-	return (&net.Dialer{}).DialContext(ctx, "tcp", target)
+	return d.Dial("tcp", target)
 }
 
-// chanListener hands dispatched channels to a server that wants a net.Listener.
+// chanListener feeds streams to library servers that only serve a net.Listener.
 type chanListener chan net.Conn
 
 func (l chanListener) Accept() (net.Conn, error) { return <-l, nil }

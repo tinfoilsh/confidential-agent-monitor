@@ -40,7 +40,6 @@ type CLI struct {
 	Stdin string            `yaml:"stdin"`
 }
 
-// Serve runs the configured binary with argv from the parsed exec string and env from the config alone.
 func (t *CLI) Serve(s *Stream) {
 	defer s.Close()
 	inner, chans, reqs, err := innerSSH(s)
@@ -106,7 +105,6 @@ func (t *CLI) execute(args []string, stdin io.Reader, ch ssh.Channel) int {
 	return exitRefused
 }
 
-// gitObject is the payload layer for a commit or tag as git hands it to a signing program.
 func gitObject(b []byte) *gitLayer {
 	header, message, _ := bytes.Cut(b, []byte("\n\n"))
 	object := &gitLayer{Message: string(message), Parents: []string{}}
