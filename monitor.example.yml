@@ -9,6 +9,16 @@ connections:
     http:
       hosts: [api.github.com, github.com, "*.githubusercontent.com"]
       secrets: { GITHUB_TOKEN: ghp_REAL }
+  gmail:
+    http:
+      hosts: [gmail.googleapis.com]
+      secrets:
+        TOKEN:
+          oauth:
+            token_url: https://oauth2.googleapis.com/token
+            client_id: REAL.apps.googleusercontent.com
+            client_secret: REAL
+            refresh_token: REAL
   box2:
     ssh: { host: box2.example.com, user: deploy, key: keys/box2, host_key: "ssh-ed25519 AAAA..." }
   gh:

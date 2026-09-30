@@ -12,6 +12,12 @@ import (
 	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/tinfoilsh/mcp-sentinel"
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/email"
+	"github.com/tinfoilsh/monitor/connector/postgres"
+	"github.com/tinfoilsh/monitor/connector/redis"
+	"github.com/tinfoilsh/monitor/connector/session"
+	"github.com/tinfoilsh/monitor/connector/signer"
+	"github.com/tinfoilsh/monitor/connector/web"
 	"gopkg.in/yaml.v3"
 )
 
@@ -20,6 +26,19 @@ const (
 	secretMode      = 0o600
 	defaultPolicies = "policies"
 )
+
+// The kind is also the protocol policies see.
+var connectorKinds = map[string]func() connector.Connector{
+	"http":      func() connector.Connector { return new(web.HTTP) },
+	"ssh":       func() connector.Connector { return new(session.SSH) },
+	"cli":       func() connector.Connector { return new(session.CLI) },
+	"ssh-agent": func() connector.Connector { return new(signer.SSHAgent) },
+	"gpg-agent": func() connector.Connector { return new(signer.GPGAgent) },
+	"imap":      func() connector.Connector { return new(email.IMAP) },
+	"smtp":      func() connector.Connector { return new(email.SMTP) },
+	"postgres":  func() connector.Connector { return new(postgres.Postgres) },
+	"redis":     func() connector.Connector { return new(redis.Redis) },
+}
 
 type config struct {
 	Listen         string                          `yaml:"listen"`
@@ -64,7 +83,7 @@ func run(configPath, stateDir string, args []string) error {
 			return fmt.Errorf("%s: connection %s must have one kind", configPath, name)
 		}
 		for kind, node := range kinds {
-			newConnector, ok := connector.Kinds[kind]
+			newConnector, ok := connectorKinds[kind]
 			if !ok {
 				return fmt.Errorf("%s: connection %s has unknown kind %s", configPath, name, kind)
 			}
@@ -77,12 +96,12 @@ func run(configPath, stateDir string, args []string) error {
 	}
 	if len(args) == 1 && args[0] == "env" {
 		for name, c := range m.connections {
-			r, ok := c.connector.(*connector.HTTP)
+			r, ok := c.connector.(*web.HTTP)
 			if !ok {
 				continue
 			}
 			for secret := range r.Secrets {
-				fmt.Printf("export %s=%s\n", secret, connector.Placeholder(name, secret))
+				fmt.Printf("export %s=%s\n", secret, web.Placeholder(name, secret))
 			}
 		}
 		return nil

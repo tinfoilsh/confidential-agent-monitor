@@ -1,4 +1,4 @@
-package connector
+package redis
 
 import (
 	"bufio"
@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/tidwall/redcon"
+
+	"github.com/tinfoilsh/monitor/connector"
 )
 
 const (
@@ -16,12 +18,12 @@ const (
 	redisOK          = "+"
 )
 
-type Redis struct{ endpoint }
+type Redis struct{ connector.Endpoint }
 
-func (r *Redis) Serve(s *Stream) {
+func (r *Redis) Serve(s *connector.Stream) {
 	defer s.Close()
 	u := &r.URL
-	up, err := dialURL(s.Dialer, u, redisTLSScheme, redisPort, redisPort)
+	up, err := connector.DialURL(s.Dialer, u, redisTLSScheme, redisPort, redisPort)
 	if err != nil {
 		log.Printf("redis: %v", err)
 		return
@@ -54,7 +56,7 @@ func (r *Redis) Serve(s *Stream) {
 		for i, arg := range cmd.Args {
 			args[i] = string(arg)
 		}
-		if err := s.Gate(Event{Redis: &argvLayer{Argv: args}}); err != nil {
+		if err := s.Gate(connector.Event{Redis: &connector.ArgvLayer{Argv: args}}); err != nil {
 			if _, err := s.Write(redcon.AppendError(nil, "ERR "+err.Error())); err != nil {
 				return
 			}

@@ -1,4 +1,4 @@
-package connector
+package postgres
 
 import (
 	"context"
@@ -10,11 +10,9 @@ import (
 
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgproto3"
-)
 
-type postgresLayer struct {
-	SQL string `json:"sql"`
-}
+	"github.com/tinfoilsh/monitor/connector"
+)
 
 const (
 	sslAccepted           = 'S'
@@ -29,7 +27,7 @@ const (
 
 type Postgres string
 
-func (dsn *Postgres) Serve(s *Stream) {
+func (dsn *Postgres) Serve(s *connector.Stream) {
 	defer s.Close()
 	client, backend, startup, err := startup(s)
 	if err != nil {
@@ -57,7 +55,7 @@ func (dsn *Postgres) Serve(s *Stream) {
 	relayQueries(s, backend, up)
 }
 
-func startup(s *Stream) (net.Conn, *pgproto3.Backend, *pgproto3.StartupMessage, error) {
+func startup(s *connector.Stream) (net.Conn, *pgproto3.Backend, *pgproto3.StartupMessage, error) {
 	conn := net.Conn(s)
 	for {
 		backend := pgproto3.NewBackend(conn, conn)
@@ -94,7 +92,7 @@ func connectPostgres(d *net.Dialer, url string, startup *pgproto3.StartupMessage
 			config.RuntimeParams[name] = value
 		}
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), dialTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), connector.DialTimeout)
 	defer cancel()
 	pg, err := pgconn.ConnectConfig(ctx, config)
 	if err != nil {
@@ -104,7 +102,7 @@ func connectPostgres(d *net.Dialer, url string, startup *pgproto3.StartupMessage
 }
 
 // A refused statement is answered with an error in the client's place, so the session stays usable.
-func relayQueries(s *Stream, backend *pgproto3.Backend, up *pgconn.HijackedConn) {
+func relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.HijackedConn) {
 	var status atomic.Uint32
 	status.Store(uint32(up.TxStatus))
 	go func() {
@@ -136,7 +134,7 @@ func relayQueries(s *Stream, backend *pgproto3.Backend, up *pgconn.HijackedConn)
 			sql = msg.Query
 		}
 		if sql != "" {
-			if err := s.Gate(Event{Postgres: &postgresLayer{SQL: sql}}); err != nil {
+			if err := s.Gate(connector.Event{Postgres: &connector.PostgresLayer{SQL: sql}}); err != nil {
 				backend.Send(&pgproto3.ErrorResponse{Severity: severityError, Code: insufficientPrivilege, Message: err.Error()})
 				if _, simple := msg.(*pgproto3.Query); simple {
 					backend.Send(&pgproto3.ReadyForQuery{TxStatus: byte(status.Load())})

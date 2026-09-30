@@ -1,4 +1,4 @@
-package connector
+package signer
 
 import (
 	"errors"
@@ -7,17 +7,9 @@ import (
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
-)
 
-type signLayer struct {
-	Agent     string `json:"agent"`
-	Key       string `json:"key,omitempty"`
-	Purpose   string `json:"purpose,omitempty"`
-	Namespace string `json:"namespace,omitempty"`
-	User      string `json:"user,omitempty"`
-	Hash      string `json:"hash,omitempty"`
-	Op        string `json:"op,omitempty"`
-}
+	"github.com/tinfoilsh/monitor/connector"
+)
 
 const (
 	agentSSH           = "ssh"
@@ -34,10 +26,10 @@ type SSHAgent []string
 
 type gatedAgent struct {
 	agent.ExtendedAgent
-	s *Stream
+	s *connector.Stream
 }
 
-func (keys *SSHAgent) Serve(s *Stream) {
+func (keys *SSHAgent) Serve(s *connector.Stream) {
 	defer s.Close()
 	keyring := agent.NewKeyring().(agent.ExtendedAgent)
 	for _, path := range *keys {
@@ -61,7 +53,7 @@ func (a gatedAgent) Sign(key ssh.PublicKey, data []byte) (*ssh.Signature, error)
 }
 
 func (a gatedAgent) SignWithFlags(key ssh.PublicKey, data []byte, flags agent.SignatureFlags) (*ssh.Signature, error) {
-	if err := a.s.Gate(Event{Sign: signEvent(key, data)}); err != nil {
+	if err := a.s.Gate(connector.Event{Sign: signEvent(key, data)}); err != nil {
 		return nil, err
 	}
 	return a.ExtendedAgent.SignWithFlags(key, data, flags)
@@ -76,8 +68,8 @@ func (gatedAgent) Extension(string, []byte) ([]byte, error) {
 	return nil, agent.ErrExtensionUnsupported
 }
 
-func signEvent(key ssh.PublicKey, data []byte) *signLayer {
-	sign := &signLayer{Agent: agentSSH, Key: ssh.FingerprintSHA256(key), Purpose: purposeOther}
+func signEvent(key ssh.PublicKey, data []byte) *connector.SignLayer {
+	sign := &connector.SignLayer{Agent: agentSSH, Key: ssh.FingerprintSHA256(key), Purpose: purposeOther}
 	var sig struct {
 		Magic     [6]byte
 		Namespace string

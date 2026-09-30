@@ -1,4 +1,4 @@
-package connector
+package session
 
 import (
 	"cmp"
@@ -15,20 +15,9 @@ import (
 	"golang.org/x/crypto/ssh"
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/syntax"
+
+	"github.com/tinfoilsh/monitor/connector"
 )
-
-type sshLayer struct {
-	Request   string  `json:"request"`
-	Command   string  `json:"command,omitempty"`
-	Subsystem string  `json:"subsystem,omitempty"`
-	Term      string  `json:"term,omitempty"`
-	Env       *sshEnv `json:"env,omitempty"`
-}
-
-type sshEnv struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
-}
 
 const (
 	channelSession   = "session"
@@ -80,7 +69,7 @@ func (t *SSH) dial(d *net.Dialer) (*ssh.Client, error) {
 	return ssh.NewClient(c, chans, reqs), nil
 }
 
-func (t *SSH) Serve(s *Stream) {
+func (t *SSH) Serve(s *connector.Stream) {
 	defer s.Close()
 	inner, chans, reqs, err := innerSSH(s)
 	if err != nil {
@@ -151,16 +140,16 @@ func forwardRequests(dst ssh.Channel, reqs <-chan *ssh.Request, check func(*ssh.
 	}
 }
 
-func eventForSSH(r *ssh.Request) Event {
-	layer := &sshLayer{Request: r.Type}
-	e := Event{SSH: layer}
+func eventForSSH(r *ssh.Request) connector.Event {
+	layer := &connector.SSHLayer{Request: r.Type}
+	e := connector.Event{SSH: layer}
 	switch r.Type {
 	case requestExec:
 		var p struct{ Command string }
 		if ssh.Unmarshal(r.Payload, &p) == nil {
 			layer.Command = p.Command
 			if args := argv(p.Command); args != nil {
-				e.Command = &argvLayer{Argv: args}
+				e.Command = &connector.ArgvLayer{Argv: args}
 			}
 		}
 	case requestSubsystem:
@@ -169,7 +158,7 @@ func eventForSSH(r *ssh.Request) Event {
 			layer.Subsystem = p.Name
 		}
 	case requestEnv:
-		var p sshEnv
+		var p connector.SSHEnv
 		if ssh.Unmarshal(r.Payload, &p) == nil {
 			layer.Env = &p
 		}
@@ -224,7 +213,7 @@ func literal(parts []syntax.WordPart) bool {
 }
 
 // NoClientAuth is safe because the tunnel already checked the client's key.
-func innerSSH(s *Stream) (*ssh.ServerConn, <-chan ssh.NewChannel, <-chan *ssh.Request, error) {
+func innerSSH(s *connector.Stream) (*ssh.ServerConn, <-chan ssh.NewChannel, <-chan *ssh.Request, error) {
 	cfg := &ssh.ServerConfig{NoClientAuth: true}
 	cfg.AddHostKey(s.HostKey)
 	return ssh.NewServerConn(s, cfg)

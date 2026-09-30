@@ -1,4 +1,4 @@
-package connector
+package email
 
 import (
 	"bufio"
@@ -8,13 +8,9 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-)
 
-type imapLayer struct {
-	Command string `json:"command"`
-	Args    string `json:"args"`
-	Mailbox string `json:"mailbox,omitempty"`
-}
+	"github.com/tinfoilsh/monitor/connector"
+)
 
 const (
 	imapTLSScheme = "imaps"
@@ -25,12 +21,12 @@ const (
 
 var imapLiteral = regexp.MustCompile(`\{(\d+)(\+?)\}$`)
 
-type IMAP struct{ endpoint }
+type IMAP struct{ connector.Endpoint }
 
-func (r *IMAP) Serve(s *Stream) {
+func (r *IMAP) Serve(s *connector.Stream) {
 	defer s.Close()
 	u := &r.URL
-	up, err := dialURL(s.Dialer, u, imapTLSScheme, imapPort, imapsPort)
+	up, err := connector.DialURL(s.Dialer, u, imapTLSScheme, imapPort, imapsPort)
 	if err != nil {
 		log.Printf("imap: %v", err)
 		return
@@ -85,7 +81,7 @@ func (r *IMAP) Serve(s *Stream) {
 			mailbox = strings.Trim(args, `"`)
 		}
 		dst := io.Writer(up)
-		if err := s.Gate(Event{IMAP: &imapLayer{Command: command, Args: args, Mailbox: mailbox}}); err != nil {
+		if err := s.Gate(connector.Event{IMAP: &connector.IMAPLayer{Command: command, Args: args, Mailbox: mailbox}}); err != nil {
 			fmt.Fprintf(s, "%s NO %v\r\n", tag, err)
 			dst = io.Discard
 		}

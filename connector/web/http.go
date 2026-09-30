@@ -1,4 +1,4 @@
-package connector
+package web
 
 import (
 	"bytes"
@@ -12,31 +12,18 @@ import (
 	"net"
 	"net/http"
 	"net/http/httputil"
-	"net/url"
 	"path"
 	"slices"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/vektah/gqlparser/v2/parser"
+
+	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/credential"
 )
-
-// httpLayer is the request before substitution; secrets names the placeholders it carried.
-type httpLayer struct {
-	Method  string      `json:"method"`
-	Host    string      `json:"host"`
-	Path    string      `json:"path"`
-	Query   url.Values  `json:"query"`
-	Headers http.Header `json:"headers"`
-	Secrets []string    `json:"secrets"`
-	Body    any         `json:"body,omitempty"`
-}
-
-type graphqlLayer struct {
-	Kind  string   `json:"kind"`
-	Roots []string `json:"roots"`
-}
 
 const (
 	httpsPort         = 443
@@ -69,14 +56,14 @@ func (l *location) UnmarshalText(text []byte) error {
 type connKey struct{}
 
 type HTTP struct {
-	Hosts   []string          `yaml:"hosts"`
-	Secrets map[string]string `yaml:"secrets"`
+	Hosts   []string                         `yaml:"hosts"`
+	Secrets map[string]credential.Credential `yaml:"secrets"`
 	// The Authorization header is always substituted; these locations are opt-in.
 	Substitute []location `yaml:"substitute"`
-	conns      chanListener
+	conns      connector.Listener
 }
 
-func (r *HTTP) Serve(s *Stream) {
+func (r *HTTP) Serve(s *connector.Stream) {
 	var c net.Conn = s
 	if s.Port == httpsPort {
 		c = tls.Server(s, s.TLS)
@@ -84,8 +71,8 @@ func (r *HTTP) Serve(s *Stream) {
 	r.conns <- c
 }
 
-func (h *HTTP) Start(e *Env) {
-	h.conns = make(chanListener)
+func (h *HTTP) Start(e *connector.Env) {
+	h.conns = make(connector.Listener)
 	transport := http.DefaultTransport.(*http.Transport).Clone()
 	transport.Proxy = nil
 	transport.DialContext = e.Dialer.DialContext
@@ -102,7 +89,7 @@ func (h *HTTP) Start(e *Env) {
 	server := &http.Server{
 		ReadHeaderTimeout: readHeaderTimeout,
 		ConnContext: func(ctx context.Context, c net.Conn) context.Context {
-			return context.WithValue(ctx, connKey{}, streamOf(c))
+			return context.WithValue(ctx, connKey{}, connector.StreamOf(c))
 		},
 		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if err := h.screen(r); err != nil {
@@ -118,7 +105,7 @@ func (h *HTTP) Start(e *Env) {
 
 // The proxy dials the request's host, so it must be the one the channel's gate saw.
 func (h *HTTP) screen(r *http.Request) error {
-	s := r.Context().Value(connKey{}).(*Stream)
+	s := r.Context().Value(connKey{}).(*connector.Stream)
 	host := r.Host
 	if h, _, err := net.SplitHostPort(host); err == nil {
 		host = h
@@ -130,7 +117,7 @@ func (h *HTTP) screen(r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	layer := &httpLayer{Method: r.Method, Host: host, Path: r.URL.Path, Query: r.URL.Query(), Headers: r.Header.Clone()}
+	layer := &connector.HTTPLayer{Method: r.Method, Host: host, Path: r.URL.Path, Query: r.URL.Query(), Headers: r.Header.Clone()}
 	if mediaType, _, _ := mime.ParseMediaType(r.Header.Get("Content-Type")); mediaType == jsonType || strings.HasSuffix(mediaType, jsonSuffix) {
 		if json.Unmarshal(body, &layer.Body) != nil {
 			layer.Body = nil
@@ -142,7 +129,7 @@ func (h *HTTP) screen(r *http.Request) error {
 	if r.TLS == nil && len(layer.Secrets) > 0 {
 		return fmt.Errorf("secret placeholders require HTTPS")
 	}
-	return s.Gate(Event{HTTP: layer, GraphQL: graphql(layer.Body)})
+	return s.Gate(connector.Event{HTTP: layer, GraphQL: graphql(layer.Body)})
 }
 
 func Placeholder(connection, secret string) string {
@@ -156,12 +143,17 @@ func (h *HTTP) substitute(r *http.Request, name string, body []byte) ([]string, 
 		return nil, fmt.Errorf("body substitution needs a body of at most %d bytes", maxBodyBytes)
 	}
 	used := []string{}
-	for secret, value := range h.Secrets {
+	for secret, cred := range h.Secrets {
 		ph := Placeholder(name, secret)
 		found := false
+		value := sync.OnceValues(cred.Value)
 		swap := func(s string) string {
-			found = found || strings.Contains(s, ph)
-			return strings.ReplaceAll(s, ph, value)
+			if !strings.Contains(s, ph) {
+				return s
+			}
+			found = true
+			v, _ := value()
+			return strings.ReplaceAll(s, ph, v)
 		}
 		if inURL {
 			r.URL.Path, r.URL.RawPath, r.URL.RawQuery = swap(r.URL.Path), swap(r.URL.RawPath), swap(r.URL.RawQuery)
@@ -181,6 +173,9 @@ func (h *HTTP) substitute(r *http.Request, name string, body []byte) ([]string, 
 			body = []byte(swap(string(body)))
 		}
 		if found {
+			if _, err := value(); err != nil {
+				return nil, err
+			}
 			used = append(used, secret)
 		}
 	}
@@ -222,7 +217,7 @@ func (h *HTTP) Claim(host string, port uint32) int {
 }
 
 // Roots hidden behind a fragment spread yield no layer at all, so a policy can refuse the request.
-func graphql(body any) *graphqlLayer {
+func graphql(body any) *connector.GraphQLLayer {
 	object, _ := body.(map[string]any)
 	query, ok := object["query"].(string)
 	if !ok {
@@ -242,7 +237,7 @@ func graphql(body any) *graphqlLayer {
 	if !ok {
 		return nil
 	}
-	return &graphqlLayer{Kind: string(op.Operation), Roots: names}
+	return &connector.GraphQLLayer{Kind: string(op.Operation), Roots: names}
 }
 
 func roots(set ast.SelectionSet) ([]string, bool) {

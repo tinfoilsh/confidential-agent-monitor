@@ -1,4 +1,4 @@
-package connector
+package session
 
 import (
 	"bytes"
@@ -10,20 +10,9 @@ import (
 	"strings"
 
 	"golang.org/x/crypto/ssh"
-)
 
-type gitLayer struct {
-	Type       string   `json:"type"`
-	Tree       string   `json:"tree,omitempty"`
-	Object     string   `json:"object,omitempty"`
-	ObjectType string   `json:"object_type,omitempty"`
-	Tag        string   `json:"tag,omitempty"`
-	Parents    []string `json:"parents"`
-	Author     string   `json:"author,omitempty"`
-	Committer  string   `json:"committer,omitempty"`
-	Tagger     string   `json:"tagger,omitempty"`
-	Message    string   `json:"message"`
-}
+	"github.com/tinfoilsh/monitor/connector"
+)
 
 const (
 	maxStdinBytes     = 1 << 20
@@ -40,7 +29,7 @@ type CLI struct {
 	Stdin string            `yaml:"stdin"`
 }
 
-func (t *CLI) Serve(s *Stream) {
+func (t *CLI) Serve(s *connector.Stream) {
 	defer s.Close()
 	inner, chans, reqs, err := innerSSH(s)
 	if err != nil {
@@ -61,7 +50,7 @@ func (t *CLI) Serve(s *Stream) {
 	}
 }
 
-func (t *CLI) session(s *Stream, ch ssh.Channel, reqs <-chan *ssh.Request) {
+func (t *CLI) session(s *connector.Stream, ch ssh.Channel, reqs <-chan *ssh.Request) {
 	defer ch.Close()
 	for r := range reqs {
 		e := eventForSSH(r)
@@ -105,9 +94,9 @@ func (t *CLI) execute(args []string, stdin io.Reader, ch ssh.Channel) int {
 	return exitRefused
 }
 
-func gitObject(b []byte) *gitLayer {
+func gitObject(b []byte) *connector.GitLayer {
 	header, message, _ := bytes.Cut(b, []byte("\n\n"))
-	object := &gitLayer{Message: string(message), Parents: []string{}}
+	object := &connector.GitLayer{Message: string(message), Parents: []string{}}
 	for line := range strings.SplitSeq(string(header), "\n") {
 		key, value, _ := strings.Cut(line, " ")
 		switch key {

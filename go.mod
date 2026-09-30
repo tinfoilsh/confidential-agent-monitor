@@ -3,6 +3,7 @@ module github.com/tinfoilsh/monitor
 go 1.27.1
 
 require (
+	code.dny.dev/ssrf v0.3.0
 	github.com/emersion/go-sasl v0.0.0-20241020182733-b788ff22d5a6
 	github.com/emersion/go-smtp v0.25.0
 	github.com/jackc/pgx/v5 v5.8.0
@@ -11,12 +12,12 @@ require (
 	github.com/tinfoilsh/mcp-sentinel v0.0.0
 	github.com/vektah/gqlparser/v2 v2.5.58
 	golang.org/x/crypto v0.57.0
+	golang.org/x/oauth2 v0.36.0
 	gopkg.in/yaml.v3 v3.0.1
 	mvdan.cc/sh/v3 v3.14.1
 )
 
 require (
-	code.dny.dev/ssrf v0.3.0 // indirect
 	github.com/agnivade/levenshtein v1.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.1 // indirect
@@ -48,7 +49,6 @@ require (
 	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sync v0.23.0 // indirect
 	golang.org/x/sys v0.48.0 // indirect
 	golang.org/x/text v0.42.0 // indirect

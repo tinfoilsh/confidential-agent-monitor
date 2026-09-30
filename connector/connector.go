@@ -3,6 +3,7 @@ package connector
 import (
 	"crypto/tls"
 	"net"
+	"net/http"
 	"net/netip"
 	"net/url"
 	"time"
@@ -11,7 +12,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-const dialTimeout = 30 * time.Second
+const DialTimeout = 30 * time.Second
 
 // Serve owns the stream, but returning does not end its lifetime.
 type Connector interface {
@@ -23,19 +24,6 @@ type Starter interface{ Start(*Env) }
 
 type Claimer interface {
 	Claim(host string, port uint32) int
-}
-
-// The kind is also the protocol policies see.
-var Kinds = map[string]func() Connector{
-	"http":      func() Connector { return new(HTTP) },
-	"ssh":       func() Connector { return new(SSH) },
-	"cli":       func() Connector { return new(CLI) },
-	"ssh-agent": func() Connector { return new(SSHAgent) },
-	"gpg-agent": func() Connector { return new(GPGAgent) },
-	"imap":      func() Connector { return new(IMAP) },
-	"smtp":      func() Connector { return new(SMTP) },
-	"postgres":  func() Connector { return new(Postgres) },
-	"redis":     func() Connector { return new(Redis) },
 }
 
 type Env struct {
@@ -55,7 +43,7 @@ func NewDialer(allowed []netip.Prefix) *net.Dialer {
 		}
 	}
 	guard := ssrf.New(ssrf.WithAnyPort(), ssrf.WithAllowedV4Prefixes(v4...), ssrf.WithAllowedV6Prefixes(v6...))
-	return &net.Dialer{Timeout: dialTimeout, Control: guard.Safe}
+	return &net.Dialer{Timeout: DialTimeout, Control: guard.Safe}
 }
 
 type Stream struct {
@@ -69,26 +57,101 @@ type Stream struct {
 }
 
 type Event struct {
-	HTTP     *httpLayer     `json:"http,omitempty"`
-	GraphQL  *graphqlLayer  `json:"graphql,omitempty"`
-	SSH      *sshLayer      `json:"ssh,omitempty"`
-	Command  *argvLayer     `json:"command,omitempty"`
-	Payload  *gitLayer      `json:"payload,omitempty"`
-	Sign     *signLayer     `json:"sign,omitempty"`
-	Postgres *postgresLayer `json:"postgres,omitempty"`
-	Redis    *argvLayer     `json:"redis,omitempty"`
-	SMTP     *smtpLayer     `json:"smtp,omitempty"`
-	Mail     *mailLayer     `json:"mail,omitempty"`
-	IMAP     *imapLayer     `json:"imap,omitempty"`
+	HTTP     *HTTPLayer     `json:"http,omitempty"`
+	GraphQL  *GraphQLLayer  `json:"graphql,omitempty"`
+	SSH      *SSHLayer      `json:"ssh,omitempty"`
+	Command  *ArgvLayer     `json:"command,omitempty"`
+	Payload  *GitLayer      `json:"payload,omitempty"`
+	Sign     *SignLayer     `json:"sign,omitempty"`
+	Postgres *PostgresLayer `json:"postgres,omitempty"`
+	Redis    *ArgvLayer     `json:"redis,omitempty"`
+	SMTP     *SMTPLayer     `json:"smtp,omitempty"`
+	Mail     *MailLayer     `json:"mail,omitempty"`
+	IMAP     *IMAPLayer     `json:"imap,omitempty"`
 }
 
-type argvLayer struct {
+type ArgvLayer struct {
 	Argv []string `json:"argv"`
 }
 
-type endpoint struct{ url.URL }
+// HTTPLayer is the request before substitution; secrets names the placeholders it carried.
+type HTTPLayer struct {
+	Method  string      `json:"method"`
+	Host    string      `json:"host"`
+	Path    string      `json:"path"`
+	Query   url.Values  `json:"query"`
+	Headers http.Header `json:"headers"`
+	Secrets []string    `json:"secrets"`
+	Body    any         `json:"body,omitempty"`
+}
 
-func (e *endpoint) UnmarshalText(text []byte) error {
+type GraphQLLayer struct {
+	Kind  string   `json:"kind"`
+	Roots []string `json:"roots"`
+}
+
+type SSHLayer struct {
+	Request   string  `json:"request"`
+	Command   string  `json:"command,omitempty"`
+	Subsystem string  `json:"subsystem,omitempty"`
+	Term      string  `json:"term,omitempty"`
+	Env       *SSHEnv `json:"env,omitempty"`
+}
+
+type SSHEnv struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
+type GitLayer struct {
+	Type       string   `json:"type"`
+	Tree       string   `json:"tree,omitempty"`
+	Object     string   `json:"object,omitempty"`
+	ObjectType string   `json:"object_type,omitempty"`
+	Tag        string   `json:"tag,omitempty"`
+	Parents    []string `json:"parents"`
+	Author     string   `json:"author,omitempty"`
+	Committer  string   `json:"committer,omitempty"`
+	Tagger     string   `json:"tagger,omitempty"`
+	Message    string   `json:"message"`
+}
+
+type SignLayer struct {
+	Agent     string `json:"agent"`
+	Key       string `json:"key,omitempty"`
+	Purpose   string `json:"purpose,omitempty"`
+	Namespace string `json:"namespace,omitempty"`
+	User      string `json:"user,omitempty"`
+	Hash      string `json:"hash,omitempty"`
+	Op        string `json:"op,omitempty"`
+}
+
+type IMAPLayer struct {
+	Command string `json:"command"`
+	Args    string `json:"args"`
+	Mailbox string `json:"mailbox,omitempty"`
+}
+
+type SMTPLayer struct {
+	From string   `json:"from"`
+	To   []string `json:"to"`
+}
+
+type MailLayer struct {
+	From        []string `json:"from"`
+	To          []string `json:"to"`
+	Cc          []string `json:"cc"`
+	Subject     string   `json:"subject"`
+	Attachments []string `json:"attachments"`
+}
+
+type PostgresLayer struct {
+	SQL string `json:"sql"`
+}
+
+type Endpoint struct{ url.URL }
+
+func (e *Endpoint) UnmarshalText(text []byte) error {
 	u, err := url.Parse(string(text))
 	if err != nil {
 		return err
@@ -107,7 +170,7 @@ func address(u *url.URL, secure, port, securePort string) string {
 	return net.JoinHostPort(u.Hostname(), port)
 }
 
-func dialURL(d *net.Dialer, u *url.URL, secure, port, securePort string) (net.Conn, error) {
+func DialURL(d *net.Dialer, u *url.URL, secure, port, securePort string) (net.Conn, error) {
 	target := address(u, secure, port, securePort)
 	if u.Scheme == secure {
 		return tls.DialWithDialer(d, "tcp", target, &tls.Config{ServerName: u.Hostname()})
@@ -115,14 +178,14 @@ func dialURL(d *net.Dialer, u *url.URL, secure, port, securePort string) (net.Co
 	return d.Dial("tcp", target)
 }
 
-// chanListener feeds streams to library servers that only serve a net.Listener.
-type chanListener chan net.Conn
+// Listener feeds streams to library servers that only serve a net.Listener.
+type Listener chan net.Conn
 
-func (l chanListener) Accept() (net.Conn, error) { return <-l, nil }
-func (chanListener) Close() error                { return nil }
-func (chanListener) Addr() net.Addr              { return &net.TCPAddr{} }
+func (l Listener) Accept() (net.Conn, error) { return <-l, nil }
+func (Listener) Close() error                { return nil }
+func (Listener) Addr() net.Addr              { return &net.TCPAddr{} }
 
-func streamOf(c net.Conn) *Stream {
+func StreamOf(c net.Conn) *Stream {
 	if tc, ok := c.(*tls.Conn); ok {
 		c = tc.NetConn()
 	}

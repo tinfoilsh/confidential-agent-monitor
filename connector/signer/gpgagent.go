@@ -1,4 +1,4 @@
-package connector
+package signer
 
 import (
 	"bufio"
@@ -7,6 +7,8 @@ import (
 	"log"
 	"net"
 	"strings"
+
+	"github.com/tinfoilsh/monitor/connector"
 )
 
 const (
@@ -23,9 +25,9 @@ var agentCommands = map[string]bool{
 
 type GPGAgent string
 
-func (socket *GPGAgent) Serve(s *Stream) {
+func (socket *GPGAgent) Serve(s *connector.Stream) {
 	defer s.Close()
-	up, err := net.DialTimeout("unix", string(*socket), dialTimeout)
+	up, err := net.DialTimeout("unix", string(*socket), connector.DialTimeout)
 	if err != nil {
 		log.Printf("gpg-agent: %v", err)
 		return
@@ -35,7 +37,7 @@ func (socket *GPGAgent) Serve(s *Stream) {
 		io.Copy(s, up)
 		s.Close()
 	}()
-	sign := signLayer{Agent: agentGPG}
+	sign := connector.SignLayer{Agent: agentGPG}
 	lines := bufio.NewScanner(s)
 	for lines.Scan() {
 		line := lines.Text()
@@ -47,14 +49,14 @@ func (socket *GPGAgent) Serve(s *Stream) {
 			fmt.Fprintf(s, "ERR %d Not supported <Monitor>\n", assuanNotSupported)
 			continue
 		case command == "RESET":
-			sign = signLayer{Agent: agentGPG}
+			sign = connector.SignLayer{Agent: agentGPG}
 		case command == "SIGKEY" || command == "SETKEY":
 			sign.Key = rest
 		case command == "SETHASH":
 			sign.Hash = rest
 		case command == "PKSIGN" || command == "PKDECRYPT":
 			sign.Op = strings.ToLower(command)
-			if err := s.Gate(Event{Sign: &sign}); err != nil {
+			if err := s.Gate(connector.Event{Sign: &sign}); err != nil {
 				fmt.Fprintf(s, "ERR %d %v <Monitor>\n", assuanNotSupported, err)
 				continue
 			}
