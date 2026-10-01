@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"net"
-	"os"
 	"slices"
 	"strconv"
 	"strings"
@@ -43,11 +42,7 @@ func (t *SSH) dial(d *net.Dialer) (*ssh.Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("host_key: %w", err)
 	}
-	encoded, err := os.ReadFile(t.Key)
-	if err != nil {
-		return nil, err
-	}
-	signer, err := ssh.ParsePrivateKey(encoded)
+	signer, err := ssh.ParsePrivateKey([]byte(t.Key))
 	if err != nil {
 		return nil, err
 	}

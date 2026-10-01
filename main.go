@@ -1,15 +1,18 @@
 package main
 
 import (
-	"cmp"
+	"bytes"
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"net/netip"
 	"os"
+	"strings"
 
-	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/tinfoilsh/mcp-sentinel"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/email"
@@ -18,14 +21,13 @@ import (
 	"github.com/tinfoilsh/monitor/connector/session"
 	"github.com/tinfoilsh/monitor/connector/signer"
 	"github.com/tinfoilsh/monitor/connector/web"
+	"gocloud.dev/blob"
+	_ "gocloud.dev/blob/fileblob"
+	_ "gocloud.dev/blob/s3blob"
 	"gopkg.in/yaml.v3"
 )
 
-const (
-	stateMode       = 0o700
-	secretMode      = 0o600
-	defaultPolicies = "policies"
-)
+const devBucket = "file://"
 
 // The kind is also the protocol policies see.
 var connectorKinds = map[string]func() connector.Connector{
@@ -40,13 +42,20 @@ var connectorKinds = map[string]func() connector.Connector{
 	"redis":     func() connector.Connector { return new(redis.Redis) },
 }
 
+type identity struct {
+	Key         string   `json:"key"`
+	Connections []string `json:"connections"`
+}
+
+// Connector entries are decoded as YAML, which JSON is a subset of.
 type config struct {
-	Listen         string                          `yaml:"listen"`
-	AuthorizedKeys string                          `yaml:"authorized_keys"`
-	Policies       string                          `yaml:"policies"`
-	AllowNetworks  []netip.Prefix                  `yaml:"allow_networks"`
-	Connections    map[string]map[string]yaml.Node `yaml:"connections"`
-	MCP            map[string]*mcpServer           `yaml:"mcp"`
+	AllowNetworks []netip.Prefix                        `json:"allow_networks"`
+	Identities    map[string]identity                   `json:"identities"`
+	Connections   map[string]map[string]json.RawMessage `json:"connections"`
+	MCP           map[string]json.RawMessage            `json:"mcp"`
+	Policies      map[string]string                     `json:"policies"`
+	Data          map[string]any                        `json:"data"`
+	Pins          map[string]*sentinel.Snapshot         `json:"pins"`
 }
 
 type connection struct {
@@ -54,56 +63,28 @@ type connection struct {
 	connector      connector.Connector
 }
 
-type monitor struct {
-	connections map[string]*connection
-	mcp         map[string]*mcpServer
-	gateway     connector.Listener
-	state       string
-	policy      *sentinel.Policy
-	connector.Env
-}
-
 func main() {
-	configPath := flag.String("c", "monitor.yml", "config file")
-	stateDir := flag.String("state", "state", "directory holding the host key and CA")
+	listen := flag.String("listen", "127.0.0.1:2223", "SSH address, opened after unlock")
+	api := flag.String("api", "127.0.0.1:8080", "owner API address")
+	bucket := flag.String("bucket", "", "blob URL holding the encrypted state")
+	object := flag.String("object", "monitor.enc", "key of the encrypted state")
 	flag.Parse()
-	if err := run(*configPath, *stateDir, flag.Args()); err != nil {
+	if err := run(*listen, *api, *bucket, *object, flag.Args()); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func run(configPath, stateDir string, args []string) error {
-	raw, err := os.ReadFile(configPath)
-	if err != nil {
-		return err
-	}
-	var cfg config
-	if err := yaml.Unmarshal(raw, &cfg); err != nil {
-		return fmt.Errorf("%s: %w", configPath, err)
-	}
-	m := &monitor{connections: map[string]*connection{}, mcp: cfg.MCP, state: stateDir, gateway: make(connector.Listener)}
-	m.connections[gatewayName] = &connection{name: gatewayName, protocol: protocolMCP, connector: m.gateway}
-	for name, kinds := range cfg.Connections {
-		if m.connections[name] != nil {
-			return fmt.Errorf("%s: connection name %s is reserved", configPath, name)
-		}
-		if len(kinds) != 1 {
-			return fmt.Errorf("%s: connection %s must have one kind", configPath, name)
-		}
-		for kind, node := range kinds {
-			newConnector, ok := connectorKinds[kind]
-			if !ok {
-				return fmt.Errorf("%s: connection %s has unknown kind %s", configPath, name, kind)
-			}
-			c := &connection{name: name, protocol: kind, connector: newConnector()}
-			if err := node.Decode(c.connector); err != nil {
-				return fmt.Errorf("%s: %w", configPath, err)
-			}
-			m.connections[name] = c
-		}
-	}
+func run(listen, api, bucketURL, object string, args []string) error {
 	if len(args) == 1 && args[0] == "env" {
-		for name, c := range m.connections {
+		raw, err := io.ReadAll(os.Stdin)
+		if err != nil {
+			return err
+		}
+		_, connections, _, err := parse(raw)
+		if err != nil {
+			return err
+		}
+		for name, c := range connections {
 			r, ok := c.connector.(*web.HTTP)
 			if !ok {
 				continue
@@ -114,28 +95,52 @@ func run(configPath, stateDir string, args []string) error {
 		}
 		return nil
 	}
-	policies := rego.Load([]string{cmp.Or(cfg.Policies, defaultPolicies)}, nil)
-	if m.policy, err = sentinel.NewPolicy(context.Background(), policies); err != nil {
+	if !strings.HasPrefix(bucketURL, devBucket) {
+		delete(connectorKinds, "cli")
+		delete(connectorKinds, "gpg-agent")
+	}
+	bucket, err := blob.OpenBucket(context.Background(), bucketURL)
+	if err != nil {
 		return err
 	}
-	if err := os.MkdirAll(stateDir, stateMode); err != nil {
-		return err
+	m := &monitor{store: bucket, object: object, listen: listen, gateway: connector.NewListener()}
+	return (&http.Server{Addr: api, Handler: m.handler(), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe()
+}
+
+// parse decodes the owner's config without starting anything.
+func parse(raw []byte) (*config, map[string]*connection, map[string]*mcpServer, error) {
+	var cfg config
+	dec := json.NewDecoder(bytes.NewReader(raw))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&cfg); err != nil {
+		return nil, nil, nil, err
 	}
-	if m.TLS, err = loadCA(stateDir); err != nil {
-		return err
-	}
-	if m.HostKey, err = loadHostKey(stateDir); err != nil {
-		return err
-	}
-	m.Dialer = connector.NewDialer(cfg.AllowNetworks)
-	if len(args) == 2 && args[0] == "pin" {
-		return m.pin(args[1])
-	}
-	for _, c := range m.connections {
-		if r, ok := c.connector.(connector.Starter); ok {
-			r.Start(&m.Env)
+	connections := map[string]*connection{}
+	for name, kinds := range cfg.Connections {
+		if name == gatewayName {
+			return nil, nil, nil, fmt.Errorf("connection name %s is reserved", name)
+		}
+		if len(kinds) != 1 {
+			return nil, nil, nil, fmt.Errorf("connection %s must have one kind", name)
+		}
+		for kind, raw := range kinds {
+			newConnector, ok := connectorKinds[kind]
+			if !ok {
+				return nil, nil, nil, fmt.Errorf("connection %s has unknown kind %s", name, kind)
+			}
+			c := &connection{name: name, protocol: kind, connector: newConnector()}
+			if err := yaml.Unmarshal(raw, c.connector); err != nil {
+				return nil, nil, nil, fmt.Errorf("connection %s: %w", name, err)
+			}
+			connections[name] = c
 		}
 	}
-	m.startMCP()
-	return m.serveSSH(cfg.Listen, cfg.AuthorizedKeys)
+	servers := map[string]*mcpServer{}
+	for name, raw := range cfg.MCP {
+		servers[name] = new(mcpServer)
+		if err := yaml.Unmarshal(raw, servers[name]); err != nil {
+			return nil, nil, nil, fmt.Errorf("mcp %s: %w", name, err)
+		}
+	}
+	return &cfg, connections, servers, nil
 }

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/netip"
 	"net/url"
+	"sync"
 	"time"
 
 	"code.dny.dev/ssrf"
@@ -21,6 +22,9 @@ type Connector interface {
 
 // Start runs once, before the connector receives any stream.
 type Starter interface{ Start(*Env) }
+
+// Stop runs once, after the connector is replaced; streams it already accepted may finish.
+type Stopper interface{ Stop() }
 
 type Claimer interface {
 	Claim(host string, port uint32) int
@@ -179,12 +183,35 @@ func DialURL(d *net.Dialer, u *url.URL, secure, port, securePort string) (net.Co
 }
 
 // Listener feeds streams to library servers that only serve a net.Listener.
-type Listener chan net.Conn
+type Listener struct {
+	conns chan net.Conn
+	done  chan struct{}
+	once  sync.Once
+}
 
-func (l Listener) Accept() (net.Conn, error) { return <-l, nil }
-func (Listener) Close() error                { return nil }
-func (Listener) Addr() net.Addr              { return &net.TCPAddr{} }
-func (l Listener) Serve(s *Stream)           { l <- s }
+func NewListener() *Listener { return &Listener{conns: make(chan net.Conn), done: make(chan struct{})} }
+
+func (l *Listener) Accept() (net.Conn, error) {
+	select {
+	case c := <-l.conns:
+		return c, nil
+	case <-l.done:
+		return nil, net.ErrClosed
+	}
+}
+
+func (l *Listener) Close() error    { l.once.Do(func() { close(l.done) }); return nil }
+func (*Listener) Addr() net.Addr    { return &net.TCPAddr{} }
+func (l *Listener) Serve(s *Stream) { l.Hand(s) }
+
+// Hand closes c instead once the listener is closed.
+func (l *Listener) Hand(c net.Conn) {
+	select {
+	case l.conns <- c:
+	case <-l.done:
+		c.Close()
+	}
+}
 
 func StreamOf(c net.Conn) *Stream {
 	if tc, ok := c.(*tls.Conn); ok {

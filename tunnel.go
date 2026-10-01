@@ -1,13 +1,11 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"log"
 	"net"
-	"os"
 	"path"
 	"slices"
 	"strings"
@@ -48,24 +46,18 @@ func (p principal) reaches(name string) bool {
 type principalKey struct{}
 
 const (
-	optionConnections = "connections="
-	channelDirect     = "direct-tcpip"
-	monitorSuffix     = ".monitor"
+	channelDirect = "direct-tcpip"
+	monitorSuffix = ".monitor"
 )
 
-func (m *monitor) serveSSH(listen, authorizedKeys string) error {
-	front := &ssh.ServerConfig{PublicKeyCallback: authorized(authorizedKeys)}
-	front.AddHostKey(m.HostKey)
-	ln, err := net.Listen("tcp", listen)
-	if err != nil {
-		return err
-	}
-	defer ln.Close()
+func (m *monitor) serveSSH(ln net.Listener) {
+	front := &ssh.ServerConfig{PublicKeyCallback: m.authorized}
+	front.AddHostKey(m.live.Load().HostKey)
 	log.Printf("monitor listening on %s", ln.Addr())
 	for {
 		nc, err := ln.Accept()
 		if err != nil {
-			return err
+			log.Fatal(err)
 		}
 		go func() {
 			conn, chans, reqs, err := ssh.NewServerConn(nc, front)
@@ -97,13 +89,14 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 		nc.Reject(ssh.ConnectionFailed, "malformed direct-tcpip request")
 		return
 	}
-	c := m.route(p, target.Host, target.Port)
+	st := m.live.Load()
+	c := st.route(p, target.Host, target.Port)
 	if c == nil {
 		log.Printf("%s: dropped %s:%d", p.Name, target.Host, target.Port)
 		nc.Reject(ssh.Prohibited, "the monitor does not forward this target")
 		return
 	}
-	s := &connector.Stream{Env: &m.Env, Name: c.name, Host: target.Host, Port: target.Port}
+	s := &connector.Stream{Env: &st.Env, Name: c.name, Host: target.Host, Port: target.Port}
 	s.Gate = func(e connector.Event) error { return m.gate(input{p, c.name, c.protocol, nil, &e}) }
 	if err := m.gate(input{p, c.name, c.protocol, &tcpLayer{Host: target.Host, Port: target.Port}, nil}); err != nil {
 		nc.Reject(ssh.Prohibited, err.Error())
@@ -120,9 +113,9 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 }
 
 // Only connections the principal reaches are routed, so their claims never tie with another principal's.
-func (m *monitor) route(p principal, host string, port uint32) *connection {
+func (st *state) route(p principal, host string, port uint32) *connection {
 	if name, ok := strings.CutSuffix(host, monitorSuffix); ok {
-		c := m.connections[name]
+		c := st.connections[name]
 		if c == nil || !p.reaches(name) {
 			return nil
 		}
@@ -133,7 +126,7 @@ func (m *monitor) route(p principal, host string, port uint32) *connection {
 	}
 	best, tied := -1, false
 	var selected *connection
-	for _, c := range m.connections {
+	for _, c := range st.connections {
 		r, ok := c.connector.(connector.Claimer)
 		if !ok || !p.reaches(c.name) {
 			continue
@@ -165,7 +158,7 @@ func (m *monitor) gate(in input) error {
 	if err := util.UnmarshalJSON(encoded, &doc); err != nil {
 		return err
 	}
-	denied, err := m.policy.Deny(context.Background(), doc)
+	denied, err := m.live.Load().policy.Deny(context.Background(), doc)
 	if err != nil {
 		log.Printf("policy: %v", err)
 		return err
@@ -189,30 +182,10 @@ func (channelConn) SetDeadline(time.Time) error      { return nil }
 func (channelConn) SetReadDeadline(time.Time) error  { return nil }
 func (channelConn) SetWriteDeadline(time.Time) error { return nil }
 
-// authorized rereads the key file on every attempt, so keys change without a restart.
-// A key reaches only the connections its connections="a,b" option names.
-func authorized(path string) func(ssh.ConnMetadata, ssh.PublicKey) (*ssh.Permissions, error) {
-	return func(_ ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
-		rest, err := os.ReadFile(path)
-		if err != nil {
-			return nil, err
-		}
-		for len(rest) > 0 {
-			listed, comment, options, next, err := ssh.ParseAuthorizedKey(rest)
-			if err != nil {
-				break
-			}
-			if bytes.Equal(listed.Marshal(), key.Marshal()) {
-				p := principal{Key: ssh.FingerprintSHA256(key), Name: comment, Connections: []string{}}
-				for _, option := range options {
-					if names, ok := strings.CutPrefix(option, optionConnections); ok {
-						p.Connections = strings.Split(strings.Trim(names, `"`), ",")
-					}
-				}
-				return &ssh.Permissions{ExtraData: map[any]any{principalKey{}: p}}, nil
-			}
-			rest = next
-		}
-		return nil, errors.New("key is not authorized")
+// authorized reads the identities on every attempt, so keys change without a restart.
+func (m *monitor) authorized(_ ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
+	if p, ok := m.live.Load().principals[ssh.FingerprintSHA256(key)]; ok {
+		return &ssh.Permissions{ExtraData: map[any]any{principalKey{}: p}}, nil
 	}
+	return nil, errors.New("key is not authorized")
 }

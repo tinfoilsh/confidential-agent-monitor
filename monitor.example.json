@@ -1,0 +1,55 @@
+{
+  "allow_networks": ["100.64.0.0/10"],
+  "connections": {
+    "github": {
+      "http": {
+        "hosts": ["api.github.com", "github.com", "*.githubusercontent.com"],
+        "secrets": { "GITHUB_TOKEN": "ghp_REAL" }
+      }
+    },
+    "gmail": {
+      "http": {
+        "hosts": ["gmail.googleapis.com"],
+        "secrets": {
+          "TOKEN": {
+            "oauth": {
+              "token_url": "https://oauth2.googleapis.com/token",
+              "client_id": "REAL.apps.googleusercontent.com",
+              "client_secret": "REAL",
+              "refresh_token": "REAL"
+            }
+          }
+        }
+      }
+    },
+    "box2": {
+      "ssh": { "host": "box2.example.com", "user": "deploy", "key": "-----BEGIN OPENSSH PRIVATE KEY-----\n...", "host_key": "ssh-ed25519 AAAA..." }
+    },
+    "gh": { "cli": { "path": "/usr/bin/gh", "env": { "GH_TOKEN": "ghp_REAL", "HOME": "/var/lib/monitor" } } },
+    "gpg": { "cli": { "path": "/usr/bin/gpg", "env": { "GNUPGHOME": "/var/lib/monitor/gnupg" }, "stdin": "git" } },
+    "gpgagent": { "gpg-agent": "/var/lib/monitor/gnupg/S.gpg-agent" },
+    "sshkey": { "ssh-agent": ["-----BEGIN OPENSSH PRIVATE KEY-----\n..."] },
+    "imap": { "imap": "imaps://user:REAL@imap.fastmail.com" },
+    "smtp": { "smtp": "smtps://user:REAL@smtp.fastmail.com" },
+    "db": { "postgres": "postgres://app:REAL@db.example.com/app?sslmode=verify-full" },
+    "cache": { "redis": "rediss://default:REAL@cache.example.com:6380" }
+  },
+  "mcp": {
+    "github-mcp": { "url": "https://api.githubcopilot.com/mcp/", "token": "ghp_REAL" }
+  },
+  "data": {
+    "github": {
+      "writes": [
+        "/graphql",
+        "/*/*/git-upload-pack",
+        "/repos/*/*/issues",
+        "/repos/*/*/issues/*",
+        "/repos/*/*/issues/*/comments",
+        "/repos/*/*/pulls",
+        "/repos/*/*/pulls/*",
+        "/repos/*/*/pulls/*/reviews"
+      ],
+      "mutations": ["createPullRequest", "updatePullRequest", "addComment"]
+    }
+  }
+}

@@ -3,7 +3,6 @@ package signer
 import (
 	"errors"
 	"log"
-	"os"
 
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
@@ -32,15 +31,10 @@ type gatedAgent struct {
 func (keys *SSHAgent) Serve(s *connector.Stream) {
 	defer s.Close()
 	keyring := agent.NewKeyring().(agent.ExtendedAgent)
-	for _, path := range *keys {
-		encoded, err := os.ReadFile(path)
+	for _, encoded := range *keys {
+		key, err := ssh.ParseRawPrivateKey([]byte(encoded))
 		if err != nil {
 			log.Print(err)
-			return
-		}
-		key, err := ssh.ParseRawPrivateKey(encoded)
-		if err != nil {
-			log.Printf("%s: %v", path, err)
 			return
 		}
 		keyring.Add(agent.AddedKey{PrivateKey: key})

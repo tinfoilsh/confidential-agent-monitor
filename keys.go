@@ -9,10 +9,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
-	"errors"
 	"net"
-	"os"
-	"path/filepath"
 	"sync"
 	"time"
 
@@ -21,16 +18,19 @@ import (
 )
 
 const (
-	caCertFile    = "ca.pem"
-	caKeyFile     = "ca.key"
 	caName        = "monitor dev CA"
 	caLifetime    = 10 * 365 * 24 * time.Hour
 	leafLifetime  = 24 * time.Hour
 	leafBackdate  = time.Hour
 	pemCert       = "CERTIFICATE"
 	pemPrivateKey = "PRIVATE KEY"
-	hostKeyFile   = "host_key"
 )
+
+type keyMaterial struct {
+	HostKey string `json:"host_key"`
+	CACert  string `json:"ca_cert"`
+	CAKey   string `json:"ca_key"`
+}
 
 type authority struct {
 	ca     tls.Certificate
@@ -38,14 +38,13 @@ type authority struct {
 	leaves map[string]*tls.Certificate
 }
 
-func loadCA(dir string) (*tls.Config, error) {
-	certPath, keyPath := filepath.Join(dir, caCertFile), filepath.Join(dir, caKeyFile)
-	if _, err := os.Stat(certPath); errors.Is(err, os.ErrNotExist) {
-		if err := createCA(certPath, keyPath); err != nil {
+func loadCA(k *keyMaterial) (*tls.Config, error) {
+	if k.CACert == "" {
+		if err := createCA(k); err != nil {
 			return nil, err
 		}
 	}
-	ca, err := tls.LoadX509KeyPair(certPath, keyPath)
+	ca, err := tls.X509KeyPair([]byte(k.CACert), []byte(k.CAKey))
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +52,7 @@ func loadCA(dir string) (*tls.Config, error) {
 	return &tls.Config{GetCertificate: a.certificate}, nil
 }
 
-func createCA(certPath, keyPath string) error {
+func createCA(k *keyMaterial) error {
 	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
 		return err
@@ -75,10 +74,9 @@ func createCA(certPath, keyPath string) error {
 	if err != nil {
 		return err
 	}
-	if err := os.WriteFile(keyPath, pem.EncodeToMemory(&pem.Block{Type: pemPrivateKey, Bytes: private}), secretMode); err != nil {
-		return err
-	}
-	return os.WriteFile(certPath, pem.EncodeToMemory(&pem.Block{Type: pemCert, Bytes: der}), secretMode)
+	k.CAKey = string(pem.EncodeToMemory(&pem.Block{Type: pemPrivateKey, Bytes: private}))
+	k.CACert = string(pem.EncodeToMemory(&pem.Block{Type: pemCert, Bytes: der}))
+	return nil
 }
 
 // Without SNI, the leaf is minted for the channel's target.
@@ -122,10 +120,8 @@ func (a *authority) certificate(hello *tls.ClientHelloInfo) (*tls.Certificate, e
 	return leaf, nil
 }
 
-func loadHostKey(dir string) (ssh.Signer, error) {
-	path := filepath.Join(dir, hostKeyFile)
-	encoded, err := os.ReadFile(path)
-	if errors.Is(err, os.ErrNotExist) {
+func loadHostKey(k *keyMaterial) (ssh.Signer, error) {
+	if k.HostKey == "" {
 		_, private, err := ed25519.GenerateKey(rand.Reader)
 		if err != nil {
 			return nil, err
@@ -134,12 +130,7 @@ func loadHostKey(dir string) (ssh.Signer, error) {
 		if err != nil {
 			return nil, err
 		}
-		encoded = pem.EncodeToMemory(block)
-		if err := os.WriteFile(path, encoded, secretMode); err != nil {
-			return nil, err
-		}
-	} else if err != nil {
-		return nil, err
+		k.HostKey = string(pem.EncodeToMemory(block))
 	}
-	return ssh.ParsePrivateKey(encoded)
+	return ssh.ParsePrivateKey([]byte(k.HostKey))
 }

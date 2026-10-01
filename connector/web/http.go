@@ -60,7 +60,8 @@ type HTTP struct {
 	Secrets map[string]credential.Credential `yaml:"secrets"`
 	// The Authorization header is always substituted; these locations are opt-in.
 	Substitute []location `yaml:"substitute"`
-	conns      connector.Listener
+	conns      *connector.Listener
+	server     *http.Server
 }
 
 func (r *HTTP) Serve(s *connector.Stream) {
@@ -68,11 +69,11 @@ func (r *HTTP) Serve(s *connector.Stream) {
 	if s.Port == httpsPort {
 		c = tls.Server(s, s.TLS)
 	}
-	r.conns <- c
+	r.conns.Hand(c)
 }
 
 func (h *HTTP) Start(e *connector.Env) {
-	h.conns = make(connector.Listener)
+	h.conns = connector.NewListener()
 	transport := http.DefaultTransport.(*http.Transport).Clone()
 	transport.Proxy = nil
 	transport.DialContext = e.Dialer.DialContext
@@ -86,7 +87,7 @@ func (h *HTTP) Start(e *connector.Env) {
 			pr.Out.URL.Host = pr.In.Host
 		},
 	}
-	server := &http.Server{
+	h.server = &http.Server{
 		ReadHeaderTimeout: readHeaderTimeout,
 		ConnContext: func(ctx context.Context, c net.Conn) context.Context {
 			return context.WithValue(ctx, connKey{}, connector.StreamOf(c))
@@ -100,8 +101,14 @@ func (h *HTTP) Start(e *connector.Env) {
 			proxy.ServeHTTP(w, r)
 		}),
 	}
-	go func() { log.Fatal(server.Serve(h.conns)) }()
+	go func() {
+		if err := h.server.Serve(h.conns); err != http.ErrServerClosed {
+			log.Fatal(err)
+		}
+	}()
 }
+
+func (h *HTTP) Stop() { h.server.Shutdown(context.Background()) }
 
 // The proxy dials the request's host, so it must be the one the channel's gate saw.
 func (h *HTTP) screen(r *http.Request) error {

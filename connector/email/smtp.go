@@ -2,6 +2,7 @@ package email
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"io"
 	"log"
@@ -29,14 +30,15 @@ const (
 
 type SMTP struct {
 	connector.Endpoint
-	conns connector.Listener
+	conns  *connector.Listener
+	server *smtp.Server
 }
 
-func (r *SMTP) Serve(s *connector.Stream) { r.conns <- s }
+func (r *SMTP) Serve(s *connector.Stream) { r.conns.Serve(s) }
 
 // Start accepts any credential from the client and submits each message upstream with the stored one.
 func (r *SMTP) Start(e *connector.Env) {
-	r.conns = make(connector.Listener)
+	r.conns = connector.NewListener()
 	server := smtp.NewServer(smtp.BackendFunc(func(c *smtp.Conn) (smtp.Session, error) {
 		s := connector.StreamOf(c.Conn())
 		return &smtpSession{stream: s, relay: r}, nil
@@ -45,8 +47,15 @@ func (r *SMTP) Start(e *connector.Env) {
 	server.MaxMessageBytes = maxMessageBytes
 	server.AllowInsecureAuth = true
 	server.TLSConfig = e.TLS
-	go func() { log.Fatal(server.Serve(r.conns)) }()
+	r.server = server
+	go func() {
+		if err := server.Serve(r.conns); err != nil {
+			log.Fatal(err)
+		}
+	}()
 }
+
+func (r *SMTP) Stop() { r.server.Shutdown(context.Background()) }
 
 type smtpSession struct {
 	stream *connector.Stream
