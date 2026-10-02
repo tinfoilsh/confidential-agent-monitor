@@ -12,41 +12,6 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-type tcpLayer struct {
-	Host string `json:"host"`
-	Port uint32 `json:"port"`
-}
-
-type namedAccount struct {
-	Name string `json:"name"`
-	account
-}
-
-// input carries either the tunnel's tcp layer or a connector's layers, never both.
-type input struct {
-	Principal  principal     `json:"principal"`
-	Connection string        `json:"connection"`
-	Protocol   string        `json:"protocol"`
-	TCP        *tcpLayer     `json:"tcp,omitempty"`
-	Account    *namedAccount `json:"account"`
-	Access     access        `json:"access"`
-	Rules      []rule        `json:"rules"`
-	Label      label         `json:"label"`
-	*connector.Event
-}
-
-type principal struct {
-	Key      string            `json:"key"`
-	Name     string            `json:"name"`
-	Accounts map[string]access `json:"-"`
-	Rules    []rule            `json:"-"`
-}
-
-func (p principal) reaches(account string) bool {
-	level := p.Accounts[account].Level
-	return level != "" && level != "off"
-}
-
 type principalKey struct{}
 
 const (
