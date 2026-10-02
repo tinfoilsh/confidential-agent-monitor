@@ -23,6 +23,14 @@ scope := object.get(t, "scope", {})
 
 sends := object.get(t, "sends", input.account.sends)
 
+# An action is a dotted path, and the most specific setting along it wins.
+lineage := [concat(".", array.slice(path, 0, i)) | path := split(action, "."); some i in numbers.range(count(path), 1)]
+
+changed if {
+	some a in lineage
+	a in changes
+}
+
 # Every mode but allow asks, so a value this chain does not expect fails closed.
 mode := "off" if not input.access.level in {"read", "ask", "allow"}
 else := "off" if {
@@ -30,8 +38,8 @@ else := "off" if {
 	input.access.level == "read"
 }
 else := "ask" if action == null
-else := m if m := input.access.actions[action]
-else := "allow" if not action in changes
+else := m if m := [o | some a in lineage; o := input.access.actions[a]][0]
+else := "allow" if not changed
 else := "off" if input.access.level == "read"
 else := input.access.level
 
@@ -45,7 +53,10 @@ deny contains "this agent may not do this on the account" if mode == "off"
 
 needs_trust if action == null
 
-needs_trust if action in object.get(t, "needs_trust", set())
+needs_trust if {
+	some a in lineage
+	a in object.get(t, "needs_trust", set())
+}
 
 gap contains "ask" if mode != "allow"
 

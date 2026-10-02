@@ -11,7 +11,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"maps"
 	"net"
 	"net/http"
@@ -52,31 +51,24 @@ type state struct {
 	sealed
 	cfg         *config
 	connections map[string]*connection
-	mcp         map[string]*mcpServer
 	principals  map[string]principal
 	decision    rego.PreparedEvalQuery
-	// infra is what connectors and MCP sessions are started from; states that share it share them.
+	// infra is what connectors are started from; states that share it share them.
 	infra string
 	connector.Env
 }
 
 type monitor struct {
-	live    atomic.Pointer[state]
-	mu      sync.Mutex
-	owner   []byte
-	store   *blob.Bucket
-	object  string
-	listen  string
-	gateway *connector.Listener
+	live   atomic.Pointer[state]
+	mu     sync.Mutex
+	owner  []byte
+	store  *blob.Bucket
+	object string
+	listen string
 	// flow orders label reads and writes; labels change only while holding both it and mu.
 	flow    sync.Mutex
 	labels  map[string]label
 	records records
-}
-
-type mcpStatus struct {
-	Error   string `json:"error,omitempty"`
-	Blocked int    `json:"blocked"`
 }
 
 // ownerView never includes private keys or secret values.
@@ -86,24 +78,28 @@ type ownerView struct {
 	HostKey    string                       `json:"host_key"`
 	CA         string                       `json:"ca"`
 	Secrets    map[string][]string          `json:"secrets"`
-	Status     map[string]mcpStatus         `json:"status"`
+	Status     map[string]any               `json:"status"`
 	Labels     map[string]label             `json:"labels"`
 	Setup      map[string]map[string]string `json:"setup"`
+	Templates  any                          `json:"templates"`
 }
 
 func (m *monitor) view(s *state, err error) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	templates, err := catalog()
+	if err != nil {
+		return nil, err
+	}
 	v := ownerView{s.Generation, s.Config, string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), s.Keys.CACert,
-		map[string][]string{}, map[string]mcpStatus{}, map[string]label{}, map[string]map[string]string{}}
+		map[string][]string{}, map[string]any{}, map[string]label{}, map[string]map[string]string{}, templates}
 	for acct, secrets := range s.Secrets {
 		v.Secrets[acct] = slices.Sorted(maps.Keys(secrets))
 	}
-	for name, srv := range s.mcp {
-		v.Status[name] = mcpStatus{Error: srv.err}
-		if u := srv.upstream.Load(); u != nil {
-			v.Status[name] = mcpStatus{Blocked: u.Blocked}
+	for _, c := range s.connections {
+		if r, ok := c.connector.(connector.Reporter); ok {
+			v.Status[c.name] = r.Status()
 		}
 	}
 	for _, p := range s.principals {
@@ -187,7 +183,6 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (*stat
 	}
 	m.owner = key
 	m.live.Store(s)
-	m.startMCP()
 	go m.serveSSH(ln)
 	return s, nil
 }
@@ -256,12 +251,12 @@ func (m *monitor) persist(ctx context.Context, s *state, key []byte) error {
 
 // build starts connectors anew unless old shares their infra; the caller retires whichever state it does not publish.
 func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *state) (*state, error) {
-	cfg, connections, servers, err := parse(sl.Config, sl.Secrets)
+	cfg, connections, err := parse(sl.Config, sl.Secrets)
 	if err != nil {
 		return nil, err
 	}
 	maps.DeleteFunc(sl.Secrets, func(acct string, _ map[string]any) bool { _, ok := cfg.Accounts[acct]; return !ok })
-	s := &state{sealed: sl, cfg: cfg, connections: connections, mcp: servers, principals: map[string]principal{}, Env: env}
+	s := &state{sealed: sl, cfg: cfg, connections: connections, principals: map[string]principal{}, Env: env}
 	s.Dialer = connector.NewDialer(cfg.AllowNetworks)
 	for name, id := range cfg.Identities {
 		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(id.Key))
@@ -278,28 +273,19 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *
 	for acct, a := range cfg.Accounts {
 		conns[acct] = a.Connections
 	}
-	infra, err := json.Marshal([]any{conns, cfg.Pins, cfg.AllowNetworks, sl.Secrets})
+	infra, err := json.Marshal([]any{conns, cfg.AllowNetworks, sl.Secrets})
 	if err != nil {
 		return nil, err
 	}
 	if s.infra = string(infra); old != nil && old.infra == s.infra {
-		s.connections, s.mcp = old.connections, old.mcp
+		s.connections = old.connections
 		return s, nil
 	}
-	s.connections[gatewayName] = &connection{name: gatewayName, protocol: protocolMCP, connector: m.gateway}
+	var wg sync.WaitGroup
 	for _, c := range s.connections {
 		if r, ok := c.connector.(connector.Starter); ok {
-			r.Start(&s.Env)
+			wg.Go(func() { r.Start(&s.Env) })
 		}
-	}
-	var wg sync.WaitGroup
-	for name, srv := range s.mcp {
-		wg.Go(func() {
-			if err := m.connectMCP(s, name, srv); err != nil {
-				log.Printf("%s: %v", name, err)
-				srv.err = err.Error()
-			}
-		})
 	}
 	wg.Wait()
 	return s, nil
@@ -313,9 +299,6 @@ func (s *state) retire(next *state) {
 		if r, ok := c.connector.(connector.Stopper); ok {
 			go r.Stop()
 		}
-	}
-	for _, srv := range s.mcp {
-		srv.close()
 	}
 }
 
@@ -337,9 +320,6 @@ func (m *monitor) handler() http.Handler {
 			return nil, err
 		}
 		return m.view(m.patch(r.Context(), patch))
-	}))
-	mux.Handle("GET /mcp/{name}/review", m.owned(true, func(r *http.Request, _ []byte) (any, error) {
-		return m.review(r.Context(), r.PathValue("name"))
 	}))
 	m.requests(mux)
 	mux.Handle("GET /app/", http.FileServerFS(app))

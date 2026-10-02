@@ -1,5 +1,16 @@
 package templates.mcp
 
+catalog := {
+	"title": "MCP server",
+	"fields": [{"key": "url", "label": "Server URL"}, {"key": "token", "label": "Token", "secret": true}],
+	"connections": {"": {"mcp": {"url": "{url}", "token": {"$secret": "token"}}}},
+	"defaults": {"contents": "team", "strangers": true, "sends": "me"},
+	"actions": {
+		"read": {"title": "Use read-only tools"},
+		"use": {"title": "Use tools that change things", "save": "Allow {tool}"},
+	},
+}
+
 changes := {"use"}
 
 needs_trust := {"use"}

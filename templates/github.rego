@@ -1,5 +1,30 @@
 package templates.github
 
+catalog := {
+	"title": "GitHub",
+	"fields": [
+		{"key": "token", "label": "Personal access token", "secret": true},
+		{"key": "private", "label": "Private orgs and repos", "list": true, "hint": "owner/* or owner/repo"},
+	],
+	"connections": {
+		"": {"http": {"hosts": ["api.github.com", "github.com", "*.githubusercontent.com"], "secrets": {"GITHUB_TOKEN": {"$secret": "token"}}}},
+		"mcp": {"mcp": {"url": "https://api.githubcopilot.com/mcp/", "token": {"$secret": "token"}}},
+	},
+	"defaults": {"contents": "team", "strangers": true, "sends": "me"},
+	"actions": {
+		"read": {"title": "Read code, issues and pull requests"},
+		"comment": {"title": "Comment on issues and pull requests", "save": "Allow comments on {repo}"},
+		"comment.lines": {"title": "Comment on lines of code", "save": "Allow line comments on {repo}"},
+		"comment.reviews": {"title": "Review pull requests", "save": "Allow reviews on {repo}"},
+		"open": {"title": "Open and edit issues and pull requests"},
+		"open.issues": {"title": "Open and edit issues", "save": "Allow opening and editing issues on {repo}"},
+		"open.pulls": {"title": "Open and edit pull requests", "save": "Allow opening and editing pull requests on {repo}"},
+		"push": {"title": "Push commits", "save": "Allow pushes to {repo}"},
+		"merge": {"title": "Merge pull requests", "save": "Allow merges on {repo}"},
+		"use": {"title": "Use tools that change things", "save": "Allow {tool}"},
+	},
+}
+
 import data.monitor.mutation
 import data.monitor.route
 import data.monitor.write
@@ -11,22 +36,22 @@ needs_trust := {"push", "merge", "use"}
 writes := {
 	"/repos/*/*/issues/*/comments": "comment",
 	"/repos/*/*/issues/comments/*": "comment",
-	"/repos/*/*/pulls/*/comments": "comment",
-	"/repos/*/*/pulls/*/reviews": "comment",
-	"/repos/*/*/issues": "open",
-	"/repos/*/*/issues/*": "open",
-	"/repos/*/*/pulls": "open",
-	"/repos/*/*/pulls/*": "open",
+	"/repos/*/*/pulls/*/comments": "comment.lines",
+	"/repos/*/*/pulls/*/reviews": "comment.reviews",
+	"/repos/*/*/issues": "open.issues",
+	"/repos/*/*/issues/*": "open.issues",
+	"/repos/*/*/pulls": "open.pulls",
+	"/repos/*/*/pulls/*": "open.pulls",
 	"/repos/*/*/pulls/*/merge": "merge",
 }
 
 mutations := {
 	"addComment": "comment",
-	"addPullRequestReview": "comment",
-	"createIssue": "open",
-	"updateIssue": "open",
-	"createPullRequest": "open",
-	"updatePullRequest": "open",
+	"addPullRequestReview": "comment.reviews",
+	"createIssue": "open.issues",
+	"updateIssue": "open.issues",
+	"createPullRequest": "open.pulls",
+	"updatePullRequest": "open.pulls",
 	"mergePullRequest": "merge",
 }
 
@@ -100,7 +125,10 @@ sends := "anyone" if {
 verbs := {
 	"read": "Read",
 	"comment": "Comment on",
-	"open": "Open or edit an issue or pull request on",
+	"comment.lines": "Comment on code in",
+	"comment.reviews": "Review a pull request on",
+	"open.issues": "Open or edit an issue on",
+	"open.pulls": "Open or edit a pull request on",
 	"push": "Push to",
 	"merge": "Merge a pull request on",
 }

@@ -12,10 +12,11 @@ import (
 	"net/netip"
 	"slices"
 	"strings"
+	"time"
 
-	"github.com/tinfoilsh/mcp-sentinel"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/email"
+	"github.com/tinfoilsh/monitor/connector/mcp"
 	"github.com/tinfoilsh/monitor/connector/postgres"
 	"github.com/tinfoilsh/monitor/connector/redis"
 	"github.com/tinfoilsh/monitor/connector/session"
@@ -27,7 +28,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const devBucket = "file://"
+const (
+	devBucket         = "file://"
+	readHeaderTimeout = 30 * time.Second
+)
 
 // The kind is also the protocol policies see.
 var connectorKinds = map[string]func() connector.Connector{
@@ -40,6 +44,7 @@ var connectorKinds = map[string]func() connector.Connector{
 	"smtp":      func() connector.Connector { return new(email.SMTP) },
 	"postgres":  func() connector.Connector { return new(postgres.Postgres) },
 	"redis":     func() connector.Connector { return new(redis.Redis) },
+	"mcp":       func() connector.Connector { return new(mcp.Server) },
 }
 
 const secretRef = "$secret"
@@ -78,12 +83,11 @@ type account struct {
 }
 
 type config struct {
-	AllowNetworks []netip.Prefix                `json:"allow_networks"`
-	Accounts      map[string]account            `json:"accounts"`
-	Identities    map[string]identity           `json:"identities"`
-	Policies      map[string]string             `json:"policies"`
-	Data          map[string]any                `json:"data"`
-	Pins          map[string]*sentinel.Snapshot `json:"pins"`
+	AllowNetworks []netip.Prefix      `json:"allow_networks"`
+	Accounts      map[string]account  `json:"accounts"`
+	Identities    map[string]identity `json:"identities"`
+	Policies      map[string]string   `json:"policies"`
+	Data          map[string]any      `json:"data"`
 }
 
 type connection struct {
@@ -111,61 +115,53 @@ func run(listen, api, bucketURL, object string) error {
 	if err != nil {
 		return err
 	}
-	m := &monitor{store: bucket, object: object, listen: listen, gateway: connector.NewListener()}
+	m := &monitor{store: bucket, object: object, listen: listen}
 	return (&http.Server{Addr: api, Handler: m.handler(), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe()
 }
 
 // parse decodes the owner's config without starting anything.
-func parse(raw []byte, secrets map[string]map[string]any) (*config, map[string]*connection, map[string]*mcpServer, error) {
+func parse(raw []byte, secrets map[string]map[string]any) (*config, map[string]*connection, error) {
 	var cfg config
 	dec := json.NewDecoder(bytes.NewReader(raw))
 	dec.DisallowUnknownFields()
 	if err := dec.Decode(&cfg); err != nil {
-		return nil, nil, nil, err
+		return nil, nil, err
 	}
 	connections := map[string]*connection{}
-	servers := map[string]*mcpServer{}
 	for acct, a := range cfg.Accounts {
 		if _, err := fs.Stat(templates, templateDir+"/"+a.Template+".rego"); err != nil {
-			return nil, nil, nil, fmt.Errorf("account %s has unknown template %s", acct, a.Template)
+			return nil, nil, fmt.Errorf("account %s has unknown template %s", acct, a.Template)
 		}
 		if !slices.Contains(audiences, a.Contents) || !slices.Contains(audiences, a.Sends) {
-			return nil, nil, nil, fmt.Errorf("account %s: contents and sends must be one of %v", acct, audiences)
+			return nil, nil, fmt.Errorf("account %s: contents and sends must be one of %v", acct, audiences)
 		}
 		for key, kinds := range a.Connections {
 			name := acct
 			if key != "" {
 				name += "-" + key
 			}
-			if name == gatewayName || connections[name] != nil || servers[name] != nil {
-				return nil, nil, nil, fmt.Errorf("connection name %s is reserved or taken", name)
+			if connections[name] != nil {
+				return nil, nil, fmt.Errorf("connection name %s is taken", name)
 			}
 			if len(kinds) != 1 {
-				return nil, nil, nil, fmt.Errorf("connection %s must have one kind", name)
+				return nil, nil, fmt.Errorf("connection %s must have one kind", name)
 			}
 			for kind, spec := range kinds {
 				spec, err := resolve(spec, secrets[acct])
 				if err != nil {
-					return nil, nil, nil, fmt.Errorf("connection %s: %w", name, err)
+					return nil, nil, fmt.Errorf("connection %s: %w", name, err)
 				}
 				raw, err := json.Marshal(spec)
 				if err != nil {
-					return nil, nil, nil, err
-				}
-				if kind == protocolMCP {
-					servers[name] = &mcpServer{account: acct}
-					if err := yaml.Unmarshal(raw, servers[name]); err != nil {
-						return nil, nil, nil, fmt.Errorf("connection %s: %w", name, err)
-					}
-					continue
+					return nil, nil, err
 				}
 				newConnector, ok := connectorKinds[kind]
 				if !ok {
-					return nil, nil, nil, fmt.Errorf("connection %s has unknown kind %s", name, kind)
+					return nil, nil, fmt.Errorf("connection %s has unknown kind %s", name, kind)
 				}
 				c := &connection{name: name, protocol: kind, account: acct, connector: newConnector()}
 				if err := yaml.Unmarshal(raw, c.connector); err != nil {
-					return nil, nil, nil, fmt.Errorf("connection %s: %w", name, err)
+					return nil, nil, fmt.Errorf("connection %s: %w", name, err)
 				}
 				connections[name] = c
 			}
@@ -174,16 +170,16 @@ func parse(raw []byte, secrets map[string]map[string]any) (*config, map[string]*
 	for name, id := range cfg.Identities {
 		for acct, a := range id.Accounts {
 			if _, ok := cfg.Accounts[acct]; !ok || !slices.Contains(levels, a.Level) {
-				return nil, nil, nil, fmt.Errorf("identity %s: account %s must exist and have a level in %v", name, acct, levels)
+				return nil, nil, fmt.Errorf("identity %s: account %s must exist and have a level in %v", name, acct, levels)
 			}
 			for action, level := range a.Actions {
 				if level == "read" || !slices.Contains(levels, level) {
-					return nil, nil, nil, fmt.Errorf("identity %s: action %s must be off, ask or allow", name, action)
+					return nil, nil, fmt.Errorf("identity %s: action %s must be off, ask or allow", name, action)
 				}
 			}
 		}
 	}
-	return &cfg, connections, servers, nil
+	return &cfg, connections, nil
 }
 
 // resolve replaces each {"$secret": key} with the account's secret, which may be an object.

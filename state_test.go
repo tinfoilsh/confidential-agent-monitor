@@ -6,7 +6,6 @@ import (
 	"crypto/rand"
 	"testing"
 
-	"github.com/tinfoilsh/monitor/connector"
 	"gocloud.dev/blob/memblob"
 )
 
@@ -14,7 +13,7 @@ func TestUnlockPatchRestart(t *testing.T) {
 	ctx := context.Background()
 	store := memblob.OpenBucket(nil)
 	open := func() *monitor {
-		return &monitor{store: store, object: "monitor.enc", listen: "127.0.0.1:0", gateway: connector.NewListener()}
+		return &monitor{store: store, object: "monitor.enc", listen: "127.0.0.1:0"}
 	}
 	key, wrong := make([]byte, ownerKeyBytes), make([]byte, ownerKeyBytes)
 	rand.Read(key)

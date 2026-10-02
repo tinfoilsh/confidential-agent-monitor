@@ -47,19 +47,6 @@ func (p principal) reaches(account string) bool {
 	return level != "" && level != "off"
 }
 
-// The gateway is reachable through any MCP account the principal reaches.
-func (st *state) reaches(p principal, c *connection) bool {
-	if c.name != gatewayName {
-		return p.reaches(c.account)
-	}
-	for _, s := range st.mcp {
-		if p.reaches(s.account) {
-			return true
-		}
-	}
-	return false
-}
-
 type principalKey struct{}
 
 const (
@@ -126,7 +113,7 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 		return
 	}
 	go ssh.DiscardRequests(reqs)
-	s.Conn = channelConn{ch, p}
+	s.Conn = channelConn{ch}
 	log.Printf("%s: forwarding %s:%d", p.Name, target.Host, target.Port)
 	c.connector.Serve(s)
 }
@@ -135,7 +122,7 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 func (st *state) route(p principal, host string, port uint32) *connection {
 	if name, ok := strings.CutSuffix(host, monitorSuffix); ok {
 		c := st.connections[name]
-		if c == nil || !st.reaches(p, c) {
+		if c == nil || !p.reaches(c.account) {
 			return nil
 		}
 		if _, ok := c.connector.(connector.Claimer); ok {
@@ -147,7 +134,7 @@ func (st *state) route(p principal, host string, port uint32) *connection {
 	var selected *connection
 	for _, c := range st.connections {
 		r, ok := c.connector.(connector.Claimer)
-		if !ok || !st.reaches(p, c) {
+		if !ok || !p.reaches(c.account) {
 			continue
 		}
 		score := r.Claim(host, port)
@@ -167,10 +154,7 @@ func (st *state) route(p principal, host string, port uint32) *connection {
 	return selected
 }
 
-type channelConn struct {
-	ssh.Channel
-	principal principal
-}
+type channelConn struct{ ssh.Channel }
 
 func (channelConn) LocalAddr() net.Addr              { return &net.TCPAddr{} }
 func (channelConn) RemoteAddr() net.Addr             { return &net.TCPAddr{} }

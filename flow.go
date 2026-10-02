@@ -24,6 +24,7 @@ import (
 const (
 	templateDir   = "templates"
 	decisionQuery = "data.monitor.decision"
+	catalogQuery  = `{t: object.union(c, {"changes": object.get(data.templates, [t, "changes"], [])}) | c := data.templates[t].catalog}`
 	approvalWait  = 2 * time.Minute
 	maxRecords    = 1000
 
@@ -86,16 +87,29 @@ type records struct {
 	list []*record
 }
 
-func prepareDecision(ctx context.Context, cfg *config) (rego.PreparedEvalQuery, error) {
-	if cfg.Data == nil {
-		cfg.Data = map[string]any{}
-	}
-	opts := []func(*rego.Rego){rego.Query(decisionQuery), rego.Store(inmem.NewFromObject(cfg.Data))}
+func templateModules() (opts []func(*rego.Rego)) {
 	files, _ := fs.Glob(templates, templateDir+"/*.rego")
 	for _, name := range files {
 		src, _ := templates.ReadFile(name)
 		opts = append(opts, rego.Module(name, string(src)))
 	}
+	return opts
+}
+
+// catalog is what the owner's app needs to know of each template.
+var catalog = sync.OnceValues(func() (any, error) {
+	rs, err := rego.New(append(templateModules(), rego.Query(catalogQuery))...).Eval(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return rs[0].Expressions[0].Value, nil
+})
+
+func prepareDecision(ctx context.Context, cfg *config) (rego.PreparedEvalQuery, error) {
+	if cfg.Data == nil {
+		cfg.Data = map[string]any{}
+	}
+	opts := append(templateModules(), rego.Query(decisionQuery), rego.Store(inmem.NewFromObject(cfg.Data)))
 	for name, src := range cfg.Policies {
 		opts = append(opts, rego.Module(path.Join("policies", name), src))
 	}

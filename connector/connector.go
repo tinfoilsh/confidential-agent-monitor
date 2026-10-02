@@ -12,6 +12,7 @@ import (
 
 	"code.dny.dev/ssrf"
 	"golang.org/x/crypto/ssh"
+	"gopkg.in/yaml.v3"
 )
 
 const DialTimeout = 30 * time.Second
@@ -26,6 +27,9 @@ type Starter interface{ Start(*Env) }
 
 // Stop runs once, after the connector is replaced; streams it already accepted may finish.
 type Stopper interface{ Stop() }
+
+// Status is shown to the owner.
+type Reporter interface{ Status() any }
 
 type Claimer interface {
 	Claim(host string, port uint32) int
@@ -162,12 +166,22 @@ type PostgresLayer struct {
 	SQL string `json:"sql"`
 }
 
+// An Endpoint is a URL, or a URL with the user and password kept apart so neither needs escaping.
 type Endpoint struct{ url.URL }
 
-func (e *Endpoint) UnmarshalText(text []byte) error {
-	u, err := url.Parse(string(text))
+func (e *Endpoint) UnmarshalYAML(n *yaml.Node) error {
+	var v struct{ URL, User, Password string }
+	if n.Kind == yaml.ScalarNode {
+		v.URL = n.Value
+	} else if err := n.Decode(&v); err != nil {
+		return err
+	}
+	u, err := url.Parse(v.URL)
 	if err != nil {
 		return err
+	}
+	if v.User != "" {
+		u.User = url.UserPassword(v.User, v.Password)
 	}
 	e.URL = *u
 	return nil
