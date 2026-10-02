@@ -39,7 +39,7 @@
 <main id="page"></main>
 <div id="toast" hidden></div>
 <script>
-const KEY = "monitor-owner-key", GENERATION = "monitor-generation", DISMISSED = "monitor-dismissed";
+const KEY = "monitor-owner-key", GENERATION = "monitor-generation", DISMISSED = "monitor-dismissed", RETURN = "monitor-sign-in-return";
 const REQUEST_POLL_MS = 5000, TOAST_MS = 5000;
 const LEVELS = { off: "No access", read: "Read only", ask: "Ask", allow: "Allow" }, MODES = { allow: "Allow", ask: "Ask", off: "Deny" }, AUDIENCES = ["me", "team", "anyone"];
 const WHO = { me: "Only me", team: "My team", anyone: "Anyone" };
@@ -292,6 +292,8 @@ function read(f) {
   return f.list ? v.split(/[\s,]+/).filter(Boolean) : v;
 }
 
+const filled = (x, v) => JSON.parse(JSON.stringify(x), (_, s) => (typeof s === "string" ? fill(s, v) : s));
+
 const plain = (c) => c.fields.filter((f) => !f.secret && !f.json);
 
 // secretsOf keeps only the secrets the form filled in, so a patch leaves the others as they are.
@@ -311,9 +313,10 @@ function add(template) {
 const addAccount = run(async (template) => {
   const c = view.templates[template], name = $("account-name").value.trim();
   const v = Object.fromEntries(c.fields.map((f) => [f.key, read(f)]));
-  const connections = c.connections ? JSON.parse(JSON.stringify(c.connections), (_, x) => (typeof x === "string" ? fill(x, v) : x)) : v.connections;
+  const connections = c.connections ? filled(c.connections, v) : v.connections;
   const fields = Object.fromEntries(plain(c).map((f) => [f.key, v[f.key]]));
-  patch({ accounts: { [name]: { template, fields, ...answers(), connections } }, secrets: { [name]: secretsOf(c, v) } }, "account/" + encodeURIComponent(name));
+  const grants = Object.fromEntries(c.fields.filter((f) => f.oauth && !v[f.key]).map((f) => [f.key, { oauth: filled(f.oauth, v) }]));
+  patch({ accounts: { [name]: { template, fields, ...answers(), connections } }, secrets: { [name]: { ...grants, ...secretsOf(c, v) } } }, "account/" + encodeURIComponent(name));
 });
 
 function account(a) {
@@ -321,7 +324,7 @@ function account(a) {
   if (!acc) return `<p class="empty">No account ${esc(a)}.</p>`;
   const c = entry(a);
   const users = Object.entries(ids()).filter(([, id]) => (id.accounts?.[a]?.level ?? "off") !== "off").map(([n, id]) => `${n} (${id.accounts[a].level})`);
-  const secrets = c.fields.filter((f) => f.secret).map((f) => `<label>${esc(f.label)}</label>${input(f)}`);
+  const secrets = c.fields.filter((f) => f.secret).map((f) => `<label>${esc(f.label)}</label>${input(f)}${f.oauth ? `<div class="row"><span></span><button onclick="signIn(${q(a)}, ${q(f.key)})">Sign in</button></div>` : ""}`);
   return `<section><h2>${esc(a)} · ${esc(c.title)}</h2>${questions(acc)}
       ${plain(c).map((f) => `<label>${esc(f.label)}</label>${input(f, acc.fields?.[f.key])}`).join("")}
       <div class="row"><span></span><button onclick="saveAccount(${q(a)})">Save</button></div></section>
@@ -357,6 +360,15 @@ const replaceSecrets = (a) => {
   patch({ secrets: { [a]: secretsOf(c, v) } });
 };
 
+// The grant is patched in first, so signing in replaces a pasted token and reuses an earlier client registration.
+const signIn = run(async (a, key) => {
+  const f = entry(a).fields.find((x) => x.key === key);
+  remember(await api("PATCH", "/", { secrets: { [a]: { [key]: { oauth: filled(f.oauth, accounts()[a].fields) } } } }));
+  const { url } = await api("POST", `/secrets/${encodeURIComponent(a)}/${encodeURIComponent(key)}/sign-in`, { redirect: location.origin + location.pathname });
+  sessionStorage.setItem(RETURN, location.hash);
+  location.href = url;
+});
+
 // Identities may not name a missing account, so removing one also clears it from every agent.
 const removeAccount = (a) => patch({
   accounts: { [a]: null },
@@ -377,5 +389,17 @@ setInterval(run(async () => {
   await refresh();
   if (["", "requests", "activity"].includes(route()[0])) render();
 }), REQUEST_POLL_MS);
-run(async () => { if (sessionStorage.getItem(KEY)) await refresh(); })().then(render);
+// The provider redirects back here with the sign-in's state and either a code or an error.
+const back = new URLSearchParams(location.search);
+if (back.has("state")) history.replaceState(null, "", location.pathname + (sessionStorage.getItem(RETURN) ?? ""));
+run(async () => {
+  if (!sessionStorage.getItem(KEY)) return;
+  await refresh();
+  if (back.has("error")) throw new Error(back.get("error_description") ?? back.get("error"));
+  if (!back.has("code")) return;
+  render();
+  toast("Finishing sign-in…");
+  remember(await api("POST", `/sign-in/${encodeURIComponent(back.get("state"))}`, { code: back.get("code") }));
+  toast("Signed in");
+})().then(render);
 </script>

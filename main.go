@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/connector/email"
 	"github.com/tinfoilsh/monitor/connector/mcp"
 	"github.com/tinfoilsh/monitor/connector/postgres"
@@ -116,6 +117,7 @@ func run(listen, api, bucketURL, object string) error {
 		return err
 	}
 	m := &monitor{store: bucket, object: object, listen: listen}
+	credential.Rotated = m.rotate
 	return (&http.Server{Addr: api, Handler: m.handler(), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe()
 }
 

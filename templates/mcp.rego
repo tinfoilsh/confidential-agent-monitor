@@ -2,7 +2,7 @@ package templates.mcp
 
 catalog := {
 	"title": "MCP server",
-	"fields": [{"key": "url", "label": "Server URL"}, {"key": "token", "label": "Token", "secret": true}],
+	"fields": [{"key": "url", "label": "Server URL"}, {"key": "token", "label": "Token", "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "{url}"}}],
 	"connections": {"": {"mcp": {"url": "{url}", "token": {"$secret": "token"}}}},
 	"defaults": {"contents": "team", "strangers": true, "sends": "me"},
 	"actions": {

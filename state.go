@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"maps"
 	"net"
 	"net/http"
@@ -22,6 +23,7 @@ import (
 	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/connector/web"
 	"gocloud.dev/blob"
 	"gocloud.dev/gcerrors"
@@ -69,6 +71,8 @@ type monitor struct {
 	flow    sync.Mutex
 	labels  map[string]label
 	records records
+	// signIns holds the finish of each started sign-in, keyed by its state.
+	signIns sync.Map
 }
 
 // ownerView never includes private keys or secret values.
@@ -233,6 +237,30 @@ func (m *monitor) patch(ctx context.Context, patch []byte) (*state, error) {
 	return s, nil
 }
 
+func (m *monitor) rotate(old, new string) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	secrets := map[string]map[string]any{}
+	for acct, ss := range m.live.Load().Secrets {
+		for key, v := range ss {
+			secret, _ := v.(map[string]any)
+			if o, _ := secret["oauth"].(map[string]any); o["refresh_token"] == old {
+				if secrets[acct] == nil {
+					secrets[acct] = map[string]any{}
+				}
+				secrets[acct][key] = map[string]any{"oauth": map[string]any{"refresh_token": new}}
+			}
+		}
+	}
+	patch, err := json.Marshal(map[string]any{"secrets": secrets})
+	if err == nil {
+		_, err = m.patch(context.Background(), patch)
+	}
+	if err != nil {
+		log.Printf("rotate: %v", err)
+	}
+}
+
 // persist keeps only the labels of keys that some identity holds.
 func (m *monitor) persist(ctx context.Context, s *state, key []byte) error {
 	sl := s.sealed
@@ -320,6 +348,44 @@ func (m *monitor) handler() http.Handler {
 			return nil, err
 		}
 		return m.view(m.patch(r.Context(), patch))
+	}))
+	mux.Handle("POST /secrets/{account}/{key}/sign-in", m.owned(true, func(r *http.Request, _ []byte) (any, error) {
+		var req struct {
+			Redirect string `json:"redirect"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			return nil, err
+		}
+		s, acct, key := m.live.Load(), r.PathValue("account"), r.PathValue("key")
+		sign, err := credential.NewSignIn(r.Context(), &http.Client{Transport: &http.Transport{DialContext: s.Dialer.DialContext}}, s.Secrets[acct][key], req.Redirect)
+		if err != nil {
+			return nil, err
+		}
+		m.signIns.Store(sign.State, func(ctx context.Context, code string) (*state, error) {
+			secret, err := sign.Exchange(ctx, code)
+			if err != nil {
+				return nil, err
+			}
+			patch, err := json.Marshal(map[string]any{"secrets": map[string]any{acct: map[string]any{key: secret}}})
+			if err != nil {
+				return nil, err
+			}
+			return m.patch(ctx, patch)
+		})
+		return map[string]string{"url": sign.URL}, nil
+	}))
+	mux.Handle("POST /sign-in/{state}", m.owned(true, func(r *http.Request, _ []byte) (any, error) {
+		var req struct {
+			Code string `json:"code"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			return nil, err
+		}
+		finish, ok := m.signIns.LoadAndDelete(r.PathValue("state"))
+		if !ok {
+			return nil, errors.New("no sign-in is waiting for this state")
+		}
+		return m.view(finish.(func(context.Context, string) (*state, error))(r.Context(), req.Code))
 	}))
 	m.requests(mux)
 	mux.Handle("GET /app/", http.FileServerFS(app))
