@@ -1,55 +1,54 @@
 {
   "allow_networks": ["100.64.0.0/10"],
-  "connections": {
+  "accounts": {
     "github": {
-      "http": {
-        "hosts": ["api.github.com", "github.com", "*.githubusercontent.com"],
-        "secrets": { "GITHUB_TOKEN": "ghp_REAL" }
+      "template": "github",
+      "fields": { "private": ["tinfoilsh/*"] },
+      "contents": "team", "strangers": true, "sends": "me",
+      "connections": {
+        "": { "http": { "hosts": ["api.github.com", "github.com", "*.githubusercontent.com"], "secrets": { "GITHUB_TOKEN": { "$secret": "token" } } } },
+        "mcp": { "mcp": { "url": "https://api.githubcopilot.com/mcp/", "token": { "$secret": "token" } } }
       }
     },
     "gmail": {
-      "http": {
-        "hosts": ["gmail.googleapis.com"],
-        "secrets": {
-          "TOKEN": {
-            "oauth": {
-              "token_url": "https://oauth2.googleapis.com/token",
-              "client_id": "REAL.apps.googleusercontent.com",
-              "client_secret": "REAL",
-              "refresh_token": "REAL"
-            }
-          }
-        }
+      "template": "email",
+      "fields": { "address": "me@gmail.com" },
+      "contents": "me", "strangers": true, "sends": "me",
+      "connections": {
+        "imap": { "imap": { "$secret": "imap" } },
+        "smtp": { "smtp": { "$secret": "smtp" } }
       }
     },
-    "box2": {
-      "ssh": { "host": "box2.example.com", "user": "deploy", "key": "-----BEGIN OPENSSH PRIVATE KEY-----\n...", "host_key": "ssh-ed25519 AAAA..." }
+    "web": {
+      "template": "web", "contents": "anyone", "strangers": true, "sends": "anyone",
+      "connections": { "": { "http": { "hosts": ["*"] } } }
     },
-    "gh": { "cli": { "path": "/usr/bin/gh", "env": { "GH_TOKEN": "ghp_REAL", "HOME": "/var/lib/monitor" } } },
-    "gpg": { "cli": { "path": "/usr/bin/gpg", "env": { "GNUPGHOME": "/var/lib/monitor/gnupg" }, "stdin": "git" } },
-    "gpgagent": { "gpg-agent": "/var/lib/monitor/gnupg/S.gpg-agent" },
-    "sshkey": { "ssh-agent": ["-----BEGIN OPENSSH PRIVATE KEY-----\n..."] },
-    "imap": { "imap": "imaps://user:REAL@imap.fastmail.com" },
-    "smtp": { "smtp": "smtps://user:REAL@smtp.fastmail.com" },
-    "db": { "postgres": "postgres://app:REAL@db.example.com/app?sslmode=verify-full" },
-    "cache": { "redis": "rediss://default:REAL@cache.example.com:6380" }
-  },
-  "mcp": {
-    "github-mcp": { "url": "https://api.githubcopilot.com/mcp/", "token": "ghp_REAL" }
-  },
-  "data": {
-    "github": {
-      "writes": [
-        "/graphql",
-        "/*/*/git-upload-pack",
-        "/repos/*/*/issues",
-        "/repos/*/*/issues/*",
-        "/repos/*/*/issues/*/comments",
-        "/repos/*/*/pulls",
-        "/repos/*/*/pulls/*",
-        "/repos/*/*/pulls/*/reviews"
-      ],
-      "mutations": ["createPullRequest", "updatePullRequest", "addComment"]
+    "box2": {
+      "template": "custom", "contents": "team", "strangers": false, "sends": "me",
+      "connections": { "": { "ssh": { "host": "box2.example.com", "user": "deploy", "key": { "$secret": "key" }, "host_key": "ssh-ed25519 AAAA..." } } }
+    },
+    "local": {
+      "template": "custom", "contents": "me", "strangers": false, "sends": "me",
+      "connections": {
+        "gh": { "cli": { "path": "/usr/bin/gh", "env": { "GH_TOKEN": { "$secret": "gh" }, "HOME": "/var/lib/monitor" } } },
+        "gpg": { "cli": { "path": "/usr/bin/gpg", "env": { "GNUPGHOME": "/var/lib/monitor/gnupg" }, "stdin": "git" } },
+        "gpgagent": { "gpg-agent": "/var/lib/monitor/gnupg/S.gpg-agent" },
+        "sshkey": { "ssh-agent": [{ "$secret": "signing_key" }] }
+      }
+    },
+    "db": {
+      "template": "custom", "contents": "team", "strangers": false, "sends": "me",
+      "connections": {
+        "": { "postgres": { "$secret": "url" } },
+        "cache": { "redis": { "$secret": "cache_url" } }
+      }
     }
+  },
+  "secrets": {
+    "github": { "token": "ghp_REAL" },
+    "gmail": { "imap": "imaps://me%40gmail.com:APP_PASSWORD@imap.gmail.com", "smtp": "smtps://me%40gmail.com:APP_PASSWORD@smtp.gmail.com" },
+    "box2": { "key": "-----BEGIN OPENSSH PRIVATE KEY-----\n..." },
+    "local": { "gh": "ghp_REAL", "signing_key": "-----BEGIN OPENSSH PRIVATE KEY-----\n..." },
+    "db": { "url": "postgres://app:REAL@db.example.com/app?sslmode=verify-full", "cache_url": "rediss://default:REAL@cache.example.com:6380" }
   }
 }

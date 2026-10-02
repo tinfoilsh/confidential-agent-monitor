@@ -6,11 +6,11 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"net/netip"
-	"os"
+	"slices"
 	"strings"
 
 	"github.com/tinfoilsh/mcp-sentinel"
@@ -42,25 +42,53 @@ var connectorKinds = map[string]func() connector.Connector{
 	"redis":     func() connector.Connector { return new(redis.Redis) },
 }
 
+const secretRef = "$secret"
+
+var (
+	audiences = []string{"me", "team", "anyone"}
+	levels    = []string{"off", "read", "ask", "allow"}
+)
+
 type identity struct {
-	Key         string   `json:"key"`
-	Connections []string `json:"connections"`
+	Key      string            `json:"key"`
+	Accounts map[string]access `json:"accounts"`
+	Rules    []rule            `json:"rules,omitempty"`
+}
+
+type access struct {
+	Level   string            `json:"level"`
+	Actions map[string]string `json:"actions,omitempty"`
+}
+
+type rule struct {
+	Account string         `json:"account"`
+	Action  string         `json:"action"`
+	Scope   map[string]any `json:"scope"`
+	Waives  []string       `json:"waives"`
 }
 
 // Connector entries are decoded as YAML, which JSON is a subset of.
+type account struct {
+	Template    string                    `json:"template"`
+	Fields      map[string]any            `json:"fields,omitempty"`
+	Contents    string                    `json:"contents"`
+	Strangers   bool                      `json:"strangers"`
+	Sends       string                    `json:"sends"`
+	Connections map[string]map[string]any `json:"connections,omitempty"`
+}
+
 type config struct {
-	AllowNetworks []netip.Prefix                        `json:"allow_networks"`
-	Identities    map[string]identity                   `json:"identities"`
-	Connections   map[string]map[string]json.RawMessage `json:"connections"`
-	MCP           map[string]json.RawMessage            `json:"mcp"`
-	Policies      map[string]string                     `json:"policies"`
-	Data          map[string]any                        `json:"data"`
-	Pins          map[string]*sentinel.Snapshot         `json:"pins"`
+	AllowNetworks []netip.Prefix                `json:"allow_networks"`
+	Accounts      map[string]account            `json:"accounts"`
+	Identities    map[string]identity           `json:"identities"`
+	Policies      map[string]string             `json:"policies"`
+	Data          map[string]any                `json:"data"`
+	Pins          map[string]*sentinel.Snapshot `json:"pins"`
 }
 
 type connection struct {
-	name, protocol string
-	connector      connector.Connector
+	name, protocol, account string
+	connector               connector.Connector
 }
 
 func main() {
@@ -69,32 +97,12 @@ func main() {
 	bucket := flag.String("bucket", "", "blob URL holding the encrypted state")
 	object := flag.String("object", "monitor.enc", "key of the encrypted state")
 	flag.Parse()
-	if err := run(*listen, *api, *bucket, *object, flag.Args()); err != nil {
+	if err := run(*listen, *api, *bucket, *object); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func run(listen, api, bucketURL, object string, args []string) error {
-	if len(args) == 1 && args[0] == "env" {
-		raw, err := io.ReadAll(os.Stdin)
-		if err != nil {
-			return err
-		}
-		_, connections, _, err := parse(raw)
-		if err != nil {
-			return err
-		}
-		for name, c := range connections {
-			r, ok := c.connector.(*web.HTTP)
-			if !ok {
-				continue
-			}
-			for secret := range r.Secrets {
-				fmt.Printf("export %s=%s\n", secret, web.Placeholder(name, secret))
-			}
-		}
-		return nil
-	}
+func run(listen, api, bucketURL, object string) error {
 	if !strings.HasPrefix(bucketURL, devBucket) {
 		delete(connectorKinds, "cli")
 		delete(connectorKinds, "gpg-agent")
@@ -108,7 +116,7 @@ func run(listen, api, bucketURL, object string, args []string) error {
 }
 
 // parse decodes the owner's config without starting anything.
-func parse(raw []byte) (*config, map[string]*connection, map[string]*mcpServer, error) {
+func parse(raw []byte, secrets map[string]map[string]any) (*config, map[string]*connection, map[string]*mcpServer, error) {
 	var cfg config
 	dec := json.NewDecoder(bytes.NewReader(raw))
 	dec.DisallowUnknownFields()
@@ -116,31 +124,90 @@ func parse(raw []byte) (*config, map[string]*connection, map[string]*mcpServer, 
 		return nil, nil, nil, err
 	}
 	connections := map[string]*connection{}
-	for name, kinds := range cfg.Connections {
-		if name == gatewayName {
-			return nil, nil, nil, fmt.Errorf("connection name %s is reserved", name)
+	servers := map[string]*mcpServer{}
+	for acct, a := range cfg.Accounts {
+		if _, err := fs.Stat(templates, templateDir+"/"+a.Template+".rego"); err != nil {
+			return nil, nil, nil, fmt.Errorf("account %s has unknown template %s", acct, a.Template)
 		}
-		if len(kinds) != 1 {
-			return nil, nil, nil, fmt.Errorf("connection %s must have one kind", name)
+		if !slices.Contains(audiences, a.Contents) || !slices.Contains(audiences, a.Sends) {
+			return nil, nil, nil, fmt.Errorf("account %s: contents and sends must be one of %v", acct, audiences)
 		}
-		for kind, raw := range kinds {
-			newConnector, ok := connectorKinds[kind]
-			if !ok {
-				return nil, nil, nil, fmt.Errorf("connection %s has unknown kind %s", name, kind)
+		for key, kinds := range a.Connections {
+			name := acct
+			if key != "" {
+				name += "-" + key
 			}
-			c := &connection{name: name, protocol: kind, connector: newConnector()}
-			if err := yaml.Unmarshal(raw, c.connector); err != nil {
-				return nil, nil, nil, fmt.Errorf("connection %s: %w", name, err)
+			if name == gatewayName || connections[name] != nil || servers[name] != nil {
+				return nil, nil, nil, fmt.Errorf("connection name %s is reserved or taken", name)
 			}
-			connections[name] = c
+			if len(kinds) != 1 {
+				return nil, nil, nil, fmt.Errorf("connection %s must have one kind", name)
+			}
+			for kind, spec := range kinds {
+				spec, err := resolve(spec, secrets[acct])
+				if err != nil {
+					return nil, nil, nil, fmt.Errorf("connection %s: %w", name, err)
+				}
+				raw, err := json.Marshal(spec)
+				if err != nil {
+					return nil, nil, nil, err
+				}
+				if kind == protocolMCP {
+					servers[name] = &mcpServer{account: acct}
+					if err := yaml.Unmarshal(raw, servers[name]); err != nil {
+						return nil, nil, nil, fmt.Errorf("connection %s: %w", name, err)
+					}
+					continue
+				}
+				newConnector, ok := connectorKinds[kind]
+				if !ok {
+					return nil, nil, nil, fmt.Errorf("connection %s has unknown kind %s", name, kind)
+				}
+				c := &connection{name: name, protocol: kind, account: acct, connector: newConnector()}
+				if err := yaml.Unmarshal(raw, c.connector); err != nil {
+					return nil, nil, nil, fmt.Errorf("connection %s: %w", name, err)
+				}
+				connections[name] = c
+			}
 		}
 	}
-	servers := map[string]*mcpServer{}
-	for name, raw := range cfg.MCP {
-		servers[name] = new(mcpServer)
-		if err := yaml.Unmarshal(raw, servers[name]); err != nil {
-			return nil, nil, nil, fmt.Errorf("mcp %s: %w", name, err)
+	for name, id := range cfg.Identities {
+		for acct, a := range id.Accounts {
+			if _, ok := cfg.Accounts[acct]; !ok || !slices.Contains(levels, a.Level) {
+				return nil, nil, nil, fmt.Errorf("identity %s: account %s must exist and have a level in %v", name, acct, levels)
+			}
+			for action, level := range a.Actions {
+				if level == "read" || !slices.Contains(levels, level) {
+					return nil, nil, nil, fmt.Errorf("identity %s: action %s must be off, ask or allow", name, action)
+				}
+			}
 		}
 	}
 	return &cfg, connections, servers, nil
+}
+
+// resolve replaces each {"$secret": key} with the account's secret, which may be an object.
+func resolve(v any, secrets map[string]any) (any, error) {
+	var err error
+	switch v := v.(type) {
+	case map[string]any:
+		if key, ok := v[secretRef].(string); ok && len(v) == 1 {
+			if secret, ok := secrets[key]; ok {
+				return secret, nil
+			}
+			return nil, fmt.Errorf("secret %s is not set", key)
+		}
+		for k, e := range v {
+			if v[k], err = resolve(e, secrets); err != nil {
+				return nil, err
+			}
+		}
+	case []any:
+		for i, e := range v {
+			if v[i], err = resolve(e, secrets); err != nil {
+				return nil, err
+			}
+		}
+	}
+	return v, nil
 }

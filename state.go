@@ -5,51 +5,58 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/subtle"
+	"embed"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"log"
+	"maps"
 	"net"
 	"net/http"
+	"slices"
 	"strings"
 	"sync"
 	"sync/atomic"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/open-policy-agent/opa/v1/rego"
-	"github.com/open-policy-agent/opa/v1/storage/inmem"
-	"github.com/tinfoilsh/mcp-sentinel"
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/web"
 	"gocloud.dev/blob"
 	"gocloud.dev/gcerrors"
 	"golang.org/x/crypto/ssh"
 )
 
 const (
-	ownerKeyBytes     = 32
-	maxDocumentBytes  = 16 << 20
-	defaultPolicyName = "monitor.rego"
-	defaultPolicy     = "package sentinel\n\ndeny contains reason if { false; reason := \"\" }"
+	ownerKeyBytes    = 32
+	maxDocumentBytes = 16 << 20
 )
 
 var errOwner = errors.New("invalid owner secret")
 
+//go:embed app
+var app embed.FS
+
 // sealed is the plaintext of the encrypted object; only Config is the owner's to edit.
 type sealed struct {
-	Generation uint64          `json:"generation"`
-	Keys       keyMaterial     `json:"keys"`
-	Config     json.RawMessage `json:"config"`
+	Generation uint64                    `json:"generation"`
+	Keys       keyMaterial               `json:"keys"`
+	Secrets    map[string]map[string]any `json:"secrets"`
+	Labels     map[string]label          `json:"labels"`
+	Config     json.RawMessage           `json:"config"`
 }
 
 type state struct {
 	sealed
+	cfg         *config
 	connections map[string]*connection
 	mcp         map[string]*mcpServer
 	principals  map[string]principal
-	pins        map[string]*sentinel.Snapshot
-	policy      *sentinel.Policy
+	decision    rego.PreparedEvalQuery
+	// infra is what connectors and MCP sessions are started from; states that share it share them.
+	infra string
 	connector.Env
 }
 
@@ -61,16 +68,56 @@ type monitor struct {
 	object  string
 	listen  string
 	gateway *connector.Listener
+	// flow orders label reads and writes; labels change only while holding both it and mu.
+	flow    sync.Mutex
+	labels  map[string]label
+	records records
 }
 
-// MarshalJSON is the owner's view, which never includes private keys.
-func (s *state) MarshalJSON() ([]byte, error) {
-	return json.Marshal(struct {
-		Generation uint64          `json:"generation"`
-		Config     json.RawMessage `json:"config"`
-		HostKey    string          `json:"host_key"`
-		CA         string          `json:"ca"`
-	}{s.Generation, s.Config, string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), s.Keys.CACert})
+type mcpStatus struct {
+	Error   string `json:"error,omitempty"`
+	Blocked int    `json:"blocked"`
+}
+
+// ownerView never includes private keys or secret values.
+type ownerView struct {
+	Generation uint64                       `json:"generation"`
+	Config     json.RawMessage              `json:"config"`
+	HostKey    string                       `json:"host_key"`
+	CA         string                       `json:"ca"`
+	Secrets    map[string][]string          `json:"secrets"`
+	Status     map[string]mcpStatus         `json:"status"`
+	Labels     map[string]label             `json:"labels"`
+	Setup      map[string]map[string]string `json:"setup"`
+}
+
+func (m *monitor) view(s *state, err error) (any, error) {
+	if err != nil {
+		return nil, err
+	}
+	v := ownerView{s.Generation, s.Config, string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), s.Keys.CACert,
+		map[string][]string{}, map[string]mcpStatus{}, map[string]label{}, map[string]map[string]string{}}
+	for acct, secrets := range s.Secrets {
+		v.Secrets[acct] = slices.Sorted(maps.Keys(secrets))
+	}
+	for name, srv := range s.mcp {
+		v.Status[name] = mcpStatus{Error: srv.err}
+		if u := srv.upstream.Load(); u != nil {
+			v.Status[name] = mcpStatus{Blocked: u.Blocked}
+		}
+	}
+	for _, p := range s.principals {
+		v.Labels[p.Name] = m.label(p.Key)
+		v.Setup[p.Name] = map[string]string{}
+		for _, c := range s.connections {
+			if r, ok := c.connector.(*web.HTTP); ok && p.reaches(c.account) {
+				for secret := range r.Secrets {
+					v.Setup[p.Name][secret] = web.Placeholder(c.name, secret)
+				}
+			}
+		}
+	}
+	return v, nil
 }
 
 func newAEAD(key []byte) (cipher.AEAD, error) {
@@ -121,7 +168,10 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (*stat
 	if fresh {
 		sl.Generation++
 	}
-	s, err := m.build(ctx, sl, env)
+	if m.labels = sl.Labels; m.labels == nil {
+		m.labels = map[string]label{}
+	}
+	s, err := m.build(ctx, sl, env, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +182,7 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (*stat
 		}
 	}
 	if err != nil {
-		retire(s)
+		s.retire(nil)
 		return nil, err
 	}
 	m.owner = key
@@ -145,26 +195,55 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (*stat
 func (m *monitor) patch(ctx context.Context, patch []byte) (*state, error) {
 	old := m.live.Load()
 	next := old.sealed
-	var err error
+	var doc map[string]json.RawMessage
+	if err := json.Unmarshal(patch, &doc); err != nil {
+		return nil, err
+	}
+	secretsPatch, ok := doc["secrets"]
+	if !ok {
+		secretsPatch = json.RawMessage("{}")
+	}
+	delete(doc, "secrets")
+	patch, err := json.Marshal(doc)
+	if err != nil {
+		return nil, err
+	}
 	if next.Config, err = jsonpatch.MergePatch(old.Config, patch); err != nil {
 		return nil, err
 	}
+	secrets := []byte("{}")
+	if old.Secrets != nil {
+		if secrets, err = json.Marshal(old.Secrets); err != nil {
+			return nil, err
+		}
+	}
+	if secrets, err = jsonpatch.MergePatch(secrets, secretsPatch); err != nil {
+		return nil, err
+	}
+	next.Secrets = nil
+	if err := json.Unmarshal(secrets, &next.Secrets); err != nil {
+		return nil, err
+	}
 	next.Generation++
-	s, err := m.build(ctx, next, old.Env)
+	s, err := m.build(ctx, next, old.Env, old)
 	if err != nil {
 		return nil, err
 	}
 	if err := m.persist(ctx, s, m.owner); err != nil {
-		retire(s)
+		s.retire(old)
 		return nil, err
 	}
 	m.live.Store(s)
-	retire(old)
+	old.retire(s)
 	return s, nil
 }
 
+// persist keeps only the labels of keys that some identity holds.
 func (m *monitor) persist(ctx context.Context, s *state, key []byte) error {
-	plain, err := json.Marshal(s.sealed)
+	sl := s.sealed
+	sl.Labels = maps.Clone(m.labels)
+	maps.DeleteFunc(sl.Labels, func(fingerprint string, _ label) bool { _, ok := s.principals[fingerprint]; return !ok })
+	plain, err := json.Marshal(sl)
 	if err != nil {
 		return err
 	}
@@ -175,13 +254,14 @@ func (m *monitor) persist(ctx context.Context, s *state, key []byte) error {
 	return m.store.WriteAll(ctx, m.object, aead.Seal(nil, nil, plain, nil), nil)
 }
 
-// build starts every connector anew; the caller retires whichever state it does not publish.
-func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env) (*state, error) {
-	cfg, connections, servers, err := parse(sl.Config)
+// build starts connectors anew unless old shares their infra; the caller retires whichever state it does not publish.
+func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *state) (*state, error) {
+	cfg, connections, servers, err := parse(sl.Config, sl.Secrets)
 	if err != nil {
 		return nil, err
 	}
-	s := &state{sealed: sl, connections: connections, mcp: servers, principals: map[string]principal{}, pins: cfg.Pins, Env: env}
+	maps.DeleteFunc(sl.Secrets, func(acct string, _ map[string]any) bool { _, ok := cfg.Accounts[acct]; return !ok })
+	s := &state{sealed: sl, cfg: cfg, connections: connections, mcp: servers, principals: map[string]principal{}, Env: env}
 	s.Dialer = connector.NewDialer(cfg.AllowNetworks)
 	for name, id := range cfg.Identities {
 		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(id.Key))
@@ -189,17 +269,22 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env) (*sta
 			return nil, fmt.Errorf("identity %s: %w", name, err)
 		}
 		fingerprint := ssh.FingerprintSHA256(key)
-		s.principals[fingerprint] = principal{Key: fingerprint, Name: name, Connections: id.Connections}
+		s.principals[fingerprint] = principal{Key: fingerprint, Name: name, Accounts: id.Accounts, Rules: id.Rules}
 	}
-	if cfg.Data == nil {
-		cfg.Data = map[string]any{}
-	}
-	policies := []func(*rego.Rego){rego.Module(defaultPolicyName, defaultPolicy), rego.Store(inmem.NewFromObject(cfg.Data))}
-	for name, src := range cfg.Policies {
-		policies = append(policies, rego.Module(name, src))
-	}
-	if s.policy, err = sentinel.NewPolicy(ctx, policies...); err != nil {
+	if s.decision, err = prepareDecision(ctx, cfg); err != nil {
 		return nil, err
+	}
+	conns := map[string]any{}
+	for acct, a := range cfg.Accounts {
+		conns[acct] = a.Connections
+	}
+	infra, err := json.Marshal([]any{conns, cfg.Pins, cfg.AllowNetworks, sl.Secrets})
+	if err != nil {
+		return nil, err
+	}
+	if s.infra = string(infra); old != nil && old.infra == s.infra {
+		s.connections, s.mcp = old.connections, old.mcp
+		return s, nil
 	}
 	s.connections[gatewayName] = &connection{name: gatewayName, protocol: protocolMCP, connector: m.gateway}
 	for _, c := range s.connections {
@@ -212,6 +297,7 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env) (*sta
 		wg.Go(func() {
 			if err := m.connectMCP(s, name, srv); err != nil {
 				log.Printf("%s: %v", name, err)
+				srv.err = err.Error()
 			}
 		})
 	}
@@ -219,7 +305,10 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env) (*sta
 	return s, nil
 }
 
-func retire(s *state) {
+func (s *state) retire(next *state) {
+	if next != nil && next.infra == s.infra {
+		return
+	}
 	for _, c := range s.connections {
 		if r, ok := c.connector.(connector.Stopper); ok {
 			go r.Stop()
@@ -239,19 +328,21 @@ func (m *monitor) handler() http.Handler {
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			return nil, err
 		}
-		return m.unlock(r.Context(), key, req.Generation)
+		return m.view(m.unlock(r.Context(), key, req.Generation))
 	}))
-	mux.Handle("GET /{$}", m.owned(true, func(*http.Request, []byte) (any, error) { return m.live.Load(), nil }))
+	mux.Handle("GET /{$}", m.owned(true, func(*http.Request, []byte) (any, error) { return m.view(m.live.Load(), nil) }))
 	mux.Handle("PATCH /{$}", m.owned(true, func(r *http.Request, _ []byte) (any, error) {
 		patch, err := io.ReadAll(r.Body)
 		if err != nil {
 			return nil, err
 		}
-		return m.patch(r.Context(), patch)
+		return m.view(m.patch(r.Context(), patch))
 	}))
 	mux.Handle("GET /mcp/{name}/review", m.owned(true, func(r *http.Request, _ []byte) (any, error) {
 		return m.review(r.Context(), r.PathValue("name"))
 	}))
+	m.requests(mux)
+	mux.Handle("GET /app/", http.FileServerFS(app))
 	return mux
 }
 
@@ -260,6 +351,10 @@ func (m *monitor) owned(unlocked bool, fn func(*http.Request, []byte) (any, erro
 	return func(w http.ResponseWriter, r *http.Request) {
 		m.mu.Lock()
 		defer m.mu.Unlock()
+		if unlocked && m.live.Load() == nil {
+			http.Error(w, "the monitor is locked", http.StatusLocked)
+			return
+		}
 		r.Body = http.MaxBytesReader(w, r.Body, maxDocumentBytes)
 		var v any
 		key, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer "))

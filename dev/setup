@@ -15,13 +15,12 @@ mkdir -p "$dev/firefox" "$dev/store"
 [[ -f monitor.json ]] || cp monitor.example.json monitor.json
 if ! curl -s "$api" > /dev/null; then
   go build -o "$dev/monitor" .
-  "$dev/monitor" -listen "$listen" -api "${api#http://}" -bucket "file://$dev/store" > "$dev/monitor.log" 2>&1 &
+  "$dev/monitor" -listen "$listen" -api "${api#http://}" -bucket "file://$dev/store?no_tmp_dir=true" > "$dev/monitor.log" 2>&1 &
 fi
 # The header file keeps the owner secret out of curl's arguments.
 owner() { curl -sS --fail-with-body --retry 10 --retry-connrefused -H @<(echo "Authorization: Bearer $(<"$dev/owner.key")") "$api$1" "${@:2}"; }
 owner /unlock -d '{"generation": 0}' > /dev/null
-jq --rawfile key "$dev/id.pub" --rawfile lib policies/lib.rego --rawfile github policies/github.rego \
-  '.identities.dev = {key: $key, connections: ["*"]} | .policies = {"lib.rego": $lib, "github.rego": $github}' monitor.json |
+jq --rawfile key "$dev/id.pub" '.identities.dev = {key: $key, accounts: (.accounts | map_values({level: "allow"}))}' monitor.json |
   owner / -X PATCH --data-binary @- > "$dev/state.json"
 echo "monitor,*.monitor,[$host]:$port $(jq -r .host_key "$dev/state.json")" > "$dev/known_hosts"
 jq -r .ca "$dev/state.json" > "$dev/ca.pem"
@@ -57,7 +56,7 @@ CONF
   for var in SSL_CERT_FILE CURL_CA_BUNDLE NODE_EXTRA_CA_CERTS REQUESTS_CA_BUNDLE GIT_SSL_CAINFO PGSSLROOTCERT; do
     echo "export $var=$dev/ca.pem"
   done
-  go run . env < monitor.json
+  jq -r '.setup.dev | to_entries[] | "export \(.key)=\(.value)"' "$dev/state.json"
 } > "$dev/env"
 
 cat > "$dev/firefox/user.js" <<CONF

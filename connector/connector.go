@@ -2,6 +2,7 @@ package connector
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"net"
 	"net/http"
 	"net/netip"
@@ -72,6 +73,7 @@ type Event struct {
 	SMTP     *SMTPLayer     `json:"smtp,omitempty"`
 	Mail     *MailLayer     `json:"mail,omitempty"`
 	IMAP     *IMAPLayer     `json:"imap,omitempty"`
+	MCP      *MCPLayer      `json:"mcp,omitempty"`
 }
 
 type ArgvLayer struct {
@@ -147,6 +149,13 @@ type MailLayer struct {
 	Cc          []string `json:"cc"`
 	Subject     string   `json:"subject"`
 	Attachments []string `json:"attachments"`
+}
+
+// ReadOnly is the pinned tool's hint, which the owner approved with the pin.
+type MCPLayer struct {
+	Tool      string          `json:"tool"`
+	Arguments json.RawMessage `json:"arguments"`
+	ReadOnly  bool            `json:"read_only"`
 }
 
 type PostgresLayer struct {

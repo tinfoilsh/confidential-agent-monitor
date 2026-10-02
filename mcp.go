@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net"
@@ -25,6 +26,8 @@ const (
 type mcpServer struct {
 	URL      string                 `yaml:"url"`
 	Token    *credential.Credential `yaml:"token"`
+	account  string
+	err      string
 	upstream atomic.Pointer[sentinel.Upstream]
 }
 
@@ -62,7 +65,7 @@ func (m *monitor) connectMCP(st *state, name string, s *mcpServer) error {
 	if err != nil {
 		return err
 	}
-	u, err := sentinel.NewUpstream(ctx, name, session, st.pins[name], func() *sentinel.Policy { return m.live.Load().policy })
+	u, err := sentinel.NewUpstream(ctx, name, session, st.cfg.Pins[name])
 	if err != nil {
 		session.Close()
 		return err
@@ -94,8 +97,11 @@ func (m *monitor) unified(r *http.Request) *mcp.Server {
 	p := r.Context().Value(principalKey{}).(principal)
 	server := mcp.NewServer(&mcp.Implementation{Name: "monitor", Version: sentinel.Version}, nil)
 	for name, s := range m.live.Load().mcp {
-		if u := s.upstream.Load(); u != nil && p.reaches(name) {
-			u.Register(server, name+toolSeparator, map[string]any{"principal": p, "connection": name, "protocol": protocolMCP})
+		if u := s.upstream.Load(); u != nil && p.reaches(s.account) {
+			u.Register(server, name+toolSeparator, func(ctx context.Context, t *mcp.Tool, args json.RawMessage) error {
+				layer := &connector.MCPLayer{Tool: t.Name, Arguments: args, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}
+				return m.gate(ctx, input{Principal: p, Connection: name, Protocol: protocolMCP, Event: &connector.Event{MCP: layer}}, s.account)
+			})
 		}
 	}
 	return server
@@ -124,5 +130,5 @@ func (m *monitor) review(ctx context.Context, name string) (*review, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &review{st.pins[name].Diff(cur), cur}, nil
+	return &review{st.cfg.Pins[name].Diff(cur), cur}, nil
 }

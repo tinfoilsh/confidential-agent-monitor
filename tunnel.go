@@ -2,16 +2,12 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"log"
 	"net"
-	"path"
-	"slices"
 	"strings"
 	"time"
 
-	"github.com/open-policy-agent/opa/v1/util"
 	"github.com/tinfoilsh/monitor/connector"
 	"golang.org/x/crypto/ssh"
 )
@@ -21,26 +17,47 @@ type tcpLayer struct {
 	Port uint32 `json:"port"`
 }
 
+type namedAccount struct {
+	Name string `json:"name"`
+	account
+}
+
 // input carries either the tunnel's tcp layer or a connector's layers, never both.
 type input struct {
-	Principal  principal `json:"principal"`
-	Connection string    `json:"connection"`
-	Protocol   string    `json:"protocol"`
-	TCP        *tcpLayer `json:"tcp,omitempty"`
+	Principal  principal     `json:"principal"`
+	Connection string        `json:"connection"`
+	Protocol   string        `json:"protocol"`
+	TCP        *tcpLayer     `json:"tcp,omitempty"`
+	Account    *namedAccount `json:"account"`
+	Access     access        `json:"access"`
+	Rules      []rule        `json:"rules"`
+	Label      label         `json:"label"`
 	*connector.Event
 }
 
 type principal struct {
-	Key         string   `json:"key"`
-	Name        string   `json:"name"`
-	Connections []string `json:"connections"`
+	Key      string            `json:"key"`
+	Name     string            `json:"name"`
+	Accounts map[string]access `json:"-"`
+	Rules    []rule            `json:"-"`
 }
 
-func (p principal) reaches(name string) bool {
-	return slices.ContainsFunc(p.Connections, func(pattern string) bool {
-		ok, _ := path.Match(pattern, name)
-		return ok
-	})
+func (p principal) reaches(account string) bool {
+	level := p.Accounts[account].Level
+	return level != "" && level != "off"
+}
+
+// The gateway is reachable through any MCP account the principal reaches.
+func (st *state) reaches(p principal, c *connection) bool {
+	if c.name != gatewayName {
+		return p.reaches(c.account)
+	}
+	for _, s := range st.mcp {
+		if p.reaches(s.account) {
+			return true
+		}
+	}
+	return false
 }
 
 type principalKey struct{}
@@ -97,8 +114,10 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 		return
 	}
 	s := &connector.Stream{Env: &st.Env, Name: c.name, Host: target.Host, Port: target.Port}
-	s.Gate = func(e connector.Event) error { return m.gate(input{p, c.name, c.protocol, nil, &e}) }
-	if err := m.gate(input{p, c.name, c.protocol, &tcpLayer{Host: target.Host, Port: target.Port}, nil}); err != nil {
+	s.Gate = func(e connector.Event) error {
+		return m.gate(context.Background(), input{Principal: p, Connection: c.name, Protocol: c.protocol, Event: &e}, c.account)
+	}
+	if err := m.gate(context.Background(), input{Principal: p, Connection: c.name, Protocol: c.protocol, TCP: &tcpLayer{Host: target.Host, Port: target.Port}}, c.account); err != nil {
 		nc.Reject(ssh.Prohibited, err.Error())
 		return
 	}
@@ -116,7 +135,7 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 func (st *state) route(p principal, host string, port uint32) *connection {
 	if name, ok := strings.CutSuffix(host, monitorSuffix); ok {
 		c := st.connections[name]
-		if c == nil || !p.reaches(name) {
+		if c == nil || !st.reaches(p, c) {
 			return nil
 		}
 		if _, ok := c.connector.(connector.Claimer); ok {
@@ -128,7 +147,7 @@ func (st *state) route(p principal, host string, port uint32) *connection {
 	var selected *connection
 	for _, c := range st.connections {
 		r, ok := c.connector.(connector.Claimer)
-		if !ok || !p.reaches(c.name) {
+		if !ok || !st.reaches(p, c) {
 			continue
 		}
 		score := r.Claim(host, port)
@@ -146,29 +165,6 @@ func (st *state) route(p principal, host string, port uint32) *connection {
 		return nil
 	}
 	return selected
-}
-
-func (m *monitor) gate(in input) error {
-	encoded, err := json.Marshal(in)
-	if err != nil {
-		return err
-	}
-	var doc map[string]any
-	// Keep util.UnmarshalJSON so numbers retain their precision for policy evaluation.
-	if err := util.UnmarshalJSON(encoded, &doc); err != nil {
-		return err
-	}
-	denied, err := m.live.Load().policy.Deny(context.Background(), doc)
-	if err != nil {
-		log.Printf("policy: %v", err)
-		return err
-	}
-	if len(denied) == 0 {
-		return nil
-	}
-	reason := strings.Join(denied, "; ")
-	log.Printf("denied %s: %s", encoded, reason)
-	return errors.New(reason)
 }
 
 type channelConn struct {
