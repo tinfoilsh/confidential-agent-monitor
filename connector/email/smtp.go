@@ -37,7 +37,7 @@ type SMTP struct {
 func (r *SMTP) Serve(s *connector.Stream) { r.conns.Serve(s) }
 
 // Start accepts any credential from the client and submits each message upstream with the stored one.
-func (r *SMTP) Start(e *connector.Env) {
+func (r *SMTP) Start(_ context.Context, e *connector.Env) {
 	r.conns = connector.NewListener()
 	server := smtp.NewServer(smtp.BackendFunc(func(c *smtp.Conn) (smtp.Session, error) {
 		s := connector.StreamOf(c.Conn())
@@ -55,7 +55,10 @@ func (r *SMTP) Start(e *connector.Env) {
 	}()
 }
 
-func (r *SMTP) Stop() { r.server.Shutdown(context.Background()) }
+func (r *SMTP) Stop() {
+	r.server.Close()
+	r.conns.Close()
+}
 
 type smtpSession struct {
 	stream *connector.Stream

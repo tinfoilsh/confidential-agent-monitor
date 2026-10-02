@@ -54,6 +54,9 @@ const opt = (value, text, selected) => `<option value="${esc(value)}" ${value ==
 const ids = () => view.config.identities ?? {};
 const accounts = () => view.config.accounts ?? {};
 const entry = (account) => view.templates[accounts()[account]?.template] ?? view.templates.custom;
+// Each pinned MCP tool is an action under read or use, by the hint the owner approved with the pin.
+const actionsOf = (account) => ({ ...entry(account).actions, ...Object.fromEntries(Object.values(accounts()[account]?.connections ?? {})
+  .flatMap((c) => c.mcp?.pin?.tools ?? []).map((t) => [`${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`, { title: t.title || t.name, save: `Allow ${t.name}` }])) });
 const tree = (actions) => Object.entries(actions).sort(([a], [b]) => a.localeCompare(b)).map(([k, x]) => [k, x, k.split(".").length - 1]);
 const fill = (text, scope) => text.replace(/\{(\w+)\}/g, (m, k) => scope?.[k] ?? m);
 const route = () => location.hash.slice(1).split("/").map(decodeURIComponent);
@@ -148,7 +151,7 @@ function reasons(r) {
   })[g]);
 }
 
-const saveText = (r) => fill(entry(r.account).actions[r.action]?.save ?? "Allow this next time", r.scope);
+const saveText = (r) => fill(actionsOf(r.account)[r.action]?.save ?? "Allow this next time", r.scope);
 
 function card(r) {
   const pending = r.state === "pending";
@@ -205,7 +208,7 @@ function agents() {
 const pair = () => patch({ identities: { [$("name").value.trim()]: { key: $("pubkey").value.trim(), accounts: {} } } }, "agent/" + encodeURIComponent($("name").value.trim()));
 
 function ruleSentence(r) {
-  const save = entry(r.account).actions[r.action]?.save;
+  const save = actionsOf(r.account)[r.action]?.save;
   return `${save ? fill(save, r.scope) : `Allow ${r.action} on ${r.account}`}, despite ${r.waives.join(" and ")}`;
 }
 
@@ -222,7 +225,7 @@ function agent(name) {
   const levels = Object.entries(accounts()).map(([a, acc]) => {
     const access = id.accounts?.[a] ?? { level: "off" };
     const c = entry(a);
-    const actions = access.level === "off" ? [] : tree(c.actions).map(([k, x, d]) => {
+    const actions = access.level === "off" ? [] : tree(actionsOf(a)).map(([k, x, d]) => {
       const own = access.actions?.[k], inherited = mode({ ...access, actions: { ...access.actions, [k]: null } }, c.changes, k);
       return `<div class="row node" style="--depth: ${d}"><span>${esc(x.title)}</span><span>${Object.entries(MODES).map(([m, t]) =>
         `<button class="${m === own ? "primary" : !own && m === inherited ? "inherited" : ""}" onclick="patchAccess(${q(name)}, ${q(a)}, { actions: { [${q(k)}]: ${q(m === own ? null : m)} } })">${t}</button>`).join(" ")}</span></div>`;
@@ -262,6 +265,7 @@ const connName = (a, key) => (key ? `${a}-${key}` : a);
 function accountStatus(a) {
   const states = mcpKeys(a).map((k) => view.status[connName(a, k)] ?? {});
   if (states.some((s) => s.error)) return `<span class="bad">Can't connect</span>`;
+  if (states.some((s) => s.state === "connecting")) return `<span class="muted">Connecting…</span>`;
   const blocked = states.reduce((n, s) => n + (s.blocked ?? 0), 0);
   return blocked ? `<span class="warn">${blocked} tools await review</span>` : `<span class="ok">Ready</span>`;
 }
@@ -331,7 +335,7 @@ function account(a) {
     <section><h2>Secrets</h2><p class="muted">Set: ${esc((view.secrets[a] ?? []).join(", ") || "none")}</p>${secrets.join("")}
       ${secrets.length ? `<div class="row"><span></span><button onclick="replaceSecrets(${q(a)})">Replace</button></div>` : ""}</section>
     <section><h2>Actions</h2>${tree(c.actions).map(([, x, d]) => `<div class="node" style="--depth: ${d}">${esc(x.title)}</div>`).join("")}<p class="muted">Used by ${esc(users.join(", ") || "no agents")}</p></section>
-    ${mcpKeys(a).map((k) => review(a, k, c)).join("")}
+    <div id="connector-status">${mcpKeys(a).map((k) => review(a, k, c)).join("")}</div>
     <section><details><summary class="muted">Advanced → Custom rules</summary><textarea id="policy" rows="12">${esc(view.config.policies?.[a])}</textarea>
       <div class="row"><span></span><button onclick="patch({ policies: { [${q(a)}]: $('policy').value.trim() || null } })">Save rules</button></div></details></section>
     <button class="danger" onclick="removeAccount(${q(a)})">Remove account</button>`;
@@ -339,6 +343,7 @@ function account(a) {
 
 function review(a, key, c) {
   const name = connName(a, key), s = view.status[name] ?? {};
+  if (s.state === "connecting") return `<section><h2>${esc(name)}</h2><p class="muted">Connecting…</p></section>`;
   if (s.error) return `<section><h2>${esc(name)}</h2><p class="bad">Can't connect: ${esc(s.error)}</p></section>`;
   if (!s.blocked) return "";
   const count = (sign) => s.changes.filter((x) => x.startsWith(sign)).length;
@@ -387,7 +392,9 @@ window.addEventListener("hashchange", render);
 setInterval(run(async () => {
   if (!sessionStorage.getItem(KEY) || locked) return;
   await refresh();
-  if (["", "requests", "activity"].includes(route()[0])) render();
+  const [page, a] = route();
+  if (["", "requests", "activity", "accounts"].includes(page)) render();
+  if (page === "account" && accounts()[a] && $("connector-status")) $("connector-status").innerHTML = mcpKeys(a).map((k) => review(a, k, entry(a))).join("");
 }), REQUEST_POLL_MS);
 // The provider redirects back here with the sign-in's state and either a code or an error.
 const back = new URLSearchParams(location.search);

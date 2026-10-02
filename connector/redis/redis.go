@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io"
 	"log"
+	"slices"
 	"strings"
 
 	"github.com/tidwall/redcon"
@@ -17,6 +18,11 @@ const (
 	redisDefaultUser = "default"
 	redisOK          = "+"
 )
+
+var containerCommands = []string{
+	"ACL", "CLIENT", "CLUSTER", "COMMAND", "CONFIG", "FUNCTION", "LATENCY", "MEMORY",
+	"MODULE", "OBJECT", "PUBSUB", "SCRIPT", "SLOWLOG", "XGROUP", "XINFO",
+}
 
 type Redis struct{ connector.Endpoint }
 
@@ -56,7 +62,7 @@ func (r *Redis) Serve(s *connector.Stream) {
 		for i, arg := range cmd.Args {
 			args[i] = string(arg)
 		}
-		if err := s.Gate(connector.Event{Redis: &connector.ArgvLayer{Argv: args}}); err != nil {
+		if err := s.Gate(connector.Event{Redis: &connector.RedisLayer{Command: commandName(args), Argv: args}}); err != nil {
 			if _, err := s.Write(redcon.AppendError(nil, "ERR "+err.Error())); err != nil {
 				return
 			}
@@ -72,6 +78,16 @@ func (r *Redis) Serve(s *connector.Stream) {
 			return
 		}
 	}
+}
+
+func commandName(argv []string) string {
+	switch {
+	case len(argv) == 0:
+		return ""
+	case len(argv) > 1 && slices.Contains(containerCommands, strings.ToUpper(argv[0])):
+		return strings.ToUpper(argv[0] + "|" + argv[1])
+	}
+	return strings.ToUpper(argv[0])
 }
 
 func reauthorize(args [][]byte, user, pass string) ([][]byte, bool) {

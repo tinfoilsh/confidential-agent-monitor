@@ -17,27 +17,26 @@ needs_trust := {"write"}
 
 argv := input.redis.argv
 
-command := upper(argv[0])
+command := input.redis.command
 
 reads := {
 	"AUTH", "HELLO", "PING", "ECHO", "SELECT", "QUIT", "MULTI", "EXEC", "DISCARD", "WATCH", "UNWATCH",
-	"SUBSCRIBE", "PSUBSCRIBE", "UNSUBSCRIBE", "PUNSUBSCRIBE", "INFO", "DBSIZE", "TIME", "COMMAND",
-	"TYPE", "TTL", "PTTL", "EXISTS", "KEYS", "SCAN", "RANDOMKEY", "OBJECT", "DUMP",
+	"SUBSCRIBE", "PSUBSCRIBE", "UNSUBSCRIBE", "PUNSUBSCRIBE", "INFO", "DBSIZE", "TIME",
+	"COMMAND", "COMMAND|COUNT", "COMMAND|DOCS", "COMMAND|INFO", "COMMAND|LIST", "COMMAND|GETKEYS", "COMMAND|GETKEYSANDFLAGS",
+	# Client libraries name their connection as they open it.
+	"CLIENT|SETNAME", "CLIENT|SETINFO", "CLIENT|GETNAME", "CLIENT|ID", "CLIENT|INFO",
+	"TYPE", "TTL", "PTTL", "EXISTS", "KEYS", "SCAN", "RANDOMKEY", "DUMP",
+	"OBJECT|ENCODING", "OBJECT|FREQ", "OBJECT|IDLETIME", "OBJECT|REFCOUNT",
 	"GET", "MGET", "GETRANGE", "STRLEN", "GETBIT", "BITCOUNT", "PFCOUNT",
 	"HGET", "HMGET", "HGETALL", "HKEYS", "HVALS", "HLEN", "HEXISTS", "HSCAN",
 	"LRANGE", "LLEN", "LINDEX", "LPOS", "SMEMBERS", "SISMEMBER", "SMISMEMBER", "SCARD", "SSCAN",
 	"ZRANGE", "ZRANGEBYSCORE", "ZREVRANGE", "ZREVRANGEBYSCORE", "ZSCORE", "ZMSCORE", "ZCARD", "ZCOUNT",
-	"ZRANK", "ZREVRANK", "ZSCAN", "XRANGE", "XREVRANGE", "XREAD", "XLEN", "XINFO",
+	"ZRANK", "ZREVRANK", "ZSCAN", "XRANGE", "XREVRANGE", "XREAD", "XLEN",
+	"XINFO|CONSUMERS", "XINFO|GROUPS", "XINFO|STREAM",
 	"GEOPOS", "GEODIST", "GEOSEARCH",
 }
 
-# Client libraries name their connection as they open it.
 read if command in reads
-
-read if {
-	command == "CLIENT"
-	upper(argv[1]) in {"SETNAME", "SETINFO", "GETNAME", "ID", "INFO"}
-}
 
 action := "read" if read
 

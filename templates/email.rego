@@ -24,8 +24,7 @@ changes := {"organize", "send"}
 
 needs_trust := {"send"}
 
-command := upper(split(input.imap.args, " ")[0]) if input.imap.command == "UID"
-else := input.imap.command
+command := input.imap.command
 
 action := "read" if command in {
 	"CAPABILITY", "CHECK", "ENABLE", "EXAMINE", "FETCH", "ID", "IDLE", "LIST", "LOGOUT",

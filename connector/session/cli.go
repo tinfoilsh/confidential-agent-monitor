@@ -24,9 +24,9 @@ const (
 )
 
 type CLI struct {
-	Path  string            `yaml:"path"`
-	Env   map[string]string `yaml:"env"`
-	Stdin string            `yaml:"stdin"`
+	Path  string            `json:"path"`
+	Env   map[string]string `json:"env"`
+	Stdin string            `json:"stdin"`
 }
 
 func (t *CLI) Serve(s *connector.Stream) {

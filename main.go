@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"maps"
 	"net/http"
 	"net/netip"
 	"slices"
@@ -26,7 +27,6 @@ import (
 	"gocloud.dev/blob"
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/s3blob"
-	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -73,7 +73,6 @@ type rule struct {
 	Waives  []string       `json:"waives"`
 }
 
-// Connector entries are decoded as YAML, which JSON is a subset of.
 type account struct {
 	Template    string                    `json:"template"`
 	Fields      map[string]any            `json:"fields,omitempty"`
@@ -89,11 +88,6 @@ type config struct {
 	Identities    map[string]identity `json:"identities"`
 	Policies      map[string]string   `json:"policies"`
 	Data          map[string]any      `json:"data"`
-}
-
-type connection struct {
-	name, protocol, account string
-	connector               connector.Connector
 }
 
 func main() {
@@ -117,7 +111,6 @@ func run(listen, api, bucketURL, object string) error {
 		return err
 	}
 	m := &monitor{store: bucket, object: object, listen: listen}
-	credential.Rotated = m.rotate
 	return (&http.Server{Addr: api, Handler: m.handler(), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe()
 }
 
@@ -149,22 +142,33 @@ func parse(raw []byte, secrets map[string]map[string]any) (*config, map[string]*
 				return nil, nil, fmt.Errorf("connection %s must have one kind", name)
 			}
 			for kind, spec := range kinds {
-				spec, err := resolve(spec, secrets[acct])
-				if err != nil {
-					return nil, nil, fmt.Errorf("connection %s: %w", name, err)
-				}
-				raw, err := json.Marshal(spec)
-				if err != nil {
-					return nil, nil, err
-				}
 				newConnector, ok := connectorKinds[kind]
 				if !ok {
 					return nil, nil, fmt.Errorf("connection %s has unknown kind %s", name, kind)
 				}
 				c := &connection{name: name, protocol: kind, account: acct, connector: newConnector()}
-				if err := yaml.Unmarshal(raw, c.connector); err != nil {
+				var paths []string
+				if fields, ok := c.connector.(credential.Fields); ok {
+					paths = fields.CredentialFields()
+				}
+				resolved, err := resolve(spec, secrets[acct], paths, &c.credentialRefs)
+				if err != nil {
 					return nil, nil, fmt.Errorf("connection %s: %w", name, err)
 				}
+				raw, err := json.Marshal(resolved)
+				if err != nil {
+					return nil, nil, err
+				}
+				if err := json.Unmarshal(raw, c.connector); err != nil {
+					return nil, nil, fmt.Errorf("connection %s: %w", name, err)
+				}
+				raw, err = json.Marshal([]any{kind, resolved, cfg.AllowNetworks})
+				if err != nil {
+					return nil, nil, err
+				}
+				c.spec = string(raw)
+				c.ctx, c.cancel = context.WithCancel(context.Background())
+				c.ready, c.done = make(chan struct{}), make(chan struct{})
 				connections[name] = c
 			}
 		}
@@ -184,28 +188,54 @@ func parse(raw []byte, secrets map[string]map[string]any) (*config, map[string]*
 	return &cfg, connections, nil
 }
 
-// resolve replaces each {"$secret": key} with the account's secret, which may be an object.
-func resolve(v any, secrets map[string]any) (any, error) {
+// resolve expands ordinary secrets and retains credential references for runtime lookup.
+// paths lists the credential fields still reachable below v.
+func resolve(v any, secrets map[string]any, paths []string, refs *[]string) (any, error) {
+	childPaths := func(key string) []string {
+		var child []string
+		for _, path := range paths {
+			head, tail, _ := strings.Cut(path, "/")
+			if head == key || head == "*" {
+				child = append(child, tail)
+			}
+		}
+		return child
+	}
 	var err error
 	switch v := v.(type) {
 	case map[string]any:
 		if key, ok := v[secretRef].(string); ok && len(v) == 1 {
 			if secret, ok := secrets[key]; ok {
+				if slices.Contains(paths, "") {
+					*refs = append(*refs, key)
+					return v, nil
+				}
+				if len(paths) > 0 {
+					// A secret may hold a whole config object or credential map.
+					// Exclude it while expanding to reject recursive references.
+					remaining := maps.Clone(secrets)
+					delete(remaining, key)
+					return resolve(secret, remaining, paths, refs)
+				}
 				return secret, nil
 			}
 			return nil, fmt.Errorf("secret %s is not set", key)
 		}
+		out := make(map[string]any, len(v))
 		for k, e := range v {
-			if v[k], err = resolve(e, secrets); err != nil {
+			if out[k], err = resolve(e, secrets, childPaths(k), refs); err != nil {
 				return nil, err
 			}
 		}
+		return out, nil
 	case []any:
+		out := make([]any, len(v))
 		for i, e := range v {
-			if v[i], err = resolve(e, secrets); err != nil {
+			if out[i], err = resolve(e, secrets, childPaths("*"), refs); err != nil {
 				return nil, err
 			}
 		}
+		return out, nil
 	}
 	return v, nil
 }

@@ -56,13 +56,16 @@ func (l *location) UnmarshalText(text []byte) error {
 type connKey struct{}
 
 type HTTP struct {
-	Hosts   []string                         `yaml:"hosts"`
-	Secrets map[string]credential.Credential `yaml:"secrets"`
+	Hosts   []string                          `json:"hosts"`
+	Secrets map[string]*credential.Credential `json:"secrets"`
 	// The Authorization header is always substituted; these locations are opt-in.
-	Substitute []location `yaml:"substitute"`
-	conns      *connector.Listener
-	server     *http.Server
+	Substitute  []location `json:"substitute"`
+	credentials credential.Store
+	conns       *connector.Listener
+	server      *http.Server
 }
+
+func (*HTTP) CredentialFields() []string { return []string{"secrets/*"} }
 
 func (r *HTTP) Serve(s *connector.Stream) {
 	var c net.Conn = s
@@ -72,7 +75,8 @@ func (r *HTTP) Serve(s *connector.Stream) {
 	r.conns.Hand(c)
 }
 
-func (h *HTTP) Start(e *connector.Env) {
+func (h *HTTP) Start(_ context.Context, e *connector.Env) {
+	h.credentials = e.Credentials
 	h.conns = connector.NewListener()
 	transport := http.DefaultTransport.(*http.Transport).Clone()
 	transport.Proxy = nil
@@ -108,7 +112,7 @@ func (h *HTTP) Start(e *connector.Env) {
 	}()
 }
 
-func (h *HTTP) Stop() { h.server.Shutdown(context.Background()) }
+func (h *HTTP) Stop() { h.server.Close() }
 
 // The proxy dials the request's host, so it must be the one the channel's gate saw.
 func (h *HTTP) screen(r *http.Request) error {
@@ -153,7 +157,7 @@ func (h *HTTP) substitute(r *http.Request, name string, body []byte) ([]string, 
 	for secret, cred := range h.Secrets {
 		ph := Placeholder(name, secret)
 		found := false
-		value := sync.OnceValues(cred.Value)
+		value := sync.OnceValues(func() (string, error) { return cred.Value(r.Context(), h.credentials) })
 		swap := func(s string) string {
 			if !strings.Contains(s, ph) {
 				return s

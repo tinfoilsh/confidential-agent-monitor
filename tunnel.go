@@ -94,10 +94,17 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 		return
 	}
 	st := m.live.Load()
+	p = st.principals[p.Key]
 	c := st.route(p, target.Host, target.Port)
 	if c == nil {
 		log.Printf("%s: dropped %s:%d", p.Name, target.Host, target.Port)
 		nc.Reject(ssh.Prohibited, "the monitor does not forward this target")
+		return
+	}
+	select {
+	case <-c.ready:
+	default:
+		nc.Reject(ssh.ConnectionFailed, "the connector is starting")
 		return
 	}
 	s := &connector.Stream{Env: &st.Env, Name: c.name, Host: target.Host, Port: target.Port}

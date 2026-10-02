@@ -21,7 +21,7 @@ catalog := {
 		"open.pulls": {"title": "Open and edit pull requests", "save": "Allow opening and editing pull requests on {repo}"},
 		"push": {"title": "Push commits", "save": "Allow pushes to {repo}"},
 		"merge": {"title": "Merge pull requests", "save": "Allow merges on {repo}"},
-		"use": {"title": "Use tools that change things", "save": "Allow {tool}"},
+		"use": {"title": "Use tools that change things"},
 	},
 }
 

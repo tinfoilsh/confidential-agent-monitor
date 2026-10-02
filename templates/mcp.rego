@@ -7,7 +7,7 @@ catalog := {
 	"defaults": {"contents": "team", "strangers": true, "sends": "me"},
 	"actions": {
 		"read": {"title": "Use read-only tools"},
-		"use": {"title": "Use tools that change things", "save": "Allow {tool}"},
+		"use": {"title": "Use tools that change things"},
 	},
 }
 
@@ -15,13 +15,11 @@ changes := {"use"}
 
 needs_trust := {"use"}
 
-action := "read" if input.mcp.read_only
+action := sprintf("read.%s", [input.mcp.tool]) if input.mcp.read_only
 
-action := "use" if {
+action := sprintf("use.%s", [input.mcp.tool]) if {
 	input.mcp
 	not input.mcp.read_only
 }
-
-scope := {"tool": input.mcp.tool}
 
 title := sprintf("Use %s", [input.mcp.tool])

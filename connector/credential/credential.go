@@ -2,183 +2,81 @@ package credential
 
 import (
 	"context"
-	"crypto/rand"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
-	"net/url"
-	"slices"
-	"strings"
-	"sync"
-
-	"github.com/modelcontextprotocol/go-sdk/auth"
-	"github.com/modelcontextprotocol/go-sdk/oauthex"
-	"golang.org/x/oauth2"
-	"gopkg.in/yaml.v3"
 )
 
-const (
-	clientName    = "Monitor"
-	offlineAccess = "offline_access"
-)
-
-// A grant without an AuthURL is signed in at the authorization server its Resource names (RFC 9728).
-type oauth struct {
-	AuthURL      string `yaml:"auth_url" json:"auth_url,omitempty"`
-	TokenURL     string `yaml:"token_url" json:"token_url"`
-	ClientID     string `yaml:"client_id" json:"client_id"`
-	ClientSecret string `yaml:"client_secret" json:"client_secret,omitempty"`
-	RefreshToken string `yaml:"refresh_token" json:"refresh_token"`
-	Scope        string `yaml:"scope" json:"scope,omitempty"`
-	Resource     string `yaml:"resource" json:"resource,omitempty"`
+// Source supplies the current credential value to a connector.
+type Source interface {
+	Value(context.Context) (string, error)
 }
 
-var sources sync.Map
+// Static is a credential whose value does not expire.
+type Static string
 
-var Rotated = func(old, new string) {}
+func (s Static) Value(context.Context) (string, error) { return string(s), nil }
 
-// A Credential is a fixed string, or an access token refreshed from an oauth block when it expires.
+// Fields identifies credential fields whose secret references survive config decoding.
+// A * path segment addresses each entry of a map or array.
+type Fields interface {
+	CredentialFields() []string
+}
+
+// Store holds the shared sources for one account. Published stores are immutable.
+type Store map[string]Source
+
+// Credential is a named reference or an inline credential.
 type Credential struct {
-	value  string
-	grant  oauth
-	tokens oauth2.TokenSource
+	Name *string
+	Source
 }
 
-func (c *Credential) UnmarshalYAML(n *yaml.Node) error {
-	if n.Kind == yaml.ScalarNode {
-		return n.Decode(&c.value)
-	}
-	var v struct {
-		OAuth oauth `yaml:"oauth"`
-	}
-	if err := n.Decode(&v); err != nil {
-		return err
-	}
-	config := &oauth2.Config{ClientID: v.OAuth.ClientID, ClientSecret: v.OAuth.ClientSecret, Endpoint: oauth2.Endpoint{TokenURL: v.OAuth.TokenURL}}
-	s, _ := sources.LoadOrStore(v.OAuth, config.TokenSource(context.Background(), &oauth2.Token{RefreshToken: v.OAuth.RefreshToken}))
-	c.grant, c.tokens = v.OAuth, s.(oauth2.TokenSource)
-	return nil
-}
-
-func (c *Credential) Value() (string, error) {
-	if c.tokens == nil {
-		return c.value, nil
-	}
-	t, err := c.tokens.Token()
-	if err != nil {
-		return "", err
-	}
-	if next := c.grant; t.RefreshToken != next.RefreshToken {
-		next.RefreshToken = t.RefreshToken
-		if _, seen := sources.LoadOrStore(next, c.tokens); !seen {
-			go Rotated(c.grant.RefreshToken, t.RefreshToken)
+func (c *Credential) UnmarshalJSON(raw []byte) error {
+	*c = Credential{}
+	var ref map[string]json.RawMessage
+	if json.Unmarshal(raw, &ref) == nil && len(ref) == 1 {
+		if name, ok := ref["$secret"]; ok {
+			if err := json.Unmarshal(name, &c.Name); err != nil {
+				return err
+			}
+			if c.Name == nil {
+				return errors.New("credential reference must be a string")
+			}
+			return nil
 		}
 	}
-	return t.AccessToken, nil
-}
-
-// A SignIn is an authorization code flow waiting for the provider to redirect back with a code.
-type SignIn struct {
-	URL, State string
-	grant      oauth
-	config     *oauth2.Config
-	client     *http.Client
-	verifier   string
-	opts       []oauth2.AuthCodeOption
-}
-
-// NewSignIn starts the flow for an oauth secret, registering a client first when the secret names only its resource.
-func NewSignIn(ctx context.Context, client *http.Client, secret any, redirect string) (*SignIn, error) {
-	raw, err := json.Marshal(secret)
-	if err != nil {
-		return nil, err
+	var value *string
+	if err := json.Unmarshal(raw, &value); err == nil && value != nil {
+		c.Source = Static(*value)
+		return nil
 	}
 	var v struct {
 		OAuth *oauth `json:"oauth"`
 	}
-	if err := json.Unmarshal(raw, &v); err != nil || v.OAuth == nil {
-		return nil, errors.New("the secret is not an oauth grant")
-	}
-	s := &SignIn{State: rand.Text(), grant: *v.OAuth, client: client, verifier: oauth2.GenerateVerifier()}
-	if s.grant.AuthURL == "" {
-		if err := s.register(ctx, redirect); err != nil {
-			return nil, err
-		}
-	}
-	if s.grant.Resource != "" {
-		s.opts = append(s.opts, oauth2.SetAuthURLParam("resource", s.grant.Resource))
-	}
-	s.config = &oauth2.Config{
-		ClientID: s.grant.ClientID, ClientSecret: s.grant.ClientSecret, RedirectURL: redirect, Scopes: strings.Fields(s.grant.Scope),
-		Endpoint: oauth2.Endpoint{AuthURL: s.grant.AuthURL, TokenURL: s.grant.TokenURL},
-	}
-	s.URL = s.config.AuthCodeURL(s.State, append(s.opts, oauth2.S256ChallengeOption(s.verifier), oauth2.AccessTypeOffline)...)
-	return s, nil
-}
-
-// register discovers the resource's authorization server (RFC 9728, RFC 8414) and registers with it (RFC 7591).
-func (s *SignIn) register(ctx context.Context, redirect string) error {
-	u, err := url.Parse(s.grant.Resource)
-	if err != nil {
+	if err := json.Unmarshal(raw, &v); err != nil {
 		return err
 	}
-	metadata := u.Scheme + "://" + u.Host + "/.well-known/oauth-protected-resource" + u.Path
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.grant.Resource, nil)
-	if err != nil {
-		return err
+	if v.OAuth == nil {
+		return errors.New("credential must be a string or an oauth grant")
 	}
-	resp, err := s.client.Do(req)
-	if err != nil {
-		return err
-	}
-	resp.Body.Close()
-	challenges, _ := oauthex.ParseWWWAuthenticate(resp.Header.Values("WWW-Authenticate"))
-	for _, c := range challenges {
-		if m := c.Params["resource_metadata"]; m != "" {
-			metadata = m
-		}
-	}
-	prm, err := oauthex.GetProtectedResourceMetadata(ctx, metadata, s.grant.Resource, s.client)
-	if err != nil {
-		return err
-	}
-	if len(prm.AuthorizationServers) == 0 {
-		return fmt.Errorf("%s names no authorization server", s.grant.Resource)
-	}
-	asm, err := auth.GetAuthServerMetadata(ctx, prm.AuthorizationServers[0], s.client)
-	if err != nil {
-		return err
-	}
-	if asm == nil || asm.RegistrationEndpoint == "" {
-		return fmt.Errorf("%s does not register clients", prm.AuthorizationServers[0])
-	}
-	reg, err := oauthex.RegisterClient(ctx, asm.RegistrationEndpoint, &oauthex.ClientRegistrationMetadata{
-		RedirectURIs: []string{redirect}, ClientName: clientName, GrantTypes: []string{"authorization_code", "refresh_token"},
-	}, s.client)
-	if err != nil {
-		return err
-	}
-	s.grant.AuthURL, s.grant.TokenURL, s.grant.ClientID, s.grant.ClientSecret = asm.AuthorizationEndpoint, asm.TokenEndpoint, reg.ClientID, reg.ClientSecret
-	if s.grant.Scope == "" {
-		scopes := prm.ScopesSupported
-		if slices.Contains(asm.ScopesSupported, offlineAccess) && !slices.Contains(scopes, offlineAccess) {
-			scopes = append(scopes, offlineAccess)
-		}
-		s.grant.Scope = strings.Join(scopes, " ")
-	}
+	c.Source = newOAuth(*v.OAuth)
 	return nil
 }
 
-// Exchange trades the provider's code for the secret a Credential refreshes from.
-func (s *SignIn) Exchange(ctx context.Context, code string) (any, error) {
-	t, err := s.config.Exchange(context.WithValue(ctx, oauth2.HTTPClient, s.client), code, append(s.opts, oauth2.VerifierOption(s.verifier))...)
-	if err != nil {
-		return nil, err
+func (c *Credential) Value(ctx context.Context, store Store) (string, error) {
+	if c == nil {
+		return "", errors.New("credential is not set")
 	}
-	if t.RefreshToken == "" {
-		return t.AccessToken, nil
+	source := c.Source
+	if c.Name != nil {
+		source = store[*c.Name]
+		if source == nil {
+			return "", fmt.Errorf("credential %q is not set", *c.Name)
+		}
 	}
-	s.grant.RefreshToken = t.RefreshToken
-	return map[string]oauth{"oauth": s.grant}, nil
+	if source == nil {
+		return "", errors.New("credential is not set")
+	}
+	return source.Value(ctx)
 }

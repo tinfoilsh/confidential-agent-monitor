@@ -1,6 +1,7 @@
 package connector
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"net"
@@ -11,8 +12,8 @@ import (
 	"time"
 
 	"code.dny.dev/ssrf"
+	"github.com/tinfoilsh/monitor/connector/credential"
 	"golang.org/x/crypto/ssh"
-	"gopkg.in/yaml.v3"
 )
 
 const DialTimeout = 30 * time.Second
@@ -22,10 +23,10 @@ type Connector interface {
 	Serve(s *Stream)
 }
 
-// Start runs once, before the connector receives any stream.
-type Starter interface{ Start(*Env) }
+// Start runs once in the connector's goroutine, before it receives any stream.
+type Starter interface{ Start(context.Context, *Env) }
 
-// Stop runs once, after the connector is replaced; streams it already accepted may finish.
+// Stop runs once before a replacement starts. Only this connector is interrupted.
 type Stopper interface{ Stop() }
 
 // Status is shown to the owner.
@@ -36,9 +37,10 @@ type Claimer interface {
 }
 
 type Env struct {
-	TLS     *tls.Config
-	HostKey ssh.Signer
-	Dialer  *net.Dialer
+	Credentials credential.Store
+	TLS         *tls.Config
+	HostKey     ssh.Signer
+	Dialer      *net.Dialer
 }
 
 // The guard checks the resolved address, so DNS cannot steer an upstream into a refused range.
@@ -73,7 +75,7 @@ type Event struct {
 	Payload  *GitLayer      `json:"payload,omitempty"`
 	Sign     *SignLayer     `json:"sign,omitempty"`
 	Postgres *PostgresLayer `json:"postgres,omitempty"`
-	Redis    *ArgvLayer     `json:"redis,omitempty"`
+	Redis    *RedisLayer    `json:"redis,omitempty"`
 	SMTP     *SMTPLayer     `json:"smtp,omitempty"`
 	Mail     *MailLayer     `json:"mail,omitempty"`
 	IMAP     *IMAPLayer     `json:"imap,omitempty"`
@@ -82,6 +84,12 @@ type Event struct {
 
 type ArgvLayer struct {
 	Argv []string `json:"argv"`
+}
+
+// Command is named as Redis ACLs name it, with a container's subcommand: CLIENT|SETNAME.
+type RedisLayer struct {
+	Command string   `json:"command"`
+	Argv    []string `json:"argv"`
 }
 
 // HTTPLayer is the request before substitution; secrets names the placeholders it carried.
@@ -169,12 +177,16 @@ type PostgresLayer struct {
 // An Endpoint is a URL, or a URL with the user and password kept apart so neither needs escaping.
 type Endpoint struct{ url.URL }
 
-func (e *Endpoint) UnmarshalYAML(n *yaml.Node) error {
-	var v struct{ URL, User, Password string }
-	if n.Kind == yaml.ScalarNode {
-		v.URL = n.Value
-	} else if err := n.Decode(&v); err != nil {
-		return err
+func (e *Endpoint) UnmarshalJSON(raw []byte) error {
+	var v struct {
+		URL      string `json:"url"`
+		User     string `json:"user"`
+		Password string `json:"password"`
+	}
+	if err := json.Unmarshal(raw, &v.URL); err != nil {
+		if err := json.Unmarshal(raw, &v); err != nil {
+			return err
+		}
 	}
 	u, err := url.Parse(v.URL)
 	if err != nil {

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"crypto/aes"
 	"crypto/cipher"
@@ -55,18 +56,18 @@ type state struct {
 	connections map[string]*connection
 	principals  map[string]principal
 	decision    rego.PreparedEvalQuery
-	// infra is what connectors are started from; states that share it share them.
-	infra string
+	credentials map[string]credential.Store
 	connector.Env
 }
 
 type monitor struct {
-	live   atomic.Pointer[state]
-	mu     sync.Mutex
-	owner  []byte
-	store  *blob.Bucket
-	object string
-	listen string
+	live    atomic.Pointer[state]
+	mu      sync.Mutex
+	owner   []byte
+	store   *blob.Bucket
+	object  string
+	listen  string
+	running map[string]*connection
 	// flow orders label reads and writes; labels change only while holding both it and mu.
 	flow    sync.Mutex
 	labels  map[string]label
@@ -102,9 +103,7 @@ func (m *monitor) view(s *state, err error) (any, error) {
 		v.Secrets[acct] = slices.Sorted(maps.Keys(secrets))
 	}
 	for _, c := range s.connections {
-		if r, ok := c.connector.(connector.Reporter); ok {
-			v.Status[c.name] = r.Status()
-		}
+		v.Status[c.name] = c.status()
 	}
 	for _, p := range s.principals {
 		v.Labels[p.Name] = m.label(p.Key)
@@ -182,11 +181,11 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (*stat
 		}
 	}
 	if err != nil {
-		s.retire(nil)
 		return nil, err
 	}
 	m.owner = key
 	m.live.Store(s)
+	m.apply(s)
 	go m.serveSSH(ln)
 	return s, nil
 }
@@ -229,36 +228,41 @@ func (m *monitor) patch(ctx context.Context, patch []byte) (*state, error) {
 		return nil, err
 	}
 	if err := m.persist(ctx, s, m.owner); err != nil {
-		s.retire(old)
 		return nil, err
 	}
 	m.live.Store(s)
-	old.retire(s)
+	m.apply(s)
 	return s, nil
 }
 
-func (m *monitor) rotate(old, new string) {
+func (m *monitor) rotate(key credentialKey, source credential.Source, old, new string) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	secrets := map[string]map[string]any{}
-	for acct, ss := range m.live.Load().Secrets {
-		for key, v := range ss {
-			secret, _ := v.(map[string]any)
-			if o, _ := secret["oauth"].(map[string]any); o["refresh_token"] == old {
-				if secrets[acct] == nil {
-					secrets[acct] = map[string]any{}
-				}
-				secrets[acct][key] = map[string]any{"oauth": map[string]any{"refresh_token": new}}
-			}
-		}
+	s := m.live.Load()
+	if s.credentials[key.account][key.name] != source {
+		return nil
 	}
-	patch, err := json.Marshal(map[string]any{"secrets": secrets})
-	if err == nil {
-		_, err = m.patch(context.Background(), patch)
+	secret, _ := s.Secrets[key.account][key.name].(map[string]any)
+	oauth, _ := secret["oauth"].(map[string]any)
+	if oauth["refresh_token"] != old {
+		return nil
 	}
-	if err != nil {
+	// Rotation only saves the source's runtime state. It does not rebuild config.
+	next := *s
+	next.Generation++
+	next.Secrets = maps.Clone(s.Secrets)
+	next.Secrets[key.account] = maps.Clone(s.Secrets[key.account])
+	secret = maps.Clone(secret)
+	oauth = maps.Clone(oauth)
+	oauth["refresh_token"] = new
+	secret["oauth"] = oauth
+	next.Secrets[key.account][key.name] = secret
+	if err := m.persist(context.Background(), &next, m.owner); err != nil {
 		log.Printf("rotate: %v", err)
+		return err
 	}
+	m.live.Store(&next)
+	return nil
 }
 
 // persist keeps only the labels of keys that some identity holds.
@@ -277,14 +281,54 @@ func (m *monitor) persist(ctx context.Context, s *state, key []byte) error {
 	return m.store.WriteAll(ctx, m.object, aead.Seal(nil, nil, plain, nil), nil)
 }
 
-// build starts connectors anew unless old shares their infra; the caller retires whichever state it does not publish.
+// build validates without starting anything or mutating live credentials.
 func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *state) (*state, error) {
 	cfg, connections, err := parse(sl.Config, sl.Secrets)
 	if err != nil {
 		return nil, err
 	}
+	credentials := map[string]credential.Store{}
+	changed := map[credentialKey]bool{}
+	for _, conn := range connections {
+		account := conn.account
+		for _, name := range conn.credentialRefs {
+			if credentials[account] == nil {
+				credentials[account] = credential.Store{}
+			}
+			if credentials[account][name] != nil {
+				continue
+			}
+			raw, err := json.Marshal(sl.Secrets[account][name])
+			if err != nil {
+				return nil, err
+			}
+			if old != nil {
+				previous, err := json.Marshal(old.Secrets[account][name])
+				if err != nil {
+					return nil, err
+				}
+				if source := old.credentials[account][name]; source != nil && bytes.Equal(previous, raw) {
+					credentials[account][name] = source
+					continue
+				}
+			}
+			key := credentialKey{account, name}
+			changed[key] = true
+			var c credential.Credential
+			if err := json.Unmarshal(raw, &c); err != nil {
+				return nil, fmt.Errorf("credential %s/%s: %w", account, name, err)
+			}
+			if c.Name != nil {
+				return nil, fmt.Errorf("credential %s/%s must be a string or an oauth grant", account, name)
+			}
+			if source, ok := c.Source.(*credential.OAuth); ok {
+				source.Rotated = func(before, after string) error { return m.rotate(key, source, before, after) }
+			}
+			credentials[account][name] = c.Source
+		}
+	}
 	maps.DeleteFunc(sl.Secrets, func(acct string, _ map[string]any) bool { _, ok := cfg.Accounts[acct]; return !ok })
-	s := &state{sealed: sl, cfg: cfg, connections: connections, principals: map[string]principal{}, Env: env}
+	s := &state{sealed: sl, cfg: cfg, connections: connections, principals: map[string]principal{}, credentials: credentials, Env: env}
 	s.Dialer = connector.NewDialer(cfg.AllowNetworks)
 	for name, id := range cfg.Identities {
 		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(id.Key))
@@ -297,37 +341,15 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *
 	if s.decision, err = prepareDecision(ctx, cfg); err != nil {
 		return nil, err
 	}
-	conns := map[string]any{}
-	for acct, a := range cfg.Accounts {
-		conns[acct] = a.Connections
-	}
-	infra, err := json.Marshal([]any{conns, cfg.AllowNetworks, sl.Secrets})
-	if err != nil {
-		return nil, err
-	}
-	if s.infra = string(infra); old != nil && old.infra == s.infra {
-		s.connections = old.connections
-		return s, nil
-	}
-	var wg sync.WaitGroup
-	for _, c := range s.connections {
-		if r, ok := c.connector.(connector.Starter); ok {
-			wg.Go(func() { r.Start(&s.Env) })
+	if old != nil {
+		for name, c := range connections {
+			if previous := old.connections[name]; previous != nil && previous.account == c.account && previous.spec == c.spec && !c.usesChangedCredential(changed) {
+				c.cancel()
+				connections[name] = previous
+			}
 		}
 	}
-	wg.Wait()
 	return s, nil
-}
-
-func (s *state) retire(next *state) {
-	if next != nil && next.infra == s.infra {
-		return
-	}
-	for _, c := range s.connections {
-		if r, ok := c.connector.(connector.Stopper); ok {
-			go r.Stop()
-		}
-	}
 }
 
 func (m *monitor) handler() http.Handler {

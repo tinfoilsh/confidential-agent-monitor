@@ -72,6 +72,9 @@ func (r *IMAP) Serve(s *connector.Stream) {
 			continue
 		}
 		command, args, _ := strings.Cut(rest, " ")
+		if strings.EqualFold(command, "UID") {
+			command, args, _ = strings.Cut(args, " ")
+		}
 		command = strings.ToUpper(command)
 		switch command {
 		case "LOGIN", "AUTHENTICATE":

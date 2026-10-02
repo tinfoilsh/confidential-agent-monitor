@@ -30,11 +30,11 @@ const (
 var refusedRequests = []string{"auth-agent-req@openssh.com", "x11-req"}
 
 type SSH struct {
-	Host    string `yaml:"host"`
-	Port    int    `yaml:"port"`
-	User    string `yaml:"user"`
-	Key     string `yaml:"key"`
-	HostKey string `yaml:"host_key"`
+	Host    string `json:"host"`
+	Port    int    `json:"port"`
+	User    string `json:"user"`
+	Key     string `json:"key"`
+	HostKey string `json:"host_key"`
 }
 
 func (t *SSH) dial(d *net.Dialer) (*ssh.Client, error) {
@@ -46,6 +46,11 @@ func (t *SSH) dial(d *net.Dialer) (*ssh.Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	hostKeyAlgorithms := []string{hostKey.Type()}
+	if hostKey.Type() == ssh.KeyAlgoRSA {
+		// An RSA key can sign with SHA-2 even though its key format is ssh-rsa.
+		hostKeyAlgorithms = []string{ssh.KeyAlgoRSASHA512, ssh.KeyAlgoRSASHA256, ssh.KeyAlgoRSA}
+	}
 	addr := net.JoinHostPort(t.Host, strconv.Itoa(cmp.Or(t.Port, sshPort)))
 	conn, err := d.Dial("tcp", addr)
 	if err != nil {
@@ -55,7 +60,7 @@ func (t *SSH) dial(d *net.Dialer) (*ssh.Client, error) {
 		User:              t.User,
 		Auth:              []ssh.AuthMethod{ssh.PublicKeys(signer)},
 		HostKeyCallback:   ssh.FixedHostKey(hostKey),
-		HostKeyAlgorithms: []string{hostKey.Type()},
+		HostKeyAlgorithms: hostKeyAlgorithms,
 	})
 	if err != nil {
 		conn.Close()
