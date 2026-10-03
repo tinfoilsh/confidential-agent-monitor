@@ -15,34 +15,27 @@ import (
 )
 
 const (
-	sslAccepted           = 'S'
-	gssRefused            = 'N'
-	connectionFailure     = "08006"
-	insufficientPrivilege = "42501"
-	severityFatal         = "FATAL"
-	severityError         = "ERROR"
-	startupUser           = "user"
-	startupDatabase       = "database"
+	sslAccepted = 'S'
+	gssRefused  = 'N'
 )
 
-type Postgres string
+type Postgres struct{ connector.Endpoint }
 
-func (dsn *Postgres) Serve(s *connector.Stream) {
-	defer s.Close()
-	client, backend, startup, err := startup(s)
+func (r *Postgres) Serve(s *connector.Stream, e *connector.Env) {
+	client, backend, startup, err := startup(s, e.TLS)
 	if err != nil {
 		log.Printf("postgres startup: %v", err)
 		return
 	}
 	defer client.Close()
-	up, err := connectPostgres(s.Dialer, string(*dsn), startup)
+	up, err := r.connect(s, e, startup)
 	if err != nil {
 		log.Printf("postgres: %v", err)
-		backend.Send(&pgproto3.ErrorResponse{Severity: severityFatal, Code: connectionFailure, Message: err.Error()})
+		backend.Send(&pgproto3.ErrorResponse{Severity: "FATAL", Code: "08006", Message: err.Error()})
 		backend.Flush()
 		return
 	}
-	defer up.Conn.Close()
+	defer s.Interrupt(up.Conn)()
 	backend.Send(&pgproto3.AuthenticationOk{})
 	for name, value := range up.ParameterStatuses {
 		backend.Send(&pgproto3.ParameterStatus{Name: name, Value: value})
@@ -55,7 +48,7 @@ func (dsn *Postgres) Serve(s *connector.Stream) {
 	relayQueries(s, backend, up)
 }
 
-func startup(s *connector.Stream) (net.Conn, *pgproto3.Backend, *pgproto3.StartupMessage, error) {
+func startup(s *connector.Stream, config *tls.Config) (net.Conn, *pgproto3.Backend, *pgproto3.StartupMessage, error) {
 	conn := net.Conn(s)
 	for {
 		backend := pgproto3.NewBackend(conn, conn)
@@ -70,7 +63,7 @@ func startup(s *connector.Stream) (net.Conn, *pgproto3.Backend, *pgproto3.Startu
 			if _, err := conn.Write([]byte{sslAccepted}); err != nil {
 				return nil, nil, nil, err
 			}
-			conn = tls.Server(conn, s.TLS)
+			conn = tls.Server(conn, config)
 		case *pgproto3.GSSEncRequest:
 			if _, err := conn.Write([]byte{gssRefused}); err != nil {
 				return nil, nil, nil, err
@@ -81,18 +74,22 @@ func startup(s *connector.Stream) (net.Conn, *pgproto3.Backend, *pgproto3.Startu
 	}
 }
 
-func connectPostgres(d *net.Dialer, url string, startup *pgproto3.StartupMessage) (*pgconn.HijackedConn, error) {
-	config, err := pgconn.ParseConfig(url)
+func (r *Postgres) connect(s *connector.Stream, e *connector.Env, startup *pgproto3.StartupMessage) (*pgconn.HijackedConn, error) {
+	config, err := pgconn.ParseConfig(r.URL.String())
 	if err != nil {
 		return nil, err
 	}
-	config.DialFunc = d.DialContext
+	config.Password, err = r.Password.Value(s.Context)
+	if err != nil {
+		return nil, err
+	}
+	config.DialFunc = e.Dialer.DialContext
 	for name, value := range startup.Parameters {
-		if name != startupUser && name != startupDatabase {
+		if name != "user" && name != "database" {
 			config.RuntimeParams[name] = value
 		}
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), connector.DialTimeout)
+	ctx, cancel := context.WithTimeout(s.Context, connector.DialTimeout)
 	defer cancel()
 	pg, err := pgconn.ConnectConfig(ctx, config)
 	if err != nil {
@@ -105,7 +102,10 @@ func connectPostgres(d *net.Dialer, url string, startup *pgproto3.StartupMessage
 func relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.HijackedConn) {
 	var status atomic.Uint32
 	status.Store(uint32(up.TxStatus))
+	done := make(chan struct{})
+	defer func() { s.Close(); up.Conn.Close(); <-done }()
 	go func() {
+		defer close(done)
 		defer s.Close()
 		for {
 			msg, err := up.Frontend.Receive()
@@ -135,7 +135,7 @@ func relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.Hij
 		}
 		if sql != "" {
 			if err := s.Gate(connector.Event{Postgres: &connector.PostgresLayer{SQL: sql}}); err != nil {
-				backend.Send(&pgproto3.ErrorResponse{Severity: severityError, Code: insufficientPrivilege, Message: err.Error()})
+				backend.Send(&pgproto3.ErrorResponse{Severity: "ERROR", Code: "42501", Message: err.Error()})
 				if _, simple := msg.(*pgproto3.Query); simple {
 					backend.Send(&pgproto3.ReadyForQuery{TxStatus: byte(status.Load())})
 				}

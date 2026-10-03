@@ -13,30 +13,30 @@ import (
 )
 
 const (
-	imapTLSScheme = "imaps"
-	imapPort      = "143"
-	imapsPort     = "993"
-	loginTag      = "m0"
+	loginTag = "m0"
 )
 
 var imapLiteral = regexp.MustCompile(`\{(\d+)(\+?)\}$`)
 
 type IMAP struct{ connector.Endpoint }
 
-func (r *IMAP) Serve(s *connector.Stream) {
-	defer s.Close()
+func (r *IMAP) Serve(s *connector.Stream, e *connector.Env) {
 	u := &r.URL
-	up, err := connector.DialURL(s.Dialer, u, imapTLSScheme, imapPort, imapsPort)
+	up, err := connector.DialURL(s.Context, e.Dialer, u, "imaps", "143", "993")
 	if err != nil {
 		log.Printf("imap: %v", err)
 		return
 	}
-	defer up.Close()
+	defer s.Interrupt(up)()
 	replies := bufio.NewReader(up)
 	if _, err := replies.ReadString('\n'); err != nil {
 		return
 	}
-	pass, _ := u.User.Password()
+	pass, err := r.Password.Value(s.Context)
+	if err != nil {
+		log.Printf("credential: %v", err)
+		return
+	}
 	quote := strings.NewReplacer(`\`, `\\`, `"`, `\"`)
 	fmt.Fprintf(up, "%s LOGIN \"%s\" \"%s\"\r\n", loginTag, quote.Replace(u.User.Username()), quote.Replace(pass))
 	for {
@@ -53,10 +53,7 @@ func (r *IMAP) Serve(s *connector.Stream) {
 		}
 	}
 	fmt.Fprintf(s, "* PREAUTH monitor\r\n")
-	go func() {
-		io.Copy(s, replies)
-		s.Close()
-	}()
+	defer connector.CopyReplies(s, up, replies)()
 	commands := bufio.NewReader(s)
 	mailbox := ""
 	for {

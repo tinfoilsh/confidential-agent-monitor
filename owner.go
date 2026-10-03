@@ -9,13 +9,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"maps"
 	"net/http"
 	"slices"
 	"strings"
 	"sync"
 	"time"
 
+	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/connector/web"
@@ -27,13 +27,18 @@ const maxDocumentBytes = 16 << 20
 //go:embed app
 var app embed.FS
 
-// ownerView never includes private keys or secret values.
+type fieldMetadata struct {
+	Path []string `json:"path"`
+	Kind string   `json:"kind"`
+}
+
+// ownerView omits values marked redact in connector field metadata.
 type ownerView struct {
 	Generation uint64                       `json:"generation"`
 	Config     json.RawMessage              `json:"config"`
 	HostKey    string                       `json:"host_key"`
 	CA         string                       `json:"ca"`
-	Secrets    map[string][]string          `json:"secrets"`
+	Fields     map[string][]fieldMetadata   `json:"fields"`
 	Status     map[string]any               `json:"status"`
 	Labels     map[string]label             `json:"labels"`
 	Setup      map[string]map[string]string `json:"setup"`
@@ -48,20 +53,18 @@ func (m *monitor) view(s *state, err error) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	v := ownerView{s.Generation, s.Config, string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), s.Keys.CACert,
-		map[string][]string{}, map[string]any{}, map[string]label{}, map[string]map[string]string{}, templates}
-	for acct, secrets := range s.Secrets {
-		v.Secrets[acct] = slices.Sorted(maps.Keys(secrets))
-	}
+	v := ownerView{m.doc.Generation, m.doc.Config, string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), m.doc.Keys.CACert,
+		map[string][]fieldMetadata{}, map[string]any{}, map[string]label{}, map[string]map[string]string{}, templates}
+	v.Config, v.Fields = configView(m.doc.Config, s.connections)
 	for _, c := range s.connections {
 		v.Status[c.name] = c.status()
 	}
 	for _, p := range s.principals {
-		v.Labels[p.Name] = m.label(p.Key)
+		v.Labels[p.Name] = m.labelLocked(p.Key)
 		v.Setup[p.Name] = map[string]string{}
 		for _, c := range s.connections {
-			if r, ok := c.connector.(*web.HTTP); ok && p.reaches(c.account) {
-				for secret := range r.Secrets {
+			if h, ok := c.connector.(*web.HTTP); ok && p.reaches(c.account) {
+				for secret := range h.Values {
 					v.Setup[p.Name][secret] = web.Placeholder(c.name, secret)
 				}
 			}
@@ -70,62 +73,84 @@ func (m *monitor) view(s *state, err error) (any, error) {
 	return v, nil
 }
 
+func configView(raw json.RawMessage, connections map[string]*connection) (json.RawMessage, map[string][]fieldMetadata) {
+	fields := map[string][]fieldMetadata{}
+	visible := raw
+	for _, c := range connections {
+		for _, field := range c.connector.Fields() {
+			if !field.Redact {
+				continue
+			}
+			path := append(c.path(), field.Path...)
+			value := configValue(raw, path)
+			fields[c.account] = append(fields[c.account], fieldMetadata{path[2:], credential.Describe(value)})
+			visible, _ = jsonpatch.MergePatch(visible, valuePatch(path, json.RawMessage("null")))
+		}
+	}
+	return visible, fields
+}
+
+type ownerInput struct {
+	Generation uint64          `json:"generation"`
+	Redirect   string          `json:"redirect"`
+	Path       []string        `json:"path"`
+	Credential json.RawMessage `json:"credential"`
+	Code       string          `json:"code"`
+	Decision   string          `json:"decision"`
+	key        []byte
+	raw        json.RawMessage
+}
+
 func (m *monitor) handler() http.Handler {
 	mux := http.NewServeMux()
-	mux.Handle("POST /unlock", m.owned(false, func(r *http.Request, key []byte) (any, error) {
-		var req struct {
-			Generation uint64 `json:"generation"`
-		}
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			return nil, err
-		}
-		return m.view(m.unlock(r.Context(), key, req.Generation))
+	mux.Handle("POST /unlock", m.owned(false, func(r *http.Request, req ownerInput) (any, error) {
+		return m.view(m.unlock(r.Context(), req.key, req.Generation))
 	}))
-	mux.Handle("GET /{$}", m.owned(true, func(*http.Request, []byte) (any, error) { return m.view(m.live.Load(), nil) }))
-	mux.Handle("PATCH /{$}", m.owned(true, func(r *http.Request, _ []byte) (any, error) {
-		patch, err := io.ReadAll(r.Body)
+	mux.Handle("GET /{$}", m.owned(true, func(*http.Request, ownerInput) (any, error) { return m.view(m.live.Load(), nil) }))
+	mux.Handle("PATCH /{$}", m.owned(true, func(r *http.Request, req ownerInput) (any, error) {
+		return m.view(m.patch(r.Context(), req.raw))
+	}))
+	mux.Handle("POST /accounts/{account}/sign-in", m.owned(true, func(r *http.Request, req ownerInput) (any, error) {
+		s := m.live.Load()
+		if len(req.Path) < 4 || req.Path[0] != "connections" {
+			return nil, errors.New("invalid credential path")
+		}
+		c := s.connections[connectionName(r.PathValue("account"), req.Path[1])]
+		if c == nil || c.protocol != req.Path[2] {
+			return nil, errors.New("connection does not exist")
+		}
+		path := append([]string{"accounts", c.account}, req.Path...)
+		previous := configValue(m.doc.Config, path)
+		record := previous
+		if req.Credential != nil {
+			record = req.Credential
+		}
+		sign, err := credential.NewSignIn(r.Context(), &http.Client{Transport: s.Transport()}, record, req.Redirect)
 		if err != nil {
 			return nil, err
 		}
-		return m.view(m.patch(r.Context(), patch))
-	}))
-	mux.Handle("POST /secrets/{account}/{key}/sign-in", m.owned(true, func(r *http.Request, _ []byte) (any, error) {
-		var req struct {
-			Redirect string `json:"redirect"`
+		if m.signIns == nil {
+			m.signIns = map[string]func(context.Context, string) (*state, error){}
 		}
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			return nil, err
-		}
-		s, acct, key := m.live.Load(), r.PathValue("account"), r.PathValue("key")
-		sign, err := credential.NewSignIn(r.Context(), &http.Client{Transport: &http.Transport{DialContext: s.Dialer.DialContext}}, s.Secrets[acct][key], req.Redirect)
-		if err != nil {
-			return nil, err
-		}
-		m.signIns.Store(sign.State, func(ctx context.Context, code string) (*state, error) {
+		m.signIns[sign.State] = func(ctx context.Context, code string) (*state, error) {
+			if !m.currentValue(c, path, previous) {
+				return nil, errors.New("credential changed during sign-in; start again")
+			}
 			secret, err := sign.Exchange(ctx, code)
 			if err != nil {
 				return nil, err
 			}
-			patch, err := json.Marshal(map[string]any{"secrets": map[string]any{acct: map[string]any{key: secret}}})
-			if err != nil {
-				return nil, err
-			}
-			return m.patch(ctx, patch)
-		})
+			return m.patch(ctx, valuePatch(path, secret))
+		}
 		return map[string]string{"url": sign.URL}, nil
 	}))
-	mux.Handle("POST /sign-in/{state}", m.owned(true, func(r *http.Request, _ []byte) (any, error) {
-		var req struct {
-			Code string `json:"code"`
-		}
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			return nil, err
-		}
-		finish, ok := m.signIns.LoadAndDelete(r.PathValue("state"))
+	mux.Handle("POST /sign-in/{state}", m.owned(true, func(r *http.Request, req ownerInput) (any, error) {
+		finish, ok := m.signIns[r.PathValue("state")]
+		delete(m.signIns, r.PathValue("state"))
 		if !ok {
 			return nil, errors.New("no sign-in is waiting for this state")
 		}
-		return m.view(finish.(func(context.Context, string) (*state, error))(r.Context(), req.Code))
+		return m.view(finish(r.Context(), req.Code))
 	}))
 	m.requests(mux)
 	mux.Handle("GET /app/", http.FileServerFS(app))
@@ -133,7 +158,7 @@ func (m *monitor) handler() http.Handler {
 }
 
 // owned serializes owner requests; before unlock, decrypting the state is what proves the secret.
-func (m *monitor) owned(unlocked bool, fn func(*http.Request, []byte) (any, error)) http.HandlerFunc {
+func (m *monitor) owned(unlocked bool, fn func(*http.Request, ownerInput) (any, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		m.mu.Lock()
 		defer m.mu.Unlock()
@@ -145,7 +170,15 @@ func (m *monitor) owned(unlocked bool, fn func(*http.Request, []byte) (any, erro
 		var v any
 		key, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer "))
 		if err == nil && len(key) == ownerKeyBytes && (!unlocked || subtle.ConstantTimeCompare(key, m.owner) == 1) {
-			v, err = fn(r, key)
+			req := ownerInput{key: key}
+			if r.Method == http.MethodPost || r.Method == http.MethodPatch {
+				if req.raw, err = io.ReadAll(r.Body); err == nil {
+					err = json.Unmarshal(req.raw, &req)
+				}
+			}
+			if err == nil {
+				v, err = fn(r, req)
+			}
 		} else {
 			err = errOwner
 		}
@@ -277,14 +310,8 @@ func (m *monitor) answer(ctx context.Context, id, choice string) error {
 }
 
 func (m *monitor) requests(mux *http.ServeMux) {
-	mux.Handle("GET /requests", m.owned(true, func(*http.Request, []byte) (any, error) { return m.records.marshal() }))
-	mux.Handle("POST /requests/{id}", m.owned(true, func(r *http.Request, _ []byte) (any, error) {
-		var req struct {
-			Decision string `json:"decision"`
-		}
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			return nil, err
-		}
+	mux.Handle("GET /requests", m.owned(true, func(*http.Request, ownerInput) (any, error) { return m.records.marshal() }))
+	mux.Handle("POST /requests/{id}", m.owned(true, func(r *http.Request, req ownerInput) (any, error) {
 		return nil, m.answer(r.Context(), r.PathValue("id"), req.Decision)
 	}))
 }

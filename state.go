@@ -9,16 +9,15 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"maps"
 	"net"
+	"slices"
 	"sync"
 	"sync/atomic"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/connector/credential"
 	"gocloud.dev/blob"
 	"gocloud.dev/gcerrors"
 	"golang.org/x/crypto/ssh"
@@ -28,39 +27,36 @@ const ownerKeyBytes = 32
 
 var errOwner = errors.New("invalid owner secret")
 
-// sealed is the plaintext of the encrypted object; only Config is the owner's to edit.
+// sealed is the document encrypted in storage. The monitor owns it under mu.
 type sealed struct {
-	Generation uint64                    `json:"generation"`
-	Keys       keyMaterial               `json:"keys"`
-	Secrets    map[string]map[string]any `json:"secrets"`
-	Labels     map[string]label          `json:"labels"`
-	Config     json.RawMessage           `json:"config"`
+	Generation uint64           `json:"generation"`
+	Keys       keyMaterial      `json:"keys"`
+	Labels     map[string]label `json:"labels"`
+	Config     json.RawMessage  `json:"config"`
 }
 
 type state struct {
-	sealed
 	cfg         *config
 	connections map[string]*connection
 	principals  map[string]principal
 	decision    rego.PreparedEvalQuery
-	credentials map[string]credential.Store
 	connector.Env
 }
 
 type monitor struct {
 	live    atomic.Pointer[state]
 	mu      sync.Mutex
+	doc     sealed
 	owner   []byte
 	store   *blob.Bucket
 	object  string
 	listen  string
 	running map[string]*connection
-	// flow orders label reads and writes; labels change only while holding both it and mu.
+	// flow serializes policy decisions; mu protects all document reads and writes.
 	flow    sync.Mutex
-	labels  map[string]label
 	records records
 	// signIns holds the finish of each started sign-in, keyed by its state.
-	signIns sync.Map
+	signIns map[string]func(context.Context, string) (*state, error)
 }
 
 type principal struct {
@@ -123,8 +119,8 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (*stat
 	if fresh {
 		sl.Generation++
 	}
-	if m.labels = sl.Labels; m.labels == nil {
-		m.labels = map[string]label{}
+	if sl.Labels == nil {
+		sl.Labels = map[string]label{}
 	}
 	s, err := m.build(ctx, sl, env, nil)
 	if err != nil {
@@ -132,7 +128,7 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (*stat
 	}
 	ln, err := net.Listen("tcp", m.listen)
 	if err == nil && fresh {
-		if err = m.persist(ctx, s, key); err != nil {
+		if err = m.persist(ctx, sl, key); err != nil {
 			ln.Close()
 		}
 	}
@@ -140,96 +136,92 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (*stat
 		return nil, err
 	}
 	m.owner = key
-	m.live.Store(s)
+	m.doc = sl
 	m.apply(s)
+	m.live.Store(s)
 	go m.serveSSH(ln)
 	return s, nil
 }
 
 func (m *monitor) patch(ctx context.Context, patch []byte) (*state, error) {
-	old := m.live.Load()
-	next := old.sealed
-	var doc map[string]json.RawMessage
-	if err := json.Unmarshal(patch, &doc); err != nil {
-		return nil, err
+	patch = bytes.TrimSpace(patch)
+	if len(patch) == 0 || patch[0] != '{' {
+		return nil, errors.New("configuration patch must be an object")
 	}
-	secretsPatch, ok := doc["secrets"]
-	if !ok {
-		secretsPatch = json.RawMessage("{}")
-	}
-	delete(doc, "secrets")
-	patch, err := json.Marshal(doc)
+	config, err := jsonpatch.MergePatch(m.doc.Config, patch)
 	if err != nil {
 		return nil, err
 	}
-	if next.Config, err = jsonpatch.MergePatch(old.Config, patch); err != nil {
-		return nil, err
-	}
-	secrets := []byte("{}")
-	if old.Secrets != nil {
-		if secrets, err = json.Marshal(old.Secrets); err != nil {
-			return nil, err
-		}
-	}
-	if secrets, err = jsonpatch.MergePatch(secrets, secretsPatch); err != nil {
-		return nil, err
-	}
-	next.Secrets = nil
-	if err := json.Unmarshal(secrets, &next.Secrets); err != nil {
-		return nil, err
-	}
+	old := m.live.Load()
+	next := m.doc
+	next.Config = config
 	next.Generation++
 	s, err := m.build(ctx, next, old.Env, old)
 	if err != nil {
 		return nil, err
 	}
-	if err := m.persist(ctx, s, m.owner); err != nil {
+	next.Labels = maps.Clone(m.doc.Labels)
+	maps.DeleteFunc(next.Labels, func(key string, _ label) bool { _, ok := s.principals[key]; return !ok })
+	if err := m.persist(ctx, next, m.owner); err != nil {
 		return nil, err
 	}
-	m.live.Store(s)
+	m.doc = next
 	m.apply(s)
+	m.live.Store(s)
 	return s, nil
 }
 
-func (m *monitor) rotate(key credentialKey, source credential.Source, old, new string) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	s := m.live.Load()
-	if s.credentials[key.account][key.name] != source {
-		return nil
+func configValue(raw json.RawMessage, path []string) json.RawMessage {
+	for _, key := range path {
+		var object map[string]json.RawMessage
+		if json.Unmarshal(raw, &object) != nil {
+			return nil
+		}
+		raw = object[key]
 	}
-	secret, _ := s.Secrets[key.account][key.name].(map[string]any)
-	oauth, _ := secret["oauth"].(map[string]any)
-	if oauth["refresh_token"] != old {
-		return nil
+	return raw
+}
+
+// valuePatch addresses a value through the same merge-patch API as other edits.
+func valuePatch(path []string, value json.RawMessage) []byte {
+	var patch any = value
+	for _, key := range slices.Backward(path) {
+		patch = map[string]any{key: patch}
 	}
-	// Rotation only saves the source's runtime state. It does not rebuild config.
-	next := *s
-	next.Generation++
-	next.Secrets = maps.Clone(s.Secrets)
-	next.Secrets[key.account] = maps.Clone(s.Secrets[key.account])
-	secret = maps.Clone(secret)
-	oauth = maps.Clone(oauth)
-	oauth["refresh_token"] = new
-	secret["oauth"] = oauth
-	next.Secrets[key.account][key.name] = secret
-	if err := m.persist(context.Background(), &next, m.owner); err != nil {
-		log.Printf("rotate: %v", err)
+	raw, _ := json.Marshal(patch)
+	return raw
+}
+
+func (c *connection) path() []string {
+	return []string{"accounts", c.account, "connections", c.key, c.protocol}
+}
+
+func (m *monitor) currentValue(c *connection, path []string, before json.RawMessage) bool {
+	current := configValue(m.doc.Config, path)
+	return m.running[c.name] == c && (bytes.Equal(current, before) || jsonpatch.Equal(current, before))
+}
+
+// Provider writes preserve the connector and publish only after persistence.
+func (m *monitor) replaceValue(ctx context.Context, c *connection, path []string, before, after json.RawMessage) error {
+	if !m.currentValue(c, path, before) {
+		return errors.New("credential changed; start again")
+	}
+	next := m.doc
+	var err error
+	if next.Config, err = jsonpatch.MergePatch(next.Config, valuePatch(path, after)); err != nil {
 		return err
 	}
-	m.live.Store(&next)
+	next.Generation++
+	if err := m.persist(ctx, next, m.owner); err != nil {
+		return err
+	}
+	m.doc = next
 	return nil
 }
 
-// persist keeps only the labels of keys that some identity holds.
-func (m *monitor) persist(ctx context.Context, s *state, key []byte) error {
-	sl := s.sealed
-	sl.Labels = maps.Clone(m.labels)
-	maps.DeleteFunc(sl.Labels, func(fingerprint string, _ label) bool { _, ok := s.principals[fingerprint]; return !ok })
-	plain, err := json.Marshal(sl)
-	if err != nil {
-		return err
-	}
+// persist writes a document without publishing it or touching runtime resources.
+func (m *monitor) persist(ctx context.Context, sl sealed, key []byte) error {
+	plain, _ := json.Marshal(sl)
 	aead, err := newAEAD(key)
 	if err != nil {
 		return err
@@ -239,52 +231,30 @@ func (m *monitor) persist(ctx context.Context, s *state, key []byte) error {
 
 // build validates without starting anything or mutating live credentials.
 func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *state) (*state, error) {
-	cfg, connections, err := parse(sl.Config, sl.Secrets)
+	cfg, definitions, err := parse(sl.Config)
 	if err != nil {
 		return nil, err
 	}
-	credentials := map[string]credential.Store{}
-	changed := map[credentialKey]bool{}
-	for _, conn := range connections {
-		account := conn.account
-		for _, name := range conn.credentialRefs {
-			if credentials[account] == nil {
-				credentials[account] = credential.Store{}
-			}
-			if credentials[account][name] != nil {
-				continue
-			}
-			raw, err := json.Marshal(sl.Secrets[account][name])
-			if err != nil {
-				return nil, err
-			}
-			if old != nil {
-				previous, err := json.Marshal(old.Secrets[account][name])
-				if err != nil {
-					return nil, err
-				}
-				if source := old.credentials[account][name]; source != nil && bytes.Equal(previous, raw) {
-					credentials[account][name] = source
+	s := &state{cfg: cfg, connections: definitions, principals: map[string]principal{}, Env: env}
+	for name, definition := range definitions {
+		if old != nil && old.connections[name] != nil && slices.Equal(old.cfg.AllowNetworks, cfg.AllowNetworks) &&
+			old.connections[name].account == definition.account && old.connections[name].protocol == definition.protocol &&
+			jsonpatch.Equal(configValue(m.doc.Config, definition.path()), definition.config) {
+			s.connections[name] = old.connections[name]
+		} else {
+			for _, field := range definition.connector.Fields() {
+				if field.Value == nil {
 					continue
 				}
+				path := append(definition.path(), field.Path...)
+				field.Value.Save = func(ctx context.Context, before, after json.RawMessage) error {
+					m.mu.Lock()
+					defer m.mu.Unlock()
+					return m.replaceValue(ctx, definition, path, before, after)
+				}
 			}
-			key := credentialKey{account, name}
-			changed[key] = true
-			var c credential.Credential
-			if err := json.Unmarshal(raw, &c); err != nil {
-				return nil, fmt.Errorf("credential %s/%s: %w", account, name, err)
-			}
-			if c.Name != nil {
-				return nil, fmt.Errorf("credential %s/%s must be a string or an oauth grant", account, name)
-			}
-			if source, ok := c.Source.(*credential.OAuth); ok {
-				source.Rotated = func(before, after string) error { return m.rotate(key, source, before, after) }
-			}
-			credentials[account][name] = c.Source
 		}
 	}
-	maps.DeleteFunc(sl.Secrets, func(acct string, _ map[string]any) bool { _, ok := cfg.Accounts[acct]; return !ok })
-	s := &state{sealed: sl, cfg: cfg, connections: connections, principals: map[string]principal{}, credentials: credentials, Env: env}
 	s.Dialer = connector.NewDialer(cfg.AllowNetworks)
 	for name, id := range cfg.Identities {
 		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(id.Key))
@@ -296,14 +266,6 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *
 	}
 	if s.decision, err = prepareDecision(ctx, cfg); err != nil {
 		return nil, err
-	}
-	if old != nil {
-		for name, c := range connections {
-			if previous := old.connections[name]; previous != nil && previous.account == c.account && previous.spec == c.spec && !c.usesChangedCredential(changed) {
-				c.cancel()
-				connections[name] = previous
-			}
-		}
 	}
 	return s, nil
 }

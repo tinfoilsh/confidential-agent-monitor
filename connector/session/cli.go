@@ -2,39 +2,47 @@ package session
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
 	"log"
 	"os/exec"
 	"strings"
+	"sync"
+	"time"
 
 	"golang.org/x/crypto/ssh"
 
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/credential"
 )
 
 const (
-	maxStdinBytes     = 1 << 20
-	exitRefused       = 126
-	stdinGit          = "git"
-	requestExitStatus = "exit-status"
-	objectCommit      = "commit"
-	objectTag         = "tag"
+	maxStdinBytes = 1 << 20
+	exitRefused   = 126
 )
 
 type CLI struct {
-	Path  string            `json:"path"`
-	Env   map[string]string `json:"env"`
-	Stdin string            `json:"stdin"`
+	Path  string                       `json:"path"`
+	Env   map[string]*credential.Value `json:"env"`
+	Stdin string                       `json:"stdin"`
 }
 
-func (t *CLI) Serve(s *connector.Stream) {
-	defer s.Close()
-	inner, chans, reqs, err := innerSSH(s)
+func (t *CLI) Fields() (fields []connector.Field) {
+	for name, value := range t.Env {
+		fields = append(fields, connector.Field{Path: []string{"env", name}, Value: value, Redact: true})
+	}
+	return
+}
+
+func (t *CLI) Serve(s *connector.Stream, e *connector.Env) {
+	inner, chans, reqs, err := innerSSH(s, e.HostKey)
 	if err != nil {
 		return
 	}
+	var workers sync.WaitGroup
+	defer func() { s.Close(); workers.Wait() }()
 	defer inner.Close()
 	go ssh.DiscardRequests(reqs)
 	for nc := range chans {
@@ -46,7 +54,7 @@ func (t *CLI) Serve(s *connector.Stream) {
 		if err != nil {
 			return
 		}
-		go t.session(s, ch, reqs)
+		workers.Go(func() { t.session(s, ch, reqs) })
 	}
 }
 
@@ -60,7 +68,7 @@ func (t *CLI) session(s *connector.Stream, ch ssh.Channel, reqs <-chan *ssh.Requ
 		}
 		r.Reply(true, nil)
 		var stdin []byte
-		if t.Stdin == stdinGit {
+		if t.Stdin == "git" {
 			stdin, _ = io.ReadAll(io.LimitReader(ch, maxStdinBytes))
 			e.Payload = gitObject(stdin)
 		}
@@ -68,17 +76,23 @@ func (t *CLI) session(s *connector.Stream, ch ssh.Channel, reqs <-chan *ssh.Requ
 		if err := s.Gate(e); err != nil {
 			fmt.Fprintf(ch.Stderr(), "monitor: %v\n", err)
 		} else {
-			status = t.execute(e.Command.Argv, io.MultiReader(bytes.NewReader(stdin), ch), ch)
+			status = t.execute(s.Context, e.Command.Argv, io.MultiReader(bytes.NewReader(stdin), ch), ch)
 		}
-		ch.SendRequest(requestExitStatus, false, ssh.Marshal(struct{ Status uint32 }{uint32(status)}))
+		ch.SendRequest("exit-status", false, ssh.Marshal(struct{ Status uint32 }{uint32(status)}))
 		return
 	}
 }
 
-func (t *CLI) execute(args []string, stdin io.Reader, ch ssh.Channel) int {
-	cmd := exec.Command(t.Path, args[1:]...)
+func (t *CLI) execute(ctx context.Context, args []string, stdin io.Reader, ch ssh.Channel) int {
+	cmd := exec.CommandContext(ctx, t.Path, args[1:]...)
+	cmd.WaitDelay = time.Second
 	cmd.Env = []string{}
-	for name, value := range t.Env {
+	for name, v := range t.Env {
+		value, err := v.Value(ctx)
+		if err != nil {
+			log.Printf("cli credential: %v", err)
+			return exitRefused
+		}
 		cmd.Env = append(cmd.Env, name+"="+value)
 	}
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = stdin, ch, ch.Stderr()
@@ -101,9 +115,9 @@ func gitObject(b []byte) *connector.GitLayer {
 		key, value, _ := strings.Cut(line, " ")
 		switch key {
 		case "tree":
-			object.Type, object.Tree = objectCommit, value
+			object.Type, object.Tree = "commit", value
 		case "object":
-			object.Type, object.Object = objectTag, value
+			object.Type, object.Object = "tag", value
 		case "type":
 			object.ObjectType = value
 		case "parent":

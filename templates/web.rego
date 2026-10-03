@@ -7,8 +7,8 @@ catalog := {
 	"defaults": {"contents": "anyone", "strangers": true, "sends": "anyone"},
 	"actions": {
 		"browse": {"title": "Browse", "save": "Trust {host} with this agent's data"},
-		"submit": {"title": "Submit forms and post", "save": "Allow posting to {host}"},
-	},
+		"submit": {"title": "Submit forms and post", "save": "Allow posting to {host}"}
+	}
 }
 
 import data.monitor.write

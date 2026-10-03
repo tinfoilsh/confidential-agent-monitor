@@ -3,12 +3,17 @@ package templates.github
 catalog := {
 	"title": "GitHub",
 	"fields": [
-		{"key": "token", "label": "Personal access token", "secret": true},
-		{"key": "private", "label": "Private orgs and repos", "list": true, "hint": "owner/* or owner/repo"},
+		{
+			"key": "token",
+			"label": "Personal access token",
+			"secret": true,
+			"paths": [["connections", "", "http", "values", "GITHUB_TOKEN"], ["connections", "mcp", "mcp", "token"]]
+		},
+		{"key": "private", "label": "Private orgs and repos", "list": true, "hint": "owner/* or owner/repo", "path": ["policy_options", "private"]}
 	],
 	"connections": {
-		"": {"http": {"hosts": ["api.github.com", "github.com", "*.githubusercontent.com"], "secrets": {"GITHUB_TOKEN": {"$secret": "token"}}}},
-		"mcp": {"mcp": {"url": "https://api.githubcopilot.com/mcp/", "token": {"$secret": "token"}}},
+		"": {"http": {"hosts": ["api.github.com", "github.com", "*.githubusercontent.com"]}},
+		"mcp": {"mcp": {"url": "https://api.githubcopilot.com/mcp/"}}
 	},
 	"defaults": {"contents": "team", "strangers": true, "sends": "me"},
 	"actions": {
@@ -21,8 +26,8 @@ catalog := {
 		"open.pulls": {"title": "Open and edit pull requests", "save": "Allow opening and editing pull requests on {repo}"},
 		"push": {"title": "Push commits", "save": "Allow pushes to {repo}"},
 		"merge": {"title": "Merge pull requests", "save": "Allow merges on {repo}"},
-		"use": {"title": "Use tools that change things"},
-	},
+		"use": {"title": "Use tools that change things"}
+	}
 }
 
 import data.monitor.mutation
@@ -104,7 +109,7 @@ repo := concat("/", [parts[1], trim_suffix(parts[2], ".git")]) if {
 repo := concat("/", [input.mcp.arguments.owner, input.mcp.arguments.repo])
 
 private if {
-	some pattern in input.account.fields.private
+	some pattern in input.account.policy_options.private
 	glob.match(pattern, ["/"], repo)
 }
 

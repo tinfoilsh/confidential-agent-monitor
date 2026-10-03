@@ -3,19 +3,19 @@ package templates.ssh
 catalog := {
 	"title": "SSH server",
 	"fields": [
-		{"key": "host", "label": "Host"},
-		{"key": "user", "label": "User"},
-		{"key": "host_key", "label": "Host key", "hint": "a line of ssh-keyscan <host>"},
-		{"key": "key", "label": "Private key", "secret": true, "multiline": true},
+		{"key": "host", "label": "Host", "path": ["connections", "", "ssh", "host"]},
+		{"key": "user", "label": "User", "path": ["connections", "", "ssh", "user"]},
+		{"key": "host_key", "label": "Host key", "hint": "a line of ssh-keyscan <host>", "path": ["connections", "", "ssh", "host_key"]},
+		{"key": "key", "label": "Private key", "secret": true, "multiline": true, "path": ["connections", "", "ssh", "key"]}
 	],
-	"connections": {"": {"ssh": {"host": "{host}", "user": "{user}", "host_key": "{host_key}", "key": {"$secret": "key"}}}},
+	"connections": {"": {"ssh": {"host": "{host}", "user": "{user}", "host_key": "{host_key}"}}},
 	"defaults": {"contents": "me", "strangers": true, "sends": "me"},
 	"actions": {
 		"session": {"title": "Set up terminals and send signals"},
 		"run": {"title": "Run commands", "save": "Allow {command}"},
 		"shell": {"title": "Open interactive shells", "save": "Allow shells"},
-		"files": {"title": "Transfer files", "save": "Allow file transfers"},
-	},
+		"files": {"title": "Transfer files", "save": "Allow file transfers"}
+	}
 }
 
 changes := {"run", "shell", "files"}
@@ -32,7 +32,7 @@ action := "files" if input.ssh.subsystem == "sftp"
 
 scope := {"command": input.ssh.command} if input.ssh.command
 
-host := input.account.fields.host
+host := input.connection_config.host
 
 title := sprintf("Run %s on %s", [input.ssh.command, host]) if input.ssh.command
 

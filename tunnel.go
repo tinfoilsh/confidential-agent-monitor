@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"log"
 	"net"
@@ -16,7 +15,6 @@ type principalKey struct{}
 
 const (
 	channelDirect = "direct-tcpip"
-	monitorSuffix = ".monitor"
 )
 
 func (m *monitor) serveSSH(ln net.Listener) {
@@ -72,27 +70,34 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 		nc.Reject(ssh.ConnectionFailed, "the connector is starting")
 		return
 	}
-	s := &connector.Stream{Env: &st.Env, Name: c.name, Host: target.Host, Port: target.Port}
-	s.Gate = func(e connector.Event) error {
-		return m.gate(context.Background(), input{Principal: p, Connection: c.name, Protocol: c.protocol, Event: &e}, c.account)
+	if c.ctx.Err() != nil {
+		nc.Reject(ssh.ConnectionFailed, "the connector is stopped")
+		return
 	}
-	if err := m.gate(context.Background(), input{Principal: p, Connection: c.name, Protocol: c.protocol, TCP: &tcpLayer{Host: target.Host, Port: target.Port}}, c.account); err != nil {
+	s := connector.NewStream(c.ctx)
+	s.Name, s.Host, s.Port = c.name, target.Host, target.Port
+	s.Gate = func(e connector.Event) error {
+		return m.gate(s.Context, input{Principal: p, Connection: c.name, Protocol: c.protocol, Event: &e}, c.account)
+	}
+	if err := m.gate(s.Context, input{Principal: p, Connection: c.name, Protocol: c.protocol, TCP: &tcpLayer{Host: target.Host, Port: target.Port}}, c.account); err != nil {
+		s.Close()
 		nc.Reject(ssh.Prohibited, err.Error())
 		return
 	}
 	ch, reqs, err := nc.Accept()
 	if err != nil {
+		s.Close()
 		return
 	}
 	go ssh.DiscardRequests(reqs)
 	s.Conn = channelConn{ch}
 	log.Printf("%s: forwarding %s:%d", p.Name, target.Host, target.Port)
-	c.connector.Serve(s)
+	c.incoming.Hand(s)
 }
 
 // Only connections the principal reaches are routed, so their claims never tie with another principal's.
 func (st *state) route(p principal, host string, port uint32) *connection {
-	if name, ok := strings.CutSuffix(host, monitorSuffix); ok {
+	if name, ok := strings.CutSuffix(host, ".monitor"); ok {
 		c := st.connections[name]
 		if c == nil || !p.reaches(c.account) {
 			return nil

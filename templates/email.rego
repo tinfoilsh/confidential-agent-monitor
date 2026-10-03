@@ -3,21 +3,24 @@ package templates.email
 catalog := {
 	"title": "Email",
 	"fields": [
-		{"key": "address", "label": "Address"},
-		{"key": "password", "label": "App password", "secret": true},
-		{"key": "imap_host", "label": "IMAP server", "default": "imap.gmail.com"},
-		{"key": "smtp_host", "label": "SMTP server", "default": "smtp.gmail.com"},
+		{"key": "address", "label": "Own email address, for policy", "path": ["policy_options", "address"]},
+		{
+			"key": "password",
+			"label": "App password",
+			"secret": true,
+			"paths": [["connections", "imap", "imap", "password"], ["connections", "smtp", "smtp", "password"]]
+		},
+		{"key": "imap_url", "label": "IMAP URL", "default": "imaps://imap.gmail.com", "path": ["connections", "imap", "imap", "url"]},
+		{"key": "smtp_url", "label": "SMTP URL", "default": "smtps://smtp.gmail.com", "path": ["connections", "smtp", "smtp", "url"]},
+		{"key": "imap_user", "label": "IMAP user", "path": ["connections", "imap", "imap", "user"], "edit_only": true},
+		{"key": "smtp_user", "label": "SMTP user", "path": ["connections", "smtp", "smtp", "user"], "edit_only": true}
 	],
 	"connections": {
-		"imap": {"imap": {"url": "imaps://{imap_host}", "user": "{address}", "password": {"$secret": "password"}}},
-		"smtp": {"smtp": {"url": "smtps://{smtp_host}", "user": "{address}", "password": {"$secret": "password"}}},
+		"imap": {"imap": {"url": "{imap_url}", "user": "{address}"}},
+		"smtp": {"smtp": {"url": "{smtp_url}", "user": "{address}"}}
 	},
 	"defaults": {"contents": "me", "strangers": true, "sends": "me"},
-	"actions": {
-		"read": {"title": "Read mail"},
-		"organize": {"title": "Move, flag and delete mail"},
-		"send": {"title": "Send mail", "save": "Allow mail to {to}"},
-	},
+	"actions": {"read": {"title": "Read mail"}, "organize": {"title": "Move, flag and delete mail"}, "send": {"title": "Send mail", "save": "Allow mail to {to}"}}
 }
 
 changes := {"organize", "send"}
@@ -40,7 +43,7 @@ action := "send" if input.smtp
 
 sends := "anyone" if {
 	some to in input.smtp.to
-	not lower(to) == lower(input.account.fields.address)
+	not lower(to) == lower(input.account.policy_options.address)
 }
 
 scope := {"to": sort(input.smtp.to)}

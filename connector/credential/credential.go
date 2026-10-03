@@ -1,82 +1,106 @@
 package credential
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
+	"time"
+
+	"golang.org/x/oauth2"
 )
 
-// Source supplies the current credential value to a connector.
-type Source interface {
-	Value(context.Context) (string, error)
+var ErrNotConfigured = errors.New("credential is not configured")
+
+// Value is a string or an OAuth grant. Disclosure is controlled by field metadata.
+type Value struct {
+	raw     json.RawMessage
+	text    string
+	grant   *oauth
+	token   *oauth2.Token
+	refresh chan struct{}
+	Save    func(context.Context, json.RawMessage, json.RawMessage) error
 }
 
-// Static is a credential whose value does not expire.
-type Static string
-
-func (s Static) Value(context.Context) (string, error) { return string(s), nil }
-
-// Fields identifies credential fields whose secret references survive config decoding.
-// A * path segment addresses each entry of a map or array.
-type Fields interface {
-	CredentialFields() []string
-}
-
-// Store holds the shared sources for one account. Published stores are immutable.
-type Store map[string]Source
-
-// Credential is a named reference or an inline credential.
-type Credential struct {
-	Name *string
-	Source
-}
-
-func (c *Credential) UnmarshalJSON(raw []byte) error {
-	*c = Credential{}
-	var ref map[string]json.RawMessage
-	if json.Unmarshal(raw, &ref) == nil && len(ref) == 1 {
-		if name, ok := ref["$secret"]; ok {
-			if err := json.Unmarshal(name, &c.Name); err != nil {
-				return err
-			}
-			if c.Name == nil {
-				return errors.New("credential reference must be a string")
-			}
-			return nil
-		}
-	}
-	var value *string
-	if err := json.Unmarshal(raw, &value); err == nil && value != nil {
-		c.Source = Static(*value)
+func (v *Value) UnmarshalJSON(raw []byte) error {
+	*v = Value{raw: bytes.Clone(raw)}
+	if json.Unmarshal(raw, &v.text) == nil {
 		return nil
 	}
-	var v struct {
+	var cfg struct {
 		OAuth *oauth `json:"oauth"`
 	}
-	if err := json.Unmarshal(raw, &v); err != nil {
+	dec := json.NewDecoder(bytes.NewReader(raw))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&cfg); err != nil {
 		return err
 	}
-	if v.OAuth == nil {
+	if cfg.OAuth == nil {
 		return errors.New("credential must be a string or an oauth grant")
 	}
-	c.Source = newOAuth(*v.OAuth)
+	v.grant = cfg.OAuth
+	v.token = &oauth2.Token{RefreshToken: v.grant.RefreshToken}
+	v.refresh = make(chan struct{}, 1)
 	return nil
 }
 
-func (c *Credential) Value(ctx context.Context, store Store) (string, error) {
-	if c == nil {
-		return "", errors.New("credential is not set")
+func (v *Value) Raw() json.RawMessage { return v.raw }
+
+func (v *Value) Value(ctx context.Context) (string, error) {
+	if v == nil {
+		return "", ErrNotConfigured
 	}
-	source := c.Source
-	if c.Name != nil {
-		source = store[*c.Name]
-		if source == nil {
-			return "", fmt.Errorf("credential %q is not set", *c.Name)
+	if v.grant == nil {
+		if bytes.Equal(v.raw, []byte("null")) {
+			return "", ErrNotConfigured
 		}
+		return v.text, nil
 	}
-	if source == nil {
-		return "", errors.New("credential is not set")
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	select {
+	case v.refresh <- struct{}{}:
+		defer func() { <-v.refresh }()
+	case <-ctx.Done():
+		return "", ctx.Err()
 	}
-	return source.Value(ctx)
+	grant := *v.grant
+	t := v.token
+	if !t.Valid() {
+		if t.RefreshToken == "" {
+			return "", ErrNotConfigured
+		}
+		var err error
+		config := oauth2.Config{ClientID: grant.ClientID, ClientSecret: grant.ClientSecret, Endpoint: oauth2.Endpoint{TokenURL: grant.TokenURL}}
+		if t, err = config.TokenSource(ctx, t).Token(); err != nil {
+			return "", err
+		}
+		v.token = t
+	}
+	if grant.RefreshToken != t.RefreshToken {
+		grant.RefreshToken = t.RefreshToken
+		raw := encodeGrant(grant)
+		if v.Save != nil {
+			if err := v.Save(ctx, v.raw, raw); err != nil {
+				return "", err
+			}
+		}
+		*v.grant, v.raw = grant, raw
+	}
+	return t.AccessToken, nil
+}
+
+// Describe returns only the status needed by the owner editor.
+func Describe(raw json.RawMessage) string {
+	var v Value
+	if json.Unmarshal(raw, &v) != nil || bytes.Equal(raw, []byte("null")) {
+		return "unset"
+	}
+	if v.grant == nil {
+		return "static"
+	}
+	if v.grant.RefreshToken != "" {
+		return "oauth"
+	}
+	return "oauth-required"
 }

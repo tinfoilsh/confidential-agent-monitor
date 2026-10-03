@@ -2,13 +2,13 @@ package templates.postgres
 
 catalog := {
 	"title": "Postgres",
-	"fields": [{"key": "url", "label": "Connection URL", "hint": "postgres://user:password@host/db", "secret": true}],
-	"connections": {"": {"postgres": {"$secret": "url"}}},
+	"fields": [
+		{"key": "url", "label": "Connection URL", "hint": "postgres://user@host/db", "path": ["connections", "", "postgres", "url"]},
+		{"key": "password", "label": "Password", "secret": true, "default": "", "path": ["connections", "", "postgres", "password"]}
+	],
+	"connections": {"": {"postgres": {"url": "{url}"}}},
 	"defaults": {"contents": "me", "strangers": true, "sends": "me"},
-	"actions": {
-		"read": {"title": "Run SELECT, SHOW and EXPLAIN"},
-		"write": {"title": "Change data and schema", "save": "Allow this statement"},
-	},
+	"actions": {"read": {"title": "Run SELECT, SHOW and EXPLAIN"}, "write": {"title": "Change data and schema", "save": "Allow this statement"}}
 }
 
 changes := {"write"}

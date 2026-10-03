@@ -18,12 +18,9 @@ import (
 )
 
 const (
-	caName        = "monitor dev CA"
-	caLifetime    = 10 * 365 * 24 * time.Hour
-	leafLifetime  = 24 * time.Hour
-	leafBackdate  = time.Hour
-	pemCert       = "CERTIFICATE"
-	pemPrivateKey = "PRIVATE KEY"
+	caLifetime   = 10 * 365 * 24 * time.Hour
+	leafLifetime = 24 * time.Hour
+	leafBackdate = time.Hour
 )
 
 type keyMaterial struct {
@@ -59,7 +56,7 @@ func createCA(k *keyMaterial) error {
 	}
 	now := time.Now()
 	template := &x509.Certificate{
-		Subject:               pkix.Name{CommonName: caName},
+		Subject:               pkix.Name{CommonName: "monitor dev CA"},
 		NotBefore:             now,
 		NotAfter:              now.Add(caLifetime),
 		IsCA:                  true,
@@ -74,8 +71,8 @@ func createCA(k *keyMaterial) error {
 	if err != nil {
 		return err
 	}
-	k.CAKey = string(pem.EncodeToMemory(&pem.Block{Type: pemPrivateKey, Bytes: private}))
-	k.CACert = string(pem.EncodeToMemory(&pem.Block{Type: pemCert, Bytes: der}))
+	k.CAKey = string(pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: private}))
+	k.CACert = string(pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der}))
 	return nil
 }
 

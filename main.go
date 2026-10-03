@@ -21,23 +21,20 @@ import (
 	_ "gocloud.dev/blob/s3blob"
 )
 
-const (
-	devBucket         = "file://"
-	readHeaderTimeout = 30 * time.Second
-)
+const readHeaderTimeout = 30 * time.Second
 
 // The kind is also the protocol policies see.
 var connectorKinds = map[string]func() connector.Connector{
 	"http":      func() connector.Connector { return new(web.HTTP) },
+	"mcp":       func() connector.Connector { return new(mcp.Server) },
 	"ssh":       func() connector.Connector { return new(session.SSH) },
 	"cli":       func() connector.Connector { return new(session.CLI) },
 	"ssh-agent": func() connector.Connector { return new(signer.SSHAgent) },
 	"gpg-agent": func() connector.Connector { return new(signer.GPGAgent) },
 	"imap":      func() connector.Connector { return new(email.IMAP) },
 	"smtp":      func() connector.Connector { return new(email.SMTP) },
-	"postgres":  func() connector.Connector { return new(postgres.Postgres) },
 	"redis":     func() connector.Connector { return new(redis.Redis) },
-	"mcp":       func() connector.Connector { return new(mcp.Server) },
+	"postgres":  func() connector.Connector { return new(postgres.Postgres) },
 }
 
 func main() {
@@ -52,7 +49,7 @@ func main() {
 }
 
 func run(listen, api, bucketURL, object string) error {
-	if !strings.HasPrefix(bucketURL, devBucket) {
+	if !strings.HasPrefix(bucketURL, "file://") {
 		delete(connectorKinds, "cli")
 		delete(connectorKinds, "gpg-agent")
 	}

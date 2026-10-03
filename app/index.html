@@ -285,55 +285,86 @@ function questions(a) {
 
 const answers = () => ({ contents: $("contents").value, strangers: $("strangers").checked, sends: $("sends").value });
 
-function input(f, value) {
-  if (f.json || f.multiline) return `<textarea id="f-${f.key}" rows="6">${esc(value)}</textarea>`;
-  return `<input id="f-${f.key}" type="${f.secret ? "password" : "text"}" placeholder="${esc(f.hint)}" value="${esc(f.list ? (value ?? []).join(", ") : value)}">`;
+function input(f, value, disabled = false) {
+  const state = disabled ? "disabled" : "";
+  if (f.json) value = value === undefined ? "" : JSON.stringify(value, null, 2);
+  if (f.json || f.multiline) return `<textarea id="f-${esc(f.key)}" ${state} rows="6">${esc(value)}</textarea>`;
+  return `<input id="f-${esc(f.key)}" ${state} type="${f.secret ? "password" : "text"}" placeholder="${esc(f.hint)}" value="${esc(f.list ? (value ?? []).join(", ") : value)}">`;
 }
 
 function read(f) {
-  const v = $("f-" + f.key).value.trim();
-  if (f.json) return v ? JSON.parse(v) : undefined;
+  const raw = $("f-" + f.key).value;
+  const v = f.secret ? raw : raw.trim();
+  if (f.json) return v ? JSON.parse(v) : {};
   return f.list ? v.split(/[\s,]+/).filter(Boolean) : v;
 }
 
-const filled = (x, v) => JSON.parse(JSON.stringify(x), (_, s) => (typeof s === "string" ? fill(s, v) : s));
+const atPath = (object, path) => path.reduce((value, key) => value?.[key], object);
+function putPath(object, path, value) {
+  for (const key of path.slice(0, -1)) {
+    if (!Object.hasOwn(object, key)) Object.defineProperty(object, key, { value: {}, enumerable: true });
+    object = object[key];
+  }
+  Object.defineProperty(object, path.at(-1), { value, enumerable: true, configurable: true, writable: true });
+}
+const paths = (f) => f.paths ?? [f.path];
+const plain = (c) => c.fields.filter((f) => !f.secret);
+const fieldValue = (acc, f) => atPath(acc, f.path) ?? (f.list ? [] : f.json ? {} : "");
+const filled = (c, values) => JSON.parse(JSON.stringify(c), (_, v) => typeof v === "string" ? fill(v, values) : v);
 
-const plain = (c) => c.fields.filter((f) => !f.secret && !f.json);
-
-// secretsOf keeps only the secrets the form filled in, so a patch leaves the others as they are.
-function secretsOf(c, v) {
-  const all = Object.assign({}, ...c.fields.filter((f) => f.secret).map((f) => (f.json ? v[f.key] : { [f.key]: v[f.key] })));
-  return Object.fromEntries(Object.entries(all).filter(([, s]) => s));
+// Used for the custom JSON editor so removed settings become explicit deletions.
+function changes(before, after) {
+  if (JSON.stringify(before) === JSON.stringify(after)) return undefined;
+  if (after === null || typeof after !== "object" || Array.isArray(after)) return after;
+  return Object.fromEntries([...new Set([...Object.keys(before ?? {}), ...Object.keys(after)])]
+    .map((key) => [key, Object.hasOwn(after, key) ? changes(before?.[key], after[key]) : null])
+    .filter(([, value]) => value !== undefined));
 }
 
 function add(template) {
   const c = view.templates[template];
   if (!c) return `<p class="empty">No template ${esc(template)}.</p>`;
-  return `<section><h2>Add ${c.title}</h2><label>Name</label><input id="account-name" value="${esc(template)}">
-    ${c.fields.map((f) => `<label>${esc(f.label)}</label>${input(f, f.default)}`).join("")}
+  return `<section><h2>Add ${esc(c.title)}</h2><label>Name</label><input id="account-name" value="${esc(template)}">
+    ${c.fields.filter((f) => !f.edit_only).map((f) => `<label>${esc(f.label)}</label>${f.secret && !f.json ? `<select id="mode-${esc(f.key)}" onchange="$(${q("f-" + f.key)}).disabled = this.value !== 'replace'">${opt("replace", "Set value", f.oauth ? "oauth" : "replace")}${opt("clear", "Leave unconfigured")}${f.oauth ? opt("oauth", "Sign in after creating", "oauth") : ""}</select>` : ""}${input(f, f.default, !!f.oauth)}`).join("")}
     ${questions(c.defaults)}<div class="row"><span></span><button class="primary" onclick="addAccount(${q(template)})">Add</button></div></section>`;
 }
 
 const addAccount = run(async (template) => {
   const c = view.templates[template], name = $("account-name").value.trim();
-  const v = Object.fromEntries(c.fields.map((f) => [f.key, read(f)]));
-  const connections = c.connections ? filled(c.connections, v) : v.connections;
-  const fields = Object.fromEntries(plain(c).map((f) => [f.key, v[f.key]]));
-  const grants = Object.fromEntries(c.fields.filter((f) => f.oauth && !v[f.key]).map((f) => [f.key, { oauth: filled(f.oauth, v) }]));
-  patch({ accounts: { [name]: { template, fields, ...answers(), connections } }, secrets: { [name]: { ...grants, ...secretsOf(c, v) } } }, "account/" + encodeURIComponent(name));
+  const fields = c.fields.filter((f) => !f.edit_only);
+  const values = Object.fromEntries(fields.map((f) => [f.key, read(f)]));
+  const acc = { template, ...answers(), connections: c.connections ? filled(c.connections, values) : values.connections };
+  for (const f of fields) {
+    const mode = f.secret ? $("mode-" + f.key).value : "replace";
+    const value = mode === "clear" ? null : mode === "oauth" ? { oauth: filled(f.oauth, values) } : values[f.key];
+    for (const path of paths(f)) putPath(acc, path, value);
+  }
+  await patch({ accounts: { [name]: acc } }, "account/" + encodeURIComponent(name));
 });
+
+function credentialFields(a) {
+  return (view.fields?.[a] ?? []).map((meta) => {
+    const f = entry(a).fields.find((f) => paths(f).some((path) => JSON.stringify(path) === JSON.stringify(meta.path)));
+    return { ...f, ...meta, key: meta.path.map(encodeURIComponent).join("/"), label: `${meta.path[1] || "Default"}: ${f?.label ?? meta.path.at(-1)}`, secret: true, multiline: true };
+  }).sort((a, b) => a.key.localeCompare(b.key));
+}
+
+function credentialEditor(a, f) {
+  const status = f.kind === "oauth-required" ? "Sign-in required" : f.kind === "unset" ? "Not configured" : `Configured · ${f.kind}`;
+  return `<label>${esc(f.label)} · ${esc(status)}</label>
+    <select id="mode-${esc(f.key)}" onchange="$(${q("f-" + f.key)}).disabled = this.value !== 'replace'"><option value="keep">Keep unchanged</option><option value="replace">Replace value</option><option value="clear">Clear credential</option></select>
+    ${input(f, undefined, true)}${f.oauth || f.kind.startsWith("oauth") ? `<div class="row"><span></span><button onclick="signIn(${q(a)}, ${q(f.key)})">Sign in</button></div>` : ""}`;
+}
 
 function account(a) {
   const acc = accounts()[a];
   if (!acc) return `<p class="empty">No account ${esc(a)}.</p>`;
   const c = entry(a);
   const users = Object.entries(ids()).filter(([, id]) => (id.accounts?.[a]?.level ?? "off") !== "off").map(([n, id]) => `${n} (${id.accounts[a].level})`);
-  const secrets = c.fields.filter((f) => f.secret).map((f) => `<label>${esc(f.label)}</label>${input(f)}${f.oauth ? `<div class="row"><span></span><button onclick="signIn(${q(a)}, ${q(f.key)})">Sign in</button></div>` : ""}`);
   return `<section><h2>${esc(a)} · ${esc(c.title)}</h2>${questions(acc)}
-      ${plain(c).map((f) => `<label>${esc(f.label)}</label>${input(f, acc.fields?.[f.key])}`).join("")}
+      ${plain(c).map((f) => `<label>${esc(f.label)}</label>${input(f, fieldValue(acc, f))}`).join("")}
+      ${credentialFields(a).map((f) => credentialEditor(a, f)).join("")}
       <div class="row"><span></span><button onclick="saveAccount(${q(a)})">Save</button></div></section>
-    <section><h2>Secrets</h2><p class="muted">Set: ${esc((view.secrets[a] ?? []).join(", ") || "none")}</p>${secrets.join("")}
-      ${secrets.length ? `<div class="row"><span></span><button onclick="replaceSecrets(${q(a)})">Replace</button></div>` : ""}</section>
     <section><h2>Actions</h2>${tree(c.actions).map(([, x, d]) => `<div class="node" style="--depth: ${d}">${esc(x.title)}</div>`).join("")}<p class="muted">Used by ${esc(users.join(", ") || "no agents")}</p></section>
     <div id="connector-status">${mcpKeys(a).map((k) => review(a, k, c)).join("")}</div>
     <section><details><summary class="muted">Advanced → Custom rules</summary><textarea id="policy" rows="12">${esc(view.config.policies?.[a])}</textarea>
@@ -355,21 +386,26 @@ function review(a, key, c) {
 const approve = (a, key) => patch({ accounts: { [a]: { connections: { [key]: { mcp: { pin: view.status[connName(a, key)].pin } } } } } });
 
 const saveAccount = (a) => {
-  const c = entry(a);
-  patch({ accounts: { [a]: { ...answers(), fields: { ...accounts()[a].fields, ...Object.fromEntries(plain(c).map((f) => [f.key, read(f)])) } } } });
+  const acc = accounts()[a], update = answers();
+  for (const f of plain(entry(a))) {
+    const value = read(f);
+    const delta = changes(fieldValue(acc, f), value);
+    if (delta !== undefined) putPath(update, f.path, delta);
+  }
+  for (const f of credentialFields(a)) {
+    const mode = $("mode-" + f.key).value;
+    if (mode === "replace") putPath(update, f.path, read(f));
+    if (mode === "clear") putPath(update, f.path, null);
+  }
+  return patch({ accounts: { [a]: update } });
 };
 
-const replaceSecrets = (a) => {
-  const c = entry(a);
-  const v = { ...accounts()[a].fields, ...Object.fromEntries(c.fields.filter((f) => f.secret).map((f) => [f.key, read(f)])) };
-  patch({ secrets: { [a]: secretsOf(c, v) } });
-};
-
-// The grant is patched in first, so signing in replaces a pasted token and reuses an earlier client registration.
+// Sign-in leaves the current credential usable until the exchange succeeds.
 const signIn = run(async (a, key) => {
-  const f = entry(a).fields.find((x) => x.key === key);
-  remember(await api("PATCH", "/", { secrets: { [a]: { [key]: { oauth: filled(f.oauth, accounts()[a].fields) } } } }));
-  const { url } = await api("POST", `/secrets/${encodeURIComponent(a)}/${encodeURIComponent(key)}/sign-in`, { redirect: location.origin + location.pathname });
+  const f = credentialFields(a).find((f) => f.key === key);
+  const values = Object.fromEntries(plain(entry(a)).map((f) => [f.key, fieldValue(accounts()[a], f)]));
+  const credential = f?.oauth ? { oauth: filled(f.oauth, values) } : undefined;
+  const { url } = await api("POST", `/accounts/${encodeURIComponent(a)}/sign-in`, { path: f.path, redirect: location.origin + location.pathname, credential });
   sessionStorage.setItem(RETURN, location.hash);
   location.href = url;
 });
@@ -377,7 +413,6 @@ const signIn = run(async (a, key) => {
 // Identities may not name a missing account, so removing one also clears it from every agent.
 const removeAccount = (a) => patch({
   accounts: { [a]: null },
-  secrets: { [a]: null },
   policies: { [a]: null },
   identities: Object.fromEntries(Object.keys(ids()).map((n) => [n, { accounts: { [a]: null } }])),
 }, "accounts");

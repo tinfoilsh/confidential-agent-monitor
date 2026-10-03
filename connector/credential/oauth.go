@@ -10,85 +10,28 @@ import (
 	"net/url"
 	"slices"
 	"strings"
-	"sync"
-	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/oauthex"
 	"golang.org/x/oauth2"
 )
 
-const (
-	clientName    = "Monitor"
-	offlineAccess = "offline_access"
-)
+const offlineAccess = "offline_access"
 
 // A grant without an AuthURL is signed in at the authorization server its Resource names (RFC 9728).
 type oauth struct {
-	AuthURL      string `json:"auth_url,omitempty"`
+	AuthURL      string `json:"auth_url"`
 	TokenURL     string `json:"token_url"`
 	ClientID     string `json:"client_id"`
-	ClientSecret string `json:"client_secret,omitempty"`
+	ClientSecret string `json:"client_secret"`
 	RefreshToken string `json:"refresh_token"`
-	Scope        string `json:"scope,omitempty"`
-	Resource     string `json:"resource,omitempty"`
+	Scope        string `json:"scope"`
+	Resource     string `json:"resource"`
 }
 
-// OAuth caches access tokens and persists refresh-token rotations.
-// Set Rotated before sharing the source with callers.
-type OAuth struct {
-	config    *oauth2.Config
-	token     *oauth2.Token
-	refresh   chan struct{}
-	mu        sync.Mutex
-	persisted string
-	saving    bool
-	Rotated   func(old, new string) error
-}
-
-func newOAuth(grant oauth) *OAuth {
-	return &OAuth{
-		config: &oauth2.Config{ClientID: grant.ClientID, ClientSecret: grant.ClientSecret,
-			Endpoint: oauth2.Endpoint{TokenURL: grant.TokenURL}},
-		token:     &oauth2.Token{RefreshToken: grant.RefreshToken},
-		refresh:   make(chan struct{}, 1),
-		persisted: grant.RefreshToken,
-	}
-}
-
-func (c *OAuth) Value(ctx context.Context) (string, error) {
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
-	select {
-	case c.refresh <- struct{}{}:
-		defer func() { <-c.refresh }()
-	case <-ctx.Done():
-		return "", ctx.Err()
-	}
-	t := c.token
-	if !t.Valid() {
-		var err error
-		if t, err = c.config.TokenSource(ctx, t).Token(); err != nil {
-			return "", err
-		}
-		c.token = t
-	}
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	if c.Rotated != nil && c.persisted != t.RefreshToken && !c.saving {
-		old, next := c.persisted, t.RefreshToken
-		c.saving = true
-		go func() {
-			err := c.Rotated(old, next)
-			c.mu.Lock()
-			defer c.mu.Unlock()
-			if err == nil {
-				c.persisted = next
-			}
-			c.saving = false
-		}()
-	}
-	return t.AccessToken, nil
+func encodeGrant(grant oauth) json.RawMessage {
+	raw, _ := json.Marshal(map[string]oauth{"oauth": grant})
+	return raw
 }
 
 // A SignIn is an authorization code flow waiting for the provider to redirect back with a code.
@@ -102,18 +45,15 @@ type SignIn struct {
 }
 
 // NewSignIn starts the flow for an oauth secret, registering a client first when the secret names only its resource.
-func NewSignIn(ctx context.Context, client *http.Client, secret any, redirect string) (*SignIn, error) {
-	raw, err := json.Marshal(secret)
-	if err != nil {
+func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage, redirect string) (*SignIn, error) {
+	var v Value
+	if err := json.Unmarshal(secret, &v); err != nil {
 		return nil, err
 	}
-	var v struct {
-		OAuth *oauth `json:"oauth"`
-	}
-	if err := json.Unmarshal(raw, &v); err != nil || v.OAuth == nil {
+	if v.grant == nil {
 		return nil, errors.New("the secret is not an oauth grant")
 	}
-	s := &SignIn{State: rand.Text(), grant: *v.OAuth, client: client, verifier: oauth2.GenerateVerifier()}
+	s := &SignIn{State: rand.Text(), grant: *v.grant, client: client, verifier: oauth2.GenerateVerifier()}
 	if s.grant.AuthURL == "" {
 		if err := s.register(ctx, redirect); err != nil {
 			return nil, err
@@ -167,7 +107,7 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 		return fmt.Errorf("%s does not register clients", prm.AuthorizationServers[0])
 	}
 	reg, err := oauthex.RegisterClient(ctx, asm.RegistrationEndpoint, &oauthex.ClientRegistrationMetadata{
-		RedirectURIs: []string{redirect}, ClientName: clientName, GrantTypes: []string{"authorization_code", "refresh_token"},
+		RedirectURIs: []string{redirect}, ClientName: "Monitor", GrantTypes: []string{"authorization_code", "refresh_token"},
 	}, s.client)
 	if err != nil {
 		return err
@@ -183,15 +123,15 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 	return nil
 }
 
-// Exchange trades the provider's code for the secret a Credential refreshes from.
-func (s *SignIn) Exchange(ctx context.Context, code string) (any, error) {
+// Exchange returns the replacement record for the authorized scope.
+func (s *SignIn) Exchange(ctx context.Context, code string) (json.RawMessage, error) {
 	t, err := s.config.Exchange(context.WithValue(ctx, oauth2.HTTPClient, s.client), code, append(s.opts, oauth2.VerifierOption(s.verifier))...)
 	if err != nil {
 		return nil, err
 	}
 	if t.RefreshToken == "" {
-		return t.AccessToken, nil
+		return json.Marshal(t.AccessToken)
 	}
 	s.grant.RefreshToken = t.RefreshToken
-	return map[string]oauth{"oauth": s.grant}, nil
+	return encodeGrant(s.grant), nil
 }

@@ -2,13 +2,13 @@ package templates.redis
 
 catalog := {
 	"title": "Redis",
-	"fields": [{"key": "url", "label": "URL", "hint": "rediss://user:password@host:6379", "secret": true}],
-	"connections": {"": {"redis": {"$secret": "url"}}},
+	"fields": [
+		{"key": "url", "label": "Connection URL", "hint": "rediss://user@host:6379", "path": ["connections", "", "redis", "url"]},
+		{"key": "password", "label": "Password", "secret": true, "default": "", "path": ["connections", "", "redis", "password"]}
+	],
+	"connections": {"": {"redis": {"url": "{url}"}}},
 	"defaults": {"contents": "me", "strangers": true, "sends": "me"},
-	"actions": {
-		"read": {"title": "Read keys"},
-		"write": {"title": "Change keys and the server", "save": "Allow {command}"},
-	},
+	"actions": {"read": {"title": "Read keys"}, "write": {"title": "Change keys and the server", "save": "Allow {command}"}}
 }
 
 changes := {"write"}

@@ -4,6 +4,8 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
+	"io"
 	"net"
 	"net/http"
 	"net/netip"
@@ -12,22 +14,30 @@ import (
 	"time"
 
 	"code.dny.dev/ssrf"
-	"github.com/tinfoilsh/monitor/connector/credential"
 	"golang.org/x/crypto/ssh"
 )
 
 const DialTimeout = 30 * time.Second
 
-// Serve owns the stream, but returning does not end its lifetime.
+// A connector either runs a server or handles individual streams.
 type Connector interface {
-	Serve(s *Stream)
+	// Fields declares credentials and redacted values at relative JSON paths.
+	Fields() []Field
 }
 
-// Start runs once in the connector's goroutine, before it receives any stream.
-type Starter interface{ Start(context.Context, *Env) }
+type runner interface {
+	Run(context.Context, *Env, *Listener, func()) error
+}
 
-// Stop runs once before a replacement starts. Only this connector is interrupted.
-type Stopper interface{ Stop() }
+type streamHandler interface{ Serve(*Stream, *Env) }
+
+// Run owns resources and waits for stream handlers to finish on cancellation.
+func Run(c Connector, ctx context.Context, e *Env, in *Listener, ready func()) error {
+	if r, ok := c.(runner); ok {
+		return r.Run(ctx, e, in, ready)
+	}
+	return ServeStreams(in, ready, func(s *Stream) { c.(streamHandler).Serve(s, e) })
+}
 
 // Status is shown to the owner.
 type Reporter interface{ Status() any }
@@ -37,10 +47,34 @@ type Claimer interface {
 }
 
 type Env struct {
-	Credentials credential.Store
-	TLS         *tls.Config
-	HostKey     ssh.Signer
-	Dialer      *net.Dialer
+	TLS     *tls.Config
+	HostKey ssh.Signer
+	Dialer  *net.Dialer
+}
+
+func (e *Env) Transport() *http.Transport {
+	transport := http.DefaultTransport.(*http.Transport).Clone()
+	transport.Proxy = nil
+	transport.DialContext = e.Dialer.DialContext
+	return transport
+}
+
+type streamKey struct{}
+
+func RequestStream(r *http.Request) *Stream { return r.Context().Value(streamKey{}).(*Stream) }
+
+func ServeHTTP(ctx context.Context, in net.Listener, ready func(), handler http.Handler) error {
+	server := &http.Server{
+		ReadHeaderTimeout: DialTimeout,
+		BaseContext:       func(net.Listener) context.Context { return ctx },
+		ConnContext: func(ctx context.Context, c net.Conn) context.Context {
+			return context.WithValue(ctx, streamKey{}, StreamOf(c))
+		},
+		Handler: handler,
+	}
+	defer server.Shutdown(context.Background())
+	ready()
+	return server.Serve(in)
 }
 
 // The guard checks the resolved address, so DNS cannot steer an upstream into a refused range.
@@ -58,13 +92,35 @@ func NewDialer(allowed []netip.Prefix) *net.Dialer {
 }
 
 type Stream struct {
+	Context context.Context
+	cancel  context.CancelFunc
 	net.Conn
-	*Env
 	Name string
 	Host string
 	Port uint32
 	// The error joins the message of every rule that denied the event.
 	Gate func(Event) error
+}
+
+func NewStream(ctx context.Context) *Stream {
+	ctx, cancel := context.WithCancel(ctx)
+	return &Stream{Context: ctx, cancel: cancel}
+}
+
+func (s *Stream) Close() error {
+	if s.cancel != nil {
+		s.cancel()
+	}
+	if s.Conn != nil {
+		return s.Conn.Close()
+	}
+	return nil
+}
+
+// Interrupt closes an upstream if its stream ends, including during handshakes.
+func (s *Stream) Interrupt(c io.Closer) func() {
+	stop := context.AfterFunc(s.Context, func() { c.Close() })
+	return func() { stop(); c.Close() }
 }
 
 type Event struct {
@@ -174,29 +230,19 @@ type PostgresLayer struct {
 	SQL string `json:"sql"`
 }
 
-// An Endpoint is a URL, or a URL with the user and password kept apart so neither needs escaping.
-type Endpoint struct{ url.URL }
-
-func (e *Endpoint) UnmarshalJSON(raw []byte) error {
-	var v struct {
-		URL      string `json:"url"`
-		User     string `json:"user"`
-		Password string `json:"password"`
-	}
-	if err := json.Unmarshal(raw, &v.URL); err != nil {
-		if err := json.Unmarshal(raw, &v); err != nil {
-			return err
-		}
-	}
-	u, err := url.Parse(v.URL)
+// ParseURL validates a destination whose password is supplied separately.
+func ParseURL(raw string) (*url.URL, error) {
+	u, err := url.Parse(raw)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	if v.User != "" {
-		u.User = url.UserPassword(v.User, v.Password)
+	if u.Scheme == "" || u.Host == "" {
+		return nil, errors.New("destination requires a URL with a scheme and host")
 	}
-	e.URL = *u
-	return nil
+	if _, set := u.User.Password(); set || u.Query().Has("password") {
+		return nil, errors.New("use the password field for URL authentication")
+	}
+	return u, nil
 }
 
 func address(u *url.URL, secure, port, securePort string) string {
@@ -209,42 +255,72 @@ func address(u *url.URL, secure, port, securePort string) string {
 	return net.JoinHostPort(u.Hostname(), port)
 }
 
-func DialURL(d *net.Dialer, u *url.URL, secure, port, securePort string) (net.Conn, error) {
+func DialURL(ctx context.Context, d *net.Dialer, u *url.URL, secure, port, securePort string) (net.Conn, error) {
 	target := address(u, secure, port, securePort)
 	if u.Scheme == secure {
-		return tls.DialWithDialer(d, "tcp", target, &tls.Config{ServerName: u.Hostname()})
+		return (&tls.Dialer{NetDialer: d, Config: &tls.Config{ServerName: u.Hostname()}}).DialContext(ctx, "tcp", target)
 	}
-	return d.Dial("tcp", target)
+	return d.DialContext(ctx, "tcp", target)
 }
 
-// Listener feeds streams to library servers that only serve a net.Listener.
+// Listener closes every admitted or queued stream when canceled.
 type Listener struct {
-	conns chan net.Conn
-	done  chan struct{}
-	once  sync.Once
+	conns  chan *Stream
+	ctx    context.Context
+	cancel context.CancelFunc
 }
 
-func NewListener() *Listener { return &Listener{conns: make(chan net.Conn), done: make(chan struct{})} }
-
+func NewListener() *Listener {
+	ctx, cancel := context.WithCancel(context.Background())
+	return &Listener{conns: make(chan *Stream), ctx: ctx, cancel: cancel}
+}
 func (l *Listener) Accept() (net.Conn, error) {
 	select {
 	case c := <-l.conns:
 		return c, nil
-	case <-l.done:
+	case <-l.ctx.Done():
 		return nil, net.ErrClosed
 	}
 }
+func (l *Listener) Close() error { l.cancel(); return nil }
+func (*Listener) Addr() net.Addr { return &net.TCPAddr{} }
 
-func (l *Listener) Close() error    { l.once.Do(func() { close(l.done) }); return nil }
-func (*Listener) Addr() net.Addr    { return &net.TCPAddr{} }
-func (l *Listener) Serve(s *Stream) { l.Hand(s) }
-
-// Hand closes c instead once the listener is closed.
-func (l *Listener) Hand(c net.Conn) {
+func (l *Listener) Hand(s *Stream) {
+	closeStream := sync.OnceFunc(func() { s.Close() })
+	stop := context.AfterFunc(l.ctx, closeStream)
+	context.AfterFunc(s.Context, func() { stop(); closeStream() })
 	select {
-	case l.conns <- c:
-	case <-l.done:
-		c.Close()
+	case l.conns <- s:
+	case <-l.ctx.Done():
+		s.Close()
+	case <-s.Context.Done():
+		s.Close()
+	}
+}
+
+// CopyReplies returns cleanup that closes both sides and joins the reply pump.
+func CopyReplies(s *Stream, up net.Conn, replies io.Reader) func() {
+	done := make(chan struct{})
+	go func() { defer close(done); io.Copy(s, replies); s.Close() }()
+	return func() { s.Close(); up.Close(); <-done }
+}
+
+// ServeStreams adapts blocking stream handlers and waits for every handler on exit.
+func ServeStreams(in *Listener, ready func(), serve func(*Stream)) error {
+	var workers sync.WaitGroup
+	defer workers.Wait()
+	defer in.Close()
+	ready()
+	for {
+		c, err := in.Accept()
+		if err != nil {
+			return err
+		}
+		workers.Go(func() {
+			s := StreamOf(c)
+			defer s.Close()
+			serve(s)
+		})
 	}
 }
 

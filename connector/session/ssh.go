@@ -2,6 +2,7 @@ package session
 
 import (
 	"cmp"
+	"context"
 	"fmt"
 	"io"
 	"log"
@@ -19,25 +20,26 @@ import (
 )
 
 const (
-	channelSession   = "session"
-	sshPort          = 22
-	requestExec      = "exec"
-	requestSubsystem = "subsystem"
-	requestEnv       = "env"
-	requestPty       = "pty-req"
+	channelSession = "session"
+	sshPort        = 22
+	requestExec    = "exec"
 )
 
 var refusedRequests = []string{"auth-agent-req@openssh.com", "x11-req"}
 
 type SSH struct {
+	Key     string `json:"key"`
 	Host    string `json:"host"`
 	Port    int    `json:"port"`
 	User    string `json:"user"`
-	Key     string `json:"key"`
 	HostKey string `json:"host_key"`
 }
 
-func (t *SSH) dial(d *net.Dialer) (*ssh.Client, error) {
+func (t *SSH) Fields() []connector.Field {
+	return []connector.Field{{Path: []string{"key"}, Redact: true}}
+}
+
+func (t *SSH) dial(ctx context.Context, e *connector.Env) (*ssh.Client, error) {
 	hostKey, _, _, _, err := ssh.ParseAuthorizedKey([]byte(t.HostKey))
 	if err != nil {
 		return nil, fmt.Errorf("host_key: %w", err)
@@ -52,10 +54,12 @@ func (t *SSH) dial(d *net.Dialer) (*ssh.Client, error) {
 		hostKeyAlgorithms = []string{ssh.KeyAlgoRSASHA512, ssh.KeyAlgoRSASHA256, ssh.KeyAlgoRSA}
 	}
 	addr := net.JoinHostPort(t.Host, strconv.Itoa(cmp.Or(t.Port, sshPort)))
-	conn, err := d.Dial("tcp", addr)
+	conn, err := e.Dialer.DialContext(ctx, "tcp", addr)
 	if err != nil {
 		return nil, err
 	}
+	stop := context.AfterFunc(ctx, func() { conn.Close() })
+	defer stop()
 	c, chans, reqs, err := ssh.NewClientConn(conn, addr, &ssh.ClientConfig{
 		User:              t.User,
 		Auth:              []ssh.AuthMethod{ssh.PublicKeys(signer)},
@@ -69,27 +73,28 @@ func (t *SSH) dial(d *net.Dialer) (*ssh.Client, error) {
 	return ssh.NewClient(c, chans, reqs), nil
 }
 
-func (t *SSH) Serve(s *connector.Stream) {
-	defer s.Close()
-	inner, chans, reqs, err := innerSSH(s)
+func (t *SSH) Serve(s *connector.Stream, e *connector.Env) {
+	inner, chans, reqs, err := innerSSH(s, e.HostKey)
 	if err != nil {
 		return
 	}
+	var workers sync.WaitGroup
+	defer func() { s.Close(); workers.Wait() }()
 	defer inner.Close()
 	go ssh.DiscardRequests(reqs)
-	up, err := t.dial(s.Dialer)
+	up, err := t.dial(s.Context, e)
 	if err != nil {
 		log.Printf("%s: %v", t.Host, err)
 		return
 	}
-	defer up.Close()
-	go func() {
+	defer s.Interrupt(up)()
+	workers.Go(func() {
 		up.Wait()
 		inner.Close()
-	}()
+	})
 	check := func(r *ssh.Request) error { return s.Gate(eventForSSH(r)) }
 	for nc := range chans {
-		go relayChannel(up, nc, check)
+		workers.Go(func() { relayChannel(up, nc, check) })
 	}
 }
 
@@ -103,21 +108,25 @@ func relayChannel(up *ssh.Client, nc ssh.NewChannel, check func(*ssh.Request) er
 		nc.Reject(ssh.ConnectionFailed, err.Error())
 		return
 	}
-	defer upCh.Close()
+
 	ch, reqs, err := nc.Accept()
 	if err != nil {
+		upCh.Close()
 		return
 	}
+	var workers sync.WaitGroup
+	defer workers.Wait()
+	defer upCh.Close()
 	defer ch.Close()
-	go func() {
+	workers.Go(func() {
 		if _, err := io.Copy(upCh, ch); err == nil {
 			upCh.CloseWrite()
 		}
-	}()
-	go func() {
+	})
+	workers.Go(func() {
 		forwardRequests(upCh, reqs, check)
 		upCh.Close()
-	}()
+	})
 	var replies, output sync.WaitGroup
 	replies.Go(func() { forwardRequests(ch, upReqs, nil) })
 	output.Go(func() { io.Copy(ch, upCh) })
@@ -152,17 +161,17 @@ func eventForSSH(r *ssh.Request) connector.Event {
 				e.Command = &connector.ArgvLayer{Argv: args}
 			}
 		}
-	case requestSubsystem:
+	case "subsystem":
 		var p struct{ Name string }
 		if ssh.Unmarshal(r.Payload, &p) == nil {
 			layer.Subsystem = p.Name
 		}
-	case requestEnv:
+	case "env":
 		var p connector.SSHEnv
 		if ssh.Unmarshal(r.Payload, &p) == nil {
 			layer.Env = &p
 		}
-	case requestPty:
+	case "pty-req":
 		var p struct {
 			Term string
 			Rest []byte `ssh:"rest"`
@@ -213,8 +222,8 @@ func literal(parts []syntax.WordPart) bool {
 }
 
 // NoClientAuth is safe because the tunnel already checked the client's key.
-func innerSSH(s *connector.Stream) (*ssh.ServerConn, <-chan ssh.NewChannel, <-chan *ssh.Request, error) {
+func innerSSH(s *connector.Stream, hostKey ssh.Signer) (*ssh.ServerConn, <-chan ssh.NewChannel, <-chan *ssh.Request, error) {
 	cfg := &ssh.ServerConfig{NoClientAuth: true}
-	cfg.AddHostKey(s.HostKey)
+	cfg.AddHostKey(hostKey)
 	return ssh.NewServerConn(s, cfg)
 }

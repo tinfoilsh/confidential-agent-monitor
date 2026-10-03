@@ -5,12 +5,9 @@ import (
 	"context"
 	"crypto/tls"
 	"io"
-	"log"
 	"mime"
 	"mime/multipart"
-	"net"
 	"net/mail"
-	"net/url"
 	"strings"
 
 	"github.com/emersion/go-sasl"
@@ -20,47 +17,30 @@ import (
 )
 
 const (
-	smtpTLSScheme   = "smtps"
-	smtpPort        = "587"
-	smtpsPort       = "465"
-	smtpDomain      = "monitor"
+	smtpTLSScheme = "smtps"
+
 	maxMessageBytes = 25 << 20
 	smtpRefused     = 550
 )
 
-type SMTP struct {
-	connector.Endpoint
-	conns  *connector.Listener
-	server *smtp.Server
-}
+type SMTP struct{ connector.Endpoint }
 
-func (r *SMTP) Serve(s *connector.Stream) { r.conns.Serve(s) }
-
-// Start accepts any credential from the client and submits each message upstream with the stored one.
-func (r *SMTP) Start(_ context.Context, e *connector.Env) {
-	r.conns = connector.NewListener()
+func (r *SMTP) Run(_ context.Context, e *connector.Env, in *connector.Listener, ready func()) error {
 	server := smtp.NewServer(smtp.BackendFunc(func(c *smtp.Conn) (smtp.Session, error) {
 		s := connector.StreamOf(c.Conn())
-		return &smtpSession{stream: s, relay: r}, nil
+		return &smtpSession{stream: s, relay: r, env: e}, nil
 	}))
-	server.Domain = smtpDomain
+	server.Domain = "monitor"
 	server.MaxMessageBytes = maxMessageBytes
 	server.AllowInsecureAuth = true
 	server.TLSConfig = e.TLS
-	r.server = server
-	go func() {
-		if err := server.Serve(r.conns); err != nil {
-			log.Fatal(err)
-		}
-	}()
-}
-
-func (r *SMTP) Stop() {
-	r.server.Close()
-	r.conns.Close()
+	defer server.Shutdown(context.Background())
+	ready()
+	return server.Serve(in)
 }
 
 type smtpSession struct {
+	env    *connector.Env
 	stream *connector.Stream
 	relay  *SMTP
 	from   string
@@ -84,14 +64,20 @@ func (s *smtpSession) Data(r io.Reader) error {
 	if err := s.stream.Gate(connector.Event{SMTP: &connector.SMTPLayer{From: s.from, To: s.to}, Mail: mailHeaders(message)}); err != nil {
 		return &smtp.SMTPError{Code: smtpRefused, EnhancedCode: smtp.EnhancedCode{5, 7, 1}, Message: err.Error()}
 	}
-	return submit(s.stream.Dialer, &s.relay.URL, s.from, s.to, message)
+	return s.relay.submit(s.stream, s.env, s.from, s.to, message)
 }
 
-func submit(d *net.Dialer, u *url.URL, from string, to []string, message []byte) error {
-	conn, err := connector.DialURL(d, u, smtpTLSScheme, smtpPort, smtpsPort)
+func (r *SMTP) submit(s *connector.Stream, e *connector.Env, from string, to []string, message []byte) error {
+	u := &r.URL
+	pass, err := r.Password.Value(s.Context)
 	if err != nil {
 		return err
 	}
+	conn, err := connector.DialURL(s.Context, e.Dialer, u, smtpTLSScheme, "587", "465")
+	if err != nil {
+		return err
+	}
+	defer s.Interrupt(conn)()
 	c := smtp.NewClient(conn)
 	if u.Scheme != smtpTLSScheme {
 		if c, err = smtp.NewClientStartTLS(conn, &tls.Config{ServerName: u.Hostname()}); err != nil {
@@ -99,7 +85,6 @@ func submit(d *net.Dialer, u *url.URL, from string, to []string, message []byte)
 		}
 	}
 	defer c.Close()
-	pass, _ := u.User.Password()
 	if err := c.Auth(sasl.NewPlainClient("", u.User.Username(), pass)); err != nil {
 		return err
 	}

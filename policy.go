@@ -55,14 +55,15 @@ type namedAccount struct {
 
 // input carries either the tunnel's tcp layer or a connector's layers, never both.
 type input struct {
-	Principal  principal     `json:"principal"`
-	Connection string        `json:"connection"`
-	Protocol   string        `json:"protocol"`
-	TCP        *tcpLayer     `json:"tcp,omitempty"`
-	Account    *namedAccount `json:"account"`
-	Access     access        `json:"access"`
-	Rules      []rule        `json:"rules"`
-	Label      label         `json:"label"`
+	Principal        principal       `json:"principal"`
+	Connection       string          `json:"connection"`
+	ConnectionConfig json.RawMessage `json:"connection_config,omitempty"`
+	Protocol         string          `json:"protocol"`
+	TCP              *tcpLayer       `json:"tcp,omitempty"`
+	Account          *namedAccount   `json:"account"`
+	Access           access          `json:"access"`
+	Rules            []rule          `json:"rules"`
+	Label            label           `json:"label"`
 	*connector.Event
 }
 
@@ -130,6 +131,10 @@ func (m *monitor) evaluate(ctx context.Context, in *input, account string) (*dec
 	}
 	a := st.cfg.Accounts[account]
 	a.Connections = nil
+	in.ConnectionConfig = nil
+	if c := st.connections[in.Connection]; c != nil {
+		in.ConnectionConfig = c.config
+	}
 	in.Principal = p
 	in.Access = p.Accounts[account]
 	in.Rules = p.Rules
@@ -139,7 +144,14 @@ func (m *monitor) evaluate(ctx context.Context, in *input, account string) (*dec
 }
 
 func (m *monitor) label(fingerprint string) label {
-	if l, ok := m.labels[fingerprint]; ok {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.labelLocked(fingerprint)
+}
+
+// labelLocked requires mu.
+func (m *monitor) labelLocked(fingerprint string) label {
+	if l, ok := m.doc.Labels[fingerprint]; ok {
 		return l
 	}
 	return cleanLabel
@@ -237,8 +249,10 @@ func refusal(deny []string) error {
 func (m *monitor) relabel(fingerprint string, l label) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	m.labels[fingerprint] = l
-	st := m.live.Load()
-	st.Generation++
-	return m.persist(context.Background(), st, m.owner)
+	if m.doc.Labels == nil {
+		m.doc.Labels = map[string]label{}
+	}
+	m.doc.Labels[fingerprint] = l
+	m.doc.Generation++
+	return m.persist(context.Background(), m.doc, m.owner)
 }

@@ -2,13 +2,20 @@ package templates.mcp
 
 catalog := {
 	"title": "MCP server",
-	"fields": [{"key": "url", "label": "Server URL"}, {"key": "token", "label": "Token", "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "{url}"}}],
-	"connections": {"": {"mcp": {"url": "{url}", "token": {"$secret": "token"}}}},
+	"fields": [
+		{"key": "url", "label": "Server URL", "path": ["connections", "", "mcp", "url"]},
+		{
+			"key": "token",
+			"label": "Token",
+			"secret": true,
+			"hint": "Leave empty to sign in",
+			"oauth": {"resource": "{url}"},
+			"path": ["connections", "", "mcp", "token"]
+		}
+	],
+	"connections": {"": {"mcp": {"url": "{url}"}}},
 	"defaults": {"contents": "team", "strangers": true, "sends": "me"},
-	"actions": {
-		"read": {"title": "Use read-only tools"},
-		"use": {"title": "Use tools that change things"},
-	},
+	"actions": {"read": {"title": "Use read-only tools"}, "use": {"title": "Use tools that change things"}}
 }
 
 changes := {"use"}

@@ -16,7 +16,6 @@ import (
 	"slices"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/vektah/gqlparser/v2/parser"
@@ -26,61 +25,42 @@ import (
 )
 
 const (
-	httpsPort         = 443
-	httpPort          = 80
-	maxBodyBytes      = 1 << 20
-	readHeaderTimeout = 30 * time.Second
-	jsonType          = "application/json"
-	jsonSuffix        = "+json"
+	httpsPort    = 443
+	httpPort     = 80
+	maxBodyBytes = 1 << 20
+
 	placeholderPrefix = "tfm_"
 	authorization     = "Authorization"
 )
 
-type location string
+type Location string
 
-const (
-	locationURL     location = "url"
-	locationHeaders location = "headers"
-	locationBody    location = "body"
-)
-
-func (l *location) UnmarshalText(text []byte) error {
-	switch location(text) {
-	case locationURL, locationHeaders, locationBody:
-		*l = location(text)
+func (l *Location) UnmarshalText(text []byte) error {
+	switch Location(text) {
+	case "url", "headers", "body":
+		*l = Location(text)
 		return nil
 	}
 	return fmt.Errorf("unknown substitution location %q", text)
 }
 
-type connKey struct{}
-
 type HTTP struct {
-	Hosts   []string                          `json:"hosts"`
-	Secrets map[string]*credential.Credential `json:"secrets"`
+	Values map[string]*credential.Value `json:"values"`
+	Hosts  []string                     `json:"hosts"`
 	// The Authorization header is always substituted; these locations are opt-in.
-	Substitute  []location `json:"substitute"`
-	credentials credential.Store
-	conns       *connector.Listener
-	server      *http.Server
+	Substitute []Location `json:"substitute"`
 }
 
-func (*HTTP) CredentialFields() []string { return []string{"secrets/*"} }
-
-func (r *HTTP) Serve(s *connector.Stream) {
-	var c net.Conn = s
-	if s.Port == httpsPort {
-		c = tls.Server(s, s.TLS)
+func (h *HTTP) Fields() (fields []connector.Field) {
+	for name, value := range h.Values {
+		fields = append(fields, connector.Field{Path: []string{"values", name}, Value: value, Redact: true})
 	}
-	r.conns.Hand(c)
+	return
 }
 
-func (h *HTTP) Start(_ context.Context, e *connector.Env) {
-	h.credentials = e.Credentials
-	h.conns = connector.NewListener()
-	transport := http.DefaultTransport.(*http.Transport).Clone()
-	transport.Proxy = nil
-	transport.DialContext = e.Dialer.DialContext
+func (h *HTTP) Run(ctx context.Context, e *connector.Env, in *connector.Listener, ready func()) error {
+	transport := e.Transport()
+	defer transport.CloseIdleConnections()
 	proxy := &httputil.ReverseProxy{
 		Transport: transport,
 		Rewrite: func(pr *httputil.ProxyRequest) {
@@ -91,32 +71,33 @@ func (h *HTTP) Start(_ context.Context, e *connector.Env) {
 			pr.Out.URL.Host = pr.In.Host
 		},
 	}
-	h.server = &http.Server{
-		ReadHeaderTimeout: readHeaderTimeout,
-		ConnContext: func(ctx context.Context, c net.Conn) context.Context {
-			return context.WithValue(ctx, connKey{}, connector.StreamOf(c))
-		},
-		Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if err := h.screen(r); err != nil {
-				log.Printf("refused %s %s%s: %v", r.Method, r.Host, r.URL.Path, err)
-				http.Error(w, err.Error(), http.StatusForbidden)
-				return
-			}
-			proxy.ServeHTTP(w, r)
-		}),
-	}
-	go func() {
-		if err := h.server.Serve(h.conns); err != http.ErrServerClosed {
-			log.Fatal(err)
+	return connector.ServeHTTP(ctx, tlsListener{in, e}, ready, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if err := h.screen(r); err != nil {
+			log.Printf("refused %s %s%s: %v", r.Method, r.Host, r.URL.Path, err)
+			http.Error(w, err.Error(), http.StatusForbidden)
+			return
 		}
-	}()
+		proxy.ServeHTTP(w, r)
+	}))
 }
 
-func (h *HTTP) Stop() { h.server.Close() }
+// HTTP and HTTPS arrive on the same tunnel listener.
+type tlsListener struct {
+	net.Listener
+	env *connector.Env
+}
+
+func (l tlsListener) Accept() (net.Conn, error) {
+	c, err := l.Listener.Accept()
+	if err == nil && connector.StreamOf(c).Port == httpsPort {
+		c = tls.Server(c, l.env.TLS)
+	}
+	return c, err
+}
 
 // The proxy dials the request's host, so it must be the one the channel's gate saw.
 func (h *HTTP) screen(r *http.Request) error {
-	s := r.Context().Value(connKey{}).(*connector.Stream)
+	s := connector.RequestStream(r)
 	host := r.Host
 	if h, _, err := net.SplitHostPort(host); err == nil {
 		host = h
@@ -129,7 +110,7 @@ func (h *HTTP) screen(r *http.Request) error {
 		return err
 	}
 	layer := &connector.HTTPLayer{Method: r.Method, Host: host, Path: r.URL.Path, Query: r.URL.Query(), Headers: r.Header.Clone()}
-	if mediaType, _, _ := mime.ParseMediaType(r.Header.Get("Content-Type")); mediaType == jsonType || strings.HasSuffix(mediaType, jsonSuffix) {
+	if mediaType, _, _ := mime.ParseMediaType(r.Header.Get("Content-Type")); mediaType == "application/json" || strings.HasSuffix(mediaType, "+json") {
 		if json.Unmarshal(body, &layer.Body) != nil {
 			layer.Body = nil
 		}
@@ -149,15 +130,15 @@ func Placeholder(connection, secret string) string {
 
 // Leftover placeholders are refused everywhere but the body.
 func (h *HTTP) substitute(r *http.Request, name string, body []byte) ([]string, error) {
-	inURL, inHeaders, inBody := slices.Contains(h.Substitute, locationURL), slices.Contains(h.Substitute, locationHeaders), slices.Contains(h.Substitute, locationBody)
+	inURL, inHeaders, inBody := slices.Contains(h.Substitute, "url"), slices.Contains(h.Substitute, "headers"), slices.Contains(h.Substitute, "body")
 	if inBody && len(body) > maxBodyBytes {
 		return nil, fmt.Errorf("body substitution needs a body of at most %d bytes", maxBodyBytes)
 	}
 	used := []string{}
-	for secret, cred := range h.Secrets {
+	for secret, v := range h.Values {
 		ph := Placeholder(name, secret)
 		found := false
-		value := sync.OnceValues(func() (string, error) { return cred.Value(r.Context(), h.credentials) })
+		value := sync.OnceValues(func() (string, error) { return v.Value(r.Context()) })
 		swap := func(s string) string {
 			if !strings.Contains(s, ph) {
 				return s

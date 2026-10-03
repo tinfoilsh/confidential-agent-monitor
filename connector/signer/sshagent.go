@@ -11,27 +11,30 @@ import (
 )
 
 const (
-	agentSSH           = "ssh"
-	sshsigMagic        = "SSHSIG"
-	purposeSSHSig      = "sshsig"
-	purposeAuth        = "auth"
-	purposeOther       = "other"
 	msgUserAuthRequest = 50
 )
 
 var errAgentSignsOnly = errors.New("the monitor's agent only signs")
 
-type SSHAgent []string
+type SSHAgent struct {
+	Keys map[string]string `json:"keys"`
+}
+
+func (keys *SSHAgent) Fields() (fields []connector.Field) {
+	for name := range keys.Keys {
+		fields = append(fields, connector.Field{Path: []string{"keys", name}, Redact: true})
+	}
+	return
+}
 
 type gatedAgent struct {
 	agent.ExtendedAgent
 	s *connector.Stream
 }
 
-func (keys *SSHAgent) Serve(s *connector.Stream) {
-	defer s.Close()
+func (keys *SSHAgent) Serve(s *connector.Stream, _ *connector.Env) {
 	keyring := agent.NewKeyring().(agent.ExtendedAgent)
-	for _, encoded := range *keys {
+	for _, encoded := range keys.Keys {
 		key, err := ssh.ParseRawPrivateKey([]byte(encoded))
 		if err != nil {
 			log.Print(err)
@@ -63,14 +66,14 @@ func (gatedAgent) Extension(string, []byte) ([]byte, error) {
 }
 
 func signEvent(key ssh.PublicKey, data []byte) *connector.SignLayer {
-	sign := &connector.SignLayer{Agent: agentSSH, Key: ssh.FingerprintSHA256(key), Purpose: purposeOther}
+	sign := &connector.SignLayer{Agent: "ssh", Key: ssh.FingerprintSHA256(key), Purpose: "other"}
 	var sig struct {
 		Magic     [6]byte
 		Namespace string
 		Rest      []byte `ssh:"rest"`
 	}
-	if ssh.Unmarshal(data, &sig) == nil && string(sig.Magic[:]) == sshsigMagic {
-		sign.Purpose, sign.Namespace = purposeSSHSig, sig.Namespace
+	if ssh.Unmarshal(data, &sig) == nil && string(sig.Magic[:]) == "SSHSIG" {
+		sign.Purpose, sign.Namespace = "sshsig", sig.Namespace
 		return sign
 	}
 	var auth struct {
@@ -80,7 +83,7 @@ func signEvent(key ssh.PublicKey, data []byte) *connector.SignLayer {
 		Rest    []byte `ssh:"rest"`
 	}
 	if ssh.Unmarshal(data, &auth) == nil && auth.Type == msgUserAuthRequest {
-		sign.Purpose, sign.User = purposeAuth, auth.User
+		sign.Purpose, sign.User = "auth", auth.User
 	}
 	return sign
 }

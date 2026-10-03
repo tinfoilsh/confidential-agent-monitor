@@ -2,7 +2,6 @@ package redis
 
 import (
 	"bufio"
-	"io"
 	"log"
 	"slices"
 	"strings"
@@ -13,10 +12,7 @@ import (
 )
 
 const (
-	redisTLSScheme   = "rediss"
-	redisPort        = "6379"
-	redisDefaultUser = "default"
-	redisOK          = "+"
+	redisPort = "6379"
 )
 
 var containerCommands = []string{
@@ -26,32 +22,32 @@ var containerCommands = []string{
 
 type Redis struct{ connector.Endpoint }
 
-func (r *Redis) Serve(s *connector.Stream) {
-	defer s.Close()
+func (r *Redis) Serve(s *connector.Stream, e *connector.Env) {
 	u := &r.URL
-	up, err := connector.DialURL(s.Dialer, u, redisTLSScheme, redisPort, redisPort)
+	up, err := connector.DialURL(s.Context, e.Dialer, u, "rediss", redisPort, redisPort)
 	if err != nil {
 		log.Printf("redis: %v", err)
 		return
 	}
-	defer up.Close()
+	defer s.Interrupt(up)()
 	user := u.User.Username()
-	pass, _ := u.User.Password()
+	pass, err := r.Password.Value(s.Context)
+	if err != nil {
+		log.Printf("credential: %v", err)
+		return
+	}
 	replies := bufio.NewReader(up)
 	if pass != "" {
 		if _, err := up.Write(encode(authArgs(user, pass))); err != nil {
 			return
 		}
 		line, err := replies.ReadString('\n')
-		if err != nil || !strings.HasPrefix(line, redisOK) {
+		if err != nil || !strings.HasPrefix(line, "+") {
 			log.Printf("redis upstream refused the stored credential: %q %v", line, err)
 			return
 		}
 	}
-	go func() {
-		io.Copy(s, replies)
-		s.Close()
-	}()
+	defer connector.CopyReplies(s, up, replies)()
 	commands := redcon.NewReader(s)
 	for {
 		cmd, err := commands.ReadCommand()
@@ -99,7 +95,7 @@ func reauthorize(args [][]byte, user, pass string) ([][]byte, bool) {
 		return authArgs(user, pass), true
 	case "HELLO":
 		if user == "" {
-			user = redisDefaultUser
+			user = "default"
 		}
 		for i := range args {
 			if strings.EqualFold(string(args[i]), "AUTH") && i+2 < len(args) {
