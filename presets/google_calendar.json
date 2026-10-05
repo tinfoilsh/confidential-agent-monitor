@@ -2,10 +2,8 @@
   "title": "Google Calendar",
   "catalog": {
     "fields": [
-      {"key": "client_id", "label": "Google OAuth client ID (web application)", "paths": []},
-      {"key": "client_secret", "label": "Google OAuth client secret", "secret": true, "paths": []},
       {"key": "token", "label": "Google account", "secret": true, "path": ["connections", "", "http", "values", "token"],
-       "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.calendarlist.readonly https://www.googleapis.com/auth/calendar.freebusy", "prompt": "consent"}}
+       "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{MONITOR_GOOGLE_CLIENT_ID}", "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}", "scope": "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.calendarlist.readonly https://www.googleapis.com/auth/calendar.freebusy", "prompt": "consent"}}
     ],
     "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://www.googleapis.com", "path": "/calendar/v3", "header": "Authorization", "prefix": "Bearer "}]}}},
     "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},

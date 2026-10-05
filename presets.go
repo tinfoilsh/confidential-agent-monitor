@@ -6,7 +6,10 @@ import (
 	"encoding/json/jsontext"
 	"fmt"
 	"io/fs"
+	"os"
 	"path"
+	"regexp"
+	"slices"
 	"strings"
 	"sync"
 
@@ -25,11 +28,23 @@ type preset struct {
 	catalog map[string]any
 }
 
+// A preset reads {MONITOR_X} only if MONITOR_X_PRESETS lists its name.
+var envRef = regexp.MustCompile(`\{(MONITOR_\w+)\}`)
+
 var presets = sync.OnceValues(func() (map[string]preset, error) {
 	files, _ := fs.Glob(presetFiles, "presets/*.json")
 	out, records := map[string]preset{}, map[string]any{}
 	for _, file := range files {
+		name := strings.TrimSuffix(path.Base(file), ".json")
 		src, _ := presetFiles.ReadFile(file)
+		src = envRef.ReplaceAllFunc(src, func(ref []byte) []byte {
+			key := string(ref[1 : len(ref)-1])
+			if !slices.Contains(strings.Split(os.Getenv(key+"_PRESETS"), ","), name) {
+				return nil
+			}
+			quoted, _ := jsontext.AppendQuote(nil, os.Getenv(key))
+			return quoted[1 : len(quoted)-1]
+		})
 		// encoding/json keeps the last of repeated names, which could silently drop a condition.
 		if !jsontext.Value(src).IsValid() {
 			return nil, fmt.Errorf("%s is not valid JSON or repeats a name", file)
@@ -38,7 +53,6 @@ var presets = sync.OnceValues(func() (map[string]preset, error) {
 		if err := connector.DecodeNumbers(src, &p); err != nil {
 			return nil, fmt.Errorf("%s: %w", file, err)
 		}
-		name := strings.TrimSuffix(path.Base(file), ".json")
 		catalog, _ := p["catalog"].(map[string]any)
 		delete(p, "catalog")
 		out[name], records[name] = preset{p, catalog}, p

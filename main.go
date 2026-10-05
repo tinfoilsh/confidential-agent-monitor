@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/email"
 	"github.com/tinfoilsh/monitor/connector/mcp"

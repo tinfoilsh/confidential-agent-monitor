@@ -10,6 +10,7 @@ require (
 	github.com/emersion/go-smtp v0.25.0
 	github.com/evanphx/json-patch/v5 v5.9.11
 	github.com/jackc/pgx/v5 v5.8.0
+	github.com/joho/godotenv v1.5.1
 	github.com/modelcontextprotocol/go-sdk v1.8.0
 	github.com/open-policy-agent/opa v1.20.2
 	github.com/tidwall/redcon v1.6.4
