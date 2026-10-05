@@ -1,0 +1,25 @@
+{
+  "title": "Stripe",
+  "catalog": {
+    "fields": [
+      {"key": "key", "label": "Restricted or secret API key", "secret": true, "path": ["connections", "", "http", "values", "key"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "key", "origin": "https://api.stripe.com", "path": "/v1", "basic": "user"}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read customers and payments"},
+      "write.customers": {"title": "Create and edit customers"},
+      "pay": {"title": "Create payments and refunds"}
+    }
+  },
+  "operations": [
+    {"id": "customers.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.stripe.com", "path": "/v1/customers", "params": ["limit", "starting_after", "email"], "headers": {"Stripe-Account": null, "Stripe-Context": null, "Stripe-Version": "2026-09-30.endive"}, "scope": {}},
+    {"id": "customers.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.stripe.com", "path": "/v1/customers/{customer}", "headers": {"Stripe-Account": null, "Stripe-Context": null, "Stripe-Version": "2026-09-30.endive"}, "scope": {"customer": {"from": "path", "at": "customer"}}},
+    {"id": "payment_intents.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.stripe.com", "path": "/v1/payment_intents/{intent}", "headers": {"Stripe-Account": null, "Stripe-Context": null, "Stripe-Version": "2026-09-30.endive"}, "scope": {"intent": {"from": "path", "at": "intent"}}},
+    {"id": "customers.create", "action": "write.customers", "effects": ["write"], "method": "POST", "origin": "https://api.stripe.com", "path": "/v1/customers", "headers": {"Stripe-Account": null, "Stripe-Context": null, "Stripe-Version": "2026-09-30.endive"}, "fields": {"balance": null, "cash_balance[settings][reconciliation_mode]": null}, "body": "form", "scope": {"customer": {"from": "form", "at": "", "type": "object"}}},
+    {"id": "payment_intents.create", "action": "pay", "effects": ["send", "pay"], "method": "POST", "origin": "https://api.stripe.com", "path": "/v1/payment_intents", "headers": {"Stripe-Account": null, "Stripe-Context": null, "Stripe-Version": "2026-09-30.endive"}, "body": "form", "scope": {"intent": {"from": "form", "at": "", "type": "object"}}},
+    {"id": "refunds.create", "action": "pay", "effects": ["pay"], "method": "POST", "origin": "https://api.stripe.com", "path": "/v1/refunds", "headers": {"Stripe-Account": null, "Stripe-Context": null, "Stripe-Version": "2026-09-30.endive"}, "body": "form", "scope": {"refund": {"from": "form", "at": "", "type": "object"}}},
+    {"id": "payment_intents.confirm", "action": "pay", "effects": ["pay"], "method": "POST", "origin": "https://api.stripe.com", "path": "/v1/payment_intents/{intent}/confirm", "headers": {"Stripe-Account": null, "Stripe-Context": null, "Stripe-Version": "2026-09-30.endive"}, "body": "form", "scope": {"intent": {"from": "path", "at": "intent"}, "confirm": {"from": "form", "at": "", "type": "object"}}},
+    {"id": "payment_intents.cancel", "action": "pay", "effects": ["pay"], "method": "POST", "origin": "https://api.stripe.com", "path": "/v1/payment_intents/{intent}/cancel", "headers": {"Stripe-Account": null, "Stripe-Context": null, "Stripe-Version": "2026-09-30.endive"}, "body": "form", "scope": {"intent": {"from": "path", "at": "intent"}, "cancel": {"from": "form", "at": "", "type": "object"}}}
+  ]
+}

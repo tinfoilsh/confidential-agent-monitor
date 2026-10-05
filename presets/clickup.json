@@ -1,0 +1,26 @@
+{
+  "title": "ClickUp",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "API token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.clickup.com", "path": "/api/v2", "header": "Authorization"}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read workspaces, lists and tasks"},
+      "write.tasks": {"title": "Create and edit tasks"},
+      "send.comment": {"title": "Comment on tasks"},
+      "delete": {"title": "Delete tasks"}
+    }
+  },
+  "operations": [
+    {"id": "team.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.clickup.com", "path": "/api/v2/team", "scope": {}},
+    {"id": "space.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.clickup.com", "path": "/api/v2/team/{team}/space", "params": ["archived"], "scope": {"team": {"from": "path", "at": "team"}}},
+    {"id": "list.tasks.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.clickup.com", "path": "/api/v2/list/{list}/task", "params": ["archived", "page", "order_by", "statuses[]"], "scope": {"list": {"from": "path", "at": "list"}}},
+    {"id": "task.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.clickup.com", "path": "/api/v2/task/{task}", "scope": {"task": {"from": "path", "at": "task"}}},
+    {"id": "list.task.create", "action": "write.tasks", "effects": ["write"], "method": "POST", "origin": "https://api.clickup.com", "path": "/api/v2/list/{list}/task", "body": "json", "scope": {"list": {"from": "path", "at": "list"}, "task": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "task.update", "action": "write.tasks", "effects": ["write"], "method": "PUT", "origin": "https://api.clickup.com", "path": "/api/v2/task/{task}", "body": "json", "scope": {"task": {"from": "path", "at": "task"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "task.comment.create", "action": "send.comment", "effects": ["send"], "method": "POST", "origin": "https://api.clickup.com", "path": "/api/v2/task/{task}/comment", "body": "json", "scope": {"task": {"from": "path", "at": "task"}, "comment": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "task.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.clickup.com", "path": "/api/v2/task/{task}", "scope": {"task": {"from": "path", "at": "task"}}}
+  ]
+}

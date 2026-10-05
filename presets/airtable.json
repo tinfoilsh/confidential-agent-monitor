@@ -1,0 +1,22 @@
+{
+  "title": "Airtable",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "Personal access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.airtable.com", "path": "/v0", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "List and read records"},
+      "write": {"title": "Create and edit records"},
+      "delete": {"title": "Delete records"}
+    }
+  },
+  "operations": [
+    {"id": "records.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.airtable.com", "path": "/v0/app{base}/{table}", "params": ["fields[]", "filterByFormula", "maxRecords", "pageSize", "sort[0][field]", "sort[0][direction]", "view", "cellFormat", "offset"], "scope": {"base": {"from": "path", "at": "base"}, "table": {"from": "path", "at": "table"}}},
+    {"id": "records.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.airtable.com", "path": "/v0/app{base}/{table}/{record}", "scope": {"base": {"from": "path", "at": "base"}, "table": {"from": "path", "at": "table"}, "record": {"from": "path", "at": "record"}}},
+    {"id": "records.create", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://api.airtable.com", "path": "/v0/app{base}/{table}", "body": "json", "scope": {"base": {"from": "path", "at": "base"}, "table": {"from": "path", "at": "table"}, "records": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "records.update", "action": "write", "effects": ["write"], "method": "PATCH", "origin": "https://api.airtable.com", "path": "/v0/app{base}/{table}", "body": "json", "scope": {"base": {"from": "path", "at": "base"}, "table": {"from": "path", "at": "table"}, "records": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "records.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.airtable.com", "path": "/v0/app{base}/{table}", "params": ["records[]"], "scope": {"base": {"from": "path", "at": "base"}, "table": {"from": "path", "at": "table"}, "query": {"from": "query", "at": "", "type": "object"}}}
+  ]
+}

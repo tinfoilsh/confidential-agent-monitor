@@ -1,0 +1,19 @@
+{
+  "title": "Anthropic",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "API key", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.anthropic.com", "path": "/v1", "header": "X-Api-Key"}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "List models and count tokens"},
+      "generate": {"title": "Generate messages and count tokens (billable; hosted tools and remote MCP servers are refused)"}
+    }
+  },
+  "operations": [
+    {"id": "models.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.anthropic.com", "path": "/v1/models", "headers": {"Anthropic-Version": "2023-06-01"}, "scope": {}},
+    {"id": "messages.count_tokens", "action": "generate", "effects": ["send"], "method": "POST", "origin": "https://api.anthropic.com", "path": "/v1/messages/count_tokens", "headers": {"Anthropic-Version": "2023-06-01"}, "body": "json", "scope": {}},
+    {"id": "messages.create", "action": "generate", "effects": ["generate", "pay", "send"], "method": "POST", "origin": "https://api.anthropic.com", "path": "/v1/messages", "headers": {"Anthropic-Version": "2023-06-01"}, "fields": {"/tools": null, "/mcp_servers": null, "/container": null}, "body": "json", "scope": {"request": {"from": "body", "at": "", "type": "object"}}}
+  ]
+}

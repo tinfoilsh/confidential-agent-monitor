@@ -1,0 +1,29 @@
+{
+  "title": "Zendesk",
+  "catalog": {
+    "fields": [
+      {"key": "origin", "label": "Your Zendesk subdomain URL (https://yourcompany.zendesk.com)",
+       "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
+      {"key": "login", "label": "Login (your-email@example.com/token)", "secret": true, "path": ["connections", "", "http", "values", "login"]},
+      {"key": "apitoken", "label": "API token", "secret": true, "path": ["connections", "", "http", "values", "apitoken"]}
+    ],
+    "connections": {"": {"http": {"slots": [
+      {"value": "login", "origin": "https://example.zendesk.com", "path": "/api/v2", "basic": "user"},
+      {"value": "apitoken", "origin": "https://example.zendesk.com", "path": "/api/v2", "basic": "password"}
+    ]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read tickets"},
+      "write.tickets": {"title": "Create and edit tickets, including public replies and sharing"},
+      "delete": {"title": "Delete tickets"}
+    }
+  },
+  "operations": [
+    {"id": "tickets.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v2/tickets", "params": ["page[size]", "page[after]", "page[before]", "sort"], "scope": {}},
+    {"id": "tickets.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v2/tickets/{ticket}", "scope": {"ticket": {"from": "path", "at": "ticket"}}},
+    {"id": "tickets.create", "action": "write.tickets", "effects": ["write", "send", "share"], "method": "POST", "origin": "{origin}", "path": "/api/v2/tickets", "body": "json", "scope": {"ticket": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "tickets.update", "action": "write.tickets", "effects": ["write", "send", "share"], "method": "PUT", "origin": "{origin}", "path": "/api/v2/tickets/{ticket}", "body": "json", "scope": {"ticket": {"from": "path", "at": "ticket"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "tickets.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/api/v2/tickets/{ticket}", "scope": {"ticket": {"from": "path", "at": "ticket"}}},
+    {"id": "tickets.comments.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v2/tickets/{ticket}/comments", "params": ["page[size]", "page[after]", "page[before]"], "scope": {"ticket": {"from": "path", "at": "ticket"}}}
+  ]
+}

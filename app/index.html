@@ -53,10 +53,18 @@ const q = (v) => esc(JSON.stringify(v));
 const opt = (value, text, selected) => `<option value="${esc(value)}" ${value === selected ? "selected" : ""}>${esc(text)}</option>`;
 const ids = () => view.config.identities ?? {};
 const accounts = () => view.config.accounts ?? {};
-const entry = (account) => view.templates[accounts()[account]?.template] ?? view.templates.custom;
+const entry = (account) => view.templates[accounts()[account]?.policy_options?.preset] ?? view.templates[accounts()[account]?.template] ?? view.templates.custom;
 // Each pinned MCP tool is an action under read or use, by the hint the owner approved with the pin.
-const actionsOf = (account) => ({ ...entry(account).actions, ...Object.fromEntries(Object.values(accounts()[account]?.connections ?? {})
-  .flatMap((c) => c.mcp?.pin?.tools ?? []).map((t) => [`${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`, { title: t.title || t.name, save: `Allow ${t.name}` }])) });
+const actionsOf = (account) => ({ ...groupsOf(account), ...entry(account).actions, ...Object.fromEntries(Object.values(accounts()[account]?.connections ?? {})
+  .flatMap((c) => c.mcp?.pin?.tools ?? []).map((t) => [`${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`, { title: t.title || t.name }])) });
+// An api account's actions are the permission groups of its service record's or preset's operations.
+const operationsOf = (account) => accounts()[account]?.template === "api"
+  ? view.config.data?.services?.[accounts()[account]?.policy_options?.service]?.operations ?? entry(account).operations ?? [] : [];
+const groupsOf = (account) => Object.fromEntries([...operationsOf(account).map((o) => [o.action, { title: o.action }]),
+  ...(accounts()[account]?.template === "api" ? [["unreviewed", { title: "Requests no operation matches" }]] : [])]);
+// effectsOf unions the effects of every operation under an action, so a group shows its strictest obligations.
+const effectsOf = (account, k) => entry(account).effects?.[k.split(".")[0]]
+  ?? [...new Set(operationsOf(account).filter((o) => o.action === k || o.action.startsWith(k + ".")).flatMap((o) => o.effects))];
 const tree = (actions) => Object.entries(actions).sort(([a], [b]) => a.localeCompare(b)).map(([k, x]) => [k, x, k.split(".").length - 1]);
 const fill = (text, scope) => text.replace(/\{(\w+)\}/g, (m, k) => scope?.[k] ?? m);
 const route = () => location.hash.slice(1).split("/").map(decodeURIComponent);
@@ -151,11 +159,18 @@ function reasons(r) {
   })[g]);
 }
 
-const saveText = (r) => fill(actionsOf(r.account)[r.action]?.save ?? "Allow this next time", r.scope);
+// A saved approval binds one operation and its grant. The text names fields, not values, which can be whole messages;
+// fields left out of the grant are named as broad.
+function grantText(operation, grant, scope) {
+  const fields = Object.keys(grant ?? {}), broad = Object.keys(scope ?? {}).filter((k) => !fields.includes(k));
+  return `Allow ${operation} ${fields.length ? "for the same " + fields.join(", ") : "for any request"}`
+    + (broad.length ? `, with any ${broad.join(", ")}` : "");
+}
+const saveText = (r) => grantText(r.operation, r.grant, r.scope);
 
 function card(r) {
   const pending = r.state === "pending";
-  const save = r.action == null ? "" : `<button class="${pending ? "primary" : ""}" onclick="answer('${r.id}', 'save')">${esc(saveText(r))}</button>`;
+  const save = r.action == null || !r.operation ? "" : `<button class="${pending ? "primary" : ""}" onclick="answer('${r.id}', 'save')">${esc(saveText(r))}</button>`;
   const buttons = pending
     ? `<button onclick="answer('${r.id}', 'deny')">Deny</button><button onclick="answer('${r.id}', 'once')">Allow once</button>${save}`
     : `${save}<button onclick="dismiss('${r.id}')">Dismiss</button>`;
@@ -163,6 +178,7 @@ function card(r) {
     <div class="row"><b>${esc(r.title || summary(r.event))}</b><span class="muted">${esc(r.identity)} · ${pending ? "waiting" : "expired"}</span></div>
     <ul>${reasons(r).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
     <div class="mono">${esc(summary(r.event))}</div>
+    ${r.operation ? `<details><summary class="muted">${esc(r.operation)} grant</summary><pre>${esc(JSON.stringify(r.grant))}</pre></details>` : ""}
     <details><summary class="muted">Request</summary><pre>${esc(JSON.stringify(r.event, null, 2))}</pre></details>
     <div class="row"><span></span><span>${buttons}</span></div>
   </section>`;
@@ -208,15 +224,18 @@ function agents() {
 const pair = () => patch({ identities: { [$("name").value.trim()]: { key: $("pubkey").value.trim(), accounts: {} } } }, "agent/" + encodeURIComponent($("name").value.trim()));
 
 function ruleSentence(r) {
-  const save = actionsOf(r.account)[r.action]?.save;
-  return `${save ? fill(save, r.scope) : `Allow ${r.action} on ${r.account}`}, despite ${r.waives.join(" and ")}`;
+  if (!r.operation) return `Inactive: ${r.action} on ${r.account} was saved before approvals named an operation`;
+  return `${grantText(r.operation, r.scope, r.scope)} on ${r.account}, despite ${r.waives.join(" and ")}`;
 }
 
-// mode mirrors lib.rego: the most specific override wins, else unchanged actions are allowed and the rest follow the level.
-function mode(access, changes, k) {
+// mode mirrors lib.rego: the most specific override wins, effects that ask still ask at allow,
+// effects without change are allowed and the rest follow the level.
+function mode(access, vocabulary, effects, k) {
   const lineage = k.split(".").map((_, i, p) => p.slice(0, p.length - i).join("."));
+  const has = (name) => effects.some((e) => vocabulary[e]?.[name]);
   return lineage.map((a) => access.actions?.[a]).find(Boolean)
-    ?? (lineage.some((a) => changes.includes(a)) ? (access.level === "read" ? "off" : access.level) : "allow");
+    ?? (k === "unreviewed" ? "off" : null)
+    ?? (access.level === "allow" && has("ask") ? "ask" : has("change") ? (access.level === "read" ? "off" : access.level) : "allow");
 }
 
 function agent(name) {
@@ -226,22 +245,26 @@ function agent(name) {
     const access = id.accounts?.[a] ?? { level: "off" };
     const c = entry(a);
     const actions = access.level === "off" ? [] : tree(actionsOf(a)).map(([k, x, d]) => {
-      const own = access.actions?.[k], inherited = mode({ ...access, actions: { ...access.actions, [k]: null } }, c.changes, k);
-      return `<div class="row node" style="--depth: ${d}"><span>${esc(x.title)}</span><span>${Object.entries(MODES).map(([m, t]) =>
+      const effects = effectsOf(a, k), inherited = mode({ ...access, actions: { ...access.actions, [k]: null } }, c.vocabulary, effects, k);
+      const own = access.actions?.[k];
+      return `<div class="row node" style="--depth: ${d}"><span>${esc(x.title)} <span class="muted">${esc(effects.join(", "))}</span></span><span>${Object.entries(MODES).map(([m, t]) =>
         `<button class="${m === own ? "primary" : !own && m === inherited ? "inherited" : ""}" onclick="patchAccess(${q(name)}, ${q(a)}, { actions: { [${q(k)}]: ${q(m === own ? null : m)} } })">${t}</button>`).join(" ")}</span></div>`;
     });
     return `<tr><td><div class="row"><b>${esc(a)}</b><span>${Object.entries(LEVELS).map(([l, t]) =>
       `<button class="${l === access.level ? "primary" : ""}" onclick="patchAccess(${q(name)}, ${q(a)}, { level: ${q(l)} })">${t}</button>`).join(" ")}</span></div>${actions.join("")}</td></tr>`;
   });
-  const rules = (id.rules ?? []).map((r, i) => `<div class="row"><span>${esc(ruleSentence(r))}</span><button onclick="removeRule(${q(name)}, ${i})">Remove</button></div>`);
+  const rules = (id.rules ?? []).map((r, i) => `<div class="row"><span>${esc(ruleSentence(r))}${r.operation
+    ? `<details><summary class="muted">grant</summary><pre>${esc(JSON.stringify(r.scope))}</pre></details>` : ""}</span><button onclick="removeRule(${q(name)}, ${i})">Remove</button></div>`);
   const reaches = (pred) => Object.entries(accounts()).some(([a, acc]) => (id.accounts?.[a]?.level ?? "off") !== "off" && pred(acc));
   const hint = reaches((acc) => acc.template === "web") && reaches((acc) => acc.contents !== "anyone")
     ? `<p class="warn">Once it reads private data, browsing will need approval. A separate agent for browsing avoids that.</p>` : "";
-  const env = Object.entries(view.setup[name] ?? {}).map(([k, v]) => `export ${k}=${v}`).join("\n");
   const others = Object.keys(ids()).filter((n) => n !== name);
-  return `<section><h2>${esc(name)} · ${esc(labelStatus(view.labels[name]))}</h2>${hint}<table>${levels.join("")}</table></section>
+  const l = view.labels[name] ?? {};
+  const point = (axis, values) => `<div class="row"><span>${axis}</span><span>${values.map((v) =>
+    `<button class="${l[axis] === v ? "primary" : ""}" onclick="setLabel(${q(name)}, ${q({ trust: l.trust, audience: l.audience, [axis]: v })})">${v}</button>`).join(" ")}</span></div>`;
+  return `<section><h2>${esc(name)} · ${esc(labelStatus(l))}</h2>${hint}${point("trust", ["trusted", "untrusted"])}${point("audience", ["anyone", "team", "me"])}<table>${levels.join("")}</table></section>
     <section><h2>Saved rules</h2>${rules.join("") || `<p class="empty">None yet. They come from “Allow this next time”.</p>`}</section>
-    <section><h2>Setup</h2><label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre><label>Environment</label><pre>${esc(env) || "No secrets to substitute."}</pre></section>
+    <section><h2>Setup</h2><label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre><label>Environment</label><pre>${esc(view.setup[name]) || "No secrets to substitute."}</pre></section>
     <section><h2>Replace key</h2><p class="muted">Use this after recreating the sandbox. The agent starts clean.</p><textarea id="pubkey" rows="2"></textarea>
       <div class="row"><span></span><button onclick="patch({ identities: { [${q(name)}]: { key: $('pubkey').value.trim() } } })">Replace key</button></div></section>
     ${others.length ? `<section><h2>Copy settings from</h2><div class="row"><select id="from">${others.map((n) => opt(n, n)).join("")}</select><button onclick="copySettings(${q(name)})">Copy</button></div></section>` : ""}
@@ -249,6 +272,11 @@ function agent(name) {
 }
 
 const patchAccess = (name, account, access) => patch({ identities: { [name]: { accounts: { [account]: access } } } });
+
+const setLabel = run(async (name, label) => {
+  remember(await api("POST", "/labels/" + encodeURIComponent(name), label));
+  render();
+});
 
 const removeRule = (name, i) => patch({ identities: { [name]: { rules: ids()[name].rules.filter((_, j) => j !== i) } } });
 
@@ -308,8 +336,17 @@ function putPath(object, path, value) {
   Object.defineProperty(object, path.at(-1), { value, enumerable: true, configurable: true, writable: true });
 }
 const paths = (f) => f.paths ?? [f.path];
-const plain = (c) => c.fields.filter((f) => !f.secret);
-const fieldValue = (acc, f) => atPath(acc, f.path) ?? (f.list ? [] : f.json ? {} : "");
+// A field with no paths, such as an OAuth client ID, only fills the account's templates when it is created.
+const plain = (c) => c.fields.filter((f) => !f.secret && paths(f).length);
+const fieldValue = (acc, f) => atPath(acc, f.path ?? paths(f)[0]) ?? (f.list ? [] : f.json ? {} : "");
+// A merge patch replaces an array whole, so a setting inside one, such as a slot's origin, rewrites a copy of its array.
+function putSetting(update, acc, path, value) {
+  const n = path.findIndex((_, i) => i > 0 && Array.isArray(atPath(acc, path.slice(0, i))));
+  if (n < 0) return putPath(update, path, value);
+  const list = atPath(update, path.slice(0, n)) ?? JSON.parse(JSON.stringify(atPath(acc, path.slice(0, n))));
+  path.slice(n, -1).reduce((o, k) => o[k], list)[path.at(-1)] = value;
+  putPath(update, path.slice(0, n), list);
+}
 const filled = (c, values) => JSON.parse(JSON.stringify(c), (_, v) => typeof v === "string" ? fill(v, values) : v);
 
 // Used for the custom JSON editor so removed settings become explicit deletions.
@@ -333,7 +370,10 @@ const addAccount = run(async (template) => {
   const c = view.templates[template], name = $("account-name").value.trim();
   const fields = c.fields.filter((f) => !f.edit_only);
   const values = Object.fromEntries(fields.map((f) => [f.key, read(f)]));
-  const acc = { template, ...answers(), connections: c.connections ? filled(c.connections, values) : values.connections };
+  // Only the non-secret values fill a preset's connections; secrets go to their fields' paths.
+  const plainValues = Object.fromEntries(fields.filter((f) => !f.secret).map((f) => [f.key, values[f.key]]));
+  const acc = { template: c.preset ? "api" : template, ...(c.preset && { policy_options: { preset: c.preset } }), ...answers(),
+    connections: c.connections ? filled(c.connections, c.preset ? plainValues : values) : values.connections };
   for (const f of fields) {
     const mode = f.secret ? $("mode-" + f.key).value : "replace";
     const value = mode === "clear" ? null : mode === "oauth" ? { oauth: filled(f.oauth, values) } : values[f.key];
@@ -353,7 +393,7 @@ function credentialEditor(a, f) {
   const status = f.kind === "oauth-required" ? "Sign-in required" : f.kind === "unset" ? "Not configured" : `Configured · ${f.kind}`;
   return `<label>${esc(f.label)} · ${esc(status)}</label>
     <select id="mode-${esc(f.key)}" onchange="$(${q("f-" + f.key)}).disabled = this.value !== 'replace'"><option value="keep">Keep unchanged</option><option value="replace">Replace value</option><option value="clear">Clear credential</option></select>
-    ${input(f, undefined, true)}${f.oauth || f.kind.startsWith("oauth") ? `<div class="row"><span></span><button onclick="signIn(${q(a)}, ${q(f.key)})">Sign in</button></div>` : ""}`;
+    ${input(f, undefined, true)}${f.kind.startsWith("oauth") || grantTemplate(a, f) ? `<div class="row"><span></span><button onclick="signIn(${q(a)}, ${q(f.key)})">Sign in</button></div>` : ""}`;
 }
 
 function account(a) {
@@ -365,7 +405,7 @@ function account(a) {
       ${plain(c).map((f) => `<label>${esc(f.label)}</label>${input(f, fieldValue(acc, f))}`).join("")}
       ${credentialFields(a).map((f) => credentialEditor(a, f)).join("")}
       <div class="row"><span></span><button onclick="saveAccount(${q(a)})">Save</button></div></section>
-    <section><h2>Actions</h2>${tree(c.actions).map(([, x, d]) => `<div class="node" style="--depth: ${d}">${esc(x.title)}</div>`).join("")}<p class="muted">Used by ${esc(users.join(", ") || "no agents")}</p></section>
+    <section><h2>Actions</h2>${tree(actionsOf(a)).map(([k, x, d]) => `<div class="node" style="--depth: ${d}">${esc(x.title)} <span class="muted">${esc(effectsOf(a, k).join(", "))}</span></div>`).join("")}<p class="muted">Used by ${esc(users.join(", ") || "no agents")}</p></section>
     <div id="connector-status">${mcpKeys(a).map((k) => review(a, k, c)).join("")}</div>
     <section><details><summary class="muted">Advanced → Custom rules</summary><textarea id="policy" rows="12">${esc(view.config.policies?.[a])}</textarea>
       <div class="row"><span></span><button onclick="patch({ policies: { [${q(a)}]: $('policy').value.trim() || null } })">Save rules</button></div></details></section>
@@ -390,7 +430,7 @@ const saveAccount = (a) => {
   for (const f of plain(entry(a))) {
     const value = read(f);
     const delta = changes(fieldValue(acc, f), value);
-    if (delta !== undefined) putPath(update, f.path, delta);
+    if (delta !== undefined) for (const path of paths(f)) putSetting(update, acc, path, delta);
   }
   for (const f of credentialFields(a)) {
     const mode = $("mode-" + f.key).value;
@@ -400,11 +440,19 @@ const saveAccount = (a) => {
   return patch({ accounts: { [a]: update } });
 };
 
+// A grant template fills from the account's plain settings; one that needs a setup-only value, such as an OAuth client, cannot.
+function grantTemplate(a, f) {
+  const values = Object.fromEntries(plain(entry(a)).map((p) => [p.key, fieldValue(accounts()[a], p)]));
+  const grant = f?.oauth && filled(f.oauth, values);
+  return grant && !/\{\w+\}/.test(JSON.stringify(grant)) ? grant : undefined;
+}
+
 // Sign-in leaves the current credential usable until the exchange succeeds.
 const signIn = run(async (a, key) => {
   const f = credentialFields(a).find((f) => f.key === key);
-  const values = Object.fromEntries(plain(entry(a)).map((f) => [f.key, fieldValue(accounts()[a], f)]));
-  const credential = f?.oauth ? { oauth: filled(f.oauth, values) } : undefined;
+  // A stored grant keeps its client and endpoints; only an unset or static value starts from the template.
+  const grant = f?.kind?.startsWith("oauth") ? undefined : grantTemplate(a, f);
+  const credential = grant && { oauth: grant };
   const { url } = await api("POST", `/accounts/${encodeURIComponent(a)}/sign-in`, { path: f.path, redirect: location.origin + location.pathname, credential });
   sessionStorage.setItem(RETURN, location.hash);
   location.href = url;

@@ -59,6 +59,14 @@ func (e *Env) Transport() *http.Transport {
 	return transport
 }
 
+// Client is for requests the monitor makes itself, such as OAuth. A redirect could carry a credential elsewhere, so it fails.
+func (e *Env) Client() *http.Client {
+	return &http.Client{
+		Transport:     e.Transport(),
+		CheckRedirect: func(*http.Request, []*http.Request) error { return errors.New("redirects are refused") },
+	}
+}
+
 type streamKey struct{}
 
 func RequestStream(r *http.Request) *Stream { return r.Context().Value(streamKey{}).(*Stream) }
@@ -150,18 +158,29 @@ type RedisLayer struct {
 
 // HTTPLayer is the request before substitution; secrets names the placeholders it carried.
 type HTTPLayer struct {
-	Method  string      `json:"method"`
-	Host    string      `json:"host"`
-	Path    string      `json:"path"`
-	Query   url.Values  `json:"query"`
-	Headers http.Header `json:"headers"`
-	Secrets []string    `json:"secrets"`
-	Body    any         `json:"body,omitempty"`
+	Method   string      `json:"method"`
+	Origin   string      `json:"origin"`
+	Host     string      `json:"host"`
+	Path     string      `json:"path"`
+	Query    url.Values  `json:"query"`
+	Headers  http.Header `json:"headers"`
+	Secrets  []string    `json:"secrets"`
+	BodyKind string      `json:"body_kind"`
+	Body     any         `json:"body,omitempty"`
+	Form     url.Values  `json:"form,omitempty"`
+	// HeaderJSON holds single header values that are JSON objects, as Dropbox-API-Arg is.
+	HeaderJSON map[string]any `json:"header_json,omitempty"`
 }
 
+// GraphQLLayer is the selected operation; each root field carries its argument values after variables apply.
 type GraphQLLayer struct {
-	Kind  string   `json:"kind"`
-	Roots []string `json:"roots"`
+	Kind   string         `json:"kind"`
+	Fields []GraphQLField `json:"fields"`
+}
+
+type GraphQLField struct {
+	Name      string         `json:"name"`
+	Arguments map[string]any `json:"arguments"`
 }
 
 type SSHLayer struct {

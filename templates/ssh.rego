@@ -12,15 +12,14 @@ catalog := {
 	"defaults": {"contents": "me", "strangers": true, "sends": "me"},
 	"actions": {
 		"session": {"title": "Set up terminals and send signals"},
-		"run": {"title": "Run commands", "save": "Allow {command}"},
-		"shell": {"title": "Open interactive shells", "save": "Allow shells"},
-		"files": {"title": "Transfer files", "save": "Allow file transfers"}
+		"run": {"title": "Run commands"},
+		"shell": {"title": "Open interactive shells"},
+		"files": {"title": "Transfer files"}
 	}
 }
 
-changes := {"run", "shell", "files"}
-
-needs_trust := {"run", "shell", "files"}
+# Session requests (terminal, environment, signals) carry no change obligation; file transfer needs trust.
+effects := {"session": {"session"}, "run": {"execute"}, "shell": {"execute"}, "files": {"read", "write"}}
 
 action := "session" if input.ssh.request in {"pty-req", "env", "window-change", "signal", "break"}
 
@@ -30,7 +29,13 @@ action := "shell" if input.ssh.request == "shell"
 
 action := "files" if input.ssh.subsystem == "sftp"
 
+default scope := {}
+
 scope := {"command": input.ssh.command} if input.ssh.command
+
+operation := {
+	"id": action, "action": action, "effects": effects[action], "scope": scope, "trust": action == "files"
+}
 
 host := input.connection_config.host
 

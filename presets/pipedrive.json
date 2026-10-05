@@ -1,0 +1,30 @@
+{
+  "title": "Pipedrive",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "API token (Personal preferences > API)", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.pipedrive.com", "path": "/api/v2", "header": "X-Api-Token"}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read deals, persons and activities"},
+      "write.deals": {"title": "Create and edit deals"},
+      "write.activities": {"title": "Create activities"},
+      "write.persons": {"title": "Create and edit persons"},
+      "delete": {"title": "Delete deals and persons"}
+    }
+  },
+  "operations": [
+    {"id": "deals.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.pipedrive.com", "path": "/api/v2/deals", "params": ["status", "limit", "cursor", "owner_id"], "scope": {}},
+    {"id": "deals.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.pipedrive.com", "path": "/api/v2/deals/{deal}", "scope": {"deal": {"from": "path", "at": "deal"}}},
+    {"id": "persons.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.pipedrive.com", "path": "/api/v2/persons", "params": ["limit", "cursor"], "scope": {}},
+    {"id": "deals.create", "action": "write.deals", "effects": ["write"], "method": "POST", "origin": "https://api.pipedrive.com", "path": "/api/v2/deals", "fields": {"/visible_to": null}, "body": "json", "scope": {"deal": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "deals.update", "action": "write.deals", "effects": ["write"], "method": "PATCH", "origin": "https://api.pipedrive.com", "path": "/api/v2/deals/{deal}", "fields": {"/visible_to": null, "/is_deleted": null}, "body": "json", "scope": {"deal": {"from": "path", "at": "deal"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "activities.create", "action": "write.activities", "effects": ["write"], "method": "POST", "origin": "https://api.pipedrive.com", "path": "/api/v2/activities", "body": "json", "scope": {"activity": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "deals.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.pipedrive.com", "path": "/api/v2/deals/{deal}", "scope": {"deal": {"from": "path", "at": "deal"}}},
+    {"id": "persons.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.pipedrive.com", "path": "/api/v2/persons/{person}", "scope": {"person": {"from": "path", "at": "person"}}},
+    {"id": "persons.create", "action": "write.persons", "effects": ["write"], "method": "POST", "origin": "https://api.pipedrive.com", "path": "/api/v2/persons", "fields": {"/visible_to": null}, "body": "json", "scope": {"person": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "persons.update", "action": "write.persons", "effects": ["write"], "method": "PATCH", "origin": "https://api.pipedrive.com", "path": "/api/v2/persons/{person}", "fields": {"/visible_to": null}, "body": "json", "scope": {"person": {"from": "path", "at": "person"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "persons.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.pipedrive.com", "path": "/api/v2/persons/{person}", "scope": {"person": {"from": "path", "at": "person"}}}
+  ]
+}

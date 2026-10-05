@@ -3,18 +3,22 @@ package main
 import (
 	"context"
 	"crypto/rand"
+	"crypto/sha256"
 	"embed"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/fs"
 	"log"
+	"maps"
 	"path"
 	"slices"
 	"strings"
 	"sync"
 	"time"
 
+	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/open-policy-agent/opa/v1/storage/inmem"
 	"github.com/tinfoilsh/monitor/connector"
@@ -23,7 +27,7 @@ import (
 const (
 	templateDir   = "templates"
 	decisionQuery = "data.monitor.decision"
-	catalogQuery  = `{t: object.union(c, {"changes": object.get(data.templates, [t, "changes"], [])}) | c := data.templates[t].catalog}`
+	catalogQuery  = `{t: object.union(c, {"effects": object.get(data.templates, [t, "effects"], {}), "vocabulary": data.monitor.vocabulary}) | c := data.templates[t].catalog}`
 )
 
 //go:embed templates/*.rego
@@ -75,6 +79,16 @@ type decision struct {
 	Sends  string         `json:"sends"`
 	Gaps   []string       `json:"gaps"`
 	Next   label          `json:"next"`
+	// The authority an approval grants: the operation, its definition, effects and scope.
+	Operation  string         `json:"operation"`
+	Definition string         `json:"definition"`
+	Effects    []string       `json:"effects"`
+	Grant      map[string]any `json:"grant"`
+}
+
+func (d *decision) authority() string {
+	raw, _ := json.Marshal([]any{d.Action, d.Operation, d.Definition, d.Effects, d.Scope, d.Grant, d.Sends})
+	return string(raw)
 }
 
 func templateModules() (opts []func(*rego.Rego)) {
@@ -86,20 +100,56 @@ func templateModules() (opts []func(*rego.Rego)) {
 	return opts
 }
 
-// catalog is what the owner's app needs to know of each template.
+// catalog is what the owner's app needs to know of each template and preset. A preset sets up an api account.
 var catalog = sync.OnceValues(func() (any, error) {
 	rs, err := rego.New(append(templateModules(), rego.Query(catalogQuery))...).Eval(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	return rs[0].Expressions[0].Value, nil
+	entries := rs[0].Expressions[0].Value.(map[string]any)
+	builtin, err := presets()
+	if err != nil {
+		return nil, err
+	}
+	for name, p := range builtin {
+		if entries[name] != nil {
+			return nil, fmt.Errorf("preset %s has a template's name", name)
+		}
+		entry := maps.Clone(p.catalog)
+		entry["title"], entry["preset"], entry["operations"] = p.Title, name, p.Operations
+		entry["vocabulary"] = entries["api"].(map[string]any)["vocabulary"]
+		entries[name] = entry
+	}
+	return entries, nil
 })
 
+// prepareDecision gives policy the preset records and data.definitions.program, a digest of
+// every template and owner policy, which saved approvals name.
 func prepareDecision(ctx context.Context, cfg *config) (rego.PreparedEvalQuery, error) {
-	if cfg.Data == nil {
-		cfg.Data = map[string]any{}
+	data := maps.Clone(cfg.Data)
+	if data == nil {
+		data = map[string]any{}
 	}
-	opts := append(templateModules(), rego.Query(decisionQuery), rego.Store(inmem.NewFromObject(cfg.Data)))
+	builtin, err := presets()
+	if err != nil {
+		return rego.PreparedEvalQuery{}, err
+	}
+	records := map[string]any{}
+	for name, p := range builtin {
+		records[name] = p.record
+	}
+	data["presets"] = records
+	h := sha256.New()
+	files, _ := fs.Glob(templates, templateDir+"/*.rego")
+	for _, file := range files {
+		src, _ := templates.ReadFile(file)
+		fmt.Fprintf(h, "%q%q", file, src)
+	}
+	for _, name := range slices.Sorted(maps.Keys(cfg.Policies)) {
+		fmt.Fprintf(h, "%q%q", name, cfg.Policies[name])
+	}
+	data["definitions"] = map[string]any{"program": hex.EncodeToString(h.Sum(nil))}
+	opts := append(templateModules(), rego.Query(decisionQuery), rego.Store(inmem.NewFromObject(data)))
 	for name, src := range cfg.Policies {
 		opts = append(opts, rego.Module(path.Join("policies", name), src))
 	}
@@ -119,7 +169,7 @@ func (st *state) decide(ctx context.Context, in input) (*decision, error) {
 		return nil, err
 	}
 	var d decision
-	return &d, json.Unmarshal(raw, &d)
+	return &d, connector.DecodeNumbers(raw, &d)
 }
 
 // evaluate refreshes the input from current settings. The caller must hold m.flow.
@@ -134,6 +184,11 @@ func (m *monitor) evaluate(ctx context.Context, in *input, account string) (*dec
 	in.ConnectionConfig = nil
 	if c := st.connections[in.Connection]; c != nil {
 		in.ConnectionConfig = c.config
+		for _, field := range c.connector.Fields() {
+			if field.Redact {
+				in.ConnectionConfig, _ = jsonpatch.MergePatch(in.ConnectionConfig, valuePatch(field.Path, json.RawMessage("null")))
+			}
+		}
 	}
 	in.Principal = p
 	in.Access = p.Accounts[account]
@@ -227,6 +282,9 @@ func (m *monitor) recheck(ctx context.Context, answer string, r *record, in *inp
 	}
 	if len(d.Deny) > 0 {
 		return nil, refusal(d.Deny)
+	}
+	if d.authority() != r.authority() {
+		return nil, errChanged
 	}
 	for _, gap := range d.Gaps {
 		if !slices.Contains(r.Gaps, gap) {

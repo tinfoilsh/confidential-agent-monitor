@@ -58,7 +58,7 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 	}
 	st := m.live.Load()
 	p = st.principals[p.Key]
-	c := st.route(p, target.Host, target.Port)
+	c, selected := st.route(p, target.Host, target.Port)
 	if c == nil {
 		log.Printf("%s: dropped %s:%d", p.Name, target.Host, target.Port)
 		nc.Reject(ssh.Prohibited, "the monitor does not forward this target")
@@ -76,6 +76,9 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 	}
 	s := connector.NewStream(c.ctx)
 	s.Name, s.Host, s.Port = c.name, target.Host, target.Port
+	if selected {
+		s.Host = ""
+	}
 	s.Gate = func(e connector.Event) error {
 		return m.gate(s.Context, input{Principal: p, Connection: c.name, Protocol: c.protocol, Event: &e}, c.account)
 	}
@@ -96,16 +99,14 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 }
 
 // Only connections the principal reaches are routed, so their claims never tie with another principal's.
-func (st *state) route(p principal, host string, port uint32) *connection {
+// A name.monitor target selects that connection; a claimer then checks each request's origin itself.
+func (st *state) route(p principal, host string, port uint32) (*connection, bool) {
 	if name, ok := strings.CutSuffix(host, ".monitor"); ok {
 		c := st.connections[name]
 		if c == nil || !p.reaches(c.account) {
-			return nil
+			return nil, false
 		}
-		if _, ok := c.connector.(connector.Claimer); ok {
-			return nil
-		}
-		return c
+		return c, true
 	}
 	best, tied := -1, false
 	var selected *connection
@@ -126,9 +127,9 @@ func (st *state) route(p principal, host string, port uint32) *connection {
 	}
 	if tied {
 		log.Printf("ambiguous route for %s:%d at claim %d", host, port, best)
-		return nil
+		return nil, false
 	}
-	return selected
+	return selected, false
 }
 
 type channelConn struct{ ssh.Channel }

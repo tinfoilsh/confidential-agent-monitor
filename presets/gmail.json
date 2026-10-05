@@ -1,0 +1,40 @@
+{
+  "title": "Gmail",
+  "catalog": {
+    "fields": [
+      {"key": "client_id", "label": "Google OAuth client ID (web application)", "paths": []},
+      {"key": "client_secret", "label": "Google OAuth client secret", "secret": true, "paths": []},
+      {"key": "token", "label": "Google account", "secret": true, "path": ["connections", "", "http", "values", "token"],
+       "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/gmail.modify", "prompt": "consent"}}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read mail, threads, labels and drafts"},
+      "write.drafts": {"title": "Create and edit drafts"},
+      "write.organize": {"title": "Label, archive and restore mail"},
+      "delete": {"title": "Move mail and drafts to the trash"},
+      "send.mail": {"title": "Send mail and drafts"}
+    }
+  },
+  "operations": [
+    {"id": "messages.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/messages", "params": ["q", "maxResults", "pageToken", "labelIds", "includeSpamTrash"], "scope": {"user": {"from": "path", "at": "user"}}},
+    {"id": "messages.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/messages/{message}", "params": ["format", "metadataHeaders"], "scope": {"user": {"from": "path", "at": "user"}}},
+    {"id": "messages.attachments.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/messages/{message}/attachments/{attachment}", "scope": {"user": {"from": "path", "at": "user"}}},
+    {"id": "threads.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/threads", "params": ["q", "maxResults", "pageToken", "labelIds", "includeSpamTrash"], "scope": {"user": {"from": "path", "at": "user"}}},
+    {"id": "threads.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/threads/{thread}", "params": ["format", "metadataHeaders"], "scope": {"user": {"from": "path", "at": "user"}}},
+    {"id": "labels.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/labels", "scope": {"user": {"from": "path", "at": "user"}}},
+    {"id": "drafts.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/drafts", "params": ["q", "maxResults", "pageToken", "includeSpamTrash"], "scope": {"user": {"from": "path", "at": "user"}}},
+    {"id": "drafts.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/drafts/{draft}", "params": ["format"], "scope": {"user": {"from": "path", "at": "user"}}},
+    {"id": "drafts.create", "action": "write.drafts", "effects": ["write"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/drafts", "body": "json", "scope": {"user": {"from": "path", "at": "user"}}},
+    {"id": "drafts.update", "action": "write.drafts", "effects": ["write"], "method": "PUT", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/drafts/{draft}", "body": "json", "scope": {"user": {"from": "path", "at": "user"}, "draft": {"from": "path", "at": "draft"}}},
+    {"id": "drafts.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/drafts/{draft}", "scope": {"user": {"from": "path", "at": "user"}, "draft": {"from": "path", "at": "draft"}}},
+    {"id": "drafts.send", "action": "send.mail", "effects": ["send"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/drafts/send", "body": "json", "scope": {"user": {"from": "path", "at": "user"}, "draft": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "messages.send", "action": "send.mail", "effects": ["send"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/messages/send", "body": "json", "scope": {"user": {"from": "path", "at": "user"}, "message": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "messages.modify", "action": "write.organize", "effects": ["write"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/messages/{message}/modify", "body": "json", "scope": {"user": {"from": "path", "at": "user"}, "message": {"from": "path", "at": "message"}, "labels": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "threads.modify", "action": "write.organize", "effects": ["write"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/threads/{thread}/modify", "body": "json", "scope": {"user": {"from": "path", "at": "user"}, "thread": {"from": "path", "at": "thread"}, "labels": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "messages.untrash", "action": "write.organize", "effects": ["write"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/messages/{message}/untrash", "scope": {"user": {"from": "path", "at": "user"}, "message": {"from": "path", "at": "message"}}},
+    {"id": "messages.trash", "action": "delete", "effects": ["delete"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/messages/{message}/trash", "scope": {"user": {"from": "path", "at": "user"}, "message": {"from": "path", "at": "message"}}},
+    {"id": "threads.trash", "action": "delete", "effects": ["delete"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/threads/{thread}/trash", "scope": {"user": {"from": "path", "at": "user"}, "thread": {"from": "path", "at": "thread"}}}
+  ]
+}

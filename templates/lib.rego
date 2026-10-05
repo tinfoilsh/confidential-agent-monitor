@@ -13,23 +13,102 @@ audiences := {"me": 0, "team": 1, "anyone": 2}
 
 t := data.templates[input.account.template]
 
+# Each effect carries fixed obligations. An operation's obligations are the union over its effects.
+vocabulary := {
+	"read": {"change": false, "trust": false, "ask": false, "discloses": false},
+	"session": {"change": false, "trust": false, "ask": false, "discloses": false},
+	"write": {"change": true, "trust": false, "ask": false, "discloses": false},
+	"generate": {"change": true, "trust": false, "ask": false, "discloses": false},
+	"delete": {"change": true, "trust": true, "ask": false, "discloses": false},
+	"admin": {"change": true, "trust": true, "ask": false, "discloses": false},
+	"execute": {"change": true, "trust": true, "ask": false, "discloses": false},
+	"send": {"change": true, "trust": true, "ask": false, "discloses": true},
+	"share": {"change": true, "trust": true, "ask": false, "discloses": true},
+	"publish": {"change": true, "trust": true, "ask": true, "discloses": true},
+	"pay": {"change": true, "trust": true, "ask": true, "discloses": false},
+}
+
+op := t.operation
+
+fields := {"id", "action", "effects", "scope", "grant", "trust", "sends", "reveals", "definition"}
+
+valid if {
+	is_object(op)
+	every field, _ in op {
+		field in fields
+	}
+	is_string(op.id)
+	op.id != ""
+	is_string(op.action)
+	op.action != ""
+	collection(op.effects)
+	count(op.effects) > 0
+	every e in op.effects {
+		vocabulary[e]
+	}
+	is_object(op.scope)
+	is_object(object.get(op, "grant", {}))
+	is_boolean(object.get(op, "trust", false))
+	audiences[object.get(op, "sends", "me")]
+	is_object(object.get(op, "reveals", {}))
+	every field, value in object.get(op, "reveals", {}) {
+		revealed(field, value)
+	}
+}
+
+revealed("contents", value) if audiences[value]
+
+revealed("strangers", value) if is_boolean(value)
+
+collection(x) if is_array(x)
+
+collection(x) if is_set(x)
+
 default action := null
 
-action := t.action
+action := op.action if valid
 
-changes := object.get(t, "changes", set())
+default operation := ""
 
-scope := object.get(t, "scope", {})
+operation := op.id if valid
 
-sends := object.get(t, "sends", input.account.sends)
+effects := {e | some e in op.effects} if valid
+else := set()
+
+obligation(name) if {
+	some e in effects
+	vocabulary[e][name]
+}
+
+grant := object.get(op, "grant", op.scope) if valid
+else := {}
+
+scope := op.scope if valid
+else := {}
+
+# A saved approval trusts this digest: the policy program, the account's policy settings, the connection and its settings without secrets,
+# the recognizer's reviewed input and the facts it resolved. Labels, saved rules and unrelated edits leave it unchanged.
+definition := crypto.sha256(json.marshal([
+	data.definitions.program,
+	input.account.template,
+	object.get(input, "connection", ""),
+	object.get(input, "connection_config", null),
+	object.get(input.account, "policy_options", {}),
+	[input.account.contents, input.account.strangers, input.account.sends],
+	object.get(op, "definition", null),
+	[sort([e | some e in effects]), object.get(op, "trust", false), sends, reveal],
+])) if valid
+else := ""
+
+sends := op.sends if {
+	valid
+	op.sends
+}
+else := "anyone" if obligation("discloses")
+else := input.account.sends
 
 # An action is a dotted path, and the most specific setting along it wins.
 lineage := [concat(".", array.slice(path, 0, i)) | path := split(action, "."); some i in numbers.range(count(path), 1)]
-
-changed if {
-	some a in lineage
-	a in changes
-}
 
 # Every mode but allow asks, so a value this chain does not expect fails closed.
 mode := "off" if not input.access.level in {"read", "ask", "allow"}
@@ -39,7 +118,11 @@ else := "off" if {
 }
 else := "ask" if action == null
 else := m if m := [o | some a in lineage; o := input.access.actions[a]][0]
-else := "allow" if not changed
+else := "ask" if {
+	input.access.level == "allow"
+	obligation("ask")
+}
+else := "allow" if not obligation("change")
 else := "off" if input.access.level == "read"
 else := input.access.level
 
@@ -51,11 +134,18 @@ deny contains msg if some msg in t.deny
 
 deny contains "this agent may not do this on the account" if mode == "off"
 
+deny contains "the recognized operation is malformed" if {
+	op
+	not valid
+}
+
 needs_trust if action == null
 
+needs_trust if obligation("trust")
+
 needs_trust if {
-	some a in lineage
-	a in object.get(t, "needs_trust", set())
+	valid
+	op.trust == true
 }
 
 gap contains "ask" if mode != "allow"
@@ -67,15 +157,18 @@ gap contains "trust" if {
 	needs_trust
 }
 
+# A saved approval names the operation and the definition it trusted; rules from before that bind nothing.
 waived contains w if {
 	some r in input.rules
 	r.account == input.account.name
 	r.action == action
-	r.scope == scope
+	r.operation == op.id
+	r.definition == definition
+	r.scope == grant
 	some w in r.waives
 }
 
-reveal := object.union({"contents": input.account.contents, "strangers": input.account.strangers}, object.get(t, "reveals", {})) if action != null
+reveal := object.union({"contents": input.account.contents, "strangers": input.account.strangers}, object.get(op, "reveals", {})) if action != null
 else := {"contents": "me", "strangers": true}
 
 lowered contains "audience" if audiences[reveal.contents] < audiences[input.label.audience]
@@ -101,8 +194,12 @@ decision := {"deny": custom} if input.tcp
 else := {
 	"deny": deny,
 	"action": action,
+	"operation": operation,
+	"definition": definition,
+	"effects": effects,
 	"title": object.get(t, "title", ""),
 	"scope": scope,
+	"grant": grant,
 	"sends": sends,
 	"gaps": gap - waived,
 	"next": next,

@@ -1,0 +1,38 @@
+{
+  "title": "Microsoft Teams",
+  "catalog": {
+    "fields": [
+      {"key": "tenant", "label": "Microsoft Entra tenant (ID, domain, organizations or consumers)", "default": "organizations", "paths": []},
+      {"key": "client_id", "label": "Application (client) ID", "paths": []},
+      {"key": "client_secret", "label": "Client secret", "secret": true, "paths": []},
+      {"key": "token", "label": "Microsoft account", "secret": true, "path": ["connections", "", "http", "values", "token"],
+       "oauth": {"auth_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize", "token_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "offline_access Team.ReadBasic.All Channel.ReadBasic.All ChannelMessage.Read.All ChannelMessage.Send Chat.ReadWrite ChannelMember.ReadWrite.All TeamMember.ReadWrite.All Channel.Create"}}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://graph.microsoft.com", "path": "/v1.0", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read teams, channels, chats and messages"},
+      "send.message": {"title": "Post and reply in channels and chats"},
+      "share.members": {"title": "Add people to teams, channels and new chats"},
+      "admin": {"title": "Create channels and remove team members"}
+    }
+  },
+  "operations": [
+    {"id": "joinedTeams.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/joinedTeams", "scope": {}},
+    {"id": "channels.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/teams/{team}/channels", "params": ["$filter", "$select"], "scope": {"team": {"from": "path", "at": "team"}}},
+    {"id": "channels.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/teams/{team}/channels/{channel}", "params": ["$select"], "scope": {"team": {"from": "path", "at": "team"}, "channel": {"from": "path", "at": "channel"}}},
+    {"id": "channel.messages.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/teams/{team}/channels/{channel}/messages", "params": ["$top", "$expand", "$skiptoken"], "scope": {"team": {"from": "path", "at": "team"}, "channel": {"from": "path", "at": "channel"}}},
+    {"id": "channel.messages.replies", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/teams/{team}/channels/{channel}/messages/{message}/replies", "params": ["$top", "$skiptoken"], "scope": {"team": {"from": "path", "at": "team"}, "channel": {"from": "path", "at": "channel"}}},
+    {"id": "members.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/teams/{team}/members", "params": ["$filter", "$select", "$top", "$skiptoken"], "scope": {"team": {"from": "path", "at": "team"}}},
+    {"id": "chats.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/chats", "params": ["$filter", "$expand", "$top", "$orderby", "$skiptoken"], "scope": {}},
+    {"id": "chat.messages.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/chats/{chat}/messages", "params": ["$top", "$orderby", "$filter", "$skiptoken"], "scope": {"chat": {"from": "path", "at": "chat"}}},
+    {"id": "channel.messages.send", "action": "send.message", "effects": ["send"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/teams/{team}/channels/{channel}/messages", "body": "json", "scope": {"team": {"from": "path", "at": "team"}, "channel": {"from": "path", "at": "channel"}, "message": {"from": "body", "at": "", "type": "object"}}, "grant": ["team", "channel"]},
+    {"id": "channel.messages.reply", "action": "send.message", "effects": ["send"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/teams/{team}/channels/{channel}/messages/{message}/replies", "body": "json", "scope": {"team": {"from": "path", "at": "team"}, "channel": {"from": "path", "at": "channel"}, "reply": {"from": "body", "at": "", "type": "object"}}, "grant": ["team", "channel"]},
+    {"id": "chat.messages.send", "action": "send.message", "effects": ["send"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/chats/{chat}/messages", "body": "json", "scope": {"chat": {"from": "path", "at": "chat"}, "message": {"from": "body", "at": "", "type": "object"}}, "grant": ["chat"]},
+    {"id": "chats.create", "action": "share.members", "effects": ["share"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/chats", "body": "json", "scope": {"chat": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "members.add", "action": "share.members", "effects": ["share", "admin"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/teams/{team}/members", "body": "json", "scope": {"team": {"from": "path", "at": "team"}, "member": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "channel.members.add", "action": "share.members", "effects": ["share", "admin"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/teams/{team}/channels/{channel}/members", "body": "json", "scope": {"team": {"from": "path", "at": "team"}, "channel": {"from": "path", "at": "channel"}, "member": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "channels.create", "action": "admin", "effects": ["admin", "share"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/teams/{team}/channels", "body": "json", "scope": {"team": {"from": "path", "at": "team"}, "channel": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "members.remove", "action": "admin", "effects": ["admin"], "method": "DELETE", "origin": "https://graph.microsoft.com", "path": "/v1.0/teams/{team}/members/{member}", "scope": {"team": {"from": "path", "at": "team"}, "member": {"from": "path", "at": "member"}}}
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "title": "Google Drive",
+  "catalog": {
+    "fields": [
+      {"key": "client_id", "label": "Google OAuth client ID (web application)", "paths": []},
+      {"key": "client_secret", "label": "Google OAuth client secret", "secret": true, "paths": []},
+      {"key": "token", "label": "Google account", "secret": true, "path": ["connections", "", "http", "values", "token"],
+       "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/drive", "prompt": "consent"}}
+    ],
+    "connections": {"": {"http": {"slots": [
+      {"value": "token", "origin": "https://www.googleapis.com", "path": "/drive/v3", "header": "Authorization", "prefix": "Bearer "},
+      {"value": "token", "origin": "https://www.googleapis.com", "path": "/upload/drive/v3", "header": "Authorization", "prefix": "Bearer "}
+    ]}}},
+    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "List, read, download and export files"},
+      "write": {"title": "Create, upload and copy files"},
+      "admin.metadata": {"title": "Change file metadata: rename, trash, sharing settings and restrictions"},
+      "delete": {"title": "Delete files permanently"},
+      "share": {"title": "Share files and change permissions"}
+    }
+  },
+  "operations": [
+    {"id": "files.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.googleapis.com", "path": "/drive/v3/files", "params": ["q", "pageSize", "pageToken", "fields", "orderBy", "spaces", "corpora", "driveId", "includeItemsFromAllDrives", "supportsAllDrives"], "query": {"useDomainAdminAccess": null}, "scope": {}},
+    {"id": "files.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.googleapis.com", "path": "/drive/v3/files/{file}", "params": ["fields", "alt", "supportsAllDrives", "acknowledgeAbuse"], "scope": {"file": {"from": "path", "at": "file"}}},
+    {"id": "files.export", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.googleapis.com", "path": "/drive/v3/files/{file}/export", "params": ["mimeType"], "scope": {"file": {"from": "path", "at": "file"}}},
+    {"id": "permissions.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.googleapis.com", "path": "/drive/v3/files/{file}/permissions", "params": ["pageSize", "pageToken", "fields", "supportsAllDrives"], "query": {"useDomainAdminAccess": null}, "scope": {"file": {"from": "path", "at": "file"}}},
+    {"id": "drives.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.googleapis.com", "path": "/drive/v3/drives", "params": ["pageSize", "pageToken", "q", "fields"], "query": {"useDomainAdminAccess": null}, "scope": {}},
+    {"id": "files.create", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://www.googleapis.com", "path": "/drive/v3/files", "params": ["fields", "supportsAllDrives"], "fields": {"/writersCanShare": null, "/copyRequiresWriterPermission": null}, "body": "json", "scope": {"file": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "files.upload", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://www.googleapis.com", "path": "/upload/drive/v3/files", "query": {"uploadType": "media"}, "params": ["fields", "supportsAllDrives"], "body": "any", "scope": {}},
+    {"id": "files.update", "action": "admin.metadata", "effects": ["write", "delete", "share", "admin"], "method": "PATCH", "origin": "https://www.googleapis.com", "path": "/drive/v3/files/{file}", "params": ["fields", "supportsAllDrives"], "body": "json", "scope": {"file": {"from": "path", "at": "file"}, "metadata": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "files.copy", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://www.googleapis.com", "path": "/drive/v3/files/{file}/copy", "params": ["fields", "supportsAllDrives"], "fields": {"/writersCanShare": null, "/copyRequiresWriterPermission": null}, "body": "json", "scope": {"file": {"from": "path", "at": "file"}, "copy": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "files.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://www.googleapis.com", "path": "/drive/v3/files/{file}", "params": ["supportsAllDrives"], "scope": {"file": {"from": "path", "at": "file"}}},
+    {"id": "permissions.create", "action": "share", "effects": ["share", "send"], "method": "POST", "origin": "https://www.googleapis.com", "path": "/drive/v3/files/{file}/permissions", "params": ["sendNotificationEmail", "emailMessage", "supportsAllDrives", "fields"], "query": {"transferOwnership": null, "moveToNewOwnersRoot": null, "useDomainAdminAccess": null, "enforceSingleParent": null, "enforceExpansiveAccess": null}, "body": "json", "scope": {"file": {"from": "path", "at": "file"}, "permission": {"from": "body", "at": "", "type": "object"}, "query": {"from": "query", "at": "", "type": "object"}}},
+    {"id": "permissions.delete", "action": "share", "effects": ["share"], "method": "DELETE", "origin": "https://www.googleapis.com", "path": "/drive/v3/files/{file}/permissions/{permission}", "params": ["supportsAllDrives"], "query": {"useDomainAdminAccess": null}, "scope": {"file": {"from": "path", "at": "file"}, "permission": {"from": "path", "at": "permission"}}}
+  ]
+}

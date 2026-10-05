@@ -1,0 +1,38 @@
+{
+  "title": "Microsoft Outlook",
+  "catalog": {
+    "fields": [
+      {"key": "tenant", "label": "Microsoft Entra tenant (ID, domain, organizations or consumers)", "default": "organizations", "paths": []},
+      {"key": "client_id", "label": "Application (client) ID", "paths": []},
+      {"key": "client_secret", "label": "Client secret", "secret": true, "paths": []},
+      {"key": "token", "label": "Microsoft account", "secret": true, "path": ["connections", "", "http", "values", "token"],
+       "oauth": {"auth_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize", "token_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "offline_access Mail.ReadWrite Mail.Send"}}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://graph.microsoft.com", "path": "/v1.0", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read mail, folders and attachments"},
+      "write.drafts": {"title": "Create and edit drafts"},
+      "write.organize": {"title": "Mark, flag and move mail"},
+      "delete": {"title": "Delete mail"},
+      "send.mail": {"title": "Send mail, replies and forwards"}
+    }
+  },
+  "operations": [
+    {"id": "messages.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/messages", "params": ["$select", "$filter", "$top", "$skip", "$orderby", "$expand", "$search", "$count", "$skiptoken"], "scope": {}},
+    {"id": "mailFolders.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/mailFolders", "params": ["$select", "$filter", "$top", "$skip", "$orderby", "$expand", "$search", "$count", "$skiptoken", "includeHiddenFolders"], "scope": {}},
+    {"id": "mailFolders.messages.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/mailFolders/{folder}/messages", "params": ["$select", "$filter", "$top", "$skip", "$orderby", "$expand", "$search", "$count", "$skiptoken"], "scope": {"folder": {"from": "path", "at": "folder"}}},
+    {"id": "messages.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/messages/{message}", "params": ["$select", "$expand"], "scope": {"message": {"from": "path", "at": "message"}}},
+    {"id": "attachments.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/messages/{message}/attachments", "params": ["$select", "$top", "$skip"], "scope": {"message": {"from": "path", "at": "message"}}},
+    {"id": "attachments.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/messages/{message}/attachments/{attachment}", "params": ["$select"], "scope": {"message": {"from": "path", "at": "message"}}},
+    {"id": "messages.createDraft", "action": "write.drafts", "effects": ["write"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/messages", "body": "json", "scope": {}},
+    {"id": "messages.update", "action": "write.organize", "effects": ["write"], "method": "PATCH", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/messages/{message}", "body": "json", "scope": {"message": {"from": "path", "at": "message"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "messages.move", "action": "write.organize", "effects": ["write"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/messages/{message}/move", "body": "json", "scope": {"message": {"from": "path", "at": "message"}, "destination": {"from": "body", "at": "/destinationId"}}},
+    {"id": "messages.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/messages/{message}", "scope": {"message": {"from": "path", "at": "message"}}},
+    {"id": "messages.send", "action": "send.mail", "effects": ["send"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/messages/{message}/send", "scope": {"message": {"from": "path", "at": "message"}}},
+    {"id": "sendMail", "action": "send.mail", "effects": ["send"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/sendMail", "body": "json", "scope": {"mail": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "messages.reply", "action": "send.mail", "effects": ["send"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/messages/{message}/reply", "body": "json", "scope": {"message": {"from": "path", "at": "message"}, "reply": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "messages.replyAll", "action": "send.mail", "effects": ["send"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/messages/{message}/replyAll", "body": "json", "scope": {"message": {"from": "path", "at": "message"}, "reply": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "messages.forward", "action": "send.mail", "effects": ["send"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/messages/{message}/forward", "body": "json", "scope": {"message": {"from": "path", "at": "message"}, "forward": {"from": "body", "at": "", "type": "object"}}}
+  ]
+}

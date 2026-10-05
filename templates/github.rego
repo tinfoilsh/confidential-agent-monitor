@@ -12,20 +12,24 @@ catalog := {
 		{"key": "private", "label": "Private orgs and repos", "list": true, "hint": "owner/* or owner/repo", "path": ["policy_options", "private"]}
 	],
 	"connections": {
-		"": {"http": {"hosts": ["api.github.com", "github.com", "*.githubusercontent.com"]}},
+		"": {"http": {"hosts": ["api.github.com", "github.com", "*.githubusercontent.com"], "slots": [
+			{"value": "GITHUB_TOKEN", "origin": "https://api.github.com", "header": "Authorization", "prefix": "Bearer "},
+			{"value": "GITHUB_TOKEN", "origin": "https://api.github.com", "header": "Authorization", "prefix": "token "},
+			{"value": "GITHUB_TOKEN", "origin": "https://github.com", "basic": "password"},
+		]}},
 		"mcp": {"mcp": {"url": "https://api.githubcopilot.com/mcp/"}}
 	},
 	"defaults": {"contents": "team", "strangers": true, "sends": "me"},
 	"actions": {
 		"read": {"title": "Read code, issues and pull requests"},
-		"comment": {"title": "Comment on issues and pull requests", "save": "Allow comments on {repo}"},
-		"comment.lines": {"title": "Comment on lines of code", "save": "Allow line comments on {repo}"},
-		"comment.reviews": {"title": "Review pull requests", "save": "Allow reviews on {repo}"},
+		"comment": {"title": "Comment on issues and pull requests"},
+		"comment.lines": {"title": "Comment on lines of code"},
+		"comment.reviews": {"title": "Review pull requests"},
 		"open": {"title": "Open and edit issues and pull requests"},
-		"open.issues": {"title": "Open and edit issues", "save": "Allow opening and editing issues on {repo}"},
-		"open.pulls": {"title": "Open and edit pull requests", "save": "Allow opening and editing pull requests on {repo}"},
-		"push": {"title": "Push commits", "save": "Allow pushes to {repo}"},
-		"merge": {"title": "Merge pull requests", "save": "Allow merges on {repo}"},
+		"open.issues": {"title": "Open and edit issues"},
+		"open.pulls": {"title": "Open and edit pull requests"},
+		"push": {"title": "Push commits"},
+		"merge": {"title": "Merge pull requests"},
 		"use": {"title": "Use tools that change things"}
 	}
 }
@@ -34,9 +38,9 @@ import data.monitor.mutation
 import data.monitor.route
 import data.monitor.write
 
-changes := {"comment", "open", "push", "merge", "use"}
+effects := {"read": {"read"}, "comment": {"write"}, "open": {"write"}, "push": {"write"}, "merge": {"write"}, "use": {"write"}}
 
-needs_trust := {"push", "merge", "use"}
+root := split(action, ".")[0]
 
 writes := {
 	"/repos/*/*/issues/*/comments": "comment",
@@ -81,10 +85,10 @@ action := "read" if input.graphql.kind == "query"
 
 action := a if {
 	mutation
-	some root in input.graphql.roots
-	a := mutations[root]
-	every r in input.graphql.roots {
-		mutations[r] == a
+	some field in input.graphql.fields
+	a := mutations[field.name]
+	every f in input.graphql.fields {
+		mutations[f.name] == a
 	}
 }
 
@@ -113,7 +117,14 @@ private if {
 	glob.match(pattern, ["/"], repo)
 }
 
+default scope := {}
+
 scope := {"repo": repo}
+
+operation := {
+	"id": action, "action": action, "effects": effects[root], "scope": scope,
+	"trust": root in {"push", "merge", "use"}, "sends": sends, "reveals": reveals
+}
 
 public if {
 	repo
@@ -121,11 +132,13 @@ public if {
 }
 
 reveals := {"contents": "anyone"} if public
+else := {}
 
 sends := "anyone" if {
 	public
-	action in changes
+	root != "read"
 }
+else := input.account.sends
 
 verbs := {
 	"read": "Read",

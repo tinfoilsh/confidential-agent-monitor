@@ -1,0 +1,23 @@
+{
+  "title": "OpenAI",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "API key", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.openai.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "List models and files"},
+      "write.files": {"title": "Upload files"},
+      "generate": {"title": "Generate text, embeddings and images (billable)"}
+    }
+  },
+  "operations": [
+    {"id": "models.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.openai.com", "path": "/v1/models", "headers": {"Openai-Organization": null, "Openai-Project": null}, "scope": {}},
+    {"id": "files.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.openai.com", "path": "/v1/files", "headers": {"Openai-Organization": null, "Openai-Project": null}, "scope": {}},
+    {"id": "files.create", "action": "write.files", "effects": ["write"], "method": "POST", "origin": "https://api.openai.com", "path": "/v1/files", "headers": {"Openai-Organization": null, "Openai-Project": null}, "body": "any", "scope": {}},
+    {"id": "chat.completions.create", "action": "generate", "effects": ["generate", "pay", "send"], "method": "POST", "origin": "https://api.openai.com", "path": "/v1/chat/completions", "headers": {"Openai-Organization": null, "Openai-Project": null}, "fields": {"/web_search_options": null}, "body": "json", "scope": {"request": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "embeddings.create", "action": "generate", "effects": ["generate", "pay", "send"], "method": "POST", "origin": "https://api.openai.com", "path": "/v1/embeddings", "headers": {"Openai-Organization": null, "Openai-Project": null}, "body": "json", "scope": {"request": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "images.generate", "action": "generate", "effects": ["generate", "pay", "send"], "method": "POST", "origin": "https://api.openai.com", "path": "/v1/images/generations", "headers": {"Openai-Organization": null, "Openai-Project": null}, "body": "json", "scope": {"request": {"from": "body", "at": "", "type": "object"}}}
+  ]
+}

@@ -56,7 +56,7 @@ CONF
   for var in SSL_CERT_FILE CURL_CA_BUNDLE NODE_EXTRA_CA_CERTS REQUESTS_CA_BUNDLE GIT_SSL_CAINFO PGSSLROOTCERT; do
     echo "export $var=$dev/ca.pem"
   done
-  jq -r '.setup.dev | to_entries[] | "export \(.key)=\(.value)"' "$dev/state.json"
+  jq -r '.setup.dev' "$dev/state.json"
 } > "$dev/env"
 
 cat > "$dev/firefox/user.js" <<CONF

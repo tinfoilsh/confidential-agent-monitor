@@ -1,0 +1,23 @@
+{
+  "title": "Linear",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "Personal API key", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.linear.app", "path": "/graphql", "header": "Authorization"}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read teams, issues and comments"},
+      "write.issues": {"title": "Create and edit issues"},
+      "send.comment": {"title": "Comment on issues"}
+    }
+  },
+  "operations": [
+    {"id": "viewer", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.linear.app", "path": "/graphql", "body": "graphql", "graphql": {"operation": "query", "field": "viewer"}, "scope": {}},
+    {"id": "issues", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.linear.app", "path": "/graphql", "body": "graphql", "graphql": {"operation": "query", "field": "issues"}, "scope": {}},
+    {"id": "issue", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.linear.app", "path": "/graphql", "body": "graphql", "graphql": {"operation": "query", "field": "issue"}, "scope": {"id": {"from": "argument", "at": "/id"}}},
+    {"id": "issueCreate", "action": "write.issues", "effects": ["write"], "method": "POST", "origin": "https://api.linear.app", "path": "/graphql", "body": "graphql", "graphql": {"operation": "mutation", "field": "issueCreate"}, "scope": {"input": {"from": "argument", "at": "/input", "type": "object"}}},
+    {"id": "issueUpdate", "action": "write.issues", "effects": ["write"], "method": "POST", "origin": "https://api.linear.app", "path": "/graphql", "body": "graphql", "graphql": {"operation": "mutation", "field": "issueUpdate"}, "scope": {"id": {"from": "argument", "at": "/id"}, "input": {"from": "argument", "at": "/input", "type": "object"}}},
+    {"id": "commentCreate", "action": "send.comment", "effects": ["send"], "method": "POST", "origin": "https://api.linear.app", "path": "/graphql", "body": "graphql", "graphql": {"operation": "mutation", "field": "commentCreate"}, "scope": {"input": {"from": "argument", "at": "/input", "type": "object"}}}
+  ]
+}

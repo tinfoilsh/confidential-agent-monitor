@@ -1,0 +1,37 @@
+{
+  "title": "Microsoft OneDrive",
+  "catalog": {
+    "fields": [
+      {"key": "tenant", "label": "Microsoft Entra tenant (ID, domain, organizations or consumers)", "default": "organizations", "paths": []},
+      {"key": "client_id", "label": "Application (client) ID", "paths": []},
+      {"key": "client_secret", "label": "Client secret", "secret": true, "paths": []},
+      {"key": "token", "label": "Microsoft account", "secret": true, "path": ["connections", "", "http", "values", "token"],
+       "oauth": {"auth_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize", "token_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "offline_access Files.ReadWrite"}}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://graph.microsoft.com", "path": "/v1.0", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "List, search and read file metadata and permissions"},
+      "write": {"title": "Upload, create folders, rename, move and copy"},
+      "delete": {"title": "Delete files and folders"},
+      "share": {"title": "Create sharing links, invite people and remove permissions"}
+    }
+  },
+  "operations": [
+    {"id": "drive.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive", "params": ["$select"], "scope": {}},
+    {"id": "root.children", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/root/children", "params": ["$select", "$filter", "$top", "$skip", "$orderby", "$expand", "$search", "$count", "$skiptoken"], "scope": {}},
+    {"id": "items.children", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/children", "params": ["$select", "$filter", "$top", "$skip", "$orderby", "$expand", "$search", "$count", "$skiptoken"], "scope": {"item": {"from": "path", "at": "item"}}},
+    {"id": "items.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}", "params": ["$select", "$expand"], "scope": {"item": {"from": "path", "at": "item"}}},
+    {"id": "root.search", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/root/search(q={query})", "params": ["$select", "$top", "$skiptoken"], "scope": {"query": {"from": "path", "at": "query"}}},
+    {"id": "permissions.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/permissions", "params": ["$select"], "scope": {"item": {"from": "path", "at": "item"}}},
+    {"id": "items.upload", "action": "write", "effects": ["write"], "method": "PUT", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{parent}:/{name}:/content", "query": {"@microsoft.graph.conflictBehavior": null}, "body": "any", "scope": {"parent": {"from": "path", "at": "parent"}, "name": {"from": "path", "at": "name"}}},
+    {"id": "items.replaceContent", "action": "write", "effects": ["write"], "method": "PUT", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/content", "body": "any", "scope": {"item": {"from": "path", "at": "item"}}},
+    {"id": "items.createFolder", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{parent}/children", "body": "json", "scope": {"parent": {"from": "path", "at": "parent"}, "folder": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "items.update", "action": "write", "effects": ["write"], "method": "PATCH", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}", "body": "json", "scope": {"item": {"from": "path", "at": "item"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "items.copy", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/copy", "query": {"@microsoft.graph.conflictBehavior": null}, "body": "json", "scope": {"item": {"from": "path", "at": "item"}, "copy": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "items.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}", "scope": {"item": {"from": "path", "at": "item"}}},
+    {"id": "items.createLink", "action": "share", "effects": ["share"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/createLink", "body": "json", "scope": {"item": {"from": "path", "at": "item"}, "link": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "items.invite", "action": "share", "effects": ["share", "send"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/invite", "body": "json", "scope": {"item": {"from": "path", "at": "item"}, "invitation": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "permissions.delete", "action": "share", "effects": ["share"], "method": "DELETE", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/permissions/{permission}", "scope": {"item": {"from": "path", "at": "item"}, "permission": {"from": "path", "at": "permission"}}}
+  ]
+}

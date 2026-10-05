@@ -1,0 +1,24 @@
+{
+  "title": "Discord",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "Bot token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://discord.com", "path": "/api/v10", "header": "Authorization", "prefix": "Bot "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read channels, messages and members"},
+      "send.message": {"title": "Post and edit messages"},
+      "delete": {"title": "Delete messages"}
+    }
+  },
+  "operations": [
+    {"id": "channels.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://discord.com", "path": "/api/v10/channels/{channel}", "scope": {"channel": {"from": "path", "at": "channel"}}},
+    {"id": "messages.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://discord.com", "path": "/api/v10/channels/{channel}/messages", "params": ["around", "before", "after", "limit"], "scope": {"channel": {"from": "path", "at": "channel"}}},
+    {"id": "messages.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://discord.com", "path": "/api/v10/channels/{channel}/messages/{message}", "scope": {"channel": {"from": "path", "at": "channel"}, "message": {"from": "path", "at": "message"}}},
+    {"id": "guild.members.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://discord.com", "path": "/api/v10/guilds/{guild}/members", "params": ["limit", "after"], "scope": {"guild": {"from": "path", "at": "guild"}}},
+    {"id": "messages.create", "action": "send.message", "effects": ["send"], "method": "POST", "origin": "https://discord.com", "path": "/api/v10/channels/{channel}/messages", "body": "json", "scope": {"channel": {"from": "path", "at": "channel"}, "message": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "messages.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://discord.com", "path": "/api/v10/channels/{channel}/messages/{message}", "scope": {"channel": {"from": "path", "at": "channel"}, "message": {"from": "path", "at": "message"}}},
+    {"id": "messages.update", "action": "send.message", "effects": ["send"], "method": "PATCH", "origin": "https://discord.com", "path": "/api/v10/channels/{channel}/messages/{message}", "body": "json", "scope": {"channel": {"from": "path", "at": "channel"}, "message": {"from": "path", "at": "message"}, "changes": {"from": "body", "at": "", "type": "object"}}}
+  ]
+}

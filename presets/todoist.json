@@ -1,0 +1,31 @@
+{
+  "title": "Todoist",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "API token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.todoist.com", "path": "/api/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read projects and tasks"},
+      "write": {"title": "Create and edit tasks"},
+      "write.projects": {"title": "Create and edit projects"},
+      "delete": {"title": "Delete tasks and projects"}
+    }
+  },
+  "operations": [
+    {"id": "projects.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.todoist.com", "path": "/api/v1/projects", "params": ["cursor", "limit"], "scope": {}},
+    {"id": "tasks.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.todoist.com", "path": "/api/v1/tasks", "params": ["project_id", "section_id", "parent_id", "label", "ids", "cursor", "limit"], "scope": {}},
+    {"id": "tasks.filter", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.todoist.com", "path": "/api/v1/tasks/filter", "params": ["query", "lang", "cursor", "limit"], "scope": {}},
+    {"id": "tasks.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.todoist.com", "path": "/api/v1/tasks/{task}", "scope": {"task": {"from": "path", "at": "task"}}},
+    {"id": "tasks.create", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://api.todoist.com", "path": "/api/v1/tasks", "body": "json", "scope": {"task": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "tasks.update", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://api.todoist.com", "path": "/api/v1/tasks/{task}", "body": "json", "scope": {"task": {"from": "path", "at": "task"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "tasks.close", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://api.todoist.com", "path": "/api/v1/tasks/{task}/close", "scope": {"task": {"from": "path", "at": "task"}}},
+    {"id": "tasks.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.todoist.com", "path": "/api/v1/tasks/{task}", "scope": {"task": {"from": "path", "at": "task"}}},
+    {"id": "tasks.reopen", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://api.todoist.com", "path": "/api/v1/tasks/{task}/reopen", "scope": {"task": {"from": "path", "at": "task"}}},
+    {"id": "projects.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.todoist.com", "path": "/api/v1/projects/{project}", "scope": {"project": {"from": "path", "at": "project"}}},
+    {"id": "projects.create", "action": "write.projects", "effects": ["write"], "method": "POST", "origin": "https://api.todoist.com", "path": "/api/v1/projects", "body": "json", "scope": {"project": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "projects.update", "action": "write.projects", "effects": ["write"], "method": "POST", "origin": "https://api.todoist.com", "path": "/api/v1/projects/{project}", "body": "json", "scope": {"project": {"from": "path", "at": "project"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "projects.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.todoist.com", "path": "/api/v1/projects/{project}", "scope": {"project": {"from": "path", "at": "project"}}}
+  ]
+}

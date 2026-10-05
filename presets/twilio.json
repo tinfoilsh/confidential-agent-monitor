@@ -1,0 +1,26 @@
+{
+  "title": "Twilio",
+  "catalog": {
+    "fields": [
+      {"key": "sid", "label": "Account SID", "secret": true, "path": ["connections", "", "http", "values", "sid"]},
+      {"key": "token", "label": "Auth token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [
+      {"value": "sid", "origin": "https://api.twilio.com", "path": "/2010-04-01", "basic": "user"},
+      {"value": "token", "origin": "https://api.twilio.com", "path": "/2010-04-01", "basic": "password"},
+      {"value": "sid", "origin": "https://api.twilio.com", "path": "/2010-04-01/Accounts", "segment": 3}
+    ]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read messages and calls"},
+      "send.message": {"title": "Send text messages (billable)"},
+      "send.call": {"title": "Place calls (billable)"}
+    }
+  },
+  "operations": [
+    {"id": "messages.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.twilio.com", "path": "/2010-04-01/Accounts/{account}/Messages.json", "params": ["To", "From", "DateSent", "PageSize", "Page"], "scope": {"account": {"from": "path", "at": "account"}}},
+    {"id": "messages.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.twilio.com", "path": "/2010-04-01/Accounts/{account}/Messages/{message}.json", "scope": {"account": {"from": "path", "at": "account"}, "message": {"from": "path", "at": "message"}}},
+    {"id": "messages.create", "action": "send.message", "effects": ["send", "pay"], "method": "POST", "origin": "https://api.twilio.com", "path": "/2010-04-01/Accounts/{account}/Messages.json", "body": "form", "scope": {"account": {"from": "path", "at": "account"}, "message": {"from": "form", "at": "", "type": "object"}}},
+    {"id": "calls.create", "action": "send.call", "effects": ["send", "pay"], "method": "POST", "origin": "https://api.twilio.com", "path": "/2010-04-01/Accounts/{account}/Calls.json", "body": "form", "scope": {"account": {"from": "path", "at": "account"}, "call": {"from": "form", "at": "", "type": "object"}}}
+  ]
+}

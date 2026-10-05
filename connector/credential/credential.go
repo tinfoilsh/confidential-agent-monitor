@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"net/http"
 	"time"
 
 	"golang.org/x/oauth2"
@@ -13,6 +15,7 @@ import (
 var ErrNotConfigured = errors.New("credential is not configured")
 
 // Value is a string or an OAuth grant. Disclosure is controlled by field metadata.
+// Client is the guarded client that refreshes the grant; without one, a grant cannot refresh.
 type Value struct {
 	raw     json.RawMessage
 	text    string
@@ -20,6 +23,7 @@ type Value struct {
 	token   *oauth2.Token
 	refresh chan struct{}
 	Save    func(context.Context, json.RawMessage, json.RawMessage) error
+	Client  *http.Client
 }
 
 func (v *Value) UnmarshalJSON(raw []byte) error {
@@ -38,13 +42,23 @@ func (v *Value) UnmarshalJSON(raw []byte) error {
 	if cfg.OAuth == nil {
 		return errors.New("credential must be a string or an oauth grant")
 	}
+	if err := cfg.OAuth.validate(); err != nil {
+		return err
+	}
 	v.grant = cfg.OAuth
-	v.token = &oauth2.Token{RefreshToken: v.grant.RefreshToken}
+	v.token = &oauth2.Token{AccessToken: v.grant.AccessToken, RefreshToken: v.grant.RefreshToken, Expiry: v.grant.Expiry}
 	v.refresh = make(chan struct{}, 1)
 	return nil
 }
 
-func (v *Value) Raw() json.RawMessage { return v.raw }
+// Raw waits for a refresh in progress, which may rotate the record.
+func (v *Value) Raw() json.RawMessage {
+	if v.refresh != nil {
+		v.refresh <- struct{}{}
+		defer func() { <-v.refresh }()
+	}
+	return v.raw
+}
 
 func (v *Value) Value(ctx context.Context) (string, error) {
 	if v == nil {
@@ -70,10 +84,13 @@ func (v *Value) Value(ctx context.Context) (string, error) {
 		if t.RefreshToken == "" {
 			return "", ErrNotConfigured
 		}
+		if v.Client == nil {
+			return "", errors.New("credential has no guarded client to refresh with")
+		}
 		var err error
-		config := oauth2.Config{ClientID: grant.ClientID, ClientSecret: grant.ClientSecret, Endpoint: oauth2.Endpoint{TokenURL: grant.TokenURL}}
-		if t, err = config.TokenSource(ctx, t).Token(); err != nil {
-			return "", err
+		config := grant.config("")
+		if t, err = config.TokenSource(context.WithValue(ctx, oauth2.HTTPClient, v.Client), t).Token(); err != nil {
+			return "", scrub(ctx, "refresh", err)
 		}
 		v.token = t
 	}
@@ -99,8 +116,20 @@ func Describe(raw json.RawMessage) string {
 	if v.grant == nil {
 		return "static"
 	}
-	if v.grant.RefreshToken != "" {
+	if v.grant.RefreshToken != "" || v.token.Valid() {
 		return "oauth"
 	}
 	return "oauth-required"
+}
+
+// scrub keeps provider responses and request URLs out of errors, since either may hold a secret.
+func scrub(ctx context.Context, step string, err error) error {
+	if ctx.Err() != nil {
+		return ctx.Err()
+	}
+	var provider *oauth2.RetrieveError
+	if errors.As(err, &provider) && provider.Response != nil {
+		return fmt.Errorf("oauth %s failed with status %d", step, provider.Response.StatusCode)
+	}
+	return fmt.Errorf("oauth %s failed", step)
 }

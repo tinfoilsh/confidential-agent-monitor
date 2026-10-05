@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# Boots the confidential-agent-sandbox image under podman and opens a shell in it whose only
+# way out is the monitor: sing-box routes every TCP connection, by name, into its SOCKS tunnel.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+dev=$PWD/.dev
+src=${SANDBOX_SRC:-../confidential-agent-sandbox}
+name=${SANDBOX_NAME:-sandbox-dev}
+listen=${MONITOR_LISTEN:-127.0.0.1:2223}
+toolchain=$(realpath "${SANDBOX_TOOLCHAIN:?set to a nix-closure pack.sh STAGE directory}")
+socks=127.0.0.1:1080 tun=172.19.0.1/30 resolver=172.19.0.2
+singbox=$(nix build --no-link --print-out-paths nixpkgs#sing-box)
+
+podman rm -f "$name" > /dev/null
+pkill -f "^$dev/monitor " && pidwait -f "^$dev/monitor " || true
+dev/setup > /dev/null
+podman build -q -t "$name" "$src" > /dev/null
+# Every name resolves to a fake address, which sing-box maps back so the monitor sees the name.
+cat > "$dev/sing-box.json" <<JSON
+{
+  "dns": {
+    "servers": [{"type": "local", "tag": "local"}, {"type": "fakeip", "tag": "fakeip", "inet4_range": "198.18.0.0/15"}],
+    "rules": [{"query_type": ["A"], "server": "fakeip"}, {"action": "predefined", "rcode": "NOERROR"}]
+  },
+  "inbounds": [{"type": "tun", "interface_name": "tun0", "address": ["$tun"], "auto_route": true}],
+  "outbounds": [{"type": "socks", "tag": "monitor", "server": "${socks%:*}", "server_port": ${socks##*:}}],
+  "route": {
+    "rules": [{"action": "sniff"}, {"protocol": "dns", "action": "hijack-dns"}, {"network": "udp", "action": "reject"}],
+    "final": "monitor"
+  }
+}
+JSON
+# keep-id makes .dev's files the sandbox user's, at the paths .dev/env names.
+podman run -d --name "$name" --hostname workspace --privileged --systemd=always \
+  --userns=keep-id --user root --network "pasta:-T,${listen##*:}" --dns "$resolver" \
+  -v "$name:/mnt/disk" -v "$name:/nix" -v "$toolchain:/tinfoil/models/nix:ro" \
+  -v "$dev:/srv/monitor:ro" \
+  -v "$dev/ssh_config:/etc/ssh/ssh_config.d/monitor.conf:ro" \
+  --entrypoint bash "$name" -c 'touch /mnt/disk/.authorized_keys && mkdir -p /nix/store /nix/store.upper /nix/store.work &&
+    mount -t overlay overlay -o lowerdir=/tinfoil/models/nix/nix/store,upperdir=/nix/store.upper,workdir=/nix/store.work /nix/store &&
+    exec /entrypoint' > /dev/null
+until [[ $(podman exec "$name" systemctl is-system-running --wait 2> /dev/null) =~ running|degraded ]]; do
+  [[ $(podman inspect -f '{{.State.Running}}' "$name") == true ]] || { podman logs "$name"; exit 1; }
+done
+# The entrypoint binds the disk's /home over the path .dev/env names, so .dev joins after boot.
+podman exec "$name" sh -c "mkdir -p '$dev' && mount --bind /srv/monitor '$dev'"
+podman exec "$name" sh -c "grep -v _PROXY= '$dev/env' > /etc/profile.d/monitor.sh &&
+  cp '$dev/ca.pem' /usr/local/share/ca-certificates/monitor.crt && update-ca-certificates > /dev/null"
+nix-store --export $(nix-store -qR "$singbox") | podman exec -i "$name" bash -lc 'nix-store --import' > /dev/null
+podman exec -i "$name" nft -f - <<NFT
+table inet egress {
+  chain output { type filter hook output priority 0; oifname != { "lo", "tun0" } drop; }
+  chain forward { type filter hook forward priority 0; drop; }
+}
+NFT
+podman exec -d -u sandbox "$name" ssh -N -D "$socks" monitor
+podman exec -d "$name" "$singbox/bin/sing-box" run -c "$dev/sing-box.json"
+exec podman exec -it -u sandbox -w /workspace "$name" bash -l

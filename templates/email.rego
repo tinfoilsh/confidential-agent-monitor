@@ -20,12 +20,10 @@ catalog := {
 		"smtp": {"smtp": {"url": "{smtp_url}", "user": "{address}"}}
 	},
 	"defaults": {"contents": "me", "strangers": true, "sends": "me"},
-	"actions": {"read": {"title": "Read mail"}, "organize": {"title": "Move, flag and delete mail"}, "send": {"title": "Send mail", "save": "Allow mail to {to}"}}
+	"actions": {"read": {"title": "Read mail"}, "organize": {"title": "Move, flag and delete mail"}, "send": {"title": "Send mail"}}
 }
 
-changes := {"organize", "send"}
-
-needs_trust := {"send"}
+effects := {"read": {"read"}, "organize": {"write"}, "send": {"send"}}
 
 command := input.imap.command
 
@@ -41,12 +39,19 @@ action := "organize" if command in {
 
 action := "send" if input.smtp
 
+# Mail to the account's own address stays within the account's audience.
 sends := "anyone" if {
 	some to in input.smtp.to
 	not lower(to) == lower(input.account.policy_options.address)
-}
+} else := input.account.sends
+
+default scope := {}
 
 scope := {"to": sort(input.smtp.to)}
+
+operation := {
+	"id": action, "action": action, "effects": effects[action], "scope": scope, "sends": sends
+}
 
 title := sprintf("Send mail to %s", [concat(", ", input.smtp.to)])
 

@@ -1,0 +1,29 @@
+{
+  "title": "Trello",
+  "catalog": {
+    "fields": [
+      {"key": "key", "label": "API key", "secret": true, "path": ["connections", "", "http", "values", "key"]},
+      {"key": "token", "label": "API token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [
+      {"value": "key", "origin": "https://api.trello.com", "path": "/1", "query": "key"},
+      {"value": "token", "origin": "https://api.trello.com", "path": "/1", "query": "token"}
+    ]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read boards, lists and cards"},
+      "write.cards": {"title": "Create and edit cards"},
+      "send.comment": {"title": "Comment on cards"},
+      "delete": {"title": "Delete cards"}
+    }
+  },
+  "operations": [
+    {"id": "boards.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.trello.com", "path": "/1/boards/{board}", "params": ["key", "token", "fields", "lists", "cards"], "scope": {"board": {"from": "path", "at": "board"}}},
+    {"id": "lists.cards.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.trello.com", "path": "/1/lists/{list}/cards", "params": ["key", "token", "fields"], "scope": {"list": {"from": "path", "at": "list"}}},
+    {"id": "cards.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.trello.com", "path": "/1/cards/{card}", "params": ["key", "token", "fields"], "scope": {"card": {"from": "path", "at": "card"}}},
+    {"id": "cards.create", "action": "write.cards", "effects": ["write"], "method": "POST", "origin": "https://api.trello.com", "path": "/1/cards", "params": ["key", "token", "idList", "name", "desc", "due", "idMembers"], "scope": {"query": {"from": "query", "at": "", "type": "object"}}},
+    {"id": "cards.update", "action": "write.cards", "effects": ["write"], "method": "PUT", "origin": "https://api.trello.com", "path": "/1/cards/{card}", "params": ["key", "token", "name", "desc", "due", "closed", "idList", "idMembers"], "scope": {"card": {"from": "path", "at": "card"}, "query": {"from": "query", "at": "", "type": "object"}}},
+    {"id": "cards.comments.create", "action": "send.comment", "effects": ["send"], "method": "POST", "origin": "https://api.trello.com", "path": "/1/cards/{card}/actions/comments", "params": ["key", "token", "text"], "scope": {"card": {"from": "path", "at": "card"}, "text": {"from": "query", "at": "text"}}},
+    {"id": "cards.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.trello.com", "path": "/1/cards/{card}", "params": ["key", "token"], "scope": {"card": {"from": "path", "at": "card"}}}
+  ]
+}

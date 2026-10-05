@@ -5,6 +5,8 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"encoding/json/jsontext"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -12,13 +14,13 @@ import (
 	"net"
 	"net/http"
 	"net/http/httputil"
+	"net/url"
 	"path"
 	"slices"
+	"strconv"
 	"strings"
-	"sync"
-
-	"github.com/vektah/gqlparser/v2/ast"
-	"github.com/vektah/gqlparser/v2/parser"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
@@ -31,24 +33,33 @@ const (
 
 	placeholderPrefix = "tfm_"
 	authorization     = "Authorization"
+	hostChars         = "abcdefghijklmnopqrstuvwxyz0123456789.-:"
 )
 
-type Location string
+var (
+	Methods = []string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions}
+	// Some servers let these replace the method the policy saw.
+	methodOverrides = []string{"X-Http-Method-Override", "X-Http-Method", "X-Method-Override"}
+)
 
-func (l *Location) UnmarshalText(text []byte) error {
-	switch Location(text) {
-	case "url", "headers", "body":
-		*l = Location(text)
-		return nil
-	}
-	return fmt.Errorf("unknown substitution location %q", text)
-}
-
+// HTTP forwards unauthenticated requests for Hosts on ports 80 and 443, and authenticated ones for slot origins.
 type HTTP struct {
 	Values map[string]*credential.Value `json:"values"`
 	Hosts  []string                     `json:"hosts"`
-	// The Authorization header is always substituted; these locations are opt-in.
-	Substitute []Location `json:"substitute"`
+	Slots  []Slot                       `json:"slots"`
+}
+
+func (h *HTTP) UnmarshalJSON(raw []byte) error {
+	type plain HTTP
+	if err := connector.Decode(raw, (*plain)(h)); err != nil {
+		return err
+	}
+	for i := range h.Slots {
+		if err := h.Slots[i].validate(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (h *HTTP) Fields() (fields []connector.Field) {
@@ -61,18 +72,10 @@ func (h *HTTP) Fields() (fields []connector.Field) {
 func (h *HTTP) Run(ctx context.Context, e *connector.Env, in *connector.Listener, ready func()) error {
 	transport := e.Transport()
 	defer transport.CloseIdleConnections()
-	proxy := &httputil.ReverseProxy{
-		Transport: transport,
-		Rewrite: func(pr *httputil.ProxyRequest) {
-			pr.Out.URL.Scheme = "http"
-			if pr.In.TLS != nil {
-				pr.Out.URL.Scheme = "https"
-			}
-			pr.Out.URL.Host = pr.In.Host
-		},
-	}
+	proxy := h.proxy(transport)
 	return connector.ServeHTTP(ctx, tlsListener{in, e}, ready, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := h.screen(r); err != nil {
+		r, err := h.screen(r, connector.RequestStream(r))
+		if err != nil {
 			log.Printf("refused %s %s%s: %v", r.Method, r.Host, r.URL.Path, err)
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
@@ -81,7 +84,20 @@ func (h *HTTP) Run(ctx context.Context, e *connector.Env, in *connector.Listener
 	}))
 }
 
-// HTTP and HTTPS arrive on the same tunnel listener.
+// The screened request already names its upstream; substitution is the last change before it is sent.
+func (h *HTTP) proxy(base http.RoundTripper) *httputil.ReverseProxy {
+	return &httputil.ReverseProxy{
+		Transport: substitution{base, h.Values},
+		Rewrite:   func(*httputil.ProxyRequest) {},
+		// The error may quote the request with its credentials in place.
+		ErrorHandler: func(w http.ResponseWriter, r *http.Request, _ error) {
+			log.Printf("upstream %s %s failed", r.Method, r.Host)
+			http.Error(w, "the upstream request failed", http.StatusBadGateway)
+		},
+	}
+}
+
+// HTTP and HTTPS arrive on the same tunnel listener; only port 80 is plain.
 type tlsListener struct {
 	net.Listener
 	env *connector.Env
@@ -89,164 +105,268 @@ type tlsListener struct {
 
 func (l tlsListener) Accept() (net.Conn, error) {
 	c, err := l.Listener.Accept()
-	if err == nil && connector.StreamOf(c).Port == httpsPort {
+	if err == nil && connector.StreamOf(c).Port != httpPort {
 		c = tls.Server(c, l.env.TLS)
 	}
 	return c, err
 }
 
-// The proxy dials the request's host, so it must be the one the channel's gate saw.
-func (h *HTTP) screen(r *http.Request) error {
-	s := connector.RequestStream(r)
-	host := r.Host
-	if h, _, err := net.SplitHostPort(host); err == nil {
-		host = h
+// screen gates the canonical request with its placeholders; a selected connection, unlike a routed one, has no host to match.
+func (h *HTTP) screen(r *http.Request, s *connector.Stream) (*http.Request, error) {
+	scheme, host, port, err := authority(r)
+	if err != nil {
+		return r, err
 	}
-	if !strings.EqualFold(host, s.Host) {
-		return fmt.Errorf("a channel to %s cannot carry a request for %s", s.Host, host)
+	switch {
+	case s.Host != "" && (host != strings.ToLower(s.Host) || port != s.Port):
+		return r, fmt.Errorf("a channel to %s:%d cannot carry a request for %s:%d", s.Host, s.Port, host, port)
+	case h.score(host, port) < 0:
+		return r, fmt.Errorf("this connection does not serve %s:%d", host, port)
+	case !slices.Contains(Methods, r.Method):
+		return r, fmt.Errorf("method %s is refused", r.Method)
+	case len(r.Trailer) > 0:
+		return r, errors.New("trailers are refused")
+	case r.Header["Upgrade"] != nil:
+		return r, errors.New("protocol upgrades are refused")
 	}
+	// The proxy drops headers that Connection names, after the gate would have seen them.
+	for _, token := range strings.FieldsFunc(strings.Join(r.Header.Values("Connection"), ","), func(c rune) bool { return c == ',' || c == ' ' }) {
+		if !strings.EqualFold(token, "keep-alive") && !strings.EqualFold(token, "close") {
+			return r, fmt.Errorf("Connection: %s is refused", token)
+		}
+	}
+	for _, name := range methodOverrides {
+		if r.Header[name] != nil {
+			return r, fmt.Errorf("%s is refused", name)
+		}
+	}
+	if err := canonicalPath(r.URL); err != nil {
+		return r, err
+	}
+	query, err := url.ParseQuery(r.URL.RawQuery)
+	if err != nil || !validText(query) || !validText(r.Header) {
+		return r, errors.New("the query or headers are not valid UTF-8 text")
+	}
+	origin := origin(scheme, host, port)
+	r.URL.Scheme, r.URL.Host, r.URL.RawPath, r.URL.RawQuery = scheme, strings.TrimPrefix(origin, scheme+"://"), "", encodeQuery(query)
+	r.Host = r.URL.Host
+	layer := &connector.HTTPLayer{Method: r.Method, Origin: origin, Host: host, Path: r.URL.Path, Query: query, Headers: r.Header.Clone()}
+	if err := inspect(r, layer); err != nil {
+		return r, err
+	}
+	used, err := h.bind(r, s.Name, origin)
+	if err != nil {
+		return r, err
+	}
+	for _, slot := range used {
+		layer.Secrets = append(layer.Secrets, slot.Value)
+	}
+	for name, values := range r.Header {
+		if len(values) == 1 && strings.HasPrefix(values[0], "{") {
+			if v, err := decodeJSON([]byte(values[0])); err == nil {
+				if layer.HeaderJSON == nil {
+					layer.HeaderJSON = map[string]any{}
+				}
+				layer.HeaderJSON[name] = v
+			}
+		}
+	}
+	if err := s.Gate(connector.Event{HTTP: layer, GraphQL: graphql(layer.Body, query)}); err != nil {
+		return r, err
+	}
+	return r.WithContext(context.WithValue(r.Context(), slotsKey{}, used)), nil
+}
+
+// authority returns the request's scheme, host and effective port, refusing any other spelling of them.
+func authority(r *http.Request) (scheme, host string, port uint32, err error) {
+	if r.URL.Host != "" || r.URL.Opaque != "" {
+		return "", "", 0, errors.New("only origin-form request targets are accepted")
+	}
+	scheme, port = "http", httpPort
+	if r.TLS != nil {
+		scheme, port = "https", httpsPort
+	}
+	u := url.URL{Host: r.Host}
+	host = strings.ToLower(u.Hostname())
+	spelled := host
+	if strings.Contains(host, ":") {
+		spelled = "[" + host + "]"
+	}
+	if text := u.Port(); text != "" {
+		n, err := strconv.ParseUint(text, 10, 16)
+		if err != nil || n == 0 || strconv.FormatUint(n, 10) != text {
+			return "", "", 0, fmt.Errorf("invalid port in %q", r.Host)
+		}
+		port, spelled = uint32(n), spelled+":"+text
+	}
+	switch {
+	case host == "" || strings.Trim(host, hostChars) != "" || !strings.EqualFold(r.Host, spelled):
+		return "", "", 0, fmt.Errorf("noncanonical host %q", r.Host)
+	case (scheme == "http") != (port == httpPort):
+		return "", "", 0, fmt.Errorf("%s cannot use port %d", scheme, port)
+	case r.TLS != nil && r.TLS.ServerName != "" && !strings.EqualFold(r.TLS.ServerName, host):
+		return "", "", 0, fmt.Errorf("TLS server name %s differs from host %s", r.TLS.ServerName, host)
+	}
+	return scheme, host, port, nil
+}
+
+func origin(scheme, host string, port uint32) string {
+	if strings.Contains(host, ":") {
+		host = "[" + host + "]"
+	}
+	if (scheme == "https" && port != httpsPort) || (scheme == "http" && port != httpPort) {
+		host += ":" + strconv.Itoa(int(port))
+	}
+	return scheme + "://" + host
+}
+
+// canonicalPath refuses paths whose segments an upstream could split, unescape again or resolve differently.
+func canonicalPath(u *url.URL) error {
+	raw := strings.ToUpper(u.RawPath)
+	if !strings.HasPrefix(u.Path, "/") || !utf8.ValidString(u.Path) || strings.Contains(raw, "%2F") || strings.ContainsAny(u.Path, "\\%\x00") {
+		return errors.New("the path is not canonical")
+	}
+	segments := strings.Split(u.Path[1:], "/")
+	for i, segment := range segments {
+		if segment == "." || segment == ".." || (segment == "" && i < len(segments)-1) {
+			return errors.New("the path is not canonical")
+		}
+	}
+	return nil
+}
+
+// validText refuses names and values that JSON would alter, so policy compares what is sent.
+func validText(values map[string][]string) bool {
+	for key, entries := range values {
+		if !utf8.ValidString(key) {
+			return false
+		}
+		for _, entry := range entries {
+			if !utf8.ValidString(entry) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// Spaces become %20, since not every upstream reads + as a space.
+func encodeQuery(q url.Values) string {
+	return strings.ReplaceAll(q.Encode(), "+", "%20")
+}
+
+// inspect decodes a complete body of at most maxBodyBytes without repeated names; anything else is opaque and still forwarded.
+func inspect(r *http.Request, layer *connector.HTTPLayer) error {
 	body, err := io.ReadAll(io.LimitReader(r.Body, maxBodyBytes+1))
 	if err != nil {
 		return err
 	}
-	layer := &connector.HTTPLayer{Method: r.Method, Host: host, Path: r.URL.Path, Query: r.URL.Query(), Headers: r.Header.Clone()}
-	if mediaType, _, _ := mime.ParseMediaType(r.Header.Get("Content-Type")); mediaType == "application/json" || strings.HasSuffix(mediaType, "+json") {
-		if json.Unmarshal(body, &layer.Body) != nil {
-			layer.Body = nil
+	r.Body = io.NopCloser(io.MultiReader(bytes.NewReader(body), r.Body))
+	layer.BodyKind = "opaque"
+	types := r.Header.Values("Content-Type")
+	switch {
+	case len(body) == 0:
+		layer.BodyKind = "none"
+		return nil
+	case len(body) > maxBodyBytes || len(r.Header.Values("Content-Encoding")) > 0 || len(types) != 1 || !utf8.Valid(body):
+		return nil
+	}
+	mediaType, params, err := mime.ParseMediaType(types[0])
+	if err != nil || (params["charset"] != "" && !strings.EqualFold(params["charset"], "utf-8")) {
+		return nil
+	}
+	switch {
+	case mediaType == "application/json" || strings.HasSuffix(mediaType, "+json"):
+		if layer.Body, err = decodeJSON(body); err == nil {
+			layer.BodyKind = "json"
+		}
+	case mediaType == "application/x-www-form-urlencoded":
+		form, err := url.ParseQuery(string(body))
+		if err == nil {
+			seen := map[string]bool{}
+			for key, values := range form {
+				name := strings.Map(fold, key)
+				if len(values) != 1 || seen[name] || !utf8.ValidString(key) || !utf8.ValidString(values[0]) {
+					return nil
+				}
+				seen[name] = true
+			}
+			layer.Form, layer.BodyKind = form, "form"
 		}
 	}
-	if layer.Secrets, err = h.substitute(r, s.Name, body); err != nil {
-		return err
+	return nil
+}
+
+var errAmbiguousJSON = errors.New("ambiguous JSON")
+
+// decodeJSON accepts one valid value whose names are unique under case folding, refusing unpaired surrogate escapes.
+func decodeJSON(body []byte) (any, error) {
+	if !jsontext.Value(body).IsValid() || !unique(json.NewDecoder(bytes.NewReader(body))) {
+		return nil, errAmbiguousJSON
 	}
-	if r.TLS == nil && len(layer.Secrets) > 0 {
-		return fmt.Errorf("secret placeholders require HTTPS")
+	var v any
+	return v, connector.DecodeNumbers(body, &v)
+}
+
+// fold maps a rune to the least rune that strings.EqualFold, and so Go's JSON decoder, treats as equal.
+func fold(r rune) rune {
+	least := r
+	for f := unicode.SimpleFold(r); f != r; f = unicode.SimpleFold(f) {
+		least = min(least, f)
 	}
-	return s.Gate(connector.Event{HTTP: layer, GraphQL: graphql(layer.Body)})
+	return least
+}
+
+// unique walks one value already known to be valid JSON.
+func unique(dec *json.Decoder) bool {
+	t, err := dec.Token()
+	if err != nil {
+		return false
+	}
+	if t != json.Delim('{') && t != json.Delim('[') {
+		return true
+	}
+	seen := map[string]bool{}
+	for dec.More() {
+		if t == json.Delim('{') {
+			key, err := dec.Token()
+			name := strings.Map(fold, fmt.Sprint(key))
+			if err != nil || seen[name] {
+				return false
+			}
+			seen[name] = true
+		}
+		if !unique(dec) {
+			return false
+		}
+	}
+	_, err = dec.Token()
+	return err == nil
 }
 
 func Placeholder(connection, secret string) string {
 	return placeholderPrefix + connection + "_" + secret
 }
 
-// Leftover placeholders are refused everywhere but the body.
-func (h *HTTP) substitute(r *http.Request, name string, body []byte) ([]string, error) {
-	inURL, inHeaders, inBody := slices.Contains(h.Substitute, "url"), slices.Contains(h.Substitute, "headers"), slices.Contains(h.Substitute, "body")
-	if inBody && len(body) > maxBodyBytes {
-		return nil, fmt.Errorf("body substitution needs a body of at most %d bytes", maxBodyBytes)
-	}
-	used := []string{}
-	for secret, v := range h.Values {
-		ph := Placeholder(name, secret)
-		found := false
-		value := sync.OnceValues(func() (string, error) { return v.Value(r.Context()) })
-		swap := func(s string) string {
-			if !strings.Contains(s, ph) {
-				return s
-			}
-			found = true
-			v, _ := value()
-			return strings.ReplaceAll(s, ph, v)
-		}
-		if inURL {
-			r.URL.Path, r.URL.RawPath, r.URL.RawQuery = swap(r.URL.Path), swap(r.URL.RawPath), swap(r.URL.RawQuery)
-		}
-		for key, values := range r.Header {
-			if key != authorization && !inHeaders {
-				continue
-			}
-			for i := range values {
-				values[i] = swap(values[i])
-			}
-		}
-		if user, pass, ok := r.BasicAuth(); ok {
-			r.SetBasicAuth(swap(user), swap(pass))
-		}
-		if inBody {
-			body = []byte(swap(string(body)))
-		}
-		if found {
-			if _, err := value(); err != nil {
-				return nil, err
-			}
-			used = append(used, secret)
-		}
-	}
-	values := []string{r.URL.Path, r.URL.RawPath, r.URL.RawQuery}
-	for key, entries := range r.URL.Query() {
-		values = append(values, key)
-		values = append(values, entries...)
-	}
-	for key, entries := range r.Header {
-		values = append(values, key)
-		values = append(values, entries...)
-	}
-	if user, pass, ok := r.BasicAuth(); ok {
-		values = append(values, user, pass)
-	}
-	for _, value := range values {
-		if strings.Contains(value, placeholderPrefix) {
-			return nil, fmt.Errorf("unresolved secret placeholder")
-		}
-	}
-	if inBody {
-		r.ContentLength = int64(len(body))
-	}
-	r.Body = io.NopCloser(io.MultiReader(bytes.NewReader(body), r.Body))
-	return used, nil
+func (h *HTTP) Claim(host string, port uint32) int {
+	return h.score(strings.ToLower(host), port)
 }
 
-func (h *HTTP) Claim(host string, port uint32) int {
-	if port != httpPort && port != httpsPort {
-		return -1
-	}
+// score ranks exact slot origins by their length and host patterns, which serve only default ports, by theirs.
+func (h *HTTP) score(host string, port uint32) int {
 	score := -1
+	for _, s := range h.Slots {
+		if s.host == host && s.port == port {
+			score = len(host)
+		}
+	}
+	if port != httpPort && port != httpsPort {
+		return score
+	}
 	for _, pattern := range h.Hosts {
 		if ok, _ := path.Match(pattern, host); ok {
 			score = max(score, len(pattern))
 		}
 	}
 	return score
-}
-
-// Roots hidden behind a fragment spread yield no layer at all, so a policy can refuse the request.
-func graphql(body any) *connector.GraphQLLayer {
-	object, _ := body.(map[string]any)
-	query, ok := object["query"].(string)
-	if !ok {
-		return nil
-	}
-	doc, err := parser.ParseQuery(&ast.Source{Input: query})
-	if err != nil || len(doc.Operations) == 0 {
-		return nil
-	}
-	op := doc.Operations[0]
-	if name, _ := object["operationName"].(string); name != "" {
-		if op = doc.Operations.ForName(name); op == nil {
-			return nil
-		}
-	}
-	names, ok := roots(op.SelectionSet)
-	if !ok {
-		return nil
-	}
-	return &connector.GraphQLLayer{Kind: string(op.Operation), Roots: names}
-}
-
-func roots(set ast.SelectionSet) ([]string, bool) {
-	names := []string{}
-	for _, s := range set {
-		switch s := s.(type) {
-		case *ast.Field:
-			names = append(names, s.Name)
-		case *ast.InlineFragment:
-			inner, ok := roots(s.SelectionSet)
-			if !ok {
-				return nil, false
-			}
-			names = append(names, inner...)
-		default:
-			return nil, false
-		}
-	}
-	return names, true
 }

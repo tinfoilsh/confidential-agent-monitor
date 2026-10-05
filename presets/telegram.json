@@ -1,0 +1,27 @@
+{
+  "title": "Telegram",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "Bot token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.telegram.org", "path": "/", "segment": 1, "prefix": "bot"}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read the bot's own identity, chats and updates"},
+      "send.message": {"title": "Send and edit messages"},
+      "pay.broadcast": {"title": "Send paid broadcasts (allow_paid_broadcast; billed in Telegram Stars)"},
+      "delete": {"title": "Delete messages"}
+    }
+  },
+  "operations": [
+    {"id": "getMe", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.telegram.org", "path": "/bot{token}/getMe", "scope": {}},
+    {"id": "getChat", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.telegram.org", "path": "/bot{token}/getChat", "params": ["chat_id"], "scope": {"query": {"from": "query", "at": "", "type": "object"}}},
+    {"id": "getUpdates", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.telegram.org", "path": "/bot{token}/getUpdates", "params": ["offset", "limit", "timeout", "allowed_updates"], "scope": {}},
+    {"id": "sendMessage", "action": "send.message", "effects": ["send"], "method": "POST", "origin": "https://api.telegram.org", "path": "/bot{token}/sendMessage", "fields": {"/allow_paid_broadcast": null}, "body": "json", "scope": {"message": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "sendMessage.paid_broadcast", "action": "pay.broadcast", "effects": ["send", "pay"], "method": "POST", "origin": "https://api.telegram.org", "path": "/bot{token}/sendMessage", "fields": {"/allow_paid_broadcast": true}, "body": "json", "scope": {"message": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "sendPhoto", "action": "send.message", "effects": ["send"], "method": "POST", "origin": "https://api.telegram.org", "path": "/bot{token}/sendPhoto", "fields": {"/allow_paid_broadcast": null}, "body": "json", "scope": {"message": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "sendPhoto.paid_broadcast", "action": "pay.broadcast", "effects": ["send", "pay"], "method": "POST", "origin": "https://api.telegram.org", "path": "/bot{token}/sendPhoto", "fields": {"/allow_paid_broadcast": true}, "body": "json", "scope": {"message": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "editMessageText", "action": "send.message", "effects": ["send"], "method": "POST", "origin": "https://api.telegram.org", "path": "/bot{token}/editMessageText", "body": "json", "scope": {"message": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "deleteMessage", "action": "delete", "effects": ["delete"], "method": "POST", "origin": "https://api.telegram.org", "path": "/bot{token}/deleteMessage", "body": "json", "scope": {"message": {"from": "body", "at": "", "type": "object"}}}
+  ]
+}

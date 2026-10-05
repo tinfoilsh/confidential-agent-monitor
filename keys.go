@@ -9,6 +9,7 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"errors"
 	"net"
 	"sync"
 	"time"
@@ -81,6 +82,9 @@ func (a *authority) certificate(hello *tls.ClientHelloInfo) (*tls.Certificate, e
 	name := hello.ServerName
 	if c, ok := hello.Conn.(*connector.Stream); ok && name == "" {
 		name = c.Host
+	}
+	if name == "" {
+		return nil, errors.New("a selected connection needs TLS server name indication")
 	}
 	a.mu.Lock()
 	defer a.mu.Unlock()

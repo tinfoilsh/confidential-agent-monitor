@@ -1,0 +1,25 @@
+{
+  "title": "Shopify",
+  "catalog": {
+    "fields": [
+      {"key": "origin", "label": "Your Shopify store (https://yourshop.myshopify.com)",
+       "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
+      {"key": "token", "label": "Admin API access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://example.myshopify.com", "path": "/admin/api/2026-10", "header": "X-Shopify-Access-Token"}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read products and orders"},
+      "write.products": {"title": "Create and edit products, including publishing"},
+      "write.orders": {"title": "Cancel orders, including refunds"}
+    }
+  },
+  "operations": [
+    {"id": "products", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/admin/api/2026-10/graphql.json", "body": "graphql", "graphql": {"operation": "query", "field": "products"}, "scope": {}},
+    {"id": "product", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/admin/api/2026-10/graphql.json", "body": "graphql", "graphql": {"operation": "query", "field": "product"}, "scope": {"id": {"from": "argument", "at": "/id"}}},
+    {"id": "orders", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/admin/api/2026-10/graphql.json", "body": "graphql", "graphql": {"operation": "query", "field": "orders"}, "scope": {}},
+    {"id": "productCreate", "action": "write.products", "effects": ["write", "publish"], "method": "POST", "origin": "{origin}", "path": "/admin/api/2026-10/graphql.json", "body": "graphql", "graphql": {"operation": "mutation", "field": "productCreate"}, "scope": {"input": {"from": "argument", "at": "", "type": "object"}}},
+    {"id": "productUpdate", "action": "write.products", "effects": ["write", "publish"], "method": "POST", "origin": "{origin}", "path": "/admin/api/2026-10/graphql.json", "body": "graphql", "graphql": {"operation": "mutation", "field": "productUpdate"}, "scope": {"input": {"from": "argument", "at": "", "type": "object"}}},
+    {"id": "orderCancel", "action": "write.orders", "effects": ["write", "delete", "pay"], "method": "POST", "origin": "{origin}", "path": "/admin/api/2026-10/graphql.json", "body": "graphql", "graphql": {"operation": "mutation", "field": "orderCancel"}, "scope": {"input": {"from": "argument", "at": "", "type": "object"}}}
+  ]
+}

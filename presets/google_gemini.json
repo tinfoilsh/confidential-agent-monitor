@@ -1,0 +1,27 @@
+{
+  "title": "Google Gemini",
+  "catalog": {
+    "fields": [
+      {"key": "api_key", "label": "Gemini API key (Google AI Studio)", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://generativelanguage.googleapis.com", "path": "/v1beta", "header": "X-Goog-Api-Key"}]}}},
+    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "List models and files"},
+      "generate": {"title": "Generate without tools, embed and count tokens (sends the prompt to Google; billable)"},
+      "delete": {"title": "Delete uploaded files"}
+    }
+  },
+  "operations": [
+    {"id": "models.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://generativelanguage.googleapis.com", "path": "/v1beta/models", "params": ["pageSize", "pageToken"], "query": {"key": null}, "scope": {}},
+    {"id": "models.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://generativelanguage.googleapis.com", "path": "/v1beta/models/{model}", "query": {"key": null}, "scope": {"model": {"from": "path", "at": "model"}}},
+    {"id": "files.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://generativelanguage.googleapis.com", "path": "/v1beta/files", "params": ["pageSize", "pageToken"], "query": {"key": null}, "scope": {}},
+    {"id": "files.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://generativelanguage.googleapis.com", "path": "/v1beta/files/{file}", "query": {"key": null}, "scope": {"file": {"from": "path", "at": "file"}}},
+    {"id": "models.generateContent", "action": "generate", "effects": ["generate", "send"], "method": "POST", "origin": "https://generativelanguage.googleapis.com", "path": "/v1beta/models/{model}:generateContent", "query": {"key": null}, "fields": {"/tools": null, "/toolConfig": null, "/cachedContent": null}, "body": "json", "scope": {"model": {"from": "path", "at": "model"}}},
+    {"id": "models.streamGenerateContent", "action": "generate", "effects": ["generate", "send"], "method": "POST", "origin": "https://generativelanguage.googleapis.com", "path": "/v1beta/models/{model}:streamGenerateContent", "params": ["alt"], "query": {"key": null}, "fields": {"/tools": null, "/toolConfig": null, "/cachedContent": null}, "body": "json", "scope": {"model": {"from": "path", "at": "model"}}},
+    {"id": "models.countTokens", "action": "generate", "effects": ["send"], "method": "POST", "origin": "https://generativelanguage.googleapis.com", "path": "/v1beta/models/{model}:countTokens", "query": {"key": null}, "body": "json", "scope": {"model": {"from": "path", "at": "model"}}},
+    {"id": "models.embedContent", "action": "generate", "effects": ["generate", "send"], "method": "POST", "origin": "https://generativelanguage.googleapis.com", "path": "/v1beta/models/{model}:embedContent", "query": {"key": null}, "body": "json", "scope": {"model": {"from": "path", "at": "model"}}},
+    {"id": "models.batchEmbedContents", "action": "generate", "effects": ["generate", "send"], "method": "POST", "origin": "https://generativelanguage.googleapis.com", "path": "/v1beta/models/{model}:batchEmbedContents", "query": {"key": null}, "body": "json", "scope": {"model": {"from": "path", "at": "model"}}},
+    {"id": "files.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://generativelanguage.googleapis.com", "path": "/v1beta/files/{file}", "query": {"key": null}, "scope": {"file": {"from": "path", "at": "file"}}}
+  ]
+}

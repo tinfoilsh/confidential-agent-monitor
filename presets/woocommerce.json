@@ -1,0 +1,33 @@
+{
+  "title": "WooCommerce",
+  "catalog": {
+    "fields": [
+      {"key": "origin", "label": "Your store's site URL (https://yourstore.example.com)",
+       "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
+      {"key": "consumer_key", "label": "Consumer key", "secret": true, "path": ["connections", "", "http", "values", "consumer_key"]},
+      {"key": "consumer_secret", "label": "Consumer secret", "secret": true, "path": ["connections", "", "http", "values", "consumer_secret"]}
+    ],
+    "connections": {"": {"http": {"slots": [
+      {"value": "consumer_key", "origin": "https://example.com", "path": "/wp-json/wc/v3", "basic": "user"},
+      {"value": "consumer_secret", "origin": "https://example.com", "path": "/wp-json/wc/v3", "basic": "password"}
+    ]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read products and orders"},
+      "write.products": {"title": "Create and edit products, including publishing"},
+      "write.orders": {"title": "Edit orders, including marking them paid and changing status"},
+      "pay.refunds": {"title": "Issue order refunds"},
+      "delete": {"title": "Delete products"}
+    }
+  },
+  "operations": [
+    {"id": "products.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wp-json/wc/v3/products", "params": ["page", "per_page", "search", "status"], "scope": {}},
+    {"id": "products.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wp-json/wc/v3/products/{product}", "scope": {"product": {"from": "path", "at": "product"}}},
+    {"id": "orders.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wp-json/wc/v3/orders", "params": ["page", "per_page", "status"], "scope": {}},
+    {"id": "products.create", "action": "write.products", "effects": ["write", "publish"], "method": "POST", "origin": "{origin}", "path": "/wp-json/wc/v3/products", "body": "json", "scope": {"product": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "products.update", "action": "write.products", "effects": ["write", "publish"], "method": "PUT", "origin": "{origin}", "path": "/wp-json/wc/v3/products/{product}", "body": "json", "scope": {"product": {"from": "path", "at": "product"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "orders.update", "action": "write.orders", "effects": ["write", "pay", "send"], "method": "PUT", "origin": "{origin}", "path": "/wp-json/wc/v3/orders/{order}", "body": "json", "scope": {"order": {"from": "path", "at": "order"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "orders.refunds.create", "action": "pay.refunds", "effects": ["pay"], "method": "POST", "origin": "{origin}", "path": "/wp-json/wc/v3/orders/{order}/refunds", "body": "json", "scope": {"order": {"from": "path", "at": "order"}, "refund": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "products.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/wp-json/wc/v3/products/{product}", "params": ["force"], "scope": {"product": {"from": "path", "at": "product"}, "query": {"from": "query", "at": "", "type": "object"}}}
+  ]
+}

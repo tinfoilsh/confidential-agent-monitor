@@ -1,0 +1,33 @@
+{
+  "title": "Google Tasks",
+  "catalog": {
+    "fields": [
+      {"key": "client_id", "label": "Google OAuth client ID (web application)", "paths": []},
+      {"key": "client_secret", "label": "Google OAuth client secret", "secret": true, "paths": []},
+      {"key": "token", "label": "Google account", "secret": true, "path": ["connections", "", "http", "values", "token"],
+       "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/tasks", "prompt": "consent"}}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://tasks.googleapis.com", "path": "/tasks/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "me", "strangers": true, "sends": "me"},
+    "actions": {
+      "read": {"title": "Read task lists and tasks"},
+      "write": {"title": "Create, edit, complete and move tasks and lists"},
+      "delete": {"title": "Delete tasks and lists, and clear completed tasks"}
+    }
+  },
+  "operations": [
+    {"id": "tasklists.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://tasks.googleapis.com", "path": "/tasks/v1/users/@me/lists", "params": ["maxResults", "pageToken"], "scope": {}},
+    {"id": "tasklists.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://tasks.googleapis.com", "path": "/tasks/v1/users/@me/lists/{list}", "scope": {"list": {"from": "path", "at": "list"}}},
+    {"id": "tasks.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://tasks.googleapis.com", "path": "/tasks/v1/lists/{list}/tasks", "params": ["completedMax", "completedMin", "dueMax", "dueMin", "maxResults", "pageToken", "showCompleted", "showDeleted", "showHidden", "showAssigned", "updatedMin"], "scope": {"list": {"from": "path", "at": "list"}}},
+    {"id": "tasks.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://tasks.googleapis.com", "path": "/tasks/v1/lists/{list}/tasks/{task}", "scope": {"list": {"from": "path", "at": "list"}, "task": {"from": "path", "at": "task"}}},
+    {"id": "tasklists.insert", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://tasks.googleapis.com", "path": "/tasks/v1/users/@me/lists", "body": "json", "scope": {}},
+    {"id": "tasklists.patch", "action": "write", "effects": ["write"], "method": "PATCH", "origin": "https://tasks.googleapis.com", "path": "/tasks/v1/users/@me/lists/{list}", "body": "json", "scope": {"list": {"from": "path", "at": "list"}}},
+    {"id": "tasks.insert", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://tasks.googleapis.com", "path": "/tasks/v1/lists/{list}/tasks", "params": ["parent", "previous"], "body": "json", "scope": {"list": {"from": "path", "at": "list"}}},
+    {"id": "tasks.patch", "action": "write", "effects": ["write"], "method": "PATCH", "origin": "https://tasks.googleapis.com", "path": "/tasks/v1/lists/{list}/tasks/{task}", "body": "json", "scope": {"list": {"from": "path", "at": "list"}, "task": {"from": "path", "at": "task"}}},
+    {"id": "tasks.update", "action": "write", "effects": ["write"], "method": "PUT", "origin": "https://tasks.googleapis.com", "path": "/tasks/v1/lists/{list}/tasks/{task}", "body": "json", "scope": {"list": {"from": "path", "at": "list"}, "task": {"from": "path", "at": "task"}}},
+    {"id": "tasks.move", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://tasks.googleapis.com", "path": "/tasks/v1/lists/{list}/tasks/{task}/move", "params": ["parent", "previous", "destinationTasklist"], "scope": {"list": {"from": "path", "at": "list"}, "task": {"from": "path", "at": "task"}, "query": {"from": "query", "at": "", "type": "object"}}},
+    {"id": "tasks.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://tasks.googleapis.com", "path": "/tasks/v1/lists/{list}/tasks/{task}", "scope": {"list": {"from": "path", "at": "list"}, "task": {"from": "path", "at": "task"}}},
+    {"id": "tasks.clear", "action": "delete", "effects": ["delete"], "method": "POST", "origin": "https://tasks.googleapis.com", "path": "/tasks/v1/lists/{list}/clear", "scope": {"list": {"from": "path", "at": "list"}}},
+    {"id": "tasklists.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://tasks.googleapis.com", "path": "/tasks/v1/users/@me/lists/{list}", "scope": {"list": {"from": "path", "at": "list"}}}
+  ]
+}

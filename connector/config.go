@@ -3,14 +3,21 @@ package connector
 import (
 	"bytes"
 	"encoding/json"
+	jsonv2 "encoding/json/v2"
 	"net/url"
 
 	"github.com/tinfoilsh/monitor/connector/credential"
 )
 
 func Decode(raw json.RawMessage, dst any) error {
+	return jsonv2.Unmarshal(raw, dst, jsonv2.RejectUnknownMembers(true))
+}
+
+// DecodeNumbers keeps numbers as json.Number, so policy compares the values exactly as written.
+func DecodeNumbers(raw []byte, dst any) error {
 	dec := json.NewDecoder(bytes.NewReader(raw))
 	dec.DisallowUnknownFields()
+	dec.UseNumber()
 	return dec.Decode(dst)
 }
 

@@ -8,12 +8,10 @@ catalog := {
 	],
 	"connections": {"": {"postgres": {"url": "{url}"}}},
 	"defaults": {"contents": "me", "strangers": true, "sends": "me"},
-	"actions": {"read": {"title": "Run SELECT, SHOW and EXPLAIN"}, "write": {"title": "Change data and schema", "save": "Allow this statement"}}
+	"actions": {"read": {"title": "Run SELECT, SHOW and EXPLAIN"}, "write": {"title": "Change data and schema"}}
 }
 
-changes := {"write"}
-
-needs_trust := {"write"}
+effects := {"read": {"read"}, "write": {"write"}}
 
 sql := trim_suffix(trim_space(input.postgres.sql), ";")
 
@@ -31,6 +29,12 @@ action := "write" if {
 	not read
 }
 
+default scope := {}
+
 scope := {"sql": input.postgres.sql}
+
+operation := {
+	"id": action, "action": action, "effects": effects[action], "scope": scope, "trust": action == "write"
+}
 
 title := sprintf("Run %s", [input.postgres.sql])

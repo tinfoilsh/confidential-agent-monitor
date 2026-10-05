@@ -1,0 +1,26 @@
+{
+  "title": "Intercom",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "Access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.intercom.io", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read conversations and contacts"},
+      "write.contacts": {"title": "Create and edit contacts"},
+      "send.reply": {"title": "Reply to conversations"},
+      "delete": {"title": "Delete contacts"}
+    }
+  },
+  "operations": [
+    {"id": "conversations.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.intercom.io", "path": "/conversations", "headers": {"Intercom-Version": "2.16"}, "params": ["per_page", "starting_after"], "scope": {}},
+    {"id": "conversations.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.intercom.io", "path": "/conversations/{conversation}", "headers": {"Intercom-Version": "2.16"}, "scope": {"conversation": {"from": "path", "at": "conversation"}}},
+    {"id": "contacts.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.intercom.io", "path": "/contacts", "headers": {"Intercom-Version": "2.16"}, "params": ["per_page", "starting_after"], "scope": {}},
+    {"id": "contacts.create", "action": "write.contacts", "effects": ["write"], "method": "POST", "origin": "https://api.intercom.io", "path": "/contacts", "headers": {"Intercom-Version": "2.16"}, "body": "json", "scope": {"contact": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "conversations.reply", "action": "send.reply", "effects": ["send"], "method": "POST", "origin": "https://api.intercom.io", "path": "/conversations/{conversation}/reply", "headers": {"Intercom-Version": "2.16"}, "body": "json", "scope": {"conversation": {"from": "path", "at": "conversation"}, "reply": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "contacts.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.intercom.io", "path": "/contacts/{contact}", "headers": {"Intercom-Version": "2.16"}, "scope": {"contact": {"from": "path", "at": "contact"}}},
+    {"id": "contacts.update", "action": "write.contacts", "effects": ["write"], "method": "PUT", "origin": "https://api.intercom.io", "path": "/contacts/{contact}", "headers": {"Intercom-Version": "2.16"}, "body": "json", "scope": {"contact": {"from": "path", "at": "contact"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "contacts.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.intercom.io", "path": "/contacts/{contact}", "headers": {"Intercom-Version": "2.16"}, "scope": {"contact": {"from": "path", "at": "contact"}}}
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "title": "Google Calendar",
+  "catalog": {
+    "fields": [
+      {"key": "client_id", "label": "Google OAuth client ID (web application)", "paths": []},
+      {"key": "client_secret", "label": "Google OAuth client secret", "secret": true, "paths": []},
+      {"key": "token", "label": "Google account", "secret": true, "path": ["connections", "", "http", "values", "token"],
+       "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.calendarlist.readonly https://www.googleapis.com/auth/calendar.freebusy", "prompt": "consent"}}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://www.googleapis.com", "path": "/calendar/v3", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read calendars, events and availability"},
+      "write": {"title": "Create events without guests"},
+      "send.invite": {"title": "Invite guests, and edit or cancel events guests may see"}
+    }
+  },
+  "operations": [
+    {"id": "calendarList.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.googleapis.com", "path": "/calendar/v3/users/me/calendarList", "params": ["maxResults", "pageToken", "minAccessRole", "showDeleted", "showHidden", "syncToken"], "scope": {}},
+    {"id": "events.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.googleapis.com", "path": "/calendar/v3/calendars/{calendar}/events", "params": ["timeMin", "timeMax", "q", "singleEvents", "orderBy", "pageToken", "maxResults", "showDeleted", "updatedMin", "syncToken", "timeZone", "iCalUID", "eventTypes"], "scope": {"calendar": {"from": "path", "at": "calendar"}}},
+    {"id": "events.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.googleapis.com", "path": "/calendar/v3/calendars/{calendar}/events/{event}", "params": ["timeZone", "maxAttendees"], "scope": {"calendar": {"from": "path", "at": "calendar"}, "event": {"from": "path", "at": "event"}}},
+    {"id": "freebusy.query", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://www.googleapis.com", "path": "/calendar/v3/freeBusy", "body": "json", "scope": {}},
+    {"id": "events.insert", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://www.googleapis.com", "path": "/calendar/v3/calendars/{calendar}/events", "query": {"sendUpdates": null, "sendNotifications": null}, "params": ["conferenceDataVersion", "supportsAttachments", "maxAttendees"], "fields": {"/attendees": null}, "body": "json", "scope": {"calendar": {"from": "path", "at": "calendar"}, "event": {"from": "body", "at": "", "type": "object"}}, "grant": ["calendar"]},
+    {"id": "events.insert.invite", "action": "send.invite", "effects": ["write", "send"], "method": "POST", "origin": "https://www.googleapis.com", "path": "/calendar/v3/calendars/{calendar}/events", "query": {"sendUpdates": "all", "sendNotifications": null}, "params": ["conferenceDataVersion", "supportsAttachments", "maxAttendees"], "body": "json", "scope": {"calendar": {"from": "path", "at": "calendar"}, "event": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "events.patch", "action": "send.invite", "effects": ["write", "send"], "method": "PATCH", "origin": "https://www.googleapis.com", "path": "/calendar/v3/calendars/{calendar}/events/{event}", "query": {"sendNotifications": null}, "params": ["sendUpdates", "conferenceDataVersion", "supportsAttachments", "maxAttendees"], "body": "json", "scope": {"calendar": {"from": "path", "at": "calendar"}, "event": {"from": "path", "at": "event"}, "changes": {"from": "body", "at": "", "type": "object"}, "query": {"from": "query", "at": "", "type": "object"}}},
+    {"id": "events.update", "action": "send.invite", "effects": ["write", "send"], "method": "PUT", "origin": "https://www.googleapis.com", "path": "/calendar/v3/calendars/{calendar}/events/{event}", "query": {"sendNotifications": null}, "params": ["sendUpdates", "conferenceDataVersion", "supportsAttachments", "maxAttendees"], "body": "json", "scope": {"calendar": {"from": "path", "at": "calendar"}, "event": {"from": "path", "at": "event"}, "changes": {"from": "body", "at": "", "type": "object"}, "query": {"from": "query", "at": "", "type": "object"}}},
+    {"id": "events.delete", "action": "send.invite", "effects": ["delete", "send"], "method": "DELETE", "origin": "https://www.googleapis.com", "path": "/calendar/v3/calendars/{calendar}/events/{event}", "query": {"sendNotifications": null}, "params": ["sendUpdates"], "scope": {"calendar": {"from": "path", "at": "calendar"}, "event": {"from": "path", "at": "event"}, "query": {"from": "query", "at": "", "type": "object"}}}
+  ]
+}

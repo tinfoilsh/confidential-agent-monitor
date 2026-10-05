@@ -12,6 +12,7 @@ import (
 
 var (
 	audiences = []string{"me", "team", "anyone"}
+	trusts    = []string{"untrusted", "trusted"}
 	levels    = []string{"off", "read", "ask", "allow"}
 )
 
@@ -26,17 +27,23 @@ type access struct {
 	Actions map[string]string `json:"actions,omitempty"`
 }
 
+// A rule waives gaps for one recognized operation under the definition the owner approved.
 type rule struct {
-	Account string         `json:"account"`
-	Action  string         `json:"action"`
-	Scope   map[string]any `json:"scope"`
-	Waives  []string       `json:"waives"`
+	Account    string         `json:"account"`
+	Action     string         `json:"action"`
+	Operation  string         `json:"operation,omitempty"`
+	Definition string         `json:"definition,omitempty"`
+	Scope      map[string]any `json:"scope"`
+	Waives     []string       `json:"waives"`
 }
 
 // policyOptions contains settings used only by policy, never connection setup.
 type policyOptions struct {
 	Private []string `json:"private,omitempty"`
 	Address string   `json:"address,omitempty"`
+	Service string   `json:"service,omitempty"`
+	Preset  string   `json:"preset,omitempty"`
+	Origin  string   `json:"origin,omitempty"`
 }
 
 type account struct {
@@ -59,11 +66,27 @@ type config struct {
 // parse decodes the owner's config without starting anything.
 func parse(raw []byte) (*config, map[string]*connection, error) {
 	var cfg config
-	if err := connector.Decode(raw, &cfg); err != nil {
+	if err := connector.DecodeNumbers(raw, &cfg); err != nil {
+		return nil, nil, err
+	}
+	for _, reserved := range []string{"definitions", "presets"} {
+		if _, ok := cfg.Data[reserved]; ok {
+			return nil, nil, fmt.Errorf("data.%s is reserved for the monitor", reserved)
+		}
+	}
+	services, err := parseServices(cfg.Data["services"])
+	if err != nil {
 		return nil, nil, err
 	}
 	connections := map[string]*connection{}
 	for acct, a := range cfg.Accounts {
+		if a.Template == "api" {
+			if _, err := apiService(services, a.PolicyOptions); err != nil {
+				return nil, nil, fmt.Errorf("account %s %w", acct, err)
+			}
+		} else if a.PolicyOptions.Preset != "" || a.PolicyOptions.Origin != "" {
+			return nil, nil, fmt.Errorf("account %s: only api accounts name a preset or origin", acct)
+		}
 		if _, err := fs.Stat(templates, templateDir+"/"+a.Template+".rego"); err != nil {
 			return nil, nil, fmt.Errorf("account %s has unknown template %s", acct, a.Template)
 		}

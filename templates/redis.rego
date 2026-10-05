@@ -8,12 +8,10 @@ catalog := {
 	],
 	"connections": {"": {"redis": {"url": "{url}"}}},
 	"defaults": {"contents": "me", "strangers": true, "sends": "me"},
-	"actions": {"read": {"title": "Read keys"}, "write": {"title": "Change keys and the server", "save": "Allow {command}"}}
+	"actions": {"read": {"title": "Read keys"}, "write": {"title": "Change keys and the server"}}
 }
 
-changes := {"write"}
-
-needs_trust := {"write"}
+effects := {"read": {"read"}, "write": {"write"}}
 
 argv := input.redis.argv
 
@@ -45,6 +43,12 @@ action := "write" if {
 	not read
 }
 
+default scope := {}
+
 scope := {"command": command}
+
+operation := {
+	"id": action, "action": action, "effects": effects[action], "scope": scope, "trust": action == "write"
+}
 
 title := concat(" ", array.slice(argv, 0, 2))

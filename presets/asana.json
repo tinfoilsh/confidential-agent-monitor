@@ -1,0 +1,25 @@
+{
+  "title": "Asana",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "Personal access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://app.asana.com", "path": "/api/1.0", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read workspaces, projects and tasks"},
+      "write.tasks": {"title": "Create and edit tasks"},
+      "send.comment": {"title": "Comment on tasks"},
+      "delete": {"title": "Delete tasks"}
+    }
+  },
+  "operations": [
+    {"id": "workspaces.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://app.asana.com", "path": "/api/1.0/workspaces", "params": ["opt_fields"], "scope": {}},
+    {"id": "tasks.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://app.asana.com", "path": "/api/1.0/tasks", "params": ["project", "assignee", "workspace", "completed_since", "opt_fields"], "scope": {}},
+    {"id": "tasks.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://app.asana.com", "path": "/api/1.0/tasks/{task}", "params": ["opt_fields"], "scope": {"task": {"from": "path", "at": "task"}}},
+    {"id": "tasks.create", "action": "write.tasks", "effects": ["write"], "method": "POST", "origin": "https://app.asana.com", "path": "/api/1.0/tasks", "body": "json", "scope": {"task": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "tasks.update", "action": "write.tasks", "effects": ["write"], "method": "PUT", "origin": "https://app.asana.com", "path": "/api/1.0/tasks/{task}", "body": "json", "scope": {"task": {"from": "path", "at": "task"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "stories.create", "action": "send.comment", "effects": ["send"], "method": "POST", "origin": "https://app.asana.com", "path": "/api/1.0/tasks/{task}/stories", "body": "json", "scope": {"task": {"from": "path", "at": "task"}, "story": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "tasks.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://app.asana.com", "path": "/api/1.0/tasks/{task}", "scope": {"task": {"from": "path", "at": "task"}}}
+  ]
+}

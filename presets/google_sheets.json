@@ -1,0 +1,34 @@
+{
+  "title": "Google Sheets",
+  "catalog": {
+    "fields": [
+      {"key": "client_id", "label": "Google OAuth client ID (web application)", "paths": []},
+      {"key": "client_secret", "label": "Google OAuth client secret", "secret": true, "paths": []},
+      {"key": "token", "label": "Google account", "secret": true, "path": ["connections", "", "http", "values", "token"],
+       "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/spreadsheets", "prompt": "consent"}}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read spreadsheets and ranges"},
+      "write": {"title": "Edit values entered as raw text"},
+      "execute.formulas": {"title": "Create spreadsheets and enter values parsed as formulas, which can fetch URLs"},
+      "delete": {"title": "Clear ranges"},
+      "admin.structure": {"title": "Change sheets, protection and structure (batch update)"}
+    }
+  },
+  "operations": [
+    {"id": "spreadsheets.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}", "params": ["ranges", "includeGridData", "excludeTablesInBandedRanges", "fields"], "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}}},
+    {"id": "values.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values/{range}", "params": ["majorDimension", "valueRenderOption", "dateTimeRenderOption"], "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "range": {"from": "path", "at": "range"}}},
+    {"id": "values.batchGet", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values:batchGet", "params": ["ranges", "majorDimension", "valueRenderOption", "dateTimeRenderOption"], "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}}},
+    {"id": "spreadsheets.create", "action": "execute.formulas", "effects": ["write", "execute", "send"], "method": "POST", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets", "body": "json", "scope": {"spreadsheet": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "values.update", "action": "write", "effects": ["write"], "method": "PUT", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values/{range}", "query": {"valueInputOption": "RAW"}, "params": ["includeValuesInResponse", "responseValueRenderOption", "responseDateTimeRenderOption"], "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "range": {"from": "path", "at": "range"}}},
+    {"id": "values.update.formulas", "action": "execute.formulas", "effects": ["write", "execute", "send"], "method": "PUT", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values/{range}", "query": {"valueInputOption": "USER_ENTERED"}, "params": ["includeValuesInResponse", "responseValueRenderOption", "responseDateTimeRenderOption"], "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "range": {"from": "path", "at": "range"}, "values": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "values.append", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values/{range}:append", "query": {"valueInputOption": "RAW"}, "params": ["insertDataOption", "includeValuesInResponse", "responseValueRenderOption", "responseDateTimeRenderOption"], "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "range": {"from": "path", "at": "range"}}},
+    {"id": "values.append.formulas", "action": "execute.formulas", "effects": ["write", "execute", "send"], "method": "POST", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values/{range}:append", "query": {"valueInputOption": "USER_ENTERED"}, "params": ["insertDataOption", "includeValuesInResponse", "responseValueRenderOption", "responseDateTimeRenderOption"], "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "range": {"from": "path", "at": "range"}, "values": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "values.batchUpdate", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values:batchUpdate", "fields": {"/valueInputOption": "RAW"}, "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}}},
+    {"id": "values.batchUpdate.formulas", "action": "execute.formulas", "effects": ["write", "execute", "send"], "method": "POST", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values:batchUpdate", "fields": {"/valueInputOption": "USER_ENTERED"}, "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "data": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "values.clear", "action": "delete", "effects": ["delete"], "method": "POST", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values/{range}:clear", "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "range": {"from": "path", "at": "range"}}},
+    {"id": "spreadsheets.batchUpdate", "action": "admin.structure", "effects": ["write", "delete", "admin", "execute", "send"], "method": "POST", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}:batchUpdate", "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "requests": {"from": "body", "at": "", "type": "object"}}}
+  ]
+}

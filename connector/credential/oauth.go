@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/oauthex"
@@ -18,15 +19,50 @@ import (
 
 const offlineAccess = "offline_access"
 
+var (
+	prompts    = []string{"", "none", "login", "consent", "select_account"}
+	authStyles = map[string]oauth2.AuthStyle{"": oauth2.AuthStyleAutoDetect, "header": oauth2.AuthStyleInHeader, "params": oauth2.AuthStyleInParams}
+)
+
 // A grant without an AuthURL is signed in at the authorization server its Resource names (RFC 9728).
+// A grant without a refresh token keeps its access token until Expiry, then needs a new sign-in.
 type oauth struct {
-	AuthURL      string `json:"auth_url"`
-	TokenURL     string `json:"token_url"`
-	ClientID     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
-	RefreshToken string `json:"refresh_token"`
-	Scope        string `json:"scope"`
-	Resource     string `json:"resource"`
+	AuthURL      string    `json:"auth_url"`
+	TokenURL     string    `json:"token_url"`
+	ClientID     string    `json:"client_id"`
+	ClientSecret string    `json:"client_secret"`
+	RefreshToken string    `json:"refresh_token"`
+	Scope        string    `json:"scope"`
+	Resource     string    `json:"resource"`
+	Prompt       string    `json:"prompt,omitempty"`
+	AuthStyle    string    `json:"auth_style,omitempty"`
+	AccessToken  string    `json:"access_token,omitempty"`
+	Expiry       time.Time `json:"expiry,omitzero"`
+}
+
+func (o *oauth) validate() error {
+	if _, ok := authStyles[o.AuthStyle]; !ok || !slices.Contains(prompts, o.Prompt) {
+		return errors.New("oauth prompt or auth_style is not supported")
+	}
+	return secure(o.AuthURL, o.TokenURL, o.Resource)
+}
+
+// secure requires https without user information or fragments, and never quotes an endpoint that may hold a password.
+func secure(endpoints ...string) error {
+	for _, endpoint := range endpoints {
+		u, err := url.Parse(endpoint)
+		if endpoint != "" && (err != nil || u.Scheme != "https" || u.Host == "" || u.User != nil || u.Fragment != "" || strings.Contains(endpoint, "#")) {
+			return errors.New("oauth endpoints must be https URLs without user information or fragments")
+		}
+	}
+	return nil
+}
+
+func (o *oauth) config(redirect string) oauth2.Config {
+	return oauth2.Config{
+		ClientID: o.ClientID, ClientSecret: o.ClientSecret, RedirectURL: redirect, Scopes: strings.Fields(o.Scope),
+		Endpoint: oauth2.Endpoint{AuthURL: o.AuthURL, TokenURL: o.TokenURL, AuthStyle: authStyles[o.AuthStyle]},
+	}
 }
 
 func encodeGrant(grant oauth) json.RawMessage {
@@ -53,20 +89,25 @@ func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage,
 	if v.grant == nil {
 		return nil, errors.New("the secret is not an oauth grant")
 	}
+	if client == nil {
+		return nil, errors.New("sign-in needs the guarded client")
+	}
 	s := &SignIn{State: rand.Text(), grant: *v.grant, client: client, verifier: oauth2.GenerateVerifier()}
 	if s.grant.AuthURL == "" {
 		if err := s.register(ctx, redirect); err != nil {
-			return nil, err
+			return nil, scrub(ctx, "discovery", err)
 		}
 	}
 	if s.grant.Resource != "" {
 		s.opts = append(s.opts, oauth2.SetAuthURLParam("resource", s.grant.Resource))
 	}
-	s.config = &oauth2.Config{
-		ClientID: s.grant.ClientID, ClientSecret: s.grant.ClientSecret, RedirectURL: redirect, Scopes: strings.Fields(s.grant.Scope),
-		Endpoint: oauth2.Endpoint{AuthURL: s.grant.AuthURL, TokenURL: s.grant.TokenURL},
+	config := s.grant.config(redirect)
+	s.config = &config
+	opts := append(slices.Clone(s.opts), oauth2.S256ChallengeOption(s.verifier), oauth2.AccessTypeOffline)
+	if s.grant.Prompt != "" {
+		opts = append(opts, oauth2.SetAuthURLParam("prompt", s.grant.Prompt))
 	}
-	s.URL = s.config.AuthCodeURL(s.State, append(s.opts, oauth2.S256ChallengeOption(s.verifier), oauth2.AccessTypeOffline)...)
+	s.URL = s.config.AuthCodeURL(s.State, opts...)
 	return s, nil
 }
 
@@ -92,6 +133,9 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 			metadata = m
 		}
 	}
+	if err := secure(metadata); err != nil {
+		return err
+	}
 	prm, err := oauthex.GetProtectedResourceMetadata(ctx, metadata, s.grant.Resource, s.client)
 	if err != nil {
 		return err
@@ -99,12 +143,21 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 	if len(prm.AuthorizationServers) == 0 {
 		return fmt.Errorf("%s names no authorization server", s.grant.Resource)
 	}
+	if err := secure(prm.AuthorizationServers[0]); err != nil {
+		return err
+	}
 	asm, err := auth.GetAuthServerMetadata(ctx, prm.AuthorizationServers[0], s.client)
 	if err != nil {
 		return err
 	}
 	if asm == nil || asm.RegistrationEndpoint == "" {
 		return fmt.Errorf("%s does not register clients", prm.AuthorizationServers[0])
+	}
+	if asm.AuthorizationEndpoint == "" || asm.TokenEndpoint == "" {
+		return fmt.Errorf("%s names no authorization or token endpoint", prm.AuthorizationServers[0])
+	}
+	if err := secure(asm.AuthorizationEndpoint, asm.TokenEndpoint, asm.RegistrationEndpoint); err != nil {
+		return err
 	}
 	reg, err := oauthex.RegisterClient(ctx, asm.RegistrationEndpoint, &oauthex.ClientRegistrationMetadata{
 		RedirectURIs: []string{redirect}, ClientName: "Monitor", GrantTypes: []string{"authorization_code", "refresh_token"},
@@ -127,11 +180,11 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 func (s *SignIn) Exchange(ctx context.Context, code string) (json.RawMessage, error) {
 	t, err := s.config.Exchange(context.WithValue(ctx, oauth2.HTTPClient, s.client), code, append(s.opts, oauth2.VerifierOption(s.verifier))...)
 	if err != nil {
-		return nil, err
+		return nil, scrub(ctx, "exchange", err)
 	}
+	s.grant.RefreshToken, s.grant.AccessToken, s.grant.Expiry = t.RefreshToken, "", time.Time{}
 	if t.RefreshToken == "" {
-		return json.Marshal(t.AccessToken)
+		s.grant.AccessToken, s.grant.Expiry = t.AccessToken, t.Expiry
 	}
-	s.grant.RefreshToken = t.RefreshToken
 	return encodeGrant(s.grant), nil
 }

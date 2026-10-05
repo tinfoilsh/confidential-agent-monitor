@@ -1,0 +1,26 @@
+{
+  "title": "Notion",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "Internal integration secret", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.notion.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Search and read pages, databases, data sources and blocks"},
+      "write.pages": {"title": "Create, edit and trash pages"},
+      "write.blocks": {"title": "Append content blocks"}
+    }
+  },
+  "operations": [
+    {"id": "search", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.notion.com", "path": "/v1/search", "headers": {"Notion-Version": "2026-03-11"}, "body": "json", "scope": {}},
+    {"id": "pages.retrieve", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.notion.com", "path": "/v1/pages/{page}", "headers": {"Notion-Version": "2026-03-11"}, "scope": {"page": {"from": "path", "at": "page"}}},
+    {"id": "databases.retrieve", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.notion.com", "path": "/v1/databases/{database}", "headers": {"Notion-Version": "2026-03-11"}, "scope": {"database": {"from": "path", "at": "database"}}},
+    {"id": "data_sources.retrieve", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.notion.com", "path": "/v1/data_sources/{data_source}", "headers": {"Notion-Version": "2026-03-11"}, "scope": {"data_source": {"from": "path", "at": "data_source"}}},
+    {"id": "data_sources.query", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.notion.com", "path": "/v1/data_sources/{data_source}/query", "headers": {"Notion-Version": "2026-03-11"}, "body": "json", "scope": {"data_source": {"from": "path", "at": "data_source"}}},
+    {"id": "blocks.children.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.notion.com", "path": "/v1/blocks/{block}/children", "params": ["page_size", "start_cursor"], "headers": {"Notion-Version": "2026-03-11"}, "scope": {"block": {"from": "path", "at": "block"}}},
+    {"id": "pages.create", "action": "write.pages", "effects": ["write"], "method": "POST", "origin": "https://api.notion.com", "path": "/v1/pages", "headers": {"Notion-Version": "2026-03-11"}, "body": "json", "scope": {"page": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "pages.update", "action": "write.pages", "effects": ["write", "delete"], "method": "PATCH", "origin": "https://api.notion.com", "path": "/v1/pages/{page}", "headers": {"Notion-Version": "2026-03-11"}, "body": "json", "scope": {"page": {"from": "path", "at": "page"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "blocks.children.append", "action": "write.blocks", "effects": ["write"], "method": "PATCH", "origin": "https://api.notion.com", "path": "/v1/blocks/{block}/children", "headers": {"Notion-Version": "2026-03-11"}, "body": "json", "scope": {"block": {"from": "path", "at": "block"}, "children": {"from": "body", "at": "", "type": "object"}}}
+  ]
+}

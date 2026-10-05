@@ -1,0 +1,32 @@
+{
+  "title": "Confluence",
+  "catalog": {
+    "fields": [
+      {"key": "origin", "label": "Your Confluence site (https://yourcompany.atlassian.net)",
+       "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
+      {"key": "email", "label": "Atlassian account email", "secret": true, "path": ["connections", "", "http", "values", "email"]},
+      {"key": "apitoken", "label": "Atlassian API token", "secret": true, "path": ["connections", "", "http", "values", "apitoken"]}
+    ],
+    "connections": {"": {"http": {"slots": [
+      {"value": "email", "origin": "https://example.atlassian.net", "path": "/wiki/api/v2", "basic": "user"},
+      {"value": "apitoken", "origin": "https://example.atlassian.net", "path": "/wiki/api/v2", "basic": "password"}
+    ]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read spaces and pages"},
+      "write.pages": {"title": "Create and edit pages, including publishing"},
+      "send.comment": {"title": "Comment on pages"},
+      "delete": {"title": "Delete pages"}
+    }
+  },
+  "operations": [
+    {"id": "spaces.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wiki/api/v2/spaces", "params": ["keys", "type", "status", "limit", "cursor"], "scope": {}},
+    {"id": "pages.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wiki/api/v2/pages", "params": ["space-id", "status", "title", "limit", "cursor"], "scope": {}},
+    {"id": "pages.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wiki/api/v2/pages/{page}", "params": ["body-format"], "scope": {"page": {"from": "path", "at": "page"}}},
+    {"id": "pages.create", "action": "write.pages", "effects": ["write", "publish"], "method": "POST", "origin": "{origin}", "path": "/wiki/api/v2/pages", "body": "json", "scope": {"page": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "pages.update", "action": "write.pages", "effects": ["write", "publish"], "method": "PUT", "origin": "{origin}", "path": "/wiki/api/v2/pages/{page}", "body": "json", "scope": {"page": {"from": "path", "at": "page"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "pages.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/wiki/api/v2/pages/{page}", "params": ["purge", "draft"], "scope": {"page": {"from": "path", "at": "page"}, "query": {"from": "query", "at": "", "type": "object"}}},
+    {"id": "footer_comments.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wiki/api/v2/pages/{page}/footer-comments", "params": ["body-format", "limit", "cursor"], "scope": {"page": {"from": "path", "at": "page"}}},
+    {"id": "footer_comments.create", "action": "send.comment", "effects": ["send"], "method": "POST", "origin": "{origin}", "path": "/wiki/api/v2/footer-comments", "body": "json", "scope": {"comment": {"from": "body", "at": "", "type": "object"}}}
+  ]
+}

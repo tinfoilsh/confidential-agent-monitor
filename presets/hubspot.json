@@ -1,0 +1,23 @@
+{
+  "title": "HubSpot",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "Private app access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.hubapi.com", "path": "/crm/v3", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "List, search and read CRM objects"},
+      "write": {"title": "Create and edit CRM objects"},
+      "delete": {"title": "Delete CRM objects"}
+    }
+  },
+  "operations": [
+    {"id": "objects.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.hubapi.com", "path": "/crm/v3/objects/{object}", "params": ["limit", "after", "properties", "associations"], "scope": {"object": {"from": "path", "at": "object"}}},
+    {"id": "objects.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.hubapi.com", "path": "/crm/v3/objects/{object}/{id}", "params": ["properties", "associations"], "scope": {"object": {"from": "path", "at": "object"}, "id": {"from": "path", "at": "id"}}},
+    {"id": "objects.search", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.hubapi.com", "path": "/crm/v3/objects/{object}/search", "body": "json", "scope": {"object": {"from": "path", "at": "object"}, "query": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "objects.create", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://api.hubapi.com", "path": "/crm/v3/objects/{object}", "body": "json", "scope": {"object": {"from": "path", "at": "object"}, "record": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "objects.update", "action": "write", "effects": ["write"], "method": "PATCH", "origin": "https://api.hubapi.com", "path": "/crm/v3/objects/{object}/{id}", "body": "json", "scope": {"object": {"from": "path", "at": "object"}, "id": {"from": "path", "at": "id"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "objects.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.hubapi.com", "path": "/crm/v3/objects/{object}/{id}", "scope": {"object": {"from": "path", "at": "object"}, "id": {"from": "path", "at": "id"}}}
+  ]
+}

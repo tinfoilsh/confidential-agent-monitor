@@ -1,0 +1,23 @@
+{
+  "title": "Google Docs",
+  "catalog": {
+    "fields": [
+      {"key": "client_id", "label": "Google OAuth client ID (web application)", "paths": []},
+      {"key": "client_secret", "label": "Google OAuth client secret", "secret": true, "paths": []},
+      {"key": "token", "label": "Google account", "secret": true, "path": ["connections", "", "http", "values", "token"],
+       "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/documents", "prompt": "consent"}}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://docs.googleapis.com", "path": "/v1/documents", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read documents"},
+      "write": {"title": "Create documents"},
+      "write.batch": {"title": "Edit documents (inline images fetch their URLs)"}
+    }
+  },
+  "operations": [
+    {"id": "documents.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://docs.googleapis.com", "path": "/v1/documents/{document}", "params": ["includeTabsContent", "suggestionsViewMode"], "scope": {"document": {"from": "path", "at": "document"}}},
+    {"id": "documents.create", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://docs.googleapis.com", "path": "/v1/documents", "body": "json", "scope": {}},
+    {"id": "documents.batchUpdate", "action": "write.batch", "effects": ["write", "send"], "method": "POST", "origin": "https://docs.googleapis.com", "path": "/v1/documents/{document}:batchUpdate", "body": "json", "scope": {"document": {"from": "path", "at": "document"}, "requests": {"from": "body", "at": "", "type": "object"}}}
+  ]
+}

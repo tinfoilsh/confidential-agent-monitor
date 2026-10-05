@@ -1,0 +1,36 @@
+{
+  "title": "Salesforce",
+  "catalog": {
+    "fields": [
+      {"key": "origin", "label": "Your Salesforce instance URL (https://yourinstance.my.salesforce.com)",
+       "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
+      {"key": "token", "label": "OAuth2 access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://example.my.salesforce.com", "path": "/services/data/v62.0", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Query and read records of any object type"},
+      "write.crm": {"title": "Create and edit common CRM records: accounts, contacts, leads, opportunities and cases"},
+      "delete.crm": {"title": "Delete common CRM records"}
+    }
+  },
+  "operations": [
+    {"id": "query", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/services/data/v62.0/query", "params": ["q"], "scope": {}},
+    {"id": "sobjects.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/{object}/{id}", "params": ["fields"], "scope": {"object": {"from": "path", "at": "object"}, "id": {"from": "path", "at": "id"}}},
+    {"id": "accounts.create", "action": "write.crm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Account", "body": "json", "scope": {"record": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "accounts.update", "action": "write.crm", "effects": ["write"], "method": "PATCH", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Account/{id}", "body": "json", "scope": {"id": {"from": "path", "at": "id"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "accounts.delete", "action": "delete.crm", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Account/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
+    {"id": "contacts.create", "action": "write.crm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Contact", "body": "json", "scope": {"record": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "contacts.update", "action": "write.crm", "effects": ["write"], "method": "PATCH", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Contact/{id}", "body": "json", "scope": {"id": {"from": "path", "at": "id"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "contacts.delete", "action": "delete.crm", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Contact/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
+    {"id": "leads.create", "action": "write.crm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Lead", "body": "json", "scope": {"record": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "leads.update", "action": "write.crm", "effects": ["write"], "method": "PATCH", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Lead/{id}", "body": "json", "scope": {"id": {"from": "path", "at": "id"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "leads.delete", "action": "delete.crm", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Lead/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
+    {"id": "opportunities.create", "action": "write.crm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Opportunity", "body": "json", "scope": {"record": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "opportunities.update", "action": "write.crm", "effects": ["write"], "method": "PATCH", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Opportunity/{id}", "body": "json", "scope": {"id": {"from": "path", "at": "id"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "opportunities.delete", "action": "delete.crm", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Opportunity/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
+    {"id": "cases.create", "action": "write.crm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Case", "body": "json", "scope": {"record": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "cases.update", "action": "write.crm", "effects": ["write"], "method": "PATCH", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Case/{id}", "body": "json", "scope": {"id": {"from": "path", "at": "id"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "cases.delete", "action": "delete.crm", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/services/data/v62.0/sobjects/Case/{id}", "scope": {"id": {"from": "path", "at": "id"}}}
+  ]
+}

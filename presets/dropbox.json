@@ -1,0 +1,28 @@
+{
+  "title": "Dropbox",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "OAuth2 access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [
+      {"value": "token", "origin": "https://api.dropboxapi.com", "path": "/2", "header": "Authorization", "prefix": "Bearer "},
+      {"value": "token", "origin": "https://content.dropboxapi.com", "path": "/2", "header": "Authorization", "prefix": "Bearer "}
+    ]}}},
+    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "List, read and download files"},
+      "write": {"title": "Upload files"},
+      "delete": {"title": "Delete files"},
+      "share": {"title": "Create shared links"}
+    }
+  },
+  "operations": [
+    {"id": "files.list_folder", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.dropboxapi.com", "path": "/2/files/list_folder", "headers": {"Dropbox-Api-Select-User": null, "Dropbox-Api-Select-Admin": null, "Dropbox-Api-Path-Root": null}, "body": "json", "scope": {"path": {"from": "body", "at": "/path"}}},
+    {"id": "files.get_metadata", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.dropboxapi.com", "path": "/2/files/get_metadata", "headers": {"Dropbox-Api-Select-User": null, "Dropbox-Api-Select-Admin": null, "Dropbox-Api-Path-Root": null}, "body": "json", "scope": {"path": {"from": "body", "at": "/path"}}},
+    {"id": "files.download", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://content.dropboxapi.com", "path": "/2/files/download", "headers": {"Dropbox-Api-Select-User": null, "Dropbox-Api-Select-Admin": null, "Dropbox-Api-Path-Root": null}, "scope": {"path": {"from": "header_json", "header": "Dropbox-Api-Arg", "at": "/path"}}},
+    {"id": "files.upload", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://content.dropboxapi.com", "path": "/2/files/upload", "headers": {"Dropbox-Api-Select-User": null, "Dropbox-Api-Select-Admin": null, "Dropbox-Api-Path-Root": null}, "body": "any", "scope": {"arg": {"from": "header_json", "header": "Dropbox-Api-Arg", "at": "", "type": "object"}}},
+    {"id": "files.delete_v2", "action": "delete", "effects": ["delete"], "method": "POST", "origin": "https://api.dropboxapi.com", "path": "/2/files/delete_v2", "headers": {"Dropbox-Api-Select-User": null, "Dropbox-Api-Select-Admin": null, "Dropbox-Api-Path-Root": null}, "body": "json", "scope": {"path": {"from": "body", "at": "/path"}}},
+    {"id": "sharing.create_shared_link_with_settings", "action": "share", "effects": ["share"], "method": "POST", "origin": "https://api.dropboxapi.com", "path": "/2/sharing/create_shared_link_with_settings", "headers": {"Dropbox-Api-Select-User": null, "Dropbox-Api-Select-Admin": null, "Dropbox-Api-Path-Root": null}, "body": "json", "scope": {"settings": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "files.create_folder_v2", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://api.dropboxapi.com", "path": "/2/files/create_folder_v2", "headers": {"Dropbox-Api-Select-User": null, "Dropbox-Api-Select-Admin": null, "Dropbox-Api-Path-Root": null}, "body": "json", "scope": {"folder": {"from": "body", "at": "", "type": "object"}}}
+  ]
+}

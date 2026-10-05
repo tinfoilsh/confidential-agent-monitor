@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cmp"
 	"context"
 	"crypto/subtle"
 	"embed"
@@ -9,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"slices"
 	"strings"
@@ -34,15 +36,15 @@ type fieldMetadata struct {
 
 // ownerView omits values marked redact in connector field metadata.
 type ownerView struct {
-	Generation uint64                       `json:"generation"`
-	Config     json.RawMessage              `json:"config"`
-	HostKey    string                       `json:"host_key"`
-	CA         string                       `json:"ca"`
-	Fields     map[string][]fieldMetadata   `json:"fields"`
-	Status     map[string]any               `json:"status"`
-	Labels     map[string]label             `json:"labels"`
-	Setup      map[string]map[string]string `json:"setup"`
-	Templates  any                          `json:"templates"`
+	Generation uint64                     `json:"generation"`
+	Config     json.RawMessage            `json:"config"`
+	HostKey    string                     `json:"host_key"`
+	CA         string                     `json:"ca"`
+	Fields     map[string][]fieldMetadata `json:"fields"`
+	Status     map[string]any             `json:"status"`
+	Labels     map[string]label           `json:"labels"`
+	Setup      map[string]string          `json:"setup"`
+	Templates  any                        `json:"templates"`
 }
 
 func (m *monitor) view(s *state, err error) (any, error) {
@@ -54,23 +56,39 @@ func (m *monitor) view(s *state, err error) (any, error) {
 		return nil, err
 	}
 	v := ownerView{m.doc.Generation, m.doc.Config, string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), m.doc.Keys.CACert,
-		map[string][]fieldMetadata{}, map[string]any{}, map[string]label{}, map[string]map[string]string{}, templates}
+		map[string][]fieldMetadata{}, map[string]any{}, map[string]label{}, map[string]string{}, templates}
 	v.Config, v.Fields = configView(m.doc.Config, s.connections)
 	for _, c := range s.connections {
 		v.Status[c.name] = c.status()
 	}
 	for _, p := range s.principals {
 		v.Labels[p.Name] = m.labelLocked(p.Key)
-		v.Setup[p.Name] = map[string]string{}
-		for _, c := range s.connections {
-			if h, ok := c.connector.(*web.HTTP); ok && p.reaches(c.account) {
-				for secret := range h.Values {
-					v.Setup[p.Name][secret] = web.Placeholder(c.name, secret)
-				}
+		v.Setup[p.Name] = setup(p, s.connections)
+	}
+	return v, nil
+}
+
+// setup exports each secret's placeholder; a name in several connections stays a comment, since one variable cannot hold both.
+func setup(p principal, connections map[string]*connection) string {
+	holders := map[string][]string{}
+	for _, name := range slices.Sorted(maps.Keys(connections)) {
+		if h, ok := connections[name].connector.(*web.HTTP); ok && p.reaches(connections[name].account) {
+			for secret := range h.Values {
+				holders[secret] = append(holders[secret], name)
 			}
 		}
 	}
-	return v, nil
+	var lines []string
+	for _, secret := range slices.Sorted(maps.Keys(holders)) {
+		for _, name := range holders[secret] {
+			if len(holders[secret]) == 1 {
+				lines = append(lines, fmt.Sprintf("export %s=%s", secret, web.Placeholder(name, secret)))
+			} else {
+				lines = append(lines, fmt.Sprintf("# %s for %s.monitor: %s", secret, name, web.Placeholder(name, secret)))
+			}
+		}
+	}
+	return strings.Join(lines, "\n")
 }
 
 func configView(raw json.RawMessage, connections map[string]*connection) (json.RawMessage, map[string][]fieldMetadata) {
@@ -110,6 +128,33 @@ func (m *monitor) handler() http.Handler {
 	mux.Handle("PATCH /{$}", m.owned(true, func(r *http.Request, req ownerInput) (any, error) {
 		return m.view(m.patch(r.Context(), req.raw))
 	}))
+	// The owner may move a label to any point; an axis left tainted keeps the account it came from.
+	mux.Handle("POST /labels/{identity}", m.owned(true, func(r *http.Request, req ownerInput) (any, error) {
+		id, ok := m.live.Load().cfg.Identities[r.PathValue("identity")]
+		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(id.Key))
+		if !ok || err != nil {
+			return nil, fmt.Errorf("no identity %s", r.PathValue("identity"))
+		}
+		var l label
+		if json.Unmarshal(req.raw, &l) != nil || !slices.Contains(trusts, l.Trust) || !slices.Contains(audiences, l.Audience) {
+			return nil, fmt.Errorf("a label needs trust in %v and audience in %v", trusts, audiences)
+		}
+		fingerprint := ssh.FingerprintSHA256(key)
+		old := m.labelLocked(fingerprint)
+		l.Because = map[string]string{}
+		if l.Trust != cleanLabel.Trust {
+			l.Because["trust"] = cmp.Or(old.Because["trust"], "the owner")
+		}
+		if l.Audience != cleanLabel.Audience {
+			l.Because["audience"] = cmp.Or(old.Because["audience"], "the owner")
+		}
+		if m.doc.Labels == nil {
+			m.doc.Labels = map[string]label{}
+		}
+		m.doc.Labels[fingerprint] = l
+		m.doc.Generation++
+		return m.view(m.live.Load(), m.persist(r.Context(), m.doc, m.owner))
+	}))
 	mux.Handle("POST /accounts/{account}/sign-in", m.owned(true, func(r *http.Request, req ownerInput) (any, error) {
 		s := m.live.Load()
 		if len(req.Path) < 4 || req.Path[0] != "connections" {
@@ -125,7 +170,7 @@ func (m *monitor) handler() http.Handler {
 		if req.Credential != nil {
 			record = req.Credential
 		}
-		sign, err := credential.NewSignIn(r.Context(), &http.Client{Transport: s.Transport()}, record, req.Redirect)
+		sign, err := credential.NewSignIn(r.Context(), s.Client(), record, req.Redirect)
 		if err != nil {
 			return nil, err
 		}
@@ -290,8 +335,8 @@ func (m *monitor) answer(ctx context.Context, id, choice string) error {
 		return fmt.Errorf("request %s is %s", id, state)
 	}
 	if choice == answerSave {
-		if r.Action == nil {
-			return errors.New("an unknown request cannot be saved")
+		if r.Action == nil || r.Operation == "" || r.Definition == "" {
+			return errors.New("an unrecognized request cannot be saved")
 		}
 		if err := m.saveApproval(ctx, r); err != nil {
 			return err
@@ -319,10 +364,12 @@ func (m *monitor) requests(mux *http.ServeMux) {
 func (m *monitor) saveApproval(ctx context.Context, r *record) error {
 	rules := slices.Clone(m.live.Load().cfg.Identities[r.Identity].Rules)
 	rules = append(rules, rule{
-		Account: r.Account,
-		Action:  *r.Action,
-		Scope:   r.Scope,
-		Waives:  r.Gaps,
+		Account:    r.Account,
+		Action:     *r.Action,
+		Operation:  r.Operation,
+		Definition: r.Definition,
+		Scope:      r.Grant,
+		Waives:     r.Gaps,
 	})
 	patch, err := json.Marshal(map[string]any{"identities": map[string]any{r.Identity: map[string]any{"rules": rules}}})
 	if err != nil {

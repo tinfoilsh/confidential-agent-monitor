@@ -1,0 +1,31 @@
+{
+  "title": "Microsoft SharePoint",
+  "catalog": {
+    "fields": [
+      {"key": "tenant", "label": "Microsoft Entra tenant (ID, domain, organizations or consumers)", "default": "organizations", "paths": []},
+      {"key": "client_id", "label": "Application (client) ID", "paths": []},
+      {"key": "client_secret", "label": "Client secret", "secret": true, "paths": []},
+      {"key": "token", "label": "Microsoft account", "secret": true, "path": ["connections", "", "http", "values", "token"],
+       "oauth": {"auth_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize", "token_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "offline_access Sites.ReadWrite.All"}}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://graph.microsoft.com", "path": "/v1.0", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Find sites and read lists, items and drives"},
+      "write": {"title": "Create and edit list items"},
+      "delete": {"title": "Delete list items"}
+    }
+  },
+  "operations": [
+    {"id": "sites.search", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/sites", "params": ["search", "$select", "$top", "$skiptoken"], "scope": {}},
+    {"id": "sites.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/sites/{site}", "params": ["$select", "$expand"], "scope": {"site": {"from": "path", "at": "site"}}},
+    {"id": "drives.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/sites/{site}/drives", "params": ["$select", "$top"], "scope": {"site": {"from": "path", "at": "site"}}},
+    {"id": "lists.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/sites/{site}/lists", "params": ["$select", "$expand", "$filter", "$top", "$skiptoken"], "scope": {"site": {"from": "path", "at": "site"}}},
+    {"id": "lists.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/sites/{site}/lists/{list}", "params": ["$select", "$expand"], "scope": {"site": {"from": "path", "at": "site"}, "list": {"from": "path", "at": "list"}}},
+    {"id": "items.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/sites/{site}/lists/{list}/items", "params": ["$select", "$filter", "$top", "$skip", "$orderby", "$expand", "$search", "$count", "$skiptoken"], "scope": {"site": {"from": "path", "at": "site"}, "list": {"from": "path", "at": "list"}}},
+    {"id": "items.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/sites/{site}/lists/{list}/items/{item}", "params": ["$select", "$expand"], "scope": {"site": {"from": "path", "at": "site"}, "list": {"from": "path", "at": "list"}, "item": {"from": "path", "at": "item"}}},
+    {"id": "items.create", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/sites/{site}/lists/{list}/items", "body": "json", "scope": {"site": {"from": "path", "at": "site"}, "list": {"from": "path", "at": "list"}}},
+    {"id": "items.fields.update", "action": "write", "effects": ["write"], "method": "PATCH", "origin": "https://graph.microsoft.com", "path": "/v1.0/sites/{site}/lists/{list}/items/{item}/fields", "body": "json", "scope": {"site": {"from": "path", "at": "site"}, "list": {"from": "path", "at": "list"}, "item": {"from": "path", "at": "item"}}},
+    {"id": "items.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://graph.microsoft.com", "path": "/v1.0/sites/{site}/lists/{list}/items/{item}", "scope": {"site": {"from": "path", "at": "site"}, "list": {"from": "path", "at": "list"}, "item": {"from": "path", "at": "item"}}}
+  ]
+}

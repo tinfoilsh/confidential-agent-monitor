@@ -1,0 +1,33 @@
+{
+  "title": "Microsoft Excel",
+  "catalog": {
+    "fields": [
+      {"key": "tenant", "label": "Microsoft Entra tenant (ID, domain, organizations or consumers)", "default": "organizations", "paths": []},
+      {"key": "client_id", "label": "Application (client) ID", "paths": []},
+      {"key": "client_secret", "label": "Client secret", "secret": true, "paths": []},
+      {"key": "token", "label": "Microsoft account", "secret": true, "path": ["connections", "", "http", "values", "token"],
+       "oauth": {"auth_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize", "token_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "offline_access Files.ReadWrite"}}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://graph.microsoft.com", "path": "/v1.0", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read worksheets, ranges and tables"},
+      "session": {"title": "Open and close workbook sessions"},
+      "write": {"title": "Edit ranges and add rows (values starting with = are formulas), and add worksheets"},
+      "delete": {"title": "Delete worksheets"}
+    }
+  },
+  "operations": [
+    {"id": "worksheets.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/workbook/worksheets", "params": ["$select"], "scope": {"item": {"from": "path", "at": "item"}}},
+    {"id": "range.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/workbook/worksheets/{sheet}/range(address={address})", "params": ["$select"], "scope": {"item": {"from": "path", "at": "item"}, "sheet": {"from": "path", "at": "sheet"}, "address": {"from": "path", "at": "address"}}},
+    {"id": "usedRange.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/workbook/worksheets/{sheet}/usedRange", "params": ["$select", "valuesOnly"], "scope": {"item": {"from": "path", "at": "item"}, "sheet": {"from": "path", "at": "sheet"}}},
+    {"id": "tables.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/workbook/tables", "params": ["$select"], "scope": {"item": {"from": "path", "at": "item"}}},
+    {"id": "tables.rows.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/workbook/tables/{table}/rows", "params": ["$top", "$skip", "$select"], "scope": {"item": {"from": "path", "at": "item"}, "table": {"from": "path", "at": "table"}}},
+    {"id": "createSession", "action": "session", "effects": ["session"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/workbook/createSession", "body": "json", "scope": {"item": {"from": "path", "at": "item"}}},
+    {"id": "closeSession", "action": "session", "effects": ["session"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/workbook/closeSession", "scope": {"item": {"from": "path", "at": "item"}}},
+    {"id": "range.update", "action": "write", "effects": ["write", "execute"], "method": "PATCH", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/workbook/worksheets/{sheet}/range(address={address})", "body": "json", "scope": {"item": {"from": "path", "at": "item"}, "sheet": {"from": "path", "at": "sheet"}, "address": {"from": "path", "at": "address"}, "values": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "tables.rows.add", "action": "write", "effects": ["write", "execute"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/workbook/tables/{table}/rows", "body": "json", "scope": {"item": {"from": "path", "at": "item"}, "table": {"from": "path", "at": "table"}, "rows": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "worksheets.add", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/workbook/worksheets", "body": "json", "scope": {"item": {"from": "path", "at": "item"}}},
+    {"id": "worksheets.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/drive/items/{item}/workbook/worksheets/{sheet}", "scope": {"item": {"from": "path", "at": "item"}, "sheet": {"from": "path", "at": "sheet"}}}
+  ]
+}

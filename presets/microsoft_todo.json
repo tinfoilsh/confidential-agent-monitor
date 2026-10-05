@@ -1,0 +1,33 @@
+{
+  "title": "Microsoft To Do",
+  "catalog": {
+    "fields": [
+      {"key": "tenant", "label": "Microsoft Entra tenant (ID, domain, organizations or consumers)", "default": "organizations", "paths": []},
+      {"key": "client_id", "label": "Application (client) ID", "paths": []},
+      {"key": "client_secret", "label": "Client secret", "secret": true, "paths": []},
+      {"key": "token", "label": "Microsoft account", "secret": true, "path": ["connections", "", "http", "values", "token"],
+       "oauth": {"auth_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize", "token_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "offline_access Tasks.ReadWrite"}}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://graph.microsoft.com", "path": "/v1.0", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "me", "strangers": true, "sends": "me"},
+    "actions": {
+      "read": {"title": "Read task lists, tasks and checklists"},
+      "write": {"title": "Create, edit and complete tasks and lists"},
+      "delete": {"title": "Delete tasks and lists"}
+    }
+  },
+  "operations": [
+    {"id": "lists.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/todo/lists", "params": ["$select", "$top", "$skiptoken"], "scope": {}},
+    {"id": "lists.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/todo/lists/{list}", "scope": {"list": {"from": "path", "at": "list"}}},
+    {"id": "tasks.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/todo/lists/{list}/tasks", "params": ["$select", "$filter", "$top", "$skip", "$orderby", "$expand", "$search", "$count", "$skiptoken"], "scope": {"list": {"from": "path", "at": "list"}}},
+    {"id": "tasks.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/todo/lists/{list}/tasks/{task}", "params": ["$select", "$expand"], "scope": {"list": {"from": "path", "at": "list"}, "task": {"from": "path", "at": "task"}}},
+    {"id": "checklistItems.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/todo/lists/{list}/tasks/{task}/checklistItems", "scope": {"list": {"from": "path", "at": "list"}, "task": {"from": "path", "at": "task"}}},
+    {"id": "lists.create", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/todo/lists", "body": "json", "scope": {}},
+    {"id": "lists.update", "action": "write", "effects": ["write"], "method": "PATCH", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/todo/lists/{list}", "body": "json", "scope": {"list": {"from": "path", "at": "list"}}},
+    {"id": "tasks.create", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/todo/lists/{list}/tasks", "body": "json", "scope": {"list": {"from": "path", "at": "list"}}},
+    {"id": "tasks.update", "action": "write", "effects": ["write"], "method": "PATCH", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/todo/lists/{list}/tasks/{task}", "body": "json", "scope": {"list": {"from": "path", "at": "list"}, "task": {"from": "path", "at": "task"}}},
+    {"id": "checklistItems.create", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/todo/lists/{list}/tasks/{task}/checklistItems", "body": "json", "scope": {"list": {"from": "path", "at": "list"}, "task": {"from": "path", "at": "task"}}},
+    {"id": "tasks.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/todo/lists/{list}/tasks/{task}", "scope": {"list": {"from": "path", "at": "list"}, "task": {"from": "path", "at": "task"}}},
+    {"id": "lists.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://graph.microsoft.com", "path": "/v1.0/me/todo/lists/{list}", "scope": {"list": {"from": "path", "at": "list"}}}
+  ]
+}

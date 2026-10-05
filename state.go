@@ -236,6 +236,8 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *
 		return nil, err
 	}
 	s := &state{cfg: cfg, connections: definitions, principals: map[string]principal{}, Env: env}
+	s.Dialer = connector.NewDialer(cfg.AllowNetworks)
+	client := s.Client()
 	for name, definition := range definitions {
 		if old != nil && old.connections[name] != nil && slices.Equal(old.cfg.AllowNetworks, cfg.AllowNetworks) &&
 			old.connections[name].account == definition.account && old.connections[name].protocol == definition.protocol &&
@@ -247,6 +249,7 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *
 					continue
 				}
 				path := append(definition.path(), field.Path...)
+				field.Value.Client = client
 				field.Value.Save = func(ctx context.Context, before, after json.RawMessage) error {
 					m.mu.Lock()
 					defer m.mu.Unlock()
@@ -255,7 +258,6 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *
 			}
 		}
 	}
-	s.Dialer = connector.NewDialer(cfg.AllowNetworks)
 	for name, id := range cfg.Identities {
 		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(id.Key))
 		if err != nil {

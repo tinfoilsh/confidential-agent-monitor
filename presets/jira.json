@@ -1,0 +1,33 @@
+{
+  "title": "Jira",
+  "catalog": {
+    "fields": [
+      {"key": "origin", "label": "Your Jira site (https://yourcompany.atlassian.net)",
+       "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
+      {"key": "email", "label": "Atlassian account email", "secret": true, "path": ["connections", "", "http", "values", "email"]},
+      {"key": "apitoken", "label": "Atlassian API token", "secret": true, "path": ["connections", "", "http", "values", "apitoken"]}
+    ],
+    "connections": {"": {"http": {"slots": [
+      {"value": "email", "origin": "https://example.atlassian.net", "path": "/rest/api/3", "basic": "user"},
+      {"value": "apitoken", "origin": "https://example.atlassian.net", "path": "/rest/api/3", "basic": "password"}
+    ]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Search and read issues"},
+      "write.issues": {"title": "Create, edit and transition issues"},
+      "send.comment": {"title": "Comment on issues"},
+      "delete": {"title": "Delete issues"}
+    }
+  },
+  "operations": [
+    {"id": "myself.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/rest/api/3/myself", "scope": {}},
+    {"id": "issue.search", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/rest/api/3/search/jql", "params": ["jql", "maxResults", "nextPageToken", "fields"], "scope": {}},
+    {"id": "issue.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/rest/api/3/issue/{issue}", "params": ["fields"], "scope": {"issue": {"from": "path", "at": "issue"}}},
+    {"id": "issue.create", "action": "write.issues", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/rest/api/3/issue", "body": "json", "scope": {"issue": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "issue.update", "action": "write.issues", "effects": ["write"], "method": "PUT", "origin": "{origin}", "path": "/rest/api/3/issue/{issue}", "body": "json", "scope": {"issue": {"from": "path", "at": "issue"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "issue.transitions.do", "action": "write.issues", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/rest/api/3/issue/{issue}/transitions", "body": "json", "scope": {"issue": {"from": "path", "at": "issue"}, "transition": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "issue.comment.add", "action": "send.comment", "effects": ["send"], "method": "POST", "origin": "{origin}", "path": "/rest/api/3/issue/{issue}/comment", "body": "json", "scope": {"issue": {"from": "path", "at": "issue"}, "comment": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "issue.transitions.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/rest/api/3/issue/{issue}/transitions", "scope": {"issue": {"from": "path", "at": "issue"}}},
+    {"id": "issue.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/rest/api/3/issue/{issue}", "params": ["deleteSubtasks"], "scope": {"issue": {"from": "path", "at": "issue"}, "query": {"from": "query", "at": "", "type": "object"}}}
+  ]
+}

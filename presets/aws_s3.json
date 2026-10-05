@@ -1,0 +1,28 @@
+{
+  "title": "AWS S3",
+  "catalog": {
+    "fields": [
+      {"key": "origin", "label": "Bucket endpoint (https://yourbucket.s3.your-region.amazonaws.com)",
+       "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
+      {"key": "region", "label": "Bucket region (e.g. us-east-1)", "path": ["connections", "", "http", "slots", 0, "s3", "region"]},
+      {"key": "access_key", "label": "Access key ID", "secret": true, "path": ["connections", "", "http", "values", "access_key"]},
+      {"key": "secret_key", "label": "Secret access key", "secret": true, "path": ["connections", "", "http", "values", "secret_key"]},
+      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "path": ["connections", "", "http", "values", "session_token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "access_key", "origin": "https://example-bucket.s3.us-east-1.amazonaws.com", "path": "/", "s3": {"region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "List and read objects"},
+      "pay.requester": {"title": "Read objects from requester-pays buckets (billed to this account)"},
+      "write": {"title": "Write objects"},
+      "delete": {"title": "Delete objects"}
+    }
+  },
+  "operations": [
+    {"id": "object.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/", "query": {"list-type": "2"}, "params": ["prefix", "delimiter", "max-keys", "continuation-token"], "headers": {"X-Amz-Request-Payer": null}, "scope": {}},
+    {"id": "object.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/{key*}", "headers": {"X-Amz-Request-Payer": null}, "scope": {"key": {"from": "path", "at": "key"}}},
+    {"id": "object.get.requester_pays", "action": "pay.requester", "effects": ["read", "pay"], "method": "GET", "origin": "{origin}", "path": "/{key*}", "headers": {"X-Amz-Request-Payer": "requester"}, "scope": {"key": {"from": "path", "at": "key"}}},
+    {"id": "object.put", "action": "write", "effects": ["write"], "method": "PUT", "origin": "{origin}", "path": "/{key*}", "headers": {"X-Amz-Copy-Source": null, "X-Amz-Acl": null, "X-Amz-Grant-Read": null, "X-Amz-Grant-Write": null, "X-Amz-Grant-Read-Acp": null, "X-Amz-Grant-Write-Acp": null, "X-Amz-Grant-Full-Control": null, "X-Amz-Tagging": null, "X-Amz-Object-Lock-Mode": null, "X-Amz-Object-Lock-Retain-Until-Date": null, "X-Amz-Object-Lock-Legal-Hold": null, "X-Amz-Website-Redirect-Location": null, "X-Amz-Request-Payer": null}, "body": "any", "scope": {"key": {"from": "path", "at": "key"}}},
+    {"id": "object.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/{key*}", "headers": {"X-Amz-Request-Payer": null, "X-Amz-Bypass-Governance-Retention": null}, "scope": {"key": {"from": "path", "at": "key"}}}
+  ]
+}

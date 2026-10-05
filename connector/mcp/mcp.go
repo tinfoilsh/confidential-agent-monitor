@@ -3,7 +3,9 @@ package mcp
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
+	"net/url"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/tinfoilsh/mcp-sentinel"
@@ -36,25 +38,35 @@ func (b bearer) RoundTrip(r *http.Request) (*http.Response, error) {
 	}
 	r = r.Clone(r.Context())
 	r.Header.Set("Authorization", "Bearer "+token)
-	return b.base.RoundTrip(r)
+	resp, err := b.base.RoundTrip(r)
+	if err != nil {
+		// The error may quote the authenticated request.
+		if ctxErr := r.Context().Err(); ctxErr != nil {
+			return nil, ctxErr
+		}
+		return nil, errors.New("the MCP request failed")
+	}
+	return resp, nil
 }
 
 func (m *Server) Run(ctx context.Context, e *connector.Env, in *connector.Listener, ready func()) error {
-	transport := e.Transport()
-	defer transport.CloseIdleConnections()
-	if err := m.connect(ctx, transport); err != nil {
+	client := e.Client()
+	defer client.CloseIdleConnections()
+	if err := m.connect(ctx, client); err != nil {
 		return err
 	}
 	defer m.upstream.Close()
 	return connector.ServeHTTP(ctx, in, ready, sdk.NewStreamableHTTPHandler(m.serve, &sdk.StreamableHTTPOptions{Stateless: true}))
 }
 
-func (m *Server) connect(ctx context.Context, transport *http.Transport) error {
+func (m *Server) connect(ctx context.Context, client *http.Client) error {
 	ctx, cancel := context.WithTimeout(ctx, connector.DialTimeout)
 	defer cancel()
-	client := &http.Client{Transport: transport}
 	if len(m.Token.Raw()) > 0 {
-		client.Transport = bearer{&m.Token, transport}
+		if u, err := url.Parse(m.URL); err != nil || u.Scheme != "https" {
+			return errors.New("an MCP token needs an https server URL")
+		}
+		client.Transport = bearer{&m.Token, client.Transport}
 	}
 	session, err := sdk.NewClient(&sdk.Implementation{Name: "monitor", Version: sentinel.Version}, nil).
 		Connect(ctx, &sdk.StreamableClientTransport{Endpoint: m.URL, HTTPClient: client}, nil)

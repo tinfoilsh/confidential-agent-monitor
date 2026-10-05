@@ -1,0 +1,19 @@
+{
+  "title": "WhatsApp Business Cloud",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "Meta access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://graph.facebook.com", "path": "/v25.0", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read message templates and media metadata"},
+      "send.message": {"title": "Send messages; template messages and some others are billed per message"}
+    }
+  },
+  "operations": [
+    {"id": "templates.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.facebook.com", "path": "/v25.0/{waba}/message_templates", "params": ["limit"], "scope": {"waba": {"from": "path", "at": "waba"}}},
+    {"id": "media.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.facebook.com", "path": "/v25.0/{media}", "scope": {"media": {"from": "path", "at": "media"}}},
+    {"id": "messages.send", "action": "send.message", "effects": ["send", "pay"], "method": "POST", "origin": "https://graph.facebook.com", "path": "/v25.0/{phone}/messages", "body": "json", "scope": {"phone": {"from": "path", "at": "phone"}, "message": {"from": "body", "at": "", "type": "object"}}}
+  ]
+}

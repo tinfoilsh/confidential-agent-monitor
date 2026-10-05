@@ -1,0 +1,38 @@
+{
+  "title": "Slack",
+  "catalog": {
+    "fields": [
+      {"key": "token", "label": "Bot token (xoxb-) or user token (xoxp-)", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://slack.com", "path": "/api", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read channels, messages, users and files"},
+      "send.message": {"title": "Post, update and react to messages; a saved approval covers any message to the same channel"},
+      "delete": {"title": "Delete messages"},
+      "share.members": {"title": "Invite people to channels"},
+      "admin.channels": {"title": "Create, rename and archive channels"}
+    }
+  },
+  "operations": [
+    {"id": "auth.test", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://slack.com", "path": "/api/auth.test", "scope": {}},
+    {"id": "auth.test.form", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://slack.com", "path": "/api/auth.test", "body": "form", "fields": {"token": null}, "scope": {}},
+    {"id": "conversations.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slack.com", "path": "/api/conversations.list", "params": ["cursor", "exclude_archived", "limit", "team_id", "types"], "scope": {}},
+    {"id": "conversations.info", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slack.com", "path": "/api/conversations.info", "params": ["channel", "include_locale", "include_num_members"], "scope": {"channel": {"from": "query", "at": "channel"}}},
+    {"id": "conversations.history", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slack.com", "path": "/api/conversations.history", "params": ["channel", "cursor", "include_all_metadata", "inclusive", "latest", "limit", "oldest"], "scope": {"channel": {"from": "query", "at": "channel"}}},
+    {"id": "conversations.replies", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slack.com", "path": "/api/conversations.replies", "params": ["channel", "ts", "cursor", "include_all_metadata", "inclusive", "latest", "limit", "oldest"], "scope": {"channel": {"from": "query", "at": "channel"}}},
+    {"id": "conversations.members", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slack.com", "path": "/api/conversations.members", "params": ["channel", "cursor", "limit"], "scope": {"channel": {"from": "query", "at": "channel"}}},
+    {"id": "users.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slack.com", "path": "/api/users.list", "params": ["cursor", "include_locale", "limit", "team_id"], "scope": {}},
+    {"id": "users.info", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slack.com", "path": "/api/users.info", "params": ["user", "include_locale"], "scope": {"user": {"from": "query", "at": "user"}}},
+    {"id": "files.info", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slack.com", "path": "/api/files.info", "params": ["file", "cursor", "limit"], "scope": {"file": {"from": "query", "at": "file"}}},
+    {"id": "chat.postMessage", "action": "send.message", "effects": ["send"], "method": "POST", "origin": "https://slack.com", "path": "/api/chat.postMessage", "body": "json", "scope": {"channel": {"from": "body", "at": "/channel"}, "message": {"from": "body", "at": "", "type": "object"}}, "grant": ["channel"]},
+    {"id": "chat.postEphemeral", "action": "send.message", "effects": ["send"], "method": "POST", "origin": "https://slack.com", "path": "/api/chat.postEphemeral", "body": "json", "scope": {"channel": {"from": "body", "at": "/channel"}, "user": {"from": "body", "at": "/user"}, "message": {"from": "body", "at": "", "type": "object"}}, "grant": ["channel", "user"]},
+    {"id": "chat.update", "action": "send.message", "effects": ["send"], "method": "POST", "origin": "https://slack.com", "path": "/api/chat.update", "body": "json", "scope": {"channel": {"from": "body", "at": "/channel"}, "message": {"from": "body", "at": "", "type": "object"}}, "grant": ["channel"]},
+    {"id": "reactions.add", "action": "send.message", "effects": ["send"], "method": "POST", "origin": "https://slack.com", "path": "/api/reactions.add", "body": "json", "scope": {"channel": {"from": "body", "at": "/channel"}, "reaction": {"from": "body", "at": "", "type": "object"}}, "grant": ["channel"]},
+    {"id": "chat.delete", "action": "delete", "effects": ["delete"], "method": "POST", "origin": "https://slack.com", "path": "/api/chat.delete", "body": "json", "scope": {"channel": {"from": "body", "at": "/channel"}, "ts": {"from": "body", "at": "/ts"}}},
+    {"id": "conversations.invite", "action": "share.members", "effects": ["share"], "method": "POST", "origin": "https://slack.com", "path": "/api/conversations.invite", "body": "json", "scope": {"channel": {"from": "body", "at": "/channel"}, "users": {"from": "body", "at": "/users"}}},
+    {"id": "conversations.create", "action": "admin.channels", "effects": ["admin"], "method": "POST", "origin": "https://slack.com", "path": "/api/conversations.create", "body": "json", "scope": {"name": {"from": "body", "at": "/name"}, "request": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "conversations.rename", "action": "admin.channels", "effects": ["admin"], "method": "POST", "origin": "https://slack.com", "path": "/api/conversations.rename", "body": "json", "scope": {"channel": {"from": "body", "at": "/channel"}, "name": {"from": "body", "at": "/name"}}},
+    {"id": "conversations.archive", "action": "admin.channels", "effects": ["admin"], "method": "POST", "origin": "https://slack.com", "path": "/api/conversations.archive", "body": "json", "scope": {"channel": {"from": "body", "at": "/channel"}}}
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "title": "WordPress",
+  "catalog": {
+    "fields": [
+      {"key": "origin", "label": "Your site URL (https://yoursite.example.com)",
+       "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
+      {"key": "username", "label": "Username", "secret": true, "path": ["connections", "", "http", "values", "username"]},
+      {"key": "apppassword", "label": "Application password", "secret": true, "path": ["connections", "", "http", "values", "apppassword"]}
+    ],
+    "connections": {"": {"http": {"slots": [
+      {"value": "username", "origin": "https://example.com", "path": "/wp-json/wp/v2", "basic": "user"},
+      {"value": "apppassword", "origin": "https://example.com", "path": "/wp-json/wp/v2", "basic": "password"}
+    ]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read posts"},
+      "write.posts": {"title": "Create and edit posts, including publishing"},
+      "delete": {"title": "Delete posts"}
+    }
+  },
+  "operations": [
+    {"id": "posts.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wp-json/wp/v2/posts", "params": ["page", "per_page", "search", "status"], "scope": {}},
+    {"id": "posts.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wp-json/wp/v2/posts/{post}", "scope": {"post": {"from": "path", "at": "post"}}},
+    {"id": "posts.create", "action": "write.posts", "effects": ["write", "publish"], "method": "POST", "origin": "{origin}", "path": "/wp-json/wp/v2/posts", "body": "json", "scope": {"post": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "posts.update", "action": "write.posts", "effects": ["write", "publish"], "method": "POST", "origin": "{origin}", "path": "/wp-json/wp/v2/posts/{post}", "body": "json", "scope": {"post": {"from": "path", "at": "post"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "posts.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/wp-json/wp/v2/posts/{post}", "params": ["force"], "scope": {"post": {"from": "path", "at": "post"}, "query": {"from": "query", "at": "", "type": "object"}}}
+  ]
+}

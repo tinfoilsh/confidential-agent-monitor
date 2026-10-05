@@ -6,7 +6,14 @@
       "policy_options": { "private": ["tinfoilsh/*"] },
       "contents": "team", "strangers": true, "sends": "me",
       "connections": {
-        "": { "http": {"hosts": ["api.github.com", "github.com", "*.githubusercontent.com"], "values": {"GITHUB_TOKEN": "ghp_REAL"}} },
+        "": { "http": {
+          "hosts": ["api.github.com", "github.com", "*.githubusercontent.com"],
+          "slots": [
+            {"value": "GITHUB_TOKEN", "origin": "https://api.github.com", "header": "Authorization", "prefix": "Bearer "},
+            {"value": "GITHUB_TOKEN", "origin": "https://github.com", "basic": "password"}
+          ],
+          "values": {"GITHUB_TOKEN": "ghp_REAL"}
+        } },
         "mcp": { "mcp": { "url": "https://api.githubcopilot.com/mcp/", "token": "ghp_REAL" } }
       }
     },
@@ -18,6 +25,23 @@
         "imap": { "imap": { "url": "imaps://imap.gmail.com", "user": "me@gmail.com", "password": "APP_PASSWORD" } },
         "smtp": { "smtp": { "url": "smtps://smtp.gmail.com", "user": "me@gmail.com", "password": "APP_PASSWORD" } }
       }
+    },
+    "slack": {
+      "template": "api", "policy_options": { "service": "slack" },
+      "contents": "team", "strangers": true, "sends": "me",
+      "connections": { "": { "http": {
+        "slots": [{"value": "token", "origin": "https://slack.com", "path": "/api", "header": "Authorization", "prefix": "Bearer "}],
+        "values": {"token": "xoxb-REAL"}
+      } } }
+    },
+    "backups": {
+      "template": "api", "policy_options": { "service": "s3" },
+      "contents": "me", "strangers": false, "sends": "me",
+      "connections": { "": { "http": {
+        "slots": [{"value": "access_key", "origin": "https://s3.us-east-1.amazonaws.com", "path": "/my-backups",
+                   "s3": {"region": "us-east-1", "secret": "secret_key"}}],
+        "values": {"access_key": "AKIA_REAL", "secret_key": "SECRET_REAL"}
+      } } }
     },
     "web": {
       "template": "web", "contents": "anyone", "strangers": true, "sends": "anyone",
@@ -41,6 +65,27 @@
       "connections": {
         "": { "postgres": {"url": "postgres://app@db.example.com/app?sslmode=verify-full", "password": "REAL"} },
         "cache": { "redis": {"url": "rediss://default@cache.example.com:6380", "password": "REAL"} }
+      }
+    }
+  },
+  "data": {
+    "services": {
+      "s3": {
+        "title": "Amazon S3",
+        "operations": [
+          {"id": "objects.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://s3.us-east-1.amazonaws.com", "path": "/{bucket}", "query": {"list-type": "2"}, "params": ["prefix", "delimiter", "continuation-token", "max-keys", "start-after", "encoding-type"], "scope": {"bucket": {"from": "path", "at": "bucket"}}},
+          {"id": "objects.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://s3.us-east-1.amazonaws.com", "path": "/{bucket}/{key*}", "params": ["versionId", "x-id"], "scope": {"bucket": {"from": "path", "at": "bucket"}, "key": {"from": "path", "at": "key"}}},
+          {"id": "objects.head", "action": "read", "effects": ["read"], "method": "HEAD", "origin": "https://s3.us-east-1.amazonaws.com", "path": "/{bucket}/{key*}", "params": ["versionId"], "scope": {"bucket": {"from": "path", "at": "bucket"}, "key": {"from": "path", "at": "key"}}},
+          {"id": "objects.put", "action": "write", "effects": ["write"], "method": "PUT", "origin": "https://s3.us-east-1.amazonaws.com", "path": "/{bucket}/{key*}", "params": ["x-id"], "headers": {"X-Amz-Copy-Source": null, "X-Amz-Acl": null, "X-Amz-Tagging": null, "X-Amz-Grant-Full-Control": null, "X-Amz-Grant-Read": null, "X-Amz-Grant-Read-Acp": null, "X-Amz-Grant-Write-Acp": null, "X-Amz-Website-Redirect-Location": null, "X-Amz-Object-Lock-Mode": null, "X-Amz-Object-Lock-Retain-Until-Date": null, "X-Amz-Object-Lock-Legal-Hold": null}, "body": "any", "scope": {"bucket": {"from": "path", "at": "bucket"}, "key": {"from": "path", "at": "key"}}},
+          {"id": "objects.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://s3.us-east-1.amazonaws.com", "path": "/{bucket}/{key*}", "params": ["versionId", "x-id"], "headers": {"X-Amz-Bypass-Governance-Retention": null}, "scope": {"bucket": {"from": "path", "at": "bucket"}, "key": {"from": "path", "at": "key"}}}
+        ]
+      },
+      "slack": {
+        "title": "Slack",
+        "operations": [
+          {"id": "conversations.history", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slack.com", "path": "/api/conversations.history", "scope": {"channel": {"from": "query", "at": "channel"}}, "params": ["channel", "cursor", "limit"]},
+          {"id": "chat.postMessage", "action": "send.message", "effects": ["send"], "method": "POST", "origin": "https://slack.com", "path": "/api/chat.postMessage", "body": "json", "scope": {"channel": {"from": "body", "at": "/channel"}, "text": {"from": "body", "at": "/text"}}, "grant": ["channel"]}
+        ]
       }
     }
   }

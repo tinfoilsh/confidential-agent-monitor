@@ -1,0 +1,31 @@
+{
+  "title": "GitLab",
+  "catalog": {
+    "fields": [
+      {"key": "origin", "label": "Your GitLab instance URL", "default": "https://gitlab.com",
+       "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
+      {"key": "token", "label": "Personal access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://gitlab.com", "path": "/api/v4", "header": "Private-Token"}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read projects, issues and merge requests"},
+      "write.issues": {"title": "Create and edit issues"},
+      "write.merge_requests": {"title": "Open and merge merge requests"},
+      "execute.pipelines": {"title": "Trigger pipelines"},
+      "write.commits": {"title": "Create repository commits, which can modify or delete files and trigger CI pipelines"}
+    }
+  },
+  "operations": [
+    {"id": "projects.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v4/projects", "params": ["search", "owned", "membership", "per_page", "page"], "headers": {"Sudo": null}, "scope": {}},
+    {"id": "projects.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v4/projects/{project}", "headers": {"Sudo": null}, "scope": {"project": {"from": "path", "at": "project"}}},
+    {"id": "issues.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v4/projects/{project}/issues", "params": ["state", "per_page", "page"], "headers": {"Sudo": null}, "scope": {"project": {"from": "path", "at": "project"}}},
+    {"id": "issues.create", "action": "write.issues", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/v4/projects/{project}/issues", "headers": {"Sudo": null}, "body": "json", "scope": {"project": {"from": "path", "at": "project"}, "issue": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "issues.update", "action": "write.issues", "effects": ["write"], "method": "PUT", "origin": "{origin}", "path": "/api/v4/projects/{project}/issues/{issue}", "headers": {"Sudo": null}, "body": "json", "scope": {"project": {"from": "path", "at": "project"}, "issue": {"from": "path", "at": "issue"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "merge_requests.create", "action": "write.merge_requests", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/v4/projects/{project}/merge_requests", "headers": {"Sudo": null}, "body": "json", "scope": {"project": {"from": "path", "at": "project"}, "mr": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "merge_requests.merge", "action": "write.merge_requests", "effects": ["write", "admin"], "method": "PUT", "origin": "{origin}", "path": "/api/v4/projects/{project}/merge_requests/{mr}/merge", "headers": {"Sudo": null}, "scope": {"project": {"from": "path", "at": "project"}, "mr": {"from": "path", "at": "mr"}}},
+    {"id": "pipelines.create", "action": "execute.pipelines", "effects": ["execute"], "method": "POST", "origin": "{origin}", "path": "/api/v4/projects/{project}/pipeline", "params": ["ref"], "headers": {"Sudo": null}, "scope": {"project": {"from": "path", "at": "project"}, "query": {"from": "query", "at": "", "type": "object"}}},
+    {"id": "repository_commits.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v4/projects/{project}/repository/commits", "params": ["ref_name", "since", "until", "per_page", "page"], "headers": {"Sudo": null}, "scope": {"project": {"from": "path", "at": "project"}}},
+    {"id": "repository_commits.create", "action": "write.commits", "effects": ["write", "delete", "execute"], "method": "POST", "origin": "{origin}", "path": "/api/v4/projects/{project}/repository/commits", "headers": {"Sudo": null}, "body": "json", "scope": {"project": {"from": "path", "at": "project"}, "commit": {"from": "body", "at": "", "type": "object"}}}
+  ]
+}

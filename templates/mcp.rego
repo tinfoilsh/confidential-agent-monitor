@@ -18,9 +18,7 @@ catalog := {
 	"actions": {"read": {"title": "Use read-only tools"}, "use": {"title": "Use tools that change things"}}
 }
 
-changes := {"use"}
-
-needs_trust := {"use"}
+effects := {"read": {"read"}, "use": {"write"}}
 
 action := sprintf("read.%s", [input.mcp.tool]) if input.mcp.read_only
 
@@ -30,3 +28,7 @@ action := sprintf("use.%s", [input.mcp.tool]) if {
 }
 
 title := sprintf("Use %s", [input.mcp.tool])
+
+operation := {
+	"id": action, "action": action, "effects": effects[split(action, ".")[0]], "scope": {}, "trust": startswith(action, "use.")
+}
