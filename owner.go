@@ -51,7 +51,7 @@ func (m *monitor) view(s *state, err error) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	templates, err := catalog()
+	templates, err := catalog(s.cfg.resolved)
 	if err != nil {
 		return nil, err
 	}
@@ -128,6 +128,11 @@ func (m *monitor) handler() http.Handler {
 	mux.Handle("PATCH /{$}", m.owned(true, func(r *http.Request, req ownerInput) (any, error) {
 		return m.view(m.patch(r.Context(), req.raw))
 	}))
+	// A shipped preset as its file has it, so an owner's copy keeps its order and environment references.
+	mux.Handle("GET /presets/{name}", m.owned(true, func(r *http.Request, _ ownerInput) (any, error) {
+		src, err := presetFiles.ReadFile("presets/" + r.PathValue("name") + ".json")
+		return json.RawMessage(src), err
+	}))
 	// The owner may move a label to any point; an axis left tainted keeps the account it came from.
 	mux.Handle("POST /labels/{identity}", m.owned(true, func(r *http.Request, req ownerInput) (any, error) {
 		id, ok := m.live.Load().cfg.Identities[r.PathValue("identity")]
@@ -148,12 +153,8 @@ func (m *monitor) handler() http.Handler {
 		if l.Audience != cleanLabel.Audience {
 			l.Because["audience"] = cmp.Or(old.Because["audience"], "the owner")
 		}
-		if m.doc.Labels == nil {
-			m.doc.Labels = map[string]label{}
-		}
-		m.doc.Labels[fingerprint] = l
-		m.doc.Generation++
-		return m.view(m.live.Load(), m.persist(r.Context(), m.doc, m.owner))
+		m.setLabelLocked(fingerprint, l, nil)
+		return m.view(m.live.Load(), m.commitLocked(r.Context(), m.doc))
 	}))
 	mux.Handle("POST /accounts/{account}/sign-in", m.owned(true, func(r *http.Request, req ownerInput) (any, error) {
 		s := m.live.Load()
@@ -202,9 +203,12 @@ func (m *monitor) handler() http.Handler {
 	return mux
 }
 
-// owned serializes owner requests; before unlock, decrypting the state is what proves the secret.
+// owned uses the same lock order as agent requests. Before unlock, decrypting
+// the state is what proves the secret.
 func (m *monitor) owned(unlocked bool, fn func(*http.Request, ownerInput) (any, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		m.flow.Lock()
+		defer m.flow.Unlock()
 		m.mu.Lock()
 		defer m.mu.Unlock()
 		if unlocked && m.live.Load() == nil {
@@ -255,16 +259,28 @@ const (
 	answerDeny = "deny"
 )
 
+// Audit events include connector observations and monitor-owned messages.
+type auditEvent struct {
+	*connector.Event
+	Message *messageEvent `json:"message,omitempty"`
+}
+
+type messageEvent struct {
+	From string `json:"from"`
+	To   string `json:"to"`
+	ID   string `json:"id,omitempty"`
+}
+
 // A record is one decision; requests are the pending and expired ones.
 type record struct {
-	ID       string           `json:"id"`
-	State    string           `json:"state"`
-	Time     time.Time        `json:"time"`
-	Expires  time.Time        `json:"expires,omitzero"`
-	Identity string           `json:"identity"`
-	Account  string           `json:"account"`
-	Label    label            `json:"label"`
-	Event    *connector.Event `json:"event,omitempty"`
+	ID       string      `json:"id"`
+	State    string      `json:"state"`
+	Time     time.Time   `json:"time"`
+	Expires  time.Time   `json:"expires,omitzero"`
+	Identity string      `json:"identity"`
+	Account  string      `json:"account"`
+	Label    label       `json:"label"`
+	Event    *auditEvent `json:"event,omitempty"`
 	*decision
 	answered chan struct{}
 }

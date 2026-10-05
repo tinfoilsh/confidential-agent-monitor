@@ -29,32 +29,39 @@ var errOwner = errors.New("invalid owner secret")
 
 // sealed is the document encrypted in storage. The monitor owns it under mu.
 type sealed struct {
-	Generation uint64           `json:"generation"`
-	Keys       keyMaterial      `json:"keys"`
-	Labels     map[string]label `json:"labels"`
-	Config     json.RawMessage  `json:"config"`
+	Generation uint64             `json:"generation"`
+	Keys       keyMaterial        `json:"keys"`
+	Labels     map[string]label   `json:"labels"`
+	Mailboxes  map[string]mailbox `json:"mailboxes,omitempty"`
+	Config     json.RawMessage    `json:"config"`
 }
 
 type state struct {
-	cfg         *config
-	connections map[string]*connection
-	principals  map[string]principal
-	decision    rego.PreparedEvalQuery
+	cfg             *config
+	connections     map[string]*connection
+	principals      map[string]principal
+	decision        rego.PreparedEvalQuery
+	messageDecision rego.PreparedEvalQuery
 	connector.Env
 }
 
 type monitor struct {
-	live    atomic.Pointer[state]
-	mu      sync.Mutex
-	doc     sealed
-	owner   []byte
-	store   *blob.Bucket
-	object  string
-	listen  string
-	running map[string]*connection
+	live        atomic.Pointer[state]
+	mu          sync.Mutex
+	doc         sealed
+	labelsDirty bool // A failed write must not let a later request skip label persistence.
+	owner       []byte
+	store       *blob.Bucket
+	object      string
+	listen      string
+	running     map[string]*connection
 	// flow serializes policy decisions; mu protects all document reads and writes.
 	flow    sync.Mutex
+	streams map[string]map[*connector.Stream]struct{}
 	records records
+	// Only with a file:// bucket: corpus receives every request to a preset's account, and identities may profile.
+	dev    bool
+	corpus *json.Encoder
 	// signIns holds the finish of each started sign-in, keyed by its state.
 	signIns map[string]func(context.Context, string) (*state, error)
 }
@@ -64,6 +71,8 @@ type principal struct {
 	Name     string            `json:"name"`
 	Accounts map[string]access `json:"-"`
 	Rules    []rule            `json:"-"`
+	Messages *messageAccess    `json:"-"`
+	Profile  bool              `json:"-"`
 }
 
 func (p principal) reaches(account string) bool {
@@ -162,10 +171,16 @@ func (m *monitor) patch(ctx context.Context, patch []byte) (*state, error) {
 	}
 	next.Labels = maps.Clone(m.doc.Labels)
 	maps.DeleteFunc(next.Labels, func(key string, _ label) bool { _, ok := s.principals[key]; return !ok })
-	if err := m.persist(ctx, next, m.owner); err != nil {
+	next.Mailboxes = maps.Clone(m.doc.Mailboxes)
+	maps.DeleteFunc(next.Mailboxes, func(_ string, box mailbox) bool { return !s.keepsMailbox(box) })
+	if err := m.commitLocked(ctx, next); err != nil {
 		return nil, err
 	}
-	m.doc = next
+	for key := range m.streams {
+		if _, exists := s.principals[key]; !exists {
+			m.retireStreamsLocked(key, nil)
+		}
+	}
 	m.apply(s)
 	m.live.Store(s)
 	return s, nil
@@ -212,11 +227,7 @@ func (m *monitor) replaceValue(ctx context.Context, c *connection, path []string
 		return err
 	}
 	next.Generation++
-	if err := m.persist(ctx, next, m.owner); err != nil {
-		return err
-	}
-	m.doc = next
-	return nil
+	return m.commitLocked(ctx, next)
 }
 
 // persist writes a document without publishing it or touching runtime resources.
@@ -227,6 +238,17 @@ func (m *monitor) persist(ctx context.Context, sl sealed, key []byte) error {
 		return err
 	}
 	return m.store.WriteAll(ctx, m.object, aead.Seal(nil, nil, plain, nil), nil)
+}
+
+// commitLocked requires mu. Queue changes are published only after persistence;
+// label changes already applied by setLabelLocked remain restrictive on failure.
+func (m *monitor) commitLocked(ctx context.Context, next sealed) error {
+	if err := m.persist(ctx, next, m.owner); err != nil {
+		return err
+	}
+	m.doc = next
+	m.labelsDirty = false
+	return nil
 }
 
 // build validates without starting anything or mutating live credentials.
@@ -264,9 +286,15 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *
 			return nil, fmt.Errorf("identity %s: %w", name, err)
 		}
 		fingerprint := ssh.FingerprintSHA256(key)
-		s.principals[fingerprint] = principal{Key: fingerprint, Name: name, Accounts: id.Accounts, Rules: id.Rules}
+		if _, exists := s.principals[fingerprint]; exists {
+			return nil, fmt.Errorf("identity %s shares another identity's public key", name)
+		}
+		if id.Profile && !m.dev {
+			return nil, fmt.Errorf("identity %s: profiling needs a file:// bucket", name)
+		}
+		s.principals[fingerprint] = principal{Key: fingerprint, Name: name, Accounts: id.Accounts, Rules: id.Rules, Messages: id.Messages, Profile: id.Profile}
 	}
-	if s.decision, err = prepareDecision(ctx, cfg); err != nil {
+	if s.decision, s.messageDecision, err = preparePolicies(ctx, cfg); err != nil {
 		return nil, err
 	}
 	return s, nil

@@ -9,7 +9,7 @@ route(pattern) if glob.match(pattern, ["/"], input.http.path)
 
 mutation if input.graphql.kind == "mutation"
 
-audiences := {"me": 0, "team": 1, "anyone": 2}
+audiences := data.monitor.labels.audiences
 
 t := data.templates[input.account.template]
 
@@ -171,24 +171,10 @@ waived contains w if {
 reveal := object.union({"contents": input.account.contents, "strangers": input.account.strangers}, object.get(op, "reveals", {})) if action != null
 else := {"contents": "me", "strangers": true}
 
-lowered contains "audience" if audiences[reveal.contents] < audiences[input.label.audience]
+observed_trust := "untrusted" if reveal.strangers
+else := "trusted"
 
-lowered contains "trust" if {
-	reveal.strangers
-	input.label.trust == "trusted"
-}
-
-trust := "untrusted" if "trust" in lowered
-else := input.label.trust
-
-audience := reveal.contents if "audience" in lowered
-else := input.label.audience
-
-next := {
-	"trust": trust,
-	"audience": audience,
-	"because": object.union(object.get(input.label, "because", {}), {g: input.account.name | some g in lowered}),
-}
+next := data.monitor.labels.observe(input.label, {"audience": reveal.contents, "trust": observed_trust}, input.account.name)
 
 decision := {"deny": custom} if input.tcp
 else := {

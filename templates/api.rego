@@ -1,7 +1,7 @@
 package templates.api
 
 # An account names a preset in data.presets, whose operations are checked by malformed when the monitor starts.
-# Only its operations are allowed, and each request must match exactly one of them.
+# A request no operation matches is unknown to policy, and one that matches several is refused.
 
 options := input.account.policy_options
 
@@ -43,6 +43,14 @@ malformed contains [name, object.get(o, "id", i)] if {
 	not well_formed(o)
 }
 
+malformed contains [name, sprintf("%v is repeated", [o.id])] if {
+	some name, s in data.presets
+	some i, o in s.operations
+	some j, other in s.operations
+	i < j
+	o.id == other.id
+}
+
 matches := [o | some o in service.operations; matched(o)]
 
 record := matches[0] if count(matches) == 1
@@ -67,29 +75,11 @@ operation := {
 
 title := sprintf("%s: %s", [service.title, record.id])
 
-# A request no operation matches is the unreviewed action, off until an agent's access names it.
-operation := {
-	"id": "unreviewed",
-	"action": "unreviewed",
-	"effects": [unreviewed_effect],
-	"scope": {"method": input.http.method, "path": input.http.path},
-	"definition": {"origin": input.http.origin},
-} if count(matches) == 0
-
-unreviewed_effect := "send" if data.monitor.write
-else := "read"
-
 title := sprintf("%s: %s %s", [service.title, input.http.method, input.http.path]) if count(matches) == 0
 
 deny contains "the account names no service record" if not service
 
 deny contains "only HTTP requests reach a service" if not input.http
-
-deny contains "the request matches no reviewed operation" if {
-	service
-	count(matches) == 0
-	not input.access.actions.unreviewed
-}
 
 deny contains "the service record is malformed" if {
 	some o in service.operations

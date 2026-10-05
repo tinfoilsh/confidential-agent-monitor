@@ -2,9 +2,12 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"flag"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -43,14 +46,16 @@ func main() {
 	api := flag.String("api", "127.0.0.1:8080", "owner API address")
 	bucket := flag.String("bucket", "", "blob URL holding the encrypted state")
 	object := flag.String("object", "monitor.enc", "key of the encrypted state")
+	corpus := flag.String("corpus", "", "with a file:// bucket, append each request to a preset's account here")
 	flag.Parse()
-	if err := run(*listen, *api, *bucket, *object); err != nil {
+	if err := run(*listen, *api, *bucket, *object, *corpus); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func run(listen, api, bucketURL, object string) error {
-	if !strings.HasPrefix(bucketURL, "file://") {
+func run(listen, api, bucketURL, object, corpus string) error {
+	dev := strings.HasPrefix(bucketURL, "file://")
+	if !dev {
 		delete(connectorKinds, "cli")
 		delete(connectorKinds, "gpg-agent")
 	}
@@ -58,6 +63,16 @@ func run(listen, api, bucketURL, object string) error {
 	if err != nil {
 		return err
 	}
-	m := &monitor{store: bucket, object: object, listen: listen}
+	m := &monitor{store: bucket, object: object, listen: listen, dev: dev}
+	if corpus != "" {
+		if !dev {
+			return errors.New("-corpus holds request bodies in plain text, so it needs a file:// bucket")
+		}
+		f, err := os.OpenFile(corpus, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
+		if err != nil {
+			return err
+		}
+		m.corpus = json.NewEncoder(f)
+	}
 	return (&http.Server{Addr: api, Handler: m.handler(), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe()
 }

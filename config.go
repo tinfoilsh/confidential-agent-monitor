@@ -20,6 +20,9 @@ type identity struct {
 	Key      string            `json:"key"`
 	Accounts map[string]access `json:"accounts"`
 	Rules    []rule            `json:"rules,omitempty"`
+	Messages *messageAccess    `json:"messages,omitempty"`
+	// Profile admits every request unchanged and unlabeled, recording it, to learn what a client sends.
+	Profile bool `json:"profile,omitempty"`
 }
 
 type access struct {
@@ -60,6 +63,10 @@ type config struct {
 	Identities    map[string]identity `json:"identities"`
 	Policies      map[string]string   `json:"policies"`
 	Data          map[string]any      `json:"data"`
+
+	// Presets are the owner's, in the shipped file format; each replaces the shipped preset of its name.
+	Presets  map[string]map[string]any `json:"presets,omitempty"`
+	resolved map[string]preset
 }
 
 // parse decodes the owner's config without starting anything.
@@ -73,13 +80,14 @@ func parse(raw []byte) (*config, map[string]*connection, error) {
 			return nil, nil, fmt.Errorf("data.%s is reserved for the monitor", reserved)
 		}
 	}
-	builtin, err := presets()
+	resolved, err := withOwned(cfg.Presets)
 	if err != nil {
 		return nil, nil, err
 	}
+	cfg.resolved = resolved
 	connections := map[string]*connection{}
 	for acct, a := range cfg.Accounts {
-		if _, ok := builtin[a.PolicyOptions.Preset]; (a.Template == "api") != ok || a.Template != "api" && a.PolicyOptions.Origin != "" {
+		if _, ok := resolved[a.PolicyOptions.Preset]; (a.Template == "api") != ok || a.Template != "api" && a.PolicyOptions.Origin != "" {
 			return nil, nil, fmt.Errorf("account %s: api accounts name a preset, and only they name a preset or origin", acct)
 		}
 		if _, err := fs.Stat(templates, templateDir+"/"+a.Template+".rego"); err != nil {
@@ -90,6 +98,9 @@ func parse(raw []byte) (*config, map[string]*connection, error) {
 		}
 		for key, kinds := range a.Connections {
 			name := connectionName(acct, key)
+			if name == "messages" {
+				return nil, nil, fmt.Errorf("connection name messages is reserved for agent mailboxes")
+			}
 			if connections[name] != nil {
 				return nil, nil, fmt.Errorf("connection name %s is taken", name)
 			}
@@ -112,6 +123,9 @@ func parse(raw []byte) (*config, map[string]*connection, error) {
 		}
 	}
 	for name, id := range cfg.Identities {
+		if err := validateMessageAccess(name, id.Messages, cfg.Identities); err != nil {
+			return nil, nil, err
+		}
 		for acct, a := range id.Accounts {
 			if _, ok := cfg.Accounts[acct]; !ok || !slices.Contains(levels, a.Level) {
 				return nil, nil, fmt.Errorf("identity %s: account %s must exist and have a level in %v", name, acct, levels)

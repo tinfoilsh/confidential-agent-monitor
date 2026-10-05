@@ -24,7 +24,10 @@ func (m *monitor) serveSSH(ln net.Listener) {
 	for {
 		nc, err := ln.Accept()
 		if err != nil {
-			log.Fatal(err)
+			if !errors.Is(err, net.ErrClosed) {
+				log.Printf("SSH listener: %v", err)
+			}
+			return
 		}
 		go func() {
 			conn, chans, reqs, err := ssh.NewServerConn(nc, front)
@@ -56,6 +59,10 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 		nc.Reject(ssh.ConnectionFailed, "malformed direct-tcpip request")
 		return
 	}
+	if target.Host == messageHost {
+		m.forwardMessages(p, nc, target.Port)
+		return
+	}
 	st := m.live.Load()
 	p = st.principals[p.Key]
 	c, selected := st.route(p, target.Host, target.Port)
@@ -80,7 +87,7 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 		s.Host = ""
 	}
 	s.Gate = func(e connector.Event) error {
-		return m.gate(s.Context, input{Principal: p, Connection: c.name, Protocol: c.protocol, Event: &e}, c.account)
+		return m.gate(s.Context, input{stream: s, Principal: p, Connection: c.name, Protocol: c.protocol, Event: &e}, c.account)
 	}
 	if err := m.gate(s.Context, input{Principal: p, Connection: c.name, Protocol: c.protocol, TCP: &tcpLayer{Host: target.Host, Port: target.Port}}, c.account); err != nil {
 		s.Close()
@@ -94,6 +101,10 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 	}
 	go ssh.DiscardRequests(reqs)
 	s.Conn = channelConn{ch}
+	if err := m.trackStream(p.Key, s); err != nil {
+		s.Close()
+		return
+	}
 	log.Printf("%s: forwarding %s:%d", p.Name, target.Host, target.Port)
 	c.incoming.Hand(s)
 }

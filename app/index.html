@@ -45,6 +45,10 @@ const LEVELS = { off: "No access", read: "Read only", ask: "Ask", allow: "Allow"
 const WHO = { me: "Only me", team: "My team", anyone: "Anyone" };
 const SEES = { me: "only you", team: "your team", anyone: "anyone" };
 const STATE_CLASS = { allowed: "ok", approved: "ok", refused: "bad", denied: "bad", expired: "warn", pending: "warn" };
+// A new preset starts as one bearer-token API; the owner sets its origin, slots and operations.
+const NEW_PRESET = { catalog: { fields: [{ key: "token", label: "API token", secret: true, path: ["connections", "", "http", "values", "token"] }],
+  connections: { "": { http: { slots: [{ value: "token", origin: "https://api.example.com", path: "/", header: "Authorization", prefix: "Bearer " }] } } },
+  defaults: { contents: "me", strangers: true, sends: "me" } }, operations: [] };
 
 let view = null, records = [], locked = false;
 const $ = (id) => document.getElementById(id);
@@ -59,8 +63,7 @@ const actionsOf = (account) => ({ ...groupsOf(account), ...entry(account).action
   .flatMap((c) => c.mcp?.pin?.tools ?? []).map((t) => [`${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`, { title: t.title || t.name }])) });
 // An api account's actions are the permission groups of its preset's operations.
 const operationsOf = (account) => accounts()[account]?.template === "api" ? entry(account).operations ?? [] : [];
-const groupsOf = (account) => Object.fromEntries([...operationsOf(account).map((o) => [o.action, { title: o.action }]),
-  ...(accounts()[account]?.template === "api" ? [["unreviewed", { title: "Requests no operation matches" }]] : [])]);
+const groupsOf = (account) => Object.fromEntries(operationsOf(account).map((o) => [o.action, { title: o.action }]));
 // effectsOf unions the effects of every operation under an action, so a group shows its strictest obligations.
 const effectsOf = (account, k) => entry(account).effects?.[k.split(".")[0]]
   ?? [...new Set(operationsOf(account).filter((o) => o.action === k || o.action.startsWith(k + ".")).flatMap((o) => o.effects))];
@@ -108,20 +111,20 @@ const patch = run(async (body, then) => {
 });
 
 function render() {
-  const [page, arg] = route();
-  const pages = { requests, activity, agents, agent, accounts: accountList, account, add, settings };
+  const [page, ...args] = route();
+  const pages = { requests, activity, agents, agent, accounts: accountList, account, add, preset: presetPage, settings };
   let html;
   if (!sessionStorage.getItem(KEY)) html = keyPage();
   else if (locked) html = `<section><p>Your monitor restarted.</p><button class="primary" onclick="unlock()">Unlock</button></section>`;
   else if (!view) html = `<p class="empty">Loading…</p>`;
-  else html = nav(page || "requests") + (pages[page] ?? requests)(arg);
+  else html = nav(page || "requests") + (pages[page] ?? requests)(...args);
   $("page").innerHTML = html;
 }
 
 function nav(page) {
   const pending = records.filter((r) => r.state === "pending").length;
   const tabs = [["requests", `Requests${pending ? ` (${pending})` : ""}`], ["agents", "Agents"], ["accounts", "Accounts"], ["activity", "Activity"], ["settings", "Settings"]];
-  const active = { agent: "agents", account: "accounts", add: "accounts" }[page] ?? page;
+  const active = { agent: "agents", account: "accounts", add: "accounts", preset: "accounts" }[page] ?? page;
   return `<nav>${tabs.map(([p, t]) => `<a href="#${p}" class="${p === active ? "active" : ""}">${t}</a>`).join("")}</nav>`;
 }
 
@@ -142,6 +145,7 @@ const unlock = run(async () => {
 });
 
 function summary(e) {
+  if (e?.message) return `${e.message.from} → ${e.message.to}`;
   if (e?.http) return `${e.http.method} ${e.http.host}${e.http.path}`;
   if (e?.smtp) return `To ${e.smtp.to.join(", ")}${e.mail?.subject ? `: ${e.mail.subject}` : ""}`;
   if (e?.imap) return `${e.imap.command} ${e.imap.args}`;
@@ -179,7 +183,7 @@ function card(r) {
     <div class="mono">${esc(summary(r.event))}</div>
     ${r.operation ? `<details><summary class="muted">${esc(r.operation)} grant</summary><pre>${esc(JSON.stringify(r.grant))}</pre></details>` : ""}
     <details><summary class="muted">Request</summary><pre>${esc(JSON.stringify(r.event, null, 2))}</pre></details>
-    <div class="row"><span></span><span>${buttons}</span></div>
+    <div class="row">${draftLink(r) || "<span></span>"}<span>${buttons}</span></div>
   </section>`;
 }
 
@@ -203,7 +207,7 @@ function dismiss(id) {
 function activity(agent) {
   const rows = records.filter((r) => !agent || r.identity === agent).map((r) => `<tr>
     <td class="muted">${new Date(r.time).toLocaleTimeString()}</td><td>${esc(r.identity)}</td>
-    <td>${esc(r.title || summary(r.event) || r.account)}</td><td class="${STATE_CLASS[r.state]}">${r.state}</td></tr>`);
+    <td>${esc(r.title || summary(r.event) || r.account)}</td><td class="${STATE_CLASS[r.state]}">${r.state}</td><td>${draftLink(r)}</td></tr>`);
   return `<select onchange="location.hash = 'activity/' + encodeURIComponent(this.value)">${opt("", "All agents", agent ?? "")}${Object.keys(ids()).map((n) => opt(n, n, agent)).join("")}</select>
     <table>${rows.join("") || `<tr><td class="empty">Nothing yet.</td></tr>`}</table>`;
 }
@@ -233,7 +237,6 @@ function mode(access, vocabulary, effects, k) {
   const lineage = k.split(".").map((_, i, p) => p.slice(0, p.length - i).join("."));
   const has = (name) => effects.some((e) => vocabulary[e]?.[name]);
   return lineage.map((a) => access.actions?.[a]).find(Boolean)
-    ?? (k === "unreviewed" ? "off" : null)
     ?? (access.level === "allow" && has("ask") ? "ask" : has("change") ? (access.level === "read" ? "off" : access.level) : "allow");
 }
 
@@ -261,14 +264,40 @@ function agent(name) {
   const l = view.labels[name] ?? {};
   const point = (axis, values) => `<div class="row"><span>${axis}</span><span>${values.map((v) =>
     `<button class="${l[axis] === v ? "primary" : ""}" onclick="setLabel(${q(name)}, ${q({ trust: l.trust, audience: l.audience, [axis]: v })})">${v}</button>`).join(" ")}</span></div>`;
-  return `<section><h2>${esc(name)} · ${esc(labelStatus(l))}</h2>${hint}${point("trust", ["trusted", "untrusted"])}${point("audience", ["anyone", "team", "me"])}<table>${levels.join("")}</table></section>
+  return `<section><h2>${esc(name)} · ${esc(labelStatus(l))}</h2>${id.profile ? `<p class="warn">Profiling: every request runs unchecked and is recorded.</p>` : ""}${hint}${point("trust", ["trusted", "untrusted"])}${point("audience", ["anyone", "team", "me"])}<table>${levels.join("")}</table></section>
+    ${messageSettings(name, others)}
     <section><h2>Saved rules</h2>${rules.join("") || `<p class="empty">None yet. They come from “Allow this next time”.</p>`}</section>
     <section><h2>Setup</h2><label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre><label>Environment</label><pre>${esc(view.setup[name]) || "No secrets to substitute."}</pre></section>
     <section><h2>Replace key</h2><p class="muted">Use this after recreating the sandbox. The agent starts clean.</p><textarea id="pubkey" rows="2"></textarea>
       <div class="row"><span></span><button onclick="patch({ identities: { [${q(name)}]: { key: $('pubkey').value.trim() } } })">Replace key</button></div></section>
     ${others.length ? `<section><h2>Copy settings from</h2><div class="row"><select id="from">${others.map((n) => opt(n, n)).join("")}</select><button onclick="copySettings(${q(name)})">Copy</button></div></section>` : ""}
-    <button class="danger" onclick="patch({ identities: { [${q(name)}]: null } }, 'agents')">Remove agent</button>`;
+    <button class="danger" onclick="removeAgent(${q(name)})">Remove agent</button>`;
 }
+
+function messageSettings(name, peers) {
+  const messages = ids()[name].messages ?? {};
+  return `<section><h2>Agent messages</h2><p class="muted">Both agents must permit a channel. Sending and polling apply its disclosure and trust limits, even when the inbox is empty. Changing a limit or revoking a channel clears its queued messages.</p>
+    ${peers.length ? `<table><tr><th>Agent</th><th>May send to</th><th>Receive audience</th><th>Receive trust</th></tr>${peers.map((peer) => {
+      const limit = messages.receive?.[peer];
+      return `<tr><td>${esc(peer)}</td><td><input type="checkbox" ${messages.send?.includes(peer) ? "checked" : ""} onchange="setMessageSend(${q(name)}, ${q(peer)}, this.checked)"></td>
+        <td><select onchange="setMessageReceive(${q(name)}, ${q(peer)}, 'audience', this.value)">${["off", "anyone", "team", "me"].map((v) => opt(v, v, limit?.audience ?? "off")).join("")}</select></td>
+        <td><select ${limit ? "" : "disabled"} onchange="setMessageReceive(${q(name)}, ${q(peer)}, 'trust', this.value)">${["trusted", "untrusted"].map((v) => opt(v, v, limit?.trust ?? "trusted")).join("")}</select></td></tr>`;
+    }).join("")}</table>` : `<p class="empty">Pair another agent to enable messaging.</p>`}</section>`;
+}
+
+const setMessageSend = (name, peer, enabled) => {
+  const send = (ids()[name].messages?.send ?? []).filter((p) => p !== peer);
+  if (enabled) send.push(peer);
+  return patch({ identities: { [name]: { messages: { send } } } });
+};
+
+const setMessageReceive = (name, peer, axis, value) => patch({ identities: { [name]: { messages: { receive: {
+  [peer]: value === "off" ? null : { audience: "anyone", trust: "trusted", ...ids()[name].messages?.receive?.[peer], [axis]: value },
+} } } } });
+
+const removeAgent = (name) => patch({ identities: Object.fromEntries(Object.entries(ids()).map(([peer, id]) => [peer,
+  peer === name ? null : { messages: id.messages ? { send: (id.messages.send ?? []).filter((p) => p !== name), receive: { [name]: null } } : null },
+])) }, "agents");
 
 const patchAccess = (name, account, access) => patch({ identities: { [name]: { accounts: { [account]: access } } } });
 
@@ -300,8 +329,65 @@ function accountStatus(a) {
 function accountList() {
   const list = Object.entries(accounts()).map(([a, acc]) => `<div class="row"><a href="#account/${encodeURIComponent(a)}">${esc(a)}</a><span class="muted">${esc(entry(a).title)} · ${accountStatus(a)}</span></div>`);
   return `<section>${list.join("") || `<p class="empty">No accounts yet.</p>`}</section>
-    <section><h2>Add account</h2>${Object.entries(view.templates).map(([t, c]) => `<button onclick="location.hash = 'add/${t}'">${c.title}</button>`).join(" ")}</section>`;
+    <section><h2>Add account</h2>${Object.entries(view.templates).map(([t, c]) => `<button onclick="location.hash = 'add/${t}'">${c.title}</button>`).join(" ")}</section>
+    <section><h2>New preset</h2><div class="row"><input id="preset-name" placeholder="Name"><button onclick="location.hash = 'preset/' + encodeURIComponent($('preset-name').value.trim())">Create</button></div></section>`;
 }
+
+// Shipped preset files, fetched as written so an owner's copy keeps their order and environment references.
+const shippedFiles = {};
+const loadShipped = run(async (name) => {
+  shippedFiles[name] = await api("GET", "/presets/" + encodeURIComponent(name));
+  render();
+});
+// The owner's version of a preset, else the shipped file once fetched, else a new preset.
+const presetFile = (name) => view.config.presets?.[name] ?? shippedFiles[name] ?? (view.templates[name]?.preset ? undefined : { title: name, ...NEW_PRESET });
+
+// Preset files keep one field, action and operation per line, as the shipped files do.
+const EXPANDED = ["", "catalog", "catalog.fields", "catalog.actions", "operations"];
+const compact = (v) => Array.isArray(v) ? `[${v.map(compact).join(", ")}]`
+  : v && typeof v === "object" ? `{${Object.entries(v).map(([k, x]) => `${JSON.stringify(k)}: ${compact(x)}`).join(", ")}}` : JSON.stringify(v);
+function presetText(v, path = "", indent = "") {
+  if (!EXPANDED.includes(path) || v === null || typeof v !== "object") return compact(v);
+  const [open, close, items] = Array.isArray(v) ? ["[", "]", v.map((x) => presetText(x, path + ".*", indent + "  "))]
+    : ["{", "}", Object.entries(v).map(([k, x]) => `${JSON.stringify(k)}: ${presetText(x, path ? `${path}.${k}` : k, indent + "  ")}`)];
+  return items.length ? `${open}\n${indent}  ${items.join(`,\n${indent}  `)}\n${indent}${close}` : open + close;
+}
+
+// Downloads the saved version, which the monitor has checked, as presets/<name>.json.
+function downloadPreset(name) {
+  const blob = new Blob([presetText(presetFile(name)) + "\n"], { type: "application/json" });
+  Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: name + ".json" }).click();
+}
+
+// An unmatched request on a preset's account can become one of its operations.
+const draftLink = (r) => r.action == null && r.event?.http && accounts()[r.account]?.policy_options?.preset
+  ? `<a href="#preset/${encodeURIComponent(accounts()[r.account].policy_options.preset)}/${r.id}">Add operation</a>` : "";
+
+// The draft matches only this exact path; the owner turns segments into {parameters} and sets its effects and scope.
+function draftOperation(e) {
+  const h = e.http, read = ["GET", "HEAD"].includes(h.method), params = Object.keys(h.query ?? {});
+  return { id: `${h.method} ${h.path}`, action: read ? "read" : "write", effects: [read ? "read" : "write"], method: h.method, origin: h.origin, path: h.path,
+    ...(params.length && { params }), ...(h.body_kind !== "none" && { body: ["json", "form"].includes(h.body_kind) ? h.body_kind : "any" }),
+    ...(e.graphql?.fields?.length === 1 && { body: "graphql", graphql: { operation: e.graphql.kind, field: e.graphql.fields[0].name } }), scope: {} };
+}
+
+function presetPage(name, from) {
+  if (!presetFile(name)) {
+    loadShipped(name);
+    return `<p class="empty">Loading…</p>`;
+  }
+  const file = structuredClone(presetFile(name)), r = records.find((r) => r.id === from);
+  if (r?.event?.http) file.operations = [...(file.operations ?? []), draftOperation(r.event)];
+  const users = Object.entries(accounts()).filter(([, acc]) => acc.policy_options?.preset === name).map(([a]) => a);
+  return `<section><h2>Preset ${esc(name)}</h2><p class="muted">Changes apply to every account using it: ${esc(users.join(", ") || "none yet")}.</p>
+    <textarea id="preset" rows="30">${esc(presetText(file))}</textarea>
+    <div class="row">${view.config.presets?.[name] ? `<button class="danger" onclick="patch({ presets: { [${q(name)}]: null } })">Remove your version</button>` : "<span></span>"}
+      <span><button onclick="downloadPreset(${q(name)})">Download file</button> <button class="primary" onclick="savePreset(${q(name)})">Save</button></span></div></section>`;
+}
+
+const savePreset = run(async (name) => {
+  await patch({ presets: { [name]: changes(view.config.presets?.[name], JSON.parse($("preset").value)) } }, "preset/" + encodeURIComponent(name));
+});
 
 function questions(a) {
   const pick = (id, value) => `<select id="${id}">${AUDIENCES.map((x) => opt(x, WHO[x], value)).join("")}</select>`;
@@ -404,7 +490,8 @@ function account(a) {
       ${plain(c).map((f) => `<label>${esc(f.label)}</label>${input(f, fieldValue(acc, f))}`).join("")}
       ${credentialFields(a).map((f) => credentialEditor(a, f)).join("")}
       <div class="row"><span></span><button onclick="saveAccount(${q(a)})">Save</button></div></section>
-    <section><h2>Actions</h2>${tree(actionsOf(a)).map(([k, x, d]) => `<div class="node" style="--depth: ${d}">${esc(x.title)} <span class="muted">${esc(effectsOf(a, k).join(", "))}</span></div>`).join("")}<p class="muted">Used by ${esc(users.join(", ") || "no agents")}</p></section>
+    <section><h2>Actions</h2>${tree(actionsOf(a)).map(([k, x, d]) => `<div class="node" style="--depth: ${d}">${esc(x.title)} <span class="muted">${esc(effectsOf(a, k).join(", "))}</span></div>`).join("")}<p class="muted">Used by ${esc(users.join(", ") || "no agents")}</p>
+      ${acc.template === "api" ? `<a href="#preset/${encodeURIComponent(acc.policy_options.preset)}">Edit operations</a>` : ""}</section>
     <div id="connector-status">${mcpKeys(a).map((k) => review(a, k, c)).join("")}</div>
     <section><details><summary class="muted">Advanced → Custom rules</summary><textarea id="policy" rows="12">${esc(view.config.policies?.[a])}</textarea>
       <div class="row"><span></span><button onclick="patch({ policies: { [${q(a)}]: $('policy').value.trim() || null } })">Save rules</button></div></details></section>

@@ -19,6 +19,7 @@ import (
 	"time"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
+	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/open-policy-agent/opa/v1/storage/inmem"
 	"github.com/tinfoilsh/monitor/connector"
@@ -27,6 +28,7 @@ import (
 const (
 	templateDir   = "templates"
 	decisionQuery = "data.monitor.decision"
+	messageQuery  = "data.monitor.messages.decision"
 	catalogQuery  = `[{t: object.union(c, {"effects": object.get(data.templates, [t, "effects"], {}), "vocabulary": data.monitor.vocabulary}) | c := data.templates[t].catalog}, data.monitor.vocabulary]`
 )
 
@@ -34,18 +36,11 @@ const (
 var templates embed.FS
 
 var (
-	cleanLabel = label{Trust: "trusted", Audience: "anyone"}
 	errExpired = errors.New("waiting for the owner's approval in the monitor timed out")
 	errDenied  = errors.New("the owner denied this request")
 	errChanged = errors.New("the request needs more than the owner approved")
 	errNoAgent = errors.New("this agent's identity was removed")
 )
-
-type label struct {
-	Trust    string            `json:"trust"`
-	Audience string            `json:"audience"`
-	Because  map[string]string `json:"because,omitempty"`
-}
 
 type tcpLayer struct {
 	Host string `json:"host"`
@@ -59,6 +54,7 @@ type namedAccount struct {
 
 // input carries either the tunnel's tcp layer or a connector's layers, never both.
 type input struct {
+	stream           *connector.Stream
 	Principal        principal       `json:"principal"`
 	Connection       string          `json:"connection"`
 	ConnectionConfig json.RawMessage `json:"connection_config,omitempty"`
@@ -100,43 +96,39 @@ func templateModules() (opts []func(*rego.Rego)) {
 	return opts
 }
 
-// catalog is what the owner's app needs to know of each template and preset. A preset sets up an api account.
-var catalog = sync.OnceValues(func() (any, error) {
+var templateCatalog = sync.OnceValues(func() ([]any, error) {
 	rs, err := rego.New(append(templateModules(), rego.Query(catalogQuery))...).Eval(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	result := rs[0].Expressions[0].Value.([]any)
-	entries := result[0].(map[string]any)
-	builtin, err := presets()
+	return rs[0].Expressions[0].Value.([]any), nil
+})
+
+// catalog is what the owner's app needs to know of each template and preset. A preset sets up an api account.
+func catalog(all map[string]preset) (any, error) {
+	result, err := templateCatalog()
 	if err != nil {
 		return nil, err
 	}
-	for name, p := range builtin {
-		if entries[name] != nil {
-			return nil, fmt.Errorf("preset %s has a template's name", name)
-		}
+	entries := maps.Clone(result[0].(map[string]any))
+	for name, p := range all {
 		entry := maps.Clone(p.catalog)
 		entry["title"], entry["preset"], entry["operations"] = p.record["title"], name, p.record["operations"]
 		entry["vocabulary"] = result[1]
 		entries[name] = entry
 	}
 	return entries, nil
-})
+}
 
-// prepareDecision gives policy the preset records and data.definitions.program, a digest of
-// every template and owner policy, which saved approvals name.
-func prepareDecision(ctx context.Context, cfg *config) (rego.PreparedEvalQuery, error) {
+// preparePolicies compiles the modules and builds their data once for both queries.
+// Saved approvals name data.definitions.program, the digest of all policy sources.
+func preparePolicies(ctx context.Context, cfg *config) (connectors, messages rego.PreparedEvalQuery, err error) {
 	data := maps.Clone(cfg.Data)
 	if data == nil {
 		data = map[string]any{}
 	}
-	builtin, err := presets()
-	if err != nil {
-		return rego.PreparedEvalQuery{}, err
-	}
 	records := map[string]any{}
-	for name, p := range builtin {
+	for name, p := range cfg.resolved {
 		records[name] = p.record
 	}
 	data["presets"] = records
@@ -150,20 +142,30 @@ func prepareDecision(ctx context.Context, cfg *config) (rego.PreparedEvalQuery, 
 		fmt.Fprintf(h, "%q%q", name, cfg.Policies[name])
 	}
 	data["definitions"] = map[string]any{"program": hex.EncodeToString(h.Sum(nil))}
-	opts := append(templateModules(), rego.Query(decisionQuery), rego.Store(inmem.NewFromObject(data)))
+	compiler := ast.NewCompiler()
+	store := inmem.NewFromObject(data)
+	opts := append(templateModules(), rego.Compiler(compiler), rego.Query(decisionQuery), rego.Store(store))
 	for name, src := range cfg.Policies {
 		opts = append(opts, rego.Module(path.Join("policies", name), src))
 	}
-	return rego.New(opts...).PrepareForEval(ctx)
+	if connectors, err = rego.New(opts...).PrepareForEval(ctx); err != nil {
+		return connectors, messages, err
+	}
+	messages, err = rego.New(rego.Compiler(compiler), rego.Store(store), rego.Query(messageQuery)).PrepareForEval(ctx)
+	return connectors, messages, err
 }
 
 func (st *state) decide(ctx context.Context, in input) (*decision, error) {
-	rs, err := st.decision.Eval(ctx, rego.EvalInput(in))
+	return evaluateDecision(ctx, st.decision, in)
+}
+
+func evaluateDecision(ctx context.Context, query rego.PreparedEvalQuery, in any) (*decision, error) {
+	rs, err := query.Eval(ctx, rego.EvalInput(in))
 	if err != nil {
 		return nil, err
 	}
 	if len(rs) == 0 {
-		return nil, fmt.Errorf("%s is undefined", decisionQuery)
+		return nil, errors.New("policy decision is undefined")
 	}
 	raw, err := json.Marshal(rs[0].Expressions[0].Value)
 	if err != nil {
@@ -175,6 +177,9 @@ func (st *state) decide(ctx context.Context, in input) (*decision, error) {
 
 // evaluate refreshes the input from current settings. The caller must hold m.flow.
 func (m *monitor) evaluate(ctx context.Context, in *input, account string) (*decision, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	st := m.live.Load()
 	p, ok := st.principals[in.Principal.Key]
 	if !ok {
@@ -199,18 +204,13 @@ func (m *monitor) evaluate(ctx context.Context, in *input, account string) (*dec
 	return st.decide(ctx, *in)
 }
 
-func (m *monitor) label(fingerprint string) label {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	return m.labelLocked(fingerprint)
-}
-
-// labelLocked requires mu.
-func (m *monitor) labelLocked(fingerprint string) label {
-	if l, ok := m.doc.Labels[fingerprint]; ok {
-		return l
-	}
-	return cleanLabel
+// A corpus entry is one request to a preset's account and the operation it reached, for replay against later presets.
+type corpusEntry struct {
+	Preset    string                  `json:"preset"`
+	Origin    string                  `json:"origin,omitempty"`
+	Operation string                  `json:"operation"`
+	HTTP      *connector.HTTPLayer    `json:"http"`
+	GraphQL   *connector.GraphQLLayer `json:"graphql,omitempty"`
 }
 
 // gate admits, refuses or holds one request; the flow lock is released only while it waits for the owner.
@@ -225,6 +225,11 @@ func (m *monitor) gate(ctx context.Context, in input, account string) error {
 	if in.TCP != nil {
 		return refusal(d.Deny)
 	}
+	if o := in.Account.PolicyOptions; m.corpus != nil && in.Event != nil && in.HTTP != nil && o.Preset != "" {
+		if err := m.corpus.Encode(corpusEntry{o.Preset, o.Origin, d.Operation, in.HTTP, in.GraphQL}); err != nil {
+			log.Printf("corpus: %v", err)
+		}
+	}
 	r := &record{
 		ID:       rand.Text(),
 		State:    stateAllowed,
@@ -235,15 +240,20 @@ func (m *monitor) gate(ctx context.Context, in input, account string) error {
 		decision: d,
 	}
 	switch {
+	case in.Principal.Profile:
+		r.Event = &auditEvent{Event: in.Event}
+		m.records.add(r)
+		return nil
+
 	case len(d.Deny) > 0:
 		r.State = stateRefused
-		r.Event = in.Event
+		r.Event = &auditEvent{Event: in.Event}
 		m.records.add(r)
 		return refusal(d.Deny)
 
 	case len(d.Gaps) > 0:
 		r.State = statePending
-		r.Event = in.Event
+		r.Event = &auditEvent{Event: in.Event}
 		r.Expires = r.Time.Add(approvalWait)
 		r.answered = make(chan struct{})
 		m.records.add(r)
@@ -263,10 +273,7 @@ func (m *monitor) gate(ctx context.Context, in input, account string) error {
 		m.records.add(r)
 	}
 
-	if d.Next.Trust != in.Label.Trust || d.Next.Audience != in.Label.Audience {
-		return m.relabel(in.Principal.Key, d.Next)
-	}
-	return nil
+	return m.relabel(ctx, in.Principal.Key, d.Next, in.stream)
 }
 
 // recheck evaluates an approved request again, since the label or the owner's settings may have moved.
@@ -302,16 +309,4 @@ func refusal(deny []string) error {
 	reason := strings.Join(deny, "; ")
 	log.Printf("denied: %s", reason)
 	return errors.New(reason)
-}
-
-// relabel lowers a label in memory before persisting, so a failed write still leaves it lowered.
-func (m *monitor) relabel(fingerprint string, l label) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	if m.doc.Labels == nil {
-		m.doc.Labels = map[string]label{}
-	}
-	m.doc.Labels[fingerprint] = l
-	m.doc.Generation++
-	return m.persist(context.Background(), m.doc, m.owner)
 }
