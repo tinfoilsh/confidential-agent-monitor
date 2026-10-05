@@ -1,23 +1,47 @@
 package templates.api
 
-# An account names one record, in data.services or a preset in data.presets, validated when the configuration loads.
+# An account names a preset in data.presets, whose operations are checked by malformed when the monitor starts.
 # Only its operations are allowed, and each request must match exactly one of them.
-
-catalog := {
-	"title": "API service",
-	"fields": [
-		{"key": "service", "label": "Service record in data.services", "path": ["policy_options", "service"]},
-		{"key": "connections", "label": "Connections", "json": true, "path": ["connections"]},
-	],
-	"defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
-	"actions": {},
-}
 
 options := input.account.policy_options
 
-service := data.services[options.service] if not options.preset
+service := data.presets[options.preset]
 
-service := data.presets[options.preset] if not options.service
+# A record is data, so anything this template would not read is refused rather than ignored.
+operation_keys := {"id", "action", "effects", "method", "origin", "path", "query", "headers", "fields", "params", "open_params", "body", "graphql", "scope", "grant"}
+
+well_formed(o) if {
+	every key, _ in o {
+		key in operation_keys
+	}
+	is_array(o.effects)
+	every e in o.effects {
+		data.monitor.vocabulary[e]
+	}
+	is_object(o.scope)
+	every _, spec in o.scope {
+		is_string(spec.from)
+	}
+	is_array(object.get(o, "grant", []))
+	every k in object.get(o, "grant", []) {
+		o.scope[k]
+	}
+	is_array(object.get(o, "params", []))
+	every m in ["query", "headers", "fields"] {
+		is_object(object.get(o, m, {}))
+	}
+	graphql_body(o)
+}
+
+graphql_body(o) if not "graphql" in object.keys(o)
+
+graphql_body(o) if o.body == "graphql"
+
+malformed contains [name, object.get(o, "id", i)] if {
+	some name, s in data.presets
+	some i, o in s.operations
+	not well_formed(o)
+}
 
 matches := [o | some o in service.operations; matched(o)]
 
@@ -67,6 +91,11 @@ deny contains "the request matches no reviewed operation" if {
 	not input.access.actions.unreviewed
 }
 
+deny contains "the service record is malformed" if {
+	some o in service.operations
+	not well_formed(o)
+}
+
 deny contains "the request matches more than one reviewed operation" if count(matches) > 1
 
 deny contains sprintf("the request has no %s of the expected type", [name]) if {
@@ -82,7 +111,7 @@ matched(o) if {
 		condition(input.http.query, key, value)
 	}
 	every key, value in object.get(o, "headers", {}) {
-		condition(input.http.headers, key, value)
+		condition({lower(k): v | some k, v in input.http.headers}, lower(key), value)
 	}
 	every key, value in object.get(o, "fields", {}) {
 		field(o.body, key, value)

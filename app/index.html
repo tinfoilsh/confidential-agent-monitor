@@ -57,9 +57,8 @@ const entry = (account) => view.templates[accounts()[account]?.policy_options?.p
 // Each pinned MCP tool is an action under read or use, by the hint the owner approved with the pin.
 const actionsOf = (account) => ({ ...groupsOf(account), ...entry(account).actions, ...Object.fromEntries(Object.values(accounts()[account]?.connections ?? {})
   .flatMap((c) => c.mcp?.pin?.tools ?? []).map((t) => [`${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`, { title: t.title || t.name }])) });
-// An api account's actions are the permission groups of its service record's or preset's operations.
-const operationsOf = (account) => accounts()[account]?.template === "api"
-  ? view.config.data?.services?.[accounts()[account]?.policy_options?.service]?.operations ?? entry(account).operations ?? [] : [];
+// An api account's actions are the permission groups of its preset's operations.
+const operationsOf = (account) => accounts()[account]?.template === "api" ? entry(account).operations ?? [] : [];
 const groupsOf = (account) => Object.fromEntries([...operationsOf(account).map((o) => [o.action, { title: o.action }]),
   ...(accounts()[account]?.template === "api" ? [["unreviewed", { title: "Requests no operation matches" }]] : [])]);
 // effectsOf unions the effects of every operation under an action, so a group shows its strictest obligations.

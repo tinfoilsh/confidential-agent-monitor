@@ -27,7 +27,7 @@ import (
 const (
 	templateDir   = "templates"
 	decisionQuery = "data.monitor.decision"
-	catalogQuery  = `{t: object.union(c, {"effects": object.get(data.templates, [t, "effects"], {}), "vocabulary": data.monitor.vocabulary}) | c := data.templates[t].catalog}`
+	catalogQuery  = `[{t: object.union(c, {"effects": object.get(data.templates, [t, "effects"], {}), "vocabulary": data.monitor.vocabulary}) | c := data.templates[t].catalog}, data.monitor.vocabulary]`
 )
 
 //go:embed templates/*.rego
@@ -106,7 +106,8 @@ var catalog = sync.OnceValues(func() (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	entries := rs[0].Expressions[0].Value.(map[string]any)
+	result := rs[0].Expressions[0].Value.([]any)
+	entries := result[0].(map[string]any)
 	builtin, err := presets()
 	if err != nil {
 		return nil, err
@@ -116,8 +117,8 @@ var catalog = sync.OnceValues(func() (any, error) {
 			return nil, fmt.Errorf("preset %s has a template's name", name)
 		}
 		entry := maps.Clone(p.catalog)
-		entry["title"], entry["preset"], entry["operations"] = p.Title, name, p.Operations
-		entry["vocabulary"] = entries["api"].(map[string]any)["vocabulary"]
+		entry["title"], entry["preset"], entry["operations"] = p.record["title"], name, p.record["operations"]
+		entry["vocabulary"] = result[1]
 		entries[name] = entry
 	}
 	return entries, nil

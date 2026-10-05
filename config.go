@@ -41,7 +41,6 @@ type rule struct {
 type policyOptions struct {
 	Private []string `json:"private,omitempty"`
 	Address string   `json:"address,omitempty"`
-	Service string   `json:"service,omitempty"`
 	Preset  string   `json:"preset,omitempty"`
 	Origin  string   `json:"origin,omitempty"`
 }
@@ -74,18 +73,14 @@ func parse(raw []byte) (*config, map[string]*connection, error) {
 			return nil, nil, fmt.Errorf("data.%s is reserved for the monitor", reserved)
 		}
 	}
-	services, err := parseServices(cfg.Data["services"])
+	builtin, err := presets()
 	if err != nil {
 		return nil, nil, err
 	}
 	connections := map[string]*connection{}
 	for acct, a := range cfg.Accounts {
-		if a.Template == "api" {
-			if _, err := apiService(services, a.PolicyOptions); err != nil {
-				return nil, nil, fmt.Errorf("account %s %w", acct, err)
-			}
-		} else if a.PolicyOptions.Preset != "" || a.PolicyOptions.Origin != "" {
-			return nil, nil, fmt.Errorf("account %s: only api accounts name a preset or origin", acct)
+		if _, ok := builtin[a.PolicyOptions.Preset]; (a.Template == "api") != ok || a.Template != "api" && a.PolicyOptions.Origin != "" {
+			return nil, nil, fmt.Errorf("account %s: api accounts name a preset, and only they name a preset or origin", acct)
 		}
 		if _, err := fs.Stat(templates, templateDir+"/"+a.Template+".rego"); err != nil {
 			return nil, nil, fmt.Errorf("account %s has unknown template %s", acct, a.Template)
