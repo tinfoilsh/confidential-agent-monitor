@@ -144,6 +144,7 @@ type Event struct {
 	Mail     *MailLayer     `json:"mail,omitempty"`
 	IMAP     *IMAPLayer     `json:"imap,omitempty"`
 	MCP      *MCPLayer      `json:"mcp,omitempty"`
+	Browser  *BrowserLayer  `json:"browser,omitempty"`
 }
 
 type ArgvLayer struct {
@@ -243,6 +244,15 @@ type MCPLayer struct {
 	Tool      string          `json:"tool"`
 	Arguments json.RawMessage `json:"arguments"`
 	ReadOnly  bool            `json:"read_only"`
+}
+
+// BrowserLayer names the page a command acts on: the destination of navigate, otherwise the current page.
+type BrowserLayer struct {
+	Command string   `json:"command"`
+	URL     string   `json:"url"`
+	Host    string   `json:"host"`
+	Text    string   `json:"text,omitempty"`
+	Secrets []string `json:"secrets,omitempty"`
 }
 
 type PostgresLayer struct {

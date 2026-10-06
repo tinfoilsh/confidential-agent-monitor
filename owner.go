@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"iter"
 	"maps"
 	"net/http"
 	"slices"
@@ -73,8 +74,8 @@ func (m *monitor) view(s *state, err error) (any, error) {
 func setup(p principal, connections map[string]*connection) string {
 	holders := map[string][]string{}
 	for _, name := range slices.Sorted(maps.Keys(connections)) {
-		if h, ok := connections[name].connector.(*web.HTTP); ok && p.reaches(connections[name].account) {
-			for secret := range h.Values {
+		if h, ok := connections[name].connector.(interface{ Names() iter.Seq[string] }); ok && p.reaches(connections[name].account) {
+			for secret := range h.Names() {
 				holders[secret] = append(holders[secret], name)
 			}
 		}

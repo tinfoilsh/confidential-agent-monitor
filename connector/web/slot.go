@@ -3,6 +3,8 @@ package web
 import (
 	"errors"
 	"fmt"
+	"iter"
+	"maps"
 	"net/http"
 	"net/textproto"
 	"net/url"
@@ -13,6 +15,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 
+	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
 )
 
@@ -22,7 +25,51 @@ var reservedHeaders = []string{
 	"Te", "Trailer", "Upgrade", "Expect", "Proxy-Authorization", "Proxy-Connection",
 }
 
-// A Slot is the one header, query key, Basic field, path segment or SigV4 signature where a value's placeholder may appear.
+// FormTypes are the input types a browser may fill with each kind of form value.
+var FormTypes = map[string][]string{"username": {"", "text", "email", "tel"}, "password": {"password"}, "otp": {"", "text", "tel", "number"}}
+
+// Credentials are a connection's values and the slots where each may be placed.
+type Credentials struct {
+	Values map[string]*credential.Value `json:"values"`
+	Slots  []Slot                       `json:"slots"`
+}
+
+func (c *Credentials) Fields() (fields []connector.Field) {
+	for name, value := range c.Values {
+		fields = append(fields, connector.Field{Path: []string{"values", name}, Value: value, Redact: true})
+	}
+	return
+}
+
+func (c *Credentials) Names() iter.Seq[string] { return maps.Keys(c.Values) }
+
+// Validate checks every slot; a browser places values only in form fields, and HTTP never does.
+func (c *Credentials) Validate(form bool) error {
+	for i := range c.Slots {
+		if err := c.Slots[i].validate(); err != nil {
+			return err
+		}
+		if (c.Slots[i].Form != "") != form {
+			return fmt.Errorf("slot for %s does not fit this kind of connection", c.Slots[i].Value)
+		}
+	}
+	return nil
+}
+
+// Form returns the form slot whose placeholder is the whole text, for a field on origin; text without a placeholder needs none.
+func (c *Credentials) Form(connection, origin, text string) (*Slot, error) {
+	if !strings.Contains(text, placeholderPrefix) {
+		return nil, nil
+	}
+	for i := range c.Slots {
+		if s := &c.Slots[i]; s.Form != "" && s.Origin == origin && text == Placeholder(connection, s.Value) {
+			return s, nil
+		}
+	}
+	return nil, errors.New("a secret placeholder is outside this connection's declared slots")
+}
+
+// A Slot is the one header, query key, Basic field, path segment, SigV4 signature or form field where a value's placeholder may appear.
 type Slot struct {
 	Value   string `json:"value"`
 	Origin  string `json:"origin"`
@@ -33,6 +80,7 @@ type Slot struct {
 	Basic   string `json:"basic,omitempty"`
 	Segment int    `json:"segment,omitempty"`
 	SigV4   *SigV4 `json:"sigv4,omitempty"`
+	Form    string `json:"form,omitempty"`
 	host    string
 	port    uint32
 }
@@ -57,13 +105,16 @@ func (s *Slot) validate() error {
 		return errors.New("a slot needs a value and an absolute path")
 	}
 	places := 0
-	for _, set := range []bool{s.Header != "", s.Query != "", s.Basic != "", s.Segment > 0, s.SigV4 != nil} {
+	for _, set := range []bool{s.Header != "", s.Query != "", s.Basic != "", s.Segment > 0, s.SigV4 != nil, s.Form != ""} {
 		if set {
 			places++
 		}
 	}
 	if places != 1 || (s.Basic != "" && s.Basic != "user" && s.Basic != "password") || (s.Prefix != "" && s.Header == "" && s.Segment == 0) {
-		return fmt.Errorf("slot for %s must place it in one header, query key, basic field, path segment or SigV4 signature", s.Value)
+		return fmt.Errorf("slot for %s must place it in one header, query key, basic field, path segment, SigV4 signature or form field", s.Value)
+	}
+	if _, ok := FormTypes[s.Form]; s.Form != "" && (!ok || s.Path != "/") {
+		return fmt.Errorf("form slot for %s must fill a username, password or otp field and match the whole origin", s.Value)
 	}
 	if s.SigV4 != nil && (s.SigV4.Service == "" || s.SigV4.Region == "" || s.SigV4.Secret == "") {
 		return errors.New("a SigV4 slot needs a service, a region and a secret value")

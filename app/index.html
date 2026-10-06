@@ -252,7 +252,7 @@ function reasons(r) {
 function grantText(operation, grant, scope) {
   const fields = Object.keys(grant ?? {}), broad = Object.keys(scope ?? {}).filter((k) => !fields.includes(k));
   return `Allow ${operation} ${fields.length ? "for the same " + fields.join(", ") : "for any request"}`
-    + (broad.length ? `, with any ${broad.join(", ")}` : "");
+    + (fields.length && broad.length ? `, with any ${broad.join(", ")}` : "");
 }
 const saveText = (r) => grantText(r.operation, r.grant, r.scope);
 const saveButton = (r, text, primary) => r.action == null || !r.operation ? ""

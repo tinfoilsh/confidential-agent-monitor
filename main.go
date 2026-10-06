@@ -13,6 +13,7 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/browser"
 	"github.com/tinfoilsh/monitor/connector/email"
 	"github.com/tinfoilsh/monitor/connector/mcp"
 	"github.com/tinfoilsh/monitor/connector/postgres"
@@ -48,12 +49,16 @@ func main() {
 	object := flag.String("object", "monitor.enc", "key of the encrypted state")
 	corpus := flag.String("corpus", "", "with a file:// bucket, append each request to a preset's account here")
 	drafts := flag.String("drafts", "", "with a file:// bucket, also load the draft presets in this directory")
+	extension := flag.String("extension", "", "the english-only extension directory; browser connections need it")
 	flag.Parse()
 	if *drafts != "" {
 		if !strings.HasPrefix(*bucket, "file://") {
 			log.Fatal("-drafts loads unreviewed presets, so it needs a file:// bucket")
 		}
 		draftFiles = os.DirFS(*drafts)
+	}
+	if *extension != "" {
+		connectorKinds["browser"] = func() connector.Connector { return &browser.Browser{Extension: *extension} }
 	}
 	if err := run(*listen, *api, *bucket, *object, *corpus); err != nil {
 		log.Fatal(err)

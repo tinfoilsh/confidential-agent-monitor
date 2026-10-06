@@ -6,6 +6,8 @@ require (
 	code.dny.dev/ssrf v0.3.0
 	github.com/aws/aws-sdk-go-v2 v1.41.9
 	github.com/aws/smithy-go v1.26.0
+	github.com/chromedp/chromedp v0.20.1
+	github.com/elazarl/goproxy v1.9.2
 	github.com/emersion/go-sasl v0.0.0-20241020182733-b788ff22d5a6
 	github.com/emersion/go-smtp v0.25.0
 	github.com/evanphx/json-patch/v5 v5.9.11
@@ -42,7 +44,9 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.36.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.42.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
+	github.com/chromedp/cdproto v0.157.8 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.1 // indirect
+	github.com/go-json-experiment/json v0.0.0-20260213210345-44df1a37e875 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect

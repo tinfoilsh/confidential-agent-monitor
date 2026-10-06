@@ -23,7 +23,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/connector/credential"
 )
 
 const (
@@ -44,9 +43,8 @@ var (
 
 // HTTP forwards unauthenticated requests for Hosts on ports 80 and 443, and authenticated ones for slot origins.
 type HTTP struct {
-	Values map[string]*credential.Value `json:"values"`
-	Hosts  []string                     `json:"hosts"`
-	Slots  []Slot                       `json:"slots"`
+	Credentials
+	Hosts []string `json:"hosts"`
 }
 
 func (h *HTTP) UnmarshalJSON(raw []byte) error {
@@ -54,19 +52,7 @@ func (h *HTTP) UnmarshalJSON(raw []byte) error {
 	if err := connector.Decode(raw, (*plain)(h)); err != nil {
 		return err
 	}
-	for i := range h.Slots {
-		if err := h.Slots[i].validate(); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (h *HTTP) Fields() (fields []connector.Field) {
-	for name, value := range h.Values {
-		fields = append(fields, connector.Field{Path: []string{"values", name}, Value: value, Redact: true})
-	}
-	return
+	return h.Validate(false)
 }
 
 func (h *HTTP) Run(ctx context.Context, e *connector.Env, in *connector.Listener, ready func()) error {

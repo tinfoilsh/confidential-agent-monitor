@@ -8,7 +8,7 @@ options := input.account.policy_options
 service := data.presets[options.preset]
 
 # A record is data, so anything this template would not read is refused rather than ignored.
-operation_keys := {"id", "action", "effects", "method", "origin", "path", "query", "headers", "fields", "params", "open_params", "body", "graphql", "scope", "grant"}
+operation_keys := {"id", "action", "effects", "method", "origin", "path", "query", "headers", "fields", "params", "open_params", "body", "graphql", "scope", "grant", "sends"}
 
 well_formed(o) if {
 	every key, _ in o {
@@ -30,6 +30,7 @@ well_formed(o) if {
 	every m in ["query", "headers", "fields"] {
 		is_object(object.get(o, m, {}))
 	}
+	data.monitor.labels.audiences[object.get(o, "sends", "me")]
 	graphql_body(o)
 }
 
@@ -62,7 +63,7 @@ scope := {name: v |
 
 # Every change needs trust. A saved approval binds the listed grant fields, or every scope field,
 # and the exact record defines the operation.
-operation := {
+operation := object.union(object.filter(record, {"sends"}), {
 	"id": record.id,
 	"action": record.action,
 	"effects": record.effects,
@@ -70,7 +71,7 @@ operation := {
 	"grant": {k: scope[k] | some k in object.get(record, "grant", object.keys(record.scope))},
 	"trust": count({e | some e in record.effects; e != "read"}) > 0,
 	"definition": record,
-}
+})
 
 title := sprintf("%s: %s", [service.title, record.id])
 
