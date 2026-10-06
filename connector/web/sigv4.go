@@ -21,14 +21,15 @@ const (
 	sigV4Credential    = "AWS4-HMAC-SHA256 Credential="
 )
 
-// S3 signs for service s3 with the slot's value as access key ID; Secret and Session name the other values.
-type S3 struct {
+// SigV4 signs for Service with the slot's value as access key ID; Secret and Session name the other values.
+type SigV4 struct {
+	Service string `json:"service"`
 	Region  string `json:"region"`
 	Secret  string `json:"secret"`
 	Session string `json:"session,omitempty"`
 }
 
-var s3Signer = v4.NewSigner(func(o *v4.SignerOptions) { o.DisableURIPathEscaping = true })
+var sigV4Signer = v4.NewSigner()
 
 // streaming refuses aws-chunked uploads, whose framing a whole-body hash cannot describe.
 func streaming(header http.Header) error {
@@ -50,8 +51,8 @@ func presigned(query url.Values) bool {
 	return false
 }
 
-// signS3 signs the request exactly as it will be sent, hashing a body of at most maxSignedBodyBytes.
-func signS3(r *http.Request, keys aws.Credentials, region string, now time.Time) error {
+// sign signs the request exactly as it will be sent, hashing a body of at most maxSignedBodyBytes.
+func sign(r *http.Request, keys aws.Credentials, s *SigV4, now time.Time) error {
 	var body []byte
 	if r.Body != nil {
 		var err error
@@ -61,7 +62,7 @@ func signS3(r *http.Request, keys aws.Credentials, region string, now time.Time)
 			return err
 		}
 		if len(body) > maxSignedBodyBytes {
-			return errors.New("the S3 request body is too large to sign")
+			return errors.New("the request body is too large to sign")
 		}
 		r.Body = io.NopCloser(bytes.NewReader(body))
 	}
@@ -71,7 +72,9 @@ func signS3(r *http.Request, keys aws.Credentials, region string, now time.Time)
 	}
 	sum := sha256.Sum256(body)
 	hash := hex.EncodeToString(sum[:])
-	r.Header.Set("X-Amz-Content-Sha256", hash)
+	if s.Service == "s3" {
+		r.Header.Set("X-Amz-Content-Sha256", hash)
+	}
 	r.URL.RawPath = httpbinding.EscapePath(r.URL.Path, false)
-	return s3Signer.SignHTTP(r.Context(), keys, r, hash, "s3", region, now)
+	return sigV4Signer.SignHTTP(r.Context(), keys, r, hash, s.Service, s.Region, now, func(o *v4.SignerOptions) { o.DisableURIPathEscaping = s.Service == "s3" })
 }

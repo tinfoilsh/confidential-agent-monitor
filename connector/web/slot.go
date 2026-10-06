@@ -22,7 +22,7 @@ var reservedHeaders = []string{
 	"Te", "Trailer", "Upgrade", "Expect", "Proxy-Authorization", "Proxy-Connection",
 }
 
-// A Slot is the one header, query key, Basic field, path segment or S3 signature where a value's placeholder may appear.
+// A Slot is the one header, query key, Basic field, path segment or SigV4 signature where a value's placeholder may appear.
 type Slot struct {
 	Value   string `json:"value"`
 	Origin  string `json:"origin"`
@@ -32,7 +32,7 @@ type Slot struct {
 	Query   string `json:"query,omitempty"`
 	Basic   string `json:"basic,omitempty"`
 	Segment int    `json:"segment,omitempty"`
-	S3      *S3    `json:"s3,omitempty"`
+	SigV4   *SigV4 `json:"sigv4,omitempty"`
 	host    string
 	port    uint32
 }
@@ -57,16 +57,16 @@ func (s *Slot) validate() error {
 		return errors.New("a slot needs a value and an absolute path")
 	}
 	places := 0
-	for _, set := range []bool{s.Header != "", s.Query != "", s.Basic != "", s.Segment > 0, s.S3 != nil} {
+	for _, set := range []bool{s.Header != "", s.Query != "", s.Basic != "", s.Segment > 0, s.SigV4 != nil} {
 		if set {
 			places++
 		}
 	}
 	if places != 1 || (s.Basic != "" && s.Basic != "user" && s.Basic != "password") || (s.Prefix != "" && s.Header == "" && s.Segment == 0) {
-		return fmt.Errorf("slot for %s must place it in one header, query key, basic field, path segment or S3 signature", s.Value)
+		return fmt.Errorf("slot for %s must place it in one header, query key, basic field, path segment or SigV4 signature", s.Value)
 	}
-	if s.S3 != nil && (s.S3.Region == "" || s.S3.Secret == "") {
-		return errors.New("an S3 slot needs a region and a secret value")
+	if s.SigV4 != nil && (s.SigV4.Service == "" || s.SigV4.Region == "" || s.SigV4.Secret == "") {
+		return errors.New("a SigV4 slot needs a service, a region and a secret value")
 	}
 	if s.Header != "" {
 		s.Header = textproto.CanonicalMIMEHeaderKey(s.Header)
@@ -101,7 +101,7 @@ func (h *HTTP) bind(r *http.Request, name, origin string) ([]*Slot, error) {
 		if s.Origin != origin || !under(r.URL.Path, s.Path) {
 			continue
 		}
-		signed = signed || s.S3 != nil
+		signed = signed || s.SigV4 != nil
 		want := s.Prefix + Placeholder(name, s.Value)
 		switch {
 		case s.Header != "" && slices.Equal(header.Values(s.Header), []string{want}):
@@ -114,7 +114,7 @@ func (h *HTTP) bind(r *http.Request, name, origin string) ([]*Slot, error) {
 			user = ""
 		case basic && s.Basic == "password" && pass == want:
 			pass = ""
-		case s.S3 != nil && len(header.Values(authorization)) == 1 && strings.HasPrefix(header.Get(authorization), sigV4Credential+want+"/"):
+		case s.SigV4 != nil && len(header.Values(authorization)) == 1 && strings.HasPrefix(header.Get(authorization), sigV4Credential+want+"/"):
 			if err := streaming(header); err != nil {
 				return nil, err
 			}
@@ -126,7 +126,7 @@ func (h *HTTP) bind(r *http.Request, name, origin string) ([]*Slot, error) {
 		used = append(used, s)
 	}
 	if signed && (header.Get(authorization) != "" || presigned(query)) {
-		return nil, errors.New("this S3 origin accepts only the monitor's signature")
+		return nil, errors.New("this SigV4 origin accepts only the monitor's signature")
 	}
 	texts := append(segments, user, pass)
 	for _, values := range []map[string][]string{query, header} {
@@ -193,18 +193,18 @@ func (t substitution) RoundTrip(r *http.Request) (*http.Response, error) {
 			r.SetBasicAuth(user, pass)
 		default:
 			signer, keys.AccessKeyID = s, secret
-			if keys.SecretAccessKey, err = t.resolve(r, s.S3.Secret); err != nil {
+			if keys.SecretAccessKey, err = t.resolve(r, s.SigV4.Secret); err != nil {
 				return nil, err
 			}
-			if s.S3.Session != "" {
-				if keys.SessionToken, err = t.resolve(r, s.S3.Session); err != nil {
+			if s.SigV4.Session != "" {
+				if keys.SessionToken, err = t.resolve(r, s.SigV4.Session); err != nil {
 					return nil, err
 				}
 			}
 		}
 	}
 	if signer != nil {
-		if err := signS3(r, keys, signer.S3.Region, time.Now()); err != nil {
+		if err := sign(r, keys, signer.SigV4, time.Now()); err != nil {
 			return nil, err
 		}
 	}

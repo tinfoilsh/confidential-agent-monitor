@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"cmp"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -43,6 +44,7 @@ type specAuth struct {
 	Query  string `json:"query,omitempty"`
 	Basic  bool   `json:"basic,omitempty"`
 	User   bool   `json:"user,omitempty"`
+	SigV4  string `json:"sigv4,omitempty"`
 }
 
 type parsed struct {
@@ -310,7 +312,7 @@ func parseGraphQL(src []byte, origin, path string) (parsed, error) {
 // botocore models are plain JSON with no Go parser; this reads only the members drafting needs.
 type botocoreModel struct {
 	Metadata struct {
-		Protocol, TargetPrefix, EndpointPrefix, ServiceFullName string
+		Protocol, TargetPrefix, EndpointPrefix, ServiceFullName, SigningName string
 	}
 	Operations map[string]struct {
 		Name          string
@@ -332,7 +334,7 @@ func parseBotocore(src []byte) (parsed, error) {
 	if err := json.Unmarshal(src, &m); err != nil {
 		return parsed{}, err
 	}
-	out := parsed{}
+	out := parsed{Auth: &specAuth{SigV4: cmp.Or(m.Metadata.SigningName, m.Metadata.EndpointPrefix)}}
 	for _, name := range slices.Sorted(func(yield func(string) bool) {
 		for k := range m.Operations {
 			if !yield(k) {

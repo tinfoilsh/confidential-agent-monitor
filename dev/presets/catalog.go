@@ -268,15 +268,15 @@ func catalogFor(s *service, src source, p parsed, ops []drafted) (fields obj, co
 }
 
 // awsCatalog signs with SigV4 on the owner's regional endpoint, as the aws_s3 preset does.
-func awsCatalog() (obj, obj) {
+func awsCatalog(service string) (obj, obj) {
 	fields := obj{
 		{"origin", obj{{"key", "origin"}, {"label", "Service endpoint (https://service.region.amazonaws.com)"}, {"paths", []any{[]any{"policy_options", "origin"}, []any{"connections", "", "http", "slots", 0, "origin"}}}}},
-		{"region", obj{{"key", "region"}, {"label", "Region (e.g. us-east-1)"}, {"path", []any{"connections", "", "http", "slots", 0, "s3", "region"}}}},
+		{"region", obj{{"key", "region"}, {"label", "Region (e.g. us-east-1)"}, {"path", []any{"connections", "", "http", "slots", 0, "sigv4", "region"}}}},
 		{"access_key", secretField("access_key", "Access key ID")},
 		{"secret_key", secretField("secret_key", "Secret access key")},
 		{"session_token", secretField("session_token", "Session token (temporary credentials only)")},
 	}
-	slot := obj{{"value", "access_key"}, {"origin", exampleOrigin}, {"path", "/"}, {"s3", obj{{"region", "us-east-1"}, {"secret", "secret_key"}, {"session", "session_token"}}}}
+	slot := obj{{"value", "access_key"}, {"origin", exampleOrigin}, {"path", "/"}, {"sigv4", obj{{"service", service}, {"region", "us-east-1"}, {"secret", "secret_key"}, {"session", "session_token"}}}}
 	return fields, obj{{"", obj{{"http", obj{{"slots", []any{slot}}}}}}}
 }
 

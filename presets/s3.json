@@ -5,11 +5,11 @@
       {"key": "origin", "label": "Service endpoint, no bucket (https://your-endpoint.example.com)",
        "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
       {"key": "bucket_path", "label": "Bucket path prefix this credential may sign (e.g. /mybucket)", "path": ["connections", "", "http", "slots", 0, "path"]},
-      {"key": "region", "label": "Region (as required by your provider; use \"auto\" if none applies)", "path": ["connections", "", "http", "slots", 0, "s3", "region"]},
+      {"key": "region", "label": "Region (as required by your provider; use \"auto\" if none applies)", "path": ["connections", "", "http", "slots", 0, "sigv4", "region"]},
       {"key": "access_key", "label": "Access key ID", "secret": true, "path": ["connections", "", "http", "values", "access_key"]},
       {"key": "secret_key", "label": "Secret access key", "secret": true, "path": ["connections", "", "http", "values", "secret_key"]}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/example-bucket", "s3": {"region": "auto", "secret": "secret_key"}}]}}},
+    "connections": {"": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/example-bucket", "sigv4": {"service": "s3", "region": "auto", "secret": "secret_key"}}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "read": {"title": "List and read objects"},

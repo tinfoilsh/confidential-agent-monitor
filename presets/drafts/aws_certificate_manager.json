@@ -3,12 +3,12 @@
   "catalog": {
     "fields": [
       {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
-      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["connections", "", "http", "slots", 0, "s3", "region"]},
+      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["connections", "", "http", "slots", 0, "sigv4", "region"]},
       {"key": "access_key", "label": "Access key ID", "secret": true, "path": ["connections", "", "http", "values", "access_key"]},
       {"key": "secret_key", "label": "Secret access key", "secret": true, "path": ["connections", "", "http", "values", "secret_key"]},
       {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "path": ["connections", "", "http", "values", "session_token"]}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "s3": {"region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}}},
+    "connections": {"": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "sigv4": {"service": "acm", "region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "delete.acm": {"title": "Delete: acm"},

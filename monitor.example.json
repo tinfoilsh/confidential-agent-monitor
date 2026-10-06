@@ -39,7 +39,7 @@
       "contents": "me", "strangers": false, "sends": "me",
       "connections": { "": { "http": {
         "slots": [{"value": "access_key", "origin": "https://my-backups.s3.us-east-1.amazonaws.com", "path": "/",
-                   "s3": {"region": "us-east-1", "secret": "secret_key"}}],
+                   "sigv4": {"service": "s3", "region": "us-east-1", "secret": "secret_key"}}],
         "values": {"access_key": "AKIA_REAL", "secret_key": "SECRET_REAL"}
       } } }
     },

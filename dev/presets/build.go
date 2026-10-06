@@ -653,7 +653,7 @@ func draftService(s *service, src source, lock lockFile, effects map[string]int,
 	var fields, connections obj
 	var catNote string
 	if src.Specs[0].Format == "botocore" {
-		fields, connections = awsCatalog()
+		fields, connections = awsCatalog(p.Auth.SigV4)
 	} else {
 		fields, connections, catNote = catalogFor(s, src, p, ops)
 	}
