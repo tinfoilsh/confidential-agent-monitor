@@ -1,0 +1,58 @@
+{
+  "title": "Typeform",
+  "catalog": {
+    "fields": [
+      {"key": "access_token", "label": "Access Token", "secret": true, "path": ["connections", "", "http", "values", "access_token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "access_token", "origin": "https://api.typeform.com", "path": "/", "header": "Authorization", "prefix": "bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "admin.webhooks": {"title": "Admin: webhooks"},
+      "admin.workspaces": {"title": "Admin: workspaces"},
+      "delete.forms": {"title": "Delete: forms"},
+      "delete.images": {"title": "Delete: images"},
+      "delete.responses": {"title": "Delete: responses"},
+      "delete.themes": {"title": "Delete: themes"},
+      "delete.webhooks": {"title": "Delete: webhooks"},
+      "delete.workspaces": {"title": "Delete: workspaces"},
+      "read": {"title": "Read everything the account can see"},
+      "write.forms": {"title": "Write: forms"},
+      "write.messages": {"title": "Write: messages"},
+      "write.themes": {"title": "Write: themes"}
+    }
+  },
+  "operations": [
+    {"id": "GET /forms/{form_id}/responses", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/forms/{form_id}/responses", "params": ["page_size", "since", "until", "after", "before", "included_response_ids", "excluded_response_ids", "completed", "sort", "query", "fields", "answered_fields"], "scope": {"form_id": {"from": "path", "at": "form_id"}}},
+    {"id": "DELETE /forms/{form_id}/responses", "action": "delete.responses", "effects": ["delete"], "method": "DELETE", "origin": "https://api.typeform.com", "path": "/forms/{form_id}/responses", "params": ["included_response_ids"], "scope": {"form_id": {"from": "path", "at": "form_id"}}},
+    {"id": "GET /forms/{form_id}/responses/{response_id}/fields/{field_id}/files/{filename}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/forms/{form_id}/responses/{response_id}/fields/{field_id}/files/{filename}", "params": ["inline"], "scope": {"form_id": {"from": "path", "at": "form_id"}, "response_id": {"from": "path", "at": "response_id"}, "field_id": {"from": "path", "at": "field_id"}, "filename": {"from": "path", "at": "filename"}}},
+    {"id": "POST /", "action": "admin.workspaces", "effects": ["admin"], "method": "POST", "origin": "https://api.typeform.com", "path": "/", "scope": {}},
+    {"id": "GET /forms", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/forms", "params": ["search", "page", "page_size", "workspace_id"], "scope": {}},
+    {"id": "PATCH /forms/{form_id}", "action": "write.forms", "effects": ["write"], "method": "PATCH", "origin": "https://api.typeform.com", "path": "/forms/{form_id}", "scope": {"form_id": {"from": "path", "at": "form_id"}}},
+    {"id": "PUT /forms/{form_id}", "action": "write.forms", "effects": ["write"], "method": "PUT", "origin": "https://api.typeform.com", "path": "/forms/{form_id}", "scope": {"form_id": {"from": "path", "at": "form_id"}}},
+    {"id": "GET /forms/{form_id}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/forms/{form_id}", "scope": {"form_id": {"from": "path", "at": "form_id"}}},
+    {"id": "DELETE /forms/{form_id}", "action": "delete.forms", "effects": ["delete"], "method": "DELETE", "origin": "https://api.typeform.com", "path": "/forms/{form_id}", "scope": {"form_id": {"from": "path", "at": "form_id"}}},
+    {"id": "GET /forms/{form_id}/messages", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/forms/{form_id}/messages", "scope": {"form_id": {"from": "path", "at": "form_id"}}},
+    {"id": "PUT /forms/{form_id}/messages", "action": "write.messages", "effects": ["write"], "method": "PUT", "origin": "https://api.typeform.com", "path": "/forms/{form_id}/messages", "scope": {"form_id": {"from": "path", "at": "form_id"}}},
+    {"id": "GET /images/{image_id}/image/{size}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/images/{image_id}/image/{size}", "scope": {"image_id": {"from": "path", "at": "image_id"}, "size": {"from": "path", "at": "size"}}},
+    {"id": "GET /images/{image_id}/background/{size}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/images/{image_id}/background/{size}", "scope": {"image_id": {"from": "path", "at": "image_id"}, "size": {"from": "path", "at": "size"}}},
+    {"id": "GET /images/{image_id}/choice/{size}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/images/{image_id}/choice/{size}", "scope": {"image_id": {"from": "path", "at": "image_id"}, "size": {"from": "path", "at": "size"}}},
+    {"id": "GET /", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/", "scope": {}},
+    {"id": "GET /images/{image_id}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/images/{image_id}", "scope": {"image_id": {"from": "path", "at": "image_id"}}},
+    {"id": "DELETE /images/{image_id}", "action": "delete.images", "effects": ["delete"], "method": "DELETE", "origin": "https://api.typeform.com", "path": "/images/{image_id}", "scope": {"image_id": {"from": "path", "at": "image_id"}}},
+    {"id": "GET /insights/{form_id}/summary", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/insights/{form_id}/summary", "scope": {"form_id": {"from": "path", "at": "form_id"}}},
+    {"id": "DELETE /rtbf/{account_id}/responses", "action": "delete.responses", "effects": ["delete"], "method": "DELETE", "origin": "https://api.typeform.com", "path": "/rtbf/{account_id}/responses", "scope": {"account_id": {"from": "path", "at": "account_id"}}},
+    {"id": "GET /forms/{form_id}/webhooks", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/forms/{form_id}/webhooks", "scope": {"form_id": {"from": "path", "at": "form_id"}}},
+    {"id": "GET /forms/{form_id}/webhooks/{tag}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/forms/{form_id}/webhooks/{tag}", "scope": {"form_id": {"from": "path", "at": "form_id"}, "tag": {"from": "path", "at": "tag"}}},
+    {"id": "PUT /forms/{form_id}/webhooks/{tag}", "action": "admin.webhooks", "effects": ["admin"], "method": "PUT", "origin": "https://api.typeform.com", "path": "/forms/{form_id}/webhooks/{tag}", "scope": {"form_id": {"from": "path", "at": "form_id"}, "tag": {"from": "path", "at": "tag"}}},
+    {"id": "DELETE /forms/{form_id}/webhooks/{tag}", "action": "delete.webhooks", "effects": ["delete"], "method": "DELETE", "origin": "https://api.typeform.com", "path": "/forms/{form_id}/webhooks/{tag}", "scope": {"form_id": {"from": "path", "at": "form_id"}, "tag": {"from": "path", "at": "tag"}}},
+    {"id": "GET /themes", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/themes", "params": ["page", "page_size"], "scope": {}},
+    {"id": "GET /themes/{theme_id}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/themes/{theme_id}", "scope": {"theme_id": {"from": "path", "at": "theme_id"}}},
+    {"id": "PUT /themes/{theme_id}", "action": "write.themes", "effects": ["write"], "method": "PUT", "origin": "https://api.typeform.com", "path": "/themes/{theme_id}", "scope": {"theme_id": {"from": "path", "at": "theme_id"}}},
+    {"id": "DELETE /themes/{theme_id}", "action": "delete.themes", "effects": ["delete"], "method": "DELETE", "origin": "https://api.typeform.com", "path": "/themes/{theme_id}", "scope": {"theme_id": {"from": "path", "at": "theme_id"}}},
+    {"id": "GET /workspaces", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/workspaces", "params": ["search", "page", "page_size"], "scope": {}},
+    {"id": "GET /accounts/{account_id}/workspaces", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/accounts/{account_id}/workspaces", "params": ["search", "page", "page_size"], "scope": {"account_id": {"from": "path", "at": "account_id"}}},
+    {"id": "GET /workspaces/{workspace_id}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/workspaces/{workspace_id}", "scope": {"workspace_id": {"from": "path", "at": "workspace_id"}}},
+    {"id": "PATCH /workspaces/{workspace_id}", "action": "admin.workspaces", "effects": ["admin"], "method": "PATCH", "origin": "https://api.typeform.com", "path": "/workspaces/{workspace_id}", "scope": {"workspace_id": {"from": "path", "at": "workspace_id"}}},
+    {"id": "DELETE /workspaces/{workspace_id}", "action": "delete.workspaces", "effects": ["delete"], "method": "DELETE", "origin": "https://api.typeform.com", "path": "/workspaces/{workspace_id}", "scope": {"workspace_id": {"from": "path", "at": "workspace_id"}}}
+  ]
+}

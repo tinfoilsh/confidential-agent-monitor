@@ -1,0 +1,16 @@
+{
+  "title": "DHL",
+  "catalog": {
+    "fields": [
+      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://api-eu.dhl.com", "path": "/track", "header": "DHL-API-Key"}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read everything the account can see"}
+    }
+  },
+  "operations": [
+    {"id": "getTrackingShipment", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-eu.dhl.com", "path": "/track/shipments", "params": ["trackingNumber", "service", "requesterCountryCode", "originCountryCode", "recipientPostalCode", "language", "offset", "limit"], "scope": {}}
+  ]
+}

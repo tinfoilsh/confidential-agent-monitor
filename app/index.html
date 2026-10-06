@@ -4,39 +4,62 @@
 <title>Monitor</title>
 <style>
   :root {
-    --bg: #f6f6f4; --panel: #fff; --line: #e2e2dd; --text: #1d1d1b; --muted: #74746e;
-    --accent: #2f5bd3; --ok: #1e8a4c; --warn: #b7791f; --bad: #c0392b; --code: #f1f1ee;
+    --bg: #fff; --side: #fafafa; --hover: #f4f4f5; --hi: #e0f2fe; --line: #e4e4e7; --edge: #d4d4d8; --text: #27272a; --muted: #a1a1aa; --dim: #71717a;
+    --link: #0369a1; --ok: #15803d; --warn: #b45309; --bad: #b91c1c;
     color-scheme: light dark;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #151514; --panel: #1e1e1c; --line: #33332f; --text: #e8e8e4; --muted: #92928b; --accent: #7b9cff; --ok: #4cc27f; --warn: #e0a84a; --bad: #ff6b5b; --code: #262623; }
+    :root { --bg: #18181b; --side: #1f1f23; --hover: #27272a; --hi: #0c4a6e; --line: #2e2e33; --edge: #3f3f46; --text: #e4e4e7; --muted: #71717a; --dim: #a1a1aa; --link: #7dd3fc; --ok: #4ade80; --warn: #fbbf24; --bad: #f87171; }
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 system-ui, sans-serif; }
-  pre, textarea, .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; }
-  main { max-width: 52rem; margin: 0 auto; padding: 1rem 1.25rem; }
-  nav { display: flex; gap: .25rem; margin-bottom: 1rem; border-bottom: 1px solid var(--line); }
-  nav a { padding: .5rem .8rem; color: var(--muted); text-decoration: none; border-bottom: 2px solid transparent; }
-  nav a.active { color: var(--text); border-bottom-color: var(--accent); }
-  section { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
-  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 .75rem; font-weight: 600; }
-  a { color: var(--accent); }
-  button { font: inherit; font-size: 13px; padding: .3rem .7rem; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--text); cursor: pointer; }
-  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 12px/20px system-ui, sans-serif; }
+  pre, textarea, .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; }
+  #app { display: grid; grid-template-columns: 240px 1fr 400px; height: 100vh; }
+  #tree { border-right: 1px solid var(--line); padding: 4px 0; overflow: auto; }
+  #list { overflow: auto; }
+  #pane { border-left: 2px solid var(--edge); background: var(--side); padding: 0 8px 8px; overflow: auto; }
+  #gate { max-width: 24rem; margin: 20vh auto; }
+  a, .new { color: var(--link); text-decoration: none; }
+  .node { display: flex; gap: 4px; align-items: center; padding: 0 8px 0 calc(6px + var(--depth) * 12px); color: inherit; white-space: nowrap; cursor: pointer; }
+  .node > i { width: 10px; flex-shrink: 0; font-size: 9px; font-style: normal; color: var(--muted); }
+  .node > span { overflow: hidden; text-overflow: ellipsis; }
+  .node > small { margin-left: auto; padding-left: 8px; font-size: 10px; color: var(--muted); }
+  .node:hover, .q:hover, .ev:hover { background: var(--hover); }
+  .node.on, .q.on, .ev.on { background: var(--hi); }
+  .group { display: flex; gap: 8px; align-items: center; padding: 2px 8px; }
+  .q, .ev { display: grid; gap: 8px; align-items: center; padding: 0 8px; color: inherit; white-space: nowrap; }
+  .q { grid-template-columns: 10px 64px 1fr auto auto; }
+  .ev { grid-template-columns: 64px 72px 96px 1fr 64px; border-bottom: 1px solid var(--line); }
+  .q > a, .ev > span { overflow: hidden; text-overflow: ellipsis; color: inherit; }
+  .bang { font-weight: 700; color: var(--warn); }
+  h2, .hd { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 2px; }
+  header { display: flex; gap: 8px; align-items: baseline; padding: 6px 0 2px; }
+  header > .x { margin-left: auto; color: var(--muted); }
+  section { padding: 8px 0; border-bottom: 1px solid var(--line); }
+  button { font: inherit; font-size: 11px; line-height: 18px; padding: 0 6px; border: 1px solid var(--edge); background: var(--bg); color: var(--text); cursor: pointer; }
+  button.primary { background: var(--text); border-color: var(--text); color: var(--bg); }
+  button.inherited { border-color: var(--text); }
   button.danger { color: var(--bad); }
-  button.inherited { border-color: var(--accent); color: var(--accent); }
-  input, select, textarea { font: inherit; padding: .35rem .5rem; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--text); width: 100%; }
+  .seg { display: inline-flex; flex-shrink: 0; }
+  .seg > button + button { border-left: 0; }
+  input, select, textarea { font: inherit; padding: 1px 6px; border: 1px solid var(--edge); background: var(--bg); color: var(--text); width: 100%; }
   input[type=checkbox] { width: auto; }
-  label { display: block; font-size: 12px; color: var(--muted); margin: .5rem 0 .2rem; }
-  .node { margin-left: calc(var(--depth) * 1.25rem); }
-  .row { display: flex; gap: .5rem; align-items: center; justify-content: space-between; margin-top: .5rem; }
+  label { display: block; font-size: 11px; color: var(--dim); margin: 6px 0 1px; }
+  .acct { padding: 4px 0; border-bottom: 1px solid var(--line); }
+  .action { margin-left: calc(var(--depth) * 12px); }
+  .row { display: flex; gap: 6px; align-items: center; justify-content: space-between; margin-top: 4px; }
+  .row > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   table { width: 100%; border-collapse: collapse; }
-  td { padding: .45rem .4rem; border-bottom: 1px solid var(--line); vertical-align: top; }
-  pre { background: var(--code); padding: .6rem; border-radius: 6px; white-space: pre-wrap; word-break: break-all; max-height: 24rem; overflow: auto; }
+  th { text-align: left; font-weight: 400; color: var(--dim); }
+  td { padding: 2px 4px 2px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  ul { margin: 4px 0; padding-left: 16px; }
+  pre { background: var(--bg); border: 1px solid var(--line); padding: 2px 8px; white-space: pre-wrap; word-break: break-all; max-height: 24rem; overflow: auto; }
   .muted, .empty { color: var(--muted); } .ok { color: var(--ok); } .bad { color: var(--bad); } .warn { color: var(--warn); }
-  #toast { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: .6rem 1rem; border-radius: 6px; max-width: 40rem; }
+  .empty { padding: 0 8px; }
+  #toast { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: .4rem 1rem; max-width: 40rem; }
 </style>
-<main id="page"></main>
+<div id="gate" hidden></div>
+<div id="app" hidden><aside id="tree"></aside><div id="list"></div><aside id="pane"></aside></div>
 <div id="toast" hidden></div>
 <script>
 const KEY = "monitor-owner-key", GENERATION = "monitor-generation", DISMISSED = "monitor-dismissed", RETURN = "monitor-sign-in-return";
@@ -50,7 +73,9 @@ const NEW_PRESET = { catalog: { fields: [{ key: "token", label: "API token", sec
   connections: { "": { http: { slots: [{ value: "token", origin: "https://api.example.com", path: "/", header: "Authorization", prefix: "Bearer " }] } } },
   defaults: { contents: "me", strangers: true, sends: "me" } }, operations: [] };
 
-let view = null, records = [], locked = false;
+// scope is the agent or account the activity list follows; it outlives selecting a request.
+let view = null, records = [], locked = false, scope = null;
+const expanded = new Set(["agents", "accounts"]);
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 const q = (v) => esc(JSON.stringify(v));
@@ -70,6 +95,11 @@ const effectsOf = (account, k) => entry(account).effects?.[k.split(".")[0]]
 const tree = (actions) => Object.entries(actions).sort(([a], [b]) => a.localeCompare(b)).map(([k, x]) => [k, x, k.split(".").length - 1]);
 const fill = (text, scope) => text.replace(/\{(\w+)\}/g, (m, k) => scope?.[k] ?? m);
 const route = () => location.hash.slice(1).split("/").map(decodeURIComponent);
+const pendingSoonest = () => records.filter((r) => r.state === "pending").sort((a, b) => new Date(a.expires) - new Date(b.expires));
+const left = (r) => {
+  const s = Math.max(0, Math.round((new Date(r.expires) - Date.now()) / 1000));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+};
 
 function toast(text) {
   $("toast").textContent = text;
@@ -110,22 +140,77 @@ const patch = run(async (body, then) => {
   then ? (location.hash = then) : render();
 });
 
-function render() {
-  const [page, ...args] = route();
-  const pages = { requests, activity, agents, agent, accounts: accountList, account, add, preset: presetPage, settings };
-  let html;
-  if (!sessionStorage.getItem(KEY)) html = keyPage();
-  else if (locked) html = `<section><p>Your monitor restarted.</p><button class="primary" onclick="unlock()">Unlock</button></section>`;
-  else if (!view) html = `<p class="empty">Loading…</p>`;
-  else html = nav(page || "requests") + (pages[page] ?? requests)(...args);
-  $("page").innerHTML = html;
+// sync redraws only the keyed parts whose markup changed, so open details, focus and typed input elsewhere survive.
+const drawn = new WeakMap();
+function sync(el, parts) {
+  const old = new Map([...el.children].map((c) => [c.dataset.key, c]));
+  let at = el.firstElementChild;
+  for (const [key, html] of parts) {
+    let node = old.get(key);
+    old.delete(key);
+    if (!node || drawn.get(node) !== html) {
+      const t = document.createElement("template");
+      t.innerHTML = html;
+      const fresh = t.content.firstElementChild;
+      fresh.dataset.key = key;
+      drawn.set(fresh, html);
+      node?.replaceWith(fresh);
+      if (node === at) at = fresh;
+      node = fresh;
+    }
+    if (node === at) at = at.nextElementSibling;
+    else el.insertBefore(node, at);
+  }
+  old.forEach((c) => c.remove());
 }
 
-function nav(page) {
-  const pending = records.filter((r) => r.state === "pending").length;
-  const tabs = [["requests", `Requests${pending ? ` (${pending})` : ""}`], ["agents", "Agents"], ["accounts", "Accounts"], ["activity", "Activity"], ["settings", "Settings"]];
-  const active = { agent: "agents", account: "accounts", add: "accounts", preset: "accounts" }[page] ?? page;
-  return `<nav>${tabs.map(([p, t]) => `<a href="#${p}" class="${p === active ? "active" : ""}">${t}</a>`).join("")}</nav>`;
+function render() {
+  const gate = !sessionStorage.getItem(KEY) ? keyPage()
+    : locked ? `<section><p>Your monitor restarted.</p><button class="primary" onclick="unlock()">Unlock</button></section>`
+    : !view ? `<p class="empty">Loading…</p>` : "";
+  $("gate").hidden = !gate;
+  $("app").hidden = !!gate;
+  sync($("gate"), gate ? [["gate", gate]] : []);
+  if (gate) return;
+  const [kind, ...args] = route();
+  if (kind === "agent" || kind === "account") scope = [kind, args[0]];
+  if (kind === "activity") scope = null;
+  const panes = { request: requestPane, agent, pair, account, add, preset: presetPage, rules, settings };
+  sync($("tree"), sidebar(kind, args[0]));
+  sync($("list"), list(kind === "request" && args[0]));
+  sync($("pane"), (panes[kind]?.(...args) ?? [`<p class="empty">Select an agent, account or request.</p>`])
+    .map((html, i) => [`${location.hash}/${i}`, html]).filter(([, html]) => html));
+}
+
+const head = (title, sub = "") => `<header><b>${title}</b><span class="muted">${sub}</span><a class="x" href="#">✕</a></header>`;
+const node = (key, attrs, label, depth, { open, count = "", on } = {}) => [key,
+  `<a class="node ${on ? "on" : ""}" ${attrs} style="--depth: ${depth}"><i>${open == null ? "" : open ? "▾" : "▸"}</i><span>${label}</span><small>${count}</small></a>`];
+const folder = (key, label, count) => node(key, `onclick="toggle('${key}')"`, label, 0, { open: expanded.has(key), count });
+const link = (path, label, depth, on, count) => node(path.join("/"), `href="#${path.map(encodeURIComponent).join("/")}"`, label, depth, { on, count });
+
+function toggle(key) {
+  expanded.has(key) ? expanded.delete(key) : expanded.add(key);
+  render();
+}
+
+function sidebar(kind, arg) {
+  const pending = pendingSoonest(), at = (k, a) => kind === k && arg === a;
+  const templates = Object.entries(view.templates).sort(([, a], [, b]) => a.title.localeCompare(b.title));
+  const saved = Object.values(ids()).reduce((n, id) => n + (id.rules?.length ?? 0), 0);
+  return [
+    node("needs", `href="#${pending.length ? "request/" + pending[0].id : "activity"}"`, `<span class="bang">!</span> Needs you`, 0, { count: pending.length || "" }),
+    folder("agents", "Agents", Object.keys(ids()).length),
+    ...(expanded.has("agents") ? [...Object.keys(ids()).map((n) => link(["agent", n], `${pending.some((r) => r.identity === n) ? `<span class="bang">!</span> ` : ""}${esc(n)}`, 1,
+      at("agent", n), esc(view.labels[n] ? `${view.labels[n].audience} / ${view.labels[n].trust}` : ""))), link(["pair"], `<span class="new">Pair agent…</span>`, 1, kind === "pair")] : []),
+    folder("accounts", "Accounts", Object.keys(accounts()).length),
+    ...(expanded.has("accounts") ? Object.keys(accounts()).map((a) => link(["account", a], `${esc(a)} <span class="muted">${esc(entry(a).title)}</span>`, 1, at("account", a), accountStatus(a))) : []),
+    folder("add", "Add account", templates.length),
+    ...(expanded.has("add") ? [...templates.map(([t, c]) => link(["add", t], esc(c.title), 1, at("add", t),
+      Object.keys(accounts()).filter((a) => entry(a) === c).length || "")), link(["preset"], `<span class="new">New preset…</span>`, 1, kind === "preset" && !arg)] : []),
+    link(["rules"], "Rules", 0, kind === "rules", saved || ""),
+    link(["activity"], "Activity", 0, kind === "activity"),
+    link(["settings"], "Settings", 0, kind === "settings"),
+  ];
 }
 
 function keyPage() {
@@ -155,7 +240,7 @@ function summary(e) {
 
 function reasons(r) {
   const title = entry(r.account).title;
-  return r.gaps.map((g) => ({
+  return (r.gaps ?? []).map((g) => ({
     ask: r.action == null ? `${title} doesn't recognize this request.` : `You asked to approve changes on ${r.account}.`,
     audience: `It has seen private data from ${r.label.because?.audience}, and ${SEES[r.sends]} can see this.`,
     trust: `It has read content from strangers on ${r.label.because?.trust}, so it may be following their instructions.`,
@@ -170,27 +255,41 @@ function grantText(operation, grant, scope) {
     + (broad.length ? `, with any ${broad.join(", ")}` : "");
 }
 const saveText = (r) => grantText(r.operation, r.grant, r.scope);
+const saveButton = (r, text, primary) => r.action == null || !r.operation ? ""
+  : `<button class="${primary ? "primary" : ""}" title="${esc(saveText(r))}" onclick="answer('${r.id}', 'save')">${esc(text)}</button>`;
+const decide = (r, saveLabel) => r.state === "pending"
+  ? `<button onclick="answer('${r.id}', 'once')">Allow once</button>${saveButton(r, saveLabel, true)}<button class="danger" onclick="answer('${r.id}', 'deny')">Deny</button>`
+  : r.state === "expired" ? `${saveButton(r, saveLabel)}<button onclick="dismiss('${r.id}')">Dismiss</button>` : "";
 
-function card(r) {
-  const pending = r.state === "pending";
-  const save = r.action == null || !r.operation ? "" : `<button class="${pending ? "primary" : ""}" onclick="answer('${r.id}', 'save')">${esc(saveText(r))}</button>`;
-  const buttons = pending
-    ? `<button onclick="answer('${r.id}', 'deny')">Deny</button><button onclick="answer('${r.id}', 'once')">Allow once</button>${save}`
-    : `${save}<button onclick="dismiss('${r.id}')">Dismiss</button>`;
-  return `<section>
-    <div class="row"><b>${esc(r.title || summary(r.event))}</b><span class="muted">${esc(r.identity)} · ${pending ? "waiting" : "expired"}</span></div>
-    <ul>${reasons(r).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-    <div class="mono">${esc(summary(r.event))}</div>
-    ${r.operation ? `<details><summary class="muted">${esc(r.operation)} grant</summary><pre>${esc(JSON.stringify(r.grant))}</pre></details>` : ""}
-    <details><summary class="muted">Request</summary><pre>${esc(JSON.stringify(r.event, null, 2))}</pre></details>
-    <div class="row">${draftLink(r) || "<span></span>"}<span>${buttons}</span></div>
-  </section>`;
+function list(selected) {
+  const dismissed = JSON.parse(localStorage.getItem(DISMISSED) ?? "[]");
+  const open = [...pendingSoonest(), ...records.filter((r) => r.state === "expired" && !dismissed.includes(r.id))];
+  const shown = records.filter((r) => !scope || r[scope[0] === "agent" ? "identity" : "account"] === scope[1]);
+  return [
+    ["needs", `<div class="group"><span class="bang">!</span><b>Needs you</b><span class="muted">all agents · soonest first</span></div>`],
+    ...open.map((r) => ["q/" + r.id, `<div class="q ${r.id === selected ? "on" : ""}"><span class="bang">!</span><span>${esc(r.identity)}</span>
+      <a href="#request/${r.id}"><span class="muted">${esc(r.account)}</span> <b class="mono">${esc(r.title || summary(r.event))}</b> <span class="muted">· ${esc(reasons(r)[0])}</span></a>
+      <span class="mono warn">${r.state === "pending" ? left(r) : "expired"}</span><span class="seg">${decide(r, "Save rule")}</span></div>`]),
+    ...(open.length ? [] : [["calm", `<p class="empty">Nothing needs you.</p>`]]),
+    ["activity", `<div class="group"><b>Activity</b><span class="muted">${scope ? `${scope[0]} ${esc(scope[1])} · <a href="#activity">show all</a>` : "all agents"}</span></div>`],
+    ["columns", `<div class="ev hd"><span>Time</span><span>Agent</span><span>Account</span><span>Operation</span><span>Result</span></div>`],
+    ...shown.map((r) => ["e/" + r.id, `<a class="ev ${r.id === selected ? "on" : ""}" href="#request/${r.id}"><span class="mono muted">${new Date(r.time).toLocaleTimeString()}</span>
+      <span>${esc(r.identity)}</span><span>${esc(r.account)}</span><span class="mono">${esc(r.title || summary(r.event))}</span><span class="${STATE_CLASS[r.state]}">${r.state}</span></a>`]),
+    ...(shown.length ? [] : [["quiet", `<p class="empty">Nothing yet.</p>`]]),
+  ];
 }
 
-function requests() {
-  const dismissed = JSON.parse(localStorage.getItem(DISMISSED) ?? "[]");
-  const open = records.filter((r) => r.state === "pending" || (r.state === "expired" && !dismissed.includes(r.id)));
-  return open.map(card).join("") || `<p class="empty">Nothing needs you.</p>`;
+function requestPane(id) {
+  const r = records.find((r) => r.id === id);
+  if (!r) return [head("Request"), `<p class="empty">No request ${esc(id)}.</p>`];
+  const buttons = decide(r, saveText(r));
+  return [head(esc(r.title || summary(r.event) || r.account), `${esc(r.identity)} · ${esc(r.account)}${r.state === "pending" ? ` · ${left(r)} left` : ""}`),
+    `<section><div class="row"><span class="${STATE_CLASS[r.state]}">${r.state}</span><span class="muted">${new Date(r.time).toLocaleTimeString()}</span></div>
+      <ul>${reasons(r).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+      <div class="mono">${esc(summary(r.event))}</div>
+      ${r.operation ? `<details><summary class="muted">${esc(r.operation)} grant</summary><pre>${esc(JSON.stringify(r.grant))}</pre></details>` : ""}
+      <label>Request</label><pre>${esc(JSON.stringify(r.event, null, 2))}</pre>
+      <div class="row">${draftLink(r) || "<span></span>"}${buttons ? `<span class="seg">${buttons}</span>` : ""}</div></section>`];
 }
 
 const answer = run(async (id, decision) => {
@@ -204,27 +303,15 @@ function dismiss(id) {
   render();
 }
 
-function activity(agent) {
-  const rows = records.filter((r) => !agent || r.identity === agent).map((r) => `<tr>
-    <td class="muted">${new Date(r.time).toLocaleTimeString()}</td><td>${esc(r.identity)}</td>
-    <td>${esc(r.title || summary(r.event) || r.account)}</td><td class="${STATE_CLASS[r.state]}">${r.state}</td><td>${draftLink(r)}</td></tr>`);
-  return `<select onchange="location.hash = 'activity/' + encodeURIComponent(this.value)">${opt("", "All agents", agent ?? "")}${Object.keys(ids()).map((n) => opt(n, n, agent)).join("")}</select>
-    <table>${rows.join("") || `<tr><td class="empty">Nothing yet.</td></tr>`}</table>`;
-}
-
 function labelStatus(l) {
   const lines = [l?.audience !== "anyone" && `Has seen private data from ${l.because?.audience}`, l?.trust === "untrusted" && "Has read content from strangers"];
   return lines.filter(Boolean).join(" · ") || "Clean";
 }
 
-function agents() {
-  const list = Object.keys(ids()).map((n) => `<div class="row"><a href="#agent/${encodeURIComponent(n)}">${esc(n)}</a><span class="muted">${esc(labelStatus(view.labels[n]))}</span></div>`);
-  return `<section>${list.join("") || `<p class="empty">No agents yet.</p>`}</section>
-    <section><h2>Pair an agent</h2><label>Name</label><input id="name"><label>Public key</label><textarea id="pubkey" rows="2"></textarea>
-    <div class="row"><span></span><button class="primary" onclick="pair()">Pair</button></div></section>`;
-}
+const pair = () => [head("Pair an agent"), `<section><label>Name</label><input id="name"><label>Public key</label><textarea id="pubkey" rows="3"></textarea>
+  <div class="row"><span></span><button class="primary" onclick="pairAgent()">Pair</button></div></section>`];
 
-const pair = () => patch({ identities: { [$("name").value.trim()]: { key: $("pubkey").value.trim(), accounts: {} } } }, "agent/" + encodeURIComponent($("name").value.trim()));
+const pairAgent = () => patch({ identities: { [$("name").value.trim()]: { key: $("pubkey").value.trim(), accounts: {} } } }, "agent/" + encodeURIComponent($("name").value.trim()));
 
 function ruleSentence(r) {
   if (!r.operation) return `Inactive: ${r.action} on ${r.account} was saved before approvals named an operation`;
@@ -242,37 +329,45 @@ function mode(access, vocabulary, effects, k) {
 
 function agent(name) {
   const id = ids()[name];
-  if (!id) return `<p class="empty">No agent ${esc(name)}.</p>`;
+  if (!id) return [head(esc(name)), `<p class="empty">No agent ${esc(name)}.</p>`];
   const levels = Object.entries(accounts()).map(([a, acc]) => {
     const access = id.accounts?.[a] ?? { level: "off" };
     const c = entry(a);
     const actions = access.level === "off" ? [] : tree(actionsOf(a)).map(([k, x, d]) => {
       const effects = effectsOf(a, k), inherited = mode({ ...access, actions: { ...access.actions, [k]: null } }, c.vocabulary, effects, k);
       const own = access.actions?.[k];
-      return `<div class="row node" style="--depth: ${d}"><span>${esc(x.title)} <span class="muted">${esc(effects.join(", "))}</span></span><span>${Object.entries(MODES).map(([m, t]) =>
-        `<button class="${m === own ? "primary" : !own && m === inherited ? "inherited" : ""}" onclick="patchAccess(${q(name)}, ${q(a)}, { actions: { [${q(k)}]: ${q(m === own ? null : m)} } })">${t}</button>`).join(" ")}</span></div>`;
+      return `<div class="row action" style="--depth: ${d}"><span>${esc(x.title)} <span class="muted">${esc(effects.join(", "))}</span></span><span class="seg">${Object.entries(MODES).map(([m, t]) =>
+        `<button class="${m === own ? "primary" : !own && m === inherited ? "inherited" : ""}" onclick="patchAccess(${q(name)}, ${q(a)}, { actions: { [${q(k)}]: ${q(m === own ? null : m)} } })">${t}</button>`).join("")}</span></div>`;
     });
-    return `<tr><td><div class="row"><b>${esc(a)}</b><span>${Object.entries(LEVELS).map(([l, t]) =>
-      `<button class="${l === access.level ? "primary" : ""}" onclick="patchAccess(${q(name)}, ${q(a)}, { level: ${q(l)} })">${t}</button>`).join(" ")}</span></div>${actions.join("")}</td></tr>`;
+    return `<div class="acct"><div class="row"><b>${esc(a)}</b><span class="seg">${Object.entries(LEVELS).map(([l, t]) =>
+      `<button class="${l === access.level ? "primary" : ""}" onclick="patchAccess(${q(name)}, ${q(a)}, { level: ${q(l)} })">${t}</button>`).join("")}</span></div>${actions.join("")}</div>`;
   });
-  const rules = (id.rules ?? []).map((r, i) => `<div class="row"><span>${esc(ruleSentence(r))}${r.operation
-    ? `<details><summary class="muted">grant</summary><pre>${esc(JSON.stringify(r.scope))}</pre></details>` : ""}</span><button onclick="removeRule(${q(name)}, ${i})">Remove</button></div>`);
   const reaches = (pred) => Object.entries(accounts()).some(([a, acc]) => (id.accounts?.[a]?.level ?? "off") !== "off" && pred(acc));
   const hint = reaches((acc) => acc.template === "web") && reaches((acc) => acc.contents !== "anyone")
     ? `<p class="warn">Once it reads private data, browsing will need approval. A separate agent for browsing avoids that.</p>` : "";
   const others = Object.keys(ids()).filter((n) => n !== name);
   const l = view.labels[name] ?? {};
-  const point = (axis, values) => `<div class="row"><span>${axis}</span><span>${values.map((v) =>
-    `<button class="${l[axis] === v ? "primary" : ""}" onclick="setLabel(${q(name)}, ${q({ trust: l.trust, audience: l.audience, [axis]: v })})">${v}</button>`).join(" ")}</span></div>`;
-  return `<section><h2>${esc(name)} · ${esc(labelStatus(l))}</h2>${id.profile ? `<p class="warn">Profiling: every request runs unchecked and is recorded.</p>` : ""}${hint}${point("trust", ["trusted", "untrusted"])}${point("audience", ["anyone", "team", "me"])}<table>${levels.join("")}</table></section>
-    ${messageSettings(name, others)}
-    <section><h2>Saved rules</h2>${rules.join("") || `<p class="empty">None yet. They come from “Allow this next time”.</p>`}</section>
-    <section><h2>Setup</h2><label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre><label>Environment</label><pre>${esc(view.setup[name]) || "No secrets to substitute."}</pre></section>
-    <section><h2>Replace key</h2><p class="muted">Use this after recreating the sandbox. The agent starts clean.</p><textarea id="pubkey" rows="2"></textarea>
-      <div class="row"><span></span><button onclick="patch({ identities: { [${q(name)}]: { key: $('pubkey').value.trim() } } })">Replace key</button></div></section>
-    ${others.length ? `<section><h2>Copy settings from</h2><div class="row"><select id="from">${others.map((n) => opt(n, n)).join("")}</select><button onclick="copySettings(${q(name)})">Copy</button></div></section>` : ""}
-    <button class="danger" onclick="removeAgent(${q(name)})">Remove agent</button>`;
+  const point = (axis, values) => `<div class="row"><span>${axis}</span><span class="seg">${values.map((v) =>
+    `<button class="${l[axis] === v ? "primary" : ""}" onclick="setLabel(${q(name)}, ${q({ trust: l.trust, audience: l.audience, [axis]: v })})">${v}</button>`).join("")}</span></div>`;
+  return [head(esc(name), esc(labelStatus(l))),
+    `<section>${id.profile ? `<p class="warn">Profiling: every request runs unchecked and is recorded.</p>` : ""}${hint}${point("trust", ["trusted", "untrusted"])}${point("audience", ["anyone", "team", "me"])}</section>`,
+    `<section><h2>Access</h2>${levels.join("") || `<p class="empty">No accounts yet.</p>`}</section>`,
+    messageSettings(name, others),
+    rulesSection(name),
+    `<section><details><summary class="hd">Setup</summary><label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre><label>Environment</label><pre>${esc(view.setup[name]) || "No secrets to substitute."}</pre></details></section>`,
+    `<section><h2>Replace key</h2><p class="muted">Use this after recreating the sandbox. The agent starts clean.</p><textarea id="pubkey" rows="2"></textarea>
+      <div class="row"><span></span><button onclick="patch({ identities: { [${q(name)}]: { key: $('pubkey').value.trim() } } })">Replace key</button></div></section>`,
+    others.length ? `<section><h2>Copy settings from</h2><div class="row"><select id="from">${others.map((n) => opt(n, n)).join("")}</select><button onclick="copySettings(${q(name)})">Copy</button></div></section>` : "",
+    `<section><button class="danger" onclick="removeAgent(${q(name)})">Remove agent</button></section>`];
 }
+
+function rulesSection(name) {
+  const list = (ids()[name].rules ?? []).map((r, i) => `<div class="row"><span>${esc(ruleSentence(r))}${r.operation
+    ? `<details><summary class="muted">grant</summary><pre>${esc(JSON.stringify(r.scope))}</pre></details>` : ""}</span><button onclick="removeRule(${q(name)}, ${i})">Remove</button></div>`);
+  return `<section><h2>Saved rules · ${esc(name)}</h2>${list.join("") || `<p class="muted">None yet. They come from “Allow this next time”.</p>`}</section>`;
+}
+
+const rules = () => [head("Rules"), ...Object.keys(ids()).filter((n) => ids()[n].rules?.length).map(rulesSection)];
 
 function messageSettings(name, peers) {
   const messages = ids()[name].messages ?? {};
@@ -297,7 +392,7 @@ const setMessageReceive = (name, peer, axis, value) => patch({ identities: { [na
 
 const removeAgent = (name) => patch({ identities: Object.fromEntries(Object.entries(ids()).map(([peer, id]) => [peer,
   peer === name ? null : { messages: id.messages ? { send: (id.messages.send ?? []).filter((p) => p !== name), receive: { [name]: null } } : null },
-])) }, "agents");
+])) }, "activity");
 
 const patchAccess = (name, account, access) => patch({ identities: { [name]: { accounts: { [account]: access } } } });
 
@@ -323,14 +418,7 @@ function accountStatus(a) {
   if (states.some((s) => s.error)) return `<span class="bad">Can't connect</span>`;
   if (states.some((s) => s.state === "connecting")) return `<span class="muted">Connecting…</span>`;
   const blocked = states.reduce((n, s) => n + (s.blocked ?? 0), 0);
-  return blocked ? `<span class="warn">${blocked} tools await review</span>` : `<span class="ok">Ready</span>`;
-}
-
-function accountList() {
-  const list = Object.entries(accounts()).map(([a, acc]) => `<div class="row"><a href="#account/${encodeURIComponent(a)}">${esc(a)}</a><span class="muted">${esc(entry(a).title)} · ${accountStatus(a)}</span></div>`);
-  return `<section>${list.join("") || `<p class="empty">No accounts yet.</p>`}</section>
-    <section><h2>Add account</h2>${Object.entries(view.templates).map(([t, c]) => `<button onclick="location.hash = 'add/${t}'">${c.title}</button>`).join(" ")}</section>
-    <section><h2>New preset</h2><div class="row"><input id="preset-name" placeholder="Name"><button onclick="location.hash = 'preset/' + encodeURIComponent($('preset-name').value.trim())">Create</button></div></section>`;
+  return blocked ? `<span class="warn">${blocked} tools await review</span>` : "";
 }
 
 // Shipped preset files, fetched as written so an owner's copy keeps their order and environment references.
@@ -372,17 +460,18 @@ function draftOperation(e) {
 }
 
 function presetPage(name, from) {
+  if (!name) return [head("New preset"), `<section><label>Name</label><div class="row"><input id="preset-name"><button onclick="location.hash = 'preset/' + encodeURIComponent($('preset-name').value.trim())">Create</button></div></section>`];
   if (!presetFile(name)) {
     loadShipped(name);
-    return `<p class="empty">Loading…</p>`;
+    return [head("Preset " + esc(name)), `<p class="empty">Loading…</p>`];
   }
   const file = structuredClone(presetFile(name)), r = records.find((r) => r.id === from);
   if (r?.event?.http) file.operations = [...(file.operations ?? []), draftOperation(r.event)];
   const users = Object.entries(accounts()).filter(([, acc]) => acc.policy_options?.preset === name).map(([a]) => a);
-  return `<section><h2>Preset ${esc(name)}</h2><p class="muted">Changes apply to every account using it: ${esc(users.join(", ") || "none yet")}.</p>
-    <textarea id="preset" rows="30">${esc(presetText(file))}</textarea>
+  return [head("Preset " + esc(name)), `<section><p class="muted">Changes apply to every account using it: ${esc(users.join(", ") || "none yet")}.</p>
+    <textarea id="preset" rows="40">${esc(presetText(file))}</textarea>
     <div class="row">${view.config.presets?.[name] ? `<button class="danger" onclick="patch({ presets: { [${q(name)}]: null } })">Remove your version</button>` : "<span></span>"}
-      <span><button onclick="downloadPreset(${q(name)})">Download file</button> <button class="primary" onclick="savePreset(${q(name)})">Save</button></span></div></section>`;
+      <span><button onclick="downloadPreset(${q(name)})">Download file</button> <button class="primary" onclick="savePreset(${q(name)})">Save</button></span></div></section>`];
 }
 
 const savePreset = run(async (name) => {
@@ -445,10 +534,11 @@ function changes(before, after) {
 
 function add(template) {
   const c = view.templates[template];
-  if (!c) return `<p class="empty">No template ${esc(template)}.</p>`;
-  return `<section><h2>Add ${esc(c.title)}</h2><label>Name</label><input id="account-name" value="${esc(template)}">
+  if (!c) return [head("Add account"), `<p class="empty">No template ${esc(template)}.</p>`];
+  return [head("Add " + esc(c.title)), `<section><label>Name</label><input id="account-name" value="${esc(template)}">
     ${c.fields.filter((f) => !f.edit_only).map((f) => `<label>${esc(f.label)}</label>${f.secret && !f.json ? `<select id="mode-${esc(f.key)}" onchange="$(${q("f-" + f.key)}).disabled = this.value !== 'replace'">${opt("replace", "Set value", f.oauth ? "oauth" : "replace")}${opt("clear", "Leave unconfigured")}${f.oauth ? opt("oauth", "Sign in after creating", "oauth") : ""}</select>` : ""}${input(f, f.default, !!f.oauth)}`).join("")}
-    ${questions(c.defaults)}<div class="row"><span></span><button class="primary" onclick="addAccount(${q(template)})">Add</button></div></section>`;
+    ${questions(c.defaults)}<div class="row"><span></span><button class="primary" onclick="addAccount(${q(template)})">Add</button></div></section>`,
+    c.preset ? `<section><a href="#preset/${encodeURIComponent(c.preset)}">Edit operations</a></section>` : ""];
 }
 
 const addAccount = run(async (template) => {
@@ -483,19 +573,20 @@ function credentialEditor(a, f) {
 
 function account(a) {
   const acc = accounts()[a];
-  if (!acc) return `<p class="empty">No account ${esc(a)}.</p>`;
+  if (!acc) return [head(esc(a)), `<p class="empty">No account ${esc(a)}.</p>`];
   const c = entry(a);
   const users = Object.entries(ids()).filter(([, id]) => (id.accounts?.[a]?.level ?? "off") !== "off").map(([n, id]) => `${n} (${id.accounts[a].level})`);
-  return `<section><h2>${esc(a)} · ${esc(c.title)}</h2>${questions(acc)}
+  return [head(esc(a), `${esc(c.title)} ${accountStatus(a)}`),
+    `<section>${questions(acc)}
       ${plain(c).map((f) => `<label>${esc(f.label)}</label>${input(f, fieldValue(acc, f))}`).join("")}
       ${credentialFields(a).map((f) => credentialEditor(a, f)).join("")}
-      <div class="row"><span></span><button onclick="saveAccount(${q(a)})">Save</button></div></section>
-    <section><h2>Actions</h2>${tree(actionsOf(a)).map(([k, x, d]) => `<div class="node" style="--depth: ${d}">${esc(x.title)} <span class="muted">${esc(effectsOf(a, k).join(", "))}</span></div>`).join("")}<p class="muted">Used by ${esc(users.join(", ") || "no agents")}</p>
-      ${acc.template === "api" ? `<a href="#preset/${encodeURIComponent(acc.policy_options.preset)}">Edit operations</a>` : ""}</section>
-    <div id="connector-status">${mcpKeys(a).map((k) => review(a, k, c)).join("")}</div>
-    <section><details><summary class="muted">Advanced → Custom rules</summary><textarea id="policy" rows="12">${esc(view.config.policies?.[a])}</textarea>
-      <div class="row"><span></span><button onclick="patch({ policies: { [${q(a)}]: $('policy').value.trim() || null } })">Save rules</button></div></details></section>
-    <button class="danger" onclick="removeAccount(${q(a)})">Remove account</button>`;
+      <div class="row"><span></span><button class="primary" onclick="saveAccount(${q(a)})">Save</button></div></section>`,
+    `<section><h2>Actions</h2>${tree(actionsOf(a)).map(([k, x, d]) => `<div class="action" style="--depth: ${d}">${esc(x.title)} <span class="muted">${esc(effectsOf(a, k).join(", "))}</span></div>`).join("")}<p class="muted">Used by ${esc(users.join(", ") || "no agents")}</p>
+      ${acc.template === "api" ? `<a href="#preset/${encodeURIComponent(acc.policy_options.preset)}">Edit operations</a>` : ""}</section>`,
+    ...mcpKeys(a).map((k) => review(a, k, c)),
+    `<section><details><summary class="hd">Custom rules</summary><textarea id="policy" rows="12">${esc(view.config.policies?.[a])}</textarea>
+      <div class="row"><span></span><button onclick="patch({ policies: { [${q(a)}]: $('policy').value.trim() || null } })">Save rules</button></div></details></section>`,
+    `<section><button class="danger" onclick="removeAccount(${q(a)})">Remove account</button></section>`];
 }
 
 function review(a, key, c) {
@@ -549,21 +640,17 @@ const removeAccount = (a) => patch({
   accounts: { [a]: null },
   policies: { [a]: null },
   identities: Object.fromEntries(Object.keys(ids()).map((n) => [n, { accounts: { [a]: null } }])),
-}, "accounts");
+}, "activity");
 
-function settings() {
-  return `<section><h2>Networks</h2><label>Private networks the monitor may reach, one per line</label>
-    <textarea id="networks" rows="4">${esc((view.config.allow_networks ?? []).join("\n"))}</textarea>
-    <div class="row"><span></span><button onclick="patch({ allow_networks: $('networks').value.split(/\\s+/).filter(Boolean) })">Save</button></div></section>`;
-}
+const settings = () => [head("Settings"), `<section><h2>Networks</h2><label>Private networks the monitor may reach, one per line</label>
+  <textarea id="networks" rows="4">${esc((view.config.allow_networks ?? []).join("\n"))}</textarea>
+  <div class="row"><span></span><button onclick="patch({ allow_networks: $('networks').value.split(/\\s+/).filter(Boolean) })">Save</button></div></section>`];
 
 window.addEventListener("hashchange", render);
 setInterval(run(async () => {
   if (!sessionStorage.getItem(KEY) || locked) return;
   await refresh();
-  const [page, a] = route();
-  if (["", "requests", "activity", "accounts"].includes(page)) render();
-  if (page === "account" && accounts()[a] && $("connector-status")) $("connector-status").innerHTML = mcpKeys(a).map((k) => review(a, k, entry(a))).join("");
+  render();
 }), REQUEST_POLL_MS);
 // The provider redirects back here with the sign-in's state and either a code or an error.
 const back = new URLSearchParams(location.search);

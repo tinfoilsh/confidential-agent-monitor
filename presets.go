@@ -5,8 +5,10 @@ import (
 	"embed"
 	"encoding/json"
 	"encoding/json/jsontext"
+	"errors"
 	"fmt"
 	"io/fs"
+	"log"
 	"maps"
 	"os"
 	"path"
@@ -16,7 +18,6 @@ import (
 	"sync"
 
 	"github.com/open-policy-agent/opa/v1/rego"
-	"github.com/open-policy-agent/opa/v1/storage/inmem"
 	"github.com/tinfoilsh/monitor/connector"
 )
 
@@ -33,25 +34,59 @@ type preset struct {
 // A preset reads {MONITOR_X} only if MONITOR_X_PRESETS lists its name.
 var envRef = regexp.MustCompile(`\{(MONITOR_\w+)\}`)
 
+// draftFiles holds unreviewed presets a dev monitor loads from disk with -drafts; they are never embedded.
+var draftFiles fs.FS
+
 var presets = sync.OnceValues(func() (map[string]preset, error) {
 	files, _ := fs.Glob(presetFiles, "presets/*.json")
 	shipped := map[string]map[string]any{}
 	for _, file := range files {
-		name := strings.TrimSuffix(path.Base(file), ".json")
-		src, _ := presetFiles.ReadFile(file)
-		src = withEnv(name, src)
-		// encoding/json keeps the last of repeated names, which could silently drop a condition.
-		if !jsontext.Value(src).IsValid() {
-			return nil, fmt.Errorf("%s is not valid JSON or repeats a name", file)
-		}
-		var p map[string]any
-		if err := connector.DecodeNumbers(src, &p); err != nil {
-			return nil, fmt.Errorf("%s: %w", file, err)
+		name, p, err := presetFile(presetFiles, file)
+		if err != nil {
+			return nil, err
 		}
 		shipped[name] = p
 	}
-	return checked(map[string]preset{}, shipped)
+	out, err := checked(map[string]preset{}, shipped)
+	if err != nil || draftFiles == nil {
+		return out, err
+	}
+	// Each draft is checked alone, so a malformed one is skipped rather than stopping the monitor.
+	drafts, _ := fs.Glob(draftFiles, "*.json")
+	for _, file := range drafts {
+		name, p, err := presetFile(draftFiles, file)
+		if _, ok := out[name]; ok && err == nil {
+			err = errors.New("a shipped preset has this name")
+		}
+		if err == nil {
+			var next map[string]preset
+			if next, err = checked(maps.Clone(out), map[string]map[string]any{name: p}); err == nil {
+				out = next
+				continue
+			}
+		}
+		log.Printf("draft %s: %v", file, err)
+	}
+	return out, nil
 })
+
+func presetFile(fsys fs.FS, file string) (string, map[string]any, error) {
+	name := strings.TrimSuffix(path.Base(file), ".json")
+	src, err := fs.ReadFile(fsys, file)
+	if err != nil {
+		return "", nil, err
+	}
+	src = withEnv(name, src)
+	// encoding/json keeps the last of repeated names, which could silently drop a condition.
+	if !jsontext.Value(src).IsValid() {
+		return "", nil, fmt.Errorf("%s is not valid JSON or repeats a name", file)
+	}
+	var p map[string]any
+	if err := connector.DecodeNumbers(src, &p); err != nil {
+		return "", nil, fmt.Errorf("%s: %w", file, err)
+	}
+	return name, p, nil
+}
 
 func withEnv(name string, src []byte) []byte {
 	return envRef.ReplaceAllFunc(src, func(ref []byte) []byte {
@@ -83,6 +118,10 @@ func withOwned(owned map[string]map[string]any) (map[string]preset, error) {
 	return checked(maps.Clone(shipped), files)
 }
 
+var malformedQuery = sync.OnceValues(func() (rego.PreparedEvalQuery, error) {
+	return rego.New(append(templateModules(), rego.Query("data.templates.api.malformed with data.presets as input"))...).PrepareForEval(context.Background())
+})
+
 // checked adds presets in the file format to out, refusing a template's name or a malformed operation.
 func checked(out map[string]preset, files map[string]map[string]any) (map[string]preset, error) {
 	records := map[string]any{}
@@ -95,8 +134,11 @@ func checked(out map[string]preset, files map[string]map[string]any) (map[string
 		delete(p, "catalog")
 		out[name], records[name] = preset{p, catalog}, p
 	}
-	store := inmem.NewFromObject(map[string]any{"presets": records})
-	rs, err := rego.New(append(templateModules(), rego.Query("data.templates.api.malformed"), rego.Store(store))...).Eval(context.Background())
+	query, err := malformedQuery()
+	if err != nil {
+		return nil, err
+	}
+	rs, err := query.Eval(context.Background(), rego.EvalInput(records))
 	if err != nil {
 		return nil, err
 	}

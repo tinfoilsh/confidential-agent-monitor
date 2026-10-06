@@ -1,0 +1,23 @@
+{
+  "title": "Salesmate",
+  "catalog": {
+    "fields": [
+      {"key": "session_token", "label": "Session Token", "secret": true, "path": ["connections", "", "http", "values", "session_token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "session_token", "origin": "https://apis.salesmate.io", "path": "/", "header": "accessToken"}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "delete.v1": {"title": "Delete: v1"},
+      "read": {"title": "Read everything the account can see"},
+      "write.v1": {"title": "Write: v1"},
+      "write.v4": {"title": "Write: v4"}
+    }
+  },
+  "operations": [
+    {"id": "GET /", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://apis.salesmate.io", "path": "/", "scope": {}},
+    {"id": "POST /", "action": "write.v1", "effects": ["write"], "method": "POST", "origin": "https://apis.salesmate.io", "path": "/", "body": "any", "scope": {}},
+    {"id": "PUT /", "action": "write.v1", "effects": ["write"], "method": "PUT", "origin": "https://apis.salesmate.io", "path": "/", "body": "any", "scope": {}},
+    {"id": "DELETE /", "action": "delete.v1", "effects": ["delete"], "method": "DELETE", "origin": "https://apis.salesmate.io", "path": "/", "body": "any", "scope": {}},
+    {"id": "PATCH /", "action": "write.v4", "effects": ["write"], "method": "PATCH", "origin": "https://apis.salesmate.io", "path": "/", "body": "any", "scope": {}}
+  ]
+}

@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"maps"
 	"net/http"
 	"slices"
@@ -131,6 +132,9 @@ func (m *monitor) handler() http.Handler {
 	// A shipped preset as its file has it, so an owner's copy keeps its order and environment references.
 	mux.Handle("GET /presets/{name}", m.owned(true, func(r *http.Request, _ ownerInput) (any, error) {
 		src, err := presetFiles.ReadFile("presets/" + r.PathValue("name") + ".json")
+		if err != nil && draftFiles != nil {
+			src, err = fs.ReadFile(draftFiles, r.PathValue("name")+".json")
+		}
 		return json.RawMessage(src), err
 	}))
 	// The owner may move a label to any point; an axis left tainted keeps the account it came from.

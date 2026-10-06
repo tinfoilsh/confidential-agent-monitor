@@ -1,0 +1,63 @@
+{
+  "title": "AWS Certificate Manager",
+  "catalog": {
+    "fields": [
+      {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
+      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["connections", "", "http", "slots", 0, "s3", "region"]},
+      {"key": "access_key", "label": "Access key ID", "secret": true, "path": ["connections", "", "http", "values", "access_key"]},
+      {"key": "secret_key", "label": "Secret access key", "secret": true, "path": ["connections", "", "http", "values", "secret_key"]},
+      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "path": ["connections", "", "http", "values", "session_token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "s3": {"region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "delete.acm": {"title": "Delete: acm"},
+      "read": {"title": "Read everything the account can see"},
+      "send.acm": {"title": "Send: acm"},
+      "share.acm": {"title": "Share: acm"},
+      "write.acm": {"title": "Write: acm"}
+    }
+  },
+  "operations": [
+    {"id": "AddTagsToCertificate", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.AddTagsToCertificate"}, "body": "any", "scope": {}},
+    {"id": "CreateAcmeDomainValidation", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.CreateAcmeDomainValidation"}, "body": "any", "scope": {}},
+    {"id": "CreateAcmeEndpoint", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.CreateAcmeEndpoint"}, "body": "any", "scope": {}},
+    {"id": "CreateAcmeExternalAccountBinding", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.CreateAcmeExternalAccountBinding"}, "body": "any", "scope": {}},
+    {"id": "DeleteAcmeDomainValidation", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.DeleteAcmeDomainValidation"}, "body": "any", "scope": {}},
+    {"id": "DeleteAcmeEndpoint", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.DeleteAcmeEndpoint"}, "body": "any", "scope": {}},
+    {"id": "DeleteAcmeExternalAccountBinding", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.DeleteAcmeExternalAccountBinding"}, "body": "any", "scope": {}},
+    {"id": "DeleteCertificate", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.DeleteCertificate"}, "body": "any", "scope": {}},
+    {"id": "DescribeAcmeAccount", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.DescribeAcmeAccount"}, "body": "any", "scope": {}},
+    {"id": "DescribeAcmeDomainValidation", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.DescribeAcmeDomainValidation"}, "body": "any", "scope": {}},
+    {"id": "DescribeAcmeEndpoint", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.DescribeAcmeEndpoint"}, "body": "any", "scope": {}},
+    {"id": "DescribeAcmeExternalAccountBinding", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.DescribeAcmeExternalAccountBinding"}, "body": "any", "scope": {}},
+    {"id": "DescribeCertificate", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.DescribeCertificate"}, "body": "any", "scope": {}},
+    {"id": "ExportCertificate", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.ExportCertificate"}, "body": "any", "scope": {}},
+    {"id": "GetAccountConfiguration", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.GetAccountConfiguration"}, "body": "any", "scope": {}},
+    {"id": "GetAcmeExternalAccountBindingCredentials", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.GetAcmeExternalAccountBindingCredentials"}, "body": "any", "scope": {}},
+    {"id": "GetCertificate", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.GetCertificate"}, "body": "any", "scope": {}},
+    {"id": "ImportCertificate", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.ImportCertificate"}, "body": "any", "scope": {}},
+    {"id": "ListAcmeAccounts", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.ListAcmeAccounts"}, "body": "any", "scope": {}},
+    {"id": "ListAcmeDomainValidations", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.ListAcmeDomainValidations"}, "body": "any", "scope": {}},
+    {"id": "ListAcmeEndpoints", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.ListAcmeEndpoints"}, "body": "any", "scope": {}},
+    {"id": "ListAcmeExternalAccountBindings", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.ListAcmeExternalAccountBindings"}, "body": "any", "scope": {}},
+    {"id": "ListCertificateDomainValidations", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.ListCertificateDomainValidations"}, "body": "any", "scope": {}},
+    {"id": "ListCertificates", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.ListCertificates"}, "body": "any", "scope": {}},
+    {"id": "ListTagsForCertificate", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.ListTagsForCertificate"}, "body": "any", "scope": {}},
+    {"id": "ListTagsForResource", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.ListTagsForResource"}, "body": "any", "scope": {}},
+    {"id": "PutAccountConfiguration", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.PutAccountConfiguration"}, "body": "any", "scope": {}},
+    {"id": "RemoveTagsFromCertificate", "action": "delete.acm", "effects": ["delete"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.RemoveTagsFromCertificate"}, "body": "any", "scope": {}},
+    {"id": "RenewCertificate", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.RenewCertificate"}, "body": "any", "scope": {}},
+    {"id": "RequestCertificate", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.RequestCertificate"}, "body": "any", "scope": {}},
+    {"id": "ResendValidationEmail", "action": "send.acm", "effects": ["send"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.ResendValidationEmail"}, "body": "any", "scope": {}},
+    {"id": "RevokeAcmeAccount", "action": "share.acm", "effects": ["share"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.RevokeAcmeAccount"}, "body": "any", "scope": {}},
+    {"id": "RevokeAcmeExternalAccountBinding", "action": "share.acm", "effects": ["share"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.RevokeAcmeExternalAccountBinding"}, "body": "any", "scope": {}},
+    {"id": "RevokeCertificate", "action": "share.acm", "effects": ["share"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.RevokeCertificate"}, "body": "any", "scope": {}},
+    {"id": "SearchCertificates", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.SearchCertificates"}, "body": "any", "scope": {}},
+    {"id": "TagResource", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.TagResource"}, "body": "any", "scope": {}},
+    {"id": "UntagResource", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.UntagResource"}, "body": "any", "scope": {}},
+    {"id": "UpdateAcmeDomainValidation", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.UpdateAcmeDomainValidation"}, "body": "any", "scope": {}},
+    {"id": "UpdateAcmeEndpoint", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.UpdateAcmeEndpoint"}, "body": "any", "scope": {}},
+    {"id": "UpdateCertificateOptions", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.UpdateCertificateOptions"}, "body": "any", "scope": {}}
+  ]
+}

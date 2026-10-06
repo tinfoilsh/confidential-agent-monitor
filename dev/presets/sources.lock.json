@@ -1,0 +1,1928 @@
+{
+  "active_campaign": [
+    {
+      "source": "https://developers.activecampaign.com/openapi/v3.json",
+      "url": "https://developers.activecampaign.com/openapi/v3.json",
+      "sha256": "ddc696d2d3273b54983de67544b420d8c73fe010d87de56a342b062675825298",
+      "bytes": 1505637
+    }
+  ],
+  "acuity_scheduling": [
+    {
+      "source": "https://dash.readme.com/api/v1/api-registry/1mld74kq6ux8ie",
+      "url": "https://dash.readme.com/api/v1/api-registry/1mld74kq6ux8ie",
+      "sha256": "db4ea91137eb3a377556c99c187fc2a93c4f4c0e900ef970285bf0ad1a89545c",
+      "bytes": 17300
+    }
+  ],
+  "affinity": [
+    {
+      "source": "https://developer.affinity.co/api-reference/openapi.json",
+      "url": "https://developer.affinity.co/api-reference/openapi.json",
+      "sha256": "eb0590ff85c9e12e18b2372d66686943c8e17aebc08a9aa5eca77af8bd6661c3",
+      "bytes": 1273231
+    }
+  ],
+  "airtop": [
+    {
+      "source": "https://docs.airtop.ai/openapi.json",
+      "url": "https://docs.airtop.ai/openapi.json",
+      "sha256": "f508c8a4c5e69115bb860f715f17a04c508804d7eebdc7187119bc5e7caedc04",
+      "bytes": 101014
+    }
+  ],
+  "anthropic": [
+    {
+      "source": "github:anthropics/anthropic-sdk-python@main:scripts/mock-spec.json.gz",
+      "url": "https://raw.githubusercontent.com/anthropics/anthropic-sdk-python/18f25547f20cf5f01da69ac611e700e3bc9ebf21/scripts/mock-spec.json.gz",
+      "commit": "18f25547f20cf5f01da69ac611e700e3bc9ebf21",
+      "sha256": "c7b58a83ddf114257c794e7e25ce0c0c09a2749ab9d8a59d54fdc894c61fc9ba",
+      "bytes": 286257
+    }
+  ],
+  "asana": [
+    {
+      "source": "github:Asana/openapi@master:defs/asana_oas.yaml",
+      "url": "https://raw.githubusercontent.com/Asana/openapi/1b1c15108d490fc5b780bb83e070293b5815d522/defs/asana_oas.yaml",
+      "commit": "1b1c15108d490fc5b780bb83e070293b5815d522",
+      "sha256": "7c4c198fda7627c28be82ca0d85886fd034c93b16ed13c7d96a13d2f3534eaa6",
+      "bytes": 3215280
+    }
+  ],
+  "aws_bedrock": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/bedrock-runtime/2023-09-30/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/bedrock-runtime/2023-09-30/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "618bf3a6f4cb6e4987a01bd8ea2ce1f070e854991c750c67babf03520315dead",
+      "bytes": 220823
+    }
+  ],
+  "aws_certificate_manager": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/acm/2015-12-08/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/acm/2015-12-08/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "6c6599ff05946992b7238bca26250ee1eed453b0f93485c1f68788f3a135e30c",
+      "bytes": 180089
+    }
+  ],
+  "aws_cognito": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/cognito-idp/2016-04-18/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/cognito-idp/2016-04-18/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "3bed2e7bf2d62434576b3c4ddfbc410aa74a0104a1cfda6c493926e9c1482555",
+      "bytes": 867148
+    }
+  ],
+  "aws_comprehend": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/comprehend/2017-11-27/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/comprehend/2017-11-27/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "511336decb22aef786c4cb88c36ded6ffbd1bdc69e84970373a8e5cc101b2200",
+      "bytes": 370222
+    }
+  ],
+  "aws_dynamo_db": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/dynamodb/2012-08-10/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/dynamodb/2012-08-10/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "b6d84678ca63640f137d5beb9e8ff423dea0d7520e75b9d1bf37b7914d8838ae",
+      "bytes": 527891
+    }
+  ],
+  "aws_elb": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/elbv2/2015-12-01/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/elbv2/2015-12-01/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "5f8d293dabb9e7641f784e423c69905147f0bbe3aded13ae8ff6cb132ffd0b69",
+      "bytes": 239767
+    }
+  ],
+  "aws_iam": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/iam/2010-05-08/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/iam/2010-05-08/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "15c70eaeb15bda321fbf0e9a0db35036d67c6ccd34d38acbcad3a086b89251c5",
+      "bytes": 750921
+    }
+  ],
+  "aws_lambda": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/lambda/2015-03-31/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/lambda/2015-03-31/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "affa29b7b2819e2db3fd727df95409293634dc275ab938e3b9abbf78dc24e5df",
+      "bytes": 487721
+    }
+  ],
+  "aws_rekognition": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/rekognition/2016-06-27/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/rekognition/2016-06-27/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "d480fca1abad0125a9df7626677bca9b083c573233043c0dcdc1b975d48e2175",
+      "bytes": 465025
+    }
+  ],
+  "aws_s3": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/s3/2006-03-01/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/s3/2006-03-01/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "84c3a4e6ac1c80ed49cb1ddf1f548ea7f51d8a41acbfa0f198b9ba0028d784e8",
+      "bytes": 1397156
+    }
+  ],
+  "aws_ses": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/ses/2010-12-01/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/ses/2010-12-01/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "78f98dc6c5f4b83a60ba84091f5b76dd14b01a8a37be52cad384430b2a08b862",
+      "bytes": 271699
+    }
+  ],
+  "aws_sns": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/sns/2010-03-31/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/sns/2010-03-31/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "ffae4c31269cebee8af4027927b31f9fbc9df574fb971ad3764cd71199f93988",
+      "bytes": 172724
+    }
+  ],
+  "aws_sqs": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/sqs/2012-11-05/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/sqs/2012-11-05/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "282d08c85a2003ab91ed400a81339fe81952e446ae40a599877705903e870c0f",
+      "bytes": 157139
+    }
+  ],
+  "aws_textract": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/textract/2018-06-27/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/textract/2018-06-27/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "5ee161c8c63c848ff4b9ba3905d3fc00245b477056ccf042c9f79273a24b8da3",
+      "bytes": 145110
+    }
+  ],
+  "aws_transcribe": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/transcribe/2017-10-26/service-2.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/transcribe/2017-10-26/service-2.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "22532aa65a98ff7fded133b922594810a55bf8f393bb10019f0897988cebe026",
+      "bytes": 286273
+    }
+  ],
+  "azure_aisearch": [
+    {
+      "source": "github:Azure/azure-rest-api-specs@main:specification/search/data-plane/Search/stable/2024-07-01/searchindex.json",
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/1142128f76754601aac1da265c6fa5fd66380d9b/specification/search/data-plane/Search/stable/2024-07-01/searchindex.json",
+      "commit": "1142128f76754601aac1da265c6fa5fd66380d9b",
+      "sha256": "f7c68dcb5ffcce39287ba474a5785a6114396205a017c2b135e80f83289d7129",
+      "bytes": 88679
+    },
+    {
+      "source": "github:Azure/azure-rest-api-specs@main:specification/search/data-plane/Search/stable/2024-07-01/searchservice.json",
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/1142128f76754601aac1da265c6fa5fd66380d9b/specification/search/data-plane/Search/stable/2024-07-01/searchservice.json",
+      "commit": "1142128f76754601aac1da265c6fa5fd66380d9b",
+      "sha256": "16cb7f7bf3df52843ef2345ddcfe0b2ec1da5446da3b802d72b69a55755f2049",
+      "bytes": 396806
+    }
+  ],
+  "azure_open_ai": [
+    {
+      "source": "github:Azure/azure-rest-api-specs@main:specification/cognitiveservices/data-plane/OpenAIInference/stable/2024-10-21/inference.json",
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/1142128f76754601aac1da265c6fa5fd66380d9b/specification/cognitiveservices/data-plane/OpenAIInference/stable/2024-10-21/inference.json",
+      "commit": "1142128f76754601aac1da265c6fa5fd66380d9b",
+      "sha256": "8efc665c79a5a5e7d3137d9378da074d9956d042150a1d0a6ffc6ba95cc1bf47",
+      "bytes": 135746
+    },
+    {
+      "source": "github:Azure/azure-rest-api-specs@main:specification/ai/data-plane/OpenAI.v1/azure-v1-v1-generated.json",
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/1142128f76754601aac1da265c6fa5fd66380d9b/specification/ai/data-plane/OpenAI.v1/azure-v1-v1-generated.json",
+      "commit": "1142128f76754601aac1da265c6fa5fd66380d9b",
+      "sha256": "9fade08c5d30751828e67fecca63b3800567c802d1d6c4c91bba3d193843f7a8",
+      "bytes": 1470255
+    }
+  ],
+  "azure_storage": [
+    {
+      "source": "github:Azure/azure-rest-api-specs@main:specification/storage/data-plane/Microsoft.BlobStorage/stable/2021-12-02/blob.json",
+      "url": "https://raw.githubusercontent.com/Azure/azure-rest-api-specs/1142128f76754601aac1da265c6fa5fd66380d9b/specification/storage/data-plane/Microsoft.BlobStorage/stable/2021-12-02/blob.json",
+      "commit": "1142128f76754601aac1da265c6fa5fd66380d9b",
+      "sha256": "c18611fc51cc0bf066df00a90722a9986e1aaba9c050e7faca66a318629d9f75",
+      "bytes": 453018
+    }
+  ],
+  "bamboo_hr": [
+    {
+      "source": "https://openapi.bamboohr.io/main/latest/docs/openapi/public-openapi.yaml",
+      "url": "https://openapi.bamboohr.io/main/latest/docs/openapi/public-openapi.yaml",
+      "sha256": "acd837bb60bb988740ed61443cb349e6ff1636cba10cb11e371e699232a7d483",
+      "bytes": 1598356
+    }
+  ],
+  "bannerbear": [
+    {
+      "source": "https://api.bannerbear.com/v5/openapi.json",
+      "url": "https://api.bannerbear.com/v5/openapi.json",
+      "sha256": "745da36239a30e6f2bdd2f4f99f6810ac33ec55e40a222cc22c1b5f9e044d04b",
+      "bytes": 240977
+    }
+  ],
+  "baserow": [
+    {
+      "source": "https://api.baserow.io/api/schema.json",
+      "url": "https://api.baserow.io/api/schema.json",
+      "sha256": "1304ae2b39bc9c14874cf74321ed024a051b69f18f59de91e93f43bf2ddef28b",
+      "bytes": 6524210
+    }
+  ],
+  "bitbucket": [
+    {
+      "source": "https://dac-static.atlassian.com/cloud/bitbucket/swagger.v3.json",
+      "url": "https://dac-static.atlassian.com/cloud/bitbucket/swagger.v3.json",
+      "sha256": "869214428f35addb2a5a647870df75a63cf68e5dfe608d0cef2cb197ff564c17",
+      "bytes": 1374776
+    }
+  ],
+  "bitly": [
+    {
+      "source": "https://dev.bitly.com/v4/v4.json",
+      "url": "https://dev.bitly.com/v4/v4.json",
+      "sha256": "00dde1896336ba6085efc5a1a18021c7253f5b02900e6ab31c6ef129afd8d690",
+      "bytes": 309039
+    }
+  ],
+  "box": [
+    {
+      "source": "github:box/box-openapi@main:openapi.json",
+      "url": "https://raw.githubusercontent.com/box/box-openapi/5b055e333a802b10b8ca90fcc513643836dd92b4/openapi.json",
+      "commit": "5b055e333a802b10b8ca90fcc513643836dd92b4",
+      "sha256": "13cc601e01a7b82133975aaf7aeffb1850159a10ac6365fae00d5af94406d9d4",
+      "bytes": 1781543
+    }
+  ],
+  "brandfetch": [
+    {
+      "source": "https://docs.brandfetch.io/openapi.json",
+      "url": "https://docs.brandfetch.io/openapi.json",
+      "sha256": "301955555b54cfdad90fcb655e70e7a8b5f6c53bf11362001b8d0b0de8d85bf0",
+      "bytes": 160062
+    }
+  ],
+  "cal": [
+    {
+      "source": "github:calcom/cal.com@main:docs/api-reference/v2/openapi.json",
+      "url": "https://raw.githubusercontent.com/calcom/cal.com/54343aa685ae8f33159d2f485ec4a57bad5c574a/docs/api-reference/v2/openapi.json",
+      "commit": "54343aa685ae8f33159d2f485ec4a57bad5c574a",
+      "sha256": "cac5ec02a46bfcb9a2cdab8263e778a0dc61cc6b2cd4ffddc04639ddf8987e65",
+      "bytes": 559988
+    }
+  ],
+  "calendly": [
+    {
+      "source": "https://stoplight.io/api/v1/projects/calendly/api-docs/nodes/reference/calendly-api/openapi.yaml",
+      "url": "https://stoplight.io/api/v1/projects/calendly/api-docs/nodes/reference/calendly-api/openapi.yaml",
+      "sha256": "2249fb59d37aab2b8e5521b68cc8413a87241ea8d314bd59c024ae1cf96657a8",
+      "bytes": 514895
+    }
+  ],
+  "chargebee": [
+    {
+      "source": "github:chargebee/openapi@main:spec/chargebee_api_v2_pc_v2_spec.json",
+      "url": "https://raw.githubusercontent.com/chargebee/openapi/06f6ff8a4dd98577961acb29bf1d2d0c41684748/spec/chargebee_api_v2_pc_v2_spec.json",
+      "commit": "06f6ff8a4dd98577961acb29bf1d2d0c41684748",
+      "sha256": "a92d203879cc3fd9814089e662d4ef384412e97017a9e97fed64627b07bdd5d5",
+      "bytes": 12803120
+    }
+  ],
+  "chroma_db": [
+    {
+      "source": "https://api.trychroma.com/openapi.json",
+      "url": "https://api.trychroma.com/openapi.json",
+      "sha256": "b377a2a8578363408be9bd0142a5e7127404539c366d5faa9d86eb55683fbf6f",
+      "bytes": 89747
+    }
+  ],
+  "circle_ci": [
+    {
+      "source": "https://circleci.com/api/v2/openapi.json",
+      "url": "https://circleci.com/api/v2/openapi.json",
+      "sha256": "5f6de2b5c1889041d6631bd0fd7793b784d8f3c4e15c915aebe68821b3091dd8",
+      "bytes": 336798
+    }
+  ],
+  "cisco_webex": [
+    {
+      "source": "github:webex/webex-openapi-specs@main:public-spec/webex-messaging.json",
+      "url": "https://raw.githubusercontent.com/webex/webex-openapi-specs/f4cde0fbc3c92460fdb2bd362d2a5305df8e32b2/public-spec/webex-messaging.json",
+      "commit": "f4cde0fbc3c92460fdb2bd362d2a5305df8e32b2",
+      "sha256": "df394a91e770b40919a6fb3d039613b02f59c99b9e6e4d0317e30576d1ecdda2",
+      "bytes": 836640
+    },
+    {
+      "source": "github:webex/webex-openapi-specs@main:public-spec/webex-meeting.json",
+      "url": "https://raw.githubusercontent.com/webex/webex-openapi-specs/f4cde0fbc3c92460fdb2bd362d2a5305df8e32b2/public-spec/webex-meeting.json",
+      "commit": "f4cde0fbc3c92460fdb2bd362d2a5305df8e32b2",
+      "sha256": "e69a9a9fb9cdd726e83c8f7a1c7b2a36498a0d05bb51785fabce1ee423118317",
+      "bytes": 2503809
+    }
+  ],
+  "click_up": [
+    {
+      "source": "https://developer.clickup.com/openapi/clickup-api-v2-reference.json",
+      "url": "https://developer.clickup.com/openapi/clickup-api-v2-reference.json",
+      "sha256": "a0a72ec97ddb4e4859b9ed89b997bb784ba5828412ff35119f41e87103069662",
+      "bytes": 529169
+    }
+  ],
+  "clockify": [
+    {
+      "source": "https://docs.clockify.me/openapi.json",
+      "url": "https://docs.clockify.me/openapi.json",
+      "sha256": "4de5ab4145283bbe458f163c60542dcab2c6436a0e6bca3d6d248aad4bfe1173",
+      "bytes": 1296390
+    }
+  ],
+  "cloudflare": [
+    {
+      "source": "github:cloudflare/api-schemas@main:openapi.json",
+      "url": "https://raw.githubusercontent.com/cloudflare/api-schemas/75c2f4f7b86541b0f7759fc38d631eef224f785d/openapi.json",
+      "commit": "75c2f4f7b86541b0f7759fc38d631eef224f785d",
+      "sha256": "bd82518dc149d6575a48e5924ee78cf12faeb7a44c4c31d0439a6749b02023e4",
+      "bytes": 26796904
+    }
+  ],
+  "coda": [
+    {
+      "source": "https://coda.io/apis/v1/openapi.yaml",
+      "url": "https://coda.io/apis/v1/openapi.yaml",
+      "sha256": "2b7a7a7e909f7fc2980e0e899be208961c1e9b72d447cf956116edc24ee5d3dc",
+      "bytes": 555324
+    }
+  ],
+  "cohere": [
+    {
+      "source": "github:cohere-ai/cohere-developer-experience@main:cohere-openapi.yaml",
+      "url": "https://raw.githubusercontent.com/cohere-ai/cohere-developer-experience/734aafbe1fe2ca5c7356609009ec0d9b74e6ac57/cohere-openapi.yaml",
+      "commit": "734aafbe1fe2ca5c7356609009ec0d9b74e6ac57",
+      "sha256": "814093aac6748d91ca9e6886970b11b34bf2edcf03c4eafac622f17c18e5c851",
+      "bytes": 1135230
+    }
+  ],
+  "confluence": [
+    {
+      "source": "https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json",
+      "url": "https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json",
+      "sha256": "edb639bbc700ee451a996acd2568e51db4ceab954449427537df30f0ce20ca08",
+      "bytes": 614311
+    },
+    {
+      "source": "https://dac-static.atlassian.com/cloud/confluence/swagger.v3.json",
+      "url": "https://dac-static.atlassian.com/cloud/confluence/swagger.v3.json",
+      "sha256": "6c66a606fa7535268512f07f599fe1e3f9de2ba0b1da7eb6ead405509875577e",
+      "bytes": 415743
+    },
+    {
+      "source": "https://dac-static.atlassian.com/cloud/jira/platform/swagger-v3.v3.json",
+      "url": "https://dac-static.atlassian.com/cloud/jira/platform/swagger-v3.v3.json",
+      "sha256": "d26b518604157e26c8ba72b66e483fcebd055b1eebb4036eb03da53248199e44",
+      "bytes": 2479256
+    }
+  ],
+  "convert_kit": [
+    {
+      "source": "https://developers.kit.com/api-reference/v4.json",
+      "url": "https://developers.kit.com/api-reference/v4.json",
+      "sha256": "1101b4030f5960534c6e81f2f13c19a2a54650c09c4f819d19748a766da94148",
+      "bytes": 722918
+    }
+  ],
+  "copper": [
+    {
+      "source": "https://developer.copper.com/download/copper_postman_collection.json",
+      "url": "https://developer.copper.com/download/copper_postman_collection.json",
+      "sha256": "6ec0df3a8fc0dff4f4dfa56dea2d0aa1e319e6f4cfdfe29d8ab670653a89a8be",
+      "bytes": 1334523
+    }
+  ],
+  "currents": [
+    {
+      "source": "https://api.currents.dev/v1/docs/openapi.json",
+      "url": "https://api.currents.dev/v1/docs/openapi.json",
+      "sha256": "7c7f33e5f4fa29d9c47a525aec0a6d75e451555cb74002952ec3788be66fcc47",
+      "bytes": 185835
+    }
+  ],
+  "customer_io": [
+    {
+      "source": "https://docs.customer.io/files/journeys-track.json",
+      "url": "https://docs.customer.io/files/journeys-track.json",
+      "sha256": "d97469931d4786b7203c151c3264f3568e9dfa459923ad163bf9a781c56a3dcc",
+      "bytes": 1857732
+    },
+    {
+      "source": "https://docs.customer.io/files/journeys-app.json",
+      "url": "https://docs.customer.io/files/journeys-app.json",
+      "sha256": "2266f0a9920e369d0fc21719ac4e82c1a3dda9190131105247d4b5d8ede25ba8",
+      "bytes": 12841033
+    }
+  ],
+  "deep_l": [
+    {
+      "source": "github:DeepLcom/openapi@main:openapi.yaml",
+      "url": "https://raw.githubusercontent.com/DeepLcom/openapi/31681f724bb6790bb260c8d4d6246149f3c092c8/openapi.yaml",
+      "commit": "31681f724bb6790bb260c8d4d6246149f3c092c8",
+      "sha256": "55aa223a644cce4ed8df1784217c66fabcddc31918dc9efebd7e31b68535b8fb",
+      "bytes": 344032
+    }
+  ],
+  "dhl": [
+    {
+      "source": "https://developer.dhl.com/sites/default/files/2026-08/track_v1.5.8.yaml",
+      "url": "https://developer.dhl.com/sites/default/files/2026-08/track_v1.5.8.yaml",
+      "sha256": "06440f54c8b59b91f8766b02502a839bc93a8ede02e8105a7faca9655b2a17e5",
+      "bytes": 38438
+    }
+  ],
+  "discord": [
+    {
+      "source": "github:discord/discord-api-spec@main:specs/openapi.json",
+      "url": "https://raw.githubusercontent.com/discord/discord-api-spec/9426d3c1d4b103484283d7feb568f2ef142712de/specs/openapi.json",
+      "commit": "9426d3c1d4b103484283d7feb568f2ef142712de",
+      "sha256": "c946facea80a4d356a9e930062c4d05cb6e96ec2638e532493e557805bb6c408",
+      "bytes": 1192087
+    }
+  ],
+  "discourse": [
+    {
+      "source": "github:discourse/discourse_api_docs@main:openapi.json",
+      "url": "https://raw.githubusercontent.com/discourse/discourse_api_docs/c19117eb234ceb4ddc9cdbbf5a1b3d7522fef446/openapi.json",
+      "commit": "c19117eb234ceb4ddc9cdbbf5a1b3d7522fef446",
+      "sha256": "bd0cc899503bbd8517cd092f13decbc895c37bb41281bae4d8ed88798dc0b77b",
+      "bytes": 713636
+    }
+  ],
+  "egoi": [
+    {
+      "source": "github:E-goi/sdk-java@master:api/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/E-goi/sdk-java/ea89de5c6f0887a9cc9646bc4769880787878f2d/api/openapi.yaml",
+      "commit": "ea89de5c6f0887a9cc9646bc4769880787878f2d",
+      "sha256": "efe5c4d974e3978b5945b3d9edc5a4fb66a7b68e7816eb9b56adf6389ea6e022",
+      "bytes": 1519966
+    }
+  ],
+  "elastic_security": [
+    {
+      "source": "github:elastic/kibana@main:oas_docs/output/kibana.yaml",
+      "url": "https://raw.githubusercontent.com/elastic/kibana/1bd245d02d26137e8f784bf79309286f15996c5d/oas_docs/output/kibana.yaml",
+      "commit": "1bd245d02d26137e8f784bf79309286f15996c5d",
+      "sha256": "b6f82d23e09092e8be546c9f5c9beb92882c18e15c86cbac40f022ee23c235d7",
+      "bytes": 10556859
+    }
+  ],
+  "elasticsearch": [
+    {
+      "source": "github:elastic/elasticsearch-specification@main:output/openapi/elasticsearch-openapi.json",
+      "url": "https://raw.githubusercontent.com/elastic/elasticsearch-specification/b57a7e50d52479a5c90ebe9930a4bfbb33d3b5b2/output/openapi/elasticsearch-openapi.json",
+      "commit": "b57a7e50d52479a5c90ebe9930a4bfbb33d3b5b2",
+      "sha256": "af0c2fc91491eb9b73116f431de254628fc44472deb269e9371528330f7568c9",
+      "bytes": 6518628
+    }
+  ],
+  "figma": [
+    {
+      "source": "github:figma/rest-api-spec@main:openapi/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/figma/rest-api-spec/2a90e5adc67d8117d7c2da624f03a9bfa3027fb6/openapi/openapi.yaml",
+      "commit": "2a90e5adc67d8117d7c2da624f03a9bfa3027fb6",
+      "sha256": "d0d7f955eecafa8166c8e0dd63ba10cc14c18677903c2b447921ba39eea5d598",
+      "bytes": 401203
+    }
+  ],
+  "form_io": [
+    {
+      "source": "https://documenter.gw.postman.com/api/collections/684631/2Jvuks?segregateAuth=true\u0026versionTag=latest",
+      "url": "https://documenter.gw.postman.com/api/collections/684631/2Jvuks?segregateAuth=true\u0026versionTag=latest",
+      "sha256": "5abe868c64b86667988641d86f98a4cef3ff03b5defa64cfefa2f2dce4610afb",
+      "bytes": 2568939
+    }
+  ],
+  "formstack": [
+    {
+      "source": "https://developers.formstack.com/openapi/api2025-openapi.yaml",
+      "url": "https://developers.formstack.com/openapi/api2025-openapi.yaml",
+      "sha256": "dbf62b1e942c5ed16682585ea0d6a93fcdc11c8e1f76855198280d4a33b66bda",
+      "bytes": 235265
+    }
+  ],
+  "g_suite_admin": [
+    {
+      "source": "https://admin.googleapis.com/$discovery/rest?version=directory_v1",
+      "url": "https://admin.googleapis.com/$discovery/rest?version=directory_v1",
+      "revision": "20260929",
+      "sha256": "e92ebd8f726b6001699524ff6b7f0f72e647eb75cf6a94f0905cbd885dedba65",
+      "bytes": 387433
+    }
+  ],
+  "get_response": [
+    {
+      "source": "https://apireference.getresponse.com/open-api.json",
+      "url": "https://apireference.getresponse.com/open-api.json",
+      "sha256": "a8c2d934442d3ea8884bb5135f63686a00d364856241d467a63d7a37a0327a3d",
+      "bytes": 2471504
+    }
+  ],
+  "github": [
+    {
+      "source": "github:github/rest-api-description@main:descriptions/api.github.com/api.github.com.json",
+      "url": "https://raw.githubusercontent.com/github/rest-api-description/836ce198db13a6fb194547e53eea99c6ddae495b/descriptions/api.github.com/api.github.com.json",
+      "commit": "836ce198db13a6fb194547e53eea99c6ddae495b",
+      "sha256": "f3efa055b46b43f5f133ecf792a36a7f50cf8a4378cbd177390bc2bf8c6097cd",
+      "bytes": 13014127
+    }
+  ],
+  "gitlab": [
+    {
+      "source": "https://gitlab.com/gitlab-org/gitlab/-/raw/master/doc/api/openapi/openapi_v2.yaml",
+      "url": "https://gitlab.com/gitlab-org/gitlab/-/raw/master/doc/api/openapi/openapi_v2.yaml",
+      "sha256": "393840a87b0be71fb266a428f4aa055d0921621022e99af24a14afc398a1bec7",
+      "bytes": 2447655
+    }
+  ],
+  "gmail": [
+    {
+      "source": "https://gmail.googleapis.com/$discovery/rest?version=v1",
+      "url": "https://gmail.googleapis.com/$discovery/rest?version=v1",
+      "revision": "20260928",
+      "sha256": "5dfa2de8698cf24ff81438c6b424cd345e4df8dd69aaaa23cc64c10060f18f3d",
+      "bytes": 217687
+    }
+  ],
+  "go_to_webinar": [
+    {
+      "source": "https://api.apis.guru/v2/specs/getgo.com/gotowebinar/1.0.0/swagger.json",
+      "url": "https://api.apis.guru/v2/specs/getgo.com/gotowebinar/1.0.0/swagger.json",
+      "sha256": "2aa36684c7a7776931e109eea3d8941f97183fddb1269a9a496acf582a7eaf05",
+      "bytes": 105822
+    }
+  ],
+  "gong": [
+    {
+      "source": "https://gong.app.gong.io/ajax/settings/api/documentation/specs?version=",
+      "url": "https://gong.app.gong.io/ajax/settings/api/documentation/specs?version=",
+      "sha256": "0ba471232ce53969591255946d417df9a23879500cc2675ae2330a8fc703cbeb",
+      "bytes": 484957
+    }
+  ],
+  "google_ads": [
+    {
+      "source": "https://googleads.googleapis.com/$discovery/rest?version=v25",
+      "url": "https://googleads.googleapis.com/$discovery/rest?version=v25",
+      "revision": "20260929",
+      "sha256": "319874257eed620dbc8e1033e0bfd342a9a1e6a38017827d5294466fa3c8cad8",
+      "bytes": 3280527
+    }
+  ],
+  "google_analytics": [
+    {
+      "source": "https://analyticsdata.googleapis.com/$discovery/rest?version=v1beta",
+      "url": "https://analyticsdata.googleapis.com/$discovery/rest?version=v1beta",
+      "revision": "20261004",
+      "sha256": "c829aa28af331be57a3ea302602354cd184083bce0880dd1362c2bf12500f11f",
+      "bytes": 121083
+    },
+    {
+      "source": "https://analyticsadmin.googleapis.com/$discovery/rest?version=v1beta",
+      "url": "https://analyticsadmin.googleapis.com/$discovery/rest?version=v1beta",
+      "revision": "20261003",
+      "sha256": "536d497db22ebe2fe49453b70678125d91e3a75fd40b8ca17411f787f9dd930c",
+      "bytes": 165280
+    }
+  ],
+  "google_big_query": [
+    {
+      "source": "https://bigquery.googleapis.com/$discovery/rest?version=v2",
+      "url": "https://bigquery.googleapis.com/$discovery/rest?version=v2",
+      "revision": "20260922",
+      "sha256": "3c81d8943209fa899b1e6e435397c22df109ae76e1a1ec4c627c0593d88a71ad",
+      "bytes": 594121
+    }
+  ],
+  "google_books": [
+    {
+      "source": "https://books.googleapis.com/$discovery/rest?version=v1",
+      "url": "https://books.googleapis.com/$discovery/rest?version=v1",
+      "revision": "20260929",
+      "sha256": "e9e3ff79351aee28747096bd90cc0643a6de2890401d104404f2bef60d73d4c8",
+      "bytes": 176817
+    }
+  ],
+  "google_business_profile": [
+    {
+      "source": "https://mybusinessbusinessinformation.googleapis.com/$discovery/rest?version=v1",
+      "url": "https://mybusinessbusinessinformation.googleapis.com/$discovery/rest?version=v1",
+      "revision": "20261004",
+      "sha256": "766a0cc53f901dea02dbd8f46df8c1ce1efac07e74ddbccf2583d4e04f25a011",
+      "bytes": 85101
+    },
+    {
+      "source": "https://mybusinessaccountmanagement.googleapis.com/$discovery/rest?version=v1",
+      "url": "https://mybusinessaccountmanagement.googleapis.com/$discovery/rest?version=v1",
+      "revision": "20261004",
+      "sha256": "c561e37b559d713b7b72054d1462954e8d01a3bccbc14ef0bfff027331fff879",
+      "bytes": 42004
+    }
+  ],
+  "google_calendar": [
+    {
+      "source": "https://calendar-json.googleapis.com/$discovery/rest?version=v3",
+      "url": "https://calendar-json.googleapis.com/$discovery/rest?version=v3",
+      "revision": "20260925",
+      "sha256": "1c02b1cd5b4252baa24c13d6a8026b0438dc0f9f755a47e17313b16f0e3f5e80",
+      "bytes": 170208
+    }
+  ],
+  "google_chat": [
+    {
+      "source": "https://chat.googleapis.com/$discovery/rest?version=v1",
+      "url": "https://chat.googleapis.com/$discovery/rest?version=v1",
+      "revision": "20261001",
+      "sha256": "a353b9611c2aa349142e55f75dc420249db907fca43da5eaaf0b987dafebdf6e",
+      "bytes": 463678
+    }
+  ],
+  "google_cloud_natural_language": [
+    {
+      "source": "https://language.googleapis.com/$discovery/rest?version=v2",
+      "url": "https://language.googleapis.com/$discovery/rest?version=v2",
+      "revision": "20261004",
+      "sha256": "e5a499727f6e19eb206200a9a1cfc563a561c10c96a55259008d2a0e7e3f0c53",
+      "bytes": 205520
+    }
+  ],
+  "google_cloud_storage": [
+    {
+      "source": "https://storage.googleapis.com/$discovery/rest?version=v1",
+      "url": "https://storage.googleapis.com/$discovery/rest?version=v1",
+      "revision": "20260930",
+      "sha256": "93957c6569366dbd78a2c02a47df9d569602e95315b1467382ce5fd557be9f13",
+      "bytes": 253841
+    }
+  ],
+  "google_contacts": [
+    {
+      "source": "https://people.googleapis.com/$discovery/rest?version=v1",
+      "url": "https://people.googleapis.com/$discovery/rest?version=v1",
+      "revision": "20261004",
+      "sha256": "c71f51bcc8aa73f5c6425ff20090c8c0bce318f75eb7cafb0f83db125e9428eb",
+      "bytes": 144907
+    }
+  ],
+  "google_docs": [
+    {
+      "source": "https://docs.googleapis.com/$discovery/rest?version=v1",
+      "url": "https://docs.googleapis.com/$discovery/rest?version=v1",
+      "revision": "20260930",
+      "sha256": "10483e1020183ccb2663b710c2cffa0d59121d4cae9950f2ec486e68b5aafc63",
+      "bytes": 279107
+    }
+  ],
+  "google_drive": [
+    {
+      "source": "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
+      "url": "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
+      "revision": "20261001",
+      "sha256": "c026bee2fe54c7658c3240cc960b376cccb6e629d1c30302f2acaec947138eb6",
+      "bytes": 269730
+    }
+  ],
+  "google_firebase_cloud_firestore": [
+    {
+      "source": "https://firestore.googleapis.com/$discovery/rest?version=v1",
+      "url": "https://firestore.googleapis.com/$discovery/rest?version=v1",
+      "revision": "20260928",
+      "sha256": "7ce01f54c4c82cacd3e9a6d56ba9d37f62ab7d6ab031ec404c49a47b06dc8b2a",
+      "bytes": 323172
+    }
+  ],
+  "google_gemini": [
+    {
+      "source": "https://generativelanguage.googleapis.com/$discovery/rest?version=v1beta",
+      "url": "https://generativelanguage.googleapis.com/$discovery/rest?version=v1beta",
+      "revision": "20261004",
+      "sha256": "a5c84bcc28a8c7d34a3ccb20b14f9ef1359ce28a3a9fb9238d073cb4b8856be6",
+      "bytes": 382104
+    }
+  ],
+  "google_perspective": [
+    {
+      "source": "https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
+      "url": "https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
+      "revision": "20260810",
+      "sha256": "6ff737ba59a2e0de7a3488355dacc4a77595757a3bfab69471fc428d672883b3",
+      "bytes": 20085
+    }
+  ],
+  "google_sheets": [
+    {
+      "source": "https://sheets.googleapis.com/$discovery/rest?version=v4",
+      "url": "https://sheets.googleapis.com/$discovery/rest?version=v4",
+      "revision": "20260928",
+      "sha256": "4b69b907f86527e046d2c01bb9401a99cd0355785106623e039109b03fec1741",
+      "bytes": 396210
+    }
+  ],
+  "google_slides": [
+    {
+      "source": "https://slides.googleapis.com/$discovery/rest?version=v1",
+      "url": "https://slides.googleapis.com/$discovery/rest?version=v1",
+      "revision": "20260928",
+      "sha256": "9cdefdc32ec63ab892dda616fa68182629027568518117e2c9007e01d670c5af",
+      "bytes": 252867
+    }
+  ],
+  "google_tasks": [
+    {
+      "source": "https://tasks.googleapis.com/$discovery/rest?version=v1",
+      "url": "https://tasks.googleapis.com/$discovery/rest?version=v1",
+      "revision": "20261003",
+      "sha256": "e45cf515c010303664e937c74912cb2ccba07f8b53c037f74fd7cca18e506884",
+      "bytes": 31887
+    }
+  ],
+  "google_translate": [
+    {
+      "source": "https://translation.googleapis.com/$discovery/rest?version=v3",
+      "url": "https://translation.googleapis.com/$discovery/rest?version=v3",
+      "revision": "20260901",
+      "sha256": "87106c0243975710d2ea8d2c5221cad8914cba591bd26e9710b95fca12818420",
+      "bytes": 168711
+    }
+  ],
+  "google_vertex": [
+    {
+      "source": "https://aiplatform.googleapis.com/$discovery/rest?version=v1",
+      "url": "https://aiplatform.googleapis.com/$discovery/rest?version=v1",
+      "revision": "20260930",
+      "sha256": "c648cb9e54f6895434f626fe5224b26dcdc4410df81805164eb231862b097dec",
+      "bytes": 3891087
+    }
+  ],
+  "gotify": [
+    {
+      "source": "github:gotify/server@master:docs/spec.json",
+      "url": "https://raw.githubusercontent.com/gotify/server/f77d8a0ce8973aa3612b4e04f6b965794a2a51c5/docs/spec.json",
+      "commit": "f77d8a0ce8973aa3612b4e04f6b965794a2a51c5",
+      "sha256": "0c6c716af3498ca26b06a03e1a96dff79ec98c56d2e2da2e79ff6bf191533b6c",
+      "bytes": 94767
+    }
+  ],
+  "grafana": [
+    {
+      "source": "github:grafana/grafana@main:public/openapi3.json",
+      "url": "https://raw.githubusercontent.com/grafana/grafana/63dd0512b5cade652e7e3f2fff6df7e2456a8ebd/public/openapi3.json",
+      "commit": "63dd0512b5cade652e7e3f2fff6df7e2456a8ebd",
+      "sha256": "46060ec56dc1f917328a33c8fb9dbf8fcca722c627b6a76202888dc7f6bb65f0",
+      "bytes": 797853
+    }
+  ],
+  "grist": [
+    {
+      "source": "github:gristlabs/grist-help@master:api/grist.yml",
+      "url": "https://raw.githubusercontent.com/gristlabs/grist-help/b047726e327709d214e3b63222ee052de6399934/api/grist.yml",
+      "commit": "b047726e327709d214e3b63222ee052de6399934",
+      "sha256": "f6d1d48fd1a001a4ea70b8e4edb9c3f5aa5a544ce517d8a1bcf6d67cbf344df2",
+      "bytes": 138304
+    }
+  ],
+  "high_level": [
+    {
+      "source": "github:GoHighLevel/highlevel-api-docs@main:apps/contacts.json",
+      "url": "https://raw.githubusercontent.com/GoHighLevel/highlevel-api-docs/0af86a4cbd48c66a4071c7e509d1079f9f10ed17/apps/contacts.json",
+      "commit": "0af86a4cbd48c66a4071c7e509d1079f9f10ed17",
+      "sha256": "d251defab9b0d3ae2feb393b27c071bed7e964c63826af0131bb8e888ecfd6cb",
+      "bytes": 133996
+    },
+    {
+      "source": "github:GoHighLevel/highlevel-api-docs@main:apps/opportunities.json",
+      "url": "https://raw.githubusercontent.com/GoHighLevel/highlevel-api-docs/0af86a4cbd48c66a4071c7e509d1079f9f10ed17/apps/opportunities.json",
+      "commit": "0af86a4cbd48c66a4071c7e509d1079f9f10ed17",
+      "sha256": "bd2c63ca4ef9929fb996a04c873e7300b7d3fe5737200270e7f2270dce26e1ba",
+      "bytes": 58000
+    },
+    {
+      "source": "github:GoHighLevel/highlevel-api-docs@main:apps/calendars.json",
+      "url": "https://raw.githubusercontent.com/GoHighLevel/highlevel-api-docs/0af86a4cbd48c66a4071c7e509d1079f9f10ed17/apps/calendars.json",
+      "commit": "0af86a4cbd48c66a4071c7e509d1079f9f10ed17",
+      "sha256": "0825a16583dab7d3f34d9c5ef8b63e390dabf26d308429226d3360e813d1fc28",
+      "bytes": 193044
+    },
+    {
+      "source": "github:GoHighLevel/highlevel-api-docs@main:apps/users.json",
+      "url": "https://raw.githubusercontent.com/GoHighLevel/highlevel-api-docs/0af86a4cbd48c66a4071c7e509d1079f9f10ed17/apps/users.json",
+      "commit": "0af86a4cbd48c66a4071c7e509d1079f9f10ed17",
+      "sha256": "a83b463c0bd7e9cc3d0602d5a8edc44ce27a207eec965b7bbfa77855c672c408",
+      "bytes": 89834
+    }
+  ],
+  "hubspot": [
+    {
+      "source": "github:HubSpot/HubSpot-public-api-spec-collection@main:PublicApiSpecs/CRM/Contacts/Rollouts/424/v3/contacts.json",
+      "url": "https://raw.githubusercontent.com/HubSpot/HubSpot-public-api-spec-collection/2d376c93342ba7e83d005c0ca8d59f985a2d55b6/PublicApiSpecs/CRM/Contacts/Rollouts/424/v3/contacts.json",
+      "commit": "2d376c93342ba7e83d005c0ca8d59f985a2d55b6",
+      "sha256": "3569b4e9c3c3eac31aea944df54f8422d57a2af53f8bd8e5bed8088972ce7e0d",
+      "bytes": 84636
+    },
+    {
+      "source": "github:HubSpot/HubSpot-public-api-spec-collection@main:PublicApiSpecs/CRM/Companies/Rollouts/424/v3/companies.json",
+      "url": "https://raw.githubusercontent.com/HubSpot/HubSpot-public-api-spec-collection/2d376c93342ba7e83d005c0ca8d59f985a2d55b6/PublicApiSpecs/CRM/Companies/Rollouts/424/v3/companies.json",
+      "commit": "2d376c93342ba7e83d005c0ca8d59f985a2d55b6",
+      "sha256": "c65ef29cb4582696f57b56ec0a23e1f657989127ba68004e93e0bd829afe6fc0",
+      "bytes": 82621
+    },
+    {
+      "source": "github:HubSpot/HubSpot-public-api-spec-collection@main:PublicApiSpecs/CRM/Deals/Rollouts/424/v3/deals.json",
+      "url": "https://raw.githubusercontent.com/HubSpot/HubSpot-public-api-spec-collection/2d376c93342ba7e83d005c0ca8d59f985a2d55b6/PublicApiSpecs/CRM/Deals/Rollouts/424/v3/deals.json",
+      "commit": "2d376c93342ba7e83d005c0ca8d59f985a2d55b6",
+      "sha256": "ece657b879d003330c5d9c5133c08c17795513bcab10137b3cd0fa3742eb16e4",
+      "bytes": 80766
+    },
+    {
+      "source": "github:HubSpot/HubSpot-public-api-spec-collection@main:PublicApiSpecs/CRM/Tickets/Rollouts/424/v3/tickets.json",
+      "url": "https://raw.githubusercontent.com/HubSpot/HubSpot-public-api-spec-collection/2d376c93342ba7e83d005c0ca8d59f985a2d55b6/PublicApiSpecs/CRM/Tickets/Rollouts/424/v3/tickets.json",
+      "commit": "2d376c93342ba7e83d005c0ca8d59f985a2d55b6",
+      "sha256": "b1b2a7a8751112ce4729de9e326df21a3d1bea203cf3d3f32f27e3721b1120b7",
+      "bytes": 82066
+    },
+    {
+      "source": "github:HubSpot/HubSpot-public-api-spec-collection@main:PublicApiSpecs/CRM/Crm%20Owners/Rollouts/146888/v3/crmOwners.json",
+      "url": "https://raw.githubusercontent.com/HubSpot/HubSpot-public-api-spec-collection/2d376c93342ba7e83d005c0ca8d59f985a2d55b6/PublicApiSpecs/CRM/Crm%20Owners/Rollouts/146888/v3/crmOwners.json",
+      "commit": "2d376c93342ba7e83d005c0ca8d59f985a2d55b6",
+      "sha256": "63847721bc60bad3143d15fc5a81740f7627486b4644969445bfb17eb6a22506",
+      "bytes": 16043
+    },
+    {
+      "source": "github:HubSpot/HubSpot-public-api-spec-collection@main:PublicApiSpecs/CRM/Lists/Rollouts/144891/v3/lists.json",
+      "url": "https://raw.githubusercontent.com/HubSpot/HubSpot-public-api-spec-collection/2d376c93342ba7e83d005c0ca8d59f985a2d55b6/PublicApiSpecs/CRM/Lists/Rollouts/144891/v3/lists.json",
+      "commit": "2d376c93342ba7e83d005c0ca8d59f985a2d55b6",
+      "sha256": "634f7c16e0907c5018b6cc7f32e513806e7326a4d8564a3069cecec44c411542",
+      "bytes": 240703
+    },
+    {
+      "source": "github:HubSpot/HubSpot-public-api-spec-collection@main:PublicApiSpecs/Marketing/Forms/Rollouts/144909/v3/forms.json",
+      "url": "https://raw.githubusercontent.com/HubSpot/HubSpot-public-api-spec-collection/2d376c93342ba7e83d005c0ca8d59f985a2d55b6/PublicApiSpecs/Marketing/Forms/Rollouts/144909/v3/forms.json",
+      "commit": "2d376c93342ba7e83d005c0ca8d59f985a2d55b6",
+      "sha256": "b21df04b5da42ccecd4777face5a0d986b618d4c812f625cd7ade41075163bbc",
+      "bytes": 82399
+    }
+  ],
+  "hugging_face_inference": [
+    {
+      "source": "https://huggingface.co/.well-known/openapi.json",
+      "url": "https://huggingface.co/.well-known/openapi.json",
+      "sha256": "8853bbddca266714bc1aa8a12abbbd350eebcdf13c85698a6b1d26d540b10a58",
+      "bytes": 1158636
+    }
+  ],
+  "hunter": [
+    {
+      "source": "https://hunter.io/openapi.json",
+      "url": "https://hunter.io/openapi.json",
+      "sha256": "205b0053eefe494bd7579e85229887f766c844f12c4bd8c65678075dc1af9f6b",
+      "bytes": 265511
+    }
+  ],
+  "intercom": [
+    {
+      "source": "github:intercom/Intercom-OpenAPI@main:descriptions/2.11/api.intercom.io.yaml",
+      "url": "https://raw.githubusercontent.com/intercom/Intercom-OpenAPI/a13f991e395798bc4b87d64ed673b0e8425b267a/descriptions/2.11/api.intercom.io.yaml",
+      "commit": "a13f991e395798bc4b87d64ed673b0e8425b267a",
+      "sha256": "41c83541883c96f5400f5731cf10e6898641c68fc9984256f866fe4f721d37c6",
+      "bytes": 710787
+    }
+  ],
+  "invoice_ninja": [
+    {
+      "source": "github:invoiceninja/invoiceninja@v5-stable:openapi/api-docs.yaml",
+      "url": "https://raw.githubusercontent.com/invoiceninja/invoiceninja/f1ffa5f9989afbed4e7dc80b5c0cc18944335ffc/openapi/api-docs.yaml",
+      "commit": "f1ffa5f9989afbed4e7dc80b5c0cc18944335ffc",
+      "sha256": "bcda1f823746834e205e917bca9443ee043067f583a5b8c909c4a8d3ffa87da3",
+      "bytes": 1015417
+    }
+  ],
+  "iterable": [
+    {
+      "source": "https://api.iterable.com/api-docs",
+      "url": "https://api.iterable.com/api-docs",
+      "sha256": "cca837e6271573efccef1c8e10a8fbcb2d0f2c2808e79a9ece8109cbab4fae1c",
+      "bytes": 308389
+    }
+  ],
+  "jina_ai": [
+    {
+      "source": "https://r.jina.ai/openapi.json",
+      "url": "https://r.jina.ai/openapi.json",
+      "sha256": "a41642c440f8d16cc63494702430c4aeda58f52126a0b9c154e938274d4b7fb9",
+      "bytes": 192166
+    },
+    {
+      "source": "https://s.jina.ai/openapi.json",
+      "url": "https://s.jina.ai/openapi.json",
+      "sha256": "7f0db7206cfa63af6cffe0913d4d6f5858722718a3bb76762c4ce58e08f438c4",
+      "bytes": 197213
+    }
+  ],
+  "keap": [
+    {
+      "source": "github:infusionsoft/keap-sdk@main:sdks/v2/swagger.yml",
+      "url": "https://raw.githubusercontent.com/infusionsoft/keap-sdk/b5ddebd8085d989ba8cce17894318cef27522dea/sdks/v2/swagger.yml",
+      "commit": "b5ddebd8085d989ba8cce17894318cef27522dea",
+      "sha256": "0bc4a1e26d94a26ca49e5a85d72c279ef4fc511ae722ace08188a72f2a17bf9c",
+      "bytes": 1312658
+    }
+  ],
+  "ko_bo_toolbox": [
+    {
+      "source": "github:kobotoolbox/kpi@main:static/openapi/schema_v2.yaml",
+      "url": "https://raw.githubusercontent.com/kobotoolbox/kpi/63ba7dfb41a6a22fe0c59234e00c52c4bbb67f0d/static/openapi/schema_v2.yaml",
+      "commit": "63ba7dfb41a6a22fe0c59234e00c52c4bbb67f0d",
+      "sha256": "7f81278fee5a8ed3ded435f91ee695be8a44767f522f121b5c0f6e3134c6de78",
+      "bytes": 826636
+    }
+  ],
+  "lemlist": [
+    {
+      "source": "https://developer.lemlist.com/api-reference/openapi/v2.json",
+      "url": "https://developer.lemlist.com/api-reference/openapi/v2.json",
+      "sha256": "036194943eb754e5f1c17223fe4913a498cb7f8cc3e421a2ac3510cffc1cd259",
+      "bytes": 1181730
+    }
+  ],
+  "linear": [
+    {
+      "source": "github:linear/linear@master:packages/sdk/src/schema.graphql",
+      "url": "https://raw.githubusercontent.com/linear/linear/b37823be308a42f837277671f3ded66d33d92e6c/packages/sdk/src/schema.graphql",
+      "commit": "b37823be308a42f837277671f3ded66d33d92e6c",
+      "sha256": "cc4263f66d6e79f188b1e6b08af5f0fe8dd32dd3c0cdae3c070606e8d1e5e0eb",
+      "bytes": 1335039
+    }
+  ],
+  "magento2": [
+    {
+      "source": "github:AdobeDocs/commerce-webapi@main:src/openapi/admin-schema-2.4.9.yaml",
+      "url": "https://raw.githubusercontent.com/AdobeDocs/commerce-webapi/4a68681fcfccf894538e5772d06d19cc96f8d9ad/src/openapi/admin-schema-2.4.9.yaml",
+      "commit": "4a68681fcfccf894538e5772d06d19cc96f8d9ad",
+      "sha256": "c5c6dbc3d4995f3ee136cc49dbb74d5c323477a8954df0b213e65e1bae9bea6d",
+      "bytes": 1104589
+    }
+  ],
+  "mailchimp": [
+    {
+      "source": "github:mailchimp/mailchimp-client-lib-codegen@main:spec/marketing.json",
+      "url": "https://raw.githubusercontent.com/mailchimp/mailchimp-client-lib-codegen/74feb256f8ba8bb9d5a322de83c92b42306831fd/spec/marketing.json",
+      "commit": "74feb256f8ba8bb9d5a322de83c92b42306831fd",
+      "sha256": "374046a5209daa8d68cdb5dd7e0244fcf214928af4321ff539755849641b9a21",
+      "bytes": 10769438
+    }
+  ],
+  "mailgun": [
+    {
+      "source": "https://documentation.mailgun.com/_bundle/docs/mailgun/api-reference/send/mailgun.yaml",
+      "url": "https://documentation.mailgun.com/_bundle/docs/mailgun/api-reference/send/mailgun.yaml",
+      "sha256": "942926876cfd091def387ab10600ab38f0b7f4abc8872dabe63464a021cb11c7",
+      "bytes": 855857
+    }
+  ],
+  "mailjet": [
+    {
+      "source": "https://dev.mailjet.com/_bundle/openapi/openapi-mailjet.yaml",
+      "url": "https://dev.mailjet.com/_bundle/openapi/openapi-mailjet.yaml",
+      "sha256": "78479795211068a5770cac7ff831bcfd279d1ca04ef01e56c6b6bdc3da107b17",
+      "bytes": 1841527
+    }
+  ],
+  "mandrill": [
+    {
+      "source": "github:mailchimp/mailchimp-client-lib-codegen@main:spec/transactional.json",
+      "url": "https://raw.githubusercontent.com/mailchimp/mailchimp-client-lib-codegen/74feb256f8ba8bb9d5a322de83c92b42306831fd/spec/transactional.json",
+      "commit": "74feb256f8ba8bb9d5a322de83c92b42306831fd",
+      "sha256": "fbd8d2bb88293b00d5ea089e9758d8ea649d647d6500fb90cd31fad56065bea6",
+      "bytes": 509286
+    }
+  ],
+  "matrix": [
+    {
+      "source": "https://spec.matrix.org/latest/client-server-api/api.json",
+      "url": "https://spec.matrix.org/latest/client-server-api/api.json",
+      "sha256": "c7fe4072c6810491e436ac8e6dc212c7d653b6ce53b59e4ac752b4664b6f0e68",
+      "bytes": 2503084
+    }
+  ],
+  "message_bird": [
+    {
+      "source": "github:messagebird/openapi-specs@main:sms/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/messagebird/openapi-specs/aac7e61a4d0caeca037c6c73deff7bca845d6272/sms/openapi.yaml",
+      "commit": "aac7e61a4d0caeca037c6c73deff7bca845d6272",
+      "sha256": "48bb1cc832d5e0b0611561aa234999e42a43454f80b0ae33f3febce7d4c59585",
+      "bytes": 43512
+    }
+  ],
+  "metabase": [
+    {
+      "source": "github:metabase/metabase@master:resources/openapi/openapi.json",
+      "url": "https://raw.githubusercontent.com/metabase/metabase/d6b2903ccd7c5fce732d94cbdee718b29e52eb92/resources/openapi/openapi.json",
+      "commit": "d6b2903ccd7c5fce732d94cbdee718b29e52eb92",
+      "sha256": "19bfd8fb9e6ad7c487c3df816d4e5081e4856058e0c19df3ecbe4ed5d4bc7397",
+      "bytes": 1718062
+    }
+  ],
+  "microsoft_entra": [
+    {
+      "source": "github:microsoftgraph/msgraph-metadata@master:openapi/v1.0/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/7b2914c8ad1340129f52aa785f13c074cb46fd7c/openapi/v1.0/openapi.yaml",
+      "commit": "7b2914c8ad1340129f52aa785f13c074cb46fd7c",
+      "sha256": "77c1a39c94ab0a72c0a2e07ff74f221903141e8913e748fddcc189b98da42feb",
+      "bytes": 44334960
+    }
+  ],
+  "microsoft_excel": [
+    {
+      "source": "github:microsoftgraph/msgraph-metadata@master:openapi/v1.0/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/7b2914c8ad1340129f52aa785f13c074cb46fd7c/openapi/v1.0/openapi.yaml",
+      "commit": "7b2914c8ad1340129f52aa785f13c074cb46fd7c",
+      "sha256": "77c1a39c94ab0a72c0a2e07ff74f221903141e8913e748fddcc189b98da42feb",
+      "bytes": 44334960
+    }
+  ],
+  "microsoft_excel_share_point": [
+    {
+      "source": "github:microsoftgraph/msgraph-metadata@master:openapi/v1.0/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/7b2914c8ad1340129f52aa785f13c074cb46fd7c/openapi/v1.0/openapi.yaml",
+      "commit": "7b2914c8ad1340129f52aa785f13c074cb46fd7c",
+      "sha256": "77c1a39c94ab0a72c0a2e07ff74f221903141e8913e748fddcc189b98da42feb",
+      "bytes": 44334960
+    }
+  ],
+  "microsoft_graph_security": [
+    {
+      "source": "github:microsoftgraph/msgraph-metadata@master:openapi/v1.0/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/7b2914c8ad1340129f52aa785f13c074cb46fd7c/openapi/v1.0/openapi.yaml",
+      "commit": "7b2914c8ad1340129f52aa785f13c074cb46fd7c",
+      "sha256": "77c1a39c94ab0a72c0a2e07ff74f221903141e8913e748fddcc189b98da42feb",
+      "bytes": 44334960
+    }
+  ],
+  "microsoft_one_drive": [
+    {
+      "source": "github:microsoftgraph/msgraph-metadata@master:openapi/v1.0/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/7b2914c8ad1340129f52aa785f13c074cb46fd7c/openapi/v1.0/openapi.yaml",
+      "commit": "7b2914c8ad1340129f52aa785f13c074cb46fd7c",
+      "sha256": "77c1a39c94ab0a72c0a2e07ff74f221903141e8913e748fddcc189b98da42feb",
+      "bytes": 44334960
+    }
+  ],
+  "microsoft_outlook": [
+    {
+      "source": "github:microsoftgraph/msgraph-metadata@master:openapi/v1.0/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/7b2914c8ad1340129f52aa785f13c074cb46fd7c/openapi/v1.0/openapi.yaml",
+      "commit": "7b2914c8ad1340129f52aa785f13c074cb46fd7c",
+      "sha256": "77c1a39c94ab0a72c0a2e07ff74f221903141e8913e748fddcc189b98da42feb",
+      "bytes": 44334960
+    }
+  ],
+  "microsoft_share_point": [
+    {
+      "source": "github:microsoftgraph/msgraph-metadata@master:openapi/v1.0/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/7b2914c8ad1340129f52aa785f13c074cb46fd7c/openapi/v1.0/openapi.yaml",
+      "commit": "7b2914c8ad1340129f52aa785f13c074cb46fd7c",
+      "sha256": "77c1a39c94ab0a72c0a2e07ff74f221903141e8913e748fddcc189b98da42feb",
+      "bytes": 44334960
+    }
+  ],
+  "microsoft_teams": [
+    {
+      "source": "github:microsoftgraph/msgraph-metadata@master:openapi/v1.0/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/7b2914c8ad1340129f52aa785f13c074cb46fd7c/openapi/v1.0/openapi.yaml",
+      "commit": "7b2914c8ad1340129f52aa785f13c074cb46fd7c",
+      "sha256": "77c1a39c94ab0a72c0a2e07ff74f221903141e8913e748fddcc189b98da42feb",
+      "bytes": 44334960
+    }
+  ],
+  "microsoft_to_do": [
+    {
+      "source": "github:microsoftgraph/msgraph-metadata@master:openapi/v1.0/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/microsoftgraph/msgraph-metadata/7b2914c8ad1340129f52aa785f13c074cb46fd7c/openapi/v1.0/openapi.yaml",
+      "commit": "7b2914c8ad1340129f52aa785f13c074cb46fd7c",
+      "sha256": "77c1a39c94ab0a72c0a2e07ff74f221903141e8913e748fddcc189b98da42feb",
+      "bytes": 44334960
+    }
+  ],
+  "mindee": [
+    {
+      "source": "https://api.mindee.net/openapi.json",
+      "url": "https://api.mindee.net/openapi.json",
+      "sha256": "91e100d94c03d96d3ce2a38461fdf9242ba0cbaf87b114676aed937a515210de",
+      "bytes": 8612
+    }
+  ],
+  "minimax": [
+    {
+      "source": "https://platform.minimax.io/docs/api-reference/text/api/openapi-chat-openai.json",
+      "url": "https://platform.minimax.io/docs/api-reference/text/api/openapi-chat-openai.json",
+      "sha256": "d3b30dcce1f2423f4ed9cd797cebbfbf2b16c9868ce67bf7b38ecf7c87bd021b",
+      "bytes": 70807
+    },
+    {
+      "source": "https://platform.minimax.io/docs/api-reference/speech/t2a/api/openapi.json",
+      "url": "https://platform.minimax.io/docs/api-reference/speech/t2a/api/openapi.json",
+      "sha256": "aa21917008947d80898ffe7c33cc2cb2150370327d199c7861107cafdb875c0d",
+      "bytes": 36303
+    },
+    {
+      "source": "https://platform.minimax.io/docs/api-reference/video/generation/api/openapi.json",
+      "url": "https://platform.minimax.io/docs/api-reference/video/generation/api/openapi.json",
+      "sha256": "7088e5ab171ae108d9c00f1379d9da710aad9a4b22054585d6f2ae0ca2bfb709",
+      "bytes": 7296
+    },
+    {
+      "source": "https://platform.minimax.io/docs/api-reference/file/management/api/openapi.json",
+      "url": "https://platform.minimax.io/docs/api-reference/file/management/api/openapi.json",
+      "sha256": "0afa634fb6f58dfcf0ca79875224b84d9d726adfb7b8baa26e4b46efe879f19b",
+      "bytes": 14205
+    }
+  ],
+  "misp": [
+    {
+      "source": "github:MISP/MISP@develop:app/webroot/doc/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/MISP/MISP/4875221fb7b8dff2dfef03afb7f8f0aecda52f87/app/webroot/doc/openapi.yaml",
+      "commit": "4875221fb7b8dff2dfef03afb7f8f0aecda52f87",
+      "sha256": "7e5531c05025bfe167dad23e8c5ce58f8049a052595b9225b33ca66107d63d91",
+      "bytes": 335686
+    }
+  ],
+  "mistral_ai": [
+    {
+      "source": "github:mistralai/platform-docs-public@main:openapi.yaml",
+      "url": "https://raw.githubusercontent.com/mistralai/platform-docs-public/0256e9cf7c054c06f2daa0c14a3d7b32f906af45/openapi.yaml",
+      "commit": "0256e9cf7c054c06f2daa0c14a3d7b32f906af45",
+      "sha256": "60f5e92dcc4cae89a1c1eec614c409a1ce9da37f1e856d2868ff6734474f5859",
+      "bytes": 661948
+    }
+  ],
+  "monday_com": [
+    {
+      "source": "https://api.monday.com/v2/get_schema?format=sdl\u0026version=stable",
+      "url": "https://api.monday.com/v2/get_schema?format=sdl\u0026version=stable",
+      "sha256": "d136f8bdb45e7fe76dcb7c390216cc6b73d4c095b800610c3cc96f6279517e4e",
+      "bytes": 576802
+    }
+  ],
+  "moonshot": [
+    {
+      "source": "https://platform.moonshot.ai/docs/openapi.json",
+      "url": "https://platform.moonshot.ai/docs/openapi.json",
+      "sha256": "2d89f56850978e962aa4583bb7adc8373b4174329264061473c8dc2de7900dfb",
+      "bytes": 158301
+    }
+  ],
+  "n8n": [
+    {
+      "source": "github:n8n-io/n8n@master:packages/cli/src/public-api/v1/openapi.yml",
+      "url": "https://raw.githubusercontent.com/n8n-io/n8n/439e8ba2e70be371268bbdb86f6afb9bc5e50699/packages/cli/src/public-api/v1/openapi.yml",
+      "commit": "439e8ba2e70be371268bbdb86f6afb9bc5e50699",
+      "sha256": "43c8bf7ad1d9908c560395480f2130356c30ed233976786eadd8775fd37d1ec0",
+      "bytes": 3996
+    }
+  ],
+  "nasa": [
+    {
+      "source": "https://api.apis.guru/v2/specs/nasa.gov/apod/1.0.0/openapi.json",
+      "url": "https://api.apis.guru/v2/specs/nasa.gov/apod/1.0.0/openapi.json",
+      "sha256": "e082b43d8945db2345b088be41be4982f67fd116e129e7e194f156a4b4143028",
+      "bytes": 2925
+    }
+  ],
+  "netlify": [
+    {
+      "source": "github:netlify/open-api@master:swagger.yml",
+      "url": "https://raw.githubusercontent.com/netlify/open-api/065567609ce5b47bd210876b86460c659d077d3c/swagger.yml",
+      "commit": "065567609ce5b47bd210876b86460c659d077d3c",
+      "sha256": "989a86aa134bd90803eda0aff189ca487d0d38c7611257090061d52882dd7c3d",
+      "bytes": 155611
+    }
+  ],
+  "next_cloud": [
+    {
+      "source": "github:nextcloud/server@master:apps/provisioning_api/openapi.json",
+      "url": "https://raw.githubusercontent.com/nextcloud/server/ea075390fae67e130fd24edbc1d60afffd4d13d2/apps/provisioning_api/openapi.json",
+      "commit": "ea075390fae67e130fd24edbc1d60afffd4d13d2",
+      "sha256": "f386fc4187d4bd3a4e46c283f4b7a5751b371822e8903b203440e7f37f29ab60",
+      "bytes": 204284
+    },
+    {
+      "source": "github:nextcloud/server@master:core/openapi.json",
+      "url": "https://raw.githubusercontent.com/nextcloud/server/ea075390fae67e130fd24edbc1d60afffd4d13d2/core/openapi.json",
+      "commit": "ea075390fae67e130fd24edbc1d60afffd4d13d2",
+      "sha256": "007699e80253924ae40e4677f58c28bc3479015f4505f9cc8241ce2bbf441649",
+      "bytes": 469323
+    }
+  ],
+  "noco_db": [
+    {
+      "source": "github:nocodb/nocodb@develop:packages/nocodb/src/schema/swagger.json",
+      "url": "https://raw.githubusercontent.com/nocodb/nocodb/8783a446bba4a2c8f8112191887f5b5c330ed91b/packages/nocodb/src/schema/swagger.json",
+      "commit": "8783a446bba4a2c8f8112191887f5b5c330ed91b",
+      "sha256": "85cebe2b8b67087587c262b7161968191e92c4b770b52c25400ff6912c6a78f2",
+      "bytes": 939821
+    },
+    {
+      "source": "github:nocodb/nocodb@develop:packages/nocodb/src/schema/swagger-v2.json",
+      "url": "https://raw.githubusercontent.com/nocodb/nocodb/8783a446bba4a2c8f8112191887f5b5c330ed91b/packages/nocodb/src/schema/swagger-v2.json",
+      "commit": "8783a446bba4a2c8f8112191887f5b5c330ed91b",
+      "sha256": "eb21d6fb3181b20dfb942f21f7a22f1edd14533c9be0036a40b2543eab525efe",
+      "bytes": 694423
+    },
+    {
+      "source": "github:nocodb/nocodb@develop:packages/nocodb/src/schema/swagger-v3.json",
+      "url": "https://raw.githubusercontent.com/nocodb/nocodb/8783a446bba4a2c8f8112191887f5b5c330ed91b/packages/nocodb/src/schema/swagger-v3.json",
+      "commit": "8783a446bba4a2c8f8112191887f5b5c330ed91b",
+      "sha256": "0fa9bdb9808fe8015b711fa616e853a57de02d1c622e89766d972351b501c501",
+      "bytes": 603490
+    }
+  ],
+  "notion": [
+    {
+      "source": "https://api.apis.guru/v2/specs/notion.com/1.0.0/openapi.json",
+      "url": "https://api.apis.guru/v2/specs/notion.com/1.0.0/openapi.json",
+      "sha256": "6df5889eac35a3f4eb99115eac7dd9b28b9d6040c664a742368ef7b68d45d983",
+      "bytes": 488852
+    }
+  ],
+  "npm": [
+    {
+      "source": "github:npm/api-documentation@main:api/registry.npmjs.com/publish.yaml",
+      "url": "https://raw.githubusercontent.com/npm/api-documentation/8ea7e00e2266fd7c5632b90cf4c0885bb0b63577/api/registry.npmjs.com/publish.yaml",
+      "commit": "8ea7e00e2266fd7c5632b90cf4c0885bb0b63577",
+      "sha256": "e073d856d69801a8a51b9c6b453c5dac3097c886cbefc55b7c1ad4ebc2c5aba4",
+      "bytes": 6863
+    },
+    {
+      "source": "github:npm/api-documentation@main:api/registry.npmjs.com/search.yaml",
+      "url": "https://raw.githubusercontent.com/npm/api-documentation/8ea7e00e2266fd7c5632b90cf4c0885bb0b63577/api/registry.npmjs.com/search.yaml",
+      "commit": "8ea7e00e2266fd7c5632b90cf4c0885bb0b63577",
+      "sha256": "bb88b1f03681612d7e10a3fc7cba2b5253165f11d98d256fd8eac139281fa8ed",
+      "bytes": 8162
+    },
+    {
+      "source": "github:npm/api-documentation@main:api/registry.npmjs.com/access.yaml",
+      "url": "https://raw.githubusercontent.com/npm/api-documentation/8ea7e00e2266fd7c5632b90cf4c0885bb0b63577/api/registry.npmjs.com/access.yaml",
+      "commit": "8ea7e00e2266fd7c5632b90cf4c0885bb0b63577",
+      "sha256": "a0711624e2371b03457091f8ca2df51c1fe888414e7f89cb41a41eca1b3b38db",
+      "bytes": 7648
+    },
+    {
+      "source": "github:npm/api-documentation@main:api/registry.npmjs.com/token.yaml",
+      "url": "https://raw.githubusercontent.com/npm/api-documentation/8ea7e00e2266fd7c5632b90cf4c0885bb0b63577/api/registry.npmjs.com/token.yaml",
+      "commit": "8ea7e00e2266fd7c5632b90cf4c0885bb0b63577",
+      "sha256": "5dd7707d2d6e53f2c56bb100e800b1438723ed5e5ad4c3e7dbf2e749e4398e77",
+      "bytes": 32591
+    }
+  ],
+  "nvidia": [
+    {
+      "source": "github:openai/openai-openapi@main:openapi.yaml",
+      "url": "https://raw.githubusercontent.com/openai/openai-openapi/ff85a56f29b0ae0faeb29b263149df535572e819/openapi.yaml",
+      "commit": "ff85a56f29b0ae0faeb29b263149df535572e819",
+      "sha256": "be1bc46610f8a0a72f68794f8fbee86bf6a1124f71bff2602d049a4dbfaaff77",
+      "bytes": 3969105
+    }
+  ],
+  "okta": [
+    {
+      "source": "github:okta/okta-management-openapi-spec@master:dist/current/management-minimal.yaml",
+      "url": "https://raw.githubusercontent.com/okta/okta-management-openapi-spec/df5fc58bdf64d1a7594b324bb39d24a8c3b31eeb/dist/current/management-minimal.yaml",
+      "commit": "df5fc58bdf64d1a7594b324bb39d24a8c3b31eeb",
+      "sha256": "efb8f839ba5d3cfd27ec37539cb5f57e0c7ceeed80e947c039619935e77bf6a7",
+      "bytes": 3470021
+    }
+  ],
+  "ollama": [
+    {
+      "source": "github:ollama/ollama@main:docs/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/ollama/ollama/e363843b834c9aed95f3a9a7363adbb11d6a1444/docs/openapi.yaml",
+      "commit": "e363843b834c9aed95f3a9a7363adbb11d6a1444",
+      "sha256": "135ffe60eb9c6f17187c3ebe67a67e7d27865a76cbec8e7e2f4890120788427d",
+      "bytes": 74742
+    }
+  ],
+  "open_ai": [
+    {
+      "source": "github:openai/openai-openapi@main:openapi.yaml",
+      "url": "https://raw.githubusercontent.com/openai/openai-openapi/ff85a56f29b0ae0faeb29b263149df535572e819/openapi.yaml",
+      "commit": "ff85a56f29b0ae0faeb29b263149df535572e819",
+      "sha256": "be1bc46610f8a0a72f68794f8fbee86bf6a1124f71bff2602d049a4dbfaaff77",
+      "bytes": 3969105
+    }
+  ],
+  "open_router": [
+    {
+      "source": "https://openrouter.ai/openapi.json",
+      "url": "https://openrouter.ai/openapi.json",
+      "sha256": "590a4ab70a459e529ce8a0266c57286327c25804fc1fe8ecfb6d6cd5c5001f1e",
+      "bytes": 2572064
+    }
+  ],
+  "orbit": [
+    {
+      "source": "https://api.apis.guru/v2/specs/orbit.love/v1/openapi.json",
+      "url": "https://api.apis.guru/v2/specs/orbit.love/v1/openapi.json",
+      "sha256": "be8a2267d9d7fb6d0be45bc5340800f7bdf60edb45970bcc39c1bfb93ba1262d",
+      "bytes": 161386
+    }
+  ],
+  "oura": [
+    {
+      "source": "https://cloud.ouraring.com/v2/static/json/openapi-1.41.json",
+      "url": "https://cloud.ouraring.com/v2/static/json/openapi-1.41.json",
+      "sha256": "a144a3436e9b73da568999fc713257e1d73e12cd3f7024eef45035c9d8f6b557",
+      "bytes": 454152
+    }
+  ],
+  "pager_duty": [
+    {
+      "source": "github:PagerDuty/api-schema@main:reference/REST/openapiv3.json",
+      "url": "https://raw.githubusercontent.com/PagerDuty/api-schema/6ab7c72fb78ff76ba65670795a51d925c8b4df12/reference/REST/openapiv3.json",
+      "commit": "6ab7c72fb78ff76ba65670795a51d925c8b4df12",
+      "sha256": "f42edfd2608ae90711b43245bd7aa1045a70991868f0933462b0ae8adad90fc5",
+      "bytes": 2776646
+    }
+  ],
+  "pay_pal": [
+    {
+      "source": "github:paypal/paypal-rest-api-specifications@main:openapi/payments_payouts_batch_v1.json",
+      "url": "https://raw.githubusercontent.com/paypal/paypal-rest-api-specifications/90e8041ffe02d80c452d2b476bedd59a8d219bdc/openapi/payments_payouts_batch_v1.json",
+      "commit": "90e8041ffe02d80c452d2b476bedd59a8d219bdc",
+      "sha256": "2a86549e2e7e42e9f082d9e43051fe55b83ef19dea1f76cff549377756374cc0",
+      "bytes": 75801
+    },
+    {
+      "source": "github:paypal/paypal-rest-api-specifications@main:openapi/notifications_webhooks_v1.json",
+      "url": "https://raw.githubusercontent.com/paypal/paypal-rest-api-specifications/90e8041ffe02d80c452d2b476bedd59a8d219bdc/openapi/notifications_webhooks_v1.json",
+      "commit": "90e8041ffe02d80c452d2b476bedd59a8d219bdc",
+      "sha256": "4702a4c2601a087cdde7481f1b55800abb568906e50dde867bb958b4b25afecf",
+      "bytes": 69592
+    }
+  ],
+  "perplexity": [
+    {
+      "source": "https://docs.perplexity.ai/openapi.json",
+      "url": "https://docs.perplexity.ai/openapi.json",
+      "sha256": "20f933e6384c7844ed77c53306c8ea3a4c8ee8c1430435abe103b1e2d69b26e6",
+      "bytes": 217670
+    }
+  ],
+  "phantombuster": [
+    {
+      "source": "github:phantombuster/public-gists@master:swagger-api-v2.json",
+      "url": "https://raw.githubusercontent.com/phantombuster/public-gists/86c2ff4cda78f323f6549743a66bdb151a151ddc/swagger-api-v2.json",
+      "commit": "86c2ff4cda78f323f6549743a66bdb151a151ddc",
+      "sha256": "9214cc4cf3f8b52fecc8123975c6182be4e1c3d001f02697f48e6fd0b1880e6e",
+      "bytes": 1837069
+    }
+  ],
+  "pinecone": [
+    {
+      "source": "github:pinecone-io/pinecone-api@main:2026-07/db_control_2026-07.oas.yaml",
+      "url": "https://raw.githubusercontent.com/pinecone-io/pinecone-api/6d2d0834766f956e84f6c065a8ccd03ca39dc861/2026-07/db_control_2026-07.oas.yaml",
+      "commit": "6d2d0834766f956e84f6c065a8ccd03ca39dc861",
+      "sha256": "d303203d1dbdfc1978ec2895675cffced71af6768f5cdef9ed564b06c874a04d",
+      "bytes": 192144
+    },
+    {
+      "source": "github:pinecone-io/pinecone-api@main:2026-07/db_data_2026-07.oas.yaml",
+      "url": "https://raw.githubusercontent.com/pinecone-io/pinecone-api/6d2d0834766f956e84f6c065a8ccd03ca39dc861/2026-07/db_data_2026-07.oas.yaml",
+      "commit": "6d2d0834766f956e84f6c065a8ccd03ca39dc861",
+      "sha256": "0c9a6352af77c0bcb38a0173910935d6af247d8d4adf595d5b9bf88a379ac1e3",
+      "bytes": 156564
+    }
+  ],
+  "pipedrive": [
+    {
+      "source": "https://developers.pipedrive.com/docs/api/v1/openapi.yaml",
+      "url": "https://developers.pipedrive.com/docs/api/v1/openapi.yaml",
+      "sha256": "e28596d0277466019c2b497aa4522ec2490598f92a7f87b464b2f6d2bda9862d",
+      "bytes": 1799243
+    },
+    {
+      "source": "https://developers.pipedrive.com/docs/api/v1/openapi-v2.yaml",
+      "url": "https://developers.pipedrive.com/docs/api/v1/openapi-v2.yaml",
+      "sha256": "4df9402c9bd1b8084510cdc796c5e35702b89d40e9d2db2f3a5a2b143a70ea1a",
+      "bytes": 1042258
+    }
+  ],
+  "post_hog": [
+    {
+      "source": "https://us.posthog.com/api/schema/",
+      "url": "https://us.posthog.com/api/schema/",
+      "sha256": "7d09646aca88a799b16b1c15ef3d82968557d421b0707e3ac706f223b2e7dcc7",
+      "bytes": 9423241
+    }
+  ],
+  "postmark": [
+    {
+      "source": "https://postmarkapp.com/swagger/server.yml",
+      "url": "https://postmarkapp.com/swagger/server.yml",
+      "sha256": "fdae25f55e2ef5fb71997f1128cc4148d52e0e395aed04b4f8f9e1c86fdf44a2",
+      "bytes": 71284
+    },
+    {
+      "source": "https://postmarkapp.com/swagger/account.yml",
+      "url": "https://postmarkapp.com/swagger/account.yml",
+      "sha256": "bbbcda9432851b8d7d6781d9a090b9d8d70f4396a9288393f428bfa3d5c2102b",
+      "bytes": 28016
+    }
+  ],
+  "pushcut": [
+    {
+      "source": "github:microsoft/PowerPlatformConnectors@dev:certified-connectors/Pushcut/apiDefinition.swagger.json",
+      "url": "https://raw.githubusercontent.com/microsoft/PowerPlatformConnectors/1304e6a0a1dbb1a8138116d86c579581de080380/certified-connectors/Pushcut/apiDefinition.swagger.json",
+      "commit": "1304e6a0a1dbb1a8138116d86c579581de080380",
+      "sha256": "6a320662ba1764f4a7b0856f002dfaa41829ccee9cf324b195ce31d83b61cfaf",
+      "bytes": 8239
+    }
+  ],
+  "qdrant": [
+    {
+      "source": "github:qdrant/qdrant@master:docs/redoc/master/openapi.json",
+      "url": "https://raw.githubusercontent.com/qdrant/qdrant/016542aa5deb6c66380bb137badf73d54f742bde/docs/redoc/master/openapi.json",
+      "commit": "016542aa5deb6c66380bb137badf73d54f742bde",
+      "sha256": "22a890a799743906f5337588bb8e5ee3fccc518825e7bb5012add1ce579aa174",
+      "bytes": 525536
+    }
+  ],
+  "quickbase": [
+    {
+      "source": "github:tflanagan/node-quickbase@master:assets/QuickBase_RESTful_API.json",
+      "url": "https://raw.githubusercontent.com/tflanagan/node-quickbase/a4b985f42e2e756d9df69c42654f3dc4f70a0e06/assets/QuickBase_RESTful_API.json",
+      "commit": "a4b985f42e2e756d9df69c42654f3dc4f70a0e06",
+      "sha256": "f95ad20facc4130c1ec4711809cb64bf8abcbc793f8bddaf6ca9fa88b2ea9401",
+      "bytes": 1736732
+    }
+  ],
+  "rocketchat": [
+    {
+      "source": "github:RocketChat/Rocket.Chat-Open-API@main:messaging.yaml",
+      "url": "https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/c5e46ef76d89ce69f51d49049097d9d3b443dcd9/messaging.yaml",
+      "commit": "c5e46ef76d89ce69f51d49049097d9d3b443dcd9",
+      "sha256": "f72d2510a4dff60a95262f4303cfdbf245eb5bbbaa7886a3c3e6a13dc83bd2d1",
+      "bytes": 239700
+    },
+    {
+      "source": "github:RocketChat/Rocket.Chat-Open-API@main:rooms.yaml",
+      "url": "https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/c5e46ef76d89ce69f51d49049097d9d3b443dcd9/rooms.yaml",
+      "commit": "c5e46ef76d89ce69f51d49049097d9d3b443dcd9",
+      "sha256": "02fb4f33e74e98f1807dbe85f857c8b854b50087daa88e9be998d7faaf2ce777",
+      "bytes": 629716
+    },
+    {
+      "source": "github:RocketChat/Rocket.Chat-Open-API@main:user-management.yaml",
+      "url": "https://raw.githubusercontent.com/RocketChat/Rocket.Chat-Open-API/c5e46ef76d89ce69f51d49049097d9d3b443dcd9/user-management.yaml",
+      "commit": "c5e46ef76d89ce69f51d49049097d9d3b443dcd9",
+      "sha256": "dbdef225abdef13d610226cf406ff80d42a9eb3ff36cfdc41be3c62ff8005554",
+      "bytes": 245977
+    }
+  ],
+  "rundeck": [
+    {
+      "source": "github:rundeck/go-rundeck@master:rundeck-api.yml",
+      "url": "https://raw.githubusercontent.com/rundeck/go-rundeck/f36f79ae7ed2619ebd5fc9083c41b25353e7a844/rundeck-api.yml",
+      "commit": "f36f79ae7ed2619ebd5fc9083c41b25353e7a844",
+      "sha256": "906970bcc6c569d165a354cf5bdcb2db8b49115686a228bae724fdc41d7cfc3e",
+      "bytes": 500990
+    }
+  ],
+  "s3": [
+    {
+      "source": "https://api.apis.guru/v2/specs/amazonaws.com/s3/2006-03-01/openapi.json",
+      "url": "https://api.apis.guru/v2/specs/amazonaws.com/s3/2006-03-01/openapi.json",
+      "sha256": "1503e59f693ab475b165ab210a3f330fbeceff42e6edf5e9eda02eefa3a23e8c",
+      "bytes": 1027748
+    }
+  ],
+  "salesmate": [
+    {
+      "source": "https://documenter.gw.postman.com/api/collections/7811505/S1ZucWTA?segregateAuth=true\u0026versionTag=latest",
+      "url": "https://documenter.gw.postman.com/api/collections/7811505/S1ZucWTA?segregateAuth=true\u0026versionTag=latest",
+      "sha256": "742727e906e03021bb31a3e0351b5cfadf29b2705dce64c1b1b6cd8599d82a72",
+      "bytes": 332217
+    }
+  ],
+  "sea_table": [
+    {
+      "source": "github:seatable/openapi@v6.2:base_operations.yaml",
+      "url": "https://raw.githubusercontent.com/seatable/openapi/c6d0ad9c93af77718c2ab7fcea5939c333a7a915/base_operations.yaml",
+      "commit": "c6d0ad9c93af77718c2ab7fcea5939c333a7a915",
+      "sha256": "121961031f13fa730934aa702c4c2beb0047c700e90367c45d98503702272eec",
+      "bytes": 154464
+    },
+    {
+      "source": "github:seatable/openapi@v6.2:authentication.yaml",
+      "url": "https://raw.githubusercontent.com/seatable/openapi/c6d0ad9c93af77718c2ab7fcea5939c333a7a915/authentication.yaml",
+      "commit": "c6d0ad9c93af77718c2ab7fcea5939c333a7a915",
+      "sha256": "72054485622ed34f1bb7e080af5956df62126a7c2919c1aba5dad8ac90ec9de1",
+      "bytes": 17305
+    }
+  ],
+  "security_scorecard": [
+    {
+      "source": "https://api.securityscorecard.io/api-docs",
+      "url": "https://api.securityscorecard.io/api-docs",
+      "sha256": "90a506211f9c402f4c2980a362578f67174498ddf54195ddb3396d2c5f9934e4",
+      "bytes": 1644484
+    }
+  ],
+  "send_grid": [
+    {
+      "source": "github:twilio/sendgrid-oai@main:spec/json/tsg_mail_v3.json",
+      "url": "https://raw.githubusercontent.com/twilio/sendgrid-oai/fb95a935c87b79f7f982ac34bd37adab1f697dbc/spec/json/tsg_mail_v3.json",
+      "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+      "sha256": "4ba24d0feb8a6b347f60528161d1cf0e7591987d2b3a64a6533685dc2b39d19f",
+      "bytes": 54706
+    },
+    {
+      "source": "github:twilio/sendgrid-oai@main:spec/json/tsg_mc_contacts_v3.json",
+      "url": "https://raw.githubusercontent.com/twilio/sendgrid-oai/fb95a935c87b79f7f982ac34bd37adab1f697dbc/spec/json/tsg_mc_contacts_v3.json",
+      "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+      "sha256": "ac1addaea901d16911297adc8f393862ad2d4feb413224535121426f1cd68191",
+      "bytes": 81444
+    },
+    {
+      "source": "github:twilio/sendgrid-oai@main:spec/json/tsg_mc_lists_v3.json",
+      "url": "https://raw.githubusercontent.com/twilio/sendgrid-oai/fb95a935c87b79f7f982ac34bd37adab1f697dbc/spec/json/tsg_mc_lists_v3.json",
+      "commit": "fb95a935c87b79f7f982ac34bd37adab1f697dbc",
+      "sha256": "8dd337bd2ba2e3fdf729e120c892c52df7c4b87d3bd73b488ecea33a2117f790",
+      "bytes": 23547
+    }
+  ],
+  "send_in_blue": [
+    {
+      "source": "https://api.brevo.com/v3/swagger_definition_v3.yml",
+      "url": "https://api.brevo.com/v3/swagger_definition_v3.yml",
+      "sha256": "ae6792270191ddab5950214c313e976d805c30f1ccc0e2ab9c7142af2a72d793",
+      "bytes": 1162506
+    }
+  ],
+  "sentry_io": [
+    {
+      "source": "github:getsentry/sentry-api-schema@main:openapi-derefed.json",
+      "url": "https://raw.githubusercontent.com/getsentry/sentry-api-schema/658c82e501665b9a1977a0136ece4040d73efcd9/openapi-derefed.json",
+      "commit": "658c82e501665b9a1977a0136ece4040d73efcd9",
+      "sha256": "cee2e95a48cdffb37efc7d2f4abe80fa2214b5e5626d0f46abb1496d92bad397",
+      "bytes": 4275097
+    }
+  ],
+  "signl4": [
+    {
+      "source": "https://connect.signl4.com/api/docs/v2/swagger.json",
+      "url": "https://connect.signl4.com/api/docs/v2/swagger.json",
+      "sha256": "4013d0d383048083f56e76d5f678a101f10c1298c457e9d4b078f7d92712e06b",
+      "bytes": 1216391
+    }
+  ],
+  "slack": [
+    {
+      "source": "github:slackapi/slack-api-specs@master:web-api/slack_web_openapi_v2.json",
+      "url": "https://raw.githubusercontent.com/slackapi/slack-api-specs/bc08db49625630e3585bf2f1322128ea04f2a7f3/web-api/slack_web_openapi_v2.json",
+      "commit": "bc08db49625630e3585bf2f1322128ea04f2a7f3",
+      "sha256": "742a5c977180a829df8767cf57bc417d99b3713583aee83741efb9c08ca731e7",
+      "bytes": 1237332
+    }
+  ],
+  "sms77": [
+    {
+      "source": "github:seven-io/api-schemes@master:json/openapi.json",
+      "url": "https://raw.githubusercontent.com/seven-io/api-schemes/0c976749e132089f51fe50fc865004c1294d198f/json/openapi.json",
+      "commit": "0c976749e132089f51fe50fc865004c1294d198f",
+      "sha256": "acbb8831cefcd8206c48acdf2708bb63681c07b1a889b5b78e720dc2a921d7d4",
+      "bytes": 106188
+    }
+  ],
+  "snowflake": [
+    {
+      "source": "github:snowflakedb/snowflake-rest-api-specs@main:specifications/sqlapi.yaml",
+      "url": "https://raw.githubusercontent.com/snowflakedb/snowflake-rest-api-specs/990e25d97236a11826c9eed40e587c2b859e5680/specifications/sqlapi.yaml",
+      "commit": "990e25d97236a11826c9eed40e587c2b859e5680",
+      "sha256": "28b780dd056961e975b4e1ccffe72b04d96d713ad3aaf378d5a6dc0316586dce",
+      "bytes": 29936
+    }
+  ],
+  "spotify": [
+    {
+      "source": "https://developer.spotify.com/reference/web-api/open-api-schema.yaml",
+      "url": "https://developer.spotify.com/reference/web-api/open-api-schema.yaml",
+      "sha256": "2d888d731358ae8a97126ffd4117d257305943f06721734abe9af24962bf38c3",
+      "bytes": 289721
+    }
+  ],
+  "stackby": [
+    {
+      "source": "https://documenter.gw.postman.com/api/collections/7317658/2sAYkGLz1i?segregateAuth=true\u0026versionTag=latest",
+      "url": "https://documenter.gw.postman.com/api/collections/7317658/2sAYkGLz1i?segregateAuth=true\u0026versionTag=latest",
+      "sha256": "9d997676ae4f63acac6478e30c1821719cd1c4e911df59c34d041bfdb1cc3c86",
+      "bytes": 38983
+    }
+  ],
+  "strava": [
+    {
+      "source": "https://developers.strava.com/swagger/swagger.json",
+      "url": "https://developers.strava.com/swagger/swagger.json",
+      "sha256": "cbbf5860ef72a7df970524b4b8d0bed2e315a4b7f3627909d4e2d66aa1f3ff2f",
+      "bytes": 97967
+    }
+  ],
+  "stripe": [
+    {
+      "source": "github:stripe/openapi@master:openapi/spec3.json",
+      "url": "https://raw.githubusercontent.com/stripe/openapi/0082e0c942013f66947dbaf3d9944cf66e00f391/openapi/spec3.json",
+      "commit": "0082e0c942013f66947dbaf3d9944cf66e00f391",
+      "sha256": "7cff4cc46d0654101a36a3302f7544640f5f73e4f3cad6f264f0e23c19fa1776",
+      "bytes": 8317513
+    }
+  ],
+  "survey_monkey": [
+    {
+      "source": "github:microsoft/PowerPlatformConnectors@dev:certified-connectors/SurveyMonkey/apiDefinition.swagger.json",
+      "url": "https://raw.githubusercontent.com/microsoft/PowerPlatformConnectors/1304e6a0a1dbb1a8138116d86c579581de080380/certified-connectors/SurveyMonkey/apiDefinition.swagger.json",
+      "commit": "1304e6a0a1dbb1a8138116d86c579581de080380",
+      "sha256": "d451ec4187b001241bde7086c44dc20ed5f1d48ea240b5920d2c0584d425af58",
+      "bytes": 60031
+    }
+  ],
+  "syncro_msp": [
+    {
+      "source": "https://api-docs.syncromsp.com/swagger.json",
+      "url": "https://api-docs.syncromsp.com/swagger.json",
+      "sha256": "872c9d81f0fa8e03d4e05f7f7529604244a1e6d9d7a8d89b97e4fc38f56a2816",
+      "bytes": 645937
+    }
+  ],
+  "telegram": [
+    {
+      "source": "https://api.apis.guru/v2/specs/telegram.org/5.0.0/openapi.json",
+      "url": "https://api.apis.guru/v2/specs/telegram.org/5.0.0/openapi.json",
+      "sha256": "cebab51778f0341333daafbe124bf7944197ca8c09a6b4740f72f1ae84c6c087",
+      "bytes": 603748
+    }
+  ],
+  "the_hive": [
+    {
+      "source": "github:StrangeBeeCorp/thehive4go@main:thehive/api/openapi.yaml",
+      "url": "https://raw.githubusercontent.com/StrangeBeeCorp/thehive4go/00ef4e8c6464580530cdf9e71c08ae6e1cba46c4/thehive/api/openapi.yaml",
+      "commit": "00ef4e8c6464580530cdf9e71c08ae6e1cba46c4",
+      "sha256": "220f53791d5d28ac33e4486986aaf669bc15ea563acadb183f713181798370e2",
+      "bytes": 789353
+    }
+  ],
+  "the_hive_project": [
+    {
+      "source": "https://docs.strangebee.com/thehive/api-docs/docs.yaml",
+      "url": "https://docs.strangebee.com/thehive/api-docs/docs.yaml",
+      "sha256": "6bd4e8e3751ecdabbfd65eada644a68e554e3fef2b5dd2ebcd8f3b5fc84abc24",
+      "bytes": 1713147
+    }
+  ],
+  "todoist": [
+    {
+      "source": "https://developer.todoist.com/openapi.json",
+      "url": "https://developer.todoist.com/openapi.json",
+      "sha256": "512cf2f24bf03a706dfb861ae7adc6cf15a1d2b2bbfcbf75a2573fc63692a60d",
+      "bytes": 1224901
+    }
+  ],
+  "toggl": [
+    {
+      "source": "https://engineering.toggl.com/assets/files/api-fb7996e774ae61b08ea11c9c1b2f32ef.json",
+      "url": "https://engineering.toggl.com/assets/files/api-fb7996e774ae61b08ea11c9c1b2f32ef.json",
+      "sha256": "1581da35d2fc15c73ac229d1f432e2b42f37be918126e4692cce0fce189c5f3f",
+      "bytes": 921497
+    }
+  ],
+  "trello": [
+    {
+      "source": "https://developer.atlassian.com/cloud/trello/swagger.v3.json",
+      "url": "https://developer.atlassian.com/cloud/trello/swagger.v3.json",
+      "sha256": "b07c97d06e93f7caff661a307e86f2b58c1f97591614ac8179f8e31bda27334b",
+      "bytes": 275361
+    }
+  ],
+  "twilio": [
+    {
+      "source": "github:twilio/twilio-oai@main:spec/json/twilio_api_v2010.json",
+      "url": "https://raw.githubusercontent.com/twilio/twilio-oai/218b7821602a93ae63e83e20ab5e8637e870250f/spec/json/twilio_api_v2010.json",
+      "commit": "218b7821602a93ae63e83e20ab5e8637e870250f",
+      "sha256": "78e76cc93c355a259e241866c241663eddb6ce0ed528f066c6cf0958648f5637",
+      "bytes": 1878531
+    },
+    {
+      "source": "github:twilio/twilio-oai@main:spec/json/twilio_events_v1.json",
+      "url": "https://raw.githubusercontent.com/twilio/twilio-oai/218b7821602a93ae63e83e20ab5e8637e870250f/spec/json/twilio_events_v1.json",
+      "commit": "218b7821602a93ae63e83e20ab5e8637e870250f",
+      "sha256": "140a58be411abe4686c0b9caef7e52a0e6be73ee7475caaae213200d8054c161",
+      "bytes": 133478
+    }
+  ],
+  "twitter": [
+    {
+      "source": "https://api.x.com/2/openapi.json",
+      "url": "https://api.x.com/2/openapi.json",
+      "sha256": "b124a38050e3064919e22ce075033728d8bafb5b6fab50e566a448a258cb40b3",
+      "bytes": 1072449
+    }
+  ],
+  "typeform": [
+    {
+      "source": "https://www.postman.com/collections/17395311-84428ec5-ba07-424f-ab01-99656a4f054e",
+      "url": "https://www.postman.com/collections/17395311-84428ec5-ba07-424f-ab01-99656a4f054e",
+      "sha256": "24ff15f1bdec849aab02c36bbba9f4d9b7126cca5867543a5dcb2ed3ee62f081",
+      "bytes": 29713
+    }
+  ],
+  "uptime_robot": [
+    {
+      "source": "https://cdn.uptimerobot.com/api/openapi.yaml",
+      "url": "https://cdn.uptimerobot.com/api/openapi.yaml",
+      "sha256": "f4ef80f6b1d1c03509631684cdf1ae44391752feadb0996a30072a6f38be5a39",
+      "bytes": 345155
+    }
+  ],
+  "url_scan_io": [
+    {
+      "source": "https://docs.urlscan.io/_bundle/apis/urlscan-openapi.json?download",
+      "url": "https://docs.urlscan.io/_bundle/apis/urlscan-openapi.json?download",
+      "sha256": "4761009357fe45269ced75bfec255490122c5f51f75b6314c312f9c0456c5e4e",
+      "bytes": 292722
+    }
+  ],
+  "vercel_ai_gateway": [
+    {
+      "source": "github:openai/openai-openapi@main:openapi.yaml",
+      "url": "https://raw.githubusercontent.com/openai/openai-openapi/ff85a56f29b0ae0faeb29b263149df535572e819/openapi.yaml",
+      "commit": "ff85a56f29b0ae0faeb29b263149df535572e819",
+      "sha256": "be1bc46610f8a0a72f68794f8fbee86bf6a1124f71bff2602d049a4dbfaaff77",
+      "bytes": 3969105
+    }
+  ],
+  "vonage": [
+    {
+      "source": "https://developer.vonage.com/api/v1/developer/api/file/sms?format=json\u0026vendorId=vonage",
+      "url": "https://developer.vonage.com/api/v1/developer/api/file/sms?format=json\u0026vendorId=vonage",
+      "sha256": "2c8e216e7af29cdaca46bf029e93b49c03273a984c42c4b21ef0d21aef3a1325",
+      "bytes": 30970
+    }
+  ],
+  "weaviate": [
+    {
+      "source": "github:weaviate/weaviate@main:openapi-specs/schema.json",
+      "url": "https://raw.githubusercontent.com/weaviate/weaviate/70d0d68aadd3eaaf1d6ef7997a45b73786a3995a/openapi-specs/schema.json",
+      "commit": "70d0d68aadd3eaaf1d6ef7997a45b73786a3995a",
+      "sha256": "b6448080056dfebac41075b9d12ad2091e7dd81c09e1cc2885b65a58f94bbfcf",
+      "bytes": 464781
+    }
+  ],
+  "webflow": [
+    {
+      "source": "github:webflow/openapi-spec@main:openapi/v2.yml",
+      "url": "https://raw.githubusercontent.com/webflow/openapi-spec/f6db607359a412dd6aa6cd304674731d7f2dbe10/openapi/v2.yml",
+      "commit": "f6db607359a412dd6aa6cd304674731d7f2dbe10",
+      "sha256": "a765cfec420d5f9c3dc4fe5af81396594a27547a591ba6c25ac1248e64a967f7",
+      "bytes": 4492992
+    }
+  ],
+  "wekan": [
+    {
+      "source": "github:wekan/wekan@main:public/api/wekan.yml",
+      "url": "https://raw.githubusercontent.com/wekan/wekan/4af35e8569f6467fe23367a4a3b47995c8896b51/public/api/wekan.yml",
+      "commit": "4af35e8569f6467fe23367a4a3b47995c8896b51",
+      "sha256": "d5a87ae0c3e77045131e4d9dd7b1fb8afba76d9bcdbb46dab71b3169de7bcd6c",
+      "bytes": 257316
+    }
+  ],
+  "whats_app": [
+    {
+      "source": "github:facebook/openapi@main:business-messaging-api_v23.0.yaml",
+      "url": "https://raw.githubusercontent.com/facebook/openapi/e96a1c9dbf240c2937b6a95920685230458e346b/business-messaging-api_v23.0.yaml",
+      "commit": "e96a1c9dbf240c2937b6a95920685230458e346b",
+      "sha256": "5c1973265369944b7cdfa3fa690985713575249042e2b7edd46be3ef9bd9b09d",
+      "bytes": 1095644
+    }
+  ],
+  "wise": [
+    {
+      "source": "https://docs.wise.com/_bundle/api-reference/@latest/index.json?download",
+      "url": "https://docs.wise.com/_bundle/api-reference/@latest/index.json?download",
+      "sha256": "4c365ae1b02efc66600ebeef67d8951aa1fa54766233b384c831c22c7bd2c49d",
+      "bytes": 2067969
+    }
+  ],
+  "wolfram_alpha": [
+    {
+      "source": "https://api.apis.guru/v2/specs/wolframalpha.com/v0.1/openapi.json",
+      "url": "https://api.apis.guru/v2/specs/wolframalpha.com/v0.1/openapi.json",
+      "sha256": "49dc67897f210bd9334607a2ed96d2ac6535c02b659222fdf28a920e3aa74322",
+      "bytes": 3021
+    }
+  ],
+  "xai_grok": [
+    {
+      "source": "https://api.x.ai/api-docs/openapi.json",
+      "url": "https://api.x.ai/api-docs/openapi.json",
+      "sha256": "af1fcb7a3bc2cefd9dfd881c3680d80a3732d22cce41c97eae67bf1ac4c76476",
+      "bytes": 222757
+    }
+  ],
+  "xero": [
+    {
+      "source": "github:XeroAPI/Xero-OpenAPI@master:xero_accounting.yaml",
+      "url": "https://raw.githubusercontent.com/XeroAPI/Xero-OpenAPI/fd9d44b04bf4934a7509b8e7ece51a9e0e462e4f/xero_accounting.yaml",
+      "commit": "fd9d44b04bf4934a7509b8e7ece51a9e0e462e4f",
+      "sha256": "1afca0717bb0d323210c0f88f3802684c068059f6e5161ee24ddde7ee6294a64",
+      "bytes": 933096
+    }
+  ],
+  "you_tube": [
+    {
+      "source": "https://youtube.googleapis.com/$discovery/rest?version=v3",
+      "url": "https://youtube.googleapis.com/$discovery/rest?version=v3",
+      "revision": "20261005",
+      "sha256": "0c44b4cf047b321a7080bbef56d111f88d5ce0d5d034960bd0b1e04a35e31758",
+      "bytes": 518330
+    }
+  ],
+  "zendesk": [
+    {
+      "source": "https://developer.zendesk.com/zendesk/oas.yaml",
+      "url": "https://developer.zendesk.com/zendesk/oas.yaml",
+      "sha256": "3258ec97eed69d58deceee500efe090ea0e0b16fd616dddf15107ab209688fdc",
+      "bytes": 1951822
+    }
+  ],
+  "zep": [
+    {
+      "source": "https://help.getzep.com/openapi/sdk-reference-2.json",
+      "url": "https://help.getzep.com/openapi/sdk-reference-2.json",
+      "sha256": "e7f8e7b1255d5da14f2878fcc0e2707e32e48f56d3d1ca21ce97a62970f1382d",
+      "bytes": 96244
+    },
+    {
+      "source": "https://help.getzep.com/openapi/sdk-reference.json",
+      "url": "https://help.getzep.com/openapi/sdk-reference.json",
+      "sha256": "70318a36746feebdb5c6ad3653b102c72fb0528ad80152c83398e55538ea3dc1",
+      "bytes": 172240
+    }
+  ],
+  "zoho_crm": [
+    {
+      "source": "github:zoho/crm-oas@main:v8.0/record/record.yaml",
+      "url": "https://raw.githubusercontent.com/zoho/crm-oas/a6687fc961acdaa52592d39c5c7e4385e5b4c289/v8.0/record/record.yaml",
+      "commit": "a6687fc961acdaa52592d39c5c7e4385e5b4c289",
+      "sha256": "5397f63e5beba143086bd2aec8789291b2a59474200b096bc7c5faecff12423a",
+      "bytes": 443915
+    },
+    {
+      "source": "github:zoho/crm-oas@main:v8.0/fields/fields.yaml",
+      "url": "https://raw.githubusercontent.com/zoho/crm-oas/a6687fc961acdaa52592d39c5c7e4385e5b4c289/v8.0/fields/fields.yaml",
+      "commit": "a6687fc961acdaa52592d39c5c7e4385e5b4c289",
+      "sha256": "9fad35e499f2832e165a29da020d6f8a6b2593a9609eea480e7dfbcce25fa734",
+      "bytes": 339264
+    }
+  ],
+  "zoom": [
+    {
+      "source": "https://developers.zoom.us/api-hub/meetings/methods/endpoints.json",
+      "url": "https://developers.zoom.us/api-hub/meetings/methods/endpoints.json",
+      "sha256": "969f8b111fe98ae12e4cb8c035fc3bfbc51a281217f0158ca3665d26efeab946",
+      "bytes": 1208685
+    }
+  ],
+  "zulip": [
+    {
+      "source": "github:zulip/zulip@main:zerver/openapi/zulip.yaml",
+      "url": "https://raw.githubusercontent.com/zulip/zulip/f862fd0b9cdfb5bebad878e94d7e592ea744fb9d/zerver/openapi/zulip.yaml",
+      "commit": "f862fd0b9cdfb5bebad878e94d7e592ea744fb9d",
+      "sha256": "aefd804f6ce448e680e5da89a44638d2b644768a252abab4d2c4fd1d594794fc",
+      "bytes": 1534248
+    }
+  ]
+}

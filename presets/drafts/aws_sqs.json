@@ -1,0 +1,45 @@
+{
+  "title": "AWS SQS",
+  "catalog": {
+    "fields": [
+      {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
+      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["connections", "", "http", "slots", 0, "s3", "region"]},
+      {"key": "access_key", "label": "Access key ID", "secret": true, "path": ["connections", "", "http", "values", "access_key"]},
+      {"key": "secret_key", "label": "Secret access key", "secret": true, "path": ["connections", "", "http", "values", "secret_key"]},
+      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "path": ["connections", "", "http", "values", "session_token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "s3": {"region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "delete.sqs": {"title": "Delete: sqs"},
+      "read": {"title": "Read everything the account can see"},
+      "send.sqs": {"title": "Send: sqs"},
+      "write.sqs": {"title": "Write: sqs"}
+    }
+  },
+  "operations": [
+    {"id": "AddPermission", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.AddPermission"}, "body": "any", "scope": {}},
+    {"id": "CancelMessageMoveTask", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.CancelMessageMoveTask"}, "body": "any", "scope": {}},
+    {"id": "ChangeMessageVisibility", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.ChangeMessageVisibility"}, "body": "any", "scope": {}},
+    {"id": "ChangeMessageVisibilityBatch", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.ChangeMessageVisibilityBatch"}, "body": "any", "scope": {}},
+    {"id": "CreateQueue", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.CreateQueue"}, "body": "any", "scope": {}},
+    {"id": "DeleteMessage", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.DeleteMessage"}, "body": "any", "scope": {}},
+    {"id": "DeleteMessageBatch", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.DeleteMessageBatch"}, "body": "any", "scope": {}},
+    {"id": "DeleteQueue", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.DeleteQueue"}, "body": "any", "scope": {}},
+    {"id": "GetQueueAttributes", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.GetQueueAttributes"}, "body": "any", "scope": {}},
+    {"id": "GetQueueUrl", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.GetQueueUrl"}, "body": "any", "scope": {}},
+    {"id": "ListDeadLetterSourceQueues", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.ListDeadLetterSourceQueues"}, "body": "any", "scope": {}},
+    {"id": "ListMessageMoveTasks", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.ListMessageMoveTasks"}, "body": "any", "scope": {}},
+    {"id": "ListQueueTags", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.ListQueueTags"}, "body": "any", "scope": {}},
+    {"id": "ListQueues", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.ListQueues"}, "body": "any", "scope": {}},
+    {"id": "PurgeQueue", "action": "delete.sqs", "effects": ["delete"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.PurgeQueue"}, "body": "any", "scope": {}},
+    {"id": "ReceiveMessage", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.ReceiveMessage"}, "body": "any", "scope": {}},
+    {"id": "RemovePermission", "action": "delete.sqs", "effects": ["delete"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.RemovePermission"}, "body": "any", "scope": {}},
+    {"id": "SendMessage", "action": "send.sqs", "effects": ["send"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.SendMessage"}, "body": "any", "scope": {}},
+    {"id": "SendMessageBatch", "action": "send.sqs", "effects": ["send"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.SendMessageBatch"}, "body": "any", "scope": {}},
+    {"id": "SetQueueAttributes", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.SetQueueAttributes"}, "body": "any", "scope": {}},
+    {"id": "StartMessageMoveTask", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.StartMessageMoveTask"}, "body": "any", "scope": {}},
+    {"id": "TagQueue", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.TagQueue"}, "body": "any", "scope": {}},
+    {"id": "UntagQueue", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.UntagQueue"}, "body": "any", "scope": {}}
+  ]
+}

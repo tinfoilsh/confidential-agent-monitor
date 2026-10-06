@@ -1,0 +1,16 @@
+{
+  "title": "Vonage",
+  "catalog": {
+    "fields": [
+      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://rest.nexmo.com", "path": "/", "basic": "password"}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "send.sms": {"title": "Send: sms"}
+    }
+  },
+  "operations": [
+    {"id": "send-an-sms", "action": "send.sms", "effects": ["send"], "method": "POST", "origin": "https://rest.nexmo.com", "path": "/sms/{format}", "body": "form", "scope": {"format": {"from": "path", "at": "format"}}}
+  ]
+}

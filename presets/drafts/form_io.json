@@ -1,0 +1,25 @@
+{
+  "title": "Form.io",
+  "catalog": {
+    "fields": [
+      {"key": "origin", "label": "Your Form.io origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
+      {"key": "token", "label": "", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://example.com", "path": "/", "header": "x-jwt-token"}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "delete.platform_scope": {"title": "Delete: platform scope"},
+      "publish.project_scope": {"title": "Publish: project scope"},
+      "read": {"title": "Read everything the account can see"},
+      "share.platform_scope": {"title": "Share: platform scope"},
+      "write.runtime_scope": {"title": "Write: runtime scope"}
+    }
+  },
+  "operations": [
+    {"id": "Pagination", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/", "scope": {}},
+    {"id": "POST /", "action": "share.platform_scope", "effects": ["share"], "method": "POST", "origin": "{origin}", "path": "/", "body": "any", "scope": {}},
+    {"id": "PUT /", "action": "publish.project_scope", "effects": ["publish"], "method": "PUT", "origin": "{origin}", "path": "/", "body": "any", "scope": {}},
+    {"id": "DELETE /", "action": "delete.platform_scope", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/", "scope": {}},
+    {"id": "PATCH /", "action": "write.runtime_scope", "effects": ["write"], "method": "PATCH", "origin": "{origin}", "path": "/", "body": "any", "scope": {}}
+  ]
+}

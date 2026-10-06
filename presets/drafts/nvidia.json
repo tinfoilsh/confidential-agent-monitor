@@ -1,0 +1,30 @@
+{
+  "title": "NVIDIA Nemotron Embeddings",
+  "catalog": {
+    "fields": [
+      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://integrate.api.nvidia.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "delete.completions": {"title": "Delete: completions"},
+      "delete.models": {"title": "Delete: models"},
+      "generate.completions": {"title": "Generate: completions"},
+      "generate.embeddings": {"title": "Generate: embeddings"},
+      "read": {"title": "Read everything the account can see"}
+    }
+  },
+  "operations": [
+    {"id": "listChatCompletions", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://integrate.api.nvidia.com", "path": "/v1/chat/completions", "params": ["model", "metadata", "after", "limit", "order"], "scope": {}},
+    {"id": "createChatCompletion", "action": "generate.completions", "effects": ["generate"], "method": "POST", "origin": "https://integrate.api.nvidia.com", "path": "/v1/chat/completions", "body": "json", "scope": {}},
+    {"id": "deleteChatCompletion", "action": "delete.completions", "effects": ["delete"], "method": "DELETE", "origin": "https://integrate.api.nvidia.com", "path": "/v1/chat/completions/{completion_id}", "scope": {"completion_id": {"from": "path", "at": "completion_id"}}},
+    {"id": "getChatCompletion", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://integrate.api.nvidia.com", "path": "/v1/chat/completions/{completion_id}", "scope": {"completion_id": {"from": "path", "at": "completion_id"}}},
+    {"id": "updateChatCompletion", "action": "generate.completions", "effects": ["generate"], "method": "POST", "origin": "https://integrate.api.nvidia.com", "path": "/v1/chat/completions/{completion_id}", "body": "json", "scope": {"completion_id": {"from": "path", "at": "completion_id"}}},
+    {"id": "getChatCompletionMessages", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://integrate.api.nvidia.com", "path": "/v1/chat/completions/{completion_id}/messages", "params": ["after", "limit", "order"], "scope": {"completion_id": {"from": "path", "at": "completion_id"}}},
+    {"id": "createCompletion", "action": "generate.completions", "effects": ["generate"], "method": "POST", "origin": "https://integrate.api.nvidia.com", "path": "/v1/completions", "body": "json", "scope": {}},
+    {"id": "createEmbedding", "action": "generate.embeddings", "effects": ["generate"], "method": "POST", "origin": "https://integrate.api.nvidia.com", "path": "/v1/embeddings", "body": "json", "scope": {}},
+    {"id": "listModels", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://integrate.api.nvidia.com", "path": "/v1/models", "scope": {}},
+    {"id": "deleteModel", "action": "delete.models", "effects": ["delete"], "method": "DELETE", "origin": "https://integrate.api.nvidia.com", "path": "/v1/models/{model}", "scope": {"model": {"from": "path", "at": "model"}}},
+    {"id": "retrieveModel", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://integrate.api.nvidia.com", "path": "/v1/models/{model}", "scope": {"model": {"from": "path", "at": "model"}}}
+  ]
+}

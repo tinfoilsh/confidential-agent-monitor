@@ -47,7 +47,14 @@ func main() {
 	bucket := flag.String("bucket", "", "blob URL holding the encrypted state")
 	object := flag.String("object", "monitor.enc", "key of the encrypted state")
 	corpus := flag.String("corpus", "", "with a file:// bucket, append each request to a preset's account here")
+	drafts := flag.String("drafts", "", "with a file:// bucket, also load the draft presets in this directory")
 	flag.Parse()
+	if *drafts != "" {
+		if !strings.HasPrefix(*bucket, "file://") {
+			log.Fatal("-drafts loads unreviewed presets, so it needs a file:// bucket")
+		}
+		draftFiles = os.DirFS(*drafts)
+	}
 	if err := run(*listen, *api, *bucket, *object, *corpus); err != nil {
 		log.Fatal(err)
 	}

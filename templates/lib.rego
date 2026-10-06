@@ -11,8 +11,6 @@ mutation if input.graphql.kind == "mutation"
 
 audiences := data.monitor.labels.audiences
 
-t := data.templates[input.account.template]
-
 # Each effect carries fixed obligations. An operation's obligations are the union over its effects.
 vocabulary := {
 	"read": {"change": false, "trust": false, "ask": false, "discloses": false},
@@ -28,7 +26,11 @@ vocabulary := {
 	"pay": {"change": true, "trust": true, "ask": true, "discloses": false},
 }
 
-op := t.operation
+op := data.templates[input.account.template].operation
+
+default title := ""
+
+title := data.templates[input.account.template].title
 
 fields := {"id", "action", "effects", "scope", "grant", "trust", "sends", "reveals", "definition"}
 
@@ -130,7 +132,7 @@ custom contains msg if some msg in data.sentinel.deny with input.action as actio
 
 deny contains msg if some msg in custom
 
-deny contains msg if some msg in t.deny
+deny contains msg if some msg in data.templates[input.account.template].deny
 
 deny contains "this agent may not do this on the account" if mode == "off"
 
@@ -183,7 +185,7 @@ else := {
 	"operation": operation,
 	"definition": definition,
 	"effects": effects,
-	"title": object.get(t, "title", ""),
+	"title": title,
 	"scope": scope,
 	"grant": grant,
 	"sends": sends,

@@ -1,0 +1,44 @@
+{
+  "title": "Perplexity",
+  "catalog": {
+    "fields": [
+      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://api.perplexity.ai", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "delete.skills": {"title": "Delete: skills"},
+      "generate.agent": {"title": "Generate: agent"},
+      "generate.contextualizedembeddings": {"title": "Generate: contextualizedembeddings"},
+      "generate.embeddings": {"title": "Generate: embeddings"},
+      "generate.skills": {"title": "Generate: skills"},
+      "generate.sonar": {"title": "Generate: sonar"},
+      "read": {"title": "Read everything the account can see"},
+      "write.skills": {"title": "Write: skills"}
+    }
+  },
+  "operations": [
+    {"id": "search_search_post", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.perplexity.ai", "path": "/search", "body": "json", "scope": {}},
+    {"id": "createAgent", "action": "generate.agent", "effects": ["generate"], "method": "POST", "origin": "https://api.perplexity.ai", "path": "/v1/agent", "body": "json", "scope": {}},
+    {"id": "retrieveAgent", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.perplexity.ai", "path": "/v1/agent/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
+    {"id": "cancelAgentResponse", "action": "generate.agent", "effects": ["generate"], "method": "POST", "origin": "https://api.perplexity.ai", "path": "/v1/agent/{id}/cancel", "scope": {"id": {"from": "path", "at": "id"}}},
+    {"id": "listAgentFiles", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.perplexity.ai", "path": "/v1/agent/{id}/files", "scope": {"id": {"from": "path", "at": "id"}}},
+    {"id": "downloadAgentFile", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.perplexity.ai", "path": "/v1/agent/{id}/files/{file_id}/content", "scope": {"id": {"from": "path", "at": "id"}, "file_id": {"from": "path", "at": "file_id"}}},
+    {"id": "getComputerUsageAnalytics", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.perplexity.ai", "path": "/v1/analytics/computer/usage", "params": ["dataset", "start_time", "end_time", "bucket_width", "limit", "page", "user_email"], "scope": {}},
+    {"id": "create_async_chat_completions_async_chat_completions_post", "action": "generate.sonar", "effects": ["generate"], "method": "POST", "origin": "https://api.perplexity.ai", "path": "/v1/async/sonar", "body": "json", "scope": {}},
+    {"id": "list_async_chat_completions_async_chat_completions_get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.perplexity.ai", "path": "/v1/async/sonar", "scope": {}},
+    {"id": "get_async_chat_completion_response_async_chat_completions__api_request__get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.perplexity.ai", "path": "/v1/async/sonar/{api_request}", "scope": {"api_request": {"from": "path", "at": "api_request"}}},
+    {"id": "contextualized_embeddings_v1_contextualizedembeddings_post", "action": "generate.contextualizedembeddings", "effects": ["generate"], "method": "POST", "origin": "https://api.perplexity.ai", "path": "/v1/contextualizedembeddings", "body": "json", "scope": {}},
+    {"id": "embeddings_v1_embeddings_post", "action": "generate.embeddings", "effects": ["generate"], "method": "POST", "origin": "https://api.perplexity.ai", "path": "/v1/embeddings", "body": "json", "scope": {}},
+    {"id": "listModels", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.perplexity.ai", "path": "/v1/models", "scope": {}},
+    {"id": "listSkills", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.perplexity.ai", "path": "/v1/skills", "params": ["limit", "page_token"], "scope": {}},
+    {"id": "createSkill", "action": "generate.skills", "effects": ["generate"], "method": "POST", "origin": "https://api.perplexity.ai", "path": "/v1/skills", "body": "any", "scope": {}},
+    {"id": "deleteSkill", "action": "delete.skills", "effects": ["delete"], "method": "DELETE", "origin": "https://api.perplexity.ai", "path": "/v1/skills/{skill_id}", "params": ["expected_revision"], "scope": {"skill_id": {"from": "path", "at": "skill_id"}}},
+    {"id": "getSkill", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.perplexity.ai", "path": "/v1/skills/{skill_id}", "params": ["revision"], "scope": {"skill_id": {"from": "path", "at": "skill_id"}}},
+    {"id": "updateSkill", "action": "write.skills", "effects": ["write"], "method": "PUT", "origin": "https://api.perplexity.ai", "path": "/v1/skills/{skill_id}", "params": ["expected_revision"], "body": "any", "scope": {"skill_id": {"from": "path", "at": "skill_id"}}},
+    {"id": "downloadSkill", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.perplexity.ai", "path": "/v1/skills/{skill_id}/download", "params": ["revision"], "scope": {"skill_id": {"from": "path", "at": "skill_id"}}},
+    {"id": "listSkillRevisions", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.perplexity.ai", "path": "/v1/skills/{skill_id}/revisions", "params": ["limit", "page_token"], "scope": {"skill_id": {"from": "path", "at": "skill_id"}}},
+    {"id": "chat_completions_chat_completions_post", "action": "generate.sonar", "effects": ["generate"], "method": "POST", "origin": "https://api.perplexity.ai", "path": "/v1/sonar", "body": "json", "scope": {}},
+    {"id": "getComputerUsageAnalyticsV2", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.perplexity.ai", "path": "/v2/analytics/computer/usage", "params": ["dataset", "group_by", "start_time", "end_time", "limit", "page"], "scope": {}}
+  ]
+}

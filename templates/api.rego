@@ -43,12 +43,11 @@ malformed contains [name, object.get(o, "id", i)] if {
 	not well_formed(o)
 }
 
-malformed contains [name, sprintf("%v is repeated", [o.id])] if {
+malformed contains [name, sprintf("%v is repeated", [id])] if {
 	some name, s in data.presets
-	some i, o in s.operations
-	some j, other in s.operations
-	i < j
-	o.id == other.id
+	ids := sort([o.id | some o in s.operations])
+	some i, id in ids
+	id == ids[i + 1]
 }
 
 matches := [o | some o in service.operations; matched(o)]

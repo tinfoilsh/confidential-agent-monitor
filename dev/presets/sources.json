@@ -1,0 +1,3526 @@
+{
+ "action_network": {
+  "specs": [],
+  "auth": {
+   "header": "OSDI-API-Token"
+  },
+  "note": "No published OpenAPI; OSDI/HAL docs only"
+ },
+ "active_campaign": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://developers.activecampaign.com/openapi/v3.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "ReadMe-hosted v3 spec; per-account host {account}.api-us1.com; docs site rate-limits non-browser requests"
+ },
+ "acuity_scheduling": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://dash.readme.com/api/v1/api-registry/1mld74kq6ux8ie",
+    "kind": "vendor",
+    "origin": "https://acuityscheduling.com"
+   }
+  ],
+  "auth": {
+   "basic": true
+  },
+  "note": "Vendor ReadMe registry spec is partial (7 paths, :id style params); OAuth2 uses Bearer"
+ },
+ "adalo": {
+  "specs": [],
+  "note": "Per-app collection API; no published spec"
+ },
+ "affinity": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://developer.affinity.co/api-reference/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.affinity.co"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Spec covers v2 only (Bearer); n8n node uses v1 with basic auth (key as password), which has no spec"
+ },
+ "agile_crm": {
+  "specs": [],
+  "auth": {
+   "basic": true
+  },
+  "note": "No published spec; per-tenant {domain}.agilecrm.com, basic auth email:apiKey"
+ },
+ "airtable": {
+  "specs": [],
+  "note": "Airtable publishes no official OpenAPI for the Web API",
+  "preset": "airtable"
+ },
+ "airtop": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://docs.airtop.ai/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.airtop.ai"
+   }
+  ],
+  "note": "Spec servers base is /api"
+ },
+ "alibaba_cloud": {
+  "specs": [],
+  "note": "DashScope OpenAI-compatible mode; no vendor spec found, regional hosts"
+ },
+ "amqp": {
+  "native": "amqp (Part 2)",
+  "specs": []
+ },
+ "anthropic": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "anthropics/anthropic-sdk-python",
+    "ref": "main",
+    "file": "scripts/mock-spec.json.gz",
+    "kind": "vendor",
+    "origin": "https://api.anthropic.com"
+   }
+  ],
+  "auth": {
+   "header": "x-api-key"
+  },
+  "note": "Official Stainless spec bundled in SDK repo, gzip-compressed JSON; also needs anthropic-version header",
+  "preset": "anthropic"
+ },
+ "api_template_io": {
+  "specs": [],
+  "note": "No public OpenAPI document found"
+ },
+ "asana": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "Asana/openapi",
+    "ref": "master",
+    "file": "defs/asana_oas.yaml",
+    "kind": "vendor",
+    "origin": "https://app.asana.com"
+   }
+  ],
+  "preset": "asana"
+ },
+ "autopilot": {
+  "specs": [],
+  "auth": {
+   "header": "autopilotapikey"
+  },
+  "note": "Product discontinued (now Ortto); no spec"
+ },
+ "aws_bedrock": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/bedrock-runtime/2023-09-30/service-2.json",
+    "kind": "botocore"
+   }
+  ]
+ },
+ "aws_certificate_manager": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/acm/2015-12-08/service-2.json",
+    "kind": "botocore"
+   }
+  ]
+ },
+ "aws_cognito": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/cognito-idp/2016-04-18/service-2.json",
+    "kind": "botocore"
+   }
+  ]
+ },
+ "aws_comprehend": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/comprehend/2017-11-27/service-2.json",
+    "kind": "botocore"
+   }
+  ]
+ },
+ "aws_dynamo_db": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/dynamodb/2012-08-10/service-2.json",
+    "kind": "botocore"
+   }
+  ]
+ },
+ "aws_elb": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/elbv2/2015-12-01/service-2.json",
+    "kind": "botocore"
+   }
+  ]
+ },
+ "aws_iam": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/iam/2010-05-08/service-2.json",
+    "kind": "botocore"
+   }
+  ]
+ },
+ "aws_lambda": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/lambda/2015-03-31/service-2.json",
+    "kind": "botocore"
+   }
+  ]
+ },
+ "aws_rekognition": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/rekognition/2016-06-27/service-2.json",
+    "kind": "botocore"
+   }
+  ]
+ },
+ "aws_s3": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/s3/2006-03-01/service-2.json",
+    "kind": "botocore"
+   }
+  ],
+  "preset": "aws_s3"
+ },
+ "aws_ses": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/ses/2010-12-01/service-2.json",
+    "kind": "botocore"
+   }
+  ]
+ },
+ "aws_sns": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/sns/2010-03-31/service-2.json",
+    "kind": "botocore"
+   }
+  ]
+ },
+ "aws_sqs": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/sqs/2012-11-05/service-2.json",
+    "kind": "botocore"
+   }
+  ]
+ },
+ "aws_textract": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/textract/2018-06-27/service-2.json",
+    "kind": "botocore"
+   }
+  ]
+ },
+ "aws_transcribe": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/transcribe/2017-10-26/service-2.json",
+    "kind": "botocore"
+   }
+  ]
+ },
+ "azure_aisearch": {
+  "specs": [
+   {
+    "format": "swagger",
+    "github": "Azure/azure-rest-api-specs",
+    "ref": "main",
+    "file": "specification/search/data-plane/Search/stable/2024-07-01/searchindex.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   },
+   {
+    "format": "swagger",
+    "github": "Azure/azure-rest-api-specs",
+    "ref": "main",
+    "file": "specification/search/data-plane/Search/stable/2024-07-01/searchservice.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "header": "api-key"
+  },
+  "note": "Pinned to api-version 2024-07-01 used by n8n; newer combined search.json exists"
+ },
+ "azure_cosmos_db": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization"
+  },
+  "note": "Cosmos SQL data-plane REST not in azure-rest-api-specs (Tables only); auth is an HMAC-signed token"
+ },
+ "azure_open_ai": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "Azure/azure-rest-api-specs",
+    "ref": "main",
+    "file": "specification/cognitiveservices/data-plane/OpenAIInference/stable/2024-10-21/inference.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   },
+   {
+    "format": "openapi",
+    "github": "Azure/azure-rest-api-specs",
+    "ref": "main",
+    "file": "specification/ai/data-plane/OpenAI.v1/azure-v1-v1-generated.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "Deployment-style API (api-version) plus /openai/v1 API; per-resource host"
+ },
+ "azure_storage": {
+  "specs": [
+   {
+    "format": "swagger",
+    "github": "Azure/azure-rest-api-specs",
+    "ref": "main",
+    "file": "specification/storage/data-plane/Microsoft.BlobStorage/stable/2021-12-02/blob.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Blob service only, x-ms-version 2021-12-02 as n8n uses; shared-key auth is HMAC-signed (SharedKey prefix)"
+ },
+ "bamboo_hr": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://openapi.bamboohr.io/main/latest/docs/openapi/public-openapi.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "basic": true,
+   "user": true
+  },
+  "note": "Spec uses {company}.bamboohr.com/api/v1; n8n uses api.bamboohr.com/api/gateway.php/{company}/v1"
+ },
+ "bannerbear": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api.bannerbear.com/v5/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.bannerbear.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Spec covers v5; n8n node calls /v2 which has no spec"
+ },
+ "baserow": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api.baserow.io/api/schema.json",
+    "kind": "vendor",
+    "origin": "https://api.baserow.io"
+   }
+  ],
+  "note": "Also self-hostable (same spec at {host}/api/schema.json)"
+ },
+ "beeminder": {
+  "specs": [],
+  "note": "No published spec"
+ },
+ "bitbucket": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://dac-static.atlassian.com/cloud/bitbucket/swagger.v3.json",
+    "kind": "vendor",
+    "origin": "https://api.bitbucket.org"
+   }
+  ],
+  "auth": {
+   "basic": true
+  }
+ },
+ "bitly": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://dev.bitly.com/v4/v4.json",
+    "kind": "vendor",
+    "origin": "https://api-ssl.bitly.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  }
+ },
+ "bitwarden": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Public API swagger only embedded in bitwarden.com/help/api page or self-hosted /api/docs; no stable URL"
+ },
+ "box": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "box/box-openapi",
+    "ref": "main",
+    "file": "openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.box.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Uploads go to upload.box.com"
+ },
+ "brandfetch": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://docs.brandfetch.io/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.brandfetch.io"
+   }
+  ]
+ },
+ "bubble": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Per-app Data API; swagger only per app when enabled"
+ },
+ "cal": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "calcom/cal.com",
+    "ref": "main",
+    "file": "docs/api-reference/v2/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.cal.com"
+   }
+  ],
+  "note": "Self-hosted instances use their own host"
+ },
+ "calendly": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://stoplight.io/api/v1/projects/calendly/api-docs/nodes/reference/calendly-api/openapi.yaml",
+    "kind": "vendor",
+    "origin": "https://api.calendly.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Stoplight export URL"
+ },
+ "chargebee": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "chargebee/openapi",
+    "ref": "main",
+    "file": "spec/chargebee_api_v2_pc_v2_spec.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "basic": true
+  },
+  "note": "Product Catalog 2.0 spec; PC1.0 sites use chargebee_api_v2_pc_v1_spec.json"
+ },
+ "chroma_db": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api.trychroma.com/openapi.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "Cloud or self-hosted; served live by the Chroma server"
+ },
+ "circle_ci": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://circleci.com/api/v2/openapi.json",
+    "kind": "vendor",
+    "origin": "https://circleci.com"
+   }
+  ],
+  "auth": {
+   "header": "Circle-Token"
+  }
+ },
+ "cisco_webex": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "webex/webex-openapi-specs",
+    "ref": "main",
+    "file": "public-spec/webex-messaging.json",
+    "kind": "vendor",
+    "origin": "https://webexapis.com"
+   },
+   {
+    "format": "openapi",
+    "github": "webex/webex-openapi-specs",
+    "ref": "main",
+    "file": "public-spec/webex-meeting.json",
+    "kind": "vendor",
+    "origin": "https://webexapis.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Messaging and meetings only, matching the n8n node"
+ },
+ "citrix_adc": {
+  "specs": [],
+  "note": "NITRO API has no public spec; NextGen API YAML only downloadable from appliance GUI"
+ },
+ "clearbit": {
+  "specs": [],
+  "note": "No published spec; API sunset under HubSpot"
+ },
+ "click_up": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://developer.clickup.com/openapi/clickup-api-v2-reference.json",
+    "kind": "vendor",
+    "origin": "https://api.clickup.com"
+   }
+  ],
+  "preset": "clickup"
+ },
+ "clockify": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://docs.clockify.me/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.clockify.me"
+   }
+  ],
+  "note": "Spec has no servers; paths are relative to /api; reports API uses reports.api.clockify.me"
+ },
+ "cloudflare": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "cloudflare/api-schemas",
+    "ref": "main",
+    "file": "openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.cloudflare.com"
+   }
+  ],
+  "note": "Large spec (2000+ paths)"
+ },
+ "cockpit": {
+  "specs": [],
+  "auth": {
+   "query": "token"
+  },
+  "note": "Self-hosted CMS; no published spec"
+ },
+ "coda": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://coda.io/apis/v1/openapi.yaml",
+    "kind": "vendor",
+    "origin": "https://coda.io"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Spec rebranded Superhuman Docs with servers docs.superhuman.com/apis/v1; n8n uses coda.io/apis/v1"
+ },
+ "cohere": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "cohere-ai/cohere-developer-experience",
+    "ref": "main",
+    "file": "cohere-openapi.yaml",
+    "kind": "vendor",
+    "origin": "https://api.cohere.com"
+   }
+  ]
+ },
+ "confluence": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://dac-static.atlassian.com/cloud/confluence/openapi-v2.v3.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   },
+   {
+    "format": "openapi",
+    "url": "https://dac-static.atlassian.com/cloud/confluence/swagger.v3.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   },
+   {
+    "format": "openapi",
+    "url": "https://dac-static.atlassian.com/cloud/jira/platform/swagger-v3.v3.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "Covers Confluence v2/v1 and Jira platform; OAuth calls go via api.atlassian.com/ex/{product}/{cloudId}; Jira Server differs",
+  "preset": "confluence,jira"
+ },
+ "contentful": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "No official OpenAPI or raw Postman JSON; only third-party profiles exist."
+ },
+ "convert_kit": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://developers.kit.com/api-reference/v4.json",
+    "kind": "vendor",
+    "origin": "https://api.kit.com"
+   }
+  ],
+  "auth": {
+   "header": "X-Kit-Api-Key",
+   "prefix": ""
+  },
+  "note": "Spec is Kit v4; n8n uses v3 (api.convertkit.com, api_secret query param) which has no spec."
+ },
+ "copper": {
+  "specs": [
+   {
+    "format": "postman",
+    "url": "https://developer.copper.com/download/copper_postman_collection.json",
+    "kind": "postman",
+    "origin": "https://api.copper.com"
+   }
+  ],
+  "note": "Only an official Postman collection; no OpenAPI."
+ },
+ "cortex": {
+  "specs": [],
+  "note": "TheHive Cortex publishes no machine-readable spec."
+ },
+ "crate_db": {
+  "native": "postgres",
+  "specs": []
+ },
+ "crypto": {
+  "native": "local, no service",
+  "specs": []
+ },
+ "currents": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api.currents.dev/v1/docs/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.currents.dev"
+   }
+  ]
+ },
+ "customer_io": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://docs.customer.io/files/journeys-track.json",
+    "kind": "vendor",
+    "origin": "https://track.customer.io"
+   },
+   {
+    "format": "openapi",
+    "url": "https://docs.customer.io/files/journeys-app.json",
+    "kind": "vendor",
+    "origin": "https://api.customer.io"
+   }
+  ],
+  "auth": {
+   "basic": true
+  },
+  "note": "Basic (site_id:api_key) is for Track API; App API uses Authorization: Bearer; EU hosts are track-eu/api-eu."
+ },
+ "databricks": {
+  "specs": [],
+  "note": "Databricks publishes no official OpenAPI; only community-scraped specs."
+ },
+ "deep_l": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "DeepLcom/openapi",
+    "ref": "main",
+    "file": "openapi.yaml",
+    "kind": "vendor",
+    "origin": "https://api.deepl.com"
+   }
+  ],
+  "note": "Free plan uses https://api-free.deepl.com with the same paths."
+ },
+ "deep_seek": {
+  "specs": [],
+  "note": "No official spec; API is OpenAI-compatible at https://api.deepseek.com."
+ },
+ "demio": {
+  "specs": [],
+  "auth": {
+   "header": "Api-Key",
+   "prefix": ""
+  },
+  "note": "No spec found; Demio also requires an Api-Secret header."
+ },
+ "dhl": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://developer.dhl.com/sites/default/files/2026-08/track_v1.5.8.yaml",
+    "kind": "vendor",
+    "origin": "https://api-eu.dhl.com"
+   }
+  ],
+  "auth": {
+   "header": "DHL-API-Key",
+   "prefix": ""
+  },
+  "note": "Vendor URL has a dated path and may change with new versions."
+ },
+ "discord": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "discord/discord-api-spec",
+    "ref": "main",
+    "file": "specs/openapi.json",
+    "kind": "vendor",
+    "origin": "https://discord.com"
+   }
+  ],
+  "note": "Spec is labelled preview.",
+  "preset": "discord"
+ },
+ "discourse": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "discourse/discourse_api_docs",
+    "ref": "main",
+    "file": "openapi.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "header": "Api-Key",
+   "prefix": ""
+  },
+  "note": "An Api-Username header is also required."
+ },
+ "disqus": {
+  "specs": [],
+  "auth": {
+   "query": "api_key"
+  },
+  "note": "No machine-readable spec published."
+ },
+ "drift": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "No public spec file found; product is being sunset by Salesloft."
+ },
+ "dropbox": {
+  "specs": [],
+  "note": "Official spec is in Stone format (github.com/dropbox/dropbox-api-spec), not OpenAPI.",
+  "preset": "dropbox"
+ },
+ "dropcontact": {
+  "specs": [],
+  "note": "No machine-readable spec found."
+ },
+ "egoi": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "E-goi/sdk-java",
+    "ref": "master",
+    "file": "api/openapi.yaml",
+    "kind": "vendor",
+    "origin": "https://api.egoiapp.com"
+   }
+  ],
+  "auth": {
+   "header": "Apikey",
+   "prefix": ""
+  },
+  "note": "Spec taken from the vendor's Java SDK repo."
+ },
+ "elastic_security": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "elastic/kibana",
+    "ref": "main",
+    "file": "oas_docs/output/kibana.yaml",
+    "kind": "vendor",
+    "origin": "{origin}",
+    "include": "^/api/(cases|actions|endpoint|detection_engine)(/|$)"
+   }
+  ],
+  "auth": {
+   "basic": true
+  },
+  "note": "Kibana spec (~10MB); API key auth uses Authorization: ApiKey <key>."
+ },
+ "elasticsearch": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "elastic/elasticsearch-specification",
+    "ref": "main",
+    "file": "output/openapi/elasticsearch-openapi.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ]
+ },
+ "email_read_imap": {
+  "native": "imap",
+  "specs": []
+ },
+ "email_send": {
+  "native": "smtp",
+  "specs": []
+ },
+ "emelia": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": ""
+  },
+  "note": "GraphQL API with no published SDL; introspection needs an API key."
+ },
+ "erp_next": {
+  "specs": [],
+  "note": "Frappe ships no OpenAPI; only unofficial community specs."
+ },
+ "eventbrite": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "No public spec file; origin https://www.eventbriteapi.com."
+ },
+ "facebook": {
+  "specs": [],
+  "auth": {
+   "query": "access_token"
+  },
+  "note": "Meta publishes no Graph API spec."
+ },
+ "facebook_graph_api": {
+  "specs": [],
+  "note": "Meta publishes no Graph API spec."
+ },
+ "facebook_lead_ads": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Meta publishes no Graph API spec."
+ },
+ "figma": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "figma/rest-api-spec",
+    "ref": "main",
+    "file": "openapi/openapi.yaml",
+    "kind": "vendor",
+    "origin": "https://api.figma.com"
+   }
+  ],
+  "auth": {
+   "header": "X-Figma-Token",
+   "prefix": ""
+  },
+  "note": "OAuth tokens use Authorization: Bearer instead."
+ },
+ "filemaker": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Data API docs are served per server only; bearer is a session token from /sessions."
+ },
+ "flow": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "No machine-readable spec found."
+ },
+ "form_io": {
+  "specs": [
+   {
+    "format": "postman",
+    "url": "https://documenter.gw.postman.com/api/collections/684631/2Jvuks?segregateAuth=true&versionTag=latest",
+    "kind": "postman",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "Postman documenter export from apidocs.form.io; projects use per-project or self-hosted hosts."
+ },
+ "formstack": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://developers.formstack.com/openapi/api2025-openapi.yaml",
+    "kind": "vendor",
+    "origin": "https://www.formstack.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Spec covers /api/v2025 while n8n calls /api/v2; URL returns JSON despite .yaml name."
+ },
+ "freshdesk": {
+  "specs": [],
+  "note": "Freshworks publishes no OpenAPI for Freshdesk."
+ },
+ "freshservice": {
+  "specs": [],
+  "auth": {
+   "basic": true
+  },
+  "note": "No official spec; basic auth with API key as username."
+ },
+ "freshworks_crm": {
+  "specs": [],
+  "note": "No official spec found."
+ },
+ "ftp": {
+  "native": "ftp/sftp (Part 2)",
+  "specs": []
+ },
+ "g_suite_admin": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://admin.googleapis.com/$discovery/rest?version=directory_v1",
+    "kind": "google"
+   }
+  ]
+ },
+ "get_response": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://apireference.getresponse.com/open-api.json",
+    "kind": "vendor",
+    "origin": "https://api.getresponse.com"
+   }
+  ]
+ },
+ "ghost": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Ghost "
+  },
+  "note": "No official spec; Admin API uses a JWT, Content API uses ?key= query."
+ },
+ "git": {
+  "native": "ssh (git over ssh) or http",
+  "specs": []
+ },
+ "github": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "github/rest-api-description",
+    "ref": "main",
+    "file": "descriptions/api.github.com/api.github.com.json",
+    "kind": "vendor",
+    "origin": "https://api.github.com"
+   }
+  ],
+  "note": "Spec is ~13MB; GHES users have their own host.",
+  "preset": "github_api"
+ },
+ "gitlab": {
+  "specs": [
+   {
+    "format": "swagger",
+    "url": "https://gitlab.com/gitlab-org/gitlab/-/raw/master/doc/api/openapi/openapi_v2.yaml",
+    "kind": "vendor",
+    "origin": "https://gitlab.com"
+   }
+  ],
+  "note": "Auto-generated spec does not yet cover the full REST API; self-managed uses own host.",
+  "preset": "gitlab"
+ },
+ "gmail": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://gmail.googleapis.com/$discovery/rest?version=v1",
+    "kind": "google"
+   }
+  ],
+  "preset": "gmail"
+ },
+ "go_to_webinar": {
+  "specs": [
+   {
+    "format": "swagger",
+    "url": "https://api.apis.guru/v2/specs/getgo.com/gotowebinar/1.0.0/swagger.json",
+    "kind": "apis-guru",
+    "origin": "https://api.getgo.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "APIs.guru copy may be stale."
+ },
+ "gong": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://gong.app.gong.io/ajax/settings/api/documentation/specs?version=",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "Each customer gets its own api.gong.io base URL."
+ },
+ "google_ads": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://googleads.googleapis.com/$discovery/rest?version=v25",
+    "kind": "google"
+   }
+  ]
+ },
+ "google_analytics": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://analyticsdata.googleapis.com/$discovery/rest?version=v1beta",
+    "kind": "google"
+   },
+   {
+    "format": "discovery",
+    "url": "https://analyticsadmin.googleapis.com/$discovery/rest?version=v1beta",
+    "kind": "google"
+   }
+  ]
+ },
+ "google_big_query": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://bigquery.googleapis.com/$discovery/rest?version=v2",
+    "kind": "google"
+   }
+  ]
+ },
+ "google_books": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://books.googleapis.com/$discovery/rest?version=v1",
+    "kind": "google"
+   }
+  ]
+ },
+ "google_business_profile": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://mybusinessbusinessinformation.googleapis.com/$discovery/rest?version=v1",
+    "kind": "google"
+   },
+   {
+    "format": "discovery",
+    "url": "https://mybusinessaccountmanagement.googleapis.com/$discovery/rest?version=v1",
+    "kind": "google"
+   }
+  ]
+ },
+ "google_calendar": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://calendar-json.googleapis.com/$discovery/rest?version=v3",
+    "kind": "google"
+   }
+  ],
+  "preset": "google_calendar"
+ },
+ "google_chat": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://chat.googleapis.com/$discovery/rest?version=v1",
+    "kind": "google"
+   }
+  ]
+ },
+ "google_cloud_natural_language": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://language.googleapis.com/$discovery/rest?version=v2",
+    "kind": "google"
+   }
+  ]
+ },
+ "google_cloud_storage": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://storage.googleapis.com/$discovery/rest?version=v1",
+    "kind": "google"
+   }
+  ]
+ },
+ "google_contacts": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://people.googleapis.com/$discovery/rest?version=v1",
+    "kind": "google"
+   }
+  ]
+ },
+ "google_docs": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://docs.googleapis.com/$discovery/rest?version=v1",
+    "kind": "google"
+   }
+  ],
+  "preset": "google_docs"
+ },
+ "google_drive": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
+    "kind": "google"
+   }
+  ],
+  "preset": "google_drive"
+ },
+ "google_firebase_cloud_firestore": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://firestore.googleapis.com/$discovery/rest?version=v1",
+    "kind": "google"
+   }
+  ]
+ },
+ "google_firebase_realtime_database": {
+  "specs": []
+ },
+ "google_gemini": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://generativelanguage.googleapis.com/$discovery/rest?version=v1beta",
+    "kind": "google"
+   }
+  ],
+  "preset": "google_gemini"
+ },
+ "google_perspective": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://commentanalyzer.googleapis.com/$discovery/rest?version=v1alpha1",
+    "kind": "google"
+   }
+  ]
+ },
+ "google_sheets": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://sheets.googleapis.com/$discovery/rest?version=v4",
+    "kind": "google"
+   }
+  ],
+  "preset": "google_sheets"
+ },
+ "google_slides": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://slides.googleapis.com/$discovery/rest?version=v1",
+    "kind": "google"
+   }
+  ]
+ },
+ "google_tasks": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://tasks.googleapis.com/$discovery/rest?version=v1",
+    "kind": "google"
+   }
+  ],
+  "preset": "google_tasks"
+ },
+ "google_translate": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://translation.googleapis.com/$discovery/rest?version=v3",
+    "kind": "google"
+   }
+  ]
+ },
+ "google_vertex": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://aiplatform.googleapis.com/$discovery/rest?version=v1",
+    "kind": "google",
+    "include": "/(endpoints|publishers/[^/]*/models)/"
+   }
+  ]
+ },
+ "gotify": {
+  "specs": [
+   {
+    "format": "swagger",
+    "github": "gotify/server",
+    "ref": "master",
+    "file": "docs/spec.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "header": "X-Gotify-Key",
+   "prefix": ""
+  },
+  "note": "App token for sending messages, client token for management."
+ },
+ "grafana": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "grafana/grafana",
+    "ref": "main",
+    "file": "public/openapi3.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ]
+ },
+ "grist": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "gristlabs/grist-help",
+    "ref": "master",
+    "file": "api/grist.yml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Host is per team (X.getgrist.com) or self-hosted."
+ },
+ "groq": {
+  "specs": [],
+  "note": "No public spec URL; Groq is OpenAI-compatible at api.groq.com/openai/v1 and its spec is only embedded in SDK repos."
+ },
+ "gumroad": {
+  "specs": [],
+  "note": "No vendor spec; only an unofficial community spec (flowoid/gumroad-openapi)."
+ },
+ "halo_psa": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Each tenant serves Swagger UI at {tenant}/api/swagger, but no public JSON URL was found; the token comes from an OAuth client-credentials flow."
+ },
+ "harvest": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "No vendor spec; requests also need a Harvest-Account-Id header. Community generator: jolicode/harvest-openapi-generator."
+ },
+ "help_scout": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "No public machine-readable spec for the Inbox API v2."
+ },
+ "high_level": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "GoHighLevel/highlevel-api-docs",
+    "ref": "main",
+    "file": "apps/contacts.json",
+    "kind": "vendor",
+    "origin": "https://services.leadconnectorhq.com"
+   },
+   {
+    "format": "openapi",
+    "github": "GoHighLevel/highlevel-api-docs",
+    "ref": "main",
+    "file": "apps/opportunities.json",
+    "kind": "vendor",
+    "origin": "https://services.leadconnectorhq.com"
+   },
+   {
+    "format": "openapi",
+    "github": "GoHighLevel/highlevel-api-docs",
+    "ref": "main",
+    "file": "apps/calendars.json",
+    "kind": "vendor",
+    "origin": "https://services.leadconnectorhq.com"
+   },
+   {
+    "format": "openapi",
+    "github": "GoHighLevel/highlevel-api-docs",
+    "ref": "main",
+    "file": "apps/users.json",
+    "kind": "vendor",
+    "origin": "https://services.leadconnectorhq.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "v2 API only. The legacy v1 API at rest.gohighlevel.com has no spec. Requests also need a Version header."
+ },
+ "home_assistant": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "No published OpenAPI for the Home Assistant REST API; self-hosted."
+ },
+ "hubspot": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "HubSpot/HubSpot-public-api-spec-collection",
+    "ref": "main",
+    "file": "PublicApiSpecs/CRM/Contacts/Rollouts/424/v3/contacts.json",
+    "kind": "vendor",
+    "origin": "https://api.hubapi.com"
+   },
+   {
+    "format": "openapi",
+    "github": "HubSpot/HubSpot-public-api-spec-collection",
+    "ref": "main",
+    "file": "PublicApiSpecs/CRM/Companies/Rollouts/424/v3/companies.json",
+    "kind": "vendor",
+    "origin": "https://api.hubapi.com"
+   },
+   {
+    "format": "openapi",
+    "github": "HubSpot/HubSpot-public-api-spec-collection",
+    "ref": "main",
+    "file": "PublicApiSpecs/CRM/Deals/Rollouts/424/v3/deals.json",
+    "kind": "vendor",
+    "origin": "https://api.hubapi.com"
+   },
+   {
+    "format": "openapi",
+    "github": "HubSpot/HubSpot-public-api-spec-collection",
+    "ref": "main",
+    "file": "PublicApiSpecs/CRM/Tickets/Rollouts/424/v3/tickets.json",
+    "kind": "vendor",
+    "origin": "https://api.hubapi.com"
+   },
+   {
+    "format": "openapi",
+    "github": "HubSpot/HubSpot-public-api-spec-collection",
+    "ref": "main",
+    "file": "PublicApiSpecs/CRM/Crm%20Owners/Rollouts/146888/v3/crmOwners.json",
+    "kind": "vendor",
+    "origin": "https://api.hubapi.com"
+   },
+   {
+    "format": "openapi",
+    "github": "HubSpot/HubSpot-public-api-spec-collection",
+    "ref": "main",
+    "file": "PublicApiSpecs/CRM/Lists/Rollouts/144891/v3/lists.json",
+    "kind": "vendor",
+    "origin": "https://api.hubapi.com"
+   },
+   {
+    "format": "openapi",
+    "github": "HubSpot/HubSpot-public-api-spec-collection",
+    "ref": "main",
+    "file": "PublicApiSpecs/Marketing/Forms/Rollouts/144909/v3/forms.json",
+    "kind": "vendor",
+    "origin": "https://api.hubapi.com"
+   }
+  ],
+  "note": "v3 specs only. n8n also calls legacy v1/v2 endpoints (engagements, forms submissions on api.hsforms.com) that these specs do not cover.",
+  "preset": "hubspot"
+ },
+ "hugging_face_inference": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://huggingface.co/.well-known/openapi.json",
+    "kind": "vendor",
+    "origin": "https://huggingface.co"
+   }
+  ],
+  "note": "Covers the Hub API only. Inference (router.huggingface.co, OpenAI-compatible) has no published spec."
+ },
+ "humantic_ai": {
+  "specs": [],
+  "auth": {
+   "query": "apikey"
+  },
+  "note": "No public spec."
+ },
+ "hunter": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://hunter.io/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.hunter.io"
+   }
+  ],
+  "auth": {
+   "query": "api_key"
+  },
+  "note": "The spec also accepts an X-API-KEY header or a Bearer token."
+ },
+ "intercom": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "intercom/Intercom-OpenAPI",
+    "ref": "main",
+    "file": "descriptions/2.11/api.intercom.io.yaml",
+    "kind": "vendor",
+    "origin": "https://api.intercom.io"
+   }
+  ],
+  "note": "Pinned to API version 2.11; newer version folders exist in the repo.",
+  "preset": "intercom"
+ },
+ "invoice_ninja": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "invoiceninja/invoiceninja",
+    "ref": "v5-stable",
+    "file": "openapi/api-docs.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "header": "X-API-TOKEN",
+   "prefix": ""
+  },
+  "note": "v5 API. The hosted service is invoicing.co; self-hosted instances use their own host. The n8n node also supports the v4 API."
+ },
+ "iterable": {
+  "specs": [
+   {
+    "format": "swagger",
+    "url": "https://api.iterable.com/api-docs",
+    "kind": "vendor",
+    "origin": "https://api.iterable.com"
+   }
+  ],
+  "note": "EU projects use api.eu.iterable.com."
+ },
+ "jenkins": {
+  "specs": [],
+  "auth": {
+   "basic": true
+  },
+  "note": "Jenkins has no OpenAPI; self-hosted. Basic auth is username plus API token."
+ },
+ "jina_ai": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://r.jina.ai/openapi.json",
+    "kind": "vendor",
+    "origin": "https://r.jina.ai"
+   },
+   {
+    "format": "openapi",
+    "url": "https://s.jina.ai/openapi.json",
+    "kind": "vendor",
+    "origin": "https://s.jina.ai"
+   }
+  ],
+  "note": "DeepSearch (deepsearch.jina.ai, OpenAI-compatible) has no public spec; its openapi.json needs auth."
+ },
+ "jot_form": {
+  "specs": [],
+  "auth": {
+   "header": "APIKEY",
+   "prefix": ""
+  },
+  "note": "No public spec. The host depends on the account (api.jotform.com, eu-api, hipaa-api)."
+ },
+ "kafka": {
+  "native": "kafka (Part 2)",
+  "specs": []
+ },
+ "keap": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "infusionsoft/keap-sdk",
+    "ref": "main",
+    "file": "sdks/v2/swagger.yml",
+    "kind": "vendor",
+    "origin": "https://api.infusionsoft.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Covers REST v2 only (/crm/rest/v2). n8n uses REST v1 (/crm/rest/v1), which has no public spec. The spec server is api.keap.com."
+ },
+ "ko_bo_toolbox": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "kobotoolbox/kpi",
+    "ref": "main",
+    "file": "static/openapi/schema_v2.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "The server is kf.kobotoolbox.org, eu.kobotoolbox.org or self-hosted."
+ },
+ "ldap": {
+  "native": "ldap (Part 2)",
+  "specs": []
+ },
+ "lemlist": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://developer.lemlist.com/api-reference/openapi/v2.json",
+    "kind": "vendor",
+    "origin": "https://api.lemlist.com"
+   }
+  ],
+  "auth": {
+   "basic": true
+  },
+  "note": "Basic auth with an empty username and the API key as the password."
+ },
+ "lemonade": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Local OpenAI-compatible server with no published OpenAPI file; self-hosted."
+ },
+ "line": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "LINE Notify was discontinued in March 2025 and never had a spec."
+ },
+ "linear": {
+  "specs": [
+   {
+    "format": "graphql",
+    "github": "linear/linear",
+    "ref": "master",
+    "file": "packages/sdk/src/schema.graphql",
+    "kind": "graphql",
+    "origin": "https://api.linear.app",
+    "path": "/graphql"
+   }
+  ],
+  "note": "GraphQL endpoint is POST /graphql.",
+  "preset": "linear"
+ },
+ "lingva_nex": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "No public spec."
+ },
+ "linked_in": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "LinkedIn publishes no OpenAPI. Requests also need LinkedIn-Version and X-Restli-Protocol-Version headers."
+ },
+ "lone_scale": {
+  "specs": [],
+  "note": "No public spec."
+ },
+ "magento2": {
+  "specs": [
+   {
+    "format": "swagger",
+    "github": "AdobeDocs/commerce-webapi",
+    "ref": "main",
+    "file": "src/openapi/admin-schema-2.4.9.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "Admin REST schema for 2.4.9, basePath /rest/default. Large spec."
+ },
+ "mailcheck": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "No public spec."
+ },
+ "mailchimp": {
+  "specs": [
+   {
+    "format": "swagger",
+    "github": "mailchimp/mailchimp-client-lib-codegen",
+    "ref": "main",
+    "file": "spec/marketing.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "Host is per datacenter (usX.api.mailchimp.com), basePath /3.0."
+ },
+ "mailer_lite": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "No vendor spec. The Classic API (api.mailerlite.com) uses the X-MailerLite-ApiKey header instead."
+ },
+ "mailgun": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://documentation.mailgun.com/_bundle/docs/mailgun/api-reference/send/mailgun.yaml",
+    "kind": "vendor",
+    "origin": "https://api.mailgun.net"
+   }
+  ],
+  "note": "EU accounts use api.eu.mailgun.net."
+ },
+ "mailjet": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://dev.mailjet.com/_bundle/openapi/openapi-mailjet.yaml",
+    "kind": "vendor",
+    "origin": "https://api.mailjet.com"
+   }
+  ],
+  "note": "The SMS API (Bearer token) may not be fully covered."
+ },
+ "mandrill": {
+  "specs": [
+   {
+    "format": "swagger",
+    "github": "mailchimp/mailchimp-client-lib-codegen",
+    "ref": "main",
+    "file": "spec/transactional.json",
+    "kind": "vendor",
+    "origin": "https://mandrillapp.com"
+   }
+  ],
+  "note": "The API key goes in the JSON body field 'key', not a header. The spec basePath is /api/1.3 but n8n uses /api/1.0."
+ },
+ "marketstack": {
+  "specs": [],
+  "auth": {
+   "query": "access_key"
+  },
+  "note": "No public spec."
+ },
+ "matrix": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://spec.matrix.org/latest/client-server-api/api.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Homeserver is configurable (default matrix-client.matrix.org)."
+ },
+ "mattermost": {
+  "specs": [],
+  "note": "The bundled OpenAPI is only a build artifact; the repo holds unbundled YAML fragments (mattermost/mattermost api/v4/source)."
+ },
+ "mautic": {
+  "specs": [],
+  "note": "No public spec. The API Platform v2 docs exist only on each instance's /api/v2."
+ },
+ "mcp_client": {
+  "native": "mcp",
+  "specs": []
+ },
+ "medium": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "The APIs.guru medium.com entry is an unofficial RapidAPI wrapper. The official API is deprecated and has no spec."
+ },
+ "message_bird": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "messagebird/openapi-specs",
+    "ref": "main",
+    "file": "sms/openapi.yaml",
+    "kind": "vendor",
+    "origin": "https://rest.messagebird.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "AccessKey "
+  },
+  "note": "Covers SMS messages only. The /balance endpoint that n8n uses is not covered."
+ },
+ "metabase": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "metabase/metabase",
+    "ref": "master",
+    "file": "resources/openapi/openapi.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "Spec is from the master branch; self-hosted."
+ },
+ "microsoft_agent365": {
+  "specs": []
+ },
+ "microsoft_dataverse": {
+  "specs": []
+ },
+ "microsoft_dynamics_crm": {
+  "specs": []
+ },
+ "microsoft_entra": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "microsoftgraph/msgraph-metadata",
+    "ref": "master",
+    "file": "openapi/v1.0/openapi.yaml",
+    "kind": "msgraph",
+    "include": "^/v1\\.0/(users|groups)(/\\{[^}/]+\\}(/(members|owners|memberOf|manager|directReports)(/.*)?)?)?$"
+   }
+  ]
+ },
+ "microsoft_excel": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "microsoftgraph/msgraph-metadata",
+    "ref": "master",
+    "file": "openapi/v1.0/openapi.yaml",
+    "kind": "msgraph",
+    "include": "^/v1\\.0/((me|users/\\{[^}/]+\\})/drive|drives/\\{[^}/]+\\})/items/\\{[^}/]+\\}/workbook(/|$)"
+   }
+  ],
+  "preset": "microsoft_excel"
+ },
+ "microsoft_excel_share_point": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "microsoftgraph/msgraph-metadata",
+    "ref": "master",
+    "file": "openapi/v1.0/openapi.yaml",
+    "kind": "msgraph",
+    "include": "^/v1\\.0/drives/\\{[^}/]+\\}/items/\\{[^}/]+\\}/workbook(/|$)"
+   }
+  ],
+  "note": "Graph documents no /sites/{site}/drive workbook routes; SharePoint workbooks are reached through their drive id"
+ },
+ "microsoft_graph_security": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "microsoftgraph/msgraph-metadata",
+    "ref": "master",
+    "file": "openapi/v1.0/openapi.yaml",
+    "kind": "msgraph",
+    "include": "^/v1\\.0/security(/|$)"
+   }
+  ]
+ },
+ "microsoft_one_drive": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "microsoftgraph/msgraph-metadata",
+    "ref": "master",
+    "file": "openapi/v1.0/openapi.yaml",
+    "kind": "msgraph",
+    "include": "^/v1\\.0/((me|users/\\{[^}/]+\\})/drive|drives)(/|$)"
+   }
+  ],
+  "preset": "microsoft_onedrive"
+ },
+ "microsoft_outlook": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "microsoftgraph/msgraph-metadata",
+    "ref": "master",
+    "file": "openapi/v1.0/openapi.yaml",
+    "kind": "msgraph",
+    "include": "^/v1\\.0/(me|users/\\{[^}/]+\\})/(messages|mailFolders|sendMail|events|calendars?|calendarView|calendarGroups|contacts|contactFolders|outlook|inferenceClassification|findMeetingTimes)(/|$)"
+   }
+  ],
+  "preset": "outlook"
+ },
+ "microsoft_share_point": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "microsoftgraph/msgraph-metadata",
+    "ref": "master",
+    "file": "openapi/v1.0/openapi.yaml",
+    "kind": "msgraph",
+    "include": "^/v1\\.0/sites(/|$)"
+   }
+  ],
+  "preset": "microsoft_sharepoint"
+ },
+ "microsoft_sql": {
+  "native": "tds (Part 2)",
+  "specs": []
+ },
+ "microsoft_teams": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "microsoftgraph/msgraph-metadata",
+    "ref": "master",
+    "file": "openapi/v1.0/openapi.yaml",
+    "kind": "msgraph",
+    "include": "^/v1\\.0/(teams|chats|(me|users/\\{[^}/]+\\})/(joinedTeams|chats))(/|$)"
+   }
+  ],
+  "preset": "microsoft_teams"
+ },
+ "microsoft_to_do": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "microsoftgraph/msgraph-metadata",
+    "ref": "master",
+    "file": "openapi/v1.0/openapi.yaml",
+    "kind": "msgraph",
+    "include": "^/v1\\.0/(me|users/\\{[^}/]+\\})/todo(/|$)"
+   }
+  ],
+  "preset": "microsoft_todo"
+ },
+ "milvus": {
+  "specs": [],
+  "note": "No vendor-hosted OpenAPI URL for the RESTful v2 API was found."
+ },
+ "mindee": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api.mindee.net/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.mindee.net"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Token "
+  },
+  "note": "v1 API spec served by the API host; spec declares bearer JWT but API keys use 'Token <key>'; v2 spec at api-v2.mindee.net/openapi.json"
+ },
+ "minimax": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://platform.minimax.io/docs/api-reference/text/api/openapi-chat-openai.json",
+    "kind": "vendor",
+    "origin": "https://api.minimax.io"
+   },
+   {
+    "format": "openapi",
+    "url": "https://platform.minimax.io/docs/api-reference/speech/t2a/api/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.minimax.io"
+   },
+   {
+    "format": "openapi",
+    "url": "https://platform.minimax.io/docs/api-reference/video/generation/api/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.minimax.io"
+   },
+   {
+    "format": "openapi",
+    "url": "https://platform.minimax.io/docs/api-reference/file/management/api/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.minimax.io"
+   }
+  ],
+  "note": "docs publish one spec per product area; video spec only covers query/retrieve, image spec has no paths"
+ },
+ "misp": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "MISP/MISP",
+    "ref": "develop",
+    "file": "app/webroot/doc/openapi.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "self-hosted; spec from MISP repo default branch"
+ },
+ "mistral_ai": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "mistralai/platform-docs-public",
+    "ref": "main",
+    "file": "openapi.yaml",
+    "kind": "vendor",
+    "origin": "https://api.mistral.ai"
+   }
+  ],
+  "note": "vendor docs repo, actively updated"
+ },
+ "mocean": {
+  "specs": [],
+  "auth": {
+   "query": "mocean-api-key"
+  },
+  "note": "no public spec found; key and secret are sent as mocean-api-key and mocean-api-secret params"
+ },
+ "monday_com": {
+  "specs": [
+   {
+    "format": "graphql",
+    "url": "https://api.monday.com/v2/get_schema?format=sdl&version=stable",
+    "kind": "graphql",
+    "origin": "https://api.monday.com",
+    "path": "/v2"
+   }
+  ],
+  "note": "GraphQL-only API; all operations POST /v2"
+ },
+ "mongo_db": {
+  "native": "mongo (Part 2)",
+  "specs": []
+ },
+ "monica_crm": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "no spec in monicahq repo or docs; hosted at app.monicahq.com or self-hosted"
+ },
+ "moonshot": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://platform.moonshot.ai/docs/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.moonshot.ai"
+   }
+  ],
+  "note": "China region uses api.moonshot.cn"
+ },
+ "motorhead": {
+  "specs": [],
+  "note": "no spec for Metal's hosted Motorhead API; getmetal/motorhead repo has none"
+ },
+ "mqtt": {
+  "native": "mqtt (Part 2)",
+  "specs": []
+ },
+ "msg91": {
+  "specs": [],
+  "auth": {
+   "query": "authkey"
+  },
+  "note": "no public OpenAPI or raw Postman JSON found"
+ },
+ "my_sql": {
+  "native": "mysql (Part 2)",
+  "specs": []
+ },
+ "n8n": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "n8n-io/n8n",
+    "ref": "master",
+    "file": "packages/cli/src/public-api/v1/openapi.yml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "self-hosted; spec uses relative $refs to sibling files in the repo, base path /api/v1"
+ },
+ "nasa": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api.apis.guru/v2/specs/nasa.gov/apod/1.0.0/openapi.json",
+    "kind": "apis-guru",
+    "origin": "https://api.nasa.gov"
+   }
+  ],
+  "note": "only APOD covered; APIs.guru 'asteroids neows' entry actually contains the TechPort spec, so it is skipped; no spec for DONKI/Earth/etc."
+ },
+ "netlify": {
+  "specs": [
+   {
+    "format": "swagger",
+    "github": "netlify/open-api",
+    "ref": "master",
+    "file": "swagger.yml",
+    "kind": "vendor",
+    "origin": "https://api.netlify.com"
+   }
+  ],
+  "note": "vendor spec, base path /api/v1"
+ },
+ "next_cloud": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "nextcloud/server",
+    "ref": "master",
+    "file": "apps/provisioning_api/openapi.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   },
+   {
+    "format": "openapi",
+    "github": "nextcloud/server",
+    "ref": "master",
+    "file": "core/openapi.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "basic": true
+  },
+  "note": "self-hosted; OCS specs only, WebDAV file operations (PROPFIND/MKCOL/MOVE under /remote.php/webdav) are not covered"
+ },
+ "noco_db": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "nocodb/nocodb",
+    "ref": "develop",
+    "file": "packages/nocodb/src/schema/swagger.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   },
+   {
+    "format": "openapi",
+    "github": "nocodb/nocodb",
+    "ref": "develop",
+    "file": "packages/nocodb/src/schema/swagger-v2.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   },
+   {
+    "format": "openapi",
+    "github": "nocodb/nocodb",
+    "ref": "develop",
+    "file": "packages/nocodb/src/schema/swagger-v3.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "self-hosted or app.nocodb.com; v1/v2/v3 APIs in separate files"
+ },
+ "notion": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api.apis.guru/v2/specs/notion.com/1.0.0/openapi.json",
+    "kind": "apis-guru",
+    "origin": "https://api.notion.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "no official spec (developers.notion.com/openapi.json serves an unrelated spec); APIs.guru copy is old and has only 8 paths; Notion-Version header required",
+  "preset": "notion"
+ },
+ "npm": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "npm/api-documentation",
+    "ref": "main",
+    "file": "api/registry.npmjs.com/publish.yaml",
+    "kind": "vendor",
+    "origin": "https://registry.npmjs.org"
+   },
+   {
+    "format": "openapi",
+    "github": "npm/api-documentation",
+    "ref": "main",
+    "file": "api/registry.npmjs.com/search.yaml",
+    "kind": "vendor",
+    "origin": "https://registry.npmjs.org"
+   },
+   {
+    "format": "openapi",
+    "github": "npm/api-documentation",
+    "ref": "main",
+    "file": "api/registry.npmjs.com/access.yaml",
+    "kind": "vendor",
+    "origin": "https://registry.npmjs.org"
+   },
+   {
+    "format": "openapi",
+    "github": "npm/api-documentation",
+    "ref": "main",
+    "file": "api/registry.npmjs.com/token.yaml",
+    "kind": "vendor",
+    "origin": "https://registry.npmjs.org"
+   }
+  ],
+  "note": "official spec is split into path fragments (no openapi header) merged via api/merge-config.yaml; package metadata GET /{pkg} and dist-tags are not described"
+ },
+ "nvidia": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "openai/openai-openapi",
+    "ref": "main",
+    "file": "openapi.yaml",
+    "kind": "vendor",
+    "origin": "https://integrate.api.nvidia.com",
+    "include": "^/v1/(chat/completions|completions|embeddings|models)"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "no standalone NVIDIA spec; NIM is OpenAI-compatible under /v1, so the OpenAI spec is used with an include filter; credential url can point to self-hosted NIM"
+ },
+ "odoo": {
+  "specs": [],
+  "note": "self-hosted JSON-RPC (/jsonrpc) and JSON-2 (/json/2/<model>/<method>) APIs; no static spec, models vary per instance"
+ },
+ "okta": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "okta/okta-management-openapi-spec",
+    "ref": "master",
+    "file": "dist/current/management-minimal.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "per-tenant host (X.okta.com); management API spec"
+ },
+ "ollama": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "ollama/ollama",
+    "ref": "main",
+    "file": "docs/openapi.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "self-hosted (default localhost:11434) or ollama.com"
+ },
+ "one_simple_api": {
+  "specs": [],
+  "auth": {
+   "query": "token"
+  },
+  "note": "no public spec found"
+ },
+ "onfleet": {
+  "specs": [],
+  "auth": {
+   "basic": true
+  },
+  "note": "official Postman workspace exists but raw collection JSON needs a Postman API key; ReadMe docs expose no single spec"
+ },
+ "open_ai": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "openai/openai-openapi",
+    "ref": "main",
+    "file": "openapi.yaml",
+    "kind": "vendor",
+    "origin": "https://api.openai.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "credential url may point to an OpenAI-compatible host",
+  "preset": "openai"
+ },
+ "open_router": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://openrouter.ai/openapi.json",
+    "kind": "vendor",
+    "origin": "https://openrouter.ai"
+   }
+  ],
+  "note": "paths under /api/v1"
+ },
+ "open_weather_map": {
+  "specs": [],
+  "note": "no vendor or APIs.guru spec; only community specs exist"
+ },
+ "oracle_database": {
+  "native": "oracle (report only)",
+  "specs": []
+ },
+ "orbit": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api.apis.guru/v2/specs/orbit.love/v1/openapi.json",
+    "kind": "apis-guru",
+    "origin": "https://app.orbit.love"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Orbit has shut down; spec kept for completeness"
+ },
+ "oura": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://cloud.ouraring.com/v2/static/json/openapi-1.41.json",
+    "kind": "vendor",
+    "origin": "https://api.ouraring.com"
+   }
+  ],
+  "note": "URL is versioned and changes on releases; current link is on cloud.ouraring.com/v2/docs"
+ },
+ "paddle": {
+  "specs": [],
+  "note": "n8n uses Paddle Classic (vendors.paddle.com/api/2.0, vendor_id + vendor_auth_code in POST body); PaddleHQ/paddle-openapi covers only Paddle Billing"
+ },
+ "pager_duty": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "PagerDuty/api-schema",
+    "ref": "main",
+    "file": "reference/REST/openapiv3.json",
+    "kind": "vendor",
+    "origin": "https://api.pagerduty.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Token token="
+  },
+  "note": "OAuth tokens use 'Bearer ' instead"
+ },
+ "pay_pal": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "paypal/paypal-rest-api-specifications",
+    "ref": "main",
+    "file": "openapi/payments_payouts_batch_v1.json",
+    "kind": "vendor",
+    "origin": "https://api-m.paypal.com"
+   },
+   {
+    "format": "openapi",
+    "github": "paypal/paypal-rest-api-specifications",
+    "ref": "main",
+    "file": "openapi/notifications_webhooks_v1.json",
+    "kind": "vendor",
+    "origin": "https://api-m.paypal.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "token from client-credentials exchange at /v1/oauth2/token; sandbox is api-m.sandbox.paypal.com; other product specs in same repo"
+ },
+ "peekalink": {
+  "specs": [],
+  "note": "no public spec; tiny API (POST / with link)"
+ },
+ "perplexity": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://docs.perplexity.ai/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.perplexity.ai"
+   }
+  ],
+  "note": "vendor docs spec"
+ },
+ "pgvector": {
+  "native": "postgres",
+  "specs": []
+ },
+ "phantombuster": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "phantombuster/public-gists",
+    "ref": "master",
+    "file": "swagger-api-v2.json",
+    "kind": "vendor",
+    "origin": "https://api.phantombuster.com"
+   }
+  ],
+  "note": "vendor-published v2 spec in phantombuster/public-gists; may lag the docs"
+ },
+ "philips_hue": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "no public spec for the Hue remote API (api.meethue.com)"
+ },
+ "pinecone": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "pinecone-io/pinecone-api",
+    "ref": "main",
+    "file": "2026-07/db_control_2026-07.oas.yaml",
+    "kind": "vendor",
+    "origin": "https://api.pinecone.io"
+   },
+   {
+    "format": "openapi",
+    "github": "pinecone-io/pinecone-api",
+    "ref": "main",
+    "file": "2026-07/db_data_2026-07.oas.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "data plane runs on per-index hosts (*.svc.pinecone.io); specs are dated by API version"
+ },
+ "pipedrive": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://developers.pipedrive.com/docs/api/v1/openapi.yaml",
+    "kind": "vendor",
+    "origin": "https://api.pipedrive.com"
+   },
+   {
+    "format": "openapi",
+    "url": "https://developers.pipedrive.com/docs/api/v1/openapi-v2.yaml",
+    "kind": "vendor",
+    "origin": "https://api.pipedrive.com"
+   }
+  ],
+  "note": "v1 under /v1, v2 under /api/v2; OAuth uses company domain hosts",
+  "preset": "pipedrive"
+ },
+ "plivo": {
+  "specs": [],
+  "auth": {
+   "basic": true
+  },
+  "note": "no public spec found; Auth ID/Auth Token as basic auth"
+ },
+ "post_hog": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://us.posthog.com/api/schema/",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "~9 MB spec of the private /api/ endpoints; public capture endpoints used by n8n (/capture, /batch) are not in it; US/EU cloud or self-hosted"
+ },
+ "postgres": {
+  "native": "postgres",
+  "specs": []
+ },
+ "postmark": {
+  "specs": [
+   {
+    "format": "swagger",
+    "url": "https://postmarkapp.com/swagger/server.yml",
+    "kind": "vendor",
+    "origin": "https://api.postmarkapp.com"
+   },
+   {
+    "format": "swagger",
+    "url": "https://postmarkapp.com/swagger/account.yml",
+    "kind": "vendor",
+    "origin": "https://api.postmarkapp.com"
+   }
+  ],
+  "note": "account API uses X-Postmark-Account-Token instead of the server token"
+ },
+ "profit_well": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": ""
+  },
+  "note": "no public spec; ProfitWell is now part of Paddle"
+ },
+ "pushbullet": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "no public spec; Access-Token header also accepted"
+ },
+ "pushcut": {
+  "specs": [
+   {
+    "format": "swagger",
+    "github": "microsoft/PowerPlatformConnectors",
+    "ref": "dev",
+    "file": "certified-connectors/Pushcut/apiDefinition.swagger.json",
+    "kind": "vendor",
+    "origin": "https://api.pushcut.io"
+   }
+  ],
+  "auth": {
+   "header": "API-Key",
+   "prefix": ""
+  },
+  "note": "Vendor-certified Power Platform connector spec; Pushcut publishes no standalone OpenAPI file"
+ },
+ "pushover": {
+  "specs": [],
+  "auth": {
+   "query": "token"
+  },
+  "note": "No vendor spec; only a third-party Power Platform connector exists. Token also accepted as a form body field"
+ },
+ "qdrant": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "qdrant/qdrant",
+    "ref": "master",
+    "file": "docs/redoc/master/openapi.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "Self-hosted or Qdrant Cloud cluster URL"
+ },
+ "quest_db": {
+  "native": "postgres",
+  "specs": []
+ },
+ "quickbase": {
+  "specs": [
+   {
+    "format": "swagger",
+    "github": "tflanagan/node-quickbase",
+    "ref": "master",
+    "file": "assets/QuickBase_RESTful_API.json",
+    "kind": "vendor",
+    "origin": "https://api.quickbase.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "QB-USER-TOKEN "
+  },
+  "note": "Vendor spec from developer.quickbase.com, mirrored in a third-party repo; also needs QB-Realm-Hostname header"
+ },
+ "quickbooks": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Intuit states it has no OpenAPI file; Postman collections are only in the Postman workspace, with no public raw JSON"
+ },
+ "rabbitmq": {
+  "specs": [],
+  "auth": {
+   "basic": true
+  },
+  "note": "n8n uses AMQP; management HTTP API has only a third-party OpenAPI spec"
+ },
+ "raindrop": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "No vendor spec; unofficial spec at lasuillard/raindrop-client openapi.yaml"
+ },
+ "reddit": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "No official machine-readable spec; OAuth calls go to oauth.reddit.com"
+ },
+ "redis": {
+  "native": "redis",
+  "specs": []
+ },
+ "rocketchat": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "RocketChat/Rocket.Chat-Open-API",
+    "ref": "main",
+    "file": "messaging.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   },
+   {
+    "format": "openapi",
+    "github": "RocketChat/Rocket.Chat-Open-API",
+    "ref": "main",
+    "file": "rooms.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   },
+   {
+    "format": "openapi",
+    "github": "RocketChat/Rocket.Chat-Open-API",
+    "ref": "main",
+    "file": "user-management.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "Spec is split by area; other area files exist in the same repo"
+ },
+ "rundeck": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "rundeck/go-rundeck",
+    "ref": "master",
+    "file": "rundeck-api.yml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "Vendor spec lives in the rundeck/go-rundeck SDK repo; paths are versioned (/api/{v}/...)"
+ },
+ "s3": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api.apis.guru/v2/specs/amazonaws.com/s3/2006-03-01/openapi.json",
+    "kind": "apis-guru",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "AWS SigV4 signing, which cannot be expressed as a header/query/basic rule; the n8n node targets any S3-compatible endpoint",
+  "preset": "s3"
+ },
+ "salesforce": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "The OpenAPI file is generated per org (beta); the forcedotcom Postman repo is archived and has no collection JSON",
+  "preset": "salesforce"
+ },
+ "salesmate": {
+  "specs": [
+   {
+    "format": "postman",
+    "url": "https://documenter.gw.postman.com/api/collections/7811505/S1ZucWTA?segregateAuth=true&versionTag=latest",
+    "kind": "postman",
+    "origin": "https://apis.salesmate.io"
+   }
+  ],
+  "auth": {
+   "header": "accessToken",
+   "prefix": ""
+  },
+  "note": "Also needs x-linkname header (the account domain); older endpoints use sessionToken"
+ },
+ "sea_table": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "seatable/openapi",
+    "ref": "v6.2",
+    "file": "base_operations.yaml",
+    "kind": "vendor",
+    "origin": "https://cloud.seatable.io"
+   },
+   {
+    "format": "openapi",
+    "github": "seatable/openapi",
+    "ref": "v6.2",
+    "file": "authentication.yaml",
+    "kind": "vendor",
+    "origin": "https://cloud.seatable.io"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Token "
+  },
+  "note": "Default branch is versioned (v6.2) and changes with releases; the API token is exchanged for a base token that is sent as Bearer; self-hosted domains possible"
+ },
+ "sear_xng": {
+  "specs": [],
+  "note": "Self-hosted; no published spec and no auth by default"
+ },
+ "security_scorecard": {
+  "specs": [
+   {
+    "format": "swagger",
+    "url": "https://api.securityscorecard.io/api-docs",
+    "kind": "vendor",
+    "origin": "https://api.securityscorecard.io"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Token "
+  }
+ },
+ "segment": {
+  "specs": [],
+  "auth": {
+   "basic": true
+  },
+  "note": "No machine-readable spec for the tracking API (api.segment.io/v1); the write key is the basic-auth username"
+ },
+ "send_grid": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "twilio/sendgrid-oai",
+    "ref": "main",
+    "file": "spec/json/tsg_mail_v3.json",
+    "kind": "vendor",
+    "origin": "https://api.sendgrid.com"
+   },
+   {
+    "format": "openapi",
+    "github": "twilio/sendgrid-oai",
+    "ref": "main",
+    "file": "spec/json/tsg_mc_contacts_v3.json",
+    "kind": "vendor",
+    "origin": "https://api.sendgrid.com"
+   },
+   {
+    "format": "openapi",
+    "github": "twilio/sendgrid-oai",
+    "ref": "main",
+    "file": "spec/json/tsg_mc_lists_v3.json",
+    "kind": "vendor",
+    "origin": "https://api.sendgrid.com"
+   }
+  ],
+  "note": "OpenAPI 3.1, split per product; other areas exist in spec/json",
+  "preset": "sendgrid"
+ },
+ "send_in_blue": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api.brevo.com/v3/swagger_definition_v3.yml",
+    "kind": "vendor",
+    "origin": "https://api.brevo.com"
+   }
+  ]
+ },
+ "sendy": {
+  "specs": [],
+  "note": "Self-hosted with no spec; api_key goes in the POST form body"
+ },
+ "sentry_io": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "getsentry/sentry-api-schema",
+    "ref": "main",
+    "file": "openapi-derefed.json",
+    "kind": "vendor",
+    "origin": "https://sentry.io"
+   }
+  ],
+  "note": "Self-hosted Sentry and regional hosts (us.sentry.io, de.sentry.io) also possible"
+ },
+ "serp_api": {
+  "specs": [],
+  "note": "No published machine-readable spec"
+ },
+ "service_now": {
+  "specs": [],
+  "note": "Specs are exported per instance from the REST API Explorer; no public file, only community specs"
+ },
+ "shopify": {
+  "specs": [],
+  "note": "n8n uses legacy REST Admin with no official spec; the GraphQL Admin schema can only be fetched by POST introspection at shopify.dev/admin-graphql-direct-proxy/{version}",
+  "preset": "shopify"
+ },
+ "signl4": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://connect.signl4.com/api/docs/v2/swagger.json",
+    "kind": "vendor",
+    "origin": "https://connect.signl4.com"
+   }
+  ],
+  "note": "n8n uses the webhook /webhook/{teamSecret} (secret in path), which is not in the REST spec; the REST API uses the X-S4-Api-Key header"
+ },
+ "slack": {
+  "specs": [
+   {
+    "format": "swagger",
+    "github": "slackapi/slack-api-specs",
+    "ref": "master",
+    "file": "web-api/slack_web_openapi_v2.json",
+    "kind": "vendor",
+    "origin": "https://slack.com"
+   }
+  ],
+  "note": "Vendor spec repo is no longer updated, so newer methods may be missing",
+  "preset": "slack"
+ },
+ "sms77": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "seven-io/api-schemes",
+    "ref": "master",
+    "file": "json/openapi.json",
+    "kind": "vendor",
+    "origin": "https://gateway.seven.io"
+   }
+  ]
+ },
+ "snowflake": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "snowflakedb/snowflake-rest-api-specs",
+    "ref": "main",
+    "file": "specifications/sqlapi.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "n8n uses the SQL driver, so the SQL API is the closest HTTP match; JWT/PAT tokens also need the X-Snowflake-Authorization-Token-Type header"
+ },
+ "splunk": {
+  "specs": [],
+  "note": "Splunk confirms there is no OpenAPI spec for the Enterprise REST API"
+ },
+ "spotify": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://developer.spotify.com/reference/web-api/open-api-schema.yaml",
+    "kind": "vendor",
+    "origin": "https://api.spotify.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  }
+ },
+ "ssh": {
+  "native": "ssh",
+  "specs": []
+ },
+ "stackby": {
+  "specs": [
+   {
+    "format": "postman",
+    "url": "https://documenter.gw.postman.com/api/collections/7317658/2sAYkGLz1i?segregateAuth=true&versionTag=latest",
+    "kind": "postman",
+    "origin": "https://stackby.com"
+   }
+  ],
+  "auth": {
+   "header": "api-key",
+   "prefix": ""
+  }
+ },
+ "storyblok": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": ""
+  },
+  "note": "No official spec (vendor issue open). Auth shown is for the Management API; the Content API uses the ?token= query"
+ },
+ "strapi": {
+  "specs": [],
+  "note": "Self-hosted; the OpenAPI file is generated per project by the documentation plugin"
+ },
+ "strava": {
+  "specs": [
+   {
+    "format": "swagger",
+    "url": "https://developers.strava.com/swagger/swagger.json",
+    "kind": "vendor",
+    "origin": "https://www.strava.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  }
+ },
+ "stripe": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "stripe/openapi",
+    "ref": "master",
+    "file": "openapi/spec3.json",
+    "kind": "vendor",
+    "origin": "https://api.stripe.com"
+   }
+  ],
+  "note": "Large file (~7MB)",
+  "preset": "stripe"
+ },
+ "supabase": {
+  "specs": [],
+  "note": "PostgREST spec is generated per project at /rest/v1/ and needs the apikey; the Management API spec (api.supabase.com/api/v1-json) is not what n8n uses",
+  "preset": "supabase"
+ },
+ "survey_monkey": {
+  "specs": [
+   {
+    "format": "swagger",
+    "github": "microsoft/PowerPlatformConnectors",
+    "ref": "dev",
+    "file": "certified-connectors/SurveyMonkey/apiDefinition.swagger.json",
+    "kind": "vendor",
+    "origin": "https://api.surveymonkey.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Certified Power Platform connector, partial coverage; its host is api.surveymonkey.net"
+ },
+ "syncro_msp": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api-docs.syncromsp.com/swagger.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Per-tenant X.syncromsp.com; spec also allows the api_key query"
+ },
+ "taiga": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "No published spec; the token comes from POST /api/v1/auth"
+ },
+ "tapfiliate": {
+  "specs": [],
+  "auth": {
+   "header": "X-Api-Key",
+   "prefix": ""
+  },
+  "note": "No published machine-readable spec"
+ },
+ "telegram": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api.apis.guru/v2/specs/telegram.org/5.0.0/openapi.json",
+    "kind": "apis-guru",
+    "origin": "https://api.telegram.org"
+   }
+  ],
+  "note": "Bot token goes in the path (/bot{token}/method); the APIs.guru spec is old (Bot API 5.0)",
+  "preset": "telegram"
+ },
+ "the_hive": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "StrangeBeeCorp/thehive4go",
+    "ref": "main",
+    "file": "thehive/api/openapi.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "TheHive 5 spec (StrangeBee); the n8n node targets older /api/case endpoints that may be missing from it"
+ },
+ "the_hive_project": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://docs.strangebee.com/thehive/api-docs/docs.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "Spec is TheHive 5.8 (API v1); n8n node also uses deprecated v0 endpoints."
+ },
+ "timescale_db": {
+  "native": "postgres",
+  "specs": []
+ },
+ "todoist": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://developer.todoist.com/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.todoist.com"
+   }
+  ],
+  "note": "Official unified API v1 spec; paths carry /api/v1 prefix.",
+  "preset": "todoist"
+ },
+ "toggl": {
+  "specs": [
+   {
+    "format": "swagger",
+    "url": "https://engineering.toggl.com/assets/files/api-fb7996e774ae61b08ea11c9c1b2f32ef.json",
+    "kind": "vendor",
+    "origin": "https://api.track.toggl.com"
+   }
+  ],
+  "note": "URL is a content-hashed Docusaurus asset linked from engineering.toggl.com/docs/track/openapi/ and will change on updates; spec host says localhost."
+ },
+ "totp": {
+  "native": "local, no service",
+  "specs": []
+ },
+ "travis_ci": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "token "
+  },
+  "note": "No published OpenAPI for API v3; also requires Travis-API-Version: 3 header."
+ },
+ "trello": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://developer.atlassian.com/cloud/trello/swagger.v3.json",
+    "kind": "vendor",
+    "origin": "https://api.trello.com"
+   }
+  ],
+  "auth": {
+   "query": "key"
+  },
+  "note": "Auth needs both key and token query params; OAuth1 alternative.",
+  "preset": "trello"
+ },
+ "twake": {
+  "specs": [],
+  "note": "n8n uses a bespoke plugins.twake.app/plugins/n8n endpoint; no public spec."
+ },
+ "twilio": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "twilio/twilio-oai",
+    "ref": "main",
+    "file": "spec/json/twilio_api_v2010.json",
+    "kind": "vendor",
+    "origin": "https://api.twilio.com"
+   },
+   {
+    "format": "openapi",
+    "github": "twilio/twilio-oai",
+    "ref": "main",
+    "file": "spec/json/twilio_events_v1.json",
+    "kind": "vendor",
+    "origin": "https://events.twilio.com"
+   }
+  ],
+  "note": "Split per product; kept Core 2010 API (SMS/calls) and Events (trigger).",
+  "preset": "twilio"
+ },
+ "twist": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Only HTML docs at developer.twist.com/v3; no machine-readable spec found."
+ },
+ "twitter": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api.x.com/2/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.x.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "n8n also calls api.twitter.com and upload.twitter.com (v1.1 media upload), not in v2 spec."
+ },
+ "typeform": {
+  "specs": [
+   {
+    "format": "postman",
+    "url": "https://www.postman.com/collections/17395311-84428ec5-ba07-424f-ab01-99656a4f054e",
+    "kind": "postman",
+    "origin": "https://api.typeform.com"
+   }
+  ],
+  "note": "Official Typeform Postman collection linked from their developer docs; no public OpenAPI."
+ },
+ "unleashed_software": {
+  "specs": [],
+  "auth": {
+   "header": "api-auth-id",
+   "prefix": ""
+  },
+  "note": "No public spec; requests also need HMAC api-auth-signature header."
+ },
+ "uplead": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": ""
+  },
+  "note": "No public spec found; raw API key in Authorization header."
+ },
+ "uproc": {
+  "specs": [],
+  "auth": {
+   "basic": true
+  },
+  "note": "No public spec found; basic auth with email:apiKey."
+ },
+ "uptime_robot": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://cdn.uptimerobot.com/api/openapi.yaml",
+    "kind": "vendor",
+    "origin": "https://api.uptimerobot.com"
+   }
+  ],
+  "note": "Spec is API v3 (Bearer); n8n uses legacy v2 POST endpoints with api_key in body."
+ },
+ "url_scan_io": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://docs.urlscan.io/_bundle/apis/urlscan-openapi.json?download",
+    "kind": "vendor",
+    "origin": "https://urlscan.io"
+   }
+  ],
+  "note": "Redocly bundle download URL from docs.urlscan.io; includes Pro endpoints."
+ },
+ "venafi_tls_protect_cloud": {
+  "specs": [],
+  "note": "ReadMe-hosted docs expose no downloadable spec without login; regional hosts api.venafi.cloud/.eu etc."
+ },
+ "venafi_tls_protect_datacenter": {
+  "specs": [],
+  "note": "WebSDK OpenAPI is served only by each customer's TPP instance; no public copy."
+ },
+ "vercel_ai_gateway": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "openai/openai-openapi",
+    "ref": "main",
+    "file": "openapi.yaml",
+    "kind": "vendor",
+    "origin": "https://ai-gateway.vercel.sh",
+    "include": "^/v1/(chat/completions|completions|embeddings|models|responses)"
+   }
+  ],
+  "note": "No Vercel gateway spec; gateway is OpenAI-compatible under /v1, so OpenAI's spec filtered to those paths."
+ },
+ "vero": {
+  "specs": [],
+  "auth": {
+   "query": "auth_token"
+  },
+  "note": "No public spec; auth_token sent in JSON body or query."
+ },
+ "vonage": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://developer.vonage.com/api/v1/developer/api/file/sms?format=json&vendorId=vonage",
+    "kind": "vendor",
+    "origin": "https://rest.nexmo.com"
+   }
+  ],
+  "auth": {
+   "basic": true
+  },
+  "note": "SMS API only (what n8n uses); n8n sends api_key/api_secret in body instead of basic."
+ },
+ "weaviate": {
+  "specs": [
+   {
+    "format": "swagger",
+    "github": "weaviate/weaviate",
+    "ref": "main",
+    "file": "openapi-specs/schema.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "REST only; client may also use gRPC."
+ },
+ "webflow": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "webflow/openapi-spec",
+    "ref": "main",
+    "file": "openapi/v2.yml",
+    "kind": "vendor",
+    "origin": "https://api.webflow.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Data API v2; n8n legacy mode uses v1 which is not covered."
+ },
+ "wekan": {
+  "specs": [
+   {
+    "format": "swagger",
+    "github": "wekan/wekan",
+    "ref": "main",
+    "file": "public/api/wekan.yml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "note": "Self-hosted; spec from Wekan repo."
+ },
+ "whats_app": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "facebook/openapi",
+    "ref": "main",
+    "file": "business-messaging-api_v23.0.yaml",
+    "kind": "vendor",
+    "origin": "https://graph.facebook.com"
+   }
+  ],
+  "note": "Meta business messaging spec covers WhatsApp messages/media; filename is version-pinned and may be replaced.",
+  "preset": "whatsapp"
+ },
+ "wise": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://docs.wise.com/_bundle/api-reference/@latest/index.json?download",
+    "kind": "vendor",
+    "origin": "https://api.wise.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Spec server is api.wise.com/2026Q4 with unversioned paths; n8n uses api.transferwise.com /v1,/v3 paths."
+ },
+ "wolfram_alpha": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api.apis.guru/v2/specs/wolframalpha.com/v0.1/openapi.json",
+    "kind": "apis-guru",
+    "origin": "https://www.wolframalpha.com"
+   }
+  ],
+  "note": "Covers only llm-api and cloud-plugin; api.wolframalpha.com v1 simple/short-answer endpoints not described."
+ },
+ "woo_commerce": {
+  "specs": [],
+  "auth": {
+   "basic": true
+  },
+  "note": "No official spec; only community OpenAPI ports of wc/v3.",
+  "preset": "woocommerce"
+ },
+ "wordpress": {
+  "specs": [],
+  "note": "No official OpenAPI; WP REST API self-describes via /wp-json discovery index only.",
+  "preset": "wordpress"
+ },
+ "workable": {
+  "specs": [],
+  "note": "No public spec found for spi/v3."
+ },
+ "wufoo": {
+  "specs": [],
+  "note": "No public spec found."
+ },
+ "xai_grok": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://api.x.ai/api-docs/openapi.json",
+    "kind": "vendor",
+    "origin": "https://api.x.ai"
+   }
+  ],
+  "note": "Official spec served by xAI; OpenAI-compatible plus native endpoints."
+ },
+ "xata": {
+  "specs": [],
+  "note": "n8n uses legacy Xata serverless DB API (xata.sh); current xataio/xata specs are for the new Postgres platform."
+ },
+ "xero": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "XeroAPI/Xero-OpenAPI",
+    "ref": "master",
+    "file": "xero_accounting.yaml",
+    "kind": "vendor",
+    "origin": "https://api.xero.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "note": "Accounting API only (n8n scope); also needs xero-tenant-id header."
+ },
+ "you_tube": {
+  "specs": [
+   {
+    "format": "discovery",
+    "url": "https://youtube.googleapis.com/$discovery/rest?version=v3",
+    "kind": "google"
+   }
+  ]
+ },
+ "yourls": {
+  "specs": [],
+  "auth": {
+   "query": "signature"
+  },
+  "note": "Self-hosted single-endpoint yourls-api.php; no spec."
+ },
+ "zammad": {
+  "specs": [],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Token token="
+  },
+  "note": "Zammad publishes no OpenAPI (open feature request); basic auth also supported."
+ },
+ "zendesk": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://developer.zendesk.com/zendesk/oas.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "basic": true
+  },
+  "note": "Support API spec; per-tenant X.zendesk.com; basic is email/token:apiToken, OAuth uses Bearer.",
+  "preset": "zendesk"
+ },
+ "zep": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://help.getzep.com/openapi/sdk-reference-2.json",
+    "kind": "vendor",
+    "origin": "https://api.getzep.com"
+   },
+   {
+    "format": "openapi",
+    "url": "https://help.getzep.com/openapi/sdk-reference.json",
+    "kind": "vendor",
+    "origin": "https://api.getzep.com"
+   }
+  ],
+  "note": "First spec has legacy sessions/collections used by n8n; second is current threads API; self-hosted Zep differs."
+ },
+ "zoho_crm": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "zoho/crm-oas",
+    "ref": "main",
+    "file": "v8.0/record/record.yaml",
+    "kind": "vendor",
+    "origin": "https://www.zohoapis.com"
+   },
+   {
+    "format": "openapi",
+    "github": "zoho/crm-oas",
+    "ref": "main",
+    "file": "v8.0/fields/fields.yaml",
+    "kind": "vendor",
+    "origin": "https://www.zohoapis.com"
+   }
+  ],
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Zoho-oauthtoken "
+  },
+  "note": "Specs are v8 (n8n uses /crm/v2); host varies by data center (.eu, .in, ...)."
+ },
+ "zoom": {
+  "specs": [
+   {
+    "format": "openapi",
+    "url": "https://developers.zoom.us/api-hub/meetings/methods/endpoints.json",
+    "kind": "vendor",
+    "origin": "https://api.zoom.us"
+   }
+  ],
+  "note": "Meetings API spec (covers meetings and webinars); other products are separate api-hub specs."
+ },
+ "zulip": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "zulip/zulip",
+    "ref": "main",
+    "file": "zerver/openapi/zulip.yaml",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "auth": {
+   "basic": true
+  },
+  "note": "Basic auth with email:apiKey; per-org or self-hosted host."
+ }
+}

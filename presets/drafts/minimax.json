@@ -1,0 +1,27 @@
+{
+  "title": "MiniMax",
+  "catalog": {
+    "fields": [
+      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://api.minimax.io", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "delete.delete": {"title": "Delete: delete"},
+      "generate.completions": {"title": "Generate: completions"},
+      "generate.t2a_v2": {"title": "Generate: t2a v2"},
+      "generate.upload": {"title": "Generate: upload"},
+      "read": {"title": "Read everything the account can see"}
+    }
+  },
+  "operations": [
+    {"id": "chatCompletionOpenAI", "action": "generate.completions", "effects": ["generate"], "method": "POST", "origin": "https://api.minimax.io", "path": "/v1/chat/completions", "body": "json", "scope": {}},
+    {"id": "t2aV2", "action": "generate.t2a_v2", "effects": ["generate"], "method": "POST", "origin": "https://api.minimax.io", "path": "/v1/t2a_v2", "body": "json", "scope": {}},
+    {"id": "retrieveFile", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.minimax.io", "path": "/v1/files/retrieve", "params": ["file_id"], "scope": {"file_id": {"from": "query", "at": "file_id"}}},
+    {"id": "queryVideoGenerationTask", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.minimax.io", "path": "/v1/query/video_generation", "params": ["task_id"], "scope": {"task_id": {"from": "query", "at": "task_id"}}},
+    {"id": "deleteFile", "action": "delete.delete", "effects": ["delete"], "method": "POST", "origin": "https://api.minimax.io", "path": "/v1/files/delete", "body": "json", "scope": {"file_id": {"from": "body", "at": "/file_id", "type": "number"}}},
+    {"id": "listFiles", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.minimax.io", "path": "/v1/files/list", "params": ["purpose"], "scope": {}},
+    {"id": "retrieveFileContent", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.minimax.io", "path": "/v1/files/retrieve_content", "params": ["file_id"], "scope": {"file_id": {"from": "query", "at": "file_id"}}},
+    {"id": "uploadFile", "action": "generate.upload", "effects": ["generate"], "method": "POST", "origin": "https://api.minimax.io", "path": "/v1/files/upload", "body": "any", "scope": {}}
+  ]
+}

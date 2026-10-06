@@ -1,0 +1,25 @@
+{
+  "title": "Acuity Scheduling",
+  "catalog": {
+    "fields": [
+      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://acuityscheduling.com", "path": "/api/v1", "basic": "password"}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "delete": {"title": "Delete"},
+      "read": {"title": "Read everything the account can see"},
+      "write.block": {"title": "Write: block"}
+    }
+  },
+  "operations": [
+    {"id": "appointmentidjson", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://acuityscheduling.com", "path": "/api/v1/appointment/:id.json", "scope": {}},
+    {"id": "get-appointments", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://acuityscheduling.com", "path": "/api/v1/appointments.json", "params": ["max", "minDate", "maxDate", "calendarID"], "scope": {}},
+    {"id": "block", "action": "write.block", "effects": ["write"], "method": "POST", "origin": "https://acuityscheduling.com", "path": "/api/v1/block", "body": "any", "scope": {}},
+    {"id": "blockidjson-1", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://acuityscheduling.com", "path": "/api/v1/block/:id.json", "scope": {}},
+    {"id": "blockidjson", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://acuityscheduling.com", "path": "/api/v1/block/:id.json", "scope": {}},
+    {"id": "calendarsjson", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://acuityscheduling.com", "path": "/api/v1/calendars.json", "scope": {}},
+    {"id": "get-canceled", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://acuityscheduling.com", "path": "/api/v1/canceled.json", "params": ["max", "minDate", "maxDate", "calendarID"], "scope": {}},
+    {"id": "ordersjson", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://acuityscheduling.com", "path": "/api/v1/orders.json", "params": ["max"], "scope": {}}
+  ]
+}

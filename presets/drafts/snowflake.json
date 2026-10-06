@@ -1,0 +1,20 @@
+{
+  "title": "Snowflake",
+  "catalog": {
+    "fields": [
+      {"key": "origin", "label": "Your Snowflake origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
+      {"key": "password", "label": "Password", "secret": true, "path": ["connections", "", "http", "values", "password"]}
+    ],
+    "connections": {"": {"http": {"slots": [{"value": "password", "origin": "https://example.com", "path": "/api/v2", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "actions": {
+      "read": {"title": "Read everything the account can see"},
+      "write.statements": {"title": "Write: statements"}
+    }
+  },
+  "operations": [
+    {"id": "SubmitStatement", "action": "write.statements", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/v2/statements", "params": ["requestId", "async", "nullable"], "body": "json", "scope": {}},
+    {"id": "GetStatementStatus", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v2/statements/{statementHandle}", "params": ["requestId", "partition"], "scope": {"statementHandle": {"from": "path", "at": "statementHandle"}}},
+    {"id": "CancelStatement", "action": "write.statements", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/v2/statements/{statementHandle}/cancel", "params": ["requestId"], "scope": {"statementHandle": {"from": "path", "at": "statementHandle"}}}
+  ]
+}
