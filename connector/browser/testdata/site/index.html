@@ -1,0 +1,14 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Fixture home</title>
+<h1>Fixture home</h1>
+<p><a href="login.html">Sign in</a> · <a href="account.html">Account</a> · <a href="index.html" target="_blank">Open home in a new tab</a></p>
+<p><button onclick="count.textContent = ++presses">Press</button> Pressed <span id="count">0</span> times</p>
+<p><button onclick="window.open('popup.html', 'helper', 'width=480,height=360')">Open a popup</button> <span id="helped"></span></p>
+<p><button onclick="setTimeout(() => location.href = 'account.html', 1000)">Go to the account page later</button></p>
+<p><button onclick="location.reload()">Reload</button> <button onclick="alert('Close this dialog to go on')">Show a dialog</button></p>
+<form action="sent.html"><label>Note <input id="note" name="note"></label> <button>Send</button></form>
+<script>
+  let presses = 0
+  addEventListener('message', () => { helped.textContent = 'The popup is done' })
+</script>

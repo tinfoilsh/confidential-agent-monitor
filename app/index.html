@@ -178,6 +178,20 @@
   .settings-fields > div { min-width: 0; }
   .settings-fields details { margin-top: 6px; }
   .card-footer { display: flex; justify-content: flex-end; padding: 4px 6px; border-top: 1px solid var(--line); background: var(--control); }
+  .live { margin-bottom: 8px; }
+  .live fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+  .live .card-footer { gap: 6px; align-items: center; }
+  .live-owner { margin-right: auto; color: var(--dim); }
+  .live-body { display: grid; gap: 4px; padding: 6px; }
+  .live-bar { display: flex; gap: 4px; align-items: center; }
+  .live-tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+  .live-tabs:empty { display: none; }
+  .live-tabs > button { max-width: 16rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .live-tabs > [aria-pressed=true] { background: var(--selected); border-color: var(--primary); }
+  .live-screen { min-height: 120px; border: 1px solid var(--edge); background: var(--bg); line-height: 0; }
+  .live-screen:focus { outline: 2px solid var(--link); outline-offset: 1px; }
+  .live-screen img { width: 100%; height: auto; }
+  .live-error { margin: 0; padding: 0 6px 6px; }
   @container details (min-width: 620px) {
     .account-overview { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
     .settings-fields { grid-template-columns: 1fr 1fr; }
@@ -196,7 +210,9 @@
 <div id="saving" role="status" hidden>Saving…</div>
 <script>
 const KEY = "monitor-owner-key", GENERATION = "monitor-generation", DISMISSED = "monitor-dismissed", RETURN = "monitor-sign-in-return";
-const REQUEST_POLL_MS = 5000, TOAST_MS = 5000;
+const REQUEST_POLL_MS = 5000, TOAST_MS = 5000, LIVE_POLL_MS = 1000, WHEEL_LINE_PX = 40;
+// Tab is left out so keyboard focus can leave the page view; the Tab button sends it.
+const LIVE_KEYS = ["Enter", "Backspace", "Delete", "Escape", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"];
 const LEVELS = { off: "No access", read: "Read only", ask: "Ask", allow: "Allow" }, MODES = { allow: "Allow", ask: "Ask", off: "Deny" }, AUDIENCES = ["me", "team", "anyone"];
 const CATALOG_GROUPS = { api: "API", mcp: "MCP", protocol: "Protocol" };
 const WHO = { me: "Only me", team: "My team", anyone: "Anyone" };
@@ -430,6 +446,7 @@ function render() {
   sync($("tree"), sidebar(kind, args[0]));
   sync($("list"), list(kind === "request" && args[0]));
   sync($("pane"), panes[kind] ? parts(panes[kind](...args)) : []);
+  liveSync();
 }
 
 const head = (title, sub = "", back = "activity") => `<header><b>${title}</b><span class="muted">${sub}</span><a class="x" href="#${esc(back)}" aria-label="Close">✕</a></header>`;
@@ -901,6 +918,7 @@ function account(a) {
   const c = entry(a);
   const fields = plain(c), credentials = credentialFields(a);
   return [`<header class="account-header">${accountIcon(a)}<h1>${esc(a)}</h1><span class="muted">${esc(c.title)} ${accountStatus(a)}</span><a class="x" href="#activity" aria-label="Close account">✕</a></header>`,
+    liveCard(a),
     `<div class="account-overview"><section class="account-card"><div class="section-heading"><h2>Actions <span class="count">${Object.keys(actionsOf(a)).length}</span></h2><a href="#preset/${encodeURIComponent(acc.preset)}">Edit preset</a></div>
       <div class="action-list">${accountActions(a)}</div></section>${accountUsers(a)}</div>`,
     `<section class="account-card account-settings"><div class="section-heading"><h2>Account settings</h2></div><div class="settings-fields"><div>${questions(acc)}</div>
@@ -966,6 +984,146 @@ const removeAccount = (a) => patch({
   identities: Object.fromEntries(Object.keys(ids()).map((n) => [n, { accounts: { [a]: null } }])),
 }, "activity");
 
+// The live browser view keeps its markup fixed so polling never replaces the image, focus or typed text; liveSync owns its lifetime.
+let live = {};
+const liveConnection = (a) => {
+  const key = Object.entries(accounts()[a]?.connections ?? {}).find(([, c]) => c.browser)?.[0];
+  return key == null ? null : connName(a, key);
+};
+const liveCard = (a) => liveConnection(a) == null ? "" : `<section class="account-card live" aria-label="Browser"><div class="section-heading"><h2>Browser</h2>
+  <span id="live-owner" class="live-owner" role="status"></span><button id="live-take" class="primary" onclick="liveOwn()"></button></div>
+  <fieldset id="live-input" class="live-body" disabled>
+    <div class="live-bar"><button onclick="liveAct({ action: 'back' })">Back</button><input id="live-url" aria-label="Address" onkeydown="if (event.key === 'Enter') liveNavigate()"><button onclick="liveNavigate()">Go</button></div>
+    <div id="live-tabs" class="live-tabs" role="group" aria-label="Tabs"></div>
+    <div id="live-screen" class="live-screen" tabindex="0" aria-label="Page. While you have control, click, scroll and type here." onkeydown="liveKey(event)" onwheel="liveWheel(event)"><img id="live-shot" alt="" hidden onclick="liveClick(event)"></div>
+    <div class="live-bar"><input id="live-text" aria-label="Text to type" placeholder="Text to type" onkeydown="if (event.key === 'Enter') liveType()"><button onclick="liveType()">Type</button>
+      <span class="seg" role="group" aria-label="Keys">${["Enter", "Tab", "Backspace", "Escape"].map((k) => `<button onclick="liveAct({ action: 'key', key: '${k}' })">${k === "Escape" ? "Esc" : k}</button>`).join("")}</span></div>
+  </fieldset>
+  <p id="live-error" class="bad live-error" role="alert" hidden></p>
+  <div class="card-footer"><span class="muted">Page dialog</span><fieldset id="live-dialog" class="seg" aria-label="Page dialog" disabled>
+    <button onclick="liveAct({ action: 'dialog', accept: true })">Accept</button><button onclick="liveAct({ action: 'dialog', accept: false })">Dismiss</button></fieldset></div></section>`;
+const liveActive = () => live.name != null && !document.hidden && !locked && !!sessionStorage.getItem(KEY);
+const liveReady = () => !!(live.frame?.owner && live.frame.frame) && !live.owning;
+
+function liveSync() {
+  const [kind, a] = route(), name = kind === "account" && view ? liveConnection(a) : null;
+  if (name !== live.name) {
+    clearTimeout(live.timer);
+    live = { name, seq: 0, after: 0, queue: [] };
+  }
+  paintLive();
+  if (!live.timer) livePoll();
+}
+
+function paintLive() {
+  const f = live.frame, shot = $("live-shot");
+  if (!shot) return;
+  $("live-owner").textContent = !f ? "Connecting…" : f.owner ? "You have control. The agent is paused." : "The agent has control.";
+  $("live-take").textContent = { pause: "Pausing…", resume: "Returning…" }[live.owning] ?? (f?.owner ? "Return to agent" : "Pause and take control");
+  $("live-take").disabled = !!live.owning;
+  $("live-input").disabled = !liveReady();
+  $("live-dialog").disabled = !f?.owner || !!live.owning;
+  shot.hidden = !f?.screenshot;
+  if (f?.screenshot) Object.assign(shot, { src: "data:image/jpeg;base64," + f.screenshot, alt: f.tabs?.find((t) => t.active)?.title || f.url });
+  if (f?.url && document.activeElement !== $("live-url")) $("live-url").value = f.url;
+  const tabs = (f?.tabs ?? []).map((t) => `<button aria-pressed="${t.active}" title="${esc(t.url)}" onclick="liveAct({ action: 'tab', tab: ${q(t.id)} })">${esc(t.title || t.url)}</button>`).join("");
+  if (drawn.get($("live-tabs")) !== tabs) { $("live-tabs").innerHTML = tabs; drawn.set($("live-tabs"), tabs); }
+  const error = live.error || (f?.error ? "Couldn't show the page. If it opened a dialog, accept or dismiss it." : "");
+  Object.assign($("live-error"), { textContent: error, hidden: !error, title: live.error ? "" : f?.error ?? "" });
+}
+
+// Every response is the whole state, so one sent before the newest shown frame or action is out of date and dropped.
+async function liveRequest(l, body) {
+  const seq = ++l.seq;
+  if (body) l.after = seq;
+  const f = await api(body ? "POST" : "GET", `/connections/${encodeURIComponent(l.name)}/browser`, body);
+  if (seq < l.after) return;
+  Object.assign(l, { after: seq, frame: f, error: "" });
+  paintLive();
+}
+
+async function livePoll() {
+  const l = live;
+  l.timer = clearTimeout(l.timer);
+  if (!liveActive() || l.polling || l.queue.length || l.owning) return;
+  const after = l.after;
+  l.polling = true;
+  try { await liveRequest(l); } catch (err) { if (l.after === after) { l.error = err.message; paintLive(); } }
+  l.polling = false;
+  liveSchedule(l);
+}
+
+function liveSchedule(l) {
+  if (l === live && liveActive() && !l.timer) l.timer = setTimeout(livePoll, LIVE_POLL_MS);
+}
+
+async function liveOwn() {
+  const l = live, action = l.frame?.owner ? "resume" : "pause";
+  if (l.owning) return;
+  l.owning = action;
+  l.queue.splice(1);
+  paintLive();
+  let failed = false;
+  try { await liveRequest(l, { action }); } catch (err) { failed = true; toast(err.message); }
+  l.owning = null;
+  if (l !== live) return;
+  paintLive();
+  // A failed request may still have changed control, so look again rather than trust the last frame.
+  failed ? livePoll() : liveSchedule(l);
+}
+
+// Input runs in order, each aimed at the frame on screen when the owner gave it.
+function liveAct(body) {
+  const l = live, frame = l.frame?.frame, last = l.queue.at(-1);
+  if (body.action === "dialog" ? !l.frame?.owner || l.owning : !liveReady()) return;
+  if (l.queue.length > 1 && last.action === body.action && last.frame === frame && ["type", "scroll"].includes(body.action)) {
+    if (body.action === "type") last.text += body.text; else last.dy += body.dy;
+    return;
+  }
+  l.queue.push({ ...body, frame });
+  if (l.queue.length === 1) liveDrain(l);
+}
+
+async function liveDrain(l) {
+  while (l.queue.length && l === live) {
+    try { await liveRequest(l, l.queue[0]); } catch (err) { l.queue.splice(1); toast(err.message); }
+    l.queue.shift();
+  }
+  liveSchedule(l);
+}
+
+// Screenshot pixels are the page's viewport pixels, whatever size the image is drawn at.
+function livePoint(e) {
+  const img = $("live-shot"), r = img.getBoundingClientRect(), scale = img.naturalWidth / r.width;
+  return { x: (e.clientX - r.left) * scale, y: (e.clientY - r.top) * scale };
+}
+const liveClick = (e) => liveAct({ action: "click", ...livePoint(e) });
+
+function liveWheel(e) {
+  if (!liveReady()) return;
+  e.preventDefault();
+  liveAct({ action: "scroll", ...livePoint(e), dy: e.deltaY * (e.deltaMode ? WHEEL_LINE_PX : 1) });
+}
+
+function liveKey(e) {
+  if (e.ctrlKey || e.metaKey || e.altKey || !liveReady()) return;
+  const body = e.key.length === 1 ? { action: "type", text: e.key } : LIVE_KEYS.includes(e.key) ? { action: "key", key: e.key } : null;
+  if (!body) return;
+  e.preventDefault();
+  liveAct(body);
+}
+
+function liveType() {
+  if ($("live-text").value) liveAct({ action: "type", text: $("live-text").value });
+  $("live-text").value = "";
+}
+
+function liveNavigate() {
+  const url = $("live-url").value.trim();
+  if (url) liveAct({ action: "navigate", url: url.includes("://") ? url : "https://" + url });
+  $("live-screen").focus();
+}
+
 const settings = () => [head("Settings"), `<section><h2>Lattices</h2>
   <p class="muted">Applies to all agents, connector requests and messages.</p>
   <label><input type="checkbox" ${lattices().confidentiality ? "checked" : ""} onchange="patch({ lattices: { confidentiality: this.checked } })"> Confidentiality lattice</label>
@@ -978,6 +1136,7 @@ const settings = () => [head("Settings"), `<section><h2>Lattices</h2>
   <div class="row"><span></span><button onclick="patch({ allow_networks: $('networks').value.split(/\\s+/).filter(Boolean) })">Save</button></div></section>`];
 
 window.addEventListener("hashchange", render);
+document.addEventListener("visibilitychange", liveSync);
 setInterval(run(async () => {
   if (!sessionStorage.getItem(KEY) || locked) return;
   await refresh();

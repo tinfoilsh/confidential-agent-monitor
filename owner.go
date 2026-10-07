@@ -22,6 +22,7 @@ import (
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/browser"
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/connector/mcp"
 	"github.com/tinfoilsh/monitor/connector/web"
@@ -230,9 +231,42 @@ func (m *monitor) handler() http.Handler {
 		}
 		return m.view(finish(r.Context(), req.Code))
 	}))
+	mux.HandleFunc("GET /connections/{name}/browser", m.browserControl)
+	mux.HandleFunc("POST /connections/{name}/browser", m.browserControl)
 	m.requests(mux)
 	mux.Handle("GET /app/", appHandler(m.dev))
 	return mux
+}
+
+// browserControl checks the owner's secret as owned does, then releases the monitor's locks, since a browser call can be slow.
+func (m *monitor) browserControl(w http.ResponseWriter, r *http.Request) {
+	m.mu.Lock()
+	s, owner := m.live.Load(), m.owner
+	m.mu.Unlock()
+	if s == nil {
+		http.Error(w, "the monitor is locked", http.StatusLocked)
+		return
+	}
+	key, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer "))
+	if err != nil || len(key) != ownerKeyBytes || subtle.ConstantTimeCompare(key, owner) != 1 {
+		http.Error(w, errOwner.Error(), http.StatusUnauthorized)
+		return
+	}
+	c := s.connections[r.PathValue("name")]
+	b, ok := (*browser.Browser)(nil), false
+	if c != nil {
+		b, ok = c.connector.(*browser.Browser)
+	}
+	if !ok {
+		http.Error(w, "no browser connection "+r.PathValue("name"), http.StatusNotFound)
+		return
+	}
+	if status, _ := c.status().(map[string]string); status["state"] != "ready" {
+		http.Error(w, "the browser is "+status["state"], http.StatusConflict)
+		return
+	}
+	r.Body = http.MaxBytesReader(w, r.Body, maxDocumentBytes)
+	b.ServeOwner(w, r)
 }
 
 // owned uses the same lock order as agent requests. Before unlock, decrypting

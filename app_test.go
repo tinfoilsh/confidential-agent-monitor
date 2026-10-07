@@ -1,11 +1,17 @@
 package main
 
 import (
+	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 	"time"
+
+	"gocloud.dev/blob/memblob"
 )
 
 func TestDevAppUpdatesWithoutRestart(t *testing.T) {
@@ -86,5 +92,40 @@ func TestEmbeddedApp(t *testing.T) {
 				t.Fatalf("embedded app: status %d, got %d bytes", w.Code, w.Body.Len())
 			}
 		})
+	}
+}
+
+// Browser controls answer only the owner, and only for a browser connection.
+func TestBrowserControlNeedsOwner(t *testing.T) {
+	m := &monitor{store: memblob.OpenBucket(nil), object: "monitor.enc", listen: "127.0.0.1:0"}
+	handler := m.handler()
+	key, wrong := make([]byte, ownerKeyBytes), make([]byte, ownerKeyBytes)
+	rand.Read(key)
+	rand.Read(wrong)
+	get := func(secret []byte) int {
+		r := httptest.NewRequest(http.MethodPost, "/connections/web/browser", strings.NewReader(`{"action":"pause"}`))
+		if secret != nil {
+			r.Header.Set("Authorization", "Bearer "+base64.StdEncoding.EncodeToString(secret))
+		}
+		w := httptest.NewRecorder()
+		handler.ServeHTTP(w, r)
+		return w.Code
+	}
+	if status := get(key); status != http.StatusLocked {
+		t.Fatalf("while locked: %d", status)
+	}
+	if _, err := m.unlock(context.Background(), key, 0); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := m.patch(context.Background(), []byte(`{"accounts": {"web": {"preset": "web", "contents": "anyone", "sends": "anyone"}}}`)); err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		secret []byte
+		want   int
+	}{{nil, http.StatusUnauthorized}, {wrong, http.StatusUnauthorized}, {key, http.StatusNotFound}} {
+		if status := get(tc.secret); status != tc.want {
+			t.Fatalf("status %d, want %d", status, tc.want)
+		}
 	}
 }

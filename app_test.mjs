@@ -18,7 +18,7 @@ function app() {
     return { getItem: key => entries.get(key) ?? null, setItem: (key, value) => entries.set(key, String(value)), removeItem: key => entries.delete(key) };
   };
   const context = vm.createContext({
-    structuredClone, location: { hash: '#agent/bot' }, localStorage: storage(), sessionStorage: storage(),
+    structuredClone, setTimeout: () => 1, clearTimeout() {}, location: { hash: '#agent/bot' }, localStorage: storage(), sessionStorage: storage(),
     document: { title: '', getElementById(id) { if (!elements.has(id)) elements.set(id, {}); return elements.get(id); } },
     fetch(path, options = {}) {
       if (path === 'icons/manifest.json') return Promise.resolve({ ok: true, json: async () => ({}) });
@@ -154,4 +154,78 @@ test('preset edits update the catalog before the server responds', async () => {
   assert.equal(a.state().view.presets.custom.actions.read.title, 'Read items');
   a.requests[0].respond('Preset rejected', 400); await edit;
   assert.equal(a.state().view.presets.custom.title, 'Custom');
+});
+
+const browserApp = () => {
+  const a = app();
+  a.run('serverState.view.config.accounts.web = {preset: "custom", connections: {"": {browser: {}}}}; project(); sessionStorage.setItem(KEY, "key"); location.hash = "#account/web"; liveSync()');
+  return a;
+};
+const frame = (owner, token, extra = {}) => ({ owner, frame: token, url: 'http://site/', screenshot: 'AAAA', tabs: [{ id: 't1', url: 'http://site/', title: 'Site', active: true }], ...extra });
+const owner = a => a.run('live.frame?.owner');
+
+test('a poll sent before a pause cannot undo it, whichever response arrives first', async () => {
+  for (const pollFirst of [false, true]) {
+    const a = browserApp();
+    assert.equal(a.requests[0].method, 'GET');
+    const pause = a.run('liveOwn()');
+    assert.deepEqual(a.requests[1].body, { action: 'pause' });
+    assert.equal(a.elements.get('live-take').disabled, true);
+    if (pollFirst) { a.requests[0].respond(frame(false, 'old')); await tick(); }
+    assert.equal(owner(a), undefined);
+    a.requests[1].respond(frame(true, 'new')); await pause;
+    if (!pollFirst) { a.requests[0].respond('stale failure', 503); await tick(); }
+    assert.equal(owner(a), true);
+    assert.equal(a.elements.get('live-error').hidden, true);
+    assert.equal(a.elements.get('live-take').textContent, 'Return to agent');
+    assert.equal(a.elements.get('live-input').disabled, false);
+  }
+});
+
+test('a failed pause keeps the confirmed owner and looks again; a capture failure keeps control and the dialog usable', async () => {
+  const a = browserApp();
+  a.requests[0].respond(frame(false, 'a')); await tick();
+  const pause = a.run('liveOwn()');
+  a.requests[1].respond('timed out', 504); await pause;
+  assert.ok(a.notices.includes('timed out'));
+  assert.equal(owner(a), false);
+  assert.equal(a.elements.get('live-take').textContent, 'Pause and take control');
+  assert.equal(a.requests[2].method, 'GET');
+  a.requests[2].respond(frame(true, undefined, { screenshot: undefined, url: undefined, error: 'capture timed out' })); await tick();
+  assert.equal(owner(a), true);
+  assert.equal(a.elements.get('live-input').disabled, true, 'input needs a frame to aim at');
+  assert.equal(a.elements.get('live-dialog').disabled, false);
+  assert.equal(a.elements.get('live-error').hidden, false);
+  a.run('liveAct({action: "dialog", accept: false})');
+  assert.deepEqual(a.requests[3].body, { action: 'dialog', accept: false });
+});
+
+test('leaving the account stops polling but still reports a failed return of control', async () => {
+  const a = browserApp();
+  a.requests[0].respond(frame(true, 'a')); await tick();
+  const resume = a.run('liveOwn()');
+  a.run('location.hash = "#settings"; liveSync()');
+  a.requests[1].respond('the browser is stopped', 409); await resume;
+  assert.ok(a.notices.includes('the browser is stopped'));
+  assert.equal(a.run('live.frame'), undefined);
+  assert.equal(a.requests.length, 2, 'no poll off the account page');
+  a.run('location.hash = "#account/web"; liveSync()');
+  assert.equal(a.requests[2].method, 'GET');
+  assert.equal(a.requests[2].path, '/connections/web/browser');
+});
+
+test('clicks map to screenshot pixels, and input is sent in order aimed at the frame it was given on', async () => {
+  const a = browserApp();
+  a.requests[0].respond(frame(true, 'f1')); await tick();
+  a.run('Object.assign($("live-shot"), {naturalWidth: 1280, getBoundingClientRect: () => ({left: 10, top: 20, width: 640})})');
+  a.run('liveClick({clientX: 330, clientY: 120})');
+  assert.deepEqual(a.requests[1].body, { action: 'click', frame: 'f1', x: 640, y: 200 });
+  const key = k => a.run(`liveKey({key: ${JSON.stringify(k)}, preventDefault() {}})`);
+  key('h'); key('i'); key('Enter');
+  assert.equal(a.requests.length, 2, 'one input at a time');
+  a.requests[1].respond(frame(true, 'f2')); await tick();
+  assert.deepEqual(a.requests[2].body, { action: 'type', frame: 'f1', text: 'hi' });
+  a.requests[2].respond('the page changed', 409); await tick();
+  assert.equal(a.requests.length, 3, 'input queued behind a stale one is dropped');
+  assert.ok(a.notices.includes('the page changed'));
 });

@@ -1,0 +1,13 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Account</title>
+<h1 id="state">Not signed in</h1>
+<p><a href="index.html">Home</a> · <a href="login.html">Sign in</a></p>
+<p><button id="out" hidden onclick="document.cookie = 'session=; max-age=0; path=/'; location.reload()">Sign out</button></p>
+<script>
+  const user = document.cookie.match(/(?:^|; )session=([^;]*)/)?.[1]
+  if (user !== undefined) {
+    state.textContent = `Signed in as ${decodeURIComponent(user)}`
+    out.hidden = false
+  }
+</script>

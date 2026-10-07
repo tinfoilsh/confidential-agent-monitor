@@ -1,0 +1,16 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Enter the code</title>
+<h1>Enter the code from your phone</h1>
+<form id="form">
+  <p><input id="code" inputmode="numeric" autocomplete="one-time-code"> <button>Verify</button></p>
+</form>
+<p id="wrong" hidden>Wrong code</p>
+<script>
+  form.onsubmit = e => {
+    e.preventDefault()
+    if (code.value !== '123456') return void (wrong.hidden = false)
+    document.cookie = `session=${encodeURIComponent(sessionStorage.user ?? '')}; path=/`
+    location.href = 'account.html'
+  }
+</script>
