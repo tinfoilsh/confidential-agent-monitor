@@ -1,0 +1,19 @@
+{
+  "title": "MQTT broker",
+  "catalog": {
+    "group": "protocol",
+    "actions": {
+      "connect": {"title": "Connect to the broker", "effects": ["session"]},
+      "subscribe": {"title": "Subscribe to topics", "effects": ["read"]},
+      "receive": {"title": "Receive messages", "effects": ["read"]},
+      "publish": {"title": "Publish messages", "effects": ["send"]},
+      "retain": {"title": "Store or clear retained messages", "effects": ["send", "write"]}
+    },
+    "connections": {"": {"mqtt": {"url": "{url}"}}},
+    "defaults": {"contents": "me", "sends": "me", "strangers": true},
+    "fields": [
+      {"key": "url", "label": "Broker URL", "hint": "mqtts://user@broker.example.com:8883", "path": ["connections", "", "mqtt", "url"]},
+      {"key": "password", "label": "Password", "default": "", "secret": true, "path": ["connections", "", "mqtt", "password"]}
+    ]
+  }
+}

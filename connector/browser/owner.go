@@ -11,6 +11,7 @@ import (
 	"slices"
 	"time"
 
+	"github.com/chromedp/cdproto/cdp"
 	"github.com/chromedp/cdproto/input"
 	"github.com/chromedp/cdproto/page"
 	"github.com/chromedp/cdproto/target"
@@ -43,6 +44,17 @@ type control struct {
 	Tab    string  `json:"tab"`
 	Accept bool    `json:"accept"`
 }
+
+// wheel is Input.dispatchMouseEvent for a mouseWheel, which Chrome rejects without both deltas; cdproto omits a zero delta.
+type wheel struct {
+	Type   input.DispatchMouseEventType `json:"type"`
+	X      float64                      `json:"x"`
+	Y      float64                      `json:"y"`
+	DeltaX float64                      `json:"deltaX"`
+	DeltaY float64                      `json:"deltaY"`
+}
+
+var dispatchWheel = cdp.Command[wheel, cdp.Empty]{Method: input.CommandDispatchMouseEvent}
 
 // frame is what the owner sees. Owner is always accurate; the capture of the active tab may fail, and Error then says why.
 type frame struct {
@@ -171,7 +183,7 @@ func (b *Browser) act(r *http.Request, epoch int, c control) error {
 	case "click":
 		_, err = chromedp.Run(ctx, chromedp.MouseClickXY(c.X, c.Y))
 	case "scroll":
-		_, err = chromedp.Call(ctx, input.DispatchMouseEvent, input.DispatchMouseEventParams{Type: input.DispatchMouseEventTypeMouseWheel, X: c.X, Y: c.Y, DeltaY: c.DY})
+		_, err = chromedp.Call(ctx, dispatchWheel, wheel{Type: input.DispatchMouseEventTypeMouseWheel, X: c.X, Y: c.Y, DeltaY: c.DY})
 	case "type":
 		_, err = chromedp.Run(ctx, chromedp.KeyEvent(c.Text))
 	case "key":

@@ -1,0 +1,13 @@
+{
+  "title": "Custom API",
+  "catalog": {
+    "group": "api",
+    "actions": {
+      "request": {"title": "Use API", "effects": ["execute", "send"]}
+    },
+    "defaults": {"contents": "me", "sends": "me", "strangers": true},
+    "fields": [
+      {"key": "token", "label": "API key", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+    ]
+  }
+}

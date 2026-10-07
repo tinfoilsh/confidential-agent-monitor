@@ -1,6 +1,24 @@
 Each preset has a `<name>.json` record and may have a shipped `<name>.rego`
 module. Accounts select it with `"preset": "<name>"`.
 
+The SFTP, MQTT, and NATS protocol presets include setup forms and operation
+permissions. See [file and broker protocols](../docs/file-and-broker-protocols.md)
+for client commands, supported versions, limits, and scoped owner policies.
+
+For an API without a preset, choose **Add account → API → Custom API**. The form
+accepts an HTTPS API URL, bearer token or API key in a header or query parameter,
+and optional agent access. A path in the URL limits access to that path and its
+children. The account page supplies a placeholder and shows where the agent
+should send it through the monitor. The real credential stays in the account's
+HTTP values and is redacted from the owner view.
+
+Custom API permissions cover all requests within the configured address. `Ask`
+requests approval; `Allow` permits requests subject to the usual data-sharing,
+trust, and owner policy checks. The monitor does not infer which endpoints are
+read-only, so this preset has no read-only access option. Saved approvals bind
+the origin and connection settings. Use a service-specific preset when actions
+need separate permissions.
+
 JSON contains `title`, `catalog`, and optional `operations`. The catalog holds
 setup fields, connections, defaults, and actions. Action entries may supply
 effects for the module, inherited from the nearest action ancestor. Record

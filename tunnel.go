@@ -67,6 +67,10 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 		m.forwardGateway(p, nc, target.Port)
 		return
 	}
+	if target.Host == discoveryHost {
+		m.forwardDiscovery(p, nc, target.Port)
+		return
+	}
 	st := m.live.Load()
 	p = st.principals[p.Key]
 	c, selected := st.route(p, target.Host, target.Port)

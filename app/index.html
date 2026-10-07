@@ -97,6 +97,14 @@
   button.primary:hover { border-color: var(--link); box-shadow: inset 0 1px var(--shine), 0 0 5px var(--edge); }
   button.inherited { border-color: var(--text); }
   button.danger { color: var(--bad); }
+  button.link { padding: 0; border: 0; background: none; box-shadow: none; color: var(--link); }
+  button.link:hover { text-decoration: underline; }
+  .secret-input { display: flex; gap: 6px; align-items: center; }
+  .secret-input input { min-width: 0; }
+  .secret-input button { flex-shrink: 0; }
+  .field-help { margin: 3px 0; font-size: 11px; }
+  .credential { margin-top: 8px; }
+  .credential-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
   .seg { display: inline-flex; flex-shrink: 0; }
   .seg > button { border-radius: 0; }
   .seg > button:first-child { border-radius: 4px 0 0 4px; }
@@ -466,12 +474,14 @@ function toggle(key) {
 function sidebar(kind, arg) {
   const pending = pendingSoonest(), at = (k, a) => kind === k && arg === a;
   const presets = Object.entries(view.presets).sort(([, a], [, b]) => a.title.localeCompare(b.title));
+  const custom = ["custom_api", "mcp"].filter((name) => view.presets[name]);
   const groups = new Map(Object.keys(CATALOG_GROUPS).map((g) => [g, []]));
   for (const preset of presets) {
     const group = preset[1].group ?? "api";
     if (!groups.has(group)) groups.set(group, []);
     groups.get(group).push(preset);
   }
+  for (const entries of groups.values()) entries.sort(([a], [b]) => Number(custom.includes(b)) - Number(custom.includes(a)));
   const saved = Object.values(ids()).reduce((n, id) => n + (id.rules?.length ?? 0), 0);
   return [
     node("needs", `href="#needs"`, `${pending.length ? `<span class="bang">!</span> ` : ""}Approvals`, 0,
@@ -632,7 +642,7 @@ function agent(name) {
     const key = `access/${encodeURIComponent(name)}/${encodeURIComponent(a)}`, open = actions.length > 0 && expanded.has(key);
     return `<div class="acct"><div class="row"><button class="access-toggle" aria-label="Actions for ${esc(a)}" aria-expanded="${open}" aria-controls="${esc(key)}" ${actions.length ? "" : "disabled"} onclick="toggle(${q(key)})">
       <i>${actions.length ? open ? "▾" : "▸" : ""}</i>${accountIcon(a)}<b>${esc(a)}</b>${overrides && access.level !== "off" ? `<small class="muted" title="${overrides} action overrides" aria-label="${overrides} action overrides">${overrides}</small>` : ""}</button>
-      <span class="seg" role="group" aria-label="Default access for ${esc(a)}">${Object.entries(LEVELS).map(([l, t]) =>
+      <span class="seg" role="group" aria-label="Default access for ${esc(a)}">${Object.entries(LEVELS).filter(([l]) => acc.preset !== "custom_api" || l !== "read").map(([l, t]) =>
         `<button class="${l === access.level ? "primary" : ""}" aria-pressed="${l === access.level}" onclick="patchAccess(${q(name)}, ${q(a)}, { level: ${q(l)} })">${t}</button>`).join("")}</span></div>
       <div class="access-actions" id="${esc(key)}" ${open ? "" : "hidden"}>${actions.join("")}</div></div>`;
   });
@@ -797,7 +807,17 @@ function input(f, value, disabled = false) {
   const state = disabled ? "disabled" : "";
   if (f.json) value = value === undefined ? "" : JSON.stringify(value, null, 2);
   if (f.json || f.multiline) return `<textarea id="f-${esc(f.key)}" ${state} rows="6">${esc(value)}</textarea>`;
-  return `<input id="f-${esc(f.key)}" ${state} type="${f.secret ? "password" : "text"}" placeholder="${esc(f.hint)}" value="${esc(f.list ? (value ?? []).join(", ") : value)}">`;
+  if (f.secret) return `<div class="secret-input"><input id="f-${esc(f.key)}" ${state} type="password" autocomplete="new-password" spellcheck="false" placeholder="${esc(f.hint || "Paste your secret here")}" value="${esc(value)}">
+    <button type="button" aria-controls="f-${esc(f.key)}" aria-pressed="false" aria-label="Show ${esc(f.label)}" onclick="toggleSecret(${q(f.key)}, this)">Show</button></div>`;
+  return `<input id="f-${esc(f.key)}" ${state} type="text" placeholder="${esc(f.hint)}" value="${esc(f.list ? (value ?? []).join(", ") : value)}">`;
+}
+
+function toggleSecret(key, button) {
+  const field = $("f-" + key), show = field.type === "password";
+  field.type = show ? "text" : "password";
+  button.textContent = show ? "Hide" : "Show";
+  button.setAttribute("aria-pressed", String(show));
+  button.setAttribute("aria-label", button.getAttribute("aria-label").replace(/^(Show|Hide)/, button.textContent));
 }
 
 function read(f) {
@@ -838,17 +858,46 @@ function changes(before, after) {
     .filter(([, value]) => value !== undefined));
 }
 
+function setupField(f, preset) {
+  const field = `<label for="f-${esc(f.key)}">${esc(f.oauth ? "Access token" : f.label)}</label>${input(f.oauth ? { ...f, label: "Access token", hint: "Paste your access token here" } : f, f.default)}
+    ${f.secret ? `<p class="muted field-help">Leave blank to configure later.</p>` : ""}`;
+  if (!f.oauth) return field;
+  return `<div class="credential"><div id="token-field-${esc(f.key)}" hidden>${field}</div>
+    <button type="button" class="link" id="token-toggle-${esc(f.key)}" aria-controls="token-field-${esc(f.key)}" aria-expanded="false" onclick="setupToken(${q(preset)}, ${q(f.key)})">Use an access token instead</button></div>`;
+}
+
+function setupToken(preset, key) {
+  const field = $("token-field-" + key), button = $("token-toggle-" + key);
+  field.hidden = !field.hidden;
+  button.textContent = field.hidden ? "Use an access token instead" : "Use sign-in instead";
+  button.setAttribute("aria-expanded", String(!field.hidden));
+  $("signin-" + key).hidden = !field.hidden;
+  const oauth = view.presets[preset].fields.some((f) => !f.edit_only && f.oauth && $("token-field-" + f.key).hidden);
+  $("account-add").textContent = oauth ? "Add without signing in" : "Add";
+  $("account-add").classList.toggle("primary", !oauth);
+  if (!field.hidden) $("f-" + key).focus();
+}
+
+const signInLabel = (preset) => preset === "mcp" || !view.presets[preset] ? "Sign in" : "Sign in with " + view.presets[preset].title;
+
 function add(preset) {
   const c = view.presets[preset];
   if (!c) return [head("Add account"), `<p class="empty">No preset ${esc(preset)}.</p>`];
-  return [head(connectorIcon(preset) + "Add " + esc(c.title)), `<section><label>Name</label><input id="account-name" value="${esc(preset)}">
-    ${c.fields.filter((f) => !f.edit_only).map((f) => `<label>${esc(f.label)}</label>${f.secret && !f.json ? `<select id="mode-${esc(f.key)}" onchange="$(${q("f-" + f.key)}).disabled = this.value !== 'replace'">${opt("replace", "Set value", f.oauth ? "oauth" : "replace")}${opt("clear", "Leave unconfigured")}${f.oauth ? opt("oauth", "Sign in after creating", "oauth") : ""}</select>` : ""}${input(f, f.default, !!f.oauth)}`).join("")}
-    ${questions(c.defaults)}<div class="row"><span></span><button class="primary" onclick="addAccount(${q(preset)})">Add</button></div></section>`,
+  if (preset === "custom_api") return customAPIPage(c);
+  const fields = c.fields.filter((f) => !f.edit_only), oauth = fields.filter((f) => f.oauth);
+  return [head(connectorIcon(preset) + "Add " + esc(c.title)), `<section><label for="account-name">Name</label><input id="account-name" value="${esc(preset)}">
+    ${fields.map((f) => setupField(f, preset)).join("")}
+    ${questions(c.defaults)}<div class="row"><span></span><div class="credential-actions">
+      <button id="account-add" class="${oauth.length ? "" : "primary"}" onclick="addAccount(${q(preset)})">${oauth.length ? "Add without signing in" : "Add"}</button>
+      ${oauth.map((f) => `<button id="signin-${esc(f.key)}" class="primary" onclick="addAccount(${q(preset)}, ${q(f.key)})">${esc(signInLabel(preset))}</button>`).join("")}</div></div></section>`,
     `<section><a href="#preset/${encodeURIComponent(preset)}">Edit preset</a></section>`];
 }
 
-const addAccount = run(async (preset) => {
+const addAccount = run(async (preset, signInKey) => {
+  if ($("account-add").disabled) return;
   const c = view.presets[preset], name = $("account-name").value.trim();
+  if (!name) throw new Error("Name this account.");
+  if (Object.hasOwn(accounts(), name)) throw new Error("An account with that name already exists. Choose another name.");
   const fields = c.fields.filter((f) => !f.edit_only);
   const values = Object.fromEntries(fields.map((f) => [f.key, read(f)]));
   // Only the non-secret values fill a preset's connections; secrets go to their fields' paths.
@@ -856,25 +905,150 @@ const addAccount = run(async (preset) => {
   const acc = { preset, ...answers(),
     connections: c.connections ? filled(c.connections, plainValues) : values.connections };
   for (const f of fields) {
-    const mode = f.secret ? $("mode-" + f.key).value : "replace";
-    const value = mode === "clear" ? null : mode === "oauth" ? { oauth: filled(f.oauth, values) } : values[f.key];
+    const value = f.oauth && $("token-field-" + f.key).hidden ? { oauth: filled(f.oauth, values) }
+      : f.secret && values[f.key] === "" ? null : values[f.key];
     for (const path of paths(f)) putPath(acc, path, value);
   }
-  await patch({ accounts: { [name]: acc } }, "account/" + encodeURIComponent(name));
+  const body = { accounts: { [name]: acc } }, from = location.hash;
+  const buttons = [$("account-add"), ...fields.filter((f) => f.oauth).map((f) => $("signin-" + f.key))];
+  buttons.forEach((button) => { button.disabled = true; });
+  try {
+    await edit((state) => previewConfig(state, body), () => api("PATCH", "/", body), { message: "Account added" });
+    if (location.hash !== from) return;
+    location.hash = "account/" + encodeURIComponent(name);
+    if (signInKey !== undefined) {
+      const f = fields.find((f) => f.key === signInKey);
+      await signIn(name, paths(f)[0].map(encodeURIComponent).join("/"));
+    }
+  } finally { buttons.forEach((button) => { button.disabled = false; }); }
+});
+
+function apiConnectionFields(slot = {}) {
+  const auth = slot.query ? "query" : slot.header && !(slot.header.toLowerCase() === "authorization" && slot.prefix === "Bearer ") ? "header" : "bearer";
+  const url = slot.origin ? slot.origin + (slot.path === "/" ? "" : slot.path ?? "") : "";
+  return `<label for="api-url">API URL</label><input id="api-url" type="url" required placeholder="https://api.example.com" value="${esc(url)}" autocomplete="off">
+    <p class="muted">The credential is used only at this address and its paths.</p>
+    <label for="api-auth">Authentication</label><select id="api-auth" onchange="apiAuthChanged()">${opt("bearer", "Bearer token", auth)}${opt("header", "API key in a header", auth)}${opt("query", "API key in a query parameter", auth)}</select>
+    <div id="api-header-fields" ${auth === "header" ? "" : "hidden"}><label for="api-header">Header name</label><input id="api-header" value="${esc(auth === "header" ? slot.header : "X-API-Key")}">
+      <label for="api-prefix">Prefix, if required</label><input id="api-prefix" value="${esc(auth === "header" ? slot.prefix : "")}" placeholder="Leave empty for a plain API key"></div>
+    <div id="api-query-fields" ${auth === "query" ? "" : "hidden"}><label for="api-query">Parameter name</label><input id="api-query" value="${esc(slot.query ?? "api_key")}"></div>`;
+}
+
+function apiAuthChanged() {
+  $("api-header-fields").hidden = $("api-auth").value !== "header";
+  $("api-query-fields").hidden = $("api-auth").value !== "query";
+}
+
+function readAPISlot(value = "token") {
+  let url;
+  try { url = new URL($("api-url").value.trim()); } catch { throw new Error("Enter the API's HTTPS URL, such as https://api.example.com."); }
+  if (url.protocol !== "https:" || url.port === "80" || url.username || url.password || url.search || url.hash) {
+    throw new Error("Use an HTTPS URL without credentials, query parameters, or a fragment.");
+  }
+  const slot = { value, origin: url.origin, path: url.pathname.replace(/\/+$/, "") || "/" };
+  switch ($("api-auth").value) {
+    case "bearer": return { ...slot, header: "Authorization", prefix: "Bearer " };
+    case "header": {
+      const header = $("api-header").value.trim(), prefix = $("api-prefix").value;
+      if (!/^[!#$%&'*+.^_`|~0-9a-z-]+$/i.test(header)) throw new Error("Enter a valid header name, such as X-API-Key.");
+      if (/[\r\n]/.test(prefix)) throw new Error("The header prefix must be on one line.");
+      return { ...slot, header, ...(prefix ? { prefix } : {}) };
+    }
+    case "query": {
+      const query = $("api-query").value.trim();
+      if (!query || /[\s&=#?]/.test(query)) throw new Error("Enter a query parameter name, such as api_key.");
+      return { ...slot, query };
+    }
+    default: throw new Error("Choose an authentication method.");
+  }
+}
+
+function customAPIPage(c) {
+  const agents = Object.keys(ids()), selected = agents.length === 1 ? agents[0] : "";
+  return [head(connectorIcon("api") + "Add Custom API"), `<section><form onsubmit="event.preventDefault(); addCustomAPI()">
+    <p>Connect an app using its API key. The agent gets a placeholder; Monitor keeps the real key.</p>
+    <label for="account-name">Name</label><input id="account-name" required pattern="[a-zA-Z0-9][a-zA-Z0-9\\-]*" placeholder="my-app" title="Use letters, numbers, and hyphens.">
+    ${apiConnectionFields()}
+    <label for="api-token">API key or token</label><input id="api-token" type="password" required autocomplete="new-password">
+    ${agents.length ? `<label for="api-agent">Agent</label><select id="api-agent">${opt("", "Set up access later", selected)}${agents.map((name) => opt(name, name, selected)).join("")}</select>
+      <label for="api-access">Access</label><select id="api-access">${opt("ask", "Ask before each request", "ask")}${opt("allow", "Allow all API requests", "ask")}</select>` : `<p class="muted">After adding this account, pair an agent to give it access.</p>`}
+    <p class="muted">Access covers all operations at this address, including changes and deletions.</p>
+    <details data-disclosure="api-sharing"><summary>Data sharing</summary>${questions(c.defaults)}</details>
+    <div class="row"><span></span><button id="api-add" class="primary" type="submit">Add</button></div>
+  </form></section>`];
+}
+
+const addCustomAPI = run(async () => {
+  if ($("api-add").disabled) return;
+  const name = $("account-name").value.trim(), token = $("api-token").value;
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9-]*$/.test(name)) throw new Error("Name this account using letters, numbers, and hyphens.");
+  if (Object.hasOwn(accounts(), name)) throw new Error("An account with that name already exists. Choose another name.");
+  if (!token.trim()) throw new Error("Enter the API key or token.");
+  const slot = readAPISlot();
+  const acc = { preset: "custom_api", ...answers(), connections: { "": { http: { slots: [slot], values: { token } } } } };
+  const body = { accounts: { [name]: acc } };
+  const agent = $("api-agent")?.value;
+  if (agent) body.identities = { [agent]: { accounts: { [name]: { level: $("api-access").value } } } };
+  const from = location.hash;
+  $("api-add").disabled = true;
+  try {
+    await edit((state) => previewConfig(state, body), () => api("PATCH", "/", body), { message: "Account added" });
+    if (location.hash === from) location.hash = "account/" + encodeURIComponent(name);
+  } finally { if ($("api-add")) $("api-add").disabled = false; }
+});
+
+function apiAgentSetup(a) {
+  const slot = accounts()[a].connections?.[""]?.http?.slots?.[0];
+  if (!slot) return "";
+  const placeholder = `tfm_${a}_${slot.value}`;
+  return `<section class="account-card account-settings"><div class="section-heading"><h2>Connect your agent</h2></div><div class="settings-fields"><div>
+    <label for="api-placeholder">Agent API key</label><div class="row"><input id="api-placeholder" readonly value="${esc(placeholder)}" onclick="this.select()"><button onclick="copyAPIPlaceholder()">Copy</button></div>
+    <p class="muted">Give your agent this placeholder as its API key. Requests must go through Monitor.</p>
+    <p>API address: <span class="mono">${esc(slot.origin + (slot.path === "/" ? "" : slot.path ?? ""))}</span></p>
+    <p>${slot.query ? `Query parameter: <span class="mono">${esc(slot.query)}=${esc(placeholder)}</span>` : `Header: <span class="mono">${esc(slot.header)}: ${esc((slot.prefix ?? "") + placeholder)}</span>`}</p>
+    <p class="muted">Access covers all operations at this address, including changes and deletions.</p>
+  </div></div></section>`;
+}
+
+const copyAPIPlaceholder = run(async () => {
+  $("api-placeholder").select();
+  if (!navigator.clipboard) { toast("Copy the selected placeholder."); return; }
+  await navigator.clipboard.writeText($("api-placeholder").value);
+  toast("Placeholder copied");
 });
 
 function credentialFields(a) {
   return (view.fields?.[a] ?? []).map((meta) => {
     const f = entry(a).fields.find((f) => paths(f).some((path) => JSON.stringify(path) === JSON.stringify(meta.path)));
-    return { ...f, ...meta, key: meta.path.map(encodeURIComponent).join("/"), label: `${meta.path[1] ? meta.path[1] + ": " : ""}${f?.label ?? meta.path.at(-1)}`, secret: true, multiline: true };
+    return { ...f, ...meta, key: meta.path.map(encodeURIComponent).join("/"), label: `${meta.path[1] ? meta.path[1] + ": " : ""}${f?.label ?? meta.path.at(-1)}`, secret: true, multiline: f ? !!f.multiline : true };
   }).sort((a, b) => a.key.localeCompare(b.key));
 }
 
 function credentialEditor(a, f) {
   const status = f.kind === "oauth-required" ? "Sign-in required" : f.kind === "unset" ? "Not configured" : "Configured";
-  return disclosure("credential/" + f.key, `${esc(f.label)} · <span class="muted">${esc(status)}</span>`,
-    `<select aria-label="${esc(f.label)}" id="mode-${esc(f.key)}" onchange="$(${q("f-" + f.key)}).disabled = this.value !== 'replace'"><option value="keep">Keep unchanged</option><option value="replace">Replace value</option><option value="clear">Clear credential</option></select>
-    ${input(f, undefined, true)}${f.kind.startsWith("oauth") || grantTemplate(a, f) ? `<div class="row"><span></span><button onclick="signIn(${q(a)}, ${q(f.key)})">Sign in</button></div>` : ""}`);
+  return `<div class="credential"><div>${esc(f.label)} · <span class="muted">${esc(status)}</span></div>
+    <input type="hidden" id="mode-${esc(f.key)}" value="keep">
+    <div id="credential-actions-${esc(f.key)}" class="credential-actions">
+      ${f.kind.startsWith("oauth") || grantTemplate(a, f) ? `<button class="primary" onclick="signIn(${q(a)}, ${q(f.key)})">${esc(signInLabel(accounts()[a].preset))}</button>` : ""}
+      <button id="replace-${esc(f.key)}" onclick="credentialMode(${q(a)}, ${q(f.key)}, 'replace')">${f.kind === "unset" ? "Set value" : "Replace"}</button>
+      ${f.kind !== "unset" ? `<button class="danger" onclick="credentialMode(${q(a)}, ${q(f.key)}, 'clear')">Remove</button>` : ""}</div>
+    <div id="credential-edit-${esc(f.key)}" hidden></div>
+    <div id="credential-remove-${esc(f.key)}" hidden><p class="muted field-help" role="status">Will be removed when you save.</p></div>
+    <button id="credential-cancel-${esc(f.key)}" hidden onclick="credentialMode(${q(a)}, ${q(f.key)}, 'keep')">Cancel</button></div>`;
+}
+
+function credentialMode(a, key, mode) {
+  $("mode-" + key).value = mode;
+  $("credential-actions-" + key).hidden = mode !== "keep";
+  const editor = $("credential-edit-" + key);
+  editor.hidden = mode !== "replace";
+  const f = credentialFields(a).find((f) => f.key === key);
+  editor.innerHTML = mode === "replace" ? `<label for="f-${esc(key)}">${f.kind === "unset" ? "Value" : "New value"}</label>${input(f)}
+    <p class="muted field-help">${f.kind === "unset" ? "Enter a value, then save." : "Your current credential stays in use until you save."}</p>` : "";
+  $("credential-remove-" + key).hidden = mode !== "clear";
+  $("credential-cancel-" + key).hidden = mode === "keep";
+  if (mode === "replace") $("f-" + key).focus();
+  else $(mode === "keep" ? "replace-" + key : "credential-cancel-" + key).focus();
 }
 
 function accountActions(a) {
@@ -919,10 +1093,11 @@ function account(a) {
   const fields = plain(c), credentials = credentialFields(a);
   return [`<header class="account-header">${accountIcon(a)}<h1>${esc(a)}</h1><span class="muted">${esc(c.title)} ${accountStatus(a)}</span><a class="x" href="#activity" aria-label="Close account">✕</a></header>`,
     liveCard(a),
+    acc.preset === "custom_api" ? apiAgentSetup(a) : "",
     `<div class="account-overview"><section class="account-card"><div class="section-heading"><h2>Actions <span class="count">${Object.keys(actionsOf(a)).length}</span></h2><a href="#preset/${encodeURIComponent(acc.preset)}">Edit preset</a></div>
       <div class="action-list">${accountActions(a)}</div></section>${accountUsers(a)}</div>`,
     `<section class="account-card account-settings"><div class="section-heading"><h2>Account settings</h2></div><div class="settings-fields"><div>${questions(acc)}</div>
-      ${fields.length || credentials.length ? `<div>${fields.map((f) => `<label for="f-${esc(f.key)}">${esc(f.label)}</label>${input(f, fieldValue(acc, f))}`).join("")}${credentials.map((f) => credentialEditor(a, f)).join("")}</div>` : ""}</div>
+      ${fields.length || credentials.length || acc.preset === "custom_api" ? `<div>${acc.preset === "custom_api" ? apiConnectionFields(acc.connections?.[""]?.http?.slots?.[0]) : ""}${fields.map((f) => `<label for="f-${esc(f.key)}">${esc(f.label)}</label>${input(f, fieldValue(acc, f))}`).join("")}${credentials.map((f) => credentialEditor(a, f)).join("")}</div>` : ""}</div>
       <div class="card-footer"><button class="primary" onclick="saveAccount(${q(a)})">Save</button></div></section>`,
     ...mcpKeys(a).map((k) => review(a, k, c)),
     `<section><details data-disclosure="custom-rules"><summary class="hd">Custom rules</summary><textarea id="policy" aria-label="Custom rules" rows="12">${esc(view.config.policies?.[a])}</textarea>
@@ -944,20 +1119,30 @@ function review(a, key, c) {
 const approve = (a, key) => patch({ accounts: { [a]: { connections: { [key]: { mcp: { pin: view.status[connName(a, key)].pin } } } } } }, undefined,
   (state) => { state.view.status[connName(a, key)] = { ...state.view.status[connName(a, key)], blocked: 0, changes: [] }; });
 
-const saveAccount = (a) => {
+const saveAccount = run(async (a) => {
   const acc = accounts()[a], update = answers();
+  if (acc.preset === "custom_api") putPath(update, ["connections", "", "http", "slots"], [readAPISlot(acc.connections?.[""]?.http?.slots?.[0]?.value)]);
   for (const f of plain(entry(a))) {
     const value = read(f);
     const delta = changes(fieldValue(acc, f), value);
     if (delta !== undefined) for (const path of paths(f)) putSetting(update, acc, path, delta);
   }
-  for (const f of credentialFields(a)) {
+  const credentials = credentialFields(a), modes = credentials.map((f) => $("mode-" + f.key));
+  for (const f of credentials) {
     const mode = $("mode-" + f.key).value;
-    if (mode === "replace") putPath(update, f.path, read(f));
+    if (mode === "replace") {
+      const value = read(f);
+      if (value === "") throw new Error(`Enter a value for ${f.label}, or cancel the replacement.`);
+      putPath(update, f.path, value);
+    }
     if (mode === "clear") putPath(update, f.path, null);
   }
-  return patch({ accounts: { [a]: update } });
-};
+  const body = { accounts: { [a]: update } };
+  await edit((state) => previewConfig(state, body), () => api("PATCH", "/", body));
+  credentials.forEach((f, i) => {
+    if ($("mode-" + f.key) === modes[i] && modes[i].value !== "keep") credentialMode(a, f.key, "keep");
+  });
+});
 
 // A grant template fills from the account's plain settings; one that needs a setup-only value, such as an OAuth client, cannot.
 function grantTemplate(a, f) {

@@ -38,6 +38,8 @@ action_effects(action) := [effects |
 # A preset module owns recognition, including unknown requests and denials.
 recognizer := handler if handler := data.handlers[input.account.preset]
 
+else := data.handlers.mcp if input.mcp
+
 else := data.monitor.api
 
 op := recognizer.operation

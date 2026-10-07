@@ -105,7 +105,7 @@ func setup(p principal, connections map[string]*connection) string {
 			}
 		}
 	}
-	var lines []string
+	lines := []string{"# Discover available connections: monitor connections (uses the agent's SSH identity)"}
 	for _, secret := range slices.Sorted(maps.Keys(holders)) {
 		for _, name := range holders[secret] {
 			if len(holders[secret]) == 1 {

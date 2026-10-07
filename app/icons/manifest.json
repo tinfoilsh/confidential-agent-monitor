@@ -140,6 +140,9 @@
   "custom": {
     "src": "custom.svg"
   },
+  "custom_api": {
+    "src": "api.svg"
+  },
   "customer_io": {
     "src": "customer_io.svg"
   },

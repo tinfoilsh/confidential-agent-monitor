@@ -103,7 +103,7 @@ func parse(raw []byte) (*config, map[string]*connection, error) {
 		}
 		for key, kinds := range a.Connections {
 			name := connectionName(acct, key)
-			if name == "messages" || name == "mcp" {
+			if name == "messages" || name == "mcp" || name == "agent" {
 				return nil, nil, fmt.Errorf("connection name %s is reserved for the monitor", name)
 			}
 			if connections[name] != nil {

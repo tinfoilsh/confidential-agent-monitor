@@ -16,6 +16,8 @@ import (
 	"github.com/tinfoilsh/monitor/connector/browser"
 	"github.com/tinfoilsh/monitor/connector/email"
 	"github.com/tinfoilsh/monitor/connector/mcp"
+	"github.com/tinfoilsh/monitor/connector/mqtt"
+	"github.com/tinfoilsh/monitor/connector/nats"
 	"github.com/tinfoilsh/monitor/connector/postgres"
 	"github.com/tinfoilsh/monitor/connector/redis"
 	"github.com/tinfoilsh/monitor/connector/session"
@@ -33,6 +35,9 @@ var connectorKinds = map[string]func() connector.Connector{
 	"http":      func() connector.Connector { return new(web.HTTP) },
 	"mcp":       func() connector.Connector { return new(mcp.Server) },
 	"ssh":       func() connector.Connector { return new(session.SSH) },
+	"sftp":      func() connector.Connector { return new(session.SFTP) },
+	"mqtt":      func() connector.Connector { return new(mqtt.MQTT) },
+	"nats":      func() connector.Connector { return new(nats.NATS) },
 	"cli":       func() connector.Connector { return new(session.CLI) },
 	"ssh-agent": func() connector.Connector { return new(signer.SSHAgent) },
 	"gpg-agent": func() connector.Connector { return new(signer.GPGAgent) },

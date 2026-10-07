@@ -140,6 +140,9 @@ type Event struct {
 	Sign     *SignLayer     `json:"sign,omitempty"`
 	Postgres *PostgresLayer `json:"postgres,omitempty"`
 	Redis    *RedisLayer    `json:"redis,omitempty"`
+	SFTP     *SFTPLayer     `json:"sftp,omitempty"`
+	MQTT     *MQTTLayer     `json:"mqtt,omitempty"`
+	NATS     *NATSLayer     `json:"nats,omitempty"`
 	SMTP     *SMTPLayer     `json:"smtp,omitempty"`
 	Mail     *MailLayer     `json:"mail,omitempty"`
 	IMAP     *IMAPLayer     `json:"imap,omitempty"`
@@ -155,6 +158,36 @@ type ArgvLayer struct {
 type RedisLayer struct {
 	Command string   `json:"command"`
 	Argv    []string `json:"argv"`
+}
+
+// Paths are relative to the SFTP account's root, with a leading slash.
+type SFTPLayer struct {
+	Command    string            `json:"command"`
+	Path       string            `json:"path"`
+	Target     string            `json:"target,omitempty"`
+	Read       bool              `json:"read,omitempty"`
+	Write      bool              `json:"write,omitempty"`
+	Flags      uint32            `json:"flags,omitempty"`
+	Offset     uint64            `json:"offset,omitempty"`
+	Size       uint32            `json:"size,omitempty"`
+	Attributes map[string]uint64 `json:"attributes,omitempty"`
+}
+
+type MQTTLayer struct {
+	Command string `json:"command"`
+	Topic   string `json:"topic"`
+	QoS     byte   `json:"qos"`
+	Retain  bool   `json:"retain"`
+	Payload []byte `json:"payload,omitempty"`
+}
+
+type NATSLayer struct {
+	Command string              `json:"command"`
+	Subject string              `json:"subject"`
+	Reply   string              `json:"reply,omitempty"`
+	Queue   string              `json:"queue,omitempty"`
+	Headers map[string][]string `json:"headers,omitempty"`
+	Payload []byte              `json:"payload,omitempty"`
 }
 
 // HTTPLayer is the request before substitution; secrets names the placeholders it carried.

@@ -1,0 +1,21 @@
+{
+  "title": "NATS broker",
+  "catalog": {
+    "group": "protocol",
+    "actions": {
+      "connect": {"title": "Connect to the broker", "effects": ["session"]},
+      "subscribe": {"title": "Subscribe to subjects", "effects": ["read"]},
+      "receive": {"title": "Receive messages", "effects": ["read"]},
+      "consume": {"title": "Join queues and consume work", "effects": ["read", "write"]},
+      "publish": {"title": "Publish messages and replies", "effects": ["send"]},
+      "admin": {"title": "Publish to broker control subjects", "effects": ["send", "admin"]}
+    },
+    "connections": {"": {"nats": {"url": "{url}"}}},
+    "defaults": {"contents": "me", "sends": "me", "strangers": true},
+    "fields": [
+      {"key": "url", "label": "Broker URL", "hint": "tls://user@broker.example.com:4222", "path": ["connections", "", "nats", "url"]},
+      {"key": "password", "label": "Password", "default": "", "secret": true, "path": ["connections", "", "nats", "password"]},
+      {"key": "token", "label": "Token, instead of user and password", "default": "", "secret": true, "path": ["connections", "", "nats", "token"]}
+    ]
+  }
+}

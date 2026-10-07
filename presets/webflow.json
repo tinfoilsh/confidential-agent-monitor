@@ -1,0 +1,15 @@
+{
+  "title": "Webflow",
+  "catalog": {
+    "group": "mcp",
+    "actions": {
+      "read": {"title": "Use read-only tools", "effects": ["read"]},
+      "use": {"title": "Use tools that change things", "effects": ["write"]}
+    },
+    "connections": {"": {"mcp": {"url": "https://mcp.webflow.com/mcp"}}},
+    "defaults": {"contents": "team", "sends": "me", "strangers": true},
+    "fields": [
+      {"key": "token", "label": "Token", "path": ["connections", "", "mcp", "token"], "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://mcp.webflow.com/mcp"}}
+    ]
+  }
+}
