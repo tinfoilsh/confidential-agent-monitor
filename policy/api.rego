@@ -1,23 +1,20 @@
-package templates.api
+package monitor.api
 
 # An account names a preset in data.presets, whose operations are checked by malformed when the monitor starts.
 # A request no operation matches is unknown to policy, and one that matches several is refused.
 
 options := input.account.policy_options
 
-service := data.presets[options.preset]
+service := data.presets[input.account.preset]
 
-# A record is data, so anything this template would not read is refused rather than ignored.
+# A record is data, so anything this matcher would not read is refused rather than ignored.
 operation_keys := {"id", "action", "effects", "method", "origin", "path", "query", "headers", "fields", "params", "open_params", "body", "graphql", "scope", "grant", "sends"}
 
 well_formed(o) if {
 	every key, _ in o {
 		key in operation_keys
 	}
-	is_array(o.effects)
-	every e in o.effects {
-		data.monitor.vocabulary[e]
-	}
+	effect_list(o.effects)
 	is_object(o.scope)
 	every _, spec in o.scope {
 		is_string(spec.from)
@@ -38,20 +35,45 @@ graphql_body(o) if not "graphql" in object.keys(o)
 
 graphql_body(o) if o.body == "graphql"
 
+effect_list(effects) if {
+	is_array(effects)
+	count(effects) > 0
+	every e in effects {
+		data.monitor.vocabulary[e]
+	}
+}
+
+malformed contains [name, "operations must be an array"] if {
+	some name, s in data.presets
+	not is_array(object.get(s, "operations", []))
+}
+
+malformed contains [name, "actions must be an object"] if {
+	some name, s in data.presets
+	not is_object(object.get(s.catalog, "actions", {}))
+}
+
+malformed contains [name, sprintf("invalid effects for action %s", [action])] if {
+	some name, s in data.presets
+	some action, meta in s.catalog.actions
+	"effects" in object.keys(meta)
+	not effect_list(meta.effects)
+}
+
 malformed contains [name, object.get(o, "id", i)] if {
 	some name, s in data.presets
-	some i, o in s.operations
+	some i, o in object.get(s, "operations", [])
 	not well_formed(o)
 }
 
 malformed contains [name, sprintf("%v is repeated", [id])] if {
 	some name, s in data.presets
-	ids := sort([o.id | some o in s.operations])
+	ids := sort([o.id | some o in object.get(s, "operations", [])])
 	some i, id in ids
 	id == ids[i + 1]
 }
 
-matches := [o | some o in service.operations; matched(o)]
+matches := [o | some o in object.get(service, "operations", []); matched(o)]
 
 record := matches[0] if count(matches) == 1
 
@@ -82,7 +104,7 @@ deny contains "the account names no service record" if not service
 deny contains "only HTTP requests reach a service" if not input.http
 
 deny contains "the service record is malformed" if {
-	some o in service.operations
+	some o in object.get(service, "operations", [])
 	not well_formed(o)
 }
 

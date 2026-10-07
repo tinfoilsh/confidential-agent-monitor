@@ -1,6 +1,7 @@
 {
   "title": "Intercom",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "token", "label": "Access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
     ],

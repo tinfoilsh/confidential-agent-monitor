@@ -1,6 +1,7 @@
 {
   "title": "GetResponse",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}
     ],

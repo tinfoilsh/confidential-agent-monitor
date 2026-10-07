@@ -1,6 +1,7 @@
 {
   "title": "Postmark",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "server_token", "label": "Server API Token", "secret": true, "path": ["connections", "", "http", "values", "server_token"]}
     ],

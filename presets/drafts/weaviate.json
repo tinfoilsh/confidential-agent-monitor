@@ -1,6 +1,7 @@
 {
   "title": "Weaviate Vector Store",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Weaviate Vector Store origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
       {"key": "weaviate_api_key", "label": "Weaviate Api Key", "secret": true, "path": ["connections", "", "http", "values", "weaviate_api_key"]}

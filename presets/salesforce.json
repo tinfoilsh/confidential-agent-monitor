@@ -1,6 +1,7 @@
 {
   "title": "Salesforce",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Salesforce instance URL (https://yourinstance.my.salesforce.com)",
        "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},

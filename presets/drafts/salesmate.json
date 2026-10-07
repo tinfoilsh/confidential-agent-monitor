@@ -1,6 +1,7 @@
 {
   "title": "Salesmate",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "session_token", "label": "Session Token", "secret": true, "path": ["connections", "", "http", "values", "session_token"]}
     ],

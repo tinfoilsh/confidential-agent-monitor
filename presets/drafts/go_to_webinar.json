@@ -1,6 +1,7 @@
 {
   "title": "GoToWebinar",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "token", "label": "GoToWebinar access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
     ],

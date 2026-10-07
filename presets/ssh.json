@@ -1,0 +1,20 @@
+{
+  "title": "SSH server",
+  "catalog": {
+    "group": "protocol",
+    "actions": {
+      "files": {"title": "Transfer files", "effects": ["read", "write"]},
+      "run": {"title": "Run commands", "effects": ["execute"]},
+      "session": {"title": "Set up terminals and send signals", "effects": ["session"]},
+      "shell": {"title": "Open interactive shells", "effects": ["execute"]}
+    },
+    "connections": {"": {"ssh": {"host": "{host}", "host_key": "{host_key}", "user": "{user}"}}},
+    "defaults": {"contents": "me", "sends": "me", "strangers": true},
+    "fields": [
+      {"key": "host", "label": "Host", "path": ["connections", "", "ssh", "host"]},
+      {"key": "user", "label": "User", "path": ["connections", "", "ssh", "user"]},
+      {"hint": "a line of ssh-keyscan <host>", "key": "host_key", "label": "Host key", "path": ["connections", "", "ssh", "host_key"]},
+      {"key": "key", "label": "Private key", "multiline": true, "path": ["connections", "", "ssh", "key"], "secret": true}
+    ]
+  }
+}

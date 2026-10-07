@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/fs"
 	"net/netip"
 	"slices"
+	"strings"
 
 	"github.com/tinfoilsh/monitor/connector"
 )
+
+const mcpNameChars = "abcdefghijklmnopqrstuvwxyz0123456789-"
 
 var (
 	audiences = []string{"me", "team", "anyone"}
@@ -44,12 +46,11 @@ type rule struct {
 type policyOptions struct {
 	Private []string `json:"private,omitempty"`
 	Address string   `json:"address,omitempty"`
-	Preset  string   `json:"preset,omitempty"`
 	Origin  string   `json:"origin,omitempty"`
 }
 
 type account struct {
-	Template      string                    `json:"template"`
+	Preset        string                    `json:"preset"`
 	PolicyOptions policyOptions             `json:"policy_options"`
 	Contents      string                    `json:"contents"`
 	Strangers     bool                      `json:"strangers"`
@@ -57,7 +58,14 @@ type account struct {
 	Connections   map[string]map[string]any `json:"connections,omitempty"`
 }
 
+// Lattice switches control enforcement. Labels keep recording both axes.
+type latticeOptions struct {
+	Confidentiality bool `json:"confidentiality"`
+	Integrity       bool `json:"integrity"`
+}
+
 type config struct {
+	Lattices      latticeOptions      `json:"lattices"`
 	AllowNetworks []netip.Prefix      `json:"allow_networks"`
 	Accounts      map[string]account  `json:"accounts"`
 	Identities    map[string]identity `json:"identities"`
@@ -71,11 +79,11 @@ type config struct {
 
 // parse decodes the owner's config without starting anything.
 func parse(raw []byte) (*config, map[string]*connection, error) {
-	var cfg config
+	cfg := config{Lattices: latticeOptions{Confidentiality: true}}
 	if err := connector.DecodeNumbers(raw, &cfg); err != nil {
 		return nil, nil, err
 	}
-	for _, reserved := range []string{"definitions", "presets"} {
+	for _, reserved := range []string{"definitions", "presets", "lattices"} {
 		if _, ok := cfg.Data[reserved]; ok {
 			return nil, nil, fmt.Errorf("data.%s is reserved for the monitor", reserved)
 		}
@@ -87,19 +95,16 @@ func parse(raw []byte) (*config, map[string]*connection, error) {
 	cfg.resolved = resolved
 	connections := map[string]*connection{}
 	for acct, a := range cfg.Accounts {
-		if _, ok := resolved[a.PolicyOptions.Preset]; (a.Template == "api") != ok || a.Template != "api" && a.PolicyOptions.Origin != "" {
-			return nil, nil, fmt.Errorf("account %s: api accounts name a preset, and only they name a preset or origin", acct)
-		}
-		if _, err := fs.Stat(templates, templateDir+"/"+a.Template+".rego"); err != nil {
-			return nil, nil, fmt.Errorf("account %s has unknown template %s", acct, a.Template)
+		if _, ok := resolved[a.Preset]; !ok {
+			return nil, nil, fmt.Errorf("account %s has unknown preset %s", acct, a.Preset)
 		}
 		if !slices.Contains(audiences, a.Contents) || !slices.Contains(audiences, a.Sends) {
 			return nil, nil, fmt.Errorf("account %s: contents and sends must be one of %v", acct, audiences)
 		}
 		for key, kinds := range a.Connections {
 			name := connectionName(acct, key)
-			if name == "messages" {
-				return nil, nil, fmt.Errorf("connection name messages is reserved for agent mailboxes")
+			if name == "messages" || name == "mcp" {
+				return nil, nil, fmt.Errorf("connection name %s is reserved for the monitor", name)
 			}
 			if connections[name] != nil {
 				return nil, nil, fmt.Errorf("connection name %s is taken", name)
@@ -108,6 +113,10 @@ func parse(raw []byte) (*config, map[string]*connection, error) {
 				return nil, nil, fmt.Errorf("connection %s must have one kind", name)
 			}
 			for kind, spec := range kinds {
+				// The gateway names tools name__tool, so the first separator must end the connection name.
+				if kind == "mcp" && strings.Trim(strings.ToLower(name), mcpNameChars) != "" {
+					return nil, nil, fmt.Errorf("MCP connection name %s may use only letters, digits and -", name)
+				}
 				newConnector, ok := connectorKinds[kind]
 				if !ok {
 					return nil, nil, fmt.Errorf("connection %s has unknown kind %s", name, kind)

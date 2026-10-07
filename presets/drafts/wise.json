@@ -1,6 +1,7 @@
 {
   "title": "Wise",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "api_token", "label": "API Token", "secret": true, "path": ["connections", "", "http", "values", "api_token"]}
     ],

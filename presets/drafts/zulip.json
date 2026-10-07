@@ -1,6 +1,7 @@
 {
   "title": "Zulip",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Zulip origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
       {"key": "email", "label": "Email", "secret": true, "path": ["connections", "", "http", "values", "email"]},

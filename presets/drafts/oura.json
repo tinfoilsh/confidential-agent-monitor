@@ -1,6 +1,7 @@
 {
   "title": "Oura",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "access_token", "label": "Personal Access Token", "secret": true, "path": ["connections", "", "http", "values", "access_token"]}
     ],

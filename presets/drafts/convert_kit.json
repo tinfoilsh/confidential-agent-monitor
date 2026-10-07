@@ -1,6 +1,7 @@
 {
   "title": "ConvertKit",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "api_secret", "label": "API Secret", "secret": true, "path": ["connections", "", "http", "values", "api_secret"]}
     ],

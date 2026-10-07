@@ -1,6 +1,7 @@
 {
   "title": "Supabase",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your project URL (https://yourproject.supabase.co)",
        "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},

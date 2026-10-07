@@ -1,6 +1,7 @@
 {
   "title": "Zendesk",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Zendesk subdomain URL (https://yourcompany.zendesk.com)",
        "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},

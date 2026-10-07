@@ -1,17 +1,6 @@
-package templates.redis
+package handlers.redis
 
-catalog := {
-	"title": "Redis",
-	"fields": [
-		{"key": "url", "label": "Connection URL", "hint": "rediss://user@host:6379", "path": ["connections", "", "redis", "url"]},
-		{"key": "password", "label": "Password", "secret": true, "default": "", "path": ["connections", "", "redis", "password"]}
-	],
-	"connections": {"": {"redis": {"url": "{url}"}}},
-	"defaults": {"contents": "me", "strangers": true, "sends": "me"},
-	"actions": {"read": {"title": "Read keys"}, "write": {"title": "Change keys and the server"}}
-}
-
-effects := {"read": {"read"}, "write": {"write"}}
+import data.monitor.action_effects
 
 argv := input.redis.argv
 
@@ -48,7 +37,7 @@ default scope := {}
 scope := {"command": command}
 
 operation := {
-	"id": action, "action": action, "effects": effects[action], "scope": scope, "trust": action == "write"
+	"id": action, "action": action, "effects": action_effects(action), "scope": scope, "trust": action == "write",
 }
 
 title := concat(" ", array.slice(argv, 0, 2))

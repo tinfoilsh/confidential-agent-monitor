@@ -96,10 +96,16 @@ func (m *Server) Status() any {
 
 // serve builds a server per request, so each call is screened by the gate of the stream it arrived on.
 func (m *Server) serve(r *http.Request) *sdk.Server {
-	s := connector.RequestStream(r)
 	server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: sentinel.Version}, nil)
-	m.upstream.Register(server, "", func(_ context.Context, t *sdk.Tool, args json.RawMessage) error {
-		return s.Gate(connector.Event{MCP: &connector.MCPLayer{Tool: t.Name, Arguments: args, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}})
-	})
+	m.Register(server, "", connector.RequestStream(r).Gate)
 	return server
 }
+
+// Register adds the pinned tools under prefix; the gate sees each tool's own name.
+func (m *Server) Register(server *sdk.Server, prefix string, gate func(connector.Event) error) {
+	m.upstream.Register(server, prefix, func(_ context.Context, t *sdk.Tool, args json.RawMessage) error {
+		return gate(connector.Event{MCP: &connector.MCPLayer{Tool: t.Name, Arguments: args, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}})
+	})
+}
+
+func (m *Server) Instructions() string { return m.upstream.Instructions }

@@ -26,14 +26,12 @@ import (
 )
 
 const (
-	templateDir   = "templates"
 	decisionQuery = "data.monitor.decision"
 	messageQuery  = "data.monitor.messages.decision"
-	catalogQuery  = `[{t: object.union(c, {"effects": object.get(data.templates, [t, "effects"], {}), "vocabulary": data.monitor.vocabulary}) | c := data.templates[t].catalog}, data.monitor.vocabulary]`
 )
 
-//go:embed templates/*.rego
-var templates embed.FS
+//go:embed policy/*.rego presets/*.rego
+var policyFiles embed.FS
 
 var (
 	errExpired = errors.New("waiting for the owner's approval in the monitor timed out")
@@ -87,34 +85,42 @@ func (d *decision) authority() string {
 	return string(raw)
 }
 
-func templateModules() (opts []func(*rego.Rego)) {
-	files, _ := fs.Glob(templates, templateDir+"/*.rego")
+var policySources = sync.OnceValue(func() map[string]string {
+	files, _ := fs.Glob(policyFiles, "*/*.rego")
+	sources := map[string]string{}
 	for _, name := range files {
-		src, _ := templates.ReadFile(name)
-		opts = append(opts, rego.Module(name, string(src)))
+		src, _ := policyFiles.ReadFile(name)
+		sources[name] = string(src)
+	}
+	return sources
+})
+
+func policyModules() (opts []func(*rego.Rego)) {
+	for name, src := range policySources() {
+		opts = append(opts, rego.Module(name, src))
 	}
 	return opts
 }
 
-var templateCatalog = sync.OnceValues(func() ([]any, error) {
-	rs, err := rego.New(append(templateModules(), rego.Query(catalogQuery))...).Eval(context.Background())
+var effectVocabulary = sync.OnceValues(func() (any, error) {
+	rs, err := rego.New(append(policyModules(), rego.Query("data.monitor.vocabulary"))...).Eval(context.Background())
 	if err != nil {
 		return nil, err
 	}
-	return rs[0].Expressions[0].Value.([]any), nil
+	return rs[0].Expressions[0].Value, nil
 })
 
-// catalog is what the owner's app needs to know of each template and preset. A preset sets up an api account.
+// catalog is the resolved preset metadata and operations used by the owner's app.
 func catalog(all map[string]preset) (any, error) {
-	result, err := templateCatalog()
+	vocabulary, err := effectVocabulary()
 	if err != nil {
 		return nil, err
 	}
-	entries := maps.Clone(result[0].(map[string]any))
+	entries := map[string]any{}
 	for name, p := range all {
 		entry := maps.Clone(p.catalog)
-		entry["title"], entry["preset"], entry["operations"] = p.record["title"], name, p.record["operations"]
-		entry["vocabulary"] = result[1]
+		entry["title"], entry["operations"] = p.record["title"], p.record["operations"]
+		entry["vocabulary"] = vocabulary
 		entries[name] = entry
 	}
 	return entries, nil
@@ -132,11 +138,10 @@ func preparePolicies(ctx context.Context, cfg *config) (connectors, messages reg
 		records[name] = p.record
 	}
 	data["presets"] = records
+	data["lattices"] = map[string]any{"confidentiality": cfg.Lattices.Confidentiality, "integrity": cfg.Lattices.Integrity}
 	h := sha256.New()
-	files, _ := fs.Glob(templates, templateDir+"/*.rego")
-	for _, file := range files {
-		src, _ := templates.ReadFile(file)
-		fmt.Fprintf(h, "%q%q", file, src)
+	for _, name := range slices.Sorted(maps.Keys(policySources())) {
+		fmt.Fprintf(h, "%q%q", name, policySources()[name])
 	}
 	for _, name := range slices.Sorted(maps.Keys(cfg.Policies)) {
 		fmt.Fprintf(h, "%q%q", name, cfg.Policies[name])
@@ -144,7 +149,7 @@ func preparePolicies(ctx context.Context, cfg *config) (connectors, messages reg
 	data["definitions"] = map[string]any{"program": hex.EncodeToString(h.Sum(nil))}
 	compiler := ast.NewCompiler()
 	store := inmem.NewFromObject(data)
-	opts := append(templateModules(), rego.Compiler(compiler), rego.Query(decisionQuery), rego.Store(store))
+	opts := append(policyModules(), rego.Compiler(compiler), rego.Query(decisionQuery), rego.Store(store))
 	for name, src := range cfg.Policies {
 		opts = append(opts, rego.Module(path.Join("policies", name), src))
 	}
@@ -225,8 +230,8 @@ func (m *monitor) gate(ctx context.Context, in input, account string) error {
 	if in.TCP != nil {
 		return refusal(d.Deny)
 	}
-	if o := in.Account.PolicyOptions; m.corpus != nil && in.Event != nil && in.HTTP != nil && o.Preset != "" {
-		if err := m.corpus.Encode(corpusEntry{o.Preset, o.Origin, d.Operation, in.HTTP, in.GraphQL}); err != nil {
+	if o := in.Account.PolicyOptions; m.corpus != nil && in.Event != nil && in.HTTP != nil {
+		if err := m.corpus.Encode(corpusEntry{in.Account.Preset, o.Origin, d.Operation, in.HTTP, in.GraphQL}); err != nil {
 			log.Printf("corpus: %v", err)
 		}
 	}

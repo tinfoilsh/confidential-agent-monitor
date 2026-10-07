@@ -1,6 +1,7 @@
 {
   "title": "RocketChat",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your RocketChat origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
       {"key": "auth_key", "label": "Auth Key", "secret": true, "path": ["connections", "", "http", "values", "auth_key"]},

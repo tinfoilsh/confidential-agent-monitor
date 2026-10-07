@@ -1,6 +1,7 @@
 {
   "title": "Pinecone Vector Store",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Pinecone Vector Store origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
       {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}

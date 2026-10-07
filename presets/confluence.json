@@ -1,6 +1,7 @@
 {
   "title": "Confluence",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Confluence site (https://yourcompany.atlassian.net)",
        "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},

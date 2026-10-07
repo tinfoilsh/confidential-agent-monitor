@@ -1,6 +1,7 @@
 {
   "title": "Toggl",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "username", "label": "Email Address", "secret": true, "path": ["connections", "", "http", "values", "username"]},
       {"key": "password", "label": "Password", "secret": true, "path": ["connections", "", "http", "values", "password"]}

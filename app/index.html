@@ -12,14 +12,24 @@
     :root { --bg: #18181b; --side: #1f1f23; --hover: #27272a; --hi: #0c4a6e; --line: #2e2e33; --edge: #3f3f46; --text: #e4e4e7; --muted: #71717a; --dim: #a1a1aa; --link: #7dd3fc; --ok: #4ade80; --warn: #fbbf24; --bad: #f87171; }
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   body { margin: 0; background: var(--bg); color: var(--text); font: 12px/20px system-ui, sans-serif; }
   pre, textarea, .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; }
-  #app { display: grid; grid-template-columns: 240px 1fr 400px; height: 100vh; }
+  #app { display: grid; grid-template-columns: 240px minmax(0, 1fr); height: 100vh; }
+  #app.with-pane { grid-template-columns: 240px minmax(0, 1fr) 400px; }
   #tree { border-right: 1px solid var(--line); padding: 4px 0; overflow: auto; }
-  #list { overflow: auto; }
-  #pane { border-left: 2px solid var(--edge); background: var(--side); padding: 0 8px 8px; overflow: auto; }
+  #list { min-width: 0; overflow: auto; }
+  #pane { min-width: 0; border-left: 2px solid var(--edge); background: var(--side); padding: 0 8px 8px; overflow: auto; }
+  @media (max-width: 1000px) {
+    #app.with-pane { grid-template-columns: 200px minmax(0, 1fr); grid-template-rows: minmax(160px, 1fr) minmax(240px, 1fr); }
+    #app.with-pane #tree { grid-row: 1 / -1; }
+    #app.with-pane #list { grid-column: 2; grid-row: 1; }
+    #app.with-pane #pane { grid-column: 2; grid-row: 2; border-left: 0; border-top: 1px solid var(--edge); }
+  }
   #gate { max-width: 24rem; margin: 20vh auto; }
   a, .new { color: var(--link); text-decoration: none; }
+  .connector-icon { display: inline-block; width: 14px; height: 14px; margin-right: 4px; vertical-align: -2px; flex-shrink: 0; }
+  .connector-icon img { display: block; width: 100%; height: 100%; object-fit: contain; }
   .node { display: flex; gap: 4px; align-items: center; padding: 0 8px 0 calc(6px + var(--depth) * 12px); color: inherit; white-space: nowrap; cursor: pointer; }
   .node > i { width: 10px; flex-shrink: 0; font-size: 9px; font-style: normal; color: var(--muted); }
   .node > span { overflow: hidden; text-overflow: ellipsis; }
@@ -28,13 +38,15 @@
   .node.on, .q.on, .ev.on { background: var(--hi); }
   .group { display: flex; gap: 8px; align-items: center; padding: 2px 8px; }
   .q, .ev { display: grid; gap: 8px; align-items: center; padding: 0 8px; color: inherit; white-space: nowrap; }
-  .q { grid-template-columns: 10px 64px 1fr auto auto; }
+  .q { grid-template-columns: 10px 64px minmax(0, 1fr) auto; }
   .ev { grid-template-columns: 64px 72px 96px 1fr 64px; border-bottom: 1px solid var(--line); }
-  .q > a, .ev > span { overflow: hidden; text-overflow: ellipsis; color: inherit; }
+  .q > span, .ev > span { overflow: hidden; text-overflow: ellipsis; }
   .bang { font-weight: 700; color: var(--warn); }
   h2, .hd { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 2px; }
   header { display: flex; gap: 8px; align-items: baseline; padding: 6px 0 2px; }
   header > .x { margin-left: auto; color: var(--muted); }
+  .labels { display: inline-flex; gap: 6px; }
+  .labels select { width: auto; }
   section { padding: 8px 0; border-bottom: 1px solid var(--line); }
   button { font: inherit; font-size: 11px; line-height: 18px; padding: 0 6px; border: 1px solid var(--edge); background: var(--bg); color: var(--text); cursor: pointer; }
   button.primary { background: var(--text); border-color: var(--text); color: var(--bg); }
@@ -42,10 +54,18 @@
   button.danger { color: var(--bad); }
   .seg { display: inline-flex; flex-shrink: 0; }
   .seg > button + button { border-left: 0; }
+  .decisions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .decisions > button { max-width: 100%; text-align: left; }
+  summary { cursor: pointer; }
   input, select, textarea { font: inherit; padding: 1px 6px; border: 1px solid var(--edge); background: var(--bg); color: var(--text); width: 100%; }
   input[type=checkbox] { width: auto; }
   label { display: block; font-size: 11px; color: var(--dim); margin: 6px 0 1px; }
   .acct { padding: 4px 0; border-bottom: 1px solid var(--line); }
+  .access-toggle { display: flex; align-items: center; gap: 4px; min-width: 0; padding: 0; border: 0; background: none; font: inherit; text-align: left; }
+  .access-toggle > b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .access-toggle > i { width: 10px; flex-shrink: 0; font-size: 9px; font-style: normal; color: var(--muted); }
+  .access-toggle > .connector-icon { margin-right: 0; }
+  .access-toggle:disabled { cursor: default; }
   .action { margin-left: calc(var(--depth) * 12px); }
   .row { display: flex; gap: 6px; align-items: center; justify-content: space-between; margin-top: 4px; }
   .row > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
@@ -59,22 +79,25 @@
   #toast { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: .4rem 1rem; max-width: 40rem; }
 </style>
 <div id="gate" hidden></div>
-<div id="app" hidden><aside id="tree"></aside><div id="list"></div><aside id="pane"></aside></div>
+<div id="app" hidden><aside id="tree" aria-label="Navigation"></aside><main id="list" aria-label="Activity"></main><aside id="pane" aria-label="Details" hidden></aside></div>
 <div id="toast" hidden></div>
 <script>
 const KEY = "monitor-owner-key", GENERATION = "monitor-generation", DISMISSED = "monitor-dismissed", RETURN = "monitor-sign-in-return";
 const REQUEST_POLL_MS = 5000, TOAST_MS = 5000;
 const LEVELS = { off: "No access", read: "Read only", ask: "Ask", allow: "Allow" }, MODES = { allow: "Allow", ask: "Ask", off: "Deny" }, AUDIENCES = ["me", "team", "anyone"];
+const CATALOG_GROUPS = { api: "API", mcp: "MCP", protocol: "Protocol" };
 const WHO = { me: "Only me", team: "My team", anyone: "Anyone" };
 const SEES = { me: "only you", team: "your team", anyone: "anyone" };
-const STATE_CLASS = { allowed: "ok", approved: "ok", refused: "bad", denied: "bad", expired: "warn", pending: "warn" };
+const STATE_CLASS = { allowed: "", approved: "", refused: "bad", denied: "bad", expired: "muted", pending: "warn" };
 // A new preset starts as one bearer-token API; the owner sets its origin, slots and operations.
-const NEW_PRESET = { catalog: { fields: [{ key: "token", label: "API token", secret: true, path: ["connections", "", "http", "values", "token"] }],
+const NEW_PRESET = { catalog: { group: "api", fields: [{ key: "token", label: "API token", secret: true, path: ["connections", "", "http", "values", "token"] }],
   connections: { "": { http: { slots: [{ value: "token", origin: "https://api.example.com", path: "/", header: "Authorization", prefix: "Bearer " }] } } },
   defaults: { contents: "me", strangers: true, sends: "me" } }, operations: [] };
 
-// scope is the agent or account the activity list follows; it outlives selecting a request.
-let view = null, records = [], locked = false, scope = null;
+// Keep the activity filter and return route while a request is open.
+let view = null, records = [], locked = false, scope = null, requestSource = "activity";
+let connectorIcons = {};
+const iconsReady = fetch("icons/manifest.json").then((res) => res.ok ? res.json() : {}).then((icons) => { connectorIcons = icons; }).catch(() => {});
 const expanded = new Set(["agents", "accounts"]);
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -82,16 +105,29 @@ const q = (v) => esc(JSON.stringify(v));
 const opt = (value, text, selected) => `<option value="${esc(value)}" ${value === selected ? "selected" : ""}>${esc(text)}</option>`;
 const ids = () => view.config.identities ?? {};
 const accounts = () => view.config.accounts ?? {};
-const entry = (account) => view.templates[accounts()[account]?.policy_options?.preset] ?? view.templates[accounts()[account]?.template] ?? view.templates.custom;
+const lattices = () => ({ confidentiality: view.config.lattices?.confidentiality ?? true, integrity: view.config.lattices?.integrity ?? false });
+const connectorIcon = (type) => {
+  const icon = connectorIcons[type]?.src ? connectorIcons[type] : connectorIcons.custom ?? { src: "custom.svg" };
+  return `<picture class="connector-icon" aria-hidden="true">${icon.dark ? `<source media="(prefers-color-scheme: dark)" srcset="icons/${esc(icon.dark)}">` : ""}<img src="icons/${esc(icon.src)}" width="14" height="14" alt=""></picture>`;
+};
+const accountIcon = (a) => connectorIcon(accounts()[a]?.preset ?? "custom");
+const entry = (account) => view.presets[accounts()[account]?.preset] ?? view.presets.custom;
 // Each pinned MCP tool is an action under read or use, by the hint the owner approved with the pin.
 const actionsOf = (account) => ({ ...groupsOf(account), ...entry(account).actions, ...Object.fromEntries(Object.values(accounts()[account]?.connections ?? {})
   .flatMap((c) => c.mcp?.pin?.tools ?? []).map((t) => [`${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`, { title: t.title || t.name }])) });
-// An api account's actions are the permission groups of its preset's operations.
-const operationsOf = (account) => accounts()[account]?.template === "api" ? entry(account).operations ?? [] : [];
+// Record operations also contribute permission groups to their preset.
+const operationsOf = (account) => entry(account).operations ?? [];
 const groupsOf = (account) => Object.fromEntries(operationsOf(account).map((o) => [o.action, { title: o.action }]));
 // effectsOf unions the effects of every operation under an action, so a group shows its strictest obligations.
-const effectsOf = (account, k) => entry(account).effects?.[k.split(".")[0]]
-  ?? [...new Set(operationsOf(account).filter((o) => o.action === k || o.action.startsWith(k + ".")).flatMap((o) => o.effects))];
+const effectsOf = (account, k) => {
+  const actions = entry(account).actions ?? {}, lineage = k.split(".").map((_, i, parts) => parts.slice(0, i + 1).join(".")).reverse();
+  const inherited = lineage.find((a) => actions[a]?.effects);
+  return [...new Set([
+    ...(actions[inherited]?.effects ?? []),
+    ...Object.entries(actions).filter(([a]) => a.startsWith(k + ".")).flatMap(([, a]) => a.effects ?? []),
+    ...operationsOf(account).filter((o) => o.action === k || o.action.startsWith(k + ".")).flatMap((o) => o.effects),
+  ])];
+};
 const tree = (actions) => Object.entries(actions).sort(([a], [b]) => a.localeCompare(b)).map(([k, x]) => [k, x, k.split(".").length - 1]);
 const fill = (text, scope) => text.replace(/\{(\w+)\}/g, (m, k) => scope?.[k] ?? m);
 const route = () => location.hash.slice(1).split("/").map(decodeURIComponent);
@@ -153,6 +189,8 @@ function sync(el, parts) {
       t.innerHTML = html;
       const fresh = t.content.firstElementChild;
       fresh.dataset.key = key;
+      const disclosures = new Map([...(node?.querySelectorAll("details[data-disclosure]") ?? [])].map((d) => [d.dataset.disclosure, d.open]));
+      fresh.querySelectorAll("details[data-disclosure]").forEach((d) => { d.open = disclosures.get(d.dataset.disclosure) ?? false; });
       drawn.set(fresh, html);
       node?.replaceWith(fresh);
       if (node === at) at = fresh;
@@ -172,20 +210,29 @@ function render() {
   $("app").hidden = !!gate;
   sync($("gate"), gate ? [["gate", gate]] : []);
   if (gate) return;
-  const [kind, ...args] = route();
+  const [path, ...args] = route(), kind = path || "activity";
   if (kind === "agent" || kind === "account") scope = [kind, args[0]];
-  if (kind === "activity") scope = null;
-  const panes = { request: requestPane, agent, pair, account, add, preset: presetPage, rules, settings };
+  if (kind === "agent-settings") scope = ["agent", args[0]];
+  if (kind === "activity" || kind === "needs") {
+    scope = kind === "activity" && ["agent", "account"].includes(args[0]) && args[1] ? args.slice(0, 2) : null;
+  }
+  if (kind !== "request") requestSource = location.hash.slice(1) || "activity";
+  const panes = { request: requestPane, agent, "agent-settings": agentSettings, pair, account, add, preset: presetPage, rules, settings };
+  const parts = (html) => html.map((content, i) => [`${location.hash}/${i}`, content]).filter(([, content]) => content);
+  $("app").classList.toggle("with-pane", !!panes[kind]);
+  $("pane").hidden = !panes[kind];
   sync($("tree"), sidebar(kind, args[0]));
   sync($("list"), list(kind === "request" && args[0]));
-  sync($("pane"), (panes[kind]?.(...args) ?? [`<p class="empty">Select an agent, account or request.</p>`])
-    .map((html, i) => [`${location.hash}/${i}`, html]).filter(([, html]) => html));
+  sync($("pane"), panes[kind] ? parts(panes[kind](...args)) : []);
 }
 
-const head = (title, sub = "") => `<header><b>${title}</b><span class="muted">${sub}</span><a class="x" href="#">✕</a></header>`;
+const head = (title, sub = "", back = "activity") => `<header><b>${title}</b><span class="muted">${sub}</span><a class="x" href="#${esc(back)}" aria-label="Close">✕</a></header>`;
+const disclosure = (key, title, content, cls = "") => `<details data-disclosure="${esc(key)}" class="${cls}"><summary>${title}</summary>${content}</details>`;
 const node = (key, attrs, label, depth, { open, count = "", on } = {}) => [key,
   `<a class="node ${on ? "on" : ""}" ${attrs} style="--depth: ${depth}"><i>${open == null ? "" : open ? "▾" : "▸"}</i><span>${label}</span><small>${count}</small></a>`];
-const folder = (key, label, count) => node(key, `onclick="toggle('${key}')"`, label, 0, { open: expanded.has(key), count });
+const folder = (key, label, count, depth = 0) => node(key,
+  `role="button" tabindex="0" aria-expanded="${expanded.has(key)}" onclick="toggle(${q(key)})" onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); toggle(${q(key)}); }"`,
+  label, depth, { open: expanded.has(key), count });
 const link = (path, label, depth, on, count) => node(path.join("/"), `href="#${path.map(encodeURIComponent).join("/")}"`, label, depth, { on, count });
 
 function toggle(key) {
@@ -195,20 +242,30 @@ function toggle(key) {
 
 function sidebar(kind, arg) {
   const pending = pendingSoonest(), at = (k, a) => kind === k && arg === a;
-  const templates = Object.entries(view.templates).sort(([, a], [, b]) => a.title.localeCompare(b.title));
+  const presets = Object.entries(view.presets).sort(([, a], [, b]) => a.title.localeCompare(b.title));
+  const groups = new Map(Object.keys(CATALOG_GROUPS).map((g) => [g, []]));
+  for (const preset of presets) {
+    const group = preset[1].group ?? "api";
+    if (!groups.has(group)) groups.set(group, []);
+    groups.get(group).push(preset);
+  }
   const saved = Object.values(ids()).reduce((n, id) => n + (id.rules?.length ?? 0), 0);
   return [
-    node("needs", `href="#${pending.length ? "request/" + pending[0].id : "activity"}"`, `<span class="bang">!</span> Needs you`, 0, { count: pending.length || "" }),
+    node("needs", `href="#needs"`, `${pending.length ? `<span class="bang">!</span> ` : ""}Approvals`, 0,
+      { count: pending.length || "", on: kind === "needs" || kind === "request" && requestSource === "needs" }),
     folder("agents", "Agents", Object.keys(ids()).length),
     ...(expanded.has("agents") ? [...Object.keys(ids()).map((n) => link(["agent", n], `${pending.some((r) => r.identity === n) ? `<span class="bang">!</span> ` : ""}${esc(n)}`, 1,
-      at("agent", n), esc(view.labels[n] ? `${view.labels[n].audience} / ${view.labels[n].trust}` : ""))), link(["pair"], `<span class="new">Pair agent…</span>`, 1, kind === "pair")] : []),
+      at("agent", n) || at("agent-settings", n))), link(["pair"], `<span class="new">Pair agent…</span>`, 1, kind === "pair")] : []),
     folder("accounts", "Accounts", Object.keys(accounts()).length),
-    ...(expanded.has("accounts") ? Object.keys(accounts()).map((a) => link(["account", a], `${esc(a)} <span class="muted">${esc(entry(a).title)}</span>`, 1, at("account", a), accountStatus(a))) : []),
-    folder("add", "Add account", templates.length),
-    ...(expanded.has("add") ? [...templates.map(([t, c]) => link(["add", t], esc(c.title), 1, at("add", t),
-      Object.keys(accounts()).filter((a) => entry(a) === c).length || "")), link(["preset"], `<span class="new">New preset…</span>`, 1, kind === "preset" && !arg)] : []),
+    ...(expanded.has("accounts") ? Object.keys(accounts()).map((a) => link(["account", a], accountIcon(a) + esc(a), 1, at("account", a), accountStatus(a))) : []),
+    folder("add", "Add account", presets.length),
+    ...(expanded.has("add") ? [...[...groups].filter(([, entries]) => entries.length).flatMap(([group, entries]) => [
+      folder("add-group/" + group, esc(CATALOG_GROUPS[group] ?? group), entries.length, 1),
+      ...(expanded.has("add-group/" + group) ? entries.map(([t, c]) => link(["add", t], connectorIcon(t) + esc(c.title), 2, at("add", t),
+        Object.keys(accounts()).filter((a) => entry(a) === c).length || "")) : []),
+    ]), link(["preset"], `<span class="new">New preset…</span>`, 1, kind === "preset" && !arg)] : []),
     link(["rules"], "Rules", 0, kind === "rules", saved || ""),
-    link(["activity"], "Activity", 0, kind === "activity"),
+    link(["activity"], "Activity", 0, kind === "activity" || kind === "request" && requestSource.startsWith("activity")),
     link(["settings"], "Settings", 0, kind === "settings"),
   ];
 }
@@ -263,33 +320,34 @@ const decide = (r, saveLabel) => r.state === "pending"
 
 function list(selected) {
   const dismissed = JSON.parse(localStorage.getItem(DISMISSED) ?? "[]");
-  const open = [...pendingSoonest(), ...records.filter((r) => r.state === "expired" && !dismissed.includes(r.id))];
+  const pending = pendingSoonest(), expired = records.filter((r) => r.state === "expired" && !dismissed.includes(r.id));
   const shown = records.filter((r) => !scope || r[scope[0] === "agent" ? "identity" : "account"] === scope[1]);
+  const queued = (r) => ["q/" + r.id, `<a class="q ${r.id === selected ? "on" : ""}" href="#request/${r.id}"><span class="bang">${r.state === "pending" ? "!" : ""}</span><span>${esc(r.identity)}</span>
+    <span><span class="muted">${accountIcon(r.account)}${esc(r.account)}</span> <b class="mono">${esc(r.title || summary(r.event))}</b></span>
+    <span class="mono ${STATE_CLASS[r.state]}">${r.state === "pending" ? left(r) : "expired"}</span></a>`];
   return [
-    ["needs", `<div class="group"><span class="bang">!</span><b>Needs you</b><span class="muted">all agents · soonest first</span></div>`],
-    ...open.map((r) => ["q/" + r.id, `<div class="q ${r.id === selected ? "on" : ""}"><span class="bang">!</span><span>${esc(r.identity)}</span>
-      <a href="#request/${r.id}"><span class="muted">${esc(r.account)}</span> <b class="mono">${esc(r.title || summary(r.event))}</b> <span class="muted">· ${esc(reasons(r)[0])}</span></a>
-      <span class="mono warn">${r.state === "pending" ? left(r) : "expired"}</span><span class="seg">${decide(r, "Save rule")}</span></div>`]),
-    ...(open.length ? [] : [["calm", `<p class="empty">Nothing needs you.</p>`]]),
-    ["activity", `<div class="group"><b>Activity</b><span class="muted">${scope ? `${scope[0]} ${esc(scope[1])} · <a href="#activity">show all</a>` : "all agents"}</span></div>`],
+    ["needs", `<div class="group">${pending.length ? `<span class="bang">!</span><b>Approvals</b><span class="muted">${pending.length}</span>` : `<b>Approvals</b><span class="muted">Nothing pending</span>`}</div>`],
+    ...pending.map(queued),
+    ...(expired.length ? [["expired", `<div class="group"><b>Expired</b><span class="muted">${expired.length}</span></div>`], ...expired.map(queued)] : []),
+    ["activity", `<div class="group"><b>Activity</b>${scope ? `<span class="muted">${esc(scope[1])} · <a href="#activity">All</a></span>` : ""}</div>`],
     ["columns", `<div class="ev hd"><span>Time</span><span>Agent</span><span>Account</span><span>Operation</span><span>Result</span></div>`],
     ...shown.map((r) => ["e/" + r.id, `<a class="ev ${r.id === selected ? "on" : ""}" href="#request/${r.id}"><span class="mono muted">${new Date(r.time).toLocaleTimeString()}</span>
-      <span>${esc(r.identity)}</span><span>${esc(r.account)}</span><span class="mono">${esc(r.title || summary(r.event))}</span><span class="${STATE_CLASS[r.state]}">${r.state}</span></a>`]),
+      <span>${esc(r.identity)}</span><span>${accountIcon(r.account)}${esc(r.account)}</span><span class="mono">${esc(r.title || summary(r.event))}</span><span class="${STATE_CLASS[r.state]}">${r.state}</span></a>`]),
     ...(shown.length ? [] : [["quiet", `<p class="empty">Nothing yet.</p>`]]),
   ];
 }
 
 function requestPane(id) {
   const r = records.find((r) => r.id === id);
-  if (!r) return [head("Request"), `<p class="empty">No request ${esc(id)}.</p>`];
+  if (!r) return [head("Request", "", requestSource), `<p class="empty">No request ${esc(id)}.</p>`];
   const buttons = decide(r, saveText(r));
-  return [head(esc(r.title || summary(r.event) || r.account), `${esc(r.identity)} · ${esc(r.account)}${r.state === "pending" ? ` · ${left(r)} left` : ""}`),
+  return [head(esc(r.title || summary(r.event) || r.account), `${esc(r.identity)} · ${accountIcon(r.account)}${esc(r.account)}${r.state === "pending" ? ` · ${left(r)} left` : ""}`, requestSource),
     `<section><div class="row"><span class="${STATE_CLASS[r.state]}">${r.state}</span><span class="muted">${new Date(r.time).toLocaleTimeString()}</span></div>
       <ul>${reasons(r).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
       <div class="mono">${esc(summary(r.event))}</div>
-      ${r.operation ? `<details><summary class="muted">${esc(r.operation)} grant</summary><pre>${esc(JSON.stringify(r.grant))}</pre></details>` : ""}
-      <label>Request</label><pre>${esc(JSON.stringify(r.event, null, 2))}</pre>
-      <div class="row">${draftLink(r) || "<span></span>"}${buttons ? `<span class="seg">${buttons}</span>` : ""}</div></section>`];
+      ${r.operation ? disclosure("grant", `<span class="muted">${esc(r.operation)} grant</span>`, `<pre>${esc(JSON.stringify(r.grant))}</pre>`) : ""}
+      ${disclosure("request", "Request data", `<pre>${esc(JSON.stringify(r.event, null, 2))}</pre>`)}
+      ${draftLink(r) ? `<div class="row">${draftLink(r)}</div>` : ""}${buttons ? `<div class="decisions">${buttons}</div>` : ""}</section>`];
 }
 
 const answer = run(async (id, decision) => {
@@ -304,7 +362,7 @@ function dismiss(id) {
 }
 
 function labelStatus(l) {
-  const lines = [l?.audience !== "anyone" && `Has seen private data from ${l.because?.audience}`, l?.trust === "untrusted" && "Has read content from strangers"];
+  const lines = [lattices().confidentiality && l?.audience && l.audience !== "anyone" && `Has seen private data${l.because?.audience ? ` from ${l.because.audience}` : ""}`, lattices().integrity && l?.trust === "untrusted" && "Has read content from strangers"];
   return lines.filter(Boolean).join(" · ") || "Clean";
 }
 
@@ -336,48 +394,64 @@ function agent(name) {
     const actions = access.level === "off" ? [] : tree(actionsOf(a)).map(([k, x, d]) => {
       const effects = effectsOf(a, k), inherited = mode({ ...access, actions: { ...access.actions, [k]: null } }, c.vocabulary, effects, k);
       const own = access.actions?.[k];
-      return `<div class="row action" style="--depth: ${d}"><span>${esc(x.title)} <span class="muted">${esc(effects.join(", "))}</span></span><span class="seg">${Object.entries(MODES).map(([m, t]) =>
+      return `<div class="row action" style="--depth: ${d}"><span title="${esc(effects.join(", "))}">${esc(x.title)}</span><span class="seg">${Object.entries(MODES).map(([m, t]) =>
         `<button class="${m === own ? "primary" : !own && m === inherited ? "inherited" : ""}" onclick="patchAccess(${q(name)}, ${q(a)}, { actions: { [${q(k)}]: ${q(m === own ? null : m)} } })">${t}</button>`).join("")}</span></div>`;
     });
-    return `<div class="acct"><div class="row"><b>${esc(a)}</b><span class="seg">${Object.entries(LEVELS).map(([l, t]) =>
-      `<button class="${l === access.level ? "primary" : ""}" onclick="patchAccess(${q(name)}, ${q(a)}, { level: ${q(l)} })">${t}</button>`).join("")}</span></div>${actions.join("")}</div>`;
+    const overrides = Object.values(access.actions ?? {}).filter(Boolean).length;
+    const key = `access/${encodeURIComponent(name)}/${encodeURIComponent(a)}`, open = actions.length > 0 && expanded.has(key);
+    return `<div class="acct"><div class="row"><button class="access-toggle" aria-label="Actions for ${esc(a)}" aria-expanded="${open}" aria-controls="${esc(key)}" ${actions.length ? "" : "disabled"} onclick="toggle(${q(key)})">
+      <i>${actions.length ? open ? "▾" : "▸" : ""}</i>${accountIcon(a)}<b>${esc(a)}</b>${overrides && access.level !== "off" ? `<small class="muted" title="${overrides} action overrides" aria-label="${overrides} action overrides">${overrides}</small>` : ""}</button>
+      <span class="seg" role="group" aria-label="Default access for ${esc(a)}">${Object.entries(LEVELS).map(([l, t]) =>
+        `<button class="${l === access.level ? "primary" : ""}" aria-pressed="${l === access.level}" onclick="patchAccess(${q(name)}, ${q(a)}, { level: ${q(l)} })">${t}</button>`).join("")}</span></div>
+      <div id="${esc(key)}" ${open ? "" : "hidden"}>${actions.join("")}</div></div>`;
   });
   const reaches = (pred) => Object.entries(accounts()).some(([a, acc]) => (id.accounts?.[a]?.level ?? "off") !== "off" && pred(acc));
-  const hint = reaches((acc) => acc.template === "web") && reaches((acc) => acc.contents !== "anyone")
-    ? `<p class="warn">Once it reads private data, browsing will need approval. A separate agent for browsing avoids that.</p>` : "";
+  const hint = lattices().confidentiality && reaches((acc) => acc.preset === "web") && reaches((acc) => acc.contents !== "anyone")
+    ? `<p class="muted">Browsing needs approval after reading private data.</p>` : "";
   const others = Object.keys(ids()).filter((n) => n !== name);
   const l = view.labels[name] ?? {};
-  const point = (axis, values) => `<div class="row"><span>${axis}</span><span class="seg">${values.map((v) =>
-    `<button class="${l[axis] === v ? "primary" : ""}" onclick="setLabel(${q(name)}, ${q({ trust: l.trust, audience: l.audience, [axis]: v })})">${v}</button>`).join("")}</span></div>`;
-  return [head(esc(name), esc(labelStatus(l))),
-    `<section>${id.profile ? `<p class="warn">Profiling: every request runs unchecked and is recorded.</p>` : ""}${hint}${point("trust", ["trusted", "untrusted"])}${point("audience", ["anyone", "team", "me"])}</section>`,
+  const point = (axis, values) => {
+    const lattice = axis === "trust" ? "integrity" : "confidentiality";
+    if (!lattices()[lattice]) return `<a class="muted" href="#settings">${axis === "trust" ? "Integrity" : "Confidentiality"} off</a>`;
+    return `<select aria-label="${axis === "trust" ? "Trust" : "Audience"}" onchange="setLabel(${q(name)}, { ...${q({ trust: l.trust, audience: l.audience })}, [${q(axis)}]: this.value })">
+      ${Object.entries(values).map(([v, title]) => opt(v, title, l[axis])).join("")}</select>`;
+  };
+  return [head(esc(name), `<span class="labels" title="${esc(labelStatus(l))}">${point("trust", { trusted: "Trusted", untrusted: "Untrusted" })}${point("audience", WHO)}</span>`),
+    id.profile || hint ? `<section>${id.profile ? `<p class="warn">Profiling is on. Requests run without checks.</p>` : ""}${hint}</section>` : "",
     `<section><h2>Access</h2>${levels.join("") || `<p class="empty">No accounts yet.</p>`}</section>`,
     messageSettings(name, others),
-    rulesSection(name),
-    `<section><details><summary class="hd">Setup</summary><label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre><label>Environment</label><pre>${esc(view.setup[name]) || "No secrets to substitute."}</pre></details></section>`,
-    `<section><h2>Replace key</h2><p class="muted">Use this after recreating the sandbox. The agent starts clean.</p><textarea id="pubkey" rows="2"></textarea>
-      <div class="row"><span></span><button onclick="patch({ identities: { [${q(name)}]: { key: $('pubkey').value.trim() } } })">Replace key</button></div></section>`,
-    others.length ? `<section><h2>Copy settings from</h2><div class="row"><select id="from">${others.map((n) => opt(n, n)).join("")}</select><button onclick="copySettings(${q(name)})">Copy</button></div></section>` : "",
+    `<section><a href="#agent-settings/${encodeURIComponent(name)}">Settings</a></section>`];
+}
+
+function agentSettings(name) {
+  if (!ids()[name]) return [head(esc(name)), `<p class="empty">No agent ${esc(name)}.</p>`];
+  const others = Object.keys(ids()).filter((n) => n !== name);
+  return [head(esc(name), "Settings", "agent/" + encodeURIComponent(name)),
+    `<section>${disclosure("setup", "Setup", `<label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre><label>Environment</label><pre>${esc(view.setup[name]) || "No secrets to substitute."}</pre>`)}</section>`,
+    `<section>${disclosure("replace-key", "Replace key", `<p class="muted">Use this after recreating the sandbox. The agent starts clean.</p><textarea id="pubkey" rows="2"></textarea>
+      <div class="row"><span></span><button onclick="patch({ identities: { [${q(name)}]: { key: $('pubkey').value.trim() } } })">Replace key</button></div>`)}</section>`,
+    others.length ? `<section>${disclosure("copy-settings", "Copy settings", `<div class="row"><select id="from">${others.map((n) => opt(n, n)).join("")}</select><button onclick="copySettings(${q(name)})">Copy</button></div>`)}</section>` : "",
     `<section><button class="danger" onclick="removeAgent(${q(name)})">Remove agent</button></section>`];
 }
 
 function rulesSection(name) {
   const list = (ids()[name].rules ?? []).map((r, i) => `<div class="row"><span>${esc(ruleSentence(r))}${r.operation
     ? `<details><summary class="muted">grant</summary><pre>${esc(JSON.stringify(r.scope))}</pre></details>` : ""}</span><button onclick="removeRule(${q(name)}, ${i})">Remove</button></div>`);
-  return `<section><h2>Saved rules · ${esc(name)}</h2>${list.join("") || `<p class="muted">None yet. They come from “Allow this next time”.</p>`}</section>`;
+  return `<section><h2>${esc(name)}</h2>${list.join("")}</section>`;
 }
 
 const rules = () => [head("Rules"), ...Object.keys(ids()).filter((n) => ids()[n].rules?.length).map(rulesSection)];
 
 function messageSettings(name, peers) {
+  if (!peers.length) return "";
   const messages = ids()[name].messages ?? {};
-  return `<section><h2>Agent messages</h2><p class="muted">Both agents must permit a channel. Sending and polling apply its disclosure and trust limits, even when the inbox is empty. Changing a limit or revoking a channel clears its queued messages.</p>
-    ${peers.length ? `<table><tr><th>Agent</th><th>May send to</th><th>Receive audience</th><th>Receive trust</th></tr>${peers.map((peer) => {
+  return `<section>${disclosure("messages", "Messages", `<p class="muted">Both agents must allow a channel. Changing its limits or revoking it clears queued messages.</p>
+    <table><tr><th>Agent</th><th>May send to</th><th>Receive audience</th><th>Receive trust</th></tr>${peers.map((peer) => {
       const limit = messages.receive?.[peer];
       return `<tr><td>${esc(peer)}</td><td><input type="checkbox" ${messages.send?.includes(peer) ? "checked" : ""} onchange="setMessageSend(${q(name)}, ${q(peer)}, this.checked)"></td>
         <td><select onchange="setMessageReceive(${q(name)}, ${q(peer)}, 'audience', this.value)">${["off", "anyone", "team", "me"].map((v) => opt(v, v, limit?.audience ?? "off")).join("")}</select></td>
         <td><select ${limit ? "" : "disabled"} onchange="setMessageReceive(${q(name)}, ${q(peer)}, 'trust', this.value)">${["trusted", "untrusted"].map((v) => opt(v, v, limit?.trust ?? "trusted")).join("")}</select></td></tr>`;
-    }).join("")}</table>` : `<p class="empty">Pair another agent to enable messaging.</p>`}</section>`;
+    }).join("")}</table>`)}</section>`;
 }
 
 const setMessageSend = (name, peer, enabled) => {
@@ -428,7 +502,7 @@ const loadShipped = run(async (name) => {
   render();
 });
 // The owner's version of a preset, else the shipped file once fetched, else a new preset.
-const presetFile = (name) => view.config.presets?.[name] ?? shippedFiles[name] ?? (view.templates[name]?.preset ? undefined : { title: name, ...NEW_PRESET });
+const presetFile = (name) => view.config.presets?.[name] ?? shippedFiles[name] ?? (view.presets[name] ? undefined : { title: name, ...NEW_PRESET });
 
 // Preset files keep one field, action and operation per line, as the shipped files do.
 const EXPANDED = ["", "catalog", "catalog.fields", "catalog.actions", "operations"];
@@ -448,8 +522,8 @@ function downloadPreset(name) {
 }
 
 // An unmatched request on a preset's account can become one of its operations.
-const draftLink = (r) => r.action == null && r.event?.http && accounts()[r.account]?.policy_options?.preset
-  ? `<a href="#preset/${encodeURIComponent(accounts()[r.account].policy_options.preset)}/${r.id}">Add operation</a>` : "";
+const draftLink = (r) => r.action == null && r.event?.http && accounts()[r.account] && Array.isArray(entry(r.account).operations)
+  ? `<a href="#preset/${encodeURIComponent(accounts()[r.account].preset)}/${r.id}">Add operation</a>` : "";
 
 // The draft matches only this exact path; the owner turns segments into {parameters} and sets its effects and scope.
 function draftOperation(e) {
@@ -467,7 +541,7 @@ function presetPage(name, from) {
   }
   const file = structuredClone(presetFile(name)), r = records.find((r) => r.id === from);
   if (r?.event?.http) file.operations = [...(file.operations ?? []), draftOperation(r.event)];
-  const users = Object.entries(accounts()).filter(([, acc]) => acc.policy_options?.preset === name).map(([a]) => a);
+  const users = Object.entries(accounts()).filter(([, acc]) => acc.preset === name).map(([a]) => a);
   return [head("Preset " + esc(name)), `<section><p class="muted">Changes apply to every account using it: ${esc(users.join(", ") || "none yet")}.</p>
     <textarea id="preset" rows="40">${esc(presetText(file))}</textarea>
     <div class="row">${view.config.presets?.[name] ? `<button class="danger" onclick="patch({ presets: { [${q(name)}]: null } })">Remove your version</button>` : "<span></span>"}
@@ -532,23 +606,23 @@ function changes(before, after) {
     .filter(([, value]) => value !== undefined));
 }
 
-function add(template) {
-  const c = view.templates[template];
-  if (!c) return [head("Add account"), `<p class="empty">No template ${esc(template)}.</p>`];
-  return [head("Add " + esc(c.title)), `<section><label>Name</label><input id="account-name" value="${esc(template)}">
+function add(preset) {
+  const c = view.presets[preset];
+  if (!c) return [head("Add account"), `<p class="empty">No preset ${esc(preset)}.</p>`];
+  return [head(connectorIcon(preset) + "Add " + esc(c.title)), `<section><label>Name</label><input id="account-name" value="${esc(preset)}">
     ${c.fields.filter((f) => !f.edit_only).map((f) => `<label>${esc(f.label)}</label>${f.secret && !f.json ? `<select id="mode-${esc(f.key)}" onchange="$(${q("f-" + f.key)}).disabled = this.value !== 'replace'">${opt("replace", "Set value", f.oauth ? "oauth" : "replace")}${opt("clear", "Leave unconfigured")}${f.oauth ? opt("oauth", "Sign in after creating", "oauth") : ""}</select>` : ""}${input(f, f.default, !!f.oauth)}`).join("")}
-    ${questions(c.defaults)}<div class="row"><span></span><button class="primary" onclick="addAccount(${q(template)})">Add</button></div></section>`,
-    c.preset ? `<section><a href="#preset/${encodeURIComponent(c.preset)}">Edit operations</a></section>` : ""];
+    ${questions(c.defaults)}<div class="row"><span></span><button class="primary" onclick="addAccount(${q(preset)})">Add</button></div></section>`,
+    `<section><a href="#preset/${encodeURIComponent(preset)}">Edit preset</a></section>`];
 }
 
-const addAccount = run(async (template) => {
-  const c = view.templates[template], name = $("account-name").value.trim();
+const addAccount = run(async (preset) => {
+  const c = view.presets[preset], name = $("account-name").value.trim();
   const fields = c.fields.filter((f) => !f.edit_only);
   const values = Object.fromEntries(fields.map((f) => [f.key, read(f)]));
   // Only the non-secret values fill a preset's connections; secrets go to their fields' paths.
   const plainValues = Object.fromEntries(fields.filter((f) => !f.secret).map((f) => [f.key, values[f.key]]));
-  const acc = { template: c.preset ? "api" : template, ...(c.preset && { policy_options: { preset: c.preset } }), ...answers(),
-    connections: c.connections ? filled(c.connections, c.preset ? plainValues : values) : values.connections };
+  const acc = { preset, ...answers(),
+    connections: c.connections ? filled(c.connections, plainValues) : values.connections };
   for (const f of fields) {
     const mode = f.secret ? $("mode-" + f.key).value : "replace";
     const value = mode === "clear" ? null : mode === "oauth" ? { oauth: filled(f.oauth, values) } : values[f.key];
@@ -560,15 +634,15 @@ const addAccount = run(async (template) => {
 function credentialFields(a) {
   return (view.fields?.[a] ?? []).map((meta) => {
     const f = entry(a).fields.find((f) => paths(f).some((path) => JSON.stringify(path) === JSON.stringify(meta.path)));
-    return { ...f, ...meta, key: meta.path.map(encodeURIComponent).join("/"), label: `${meta.path[1] || "Default"}: ${f?.label ?? meta.path.at(-1)}`, secret: true, multiline: true };
+    return { ...f, ...meta, key: meta.path.map(encodeURIComponent).join("/"), label: `${meta.path[1] ? meta.path[1] + ": " : ""}${f?.label ?? meta.path.at(-1)}`, secret: true, multiline: true };
   }).sort((a, b) => a.key.localeCompare(b.key));
 }
 
 function credentialEditor(a, f) {
-  const status = f.kind === "oauth-required" ? "Sign-in required" : f.kind === "unset" ? "Not configured" : `Configured · ${f.kind}`;
-  return `<label>${esc(f.label)} · ${esc(status)}</label>
-    <select id="mode-${esc(f.key)}" onchange="$(${q("f-" + f.key)}).disabled = this.value !== 'replace'"><option value="keep">Keep unchanged</option><option value="replace">Replace value</option><option value="clear">Clear credential</option></select>
-    ${input(f, undefined, true)}${f.kind.startsWith("oauth") || grantTemplate(a, f) ? `<div class="row"><span></span><button onclick="signIn(${q(a)}, ${q(f.key)})">Sign in</button></div>` : ""}`;
+  const status = f.kind === "oauth-required" ? "Sign-in required" : f.kind === "unset" ? "Not configured" : "Configured";
+  return disclosure("credential/" + f.key, `${esc(f.label)} · <span class="muted">${esc(status)}</span>`,
+    `<select aria-label="${esc(f.label)}" id="mode-${esc(f.key)}" onchange="$(${q("f-" + f.key)}).disabled = this.value !== 'replace'"><option value="keep">Keep unchanged</option><option value="replace">Replace value</option><option value="clear">Clear credential</option></select>
+    ${input(f, undefined, true)}${f.kind.startsWith("oauth") || grantTemplate(a, f) ? `<div class="row"><span></span><button onclick="signIn(${q(a)}, ${q(f.key)})">Sign in</button></div>` : ""}`);
 }
 
 function account(a) {
@@ -576,13 +650,13 @@ function account(a) {
   if (!acc) return [head(esc(a)), `<p class="empty">No account ${esc(a)}.</p>`];
   const c = entry(a);
   const users = Object.entries(ids()).filter(([, id]) => (id.accounts?.[a]?.level ?? "off") !== "off").map(([n, id]) => `${n} (${id.accounts[a].level})`);
-  return [head(esc(a), `${esc(c.title)} ${accountStatus(a)}`),
+  return [head(accountIcon(a) + esc(a), `${esc(c.title)} ${accountStatus(a)}`),
     `<section>${questions(acc)}
       ${plain(c).map((f) => `<label>${esc(f.label)}</label>${input(f, fieldValue(acc, f))}`).join("")}
       ${credentialFields(a).map((f) => credentialEditor(a, f)).join("")}
       <div class="row"><span></span><button class="primary" onclick="saveAccount(${q(a)})">Save</button></div></section>`,
     `<section><h2>Actions</h2>${tree(actionsOf(a)).map(([k, x, d]) => `<div class="action" style="--depth: ${d}">${esc(x.title)} <span class="muted">${esc(effectsOf(a, k).join(", "))}</span></div>`).join("")}<p class="muted">Used by ${esc(users.join(", ") || "no agents")}</p>
-      ${acc.template === "api" ? `<a href="#preset/${encodeURIComponent(acc.policy_options.preset)}">Edit operations</a>` : ""}</section>`,
+      <a href="#preset/${encodeURIComponent(acc.preset)}">Edit preset</a></section>`,
     ...mcpKeys(a).map((k) => review(a, k, c)),
     `<section><details><summary class="hd">Custom rules</summary><textarea id="policy" rows="12">${esc(view.config.policies?.[a])}</textarea>
       <div class="row"><span></span><button onclick="patch({ policies: { [${q(a)}]: $('policy').value.trim() || null } })">Save rules</button></div></details></section>`,
@@ -642,7 +716,14 @@ const removeAccount = (a) => patch({
   identities: Object.fromEntries(Object.keys(ids()).map((n) => [n, { accounts: { [a]: null } }])),
 }, "activity");
 
-const settings = () => [head("Settings"), `<section><h2>Networks</h2><label>Private networks the monitor may reach, one per line</label>
+const settings = () => [head("Settings"), `<section><h2>Lattices</h2>
+  <p class="muted">Applies to all agents, connector requests and messages.</p>
+  <label><input type="checkbox" ${lattices().confidentiality ? "checked" : ""} onchange="patch({ lattices: { confidentiality: this.checked } })"> Confidentiality lattice</label>
+  <p class="muted">Restrict where agents can send private data. On by default.</p>
+  <label><input type="checkbox" ${lattices().integrity ? "checked" : ""} onchange="patch({ lattices: { integrity: this.checked } })"> Integrity lattice</label>
+  <p class="muted">Restrict sensitive actions after agents read untrusted content. Off by default.</p>
+  <p class="muted">Labels keep their history while enforcement is off. Access permissions, explicit approvals and custom rules still apply.</p>
+  </section>`, `<section><h2>Networks</h2><label>Private networks the monitor may reach, one per line</label>
   <textarea id="networks" rows="4">${esc((view.config.allow_networks ?? []).join("\n"))}</textarea>
   <div class="row"><span></span><button onclick="patch({ allow_networks: $('networks').value.split(/\\s+/).filter(Boolean) })">Save</button></div></section>`];
 
@@ -656,6 +737,7 @@ setInterval(run(async () => {
 const back = new URLSearchParams(location.search);
 if (back.has("state")) history.replaceState(null, "", location.pathname + (sessionStorage.getItem(RETURN) ?? ""));
 run(async () => {
+  await iconsReady;
   if (!sessionStorage.getItem(KEY)) return;
   await refresh();
   if (back.has("error")) throw new Error(back.get("error_description") ?? back.get("error"));

@@ -1055,7 +1055,7 @@
    }
   ],
   "note": "Spec is ~13MB; GHES users have their own host.",
-  "preset": "github_api"
+  "preset": "github"
  },
  "gitlab": {
   "specs": [

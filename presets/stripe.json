@@ -1,6 +1,7 @@
 {
   "title": "Stripe",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "key", "label": "Restricted or secret API key", "secret": true, "path": ["connections", "", "http", "values", "key"]}
     ],

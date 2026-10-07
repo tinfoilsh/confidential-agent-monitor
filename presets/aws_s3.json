@@ -1,6 +1,7 @@
 {
   "title": "AWS S3",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Bucket endpoint (https://yourbucket.s3.your-region.amazonaws.com)",
        "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},

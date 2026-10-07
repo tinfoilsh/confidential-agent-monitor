@@ -1,6 +1,7 @@
 {
   "title": "HighLevel",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "token", "label": "HighLevel access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
     ],

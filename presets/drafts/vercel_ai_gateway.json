@@ -1,6 +1,7 @@
 {
   "title": "Vercel AI Gateway Chat Model",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "api_key", "label": "API Key or OIDC Token", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}
     ],

@@ -1,6 +1,7 @@
 {
   "title": "Chargebee",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Chargebee origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
       {"key": "api_key", "label": "Api Key", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}

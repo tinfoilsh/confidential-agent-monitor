@@ -1,6 +1,7 @@
 {
   "title": "Keap",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "secret": true, "paths": []},

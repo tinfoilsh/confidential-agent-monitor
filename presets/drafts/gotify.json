@@ -1,6 +1,7 @@
 {
   "title": "Gotify",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Gotify origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
       {"key": "app_api_token", "label": "App API Token", "secret": true, "path": ["connections", "", "http", "values", "app_api_token"]}

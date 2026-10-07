@@ -1,6 +1,7 @@
 {
   "title": "Trello",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "key", "label": "API key", "secret": true, "path": ["connections", "", "http", "values", "key"]},
       {"key": "token", "label": "API token", "secret": true, "path": ["connections", "", "http", "values", "token"]}

@@ -1,6 +1,7 @@
 {
   "title": "Grist",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Grist origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
       {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}

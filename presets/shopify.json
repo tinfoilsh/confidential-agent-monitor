@@ -1,6 +1,7 @@
 {
   "title": "Shopify",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Shopify store (https://yourshop.myshopify.com)",
        "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},

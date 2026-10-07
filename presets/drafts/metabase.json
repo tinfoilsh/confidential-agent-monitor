@@ -1,6 +1,7 @@
 {
   "title": "Metabase",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Metabase origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
       {"key": "session_token", "label": "", "secret": true, "path": ["connections", "", "http", "values", "session_token"]}

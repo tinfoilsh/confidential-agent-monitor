@@ -1,6 +1,7 @@
 {
   "title": "Form.io",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Form.io origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
       {"key": "token", "label": "", "secret": true, "path": ["connections", "", "http", "values", "token"]}

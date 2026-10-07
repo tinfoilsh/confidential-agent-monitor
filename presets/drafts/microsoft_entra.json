@@ -1,6 +1,7 @@
 {
   "title": "Microsoft Entra ID",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "tenant", "label": "Microsoft Entra tenant (ID, domain, organizations or consumers)", "default": "organizations", "paths": []},
       {"key": "client_id", "label": "OAuth client ID", "paths": []},

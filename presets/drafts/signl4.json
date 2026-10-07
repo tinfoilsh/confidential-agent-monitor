@@ -1,6 +1,7 @@
 {
   "title": "SIGNL4",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "team_secret", "label": "Team Secret", "secret": true, "path": ["connections", "", "http", "values", "team_secret"]}
     ],

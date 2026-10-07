@@ -1,6 +1,7 @@
 {
   "title": "Twilio",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "sid", "label": "Account SID", "secret": true, "path": ["connections", "", "http", "values", "sid"]},
       {"key": "token", "label": "Auth token", "secret": true, "path": ["connections", "", "http", "values", "token"]}

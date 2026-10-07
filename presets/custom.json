@@ -1,0 +1,11 @@
+{
+  "title": "Custom",
+  "catalog": {
+    "group": "protocol",
+    "actions": {},
+    "defaults": {"contents": "me", "sends": "me", "strangers": false},
+    "fields": [
+      {"json": true, "key": "connections", "label": "Connections", "path": ["connections"]}
+    ]
+  }
+}

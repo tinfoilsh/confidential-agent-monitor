@@ -20,6 +20,21 @@ func validLabel(l label) bool {
 	return slices.Contains(audiences, l.Audience) && slices.Contains(trusts, l.Trust)
 }
 
+// observe joins stored mailbox history without dropping provenance on other axes.
+func (l label) observe(observed label, cause string) label {
+	l.Because = maps.Clone(l.Because)
+	if l.Because == nil {
+		l.Because = map[string]string{}
+	}
+	if slices.Index(audiences, observed.Audience) < slices.Index(audiences, l.Audience) {
+		l.Audience, l.Because["audience"] = observed.Audience, cause
+	}
+	if slices.Index(trusts, observed.Trust) < slices.Index(trusts, l.Trust) {
+		l.Trust, l.Because["trust"] = observed.Trust, cause
+	}
+	return l
+}
+
 func (m *monitor) label(fingerprint string) label {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -49,7 +64,8 @@ func (m *monitor) setLabelLocked(fingerprint string, l label, source *connector.
 	m.doc.Labels[fingerprint] = l
 	m.doc.Generation++
 	m.labelsDirty = true
-	if changed {
+	lattices := m.live.Load().cfg.Lattices
+	if lattices.Integrity && old.Trust != l.Trust || lattices.Confidentiality && old.Audience != l.Audience {
 		m.retireStreamsLocked(fingerprint, source)
 	}
 }

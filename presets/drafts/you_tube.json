@@ -1,6 +1,7 @@
 {
   "title": "YouTube",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "token", "label": "YouTube account", "secret": true, "path": ["connections", "", "http", "values", "token"], "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{MONITOR_GOOGLE_CLIENT_ID}", "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}", "scope": "https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtubepartner-channel-audit"}}
     ],

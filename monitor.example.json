@@ -1,8 +1,9 @@
 {
+  "lattices": { "confidentiality": true, "integrity": false },
   "allow_networks": ["100.64.0.0/10"],
   "accounts": {
     "github": {
-      "template": "github",
+      "preset": "github",
       "policy_options": { "private": ["tinfoilsh/*"] },
       "contents": "team", "strangers": true, "sends": "me",
       "connections": {
@@ -18,7 +19,7 @@
       }
     },
     "gmail": {
-      "template": "email",
+      "preset": "email",
       "policy_options": { "address": "me@gmail.com" },
       "contents": "me", "strangers": true, "sends": "me",
       "connections": {
@@ -27,7 +28,7 @@
       }
     },
     "slack": {
-      "template": "api", "policy_options": { "preset": "slack" },
+      "preset": "slack",
       "contents": "team", "strangers": true, "sends": "me",
       "connections": { "": { "http": {
         "slots": [{"value": "token", "origin": "https://slack.com", "path": "/api", "header": "Authorization", "prefix": "Bearer "}],
@@ -35,7 +36,7 @@
       } } }
     },
     "backups": {
-      "template": "api", "policy_options": { "preset": "aws_s3", "origin": "https://my-backups.s3.us-east-1.amazonaws.com" },
+      "preset": "aws_s3", "policy_options": { "origin": "https://my-backups.s3.us-east-1.amazonaws.com" },
       "contents": "me", "strangers": false, "sends": "me",
       "connections": { "": { "http": {
         "slots": [{"value": "access_key", "origin": "https://my-backups.s3.us-east-1.amazonaws.com", "path": "/",
@@ -44,15 +45,15 @@
       } } }
     },
     "web": {
-      "template": "web", "contents": "anyone", "strangers": true, "sends": "anyone",
+      "preset": "web", "contents": "anyone", "strangers": true, "sends": "anyone",
       "connections": { "": { "http": { "hosts": ["*"] } } }
     },
     "box2": {
-      "template": "custom", "contents": "team", "strangers": false, "sends": "me",
+      "preset": "custom", "contents": "team", "strangers": false, "sends": "me",
       "connections": { "": { "ssh": {"host": "box2.example.com", "user": "deploy", "host_key": "ssh-ed25519 AAAA...", "key": "-----BEGIN OPENSSH PRIVATE KEY-----\n..."} } }
     },
     "local": {
-      "template": "custom", "contents": "me", "strangers": false, "sends": "me",
+      "preset": "custom", "contents": "me", "strangers": false, "sends": "me",
       "connections": {
         "gh": { "cli": {"path": "/usr/bin/gh", "env": {"HOME": "/var/lib/monitor", "GH_TOKEN": "ghp_REAL"}} },
         "gpg": { "cli": { "path": "/usr/bin/gpg", "env": { "GNUPGHOME": "/var/lib/monitor/gnupg" }, "stdin": "git" } },
@@ -61,7 +62,7 @@
       }
     },
     "db": {
-      "template": "custom", "contents": "team", "strangers": false, "sends": "me",
+      "preset": "custom", "contents": "team", "strangers": false, "sends": "me",
       "connections": {
         "": { "postgres": {"url": "postgres://app@db.example.com/app?sslmode=verify-full", "password": "REAL"} },
         "cache": { "redis": {"url": "rediss://default@cache.example.com:6380", "password": "REAL"} }

@@ -1,6 +1,7 @@
 {
   "title": "Matrix",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Matrix origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
       {"key": "access_token", "label": "Access Token", "secret": true, "path": ["connections", "", "http", "values", "access_token"]}

@@ -1,6 +1,7 @@
 {
   "title": "AWS DynamoDB",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
       {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["connections", "", "http", "slots", 0, "sigv4", "region"]},

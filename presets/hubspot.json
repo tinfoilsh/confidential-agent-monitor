@@ -1,6 +1,7 @@
 {
   "title": "HubSpot",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "token", "label": "Private app access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
     ],

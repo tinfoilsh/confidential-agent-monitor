@@ -26,11 +26,25 @@ vocabulary := {
 	"pay": {"change": true, "trust": true, "ask": true, "discloses": false},
 }
 
-op := data.templates[input.account.template].operation
+# Module actions inherit effects from their nearest configured ancestor.
+# Record operations keep their own effects even when they share an action.
+action_effects(action) := [effects |
+	path := split(action, ".")
+	some i in numbers.range(count(path), 1)
+	name := concat(".", array.slice(path, 0, i))
+	effects := data.presets[input.account.preset].catalog.actions[name].effects
+][0]
+
+# A preset module owns recognition, including unknown requests and denials.
+recognizer := handler if handler := data.handlers[input.account.preset]
+
+else := data.monitor.api
+
+op := recognizer.operation
 
 default title := ""
 
-title := data.templates[input.account.template].title
+title := recognizer.title
 
 fields := {"id", "action", "effects", "scope", "grant", "trust", "sends", "reveals", "definition"}
 
@@ -75,6 +89,7 @@ default operation := ""
 operation := op.id if valid
 
 effects := {e | some e in op.effects} if valid
+
 else := set()
 
 obligation(name) if {
@@ -83,16 +98,19 @@ obligation(name) if {
 }
 
 grant := object.get(op, "grant", op.scope) if valid
+
 else := {}
 
 scope := op.scope if valid
+
 else := {}
 
 # A saved approval trusts this digest: the policy program, the account's policy settings, the connection and its settings without secrets,
 # the recognizer's reviewed input and the facts it resolved. Labels, saved rules and unrelated edits leave it unchanged.
 definition := crypto.sha256(json.marshal([
 	data.definitions.program,
-	input.account.template,
+	data.lattices,
+	input.account.preset,
 	object.get(input, "connection", ""),
 	object.get(input, "connection_config", null),
 	object.get(input.account, "policy_options", {}),
@@ -100,13 +118,16 @@ definition := crypto.sha256(json.marshal([
 	object.get(op, "definition", null),
 	[sort([e | some e in effects]), object.get(op, "trust", false), sends, reveal],
 ])) if valid
+
 else := ""
 
 sends := op.sends if {
 	valid
 	op.sends
 }
+
 else := "anyone" if obligation("discloses")
+
 else := input.account.sends
 
 # An action is a dotted path, and the most specific setting along it wins.
@@ -114,25 +135,32 @@ lineage := [concat(".", array.slice(path, 0, i)) | path := split(action, "."); s
 
 # Every mode but allow asks, so a value this chain does not expect fails closed.
 mode := "off" if not input.access.level in {"read", "ask", "allow"}
+
 else := "off" if {
 	action == null
 	input.access.level == "read"
 }
+
 else := "ask" if action == null
+
 else := m if m := [o | some a in lineage; o := input.access.actions[a]][0]
+
 else := "ask" if {
 	input.access.level == "allow"
 	obligation("ask")
 }
+
 else := "allow" if not obligation("change")
+
 else := "off" if input.access.level == "read"
+
 else := input.access.level
 
 custom contains msg if some msg in data.sentinel.deny with input.action as action
 
 deny contains msg if some msg in custom
 
-deny contains msg if some msg in data.templates[input.account.template].deny
+deny contains msg if some msg in recognizer.deny
 
 deny contains "this agent may not do this on the account" if mode == "off"
 
@@ -152,9 +180,13 @@ needs_trust if {
 
 gap contains "ask" if mode != "allow"
 
-gap contains "audience" if not audiences[sends] <= audiences[input.label.audience]
+gap contains "audience" if {
+	data.lattices.confidentiality
+	not audiences[sends] <= audiences[input.label.audience]
+}
 
 gap contains "trust" if {
+	data.lattices.integrity
 	input.label.trust == "untrusted"
 	needs_trust
 }
@@ -171,14 +203,17 @@ waived contains w if {
 }
 
 reveal := object.union({"contents": input.account.contents, "strangers": input.account.strangers}, object.get(op, "reveals", {})) if action != null
+
 else := {"contents": "me", "strangers": true}
 
 observed_trust := "untrusted" if reveal.strangers
+
 else := "trusted"
 
 next := data.monitor.labels.observe(input.label, {"audience": reveal.contents, "trust": observed_trust}, input.account.name)
 
 decision := {"deny": custom} if input.tcp
+
 else := {
 	"deny": deny,
 	"action": action,

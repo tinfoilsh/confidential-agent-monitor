@@ -1,6 +1,7 @@
 {
   "title": "Customer.io",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "tracking_api_key", "label": "Tracking API Key", "secret": true, "path": ["connections", "", "http", "values", "tracking_api_key"]}
     ],

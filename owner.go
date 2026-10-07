@@ -22,6 +22,7 @@ import (
 	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
+	"github.com/tinfoilsh/monitor/connector/mcp"
 	"github.com/tinfoilsh/monitor/connector/web"
 	"golang.org/x/crypto/ssh"
 )
@@ -46,19 +47,19 @@ type ownerView struct {
 	Status     map[string]any             `json:"status"`
 	Labels     map[string]label           `json:"labels"`
 	Setup      map[string]string          `json:"setup"`
-	Templates  any                        `json:"templates"`
+	Presets    any                        `json:"presets"`
 }
 
 func (m *monitor) view(s *state, err error) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	templates, err := catalog(s.cfg.resolved)
+	presets, err := catalog(s.cfg.resolved)
 	if err != nil {
 		return nil, err
 	}
 	v := ownerView{m.doc.Generation, m.doc.Config, string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), m.doc.Keys.CACert,
-		map[string][]fieldMetadata{}, map[string]any{}, map[string]label{}, map[string]string{}, templates}
+		map[string][]fieldMetadata{}, map[string]any{}, map[string]label{}, map[string]string{}, presets}
 	v.Config, v.Fields = configView(m.doc.Config, s.connections)
 	for _, c := range s.connections {
 		v.Status[c.name] = c.status()
@@ -73,7 +74,11 @@ func (m *monitor) view(s *state, err error) (any, error) {
 // setup exports each secret's placeholder; a name in several connections stays a comment, since one variable cannot hold both.
 func setup(p principal, connections map[string]*connection) string {
 	holders := map[string][]string{}
+	gateway := false
 	for _, name := range slices.Sorted(maps.Keys(connections)) {
+		if _, ok := connections[name].connector.(*mcp.Server); ok && p.reaches(connections[name].account) {
+			gateway = true
+		}
 		if h, ok := connections[name].connector.(interface{ Names() iter.Seq[string] }); ok && p.reaches(connections[name].account) {
 			for secret := range h.Names() {
 				holders[secret] = append(holders[secret], name)
@@ -89,6 +94,9 @@ func setup(p principal, connections map[string]*connection) string {
 				lines = append(lines, fmt.Sprintf("# %s for %s.monitor: %s", secret, name, web.Placeholder(name, secret)))
 			}
 		}
+	}
+	if gateway {
+		lines = append(lines, fmt.Sprintf("# MCP tools of every reachable server: forward %s:%d, for example ssh -N -L 127.0.0.1:8400:%s:%d monitor", gatewayHost, gatewayPort, gatewayHost, gatewayPort))
 	}
 	return strings.Join(lines, "\n")
 }

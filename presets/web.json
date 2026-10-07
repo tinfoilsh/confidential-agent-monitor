@@ -1,0 +1,13 @@
+{
+  "title": "Web",
+  "catalog": {
+    "group": "protocol",
+    "actions": {
+      "browse": {"title": "Browse", "effects": ["read"]},
+      "submit": {"title": "Submit forms and post", "effects": ["send"]}
+    },
+    "connections": {"": {"http": {"hosts": ["*"]}}},
+    "defaults": {"contents": "anyone", "sends": "anyone", "strangers": true},
+    "fields": []
+  }
+}

@@ -25,7 +25,7 @@ import (
 var presetFiles embed.FS
 
 // A preset is a reviewed service record, shipped with the monitor or the owner's, with the catalog entry that sets up its accounts.
-// The catalog is setup metadata only; policy reads the record from data.presets.
+// Policy reads the full record, including action effects in its catalog, from data.presets.
 type preset struct {
 	record  map[string]any
 	catalog map[string]any
@@ -119,19 +119,18 @@ func withOwned(owned map[string]map[string]any) (map[string]preset, error) {
 }
 
 var malformedQuery = sync.OnceValues(func() (rego.PreparedEvalQuery, error) {
-	return rego.New(append(templateModules(), rego.Query("data.templates.api.malformed with data.presets as input"))...).PrepareForEval(context.Background())
+	return rego.New(append(policyModules(), rego.Query("data.monitor.api.malformed with data.presets as input"))...).PrepareForEval(context.Background())
 })
 
-// checked adds presets in the file format to out, refusing a template's name or a malformed operation.
+// checked adds complete preset records, validating their action effects and operations.
 func checked(out map[string]preset, files map[string]map[string]any) (map[string]preset, error) {
 	records := map[string]any{}
 	for name, file := range files {
 		catalog, ok := file["catalog"].(map[string]any)
-		if _, err := fs.Stat(templates, templateDir+"/"+name+".rego"); name == "" || err == nil || !ok {
-			return nil, fmt.Errorf("preset %q needs a catalog and a name no template has", name)
+		if name == "" || !ok {
+			return nil, fmt.Errorf("preset %q needs a catalog and a name", name)
 		}
 		p := maps.Clone(file)
-		delete(p, "catalog")
 		out[name], records[name] = preset{p, catalog}, p
 	}
 	query, err := malformedQuery()

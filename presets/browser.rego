@@ -1,18 +1,6 @@
-package templates.browser
+package handlers.browser
 
-catalog := {
-	"title": "Browser",
-	"fields": [],
-	"connections": {"": {"browser": {}}},
-	"defaults": {"contents": "anyone", "strangers": true, "sends": "anyone"},
-	"actions": {
-		"browse": {"title": "Open and read pages"},
-		"submit": {"title": "Click and type"},
-		"login": {"title": "Fill saved credentials"}
-	}
-}
-
-effects := {"browse": {"read"}, "submit": {"send"}, "login": {"session", "write"}}
+import data.monitor.action_effects
 
 login if count(object.get(input.browser, "secrets", [])) > 0
 
@@ -26,12 +14,14 @@ action := "submit" if {
 action := "login" if login
 
 scope := {"host": input.browser.host, "secrets": input.browser.secrets} if login
+
 else := {"host": input.browser.host}
 
 # english-only censors every reply, so without credentials a read reveals what anyone may see.
 operation := object.union(base, {"reveals": {"contents": "anyone"}}) if count(object.get(input, ["connection_config", "slots"], [])) == 0
+
 else := base
 
-base := {"id": action, "action": action, "effects": effects[action], "scope": scope, "trust": action == "login"}
+base := {"id": action, "action": action, "effects": action_effects(action), "scope": scope, "trust": action == "login"}
 
 title := sprintf("%s %s", [input.browser.command, input.browser.url])

@@ -1,6 +1,7 @@
 {
   "title": "Wolfram|Alpha",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "app_id", "label": "App ID", "secret": true, "path": ["connections", "", "http", "values", "app_id"]}
     ],

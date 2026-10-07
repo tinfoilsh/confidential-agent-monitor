@@ -1,6 +1,7 @@
 {
   "title": "Notion",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "token", "label": "Internal integration secret", "secret": true, "path": ["connections", "", "http", "values", "token"]}
     ],

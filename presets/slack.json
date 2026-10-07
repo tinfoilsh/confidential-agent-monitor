@@ -1,6 +1,7 @@
 {
   "title": "Slack",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "token", "label": "Bot token (xoxb-) or user token (xoxp-)", "secret": true, "path": ["connections", "", "http", "values", "token"]}
     ],

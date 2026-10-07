@@ -79,6 +79,9 @@ type mailbox struct {
 	To       string         `json:"to"`
 	Limit    messageLimit   `json:"limit"`
 	Messages []agentMessage `json:"messages"`
+	// History retains labels admitted beyond the channel limit while a lattice
+	// was off, including after the queue is drained so empty reads stay labeled.
+	History *label `json:"history,omitempty"`
 }
 
 func (s *state) namedPrincipal(name string) (principal, bool) {
@@ -160,6 +163,19 @@ func (m *monitor) messageLocked(ctx context.Context, fingerprint string, req mes
 	if !exists {
 		box = mailbox{From: from.Key, To: to.Key, Limit: limit}
 	}
+	observed := limit.label()
+	if box.History != nil {
+		observed = observed.observe(*box.History, cause)
+	}
+	if req.Action != "message.receive" {
+		observed = observed.observe(original, cause)
+	}
+	changed := false
+	if observed.Audience != limit.Audience || observed.Trust != limit.Trust {
+		changed = box.History == nil || box.History.Audience != observed.Audience || box.History.Trust != observed.Trust
+		box.History = &observed
+	}
+	d.Next = d.Next.observe(observed, cause)
 	// Only annotate delivered-message provenance after policy has allowed the
 	// operation. Owner deny rules must not observe queue contents or occupancy.
 	if req.Action == "message.receive" && len(box.Messages) > 0 {
@@ -173,7 +189,6 @@ func (m *monitor) messageLocked(ctx context.Context, fingerprint string, req mes
 	}
 	r.Next = d.Next
 	m.setLabelLocked(p.Key, d.Next, nil)
-	changed := false
 	switch req.Action {
 	case "message.send":
 		n := len(req.Body)
@@ -216,7 +231,7 @@ func (m *monitor) messageLocked(ctx context.Context, fingerprint string, req mes
 		if next.Mailboxes == nil {
 			next.Mailboxes = map[string]mailbox{}
 		}
-		if len(box.Messages) == 0 {
+		if len(box.Messages) == 0 && box.History == nil {
 			delete(next.Mailboxes, key)
 		} else {
 			next.Mailboxes[key] = box

@@ -1,6 +1,7 @@
 {
   "title": "Sentry.io",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "token", "label": "Token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
     ],

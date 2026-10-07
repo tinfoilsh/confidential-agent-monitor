@@ -1,6 +1,7 @@
 {
   "title": "S3-compatible storage",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Service endpoint, no bucket (https://your-endpoint.example.com)",
        "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},

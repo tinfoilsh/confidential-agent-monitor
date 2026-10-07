@@ -1,6 +1,7 @@
 {
   "title": "Bitbucket",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "email", "label": "Email", "secret": true, "path": ["connections", "", "http", "values", "email"]},
       {"key": "access_token", "label": "Access Token", "secret": true, "path": ["connections", "", "http", "values", "access_token"]}

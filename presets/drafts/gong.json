@@ -1,6 +1,7 @@
 {
   "title": "Gong",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Gong origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
       {"key": "access_key", "label": "Access Key", "secret": true, "path": ["connections", "", "http", "values", "access_key"]},

@@ -1,6 +1,7 @@
 {
   "title": "Box",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "token", "label": "Box access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
     ],

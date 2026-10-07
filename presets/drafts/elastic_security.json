@@ -1,6 +1,7 @@
 {
   "title": "Elastic Security",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Elastic Security origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
       {"key": "username", "label": "Username", "secret": true, "path": ["connections", "", "http", "values", "username"]},

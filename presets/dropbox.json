@@ -1,6 +1,7 @@
 {
   "title": "Dropbox",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "token", "label": "OAuth2 access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
     ],

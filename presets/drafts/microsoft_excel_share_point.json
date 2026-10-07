@@ -1,6 +1,7 @@
 {
   "title": "Microsoft Excel (SharePoint)",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "token", "label": "Microsoft Excel (SharePoint) access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
     ],

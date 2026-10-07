@@ -12,7 +12,6 @@ umask 077
 mkdir -p "$dev/firefox" "$dev/store"
 [[ -f $dev/id ]] || ssh-keygen -q -t ed25519 -N '' -C monitor-dev -f "$dev/id"
 [[ -f $dev/owner.key ]] || head -c32 /dev/urandom | base64 > "$dev/owner.key"
-[[ -f monitor.json ]] || cp monitor.example.json monitor.json
 if ! curl -s "$api" > /dev/null; then
   go build -o "$dev/monitor" .
   "$dev/monitor" -listen "$listen" -api "${api#http://}" -bucket "file://$dev/store?no_tmp_dir=true" \
@@ -20,11 +19,25 @@ if ! curl -s "$api" > /dev/null; then
 fi
 # The header file keeps the owner secret out of curl's arguments.
 owner() { curl -sS --fail-with-body --retry 10 --retry-connrefused -H @<(echo "Authorization: Bearer $(<"$dev/owner.key")") "$api$1" "${@:2}"; }
-owner /unlock -d '{"generation": 0}' > /dev/null
+owner /unlock -d '{"generation": 0}' > "$dev/state.json"
+# Seed a fresh store with just Web. Import a custom config only when explicitly
+# requested; subsequent runs keep the accounts and credentials edited in the app.
+if jq -e '.generation == 1 and .config == {}' "$dev/state.json" > /dev/null; then
+  if [[ -n ${MONITOR_CONFIG:-} ]]; then
+    cp "$MONITOR_CONFIG" "$dev/seed.json"
+  else
+    jq '{accounts: {web: ({preset: "web"} + .catalog.defaults + {connections: .catalog.connections})}}' \
+      presets/web.json > "$dev/seed.json"
+  fi
+  owner / -X PATCH --data-binary @"$dev/seed.json" > "$dev/state.json"
+fi
 # MONITOR_PROFILE=1 lets the dev agent's requests all through, recorded with the corpus in .dev/corpus.jsonl.
 jq --rawfile key "$dev/id.pub" --arg profile "${MONITOR_PROFILE:-}" \
-  '.identities.dev = {key: $key, profile: ($profile != ""), accounts: (.accounts | map_values({level: "allow"}))}' monitor.json |
-  owner / -X PATCH --data-binary @- > "$dev/state.json"
+  '.config as $config | ($config.identities.dev // {}) as $dev |
+   {identities: {dev: ($dev + {key: $key, profile: ($profile != ""),
+     accounts: (($config.accounts // {}) | with_entries(.value = ($dev.accounts[.key] // {level: "allow"})))})}}' "$dev/state.json" |
+  owner / -X PATCH --data-binary @- > "$dev/state.next.json"
+mv "$dev/state.next.json" "$dev/state.json"
 echo "monitor,*.monitor,[$host]:$port $(jq -r .host_key "$dev/state.json")" > "$dev/known_hosts"
 jq -r .ca "$dev/state.json" > "$dev/ca.pem"
 

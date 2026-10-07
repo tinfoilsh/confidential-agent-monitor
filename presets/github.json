@@ -1,0 +1,39 @@
+{
+  "title": "GitHub",
+  "catalog": {
+    "group": "api",
+    "actions": {
+      "comment": {"title": "Comment on issues and pull requests", "effects": ["write"]},
+      "comment.lines": {"title": "Comment on lines of code"},
+      "comment.reviews": {"title": "Review pull requests"},
+      "merge": {"title": "Merge pull requests", "effects": ["write"]},
+      "open": {"title": "Open and edit issues and pull requests", "effects": ["write"]},
+      "open.issues": {"title": "Open and edit issues"},
+      "open.pulls": {"title": "Open and edit pull requests"},
+      "push": {"title": "Push commits", "effects": ["write"]},
+      "read": {"title": "Read code, issues and pull requests", "effects": ["read"]},
+      "use": {"title": "Use tools that change things", "effects": ["write"]}
+    },
+    "connections": {"": {"http": {"hosts": ["api.github.com", "github.com", "*.githubusercontent.com"], "slots": [{"header": "Authorization", "origin": "https://api.github.com", "prefix": "Bearer ", "value": "GITHUB_TOKEN"}, {"header": "Authorization", "origin": "https://api.github.com", "prefix": "token ", "value": "GITHUB_TOKEN"}, {"basic": "password", "origin": "https://github.com", "value": "GITHUB_TOKEN"}]}}, "mcp": {"mcp": {"url": "https://api.githubcopilot.com/mcp/"}}},
+    "defaults": {"contents": "team", "sends": "me", "strangers": true},
+    "fields": [
+      {"key": "token", "label": "Personal access token", "paths": [["connections", "", "http", "values", "GITHUB_TOKEN"], ["connections", "mcp", "mcp", "token"]], "secret": true},
+      {"hint": "owner/* or owner/repo", "key": "private", "label": "Private orgs and repos", "list": true, "path": ["policy_options", "private"]}
+    ]
+  },
+  "operations": [
+    {"id": "repos.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.github.com", "path": "/repos/{owner}/{repo}", "headers": {"X-Github-Api-Version": "2022-11-28"}, "scope": {"owner": {"from": "path", "at": "owner"}, "repo": {"from": "path", "at": "repo"}}},
+    {"id": "repos.list.mine", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.github.com", "path": "/user/repos", "headers": {"X-Github-Api-Version": "2022-11-28"}, "params": ["visibility", "affiliation", "sort", "per_page", "page"], "scope": {}},
+    {"id": "issues.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.github.com", "path": "/repos/{owner}/{repo}/issues", "headers": {"X-Github-Api-Version": "2022-11-28"}, "params": ["state", "labels", "sort", "per_page", "page"], "scope": {"owner": {"from": "path", "at": "owner"}, "repo": {"from": "path", "at": "repo"}}},
+    {"id": "issues.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.github.com", "path": "/repos/{owner}/{repo}/issues/{issue}", "headers": {"X-Github-Api-Version": "2022-11-28"}, "scope": {"owner": {"from": "path", "at": "owner"}, "repo": {"from": "path", "at": "repo"}, "issue": {"from": "path", "at": "issue"}}},
+    {"id": "pulls.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.github.com", "path": "/repos/{owner}/{repo}/pulls", "headers": {"X-Github-Api-Version": "2022-11-28"}, "params": ["state", "sort", "per_page", "page"], "scope": {"owner": {"from": "path", "at": "owner"}, "repo": {"from": "path", "at": "repo"}}},
+    {"id": "pulls.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.github.com", "path": "/repos/{owner}/{repo}/pulls/{pull}", "headers": {"X-Github-Api-Version": "2022-11-28"}, "scope": {"owner": {"from": "path", "at": "owner"}, "repo": {"from": "path", "at": "repo"}, "pull": {"from": "path", "at": "pull"}}},
+    {"id": "contents.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.github.com", "path": "/repos/{owner}/{repo}/contents/{path*}", "headers": {"X-Github-Api-Version": "2022-11-28"}, "params": ["ref"], "scope": {"owner": {"from": "path", "at": "owner"}, "repo": {"from": "path", "at": "repo"}, "path": {"from": "path", "at": "path"}}},
+    {"id": "issues.create", "action": "open.issues", "effects": ["write"], "method": "POST", "origin": "https://api.github.com", "path": "/repos/{owner}/{repo}/issues", "headers": {"X-Github-Api-Version": "2022-11-28"}, "body": "json", "scope": {"owner": {"from": "path", "at": "owner"}, "repo": {"from": "path", "at": "repo"}, "issue": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "issues.update", "action": "open.issues", "effects": ["write"], "method": "PATCH", "origin": "https://api.github.com", "path": "/repos/{owner}/{repo}/issues/{issue}", "headers": {"X-Github-Api-Version": "2022-11-28"}, "body": "json", "scope": {"owner": {"from": "path", "at": "owner"}, "repo": {"from": "path", "at": "repo"}, "issue": {"from": "path", "at": "issue"}, "changes": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "issues.comments.create", "action": "comment", "effects": ["send"], "method": "POST", "origin": "https://api.github.com", "path": "/repos/{owner}/{repo}/issues/{issue}/comments", "headers": {"X-Github-Api-Version": "2022-11-28"}, "body": "json", "scope": {"owner": {"from": "path", "at": "owner"}, "repo": {"from": "path", "at": "repo"}, "issue": {"from": "path", "at": "issue"}, "comment": {"from": "body", "at": "/body"}}},
+    {"id": "pulls.create", "action": "open.pulls", "effects": ["write"], "method": "POST", "origin": "https://api.github.com", "path": "/repos/{owner}/{repo}/pulls", "headers": {"X-Github-Api-Version": "2022-11-28"}, "body": "json", "scope": {"owner": {"from": "path", "at": "owner"}, "repo": {"from": "path", "at": "repo"}, "pull": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "pulls.merge", "action": "merge", "effects": ["write", "admin"], "method": "PUT", "origin": "https://api.github.com", "path": "/repos/{owner}/{repo}/pulls/{pull}/merge", "headers": {"X-Github-Api-Version": "2022-11-28"}, "body": "json", "scope": {"owner": {"from": "path", "at": "owner"}, "repo": {"from": "path", "at": "repo"}, "pull": {"from": "path", "at": "pull"}, "merge": {"from": "body", "at": "", "type": "object"}}},
+    {"id": "contents.put", "action": "push", "effects": ["write"], "method": "PUT", "origin": "https://api.github.com", "path": "/repos/{owner}/{repo}/contents/{path*}", "headers": {"X-Github-Api-Version": "2022-11-28"}, "body": "json", "scope": {"owner": {"from": "path", "at": "owner"}, "repo": {"from": "path", "at": "repo"}, "path": {"from": "path", "at": "path"}, "change": {"from": "body", "at": "", "type": "object"}}}
+  ]
+}

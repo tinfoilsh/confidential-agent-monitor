@@ -1,6 +1,7 @@
 {
   "title": "MessageBird",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "access_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "values", "access_key"]}
     ],

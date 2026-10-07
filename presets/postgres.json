@@ -1,0 +1,16 @@
+{
+  "title": "Postgres",
+  "catalog": {
+    "group": "protocol",
+    "actions": {
+      "read": {"title": "Run SELECT, SHOW and EXPLAIN", "effects": ["read"]},
+      "write": {"title": "Change data and schema", "effects": ["write"]}
+    },
+    "connections": {"": {"postgres": {"url": "{url}"}}},
+    "defaults": {"contents": "me", "sends": "me", "strangers": true},
+    "fields": [
+      {"hint": "postgres://user@host/db", "key": "url", "label": "Connection URL", "path": ["connections", "", "postgres", "url"]},
+      {"default": "", "key": "password", "label": "Password", "path": ["connections", "", "postgres", "password"], "secret": true}
+    ]
+  }
+}

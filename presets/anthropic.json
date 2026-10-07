@@ -1,6 +1,7 @@
 {
   "title": "Anthropic",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "token", "label": "API key", "secret": true, "path": ["connections", "", "http", "values", "token"]}
     ],

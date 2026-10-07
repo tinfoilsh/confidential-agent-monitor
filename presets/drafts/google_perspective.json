@@ -1,6 +1,7 @@
 {
   "title": "Google Perspective",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "token", "label": "Google Perspective account", "secret": true, "path": ["connections", "", "http", "values", "token"], "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{MONITOR_GOOGLE_CLIENT_ID}", "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}", "scope": "https://www.googleapis.com/auth/userinfo.email"}}
     ],

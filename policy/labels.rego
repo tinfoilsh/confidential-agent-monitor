@@ -9,9 +9,18 @@ valid(l) if {
 }
 
 flows_to(from, to) if {
-	audiences[from.audience] >= audiences[to.audience]
-	trusts[from.trust] >= trusts[to.trust]
+	valid(from)
+	valid(to)
+	every axis, levels in {"audience": audiences, "trust": trusts} {
+		flow_axis(axis, levels, from, to)
+	}
 }
+
+enabled := {"audience": data.lattices.confidentiality, "trust": data.lattices.integrity}
+
+flow_axis(axis, levels, from, to) if not enabled[axis]
+
+flow_axis(axis, levels, from, to) if levels[from[axis]] >= levels[to[axis]]
 
 lowered(current, observed) := {axis |
 	some axis, levels in {"audience": audiences, "trust": trusts}

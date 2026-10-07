@@ -1,6 +1,7 @@
 {
   "title": "Baserow",
   "catalog": {
+    "group": "api",
     "fields": [
       {"key": "jwt_token", "label": "", "secret": true, "path": ["connections", "", "http", "values", "jwt_token"]}
     ],
