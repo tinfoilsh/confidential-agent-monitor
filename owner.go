@@ -14,6 +14,7 @@ import (
 	"iter"
 	"maps"
 	"net/http"
+	"os"
 	"slices"
 	"strings"
 	"sync"
@@ -31,6 +32,24 @@ const maxDocumentBytes = 16 << 20
 
 //go:embed app
 var app embed.FS
+
+// Dev runs use the working tree so UI edits only need a browser refresh.
+// A standalone binary still has the embedded app when no local copy exists.
+func appHandler(dev bool) http.Handler {
+	if dev {
+		local := os.DirFS("app")
+		if info, err := fs.Stat(local, "index.html"); err == nil && !info.IsDir() {
+			files := http.StripPrefix("/app/", http.FileServerFS(local))
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Cache-Control", "no-store")
+				// HTTP dates only have second precision; rapid edits can share a timestamp.
+				r.Header.Del("If-Modified-Since")
+				files.ServeHTTP(w, r)
+			})
+		}
+	}
+	return http.FileServerFS(app)
+}
 
 type fieldMetadata struct {
 	Path []string `json:"path"`
@@ -212,7 +231,7 @@ func (m *monitor) handler() http.Handler {
 		return m.view(finish(r.Context(), req.Code))
 	}))
 	m.requests(mux)
-	mux.Handle("GET /app/", http.FileServerFS(app))
+	mux.Handle("GET /app/", appHandler(m.dev))
 	return mux
 }
 

@@ -4,27 +4,68 @@
 <title>Monitor</title>
 <style>
   :root {
-    --bg: #fff; --side: #fafafa; --hover: #f4f4f5; --hi: #e0f2fe; --line: #e4e4e7; --edge: #d4d4d8; --text: #27272a; --muted: #a1a1aa; --dim: #71717a;
+    --bg: #fff; --side: #eaf3f8; --hover: #e3f4fd; --line: #cadbe5; --edge: #9db9cb; --text: #253e50; --muted: #6b8495; --dim: #4d6b80;
     --link: #0369a1; --ok: #15803d; --warn: #b45309; --bad: #b91c1c;
+    --control: linear-gradient(#fff, #f2f9fd 46%, #dcebf5 52%, #edf7fc);
+    --selected: linear-gradient(#eefaff, #d7effb 46%, #bcdef1 52%, #d6effb);
+    --panel: radial-gradient(ellipse at 12% 0%, #fff, transparent 65%), linear-gradient(145deg, #eef5f8, #dae6ed 65%, #dcedec);
+    --nav: linear-gradient(#f9fcff, #e5edf4); --card: linear-gradient(155deg, #fff, #f0f8fc);
+    --bar: linear-gradient(#faffff, #eaf5fb 46%, #d6e7f3 52%, #e9f5fc);
+    --primary: #548ead; --primary-fill: linear-gradient(#d6eefb, #9ed3ed 46%, #7cbfdf 52%, #b1def2); --on-primary: #173f56;
+    --shine: #ffffffd9; --shadow: #214e7026;
     color-scheme: light dark;
   }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #18181b; --side: #1f1f23; --hover: #27272a; --hi: #0c4a6e; --line: #2e2e33; --edge: #3f3f46; --text: #e4e4e7; --muted: #71717a; --dim: #a1a1aa; --link: #7dd3fc; --ok: #4ade80; --warn: #fbbf24; --bad: #f87171; }
+    :root { --bg: #182833; --side: #213847; --hover: #2b4b60; --line: #365366; --edge: #567b93; --text: #e2f0fa; --muted: #9ab5c8; --dim: #b1c8d8; --link: #8bd9ff; --ok: #79dca3; --warn: #f5cc7c; --bad: #ffa5a5;
+      --control: linear-gradient(#4c7089, #3b5d76 46%, #29495f 52%, #355b73);
+      --selected: linear-gradient(#527f9a, #3e6c89 46%, #2a5671 52%, #396b86);
+      --panel: radial-gradient(ellipse at 12% 0%, #46697e66, transparent 65%), linear-gradient(145deg, #263d4d, #192e3e 65%, #203b40);
+      --nav: linear-gradient(#294253, #1c303e); --card: linear-gradient(155deg, #2b4659, #1d3546);
+      --bar: linear-gradient(#496a82, #3b5b73 46%, #2c4a60 52%, #365c73);
+      --primary: #83bfdf; --primary-fill: linear-gradient(#d4effb, #8fc9e2 46%, #65abcf 52%, #a1d5eb); --on-primary: #142735;
+      --shine: #ffffff29; --shadow: #0004;
+    }
   }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
   body { margin: 0; background: var(--bg); color: var(--text); font: 12px/20px system-ui, sans-serif; }
   pre, textarea, .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; }
-  #app { display: grid; grid-template-columns: 240px minmax(0, 1fr); height: 100vh; }
-  #app.with-pane { grid-template-columns: 240px minmax(0, 1fr) 400px; }
-  #tree { border-right: 1px solid var(--line); padding: 4px 0; overflow: auto; }
-  #list { min-width: 0; overflow: auto; }
-  #pane { min-width: 0; border-left: 2px solid var(--edge); background: var(--side); padding: 0 8px 8px; overflow: auto; }
-  @media (max-width: 1000px) {
-    #app.with-pane { grid-template-columns: 200px minmax(0, 1fr); grid-template-rows: minmax(160px, 1fr) minmax(240px, 1fr); }
+  #app { display: grid; grid-template-columns: 240px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); height: 100vh; height: 100dvh; }
+  #app.with-pane { grid-template-columns: 240px minmax(0, 1fr) 280px; }
+  #tree { grid-column: 1; grid-row: 1; border-right: 1px solid var(--edge); padding: 4px 0; overflow: auto; background: var(--nav); box-shadow: inset -1px 0 var(--shine); }
+  #list { grid-column: 2; grid-row: 1; min-width: 0; padding: 0; border-bottom: 0; overflow: auto; background: var(--card); }
+  #pane { grid-column: 2; grid-row: 1; min-width: 0; background: var(--panel); padding: 0 8px 8px; overflow: auto; container: details / inline-size; }
+  .with-pane #list { grid-column: 3; border-left: 1px solid var(--edge); }
+  .with-pane #list .group { flex-wrap: wrap; gap: 4px 8px; padding: 4px 8px; border-bottom: 1px solid var(--edge); background: var(--bar); box-shadow: inset 0 1px var(--shine); }
+  .with-pane .ev { grid-template-columns: minmax(0, 1fr) auto; gap: 0 6px; padding: 5px 8px; }
+  .with-pane .ev > :nth-child(1) { grid-column: 1; grid-row: 3; font-size: 10px; }
+  .with-pane .ev > :nth-child(2) { grid-column: 1; grid-row: 1; font-weight: 600; }
+  .with-pane .ev > :nth-child(3) { grid-column: 2; grid-row: 1; font-size: 10px; max-width: 110px; }
+  .with-pane .ev > :nth-child(4) { grid-column: 1 / -1; grid-row: 2; white-space: normal; overflow-wrap: anywhere; }
+  .with-pane .ev > :nth-child(5) { grid-column: 2; grid-row: 3; font-size: 10px; }
+  .with-pane .ev.hd { display: none; }
+  .with-pane .q { grid-template-columns: 10px minmax(0, 1fr) auto; gap: 0 6px; padding: 4px 8px; border-bottom: 1px solid var(--line); }
+  .with-pane .q > :nth-child(2) { grid-column: 2; grid-row: 1; }
+  .with-pane .q > :nth-child(3) { grid-column: 2 / -1; grid-row: 2; white-space: normal; overflow-wrap: anywhere; }
+  .with-pane .q > :nth-child(3) > b { display: block; }
+  .with-pane .q > :last-child { grid-column: 3; grid-row: 1; font-size: 10px; }
+  @media (max-width: 1100px) {
+    #app, #app.with-pane { grid-template-columns: 180px minmax(0, 1fr); }
+    #app.with-pane { grid-template-columns: 180px minmax(0, 1fr) 240px; }
+  }
+  @media (max-width: 900px) {
+    #app.with-pane { grid-template-columns: 180px minmax(0, 1fr); grid-template-rows: minmax(240px, 1fr) 160px; }
     #app.with-pane #tree { grid-row: 1 / -1; }
-    #app.with-pane #list { grid-column: 2; grid-row: 1; }
-    #app.with-pane #pane { grid-column: 2; grid-row: 2; border-left: 0; border-top: 1px solid var(--edge); }
+    #app.with-pane #list { grid-column: 2; grid-row: 2; border-left: 0; border-top: 1px solid var(--edge); }
+  }
+  @media (max-width: 640px) {
+    #app, #app.with-pane { grid-template-columns: minmax(0, 1fr); grid-template-rows: 64px minmax(0, 1fr); }
+    #app.with-pane { grid-template-rows: 64px minmax(0, 1fr) 140px; }
+    #app #tree { grid-column: 1; grid-row: 1; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 2px 6px; border-right: 0; border-bottom: 1px solid var(--edge); }
+    #tree .node { padding: 0 4px; }
+    #app #pane, #app #list { grid-column: 1; grid-row: 2; }
+    #app.with-pane #list { grid-column: 1; grid-row: 3; }
+    #pane .row { flex-wrap: wrap; }
   }
   #gate { max-width: 24rem; margin: 20vh auto; }
   a, .new { color: var(--link); text-decoration: none; }
@@ -35,7 +76,7 @@
   .node > span { overflow: hidden; text-overflow: ellipsis; }
   .node > small { margin-left: auto; padding-left: 8px; font-size: 10px; color: var(--muted); }
   .node:hover, .q:hover, .ev:hover { background: var(--hover); }
-  .node.on, .q.on, .ev.on { background: var(--hi); }
+  .node.on, .q.on, .ev.on { background: var(--selected); box-shadow: inset 0 1px var(--shine), inset 0 -1px var(--edge); }
   .group { display: flex; gap: 8px; align-items: center; padding: 2px 8px; }
   .q, .ev { display: grid; gap: 8px; align-items: center; padding: 0 8px; color: inherit; white-space: nowrap; }
   .q { grid-template-columns: 10px 64px minmax(0, 1fr) auto; }
@@ -43,32 +84,42 @@
   .q > span, .ev > span { overflow: hidden; text-overflow: ellipsis; }
   .bang { font-weight: 700; color: var(--warn); }
   h2, .hd { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 2px; }
-  header { display: flex; gap: 8px; align-items: baseline; padding: 6px 0 2px; }
+  header { display: flex; gap: 8px; align-items: center; padding: 4px 0; }
   header > .x { margin-left: auto; color: var(--muted); }
-  .labels { display: inline-flex; gap: 6px; }
+  #pane > header { margin-bottom: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .labels { display: inline-flex; align-items: center; gap: 6px; }
   .labels select { width: auto; }
   section { padding: 8px 0; border-bottom: 1px solid var(--line); }
-  button { font: inherit; font-size: 11px; line-height: 18px; padding: 0 6px; border: 1px solid var(--edge); background: var(--bg); color: var(--text); cursor: pointer; }
-  button.primary { background: var(--text); border-color: var(--text); color: var(--bg); }
+  button { font: inherit; font-size: 11px; line-height: 18px; padding: 0 6px; border: 1px solid var(--edge); border-radius: 4px; background: var(--control); color: var(--text); box-shadow: inset 0 1px var(--shine), 0 1px 3px var(--shadow); cursor: pointer; }
+  button:hover { background: var(--selected); border-color: var(--link); }
+  button:active { background: var(--selected); box-shadow: inset 0 1px 2px var(--shadow); }
+  button.primary { background: var(--primary-fill); border-color: var(--primary); color: var(--on-primary); }
+  button.primary:hover { border-color: var(--link); box-shadow: inset 0 1px var(--shine), 0 0 5px var(--edge); }
   button.inherited { border-color: var(--text); }
   button.danger { color: var(--bad); }
   .seg { display: inline-flex; flex-shrink: 0; }
+  .seg > button { border-radius: 0; }
+  .seg > button:first-child { border-radius: 4px 0 0 4px; }
+  .seg > button:last-child { border-radius: 0 4px 4px 0; }
   .seg > button + button { border-left: 0; }
   .decisions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
   .decisions > button { max-width: 100%; text-align: left; }
   summary { cursor: pointer; }
-  input, select, textarea { font: inherit; padding: 1px 6px; border: 1px solid var(--edge); background: var(--bg); color: var(--text); width: 100%; }
-  input[type=checkbox] { width: auto; }
+  input, select, textarea { font: inherit; padding: 1px 6px; border: 1px solid var(--edge); border-radius: 2px; background: var(--bg); color: var(--text); width: 100%; box-shadow: inset 0 1px 2px var(--shadow); }
+  input[type=checkbox] { width: auto; accent-color: var(--link); }
   label { display: block; font-size: 11px; color: var(--dim); margin: 6px 0 1px; }
   .acct { padding: 4px 0; border-bottom: 1px solid var(--line); }
-  .access-toggle { display: flex; align-items: center; gap: 4px; min-width: 0; padding: 0; border: 0; background: none; font: inherit; text-align: left; }
+  .access-toggle { display: flex; align-items: center; gap: 4px; min-width: 0; padding: 0; border: 0; background: none; box-shadow: none; font: inherit; text-align: left; }
   .access-toggle > b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .access-toggle > i { width: 10px; flex-shrink: 0; font-size: 9px; font-style: normal; color: var(--muted); }
   .access-toggle > .connector-icon { margin-right: 0; }
+  .access-toggle:hover, .access-toggle:active { background: none; box-shadow: none; }
+  .access-toggle:hover:not(:disabled) > b { color: var(--link); }
   .access-toggle:disabled { cursor: default; }
-  .action { margin-left: calc(var(--depth) * 12px); }
   .row { display: flex; gap: 6px; align-items: center; justify-content: space-between; margin-top: 4px; }
   .row > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .access-actions { display: grid; gap: 4px; padding: 4px 0 0 32px; }
+  .access-actions > .access-action { display: grid; grid-template-columns: minmax(0, 1fr) auto; margin: 0; }
   table { width: 100%; border-collapse: collapse; }
   th { text-align: left; font-weight: 400; color: var(--dim); }
   td { padding: 2px 4px 2px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -77,10 +128,72 @@
   .muted, .empty { color: var(--muted); } .ok { color: var(--ok); } .bad { color: var(--bad); } .warn { color: var(--warn); }
   .empty { padding: 0 8px; }
   #toast { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: .4rem 1rem; max-width: 40rem; }
+  #saving { position: fixed; right: 8px; bottom: 8px; padding: 1px 6px; border: 1px solid var(--edge); background: var(--control); color: var(--dim); font-size: 11px; }
+  :is(a, button, summary, input, select, textarea):focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 3px; }
+  .section-heading h2 { margin: 0; color: var(--dim); }
+  .section-heading > a { font-size: 10px; }
+  .count { margin-left: 4px; font-weight: 400; color: var(--muted); }
+  .action-list > * + * { border-top: 1px solid var(--line); }
+  .capability { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center; gap: 4px; padding: 2px 4px; list-style: none; }
+  .capability::-webkit-details-marker { display: none; }
+  .capability::before { content: ""; }
+  summary.capability::before { content: "▸"; color: var(--muted); font-size: 9px; }
+  .action-group[open] > summary.capability::before { content: "▾"; }
+  summary.capability:hover { background: var(--hover); }
+  .capability-name { overflow-wrap: anywhere; }
+  .capability-name small { margin-left: 5px; color: var(--muted); font-size: 10px; font-weight: 400; }
+  .action-group > summary .capability-name { font-weight: 600; }
+  .action-children { margin-left: 8px; border-left: 1px solid var(--edge); }
+  .effects { display: flex; flex-wrap: wrap; justify-content: flex-end; align-self: center; gap: 3px; max-width: 110px; }
+  .badge { display: inline-block; padding: 0 4px; border: 1px solid var(--edge); border-radius: 2px; background: var(--bg); color: var(--dim); font-size: 10px; line-height: 14px; white-space: nowrap; }
+  .effect-read, .level-read { color: #31657e; background: #edf7fc; border-color: #c8e0ec; }
+  .effect-write, .level-ask { color: #805d25; background: #faf5e9; border-color: #e7dabd; }
+  .effect-send { color: #69568c; background: #f4f1fa; border-color: #ded5ed; }
+  .effect-delete, .effect-admin { color: #963e3e; background: #fff2ef; border-color: #ebcec8; }
+  .level-allow { color: #43733d; background: #eff7e9; border-color: #cdddbe; }
+  .usage-columns { display: flex; justify-content: space-between; padding: 0 4px; font-size: 10px; color: var(--muted); border-bottom: 1px solid var(--line); }
+  .agent-list { padding: 0; margin: 0; list-style: none; }
+  .agent-list li + li { border-top: 1px solid var(--line); }
+  .agent-link { display: flex; gap: 6px; align-items: center; justify-content: space-between; padding: 2px 4px; }
+  .agent-link:hover { background: var(--hover); }
+  .agent-info { min-width: 0; overflow-wrap: anywhere; }
+  .agent-info strong { font-weight: 500; }
+  .agent-info small { margin-left: 5px; font-size: 10px; color: var(--muted); }
+  .agent-link > .badge { flex-shrink: 0; }
+  .account-header { padding: 8px 0; align-items: center; }
+  .account-header h1 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; overflow-wrap: anywhere; }
+  .account-header .connector-icon { width: 22px; height: 22px; margin-right: 0; padding: 2px; background: var(--bg); border-radius: 3px; }
+  .account-overview { display: grid; gap: 8px; align-items: start; margin-bottom: 8px; }
+  .account-card { min-width: 0; padding: 0; border: 1px solid var(--edge); border-radius: 4px; overflow: hidden; background: var(--card); box-shadow: inset 0 1px var(--shine), 0 3px 9px var(--shadow); }
+  .account-card .section-heading { padding: 4px 6px; margin: 0; background: var(--bar); border-bottom: 1px solid var(--edge); box-shadow: inset 0 1px var(--shine); }
+  .account-card .section-heading h2 { font-size: 11px; text-transform: none; letter-spacing: 0; }
+  .account-card .capability { padding: 3px 6px; }
+  .account-card .usage-columns { padding: 1px 6px; }
+  .account-card .agent-link { justify-content: flex-start; padding: 4px 6px; }
+  .account-card .agent-info { flex: 1; }
+  .account-card .agent-info small { display: block; margin: 0; line-height: 14px; }
+  .account-settings { margin-bottom: 8px; }
+  .settings-fields { display: grid; gap: 8px 16px; padding: 0 8px 8px; }
+  .settings-fields > div { min-width: 0; }
+  .settings-fields details { margin-top: 6px; }
+  .card-footer { display: flex; justify-content: flex-end; padding: 4px 6px; border-top: 1px solid var(--line); background: var(--control); }
+  @container details (min-width: 620px) {
+    .account-overview { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+    .settings-fields { grid-template-columns: 1fr 1fr; }
+  }
+  @media (prefers-color-scheme: dark) {
+    .effect-read, .level-read { color: #b0d4e9; background: #26353f; border-color: #405665; }
+    .effect-write, .level-ask { color: #e3c69b; background: #393329; border-color: #61533d; }
+    .effect-send { color: #ccbfeb; background: #343040; border-color: #534a66; }
+    .effect-delete, .effect-admin { color: #e9b1ab; background: #403032; border-color: #68494a; }
+    .level-allow { color: #b9d5ab; background: #2d382d; border-color: #4c6247; }
+  }
 </style>
 <div id="gate" hidden></div>
-<div id="app" hidden><aside id="tree" aria-label="Navigation"></aside><main id="list" aria-label="Activity"></main><aside id="pane" aria-label="Details" hidden></aside></div>
+<div id="app" hidden><aside id="tree" aria-label="Navigation"></aside><main id="pane" aria-label="Details" hidden></main><section id="list" aria-label="Activity and approvals"></section></div>
 <div id="toast" hidden></div>
+<div id="saving" role="status" hidden>Saving…</div>
 <script>
 const KEY = "monitor-owner-key", GENERATION = "monitor-generation", DISMISSED = "monitor-dismissed", RETURN = "monitor-sign-in-return";
 const REQUEST_POLL_MS = 5000, TOAST_MS = 5000;
@@ -96,6 +209,8 @@ const NEW_PRESET = { catalog: { group: "api", fields: [{ key: "token", label: "A
 
 // Keep the activity filter and return route while a request is open.
 let view = null, records = [], locked = false, scope = null, requestSource = "activity";
+let serverState = { view: null, records: [] }, sending = false, editVersion = 0, pollVersion = 0;
+const pendingEdits = [];
 let connectorIcons = {};
 const iconsReady = fetch("icons/manifest.json").then((res) => res.ok ? res.json() : {}).then((icons) => { connectorIcons = icons; }).catch(() => {});
 const expanded = new Set(["agents", "accounts"]);
@@ -146,7 +261,7 @@ function toast(text) {
 
 // run surfaces a failed action as a toast.
 const run = (fn) => async (...args) => {
-  try { await fn(...args); } catch (err) { toast(err.message); }
+  try { return await fn(...args); } catch (err) { render(); toast(err.message); }
 };
 
 async function api(method, path, body) {
@@ -154,26 +269,116 @@ async function api(method, path, body) {
   const text = await res.text();
   if (res.status === 401) sessionStorage.removeItem(KEY);
   locked = res.status === 423;
-  if (!res.ok) { render(); throw new Error(text.trim()); }
+  if (!res.ok) throw new Error(text.trim() || `Request failed (${res.status})`);
   return text ? JSON.parse(text) : null;
 }
 
 function remember(v) {
-  view = v;
+  serverState.view = v;
   localStorage.setItem(GENERATION, Math.max(v.generation, +localStorage.getItem(GENERATION) || 0));
+  project();
+}
+
+// Reapply pending edits over the last confirmed snapshot, including after a failed save.
+function project() {
+  const next = structuredClone(serverState);
+  for (const edit of pendingEdits) edit.update(next);
+  view = next.view;
+  records = next.records;
+  $("saving").hidden = pendingEdits.length === 0;
+  const count = pendingSoonest().length;
+  document.title = count ? `(${count}) Monitor` : "Monitor";
 }
 
 async function refresh() {
-  remember(await api("GET", "/"));
-  records = await api("GET", "/requests");
-  const pending = records.filter((r) => r.state === "pending").length;
-  document.title = pending ? `(${pending}) Monitor` : "Monitor";
+  if (pendingEdits.length || sending) return;
+  const version = editVersion, poll = ++pollVersion;
+  const [next, log] = await Promise.all([api("GET", "/"), api("GET", "/requests")]);
+  // A poll started before a click must never undo that click or a newer response.
+  if (version !== editVersion || poll !== pollVersion || pendingEdits.length) return;
+  serverState.records = log;
+  remember(next);
 }
 
-const patch = run(async (body, then) => {
-  remember(await api("PATCH", "/", body));
-  toast("Saved");
-  then ? (location.hash = then) : render();
+function edit(update, send, { then, message = "Saved" } = {}) {
+  return new Promise((resolve, reject) => {
+    const item = { update, send, message, resolve, reject, from: location.hash, to: then && "#" + then };
+    pendingEdits.push(item);
+    editVersion++;
+    try {
+      project();
+      if (item.to) location.hash = item.to;
+      render();
+    } catch (err) {
+      pendingEdits.pop();
+      project();
+      if (item.to && location.hash === item.to) location.hash = item.from;
+      render();
+      reject(err);
+      return;
+    }
+    if (!sending) flushEdits();
+  });
+}
+
+async function flushEdits() {
+  sending = true;
+  let failed = false, needsRefresh = false, message;
+  while (pendingEdits.length) {
+    const item = pendingEdits[0];
+    let result, error;
+    try { result = await item.send(); } catch (err) { error = err; }
+    pendingEdits.shift();
+    editVersion++;
+    if (!error) {
+      if (result) remember(result);
+      else { item.update(serverState); needsRefresh = true; project(); }
+      message = item.message;
+      render();
+      item.resolve();
+    } else {
+      failed = true;
+      needsRefresh = true;
+      project();
+      if (item.to && location.hash === item.to) location.hash = item.from;
+      render();
+      item.reject(error);
+    }
+  }
+  sending = false;
+  if (!failed && message) toast(message);
+  // Decisions return no snapshot; also reconcile uncertain network failures.
+  if (needsRefresh) {
+    try { await refresh(); render(); } catch (err) { toast(err.message); }
+  }
+}
+
+// JSON merge patch: null deletes a property; arrays replace the entire value.
+function mergePatch(target, patch) {
+  if (!patch || typeof patch !== "object" || Array.isArray(patch)) return structuredClone(patch);
+  const out = target && typeof target === "object" && !Array.isArray(target) ? { ...target } : {};
+  for (const [key, value] of Object.entries(patch)) {
+    if (value === null) delete out[key];
+    else Object.defineProperty(out, key, { value: mergePatch(Object.hasOwn(out, key) ? out[key] : undefined, value), enumerable: true, configurable: true, writable: true });
+  }
+  return out;
+}
+
+function previewConfig(state, body) {
+  state.view.config = mergePatch(state.view.config, body);
+  for (const name of Object.keys(body.presets ?? {})) {
+    const file = state.view.config.presets?.[name] ?? shippedFiles[name];
+    if (!file) continue; // A shipped preset not fetched yet needs the server's resolved catalog.
+    const previous = state.view.presets[name] ?? state.view.presets.custom, catalog = file.catalog ?? {};
+    state.view.presets[name] = { ...previous, ...catalog, title: typeof file.title === "string" ? file.title : name,
+      fields: Array.isArray(catalog.fields) ? catalog.fields : previous.fields ?? [],
+      actions: catalog.actions ?? {}, operations: file.operations ?? [], vocabulary: previous.vocabulary };
+  }
+}
+
+const patch = run((body, then, update = () => {}) => {
+  body = JSON.parse(JSON.stringify(body));
+  return edit((state) => { previewConfig(state, body); update(state); }, () => api("PATCH", "/", body), { then });
 });
 
 // sync redraws only the keyed parts whose markup changed, so open details, focus and typed input elsewhere survive.
@@ -220,6 +425,7 @@ function render() {
   const panes = { request: requestPane, agent, "agent-settings": agentSettings, pair, account, add, preset: presetPage, rules, settings };
   const parts = (html) => html.map((content, i) => [`${location.hash}/${i}`, content]).filter(([, content]) => content);
   $("app").classList.toggle("with-pane", !!panes[kind]);
+  $("list").setAttribute("role", panes[kind] ? "complementary" : "main");
   $("pane").hidden = !panes[kind];
   sync($("tree"), sidebar(kind, args[0]));
   sync($("list"), list(kind === "request" && args[0]));
@@ -314,7 +520,7 @@ function grantText(operation, grant, scope) {
 const saveText = (r) => grantText(r.operation, r.grant, r.scope);
 const saveButton = (r, text, primary) => r.action == null || !r.operation ? ""
   : `<button class="${primary ? "primary" : ""}" title="${esc(saveText(r))}" onclick="answer('${r.id}', 'save')">${esc(text)}</button>`;
-const decide = (r, saveLabel) => r.state === "pending"
+const decide = (r, saveLabel) => r.savingDecision ? "" : r.state === "pending"
   ? `<button onclick="answer('${r.id}', 'once')">Allow once</button>${saveButton(r, saveLabel, true)}<button class="danger" onclick="answer('${r.id}', 'deny')">Deny</button>`
   : r.state === "expired" ? `${saveButton(r, saveLabel)}<button onclick="dismiss('${r.id}')">Dismiss</button>` : "";
 
@@ -350,10 +556,18 @@ function requestPane(id) {
       ${draftLink(r) ? `<div class="row">${draftLink(r)}</div>` : ""}${buttons ? `<div class="decisions">${buttons}</div>` : ""}</section>`];
 }
 
-const answer = run(async (id, decision) => {
-  await api("POST", `/requests/${id}`, { decision });
-  await refresh();
-  render();
+const answer = run((id, decision) => {
+  const request = records.find((r) => r.id === id);
+  if (!request || request.savingDecision) return;
+  return edit((state) => {
+    state.records = state.records.map((r) => r.id === id ? { ...r, savingDecision: true,
+      state: r.state === "pending" ? decision === "deny" ? "denied" : "approved" : r.state } : r);
+    const identity = state.view.config.identities?.[request.identity];
+    if (decision === "save" && identity) identity.rules = [...(identity.rules ?? []), {
+      account: request.account, action: request.action, operation: request.operation,
+      scope: request.grant ?? {}, waives: request.gaps ?? [],
+    }];
+  }, () => api("POST", `/requests/${id}`, { decision }), { message: decision === "save" ? "Rule saved" : decision === "deny" ? "Denied" : "Approved" });
 });
 
 function dismiss(id) {
@@ -391,10 +605,10 @@ function agent(name) {
   const levels = Object.entries(accounts()).map(([a, acc]) => {
     const access = id.accounts?.[a] ?? { level: "off" };
     const c = entry(a);
-    const actions = access.level === "off" ? [] : tree(actionsOf(a)).map(([k, x, d]) => {
+    const actions = access.level === "off" ? [] : tree(actionsOf(a)).map(([k, x]) => {
       const effects = effectsOf(a, k), inherited = mode({ ...access, actions: { ...access.actions, [k]: null } }, c.vocabulary, effects, k);
       const own = access.actions?.[k];
-      return `<div class="row action" style="--depth: ${d}"><span title="${esc(effects.join(", "))}">${esc(x.title)}</span><span class="seg">${Object.entries(MODES).map(([m, t]) =>
+      return `<div class="row access-action"><span title="${esc(effects.join(", "))}">${esc(x.title)}</span><span class="seg">${Object.entries(MODES).map(([m, t]) =>
         `<button class="${m === own ? "primary" : !own && m === inherited ? "inherited" : ""}" onclick="patchAccess(${q(name)}, ${q(a)}, { actions: { [${q(k)}]: ${q(m === own ? null : m)} } })">${t}</button>`).join("")}</span></div>`;
     });
     const overrides = Object.values(access.actions ?? {}).filter(Boolean).length;
@@ -403,7 +617,7 @@ function agent(name) {
       <i>${actions.length ? open ? "▾" : "▸" : ""}</i>${accountIcon(a)}<b>${esc(a)}</b>${overrides && access.level !== "off" ? `<small class="muted" title="${overrides} action overrides" aria-label="${overrides} action overrides">${overrides}</small>` : ""}</button>
       <span class="seg" role="group" aria-label="Default access for ${esc(a)}">${Object.entries(LEVELS).map(([l, t]) =>
         `<button class="${l === access.level ? "primary" : ""}" aria-pressed="${l === access.level}" onclick="patchAccess(${q(name)}, ${q(a)}, { level: ${q(l)} })">${t}</button>`).join("")}</span></div>
-      <div id="${esc(key)}" ${open ? "" : "hidden"}>${actions.join("")}</div></div>`;
+      <div class="access-actions" id="${esc(key)}" ${open ? "" : "hidden"}>${actions.join("")}</div></div>`;
   });
   const reaches = (pred) => Object.entries(accounts()).some(([a, acc]) => (id.accounts?.[a]?.level ?? "off") !== "off" && pred(acc));
   const hint = lattices().confidentiality && reaches((acc) => acc.preset === "web") && reaches((acc) => acc.contents !== "anyone")
@@ -470,19 +684,20 @@ const removeAgent = (name) => patch({ identities: Object.fromEntries(Object.entr
 
 const patchAccess = (name, account, access) => patch({ identities: { [name]: { accounts: { [account]: access } } } });
 
-const setLabel = run(async (name, label) => {
-  remember(await api("POST", "/labels/" + encodeURIComponent(name), label));
-  render();
-});
+const setLabel = run((name, label) => edit((state) => {
+  state.view.labels[name] = { ...label, because: {
+    ...(label.trust !== "trusted" && { trust: "the owner" }),
+    ...(label.audience !== "anyone" && { audience: "the owner" }),
+  } };
+}, () => api("POST", "/labels/" + encodeURIComponent(name), label)));
 
 const removeRule = (name, i) => patch({ identities: { [name]: { rules: ids()[name].rules.filter((_, j) => j !== i) } } });
 
-// Merge patches merge nested objects, so the old settings are cleared before the copy lands.
-const copySettings = run(async (name) => {
+// Explicit deletions replace the nested account map in one atomic merge patch.
+const copySettings = (name) => {
   const from = ids()[$("from").value];
-  remember(await api("PATCH", "/", { identities: { [name]: { accounts: null, rules: null } } }));
-  patch({ identities: { [name]: { accounts: from.accounts ?? {}, rules: from.rules ?? [] } } });
-});
+  return patch({ identities: { [name]: { accounts: changes(ids()[name].accounts, from.accounts ?? {}), rules: from.rules ?? [] } } });
+};
 
 const mcpKeys = (a) => Object.entries(accounts()[a].connections ?? {}).filter(([, kinds]) => kinds.mcp).map(([key]) => key);
 const connName = (a, key) => (key ? `${a}-${key}` : a);
@@ -554,9 +769,9 @@ const savePreset = run(async (name) => {
 
 function questions(a) {
   const pick = (id, value) => `<select id="${id}">${AUDIENCES.map((x) => opt(x, WHO[x], value)).join("")}</select>`;
-  return `<label>Who should see what's in here?</label>${pick("contents", a.contents)}
+  return `<label for="contents">Who should see what's in here?</label>${pick("contents", a.contents)}
     <label><input type="checkbox" id="strangers" ${a.strangers ? "checked" : ""}> Strangers can put content here</label>
-    <label>Who sees what the agent sends here?</label>${pick("sends", a.sends)}`;
+    <label for="sends">Who sees what the agent sends here?</label>${pick("sends", a.sends)}`;
 }
 
 const answers = () => ({ contents: $("contents").value, strangers: $("strangers").checked, sends: $("sends").value });
@@ -645,20 +860,54 @@ function credentialEditor(a, f) {
     ${input(f, undefined, true)}${f.kind.startsWith("oauth") || grantTemplate(a, f) ? `<div class="row"><span></span><button onclick="signIn(${q(a)}, ${q(f.key)})">Sign in</button></div>` : ""}`);
 }
 
+function accountActions(a) {
+  const roots = new Map();
+  for (const [key, action] of tree(actionsOf(a))) {
+    let children = roots;
+    key.split(".").forEach((part, i, parts) => {
+      const path = parts.slice(0, i + 1).join(".");
+      if (!children.has(part)) children.set(part, { key: path, title: part.charAt(0).toUpperCase() + part.slice(1).replace(/[_-]/g, " "), children: new Map() });
+      const node = children.get(part);
+      if (path === key) { node.title = action.title || key; node.action = true; }
+      children = node.children;
+    });
+  }
+  const count = (node) => Number(!!node.action) + [...node.children.values()].reduce((n, child) => n + count(child), 0);
+  const renderAction = (node) => {
+    const effects = effectsOf(a, node.key), children = [...node.children.values()];
+    const total = children.reduce((n, child) => n + count(child), 0);
+    const badges = effects.map((effect) => `<span class="badge ${["read", "write", "send", "delete", "admin"].includes(effect) ? "effect-" + effect : ""}">${esc(effect.charAt(0).toUpperCase() + effect.slice(1))}</span>`).join("");
+    const row = `<span class="capability-name">${esc(node.title)}${children.length ? ` <small title="${total} subaction${total === 1 ? "" : "s"}" aria-label="${total} subaction${total === 1 ? "" : "s"}">${total}</small>` : ""}</span><span class="effects" aria-label="Effects">${badges || `<span class="muted">No effects</span>`}</span>`;
+    return children.length
+      ? `<details class="action-group" data-disclosure="${esc(a + "/" + node.key)}"><summary class="capability">${row}</summary><div class="action-children">${children.map(renderAction).join("")}</div></details>`
+      : `<div class="capability">${row}</div>`;
+  };
+  return [...roots.values()].map(renderAction).join("") || `<p class="empty">This preset doesn't define any actions yet.</p>`;
+}
+
+function accountUsers(a) {
+  const users = Object.entries(ids()).filter(([, id]) => (id.accounts?.[a]?.level ?? "off") !== "off");
+  return `<section class="account-card"><div class="section-heading"><h2>Used by <span class="count">${users.length}</span></h2></div>
+    ${users.length ? `<div class="usage-columns"><span>Agent</span><span>Default access</span></div><ul class="agent-list">${users.map(([name, id]) => {
+      const access = id.accounts[a], overrides = Object.values(access.actions ?? {}).filter(Boolean).length;
+      return `<li><a class="agent-link" href="#agent/${encodeURIComponent(name)}"><span class="agent-info"><strong>${esc(name)}</strong>${id.profile ? ` <small>Profiling on</small>` : ""} <small>${overrides ? `${overrides} action override${overrides === 1 ? "" : "s"}` : "No action overrides"}</small></span>
+        <span class="badge ${["read", "ask", "allow"].includes(access.level) ? "level-" + access.level : ""}">${esc(LEVELS[access.level] ?? access.level)}</span></a></li>`;
+    }).join("")}</ul>` : `<p class="empty">No agents have access to this account.</p>`}</section>`;
+}
+
 function account(a) {
   const acc = accounts()[a];
   if (!acc) return [head(esc(a)), `<p class="empty">No account ${esc(a)}.</p>`];
   const c = entry(a);
-  const users = Object.entries(ids()).filter(([, id]) => (id.accounts?.[a]?.level ?? "off") !== "off").map(([n, id]) => `${n} (${id.accounts[a].level})`);
-  return [head(accountIcon(a) + esc(a), `${esc(c.title)} ${accountStatus(a)}`),
-    `<section>${questions(acc)}
-      ${plain(c).map((f) => `<label>${esc(f.label)}</label>${input(f, fieldValue(acc, f))}`).join("")}
-      ${credentialFields(a).map((f) => credentialEditor(a, f)).join("")}
-      <div class="row"><span></span><button class="primary" onclick="saveAccount(${q(a)})">Save</button></div></section>`,
-    `<section><h2>Actions</h2>${tree(actionsOf(a)).map(([k, x, d]) => `<div class="action" style="--depth: ${d}">${esc(x.title)} <span class="muted">${esc(effectsOf(a, k).join(", "))}</span></div>`).join("")}<p class="muted">Used by ${esc(users.join(", ") || "no agents")}</p>
-      <a href="#preset/${encodeURIComponent(acc.preset)}">Edit preset</a></section>`,
+  const fields = plain(c), credentials = credentialFields(a);
+  return [`<header class="account-header">${accountIcon(a)}<h1>${esc(a)}</h1><span class="muted">${esc(c.title)} ${accountStatus(a)}</span><a class="x" href="#activity" aria-label="Close account">✕</a></header>`,
+    `<div class="account-overview"><section class="account-card"><div class="section-heading"><h2>Actions <span class="count">${Object.keys(actionsOf(a)).length}</span></h2><a href="#preset/${encodeURIComponent(acc.preset)}">Edit preset</a></div>
+      <div class="action-list">${accountActions(a)}</div></section>${accountUsers(a)}</div>`,
+    `<section class="account-card account-settings"><div class="section-heading"><h2>Account settings</h2></div><div class="settings-fields"><div>${questions(acc)}</div>
+      ${fields.length || credentials.length ? `<div>${fields.map((f) => `<label for="f-${esc(f.key)}">${esc(f.label)}</label>${input(f, fieldValue(acc, f))}`).join("")}${credentials.map((f) => credentialEditor(a, f)).join("")}</div>` : ""}</div>
+      <div class="card-footer"><button class="primary" onclick="saveAccount(${q(a)})">Save</button></div></section>`,
     ...mcpKeys(a).map((k) => review(a, k, c)),
-    `<section><details><summary class="hd">Custom rules</summary><textarea id="policy" rows="12">${esc(view.config.policies?.[a])}</textarea>
+    `<section><details data-disclosure="custom-rules"><summary class="hd">Custom rules</summary><textarea id="policy" aria-label="Custom rules" rows="12">${esc(view.config.policies?.[a])}</textarea>
       <div class="row"><span></span><button onclick="patch({ policies: { [${q(a)}]: $('policy').value.trim() || null } })">Save rules</button></div></details></section>`,
     `<section><button class="danger" onclick="removeAccount(${q(a)})">Remove account</button></section>`];
 }
@@ -674,7 +923,8 @@ function review(a, key, c) {
     <div class="row"><span></span><button class="primary" onclick="approve(${q(a)}, ${q(key)})">Approve</button></div></section>`;
 }
 
-const approve = (a, key) => patch({ accounts: { [a]: { connections: { [key]: { mcp: { pin: view.status[connName(a, key)].pin } } } } } });
+const approve = (a, key) => patch({ accounts: { [a]: { connections: { [key]: { mcp: { pin: view.status[connName(a, key)].pin } } } } } }, undefined,
+  (state) => { state.view.status[connName(a, key)] = { ...state.view.status[connName(a, key)], blocked: 0, changes: [] }; });
 
 const saveAccount = (a) => {
   const acc = accounts()[a], update = answers();

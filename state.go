@@ -184,7 +184,12 @@ func (m *monitor) patch(ctx context.Context, patch []byte) (*state, error) {
 		return nil, err
 	}
 	for key := range m.streams {
-		if _, exists := s.principals[key]; !exists || s.cfg.Lattices != old.cfg.Lattices {
+		p, exists := s.principals[key]
+		sameAccess := maps.EqualFunc(old.principals[key].Accounts, p.Accounts, func(a, b access) bool {
+			return a.Level == b.Level && maps.Equal(a.Actions, b.Actions)
+		})
+		// Raw sessions cannot recheck permissions for each byte after admission.
+		if !exists || !sameAccess || s.cfg.Lattices != old.cfg.Lattices {
 			m.retireStreamsLocked(key, nil)
 		}
 	}
