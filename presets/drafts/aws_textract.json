@@ -17,7 +17,8 @@
       "write.textract": {"title": "Write: textract"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "AnalyzeDocument", "action": "generate.textract", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Textract.AnalyzeDocument"}, "body": "any", "scope": {}},
     {"id": "AnalyzeExpense", "action": "generate.textract", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Textract.AnalyzeExpense"}, "body": "any", "scope": {}},
     {"id": "AnalyzeID", "action": "generate.textract", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Textract.AnalyzeID"}, "body": "any", "scope": {}},
@@ -44,4 +45,5 @@
     {"id": "UntagResource", "action": "write.textract", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Textract.UntagResource"}, "body": "any", "scope": {}},
     {"id": "UpdateAdapter", "action": "write.textract", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Textract.UpdateAdapter"}, "body": "any", "scope": {}}
   ]
+  }
 }

@@ -57,7 +57,8 @@
       "write.upload": {"title": "Write: upload"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "get-actions-connector-connectorid-oauth-start", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/actions/connector/{connectorId}/oauth/start", "scope": {"connectorId": {"from": "path", "at": "connectorId"}}},
     {"id": "get-actions-connector-id", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/actions/connector/{id}", "params": ["code", "state", "error", "error_description", "session_state"], "scope": {"id": {"from": "path", "at": "id"}}},
     {"id": "post-actions-connector-id", "action": "write.connector", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/actions/connector/{id}", "body": "any", "scope": {"id": {"from": "path", "at": "id"}}},
@@ -147,4 +148,5 @@
     {"id": "EndpointScriptLibraryGetOneScript", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/endpoint/scripts_library/{script_id}", "scope": {"script_id": {"from": "path", "at": "script_id"}}},
     {"id": "EndpointScriptLibraryDownloadScript", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/endpoint/scripts_library/{script_id}/download", "scope": {"script_id": {"from": "path", "at": "script_id"}}}
   ]
+  }
 }

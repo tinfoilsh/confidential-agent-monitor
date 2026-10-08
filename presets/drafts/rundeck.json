@@ -83,7 +83,8 @@
       "write.update_members": {"title": "Write: update members"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "info", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/", "scope": {}},
     {"id": "appContextAuthorizationsForResourceKind", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/authorizations/application/{kind}", "params": ["actions"], "scope": {"kind": {"from": "path", "at": "kind"}}},
     {"id": "appContextAuthorizationsForTypeWithSpecifier", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/authorizations/application/{type}/{specifier}", "params": ["actions"], "scope": {"type": {"from": "path", "at": "type"}, "specifier": {"from": "path", "at": "specifier"}}},
@@ -320,4 +321,5 @@
     {"id": "getUserClass", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/userclass/user/{username}", "scope": {"username": {"from": "path", "at": "username"}}},
     {"id": "post", "action": "admin.webhook", "effects": ["admin"], "method": "POST", "origin": "{origin}", "path": "/webhook/{authtoken}", "scope": {"authtoken": {"from": "path", "at": "authtoken"}}}
   ]
+  }
 }

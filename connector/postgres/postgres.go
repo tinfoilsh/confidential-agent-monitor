@@ -6,12 +6,15 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"regexp"
+	"slices"
+	"strings"
 	"sync/atomic"
 
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgproto3"
-
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/facts"
 )
 
 const (
@@ -134,7 +137,7 @@ func relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.Hij
 			sql = msg.Query
 		}
 		if sql != "" {
-			if err := s.Gate(connector.Event{Postgres: &connector.PostgresLayer{SQL: sql}}); err != nil {
+			if err := s.Gate(&Request{SQL: sql}); err != nil {
 				backend.Send(&pgproto3.ErrorResponse{Severity: "ERROR", Code: "42501", Message: err.Error()})
 				if _, simple := msg.(*pgproto3.Query); simple {
 					backend.Send(&pgproto3.ReadyForQuery{TxStatus: byte(status.Load())})
@@ -150,4 +153,25 @@ func relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.Hij
 			return
 		}
 	}
+}
+
+type Request struct {
+	SQL string `json:"sql"`
+}
+
+func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+	details := map[string]any{"postgres": v}
+	action := "write"
+	if plainRead(v.SQL) {
+		action = "read"
+	}
+	return facts.Facts{Operation: &facts.Operation{Action: action, RequiresTrust: action == "write"}, Title: "Run " + v.SQL, Parameters: map[string]any{"sql": v.SQL}, Details: details}, connector.Approval{}, nil
+}
+
+var sqlFirst = regexp.MustCompile(`^\w+`)
+var sqlUnsafe = regexp.MustCompile(`(?i)\b(into|for\s+(no\s+key\s+)?(update|share)|for\s+key\s+share|analyze)\b`)
+
+func plainRead(sql string) bool {
+	sql = strings.TrimSuffix(strings.TrimSpace(sql), ";")
+	return !strings.Contains(sql, ";") && slices.Contains(strings.Fields("SELECT SHOW TABLE VALUES EXPLAIN BEGIN COMMIT ROLLBACK END"), strings.ToUpper(sqlFirst.FindString(sql))) && !sqlUnsafe.MatchString(sql)
 }

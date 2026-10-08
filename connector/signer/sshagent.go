@@ -4,10 +4,9 @@ import (
 	"errors"
 	"log"
 
+	"github.com/tinfoilsh/monitor/connector"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
-
-	"github.com/tinfoilsh/monitor/connector"
 )
 
 const (
@@ -50,7 +49,7 @@ func (a gatedAgent) Sign(key ssh.PublicKey, data []byte) (*ssh.Signature, error)
 }
 
 func (a gatedAgent) SignWithFlags(key ssh.PublicKey, data []byte, flags agent.SignatureFlags) (*ssh.Signature, error) {
-	if err := a.s.Gate(connector.Event{Sign: signEvent(key, data)}); err != nil {
+	if err := a.s.Gate(signEvent(key, data)); err != nil {
 		return nil, err
 	}
 	return a.ExtendedAgent.SignWithFlags(key, data, flags)
@@ -65,8 +64,8 @@ func (gatedAgent) Extension(string, []byte) ([]byte, error) {
 	return nil, agent.ErrExtensionUnsupported
 }
 
-func signEvent(key ssh.PublicKey, data []byte) *connector.SignLayer {
-	sign := &connector.SignLayer{Agent: "ssh", Key: ssh.FingerprintSHA256(key), Purpose: "other"}
+func signEvent(key ssh.PublicKey, data []byte) *Request {
+	sign := &Request{Agent: "ssh", Key: ssh.FingerprintSHA256(key), Purpose: "other"}
 	var sig struct {
 		Magic     [6]byte
 		Namespace string

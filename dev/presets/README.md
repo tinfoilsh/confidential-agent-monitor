@@ -36,6 +36,8 @@ The files have different roles:
 
 Git ignores `.cache/`, `candidates/`, `coverage/`, `snapshots/`, and temporary `.generate-*` files. Keep the generator code, source definitions and lock, and shipped presets in version control. Run `fetch` and `generate` before checking candidates in a fresh checkout. If an upstream source no longer serves the locked content, restore the matching local cache or snapshot, or run `update` for that provider and review the changed lock before regenerating.
 
+HTTP definitions live under `http.operations`; protocol sections such as `mcp` remain separate.
+
 Regeneration reads the shipped presets on every run and preserves their operation IDs, effects, request constraints, scopes, grants, and destinations. It groups actions by resource and writes candidates and coverage reports. There is no separate baseline folder to keep in sync. Changing a shipped preset invalidates its previous coverage report until regeneration.
 
 Actions use resource paths followed by a capability, such as `repos.hooks.read`,

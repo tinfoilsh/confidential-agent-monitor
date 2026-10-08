@@ -16,11 +16,13 @@
       "write.runtime_scope": {"title": "Write: runtime scope"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "Pagination", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/", "scope": {}},
     {"id": "POST /", "action": "share.platform_scope", "effects": ["share"], "method": "POST", "origin": "{origin}", "path": "/", "body": "any", "scope": {}},
     {"id": "PUT /", "action": "publish.project_scope", "effects": ["publish"], "method": "PUT", "origin": "{origin}", "path": "/", "body": "any", "scope": {}},
     {"id": "DELETE /", "action": "delete.platform_scope", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/", "scope": {}},
     {"id": "PATCH /", "action": "write.runtime_scope", "effects": ["write"], "method": "PATCH", "origin": "{origin}", "path": "/", "body": "any", "scope": {}}
   ]
+  }
 }

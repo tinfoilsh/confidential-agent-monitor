@@ -13,10 +13,12 @@
       "write": {"title": "Write"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "GET /", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://stackby.com", "path": "/", "scope": {}},
     {"id": "POST /", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://stackby.com", "path": "/", "body": "any", "scope": {}},
     {"id": "PATCH /", "action": "write", "effects": ["write"], "method": "PATCH", "origin": "https://stackby.com", "path": "/", "body": "any", "scope": {}},
     {"id": "DELETE /", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://stackby.com", "path": "/", "body": "any", "scope": {}}
   ]
+  }
 }

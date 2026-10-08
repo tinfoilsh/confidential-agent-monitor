@@ -24,7 +24,8 @@
       "write.visibility": {"title": "Write: visibility"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getAvailableCountries", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://urlscan.io", "path": "/api/v1/availableCountries", "scope": {}},
     {"id": "getDatadumpLink", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://urlscan.io", "path": "/api/v1/datadump/link/{path}", "scope": {"path": {"from": "path", "at": "path"}}},
     {"id": "listDatadumps", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://urlscan.io", "path": "/api/v1/datadump/list/{timeWindow}/{fileType}/{date}", "scope": {"timeWindow": {"from": "path", "at": "timeWindow"}, "fileType": {"from": "path", "at": "fileType"}, "date": {"from": "path", "at": "date"}}},
@@ -75,4 +76,5 @@
     {"id": "getScreenshot", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://urlscan.io", "path": "/screenshots/{scanId}.png", "scope": {"scanId": {"from": "path", "at": "scanId"}}},
     {"id": "getUsername", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://urlscan.io", "path": "/user/username", "scope": {}}
   ]
+  }
 }

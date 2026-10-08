@@ -153,7 +153,8 @@
       "write.url_whitelistings": {"title": "Write: url whitelistings"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "create-an-account-1", "action": "write.account_contacts", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/accountContacts", "body": "any", "scope": {}},
     {"id": "list-all-associations-1", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/accountContacts", "params": ["filters[contact]", "filters[account]"], "scope": {}},
     {"id": "delete-an-association-1", "action": "delete.account_contacts", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/accountContacts/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
@@ -554,4 +555,5 @@
     {"id": "update-webhook", "action": "admin.webhooks", "effects": ["admin"], "method": "PUT", "origin": "{origin}", "path": "/webhooks/{id}", "body": "any", "scope": {"id": {"from": "path", "at": "id"}}},
     {"id": "get-webhook", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/webhooks/{id}", "scope": {"id": {"from": "path", "at": "id"}}}
   ]
+  }
 }

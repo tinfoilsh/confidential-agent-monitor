@@ -90,7 +90,8 @@
       "write.x509": {"title": "Write: x509"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "POST-v1-alerts-email-test", "action": "write.test", "effects": ["write"], "method": "POST", "origin": "https://api.mailgun.net", "path": "/v1/alerts/email/test", "body": "json", "scope": {}},
     {"id": "GET-v1-alerts-events", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.mailgun.net", "path": "/v1/alerts/events", "scope": {}},
     {"id": "GET-v1-alerts-settings", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.mailgun.net", "path": "/v1/alerts/settings", "scope": {}},
@@ -302,4 +303,5 @@
     {"id": "get-v5-users", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.mailgun.net", "path": "/v5/users", "params": ["role", "limit", "skip"], "scope": {}},
     {"id": "get-v5-users-user_id", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.mailgun.net", "path": "/v5/users/{user_id}", "scope": {"user_id": {"from": "path", "at": "user_id"}}}
   ]
+  }
 }

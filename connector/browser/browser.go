@@ -27,9 +27,9 @@ import (
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
 	"github.com/elazarl/goproxy"
-
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/web"
+	"github.com/tinfoilsh/monitor/facts"
 )
 
 const (
@@ -223,11 +223,11 @@ func (b *Browser) handle(command string, do func(context.Context, request) ([]by
 			return
 		}
 		u, _ := url.Parse(page)
-		layer := &connector.BrowserLayer{Command: command, URL: u.String(), Host: strings.ToLower(u.Hostname()), Text: req.Text}
+		layer := &Request{Command: command, URL: u.String(), Host: strings.ToLower(u.Hostname()), Text: req.Text}
 		if req.slot != nil {
 			layer.Secrets = []string{req.slot.Value}
 		}
-		if err := stream.Gate(connector.Event{Browser: layer}); err != nil {
+		if err := stream.Gate(layer); err != nil {
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
 		}
@@ -688,4 +688,34 @@ func (b *Browser) call(ctx context.Context, function string) (string, error) {
 	defer cancel()
 	defer context.AfterFunc(ctx, cancel)()
 	return chromedp.Run(worker, chromedp.Evaluate[string](fmt.Sprintf("%s(%q)", function, id), chromedp.EvalAwaitPromise))
+}
+
+type Request struct {
+	Command string   `json:"command"`
+	URL     string   `json:"url"`
+	Host    string   `json:"host"`
+	Text    string   `json:"text,omitempty"`
+	Secrets []string `json:"secrets,omitempty"`
+}
+
+func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+	details := map[string]any{"browser": v}
+	var config struct{ Slots []json.RawMessage }
+	if err := c.DecodeConfig(&config); err != nil {
+		return facts.Facts{Details: details}, connector.Approval{}, err
+	}
+	action := map[string]string{"navigate": "browse", "snapshot": "browse", "text": "browse", "screenshot": "browse", "click": "submit", "type": "submit", "fill": "submit"}[v.Command]
+	scope := map[string]any{"host": v.Host}
+	if len(v.Secrets) > 0 {
+		action, scope["secrets"] = "login", v.Secrets
+	}
+	observes := c.Observation
+	if len(config.Slots) == 0 {
+		observes.Audience = "anyone"
+	}
+	op := &facts.Operation{Action: action, RequiresTrust: action == "login"}
+	if action == "" {
+		op = nil
+	}
+	return facts.Facts{Operation: op, Title: v.Command + " " + v.URL, Parameters: scope, Details: details, Context: facts.Context{Observes: observes}}, connector.Approval{}, nil
 }

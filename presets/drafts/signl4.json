@@ -101,7 +101,8 @@
       "write.years": {"title": "Write: years"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "POST /api/v2/alerts", "action": "write.alerts", "effects": ["write"], "method": "POST", "origin": "https://connect.signl4.com", "path": "/api/v2/alerts", "body": "any", "scope": {}},
     {"id": "POST /api/v2/alerts/acknowledgeAll", "action": "write.acknowledge_all", "effects": ["write"], "method": "POST", "origin": "https://connect.signl4.com", "path": "/api/v2/alerts/acknowledgeAll", "params": ["userId"], "body": "any", "scope": {}},
     {"id": "GET /api/v2/alerts/acknowledgeAll/status", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://connect.signl4.com", "path": "/api/v2/alerts/acknowledgeAll/status", "params": ["teamId", "userId"], "scope": {}},
@@ -319,4 +320,5 @@
     {"id": "POST /api/v2/webhooks/{webhookId}/disable", "action": "admin.webhooks", "effects": ["admin"], "method": "POST", "origin": "https://connect.signl4.com", "path": "/api/v2/webhooks/{webhookId}/disable", "scope": {"webhookId": {"from": "path", "at": "webhookId"}}},
     {"id": "POST /api/v2/webhooks/{webhookId}/enable", "action": "admin.webhooks", "effects": ["admin"], "method": "POST", "origin": "https://connect.signl4.com", "path": "/api/v2/webhooks/{webhookId}/enable", "scope": {"webhookId": {"from": "path", "at": "webhookId"}}}
   ]
+  }
 }

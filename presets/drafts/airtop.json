@@ -38,7 +38,8 @@
       "write.windows": {"title": "Write: windows"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "windows_async-create-automation", "action": "write.create_automation", "effects": ["write"], "method": "POST", "origin": "https://api.airtop.ai", "path": "/api/v1/async/sessions/{sessionId}/windows/{windowId}/create-automation", "body": "any", "scope": {"sessionId": {"from": "path", "at": "sessionId"}, "windowId": {"from": "path", "at": "windowId"}}},
     {"id": "windows_async-create-form-filler", "action": "write.create_form_filler", "effects": ["write"], "method": "POST", "origin": "https://api.airtop.ai", "path": "/api/v1/async/sessions/{sessionId}/windows/{windowId}/create-form-filler", "body": "any", "scope": {"sessionId": {"from": "path", "at": "sessionId"}, "windowId": {"from": "path", "at": "windowId"}}},
     {"id": "windows_async-execute-automation", "action": "execute.windows", "effects": ["execute"], "method": "POST", "origin": "https://api.airtop.ai", "path": "/api/v1/async/sessions/{sessionId}/windows/{windowId}/execute-automation", "body": "any", "scope": {"sessionId": {"from": "path", "at": "sessionId"}, "windowId": {"from": "path", "at": "windowId"}}},
@@ -79,4 +80,5 @@
     {"id": "windows_summarize-content", "action": "generate.summarize_content", "effects": ["generate"], "method": "POST", "origin": "https://api.airtop.ai", "path": "/api/v1/sessions/{sessionId}/windows/{windowId}/summarize-content", "body": "any", "scope": {"sessionId": {"from": "path", "at": "sessionId"}, "windowId": {"from": "path", "at": "windowId"}}},
     {"id": "windows_type", "action": "write.type", "effects": ["write"], "method": "POST", "origin": "https://api.airtop.ai", "path": "/api/v1/sessions/{sessionId}/windows/{windowId}/type", "body": "any", "scope": {"sessionId": {"from": "path", "at": "sessionId"}, "windowId": {"from": "path", "at": "windowId"}}}
   ]
+  }
 }

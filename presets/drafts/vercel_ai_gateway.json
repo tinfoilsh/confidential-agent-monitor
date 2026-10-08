@@ -21,7 +21,8 @@
       "read": {"title": "Read everything the account can see"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "listChatCompletions", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://ai-gateway.vercel.sh", "path": "/v1/chat/completions", "params": ["model", "metadata", "after", "limit", "order"], "scope": {}},
     {"id": "createChatCompletion", "action": "generate.completions", "effects": ["generate"], "method": "POST", "origin": "https://ai-gateway.vercel.sh", "path": "/v1/chat/completions", "body": "json", "scope": {}},
     {"id": "deleteChatCompletion", "action": "delete.completions", "effects": ["delete"], "method": "DELETE", "origin": "https://ai-gateway.vercel.sh", "path": "/v1/chat/completions/{completion_id}", "scope": {"completion_id": {"from": "path", "at": "completion_id"}}},
@@ -46,4 +47,5 @@
     {"id": "beta_listInputItems", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://ai-gateway.vercel.sh", "path": "/v1/responses/{response_id}/input_items?beta=true", "params": ["limit", "order", "after", "include"], "scope": {"response_id": {"from": "path", "at": "response_id"}}},
     {"id": "beta_createResponse", "action": "generate.responses?beta=true", "effects": ["generate"], "method": "POST", "origin": "https://ai-gateway.vercel.sh", "path": "/v1/responses?beta=true", "body": "json", "scope": {}}
   ]
+  }
 }

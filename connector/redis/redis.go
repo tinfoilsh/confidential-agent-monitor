@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/tidwall/redcon"
-
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/facts"
 )
 
 const (
@@ -58,7 +58,7 @@ func (r *Redis) Serve(s *connector.Stream, e *connector.Env) {
 		for i, arg := range cmd.Args {
 			args[i] = string(arg)
 		}
-		if err := s.Gate(connector.Event{Redis: &connector.RedisLayer{Command: commandName(args), Argv: args}}); err != nil {
+		if err := s.Gate(&Request{Command: commandName(args), Argv: args}); err != nil {
 			if _, err := s.Write(redcon.AppendError(nil, "ERR "+err.Error())); err != nil {
 				return
 			}
@@ -121,3 +121,19 @@ func encode(args [][]byte) []byte {
 	}
 	return out
 }
+
+type Request struct {
+	Command string   `json:"command"`
+	Argv    []string `json:"argv"`
+}
+
+func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+	details := map[string]any{"redis": v}
+	action := "write"
+	if slices.Contains(redisReads, v.Command) {
+		action = "read"
+	}
+	return facts.Facts{Operation: &facts.Operation{Action: action, RequiresTrust: action == "write"}, Title: strings.Join(v.Argv[:min(2, len(v.Argv))], " "), Parameters: map[string]any{"command": v.Command, "argv": v.Argv}, Details: details}, connector.Approval{}, nil
+}
+
+var redisReads = strings.Fields("AUTH HELLO PING ECHO SELECT QUIT MULTI EXEC DISCARD WATCH UNWATCH SUBSCRIBE PSUBSCRIBE UNSUBSCRIBE PUNSUBSCRIBE INFO DBSIZE TIME COMMAND COMMAND|COUNT COMMAND|DOCS COMMAND|INFO COMMAND|LIST COMMAND|GETKEYS COMMAND|GETKEYSANDFLAGS CLIENT|SETNAME CLIENT|SETINFO CLIENT|GETNAME CLIENT|ID CLIENT|INFO TYPE TTL PTTL EXISTS KEYS SCAN RANDOMKEY DUMP OBJECT|ENCODING OBJECT|FREQ OBJECT|IDLETIME OBJECT|REFCOUNT GET MGET GETRANGE STRLEN GETBIT BITCOUNT PFCOUNT HGET HMGET HGETALL HKEYS HVALS HLEN HEXISTS HSCAN LRANGE LLEN LINDEX LPOS SMEMBERS SISMEMBER SMISMEMBER SCARD SSCAN ZRANGE ZRANGEBYSCORE ZREVRANGE ZREVRANGEBYSCORE ZSCORE ZMSCORE ZCARD ZCOUNT ZRANK ZREVRANK ZSCAN XRANGE XREVRANGE XREAD XLEN XINFO|CONSUMERS XINFO|GROUPS XINFO|STREAM GEOPOS GEODIST GEOSEARCH")

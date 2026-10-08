@@ -250,7 +250,7 @@ const STATE_CLASS = { allowed: "", approved: "", refused: "bad", denied: "bad", 
 // A new preset starts as one bearer-token API; the owner sets its origin, slots and operations.
 const NEW_PRESET = { catalog: { group: "api", fields: [{ key: "token", label: "API token", secret: true, path: ["connections", "", "http", "values", "token"] }],
   connections: { "": { http: { slots: [{ value: "token", origin: "https://api.example.com", path: "/", header: "Authorization", prefix: "Bearer " }] } } },
-  defaults: { contents: "me", strangers: true, sends: "me" } }, operations: [] };
+  defaults: { contents: "me", strangers: true, sends: "me" } }, http: { operations: [] } };
 
 // Keep the activity filter and return route while a request is open.
 let view = null, records = [], locked = false, scope = null, requestSource = "activity";
@@ -427,7 +427,7 @@ function previewConfig(state, body) {
     const previous = state.view.presets[name] ?? state.view.presets.custom, catalog = file.catalog ?? {};
     state.view.presets[name] = { ...previous, ...catalog, title: typeof file.title === "string" ? file.title : name,
       fields: Array.isArray(catalog.fields) ? catalog.fields : previous.fields ?? [],
-      actions: catalog.actions ?? {}, operations: file.operations ?? [], vocabulary: previous.vocabulary };
+      actions: catalog.actions ?? {}, operations: file.http?.operations ?? [], vocabulary: previous.vocabulary };
   }
 }
 
@@ -518,7 +518,7 @@ function sidebar(kind, arg) {
     node("needs", `href="#needs"`, `${pending.length ? `<span class="bang">!</span> ` : ""}Approvals`, 0,
       { count: pending.length || "", on: kind === "needs" || kind === "request" && requestSource === "needs" }),
     folder("agents", "Agents", Object.keys(ids()).length),
-    ...(expanded.has("agents") ? [...Object.keys(ids()).map((n) => link(["agent", n], `${pending.some((r) => r.identity === n) ? `<span class="bang">!</span> ` : ""}${esc(n)}`, 1,
+    ...(expanded.has("agents") ? [...Object.keys(ids()).map((n) => link(["agent", n], `${pending.some((r) => r.facts.principal.name === n) ? `<span class="bang">!</span> ` : ""}${esc(n)}`, 1,
       at("agent", n) || at("agent-settings", n))), link(["pair"], `<span class="new">Pair agent…</span>`, 1, kind === "pair")] : []),
     folder("accounts", "Accounts", Object.keys(accounts()).length),
     ...(expanded.has("accounts") ? Object.keys(accounts()).map((a) => link(["account", a], accountIcon(a) + esc(a), 1, at("account", a), accountStatus(a))) : []),
@@ -561,11 +561,11 @@ function summary(e) {
 }
 
 function reasons(r) {
-  const title = entry(r.account).title;
+  const title = entry(r.facts.account).title;
   return (r.gaps ?? []).map((g) => ({
-    ask: r.action == null ? `${title} doesn't recognize this request.` : `You asked to approve changes on ${r.account}.`,
-    audience: `It has seen private data from ${r.label.because?.audience}, and ${SEES[r.sends]} can see this.`,
-    trust: `It has read content from strangers on ${r.label.because?.trust}, so it may be following their instructions.`,
+    ask: r.facts?.operation?.action == null ? `${title} has no operation defined for this request.` : `You asked to approve changes on ${r.facts.account}.`,
+    audience: `It has seen private data from ${r.facts.context.label.because?.audience}, and ${SEES[r.facts?.context?.sends]} can see this.`,
+    trust: `It has read content from strangers on ${r.facts.context.label.because?.trust}, so it may be following their instructions.`,
   })[g]);
 }
 
@@ -576,8 +576,8 @@ function grantText(operation, grant, scope) {
   return `Allow ${operation} ${fields.length ? "for the same " + fields.join(", ") : "for any request"}`
     + (fields.length && broad.length ? `, with any ${broad.join(", ")}` : "");
 }
-const saveText = (r) => grantText(r.operation, r.grant, r.scope);
-const saveButton = (r, text, primary) => r.action == null || !r.operation ? ""
+const saveText = (r) => grantText(r.facts?.operation?.id, r.grant, r.facts?.parameters);
+const saveButton = (r, text, primary) => r.facts?.operation?.action == null || !r.facts?.operation?.id ? ""
   : `<button class="${primary ? "primary" : ""}" title="${esc(saveText(r))}" onclick="answer('${r.id}', 'save')">${esc(text)}</button>`;
 const decide = (r, saveLabel) => r.savingDecision ? "" : r.state === "pending"
   ? `<button onclick="answer('${r.id}', 'once')">Allow once</button>${saveButton(r, saveLabel, true)}<button class="danger" onclick="answer('${r.id}', 'deny')">Deny</button>`
@@ -586,9 +586,9 @@ const decide = (r, saveLabel) => r.savingDecision ? "" : r.state === "pending"
 function list(selected) {
   const dismissed = JSON.parse(localStorage.getItem(DISMISSED) ?? "[]");
   const pending = pendingSoonest(), expired = records.filter((r) => r.state === "expired" && !dismissed.includes(r.id));
-  const shown = records.filter((r) => !scope || r[scope[0] === "agent" ? "identity" : "account"] === scope[1]);
-  const queued = (r) => ["q/" + r.id, `<a class="q ${r.id === selected ? "on" : ""}" href="#request/${r.id}"><span class="bang">${r.state === "pending" ? "!" : ""}</span><span>${esc(r.identity)}</span>
-    <span><span class="muted">${accountIcon(r.account)}${esc(r.account)}</span> <b class="mono">${esc(r.title || summary(r.event))}</b></span>
+  const shown = records.filter((r) => !scope || (scope[0] === "agent" ? r.facts.principal.name : r.facts.account) === scope[1]);
+  const queued = (r) => ["q/" + r.id, `<a class="q ${r.id === selected ? "on" : ""}" href="#request/${r.id}"><span class="bang">${r.state === "pending" ? "!" : ""}</span><span>${esc(r.facts.principal.name)}</span>
+    <span><span class="muted">${accountIcon(r.facts.account)}${esc(r.facts.account)}</span> <b class="mono">${esc(r.facts?.title || summary(r.facts?.details))}</b></span>
     <span class="mono ${STATE_CLASS[r.state]}">${r.state === "pending" ? left(r) : "expired"}</span></a>`];
   return [
     ["needs", `<div class="group">${pending.length ? `<span class="bang">!</span><b>Approvals</b><span class="muted">${pending.length}</span>` : `<b>Approvals</b><span class="muted">Nothing pending</span>`}</div>`],
@@ -597,7 +597,7 @@ function list(selected) {
     ["activity", `<div class="group"><b>Activity</b>${scope ? `<span class="muted">${esc(scope[1])} · <a href="#activity">All</a></span>` : ""}</div>`],
     ["columns", `<div class="ev hd"><span>Time</span><span>Agent</span><span>Account</span><span>Operation</span><span>Result</span></div>`],
     ...shown.map((r) => ["e/" + r.id, `<a class="ev ${r.id === selected ? "on" : ""}" href="#request/${r.id}"><span class="mono muted">${new Date(r.time).toLocaleTimeString()}</span>
-      <span>${esc(r.identity)}</span><span>${accountIcon(r.account)}${esc(r.account)}</span><span class="mono">${esc(r.title || summary(r.event))}</span><span class="${STATE_CLASS[r.state]}">${r.state}</span></a>`]),
+      <span>${esc(r.facts.principal.name)}</span><span>${accountIcon(r.facts.account)}${esc(r.facts.account)}</span><span class="mono">${esc(r.facts?.title || summary(r.facts?.details))}</span><span class="${STATE_CLASS[r.state]}">${r.state}</span></a>`]),
     ...(shown.length ? [] : [["quiet", `<p class="empty">Nothing yet.</p>`]]),
   ];
 }
@@ -606,12 +606,12 @@ function requestPane(id) {
   const r = records.find((r) => r.id === id);
   if (!r) return [head("Request", "", requestSource), `<p class="empty">No request ${esc(id)}.</p>`];
   const buttons = decide(r, saveText(r));
-  return [head(esc(r.title || summary(r.event) || r.account), `${esc(r.identity)} · ${accountIcon(r.account)}${esc(r.account)}${r.state === "pending" ? ` · ${left(r)} left` : ""}`, requestSource),
+  return [head(esc(r.facts?.title || summary(r.facts?.details) || r.facts.account), `${esc(r.facts.principal.name)} · ${accountIcon(r.facts.account)}${esc(r.facts.account)}${r.state === "pending" ? ` · ${left(r)} left` : ""}`, requestSource),
     `<section><div class="row"><span class="${STATE_CLASS[r.state]}">${r.state}</span><span class="muted">${new Date(r.time).toLocaleTimeString()}</span></div>
       <ul>${reasons(r).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
-      <div class="mono">${esc(summary(r.event))}</div>
-      ${r.operation ? disclosure("grant", `<span class="muted">${esc(r.operation)} grant</span>`, `<pre>${esc(JSON.stringify(r.grant))}</pre>`) : ""}
-      ${disclosure("request", "Request data", `<pre>${esc(JSON.stringify(r.event, null, 2))}</pre>`)}
+      <div class="mono">${esc(summary(r.facts?.details))}</div>
+      ${r.facts?.operation?.id ? disclosure("grant", `<span class="muted">${esc(r.facts?.operation?.id)} grant</span>`, `<pre>${esc(JSON.stringify(r.grant))}</pre>`) : ""}
+      ${disclosure("request", "Policy facts", `<pre>${esc(JSON.stringify(r.facts, null, 2))}</pre>`)}
       ${draftLink(r) ? `<div class="row">${draftLink(r)}</div>` : ""}${buttons ? `<div class="decisions">${buttons}</div>` : ""}</section>`];
 }
 
@@ -621,9 +621,10 @@ const answer = run((id, decision) => {
   return edit((state) => {
     state.records = state.records.map((r) => r.id === id ? { ...r, savingDecision: true,
       state: r.state === "pending" ? decision === "deny" ? "denied" : "approved" : r.state } : r);
-    const identity = state.view.config.identities?.[request.identity];
+    const identity = state.view.config.identities?.[request.facts.principal.name];
     if (decision === "save" && identity) identity.rules = [...(identity.rules ?? []), {
-      account: request.account, action: request.action, operation: request.operation,
+      account: request.facts.account, action: request.facts.operation.action, operation: request.facts.operation.id,
+      definition: request.definition,
       scope: request.grant ?? {}, waives: request.gaps ?? [],
     }];
   }, () => api("POST", `/requests/${id}`, { decision }), { message: decision === "save" ? "Rule saved" : decision === "deny" ? "Denied" : "Approved" });
@@ -792,7 +793,7 @@ const loadShipped = run(async (name) => {
 const presetFile = (name) => view.config.presets?.[name] ?? shippedFiles[name] ?? (view.presets[name] ? undefined : { title: name, ...NEW_PRESET });
 
 // Preset files keep one field, action and operation per line, as the shipped files do.
-const EXPANDED = ["", "catalog", "catalog.fields", "catalog.actions", "operations"];
+const EXPANDED = ["", "catalog", "catalog.fields", "catalog.actions", "http", "http.operations"];
 const compact = (v) => Array.isArray(v) ? `[${v.map(compact).join(", ")}]`
   : v && typeof v === "object" ? `{${Object.entries(v).map(([k, x]) => `${JSON.stringify(k)}: ${compact(x)}`).join(", ")}}` : JSON.stringify(v);
 function presetText(v, path = "", indent = "") {
@@ -809,8 +810,8 @@ function downloadPreset(name) {
 }
 
 // An unmatched request on a preset's account can become one of its operations.
-const draftLink = (r) => r.action == null && r.event?.http && accounts()[r.account] && Array.isArray(entry(r.account).operations)
-  ? `<a href="#preset/${encodeURIComponent(accounts()[r.account].preset)}/${r.id}">Add operation</a>` : "";
+const draftLink = (r) => r.facts?.operation == null && r.facts?.details?.http && accounts()[r.facts.account] && Array.isArray(entry(r.facts.account).operations)
+  ? `<a href="#preset/${encodeURIComponent(accounts()[r.facts.account].preset)}/${r.id}">Add operation</a>` : "";
 
 // The draft matches only this exact path; the owner turns segments into {parameters} and sets its effects and scope.
 function draftOperation(e) {
@@ -827,7 +828,7 @@ function presetPage(name, from) {
     return [head("Preset " + esc(name)), `<p class="empty">Loading…</p>`];
   }
   const file = structuredClone(presetFile(name)), r = records.find((r) => r.id === from);
-  if (r?.event?.http) file.operations = [...(file.operations ?? []), draftOperation(r.event)];
+  if (r?.facts?.details?.http) file.http = { ...file.http, operations: [...(file.http?.operations ?? []), draftOperation(r.facts.details)] };
   const users = Object.entries(accounts()).filter(([, acc]) => acc.preset === name).map(([a]) => a);
   return [head("Preset " + esc(name)), `<section><p class="muted">Changes apply to every account using it: ${esc(users.join(", ") || "none yet")}.</p>
     <textarea id="preset" rows="40">${esc(presetText(file))}</textarea>
@@ -881,8 +882,9 @@ function putPath(object, path, value) {
   Object.defineProperty(object, path.at(-1), { value, enumerable: true, configurable: true, writable: true });
 }
 const paths = (f) => f.paths ?? [f.path];
+const fieldsOf = (c) => c.fields ?? [];
 // A field with no paths, such as an OAuth client ID, only fills the account's templates when it is created.
-const plain = (c) => c.fields.filter((f) => !f.secret && paths(f).length);
+const plain = (c) => fieldsOf(c).filter((f) => !f.secret && paths(f).length);
 const fieldValue = (acc, f) => atPath(acc, f.path ?? paths(f)[0]) ?? (f.list ? [] : f.json ? {} : "");
 // A merge patch replaces an array whole, so a setting inside one, such as a slot's origin, rewrites a copy of its array.
 function putSetting(update, acc, path, value) {
@@ -917,7 +919,7 @@ function setupToken(preset, key) {
   button.textContent = field.hidden ? "Use an access token instead" : "Use sign-in instead";
   button.setAttribute("aria-expanded", String(!field.hidden));
   $("signin-" + key).hidden = !field.hidden;
-  const oauth = view.presets[preset].fields.some((f) => !f.edit_only && f.oauth && $("token-field-" + f.key).hidden);
+  const oauth = fieldsOf(view.presets[preset]).some((f) => !f.edit_only && f.oauth && $("token-field-" + f.key).hidden);
   $("account-add").textContent = oauth ? "Add without signing in" : "Add";
   $("account-add").classList.toggle("primary", !oauth);
   if (!field.hidden) $("f-" + key).focus();
@@ -929,7 +931,7 @@ function add(preset) {
   const c = view.presets[preset];
   if (!c) return [head("Add account"), `<p class="empty">No preset ${esc(preset)}.</p>`];
   if (preset === "custom_api") return customAPIPage(c);
-  const fields = c.fields.filter((f) => !f.edit_only), oauth = fields.filter((f) => f.oauth);
+  const fields = fieldsOf(c).filter((f) => !f.edit_only), oauth = fields.filter((f) => f.oauth);
   return [head(connectorIcon(preset) + "Add " + esc(c.title)), `<section><label for="account-name">Name</label><input id="account-name" value="${esc(preset)}">
     ${fields.map((f) => setupField(f, preset)).join("")}
     ${questions(c.defaults)}<div class="row"><span></span><div class="credential-actions">
@@ -943,7 +945,7 @@ const addAccount = run(async (preset, signInKey) => {
   const c = view.presets[preset], name = $("account-name").value.trim();
   if (!name) throw new Error("Name this account.");
   if (Object.hasOwn(accounts(), name)) throw new Error("An account with that name already exists. Choose another name.");
-  const fields = c.fields.filter((f) => !f.edit_only);
+  const fields = fieldsOf(c).filter((f) => !f.edit_only);
   const values = Object.fromEntries(fields.map((f) => [f.key, read(f)]));
   // Only the non-secret values fill a preset's connections; secrets go to their fields' paths.
   const plainValues = Object.fromEntries(fields.filter((f) => !f.secret).map((f) => [f.key, values[f.key]]));
@@ -1064,7 +1066,7 @@ const copyAPIPlaceholder = run(async () => {
 
 function credentialFields(a) {
   return (view.fields?.[a] ?? []).map((meta) => {
-    const f = entry(a).fields.find((f) => paths(f).some((path) => JSON.stringify(path) === JSON.stringify(meta.path)));
+    const f = fieldsOf(entry(a)).find((f) => paths(f).some((path) => JSON.stringify(path) === JSON.stringify(meta.path)));
     return { ...f, ...meta, key: meta.path.map(encodeURIComponent).join("/"), label: `${meta.path[1] ? meta.path[1] + ": " : ""}${f?.label ?? meta.path.at(-1)}`, secret: true, multiline: f ? !!f.multiline : true };
   }).sort((a, b) => a.key.localeCompare(b.key));
 }

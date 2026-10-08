@@ -10,12 +10,14 @@ import (
 	"errors"
 	"io"
 	"net"
+	"slices"
 	"strings"
 	"sync"
 	"unicode/utf8"
 
 	"github.com/eclipse/paho.mqtt.golang/packets"
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/facts"
 )
 
 const maxPacket = 1 << 20
@@ -63,7 +65,7 @@ func (m *MQTT) Serve(s *connector.Stream, e *connector.Env) {
 		refuse(5)
 		return
 	}
-	if err := s.Gate(connector.Event{MQTT: &connector.MQTTLayer{Command: "connect"}}); err != nil {
+	if err := s.Gate(&Request{Command: "connect"}); err != nil {
 		refuse(5)
 		return
 	}
@@ -131,7 +133,7 @@ type proxy struct {
 }
 
 func (p *proxy) publish(command string, v *packets.PublishPacket) error {
-	return p.s.Gate(connector.Event{MQTT: &connector.MQTTLayer{Command: command, Topic: v.TopicName, QoS: v.Qos, Retain: v.Retain, Payload: v.Payload}})
+	return p.s.Gate(&Request{Command: command, Topic: v.TopicName, QoS: v.Qos, Retain: v.Retain, Payload: v.Payload})
 }
 
 func (p *proxy) request(packet packets.ControlPacket) error {
@@ -166,7 +168,7 @@ func (p *proxy) request(packet packets.ControlPacket) error {
 		return p.publish("publish", publish)
 	case *packets.SubscribePacket:
 		for i, topic := range v.Topics {
-			if err := p.s.Gate(connector.Event{MQTT: &connector.MQTTLayer{Command: "subscribe", Topic: topic, QoS: v.Qoss[i]}}); err != nil {
+			if err := p.s.Gate(&Request{Command: "subscribe", Topic: topic, QoS: v.Qoss[i]}); err != nil {
 				return err
 			}
 		}
@@ -350,4 +352,28 @@ func topicValid(s string, filter bool) bool {
 		}
 	}
 	return true
+}
+
+type Request struct {
+	Command string `json:"command"`
+	Topic   string `json:"topic"`
+	QoS     byte   `json:"qos"`
+	Retain  bool   `json:"retain"`
+	Payload []byte `json:"payload,omitempty"`
+}
+
+func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+	details := map[string]any{"mqtt": v}
+	action := ""
+	if slices.Contains([]string{"connect", "subscribe", "receive", "publish"}, v.Command) {
+		action = v.Command
+	}
+	if v.Command == "publish" && v.Retain {
+		action = "retain"
+	}
+	op := &facts.Operation{ID: v.Command, Action: action}
+	if action == "" {
+		op = nil
+	}
+	return facts.Facts{Operation: op, Title: "MQTT " + v.Command + " " + v.Topic, Parameters: connector.JSONFields(v), Details: details, Context: facts.Context{Sends: "account"}}, connector.Approval{}, nil
 }

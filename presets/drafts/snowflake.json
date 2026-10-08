@@ -13,9 +13,11 @@
       "write.statements": {"title": "Write: statements"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "SubmitStatement", "action": "write.statements", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/v2/statements", "params": ["requestId", "async", "nullable"], "body": "json", "scope": {}},
     {"id": "GetStatementStatus", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v2/statements/{statementHandle}", "params": ["requestId", "partition"], "scope": {"statementHandle": {"from": "path", "at": "statementHandle"}}},
     {"id": "CancelStatement", "action": "write.statements", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/v2/statements/{statementHandle}/cancel", "params": ["requestId"], "scope": {"statementHandle": {"from": "path", "at": "statementHandle"}}}
   ]
+  }
 }

@@ -116,7 +116,8 @@
       "write.zip_downloads": {"title": "Write: zip downloads"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "post_ai_ask", "action": "write.ask", "effects": ["write"], "method": "POST", "origin": "https://api.box.com", "path": "/2.0/ai/ask", "body": "any", "scope": {}},
     {"id": "post_ai_extract", "action": "generate.extract", "effects": ["generate"], "method": "POST", "origin": "https://api.box.com", "path": "/2.0/ai/extract", "body": "any", "scope": {}},
     {"id": "post_ai_extract_structured", "action": "generate.extract_structured", "effects": ["generate"], "method": "POST", "origin": "https://api.box.com", "path": "/2.0/ai/extract_structured", "body": "any", "scope": {}},
@@ -386,4 +387,5 @@
     {"id": "get_zip_downloads_id_content", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.box.com", "path": "/2.0/zip_downloads/{zip_download_id}/content", "scope": {"zip_download_id": {"from": "path", "at": "zip_download_id"}}},
     {"id": "get_zip_downloads_id_status", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.box.com", "path": "/2.0/zip_downloads/{zip_download_id}/status", "scope": {"zip_download_id": {"from": "path", "at": "zip_download_id"}}}
   ]
+  }
 }

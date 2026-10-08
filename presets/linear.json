@@ -1097,7 +1097,8 @@
     "group": "api"
   },
   "title": "Linear",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"user.read","body":"graphql","effects":["read"],"graphql":{"field":"viewer","operation":"query"},"id":"viewer","method":"POST","origin":"https://api.linear.app","path":"/graphql","scope":{}},
     {"action":"issue.read","body":"graphql","effects":["read"],"graphql":{"field":"issues","operation":"query"},"id":"issues","method":"POST","origin":"https://api.linear.app","path":"/graphql","scope":{}},
     {"action":"issue.read","body":"graphql","effects":["read"],"graphql":{"field":"issue","operation":"query"},"id":"issue","method":"POST","origin":"https://api.linear.app","path":"/graphql","scope":{"id":{"at":"/id","from":"argument"}}},
@@ -1653,4 +1654,5 @@
     {"action":"workflow_state.read","body":"graphql","effects":["read"],"graphql":{"field":"workflowState","operation":"query"},"id":"workflowState","method":"POST","origin":"https://api.linear.app","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"},"id":{"at":"/id","from":"argument"}}},
     {"action":"workflow_state.read","body":"graphql","effects":["read"],"graphql":{"field":"workflowStates","operation":"query"},"id":"workflowStates","method":"POST","origin":"https://api.linear.app","path":"/graphql","scope":{"arguments":{"at":"","from":"argument","type":"object"}}}
   ]
+  }
 }

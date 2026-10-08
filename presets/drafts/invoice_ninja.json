@@ -116,7 +116,8 @@
       "write.vendors": {"title": "Write: vendors"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getActivities", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v1/activities", "params": ["include", "index", "per_page", "page"], "scope": {}},
     {"id": "getActivityHistoricalEntityPdf", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v1/activities/download_entity/{activity_id}", "params": ["include"], "scope": {"activity_id": {"from": "path", "at": "activity_id"}}},
     {"id": "postActivitiesEntity", "action": "write.entity", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/v1/activities/entity", "body": "json", "scope": {}},
@@ -457,4 +458,5 @@
     {"id": "editWebhook", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v1/webhooks/{id}/edit", "params": ["include"], "scope": {"id": {"from": "path", "at": "id"}}},
     {"id": "yodleeRefreshWebhook", "action": "write.refresh", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/v1/yodlee/refresh", "scope": {}}
   ]
+  }
 }

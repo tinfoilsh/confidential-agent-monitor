@@ -19,7 +19,8 @@
       "write.iam": {"title": "Write: iam"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "AcceptDelegationRequest", "action": "write.iam", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "AcceptDelegationRequest"}, "body": "form", "scope": {"DelegationRequestId": {"from": "form", "at": "DelegationRequestId"}}},
     {"id": "AcquireRole", "action": "write.iam", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "AcquireRole"}, "body": "form", "scope": {"TemplateArn": {"from": "form", "at": "TemplateArn"}}},
     {"id": "AddClientIDToOpenIDConnectProvider", "action": "write.iam", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "AddClientIDToOpenIDConnectProvider"}, "body": "form", "scope": {"OpenIDConnectProviderArn": {"from": "form", "at": "OpenIDConnectProviderArn"}, "ClientID": {"from": "form", "at": "ClientID"}}},
@@ -201,4 +202,5 @@
     {"id": "UploadServerCertificate", "action": "write.iam", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "UploadServerCertificate"}, "body": "form", "scope": {"ServerCertificateName": {"from": "form", "at": "ServerCertificateName"}, "PrivateKey": {"from": "form", "at": "PrivateKey"}}},
     {"id": "UploadSigningCertificate", "action": "write.iam", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "UploadSigningCertificate"}, "body": "form", "scope": {}}
   ]
+  }
 }

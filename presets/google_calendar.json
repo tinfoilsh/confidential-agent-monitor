@@ -185,7 +185,8 @@
     "group": "api"
   },
   "title": "Google Calendar",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"calendar.users.me.calendar.read","effects":["read"],"id":"calendarList.list","method":"GET","origin":"https://www.googleapis.com","params":["maxResults","pageToken","minAccessRole","showDeleted","showHidden","syncToken"],"path":"/calendar/v3/users/me/calendarList","scope":{}},
     {"action":"calendar.calendars.events.read","effects":["read"],"id":"events.list","method":"GET","origin":"https://www.googleapis.com","params":["timeMin","timeMax","q","singleEvents","orderBy","pageToken","maxResults","showDeleted","updatedMin","syncToken","timeZone","iCalUID","eventTypes"],"path":"/calendar/v3/calendars/{calendar}/events","scope":{"calendar":{"at":"calendar","from":"path"}}},
     {"action":"calendar.calendars.events.read","effects":["read"],"id":"events.get","method":"GET","origin":"https://www.googleapis.com","params":["timeZone","maxAttendees"],"path":"/calendar/v3/calendars/{calendar}/events/{event}","scope":{"calendar":{"at":"calendar","from":"path"},"event":{"at":"event","from":"path"}}},
@@ -226,4 +227,5 @@
     {"action":"calendar.users.me.settings.read","effects":["read"],"id":"settings.list","method":"GET","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","maxResults","pageToken","syncToken"],"path":"/calendar/v3/users/me/settings","scope":{"query":{"at":"","from":"query","type":"object"}}},
     {"action":"calendar.users.me.settings.watch.write","body":"json","effects":["write"],"id":"settings.watch","method":"POST","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","maxResults","pageToken","syncToken"],"path":"/calendar/v3/users/me/settings/watch","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}}
   ]
+  }
 }

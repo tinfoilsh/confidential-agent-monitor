@@ -199,7 +199,8 @@
       "write.write_off": {"title": "Write: write off"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "retrieve_an_address", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/addresses", "params": ["subscription_id", "label"], "scope": {"subscription_id": {"from": "query", "at": "subscription_id"}}},
     {"id": "update_an_address", "action": "write.addresses", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/addresses", "body": "any", "scope": {}},
     {"id": "list_alerts", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/alerts", "params": ["limit", "offset", "id", "type", "subscription_id", "status"], "scope": {}},
@@ -670,4 +671,5 @@
     {"id": "update_a_webhook_endpoint", "action": "write.webhook_endpoints", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/webhook_endpoints/{webhook-endpoint-id}", "body": "any", "scope": {"webhook-endpoint-id": {"from": "path", "at": "webhook-endpoint-id"}}},
     {"id": "delete_a_webhook_endpoint", "action": "delete.delete", "effects": ["delete"], "method": "POST", "origin": "{origin}", "path": "/webhook_endpoints/{webhook-endpoint-id}/delete", "scope": {"webhook-endpoint-id": {"from": "path", "at": "webhook-endpoint-id"}}}
   ]
+  }
 }

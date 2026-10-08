@@ -48,7 +48,8 @@
       "write.upsert": {"title": "Write: upsert"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "get-contacts", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://services.leadconnectorhq.com", "path": "/contacts/", "params": ["locationId", "startAfterId", "startAfter", "query", "limit"], "scope": {"locationId": {"from": "query", "at": "locationId"}}},
     {"id": "create-contact", "action": "write.contacts", "effects": ["write"], "method": "POST", "origin": "https://services.leadconnectorhq.com", "path": "/contacts/", "body": "json", "scope": {"locationId": {"from": "body", "at": "/locationId"}}},
     {"id": "add-remove-contact-from-business", "action": "delete.business", "effects": ["delete"], "method": "POST", "origin": "https://services.leadconnectorhq.com", "path": "/contacts/bulk/business", "body": "json", "scope": {"locationId": {"from": "body", "at": "/locationId"}, "businessId": {"from": "body", "at": "/businessId"}}},
@@ -122,4 +123,5 @@
     {"id": "delete-user", "action": "delete.users", "effects": ["delete"], "method": "DELETE", "origin": "https://services.leadconnectorhq.com", "path": "/users/{userId}", "scope": {"userId": {"from": "path", "at": "userId"}}},
     {"id": "update-user", "action": "admin.users", "effects": ["admin"], "method": "PUT", "origin": "https://services.leadconnectorhq.com", "path": "/users/{userId}", "body": "json", "scope": {"userId": {"from": "path", "at": "userId"}}}
   ]
+  }
 }

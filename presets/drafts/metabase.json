@@ -228,7 +228,8 @@
       "write.weights": {"title": "Write: weights"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "get-api-action", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/action", "params": ["model-id"], "scope": {}},
     {"id": "post-api-action", "action": "execute.action", "effects": ["execute"], "method": "POST", "origin": "{origin}", "path": "/api/action", "body": "any", "scope": {}},
     {"id": "get-api-action-action-id", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/action/{action-id}", "scope": {"action-id": {"from": "path", "at": "action-id"}}},
@@ -830,4 +831,5 @@
     {"id": "put-api-user-id-reactivate", "action": "write.reactivate", "effects": ["write"], "method": "PUT", "origin": "{origin}", "path": "/api/user/{id}/reactivate", "scope": {"id": {"from": "path", "at": "id"}}},
     {"id": "get-api-util-random_token", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/util/random_token", "scope": {}}
   ]
+  }
 }

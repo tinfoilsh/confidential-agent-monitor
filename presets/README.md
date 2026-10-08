@@ -1,84 +1,141 @@
-Each preset has a `<name>.json` record and may have a shipped `<name>.rego`
-module. Accounts select it with `"preset": "<name>"`.
+Each preset has a `<name>.json` record. Accounts select it with
+`"preset": "<name>"`. Owner entries in `config.presets` replace the entire
+record of the same name.
 
-These JSON files are also the baseline for the [API preset generator](../dev/presets/README.md).
-Edit accepted definitions here. The generator reads them directly and writes
-proposals and reports to ignored directories under `dev/presets/`.
-`drafts/` holds presets loaded only when a development monitor uses `-drafts`;
-`policy/` holds the shared policy modules used by shipped presets.
+The catalog contains setup fields, connections, defaults, and permission actions.
+Protocol definitions have their own sections:
 
-The SFTP, MQTT, and NATS protocol presets include setup forms and operation
-permissions. See [file and broker protocols](../docs/file-and-broker-protocols.md)
-for client commands, supported versions, limits, and scoped owner policies.
+- `http.operations` contains reviewed HTTP operations, including GraphQL matchers.
+- `http.slots` requires requests to stay within the connection's configured API addresses.
+- `mcp.scope` selects service resource identifiers from MCP tool arguments.
+- `public_scope` names the extracted parameters that identify public or private resources across protocols.
 
-For an API without a preset, choose **Add account → API → Custom API**. The form
-accepts an HTTPS API URL, bearer token or API key in a header or query parameter,
-and optional agent access. A path in the URL limits access to that path and its
-children. The account page supplies a placeholder and shows where the agent
-should send it through the monitor. The real credential stays in the account's
-HTTP values and is redacted from the owner view.
+For example:
 
-Custom API permissions cover all requests within the configured address. `Ask`
-requests approval; `Allow` permits requests subject to the usual data-sharing,
-trust, and owner policy checks. The monitor does not infer which endpoints are
-read-only, so this preset has no read-only access option. Saved approvals bind
-the origin and connection settings. Use a service-specific preset when actions
-need separate permissions.
+```json
+{
+  "title": "Example",
+  "catalog": {"actions": {"items.read": {"title": "Read items"}}},
+  "http": {
+    "operations": [{
+      "id": "items.get",
+      "action": "items.read",
+      "effects": ["read"],
+      "method": "GET",
+      "origin": "https://api.example.com",
+      "path": "/items/{id}",
+      "scope": {"id": {"from": "path", "at": "id"}}
+    }]
+  },
+  "mcp": {
+    "scope": {"id": {"at": "/id", "optional": true}}
+  }
+}
+```
 
-JSON contains `title`, `catalog`, and optional `operations`. The catalog holds
-setup fields, connections, defaults, and actions. Action entries may supply
-effects for the module, inherited from the nearest action ancestor. Record
-operations keep their own effects; the app
-shows the union of effects within a permission group. Missing operations mean
-an empty list. A present `operations` value must be an array.
+HTTP selectors choose a source with `from`, then a field or JSON path with `at`.
+MCP selectors always read arguments, so they need only `at`, an optional `type`,
+and `optional`. Missing optional values are accepted; present values must have
+the declared type. The default type is `string`. Unknown configuration fields
+are rejected.
 
-The full resolved JSON is available at `data.presets.<name>`. A module uses
-`package handlers.<name>` and supplies `operation`, optional `title`, and
-optional `deny` rules. The shared policy selects that module for all requests
-on the preset, including requests it cannot recognize. Without a module, it
-uses `data.monitor.api`. A module can explicitly delegate to that matcher,
-carrying its operation, title, and denials together. See `github.rego`.
+Each connector describes its own parsed requests in Go. HTTP and GraphQL matching
+live in `connector/web`; MCP argument selection lives in `connector/mcp`.
+The shared `facts` package defines and validates the snapshot, owns label
+observation, and supplies label ordering and the effect vocabulary. The same
+effect obligations drive Go validation and disclosure defaults, Rego policy, and
+the app's permission display. They are included in the policy program's approval
+hash. Adding a protocol does not
+require adding a field to a common request struct or registering a description
+function.
 
-An owner's `config.presets` entry replaces the entire JSON record of the same
-name. The shipped module still applies. Drafts load JSON only. Owner Rego
-continues to live in `config.policies`; the `custom` preset recognizes
-`data.sentinel.operation`.
+A parsed request implements `connector.Request.Describe`. It returns facts,
+approval scope and definition dependencies, and any validation error. It must
+not mutate its input or perform I/O. The monitor supplies current redacted
+connection settings and preset sections on every evaluation, including after
+an owner approves a waiting request.
 
-GitHub's REST operations live in `github.json`. They keep their operation IDs,
-effects, scopes, and grants, and use resource-based permission names such as
-`repos.issues.open`, `repos.issues.comments.comment`, and `repos.contents.push`.
-The module handles Git smart HTTP, GraphQL, and MCP, and applies the account's
-public/private repository settings across protocols. Unlisted REST requests
-are unknown and require approval. They no longer inherit a blanket read rule.
+`policy.go` finalizes every description by resolving catalog effects, account
+labels, and public/private resource settings, then calling `Facts.Validate`.
+Invalid effects, labels, and request kinds are refused. A connector returns a null
+operation for an unknown request. An action with no configured effects also stays
+unknown; an explicit empty effect list is malformed.
+Action effects inherit from the nearest configured ancestor. HTTP
+operations supply their own effects. Renaming a preset does not change how its
+requests are described. An explicit, empty `http.operations` list leaves HTTP
+requests unknown. A preset without an HTTP section uses the connector's generic
+browse/submit actions when its catalog defines their effects.
 
-API action catalogs include resource parents and capability leaves. The account
-and agent views display the same collapsible hierarchy. A parent permission
-applies to its descendants unless a more specific override is set. The generator's
-`group` command rebuilds these names for existing shipped operations; `generate`
-and `draft` use the same grouping for their output. Grouping preserves each
-operation's effects and request constraints. Action renames have no compatibility
-mapping: existing overrides and custom policies must use the new names.
+Policy and audit receive the same frozen snapshot. Common fields live at
+`input.facts.operation`, `input.facts.parameters`, and `input.facts.context`.
+`input.facts.principal.key` and `.name` identify the requesting agent and come from
+the monitor's current identity settings. `input.facts.kind` is `operation`,
+`admission`, or `message`; omitted kinds from connector descriptions default to
+`operation`. Admission and message authorization use this field. Protocol detail
+keys do not select authorization behavior.
+Protocol details live at `input.facts.details.http`, `input.facts.details.mcp`,
+and the corresponding names for other connectors. For example:
 
-Stored configs migrate during unlock. Legacy configuration patches also migrate
-before validation. Migration replaces `template` and `policy_options.preset`
-with `preset`, and maps permissions on shipped `github_api` accounts to the
-combined GitHub actions. Owner-defined `github_api` records retain their name
-and generic matcher. Connections and credentials stay as configured;
-migration does not add an MCP connection.
+```rego
+package sentinel
+
+deny contains "restricted host" if {
+    input.facts.account == "web"
+    input.facts.details.http.host == "restricted.example"
+}
+```
+
+Owner policies remain in `config.policies`. They can deny requests using both
+common and protocol-specific facts. They do not supply operation descriptions.
+Unknown requests have a null operation and require approval; malformed or
+ambiguous matches are refused. Approval grants and definition hashes stay
+outside the facts snapshot. Decisions contain `facts`, `deny`, `gaps`, `next`,
+`grant`, and `definition`; the app reads operation, title, parameters, principal,
+account, and the current label from `facts`. Audit records add lifecycle fields
+and results without duplicating those facts. Failed message evaluations retain
+the requesting principal, account, title, and current label.
+
+Go computes `next` with the same label observation function used for mailbox
+history. Admission leaves the current label unchanged. Observations continue to
+record both label axes when their enforcement switches are off.
+
+Saved approvals bind the selected operation, effects, scope, disclosure, relevant
+preset definitions, connection settings, and policy program. Current labels and
+display titles do not change that binding. A changed operation or configuration
+cannot resume under an earlier approval. This schema replaces the old top-level
+`operations`, `http_slots`, and `mcp_scope` fields without compatibility aliases.
+Custom policies must use the facts paths above. Existing saved approvals do not
+apply to the new facts version.
+
+`facts.Version` versions the public snapshot schema. Separately,
+`approvalSemanticsVersion` in `policy.go` binds compiled Go behavior into every
+approval definition. Bump it when parsing, description, normalization, label, or
+approval semantics change, even if the facts schema and Rego sources stay the
+same. Display-only changes do not require a bump. Changes to either version
+invalidate earlier saved approvals.
+
+GitHub's HTTP section covers REST, Git smart HTTP, and GraphQL. Its MCP section
+extracts repository identifiers. The common `public_scope` setting applies the
+account's private repository patterns to both protocols. Unlisted API requests
+remain unknown.
+
+For an API without a preset, choose **Add account → API → Custom API**. Its API
+address limits requests to the configured origin and path. Permissions cover all
+requests within that address, including changes and deletions. There is no
+read-only access option. Saved approvals bind the origin and connection settings.
+
+API catalogs use resource parents and capability leaves. The most specific
+permission override wins. The account and agent views display the same hierarchy.
+The [preset generator](../dev/presets/README.md) reads these files as its baseline
+and writes proposals under `dev/presets/`. Edit accepted definitions here.
+`drafts/` holds records loaded only with `-drafts`; `policy/` contains shared
+authorization rules. Service-specific Rego modules are no longer loaded.
+
+The SFTP, MQTT, and NATS presets include setup forms and operation permissions.
+See [file and broker protocols](../docs/file-and-broker-protocols.md) for supported
+commands, limits, and scoped owner policies.
 
 `dev/setup`, also called by `dev/sandbox`, seeds a fresh store with only the
-credential-free Web account. Set `MONITOR_CONFIG=/path/to/config.json` to
-import a custom initial config instead. Later runs keep the stored accounts,
-credentials, and dev agent permissions. `monitor.example.json` is a reference
-with placeholder credentials, and is never imported automatically.
-
-Review custom policies separately. References to `input.account.template` and
-`input.account.policy_options.preset` now use `input.account.preset`.
-`data.templates.<name>` becomes `data.handlers.<name>`, except for the generic
-matcher, which becomes `data.monitor.api`. A check for `template == "api"`
-must name the relevant presets instead. Migration does not rewrite Rego.
-
-Moving the policy sources changes the program digest, so existing saved
-approvals no longer apply. Later display edits do not change approval
-definitions. Changes to operation records, resolved effects, and connection
-settings still do.
+credential-free Web account. Set `MONITOR_CONFIG=/path/to/config.json` to import
+an initial config. Later runs keep stored accounts, credentials, and permissions.
+`monitor.example.json` contains placeholders and is never imported automatically.

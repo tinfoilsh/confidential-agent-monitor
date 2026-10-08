@@ -59,7 +59,8 @@
       "write.views": {"title": "Write: views"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getAccount", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.hunter.io", "path": "/v2/account", "scope": {}},
     {"id": "updateAccount", "action": "admin.account", "effects": ["admin"], "method": "PUT", "origin": "https://api.hunter.io", "path": "/v2/account", "scope": {}},
     {"id": "getAccountStats", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.hunter.io", "path": "/v2/account-stats", "scope": {}},
@@ -234,4 +235,5 @@
     {"id": "replaceWebhook", "action": "admin.webhooks", "effects": ["admin"], "method": "PUT", "origin": "https://api.hunter.io", "path": "/v2/webhooks/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
     {"id": "deleteWebhook", "action": "delete.webhooks", "effects": ["delete"], "method": "DELETE", "origin": "https://api.hunter.io", "path": "/v2/webhooks/{id}", "scope": {"id": {"from": "path", "at": "id"}}}
   ]
+  }
 }

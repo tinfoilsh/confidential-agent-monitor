@@ -56,9 +56,11 @@
     "group": "api"
   },
   "title": "Google Docs",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"documents.read","effects":["read"],"id":"documents.get","method":"GET","origin":"https://docs.googleapis.com","params":["includeTabsContent","suggestionsViewMode"],"path":"/v1/documents/{document}","scope":{"document":{"at":"document","from":"path"}}},
     {"action":"documents.write","body":"json","effects":["write"],"id":"documents.create","method":"POST","origin":"https://docs.googleapis.com","path":"/v1/documents","scope":{}},
     {"action":"documents.write","body":"json","effects":["write","send"],"id":"documents.batchUpdate","method":"POST","origin":"https://docs.googleapis.com","path":"/v1/documents/{document}:batchUpdate","scope":{"document":{"at":"document","from":"path"},"requests":{"at":"","from":"body","type":"object"}}}
   ]
+  }
 }

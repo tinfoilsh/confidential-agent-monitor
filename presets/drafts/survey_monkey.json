@@ -12,7 +12,8 @@
       "send.messages": {"title": "Send: messages"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "GetResponseDetails", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/actions1/surveys/{surveyId}/responses/{responseId}/details", "params": ["simple", "question_ids"], "scope": {"surveyId": {"from": "path", "at": "surveyId"}, "responseId": {"from": "path", "at": "responseId"}}},
     {"id": "GetResponseDetailsNoPages", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/actions2/surveys/{surveyId}/responses/{responseId}/details", "params": ["simple", "question_ids"], "scope": {"surveyId": {"from": "path", "at": "surveyId"}, "responseId": {"from": "path", "at": "responseId"}}},
     {"id": "GetSurveyCollector", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/collectors/{collectorId}", "scope": {"collectorId": {"from": "path", "at": "collectorId"}}},
@@ -29,4 +30,5 @@
     {"id": "OnNewResponseAddedSurvey", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/trigger4/surveys/{surveyId}/responses/bulk", "scope": {"surveyId": {"from": "path", "at": "surveyId"}}},
     {"id": "OnNewResponseToQuestionAdded", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/trigger5/surveys/{surveyId}/responses/bulk", "params": ["page_ids", "question_ids"], "scope": {"surveyId": {"from": "path", "at": "surveyId"}}}
   ]
+  }
 }

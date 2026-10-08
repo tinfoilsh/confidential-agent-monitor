@@ -13,7 +13,8 @@
       "write.block": {"title": "Write: block"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "appointmentidjson", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://acuityscheduling.com", "path": "/api/v1/appointment/:id.json", "scope": {}},
     {"id": "get-appointments", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://acuityscheduling.com", "path": "/api/v1/appointments.json", "params": ["max", "minDate", "maxDate", "calendarID"], "scope": {}},
     {"id": "block", "action": "write.block", "effects": ["write"], "method": "POST", "origin": "https://acuityscheduling.com", "path": "/api/v1/block", "body": "any", "scope": {}},
@@ -23,4 +24,5 @@
     {"id": "get-canceled", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://acuityscheduling.com", "path": "/api/v1/canceled.json", "params": ["max", "minDate", "maxDate", "calendarID"], "scope": {}},
     {"id": "ordersjson", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://acuityscheduling.com", "path": "/api/v1/orders.json", "params": ["max"], "scope": {}}
   ]
+  }
 }

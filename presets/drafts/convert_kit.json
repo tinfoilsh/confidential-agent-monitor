@@ -36,7 +36,8 @@
       "write.webhook_endpoints": {"title": "Write: webhook endpoints"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "GET /v4/account", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.kit.com", "path": "/v4/account", "scope": {}},
     {"id": "GET /v4/account/colors", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.kit.com", "path": "/v4/account/colors", "scope": {}},
     {"id": "PUT /v4/account/colors", "action": "write.colors", "effects": ["write"], "method": "PUT", "origin": "https://api.kit.com", "path": "/v4/account/colors", "body": "any", "scope": {}},
@@ -120,4 +121,5 @@
     {"id": "POST /v4/webhooks", "action": "admin.webhooks", "effects": ["admin"], "method": "POST", "origin": "https://api.kit.com", "path": "/v4/webhooks", "body": "any", "scope": {}},
     {"id": "DELETE /v4/webhooks/{id}", "action": "delete.webhooks", "effects": ["delete"], "method": "DELETE", "origin": "https://api.kit.com", "path": "/v4/webhooks/{id}", "scope": {"id": {"from": "path", "at": "id"}}}
   ]
+  }
 }

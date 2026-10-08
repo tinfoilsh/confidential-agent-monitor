@@ -15,7 +15,8 @@
       "read": {"title": "Read everything the account can see"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "listChatCompletions", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://integrate.api.nvidia.com", "path": "/v1/chat/completions", "params": ["model", "metadata", "after", "limit", "order"], "scope": {}},
     {"id": "createChatCompletion", "action": "generate.completions", "effects": ["generate"], "method": "POST", "origin": "https://integrate.api.nvidia.com", "path": "/v1/chat/completions", "body": "json", "scope": {}},
     {"id": "deleteChatCompletion", "action": "delete.completions", "effects": ["delete"], "method": "DELETE", "origin": "https://integrate.api.nvidia.com", "path": "/v1/chat/completions/{completion_id}", "scope": {"completion_id": {"from": "path", "at": "completion_id"}}},
@@ -28,4 +29,5 @@
     {"id": "deleteModel", "action": "delete.models", "effects": ["delete"], "method": "DELETE", "origin": "https://integrate.api.nvidia.com", "path": "/v1/models/{model}", "scope": {"model": {"from": "path", "at": "model"}}},
     {"id": "retrieveModel", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://integrate.api.nvidia.com", "path": "/v1/models/{model}", "scope": {"model": {"from": "path", "at": "model"}}}
   ]
+  }
 }

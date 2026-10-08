@@ -12,7 +12,8 @@
       "read": {"title": "Read everything the account can see"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getAgentAccessOffer", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.brandfetch.io", "path": "/v2/agents/access", "scope": {}},
     {"id": "purchaseAgentAccess", "action": "pay.access", "effects": ["pay"], "method": "POST", "origin": "https://api.brandfetch.io", "path": "/v2/agents/access", "params": ["usd", "rotateKey"], "scope": {}},
     {"id": "getBrandDataByCrypto", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.brandfetch.io", "path": "/v2/brands/crypto/{symbol}", "params": ["allowNsfw", "cachedOnly"], "scope": {"symbol": {"from": "path", "at": "symbol"}}},
@@ -27,4 +28,5 @@
     {"id": "searchBrands", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.brandfetch.io", "path": "/v2/search/{name_clientId}", "params": ["c"], "scope": {"name_clientId": {"from": "path", "at": "name_clientId"}}},
     {"id": "getViewer", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.brandfetch.io", "path": "/v2/viewer", "scope": {}}
   ]
+  }
 }

@@ -37,7 +37,8 @@
       "write.stop": {"title": "Write: stop"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "anywhereCaches.disable", "action": "write.anywhere_caches", "effects": ["write"], "method": "POST", "origin": "https://storage.googleapis.com", "path": "/storage/v1/b/{bucket}/anywhereCaches/{anywhereCacheId}/disable", "params": ["alt", "fields", "prettyPrint", "quotaUser", "uploadType", "userIp"], "scope": {"bucket": {"from": "path", "at": "bucket"}, "anywhereCacheId": {"from": "path", "at": "anywhereCacheId"}}},
     {"id": "anywhereCaches.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://storage.googleapis.com", "path": "/storage/v1/b/{bucket}/anywhereCaches/{anywhereCacheId}", "params": ["alt", "fields", "prettyPrint", "quotaUser", "uploadType", "userIp"], "scope": {"bucket": {"from": "path", "at": "bucket"}, "anywhereCacheId": {"from": "path", "at": "anywhereCacheId"}}},
     {"id": "anywhereCaches.insert", "action": "write.anywhere_caches", "effects": ["write"], "method": "POST", "origin": "https://storage.googleapis.com", "path": "/storage/v1/b/{bucket}/anywhereCaches", "params": ["alt", "fields", "prettyPrint", "quotaUser", "uploadType", "userIp"], "body": "json", "scope": {"bucket": {"from": "path", "at": "bucket"}}},
@@ -128,4 +129,5 @@
     {"id": "rapidCaches.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://storage.googleapis.com", "path": "/storage/v1/b/{bucket}/rapidCaches", "params": ["alt", "fields", "prettyPrint", "quotaUser", "uploadType", "userIp", "pageSize", "pageToken"], "scope": {"bucket": {"from": "path", "at": "bucket"}}},
     {"id": "rapidCaches.update", "action": "write.rapid_caches", "effects": ["write"], "method": "PATCH", "origin": "https://storage.googleapis.com", "path": "/storage/v1/b/{bucket}/rapidCaches/{rapidCacheId}", "params": ["alt", "fields", "prettyPrint", "quotaUser", "uploadType", "userIp"], "body": "json", "scope": {"bucket": {"from": "path", "at": "bucket"}, "rapidCacheId": {"from": "path", "at": "rapidCacheId"}}}
   ]
+  }
 }

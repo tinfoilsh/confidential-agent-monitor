@@ -1,5 +1,11 @@
 {
   "title": "Custom API",
+  "http": {
+    "slots": true,
+    "operations": [
+    {"id":"request","action":"request","effects":["execute","send"],"method":"*","origin":"*","path":"*","open_params":true,"body":"any","sends":"account","scope":{"origin":{"from":"http","at":"/origin"},"method":{"from":"http","at":"/method"},"path":{"from":"http","at":"/path"}},"grant":["origin"]}
+  ]
+  },
   "catalog": {
     "group": "api",
     "actions": {

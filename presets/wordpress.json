@@ -100,11 +100,13 @@
     "group": "api"
   },
   "title": "WordPress",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"wp_json.wp.posts.read","effects":["read"],"id":"posts.list","method":"GET","origin":"{origin}","params":["page","per_page","search","status"],"path":"/wp-json/wp/v2/posts","scope":{}},
     {"action":"wp_json.wp.posts.read","effects":["read"],"id":"posts.get","method":"GET","origin":"{origin}","path":"/wp-json/wp/v2/posts/{post}","scope":{"post":{"at":"post","from":"path"}}},
     {"action":"wp_json.wp.posts.write","body":"json","effects":["write","publish"],"id":"posts.create","method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/posts","scope":{"post":{"at":"","from":"body","type":"object"}}},
     {"action":"wp_json.wp.posts.write","body":"json","effects":["write","publish"],"id":"posts.update","method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/posts/{post}","scope":{"changes":{"at":"","from":"body","type":"object"},"post":{"at":"post","from":"path"}}},
     {"action":"wp_json.wp.posts.delete","effects":["delete"],"id":"posts.delete","method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/posts/{post}","scope":{"post":{"at":"post","from":"path"},"query":{"at":"","from":"query","type":"object"}}}
   ]
+  }
 }

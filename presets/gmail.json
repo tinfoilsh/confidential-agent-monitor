@@ -314,7 +314,8 @@
     "group": "api"
   },
   "title": "Gmail",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"gmail.users.messages.read","effects":["read"],"id":"messages.list","method":"GET","origin":"https://gmail.googleapis.com","params":["q","maxResults","pageToken","labelIds","includeSpamTrash"],"path":"/gmail/v1/users/{user}/messages","scope":{"user":{"at":"user","from":"path"}}},
     {"action":"gmail.users.messages.read","effects":["read"],"id":"messages.get","method":"GET","origin":"https://gmail.googleapis.com","params":["format","metadataHeaders"],"path":"/gmail/v1/users/{user}/messages/{message}","scope":{"user":{"at":"user","from":"path"}}},
     {"action":"gmail.users.messages.attachments.read","effects":["read"],"id":"messages.attachments.get","method":"GET","origin":"https://gmail.googleapis.com","path":"/gmail/v1/users/{user}/messages/{message}/attachments/{attachment}","scope":{"user":{"at":"user","from":"path"}}},
@@ -395,4 +396,5 @@
     {"action":"gmail.users.threads.delete","effects":["delete"],"id":"users.threads.delete","method":"DELETE","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/threads/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
     {"action":"gmail.users.threads.untrash.write","effects":["write"],"id":"users.threads.untrash","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/threads/{id}/untrash","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}}
   ]
+  }
 }

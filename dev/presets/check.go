@@ -99,7 +99,7 @@ func checkReport(r generationReport, src source, locked []lockEntry, digest stri
 	if hex.EncodeToString(sum[:]) != r.CandidateSHA256 {
 		return fmt.Errorf("candidate changed without a matching coverage report")
 	}
-	ops, ok := p["operations"].([]any)
+	ops, ok := httpSection(p)["operations"].([]any)
 	if !ok {
 		return fmt.Errorf("candidate operations is not an array")
 	}

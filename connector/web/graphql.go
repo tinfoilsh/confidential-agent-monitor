@@ -6,12 +6,10 @@ import (
 
 	"github.com/vektah/gqlparser/v2/ast"
 	"github.com/vektah/gqlparser/v2/parser"
-
-	"github.com/tinfoilsh/monitor/connector"
 )
 
 // graphql returns nil for batches, persisted queries, URL envelopes, fragment spreads, directives and unset variables.
-func graphql(body any, query url.Values) *connector.GraphQLLayer {
+func graphql(body any, query url.Values) *GraphQLDetails {
 	envelope, _ := body.(map[string]any)
 	text, ok := envelope["query"].(string)
 	if !ok {
@@ -68,7 +66,7 @@ func graphql(body any, query url.Values) *connector.GraphQLLayer {
 	if !ok {
 		return nil
 	}
-	return &connector.GraphQLLayer{Kind: string(op.Operation), Fields: fields}
+	return &GraphQLDetails{Kind: string(op.Operation), Fields: fields}
 }
 
 // An operation name selects exactly one operation; without one, the document must hold only one.
@@ -92,8 +90,8 @@ func selectOperation(ops ast.OperationList, name any) *ast.OperationDefinition {
 }
 
 // selections returns the fields of one level and checks every level beneath it the same way.
-func selections(set ast.SelectionSet, vars map[string]any) ([]connector.GraphQLField, bool) {
-	fields := []connector.GraphQLField{}
+func selections(set ast.SelectionSet, vars map[string]any) ([]GraphQLField, bool) {
+	fields := []GraphQLField{}
 	for _, s := range set {
 		switch s := s.(type) {
 		case *ast.Field:
@@ -114,7 +112,7 @@ func selections(set ast.SelectionSet, vars map[string]any) ([]connector.GraphQLF
 			if _, ok := selections(s.SelectionSet, vars); !ok {
 				return nil, false
 			}
-			fields = append(fields, connector.GraphQLField{Name: s.Name, Arguments: args})
+			fields = append(fields, GraphQLField{Name: s.Name, Arguments: args})
 		case *ast.InlineFragment:
 			if len(s.Directives) > 0 {
 				return nil, false

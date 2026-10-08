@@ -80,7 +80,8 @@
       "write.video": {"title": "Write: video"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "Create an Attachment Action", "action": "execute.actions", "effects": ["execute"], "method": "POST", "origin": "https://webexapis.com", "path": "/attachment/actions", "body": "any", "scope": {}},
     {"id": "Get Attachment Action Details", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://webexapis.com", "path": "/attachment/actions/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
     {"id": "List Events", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://webexapis.com", "path": "/events", "params": ["resource", "type", "actorId", "from", "to", "max", "serviceType"], "scope": {}},
@@ -282,4 +283,5 @@
     {"id": "Trigger on-demand test for node", "action": "execute.nodes", "effects": ["execute"], "method": "POST", "origin": "https://webexapis.com", "path": "/videoMesh/triggerTest/nodes/{nodeId}", "body": "any", "scope": {"nodeId": {"from": "path", "at": "nodeId"}}},
     {"id": "List Clusters Utilization", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://webexapis.com", "path": "/videoMesh/utilization", "params": ["from", "to", "orgId"], "scope": {"orgId": {"from": "query", "at": "orgId"}}}
   ]
+  }
 }

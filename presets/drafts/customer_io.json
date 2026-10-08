@@ -77,7 +77,8 @@
       "write.versions": {"title": "Write: versions"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getRegion", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://track.customer.io", "path": "/api/v1/accounts/region", "scope": {}},
     {"id": "delete", "action": "delete.customers", "effects": ["delete"], "method": "DELETE", "origin": "https://track.customer.io", "path": "/api/v1/customers/{identifier}", "scope": {"identifier": {"from": "path", "at": "identifier"}}},
     {"id": "identify", "action": "write.customers", "effects": ["write"], "method": "PUT", "origin": "https://track.customer.io", "path": "/api/v1/customers/{identifier}", "body": "any", "scope": {"identifier": {"from": "path", "at": "identifier"}}},
@@ -285,4 +286,5 @@
     {"id": "transactionalLinks", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.customer.io", "path": "/v1/transactional/{transactional_id}/metrics/links", "params": ["period", "steps", "unique"], "scope": {"transactional_id": {"from": "path", "at": "transactional_id"}}},
     {"id": "listWorkspaces", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.customer.io", "path": "/v1/workspaces", "scope": {}}
   ]
+  }
 }

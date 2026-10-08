@@ -15,7 +15,8 @@
       "read": {"title": "Read everything the account can see"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "chatCompletionOpenAI", "action": "generate.completions", "effects": ["generate"], "method": "POST", "origin": "https://api.minimax.io", "path": "/v1/chat/completions", "body": "json", "scope": {}},
     {"id": "t2aV2", "action": "generate.t2a_v2", "effects": ["generate"], "method": "POST", "origin": "https://api.minimax.io", "path": "/v1/t2a_v2", "body": "json", "scope": {}},
     {"id": "retrieveFile", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.minimax.io", "path": "/v1/files/retrieve", "params": ["file_id"], "scope": {"file_id": {"from": "query", "at": "file_id"}}},
@@ -25,4 +26,5 @@
     {"id": "retrieveFileContent", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.minimax.io", "path": "/v1/files/retrieve_content", "params": ["file_id"], "scope": {"file_id": {"from": "query", "at": "file_id"}}},
     {"id": "uploadFile", "action": "generate.upload", "effects": ["generate"], "method": "POST", "origin": "https://api.minimax.io", "path": "/v1/files/upload", "body": "any", "scope": {}}
   ]
+  }
 }

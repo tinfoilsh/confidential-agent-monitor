@@ -21,7 +21,8 @@
       "read": {"title": "Read everything the account can see"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "ApplyGuardrail", "action": "generate.apply", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/guardrail/{guardrailIdentifier}/version/{guardrailVersion}/apply", "body": "any", "scope": {"guardrailIdentifier": {"from": "path", "at": "guardrailIdentifier"}, "guardrailVersion": {"from": "path", "at": "guardrailVersion"}}},
     {"id": "Converse", "action": "generate.converse", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/model/{modelId}/converse", "body": "any", "scope": {"modelId": {"from": "path", "at": "modelId"}}},
     {"id": "ConverseStream", "action": "generate.converse_stream", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/model/{modelId}/converse-stream", "body": "any", "scope": {"modelId": {"from": "path", "at": "modelId"}}},
@@ -34,4 +35,5 @@
     {"id": "ListAsyncInvokes", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/async-invoke", "params": ["maxResults", "nextToken", "sortBy", "sortOrder", "statusEquals", "submitTimeAfter", "submitTimeBefore"], "scope": {}},
     {"id": "StartAsyncInvoke", "action": "execute.async_invoke", "effects": ["execute"], "method": "POST", "origin": "{origin}", "path": "/async-invoke", "body": "any", "scope": {}}
   ]
+  }
 }

@@ -17,7 +17,8 @@
       "write.elasticloadbalancing": {"title": "Write: elasticloadbalancing"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "AddListenerCertificates", "action": "write.elasticloadbalancing", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "AddListenerCertificates"}, "body": "form", "scope": {"ListenerArn": {"from": "form", "at": "ListenerArn"}}},
     {"id": "AddTags", "action": "write.elasticloadbalancing", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "AddTags"}, "body": "form", "scope": {}},
     {"id": "AddTrustStoreRevocations", "action": "write.elasticloadbalancing", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "AddTrustStoreRevocations"}, "body": "form", "scope": {"TrustStoreArn": {"from": "form", "at": "TrustStoreArn"}}},
@@ -70,4 +71,5 @@
     {"id": "SetSecurityGroups", "action": "write.elasticloadbalancing", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "SetSecurityGroups"}, "body": "form", "scope": {"LoadBalancerArn": {"from": "form", "at": "LoadBalancerArn"}}},
     {"id": "SetSubnets", "action": "write.elasticloadbalancing", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "SetSubnets"}, "body": "form", "scope": {"LoadBalancerArn": {"from": "form", "at": "LoadBalancerArn"}}}
   ]
+  }
 }

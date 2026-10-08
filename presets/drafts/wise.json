@@ -118,7 +118,8 @@
       "write.verify_profile": {"title": "Write: verify profile"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "recipientList", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.wise.com", "path": "/2026Q4/accounts", "params": ["creatorId", "profileId", "profile", "currency", "active", "type", "ownedByCustomer", "size", "seekPosition", "sort"], "scope": {}},
     {"id": "recipientCreate", "action": "admin.accounts", "effects": ["admin"], "method": "POST", "origin": "https://api.wise.com", "path": "/2026Q4/accounts", "params": ["refund"], "body": "json", "scope": {}},
     {"id": "recipientDeactivate", "action": "delete.accounts", "effects": ["delete"], "method": "DELETE", "origin": "https://api.wise.com", "path": "/2026Q4/accounts/{accountId}", "scope": {"accountId": {"from": "path", "at": "accountId"}}},
@@ -337,4 +338,5 @@
     {"id": "userContactEmailSet", "action": "write.contact_email", "effects": ["write"], "method": "PUT", "origin": "https://api.wise.com", "path": "/2026Q4/users/{userId}/contact-email", "body": "json", "scope": {"userId": {"from": "path", "at": "userId"}}},
     {"id": "userContactEmailGet", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.wise.com", "path": "/2026Q4/users/{userId}/contact-email", "scope": {"userId": {"from": "path", "at": "userId"}}}
   ]
+  }
 }

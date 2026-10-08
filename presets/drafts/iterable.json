@@ -80,7 +80,8 @@
       "write.winner": {"title": "Write: winner"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "Invalidate JWT", "action": "write.invalidate", "effects": ["write"], "method": "POST", "origin": "https://api.iterable.com", "path": "/api/auth/jwts/invalidate", "body": "json", "scope": {}},
     {"id": "campaigns", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.iterable.com", "path": "/api/campaigns", "params": ["page", "pageSize", "sort", "campaignState"], "scope": {}},
     {"id": "abort campaign", "action": "write.abort", "effects": ["write"], "method": "POST", "origin": "https://api.iterable.com", "path": "/api/campaigns/abort", "body": "json", "scope": {"campaignId": {"from": "body", "at": "/campaignId", "type": "number"}}},
@@ -233,4 +234,5 @@
     {"id": "target.7", "action": "write.target", "effects": ["write"], "method": "POST", "origin": "https://api.iterable.com", "path": "/api/whatsApp/target", "body": "json", "scope": {"campaignId": {"from": "body", "at": "/campaignId", "type": "number"}}},
     {"id": "triggerWorkflow", "action": "execute.trigger_workflow", "effects": ["execute"], "method": "POST", "origin": "https://api.iterable.com", "path": "/api/workflows/triggerWorkflow", "body": "json", "scope": {"workflowId": {"from": "body", "at": "/workflowId", "type": "number"}}}
   ]
+  }
 }

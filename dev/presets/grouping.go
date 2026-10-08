@@ -130,7 +130,7 @@ func groupRecord(record map[string]any, hints map[string]specOp) int {
 	catalog := record["catalog"].(map[string]any)
 	oldActions, _ := catalog["actions"].(map[string]any)
 	var ops []map[string]any
-	switch values := record["operations"].(type) {
+	switch values := httpSection(record)["operations"].(type) {
 	case []map[string]any:
 		ops = values
 	case []any:
@@ -141,7 +141,7 @@ func groupRecord(record map[string]any, hints map[string]specOp) int {
 	if len(ops) == 0 {
 		return 0
 	}
-	// Actions supplied by a recognizer have effects in the catalog. Keep those
+	// Actions described by a connector have effects in the catalog. Keep those
 	// roots and their descendants, including GitHub's Git/GraphQL/MCP controls.
 	actions := map[string]any{}
 	for name, meta := range oldActions {
@@ -188,7 +188,7 @@ func groupRecord(record map[string]any, hints map[string]specOp) int {
 		addActionParents(actions, next)
 	}
 	catalog["actions"] = actions
-	record["operations"] = ops
+	httpSection(record)["operations"] = ops
 	return changed
 }
 
@@ -232,7 +232,7 @@ func groupShipped(only []string) error {
 		if err != nil {
 			return err
 		}
-		ops, _ := record["operations"].([]any)
+		ops, _ := httpSection(record)["operations"].([]any)
 		if len(ops) == 0 {
 			continue
 		}

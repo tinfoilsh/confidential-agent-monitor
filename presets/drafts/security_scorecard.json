@@ -126,7 +126,8 @@
       "write.visibility": {"title": "Write: visibility"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "GET /actions/validate-jira-secrets", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.securityscorecard.io", "path": "/actions/validate-jira-secrets", "scope": {}},
     {"id": "GET /apps/jira-legacy/actions/validate-jira-secrets", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.securityscorecard.io", "path": "/apps/jira-legacy/actions/validate-jira-secrets", "scope": {}},
     {"id": "POST /apps/jira-legacy/install", "action": "write.install", "effects": ["write"], "method": "POST", "origin": "https://api.securityscorecard.io", "path": "/apps/jira-legacy/install", "scope": {}},
@@ -643,4 +644,5 @@
     {"id": "GET /vendor-portfolio-automation/ingested-vendors", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.securityscorecard.io", "path": "/vendor-portfolio-automation/ingested-vendors", "params": ["page", "page_size", "sort", "search", "sources", "source_ids", "vendor_name", "is_dismissed", "is_overridden"], "scope": {}},
     {"id": "GET /vendor-portfolio-automation/suggested-vendors", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.securityscorecard.io", "path": "/vendor-portfolio-automation/suggested-vendors", "params": ["page", "page_size", "sort", "portfolios", "portfolios_criteria", "watchlists", "watchlists_criteria", "search", "facet_search", "is_custom_vendor", "industry", "status", "score", "grade", "recalibrated_score", "recalibrated_score_grade", "recalibration_impact", "last_month_score_change", "ransomware_score_categorical_value", "bsi_score_categorical_value", "tags", "tags_criteria", "public_tags", "public_tags_criteria", "include_tags", "show_products", "cves", "cves_criteria", "issue_types", "had_breach_within_last_days", "products", "business_impact", "new_added_only", "with_scoring_update", "critical_service_exposure_index", "malware_exposure_index", "social_engineering_susceptibility_index", "cumulative_vulnerability_exposure_index", "sources", "source_ids", "monitored", "add_to_portfolio", "vsor_status", "vsor_data_types_shared", "vsor_risk", "vsor_business_unit", "vsor_internal_contact", "vsor_contract_end_date_from", "vsor_contract_end_date_to", "has_contacts", "uuids"], "scope": {}}
   ]
+  }
 }

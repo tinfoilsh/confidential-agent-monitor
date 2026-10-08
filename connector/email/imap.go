@@ -6,10 +6,12 @@ import (
 	"io"
 	"log"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/facts"
 )
 
 const (
@@ -81,7 +83,7 @@ func (r *IMAP) Serve(s *connector.Stream, e *connector.Env) {
 			mailbox = strings.Trim(args, `"`)
 		}
 		dst := io.Writer(up)
-		if err := s.Gate(connector.Event{IMAP: &connector.IMAPLayer{Command: command, Args: args, Mailbox: mailbox}}); err != nil {
+		if err := s.Gate(&IMAPRequest{Command: command, Args: args, Mailbox: mailbox}); err != nil {
 			fmt.Fprintf(s, "%s NO %v\r\n", tag, err)
 			dst = io.Discard
 		}
@@ -110,4 +112,26 @@ func forwardIMAP(dst io.Writer, src *bufio.Reader, line string) error {
 			return err
 		}
 	}
+}
+
+type IMAPRequest struct {
+	Command string `json:"command"`
+	Args    string `json:"args"`
+	Mailbox string `json:"mailbox,omitempty"`
+}
+
+func (v *IMAPRequest) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+	details := map[string]any{"imap": v}
+	action := ""
+	if slices.Contains(strings.Fields("CAPABILITY CHECK ENABLE EXAMINE FETCH ID IDLE LIST LOGOUT LSUB NAMESPACE NOOP SEARCH SELECT STATUS UNSELECT"), v.Command) {
+		action = "read"
+	}
+	if slices.Contains(strings.Fields("APPEND CLOSE COPY CREATE DELETE EXPUNGE MOVE RENAME STORE SUBSCRIBE UNSUBSCRIBE"), v.Command) {
+		action = "organize"
+	}
+	op := &facts.Operation{Action: action}
+	if action == "" {
+		op = nil
+	}
+	return facts.Facts{Operation: op, Title: v.Command + " " + v.Mailbox, Parameters: map[string]any{"mailbox": v.Mailbox, "args": v.Args}, Details: details}, connector.Approval{}, nil
 }

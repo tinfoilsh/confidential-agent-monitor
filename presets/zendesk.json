@@ -2680,7 +2680,8 @@
     "group": "api"
   },
   "title": "Zendesk",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"tickets.read","effects":["read"],"id":"tickets.list","method":"GET","origin":"{origin}","params":["page[size]","page[after]","page[before]","sort"],"path":"/api/v2/tickets","scope":{}},
     {"action":"tickets.read","effects":["read"],"id":"tickets.get","method":"GET","origin":"{origin}","path":"/api/v2/tickets/{ticket}","scope":{"ticket":{"at":"ticket","from":"path"}}},
     {"action":"tickets.write","body":"json","effects":["write","send","share"],"id":"tickets.create","method":"POST","origin":"{origin}","path":"/api/v2/tickets","scope":{"ticket":{"at":"","from":"body","type":"object"}}},
@@ -3392,4 +3393,5 @@
     {"action":"relationship_fields.read","effects":["read"],"id":"GetSourcesByTarget","method":"GET","origin":"{origin}","path":"/api/v2/{target_type}/{target_id}/relationship_fields/{field_id}/{source_type}","scope":{"field_id":{"at":"field_id","from":"path"},"source_type":{"at":"source_type","from":"path"},"target_id":{"at":"target_id","from":"path"},"target_type":{"at":"target_type","from":"path"}}},
     {"action":"oauth.tokens.share","effects":["share"],"id":"CreateTokenForGrantType","method":"POST","origin":"{origin}","path":"/oauth/tokens","scope":{}}
   ]
+  }
 }

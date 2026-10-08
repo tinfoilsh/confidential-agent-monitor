@@ -12,8 +12,10 @@
       "send.comments": {"title": "Send: comments"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "comments.analyze", "action": "generate.comments", "effects": ["generate"], "method": "POST", "origin": "https://commentanalyzer.googleapis.com", "path": "/v1alpha1/comments:analyze", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {}},
     {"id": "comments.suggestscore", "action": "send.comments", "effects": ["send"], "method": "POST", "origin": "https://commentanalyzer.googleapis.com", "path": "/v1alpha1/comments:suggestscore", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {"request": {"from": "body", "at": "", "type": "object"}}}
   ]
+  }
 }

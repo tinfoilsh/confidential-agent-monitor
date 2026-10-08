@@ -28,7 +28,8 @@
       "write.user_creds": {"title": "Write: user creds"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "projects.databases.bulkDeleteDocuments", "action": "write.databases", "effects": ["write"], "method": "POST", "origin": "https://firestore.googleapis.com", "path": "/v1/projects/{projectsId}/databases/{databasesId}:bulkDeleteDocuments", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {"projectsId": {"from": "path", "at": "projectsId"}, "databasesId": {"from": "path", "at": "databasesId"}}},
     {"id": "projects.databases.clone", "action": "write.databases", "effects": ["write"], "method": "POST", "origin": "https://firestore.googleapis.com", "path": "/v1/projects/{projectsId}/databases:clone", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {"projectsId": {"from": "path", "at": "projectsId"}}},
     {"id": "projects.databases.create", "action": "write.databases", "effects": ["write"], "method": "POST", "origin": "https://firestore.googleapis.com", "path": "/v1/projects/{projectsId}/databases", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "databaseId"], "body": "json", "scope": {"projectsId": {"from": "path", "at": "projectsId"}}},
@@ -86,4 +87,5 @@
     {"id": "projects.locations.backups.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://firestore.googleapis.com", "path": "/v1/projects/{projectsId}/locations/{locationsId}/backups/{backupsId}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "scope": {"projectsId": {"from": "path", "at": "projectsId"}, "locationsId": {"from": "path", "at": "locationsId"}, "backupsId": {"from": "path", "at": "backupsId"}}},
     {"id": "projects.locations.backups.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://firestore.googleapis.com", "path": "/v1/projects/{projectsId}/locations/{locationsId}/backups", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "filter"], "scope": {"projectsId": {"from": "path", "at": "projectsId"}, "locationsId": {"from": "path", "at": "locationsId"}}}
   ]
+  }
 }

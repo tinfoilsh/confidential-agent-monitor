@@ -141,7 +141,8 @@
     "group": "api"
   },
   "title": "SendGrid",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"templates.read","effects":["read"],"headers":{"On-Behalf-Of":null},"id":"templates.list","method":"GET","origin":"https://api.sendgrid.com","params":["generations","page_size"],"path":"/v3/templates","scope":{}},
     {"action":"marketing.contacts.read","effects":["read"],"headers":{"On-Behalf-Of":null},"id":"contacts.list","method":"GET","origin":"https://api.sendgrid.com","params":["page_size"],"path":"/v3/marketing/contacts","scope":{}},
     {"action":"marketing.contacts.write","body":"json","effects":["write"],"headers":{"On-Behalf-Of":null},"id":"contacts.upsert","method":"PUT","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts","scope":{"contacts":{"at":"","from":"body","type":"object"}}},
@@ -180,4 +181,5 @@
     {"action":"marketing.lists.contacts.delete","effects":["delete"],"id":"DeleteContact.none.68ca2705d24b","method":"DELETE","origin":"https://api.sendgrid.com","params":["contact_ids"],"path":"/v3/marketing/lists/{id}/contacts","scope":{"contact_ids":{"at":"contact_ids","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
     {"action":"marketing.lists.contacts.count.read","effects":["read"],"id":"ListContactCount.none.fc7facd9d215","method":"GET","origin":"https://api.sendgrid.com","path":"/v3/marketing/lists/{id}/contacts/count","scope":{"id":{"at":"id","from":"path"}}}
   ]
+  }
 }

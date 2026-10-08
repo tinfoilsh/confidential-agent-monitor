@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/facts"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -56,7 +57,7 @@ func validateMessageAccess(name string, access *messageAccess, identities map[st
 		}
 	}
 	for peer, limit := range access.Receive {
-		if _, ok := identities[peer]; !ok || peer == name || !validLabel(limit.label()) {
+		if _, ok := identities[peer]; !ok || peer == name || !limit.label().Valid() {
 			return fmt.Errorf("identity %s: incoming message channel %s needs another identity and valid audience and trust", name, peer)
 		}
 	}
@@ -98,7 +99,7 @@ func channelLimit(from, to principal) (messageLimit, bool) {
 		return messageLimit{}, false
 	}
 	limit, ok := to.Messages.Receive[from.Name]
-	return limit, ok && validLabel(limit.label())
+	return limit, ok && limit.label().Valid()
 }
 
 func (s *state) keepsMailbox(box mailbox) bool {
@@ -136,11 +137,13 @@ func (m *monitor) messageLocked(ctx context.Context, fingerprint string, req mes
 	}
 	original := m.labelLocked(p.Key)
 	original.Because = maps.Clone(original.Because)
-	r := &record{ID: rand.Text(), State: stateAllowed, Time: time.Now(), Identity: p.Name,
-		Account: messageHost, Label: original,
-		Event: &auditEvent{Message: &messageEvent{From: from.Name, To: to.Name, ID: req.ID}},
-		decision: &decision{Action: &req.Action, Operation: req.Action, Title: req.Action + " · " + peer.Name,
-			Scope: map[string]any{"peer": peer.Name}, Sends: limit.Audience, Next: original}}
+	// Keep request identity and context even if parsing or policy evaluation fails.
+	r := &record{ID: rand.Text(), State: stateAllowed, Time: time.Now(),
+		decision: &decision{Facts: &facts.Facts{
+			Version: facts.Version, Kind: facts.KindMessage,
+			Principal: facts.Principal{Key: p.Key, Name: p.Name}, Account: messageHost, Service: "custom",
+			Title: req.Action + " · " + peer.Name, Context: facts.Context{Label: original},
+		}, Next: original}}
 	defer func() {
 		if err != nil {
 			r.State, r.Deny = stateRefused, []string{err.Error()}
@@ -152,6 +155,7 @@ func (m *monitor) messageLocked(ctx context.Context, fingerprint string, req mes
 	if err != nil {
 		return nil, http.StatusForbidden, err
 	}
+	r.decision = d
 	if err := refusal(d.Deny); err != nil {
 		return nil, http.StatusForbidden, err
 	}
@@ -165,17 +169,17 @@ func (m *monitor) messageLocked(ctx context.Context, fingerprint string, req mes
 	}
 	observed := limit.label()
 	if box.History != nil {
-		observed = observed.observe(*box.History, cause)
+		observed = observed.Observe(*box.History, cause)
 	}
 	if req.Action != "message.receive" {
-		observed = observed.observe(original, cause)
+		observed = observed.Observe(original, cause)
 	}
 	changed := false
 	if observed.Audience != limit.Audience || observed.Trust != limit.Trust {
 		changed = box.History == nil || box.History.Audience != observed.Audience || box.History.Trust != observed.Trust
 		box.History = &observed
 	}
-	d.Next = d.Next.observe(observed, cause)
+	d.Next = d.Next.Observe(observed, cause)
 	// Only annotate delivered-message provenance after policy has allowed the
 	// operation. Owner deny rules must not observe queue contents or occupancy.
 	if req.Action == "message.receive" && len(box.Messages) > 0 {
@@ -203,7 +207,7 @@ func (m *monitor) messageLocked(ctx context.Context, fingerprint string, req mes
 			Time: time.Now(), Label: d.Next, Body: bytes.Clone(req.Body)}
 		box.Messages = append(slices.Clone(box.Messages), msg)
 		changed = true
-		r.Event.Message.ID = msg.ID
+		r.Result = map[string]any{"message_id": msg.ID}
 		result, status = map[string]string{"id": msg.ID}, http.StatusCreated
 	case "message.receive":
 		status = http.StatusOK
@@ -211,7 +215,7 @@ func (m *monitor) messageLocked(ctx context.Context, fingerprint string, req mes
 			status = http.StatusNoContent
 		} else {
 			result = box.Messages[0]
-			r.Event.Message.ID = box.Messages[0].ID
+			r.Result = map[string]any{"message_id": box.Messages[0].ID}
 		}
 	case "message.ack":
 		index := slices.IndexFunc(box.Messages, func(msg agentMessage) bool { return msg.ID == req.ID })
@@ -251,10 +255,13 @@ func (s *state) decideMessage(ctx context.Context, p, peer principal, current la
 			return nil, err
 		}
 	}
-	in := map[string]any{"protocol": "messages", "action": req.Action, "principal": p, "peer": peer,
-		"label": current, "channel_label": limit, "cause": cause,
-		"message": map[string]any{"id": req.ID, "body": body}}
-	return evaluateDecision(ctx, s.messageDecision, in)
+	from, to := p.Name, peer.Name
+	if req.Action != "message.send" {
+		from, to = peer.Name, p.Name
+	}
+	in := input{Principal: p, Account: &namedAccount{Name: messageHost, account: account{Preset: "custom", Contents: limit.Audience, Sends: limit.Audience}}, Access: access{Level: "allow"}, Label: current,
+		Request: &parsedMessage{Action: req.Action, Peer: peer.Name, From: from, To: to, ID: req.ID, Body: body, Channel: facts.Label{Audience: limit.Audience, Trust: limit.Trust}, Cause: cause}}
+	return evaluateDecision(ctx, s.decision, in)
 }
 
 func (m *monitor) messageHandler(fingerprint string) http.Handler {
@@ -334,4 +341,22 @@ func (m *monitor) forwardMessages(p principal, nc ssh.NewChannel, port uint32) {
 	if err := server.Serve(in); err != nil && !errors.Is(err, net.ErrClosed) && !errors.Is(err, http.ErrServerClosed) {
 		log.Printf("mailbox HTTP: %v", err)
 	}
+}
+
+type parsedMessage struct {
+	Action  string      `json:"action"`
+	Peer    string      `json:"peer"`
+	From    string      `json:"from"`
+	To      string      `json:"to"`
+	ID      string      `json:"id,omitempty"`
+	Body    any         `json:"body,omitempty"`
+	Channel facts.Label `json:"channel"`
+	Cause   string      `json:"cause"`
+}
+
+func (r *parsedMessage) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+	effect := map[string]string{"message.send": "send", "message.receive": "read", "message.ack": "write"}[r.Action]
+	return facts.Facts{Kind: facts.KindMessage, Operation: &facts.Operation{Action: r.Action, Effects: []string{effect}}, Title: r.Action + " · " + r.Peer,
+		Parameters: map[string]any{"peer": r.Peer, "id": r.ID, "body": r.Body}, Details: map[string]any{"message": r},
+		Context: facts.Context{Observes: r.Channel, Channel: &r.Channel, Sends: r.Channel.Audience, Cause: r.Cause}}, connector.Approval{}, nil
 }

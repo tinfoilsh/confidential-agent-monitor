@@ -79,7 +79,8 @@
       "write.uuid": {"title": "Write: uuid"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "document_list_collections", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.getzep.com", "path": "/api/v2/collections", "scope": {}},
     {"id": "document_delete_collection", "action": "delete.collections", "effects": ["delete"], "method": "DELETE", "origin": "https://api.getzep.com", "path": "/api/v2/collections/{collectionName}", "scope": {"collectionName": {"from": "path", "at": "collectionName"}}},
     {"id": "document_get_collection", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.getzep.com", "path": "/api/v2/collections/{collectionName}", "scope": {"collectionName": {"from": "path", "at": "collectionName"}}},
@@ -221,4 +222,5 @@
     {"id": "user_getUserThreads", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.getzep.com", "path": "/api/v2/users/{userId}/threads", "scope": {"userId": {"from": "path", "at": "userId"}}},
     {"id": "user_warmUserCache", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.getzep.com", "path": "/api/v2/users/{userId}/warm", "scope": {"userId": {"from": "path", "at": "userId"}}}
   ]
+  }
 }

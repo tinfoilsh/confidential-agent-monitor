@@ -1245,7 +1245,8 @@
     "group": "api"
   },
   "title": "OpenAI",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"models.read","effects":["read"],"headers":{"Openai-Organization":null,"Openai-Project":null},"id":"models.list","method":"GET","origin":"https://api.openai.com","path":"/v1/models","scope":{}},
     {"action":"files.read","effects":["read"],"headers":{"Openai-Organization":null,"Openai-Project":null},"id":"files.list","method":"GET","origin":"https://api.openai.com","path":"/v1/files","scope":{}},
     {"action":"files.write","body":"any","effects":["write"],"headers":{"Openai-Organization":null,"Openai-Project":null},"id":"files.create","method":"POST","origin":"https://api.openai.com","path":"/v1/files","scope":{}},
@@ -1627,4 +1628,5 @@
     {"action":"webhook_endpoints.read","body":"json","effects":["read"],"id":"TestWebhookEndpoint.json.36599a43f118","method":"POST","origin":"https://api.openai.com","path":"/v1/webhook_endpoints/{webhook_endpoint_id}/test","scope":{"request":{"at":"","from":"body","type":"object"},"webhook_endpoint_id":{"at":"webhook_endpoint_id","from":"path"}}},
     {"action":"webhook_event_types.read","effects":["read"],"id":"ListWebhookEventTypes","method":"GET","origin":"https://api.openai.com","path":"/v1/webhook_event_types","scope":{}}
   ]
+  }
 }

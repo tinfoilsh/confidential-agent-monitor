@@ -6750,7 +6750,8 @@
     "group": "api"
   },
   "title": "Microsoft Excel",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"me.drive.items.workbook.worksheets.read","effects":["read"],"id":"worksheets.list","method":"GET","origin":"https://graph.microsoft.com","params":["$select"],"path":"/v1.0/me/drive/items/{item}/workbook/worksheets","scope":{"item":{"at":"item","from":"path"}}},
     {"action":"me.drive.items.workbook.worksheets.read","effects":["read"],"id":"range.get","method":"GET","origin":"https://graph.microsoft.com","params":["$select"],"path":"/v1.0/me/drive/items/{item}/workbook/worksheets/{sheet}/range(address={address})","scope":{"address":{"at":"address","from":"path"},"item":{"at":"item","from":"path"},"sheet":{"at":"sheet","from":"path"}}},
     {"action":"me.drive.items.workbook.worksheets.used_range.read","effects":["read"],"id":"usedRange.get","method":"GET","origin":"https://graph.microsoft.com","params":["$select","valuesOnly"],"path":"/v1.0/me/drive/items/{item}/workbook/worksheets/{sheet}/usedRange","scope":{"item":{"at":"item","from":"path"},"sheet":{"at":"sheet","from":"path"}}},
@@ -8528,4 +8529,5 @@
     {"action":"drives.items.workbook.worksheets.visible_view.read","effects":["read"],"id":"drives.drive.items.driveItem.workbook.worksheets.workbookWorksheet.usedRange.visibleView-63c8","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/drives/{drive-id}/items/{driveItem-id}/workbook/worksheets/{workbookWorksheet-id}/usedRange(valuesOnly={valuesOnly})/visibleView()","scope":{"drive-id":{"at":"drive-id","from":"path"},"driveItem-id":{"at":"driveItem-id","from":"path"},"valuesOnly":{"at":"valuesOnly","from":"path"},"workbookWorksheet-id":{"at":"workbookWorksheet-id","from":"path"}}},
     {"action":"drives.items.workbook.worksheets.worksheet.read","effects":["read"],"id":"drives.items.workbook.worksheets.usedRange.GetWorksheet-63c8","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/drives/{drive-id}/items/{driveItem-id}/workbook/worksheets/{workbookWorksheet-id}/usedRange(valuesOnly={valuesOnly})/worksheet","scope":{"drive-id":{"at":"drive-id","from":"path"},"driveItem-id":{"at":"driveItem-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"valuesOnly":{"at":"valuesOnly","from":"path"},"workbookWorksheet-id":{"at":"workbookWorksheet-id","from":"path"}}}
   ]
+  }
 }

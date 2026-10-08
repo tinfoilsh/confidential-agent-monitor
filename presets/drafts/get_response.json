@@ -77,7 +77,8 @@
       "write.winner": {"title": "Write: winner"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "GetAbTestSubjectList", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.getresponse.com", "path": "/v3/ab-tests/subject", "params": ["query[name]", "query[stage]", "query[abTestId]", "query[campaignId]", "sort[name]", "sort[stage]", "sort[sendOn]", "sort[totalDelivered]", "fields", "perPage", "page"], "scope": {}},
     {"id": "createSubjectAbTest", "action": "write.subject", "effects": ["write"], "method": "POST", "origin": "https://api.getresponse.com", "path": "/v3/ab-tests/subject", "body": "any", "scope": {}},
     {"id": "getAbTestSubjectById", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.getresponse.com", "path": "/v3/ab-tests/subject/{abTestId}", "params": ["fields"], "scope": {"abTestId": {"from": "path", "at": "abTestId"}}},
@@ -290,4 +291,5 @@
     {"id": "getWorkflow", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.getresponse.com", "path": "/v3/workflow/{workflowId}", "params": ["fields"], "scope": {"workflowId": {"from": "path", "at": "workflowId"}}},
     {"id": "updateWorkflow", "action": "execute.workflow", "effects": ["execute"], "method": "POST", "origin": "https://api.getresponse.com", "path": "/v3/workflow/{workflowId}", "body": "any", "scope": {"workflowId": {"from": "path", "at": "workflowId"}}}
   ]
+  }
 }

@@ -1020,7 +1020,8 @@
     "group": "api"
   },
   "title": "Asana",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"workspaces.read","effects":["read"],"id":"workspaces.list","method":"GET","origin":"https://app.asana.com","params":["opt_fields"],"path":"/api/1.0/workspaces","scope":{}},
     {"action":"tasks.read","effects":["read"],"id":"tasks.list","method":"GET","origin":"https://app.asana.com","params":["project","assignee","workspace","completed_since","opt_fields"],"path":"/api/1.0/tasks","scope":{}},
     {"action":"tasks.read","effects":["read"],"id":"tasks.get","method":"GET","origin":"https://app.asana.com","params":["opt_fields"],"path":"/api/1.0/tasks/{task}","scope":{"task":{"at":"task","from":"path"}}},
@@ -1286,4 +1287,5 @@
     {"action":"workspaces.users.admin","body":"json","effects":["admin"],"id":"updateUserForWorkspace","method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/users/{user_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"user_gid":{"at":"user_gid","from":"path"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
     {"action":"workspaces.workspace_memberships.read","effects":["read"],"id":"getWorkspaceMembershipsForWorkspace","method":"GET","origin":"https://app.asana.com","params":["user","opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/workspace_memberships","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query","optional":true},"workspace_gid":{"at":"workspace_gid","from":"path"}}}
   ]
+  }
 }

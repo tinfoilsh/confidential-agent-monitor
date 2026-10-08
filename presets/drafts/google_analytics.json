@@ -33,7 +33,8 @@
       "write.properties": {"title": "Write: properties"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "properties.batchRunPivotReports", "action": "execute.properties", "effects": ["execute"], "method": "POST", "origin": "https://analyticsdata.googleapis.com", "path": "/v1beta/properties/{propertiesId}:batchRunPivotReports", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {"propertiesId": {"from": "path", "at": "propertiesId"}}},
     {"id": "properties.batchRunReports", "action": "execute.properties", "effects": ["execute"], "method": "POST", "origin": "https://analyticsdata.googleapis.com", "path": "/v1beta/properties/{propertiesId}:batchRunReports", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {"propertiesId": {"from": "path", "at": "propertiesId"}}},
     {"id": "properties.checkCompatibility", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://analyticsdata.googleapis.com", "path": "/v1beta/properties/{propertiesId}:checkCompatibility", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {"propertiesId": {"from": "path", "at": "propertiesId"}}},
@@ -101,4 +102,5 @@
     {"id": "properties.keyEvents.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://analyticsadmin.googleapis.com", "path": "/v1beta/properties/{propertiesId}/keyEvents", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "pageSize", "pageToken"], "scope": {"propertiesId": {"from": "path", "at": "propertiesId"}}},
     {"id": "properties.keyEvents.patch", "action": "write.key_events", "effects": ["write"], "method": "PATCH", "origin": "https://analyticsadmin.googleapis.com", "path": "/v1beta/properties/{propertiesId}/keyEvents/{keyEventsId}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "updateMask"], "body": "json", "scope": {"propertiesId": {"from": "path", "at": "propertiesId"}, "keyEventsId": {"from": "path", "at": "keyEventsId"}}}
   ]
+  }
 }

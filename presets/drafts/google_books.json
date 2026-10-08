@@ -31,7 +31,8 @@
       "write.update_user_settings": {"title": "Write: update user settings"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "bookshelves.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://books.googleapis.com", "path": "/books/v1/users/{userId}/bookshelves/{shelf}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "source"], "scope": {"userId": {"from": "path", "at": "userId"}, "shelf": {"from": "path", "at": "shelf"}}},
     {"id": "bookshelves.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://books.googleapis.com", "path": "/books/v1/users/{userId}/bookshelves", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "source"], "scope": {"userId": {"from": "path", "at": "userId"}}},
     {"id": "bookshelves.volumes.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://books.googleapis.com", "path": "/books/v1/users/{userId}/bookshelves/{shelf}/volumes", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "maxResults", "showPreorders", "source", "startIndex"], "scope": {"userId": {"from": "path", "at": "userId"}, "shelf": {"from": "path", "at": "shelf"}}},
@@ -81,4 +82,5 @@
     {"id": "volumes.associated.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://books.googleapis.com", "path": "/books/v1/volumes/{volumeId}/associated", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "association", "locale", "maxAllowedMaturityRating", "source"], "scope": {"volumeId": {"from": "path", "at": "volumeId"}}},
     {"id": "volumes.recommended.rate", "action": "write.rate", "effects": ["write"], "method": "POST", "origin": "https://books.googleapis.com", "path": "/books/v1/volumes/recommended/rate", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "locale", "rating", "source", "volumeId"], "scope": {}}
   ]
+  }
 }

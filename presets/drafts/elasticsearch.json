@@ -208,7 +208,8 @@
       "write.watches": {"title": "Write: watches"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "info", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/", "scope": {}},
     {"id": "ping", "action": "read", "effects": ["read"], "method": "HEAD", "origin": "{origin}", "path": "/", "scope": {}},
     {"id": "indices-get-alias-1", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/_alias/{name}", "params": ["allow_no_indices", "expand_wildcards", "ignore_unavailable", "master_timeout", "analyzer", "analyze_wildcard", "default_operator", "df", "ignore_throttled", "lenient", "min_score", "preference", "routing", "stats", "terminate_after", "q", "fields", "include_unmapped", "filters", "types", "include_empty_fields", "force", "wait_if_ongoing", "local", "ids", "field_statistics", "offsets", "payloads", "positions", "realtime", "term_statistics", "version", "version_type", "active_only", "detailed", "resource", "allow_partial_search_results", "batched_reduce_size", "ccs_minimize_roundtrips", "docvalue_fields", "explain", "include_named_queries_score", "max_concurrent_shard_requests", "pre_filter_shard_size", "request_cache", "scroll", "search_type", "stored_fields", "suggest_field", "suggest_mode", "suggest_size", "suggest_text", "timeout", "track_total_hits", "track_scores", "typed_keys", "rest_total_hits_as_int", "_source", "_source_excludes", "_source_exclude_vectors", "_source_includes", "seq_no_primary_term", "size", "from", "sort", "flat_settings", "include_defaults", "status", "completion_fields", "fielddata_fields", "forbid_closed_indices", "groups", "include_segment_file_sizes", "include_unloaded_segments", "level"], "scope": {"name": {"from": "path", "at": "name"}}},
@@ -816,4 +817,5 @@
     {"id": "exists-source", "action": "read", "effects": ["read"], "method": "HEAD", "origin": "{origin}", "path": "/{index}/_source/{id}", "params": ["preference", "realtime", "refresh", "routing", "_source", "_source_excludes", "_source_includes", "version", "version_type"], "scope": {"index": {"from": "path", "at": "index"}, "id": {"from": "path", "at": "id"}}},
     {"id": "terms-enum", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/{index}/_terms_enum", "body": "json", "scope": {"index": {"from": "path", "at": "index"}}}
   ]
+  }
 }

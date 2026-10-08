@@ -30,7 +30,8 @@
       "write.update": {"title": "Write: update"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "AlertContactsController_list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.uptimerobot.com", "path": "/v3/alert-contacts", "params": ["limit", "cursor"], "scope": {}},
     {"id": "AlertContactsController_create", "action": "write.alert_contacts", "effects": ["write"], "method": "POST", "origin": "https://api.uptimerobot.com", "path": "/v3/alert-contacts", "body": "json", "scope": {}},
     {"id": "AlertContactsController_delete", "action": "delete.alert_contacts", "effects": ["delete"], "method": "DELETE", "origin": "https://api.uptimerobot.com", "path": "/v3/alert-contacts/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
@@ -91,4 +92,5 @@
     {"id": "UserController_getAllAlertContacts", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.uptimerobot.com", "path": "/v3/user/all-alert-contacts", "scope": {}},
     {"id": "UserController_getMe", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.uptimerobot.com", "path": "/v3/user/me", "scope": {}}
   ]
+  }
 }

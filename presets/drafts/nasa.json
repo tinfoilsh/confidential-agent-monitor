@@ -11,7 +11,9 @@
       "read": {"title": "Read everything the account can see"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "GET /planetary/apod", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.nasa.gov", "path": "/planetary/apod", "params": ["date", "hd"], "scope": {}}
   ]
+  }
 }

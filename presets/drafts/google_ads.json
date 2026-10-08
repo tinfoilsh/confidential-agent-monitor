@@ -118,7 +118,8 @@
       "write.you_tube_video_uploads": {"title": "Write: you tube video uploads"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "audienceInsights.listInsightsEligibleDates", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://googleads.googleapis.com", "path": "/v25/audienceInsights:listInsightsEligibleDates", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {}},
     {"id": "customers.createCustomerClient", "action": "write.customers", "effects": ["write"], "method": "POST", "origin": "https://googleads.googleapis.com", "path": "/v25/customers/{customersId}:createCustomerClient", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {"customersId": {"from": "path", "at": "customersId"}}},
     {"id": "customers.generateAdGroupThemes", "action": "generate.customers", "effects": ["generate"], "method": "POST", "origin": "https://googleads.googleapis.com", "path": "/v25/customers/{customersId}:generateAdGroupThemes", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {"customersId": {"from": "path", "at": "customersId"}}},
@@ -296,4 +297,5 @@
     {"id": "listPlannableUserInterests", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://googleads.googleapis.com", "path": "/v25:listPlannableUserInterests", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {}},
     {"id": "listPlannableUserLists", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://googleads.googleapis.com", "path": "/v25:listPlannableUserLists", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {}}
   ]
+  }
 }

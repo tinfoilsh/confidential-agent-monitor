@@ -806,7 +806,8 @@
     "group": "api"
   },
   "title": "Anthropic",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"hello.read","effects":["read"],"id":"hello","method":"HEAD","origin":"https://api.anthropic.com","path":"/api/hello","scope":{}},
     {"action":"models.read","effects":["read"],"headers":{"Anthropic-Version":"2023-06-01"},"id":"models.list","method":"GET","origin":"https://api.anthropic.com","params":["beta"],"path":"/v1/models","scope":{}},
     {"action":"messages.count_tokens.generate","body":"json","effects":["send"],"headers":{"Anthropic-Version":"2023-06-01"},"id":"messages.count_tokens","method":"POST","origin":"https://api.anthropic.com","params":["beta"],"path":"/v1/messages/count_tokens","scope":{},"sends":"me"},
@@ -1120,4 +1121,5 @@
     {"action":"vaults.read","effects":["read"],"id":"BetaListVaults","method":"GET","origin":"https://api.anthropic.com","params":["limit","page","include_archived"],"path":"/v1/vaults","query":{"beta":"true"},"scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
     {"action":"vaults.generate","body":"json","effects":["generate","pay","send"],"id":"BetaCreateVault","method":"POST","origin":"https://api.anthropic.com","path":"/v1/vaults","query":{"beta":"true"},"scope":{"display_name":{"at":"/display_name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}}
   ]
+  }
 }

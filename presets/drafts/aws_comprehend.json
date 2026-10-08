@@ -17,7 +17,8 @@
       "write.comprehend": {"title": "Write: comprehend"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "BatchDetectDominantLanguage", "action": "generate.comprehend", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Comprehend_20171127.BatchDetectDominantLanguage"}, "body": "any", "scope": {}},
     {"id": "BatchDetectEntities", "action": "generate.comprehend", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Comprehend_20171127.BatchDetectEntities"}, "body": "any", "scope": {}},
     {"id": "BatchDetectKeyPhrases", "action": "generate.comprehend", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Comprehend_20171127.BatchDetectKeyPhrases"}, "body": "any", "scope": {}},
@@ -104,4 +105,5 @@
     {"id": "UpdateEndpoint", "action": "write.comprehend", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Comprehend_20171127.UpdateEndpoint"}, "body": "any", "scope": {}},
     {"id": "UpdateFlywheel", "action": "write.comprehend", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Comprehend_20171127.UpdateFlywheel"}, "body": "any", "scope": {}}
   ]
+  }
 }

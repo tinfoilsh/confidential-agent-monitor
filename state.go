@@ -5,23 +5,37 @@ import (
 	"context"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/ecdsa"
+	"crypto/ed25519"
+	"crypto/elliptic"
+	"crypto/rand"
 	"crypto/subtle"
+	"crypto/tls"
+	"crypto/x509"
+	"crypto/x509/pkix"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"fmt"
+	"log"
 	"maps"
 	"net"
 	"slices"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
-	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/facts"
 	"gocloud.dev/blob"
 	"gocloud.dev/gcerrors"
 	"golang.org/x/crypto/ssh"
 )
+
+type label = facts.Label
+
+var cleanLabel = label{Trust: "trusted", Audience: "anyone"}
 
 const ownerKeyBytes = 32
 
@@ -37,11 +51,10 @@ type sealed struct {
 }
 
 type state struct {
-	cfg             *config
-	connections     map[string]*connection
-	principals      map[string]principal
-	decision        rego.PreparedEvalQuery
-	messageDecision rego.PreparedEvalQuery
+	cfg         *config
+	connections map[string]*connection
+	principals  map[string]principal
+	decision    policyQuery
 	connector.Env
 }
 
@@ -306,8 +319,267 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *
 		}
 		s.principals[fingerprint] = principal{Key: fingerprint, Name: name, Accounts: id.Accounts, Rules: id.Rules, Messages: id.Messages, Profile: id.Profile}
 	}
-	if s.decision, s.messageDecision, err = preparePolicies(ctx, cfg); err != nil {
+	if s.decision, err = preparePolicy(ctx, cfg); err != nil {
 		return nil, err
 	}
 	return s, nil
+}
+
+// Parsing fills settings; apply allocates runtime resources after persistence.
+type connection struct {
+	name, protocol, account, key string
+	config                       json.RawMessage
+	connector                    connector.Connector
+	ctx                          context.Context
+	cancel                       context.CancelFunc
+	ready, done                  chan struct{}
+	incoming                     *connector.Listener
+	err                          error // Published by closing done.
+}
+
+// apply never waits for upstreams. Replacements wait for their predecessors,
+// including when a connection is removed and immediately re-added.
+func (m *monitor) apply(s *state) {
+	if m.running == nil {
+		m.running = map[string]*connection{}
+	}
+	for name, c := range m.running {
+		if s.connections[name] != c {
+			c.cancel()
+			select {
+			case <-c.done:
+				delete(m.running, name)
+			default:
+			}
+		}
+	}
+	for name, c := range s.connections {
+		previous := m.running[name]
+		if previous == c {
+			continue
+		}
+		c.ctx, c.cancel = context.WithCancel(context.Background())
+		c.ready, c.done = make(chan struct{}), make(chan struct{})
+		c.incoming = connector.NewListener()
+		m.running[name] = c
+		go func() {
+			defer close(c.done)
+			defer c.cancel()
+			if previous != nil {
+				<-previous.done
+			}
+			if c.ctx.Err() != nil {
+				return
+			}
+			stop := context.AfterFunc(c.ctx, func() { c.incoming.Close() })
+			defer stop()
+			defer c.incoming.Close()
+			c.err = connector.Run(c.connector, c.ctx, &s.Env, c.incoming, func() { close(c.ready) })
+			if c.err != nil && c.ctx.Err() == nil {
+				log.Printf("connector %s: %v", c.name, c.err)
+			}
+		}()
+	}
+}
+
+func (c *connection) status() any {
+	select {
+	case <-c.done:
+		if c.err != nil {
+			return map[string]string{"state": "error", "error": c.err.Error()}
+		}
+		return map[string]string{"state": "stopped"}
+	default:
+	}
+	select {
+	case <-c.ready:
+		if r, ok := c.connector.(connector.Reporter); ok {
+			return r.Status()
+		}
+		return map[string]string{"state": "ready"}
+	default:
+		return map[string]string{"state": "connecting"}
+	}
+}
+
+func connectionName(account, key string) string {
+	if key != "" {
+		return account + "-" + key
+	}
+	return account
+}
+
+func redactedConnection(c *connection) json.RawMessage {
+	raw := c.config
+	for _, field := range c.connector.Fields() {
+		if field.Redact {
+			raw, _ = jsonpatch.MergePatch(raw, valuePatch(field.Path, json.RawMessage("null")))
+		}
+	}
+	return raw
+}
+
+func (m *monitor) label(fingerprint string) label {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.labelLocked(fingerprint)
+}
+
+// labelLocked requires mu.
+func (m *monitor) labelLocked(fingerprint string) label {
+	if l, ok := m.doc.Labels[fingerprint]; ok {
+		return l
+	}
+	return cleanLabel
+}
+
+// setLabelLocked requires flow and mu. Keep the new label in memory even if
+// persistence fails. The stream observing the data may finish its own request.
+func (m *monitor) setLabelLocked(fingerprint string, l label, source *connector.Stream) {
+	old := m.labelLocked(fingerprint)
+	changed := old.Trust != l.Trust || old.Audience != l.Audience
+	if !changed && maps.Equal(old.Because, l.Because) {
+		return
+	}
+	if m.doc.Labels == nil {
+		m.doc.Labels = map[string]label{}
+	}
+	l.Because = maps.Clone(l.Because)
+	m.doc.Labels[fingerprint] = l
+	m.doc.Generation++
+	m.labelsDirty = true
+	lattices := m.live.Load().cfg.Lattices
+	if lattices.Integrity && old.Trust != l.Trust || lattices.Confidentiality && old.Audience != l.Audience {
+		m.retireStreamsLocked(fingerprint, source)
+	}
+}
+
+// relabel requires flow. Retry a failed label write before admitting more data,
+// including when this request would leave the in-memory label unchanged.
+func (m *monitor) relabel(ctx context.Context, fingerprint string, l label, source *connector.Stream) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.setLabelLocked(fingerprint, l, source)
+	if !m.labelsDirty {
+		return nil
+	}
+	return m.commitLocked(ctx, m.doc)
+}
+
+const (
+	caLifetime   = 10 * 365 * 24 * time.Hour
+	leafLifetime = 24 * time.Hour
+	leafBackdate = time.Hour
+)
+
+type keyMaterial struct {
+	HostKey string `json:"host_key"`
+	CACert  string `json:"ca_cert"`
+	CAKey   string `json:"ca_key"`
+}
+
+type authority struct {
+	ca     tls.Certificate
+	mu     sync.Mutex
+	leaves map[string]*tls.Certificate
+}
+
+func loadCA(k *keyMaterial) (*tls.Config, error) {
+	if k.CACert == "" {
+		if err := createCA(k); err != nil {
+			return nil, err
+		}
+	}
+	ca, err := tls.X509KeyPair([]byte(k.CACert), []byte(k.CAKey))
+	if err != nil {
+		return nil, err
+	}
+	a := &authority{ca: ca, leaves: map[string]*tls.Certificate{}}
+	return &tls.Config{GetCertificate: a.certificate}, nil
+}
+
+func createCA(k *keyMaterial) error {
+	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		return err
+	}
+	now := time.Now()
+	template := &x509.Certificate{
+		Subject:               pkix.Name{CommonName: "monitor dev CA"},
+		NotBefore:             now,
+		NotAfter:              now.Add(caLifetime),
+		IsCA:                  true,
+		BasicConstraintsValid: true,
+		KeyUsage:              x509.KeyUsageCertSign,
+	}
+	der, err := x509.CreateCertificate(rand.Reader, template, template, &key.PublicKey, key)
+	if err != nil {
+		return err
+	}
+	private, err := x509.MarshalPKCS8PrivateKey(key)
+	if err != nil {
+		return err
+	}
+	k.CAKey = string(pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: private}))
+	k.CACert = string(pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der}))
+	return nil
+}
+
+// Without SNI, the leaf is minted for the channel's target.
+func (a *authority) certificate(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
+	name := hello.ServerName
+	if c, ok := hello.Conn.(*connector.Stream); ok && name == "" {
+		name = c.Host
+	}
+	if name == "" {
+		return nil, errors.New("a selected connection needs TLS server name indication")
+	}
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	if leaf := a.leaves[name]; leaf != nil && time.Now().Before(leaf.Leaf.NotAfter) {
+		return leaf, nil
+	}
+	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		return nil, err
+	}
+	now := time.Now()
+	template := &x509.Certificate{
+		Subject:     pkix.Name{CommonName: name},
+		NotBefore:   now.Add(-leafBackdate),
+		NotAfter:    now.Add(leafLifetime),
+		KeyUsage:    x509.KeyUsageDigitalSignature,
+		ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+	}
+	if ip := net.ParseIP(name); ip != nil {
+		template.IPAddresses = []net.IP{ip}
+	} else {
+		template.DNSNames = []string{name}
+	}
+	der, err := x509.CreateCertificate(rand.Reader, template, a.ca.Leaf, &key.PublicKey, a.ca.PrivateKey)
+	if err != nil {
+		return nil, err
+	}
+	parsed, err := x509.ParseCertificate(der)
+	if err != nil {
+		return nil, err
+	}
+	leaf := &tls.Certificate{Certificate: [][]byte{der}, PrivateKey: key, Leaf: parsed}
+	a.leaves[name] = leaf
+	return leaf, nil
+}
+
+func loadHostKey(k *keyMaterial) (ssh.Signer, error) {
+	if k.HostKey == "" {
+		_, private, err := ed25519.GenerateKey(rand.Reader)
+		if err != nil {
+			return nil, err
+		}
+		block, err := ssh.MarshalPrivateKey(private, "")
+		if err != nil {
+			return nil, err
+		}
+		k.HostKey = string(pem.EncodeToMemory(block))
+	}
+	return ssh.ParsePrivateKey([]byte(k.HostKey))
 }

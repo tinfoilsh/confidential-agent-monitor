@@ -51,7 +51,8 @@
       "write.system_connection": {"title": "Write: system connection"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "listDocAnalytics", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://coda.io", "path": "/apis/v1/analytics/docs", "params": ["docIds", "workspaceId", "query", "isPublished", "sinceDate", "untilDate", "scale", "pageToken", "orderBy", "direction", "limit"], "scope": {}},
     {"id": "listDocAnalyticsSummary", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://coda.io", "path": "/apis/v1/analytics/docs/summary", "params": ["isPublished", "sinceDate", "untilDate", "workspaceId"], "scope": {}},
     {"id": "listPageAnalytics", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://coda.io", "path": "/apis/v1/analytics/docs/{docId}/pages", "params": ["sinceDate", "untilDate", "pageToken", "limit"], "scope": {"docId": {"from": "path", "at": "docId"}}},
@@ -176,4 +177,5 @@
     {"id": "listWorkspaceMembers", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://coda.io", "path": "/apis/v1/workspaces/{workspaceId}/users", "params": ["includedRoles", "pageToken"], "scope": {"workspaceId": {"from": "path", "at": "workspaceId"}}},
     {"id": "changeUserRole", "action": "admin.role", "effects": ["admin"], "method": "POST", "origin": "https://coda.io", "path": "/apis/v1/workspaces/{workspaceId}/users/role", "body": "json", "scope": {"workspaceId": {"from": "path", "at": "workspaceId"}, "email": {"from": "body", "at": "/email"}}}
   ]
+  }
 }

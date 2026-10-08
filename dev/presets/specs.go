@@ -109,7 +109,7 @@ func splitServer(raw string) (origin, base string) {
 }
 
 func parseOpenAPI(src []byte, swagger bool, location string) (parsed, error) {
-	// Response schemas are not part of request recognition. Some vendor specs
+	// Response schemas are not part of request description. Some vendor specs
 	// contain invalid response-only schemas; do not let those hide valid routes.
 	var err error
 	if src, err = requestDocument(src, swagger); err != nil {

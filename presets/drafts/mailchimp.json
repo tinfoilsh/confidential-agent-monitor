@@ -99,7 +99,8 @@
       "write.verified_domains": {"title": "Write: verified domains"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getRoot", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/3.0/", "params": ["fields", "exclude_fields"], "scope": {}},
     {"id": "getAccountExports", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/3.0/account-exports", "params": ["fields", "exclude_fields", "count", "offset"], "scope": {}},
     {"id": "postAccountExport", "action": "write.account_exports", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/3.0/account-exports", "body": "json", "scope": {}},
@@ -399,4 +400,5 @@
     {"id": "getVerifiedDomain", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/3.0/verified-domains/{domain_name}", "scope": {"domain_name": {"from": "path", "at": "domain_name"}}},
     {"id": "verifyDomain", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/3.0/verified-domains/{domain_name}/actions/verify", "body": "json", "scope": {"domain_name": {"from": "path", "at": "domain_name"}}}
   ]
+  }
 }

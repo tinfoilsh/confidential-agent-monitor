@@ -3390,7 +3390,8 @@
     "group": "api"
   },
   "title": "Microsoft SharePoint",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"sites.read","effects":["read"],"id":"sites.search","method":"GET","origin":"https://graph.microsoft.com","params":["search","$select","$top","$skiptoken"],"path":"/v1.0/sites","scope":{}},
     {"action":"sites.read","effects":["read"],"id":"sites.get","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/sites/{site}","scope":{"site":{"at":"site","from":"path"}}},
     {"action":"sites.drives.read","effects":["read"],"id":"drives.list","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$top"],"path":"/v1.0/sites/{site}/drives","scope":{"site":{"at":"site","from":"path"}}},
@@ -4386,4 +4387,5 @@
     {"action":"sites.term_stores.sets.terms.relations.to_term.read","effects":["read"],"id":"sites.termStores.sets.terms.relations.GetToTerm","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/sites/{site-id}/termStores/{store-id}/sets/{set-id}/terms/{term-id}/relations/{relation-id}/toTerm","scope":{"query":{"at":"","from":"query","type":"object"},"relation-id":{"at":"relation-id","from":"path"},"set-id":{"at":"set-id","from":"path"},"site-id":{"at":"site-id","from":"path"},"store-id":{"at":"store-id","from":"path"},"term-id":{"at":"term-id","from":"path"}}},
     {"action":"sites.term_stores.sets.terms.read","effects":["read"],"id":"sites.termStores.sets.terms.GetSet","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/sites/{site-id}/termStores/{store-id}/sets/{set-id}/terms/{term-id}/set","scope":{"query":{"at":"","from":"query","type":"object"},"set-id":{"at":"set-id","from":"path"},"site-id":{"at":"site-id","from":"path"},"store-id":{"at":"store-id","from":"path"},"term-id":{"at":"term-id","from":"path"}}}
   ]
+  }
 }

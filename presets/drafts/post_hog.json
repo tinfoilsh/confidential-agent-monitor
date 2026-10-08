@@ -797,7 +797,8 @@
       "write.wizard": {"title": "Write: wizard"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "billing_list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/billing/", "scope": {}},
     {"id": "billing_activate_create", "action": "write.activate", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/billing/activate/", "body": "any", "scope": {}},
     {"id": "billing_activate_authorize_create", "action": "write.authorize", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/billing/activate/authorize/", "body": "any", "scope": {}},
@@ -2980,4 +2981,5 @@
     {"id": "users_two_factor_validate_create", "action": "write.two_factor_validate", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/users/{uuid}/two_factor_validate/", "body": "any", "scope": {"uuid": {"from": "path", "at": "uuid"}}},
     {"id": "users_validate_2fa_create", "action": "admin.users", "effects": ["admin"], "method": "POST", "origin": "{origin}", "path": "/api/users/{uuid}/validate_2fa/", "body": "any", "scope": {"uuid": {"from": "path", "at": "uuid"}}}
   ]
+  }
 }

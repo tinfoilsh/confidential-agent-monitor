@@ -73,7 +73,8 @@
       "write.workflows": {"title": "Write: workflows"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "agents_api_v1_agents_list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.mistral.ai", "path": "/v1/agents", "params": ["page", "page_size", "deployment_chat", "sources", "name", "search", "id", "metadata"], "scope": {}},
     {"id": "agents_api_v1_agents_create", "action": "write.agents", "effects": ["write"], "method": "POST", "origin": "https://api.mistral.ai", "path": "/v1/agents", "body": "json", "scope": {"name": {"from": "body", "at": "/name"}}},
     {"id": "agents_completion_v1_agents_completions_post", "action": "generate.completions", "effects": ["generate"], "method": "POST", "origin": "https://api.mistral.ai", "path": "/v1/agents/completions", "body": "json", "scope": {"agent_id": {"from": "body", "at": "/agent_id"}}},
@@ -241,4 +242,5 @@
     {"id": "execute_workflow_v1_workflows__workflow_identifier__execute_post", "action": "execute.workflows", "effects": ["execute"], "method": "POST", "origin": "https://api.mistral.ai", "path": "/v1/workflows/{workflow_identifier}/execute", "body": "json", "scope": {"workflow_identifier": {"from": "path", "at": "workflow_identifier"}}},
     {"id": "unarchive_workflow_v1_workflows__workflow_identifier__unarchive_put", "action": "write.workflows", "effects": ["write"], "method": "PUT", "origin": "https://api.mistral.ai", "path": "/v1/workflows/{workflow_identifier}/unarchive", "scope": {"workflow_identifier": {"from": "path", "at": "workflow_identifier"}}}
   ]
+  }
 }

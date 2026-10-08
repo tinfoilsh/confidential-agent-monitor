@@ -21,7 +21,8 @@
       "write.webinars": {"title": "Write: webinars"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getAllAccountWebinars", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.getgo.com", "path": "/G2W/rest/accounts/{accountKey}/webinars", "params": ["fromTime", "toTime", "page", "size"], "scope": {"accountKey": {"from": "path", "at": "accountKey"}}},
     {"id": "getHistoricalWebinars", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.getgo.com", "path": "/G2W/rest/organizers/{organizerKey}/historicalWebinars", "params": ["fromTime", "toTime"], "scope": {"organizerKey": {"from": "path", "at": "organizerKey"}}},
     {"id": "getOrganizerSessions", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.getgo.com", "path": "/G2W/rest/organizers/{organizerKey}/sessions", "params": ["fromTime", "toTime"], "scope": {"organizerKey": {"from": "path", "at": "organizerKey"}}},
@@ -60,4 +61,5 @@
     {"id": "getQuestions", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.getgo.com", "path": "/G2W/rest/organizers/{organizerKey}/webinars/{webinarKey}/sessions/{sessionKey}/questions", "scope": {"organizerKey": {"from": "path", "at": "organizerKey"}, "webinarKey": {"from": "path", "at": "webinarKey"}, "sessionKey": {"from": "path", "at": "sessionKey"}}},
     {"id": "getSurveys", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.getgo.com", "path": "/G2W/rest/organizers/{organizerKey}/webinars/{webinarKey}/sessions/{sessionKey}/surveys", "scope": {"organizerKey": {"from": "path", "at": "organizerKey"}, "webinarKey": {"from": "path", "at": "webinarKey"}, "sessionKey": {"from": "path", "at": "sessionKey"}}}
   ]
+  }
 }

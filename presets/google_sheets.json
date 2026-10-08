@@ -86,7 +86,8 @@
     "group": "api"
   },
   "title": "Google Sheets",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"spreadsheets.read","effects":["read"],"id":"spreadsheets.get","method":"GET","origin":"https://sheets.googleapis.com","params":["ranges","includeGridData","excludeTablesInBandedRanges","fields"],"path":"/v4/spreadsheets/{spreadsheet}","scope":{"spreadsheet":{"at":"spreadsheet","from":"path"}}},
     {"action":"spreadsheets.values.read","effects":["read"],"id":"values.get","method":"GET","origin":"https://sheets.googleapis.com","params":["majorDimension","valueRenderOption","dateTimeRenderOption"],"path":"/v4/spreadsheets/{spreadsheet}/values/{range}","scope":{"range":{"at":"range","from":"path"},"spreadsheet":{"at":"spreadsheet","from":"path"}}},
     {"action":"spreadsheets.values.read","effects":["read"],"id":"values.batchGet","method":"GET","origin":"https://sheets.googleapis.com","params":["ranges","majorDimension","valueRenderOption","dateTimeRenderOption"],"path":"/v4/spreadsheets/{spreadsheet}/values:batchGet","scope":{"spreadsheet":{"at":"spreadsheet","from":"path"}}},
@@ -108,4 +109,5 @@
     {"action":"spreadsheets.values.read","body":"json","effects":["read"],"id":"spreadsheets.values.batchGetByDataFilter","method":"POST","origin":"https://sheets.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/spreadsheets/{spreadsheetId}/values:batchGetByDataFilter","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"spreadsheetId":{"at":"spreadsheetId","from":"path"}}},
     {"action":"spreadsheets.values.write","body":"json","effects":["write"],"id":"spreadsheets.values.batchUpdateByDataFilter","method":"POST","origin":"https://sheets.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/spreadsheets/{spreadsheetId}/values:batchUpdateByDataFilter","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"spreadsheetId":{"at":"spreadsheetId","from":"path"}}}
   ]
+  }
 }

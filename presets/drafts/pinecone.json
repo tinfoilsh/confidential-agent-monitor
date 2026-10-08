@@ -34,7 +34,8 @@
       "write.namespace_aliases": {"title": "Write: namespace aliases"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "delete_backup_schedule", "action": "delete.backup_schedules", "effects": ["delete"], "method": "DELETE", "origin": "https://api.pinecone.io", "path": "/backup-schedules/{schedule_id}", "scope": {"schedule_id": {"from": "path", "at": "schedule_id"}}},
     {"id": "describe_backup_schedule", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.pinecone.io", "path": "/backup-schedules/{schedule_id}", "scope": {"schedule_id": {"from": "path", "at": "schedule_id"}}},
     {"id": "update_backup_schedule", "action": "write.backup_schedules", "effects": ["write"], "method": "PATCH", "origin": "https://api.pinecone.io", "path": "/backup-schedules/{schedule_id}", "body": "json", "scope": {"schedule_id": {"from": "path", "at": "schedule_id"}}},
@@ -89,4 +90,5 @@
     {"id": "updateVector", "action": "generate.update", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/vectors/update", "body": "json", "scope": {}},
     {"id": "upsertVectors", "action": "generate.upsert", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/vectors/upsert", "body": "json", "scope": {}}
   ]
+  }
 }

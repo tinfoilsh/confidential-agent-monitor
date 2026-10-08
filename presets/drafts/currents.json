@@ -26,7 +26,8 @@
       "write.sessions": {"title": "Write: sessions"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "listActions", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.currents.dev", "path": "/v1/actions", "params": ["projectId", "status", "search"], "scope": {"projectId": {"from": "query", "at": "projectId"}}},
     {"id": "createAction", "action": "execute.actions", "effects": ["execute"], "method": "POST", "origin": "https://api.currents.dev", "path": "/v1/actions", "params": ["projectId"], "body": "json", "scope": {"projectId": {"from": "query", "at": "projectId"}, "name": {"from": "body", "at": "/name"}}},
     {"id": "getAffectedTestExecutions", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.currents.dev", "path": "/v1/actions/tests/{signature}", "params": ["projectId", "date_start", "date_end", "limit", "starting_after", "ending_before", "search"], "scope": {"signature": {"from": "path", "at": "signature"}, "projectId": {"from": "query", "at": "projectId"}}},
@@ -74,4 +75,5 @@
     {"id": "updateWebhook", "action": "admin.webhooks", "effects": ["admin"], "method": "PUT", "origin": "https://api.currents.dev", "path": "/v1/webhooks/{hookId}", "body": "json", "scope": {"hookId": {"from": "path", "at": "hookId"}}},
     {"id": "getWebhook", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.currents.dev", "path": "/v1/webhooks/{hookId}", "scope": {"hookId": {"from": "path", "at": "hookId"}}}
   ]
+  }
 }

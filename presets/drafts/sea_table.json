@@ -37,7 +37,8 @@
       "write.views": {"title": "Write: views"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "listRowActivities", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://cloud.seatable.io", "path": "/api-gateway/api/v2/dtables/{base_uuid}/activities/", "params": ["row_id", "page", "per_page"], "scope": {"base_uuid": {"from": "path", "at": "base_uuid"}, "row_id": {"from": "query", "at": "row_id"}}},
     {"id": "addBigDataRows", "action": "write.add_archived_rows", "effects": ["write"], "method": "POST", "origin": "https://cloud.seatable.io", "path": "/api-gateway/api/v2/dtables/{base_uuid}/add-archived-rows/", "body": "any", "scope": {"base_uuid": {"from": "path", "at": "base_uuid"}}},
     {"id": "moveRowsToBigData", "action": "write.dtables", "effects": ["write"], "method": "POST", "origin": "https://cloud.seatable.io", "path": "/api-gateway/api/v2/dtables/{base_uuid}/archive-view/", "body": "any", "scope": {"base_uuid": {"from": "path", "at": "base_uuid"}}},
@@ -101,4 +102,5 @@
     {"id": "createTempApiToken", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://cloud.seatable.io", "path": "/api/v2.1/workspace/{workspace_id}/dtable/{base_name}/temp-api-token/", "scope": {"workspace_id": {"from": "path", "at": "workspace_id"}, "base_name": {"from": "path", "at": "base_name"}}},
     {"id": "getAccountTokenfromUsername", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://cloud.seatable.io", "path": "/api2/auth-token/", "body": "any", "scope": {}}
   ]
+  }
 }

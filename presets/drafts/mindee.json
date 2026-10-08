@@ -19,7 +19,8 @@
       "write.health": {"title": "Write: health"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "clear_cache_internal_cache_delete", "action": "delete.cache", "effects": ["delete"], "method": "DELETE", "origin": "https://api.mindee.net", "path": "/internal/cache", "scope": {}},
     {"id": "clear_multiple_tokens_cache_internal_cache_tokens_put", "action": "delete.tokens", "effects": ["delete"], "method": "PUT", "origin": "https://api.mindee.net", "path": "/internal/cache/tokens", "body": "json", "scope": {}},
     {"id": "health_check_internal_health_post", "action": "write.health", "effects": ["write"], "method": "POST", "origin": "https://api.mindee.net", "path": "/internal/health", "scope": {}},
@@ -37,4 +38,5 @@
     {"id": "send_request_v1_workflows__workflow_id__executions_post", "action": "send.executions", "effects": ["send"], "method": "POST", "origin": "https://api.mindee.net", "path": "/v1/workflows/{workflow_id}/executions", "scope": {"workflow_id": {"from": "path", "at": "workflow_id"}}},
     {"id": "send_request_v1_workflows__workflow_id__predict_async_post", "action": "send.predict_async", "effects": ["send"], "method": "POST", "origin": "https://api.mindee.net", "path": "/v1/workflows/{workflow_id}/predict_async", "scope": {"workflow_id": {"from": "path", "at": "workflow_id"}}}
   ]
+  }
 }

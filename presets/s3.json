@@ -112,7 +112,8 @@
     "group": "api"
   },
   "title": "S3-compatible storage",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"general.read","effects":["read"],"headers":{"X-Amz-Request-Payer":null},"id":"bucket.list","method":"GET","origin":"{origin}","params":["prefix","delimiter","max-keys","continuation-token"],"path":"/{bucket}","query":{"list-type":"2"},"scope":{"bucket":{"at":"bucket","from":"path"}}},
     {"action":"general.read","effects":["read"],"headers":{"X-Amz-Request-Payer":null},"id":"object.get","method":"GET","origin":"{origin}","path":"/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
     {"action":"general.pay","effects":["read","pay"],"headers":{"X-Amz-Request-Payer":"requester"},"id":"object.get.requester_pays","method":"GET","origin":"{origin}","path":"/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
@@ -177,4 +178,5 @@
     {"action":"general.read","effects":["read"],"id":"ListParts","method":"GET","origin":"{origin}","params":["max-parts","part-number-marker","uploadId","MaxParts","PartNumberMarker"],"path":"/{Bucket}/{Key}#uploadId","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"},"uploadId":{"at":"uploadId","from":"query"}}},
     {"action":"general.write","effects":["write"],"id":"UploadPartCopy","method":"PUT","origin":"{origin}","params":["partNumber","uploadId"],"path":"/{Bucket}/{Key}#x-amz-copy-source\u0026partNumber\u0026uploadId","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"},"uploadId":{"at":"uploadId","from":"query"}}}
   ]
+  }
 }

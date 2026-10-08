@@ -11,8 +11,10 @@
       "read": {"title": "Read everything the account can see"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getWolframCloudResults", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.wolframalpha.com", "path": "/api/v1/cloud-plugin", "params": ["input"], "scope": {}},
     {"id": "getWolframAlphaResults", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.wolframalpha.com", "path": "/api/v1/llm-api", "params": ["input"], "scope": {}}
   ]
+  }
 }

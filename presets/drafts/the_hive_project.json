@@ -118,7 +118,8 @@
       "write.views": {"title": "Write: views"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "Update Log Level", "action": "write.set", "effects": ["write"], "method": "PUT", "origin": "{origin}", "path": "/api/v1/admin/log/set/{packageName}/{level}", "scope": {"packageName": {"from": "path", "at": "packageName"}, "level": {"from": "path", "at": "level"}}},
     {"id": "Create Alert", "action": "write.alert", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/v1/alert", "body": "any", "scope": {}},
     {"id": "Delete Alert in bulk", "action": "write.bulk", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/v1/alert/delete/_bulk", "body": "json", "scope": {}},
@@ -378,4 +379,5 @@
     {"id": "Delete views", "action": "delete.views", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/api/v1/views/{viewsId}", "scope": {"viewsId": {"from": "path", "at": "viewsId"}}},
     {"id": "Update views", "action": "write.views", "effects": ["write"], "method": "PATCH", "origin": "{origin}", "path": "/api/v1/views/{viewsId}", "body": "json", "scope": {"viewsId": {"from": "path", "at": "viewsId"}}}
   ]
+  }
 }

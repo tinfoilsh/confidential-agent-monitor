@@ -32,7 +32,8 @@
       "write.tenants": {"title": "Write: tenants"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "get_user_identity", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v2/auth/identity", "scope": {}},
     {"id": "get_collection_by_crn", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v2/collections/{crn}", "scope": {"crn": {"from": "path", "at": "crn"}}},
     {"id": "healthcheck", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v2/healthcheck", "scope": {}},
@@ -68,4 +69,5 @@
     {"id": "collection_upsert", "action": "generate.upsert", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/api/v2/tenants/{tenant}/databases/{database}/collections/{collection_id}/upsert", "body": "json", "scope": {"tenant": {"from": "path", "at": "tenant"}, "database": {"from": "path", "at": "database"}, "collection_id": {"from": "path", "at": "collection_id"}}},
     {"id": "version", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v2/version", "scope": {}}
   ]
+  }
 }

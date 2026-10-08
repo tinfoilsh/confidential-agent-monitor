@@ -51,7 +51,8 @@
       "write.sync": {"title": "Write: sync"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "get-api-v1-autotranslate.getProviderUiMetadata", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v1/autotranslate.getProviderUiMetadata", "scope": {}},
     {"id": "get-api-v1-autotranslate.getSupportedLanguages", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v1/autotranslate.getSupportedLanguages", "params": ["targetLanguage"], "scope": {}},
     {"id": "post-api-v1-autotranslate.saveSettings", "action": "write.autotranslate", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/v1/autotranslate.saveSettings", "body": "any", "scope": {}},
@@ -317,4 +318,5 @@
     {"id": "post-api-v1-users.updateOwnBasicInfo", "action": "admin.users", "effects": ["admin"], "method": "POST", "origin": "{origin}", "path": "/api/v1/users.updateOwnBasicInfo", "body": "any", "scope": {}},
     {"id": "post-api-v1-users.verifyEmail", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/api/v1/users.verifyEmail", "body": "any", "scope": {}}
   ]
+  }
 }

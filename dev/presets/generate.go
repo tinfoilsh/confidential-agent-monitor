@@ -91,18 +91,29 @@ func writeJSON(path string, value any) error {
 	}
 	// Keep generated operation records on individual lines, like shipped presets.
 	if filepath.Dir(path) == candidatesDir || filepath.Dir(path) == shippedDir {
-		if record, ok := value.(map[string]any); ok {
+		if record, ok := value.(map[string]any); ok && record["http"] != nil {
 			header := maps.Clone(record)
-			delete(header, "operations")
+			delete(header, "http")
 			prefix, err := json.MarshalIndent(header, "", "  ")
 			if err != nil {
 				return err
 			}
 			var out bytes.Buffer
 			out.Write(bytes.TrimSuffix(prefix, []byte("\n}")))
-			out.WriteString(",\n  \"operations\": [\n")
+			out.WriteString(",\n  \"http\": {\n")
+			spec := maps.Clone(httpSection(record))
+			delete(spec, "operations")
+			for _, key := range slices.Sorted(maps.Keys(spec)) {
+				keyJSON, _ := json.Marshal(key)
+				valueJSON, err := json.Marshal(spec[key])
+				if err != nil {
+					return err
+				}
+				fmt.Fprintf(&out, "    %s: %s,\n", keyJSON, valueJSON)
+			}
+			out.WriteString("    \"operations\": [\n")
 			var ops []map[string]any
-			switch values := record["operations"].(type) {
+			switch values := httpSection(record)["operations"].(type) {
 			case []map[string]any:
 				ops = values
 			case []any:
@@ -118,10 +129,10 @@ func writeJSON(path string, value any) error {
 				if err != nil {
 					return err
 				}
-				out.WriteString("    ")
+				out.WriteString("      ")
 				out.Write(line)
 			}
-			out.WriteString("\n  ]\n}")
+			out.WriteString("\n    ]\n  }\n}")
 			data = out.Bytes()
 		}
 	}
@@ -255,7 +266,7 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 		if candidate == nil {
 			candidate = maps.Clone(p)
 		}
-		if ops, ok := p["operations"].([]any); ok {
+		if ops, ok := httpSection(p)["operations"].([]any); ok {
 			for _, o := range ops {
 				if m, ok := o.(map[string]any); ok {
 					baseline = append(baseline, m)
@@ -412,7 +423,7 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 	}
 	slices.Sort(r.UnmappedShipped)
 	r.Counts["unmapped_shipped"] = len(r.UnmappedShipped)
-	candidate["operations"] = operations
+	httpSection(candidate)["operations"] = operations
 	r.Counts["regrouped"] = groupRecord(candidate, groupHints(operations, p, name))
 	r.Counts["source_variants"] = len(r.Operations)
 	r.Counts["descriptors"] = len(operations)
@@ -486,4 +497,13 @@ func generate(only []string) error {
 		failed = append(failed, err)
 	}
 	return errors.Join(failed...)
+}
+
+func httpSection(record map[string]any) map[string]any {
+	if spec, ok := record["http"].(map[string]any); ok {
+		return spec
+	}
+	spec := map[string]any{}
+	record["http"] = spec
+	return spec
 }

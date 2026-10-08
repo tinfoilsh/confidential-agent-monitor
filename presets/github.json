@@ -5165,7 +5165,31 @@
     "group": "api"
   },
   "title": "GitHub",
-  "operations": [
+  "public_scope": ["owner", "repo"],
+  "mcp": {
+    "scope": {
+      "owner": {
+        "at": "/owner",
+        "optional": true
+      },
+      "repo": {
+        "at": "/repo",
+        "optional": true
+      }
+    }
+  },
+  "http": {
+    "operations": [
+    {"id":"git.discover.fetch","action":"read","effects":["read"],"method":"GET","origin":"https://github.com","path":"/{owner}/{repo}/info/refs","query":{"service":"git-upload-pack"},"scope":{"owner":{"from":"path","at":"owner"},"repo":{"from":"path","at":"repo","trim_suffix":".git"}}},
+    {"id":"git.discover.push","action":"read","effects":["read"],"method":"GET","origin":"https://github.com","path":"/{owner}/{repo}/info/refs","query":{"service":"git-receive-pack"},"scope":{"owner":{"from":"path","at":"owner"},"repo":{"from":"path","at":"repo","trim_suffix":".git"}}},
+    {"id":"git.fetch","action":"read","effects":["read"],"method":"POST","origin":"https://github.com","path":"/{owner}/{repo}/git-upload-pack","body":"any","scope":{"owner":{"from":"path","at":"owner"},"repo":{"from":"path","at":"repo","trim_suffix":".git"}}},
+    {"id":"git.push","action":"push","effects":["write"],"method":"POST","origin":"https://github.com","path":"/{owner}/{repo}/git-receive-pack","body":"any","scope":{"owner":{"from":"path","at":"owner"},"repo":{"from":"path","at":"repo","trim_suffix":".git"}}},
+    {"id":"graphql.read","action":"read","effects":["read"],"method":"POST","origin":"https://api.github.com","path":"/graphql","body":"graphql","graphql":{"operation":"query","field":"*"},"scope":{},"requires_trust":false},
+    {"id":"graphql.comment","action":"comment","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/graphql","body":"graphql","graphql":{"operation":"mutation","fields":["addComment"]},"scope":{},"requires_trust":false},
+    {"id":"graphql.comment.reviews","action":"comment.reviews","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/graphql","body":"graphql","graphql":{"operation":"mutation","fields":["addPullRequestReview"]},"scope":{},"requires_trust":false},
+    {"id":"graphql.open.issues","action":"open.issues","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/graphql","body":"graphql","graphql":{"operation":"mutation","fields":["createIssue","updateIssue"]},"scope":{},"requires_trust":false},
+    {"id":"graphql.open.pulls","action":"open.pulls","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/graphql","body":"graphql","graphql":{"operation":"mutation","fields":["createPullRequest","updatePullRequest"]},"scope":{},"requires_trust":false},
+    {"id":"graphql.merge","action":"merge","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/graphql","body":"graphql","graphql":{"operation":"mutation","fields":["mergePullRequest"]},"scope":{},"requires_trust":true},
     {"action":"repos.read","effects":["read"],"headers":{"X-Github-Api-Version":"2022-11-28"},"id":"repos.get","method":"GET","origin":"https://api.github.com","path":"/repos/{owner}/{repo}","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
     {"action":"user.repos.read","effects":["read"],"headers":{"X-Github-Api-Version":"2022-11-28"},"id":"repos.list.mine","method":"GET","origin":"https://api.github.com","params":["visibility","affiliation","sort","per_page","page"],"path":"/user/repos","scope":{}},
     {"action":"repos.issues.read","effects":["read"],"headers":{"X-Github-Api-Version":"2022-11-28"},"id":"issues.list","method":"GET","origin":"https://api.github.com","params":["state","labels","sort","per_page","page"],"path":"/repos/{owner}/{repo}/issues","scope":{"owner":{"at":"owner","from":"path"},"repo":{"at":"repo","from":"path"}}},
@@ -6465,4 +6489,5 @@
     {"action":"versions.read","effects":["read"],"id":"meta/get-all-versions","method":"GET","origin":"https://api.github.com","path":"/versions","scope":{}},
     {"action":"zen.read","effects":["read"],"id":"meta/get-zen","method":"GET","origin":"https://api.github.com","path":"/zen","scope":{}}
   ]
+  }
 }

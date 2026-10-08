@@ -207,7 +207,8 @@
       "write.use_template": {"title": "Write: use template"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "activate_form", "action": "write.activate_form", "effects": ["write"], "method": "POST", "origin": "https://api.monday.com", "path": "/v2", "body": "graphql", "graphql": {"operation": "mutation", "field": "activate_form"}, "scope": {}},
     {"id": "activate_managed_column", "action": "write.activate_managed_column", "effects": ["write"], "method": "POST", "origin": "https://api.monday.com", "path": "/v2", "body": "graphql", "graphql": {"operation": "mutation", "field": "activate_managed_column"}, "scope": {"id": {"from": "argument", "at": "/id"}}},
     {"id": "activate_users", "action": "write.activate_users", "effects": ["write"], "method": "POST", "origin": "https://api.monday.com", "path": "/v2", "body": "graphql", "graphql": {"operation": "mutation", "field": "activate_users"}, "scope": {"user_ids": {"from": "argument", "at": "/user_ids"}}},
@@ -501,4 +502,5 @@
     {"id": "webhooks", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.monday.com", "path": "/v2", "body": "graphql", "graphql": {"operation": "query", "field": "webhooks"}, "scope": {"board_id": {"from": "argument", "at": "/board_id"}}},
     {"id": "workspaces", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.monday.com", "path": "/v2", "body": "graphql", "graphql": {"operation": "query", "field": "workspaces"}, "scope": {}}
   ]
+  }
 }

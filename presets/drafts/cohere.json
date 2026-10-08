@@ -32,7 +32,8 @@
       "write.finetuned_models": {"title": "Write: finetuned models"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "chat", "action": "send.chat", "effects": ["send"], "method": "POST", "origin": "https://api.cohere.com", "path": "/v1/chat", "body": "any", "scope": {}},
     {"id": "checkAPIKey", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.cohere.com", "path": "/v1/check-api-key", "scope": {}},
     {"id": "classify", "action": "generate.classify", "effects": ["generate"], "method": "POST", "origin": "https://api.cohere.com", "path": "/v1/classify", "body": "any", "scope": {}},
@@ -75,4 +76,5 @@
     {"id": "parsev2", "action": "generate.parse", "effects": ["generate"], "method": "POST", "origin": "https://api.cohere.com", "path": "/v2/parse", "body": "json", "scope": {}},
     {"id": "rerankv2", "action": "generate.rerank", "effects": ["generate"], "method": "POST", "origin": "https://api.cohere.com", "path": "/v2/rerank", "body": "any", "scope": {}}
   ]
+  }
 }

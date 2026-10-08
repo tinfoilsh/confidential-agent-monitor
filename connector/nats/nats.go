@@ -11,6 +11,7 @@ import (
 	"io"
 	"net"
 	"net/url"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -20,6 +21,7 @@ import (
 	nats "github.com/nats-io/nats.go"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
+	"github.com/tinfoilsh/monitor/facts"
 )
 
 const (
@@ -108,7 +110,7 @@ func (n *NATS) Serve(s *connector.Stream, e *connector.Env) {
 		c.fail("invalid CONNECT")
 		return
 	}
-	if err := c.gate(connector.NATSLayer{Command: "connect"}); err != nil {
+	if err := c.gate(Request{Command: "connect"}); err != nil {
 		c.fail("connection refused")
 		return
 	}
@@ -184,7 +186,7 @@ func (c *client) ok() error {
 	}
 	return nil
 }
-func (c *client) gate(e connector.NATSLayer) error { return c.s.Gate(connector.Event{NATS: &e}) }
+func (c *client) gate(e Request) error { return c.s.Gate(&e) }
 
 func (c *client) command(line string, r *bufio.Reader) error {
 	args := strings.Fields(line)
@@ -200,7 +202,7 @@ func (c *client) command(line string, r *bufio.Reader) error {
 		if m.Header != nil && !c.options.Headers {
 			return errors.New("headers were not negotiated")
 		}
-		if err := c.gate(connector.NATSLayer{Command: "publish", Subject: m.Subject, Reply: m.Reply, Headers: m.Header, Payload: m.Data}); err != nil {
+		if err := c.gate(Request{Command: "publish", Subject: m.Subject, Reply: m.Reply, Headers: m.Header, Payload: m.Data}); err != nil {
 			return err
 		}
 		if err := c.up.PublishMsg(m); err != nil {
@@ -228,7 +230,7 @@ func (c *client) command(line string, r *bufio.Reader) error {
 				return errors.New("invalid queue")
 			}
 		}
-		if err := c.gate(connector.NATSLayer{Command: "subscribe", Subject: subject, Queue: queue}); err != nil {
+		if err := c.gate(Request{Command: "subscribe", Subject: subject, Queue: queue}); err != nil {
 			return err
 		}
 		callback := func(m *nats.Msg) { c.deliver(sid, queue, m) }
@@ -297,7 +299,7 @@ func (c *client) deliver(sid, queue string, m *nats.Msg) {
 		c.s.Close()
 		return
 	}
-	if err := c.gate(connector.NATSLayer{Command: "receive", Subject: m.Subject, Reply: m.Reply, Queue: queue, Headers: m.Header, Payload: m.Data}); err != nil {
+	if err := c.gate(Request{Command: "receive", Subject: m.Subject, Reply: m.Reply, Queue: queue, Headers: m.Header, Payload: m.Data}); err != nil {
 		c.s.Close()
 		return
 	}
@@ -448,4 +450,36 @@ func subjectValid(s string, filter bool) bool {
 		}
 	}
 	return true
+}
+
+type Request struct {
+	Command string              `json:"command"`
+	Subject string              `json:"subject"`
+	Reply   string              `json:"reply,omitempty"`
+	Queue   string              `json:"queue,omitempty"`
+	Headers map[string][]string `json:"headers,omitempty"`
+	Payload []byte              `json:"payload,omitempty"`
+}
+
+func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+	details := map[string]any{"nats": v}
+	action := ""
+	if slices.Contains([]string{"connect", "subscribe", "receive", "publish"}, v.Command) {
+		action = v.Command
+	}
+	if (action == "subscribe" || action == "receive") && v.Queue != "" {
+		action = "consume"
+	}
+	control := strings.HasPrefix(v.Subject, "$")
+	for k := range v.Headers {
+		control = control || strings.HasPrefix(strings.ToLower(k), "nats-")
+	}
+	if action == "publish" && control {
+		action = "admin"
+	}
+	op := &facts.Operation{ID: v.Command, Action: action, RequiresTrust: action == "consume"}
+	if action == "" {
+		op = nil
+	}
+	return facts.Facts{Operation: op, Title: "NATS " + v.Command + " " + v.Subject, Parameters: connector.JSONFields(v), Details: details, Context: facts.Context{Sends: "account"}}, connector.Approval{}, nil
 }

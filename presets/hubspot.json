@@ -321,7 +321,8 @@
     "group": "api"
   },
   "title": "HubSpot",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"crm.objects.read","effects":["read"],"id":"objects.list","method":"GET","origin":"https://api.hubapi.com","params":["limit","after","properties","associations"],"path":"/crm/v3/objects/{object}","scope":{"object":{"at":"object","from":"path"}}},
     {"action":"crm.objects.read","effects":["read"],"id":"objects.get","method":"GET","origin":"https://api.hubapi.com","params":["properties","associations"],"path":"/crm/v3/objects/{object}/{id}","scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
     {"action":"crm.objects.read","body":"json","effects":["read"],"id":"objects.search","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/{object}/search","scope":{"object":{"at":"object","from":"path"},"query":{"at":"","from":"body","type":"object"}}},
@@ -416,4 +417,5 @@
     {"action":"marketing.forms.write","body":"json","effects":["write"],"id":"patch-/marketing/v3/forms/{formId}_update","method":"PATCH","origin":"https://api.hubapi.com","path":"/marketing/v3/forms/{formId}","scope":{"formId":{"at":"formId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
     {"action":"marketing.forms.write","body":"json","effects":["write"],"id":"put-/marketing/v3/forms/{formId}_replace","method":"PUT","origin":"https://api.hubapi.com","path":"/marketing/v3/forms/{formId}","scope":{"formId":{"at":"formId","from":"path"},"id":{"at":"/id","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}}
   ]
+  }
 }

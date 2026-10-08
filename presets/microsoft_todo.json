@@ -453,7 +453,8 @@
     "group": "api"
   },
   "title": "Microsoft To Do",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"me.todo.lists.read","effects":["read"],"id":"lists.list","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$top","$skiptoken"],"path":"/v1.0/me/todo/lists","scope":{}},
     {"action":"me.todo.lists.read","effects":["read"],"id":"lists.get","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
     {"action":"me.todo.lists.tasks.read","effects":["read"],"id":"tasks.list","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$filter","$top","$skip","$orderby","$expand","$search","$count","$skiptoken"],"path":"/v1.0/me/todo/lists/{list}/tasks","scope":{"list":{"at":"list","from":"path"}}},
@@ -567,4 +568,5 @@
     {"action":"users.todo.lists.tasks.linked_resources.read","effects":["read"],"id":"users.todo.lists.tasks.GetLinkedResources","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/{linkedResource-id}","scope":{"linkedResource-id":{"at":"linkedResource-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
     {"action":"users.todo.lists.tasks.linked_resources.write","body":"json","effects":["write"],"id":"users.todo.lists.tasks.UpdateLinkedResources","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/{linkedResource-id}","scope":{"linkedResource-id":{"at":"linkedResource-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}}
   ]
+  }
 }

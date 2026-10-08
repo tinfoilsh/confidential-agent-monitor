@@ -55,7 +55,8 @@
       "write.videos": {"title": "Write: videos"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "abuseReports.insert", "action": "write.abuse_reports", "effects": ["write"], "method": "POST", "origin": "https://youtube.googleapis.com", "path": "/youtube/v3/abuseReports", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "part"], "body": "json", "scope": {}},
     {"id": "activities.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://youtube.googleapis.com", "path": "/youtube/v3/activities", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "channelId", "home", "maxResults", "mine", "pageToken", "part", "publishedAfter", "publishedBefore", "regionCode"], "scope": {}},
     {"id": "captions.delete", "action": "delete.captions", "effects": ["delete"], "method": "DELETE", "origin": "https://youtube.googleapis.com", "path": "/youtube/v3/captions", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "id", "onBehalfOf", "onBehalfOfContentOwner"], "scope": {}},
@@ -148,4 +149,5 @@
     {"id": "watermarks.unset", "action": "write.unset", "effects": ["write"], "method": "POST", "origin": "https://youtube.googleapis.com", "path": "/youtube/v3/watermarks/unset", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "channelId", "onBehalfOfContentOwner"], "scope": {}},
     {"id": "youtube.v3.liveChat.messages.stream", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://youtube.googleapis.com", "path": "/youtube/v3/liveChat/messages/stream", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "hl", "liveChatId", "maxResults", "pageToken", "part", "profileImageSize"], "scope": {}}
   ]
+  }
 }

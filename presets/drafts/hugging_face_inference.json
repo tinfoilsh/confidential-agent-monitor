@@ -111,7 +111,8 @@
       "write.watch": {"title": "Write: watch"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "GET /api/agent-harnesses", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://huggingface.co", "path": "/api/agent-harnesses", "scope": {}},
     {"id": "GET /api/blog/zh", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://huggingface.co", "path": "/api/blog/zh", "params": ["p", "community_sort", "tag"], "scope": {}},
     {"id": "POST /api/blog/{namespace}/{slug}/comment", "action": "send.comment", "effects": ["send"], "method": "POST", "origin": "https://huggingface.co", "path": "/api/blog/{namespace}/{slug}/comment", "body": "any", "scope": {"namespace": {"from": "path", "at": "namespace"}, "slug": {"from": "path", "at": "slug"}}},
@@ -400,4 +401,5 @@
     {"id": "GET /{namespace}/{repo}/resolve/{rev}/{path}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://huggingface.co", "path": "/{namespace}/{repo}/resolve/{rev}/{path}", "params": ["cursor", "since", "write", "expiration", "expires_in", "encrypted", "inference_api", "include_pro_status", "billing_details", "task_id", "max_params", "base_model", "direction", "limit", "sort", "xet", "expand", "include_prs", "tail", "q", "startDate", "endDate", "search", "type", "session_uuid", "p", "status", "author", "noContentDisposition", "download"], "scope": {"namespace": {"from": "path", "at": "namespace"}, "repo": {"from": "path", "at": "repo"}, "rev": {"from": "path", "at": "rev"}, "path": {"from": "path", "at": "path"}}},
     {"id": "GET /{namespace}/{repo}/user-access-report", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://huggingface.co", "path": "/{namespace}/{repo}/user-access-report", "params": ["search", "label", "stage", "cursor", "field", "q", "limit"], "scope": {"namespace": {"from": "path", "at": "namespace"}, "repo": {"from": "path", "at": "repo"}}}
   ]
+  }
 }

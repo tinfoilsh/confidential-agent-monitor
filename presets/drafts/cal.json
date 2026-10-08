@@ -49,7 +49,8 @@
       "write.verify": {"title": "Write: verify"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "ApiKeysController_refresh", "action": "write.refresh", "effects": ["write"], "method": "POST", "origin": "https://api.cal.com", "path": "/v2/api-keys/refresh", "body": "json", "scope": {}},
     {"id": "OAuth2Controller_getClient", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.cal.com", "path": "/v2/auth/oauth2/clients/{clientId}", "scope": {"clientId": {"from": "path", "at": "clientId"}}},
     {"id": "OAuth2Controller_token", "action": "admin.token", "effects": ["admin"], "method": "POST", "origin": "https://api.cal.com", "path": "/v2/auth/oauth2/token", "body": "json", "scope": {}},
@@ -162,4 +163,5 @@
     {"id": "WebhooksController_getWebhook", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.cal.com", "path": "/v2/webhooks/{webhookId}", "scope": {"webhookId": {"from": "path", "at": "webhookId"}}},
     {"id": "WebhooksController_updateWebhook", "action": "admin.webhooks", "effects": ["admin"], "method": "PATCH", "origin": "https://api.cal.com", "path": "/v2/webhooks/{webhookId}", "body": "json", "scope": {"webhookId": {"from": "path", "at": "webhookId"}}}
   ]
+  }
 }

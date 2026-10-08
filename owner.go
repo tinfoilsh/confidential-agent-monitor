@@ -21,11 +21,11 @@ import (
 	"time"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
-	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/browser"
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/connector/mcp"
 	"github.com/tinfoilsh/monitor/connector/web"
+	"github.com/tinfoilsh/monitor/facts"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -67,19 +67,15 @@ type ownerView struct {
 	Status     map[string]any             `json:"status"`
 	Labels     map[string]label           `json:"labels"`
 	Setup      map[string]string          `json:"setup"`
-	Presets    any                        `json:"presets"`
+	Presets    map[string]catalogEntry    `json:"presets"`
 }
 
 func (m *monitor) view(s *state, err error) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	presets, err := catalog(s.cfg.resolved)
-	if err != nil {
-		return nil, err
-	}
 	v := ownerView{m.doc.Generation, m.doc.Config, string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), m.doc.Keys.CACert,
-		map[string][]fieldMetadata{}, map[string]any{}, map[string]label{}, map[string]string{}, presets}
+		map[string][]fieldMetadata{}, map[string]any{}, map[string]label{}, map[string]string{}, catalog(s.cfg.resolved)}
 	v.Config, v.Fields = configView(m.doc.Config, s.connections)
 	for _, c := range s.connections {
 		v.Status[c.name] = c.status()
@@ -174,8 +170,8 @@ func (m *monitor) handler() http.Handler {
 			return nil, fmt.Errorf("no identity %s", r.PathValue("identity"))
 		}
 		var l label
-		if json.Unmarshal(req.raw, &l) != nil || !slices.Contains(trusts, l.Trust) || !slices.Contains(audiences, l.Audience) {
-			return nil, fmt.Errorf("a label needs trust in %v and audience in %v", trusts, audiences)
+		if json.Unmarshal(req.raw, &l) != nil || !l.Valid() {
+			return nil, fmt.Errorf("a label needs trust in %v and audience in %v", facts.Trusts, facts.Audiences)
 		}
 		fingerprint := ssh.FingerprintSHA256(key)
 		old := m.labelLocked(fingerprint)
@@ -325,33 +321,18 @@ const (
 	answerDeny = "deny"
 )
 
-// Audit events include connector observations and monitor-owned messages.
-type auditEvent struct {
-	*connector.Event
-	Message *messageEvent `json:"message,omitempty"`
-}
-
-type messageEvent struct {
-	From string `json:"from"`
-	To   string `json:"to"`
-	ID   string `json:"id,omitempty"`
-}
-
 // A record is one decision; requests are the pending and expired ones.
 type record struct {
-	ID       string      `json:"id"`
-	State    string      `json:"state"`
-	Time     time.Time   `json:"time"`
-	Expires  time.Time   `json:"expires,omitzero"`
-	Identity string      `json:"identity"`
-	Account  string      `json:"account"`
-	Label    label       `json:"label"`
-	Event    *auditEvent `json:"event,omitempty"`
+	ID      string         `json:"id"`
+	State   string         `json:"state"`
+	Time    time.Time      `json:"time"`
+	Expires time.Time      `json:"expires,omitzero"`
+	Result  map[string]any `json:"result,omitempty"`
 	*decision
 	answered chan struct{}
 }
 
-// After add, only State changes. mu protects State and the list.
+// mu protects publication and approval updates.
 type records struct {
 	mu   sync.Mutex
 	list []*record
@@ -417,8 +398,8 @@ func (m *monitor) answer(ctx context.Context, id, choice string) error {
 		return fmt.Errorf("request %s is %s", id, state)
 	}
 	if choice == answerSave {
-		if r.Action == nil || r.Operation == "" || r.Definition == "" {
-			return errors.New("an unrecognized request cannot be saved")
+		if r.Facts.Operation == nil || r.Facts.Operation.ID == "" || r.Definition == "" {
+			return errors.New("a request without a known operation cannot be saved")
 		}
 		if err := m.saveApproval(ctx, r); err != nil {
 			return err
@@ -444,16 +425,17 @@ func (m *monitor) requests(mux *http.ServeMux) {
 }
 
 func (m *monitor) saveApproval(ctx context.Context, r *record) error {
-	rules := slices.Clone(m.live.Load().cfg.Identities[r.Identity].Rules)
+	f := r.Facts
+	rules := slices.Clone(m.live.Load().cfg.Identities[f.Principal.Name].Rules)
 	rules = append(rules, rule{
-		Account:    r.Account,
-		Action:     *r.Action,
-		Operation:  r.Operation,
+		Account:    f.Account,
+		Action:     f.Operation.Action,
+		Operation:  f.Operation.ID,
 		Definition: r.Definition,
 		Scope:      r.Grant,
 		Waives:     r.Gaps,
 	})
-	patch, err := json.Marshal(map[string]any{"identities": map[string]any{r.Identity: map[string]any{"rules": rules}}})
+	patch, err := json.Marshal(map[string]any{"identities": map[string]any{f.Principal.Name: map[string]any{"rules": rules}}})
 	if err != nil {
 		return err
 	}

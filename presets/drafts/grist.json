@@ -56,7 +56,8 @@
       "write.update_used": {"title": "Write: update used"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "createDocUnified", "action": "write.docs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/docs", "body": "any", "scope": {}},
     {"id": "describeDoc", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/docs/{docId}", "scope": {"docId": {"from": "path", "at": "docId"}}},
     {"id": "modifyDoc", "action": "write.docs", "effects": ["write"], "method": "PATCH", "origin": "{origin}", "path": "/docs/{docId}", "body": "json", "scope": {"docId": {"from": "path", "at": "docId"}}},
@@ -196,4 +197,5 @@
     {"id": "removeWorkspace", "action": "delete.remove", "effects": ["delete"], "method": "POST", "origin": "{origin}", "path": "/workspaces/{workspaceId}/remove", "params": ["permanent"], "scope": {"workspaceId": {"from": "path", "at": "workspaceId"}}},
     {"id": "unremoveWorkspace", "action": "write.unremove", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/workspaces/{workspaceId}/unremove", "scope": {"workspaceId": {"from": "path", "at": "workspaceId"}}}
   ]
+  }
 }

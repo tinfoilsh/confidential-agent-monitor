@@ -69,7 +69,8 @@
       "write.tenants": {"title": "Write: tenants"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "weaviate.root", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/", "scope": {}},
     {"id": "weaviate.wellknown.liveness", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/.well-known/live", "scope": {}},
     {"id": "GET /.well-known/openid-configuration", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/.well-known/openid-configuration", "scope": {}},
@@ -195,4 +196,5 @@
     {"id": "rotateUserApiKey", "action": "generate.db", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/users/db/{user_id}/rotate-key", "scope": {"user_id": {"from": "path", "at": "user_id"}}},
     {"id": "getOwnInfo", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/users/own-info", "scope": {}}
   ]
+  }
 }

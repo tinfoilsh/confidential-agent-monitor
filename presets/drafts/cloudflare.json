@@ -851,7 +851,8 @@
       "write.zt_risk_scoring": {"title": "Write: zt risk scoring"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "account-creation", "action": "admin.accounts", "effects": ["admin"], "method": "POST", "origin": "https://api.cloudflare.com", "path": "/client/v4/accounts", "body": "json", "scope": {"name": {"from": "body", "at": "/name"}}},
     {"id": "accounts-list-accounts", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.cloudflare.com", "path": "/client/v4/accounts", "params": ["name", "page", "per_page", "direction"], "scope": {}},
     {"id": "Accounts_batchMoveAccounts", "action": "write.move", "effects": ["write"], "method": "POST", "origin": "https://api.cloudflare.com", "path": "/client/v4/accounts/move", "body": "json", "scope": {"destination_organization_id": {"from": "body", "at": "/destination_organization_id"}}},
@@ -4146,4 +4147,5 @@
     {"id": "worker-routes-update-route", "action": "write.routes", "effects": ["write"], "method": "PUT", "origin": "https://api.cloudflare.com", "path": "/client/v4/zones/{zone_id}/workers/routes/{route_id}", "body": "json", "scope": {"zone_id": {"from": "path", "at": "zone_id"}, "route_id": {"from": "path", "at": "route_id"}}},
     {"id": "worker-routes-get-route", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.cloudflare.com", "path": "/client/v4/zones/{zone_id}/workers/routes/{route_id}", "scope": {"zone_id": {"from": "path", "at": "zone_id"}, "route_id": {"from": "path", "at": "route_id"}}}
   ]
+  }
 }

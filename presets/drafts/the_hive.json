@@ -126,7 +126,8 @@
       "write.views": {"title": "Write: views"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "Cancel current integrity check", "action": "write.cancel", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/v1/admin/check/cancel", "scope": {}},
     {"id": "Get check stats", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v1/admin/check/stats", "scope": {}},
     {"id": "Trigger dedup integrity check", "action": "execute.dedup", "effects": ["execute"], "method": "POST", "origin": "{origin}", "path": "/api/v1/admin/check/{name}/dedup/trigger", "scope": {"name": {"from": "path", "at": "name"}}},
@@ -397,4 +398,5 @@
     {"id": "Update views", "action": "write.views", "effects": ["write"], "method": "PATCH", "origin": "{origin}", "path": "/api/v1/views/{viewsId}", "body": "json", "scope": {"viewsId": {"from": "path", "at": "viewsId"}}},
     {"id": "Get views", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v1/views/{viewsId}", "scope": {"viewsId": {"from": "path", "at": "viewsId"}}}
   ]
+  }
 }

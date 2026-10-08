@@ -31,7 +31,8 @@
       "write.order": {"title": "Write: order"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "AnalyticsByCountry", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gateway.seven.io", "path": "/api/analytics/country", "params": ["end", "label", "start", "subaccounts"], "scope": {}},
     {"id": "AnalyticsByDate", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gateway.seven.io", "path": "/api/analytics/date", "params": ["end", "label", "start", "subaccounts"], "scope": {}},
     {"id": "AnalyticsByLabel", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gateway.seven.io", "path": "/api/analytics/label", "params": ["end", "label", "start", "subaccounts"], "scope": {}},
@@ -84,4 +85,5 @@
     {"id": "WabaDispatch", "action": "execute.messages", "effects": ["execute"], "method": "POST", "origin": "https://gateway.seven.io", "path": "/api/waba/messages", "body": "json", "scope": {}},
     {"id": "WabaDelete", "action": "delete.messages", "effects": ["delete"], "method": "DELETE", "origin": "https://gateway.seven.io", "path": "/api/waba/messages/{id}", "scope": {"id": {"from": "path", "at": "id"}}}
   ]
+  }
 }

@@ -7776,7 +7776,8 @@
     "group": "api"
   },
   "title": "Microsoft OneDrive",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"me.drive.read","effects":["read"],"id":"drive.get","method":"GET","origin":"https://graph.microsoft.com","params":["$select"],"path":"/v1.0/me/drive","scope":{}},
     {"action":"me.drive.root.children.read","effects":["read"],"id":"root.children","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$filter","$top","$skip","$orderby","$expand","$search","$count","$skiptoken"],"path":"/v1.0/me/drive/root/children","scope":{}},
     {"action":"me.drive.items.children.read","effects":["read"],"id":"items.children","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$filter","$top","$skip","$orderby","$expand","$search","$count","$skiptoken"],"path":"/v1.0/me/drive/items/{item}/children","scope":{"item":{"at":"item","from":"path"}}},
@@ -9823,4 +9824,5 @@
     {"action":"drives.special.content.read","effects":["read"],"id":"drives.GetSpecialContent","method":"GET","origin":"https://graph.microsoft.com","params":["$format"],"path":"/v1.0/drives/{drive-id}/special/{driveItem-id}/content","scope":{"drive-id":{"at":"drive-id","from":"path"},"driveItem-id":{"at":"driveItem-id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
     {"action":"users.drive.read","effects":["read"],"id":"users.GetDrive","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/drive","scope":{"query":{"at":"","from":"query","type":"object"},"user-id":{"at":"user-id","from":"path"}}}
   ]
+  }
 }

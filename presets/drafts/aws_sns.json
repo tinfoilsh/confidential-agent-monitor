@@ -18,7 +18,8 @@
       "write.sns": {"title": "Write: sns"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "AddPermission", "action": "write.sns", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "AddPermission"}, "body": "form", "scope": {"TopicArn": {"from": "form", "at": "TopicArn"}}},
     {"id": "CheckIfPhoneNumberIsOptedOut", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "CheckIfPhoneNumberIsOptedOut"}, "body": "form", "scope": {}},
     {"id": "ConfirmSubscription", "action": "write.sns", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "ConfirmSubscription"}, "body": "form", "scope": {"TopicArn": {"from": "form", "at": "TopicArn"}}},
@@ -62,4 +63,5 @@
     {"id": "UntagResource", "action": "write.sns", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "UntagResource"}, "body": "form", "scope": {"ResourceArn": {"from": "form", "at": "ResourceArn"}}},
     {"id": "VerifySMSSandboxPhoneNumber", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "VerifySMSSandboxPhoneNumber"}, "body": "form", "scope": {}}
   ]
+  }
 }

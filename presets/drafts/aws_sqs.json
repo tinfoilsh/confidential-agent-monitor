@@ -18,7 +18,8 @@
       "write.sqs": {"title": "Write: sqs"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "AddPermission", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.AddPermission"}, "body": "any", "scope": {}},
     {"id": "CancelMessageMoveTask", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.CancelMessageMoveTask"}, "body": "any", "scope": {}},
     {"id": "ChangeMessageVisibility", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.ChangeMessageVisibility"}, "body": "any", "scope": {}},
@@ -43,4 +44,5 @@
     {"id": "TagQueue", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.TagQueue"}, "body": "any", "scope": {}},
     {"id": "UntagQueue", "action": "write.sqs", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AmazonSQS.UntagQueue"}, "body": "any", "scope": {}}
   ]
+  }
 }

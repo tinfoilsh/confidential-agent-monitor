@@ -71,7 +71,8 @@
       "write.version": {"title": "Write: version"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getWellknown", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/.well-known/matrix/client", "scope": {}},
     {"id": "getWellknownPolicy", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/.well-known/matrix/policy_server", "scope": {}},
     {"id": "getWellknownSupport", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/.well-known/matrix/support", "scope": {}},
@@ -239,4 +240,5 @@
     {"id": "uploadContent", "action": "write.upload", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/_matrix/media/v3/upload", "params": ["filename"], "body": "any", "scope": {}},
     {"id": "uploadContentToMXC", "action": "write.upload", "effects": ["write"], "method": "PUT", "origin": "{origin}", "path": "/_matrix/media/v3/upload/{serverName}/{mediaId}", "params": ["filename"], "body": "any", "scope": {"serverName": {"from": "path", "at": "serverName"}, "mediaId": {"from": "path", "at": "mediaId"}}}
   ]
+  }
 }

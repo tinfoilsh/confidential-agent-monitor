@@ -23,7 +23,8 @@
       "send.chat": {"title": "Send: chat"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "headBlob", "action": "read", "effects": ["read"], "method": "HEAD", "origin": "{origin}", "path": "/api/blobs/{digest}", "scope": {"digest": {"from": "path", "at": "digest"}}},
     {"id": "createBlob", "action": "generate.blobs", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/api/blobs/{digest}", "body": "any", "scope": {"digest": {"from": "path", "at": "digest"}}},
     {"id": "chat", "action": "send.chat", "effects": ["send"], "method": "POST", "origin": "{origin}", "path": "/api/chat", "body": "json", "scope": {"request": {"from": "body", "at": "", "type": "object"}}},
@@ -40,4 +41,5 @@
     {"id": "version", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/version", "scope": {}},
     {"id": "systemone", "action": "generate.systemone", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/v1/systemone", "body": "json", "scope": {}}
   ]
+  }
 }

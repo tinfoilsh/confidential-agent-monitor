@@ -540,7 +540,8 @@
     "group": "api"
   },
   "title": "WhatsApp Business Cloud",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"message_templates.read","effects":["read"],"id":"templates.list","method":"GET","origin":"https://graph.facebook.com","params":["limit"],"path":"/v25.0/{waba}/message_templates","scope":{"waba":{"at":"waba","from":"path"}}},
     {"action":"general.read","effects":["read"],"id":"media.get","method":"GET","origin":"https://graph.facebook.com","path":"/v25.0/{media}","scope":{"media":{"at":"media","from":"path"}}},
     {"action":"messages.send","body":"json","effects":["send","pay"],"id":"messages.send","method":"POST","origin":"https://graph.facebook.com","path":"/v25.0/{phone}/messages","scope":{"message":{"at":"","from":"body","type":"object"},"phone":{"at":"phone","from":"path"}}},
@@ -669,4 +670,5 @@
     {"action":"participants.delete","body":"json","effects":["delete"],"id":"removeGroupParticipants","method":"DELETE","origin":"https://graph.facebook.com","path":"/{Version}/{group_id}/participants","scope":{"Version":{"at":"Version","from":"path"},"group_id":{"at":"group_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
     {"action":"participants.write","body":"json","effects":["write"],"id":"addGroupParticipants","method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{group_id}/participants","scope":{"Version":{"at":"Version","from":"path"},"group_id":{"at":"group_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}}
   ]
+  }
 }

@@ -432,7 +432,8 @@
     "group": "api"
   },
   "title": "Airtable",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"record.read","effects":["read"],"id":"records.list","method":"GET","origin":"https://api.airtable.com","params":["fields[]","filterByFormula","maxRecords","pageSize","sort[0][field]","sort[0][direction]","view","cellFormat","offset"],"path":"/v0/app{base}/{table}","scope":{"base":{"at":"base","from":"path"},"table":{"at":"table","from":"path"}}},
     {"action":"record.read","effects":["read"],"id":"records.get","method":"GET","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}/{record}","scope":{"base":{"at":"base","from":"path"},"record":{"at":"record","from":"path"},"table":{"at":"table","from":"path"}}},
     {"action":"record.write","body":"json","effects":["write"],"id":"records.create","method":"POST","origin":"https://api.airtable.com","path":"/v0/app{base}/{table}","scope":{"base":{"at":"base","from":"path"},"records":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
@@ -590,4 +591,5 @@
     {"action":"upsert_records.write","effects":["write"],"id":"hyperdb-upsert-records-by-primary-keys","method":"PUT","origin":"https://api.airtable.com","path":"/v0/{enterpriseAccountId}/{dataTableId}/upsertRecords","scope":{"dataTableId":{"at":"dataTableId","from":"path"},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"}}},
     {"action":"upsert_records.write","body":"json","effects":["write"],"id":"hyperdb-upsert-records-by-primary-keys.json.399b5e835a38","method":"PUT","origin":"https://api.airtable.com","path":"/v0/{enterpriseAccountId}/{dataTableId}/upsertRecords","scope":{"dataTableId":{"at":"dataTableId","from":"path"},"enterpriseAccountId":{"at":"enterpriseAccountId","from":"path"},"records":{"at":"/records","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}}
   ]
+  }
 }

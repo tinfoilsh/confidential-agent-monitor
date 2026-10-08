@@ -230,7 +230,8 @@
     "group": "api"
   },
   "title": "Google Gemini",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"models.read","effects":["read"],"id":"models.list","method":"GET","origin":"https://generativelanguage.googleapis.com","params":["pageSize","pageToken"],"path":"/v1beta/models","query":{"key":null},"scope":{}},
     {"action":"models.read","effects":["read"],"id":"models.get","method":"GET","origin":"https://generativelanguage.googleapis.com","path":"/v1beta/models/{model}","query":{"key":null},"scope":{"model":{"at":"model","from":"path"}}},
     {"action":"files.read","effects":["read"],"id":"files.list","method":"GET","origin":"https://generativelanguage.googleapis.com","params":["pageSize","pageToken"],"path":"/v1beta/files","query":{"key":null},"scope":{}},
@@ -318,4 +319,5 @@
     {"action":"tuned_models.permissions.read","effects":["read"],"id":"tunedModels.permissions.list","method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/tunedModels/{tunedModelsId}/permissions","scope":{"query":{"at":"","from":"query","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
     {"action":"tuned_models.permissions.share","body":"json","effects":["share"],"id":"tunedModels.permissions.patch","method":"PATCH","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/tunedModels/{tunedModelsId}/permissions/{permissionsId}","scope":{"permissionsId":{"at":"permissionsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}}
   ]
+  }
 }

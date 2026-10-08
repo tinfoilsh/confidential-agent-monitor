@@ -41,7 +41,8 @@
       "write.wipe": {"title": "Write: wipe"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "app_config-set-value", "action": "admin.apps", "effects": ["admin"], "method": "POST", "origin": "{origin}", "path": "/ocs/v2.php/apps/provisioning_api/api/v1/config/apps/{app}/{key}", "body": "json", "scope": {"app": {"from": "path", "at": "app"}, "key": {"from": "path", "at": "key"}}},
     {"id": "preferences-set-multiple-preferences", "action": "admin.users", "effects": ["admin"], "method": "POST", "origin": "{origin}", "path": "/ocs/v2.php/apps/provisioning_api/api/v1/config/users/{appId}", "body": "json", "scope": {"appId": {"from": "path", "at": "appId"}}},
     {"id": "preferences-delete-multiple-preference", "action": "delete.users", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/ocs/v2.php/apps/provisioning_api/api/v1/config/users/{appId}", "params": ["configKeys[]"], "scope": {"appId": {"from": "path", "at": "appId"}}},
@@ -138,4 +139,5 @@
     {"id": "translation_api-translate", "action": "generate.translate", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/ocs/v2.php/translation/translate", "body": "json", "scope": {}},
     {"id": "get-status", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/status.php", "scope": {}}
   ]
+  }
 }

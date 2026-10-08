@@ -429,7 +429,8 @@
     "group": "api"
   },
   "title": "Intercom",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"conversations.read","effects":["read"],"headers":{"Intercom-Version":"2.16"},"id":"conversations.list","method":"GET","origin":"https://api.intercom.io","params":["per_page","starting_after"],"path":"/conversations","scope":{}},
     {"action":"conversations.read","effects":["read"],"headers":{"Intercom-Version":"2.16"},"id":"conversations.get","method":"GET","origin":"https://api.intercom.io","path":"/conversations/{conversation}","scope":{"conversation":{"at":"conversation","from":"path"}}},
     {"action":"contacts.read","effects":["read"],"headers":{"Intercom-Version":"2.16"},"id":"contacts.list","method":"GET","origin":"https://api.intercom.io","params":["per_page","starting_after"],"path":"/contacts","scope":{}},
@@ -586,4 +587,5 @@
     {"action":"visitors.convert.write","effects":["write"],"id":"convertVisitor","method":"POST","origin":"https://api.intercom.io","path":"/visitors/convert","scope":{}},
     {"action":"visitors.convert.write","body":"json","effects":["write"],"id":"convertVisitor.json.9c4ed184584e","method":"POST","origin":"https://api.intercom.io","path":"/visitors/convert","scope":{"request":{"at":"","from":"body","type":"object"}}}
   ]
+  }
 }

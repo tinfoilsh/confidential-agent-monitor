@@ -4,13 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"maps"
 	"net/http"
 	"net/url"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/tinfoilsh/mcp-sentinel"
+	sentinel "github.com/tinfoilsh/mcp-sentinel"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
+	"github.com/tinfoilsh/monitor/facts"
 )
 
 type Server struct {
@@ -102,10 +104,52 @@ func (m *Server) serve(r *http.Request) *sdk.Server {
 }
 
 // Register adds the pinned tools under prefix; the gate sees each tool's own name.
-func (m *Server) Register(server *sdk.Server, prefix string, gate func(connector.Event) error) {
+func (m *Server) Register(server *sdk.Server, prefix string, gate func(connector.Request) error) {
 	m.upstream.Register(server, prefix, func(_ context.Context, t *sdk.Tool, args json.RawMessage) error {
-		return gate(connector.Event{MCP: &connector.MCPLayer{Tool: t.Name, Arguments: args, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}})
+		return gate(&Request{Tool: t.Name, Arguments: args, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint})
 	})
 }
 
 func (m *Server) Instructions() string { return m.upstream.Instructions }
+
+type Request struct {
+	Tool      string          `json:"tool"`
+	Arguments json.RawMessage `json:"arguments"`
+	ReadOnly  bool            `json:"read_only"`
+}
+
+func (r *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+	f := facts.Facts{Details: map[string]any{"mcp": r}, Title: "Use " + r.Tool}
+	action := "use." + r.Tool
+	if r.ReadOnly {
+		action = "read." + r.Tool
+	}
+	var args any
+	if err := connector.DecodeNumbers(r.Arguments, &args); err != nil {
+		return f, connector.Approval{}, err
+	}
+	f.Parameters = map[string]any{"arguments": args}
+	f.Operation = &facts.Operation{Action: action, RequiresTrust: !r.ReadOnly}
+	var approval connector.Approval
+	if p, _ := c.Specs["mcp"].(*Preset); p != nil {
+		selected, err := connector.SelectJSON(args, p.Scope)
+		maps.Copy(f.Parameters, selected)
+		approval.Definition = p
+		return f, approval, err
+	}
+	return f, approval, nil
+}
+
+// Preset selects service resource identifiers from tool arguments.
+type Preset struct {
+	Scope map[string]connector.JSONSelector `json:"scope,omitempty"`
+}
+
+func (p *Preset) Validate() error {
+	for _, s := range p.Scope {
+		if err := s.Validate(); err != nil {
+			return err
+		}
+	}
+	return nil
+}

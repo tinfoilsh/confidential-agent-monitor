@@ -12,10 +12,9 @@ import (
 	"sync"
 	"time"
 
-	"golang.org/x/crypto/ssh"
-
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
+	"golang.org/x/crypto/ssh"
 )
 
 const (
@@ -108,9 +107,9 @@ func (t *CLI) execute(ctx context.Context, args []string, stdin io.Reader, ch ss
 	return exitRefused
 }
 
-func gitObject(b []byte) *connector.GitLayer {
+func gitObject(b []byte) *GitDetails {
 	header, message, _ := bytes.Cut(b, []byte("\n\n"))
-	object := &connector.GitLayer{Message: string(message), Parents: []string{}}
+	object := &GitDetails{Message: string(message), Parents: []string{}}
 	for line := range strings.SplitSeq(string(header), "\n") {
 		key, value, _ := strings.Cut(line, " ")
 		switch key {
@@ -136,4 +135,17 @@ func gitObject(b []byte) *connector.GitLayer {
 		return nil
 	}
 	return object
+}
+
+type GitDetails struct {
+	Type       string   `json:"type"`
+	Tree       string   `json:"tree,omitempty"`
+	Object     string   `json:"object,omitempty"`
+	ObjectType string   `json:"object_type,omitempty"`
+	Tag        string   `json:"tag,omitempty"`
+	Parents    []string `json:"parents"`
+	Author     string   `json:"author,omitempty"`
+	Committer  string   `json:"committer,omitempty"`
+	Tagger     string   `json:"tagger,omitempty"`
+	Message    string   `json:"message"`
 }

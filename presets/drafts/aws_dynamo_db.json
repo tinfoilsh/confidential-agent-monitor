@@ -17,7 +17,8 @@
       "write.dynamodb": {"title": "Write: dynamodb"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "BatchExecuteStatement", "action": "execute.dynamodb", "effects": ["execute"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "DynamoDB_20120810.BatchExecuteStatement"}, "body": "any", "scope": {}},
     {"id": "BatchGetItem", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "DynamoDB_20120810.BatchGetItem"}, "body": "any", "scope": {}},
     {"id": "BatchWriteItem", "action": "write.dynamodb", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "DynamoDB_20120810.BatchWriteItem"}, "body": "any", "scope": {}},
@@ -77,4 +78,5 @@
     {"id": "UpdateTableReplicaAutoScaling", "action": "write.dynamodb", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "DynamoDB_20120810.UpdateTableReplicaAutoScaling"}, "body": "any", "scope": {}},
     {"id": "UpdateTimeToLive", "action": "write.dynamodb", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "DynamoDB_20120810.UpdateTimeToLive"}, "body": "any", "scope": {}}
   ]
+  }
 }

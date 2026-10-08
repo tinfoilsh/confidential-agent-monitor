@@ -89,7 +89,8 @@
     "group": "api"
   },
   "title": "Google Tasks",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"tasks.users.me.lists.read","effects":["read"],"id":"tasklists.list","method":"GET","origin":"https://tasks.googleapis.com","params":["maxResults","pageToken"],"path":"/tasks/v1/users/@me/lists","scope":{}},
     {"action":"tasks.users.me.lists.read","effects":["read"],"id":"tasklists.get","method":"GET","origin":"https://tasks.googleapis.com","path":"/tasks/v1/users/@me/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
     {"action":"tasks.lists.tasks.read","effects":["read"],"id":"tasks.list","method":"GET","origin":"https://tasks.googleapis.com","params":["completedMax","completedMin","dueMax","dueMin","maxResults","pageToken","showCompleted","showDeleted","showHidden","showAssigned","updatedMin"],"path":"/tasks/v1/lists/{list}/tasks","scope":{"list":{"at":"list","from":"path"}}},
@@ -105,4 +106,5 @@
     {"action":"tasks.users.me.lists.delete","effects":["delete"],"id":"tasklists.delete","method":"DELETE","origin":"https://tasks.googleapis.com","path":"/tasks/v1/users/@me/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
     {"action":"tasks.users.me.lists.write","body":"json","effects":["write"],"id":"tasklists.update","method":"PUT","origin":"https://tasks.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/tasks/v1/users/@me/lists/{tasklist}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tasklist":{"at":"tasklist","from":"path"}}}
   ]
+  }
 }

@@ -117,7 +117,8 @@
     "group": "api"
   },
   "title": "Salesforce",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"services.data.read","effects":["read"],"id":"query","method":"GET","origin":"{origin}","params":["q"],"path":"/services/data/v62.0/query","scope":{}},
     {"action":"services.data.sobjects.read","effects":["read"],"id":"sobjects.get","method":"GET","origin":"{origin}","params":["fields"],"path":"/services/data/v62.0/sobjects/{object}/{id}","scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
     {"action":"services.data.sobjects.account.write","body":"json","effects":["write"],"id":"accounts.create","method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Account","scope":{"record":{"at":"","from":"body","type":"object"}}},
@@ -136,4 +137,5 @@
     {"action":"services.data.sobjects.case.write","body":"json","effects":["write"],"id":"cases.update","method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Case/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
     {"action":"services.data.sobjects.case.delete","effects":["delete"],"id":"cases.delete","method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Case/{id}","scope":{"id":{"at":"id","from":"path"}}}
   ]
+  }
 }

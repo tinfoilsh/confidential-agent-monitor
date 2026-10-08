@@ -921,7 +921,8 @@
     "group": "api"
   },
   "title": "Slack",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"auth.read","effects":["read"],"id":"auth.test","method":"POST","origin":"https://slack.com","path":"/api/auth.test","scope":{}},
     {"action":"auth.read","body":"form","effects":["read"],"fields":{"token":null},"id":"auth.test.form","method":"POST","origin":"https://slack.com","path":"/api/auth.test","scope":{}},
     {"action":"conversations.read","effects":["read"],"id":"conversations.list","method":"GET","origin":"https://slack.com","params":["cursor","exclude_archived","limit","team_id","types"],"path":"/api/conversations.list","scope":{}},
@@ -1266,4 +1267,5 @@
     {"action":"workflows.step_failed.read","effects":["read"],"id":"workflows_stepFailed","method":"GET","origin":"https://slack.com","params":["workflow_step_execute_id","error"],"path":"/api/workflows.stepFailed","scope":{"query":{"at":"","from":"query","type":"object"},"workflow_step_execute_id":{"at":"workflow_step_execute_id","from":"query"}}},
     {"action":"workflows.step.read","effects":["read"],"id":"workflows_updateStep","method":"GET","origin":"https://slack.com","params":["workflow_step_edit_id","inputs","outputs","step_name","step_image_url"],"path":"/api/workflows.updateStep","scope":{"query":{"at":"","from":"query","type":"object"},"step_image_url":{"at":"step_image_url","from":"query","optional":true},"step_name":{"at":"step_name","from":"query","optional":true},"workflow_step_edit_id":{"at":"workflow_step_edit_id","from":"query"}}}
   ]
+  }
 }

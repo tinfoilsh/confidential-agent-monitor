@@ -93,7 +93,8 @@
       "write.upload": {"title": "Write: upload"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "ensureAccount", "action": "admin.account", "effects": ["admin"], "method": "POST", "origin": "https://api.x.com", "path": "/2/account", "body": "json", "scope": {}},
     {"id": "getDeveloperAccount", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.x.com", "path": "/2/account", "scope": {}},
     {"id": "getAccountActivitySubscriptionCount", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.x.com", "path": "/2/account_activity/subscriptions/count", "scope": {}},
@@ -298,4 +299,5 @@
     {"id": "deleteWebhooks", "action": "delete.webhooks", "effects": ["delete"], "method": "DELETE", "origin": "https://api.x.com", "path": "/2/webhooks/{webhook_id}", "scope": {"webhook_id": {"from": "path", "at": "webhook_id"}}},
     {"id": "validateWebhooks", "action": "admin.webhooks", "effects": ["admin"], "method": "PUT", "origin": "https://api.x.com", "path": "/2/webhooks/{webhook_id}", "scope": {"webhook_id": {"from": "path", "at": "webhook_id"}}}
   ]
+  }
 }

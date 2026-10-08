@@ -13,6 +13,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/facts"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -103,7 +104,7 @@ type sftpHandle struct {
 type sftpProxy struct {
 	up      io.Reader
 	out     io.Writer
-	gate    func(connector.Event) error
+	gate    func(connector.Request) error
 	root    string
 	handles map[string]*sftpHandle
 	next    uint64
@@ -371,12 +372,12 @@ func (p *sftpProxy) virtual(name string) string {
 	return "/" + strings.TrimPrefix(strings.TrimPrefix(name, p.root), "/")
 }
 
-func (p *sftpProxy) check(e connector.SFTPLayer) error { return p.gate(connector.Event{SFTP: &e}) }
+func (p *sftpProxy) check(e SFTPRequest) error { return p.gate(&e) }
 
 func (p *sftpProxy) request(b []byte) ([]byte, error) {
 	id := binary.BigEndian.Uint32(b[1:5])
 	d := sftpDecoder{b: b[5:]}
-	e := connector.SFTPLayer{}
+	e := SFTPRequest{}
 	var h *sftpHandle
 	var handle, name, target string
 	var tail []byte
@@ -517,4 +518,47 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 		}
 	}
 	return r, nil
+}
+
+type SFTPRequest struct {
+	Command    string            `json:"command"`
+	Path       string            `json:"path"`
+	Target     string            `json:"target,omitempty"`
+	Read       bool              `json:"read,omitempty"`
+	Write      bool              `json:"write,omitempty"`
+	Flags      uint32            `json:"flags,omitempty"`
+	Offset     uint64            `json:"offset,omitempty"`
+	Size       uint32            `json:"size,omitempty"`
+	Attributes map[string]uint64 `json:"attributes,omitempty"`
+}
+
+func (v *SFTPRequest) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+	details := map[string]any{"sftp": v}
+	action := map[string]string{
+		"read": "read", "stat": "read", "lstat": "read", "fstat": "read", "opendir": "read", "readdir": "read", "realpath": "read", "readlink": "read",
+		"write": "write", "mkdir": "write", "remove": "delete", "rmdir": "delete", "rename": "rename", "setstat": "metadata", "fsetstat": "metadata", "close": "session",
+	}[v.Command]
+	if v.Command == "open" {
+		switch {
+		case v.Read && v.Write:
+			action = "readwrite"
+		case v.Read:
+			action = "read"
+		case v.Write:
+			action = "write"
+		}
+	}
+	scope := connector.JSONFields(v)
+	delete(scope, "command")
+	delete(scope, "offset")
+	delete(scope, "size")
+	var effects []string
+	if action == "session" {
+		effects = []string{"session"}
+	}
+	op := &facts.Operation{ID: v.Command, Action: action, Effects: effects}
+	if action == "" {
+		op = nil
+	}
+	return facts.Facts{Operation: op, Title: "SFTP " + v.Command + " " + v.Path, Parameters: scope, Details: details}, connector.Approval{}, nil
 }

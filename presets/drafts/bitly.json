@@ -42,7 +42,8 @@
       "write.to_bitlink": {"title": "Write: to bitlink"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getSiteClicksByCities", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-ssl.bitly.com", "path": "/v4/aggregate/sites/clicks/cities", "params": ["site", "unit", "units", "unit_reference", "report_guid"], "scope": {}},
     {"id": "getSiteClicksByCountries", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-ssl.bitly.com", "path": "/v4/aggregate/sites/clicks/countries", "params": ["site", "unit", "units", "unit_reference", "report_guid"], "scope": {}},
     {"id": "getSiteClicksByDevices", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-ssl.bitly.com", "path": "/v4/aggregate/sites/clicks/devices", "params": ["site", "unit", "units", "unit_reference", "report_guid"], "scope": {}},
@@ -186,4 +187,5 @@
     {"id": "updateWebhook", "action": "admin.webhooks", "effects": ["admin"], "method": "PATCH", "origin": "https://api-ssl.bitly.com", "path": "/v4/webhooks/{webhook_guid}", "body": "json", "scope": {"webhook_guid": {"from": "path", "at": "webhook_guid"}, "guid": {"from": "body", "at": "/guid"}}},
     {"id": "verifyWebhook", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api-ssl.bitly.com", "path": "/v4/webhooks/{webhook_guid}/verify", "scope": {"webhook_guid": {"from": "path", "at": "webhook_guid"}}}
   ]
+  }
 }

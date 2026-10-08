@@ -1591,7 +1591,8 @@
     "group": "api"
   },
   "title": "Confluence",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"wiki.spaces.read","effects":["read"],"id":"spaces.list","method":"GET","origin":"{origin}","params":["keys","type","status","limit","cursor"],"path":"/wiki/api/v2/spaces","scope":{}},
     {"action":"wiki.pages.read","effects":["read"],"id":"pages.list","method":"GET","origin":"{origin}","params":["space-id","status","title","limit","cursor"],"path":"/wiki/api/v2/pages","scope":{}},
     {"action":"wiki.pages.read","effects":["read"],"id":"pages.get","method":"GET","origin":"{origin}","params":["body-format"],"path":"/wiki/api/v2/pages/{page}","scope":{"page":{"at":"page","from":"path"}}},
@@ -1941,4 +1942,5 @@
     {"action":"wiki.atlassian_connect.app.module.dynamic.delete","effects":["delete"],"id":"removeModules","method":"DELETE","origin":"{origin}","params":["moduleKey"],"path":"/wiki/rest/atlassian-connect/1/app/module/dynamic","scope":{"moduleKey":{"at":"moduleKey","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
     {"action":"wiki.atlassian_connect.app.module.dynamic.read","effects":["read"],"id":"getModules","method":"GET","origin":"{origin}","path":"/wiki/rest/atlassian-connect/1/app/module/dynamic","scope":{}}
   ]
+  }
 }

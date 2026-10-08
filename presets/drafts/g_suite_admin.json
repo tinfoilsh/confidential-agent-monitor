@@ -57,7 +57,8 @@
       "write.watch": {"title": "Write: watch"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "directory.asps.delete", "action": "delete.asps", "effects": ["delete"], "method": "DELETE", "origin": "https://admin.googleapis.com", "path": "/admin/directory/v1/users/{userKey}/asps/{codeId}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "scope": {"userKey": {"from": "path", "at": "userKey"}, "codeId": {"from": "path", "at": "codeId"}}},
     {"id": "directory.asps.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://admin.googleapis.com", "path": "/admin/directory/v1/users/{userKey}/asps/{codeId}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "scope": {"userKey": {"from": "path", "at": "userKey"}, "codeId": {"from": "path", "at": "codeId"}}},
     {"id": "directory.asps.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://admin.googleapis.com", "path": "/admin/directory/v1/users/{userKey}/asps", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "scope": {"userKey": {"from": "path", "at": "userKey"}}},
@@ -187,4 +188,5 @@
     {"id": "directory.verificationCodes.invalidate", "action": "write.invalidate", "effects": ["write"], "method": "POST", "origin": "https://admin.googleapis.com", "path": "/admin/directory/v1/users/{userKey}/verificationCodes/invalidate", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "scope": {"userKey": {"from": "path", "at": "userKey"}}},
     {"id": "directory.verificationCodes.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://admin.googleapis.com", "path": "/admin/directory/v1/users/{userKey}/verificationCodes", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "scope": {"userKey": {"from": "path", "at": "userKey"}}}
   ]
+  }
 }

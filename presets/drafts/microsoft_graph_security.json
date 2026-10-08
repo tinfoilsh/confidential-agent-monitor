@@ -188,7 +188,8 @@
       "write.whois_records": {"title": "Write: whois records"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "security.security.GetSecurity", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/security", "params": ["$select", "$expand"], "scope": {}},
     {"id": "security.security.UpdateSecurity", "action": "write.security", "effects": ["write"], "method": "PATCH", "origin": "https://graph.microsoft.com", "path": "/v1.0/security", "body": "json", "scope": {}},
     {"id": "security.ListAlerts", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/security/alerts", "params": ["$top", "$skip", "$search", "$filter", "$count", "$orderby", "$select", "$expand"], "scope": {}},
@@ -722,4 +723,5 @@
     {"id": "security.triggers.DeleteRetentionEvents", "action": "delete.retention_events", "effects": ["delete"], "method": "DELETE", "origin": "https://graph.microsoft.com", "path": "/v1.0/security/triggers/retentionEvents/{retentionEvent-id}", "scope": {"retentionEvent-id": {"from": "path", "at": "retentionEvent-id"}}},
     {"id": "security.triggers.retentionEvents.GetRetentionEventType", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/security/triggers/retentionEvents/{retentionEvent-id}/retentionEventType", "params": ["$select", "$expand"], "scope": {"retentionEvent-id": {"from": "path", "at": "retentionEvent-id"}}}
   ]
+  }
 }

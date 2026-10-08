@@ -50,7 +50,8 @@
       "write.webmerge": {"title": "Write: webmerge"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getConfirmation", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.formstack.com", "path": "/api/v2025/confirmations/{confirmationId}", "scope": {"confirmationId": {"from": "path", "at": "confirmationId"}}},
     {"id": "updateConfirmationEmail", "action": "write.confirmations", "effects": ["write"], "method": "PUT", "origin": "https://www.formstack.com", "path": "/api/v2025/confirmations/{confirmationId}", "body": "json", "scope": {"confirmationId": {"from": "path", "at": "confirmationId"}}},
     {"id": "deleteConfirmationEmail", "action": "delete.confirmations", "effects": ["delete"], "method": "DELETE", "origin": "https://www.formstack.com", "path": "/api/v2025/confirmations/{confirmationId}", "scope": {"confirmationId": {"from": "path", "at": "confirmationId"}}},
@@ -141,4 +142,5 @@
     {"id": "deleteTheme", "action": "delete.themes", "effects": ["delete"], "method": "DELETE", "origin": "https://www.formstack.com", "path": "/api/v2025/themes/{themeId}", "scope": {"themeId": {"from": "path", "at": "themeId"}}},
     {"id": "copyTheme", "action": "write.themes", "effects": ["write"], "method": "POST", "origin": "https://www.formstack.com", "path": "/api/v2025/themes/{themeId}/copy", "scope": {"themeId": {"from": "path", "at": "themeId"}}}
   ]
+  }
 }

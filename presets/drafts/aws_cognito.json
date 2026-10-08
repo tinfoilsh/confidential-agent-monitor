@@ -20,7 +20,8 @@
       "write.cognito-idp": {"title": "Write: cognito-idp"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "AddCustomAttributes", "action": "write.cognito-idp", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AWSCognitoIdentityProviderService.AddCustomAttributes"}, "body": "any", "scope": {}},
     {"id": "AddUserPoolClientSecret", "action": "write.cognito-idp", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AWSCognitoIdentityProviderService.AddUserPoolClientSecret"}, "body": "any", "scope": {}},
     {"id": "AdminAddUserToGroup", "action": "write.cognito-idp", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AWSCognitoIdentityProviderService.AdminAddUserToGroup"}, "body": "any", "scope": {}},
@@ -154,4 +155,5 @@
     {"id": "VerifySoftwareToken", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AWSCognitoIdentityProviderService.VerifySoftwareToken"}, "body": "any", "scope": {}},
     {"id": "VerifyUserAttribute", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "AWSCognitoIdentityProviderService.VerifyUserAttribute"}, "body": "any", "scope": {}}
   ]
+  }
 }

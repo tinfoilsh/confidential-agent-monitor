@@ -113,7 +113,8 @@
     "group": "api"
   },
   "title": "AWS S3",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"s3.read","effects":["read"],"headers":{"X-Amz-Request-Payer":null},"id":"object.list","method":"GET","origin":"{origin}","params":["prefix","delimiter","max-keys","continuation-token"],"path":"/","query":{"list-type":"2"},"scope":{}},
     {"action":"s3.read","effects":["read"],"headers":{"X-Amz-Request-Payer":null},"id":"object.get","method":"GET","origin":"{origin}","path":"/{key*}","scope":{"key":{"at":"key","from":"path"}}},
     {"action":"s3.pay","effects":["read","pay"],"headers":{"X-Amz-Request-Payer":"requester"},"id":"object.get.requester_pays","method":"GET","origin":"{origin}","path":"/{key*}","scope":{"key":{"at":"key","from":"path"}}},
@@ -136,4 +137,5 @@
     {"action":"s3.read","effects":["read"],"id":"ListObjectAnnotations","method":"GET","origin":"{origin}","params":["annotation-prefix","continuation-token","max-annotation-results","versionId"],"path":"/{Bucket}/{Key*}","query":{"annotation":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
     {"action":"s3.read","effects":["read"],"id":"ListParts","method":"GET","origin":"{origin}","params":["max-parts","part-number-marker","uploadId"],"path":"/{Bucket}/{Key*}","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}}
   ]
+  }
 }

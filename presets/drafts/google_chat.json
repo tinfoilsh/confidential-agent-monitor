@@ -32,7 +32,8 @@
       "write.spaces": {"title": "Write: spaces"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "customEmojis.create", "action": "write.custom_emojis", "effects": ["write"], "method": "POST", "origin": "https://chat.googleapis.com", "path": "/v1/customEmojis", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {}},
     {"id": "customEmojis.delete", "action": "delete.custom_emojis", "effects": ["delete"], "method": "DELETE", "origin": "https://chat.googleapis.com", "path": "/v1/customEmojis/{customEmojisId}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "scope": {"customEmojisId": {"from": "path", "at": "customEmojisId"}}},
     {"id": "customEmojis.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://chat.googleapis.com", "path": "/v1/customEmojis/{customEmojisId}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "scope": {"customEmojisId": {"from": "path", "at": "customEmojisId"}}},
@@ -89,4 +90,5 @@
     {"id": "users.spaces.spaceNotificationSetting.patch", "action": "write.space_notification_setting", "effects": ["write"], "method": "PATCH", "origin": "https://chat.googleapis.com", "path": "/v1/users/{usersId}/spaces/{spacesId}/spaceNotificationSetting", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "updateMask"], "body": "json", "scope": {"usersId": {"from": "path", "at": "usersId"}, "spacesId": {"from": "path", "at": "spacesId"}}},
     {"id": "users.spaces.threads.getThreadReadState", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://chat.googleapis.com", "path": "/v1/users/{usersId}/spaces/{spacesId}/threads/{threadsId}/threadReadState", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "scope": {"usersId": {"from": "path", "at": "usersId"}, "spacesId": {"from": "path", "at": "spacesId"}, "threadsId": {"from": "path", "at": "threadsId"}}}
   ]
+  }
 }

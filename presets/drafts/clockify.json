@@ -80,7 +80,8 @@
       "write.value": {"title": "Write: value"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "uploadImage", "action": "generate.image", "effects": ["generate"], "method": "POST", "origin": "https://api.clockify.me", "path": "/v1/file/image", "body": "any", "scope": {}},
     {"id": "generateSharedReportV1", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.clockify.me", "path": "/v1/shared-reports/{id}", "params": ["dateRangeStart", "dateRangeEnd", "sortOrder", "sortColumn", "exportType", "page", "pageSize"], "scope": {"id": {"from": "path", "at": "id"}}},
     {"id": "getLoggedUser", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.clockify.me", "path": "/v1/user", "params": ["include-memberships"], "scope": {}},
@@ -252,4 +253,5 @@
     {"id": "getWebhookEventStatusesWithLatestLog", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.clockify.me", "path": "/v1/workspaces/{workspaceId}/webhooks/{webhookId}/statuses", "params": ["page", "size", "statuses"], "scope": {"workspaceId": {"from": "path", "at": "workspaceId"}, "webhookId": {"from": "path", "at": "webhookId"}}},
     {"id": "generateNewToken", "action": "generate.token", "effects": ["generate"], "method": "PATCH", "origin": "https://api.clockify.me", "path": "/v1/workspaces/{workspaceId}/webhooks/{webhookId}/token", "scope": {"workspaceId": {"from": "path", "at": "workspaceId"}, "webhookId": {"from": "path", "at": "webhookId"}}}
   ]
+  }
 }

@@ -28,7 +28,8 @@
       "write.projects": {"title": "Write: projects"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "projects.detectLanguage", "action": "generate.projects", "effects": ["generate"], "method": "POST", "origin": "https://translation.googleapis.com", "path": "/v3/projects/{projectsId}:detectLanguage", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {"projectsId": {"from": "path", "at": "projectsId"}}},
     {"id": "projects.getSupportedLanguages", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://translation.googleapis.com", "path": "/v3/projects/{projectsId}/supportedLanguages", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "displayLanguageCode", "model"], "scope": {"projectsId": {"from": "path", "at": "projectsId"}}},
     {"id": "projects.romanizeText", "action": "write.projects", "effects": ["write"], "method": "POST", "origin": "https://translation.googleapis.com", "path": "/v3/projects/{projectsId}:romanizeText", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {"projectsId": {"from": "path", "at": "projectsId"}}},
@@ -81,4 +82,5 @@
     {"id": "projects.locations.operations.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://translation.googleapis.com", "path": "/v3/projects/{projectsId}/locations/{locationsId}/operations", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "filter", "pageSize", "pageToken", "returnPartialSuccess"], "scope": {"projectsId": {"from": "path", "at": "projectsId"}, "locationsId": {"from": "path", "at": "locationsId"}}},
     {"id": "projects.locations.operations.wait", "action": "write.operations", "effects": ["write"], "method": "POST", "origin": "https://translation.googleapis.com", "path": "/v3/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:wait", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {"projectsId": {"from": "path", "at": "projectsId"}, "locationsId": {"from": "path", "at": "locationsId"}, "operationsId": {"from": "path", "at": "operationsId"}}}
   ]
+  }
 }

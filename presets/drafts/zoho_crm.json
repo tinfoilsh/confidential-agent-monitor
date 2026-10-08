@@ -19,7 +19,8 @@
       "write.upsert": {"title": "Write: upsert"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "deleteRecords", "action": "delete.records", "effects": ["delete"], "method": "DELETE", "origin": "https://www.zohoapis.com", "path": "/{module}", "params": ["ids"], "scope": {"module": {"from": "path", "at": "module"}}},
     {"id": "updateRecords", "action": "write.records", "effects": ["write"], "method": "PUT", "origin": "https://www.zohoapis.com", "path": "/{module}", "body": "json", "scope": {"module": {"from": "path", "at": "module"}}},
     {"id": "getRecords", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.zohoapis.com", "path": "/{module}", "params": ["fields", "territory_id", "ids", "cvid", "filters", "cross_filters", "filterId", "per_page", "page", "page_token", "sort_order", "sort_by", "converted", "include_child"], "scope": {"module": {"from": "path", "at": "module"}}},
@@ -36,4 +37,5 @@
     {"id": "deleteCustomField", "action": "delete.fields", "effects": ["delete"], "method": "DELETE", "origin": "https://www.zohoapis.com", "path": "/settings/fields/{fieldId}", "params": ["module"], "scope": {"fieldId": {"from": "path", "at": "fieldId"}}},
     {"id": "getScheduledJobs", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.zohoapis.com", "path": "/settings/fields/{fieldId}/actions/scheduled_jobs", "params": ["job_id", "module", "page", "per_page"], "scope": {"fieldId": {"from": "path", "at": "fieldId"}}}
   ]
+  }
 }

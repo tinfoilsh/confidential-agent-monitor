@@ -81,7 +81,8 @@
       "write.winner": {"title": "Write: winner"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "GET /api/activities", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.lemlist.com", "path": "/api/activities", "params": ["version", "type", "campaignId", "isFirst", "offset", "limit", "leadId", "minDate", "maxDate", "startDate", "endDate"], "scope": {}},
     {"id": "DELETE /api/activities/{activityId}/recording-transcript", "action": "delete.recording_transcript", "effects": ["delete"], "method": "DELETE", "origin": "https://api.lemlist.com", "path": "/api/activities/{activityId}/recording-transcript", "scope": {"activityId": {"from": "path", "at": "activityId"}}},
     {"id": "GET /api/campaigns", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.lemlist.com", "path": "/api/campaigns", "params": ["offset", "limit", "version", "page", "sortBy", "sortOrder", "status", "createdBy"], "scope": {}},
@@ -260,4 +261,5 @@
     {"id": "PUT /api/watchlist/signals", "action": "write.signals", "effects": ["write"], "method": "PUT", "origin": "https://api.lemlist.com", "path": "/api/watchlist/signals", "body": "json", "scope": {}},
     {"id": "POST /api/watchlist/{watchListId}/external-signals", "action": "write.external_signals", "effects": ["write"], "method": "POST", "origin": "https://api.lemlist.com", "path": "/api/watchlist/{watchListId}/external-signals", "body": "json", "scope": {"watchListId": {"from": "path", "at": "watchListId"}}}
   ]
+  }
 }

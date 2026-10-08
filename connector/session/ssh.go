@@ -12,11 +12,11 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/facts"
 	"golang.org/x/crypto/ssh"
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/syntax"
-
-	"github.com/tinfoilsh/monitor/connector"
 )
 
 const (
@@ -149,16 +149,16 @@ func forwardRequests(dst ssh.Channel, reqs <-chan *ssh.Request, check func(*ssh.
 	}
 }
 
-func eventForSSH(r *ssh.Request) connector.Event {
-	layer := &connector.SSHLayer{Request: r.Type}
-	e := connector.Event{SSH: layer}
+func eventForSSH(r *ssh.Request) *SSHRequest {
+	layer := &SSHDetails{Request: r.Type}
+	e := &SSHRequest{SSH: layer}
 	switch r.Type {
 	case requestExec:
 		var p struct{ Command string }
 		if ssh.Unmarshal(r.Payload, &p) == nil {
 			layer.Command = p.Command
 			if args := argv(p.Command); args != nil {
-				e.Command = &connector.ArgvLayer{Argv: args}
+				e.Command = &CommandDetails{Argv: args}
 			}
 		}
 	case "subsystem":
@@ -167,7 +167,7 @@ func eventForSSH(r *ssh.Request) connector.Event {
 			layer.Subsystem = p.Name
 		}
 	case "env":
-		var p connector.SSHEnv
+		var p SSHEnv
 		if ssh.Unmarshal(r.Payload, &p) == nil {
 			layer.Env = &p
 		}
@@ -226,4 +226,63 @@ func innerSSH(s *connector.Stream, hostKey ssh.Signer) (*ssh.ServerConn, <-chan 
 	cfg := &ssh.ServerConfig{NoClientAuth: true}
 	cfg.AddHostKey(hostKey)
 	return ssh.NewServerConn(s, cfg)
+}
+
+type SSHDetails struct {
+	Request   string  `json:"request"`
+	Command   string  `json:"command,omitempty"`
+	Subsystem string  `json:"subsystem,omitempty"`
+	Term      string  `json:"term,omitempty"`
+	Env       *SSHEnv `json:"env,omitempty"`
+}
+
+type SSHEnv struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
+type CommandDetails struct {
+	Argv []string `json:"argv"`
+}
+
+type SSHRequest struct {
+	SSH     *SSHDetails     `json:"ssh"`
+	Command *CommandDetails `json:"command,omitempty"`
+	Payload *GitDetails     `json:"payload,omitempty"`
+}
+
+func (r *SSHRequest) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+	details := map[string]any{"ssh": r.SSH}
+	if r.Command != nil {
+		details["command"] = r.Command
+	}
+	if r.Payload != nil {
+		details["payload"] = r.Payload
+	}
+	v := r.SSH
+	if v == nil {
+		return facts.Facts{Details: details}, connector.Approval{}, nil
+	}
+	var config struct{ Host string }
+	if err := c.DecodeConfig(&config); err != nil {
+		return facts.Facts{Details: details}, connector.Approval{}, err
+	}
+	action := map[string]string{"pty-req": "session", "env": "session", "window-change": "session", "signal": "session", "break": "session", "exec": "run", "shell": "shell"}[v.Request]
+	if v.Request == "subsystem" && v.Subsystem == "sftp" {
+		action = "files"
+	}
+	scope := map[string]any{}
+	if v.Command != "" {
+		scope["command"] = v.Command
+	}
+	host := config.Host
+	title := map[string]string{"run": "Run " + v.Command + " on " + host, "shell": "Open a shell on " + host, "files": "Transfer files on " + host}[action]
+	if title == "" {
+		title = "SSH " + v.Request
+	}
+	op := &facts.Operation{Action: action, RequiresTrust: action == "files"}
+	if action == "" {
+		op = nil
+	}
+	return facts.Facts{Operation: op, Title: title, Parameters: scope, Details: details}, connector.Approval{}, nil
 }

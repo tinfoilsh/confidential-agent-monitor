@@ -18,7 +18,8 @@
       "write.skills": {"title": "Write: skills"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "search_search_post", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.perplexity.ai", "path": "/search", "body": "json", "scope": {}},
     {"id": "createAgent", "action": "generate.agent", "effects": ["generate"], "method": "POST", "origin": "https://api.perplexity.ai", "path": "/v1/agent", "body": "json", "scope": {}},
     {"id": "retrieveAgent", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.perplexity.ai", "path": "/v1/agent/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
@@ -42,4 +43,5 @@
     {"id": "chat_completions_chat_completions_post", "action": "generate.sonar", "effects": ["generate"], "method": "POST", "origin": "https://api.perplexity.ai", "path": "/v1/sonar", "body": "json", "scope": {}},
     {"id": "getComputerUsageAnalyticsV2", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.perplexity.ai", "path": "/v2/analytics/computer/usage", "params": ["dataset", "group_by", "start_time", "end_time", "limit", "page"], "scope": {}}
   ]
+  }
 }

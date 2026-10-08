@@ -2548,7 +2548,8 @@
     "group": "api"
   },
   "title": "Jira",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"myself.read","effects":["read"],"id":"myself.get","method":"GET","origin":"{origin}","path":"/rest/api/3/myself","scope":{}},
     {"action":"search.jql.read","effects":["read"],"id":"issue.search","method":"GET","origin":"{origin}","params":["jql","maxResults","nextPageToken","fields"],"path":"/rest/api/3/search/jql","scope":{}},
     {"action":"issue.read","effects":["read"],"id":"issue.get","method":"GET","origin":"{origin}","params":["fields"],"path":"/rest/api/3/issue/{issue}","scope":{"issue":{"at":"issue","from":"path"}}},
@@ -3164,4 +3165,5 @@
     {"action":"forge.app.properties.write","body":"json","effects":["write"],"id":"putForgeAppProperty.json.8cd449848397","method":"PUT","origin":"{origin}","path":"/rest/forge/1/app/properties/{propertyKey}","scope":{"propertyKey":{"at":"propertyKey","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
     {"action":"internal.latest.worklog.bulk.read","body":"json","effects":["read"],"id":"getWorklogsByIssueIdAndWorklogId","method":"POST","origin":"{origin}","path":"/rest/internal/api/latest/worklog/bulk","scope":{"request":{"at":"","from":"body","type":"object"}}}
   ]
+  }
 }

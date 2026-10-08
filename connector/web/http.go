@@ -136,7 +136,7 @@ func (h *HTTP) screen(r *http.Request, s *connector.Stream) (*http.Request, erro
 	origin := origin(scheme, host, port)
 	r.URL.Scheme, r.URL.Host, r.URL.RawPath, r.URL.RawQuery = scheme, strings.TrimPrefix(origin, scheme+"://"), "", encodeQuery(query)
 	r.Host = r.URL.Host
-	layer := &connector.HTTPLayer{Method: r.Method, Origin: origin, Host: host, Path: r.URL.Path, Query: query, Headers: r.Header.Clone()}
+	layer := &HTTPDetails{Method: r.Method, Origin: origin, Host: host, Path: r.URL.Path, Query: query, Headers: r.Header.Clone()}
 	if err := inspect(r, layer); err != nil {
 		return r, err
 	}
@@ -157,7 +157,7 @@ func (h *HTTP) screen(r *http.Request, s *connector.Stream) (*http.Request, erro
 			}
 		}
 	}
-	if err := s.Gate(connector.Event{HTTP: layer, GraphQL: graphql(layer.Body, query)}); err != nil {
+	if err := s.Gate(&Request{HTTP: layer, GraphQL: graphql(layer.Body, query)}); err != nil {
 		return r, err
 	}
 	return r.WithContext(context.WithValue(r.Context(), slotsKey{}, used)), nil
@@ -242,7 +242,7 @@ func encodeQuery(q url.Values) string {
 }
 
 // inspect decodes a complete body of at most maxBodyBytes without repeated names; anything else is opaque and still forwarded.
-func inspect(r *http.Request, layer *connector.HTTPLayer) error {
+func inspect(r *http.Request, layer *HTTPDetails) error {
 	body, err := io.ReadAll(io.LimitReader(r.Body, maxBodyBytes+1))
 	if err != nil {
 		return err

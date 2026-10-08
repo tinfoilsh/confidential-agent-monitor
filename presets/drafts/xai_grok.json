@@ -29,7 +29,8 @@
       "share.public_url": {"title": "Share: public url"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "handle_get_api_key_info_request", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.x.ai", "path": "/v1/api-key", "scope": {}},
     {"id": "handle_generic_completion_request", "action": "generate.completions", "effects": ["generate"], "method": "POST", "origin": "https://api.x.ai", "path": "/v1/chat/completions", "body": "json", "scope": {}},
     {"id": "handle_get_deferred_completion_request", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.x.ai", "path": "/v1/chat/deferred-completion/{request_id}", "scope": {"request_id": {"from": "path", "at": "request_id"}}},
@@ -74,4 +75,5 @@
     {"id": "handle_generate_video_request", "action": "generate.generations", "effects": ["generate"], "method": "POST", "origin": "https://api.x.ai", "path": "/v1/videos/generations", "body": "json", "scope": {}},
     {"id": "handle_get_deferred_video_request", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.x.ai", "path": "/v1/videos/{request_id}", "scope": {"request_id": {"from": "path", "at": "request_id"}}}
   ]
+  }
 }

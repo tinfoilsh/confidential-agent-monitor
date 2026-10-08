@@ -35,7 +35,8 @@
       "write.webhook_subscriptions": {"title": "Write: webhook subscriptions"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "list-activity-log-entries", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.calendly.com", "path": "/activity_log_entries", "params": ["organization", "search_term", "actor", "sort", "min_occurred_at", "max_occurred_at", "page_token", "count", "namespace", "action"], "scope": {}},
     {"id": "list-calendar-events", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.calendly.com", "path": "/calendar_events", "params": ["user", "start_time", "end_time", "calendar_account_kind", "page_token", "count"], "scope": {"user": {"from": "query", "at": "user"}}},
     {"id": "list-contacts", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.calendly.com", "path": "/contacts", "params": ["sort", "email", "phone_number", "timezone", "name", "job_title", "company", "country", "state", "city", "count", "page_token", "exclude"], "scope": {}},
@@ -112,4 +113,5 @@
     {"id": "delete-webhook-subscription", "action": "delete.webhook_subscriptions", "effects": ["delete"], "method": "DELETE", "origin": "https://api.calendly.com", "path": "/webhook_subscriptions/{webhook_uuid}", "scope": {"webhook_uuid": {"from": "path", "at": "webhook_uuid"}}},
     {"id": "get-webhook-subscription", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.calendly.com", "path": "/webhook_subscriptions/{webhook_uuid}", "scope": {"webhook_uuid": {"from": "path", "at": "webhook_uuid"}}}
   ]
+  }
 }

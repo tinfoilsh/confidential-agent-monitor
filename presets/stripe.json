@@ -2105,7 +2105,8 @@
     "group": "api"
   },
   "title": "Stripe",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"customers.read","effects":["read"],"headers":{"Stripe-Account":null,"Stripe-Context":null,"Stripe-Version":"2026-09-30.endive"},"id":"customers.list","method":"GET","origin":"https://api.stripe.com","params":["limit","starting_after","email"],"path":"/v1/customers","scope":{}},
     {"action":"customers.read","effects":["read"],"headers":{"Stripe-Account":null,"Stripe-Context":null,"Stripe-Version":"2026-09-30.endive"},"id":"customers.get","method":"GET","origin":"https://api.stripe.com","path":"/v1/customers/{customer}","scope":{"customer":{"at":"customer","from":"path"}}},
     {"action":"payment_intents.read","effects":["read"],"headers":{"Stripe-Account":null,"Stripe-Context":null,"Stripe-Version":"2026-09-30.endive"},"id":"payment_intents.get","method":"GET","origin":"https://api.stripe.com","path":"/v1/payment_intents/{intent}","scope":{"intent":{"at":"intent","from":"path"}}},
@@ -3228,4 +3229,5 @@
     {"action":"webhook_endpoints.write","effects":["write"],"id":"PostWebhookEndpointsWebhookEndpoint","method":"POST","origin":"https://api.stripe.com","path":"/v1/webhook_endpoints/{webhook_endpoint}","scope":{"webhook_endpoint":{"at":"webhook_endpoint","from":"path"}}},
     {"action":"webhook_endpoints.write","body":"form","effects":["write"],"id":"PostWebhookEndpointsWebhookEndpoint.form.03f7e9f9506b","method":"POST","origin":"https://api.stripe.com","path":"/v1/webhook_endpoints/{webhook_endpoint}","scope":{"request":{"at":"","from":"form","type":"object"},"url":{"at":"url","from":"form","optional":true},"webhook_endpoint":{"at":"webhook_endpoint","from":"path"}}}
   ]
+  }
 }

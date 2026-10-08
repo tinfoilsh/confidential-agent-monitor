@@ -35,7 +35,8 @@
       "write.translation_memories": {"title": "Write: translation memories"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "createVoiceTranslateJob", "action": "generate.translate", "effects": ["generate"], "method": "POST", "origin": "https://api.deepl.com", "path": "/v1/jobs/voice/translate", "params": ["include"], "body": "json", "scope": {}},
     {"id": "getVoiceTranslateJobStatus", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.deepl.com", "path": "/v1/jobs/voice/translate/{job_id}", "params": ["include"], "scope": {"job_id": {"from": "path", "at": "job_id"}}},
     {"id": "pollQualityEvaluation", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.deepl.com", "path": "/v1/quality-evaluations/{job_id}", "scope": {"job_id": {"from": "path", "at": "job_id"}}},
@@ -97,4 +98,5 @@
     {"id": "requestReconnection", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.deepl.com", "path": "/v3/voice/realtime", "params": ["token"], "scope": {}},
     {"id": "getVoiceStreamingUrl", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.deepl.com", "path": "/v3/voice/realtime", "body": "json", "scope": {}}
   ]
+  }
 }

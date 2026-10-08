@@ -14,11 +14,13 @@
       "write.v4": {"title": "Write: v4"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "GET /", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://apis.salesmate.io", "path": "/", "scope": {}},
     {"id": "POST /", "action": "write.v1", "effects": ["write"], "method": "POST", "origin": "https://apis.salesmate.io", "path": "/", "body": "any", "scope": {}},
     {"id": "PUT /", "action": "write.v1", "effects": ["write"], "method": "PUT", "origin": "https://apis.salesmate.io", "path": "/", "body": "any", "scope": {}},
     {"id": "DELETE /", "action": "delete.v1", "effects": ["delete"], "method": "DELETE", "origin": "https://apis.salesmate.io", "path": "/", "body": "any", "scope": {}},
     {"id": "PATCH /", "action": "write.v4", "effects": ["write"], "method": "PATCH", "origin": "https://apis.salesmate.io", "path": "/", "body": "any", "scope": {}}
   ]
+  }
 }

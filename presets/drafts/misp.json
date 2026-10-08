@@ -52,7 +52,8 @@
       "write.update_json": {"title": "Write: update json"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getLogs", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/admin/logs", "body": "any", "scope": {}},
     {"id": "addOrganisation", "action": "write.add", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/admin/organisations/add", "body": "any", "scope": {}},
     {"id": "deleteOrganisation", "action": "delete.delete", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/admin/organisations/delete/{organisationId}", "scope": {"organisationId": {"from": "path", "at": "organisationId"}}},
@@ -220,4 +221,5 @@
     {"id": "updateWarninglists", "action": "write.update", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/warninglists/update", "scope": {}},
     {"id": "getWarninglistById", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/warninglists/view/{warninglistId}", "scope": {"warninglistId": {"from": "path", "at": "warninglistId"}}}
   ]
+  }
 }

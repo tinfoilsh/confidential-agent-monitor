@@ -761,7 +761,8 @@
     "group": "api"
   },
   "title": "Twilio",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"accounts.messages.read","effects":["read"],"id":"messages.list","method":"GET","origin":"https://api.twilio.com","params":["To","From","DateSent","PageSize","Page"],"path":"/2010-04-01/Accounts/{account}/Messages.json","scope":{"account":{"at":"account","from":"path"}}},
     {"action":"accounts.messages.read","effects":["read"],"id":"messages.get","method":"GET","origin":"https://api.twilio.com","path":"/2010-04-01/Accounts/{account}/Messages/{message}.json","scope":{"account":{"at":"account","from":"path"},"message":{"at":"message","from":"path"}}},
     {"action":"accounts.messages.send","body":"form","effects":["send","pay"],"id":"messages.create","method":"POST","origin":"https://api.twilio.com","path":"/2010-04-01/Accounts/{account}/Messages.json","scope":{"account":{"at":"account","from":"path"},"message":{"at":"","from":"form","type":"object"}}},
@@ -1051,4 +1052,5 @@
     {"action":"types.read","effects":["read"],"id":"ListEventType","method":"GET","origin":"https://events.twilio.com","params":["SchemaId","PageSize","Page","PageToken"],"path":"/v1/Types","scope":{"Page":{"at":"Page","from":"query","optional":true},"SchemaId":{"at":"SchemaId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
     {"action":"types.read","effects":["read"],"id":"FetchEventType","method":"GET","origin":"https://events.twilio.com","path":"/v1/Types/{Type}","scope":{"Type":{"at":"Type","from":"path"}}}
   ]
+  }
 }

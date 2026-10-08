@@ -5103,7 +5103,8 @@
     "group": "api"
   },
   "title": "Microsoft Teams",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"me.joined_teams.read","effects":["read"],"id":"joinedTeams.list","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/me/joinedTeams","scope":{}},
     {"action":"teams.channels.read","effects":["read"],"id":"channels.list","method":"GET","origin":"https://graph.microsoft.com","params":["$filter","$select"],"path":"/v1.0/teams/{team}/channels","scope":{"team":{"at":"team","from":"path"}}},
     {"action":"teams.channels.read","effects":["read"],"id":"channels.get","method":"GET","origin":"https://graph.microsoft.com","params":["$select"],"path":"/v1.0/teams/{team}/channels/{channel}","scope":{"channel":{"at":"channel","from":"path"},"team":{"at":"team","from":"path"}}},
@@ -6470,4 +6471,5 @@
     {"action":"users.joined_teams.template.read","effects":["read"],"id":"users.joinedTeams.GetTemplate","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/joinedTeams/{team-id}/template","scope":{"query":{"at":"","from":"query","type":"object"},"team-id":{"at":"team-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
     {"action":"users.joined_teams.write","effects":["write"],"id":"users.user.joinedTeams.team.unarchive","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/joinedTeams/{team-id}/unarchive","scope":{"team-id":{"at":"team-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}}
   ]
+  }
 }

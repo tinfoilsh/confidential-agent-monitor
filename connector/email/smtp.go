@@ -8,12 +8,13 @@ import (
 	"mime"
 	"mime/multipart"
 	"net/mail"
+	"slices"
 	"strings"
 
 	"github.com/emersion/go-sasl"
 	"github.com/emersion/go-smtp"
-
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/facts"
 )
 
 const (
@@ -61,7 +62,7 @@ func (s *smtpSession) Data(r io.Reader) error {
 	if err != nil {
 		return err
 	}
-	if err := s.stream.Gate(connector.Event{SMTP: &connector.SMTPLayer{From: s.from, To: s.to}, Mail: mailHeaders(message)}); err != nil {
+	if err := s.stream.Gate(&SMTPRequest{SMTP: &SMTPDetails{From: s.from, To: s.to}, Mail: mailHeaders(message)}); err != nil {
 		return &smtp.SMTPError{Code: smtpRefused, EnhancedCode: smtp.EnhancedCode{5, 7, 1}, Message: err.Error()}
 	}
 	return s.relay.submit(s.stream, s.env, s.from, s.to, message)
@@ -97,12 +98,12 @@ func (r *SMTP) submit(s *connector.Stream, e *connector.Env, from string, to []s
 const multipartPrefix = "multipart/"
 
 // Only top-level attachments are named.
-func mailHeaders(message []byte) *connector.MailLayer {
+func mailHeaders(message []byte) *MailDetails {
 	msg, err := mail.ReadMessage(bytes.NewReader(message))
 	if err != nil {
 		return nil
 	}
-	return &connector.MailLayer{
+	return &MailDetails{
 		From:        addresses(msg.Header, "From"),
 		To:          addresses(msg.Header, "To"),
 		Cc:          addresses(msg.Header, "Cc"),
@@ -142,4 +143,46 @@ func attachments(msg *mail.Message) []string {
 			names = append(names, name)
 		}
 	}
+}
+
+type SMTPDetails struct {
+	From string   `json:"from"`
+	To   []string `json:"to"`
+}
+
+type MailDetails struct {
+	From        []string `json:"from"`
+	To          []string `json:"to"`
+	Cc          []string `json:"cc"`
+	Subject     string   `json:"subject"`
+	Attachments []string `json:"attachments"`
+}
+
+type SMTPRequest struct {
+	SMTP *SMTPDetails `json:"smtp"`
+	Mail *MailDetails `json:"mail,omitempty"`
+}
+
+func (r *SMTPRequest) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+	details := map[string]any{"smtp": r.SMTP}
+	if r.Mail != nil {
+		details["mail"] = r.Mail
+	}
+	v := r.SMTP
+	if v == nil {
+		return facts.Facts{Details: details}, connector.Approval{}, nil
+	}
+	var options struct{ Address string }
+	if err := c.DecodeOptions(&options); err != nil {
+		return facts.Facts{Details: details}, connector.Approval{}, err
+	}
+	to := slices.Clone(v.To)
+	slices.Sort(to)
+	sends := "account"
+	for _, to := range v.To {
+		if !strings.EqualFold(to, options.Address) {
+			sends = "anyone"
+		}
+	}
+	return facts.Facts{Operation: &facts.Operation{Action: "send"}, Title: "Send mail to " + strings.Join(v.To, ", "), Parameters: map[string]any{"to": to}, Details: details, Context: facts.Context{Sends: sends}}, connector.Approval{}, nil
 }

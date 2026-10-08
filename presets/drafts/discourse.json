@@ -55,7 +55,8 @@
       "write.username": {"title": "Write: username"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "createBackup", "action": "write.backups", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/admin/backups.json", "body": "any", "scope": {}},
     {"id": "getBackups", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/admin/backups.json", "scope": {}},
     {"id": "downloadBackup", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/admin/backups/{filename}", "params": ["token"], "scope": {"filename": {"from": "path", "at": "filename"}}},
@@ -145,4 +146,5 @@
     {"id": "createUser", "action": "admin.users", "effects": ["admin"], "method": "POST", "origin": "{origin}", "path": "/users.json", "body": "any", "scope": {}},
     {"id": "changePassword", "action": "write.password_reset", "effects": ["write"], "method": "PUT", "origin": "{origin}", "path": "/users/password-reset/{token}.json", "body": "any", "scope": {"token": {"from": "path", "at": "token"}}}
   ]
+  }
 }

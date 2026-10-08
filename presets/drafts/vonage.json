@@ -11,7 +11,9 @@
       "send.sms": {"title": "Send: sms"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "send-an-sms", "action": "send.sms", "effects": ["send"], "method": "POST", "origin": "https://rest.nexmo.com", "path": "/sms/{format}", "body": "form", "scope": {"format": {"from": "path", "at": "format"}}}
   ]
+  }
 }

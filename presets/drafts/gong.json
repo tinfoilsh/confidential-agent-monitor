@@ -40,7 +40,8 @@
       "write.viewed": {"title": "Write: viewed"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "accountsEnrich", "action": "write.enrich", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/v2/accounts/enrich", "params": ["dataCategories"], "body": "json", "scope": {}},
     {"id": "getAccountsEnrichResults", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/v2/accounts/enrich/{jobId}/results", "scope": {"jobId": {"from": "path", "at": "jobId"}}},
     {"id": "listPermissionProfile", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/v2/all-permission-profiles", "params": ["workspaceId"], "scope": {"workspaceId": {"from": "query", "at": "workspaceId"}}},
@@ -115,4 +116,5 @@
     {"id": "getUserHistory", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/v2/users/{id}/settings-history", "scope": {"id": {"from": "path", "at": "id"}}},
     {"id": "listWorkspaces", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/v2/workspaces", "scope": {}}
   ]
+  }
 }

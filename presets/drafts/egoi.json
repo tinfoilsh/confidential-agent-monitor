@@ -84,7 +84,8 @@
       "write.web_push": {"title": "Write: web push"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getAllAutomations", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.egoiapp.com", "path": "/automations", "params": ["automation_id", "title", "created_by", "list_id", "status", "offset", "limit", "order", "order_by"], "scope": {}},
     {"id": "deleteAutomation", "action": "delete.automations", "effects": ["delete"], "method": "DELETE", "origin": "https://api.egoiapp.com", "path": "/automations/{automation_id}", "scope": {"automation_id": {"from": "path", "at": "automation_id"}}},
     {"id": "getAllActions", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.egoiapp.com", "path": "/automations/{automation_id}/actions", "params": ["automation_id", "offset", "limit"], "scope": {"automation_id": {"from": "path", "at": "automation_id"}}},
@@ -228,4 +229,5 @@
     {"id": "createCart", "action": "write.carts", "effects": ["write"], "method": "POST", "origin": "https://api.egoiapp.com", "path": "/{domain}/carts", "body": "json", "scope": {"domain": {"from": "path", "at": "domain"}}},
     {"id": "CreateOrder", "action": "write.orders", "effects": ["write"], "method": "POST", "origin": "https://api.egoiapp.com", "path": "/{domain}/orders", "body": "json", "scope": {"domain": {"from": "path", "at": "domain"}, "order_id": {"from": "body", "at": "/order_id"}}}
   ]
+  }
 }

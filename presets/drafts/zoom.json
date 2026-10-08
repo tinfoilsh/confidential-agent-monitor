@@ -60,7 +60,8 @@
       "write.webinars": {"title": "Write: webinars"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "listArchivedFiles", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.zoom.us", "path": "/v2/archive_files", "params": ["page_size", "next_page_token", "from", "to", "query_date_type", "group_id", "group_ids"], "scope": {}},
     {"id": "listArchiveFileDownloadAudit", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.zoom.us", "path": "/v2/archive_files/download_audit", "params": ["page_size", "next_page_token", "from", "to"], "scope": {}},
     {"id": "getArchivedFileStatistics", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.zoom.us", "path": "/v2/archive_files/statistics", "params": ["from", "to"], "scope": {}},
@@ -242,4 +243,5 @@
     {"id": "webinarToken", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.zoom.us", "path": "/v2/webinars/{webinarId}/token", "params": ["type"], "scope": {"webinarId": {"from": "path", "at": "webinarId"}}},
     {"id": "getTrackingSources", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.zoom.us", "path": "/v2/webinars/{webinarId}/tracking_sources", "scope": {"webinarId": {"from": "path", "at": "webinarId"}}}
   ]
+  }
 }

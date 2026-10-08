@@ -20,7 +20,8 @@
       "write.variables": {"title": "Write: variables"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getActivityLogs", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.figma.com", "path": "/v1/activity_logs", "params": ["events", "start_time", "end_time", "limit", "order"], "scope": {}},
     {"id": "getAiUsageDaily", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.figma.com", "path": "/v1/ai_usage/daily", "params": ["start_date", "end_date", "user_email", "limit", "cursor"], "scope": {}},
     {"id": "getLibraryAnalyticsComponentActions", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.figma.com", "path": "/v1/analytics/libraries/{file_key}/component/actions", "params": ["cursor", "group_by", "start_date", "end_date"], "scope": {"file_key": {"from": "path", "at": "file_key"}}},
@@ -76,4 +77,5 @@
     {"id": "deleteWebhook", "action": "delete.webhooks", "effects": ["delete"], "method": "DELETE", "origin": "https://api.figma.com", "path": "/v2/webhooks/{webhook_id}", "scope": {"webhook_id": {"from": "path", "at": "webhook_id"}}},
     {"id": "getWebhookRequests", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.figma.com", "path": "/v2/webhooks/{webhook_id}/requests", "scope": {"webhook_id": {"from": "path", "at": "webhook_id"}}}
   ]
+  }
 }

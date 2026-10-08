@@ -104,7 +104,8 @@
       "write.zulip_outgoing_webhook": {"title": "Write: zulip outgoing webhook"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "get-attachments", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/attachments", "scope": {}},
     {"id": "remove-attachment", "action": "delete.attachments", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/attachments/{attachment_id}", "scope": {"attachment_id": {"from": "path", "at": "attachment_id"}}},
     {"id": "remove-bot-storage", "action": "delete.bot_storage", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/bot_storage", "body": "any", "scope": {}},
@@ -264,4 +265,5 @@
     {"id": "get-subscription-status", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/users/{user_id}/subscriptions/{stream_id}", "params": ["allow_empty_topic_name"], "scope": {"user_id": {"from": "path", "at": "user_id"}, "stream_id": {"from": "path", "at": "stream_id"}}},
     {"id": "zulip-outgoing-webhooks", "action": "write.zulip_outgoing_webhook", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/zulip-outgoing-webhook", "scope": {}}
   ]
+  }
 }

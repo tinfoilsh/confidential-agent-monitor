@@ -32,7 +32,8 @@
       "write.semantic_search": {"title": "Write: semantic search"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "v2_auth_whoami__GET", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.affinity.co", "path": "/v2/auth/whoami", "scope": {}},
     {"id": "v2_calls__GET", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.affinity.co", "path": "/v2/calls", "params": ["cursor", "limit", "filter"], "scope": {}},
     {"id": "v2_chat-messages__GET", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.affinity.co", "path": "/v2/chat-messages", "params": ["cursor", "limit", "filter"], "scope": {}},
@@ -139,4 +140,5 @@
     {"id": "v2_webhooks_webhookId__GET", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.affinity.co", "path": "/v2/webhooks/{webhookId}", "scope": {"webhookId": {"from": "path", "at": "webhookId"}}},
     {"id": "v2_webhooks_webhookId__POST", "action": "admin.webhooks", "effects": ["admin"], "method": "POST", "origin": "https://api.affinity.co", "path": "/v2/webhooks/{webhookId}", "body": "json", "scope": {"webhookId": {"from": "path", "at": "webhookId"}}}
   ]
+  }
 }

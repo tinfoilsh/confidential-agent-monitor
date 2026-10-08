@@ -11,7 +11,9 @@
       "read": {"title": "Read everything the account can see"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getTrackingShipment", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-eu.dhl.com", "path": "/track/shipments", "params": ["trackingNumber", "service", "requesterCountryCode", "originCountryCode", "recipientPostalCode", "language", "offset", "limit"], "scope": {}}
   ]
+  }
 }

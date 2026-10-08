@@ -22,7 +22,8 @@
       "write.notes": {"title": "Write: notes"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "GET /api/v1/user", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://app.orbit.love", "path": "/api/v1/user", "scope": {}},
     {"id": "GET /api/v1/workspaces", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://app.orbit.love", "path": "/api/v1/workspaces", "scope": {}},
     {"id": "GET /api/v1/workspaces/{workspace_slug}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://app.orbit.love", "path": "/api/v1/workspaces/{workspace_slug}", "params": ["include_orbit_level_counts", "affiliation", "member_tags", "orbit", "activity_type", "identity", "company[]", "title[]", "regions[]", "countries[]", "cities[]", "start_date", "end_date", "relative", "page", "direction", "items", "sort", "type", "query", "activities_count_min", "activities_count_max", "properties"], "scope": {"workspace_slug": {"from": "path", "at": "workspace_slug"}}},
@@ -50,4 +51,5 @@
     {"id": "GET /api/v1/{workspace_slug}/webhooks/{id}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://app.orbit.love", "path": "/api/v1/{workspace_slug}/webhooks/{id}", "scope": {"workspace_slug": {"from": "path", "at": "workspace_slug"}, "id": {"from": "path", "at": "id"}}},
     {"id": "PUT /api/v1/{workspace_slug}/webhooks/{id}", "action": "admin.webhooks", "effects": ["admin"], "method": "PUT", "origin": "https://app.orbit.love", "path": "/api/v1/{workspace_slug}/webhooks/{id}", "body": "any", "scope": {"workspace_slug": {"from": "path", "at": "workspace_slug"}, "id": {"from": "path", "at": "id"}}}
   ]
+  }
 }

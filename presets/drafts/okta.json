@@ -225,7 +225,8 @@
       "write.zones": {"title": "Write: zones"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getWellKnownAppAuthenticatorConfiguration", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/.well-known/app-authenticator-configuration", "params": ["oauthClientId"], "scope": {"oauthClientId": {"from": "query", "at": "oauthClientId"}}},
     {"id": "getAppleAppSiteAssociationWellKnownURI", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/.well-known/apple-app-site-association", "scope": {}},
     {"id": "getAssetLinksWellKnownURI", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/.well-known/assetlinks.json", "scope": {}},
@@ -943,4 +944,5 @@
     {"id": "deleteWebAuthnPreregistrationFactor", "action": "delete.enrollments", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/webauthn-registration/api/v1/users/{userId}/enrollments/{authenticatorEnrollmentId}", "scope": {"userId": {"from": "path", "at": "userId"}, "authenticatorEnrollmentId": {"from": "path", "at": "authenticatorEnrollmentId"}}},
     {"id": "assignFulfillmentErrorWebAuthnPreregistrationFactor", "action": "write.enrollments", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/webauthn-registration/api/v1/users/{userId}/enrollments/{authenticatorEnrollmentId}/mark-error", "scope": {"userId": {"from": "path", "at": "userId"}, "authenticatorEnrollmentId": {"from": "path", "at": "authenticatorEnrollmentId"}}}
   ]
+  }
 }

@@ -2901,7 +2901,8 @@
     "group": "api"
   },
   "title": "Microsoft Outlook",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"me.messages.read","effects":["read"],"id":"messages.list","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$filter","$top","$skip","$orderby","$expand","$search","$count","$skiptoken"],"path":"/v1.0/me/messages","scope":{}},
     {"action":"me.mail_folders.read","effects":["read"],"id":"mailFolders.list","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$filter","$top","$skip","$orderby","$expand","$search","$count","$skiptoken","includeHiddenFolders"],"path":"/v1.0/me/mailFolders","scope":{}},
     {"action":"me.mail_folders.messages.read","effects":["read"],"id":"mailFolders.messages.list","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$filter","$top","$skip","$orderby","$expand","$search","$count","$skiptoken"],"path":"/v1.0/me/mailFolders/{folder}/messages","scope":{"folder":{"at":"folder","from":"path"}}},
@@ -3683,4 +3684,5 @@
     {"action":"users.outlook.read","effects":["read"],"id":"users.user.outlook.supportedTimeZones-0d20","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count"],"path":"/v1.0/users/{user-id}/outlook/supportedTimeZones(TimeZoneStandard='{TimeZoneStandard}')","scope":{"TimeZoneStandard":{"at":"TimeZoneStandard","from":"path"},"query":{"at":"","from":"query","type":"object"},"user-id":{"at":"user-id","from":"path"}}},
     {"action":"users.mail.send","body":"json","effects":["send"],"id":"users.user.sendMail","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/sendMail","scope":{"request":{"at":"","from":"body","type":"object"},"user-id":{"at":"user-id","from":"path"}}}
   ]
+  }
 }

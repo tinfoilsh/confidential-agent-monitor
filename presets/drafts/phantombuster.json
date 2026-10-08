@@ -35,7 +35,8 @@
       "write.visibility": {"title": "Write: visibility"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "POST /api/v2/agents/delete", "action": "delete.delete", "effects": ["delete"], "method": "POST", "origin": "https://api.phantombuster.com", "path": "/api/v2/agents/delete", "body": "any", "scope": {}},
     {"id": "GET /api/v2/agents/fetch", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.phantombuster.com", "path": "/api/v2/agents/fetch", "params": ["id", "withManifest", "withAgentObject", "withCode", "withSlaves", "withSubSlaves"], "scope": {"id": {"from": "query", "at": "id"}}},
     {"id": "GET /api/v2/agents/fetch-all", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.phantombuster.com", "path": "/api/v2/agents/fetch-all", "params": ["inputTypes", "outputTypes", "agentIds", "withAgentSlotsFactor", "withArgument"], "scope": {}},
@@ -108,4 +109,5 @@
     {"id": "GET /api/v2/users/fetch-me", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.phantombuster.com", "path": "/api/v2/users/fetch-me", "params": ["detailedOrgId", "withCustomPrompts"], "scope": {}},
     {"id": "POST /api/v2/users/update-me", "action": "write.update_me", "effects": ["write"], "method": "POST", "origin": "https://api.phantombuster.com", "path": "/api/v2/users/update-me", "body": "any", "scope": {}}
   ]
+  }
 }

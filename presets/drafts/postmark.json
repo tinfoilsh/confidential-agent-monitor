@@ -31,7 +31,8 @@
       "write.templates": {"title": "Write: templates"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getBounces", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.postmarkapp.com", "path": "/bounces", "params": ["count", "offset", "type", "inactive", "emailFilter", "messageID", "tag", "todate", "fromdate"], "scope": {}},
     {"id": "getSingleBounce", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.postmarkapp.com", "path": "/bounces/{bounceid}", "scope": {"bounceid": {"from": "path", "at": "bounceid"}}},
     {"id": "activateBounce", "action": "write.bounces", "effects": ["write"], "method": "PUT", "origin": "https://api.postmarkapp.com", "path": "/bounces/{bounceid}/activate", "scope": {"bounceid": {"from": "path", "at": "bounceid"}}},
@@ -96,4 +97,5 @@
     {"id": "getServerInformation", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.postmarkapp.com", "path": "/servers/{serverid}", "scope": {"serverid": {"from": "path", "at": "serverid"}}},
     {"id": "editServerInformation", "action": "write.servers", "effects": ["write"], "method": "PUT", "origin": "https://api.postmarkapp.com", "path": "/servers/{serverid}", "body": "any", "scope": {"serverid": {"from": "path", "at": "serverid"}}}
   ]
+  }
 }

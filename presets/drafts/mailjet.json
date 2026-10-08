@@ -50,7 +50,8 @@
       "write.template": {"title": "Write: template"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "postSendV31", "action": "send.send", "effects": ["send"], "method": "POST", "origin": "https://api.mailjet.com", "path": "/v3.1/send", "body": "json", "scope": {"request": {"from": "body", "at": "", "type": "object"}}},
     {"id": "get_v3_apikey", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.mailjet.com", "path": "/v3/REST/apikey", "params": ["APIKey", "IsActive", "IsMaster", "Name"], "scope": {}},
     {"id": "post_v3_apikey", "action": "write.apikey", "effects": ["write"], "method": "POST", "origin": "https://api.mailjet.com", "path": "/v3/REST/apikey", "body": "json", "scope": {"Name": {"from": "body", "at": "/Name"}}},
@@ -202,4 +203,5 @@
     {"id": "get_v3_useragentstatistics", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.mailjet.com", "path": "/v3/REST/useragentstatistics", "params": ["CampaignID", "ContactsList", "CustomCampaign", "Event", "ExcludePlatform", "From", "FromDomain", "FromID", "FromTS", "FromType", "IsDeleted", "IsNewsletterTool", "IsStarred", "Period", "Platform", "ToTS"], "scope": {}},
     {"id": "postSendV3", "action": "send.send", "effects": ["send"], "method": "POST", "origin": "https://api.mailjet.com", "path": "/v3/send", "body": "json", "scope": {"request": {"from": "body", "at": "", "type": "object"}}}
   ]
+  }
 }

@@ -620,7 +620,8 @@
     "group": "api"
   },
   "title": "ClickUp",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"team.read","effects":["read"],"id":"team.list","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team","scope":{}},
     {"action":"team.space.read","effects":["read"],"id":"space.list","method":"GET","origin":"https://api.clickup.com","params":["archived"],"path":"/api/v2/team/{team}/space","scope":{"team":{"at":"team","from":"path"}}},
     {"action":"list.task.read","effects":["read"],"id":"list.tasks.list","method":"GET","origin":"https://api.clickup.com","params":["archived","page","order_by","statuses[]"],"path":"/api/v2/list/{list}/task","scope":{"list":{"at":"list","from":"path"}}},
@@ -761,4 +762,5 @@
     {"action":"webhook.delete","effects":["delete"],"id":"DeleteWebhook","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/webhook/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
     {"action":"webhook.admin","body":"json","effects":["admin"],"id":"UpdateWebhook","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/webhook/{webhook_id}","scope":{"request":{"at":"","from":"body","type":"object"},"webhook_id":{"at":"webhook_id","from":"path"}}}
   ]
+  }
 }

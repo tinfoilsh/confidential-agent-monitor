@@ -86,7 +86,8 @@
       "write.variables": {"title": "Write: variables"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "DELETE /2.0/addon", "action": "delete.addon", "effects": ["delete"], "method": "DELETE", "origin": "https://api.bitbucket.org", "path": "/2.0/addon", "scope": {}},
     {"id": "PUT /2.0/addon", "action": "write.addon", "effects": ["write"], "method": "PUT", "origin": "https://api.bitbucket.org", "path": "/2.0/addon", "scope": {}},
     {"id": "GET /2.0/addon/{addon_key}/client-key", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.bitbucket.org", "path": "/2.0/addon/{addon_key}/client-key", "scope": {"addon_key": {"from": "path", "at": "addon_key"}}},
@@ -373,4 +374,5 @@
     {"id": "searchWorkspace", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.bitbucket.org", "path": "/2.0/workspaces/{workspace}/search/code", "params": ["search_query", "page", "pagelen"], "scope": {"workspace": {"from": "path", "at": "workspace"}}},
     {"id": "GET /2.0/workspaces/{workspace}/settings/gpg/public-key", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.bitbucket.org", "path": "/2.0/workspaces/{workspace}/settings/gpg/public-key", "scope": {"workspace": {"from": "path", "at": "workspace"}}}
   ]
+  }
 }

@@ -24,7 +24,8 @@
       "write.tables": {"title": "Write: tables"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "datasets.delete", "action": "delete.datasets", "effects": ["delete"], "method": "DELETE", "origin": "https://bigquery.googleapis.com", "path": "/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "deleteContents"], "scope": {"projectsId": {"from": "path", "at": "projectsId"}, "datasetsId": {"from": "path", "at": "datasetsId"}}},
     {"id": "datasets.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://bigquery.googleapis.com", "path": "/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "accessPolicyVersion", "datasetView"], "scope": {"projectsId": {"from": "path", "at": "projectsId"}, "datasetsId": {"from": "path", "at": "datasetsId"}}},
     {"id": "datasets.insert", "action": "write.datasets", "effects": ["write"], "method": "POST", "origin": "https://bigquery.googleapis.com", "path": "/bigquery/v2/projects/{projectsId}/datasets", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "accessPolicyVersion"], "body": "json", "scope": {"projectsId": {"from": "path", "at": "projectsId"}}},
@@ -74,4 +75,5 @@
     {"id": "tables.testIamPermissions", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://bigquery.googleapis.com", "path": "/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}:testIamPermissions", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {"projectsId": {"from": "path", "at": "projectsId"}, "datasetsId": {"from": "path", "at": "datasetsId"}, "tablesId": {"from": "path", "at": "tablesId"}}},
     {"id": "tables.update", "action": "write.tables", "effects": ["write"], "method": "PUT", "origin": "https://bigquery.googleapis.com", "path": "/bigquery/v2/projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "autodetect_schema"], "body": "json", "scope": {"projectsId": {"from": "path", "at": "projectsId"}, "datasetsId": {"from": "path", "at": "datasetsId"}, "tablesId": {"from": "path", "at": "tablesId"}}}
   ]
+  }
 }

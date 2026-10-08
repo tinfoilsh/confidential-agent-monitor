@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"code.dny.dev/ssrf"
+	"github.com/tinfoilsh/monitor/facts"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -107,7 +108,7 @@ type Stream struct {
 	Host string
 	Port uint32
 	// The error joins the message of every rule that denied the event.
-	Gate func(Event) error
+	Gate func(Request) error
 }
 
 func NewStream(ctx context.Context) *Stream {
@@ -129,167 +130,6 @@ func (s *Stream) Close() error {
 func (s *Stream) Interrupt(c io.Closer) func() {
 	stop := context.AfterFunc(s.Context, func() { c.Close() })
 	return func() { stop(); c.Close() }
-}
-
-type Event struct {
-	HTTP     *HTTPLayer     `json:"http,omitempty"`
-	GraphQL  *GraphQLLayer  `json:"graphql,omitempty"`
-	SSH      *SSHLayer      `json:"ssh,omitempty"`
-	Command  *ArgvLayer     `json:"command,omitempty"`
-	Payload  *GitLayer      `json:"payload,omitempty"`
-	Sign     *SignLayer     `json:"sign,omitempty"`
-	Postgres *PostgresLayer `json:"postgres,omitempty"`
-	Redis    *RedisLayer    `json:"redis,omitempty"`
-	SFTP     *SFTPLayer     `json:"sftp,omitempty"`
-	MQTT     *MQTTLayer     `json:"mqtt,omitempty"`
-	NATS     *NATSLayer     `json:"nats,omitempty"`
-	SMTP     *SMTPLayer     `json:"smtp,omitempty"`
-	Mail     *MailLayer     `json:"mail,omitempty"`
-	IMAP     *IMAPLayer     `json:"imap,omitempty"`
-	MCP      *MCPLayer      `json:"mcp,omitempty"`
-	Browser  *BrowserLayer  `json:"browser,omitempty"`
-}
-
-type ArgvLayer struct {
-	Argv []string `json:"argv"`
-}
-
-// Command is named as Redis ACLs name it, with a container's subcommand: CLIENT|SETNAME.
-type RedisLayer struct {
-	Command string   `json:"command"`
-	Argv    []string `json:"argv"`
-}
-
-// Paths are relative to the SFTP account's root, with a leading slash.
-type SFTPLayer struct {
-	Command    string            `json:"command"`
-	Path       string            `json:"path"`
-	Target     string            `json:"target,omitempty"`
-	Read       bool              `json:"read,omitempty"`
-	Write      bool              `json:"write,omitempty"`
-	Flags      uint32            `json:"flags,omitempty"`
-	Offset     uint64            `json:"offset,omitempty"`
-	Size       uint32            `json:"size,omitempty"`
-	Attributes map[string]uint64 `json:"attributes,omitempty"`
-}
-
-type MQTTLayer struct {
-	Command string `json:"command"`
-	Topic   string `json:"topic"`
-	QoS     byte   `json:"qos"`
-	Retain  bool   `json:"retain"`
-	Payload []byte `json:"payload,omitempty"`
-}
-
-type NATSLayer struct {
-	Command string              `json:"command"`
-	Subject string              `json:"subject"`
-	Reply   string              `json:"reply,omitempty"`
-	Queue   string              `json:"queue,omitempty"`
-	Headers map[string][]string `json:"headers,omitempty"`
-	Payload []byte              `json:"payload,omitempty"`
-}
-
-// HTTPLayer is the request before substitution; secrets names the placeholders it carried.
-type HTTPLayer struct {
-	Method   string      `json:"method"`
-	Origin   string      `json:"origin"`
-	Host     string      `json:"host"`
-	Path     string      `json:"path"`
-	Query    url.Values  `json:"query"`
-	Headers  http.Header `json:"headers"`
-	Secrets  []string    `json:"secrets"`
-	BodyKind string      `json:"body_kind"`
-	Body     any         `json:"body,omitempty"`
-	Form     url.Values  `json:"form,omitempty"`
-	// HeaderJSON holds single header values that are JSON objects, as Dropbox-API-Arg is.
-	HeaderJSON map[string]any `json:"header_json,omitempty"`
-}
-
-// GraphQLLayer is the selected operation; each root field carries its argument values after variables apply.
-type GraphQLLayer struct {
-	Kind   string         `json:"kind"`
-	Fields []GraphQLField `json:"fields"`
-}
-
-type GraphQLField struct {
-	Name      string         `json:"name"`
-	Arguments map[string]any `json:"arguments"`
-}
-
-type SSHLayer struct {
-	Request   string  `json:"request"`
-	Command   string  `json:"command,omitempty"`
-	Subsystem string  `json:"subsystem,omitempty"`
-	Term      string  `json:"term,omitempty"`
-	Env       *SSHEnv `json:"env,omitempty"`
-}
-
-type SSHEnv struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
-}
-
-type GitLayer struct {
-	Type       string   `json:"type"`
-	Tree       string   `json:"tree,omitempty"`
-	Object     string   `json:"object,omitempty"`
-	ObjectType string   `json:"object_type,omitempty"`
-	Tag        string   `json:"tag,omitempty"`
-	Parents    []string `json:"parents"`
-	Author     string   `json:"author,omitempty"`
-	Committer  string   `json:"committer,omitempty"`
-	Tagger     string   `json:"tagger,omitempty"`
-	Message    string   `json:"message"`
-}
-
-type SignLayer struct {
-	Agent     string `json:"agent"`
-	Key       string `json:"key,omitempty"`
-	Purpose   string `json:"purpose,omitempty"`
-	Namespace string `json:"namespace,omitempty"`
-	User      string `json:"user,omitempty"`
-	Hash      string `json:"hash,omitempty"`
-	Op        string `json:"op,omitempty"`
-}
-
-type IMAPLayer struct {
-	Command string `json:"command"`
-	Args    string `json:"args"`
-	Mailbox string `json:"mailbox,omitempty"`
-}
-
-type SMTPLayer struct {
-	From string   `json:"from"`
-	To   []string `json:"to"`
-}
-
-type MailLayer struct {
-	From        []string `json:"from"`
-	To          []string `json:"to"`
-	Cc          []string `json:"cc"`
-	Subject     string   `json:"subject"`
-	Attachments []string `json:"attachments"`
-}
-
-// ReadOnly is the pinned tool's hint, which the owner approved with the pin.
-type MCPLayer struct {
-	Tool      string          `json:"tool"`
-	Arguments json.RawMessage `json:"arguments"`
-	ReadOnly  bool            `json:"read_only"`
-}
-
-// BrowserLayer names the page a command acts on: the destination of navigate, otherwise the current page.
-type BrowserLayer struct {
-	Command string   `json:"command"`
-	URL     string   `json:"url"`
-	Host    string   `json:"host"`
-	Text    string   `json:"text,omitempty"`
-	Secrets []string `json:"secrets,omitempty"`
-}
-
-type PostgresLayer struct {
-	SQL string `json:"sql"`
 }
 
 // ParseURL validates a destination whose password is supplied separately.
@@ -391,4 +231,26 @@ func StreamOf(c net.Conn) *Stream {
 		c = tc.NetConn()
 	}
 	return c.(*Stream)
+}
+
+// Request retains parsed input while an approval is pending. Describe must be
+// pure: the monitor calls it again with current settings before execution.
+type Request interface {
+	Describe(Context) (facts.Facts, Approval, error)
+}
+
+// Context contains current, redacted settings. Specs contains the typed preset
+// sections supplied by the monitor; each connector reads its own section.
+type Context struct {
+	Title, Connection  string
+	Label, Observation facts.Label
+	Config, Options    json.RawMessage
+	Specs              map[string]any
+}
+
+// Approval carries the selected scope and reviewed definition to the monitor.
+// Neither is part of the public facts snapshot.
+type Approval struct {
+	Scope      map[string]any
+	Definition any
 }

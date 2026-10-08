@@ -31,7 +31,8 @@
       "write.security": {"title": "Write: security"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getApps", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/application", "scope": {}},
     {"id": "createApp", "action": "write.application", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/application", "body": "json", "scope": {"name": {"from": "body", "at": "/name"}}},
     {"id": "updateApplication", "action": "write.application", "effects": ["write"], "method": "PUT", "origin": "{origin}", "path": "/application/{id}", "body": "json", "scope": {"id": {"from": "path", "at": "id"}, "name": {"from": "body", "at": "/name"}}},
@@ -75,4 +76,5 @@
     {"id": "getUser", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/user/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
     {"id": "getVersion", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/version", "scope": {}}
   ]
+  }
 }

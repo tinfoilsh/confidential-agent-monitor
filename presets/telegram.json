@@ -375,7 +375,8 @@
     "group": "api"
   },
   "title": "Telegram",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"me.read","effects":["read"],"id":"getMe","method":"GET","origin":"https://api.telegram.org","path":"/bot{token}/getMe","scope":{}},
     {"action":"chat.read","effects":["read"],"id":"getChat","method":"GET","origin":"https://api.telegram.org","params":["chat_id"],"path":"/bot{token}/getChat","scope":{"query":{"at":"","from":"query","type":"object"}}},
     {"action":"updates.read","effects":["read"],"id":"getUpdates","method":"GET","origin":"https://api.telegram.org","params":["offset","limit","timeout","allowed_updates"],"path":"/bot{token}/getUpdates","scope":{}},
@@ -494,4 +495,5 @@
     {"action":"chat_message.write","body":"json","effects":["write"],"id":"POST /bot{token}/unpinChatMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/unpinChatMessage","scope":{"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
     {"action":"chat_message.write","body":"form","effects":["write"],"id":"POST /bot{token}/unpinChatMessage.form.759ead2989df","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/unpinChatMessage","scope":{"chat_id":{"at":"chat_id","from":"form"},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}}
   ]
+  }
 }

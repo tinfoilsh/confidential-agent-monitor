@@ -115,7 +115,8 @@
     "group": "api"
   },
   "title": "WooCommerce",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"wp_json.wc.products.read","effects":["read"],"id":"products.list","method":"GET","origin":"{origin}","params":["page","per_page","search","status"],"path":"/wp-json/wc/v3/products","scope":{}},
     {"action":"wp_json.wc.products.read","effects":["read"],"id":"products.get","method":"GET","origin":"{origin}","path":"/wp-json/wc/v3/products/{product}","scope":{"product":{"at":"product","from":"path"}}},
     {"action":"wp_json.wc.orders.read","effects":["read"],"id":"orders.list","method":"GET","origin":"{origin}","params":["page","per_page","status"],"path":"/wp-json/wc/v3/orders","scope":{}},
@@ -125,4 +126,5 @@
     {"action":"wp_json.wc.orders.refunds.pay","body":"json","effects":["pay"],"id":"orders.refunds.create","method":"POST","origin":"{origin}","path":"/wp-json/wc/v3/orders/{order}/refunds","scope":{"order":{"at":"order","from":"path"},"refund":{"at":"","from":"body","type":"object"}}},
     {"action":"wp_json.wc.products.delete","effects":["delete"],"id":"products.delete","method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/v3/products/{product}","scope":{"product":{"at":"product","from":"path"},"query":{"at":"","from":"query","type":"object"}}}
   ]
+  }
 }

@@ -13,10 +13,12 @@
       "send.messages": {"title": "Send: messages"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "POST /messages/messages", "action": "send.messages", "effects": ["send"], "method": "POST", "origin": "https://rest.messagebird.com", "path": "/messages/messages", "body": "any", "scope": {}},
     {"id": "GET /messages/messages", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://rest.messagebird.com", "path": "/messages/messages", "params": ["originator", "recipient", "direction", "limit", "offset", "searchterm", "type", "contact_id", "status", "from", "until"], "scope": {}},
     {"id": "DELETE /messages/messages/{messageId}", "action": "delete.messages", "effects": ["delete"], "method": "DELETE", "origin": "https://rest.messagebird.com", "path": "/messages/messages/{messageId}", "scope": {"messageId": {"from": "path", "at": "messageId"}}},
     {"id": "GET /messages/messages/{messageId}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://rest.messagebird.com", "path": "/messages/messages/{messageId}", "scope": {"messageId": {"from": "path", "at": "messageId"}}}
   ]
+  }
 }

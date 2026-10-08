@@ -1118,7 +1118,8 @@
     "group": "api"
   },
   "title": "Trello",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"boards.read","effects":["read"],"id":"boards.get","method":"GET","origin":"https://api.trello.com","params":["key","token","fields","lists","cards"],"path":"/1/boards/{board}","scope":{"board":{"at":"board","from":"path"}}},
     {"action":"lists.cards.read","effects":["read"],"id":"lists.cards.get","method":"GET","origin":"https://api.trello.com","params":["key","token","fields"],"path":"/1/lists/{list}/cards","scope":{"list":{"at":"list","from":"path"}}},
     {"action":"cards.read","effects":["read"],"id":"cards.get","method":"GET","origin":"https://api.trello.com","params":["key","token","fields"],"path":"/1/cards/{card}","scope":{"card":{"at":"card","from":"path"}}},
@@ -1389,4 +1390,5 @@
     {"action":"webhooks.admin","effects":["admin"],"id":"put-webhooks-id","method":"PUT","origin":"https://api.trello.com","params":["description","callbackURL","idModel","active"],"path":"/1/webhooks/{id}","scope":{"callbackURL":{"at":"callbackURL","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
     {"action":"webhooks.read","effects":["read"],"id":"webhooksidfield","method":"GET","origin":"https://api.trello.com","path":"/1/webhooks/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}}
   ]
+  }
 }

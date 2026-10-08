@@ -20,7 +20,8 @@
       "write.webhooks_lookup": {"title": "Write: webhooks lookup"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "payouts.post", "action": "pay.payouts", "effects": ["pay"], "method": "POST", "origin": "https://api-m.paypal.com", "path": "/v1/payments/payouts", "body": "any", "scope": {}},
     {"id": "payouts-item.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-m.paypal.com", "path": "/v1/payments/payouts-item/{payout_item_id}", "scope": {"payout_item_id": {"from": "path", "at": "payout_item_id"}}},
     {"id": "payouts-item.cancel", "action": "write.payouts_item", "effects": ["write"], "method": "POST", "origin": "https://api-m.paypal.com", "path": "/v1/payments/payouts-item/{payout_item_id}/cancel", "scope": {"payout_item_id": {"from": "path", "at": "payout_item_id"}}},
@@ -42,4 +43,5 @@
     {"id": "webhooks.update", "action": "admin.webhooks", "effects": ["admin"], "method": "PATCH", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks/{webhook_id}", "body": "any", "scope": {"webhook_id": {"from": "path", "at": "webhook_id"}}},
     {"id": "event-types.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks/{webhook_id}/event-types", "scope": {"webhook_id": {"from": "path", "at": "webhook_id"}}}
   ]
+  }
 }

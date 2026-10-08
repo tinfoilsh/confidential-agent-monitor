@@ -1175,7 +1175,8 @@
     "group": "api"
   },
   "title": "Pipedrive",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"deals.read","effects":["read"],"id":"deals.list","method":"GET","origin":"https://api.pipedrive.com","params":["status","limit","cursor","owner_id"],"path":"/api/v2/deals","scope":{}},
     {"action":"deals.read","effects":["read"],"id":"deals.get","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{deal}","scope":{"deal":{"at":"deal","from":"path"}}},
     {"action":"persons.read","effects":["read"],"id":"persons.list","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/api/v2/persons","scope":{}},
@@ -1641,4 +1642,5 @@
     {"action":"tasks.write","body":"json","effects":["write"],"id":"updateTask.json.764d9e80e9d5","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/tasks/{id}","scope":{"assignee_id":{"at":"/assignee_id","from":"body","optional":true,"type":"number"},"assignee_ids":{"at":"/assignee_ids","from":"body","optional":true,"type":"array"},"id":{"at":"id","from":"path"},"parent_task_id":{"at":"/parent_task_id","from":"body","optional":true,"type":"number"},"project_id":{"at":"/project_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
     {"action":"users.followers.read","effects":["read"],"id":"getUserFollowers.none.7535aca1bb68","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/api/v2/users/{id}/followers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}}
   ]
+  }
 }

@@ -22,7 +22,8 @@
       "write.themes": {"title": "Write: themes"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "GET /forms/{form_id}/responses", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/forms/{form_id}/responses", "params": ["page_size", "since", "until", "after", "before", "included_response_ids", "excluded_response_ids", "completed", "sort", "query", "fields", "answered_fields"], "scope": {"form_id": {"from": "path", "at": "form_id"}}},
     {"id": "DELETE /forms/{form_id}/responses", "action": "delete.responses", "effects": ["delete"], "method": "DELETE", "origin": "https://api.typeform.com", "path": "/forms/{form_id}/responses", "params": ["included_response_ids"], "scope": {"form_id": {"from": "path", "at": "form_id"}}},
     {"id": "GET /forms/{form_id}/responses/{response_id}/fields/{field_id}/files/{filename}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.typeform.com", "path": "/forms/{form_id}/responses/{response_id}/fields/{field_id}/files/{filename}", "params": ["inline"], "scope": {"form_id": {"from": "path", "at": "form_id"}, "response_id": {"from": "path", "at": "response_id"}, "field_id": {"from": "path", "at": "field_id"}, "filename": {"from": "path", "at": "filename"}}},
@@ -56,4 +57,5 @@
     {"id": "PATCH /workspaces/{workspace_id}", "action": "admin.workspaces", "effects": ["admin"], "method": "PATCH", "origin": "https://api.typeform.com", "path": "/workspaces/{workspace_id}", "scope": {"workspace_id": {"from": "path", "at": "workspace_id"}}},
     {"id": "DELETE /workspaces/{workspace_id}", "action": "delete.workspaces", "effects": ["delete"], "method": "DELETE", "origin": "https://api.typeform.com", "path": "/workspaces/{workspace_id}", "scope": {"workspace_id": {"from": "path", "at": "workspace_id"}}}
   ]
+  }
 }

@@ -14,7 +14,8 @@
       "write.renew": {"title": "Write: renew"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "Sandbox___Multiple_daily_activity_Documents_v2_sandbox_usercollection_daily_activity_get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.ouraring.com", "path": "/v2/sandbox/usercollection/daily_activity", "params": ["start_date", "end_date", "next_token"], "scope": {}},
     {"id": "Sandbox___Single_daily_activity_Document_v2_sandbox_usercollection_daily_activity__document_id__get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.ouraring.com", "path": "/v2/sandbox/usercollection/daily_activity/{document_id}", "scope": {"document_id": {"from": "path", "at": "document_id"}}},
     {"id": "Sandbox___Multiple_daily_cardiovascular_age_Documents_v2_sandbox_usercollection_daily_cardiovascular_age_get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.ouraring.com", "path": "/v2/sandbox/usercollection/daily_cardiovascular_age", "params": ["start_date", "end_date", "next_token"], "scope": {}},
@@ -91,4 +92,5 @@
     {"id": "delete_webhook_subscription_v2_webhook_subscription__id__delete", "action": "delete.subscription", "effects": ["delete"], "method": "DELETE", "origin": "https://api.ouraring.com", "path": "/v2/webhook/subscription/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
     {"id": "get_webhook_subscription_v2_webhook_subscription__id__get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.ouraring.com", "path": "/v2/webhook/subscription/{id}", "scope": {"id": {"from": "path", "at": "id"}}}
   ]
+  }
 }

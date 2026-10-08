@@ -36,7 +36,8 @@
       "write.vectors": {"title": "Write: vectors"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "root", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/", "scope": {}},
     {"id": "get_collections_aliases", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/aliases", "scope": {}},
     {"id": "cluster_status", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/cluster", "scope": {}},
@@ -107,4 +108,5 @@
     {"id": "get_full_snapshot", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/snapshots/{snapshot_name}", "scope": {"snapshot_name": {"from": "path", "at": "snapshot_name"}}},
     {"id": "telemetry", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/telemetry", "params": ["anonymize", "details_level", "per_collection", "timeout"], "scope": {}}
   ]
+  }
 }

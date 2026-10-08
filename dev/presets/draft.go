@@ -256,6 +256,6 @@ func presetText(title string, fields, actions obj, connections, defaults any, op
 	if len(as) > 0 {
 		acts = "{\n      " + strings.Join(as, ",\n      ") + "\n    }"
 	}
-	return fmt.Sprintf("{\n  \"title\": %s,\n  \"catalog\": {\n    \"group\": \"api\",\n    \"fields\": %s,\n    \"connections\": %s,\n    \"defaults\": %s,\n    \"actions\": %s\n  },\n  \"operations\": %s\n}\n",
-		quote(title), lines(fs, "    "), compact(connections), compact(defaults), acts, lines(os, "  "))
+	return fmt.Sprintf("{\n  \"title\": %s,\n  \"catalog\": {\n    \"group\": \"api\",\n    \"fields\": %s,\n    \"connections\": %s,\n    \"defaults\": %s,\n    \"actions\": %s\n  },\n  \"http\": {\n    \"operations\": %s\n  }\n}\n",
+		quote(title), lines(fs, "    "), compact(connections), compact(defaults), acts, lines(os, "    "))
 }

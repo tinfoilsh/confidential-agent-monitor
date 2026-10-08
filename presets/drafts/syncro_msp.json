@@ -88,7 +88,8 @@
       "write.worksheet_results": {"title": "Write: worksheet results"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "POST /appointment_types", "action": "write.appointment_types", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/appointment_types", "body": "any", "scope": {}},
     {"id": "GET /appointment_types", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/appointment_types", "scope": {}},
     {"id": "DELETE /appointment_types/{id}", "action": "delete.appointment_types", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/appointment_types/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
@@ -274,4 +275,5 @@
     {"id": "GET /wiki_pages/{id}", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wiki_pages/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
     {"id": "PUT /wiki_pages/{id}", "action": "write.wiki_pages", "effects": ["write"], "method": "PUT", "origin": "{origin}", "path": "/wiki_pages/{id}", "body": "any", "scope": {"id": {"from": "path", "at": "id"}}}
   ]
+  }
 }

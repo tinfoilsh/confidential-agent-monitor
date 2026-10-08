@@ -16,7 +16,8 @@
       "send.email": {"title": "Send: email"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "CloneReceiptRuleSet", "action": "send.email", "effects": ["send"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "CloneReceiptRuleSet"}, "body": "form", "scope": {"RuleSetName": {"from": "form", "at": "RuleSetName"}, "OriginalRuleSetName": {"from": "form", "at": "OriginalRuleSetName"}}},
     {"id": "CreateConfigurationSet", "action": "send.email", "effects": ["send"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "CreateConfigurationSet"}, "body": "form", "scope": {}},
     {"id": "CreateConfigurationSetEventDestination", "action": "send.email", "effects": ["send"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "CreateConfigurationSetEventDestination"}, "body": "form", "scope": {"ConfigurationSetName": {"from": "form", "at": "ConfigurationSetName"}}},
@@ -89,4 +90,5 @@
     {"id": "VerifyEmailAddress", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "VerifyEmailAddress"}, "body": "form", "scope": {}},
     {"id": "VerifyEmailIdentity", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/", "fields": {"Action": "VerifyEmailIdentity"}, "body": "form", "scope": {}}
   ]
+  }
 }

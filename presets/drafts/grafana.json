@@ -106,7 +106,8 @@
       "write.writer": {"title": "Write: writer"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "listRoles", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/access-control/roles", "params": ["delegatable", "includeHidden", "targetOrgId"], "scope": {}},
     {"id": "createRole", "action": "admin.roles", "effects": ["admin"], "method": "POST", "origin": "{origin}", "path": "/access-control/roles", "body": "json", "scope": {}},
     {"id": "updateRole", "action": "admin.roles", "effects": ["admin"], "method": "PUT", "origin": "{origin}", "path": "/access-control/roles/{roleUID}", "body": "json", "scope": {"roleUID": {"from": "path", "at": "roleUID"}, "displayName": {"from": "body", "at": "/displayName"}}},
@@ -407,4 +408,5 @@
     {"id": "patchProviderSettings", "action": "write.sso_settings", "effects": ["write"], "method": "PATCH", "origin": "{origin}", "path": "/v1/sso-settings/{key}", "body": "json", "scope": {"key": {"from": "path", "at": "key"}}},
     {"id": "updateProviderSettings", "action": "write.sso_settings", "effects": ["write"], "method": "PUT", "origin": "{origin}", "path": "/v1/sso-settings/{key}", "body": "json", "scope": {"key": {"from": "path", "at": "key"}}}
   ]
+  }
 }

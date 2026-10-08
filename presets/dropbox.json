@@ -88,7 +88,8 @@
     "group": "api"
   },
   "title": "Dropbox",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"files.folder.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"id":"files.list_folder","method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/list_folder","scope":{"path":{"at":"/path","from":"body"}}},
     {"action":"files.metadata.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"id":"files.get_metadata","method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/get_metadata","scope":{"path":{"at":"/path","from":"body"}}},
     {"action":"files.read","effects":["read"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"id":"files.download","method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/download","scope":{"path":{"at":"/path","from":"header_json","header":"Dropbox-Api-Arg"}}},
@@ -97,4 +98,5 @@
     {"action":"sharing.shared_link_with_settings.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"id":"sharing.create_shared_link_with_settings","method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/create_shared_link_with_settings","scope":{"settings":{"at":"","from":"body","type":"object"}}},
     {"action":"files.folder_v2.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"id":"files.create_folder_v2","method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/create_folder_v2","scope":{"folder":{"at":"","from":"body","type":"object"}}}
   ]
+  }
 }

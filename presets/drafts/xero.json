@@ -51,7 +51,8 @@
       "write.tracking_categories": {"title": "Write: tracking categories"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getAccounts", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.xero.com", "path": "/api.xro/2.0/Accounts", "params": ["where", "order"], "scope": {}},
     {"id": "createAccount", "action": "admin.accounts", "effects": ["admin"], "method": "PUT", "origin": "https://api.xero.com", "path": "/api.xro/2.0/Accounts", "body": "json", "scope": {}},
     {"id": "deleteAccount", "action": "delete.accounts", "effects": ["delete"], "method": "DELETE", "origin": "https://api.xero.com", "path": "/api.xro/2.0/Accounts/{AccountID}", "scope": {"AccountID": {"from": "path", "at": "AccountID"}}},
@@ -265,4 +266,5 @@
     {"id": "getUsers", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.xero.com", "path": "/api.xro/2.0/Users", "params": ["where", "order"], "scope": {}},
     {"id": "getUser", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.xero.com", "path": "/api.xro/2.0/Users/{UserID}", "scope": {"UserID": {"from": "path", "at": "UserID"}}}
   ]
+  }
 }

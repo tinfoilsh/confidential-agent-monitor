@@ -140,7 +140,8 @@
       "write.unarchive": {"title": "Write: unarchive"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "create-alert-configuration", "action": "write.alert_configurations", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/api/v1/alert-configurations", "body": "json", "scope": {"bambooAlertId": {"from": "body", "at": "/bambooAlertId", "type": "number"}}},
     {"id": "list-alert-configurations", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v1/alert-configurations", "scope": {}},
     {"id": "get-alert-configuration", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v1/alert-configurations/{id}", "scope": {"id": {"from": "path", "at": "id"}}},
@@ -515,4 +516,5 @@
     {"id": "get-goals-filters-v1_2", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/v1_2/performance/employees/{employeeId}/goals/filters", "scope": {"employeeId": {"from": "path", "at": "employeeId"}}},
     {"id": "get-data-from-dataset-v2", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/api/v2/datasets/{datasetName}/data", "body": "json", "scope": {"datasetName": {"from": "path", "at": "datasetName"}}}
   ]
+  }
 }

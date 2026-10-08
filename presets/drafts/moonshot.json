@@ -22,7 +22,8 @@
       "send.messages": {"title": "Send: messages"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "POST /anthropic/v1/messages", "action": "send.messages", "effects": ["send"], "method": "POST", "origin": "https://api.moonshot.ai", "path": "/anthropic/v1/messages", "body": "json", "scope": {"request": {"from": "body", "at": "", "type": "object"}}},
     {"id": "GET /v1/batches", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.moonshot.ai", "path": "/v1/batches", "params": ["after", "limit"], "scope": {}},
     {"id": "POST /v1/batches", "action": "generate.batches", "effects": ["generate"], "method": "POST", "origin": "https://api.moonshot.ai", "path": "/v1/batches", "body": "json", "scope": {"input_file_id": {"from": "body", "at": "/input_file_id"}}},
@@ -43,4 +44,5 @@
     {"id": "POST /v1/tools/search_pro", "action": "generate.search_pro", "effects": ["generate"], "method": "POST", "origin": "https://api.moonshot.ai", "path": "/v1/tools/search_pro", "body": "json", "scope": {}},
     {"id": "GET /v1/users/me/balance", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.moonshot.ai", "path": "/v1/users/me/balance", "scope": {}}
   ]
+  }
 }

@@ -34,7 +34,7 @@ func (socket *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
 	}
 	defer s.Interrupt(up)()
 	defer connector.CopyReplies(s, up, up)()
-	sign := connector.SignLayer{Agent: agentGPG}
+	sign := Request{Agent: agentGPG}
 	lines := bufio.NewScanner(s)
 	for lines.Scan() {
 		line := lines.Text()
@@ -46,14 +46,14 @@ func (socket *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
 			fmt.Fprintf(s, "ERR %d Not supported <Monitor>\n", assuanNotSupported)
 			continue
 		case command == "RESET":
-			sign = connector.SignLayer{Agent: agentGPG}
+			sign = Request{Agent: agentGPG}
 		case command == "SIGKEY" || command == "SETKEY":
 			sign.Key = rest
 		case command == "SETHASH":
 			sign.Hash = rest
 		case command == "PKSIGN" || command == "PKDECRYPT":
 			sign.Op = strings.ToLower(command)
-			if err := s.Gate(connector.Event{Sign: &sign}); err != nil {
+			if err := s.Gate(&sign); err != nil {
 				fmt.Fprintf(s, "ERR %d %v <Monitor>\n", assuanNotSupported, err)
 				continue
 			}

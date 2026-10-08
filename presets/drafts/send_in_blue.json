@@ -131,7 +131,8 @@
       "write.whatsapp_campaigns": {"title": "Write: whatsapp campaigns"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getAccount", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.brevo.com", "path": "/v3/account", "scope": {}},
     {"id": "getCategories", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.brevo.com", "path": "/v3/categories", "params": ["limit", "offset", "sort", "ids", "name", "modifiedSince", "createdSince", "isDeleted"], "scope": {}},
     {"id": "createUpdateCategory", "action": "write.categories", "effects": ["write"], "method": "POST", "origin": "https://api.brevo.com", "path": "/v3/categories", "body": "json", "scope": {"id": {"from": "body", "at": "/id"}}},
@@ -413,4 +414,5 @@
     {"id": "deleteWhatsAppCampaign", "action": "delete.whatsapp_campaigns", "effects": ["delete"], "method": "DELETE", "origin": "https://api.brevo.com", "path": "/v3/whatsappCampaigns/{campaignId}", "scope": {"campaignId": {"from": "path", "at": "campaignId"}}},
     {"id": "updateWhatsAppCampaign", "action": "write.whatsapp_campaigns", "effects": ["write"], "method": "PUT", "origin": "https://api.brevo.com", "path": "/v3/whatsappCampaigns/{campaignId}", "body": "json", "scope": {"campaignId": {"from": "path", "at": "campaignId"}}}
   ]
+  }
 }

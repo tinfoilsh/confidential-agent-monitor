@@ -70,7 +70,8 @@
       "write.private_endpoints": {"title": "Write: private endpoints"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "getUserActivity", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://openrouter.ai", "path": "/api/v1/activity", "params": ["date", "api_key_hash", "user_id", "group_by", "workspace_id"], "scope": {}},
     {"id": "getAnalyticsMeta", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://openrouter.ai", "path": "/api/v1/analytics/meta", "scope": {}},
     {"id": "queryAnalytics", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://openrouter.ai", "path": "/api/v1/analytics/query", "body": "json", "scope": {}},
@@ -220,4 +221,5 @@
     {"id": "getWorkspaceBudget", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://openrouter.ai", "path": "/api/v1/workspaces/{workspace_ref}/budgets/{interval}", "scope": {"workspace_ref": {"from": "path", "at": "workspace_ref"}, "interval": {"from": "path", "at": "interval"}}},
     {"id": "upsertWorkspaceBudget", "action": "write.budgets", "effects": ["write"], "method": "PUT", "origin": "https://openrouter.ai", "path": "/api/v1/workspaces/{workspace_ref}/budgets/{interval}", "body": "json", "scope": {"workspace_ref": {"from": "path", "at": "workspace_ref"}, "interval": {"from": "path", "at": "interval"}}}
   ]
+  }
 }

@@ -408,7 +408,8 @@
     "group": "api"
   },
   "title": "Todoist",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"projects.read","effects":["read"],"id":"projects.list","method":"GET","origin":"https://api.todoist.com","params":["cursor","limit"],"path":"/api/v1/projects","scope":{}},
     {"action":"tasks.read","effects":["read"],"id":"tasks.list","method":"GET","origin":"https://api.todoist.com","params":["project_id","section_id","parent_id","label","ids","cursor","limit"],"path":"/api/v1/tasks","scope":{}},
     {"action":"tasks.filter.read","effects":["read"],"id":"tasks.filter","method":"GET","origin":"https://api.todoist.com","params":["query","lang","cursor","limit"],"path":"/api/v1/tasks/filter","scope":{}},
@@ -514,4 +515,5 @@
     {"action":"workspaces.users.delete","effects":["delete"],"id":"remove_workspace_user_api_v1_workspaces__workspace_id__users__user_id__delete","method":"DELETE","origin":"https://api.todoist.com","path":"/api/v1/workspaces/{workspace_id}/users/{user_id}","scope":{"user_id":{"at":"user_id","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
     {"action":"workspaces.users.admin","body":"json","effects":["admin"],"id":"update_workspace_user_api_v1_workspaces__workspace_id__users__user_id__post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/workspaces/{workspace_id}/users/{user_id}","scope":{"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"user_id","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}}
   ]
+  }
 }

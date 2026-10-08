@@ -19,7 +19,8 @@
       "write.locations": {"title": "Write: locations"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "accounts.locations.create", "action": "write.locations", "effects": ["write"], "method": "POST", "origin": "https://mybusinessbusinessinformation.googleapis.com", "path": "/v1/accounts/{accountsId}/locations", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "requestId", "validateOnly"], "body": "json", "scope": {"accountsId": {"from": "path", "at": "accountsId"}}},
     {"id": "accounts.locations.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://mybusinessbusinessinformation.googleapis.com", "path": "/v1/accounts/{accountsId}/locations", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "filter", "orderBy", "pageSize", "pageToken", "readMask"], "scope": {"accountsId": {"from": "path", "at": "accountsId"}}},
     {"id": "attributes.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://mybusinessbusinessinformation.googleapis.com", "path": "/v1/attributes", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "categoryName", "languageCode", "pageSize", "pageToken", "parent", "regionCode", "showAll"], "scope": {}},
@@ -51,4 +52,5 @@
     {"id": "locations.admins.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://mybusinessaccountmanagement.googleapis.com", "path": "/v1/locations/{locationsId}/admins", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "scope": {"locationsId": {"from": "path", "at": "locationsId"}}},
     {"id": "locations.admins.patch", "action": "admin.admins", "effects": ["admin"], "method": "PATCH", "origin": "https://mybusinessaccountmanagement.googleapis.com", "path": "/v1/locations/{locationsId}/admins/{adminsId}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "updateMask"], "body": "json", "scope": {"locationsId": {"from": "path", "at": "locationsId"}, "adminsId": {"from": "path", "at": "adminsId"}}}
   ]
+  }
 }

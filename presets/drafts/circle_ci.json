@@ -52,7 +52,8 @@
       "write.usage_export_job": {"title": "Write: usage export job"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "listContexts", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://circleci.com", "path": "/api/v2/context", "params": ["owner-id", "owner-slug", "owner-type", "page-token"], "scope": {}},
     {"id": "createContext", "action": "write.context", "effects": ["write"], "method": "POST", "origin": "https://circleci.com", "path": "/api/v2/context", "body": "any", "scope": {}},
     {"id": "deleteContext", "action": "delete.context", "effects": ["delete"], "method": "DELETE", "origin": "https://circleci.com", "path": "/api/v2/context/{context_id}", "scope": {"context_id": {"from": "path", "at": "context_id"}}},
@@ -162,4 +163,5 @@
     {"id": "listWorkflowJobs", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://circleci.com", "path": "/api/v2/workflow/{id}/job", "scope": {"id": {"from": "path", "at": "id"}}},
     {"id": "rerunWorkflow", "action": "execute.workflow", "effects": ["execute"], "method": "POST", "origin": "https://circleci.com", "path": "/api/v2/workflow/{id}/rerun", "body": "any", "scope": {"id": {"from": "path", "at": "id"}}}
   ]
+  }
 }

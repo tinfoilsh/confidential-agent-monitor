@@ -49,7 +49,8 @@
       "write.workflows": {"title": "Write: workflows"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "GET /v5/account", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.bannerbear.com", "path": "/v5/account", "scope": {}},
     {"id": "GET /v5/animation_templates", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.bannerbear.com", "path": "/v5/animation_templates", "params": ["page"], "scope": {}},
     {"id": "POST /v5/animation_templates", "action": "write.animation_templates", "effects": ["write"], "method": "POST", "origin": "https://api.bannerbear.com", "path": "/v5/animation_templates", "body": "json", "scope": {"name": {"from": "body", "at": "/name"}}},
@@ -118,4 +119,5 @@
     {"id": "PATCH /v5/workflows/{uid}", "action": "write.workflows", "effects": ["write"], "method": "PATCH", "origin": "https://api.bannerbear.com", "path": "/v5/workflows/{uid}", "body": "json", "scope": {"uid": {"from": "path", "at": "uid"}}},
     {"id": "DELETE /v5/workflows/{uid}", "action": "delete.workflows", "effects": ["delete"], "method": "DELETE", "origin": "https://api.bannerbear.com", "path": "/v5/workflows/{uid}", "scope": {"uid": {"from": "path", "at": "uid"}}}
   ]
+  }
 }

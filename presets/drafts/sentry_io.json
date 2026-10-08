@@ -80,7 +80,8 @@
       "write.workflows": {"title": "Write: workflows"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "listOrganizations", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://sentry.io", "path": "/api/0/organizations/", "params": ["owner", "cursor", "query", "sortBy", "per_page"], "scope": {}},
     {"id": "getOrganization", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://sentry.io", "path": "/api/0/organizations/{organization_id_or_slug}/", "params": ["detailed"], "scope": {"organization_id_or_slug": {"from": "path", "at": "organization_id_or_slug"}}},
     {"id": "updateOrganization", "action": "admin.organizations", "effects": ["admin"], "method": "PUT", "origin": "https://sentry.io", "path": "/api/0/organizations/{organization_id_or_slug}/", "body": "any", "scope": {"organization_id_or_slug": {"from": "path", "at": "organization_id_or_slug"}}},
@@ -328,4 +329,5 @@
     {"id": "createTeamProject", "action": "write.projects", "effects": ["write"], "method": "POST", "origin": "https://sentry.io", "path": "/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/projects/", "body": "json", "scope": {"organization_id_or_slug": {"from": "path", "at": "organization_id_or_slug"}, "team_id_or_slug": {"from": "path", "at": "team_id_or_slug"}, "name": {"from": "body", "at": "/name"}}},
     {"id": "listTeamProjects", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://sentry.io", "path": "/api/0/teams/{organization_id_or_slug}/{team_id_or_slug}/projects/", "params": ["cursor"], "scope": {"organization_id_or_slug": {"from": "path", "at": "organization_id_or_slug"}, "team_id_or_slug": {"from": "path", "at": "team_id_or_slug"}}}
   ]
+  }
 }

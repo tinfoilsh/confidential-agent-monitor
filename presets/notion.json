@@ -108,7 +108,8 @@
     "group": "api"
   },
   "title": "Notion",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"search.read","body":"json","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"search","method":"POST","origin":"https://api.notion.com","path":"/v1/search","scope":{}},
     {"action":"pages.read","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"pages.retrieve","method":"GET","origin":"https://api.notion.com","path":"/v1/pages/{page}","scope":{"page":{"at":"page","from":"path"}}},
     {"action":"databases.read","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"databases.retrieve","method":"GET","origin":"https://api.notion.com","path":"/v1/databases/{database}","scope":{"database":{"at":"database","from":"path"}}},
@@ -134,4 +135,5 @@
     {"action":"users.read","effects":["read"],"id":"retrieveAUser","method":"GET","origin":"https://api.notion.com","path":"/v1/users/{id}","scope":{"id":{"at":"id","from":"path"}}},
     {"action":"users.read","body":"form","effects":["read"],"id":"retrieveAUser.form.731227b146e9","method":"GET","origin":"https://api.notion.com","path":"/v1/users/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"form","type":"object"}}}
   ]
+  }
 }

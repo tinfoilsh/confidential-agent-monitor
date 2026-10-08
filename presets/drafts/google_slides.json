@@ -12,11 +12,13 @@
       "write.presentations": {"title": "Write: presentations"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "presentations.batchUpdate", "action": "write.presentations", "effects": ["write"], "method": "POST", "origin": "https://slides.googleapis.com", "path": "/v1/presentations/{presentationId}:batchUpdate", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {"presentationId": {"from": "path", "at": "presentationId"}}},
     {"id": "presentations.create", "action": "write.presentations", "effects": ["write"], "method": "POST", "origin": "https://slides.googleapis.com", "path": "/v1/presentations", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {}},
     {"id": "presentations.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slides.googleapis.com", "path": "/v1/presentations/{presentationsId}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "commentsViewMode"], "scope": {"presentationsId": {"from": "path", "at": "presentationsId"}}},
     {"id": "presentations.pages.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slides.googleapis.com", "path": "/v1/presentations/{presentationId}/pages/{pageObjectId}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "commentsViewMode"], "scope": {"presentationId": {"from": "path", "at": "presentationId"}, "pageObjectId": {"from": "path", "at": "pageObjectId"}}},
     {"id": "presentations.pages.getThumbnail", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slides.googleapis.com", "path": "/v1/presentations/{presentationId}/pages/{pageObjectId}/thumbnail", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "thumbnailProperties.mimeType", "thumbnailProperties.thumbnailSize"], "scope": {"presentationId": {"from": "path", "at": "presentationId"}, "pageObjectId": {"from": "path", "at": "pageObjectId"}}}
   ]
+  }
 }

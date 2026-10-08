@@ -1038,7 +1038,8 @@
     "group": "api"
   },
   "title": "Discord",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"channels.read","effects":["read"],"id":"channels.get","method":"GET","origin":"https://discord.com","path":"/api/v10/channels/{channel}","scope":{"channel":{"at":"channel","from":"path"}}},
     {"action":"channels.messages.read","effects":["read"],"id":"messages.list","method":"GET","origin":"https://discord.com","params":["around","before","after","limit"],"path":"/api/v10/channels/{channel}/messages","scope":{"channel":{"at":"channel","from":"path"}}},
     {"action":"channels.messages.read","effects":["read"],"id":"messages.get","method":"GET","origin":"https://discord.com","path":"/api/v10/channels/{channel}/messages/{message}","scope":{"channel":{"at":"channel","from":"path"},"message":{"at":"message","from":"path"}}},
@@ -1295,4 +1296,5 @@
     {"action":"webhooks.slack.execute","body":"json","effects":["execute"],"id":"execute_slack_compatible_webhook","method":"POST","origin":"https://discord.com","params":["wait","thread_id"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}/slack","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
     {"action":"webhooks.slack.execute","body":"form","effects":["execute"],"id":"execute_slack_compatible_webhook.form.83b22aeffc6c","method":"POST","origin":"https://discord.com","params":["wait","thread_id"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}/slack","scope":{"icon_url":{"at":"icon_url","from":"form","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"username":{"at":"username","from":"form","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}}
   ]
+  }
 }

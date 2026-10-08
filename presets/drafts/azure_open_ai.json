@@ -53,7 +53,8 @@
       "share.permissions": {"title": "Share: permissions"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "Transcriptions_Create", "action": "generate.transcriptions", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/deployments/{deployment-id}/audio/transcriptions", "params": ["api-version"], "body": "any", "scope": {"deployment-id": {"from": "path", "at": "deployment-id"}}},
     {"id": "Translations_Create", "action": "generate.translations", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/deployments/{deployment-id}/audio/translations", "params": ["api-version"], "body": "any", "scope": {"deployment-id": {"from": "path", "at": "deployment-id"}}},
     {"id": "ChatCompletions_Create", "action": "generate.completions", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/deployments/{deployment-id}/chat/completions", "params": ["api-version"], "body": "json", "scope": {"deployment-id": {"from": "path", "at": "deployment-id"}}},
@@ -166,4 +167,5 @@
     {"id": "retrieveVectorStoreFileContent", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/vector_stores/{vector_store_id}/files/{file_id}/content", "params": ["api-version"], "scope": {"vector_store_id": {"from": "path", "at": "vector_store_id"}, "file_id": {"from": "path", "at": "file_id"}}},
     {"id": "searchVectorStore", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/vector_stores/{vector_store_id}/search", "params": ["api-version"], "body": "json", "scope": {"vector_store_id": {"from": "path", "at": "vector_store_id"}}}
   ]
+  }
 }

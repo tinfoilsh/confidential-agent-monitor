@@ -19,7 +19,8 @@
       "write.acm": {"title": "Write: acm"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "AddTagsToCertificate", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.AddTagsToCertificate"}, "body": "any", "scope": {}},
     {"id": "CreateAcmeDomainValidation", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.CreateAcmeDomainValidation"}, "body": "any", "scope": {}},
     {"id": "CreateAcmeEndpoint", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.CreateAcmeEndpoint"}, "body": "any", "scope": {}},
@@ -61,4 +62,5 @@
     {"id": "UpdateAcmeEndpoint", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.UpdateAcmeEndpoint"}, "body": "any", "scope": {}},
     {"id": "UpdateCertificateOptions", "action": "write.acm", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "CertificateManager.UpdateCertificateOptions"}, "body": "any", "scope": {}}
   ]
+  }
 }

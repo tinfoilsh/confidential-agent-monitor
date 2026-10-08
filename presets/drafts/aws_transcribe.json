@@ -17,7 +17,8 @@
       "write.transcribe": {"title": "Write: transcribe"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "CreateCallAnalyticsCategory", "action": "send.transcribe", "effects": ["send"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Transcribe.CreateCallAnalyticsCategory"}, "body": "any", "scope": {}},
     {"id": "CreateLanguageModel", "action": "write.transcribe", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Transcribe.CreateLanguageModel"}, "body": "any", "scope": {}},
     {"id": "CreateMedicalVocabulary", "action": "write.transcribe", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Transcribe.CreateMedicalVocabulary"}, "body": "any", "scope": {}},
@@ -63,4 +64,5 @@
     {"id": "UpdateVocabulary", "action": "write.transcribe", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Transcribe.UpdateVocabulary"}, "body": "any", "scope": {}},
     {"id": "UpdateVocabularyFilter", "action": "write.transcribe", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/", "headers": {"X-Amz-Target": "Transcribe.UpdateVocabularyFilter"}, "body": "any", "scope": {}}
   ]
+  }
 }

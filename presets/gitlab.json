@@ -5346,7 +5346,8 @@
     "group": "api"
   },
   "title": "GitLab",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"projects.read","effects":["read"],"headers":{"Sudo":null},"id":"projects.list","method":"GET","origin":"{origin}","params":["search","owned","membership","per_page","page"],"path":"/api/v4/projects","scope":{}},
     {"action":"projects.read","effects":["read"],"headers":{"Sudo":null},"id":"projects.get","method":"GET","origin":"{origin}","path":"/api/v4/projects/{project}","scope":{"project":{"at":"project","from":"path"}}},
     {"action":"projects.issues.read","effects":["read"],"headers":{"Sudo":null},"id":"issues.list","method":"GET","origin":"{origin}","params":["state","per_page","page"],"path":"/api/v4/projects/{project}/issues","scope":{"project":{"at":"project","from":"path"}}},
@@ -6510,4 +6511,5 @@
     {"action":"version.read","effects":["read"],"id":"getApiV4Version","method":"GET","origin":"https://gitlab.com","path":"/api/v4/version","scope":{}},
     {"action":"web_commits.public_key.read","effects":["read"],"id":"getApiV4WebCommitsPublicKey","method":"GET","origin":"https://gitlab.com","path":"/api/v4/web_commits/public_key","scope":{}}
   ]
+  }
 }

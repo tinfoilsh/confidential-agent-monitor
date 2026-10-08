@@ -20,7 +20,8 @@
       "write.$ref": {"title": "Write: $ref"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "groups.group.ListGroup", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/groups", "params": ["$top", "$skip", "$search", "$filter", "$count", "$orderby", "$select", "$expand"], "scope": {}},
     {"id": "groups.group.CreateGroup", "action": "admin.groups", "effects": ["admin"], "method": "POST", "origin": "https://graph.microsoft.com", "path": "/v1.0/groups", "body": "json", "scope": {}},
     {"id": "groups.group.DeleteGroup", "action": "delete.groups", "effects": ["delete"], "method": "DELETE", "origin": "https://graph.microsoft.com", "path": "/v1.0/groups/{group-id}", "scope": {"group-id": {"from": "path", "at": "group-id"}}},
@@ -104,4 +105,5 @@
     {"id": "users.GetMemberOf.AsDirectoryRole", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/users/{user-id}/memberOf/{directoryObject-id}/graph.directoryRole", "params": ["$select", "$expand"], "scope": {"user-id": {"from": "path", "at": "user-id"}, "directoryObject-id": {"from": "path", "at": "directoryObject-id"}}},
     {"id": "users.GetMemberOf.AsGroup", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/users/{user-id}/memberOf/{directoryObject-id}/graph.group", "params": ["$select", "$expand"], "scope": {"user-id": {"from": "path", "at": "user-id"}, "directoryObject-id": {"from": "path", "at": "directoryObject-id"}}}
   ]
+  }
 }

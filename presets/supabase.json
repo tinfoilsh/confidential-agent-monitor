@@ -110,7 +110,8 @@
     "group": "api"
   },
   "title": "Supabase",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"general.read","effects":["read"],"headers":{"Accept-Profile":null,"Content-Profile":null},"id":"rest.select","method":"GET","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"table":{"at":"table","from":"path"}}},
     {"action":"general.write","body":"json","effects":["write"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":null},"id":"rest.insert","method":"POST","origin":"{origin}","path":"/rest/v1/{table}","scope":{"rows":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
     {"action":"general.write","body":"json","effects":["write"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":"return=representation"},"id":"rest.insert.returning","method":"POST","origin":"{origin}","path":"/rest/v1/{table}","scope":{"rows":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
@@ -122,4 +123,5 @@
     {"action":"storage.object.read","effects":["read"],"headers":{"Accept-Profile":null,"Content-Profile":null},"id":"storage.object.get","method":"GET","origin":"{origin}","path":"/storage/v1/object/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
     {"action":"storage.object.write","body":"any","effects":["write"],"headers":{"Accept-Profile":null,"Content-Profile":null,"X-Upsert":null},"id":"storage.object.upload","method":"POST","origin":"{origin}","path":"/storage/v1/object/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}}
   ]
+  }
 }

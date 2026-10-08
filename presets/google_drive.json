@@ -255,7 +255,8 @@
     "group": "api"
   },
   "title": "Google Drive",
-  "operations": [
+  "http": {
+    "operations": [
     {"action":"drive.files.read","effects":["read"],"id":"files.list","method":"GET","origin":"https://www.googleapis.com","params":["q","pageSize","pageToken","fields","orderBy","spaces","corpora","driveId","includeItemsFromAllDrives","supportsAllDrives"],"path":"/drive/v3/files","query":{"useDomainAdminAccess":null},"scope":{}},
     {"action":"drive.files.read","effects":["read"],"id":"files.get","method":"GET","origin":"https://www.googleapis.com","params":["fields","alt","supportsAllDrives","acknowledgeAbuse"],"path":"/drive/v3/files/{file}","scope":{"file":{"at":"file","from":"path"}}},
     {"action":"drive.files.read","effects":["read"],"id":"files.export","method":"GET","origin":"https://www.googleapis.com","params":["mimeType"],"path":"/drive/v3/files/{file}/export","scope":{"file":{"at":"file","from":"path"}}},
@@ -322,4 +323,5 @@
     {"action":"drive.teamdrives.read","effects":["read"],"id":"teamdrives.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken","q","useDomainAdminAccess"],"path":"/drive/v3/teamdrives","scope":{"query":{"at":"","from":"query","type":"object"}}},
     {"action":"drive.teamdrives.write","body":"json","effects":["write"],"id":"teamdrives.update","method":"PATCH","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useDomainAdminAccess"],"path":"/drive/v3/teamdrives/{teamDriveId}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"teamDriveId":{"at":"teamDriveId","from":"path"}}}
   ]
+  }
 }

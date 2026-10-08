@@ -121,7 +121,8 @@
       "write.workspace_users": {"title": "Write: workspace users"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "get-audit-logs", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.track.toggl.com", "path": "/api/v9/audit_logs/{organization_id}/{from}/{to}", "params": ["export", "workspace_id", "entity_type", "entity_id", "action", "user_id", "page_size", "page_number"], "scope": {"organization_id": {"from": "path", "at": "organization_id"}, "from": {"from": "path", "at": "from"}, "to": {"from": "path", "at": "to"}}},
     {"id": "get-saml2-login-url", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.track.toggl.com", "path": "/api/v9/auth/saml2/login", "params": ["email", "client", "state"], "scope": {"email": {"from": "query", "at": "email"}}},
     {"id": "post-saml2-callback", "action": "write.login", "effects": ["write"], "method": "POST", "origin": "https://api.track.toggl.com", "path": "/api/v9/auth/saml2/login/{workspace_id}", "body": "any", "scope": {"workspace_id": {"from": "path", "at": "workspace_id"}}},
@@ -402,4 +403,5 @@
     {"id": "put-workspace-workspace_users", "action": "write.workspace_users", "effects": ["write"], "method": "PUT", "origin": "https://api.track.toggl.com", "path": "/api/v9/workspaces/{workspace_id}/workspace_users/{workspace_user_id}", "body": "json", "scope": {"workspace_id": {"from": "path", "at": "workspace_id"}, "workspace_user_id": {"from": "path", "at": "workspace_user_id"}}},
     {"id": "delete-workspace-user", "action": "delete.workspace_users", "effects": ["delete"], "method": "DELETE", "origin": "https://api.track.toggl.com", "path": "/api/v9/workspaces/{workspace_id}/workspace_users/{workspace_user_id}", "scope": {"workspace_id": {"from": "path", "at": "workspace_id"}, "workspace_user_id": {"from": "path", "at": "workspace_user_id"}}}
   ]
+  }
 }

@@ -179,7 +179,8 @@
       "write.workflows": {"title": "Write: workflows"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "celery_queue_size_check", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.baserow.io", "path": "/api/_health/celery-queue/", "params": ["queue"], "scope": {}},
     {"id": "email_tester", "action": "send.email", "effects": ["send"], "method": "POST", "origin": "https://api.baserow.io", "path": "/api/_health/email/", "body": "any", "scope": {}},
     {"id": "full_health_check", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.baserow.io", "path": "/api/_health/full/", "scope": {}},
@@ -570,4 +571,5 @@
     {"id": "submit_assistant_message_feedback", "action": "write.feedback", "effects": ["write"], "method": "PUT", "origin": "https://api.baserow.io", "path": "/assistant/messages/{message_id}/feedback/", "scope": {"message_id": {"from": "path", "at": "message_id"}}},
     {"id": "get_assistant_onboarding_prompt_suggestions", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.baserow.io", "path": "/assistant/onboarding/prompt-suggestions/", "body": "any", "scope": {}}
   ]
+  }
 }

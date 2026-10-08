@@ -460,7 +460,8 @@
       "write.z_test": {"title": "Write: z test"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "drives.items.DeleteWorkbook", "action": "delete.workbook", "effects": ["delete"], "method": "DELETE", "origin": "https://graph.microsoft.com", "path": "/v1.0/drives/{drive-id}/items/{driveItem-id}/workbook", "scope": {"drive-id": {"from": "path", "at": "drive-id"}, "driveItem-id": {"from": "path", "at": "driveItem-id"}}},
     {"id": "drives.items.GetWorkbook", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/drives/{drive-id}/items/{driveItem-id}/workbook", "params": ["$select", "$expand"], "scope": {"drive-id": {"from": "path", "at": "drive-id"}, "driveItem-id": {"from": "path", "at": "driveItem-id"}}},
     {"id": "drives.items.UpdateWorkbook", "action": "write.workbook", "effects": ["write"], "method": "PATCH", "origin": "https://graph.microsoft.com", "path": "/v1.0/drives/{drive-id}/items/{driveItem-id}/workbook", "body": "json", "scope": {"drive-id": {"from": "path", "at": "drive-id"}, "driveItem-id": {"from": "path", "at": "driveItem-id"}}},
@@ -1903,4 +1904,5 @@
     {"id": "drives.drive.items.driveItem.workbook.worksheets.workbookWorksheet.tables.workbookTable.totalRowRange.visibleView", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/drives/{drive-id}/items/{driveItem-id}/workbook/worksheets/{workbookWorksheet-id}/tables/{workbookTable-id}/totalRowRange()/visibleView()", "scope": {"drive-id": {"from": "path", "at": "drive-id"}, "driveItem-id": {"from": "path", "at": "driveItem-id"}, "workbookWorksheet-id": {"from": "path", "at": "workbookWorksheet-id"}, "workbookTable-id": {"from": "path", "at": "workbookTable-id"}}},
     {"id": "drives.items.workbook.worksheets.tables.totalRowRange.GetWorksheet", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://graph.microsoft.com", "path": "/v1.0/drives/{drive-id}/items/{driveItem-id}/workbook/worksheets/{workbookWorksheet-id}/tables/{workbookTable-id}/totalRowRange()/worksheet", "params": ["$select", "$expand"], "scope": {"drive-id": {"from": "path", "at": "drive-id"}, "driveItem-id": {"from": "path", "at": "driveItem-id"}, "workbookWorksheet-id": {"from": "path", "at": "workbookWorksheet-id"}, "workbookTable-id": {"from": "path", "at": "workbookTable-id"}}}
   ]
+  }
 }

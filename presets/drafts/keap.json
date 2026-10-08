@@ -110,7 +110,8 @@
       "write.types": {"title": "Write: types"}
     }
   },
-  "operations": [
+  "http": {
+    "operations": [
     {"id": "listAffiliate", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.infusionsoft.com", "path": "/crm/rest/v2/affiliates", "params": ["filter", "order_by", "page_size", "page_token"], "scope": {}},
     {"id": "addAffiliate", "action": "write.affiliates", "effects": ["write"], "method": "POST", "origin": "https://api.infusionsoft.com", "path": "/crm/rest/v2/affiliates", "body": "json", "scope": {"contact_id": {"from": "body", "at": "/contact_id"}}},
     {"id": "addCommissionProgram", "action": "write.commission_programs", "effects": ["write"], "method": "POST", "origin": "https://api.infusionsoft.com", "path": "/crm/rest/v2/affiliates/commissionPrograms", "body": "json", "scope": {"name": {"from": "body", "at": "/name"}}},
@@ -489,4 +490,5 @@
     {"id": "listWebforms", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.infusionsoft.com", "path": "/crm/rest/v2/webforms", "params": ["filter", "order_by", "page_size", "page_token"], "scope": {}},
     {"id": "getHtml", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.infusionsoft.com", "path": "/crm/rest/v2/webforms/{webform_id}:data", "scope": {"webform_id": {"from": "path", "at": "webform_id"}}}
   ]
+  }
 }
