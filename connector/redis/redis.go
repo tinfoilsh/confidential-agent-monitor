@@ -122,13 +122,10 @@ func encode(args [][]byte) []byte {
 	return out
 }
 
-type Request struct {
-	Command string   `json:"command"`
-	Argv    []string `json:"argv"`
-}
+type Request facts.Redis
 
 func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
-	details := map[string]any{"redis": v}
+	details := facts.Details{Redis: (*facts.Redis)(v)}
 	action := "write"
 	if slices.Contains(redisReads, v.Command) {
 		action = "read"

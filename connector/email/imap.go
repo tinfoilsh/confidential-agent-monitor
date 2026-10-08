@@ -114,14 +114,10 @@ func forwardIMAP(dst io.Writer, src *bufio.Reader, line string) error {
 	}
 }
 
-type IMAPRequest struct {
-	Command string `json:"command"`
-	Args    string `json:"args"`
-	Mailbox string `json:"mailbox,omitempty"`
-}
+type IMAPRequest facts.IMAP
 
 func (v *IMAPRequest) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
-	details := map[string]any{"imap": v}
+	details := facts.Details{IMAP: (*facts.IMAP)(v)}
 	action := ""
 	if slices.Contains(strings.Fields("CAPABILITY CHECK ENABLE EXAMINE FETCH ID IDLE LIST LOGOUT LSUB NAMESPACE NOOP SEARCH SELECT STATUS UNSELECT"), v.Command) {
 		action = "read"

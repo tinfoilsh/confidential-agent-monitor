@@ -7,6 +7,7 @@ import (
 	"maps"
 	"net/http"
 	"net/url"
+	"slices"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	sentinel "github.com/tinfoilsh/mcp-sentinel"
@@ -119,7 +120,7 @@ type Request struct {
 }
 
 func (r *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
-	f := facts.Facts{Details: map[string]any{"mcp": r}, Title: "Use " + r.Tool}
+	f := facts.Facts{Details: facts.Details{MCP: &facts.MCP{Tool: r.Tool, Arguments: r.Arguments, ReadOnly: r.ReadOnly}}, Title: "Use " + r.Tool}
 	action := "use." + r.Tool
 	if r.ReadOnly {
 		action = "read." + r.Tool
@@ -129,27 +130,53 @@ func (r *Request) Describe(c connector.Context) (facts.Facts, connector.Approval
 		return f, connector.Approval{}, err
 	}
 	f.Parameters = map[string]any{"arguments": args}
+	f.Details.MCP.Arguments = args
 	f.Operation = &facts.Operation{Action: action, RequiresTrust: !r.ReadOnly}
 	var approval connector.Approval
 	if p, _ := c.Specs["mcp"].(*Preset); p != nil {
-		selected, err := connector.SelectJSON(args, p.Scope)
-		maps.Copy(f.Parameters, selected)
-		approval.Definition = p
-		return f, approval, err
+		if p.definition == nil {
+			copy := *p
+			if err := copy.Validate(); err != nil {
+				return f, approval, err
+			}
+			p = &copy
+		}
+		var errs []error
+		for _, name := range p.names {
+			spec := p.Scope[name]
+			value, present := spec.Read(args)
+			if err := connector.CheckSelection(name, value, present, spec.Type, spec.Optional); err != nil {
+				errs = append(errs, err)
+			} else if present {
+				f.Parameters[name] = value
+			}
+		}
+		approval.Definition = p.definition
+		return f, approval, errors.Join(errs...)
 	}
 	return f, approval, nil
 }
 
 // Preset selects service resource identifiers from tool arguments.
 type Preset struct {
-	Scope map[string]connector.JSONSelector `json:"scope,omitempty"`
+	Scope      map[string]connector.JSONSelector `json:"scope,omitempty"`
+	names      []string
+	definition json.RawMessage
 }
 
 func (p *Preset) Validate() error {
-	for _, s := range p.Scope {
-		if err := s.Validate(); err != nil {
+	scope := maps.Clone(p.Scope)
+	for name, spec := range scope {
+		compiled, err := spec.Compile()
+		if err != nil {
 			return err
 		}
+		scope[name] = compiled
 	}
+	definition, err := json.Marshal(p)
+	if err != nil {
+		return err
+	}
+	p.Scope, p.names, p.definition = scope, slices.Sorted(maps.Keys(scope)), definition
 	return nil
 }

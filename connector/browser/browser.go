@@ -690,16 +690,10 @@ func (b *Browser) call(ctx context.Context, function string) (string, error) {
 	return chromedp.Run(worker, chromedp.Evaluate[string](fmt.Sprintf("%s(%q)", function, id), chromedp.EvalAwaitPromise))
 }
 
-type Request struct {
-	Command string   `json:"command"`
-	URL     string   `json:"url"`
-	Host    string   `json:"host"`
-	Text    string   `json:"text,omitempty"`
-	Secrets []string `json:"secrets,omitempty"`
-}
+type Request facts.Browser
 
 func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
-	details := map[string]any{"browser": v}
+	details := facts.Details{Browser: (*facts.Browser)(v)}
 	var config struct{ Slots []json.RawMessage }
 	if err := c.DecodeConfig(&config); err != nil {
 		return facts.Facts{Details: details}, connector.Approval{}, err

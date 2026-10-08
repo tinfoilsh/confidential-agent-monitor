@@ -145,18 +145,9 @@ func attachments(msg *mail.Message) []string {
 	}
 }
 
-type SMTPDetails struct {
-	From string   `json:"from"`
-	To   []string `json:"to"`
-}
+type SMTPDetails = facts.SMTP
 
-type MailDetails struct {
-	From        []string `json:"from"`
-	To          []string `json:"to"`
-	Cc          []string `json:"cc"`
-	Subject     string   `json:"subject"`
-	Attachments []string `json:"attachments"`
-}
+type MailDetails = facts.Mail
 
 type SMTPRequest struct {
 	SMTP *SMTPDetails `json:"smtp"`
@@ -164,9 +155,9 @@ type SMTPRequest struct {
 }
 
 func (r *SMTPRequest) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
-	details := map[string]any{"smtp": r.SMTP}
+	details := facts.Details{SMTP: r.SMTP}
 	if r.Mail != nil {
-		details["mail"] = r.Mail
+		details.Mail = r.Mail
 	}
 	v := r.SMTP
 	if v == nil {

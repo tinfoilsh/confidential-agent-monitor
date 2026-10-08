@@ -31,7 +31,7 @@ const decisionQuery = "data.monitor.decision"
 // Bump this when compiled parsing, description, normalization, label, or approval
 // semantics change. It invalidates saved approvals even if the facts schema and
 // Rego sources stay the same. Display-only edits do not require a bump.
-const approvalSemanticsVersion = 2
+const approvalSemanticsVersion = 3
 
 //go:embed presets/policy/*.rego
 var policyFiles embed.FS
@@ -107,6 +107,7 @@ func policyModules() (opts []func(*rego.Rego)) {
 
 // policyQuery authorizes the snapshot described by each request.
 type policyQuery struct {
+	builtIn          bool
 	query            rego.PreparedEvalQuery
 	presets          map[string]*presetRecord
 	program          string
@@ -114,7 +115,27 @@ type policyQuery struct {
 	semanticsVersion int
 }
 
+type compiledOptions struct {
+	raw     json.RawMessage
+	private []glob.Glob
+}
+
+func compileOptions(options policyOptions) *compiledOptions {
+	raw, _ := json.Marshal(options)
+	out := &compiledOptions{raw: raw}
+	for _, pattern := range options.Private {
+		if g, err := glob.Compile(pattern, '/'); err == nil {
+			out.private = append(out.private, g)
+		}
+	}
+	return out
+}
+
 func preparePolicy(ctx context.Context, cfg *config) (program policyQuery, err error) {
+	for name, a := range cfg.Accounts {
+		a.PolicyOptions.compiled = compileOptions(a.PolicyOptions)
+		cfg.Accounts[name] = a
+	}
 	data := maps.Clone(cfg.Data)
 	if data == nil {
 		data = map[string]any{}
@@ -138,7 +159,7 @@ func preparePolicy(ctx context.Context, cfg *config) (program policyQuery, err e
 	if err != nil {
 		return program, err
 	}
-	program = policyQuery{query: q, presets: cfg.resolved, program: hex.EncodeToString(h.Sum(nil)), lattices: cfg.Lattices, semanticsVersion: approvalSemanticsVersion}
+	program = policyQuery{builtIn: len(cfg.Policies) == 0 && len(cfg.Data) == 0, query: q, presets: cfg.resolved, program: hex.EncodeToString(h.Sum(nil)), lattices: cfg.Lattices, semanticsVersion: approvalSemanticsVersion}
 	return program, nil
 }
 
@@ -154,8 +175,11 @@ func describeRequest(presets map[string]*presetRecord, in input) (facts.Facts, c
 	if a.Strangers {
 		observation.Trust = "untrusted"
 	}
-	options, _ := json.Marshal(a.PolicyOptions)
-	c := connector.Context{Connection: in.Connection, Config: in.ConnectionConfig, Options: options,
+	options := a.PolicyOptions.compiled
+	if options == nil {
+		options = compileOptions(a.PolicyOptions)
+	}
+	c := connector.Context{Connection: in.Connection, Config: in.ConnectionConfig, Options: options.raw,
 		Label: in.Label, Observation: observation, Specs: map[string]any{}}
 	record := presets[a.Preset]
 	if record != nil {
@@ -240,10 +264,12 @@ func (record *presetRecord) applyVisibility(f *facts.Facts, account *namedAccoun
 		parts = append(parts, value)
 	}
 	scope := strings.Join(parts, "/")
-	private := slices.ContainsFunc(account.PolicyOptions.Private, func(pattern string) bool {
-		g, err := glob.Compile(pattern, '/')
-		return err == nil && g.Match(scope)
-	})
+	options := account.PolicyOptions.compiled
+	if options == nil {
+		options = compileOptions(account.PolicyOptions)
+	}
+	private := slices.ContainsFunc(options.private, func(g glob.Glob) bool { return g.Match(scope) })
+
 	if !private {
 		ctx.Observes.Audience = "anyone"
 	}
@@ -262,6 +288,9 @@ func (record *presetRecord) applyVisibility(f *facts.Facts, account *namedAccoun
 
 // evaluateDecision describes parsed input using current settings before authorization.
 func evaluateDecision(ctx context.Context, q policyQuery, in input) (*decision, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	if in.Account == nil {
 		return nil, errors.New("policy request has no account")
 	}
@@ -270,37 +299,35 @@ func evaluateDecision(ctx context.Context, q policyQuery, in input) (*decision, 
 	}
 	f, binding, describeErr := describeRequest(q.presets, in)
 	definition := approvalDefinition(q, f, binding, in)
-	// Freeze the snapshot before the connector resumes and can reuse its buffers.
-	// Policy and audit both receive these same JSON values.
-	rawFacts, err := json.Marshal(f)
+	// Policy and audit share one snapshot, independent of connector buffers.
+	f, err := f.Clone()
 	if err != nil {
 		return nil, err
 	}
-	var snapshot facts.Facts
-	if err := connector.DecodeNumbers(rawFacts, &snapshot); err != nil {
-		return nil, err
-	}
-	f = snapshot
 	grant := connector.JSONFields(binding.Scope)
 	var errs []string
 	if describeErr != nil {
 		errs = append(errs, describeErr.Error())
 	}
-	auth := map[string]any{"access": in.Access, "rules": in.Rules, "definition": definition, "grant": grant, "errors": errs}
-	rs, err := q.query.Eval(ctx, rego.EvalInput(map[string]any{"facts": f, "authorization": auth}))
-	if err != nil {
-		return nil, err
-	}
-	if len(rs) == 0 {
-		return nil, errors.New("policy decision is undefined")
-	}
-	raw, err := json.Marshal(rs[0].Expressions[0].Value)
-	if err != nil {
-		return nil, err
-	}
 	var d decision
-	if err = connector.DecodeNumbers(raw, &d); err != nil {
-		return nil, err
+	if q.builtIn {
+		d = builtInDecision(f, in, q.lattices, definition, grant, errs)
+	} else {
+		auth := map[string]any{"access": in.Access, "rules": in.Rules, "definition": definition, "grant": grant, "errors": errs}
+		rs, err := q.query.Eval(ctx, rego.EvalInput(map[string]any{"facts": f, "authorization": auth}))
+		if err != nil {
+			return nil, err
+		}
+		if len(rs) == 0 {
+			return nil, errors.New("policy decision is undefined")
+		}
+		raw, err := json.Marshal(rs[0].Expressions[0].Value)
+		if err != nil {
+			return nil, err
+		}
+		if err = connector.DecodeNumbers(raw, &d); err != nil {
+			return nil, err
+		}
 	}
 	d.Facts = &f
 	d.Grant = grant
@@ -310,6 +337,100 @@ func evaluateDecision(ctx context.Context, q policyQuery, in input) (*decision, 
 		d.Next = d.Next.Observe(f.Context.Observes, f.Context.Cause)
 	}
 	return &d, nil
+}
+
+// builtInDecision mirrors the shipped Rego rules. Configurations with owner
+// modules or data still evaluate the complete Rego program, including helpers
+// those modules may reference. Equivalence tests exercise both paths.
+func builtInDecision(f facts.Facts, in input, lattices latticeOptions, definition string, grant map[string]any, errs []string) decision {
+	d := decision{Deny: []string{}, Gaps: []string{}}
+	for _, err := range errs {
+		if !slices.Contains(d.Deny, err) {
+			d.Deny = append(d.Deny, err)
+		}
+	}
+	op := f.Operation
+	obligations := facts.Obligations{}
+	if op != nil {
+		obligations = facts.ObligationsFor(op.Effects)
+	}
+	mode := in.Access.Level
+	switch {
+	case !slices.Contains([]string{"read", "ask", "allow"}, mode):
+		mode = "off"
+	case op == nil && mode == "read":
+		mode = "off"
+	case op == nil:
+		mode = "ask"
+	default:
+		override := false
+		for name := op.Action; ; {
+			if value, ok := in.Access.Actions[name]; ok {
+				mode, override = value, true
+				break
+			}
+			at := strings.LastIndexByte(name, '.')
+			if at < 0 {
+				break
+			}
+			name = name[:at]
+		}
+		if !override {
+			switch {
+			case f.Kind == facts.KindAdmission:
+				mode = "allow"
+			case mode == "allow" && obligations.Ask:
+				mode = "ask"
+			case !obligations.Change:
+				mode = "allow"
+			case mode == "read":
+				mode = "off"
+			}
+		}
+	}
+	if mode == "off" {
+		d.Deny = append(d.Deny, "this agent may not do this on the account")
+	}
+	if f.Kind == facts.KindMessage && op != nil && op.Action != "message.receive" && f.Context.Channel != nil {
+		from, to := f.Context.Label, f.Context.Channel
+		flows := to != nil && from.Valid() && to.Valid()
+		if flows && lattices.Confidentiality {
+			flows = slices.Index(facts.Audiences, from.Audience) >= slices.Index(facts.Audiences, to.Audience)
+		}
+		if flows && lattices.Integrity {
+			flows = slices.Index(facts.Trusts, from.Trust) >= slices.Index(facts.Trusts, to.Trust)
+		}
+		if !flows {
+			d.Deny = append(d.Deny, "the agent's label cannot flow to this message channel")
+		}
+	}
+	if f.Kind != facts.KindAdmission && f.Kind != facts.KindMessage {
+		if mode != "allow" {
+			d.Gaps = append(d.Gaps, "ask")
+		}
+		audience, sends := slices.Index(facts.Audiences, f.Context.Label.Audience), slices.Index(facts.Audiences, f.Context.Sends)
+		if lattices.Confidentiality && (audience >= 0 && sends >= 0 && sends > audience) {
+			d.Gaps = append(d.Gaps, "audience")
+		}
+		if lattices.Integrity && f.Context.Label.Trust == "untrusted" && (op == nil || obligations.Trust || op.RequiresTrust) {
+			d.Gaps = append(d.Gaps, "trust")
+		}
+		if op != nil && len(d.Gaps) > 0 {
+			for _, rule := range in.Rules {
+				if rule.Account != f.Account || rule.Action != op.Action || rule.Operation != op.ID || rule.Definition != definition {
+					continue
+				}
+				if !connector.EqualJSON(connector.JSONFields(rule.Scope), grant) {
+					continue
+				}
+				d.Gaps = slices.DeleteFunc(d.Gaps, func(gap string) bool { return slices.Contains(rule.Waives, gap) })
+			}
+		}
+	}
+	slices.Sort(d.Deny)
+	d.Deny = slices.Compact(d.Deny)
+	slices.Sort(d.Gaps)
+	return d
 }
 
 // Approval definitions bind semantics and configuration, independently of facts
@@ -329,12 +450,16 @@ func approvalDefinition(q policyQuery, f facts.Facts, binding connector.Approval
 	return hex.EncodeToString(sum[:])
 }
 
-// refreshAndEvaluate refreshes the input from current settings. The caller must hold m.flow.
-func (m *monitor) refreshAndEvaluate(ctx context.Context, in *input, account string) (*decision, error) {
+// refreshInput captures the current configuration and label under flow. State
+// snapshots and published labels are immutable after this function returns.
+func (m *monitor) refreshInput(ctx context.Context, in *input, account string) (*state, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
 	st := m.live.Load()
+	if st == nil {
+		return nil, errNoAgent
+	}
 	p, ok := st.principals[in.Principal.Key]
 	if !ok {
 		return nil, errNoAgent
@@ -350,6 +475,15 @@ func (m *monitor) refreshAndEvaluate(ctx context.Context, in *input, account str
 	in.Rules = p.Rules
 	in.Label = m.label(p.Key)
 	in.Account = &namedAccount{Name: account, account: a}
+	return st, nil
+}
+
+// refreshAndEvaluate is used for a recheck while flow is held.
+func (m *monitor) refreshAndEvaluate(ctx context.Context, in *input, account string) (*decision, error) {
+	st, err := m.refreshInput(ctx, in, account)
+	if err != nil {
+		return nil, err
+	}
 	return st.decide(ctx, *in)
 }
 
@@ -362,11 +496,27 @@ type corpusEntry struct {
 	GraphQL   *web.GraphQLDetails `json:"graphql,omitempty"`
 }
 
-// gate admits, refuses or holds one request; the flow lock is released only while it waits for the owner.
+// gate describes and evaluates independent requests concurrently. Before any
+// authorization is used, flow verifies that its configuration and label remain
+// current, and orders the label update and its persistence with other requests.
 func (m *monitor) gate(ctx context.Context, in input, account string) error {
 	m.flow.Lock()
+	st, err := m.refreshInput(ctx, &in, account)
+	m.flow.Unlock()
+	if err != nil {
+		return err
+	}
+	d, err := st.decide(ctx, in)
+
+	m.flow.Lock()
 	defer m.flow.Unlock()
-	d, err := m.refreshAndEvaluate(ctx, &in, account)
+	current := m.label(in.Principal.Key)
+	if st != m.live.Load() || current.Audience != in.Label.Audience || current.Trust != in.Label.Trust || !maps.Equal(current.Because, in.Label.Because) {
+		// Fall back under the lock on a concurrent change, so repeated updates
+		// cannot starve a request or admit it using stale authority.
+		d, err = m.refreshAndEvaluate(ctx, &in, account)
+	}
+
 	if err != nil {
 		log.Printf("decision: %v", err)
 		return err

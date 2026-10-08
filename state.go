@@ -68,7 +68,7 @@ type monitor struct {
 	object      string
 	listen      string
 	running     map[string]*connection
-	// flow serializes policy decisions; mu protects all document reads and writes.
+	// flow orders authorization commits; mu protects all document reads and writes.
 	flow    sync.Mutex
 	streams map[string]map[*connector.Stream]struct{}
 	records records
@@ -329,6 +329,7 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *
 type connection struct {
 	name, protocol, account, key string
 	config                       json.RawMessage
+	publicConfig                 json.RawMessage
 	connector                    connector.Connector
 	ctx                          context.Context
 	cancel                       context.CancelFunc
@@ -410,6 +411,9 @@ func connectionName(account, key string) string {
 }
 
 func redactedConnection(c *connection) json.RawMessage {
+	if c.publicConfig != nil {
+		return c.publicConfig
+	}
 	raw := c.config
 	for _, field := range c.connector.Fields() {
 		if field.Redact {

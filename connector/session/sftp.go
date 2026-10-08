@@ -520,20 +520,10 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 	return r, nil
 }
 
-type SFTPRequest struct {
-	Command    string            `json:"command"`
-	Path       string            `json:"path"`
-	Target     string            `json:"target,omitempty"`
-	Read       bool              `json:"read,omitempty"`
-	Write      bool              `json:"write,omitempty"`
-	Flags      uint32            `json:"flags,omitempty"`
-	Offset     uint64            `json:"offset,omitempty"`
-	Size       uint32            `json:"size,omitempty"`
-	Attributes map[string]uint64 `json:"attributes,omitempty"`
-}
+type SFTPRequest facts.SFTP
 
 func (v *SFTPRequest) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
-	details := map[string]any{"sftp": v}
+	details := facts.Details{SFTP: (*facts.SFTP)(v)}
 	action := map[string]string{
 		"read": "read", "stat": "read", "lstat": "read", "fstat": "read", "opendir": "read", "readdir": "read", "realpath": "read", "readlink": "read",
 		"write": "write", "mkdir": "write", "remove": "delete", "rmdir": "delete", "rename": "rename", "setstat": "metadata", "fsetstat": "metadata", "close": "session",

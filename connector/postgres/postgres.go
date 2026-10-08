@@ -155,12 +155,10 @@ func relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.Hij
 	}
 }
 
-type Request struct {
-	SQL string `json:"sql"`
-}
+type Request facts.Postgres
 
 func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
-	details := map[string]any{"postgres": v}
+	details := facts.Details{Postgres: (*facts.Postgres)(v)}
 	action := "write"
 	if plainRead(v.SQL) {
 		action = "read"

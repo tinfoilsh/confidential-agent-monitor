@@ -2,9 +2,13 @@
 package facts
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"maps"
+	"net/http"
+	"net/url"
 	"slices"
 )
 
@@ -57,7 +61,7 @@ type Context struct {
 }
 
 // Facts is the snapshot shared by authorization and audit.
-// Connectors supply protocol details using their own types.
+// Protocol details use typed fields; service parameters remain JSON values.
 type Facts struct {
 	Version    int            `json:"version"`
 	Kind       Kind           `json:"kind"`
@@ -69,7 +73,182 @@ type Facts struct {
 	Parameters map[string]any `json:"parameters"`
 	Context    Context        `json:"context"`
 	Title      string         `json:"title"`
-	Details    map[string]any `json:"details"`
+	Details    Details        `json:"details"`
+}
+
+// Details holds parsed protocol data. The Go fields and JSON names are shared
+// by connectors, authorization, and audit.
+type Details struct {
+	HTTP     *HTTP     `json:"http,omitempty"`
+	GraphQL  *GraphQL  `json:"graphql,omitempty"`
+	MCP      *MCP      `json:"mcp,omitempty"`
+	SSH      *SSH      `json:"ssh,omitempty"`
+	Command  *Command  `json:"command,omitempty"`
+	Payload  *Git      `json:"payload,omitempty"`
+	SFTP     *SFTP     `json:"sftp,omitempty"`
+	SMTP     *SMTP     `json:"smtp,omitempty"`
+	Mail     *Mail     `json:"mail,omitempty"`
+	IMAP     *IMAP     `json:"imap,omitempty"`
+	Browser  *Browser  `json:"browser,omitempty"`
+	NATS     *NATS     `json:"nats,omitempty"`
+	MQTT     *MQTT     `json:"mqtt,omitempty"`
+	Redis    *Redis    `json:"redis,omitempty"`
+	Postgres *Postgres `json:"postgres,omitempty"`
+	Sign     *Sign     `json:"sign,omitempty"`
+	Message  *Message  `json:"message,omitempty"`
+	TCP      *TCP      `json:"tcp,omitempty"`
+}
+
+type HTTP struct {
+	Method   string      `json:"method"`
+	Origin   string      `json:"origin"`
+	Host     string      `json:"host"`
+	Path     string      `json:"path"`
+	Query    url.Values  `json:"query"`
+	Headers  http.Header `json:"headers"`
+	Secrets  []string    `json:"secrets"`
+	BodyKind string      `json:"body_kind"`
+	Body     any         `json:"body,omitempty"`
+	Form     url.Values  `json:"form,omitempty"`
+	// HeaderJSON holds single header values that are JSON objects, as Dropbox-API-Arg is.
+	HeaderJSON map[string]any `json:"header_json,omitempty"`
+}
+
+type GraphQL struct {
+	Kind   string         `json:"kind"`
+	Fields []GraphQLField `json:"fields"`
+}
+
+type GraphQLField struct {
+	Name      string         `json:"name"`
+	Arguments map[string]any `json:"arguments"`
+}
+
+type SSH struct {
+	Request   string  `json:"request"`
+	Command   string  `json:"command,omitempty"`
+	Subsystem string  `json:"subsystem,omitempty"`
+	Term      string  `json:"term,omitempty"`
+	Env       *SSHEnv `json:"env,omitempty"`
+}
+
+type SSHEnv struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
+type Command struct {
+	Argv []string `json:"argv"`
+}
+
+type Git struct {
+	Type       string   `json:"type"`
+	Tree       string   `json:"tree,omitempty"`
+	Object     string   `json:"object,omitempty"`
+	ObjectType string   `json:"object_type,omitempty"`
+	Tag        string   `json:"tag,omitempty"`
+	Parents    []string `json:"parents"`
+	Author     string   `json:"author,omitempty"`
+	Committer  string   `json:"committer,omitempty"`
+	Tagger     string   `json:"tagger,omitempty"`
+	Message    string   `json:"message"`
+}
+
+type SMTP struct {
+	From string   `json:"from"`
+	To   []string `json:"to"`
+}
+
+type Mail struct {
+	From        []string `json:"from"`
+	To          []string `json:"to"`
+	Cc          []string `json:"cc"`
+	Subject     string   `json:"subject"`
+	Attachments []string `json:"attachments"`
+}
+
+type IMAP struct {
+	Command string `json:"command"`
+	Args    string `json:"args"`
+	Mailbox string `json:"mailbox,omitempty"`
+}
+
+type SFTP struct {
+	Command    string            `json:"command"`
+	Path       string            `json:"path"`
+	Target     string            `json:"target,omitempty"`
+	Read       bool              `json:"read,omitempty"`
+	Write      bool              `json:"write,omitempty"`
+	Flags      uint32            `json:"flags,omitempty"`
+	Offset     uint64            `json:"offset,omitempty"`
+	Size       uint32            `json:"size,omitempty"`
+	Attributes map[string]uint64 `json:"attributes,omitempty"`
+}
+
+type Browser struct {
+	Command string   `json:"command"`
+	URL     string   `json:"url"`
+	Host    string   `json:"host"`
+	Text    string   `json:"text,omitempty"`
+	Secrets []string `json:"secrets,omitempty"`
+}
+
+type NATS struct {
+	Command string              `json:"command"`
+	Subject string              `json:"subject"`
+	Reply   string              `json:"reply,omitempty"`
+	Queue   string              `json:"queue,omitempty"`
+	Headers map[string][]string `json:"headers,omitempty"`
+	Payload []byte              `json:"payload,omitempty"`
+}
+
+type MQTT struct {
+	Command string `json:"command"`
+	Topic   string `json:"topic"`
+	QoS     byte   `json:"qos"`
+	Retain  bool   `json:"retain"`
+	Payload []byte `json:"payload,omitempty"`
+}
+
+type Redis struct {
+	Command string   `json:"command"`
+	Argv    []string `json:"argv"`
+}
+
+type Postgres struct {
+	SQL string `json:"sql"`
+}
+
+type Sign struct {
+	Agent     string `json:"agent"`
+	Key       string `json:"key,omitempty"`
+	Purpose   string `json:"purpose,omitempty"`
+	Namespace string `json:"namespace,omitempty"`
+	User      string `json:"user,omitempty"`
+	Hash      string `json:"hash,omitempty"`
+	Op        string `json:"op,omitempty"`
+}
+
+type Message struct {
+	Action  string `json:"action"`
+	Peer    string `json:"peer"`
+	From    string `json:"from"`
+	To      string `json:"to"`
+	ID      string `json:"id,omitempty"`
+	Body    any    `json:"body,omitempty"`
+	Channel Label  `json:"channel"`
+	Cause   string `json:"cause"`
+}
+
+type TCP struct {
+	Host string `json:"host"`
+	Port uint32 `json:"port"`
+}
+
+type MCP struct {
+	Tool      string `json:"tool"`
+	Arguments any    `json:"arguments"`
+	ReadOnly  bool   `json:"read_only"`
 }
 
 // Obligations describes the requirements carried by an effect.
@@ -164,4 +343,203 @@ func (f Facts) Validate() error {
 		errs = append(errs, errors.New("admission requires an operation"))
 	}
 	return errors.Join(errs...)
+}
+
+// CloneJSON owns the mutable parts of a JSON value while retaining immutable
+// strings and exact numbers. Other Go values retain encoding/json's
+// representation through the fallback.
+func CloneJSON(value any) (any, error) {
+	switch v := value.(type) {
+	case nil, string, bool:
+		return v, nil
+	case json.Number:
+		if _, err := json.Marshal(v); err != nil {
+			return nil, err
+		}
+		return v, nil
+	case map[string]any:
+		if v == nil {
+			return nil, nil
+		}
+		out := make(map[string]any, len(v))
+		for key, field := range v {
+			frozen, err := CloneJSON(field)
+			if err != nil {
+				return nil, err
+			}
+			out[key] = frozen
+		}
+		return out, nil
+	case map[string][]string:
+		if v == nil {
+			return nil, nil
+		}
+		out := make(map[string]any, len(v))
+		for key, field := range v {
+			frozen, _ := CloneJSON(field)
+			out[key] = frozen
+		}
+		return out, nil
+	case []any:
+		if v == nil {
+			return nil, nil
+		}
+		out := make([]any, len(v))
+		for i, field := range v {
+			frozen, err := CloneJSON(field)
+			if err != nil {
+				return nil, err
+			}
+			out[i] = frozen
+		}
+		return out, nil
+	case []string:
+		if v == nil {
+			return nil, nil
+		}
+		out := make([]any, len(v))
+		for i, field := range v {
+			out[i] = field
+		}
+		return out, nil
+	default:
+		raw, err := json.Marshal(value)
+		if err != nil {
+			return nil, err
+		}
+		var out any
+		decoder := json.NewDecoder(bytes.NewReader(raw))
+		decoder.UseNumber()
+		if err := decoder.Decode(&out); err != nil {
+			return nil, err
+		}
+		return out, nil
+	}
+}
+
+// Clone freezes the mutable values shared with a parsed request. Protocol fields
+// stay typed; only service-defined JSON bodies and parameters need a JSON copier.
+func (f Facts) Clone() (Facts, error) {
+	var err error
+	f.Parameters, err = cloneObject(f.Parameters)
+	if err != nil {
+		return f, err
+	}
+	f.Operation = clone(f.Operation)
+	if f.Operation != nil {
+		f.Operation.Effects = slices.Clone(f.Operation.Effects)
+	}
+	f.Context.Label.Because = maps.Clone(f.Context.Label.Because)
+	f.Context.Observes.Because = maps.Clone(f.Context.Observes.Because)
+	f.Context.Channel = clone(f.Context.Channel)
+	if f.Context.Channel != nil {
+		f.Context.Channel.Because = maps.Clone(f.Context.Channel.Because)
+	}
+	d := &f.Details
+	d.HTTP = clone(d.HTTP)
+	if h := d.HTTP; h != nil {
+		h.Query, h.Headers, h.Form = cloneValues(h.Query), cloneValues(h.Headers), cloneValues(h.Form)
+		h.Secrets = slices.Clone(h.Secrets)
+		h.Body, err = CloneJSON(h.Body)
+		if err != nil {
+			return f, err
+		}
+		h.HeaderJSON, err = cloneObject(h.HeaderJSON)
+		if err != nil {
+			return f, err
+		}
+	}
+	d.GraphQL = clone(d.GraphQL)
+	if g := d.GraphQL; g != nil {
+		g.Fields = slices.Clone(g.Fields)
+		for i := range g.Fields {
+			g.Fields[i].Arguments, err = cloneObject(g.Fields[i].Arguments)
+			if err != nil {
+				return f, err
+			}
+		}
+	}
+	d.MCP = clone(d.MCP)
+	if m := d.MCP; m != nil {
+		m.Arguments, err = CloneJSON(m.Arguments)
+		if err != nil {
+			return f, err
+		}
+	}
+	d.SSH = clone(d.SSH)
+	if d.SSH != nil {
+		d.SSH.Env = clone(d.SSH.Env)
+	}
+	d.Command = clone(d.Command)
+	if d.Command != nil {
+		d.Command.Argv = slices.Clone(d.Command.Argv)
+	}
+	d.Payload = clone(d.Payload)
+	if d.Payload != nil {
+		d.Payload.Parents = slices.Clone(d.Payload.Parents)
+	}
+	d.SMTP = clone(d.SMTP)
+	if d.SMTP != nil {
+		d.SMTP.To = slices.Clone(d.SMTP.To)
+	}
+	d.Mail = clone(d.Mail)
+	if m := d.Mail; m != nil {
+		m.From, m.To, m.Cc, m.Attachments = slices.Clone(m.From), slices.Clone(m.To), slices.Clone(m.Cc), slices.Clone(m.Attachments)
+	}
+	d.SFTP = clone(d.SFTP)
+	if d.SFTP != nil {
+		d.SFTP.Attributes = maps.Clone(d.SFTP.Attributes)
+	}
+	d.Browser = clone(d.Browser)
+	if d.Browser != nil {
+		d.Browser.Secrets = slices.Clone(d.Browser.Secrets)
+	}
+	d.Redis = clone(d.Redis)
+	if d.Redis != nil {
+		d.Redis.Argv = slices.Clone(d.Redis.Argv)
+	}
+	d.MQTT = clone(d.MQTT)
+	if d.MQTT != nil {
+		d.MQTT.Payload = slices.Clone(d.MQTT.Payload)
+	}
+	d.NATS = clone(d.NATS)
+	if d.NATS != nil {
+		d.NATS.Payload = slices.Clone(d.NATS.Payload)
+		d.NATS.Headers = cloneValues(d.NATS.Headers)
+	}
+	d.IMAP, d.Postgres, d.Sign, d.TCP = clone(d.IMAP), clone(d.Postgres), clone(d.Sign), clone(d.TCP)
+	d.Message = clone(d.Message)
+	if m := d.Message; m != nil {
+		m.Body, err = CloneJSON(m.Body)
+		if err != nil {
+			return f, err
+		}
+		m.Channel.Because = maps.Clone(m.Channel.Because)
+	}
+	return f, nil
+}
+
+func clone[T any](value *T) *T {
+	if value == nil {
+		return nil
+	}
+	copy := *value
+	return &copy
+}
+
+func cloneValues[M ~map[string][]string](values M) M {
+	if values == nil {
+		return nil
+	}
+	out := make(M, len(values))
+	for key, value := range values {
+		out[key] = slices.Clone(value)
+	}
+	return out
+}
+
+func cloneObject(value map[string]any) (map[string]any, error) {
+	frozen, err := CloneJSON(value)
+	out, _ := frozen.(map[string]any)
+	return out, err
 }

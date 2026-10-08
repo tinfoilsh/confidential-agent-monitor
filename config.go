@@ -54,9 +54,10 @@ type rule struct {
 
 // policyOptions contains settings used only by policy, never connection setup.
 type policyOptions struct {
-	Private []string `json:"private,omitempty"`
-	Address string   `json:"address,omitempty"`
-	Origin  string   `json:"origin,omitempty"`
+	Private  []string `json:"private,omitempty"`
+	Address  string   `json:"address,omitempty"`
+	Origin   string   `json:"origin,omitempty"`
+	compiled *compiledOptions
 }
 
 type account struct {
@@ -138,6 +139,7 @@ func parse(raw []byte) (*config, map[string]*connection, error) {
 				}
 				connections[name] = &connection{name: name, protocol: kind, account: acct, key: key,
 					config: raw, connector: instance}
+				connections[name].publicConfig = redactedConnection(connections[name])
 			}
 		}
 	}

@@ -15,6 +15,7 @@ import (
 	"strings"
 
 	"github.com/tinfoilsh/monitor/connector/credential"
+	"github.com/tinfoilsh/monitor/facts"
 )
 
 func Decode(raw json.RawMessage, dst any) error {
@@ -69,6 +70,7 @@ type JSONSelector struct {
 	At       string `json:"at"`
 	Type     string `json:"type,omitempty"`
 	Optional bool   `json:"optional,omitempty"`
+	read     func(any) (any, bool)
 }
 
 func (s JSONSelector) Validate() error {
@@ -97,18 +99,49 @@ func CheckSelection(name string, value any, present bool, typ string, optional b
 }
 
 func SelectJSON(doc any, selectors map[string]JSONSelector) (map[string]any, error) {
-	out := map[string]any{}
+	out := make(map[string]any, len(selectors))
 	var errs []error
 	for _, name := range slices.Sorted(maps.Keys(selectors)) {
-		s := selectors[name]
-		v, present := JSONPointer(doc, s.At)
-		if err := CheckSelection(name, v, present, s.Type, s.Optional); err != nil {
+		spec := selectors[name]
+		value, present := spec.Read(doc)
+		if err := CheckSelection(name, value, present, spec.Type, spec.Optional); err != nil {
 			errs = append(errs, err)
 		} else if present {
-			out[name] = v
+			out[name] = value
 		}
 	}
 	return out, errors.Join(errs...)
+}
+
+func (s JSONSelector) Compile() (JSONSelector, error) {
+	if err := s.Validate(); err != nil {
+		return s, err
+	}
+	var err error
+	s.read, err = CompilePointer(s.At)
+	return s, err
+}
+
+func (s JSONSelector) Read(doc any) (any, bool) {
+	if s.read != nil {
+		return s.read(doc)
+	}
+	return JSONPointer(doc, s.At)
+}
+
+// Project selects the parameter values bound to a saved approval. Nil means
+// all parameters; an explicitly empty selection stays empty.
+func Project(parameters map[string]any, names []string) map[string]any {
+	if names == nil {
+		return nil
+	}
+	out := make(map[string]any, len(names))
+	for _, name := range names {
+		if value, ok := parameters[name]; ok {
+			out[name] = value
+		}
+	}
+	return out
 }
 
 // ValidJSONPointer checks the supported pointer syntax, which excludes escapes.
@@ -117,13 +150,26 @@ func ValidJSONPointer(at string) bool {
 }
 
 func JSONPointer(doc any, at string) (any, bool) {
-	if at == "" {
-		return doc, true
-	}
-	if !ValidJSONPointer(at) {
+	read, err := CompilePointer(at)
+	if err != nil {
 		return nil, false
 	}
-	for _, s := range strings.Split(at[1:], "/") {
+	return read(doc)
+}
+
+func CompilePointer(at string) (func(any) (any, bool), error) {
+	if !ValidJSONPointer(at) {
+		return nil, fmt.Errorf("invalid selector path %q", at)
+	}
+	var parts []string
+	if at != "" {
+		parts = strings.Split(at[1:], "/")
+	}
+	return func(doc any) (any, bool) { return lookupJSON(doc, parts) }, nil
+}
+
+func lookupJSON(doc any, parts []string) (any, bool) {
+	for _, s := range parts {
 		switch v := doc.(type) {
 		case map[string]any:
 			var ok bool
@@ -137,8 +183,39 @@ func JSONPointer(doc any, at string) (any, bool) {
 				return nil, false
 			}
 			doc = v[i]
+		case map[string][]string:
+			value, ok := v[s]
+			if !ok {
+				return nil, false
+			}
+			doc = value
+		case []string:
+			i, err := strconv.Atoi(s)
+			if err != nil || strconv.Itoa(i) != s || i < 0 || i >= len(v) {
+				return nil, false
+			}
+			doc = v[i]
 		default:
 			return nil, false
+		}
+	}
+	// Typed protocol maps and slices represent JSON null when nil.
+	switch value := doc.(type) {
+	case map[string]any:
+		if value == nil {
+			doc = nil
+		}
+	case map[string][]string:
+		if value == nil {
+			doc = nil
+		}
+	case []any:
+		if value == nil {
+			doc = nil
+		}
+	case []string:
+		if value == nil {
+			doc = nil
 		}
 	}
 	return doc, true
@@ -156,7 +233,7 @@ func JSONType(v any) string {
 		return "number"
 	case []any, []string:
 		return "array"
-	case map[string]any, map[string][]string:
+	case map[string]any, map[string][]string, *facts.HTTP:
 		return "object"
 	}
 	return ""
@@ -217,11 +294,8 @@ func decimalParts(n json.Number) (string, *big.Int) {
 }
 
 func JSONFields(v any) map[string]any {
-	raw, _ := json.Marshal(v)
-	var m map[string]any
-	d := json.NewDecoder(strings.NewReader(string(raw)))
-	d.UseNumber()
-	_ = d.Decode(&m)
+	v, _ = facts.CloneJSON(v)
+	m, _ := v.(map[string]any)
 	return m
 }
 

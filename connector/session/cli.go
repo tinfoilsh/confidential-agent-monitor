@@ -14,6 +14,7 @@ import (
 
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
+	"github.com/tinfoilsh/monitor/facts"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -137,15 +138,4 @@ func gitObject(b []byte) *GitDetails {
 	return object
 }
 
-type GitDetails struct {
-	Type       string   `json:"type"`
-	Tree       string   `json:"tree,omitempty"`
-	Object     string   `json:"object,omitempty"`
-	ObjectType string   `json:"object_type,omitempty"`
-	Tag        string   `json:"tag,omitempty"`
-	Parents    []string `json:"parents"`
-	Author     string   `json:"author,omitempty"`
-	Committer  string   `json:"committer,omitempty"`
-	Tagger     string   `json:"tagger,omitempty"`
-	Message    string   `json:"message"`
-}
+type GitDetails = facts.Git

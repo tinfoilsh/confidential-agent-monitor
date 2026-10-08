@@ -228,22 +228,11 @@ func innerSSH(s *connector.Stream, hostKey ssh.Signer) (*ssh.ServerConn, <-chan 
 	return ssh.NewServerConn(s, cfg)
 }
 
-type SSHDetails struct {
-	Request   string  `json:"request"`
-	Command   string  `json:"command,omitempty"`
-	Subsystem string  `json:"subsystem,omitempty"`
-	Term      string  `json:"term,omitempty"`
-	Env       *SSHEnv `json:"env,omitempty"`
-}
+type SSHDetails = facts.SSH
 
-type SSHEnv struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
-}
+type SSHEnv = facts.SSHEnv
 
-type CommandDetails struct {
-	Argv []string `json:"argv"`
-}
+type CommandDetails = facts.Command
 
 type SSHRequest struct {
 	SSH     *SSHDetails     `json:"ssh"`
@@ -252,12 +241,12 @@ type SSHRequest struct {
 }
 
 func (r *SSHRequest) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
-	details := map[string]any{"ssh": r.SSH}
+	details := facts.Details{SSH: r.SSH}
 	if r.Command != nil {
-		details["command"] = r.Command
+		details.Command = r.Command
 	}
 	if r.Payload != nil {
-		details["payload"] = r.Payload
+		details.Payload = r.Payload
 	}
 	v := r.SSH
 	if v == nil {

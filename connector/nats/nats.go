@@ -452,17 +452,10 @@ func subjectValid(s string, filter bool) bool {
 	return true
 }
 
-type Request struct {
-	Command string              `json:"command"`
-	Subject string              `json:"subject"`
-	Reply   string              `json:"reply,omitempty"`
-	Queue   string              `json:"queue,omitempty"`
-	Headers map[string][]string `json:"headers,omitempty"`
-	Payload []byte              `json:"payload,omitempty"`
-}
+type Request facts.NATS
 
 func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
-	details := map[string]any{"nats": v}
+	details := facts.Details{NATS: (*facts.NATS)(v)}
 	action := ""
 	if slices.Contains([]string{"connect", "subscribe", "receive", "publish"}, v.Command) {
 		action = v.Command

@@ -343,20 +343,11 @@ func (m *monitor) forwardMessages(p principal, nc ssh.NewChannel, port uint32) {
 	}
 }
 
-type parsedMessage struct {
-	Action  string      `json:"action"`
-	Peer    string      `json:"peer"`
-	From    string      `json:"from"`
-	To      string      `json:"to"`
-	ID      string      `json:"id,omitempty"`
-	Body    any         `json:"body,omitempty"`
-	Channel facts.Label `json:"channel"`
-	Cause   string      `json:"cause"`
-}
+type parsedMessage facts.Message
 
 func (r *parsedMessage) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
 	effect := map[string]string{"message.send": "send", "message.receive": "read", "message.ack": "write"}[r.Action]
 	return facts.Facts{Kind: facts.KindMessage, Operation: &facts.Operation{Action: r.Action, Effects: []string{effect}}, Title: r.Action + " · " + r.Peer,
-		Parameters: map[string]any{"peer": r.Peer, "id": r.ID, "body": r.Body}, Details: map[string]any{"message": r},
+		Parameters: map[string]any{"peer": r.Peer, "id": r.ID, "body": r.Body}, Details: facts.Details{Message: (*facts.Message)(r)},
 		Context: facts.Context{Observes: r.Channel, Channel: &r.Channel, Sends: r.Channel.Audience, Cause: r.Cause}}, connector.Approval{}, nil
 }

@@ -218,14 +218,11 @@ func (m *monitor) retireStreamsLocked(fingerprint string, source *connector.Stre
 	}
 }
 
-type admissionRequest struct {
-	Host string `json:"host"`
-	Port uint32 `json:"port"`
-}
+type admissionRequest facts.TCP
 
 func (r *admissionRequest) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
 	return facts.Facts{Kind: facts.KindAdmission, Operation: &facts.Operation{Action: "session.admit", Effects: []string{"session"}},
-		Title: "Open " + c.Connection, Parameters: connector.JSONFields(r), Details: map[string]any{"tcp": r},
+		Title: "Open " + c.Connection, Parameters: connector.JSONFields(r), Details: facts.Details{TCP: (*facts.TCP)(r)},
 		Context: facts.Context{Observes: c.Label, Sends: c.Label.Audience}}, connector.Approval{}, nil
 }
 

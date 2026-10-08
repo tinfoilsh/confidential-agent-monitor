@@ -14,3 +14,6 @@ testdata/
 !dev/presets/grouping_test.go
 !dev/presets/generate_test.go
 !grouping_policy_test.go
+
+!policy_optimization_test.go
+!connector/web/preset_test.go

@@ -41,13 +41,18 @@ are rejected.
 
 Each connector describes its own parsed requests in Go. HTTP and GraphQL matching
 live in `connector/web`; MCP argument selection lives in `connector/mcp`.
+Preset validation compiles JSON paths, orders selectors, and indexes HTTP
+operations by origin, method, and path. Matching still rejects overlapping
+operations. HTTP metadata selectors read struct fields directly, without
+serializing the request body.
 The shared `facts` package defines and validates the snapshot, owns label
 observation, and supplies label ordering and the effect vocabulary. The same
 effect obligations drive Go validation and disclosure defaults, Rego policy, and
 the app's permission display. They are included in the policy program's approval
-hash. Adding a protocol does not
-require adding a field to a common request struct or registering a description
-function.
+hash. `facts.Details` has typed fields for each protocol, such as
+`f.Details.HTTP.Method` and `f.Details.MCP.Arguments`. Protocol data types live in
+`facts`; parsing and description methods stay in their connectors. A new protocol
+adds its detail type and snapshot copying to `facts`.
 
 A parsed request implements `connector.Request.Describe`. It returns facts,
 approval scope and definition dependencies, and any validation error. It must
@@ -66,7 +71,9 @@ requests are described. An explicit, empty `http.operations` list leaves HTTP
 requests unknown. A preset without an HTTP section uses the connector's generic
 browse/submit actions when its catalog defines their effects.
 
-Policy and audit receive the same frozen snapshot. Common fields live at
+Policy and audit receive the same frozen snapshot. `Facts.Clone` copies mutable
+maps, slices, and pointers while sharing immutable strings. Bodies and
+service-specific parameters retain exact JSON numbers. Common fields live at
 `input.facts.operation`, `input.facts.parameters`, and `input.facts.context`.
 `input.facts.principal.key` and `.name` identify the requesting agent and come from
 the monitor's current identity settings. `input.facts.kind` is `operation`,
@@ -94,6 +101,14 @@ outside the facts snapshot. Decisions contain `facts`, `deny`, `gaps`, `next`,
 account, and the current label from `facts`. Audit records add lifecycle fields
 and results without duplicating those facts. Failed message evaluations retain
 the requesting principal, account, title, and current label.
+
+Configurations without owner policies or custom data use the built-in Go
+decision path. Equivalence tests compare it with the shipped Rego rules. Owner
+policies and custom data use the complete Rego program, preserving access to its
+helper rules. Request evaluation runs outside the global flow lock. Before
+admission, the monitor verifies that the configuration snapshot and agent label
+are unchanged; otherwise it reevaluates under the lock. Label updates and their
+durable writes remain ordered with authorization.
 
 Go computes `next` with the same label observation function used for mailbox
 history. Admission leaves the current label unchanged. Observations continue to

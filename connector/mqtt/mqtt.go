@@ -354,16 +354,10 @@ func topicValid(s string, filter bool) bool {
 	return true
 }
 
-type Request struct {
-	Command string `json:"command"`
-	Topic   string `json:"topic"`
-	QoS     byte   `json:"qos"`
-	Retain  bool   `json:"retain"`
-	Payload []byte `json:"payload,omitempty"`
-}
+type Request facts.MQTT
 
 func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
-	details := map[string]any{"mqtt": v}
+	details := facts.Details{MQTT: (*facts.MQTT)(v)}
 	action := ""
 	if slices.Contains([]string{"connect", "subscribe", "receive", "publish"}, v.Command) {
 		action = v.Command
