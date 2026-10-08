@@ -18,6 +18,7 @@ well_formed(o) if {
 	is_object(o.scope)
 	every _, spec in o.scope {
 		is_string(spec.from)
+		is_boolean(object.get(spec, "optional", false))
 	}
 	is_array(object.get(o, "grant", []))
 	every k in object.get(o, "grant", []) {
@@ -111,8 +112,29 @@ deny contains "the service record is malformed" if {
 deny contains "the request matches more than one reviewed operation" if count(matches) > 1
 
 deny contains sprintf("the request has no %s of the expected type", [name]) if {
-	some name, _ in record.scope
+	some name, spec in record.scope
 	not name in object.keys(scope)
+	not optional_absent(spec)
+}
+
+# Optional selectors may be absent, but malformed or repeated values still fail.
+optional_absent(spec) if {
+	spec.optional == true
+	spec.from == "query"
+	not spec.at in object.keys(input.http.query)
+}
+
+optional_absent(spec) if {
+	spec.optional == true
+	spec.from == "form"
+	not spec.at in object.keys(object.get(input.http, "form", {}))
+}
+
+optional_absent(spec) if {
+	spec.optional == true
+	spec.from == "body"
+	object.get(input.http.body, steps(spec.at), false) == false
+	object.get(input.http.body, steps(spec.at), true) == true
 }
 
 matched(o) if {
@@ -251,6 +273,7 @@ extract(spec) := input.http.headers[spec.at][0] if {
 extract(spec) := input.http.form[spec.at][0] if {
 	spec.from == "form"
 	spec.at != ""
+	count(input.http.form[spec.at]) == 1
 }
 
 extract(spec) := pointer(input.http.body, spec.at) if spec.from == "body"

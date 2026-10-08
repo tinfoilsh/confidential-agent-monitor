@@ -3,37 +3,234 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "Google account", "secret": true, "path": ["connections", "", "http", "values", "token"],
-       "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{MONITOR_GOOGLE_CLIENT_ID}", "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}", "scope": "https://www.googleapis.com/auth/gmail.modify", "prompt": "consent"}}
+      {
+        "key": "token",
+        "label": "Google account",
+        "secret": true,
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ],
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "token_url": "https://oauth2.googleapis.com/token",
+          "client_id": "{MONITOR_GOOGLE_CLIENT_ID}",
+          "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}",
+          "scope": "https://www.googleapis.com/auth/gmail.modify",
+          "prompt": "consent"
+        }
+      }
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
-    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "value": "token",
+              "origin": "https://gmail.googleapis.com",
+              "path": "/gmail/v1",
+              "header": "Authorization",
+              "prefix": "Bearer "
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "me",
+      "strangers": true,
+      "sends": "anyone"
+    },
     "actions": {
-      "read": {"title": "Read mail, threads, labels and drafts"},
-      "write.drafts": {"title": "Create and edit drafts"},
-      "write.organize": {"title": "Label, archive and restore mail"},
-      "delete": {"title": "Move mail and drafts to the trash"},
-      "send.mail": {"title": "Send mail and drafts"}
+      "read": {
+        "title": "Read mail, threads, labels and drafts"
+      },
+      "write.drafts": {
+        "title": "Create and edit drafts"
+      },
+      "write.organize": {
+        "title": "Label, archive and restore mail"
+      },
+      "delete": {
+        "title": "Move mail and drafts to the trash"
+      },
+      "send.mail": {
+        "title": "Send mail and drafts"
+      },
+      "admin.users": {
+        "title": "admin: users"
+      },
+      "write.watch": {
+        "title": "write: watch"
+      },
+      "write.labels": {
+        "title": "write: labels"
+      },
+      "delete.labels": {
+        "title": "delete: labels"
+      },
+      "delete.batch_delete": {
+        "title": "delete: batch_delete"
+      },
+      "write.batch_modify": {
+        "title": "write: batch_modify"
+      },
+      "delete.messages": {
+        "title": "delete: messages"
+      },
+      "send.messages": {
+        "title": "send: messages"
+      },
+      "write.auto_forwarding": {
+        "title": "write: auto_forwarding"
+      },
+      "write.imap": {
+        "title": "write: imap"
+      },
+      "write.language": {
+        "title": "write: language"
+      },
+      "write.pop": {
+        "title": "write: pop"
+      },
+      "write.vacation": {
+        "title": "write: vacation"
+      },
+      "write.identities": {
+        "title": "write: identities"
+      },
+      "delete.identities": {
+        "title": "delete: identities"
+      },
+      "write.keypairs": {
+        "title": "write: keypairs"
+      },
+      "write.delegates": {
+        "title": "write: delegates"
+      },
+      "delete.delegates": {
+        "title": "delete: delegates"
+      },
+      "write.filters": {
+        "title": "write: filters"
+      },
+      "delete.filters": {
+        "title": "delete: filters"
+      },
+      "write.forwarding_addresses": {
+        "title": "write: forwarding_addresses"
+      },
+      "delete.forwarding_addresses": {
+        "title": "delete: forwarding_addresses"
+      },
+      "send.settings": {
+        "title": "send: settings"
+      },
+      "delete.send_as": {
+        "title": "delete: send_as"
+      },
+      "send.send_as": {
+        "title": "send: send_as"
+      },
+      "delete.smime_info": {
+        "title": "delete: smime_info"
+      },
+      "send.smime_info": {
+        "title": "send: smime_info"
+      },
+      "send.set_default": {
+        "title": "send: set_default"
+      },
+      "delete.threads": {
+        "title": "delete: threads"
+      },
+      "write.untrash": {
+        "title": "write: untrash"
+      }
     }
   },
   "operations": [
-    {"id": "messages.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/messages", "params": ["q", "maxResults", "pageToken", "labelIds", "includeSpamTrash"], "scope": {"user": {"from": "path", "at": "user"}}},
-    {"id": "messages.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/messages/{message}", "params": ["format", "metadataHeaders"], "scope": {"user": {"from": "path", "at": "user"}}},
-    {"id": "messages.attachments.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/messages/{message}/attachments/{attachment}", "scope": {"user": {"from": "path", "at": "user"}}},
-    {"id": "threads.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/threads", "params": ["q", "maxResults", "pageToken", "labelIds", "includeSpamTrash"], "scope": {"user": {"from": "path", "at": "user"}}},
-    {"id": "threads.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/threads/{thread}", "params": ["format", "metadataHeaders"], "scope": {"user": {"from": "path", "at": "user"}}},
-    {"id": "labels.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/labels", "scope": {"user": {"from": "path", "at": "user"}}},
-    {"id": "drafts.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/drafts", "params": ["q", "maxResults", "pageToken", "includeSpamTrash"], "scope": {"user": {"from": "path", "at": "user"}}},
-    {"id": "drafts.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/drafts/{draft}", "params": ["format"], "scope": {"user": {"from": "path", "at": "user"}}},
-    {"id": "drafts.create", "action": "write.drafts", "effects": ["write"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/drafts", "body": "json", "scope": {"user": {"from": "path", "at": "user"}}},
-    {"id": "drafts.update", "action": "write.drafts", "effects": ["write"], "method": "PUT", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/drafts/{draft}", "body": "json", "scope": {"user": {"from": "path", "at": "user"}, "draft": {"from": "path", "at": "draft"}}},
-    {"id": "drafts.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/drafts/{draft}", "scope": {"user": {"from": "path", "at": "user"}, "draft": {"from": "path", "at": "draft"}}},
-    {"id": "drafts.send", "action": "send.mail", "effects": ["send"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/drafts/send", "body": "json", "scope": {"user": {"from": "path", "at": "user"}, "draft": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "messages.send", "action": "send.mail", "effects": ["send"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/messages/send", "body": "json", "scope": {"user": {"from": "path", "at": "user"}, "message": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "messages.modify", "action": "write.organize", "effects": ["write"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/messages/{message}/modify", "body": "json", "scope": {"user": {"from": "path", "at": "user"}, "message": {"from": "path", "at": "message"}, "labels": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "threads.modify", "action": "write.organize", "effects": ["write"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/threads/{thread}/modify", "body": "json", "scope": {"user": {"from": "path", "at": "user"}, "thread": {"from": "path", "at": "thread"}, "labels": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "messages.untrash", "action": "write.organize", "effects": ["write"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/messages/{message}/untrash", "scope": {"user": {"from": "path", "at": "user"}, "message": {"from": "path", "at": "message"}}},
-    {"id": "messages.trash", "action": "delete", "effects": ["delete"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/messages/{message}/trash", "scope": {"user": {"from": "path", "at": "user"}, "message": {"from": "path", "at": "message"}}},
-    {"id": "threads.trash", "action": "delete", "effects": ["delete"], "method": "POST", "origin": "https://gmail.googleapis.com", "path": "/gmail/v1/users/{user}/threads/{thread}/trash", "scope": {"user": {"from": "path", "at": "user"}, "thread": {"from": "path", "at": "thread"}}}
+    {"action":"read","effects":["read"],"id":"messages.list","method":"GET","origin":"https://gmail.googleapis.com","params":["q","maxResults","pageToken","labelIds","includeSpamTrash"],"path":"/gmail/v1/users/{user}/messages","scope":{"user":{"at":"user","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"messages.get","method":"GET","origin":"https://gmail.googleapis.com","params":["format","metadataHeaders"],"path":"/gmail/v1/users/{user}/messages/{message}","scope":{"user":{"at":"user","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"messages.attachments.get","method":"GET","origin":"https://gmail.googleapis.com","path":"/gmail/v1/users/{user}/messages/{message}/attachments/{attachment}","scope":{"user":{"at":"user","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"threads.list","method":"GET","origin":"https://gmail.googleapis.com","params":["q","maxResults","pageToken","labelIds","includeSpamTrash"],"path":"/gmail/v1/users/{user}/threads","scope":{"user":{"at":"user","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"threads.get","method":"GET","origin":"https://gmail.googleapis.com","params":["format","metadataHeaders"],"path":"/gmail/v1/users/{user}/threads/{thread}","scope":{"user":{"at":"user","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"labels.list","method":"GET","origin":"https://gmail.googleapis.com","path":"/gmail/v1/users/{user}/labels","scope":{"user":{"at":"user","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"drafts.list","method":"GET","origin":"https://gmail.googleapis.com","params":["q","maxResults","pageToken","includeSpamTrash"],"path":"/gmail/v1/users/{user}/drafts","scope":{"user":{"at":"user","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"drafts.get","method":"GET","origin":"https://gmail.googleapis.com","params":["format"],"path":"/gmail/v1/users/{user}/drafts/{draft}","scope":{"user":{"at":"user","from":"path"}}},
+    {"action":"write.drafts","body":"json","effects":["write"],"id":"drafts.create","method":"POST","origin":"https://gmail.googleapis.com","path":"/gmail/v1/users/{user}/drafts","scope":{"user":{"at":"user","from":"path"}}},
+    {"action":"write.drafts","body":"json","effects":["write"],"id":"drafts.update","method":"PUT","origin":"https://gmail.googleapis.com","path":"/gmail/v1/users/{user}/drafts/{draft}","scope":{"draft":{"at":"draft","from":"path"},"user":{"at":"user","from":"path"}}},
+    {"action":"delete","effects":["delete"],"id":"drafts.delete","method":"DELETE","origin":"https://gmail.googleapis.com","path":"/gmail/v1/users/{user}/drafts/{draft}","scope":{"draft":{"at":"draft","from":"path"},"user":{"at":"user","from":"path"}}},
+    {"action":"send.mail","body":"json","effects":["send"],"id":"drafts.send","method":"POST","origin":"https://gmail.googleapis.com","path":"/gmail/v1/users/{user}/drafts/send","scope":{"draft":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"path"}}},
+    {"action":"send.mail","body":"json","effects":["send"],"id":"messages.send","method":"POST","origin":"https://gmail.googleapis.com","path":"/gmail/v1/users/{user}/messages/send","scope":{"message":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"path"}}},
+    {"action":"write.organize","body":"json","effects":["write"],"id":"messages.modify","method":"POST","origin":"https://gmail.googleapis.com","path":"/gmail/v1/users/{user}/messages/{message}/modify","scope":{"labels":{"at":"","from":"body","type":"object"},"message":{"at":"message","from":"path"},"user":{"at":"user","from":"path"}}},
+    {"action":"write.organize","body":"json","effects":["write"],"id":"threads.modify","method":"POST","origin":"https://gmail.googleapis.com","path":"/gmail/v1/users/{user}/threads/{thread}/modify","scope":{"labels":{"at":"","from":"body","type":"object"},"thread":{"at":"thread","from":"path"},"user":{"at":"user","from":"path"}}},
+    {"action":"write.organize","effects":["write"],"id":"messages.untrash","method":"POST","origin":"https://gmail.googleapis.com","path":"/gmail/v1/users/{user}/messages/{message}/untrash","scope":{"message":{"at":"message","from":"path"},"user":{"at":"user","from":"path"}}},
+    {"action":"delete","effects":["delete"],"id":"messages.trash","method":"POST","origin":"https://gmail.googleapis.com","path":"/gmail/v1/users/{user}/messages/{message}/trash","scope":{"message":{"at":"message","from":"path"},"user":{"at":"user","from":"path"}}},
+    {"action":"delete","effects":["delete"],"id":"threads.trash","method":"POST","origin":"https://gmail.googleapis.com","path":"/gmail/v1/users/{user}/threads/{thread}/trash","scope":{"thread":{"at":"thread","from":"path"},"user":{"at":"user","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.getProfile","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/profile","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"admin.users","effects":["admin"],"id":"users.stop","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/stop","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.watch","body":"json","effects":["write"],"id":"users.watch","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/watch","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.history.list","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","historyTypes","labelId","maxResults","pageToken","startHistoryId"],"path":"/gmail/v1/users/{userId}/history","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.labels","body":"json","effects":["write"],"id":"users.labels.create","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/labels","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"delete.labels","effects":["delete"],"id":"users.labels.delete","method":"DELETE","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/labels/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.labels.get","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/labels/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.labels","body":"json","effects":["write"],"id":"users.labels.patch","method":"PATCH","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/labels/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.labels","body":"json","effects":["write"],"id":"users.labels.update","method":"PUT","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/labels/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"delete.batch_delete","body":"json","effects":["delete"],"id":"users.messages.batchDelete","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/messages/batchDelete","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.batch_modify","body":"json","effects":["write"],"id":"users.messages.batchModify","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/messages/batchModify","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"delete.messages","effects":["delete"],"id":"users.messages.delete","method":"DELETE","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/messages/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"send.messages","body":"json","effects":["send"],"id":"users.messages.import","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","deleted","internalDateSource","neverMarkSpam","processForCalendar"],"path":"/gmail/v1/users/{userId}/messages/import","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"send.messages","body":"json","effects":["send"],"id":"users.messages.insert","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","deleted","internalDateSource"],"path":"/gmail/v1/users/{userId}/messages","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.getAutoForwarding","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/autoForwarding","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.getImap","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/imap","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.getLanguage","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/language","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.getPop","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/pop","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.getVacation","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/vacation","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.auto_forwarding","body":"json","effects":["write"],"id":"users.settings.updateAutoForwarding","method":"PUT","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/autoForwarding","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.imap","body":"json","effects":["write"],"id":"users.settings.updateImap","method":"PUT","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/imap","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.language","body":"json","effects":["write"],"id":"users.settings.updateLanguage","method":"PUT","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/language","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.pop","body":"json","effects":["write"],"id":"users.settings.updatePop","method":"PUT","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/pop","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.vacation","body":"json","effects":["write"],"id":"users.settings.updateVacation","method":"PUT","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/vacation","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.identities","body":"json","effects":["write"],"id":"users.settings.cse.identities.create","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/cse/identities","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"delete.identities","effects":["delete"],"id":"users.settings.cse.identities.delete","method":"DELETE","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/cse/identities/{cseEmailAddress}","scope":{"cseEmailAddress":{"at":"cseEmailAddress","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.cse.identities.get","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/cse/identities/{cseEmailAddress}","scope":{"cseEmailAddress":{"at":"cseEmailAddress","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.cse.identities.list","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/gmail/v1/users/{userId}/settings/cse/identities","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.identities","body":"json","effects":["write"],"id":"users.settings.cse.identities.patch","method":"PATCH","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/cse/identities/{emailAddress}","scope":{"emailAddress":{"at":"emailAddress","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.keypairs","body":"json","effects":["write"],"id":"users.settings.cse.keypairs.create","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","chainValidation"],"path":"/gmail/v1/users/{userId}/settings/cse/keypairs","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.keypairs","body":"json","effects":["write"],"id":"users.settings.cse.keypairs.disable","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/cse/keypairs/{keyPairId}:disable","scope":{"keyPairId":{"at":"keyPairId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.keypairs","body":"json","effects":["write"],"id":"users.settings.cse.keypairs.enable","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/cse/keypairs/{keyPairId}:enable","scope":{"keyPairId":{"at":"keyPairId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.cse.keypairs.get","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/cse/keypairs/{keyPairId}","scope":{"keyPairId":{"at":"keyPairId","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.cse.keypairs.list","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/gmail/v1/users/{userId}/settings/cse/keypairs","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.keypairs","body":"json","effects":["write"],"id":"users.settings.cse.keypairs.obliterate","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/cse/keypairs/{keyPairId}:obliterate","scope":{"keyPairId":{"at":"keyPairId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.delegates","body":"json","effects":["write"],"id":"users.settings.delegates.create","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/delegates","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"delete.delegates","effects":["delete"],"id":"users.settings.delegates.delete","method":"DELETE","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/delegates/{delegateEmail}","scope":{"delegateEmail":{"at":"delegateEmail","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.delegates.get","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/delegates/{delegateEmail}","scope":{"delegateEmail":{"at":"delegateEmail","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.delegates.list","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/delegates","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.filters","body":"json","effects":["write"],"id":"users.settings.filters.create","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/filters","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"delete.filters","effects":["delete"],"id":"users.settings.filters.delete","method":"DELETE","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/filters/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.filters.get","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/filters/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.filters.list","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/filters","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.forwarding_addresses","body":"json","effects":["write"],"id":"users.settings.forwardingAddresses.create","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/forwardingAddresses","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"delete.forwarding_addresses","effects":["delete"],"id":"users.settings.forwardingAddresses.delete","method":"DELETE","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/forwardingAddresses/{forwardingEmail}","scope":{"forwardingEmail":{"at":"forwardingEmail","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.forwardingAddresses.get","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/forwardingAddresses/{forwardingEmail}","scope":{"forwardingEmail":{"at":"forwardingEmail","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.forwardingAddresses.list","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/forwardingAddresses","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"send.settings","body":"json","effects":["send"],"id":"users.settings.sendAs.create","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/sendAs","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"delete.send_as","effects":["delete"],"id":"users.settings.sendAs.delete","method":"DELETE","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}","scope":{"query":{"at":"","from":"query","type":"object"},"sendAsEmail":{"at":"sendAsEmail","from":"path"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.sendAs.get","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}","scope":{"query":{"at":"","from":"query","type":"object"},"sendAsEmail":{"at":"sendAsEmail","from":"path"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.sendAs.list","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/sendAs","scope":{"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"send.send_as","body":"json","effects":["send"],"id":"users.settings.sendAs.patch","method":"PATCH","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"sendAsEmail":{"at":"sendAsEmail","from":"path"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"send.send_as","body":"json","effects":["send"],"id":"users.settings.sendAs.update","method":"PUT","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"sendAsEmail":{"at":"sendAsEmail","from":"path"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.sendAs.verify","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/verify","scope":{"query":{"at":"","from":"query","type":"object"},"sendAsEmail":{"at":"sendAsEmail","from":"path"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"delete.smime_info","effects":["delete"],"id":"users.settings.sendAs.smimeInfo.delete","method":"DELETE","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"sendAsEmail":{"at":"sendAsEmail","from":"path"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.sendAs.smimeInfo.get","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"sendAsEmail":{"at":"sendAsEmail","from":"path"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"send.smime_info","body":"json","effects":["send"],"id":"users.settings.sendAs.smimeInfo.insert","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"sendAsEmail":{"at":"sendAsEmail","from":"path"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"users.settings.sendAs.smimeInfo.list","method":"GET","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo","scope":{"query":{"at":"","from":"query","type":"object"},"sendAsEmail":{"at":"sendAsEmail","from":"path"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"send.set_default","effects":["send"],"id":"users.settings.sendAs.smimeInfo.setDefault","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/settings/sendAs/{sendAsEmail}/smimeInfo/{id}/setDefault","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"sendAsEmail":{"at":"sendAsEmail","from":"path"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"delete.threads","effects":["delete"],"id":"users.threads.delete","method":"DELETE","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/threads/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}},
+    {"action":"write.untrash","effects":["write"],"id":"users.threads.untrash","method":"POST","origin":"https://gmail.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/gmail/v1/users/{userId}/threads/{id}/untrash","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"userId":{"at":"userId","from":"path"}}}
   ]
 }

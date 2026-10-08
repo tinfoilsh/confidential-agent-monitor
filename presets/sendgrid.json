@@ -3,20 +3,109 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "API key", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+      {
+        "key": "token",
+        "label": "API key",
+        "secret": true,
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ]
+      }
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.sendgrid.com", "path": "/v3", "header": "Authorization", "prefix": "Bearer "}]}}},
-    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "value": "token",
+              "origin": "https://api.sendgrid.com",
+              "path": "/v3",
+              "header": "Authorization",
+              "prefix": "Bearer "
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "team",
+      "strangers": true,
+      "sends": "anyone"
+    },
     "actions": {
-      "read": {"title": "Read contacts and templates"},
-      "write.contacts": {"title": "Create and update contacts"},
-      "send.mail": {"title": "Send mail"}
+      "read": {
+        "title": "Read contacts and templates"
+      },
+      "write.contacts": {
+        "title": "Create and update contacts"
+      },
+      "send.mail": {
+        "title": "Send mail"
+      },
+      "write.batch": {
+        "title": "write: batch"
+      },
+      "send.send": {
+        "title": "send: send"
+      },
+      "delete.contacts": {
+        "title": "delete: contacts"
+      },
+      "write.imports": {
+        "title": "write: imports"
+      },
+      "delete.identifiers": {
+        "title": "delete: identifiers"
+      },
+      "write.lists": {
+        "title": "write: lists"
+      },
+      "delete.lists": {
+        "title": "delete: lists"
+      }
     }
   },
   "operations": [
-    {"id": "templates.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.sendgrid.com", "path": "/v3/templates", "params": ["generations", "page_size"], "headers": {"On-Behalf-Of": null}, "scope": {}},
-    {"id": "contacts.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.sendgrid.com", "path": "/v3/marketing/contacts", "params": ["page_size"], "headers": {"On-Behalf-Of": null}, "scope": {}},
-    {"id": "contacts.upsert", "action": "write.contacts", "effects": ["write"], "method": "PUT", "origin": "https://api.sendgrid.com", "path": "/v3/marketing/contacts", "headers": {"On-Behalf-Of": null}, "body": "json", "scope": {"contacts": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "mail.send", "action": "send.mail", "effects": ["send"], "method": "POST", "origin": "https://api.sendgrid.com", "path": "/v3/mail/send", "headers": {"On-Behalf-Of": null}, "body": "json", "scope": {"mail": {"from": "body", "at": "", "type": "object"}}}
+    {"action":"read","effects":["read"],"headers":{"On-Behalf-Of":null},"id":"templates.list","method":"GET","origin":"https://api.sendgrid.com","params":["generations","page_size"],"path":"/v3/templates","scope":{}},
+    {"action":"read","effects":["read"],"headers":{"On-Behalf-Of":null},"id":"contacts.list","method":"GET","origin":"https://api.sendgrid.com","params":["page_size"],"path":"/v3/marketing/contacts","scope":{}},
+    {"action":"write.contacts","body":"json","effects":["write"],"headers":{"On-Behalf-Of":null},"id":"contacts.upsert","method":"PUT","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts","scope":{"contacts":{"at":"","from":"body","type":"object"}}},
+    {"action":"send.mail","body":"json","effects":["send"],"headers":{"On-Behalf-Of":null},"id":"mail.send","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/mail/send","scope":{"mail":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.batch","effects":["write"],"id":"CreateMailBatch","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/mail/batch","scope":{}},
+    {"action":"read","effects":["read"],"id":"GetMailBatch","method":"GET","origin":"https://api.sendgrid.com","path":"/v3/mail/batch/{batch_id}","scope":{"batch_id":{"at":"batch_id","from":"path"}}},
+    {"action":"send.send","effects":["send"],"id":"SendMail","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/mail/send","scope":{}},
+    {"action":"delete.contacts","effects":["delete"],"id":"DeleteContact","method":"DELETE","origin":"https://api.sendgrid.com","params":["delete_all_contacts","ids"],"path":"/v3/marketing/contacts","scope":{"ids":{"at":"ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.contacts","effects":["write"],"id":"UpdateContact","method":"PUT","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts","scope":{}},
+    {"action":"read","effects":["read"],"id":"ListBatchedContact","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/batch","scope":{}},
+    {"action":"read","body":"json","effects":["read"],"id":"ListBatchedContact.json.26edec19e181","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/batch","scope":{"ids":{"at":"/ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"ListContactCount","method":"GET","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/count","scope":{}},
+    {"action":"read","effects":["read"],"id":"ListExportContact","method":"GET","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/exports","scope":{}},
+    {"action":"read","effects":["read"],"id":"ExportContact","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/exports","scope":{}},
+    {"action":"read","body":"json","effects":["read"],"id":"ExportContact.json.0c25dddabf13","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/exports","scope":{"list_ids":{"at":"/list_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"},"segment_ids":{"at":"/segment_ids","from":"body","optional":true,"type":"array"}}},
+    {"action":"read","effects":["read"],"id":"GetExportContact","method":"GET","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/exports/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.imports","effects":["write"],"id":"ImportContact","method":"PUT","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/imports","scope":{}},
+    {"action":"write.imports","body":"json","effects":["write"],"id":"ImportContact.json.07e57b5eb197","method":"PUT","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/imports","scope":{"list_ids":{"at":"/list_ids","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetImportContact","method":"GET","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/imports/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"SearchContact","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/search","scope":{}},
+    {"action":"read","body":"json","effects":["read"],"id":"SearchContact.json.4cf1b01690c6","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"ListContactByEmail","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/search/emails","scope":{}},
+    {"action":"read","body":"json","effects":["read"],"id":"ListContactByEmail.json.3bef41982ae7","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/search/emails","scope":{"anonymous_id":{"at":"/anonymous_id","from":"body","optional":true},"emails":{"at":"/emails","from":"body","type":"array"},"external_id":{"at":"/external_id","from":"body","optional":true},"phone_number_id":{"at":"/phone_number_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetContactByIdentifiers","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/search/identifiers/{identifier_type}","scope":{"identifier_type":{"at":"identifier_type","from":"path"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"GetContactByIdentifiers.json.73d6c6d7b002","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/search/identifiers/{identifier_type}","scope":{"identifier_type":{"at":"identifier_type","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.identifiers","effects":["delete"],"id":"DeleteContactIdentifier","method":"DELETE","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/{contact_id}/identifiers","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+    {"action":"delete.identifiers","body":"json","effects":["delete"],"id":"DeleteContactIdentifier.json.086fd1bae3a7","method":"DELETE","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/{contact_id}/identifiers","scope":{"contact_id":{"at":"contact_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetContact","method":"GET","origin":"https://api.sendgrid.com","path":"/v3/marketing/contacts/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"ListMarketingList","method":"GET","origin":"https://api.sendgrid.com","params":["page_size","page_token"],"path":"/v3/marketing/lists","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.lists","effects":["write"],"id":"CreateMarketingList","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/marketing/lists","scope":{}},
+    {"action":"write.lists","body":"json","effects":["write"],"id":"CreateMarketingList.json.c38071095025","method":"POST","origin":"https://api.sendgrid.com","path":"/v3/marketing/lists","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.lists","effects":["delete"],"id":"DeleteMarketingList","method":"DELETE","origin":"https://api.sendgrid.com","params":["delete_contacts"],"path":"/v3/marketing/lists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetMarketingList","method":"GET","origin":"https://api.sendgrid.com","params":["contact_sample"],"path":"/v3/marketing/lists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.lists","effects":["write"],"id":"UpdateMarketingList","method":"PATCH","origin":"https://api.sendgrid.com","path":"/v3/marketing/lists/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.lists","body":"json","effects":["write"],"id":"UpdateMarketingList.json.86800b2ea990","method":"PATCH","origin":"https://api.sendgrid.com","path":"/v3/marketing/lists/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.contacts","effects":["delete"],"id":"DeleteContact.none.68ca2705d24b","method":"DELETE","origin":"https://api.sendgrid.com","params":["contact_ids"],"path":"/v3/marketing/lists/{id}/contacts","scope":{"contact_ids":{"at":"contact_ids","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"ListContactCount.none.fc7facd9d215","method":"GET","origin":"https://api.sendgrid.com","path":"/v3/marketing/lists/{id}/contacts/count","scope":{"id":{"at":"id","from":"path"}}}
   ]
 }

@@ -58,9 +58,24 @@
   "note": "No published spec; per-tenant {domain}.agilecrm.com, basic auth email:apiKey"
  },
  "airtable": {
-  "specs": [],
-  "note": "Airtable publishes no official OpenAPI for the Web API",
-  "preset": "airtable"
+  "specs": [
+   {
+    "format": "airtable",
+    "url": "https://airtable.com/developers/web/api/introduction",
+    "kind": "vendor",
+    "origin": "https://api.airtable.com"
+   }
+  ],
+  "note": "Official OpenAPI extracted from the public developer documentation; includes Web API and SCIM operations.",
+  "preset": "airtable",
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "families": [
+   "Web API v0",
+   "SCIM v2"
+  ]
  },
  "airtop": {
   "specs": [
@@ -95,8 +110,18 @@
   "auth": {
    "header": "x-api-key"
   },
-  "note": "Official Stainless spec bundled in SDK repo, gzip-compressed JSON; also needs anthropic-version header",
-  "preset": "anthropic"
+  "note": "Pinned SDK specification includes stable and beta request variants. Public availability and admin credentials need review per operation; anthropic-version remains part of reviewed request contracts.",
+  "preset": "anthropic",
+  "families": [
+   "Messages",
+   "Models",
+   "Message Batches",
+   "Files",
+   "Skills",
+   "Managed Agents",
+   "Organization Admin",
+   "SDK beta variants"
+  ]
  },
  "api_template_io": {
   "specs": [],
@@ -2868,16 +2893,33 @@
  "slack": {
   "specs": [
    {
+    "format": "slack",
+    "url": "https://docs.slack.dev/sitemap.xml",
+    "kind": "vendor",
+    "origin": "https://slack.com"
+   },
+   {
     "format": "swagger",
     "github": "slackapi/slack-api-specs",
     "ref": "master",
     "file": "web-api/slack_web_openapi_v2.json",
-    "kind": "vendor",
+    "kind": "vendor-archived",
     "origin": "https://slack.com"
    }
   ],
-  "note": "Vendor spec repo is no longer updated, so newer methods may be missing",
-  "preset": "slack"
+  "note": "Official current Web API method documentation, indexed by the vendor sitemap; each page has a content hash. SCIM, Audit Logs, and Legal Holds are separate API families.",
+  "preset": "slack",
+  "auth": {
+   "header": "Authorization",
+   "prefix": "Bearer "
+  },
+  "families": [
+   "Web API"
+  ],
+  "exclusions": {
+   "Events API": "Inbound event payloads are outside outgoing request recognition.",
+   "SCIM, Audit Logs, Legal Holds": "Separate HTTP API families with no configured descriptor source yet."
+  }
  },
  "sms77": {
   "specs": [

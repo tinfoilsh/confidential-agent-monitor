@@ -3,22 +3,240 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "Private app access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+      {
+        "key": "token",
+        "label": "Private app access token",
+        "secret": true,
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ]
+      }
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.hubapi.com", "path": "/crm/v3", "header": "Authorization", "prefix": "Bearer "}]}}},
-    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "value": "token",
+              "origin": "https://api.hubapi.com",
+              "path": "/crm/v3",
+              "header": "Authorization",
+              "prefix": "Bearer "
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "team",
+      "strangers": true,
+      "sends": "anyone"
+    },
     "actions": {
-      "read": {"title": "List, search and read CRM objects"},
-      "write": {"title": "Create and edit CRM objects"},
-      "delete": {"title": "Delete CRM objects"}
+      "read": {
+        "title": "List, search and read CRM objects"
+      },
+      "write": {
+        "title": "Create and edit CRM objects"
+      },
+      "delete": {
+        "title": "Delete CRM objects"
+      },
+      "write.contacts": {
+        "title": "write: contacts"
+      },
+      "write.archive": {
+        "title": "write: archive"
+      },
+      "write.create": {
+        "title": "write: create"
+      },
+      "write.update": {
+        "title": "write: update"
+      },
+      "write.upsert": {
+        "title": "write: upsert"
+      },
+      "delete.gdpr_delete": {
+        "title": "delete: gdpr_delete"
+      },
+      "write.merge": {
+        "title": "write: merge"
+      },
+      "delete.contacts": {
+        "title": "delete: contacts"
+      },
+      "write.companies": {
+        "title": "write: companies"
+      },
+      "delete.companies": {
+        "title": "delete: companies"
+      },
+      "write.0_3": {
+        "title": "write: 0_3"
+      },
+      "delete.0_3": {
+        "title": "delete: 0_3"
+      },
+      "write.tickets": {
+        "title": "write: tickets"
+      },
+      "delete.tickets": {
+        "title": "delete: tickets"
+      },
+      "write.folders": {
+        "title": "write: folders"
+      },
+      "write.move_list": {
+        "title": "write: move_list"
+      },
+      "delete.folders": {
+        "title": "delete: folders"
+      },
+      "write.move": {
+        "title": "write: move"
+      },
+      "write.idmapping": {
+        "title": "write: idmapping"
+      },
+      "delete.lists": {
+        "title": "delete: lists"
+      },
+      "delete.memberships": {
+        "title": "delete: memberships"
+      },
+      "write.add": {
+        "title": "write: add"
+      },
+      "delete.add_and_remove": {
+        "title": "delete: add_and_remove"
+      },
+      "write.add_from": {
+        "title": "write: add_from"
+      },
+      "delete.remove": {
+        "title": "delete: remove"
+      },
+      "write.lists": {
+        "title": "write: lists"
+      },
+      "delete.schedule_conversion": {
+        "title": "delete: schedule_conversion"
+      },
+      "write.schedule_conversion": {
+        "title": "write: schedule_conversion"
+      },
+      "write.update_list_filters": {
+        "title": "write: update_list_filters"
+      },
+      "write.update_list_name": {
+        "title": "write: update_list_name"
+      },
+      "write.forms": {
+        "title": "write: forms"
+      },
+      "delete.forms": {
+        "title": "delete: forms"
+      }
     }
   },
   "operations": [
-    {"id": "objects.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.hubapi.com", "path": "/crm/v3/objects/{object}", "params": ["limit", "after", "properties", "associations"], "scope": {"object": {"from": "path", "at": "object"}}},
-    {"id": "objects.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.hubapi.com", "path": "/crm/v3/objects/{object}/{id}", "params": ["properties", "associations"], "scope": {"object": {"from": "path", "at": "object"}, "id": {"from": "path", "at": "id"}}},
-    {"id": "objects.search", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://api.hubapi.com", "path": "/crm/v3/objects/{object}/search", "body": "json", "scope": {"object": {"from": "path", "at": "object"}, "query": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "objects.create", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://api.hubapi.com", "path": "/crm/v3/objects/{object}", "body": "json", "scope": {"object": {"from": "path", "at": "object"}, "record": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "objects.update", "action": "write", "effects": ["write"], "method": "PATCH", "origin": "https://api.hubapi.com", "path": "/crm/v3/objects/{object}/{id}", "body": "json", "scope": {"object": {"from": "path", "at": "object"}, "id": {"from": "path", "at": "id"}, "changes": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "objects.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.hubapi.com", "path": "/crm/v3/objects/{object}/{id}", "scope": {"object": {"from": "path", "at": "object"}, "id": {"from": "path", "at": "id"}}}
+    {"action":"read","effects":["read"],"id":"objects.list","method":"GET","origin":"https://api.hubapi.com","params":["limit","after","properties","associations"],"path":"/crm/v3/objects/{object}","scope":{"object":{"at":"object","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"objects.get","method":"GET","origin":"https://api.hubapi.com","params":["properties","associations"],"path":"/crm/v3/objects/{object}/{id}","scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"objects.search","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/{object}/search","scope":{"object":{"at":"object","from":"path"},"query":{"at":"","from":"body","type":"object"}}},
+    {"action":"write","body":"json","effects":["write"],"id":"objects.create","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/{object}","scope":{"object":{"at":"object","from":"path"},"record":{"at":"","from":"body","type":"object"}}},
+    {"action":"write","body":"json","effects":["write"],"id":"objects.update","method":"PATCH","origin":"https://api.hubapi.com","path":"/crm/v3/objects/{object}/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+    {"action":"delete","effects":["delete"],"id":"objects.delete","method":"DELETE","origin":"https://api.hubapi.com","path":"/crm/v3/objects/{object}/{id}","scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/objects/contacts_getPage","method":"GET","origin":"https://api.hubapi.com","params":["after","archived","associations","limit","properties","propertiesWithHistory"],"path":"/crm/v3/objects/contacts","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.contacts","body":"json","effects":["write"],"id":"post-/crm/v3/objects/contacts_create","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/contacts","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.archive","body":"json","effects":["write"],"id":"post-/crm/v3/objects/contacts/batch/archive_archive","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/contacts/batch/archive","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.create","body":"json","effects":["write"],"id":"post-/crm/v3/objects/contacts/batch/create_create","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/contacts/batch/create","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"post-/crm/v3/objects/contacts/batch/read_read","method":"POST","origin":"https://api.hubapi.com","params":["archived"],"path":"/crm/v3/objects/contacts/batch/read","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.update","body":"json","effects":["write"],"id":"post-/crm/v3/objects/contacts/batch/update_update","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/contacts/batch/update","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.upsert","body":"json","effects":["write"],"id":"post-/crm/v3/objects/contacts/batch/upsert_upsert","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/contacts/batch/upsert","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.gdpr_delete","body":"json","effects":["delete"],"id":"post-/crm/v3/objects/contacts/gdpr-delete_purge","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/contacts/gdpr-delete","scope":{"objectId":{"at":"/objectId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.merge","body":"json","effects":["write"],"id":"post-/crm/v3/objects/contacts/merge_merge","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/contacts/merge","scope":{"primaryObjectId":{"at":"/primaryObjectId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"post-/crm/v3/objects/contacts/search_doSearch","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/contacts/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.contacts","effects":["delete"],"id":"delete-/crm/v3/objects/contacts/{contactId}_archive","method":"DELETE","origin":"https://api.hubapi.com","path":"/crm/v3/objects/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/objects/contacts/{contactId}_getById","method":"GET","origin":"https://api.hubapi.com","params":["archived","associations","idProperty","properties","propertiesWithHistory"],"path":"/crm/v3/objects/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.contacts","body":"json","effects":["write"],"id":"patch-/crm/v3/objects/contacts/{contactId}_update","method":"PATCH","origin":"https://api.hubapi.com","params":["idProperty"],"path":"/crm/v3/objects/contacts/{contactId}","scope":{"contactId":{"at":"contactId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/objects/companies_getPage","method":"GET","origin":"https://api.hubapi.com","params":["after","archived","associations","limit","properties","propertiesWithHistory"],"path":"/crm/v3/objects/companies","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.companies","body":"json","effects":["write"],"id":"post-/crm/v3/objects/companies_create","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/companies","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.archive","body":"json","effects":["write"],"id":"post-/crm/v3/objects/companies/batch/archive_archive","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/companies/batch/archive","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.create","body":"json","effects":["write"],"id":"post-/crm/v3/objects/companies/batch/create_create","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/companies/batch/create","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"post-/crm/v3/objects/companies/batch/read_read","method":"POST","origin":"https://api.hubapi.com","params":["archived"],"path":"/crm/v3/objects/companies/batch/read","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.update","body":"json","effects":["write"],"id":"post-/crm/v3/objects/companies/batch/update_update","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/companies/batch/update","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.upsert","body":"json","effects":["write"],"id":"post-/crm/v3/objects/companies/batch/upsert_upsert","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/companies/batch/upsert","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.merge","body":"json","effects":["write"],"id":"post-/crm/v3/objects/companies/merge_merge","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/companies/merge","scope":{"primaryObjectId":{"at":"/primaryObjectId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"post-/crm/v3/objects/companies/search_doSearch","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/companies/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.companies","effects":["delete"],"id":"delete-/crm/v3/objects/companies/{companyId}_archive","method":"DELETE","origin":"https://api.hubapi.com","path":"/crm/v3/objects/companies/{companyId}","scope":{"companyId":{"at":"companyId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/objects/companies/{companyId}_getById","method":"GET","origin":"https://api.hubapi.com","params":["archived","associations","idProperty","properties","propertiesWithHistory"],"path":"/crm/v3/objects/companies/{companyId}","scope":{"companyId":{"at":"companyId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.companies","body":"json","effects":["write"],"id":"patch-/crm/v3/objects/companies/{companyId}_update","method":"PATCH","origin":"https://api.hubapi.com","params":["idProperty"],"path":"/crm/v3/objects/companies/{companyId}","scope":{"companyId":{"at":"companyId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/objects/0-3_getPage","method":"GET","origin":"https://api.hubapi.com","params":["after","archived","associations","limit","properties","propertiesWithHistory"],"path":"/crm/v3/objects/0-3","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.0_3","body":"json","effects":["write"],"id":"post-/crm/v3/objects/0-3_create","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/0-3","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.archive","body":"json","effects":["write"],"id":"post-/crm/v3/objects/0-3/batch/archive_archive","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/0-3/batch/archive","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.create","body":"json","effects":["write"],"id":"post-/crm/v3/objects/0-3/batch/create_create","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/0-3/batch/create","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"post-/crm/v3/objects/0-3/batch/read_read","method":"POST","origin":"https://api.hubapi.com","params":["archived"],"path":"/crm/v3/objects/0-3/batch/read","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.update","body":"json","effects":["write"],"id":"post-/crm/v3/objects/0-3/batch/update_update","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/0-3/batch/update","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.upsert","body":"json","effects":["write"],"id":"post-/crm/v3/objects/0-3/batch/upsert_upsert","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/0-3/batch/upsert","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.merge","body":"json","effects":["write"],"id":"post-/crm/v3/objects/0-3/merge_merge","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/0-3/merge","scope":{"primaryObjectId":{"at":"/primaryObjectId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"post-/crm/v3/objects/0-3/search_doSearch","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/0-3/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.0_3","effects":["delete"],"id":"delete-/crm/v3/objects/0-3/{dealId}_archive","method":"DELETE","origin":"https://api.hubapi.com","path":"/crm/v3/objects/0-3/{dealId}","scope":{"dealId":{"at":"dealId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/objects/0-3/{dealId}_getById","method":"GET","origin":"https://api.hubapi.com","params":["archived","associations","idProperty","properties","propertiesWithHistory"],"path":"/crm/v3/objects/0-3/{dealId}","scope":{"dealId":{"at":"dealId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.0_3","body":"json","effects":["write"],"id":"patch-/crm/v3/objects/0-3/{dealId}_update","method":"PATCH","origin":"https://api.hubapi.com","params":["idProperty"],"path":"/crm/v3/objects/0-3/{dealId}","scope":{"dealId":{"at":"dealId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/objects/tickets_getPage","method":"GET","origin":"https://api.hubapi.com","params":["after","archived","associations","limit","properties","propertiesWithHistory"],"path":"/crm/v3/objects/tickets","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.tickets","body":"json","effects":["write"],"id":"post-/crm/v3/objects/tickets_create","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/tickets","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.archive","body":"json","effects":["write"],"id":"post-/crm/v3/objects/tickets/batch/archive_archive","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/tickets/batch/archive","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.create","body":"json","effects":["write"],"id":"post-/crm/v3/objects/tickets/batch/create_create","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/tickets/batch/create","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"post-/crm/v3/objects/tickets/batch/read_read","method":"POST","origin":"https://api.hubapi.com","params":["archived"],"path":"/crm/v3/objects/tickets/batch/read","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.update","body":"json","effects":["write"],"id":"post-/crm/v3/objects/tickets/batch/update_update","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/tickets/batch/update","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.upsert","body":"json","effects":["write"],"id":"post-/crm/v3/objects/tickets/batch/upsert_upsert","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/tickets/batch/upsert","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.merge","body":"json","effects":["write"],"id":"post-/crm/v3/objects/tickets/merge_merge","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/tickets/merge","scope":{"primaryObjectId":{"at":"/primaryObjectId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"post-/crm/v3/objects/tickets/search_doSearch","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/objects/tickets/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.tickets","effects":["delete"],"id":"delete-/crm/v3/objects/tickets/{ticketId}_archive","method":"DELETE","origin":"https://api.hubapi.com","path":"/crm/v3/objects/tickets/{ticketId}","scope":{"ticketId":{"at":"ticketId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/objects/tickets/{ticketId}_getById","method":"GET","origin":"https://api.hubapi.com","params":["archived","associations","idProperty","properties","propertiesWithHistory"],"path":"/crm/v3/objects/tickets/{ticketId}","scope":{"query":{"at":"","from":"query","type":"object"},"ticketId":{"at":"ticketId","from":"path"}}},
+    {"action":"write.tickets","body":"json","effects":["write"],"id":"patch-/crm/v3/objects/tickets/{ticketId}_update","method":"PATCH","origin":"https://api.hubapi.com","params":["idProperty"],"path":"/crm/v3/objects/tickets/{ticketId}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"ticketId":{"at":"ticketId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/owners_/crm/v3/owners","method":"GET","origin":"https://api.hubapi.com","params":["after","archived","email","limit"],"path":"/crm/v3/owners","scope":{"email":{"at":"email","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/owners/{ownerId}_getById","method":"GET","origin":"https://api.hubapi.com","params":["archived","idProperty"],"path":"/crm/v3/owners/{ownerId}","scope":{"ownerId":{"at":"ownerId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/lists_/crm/v3/lists","method":"GET","origin":"https://api.hubapi.com","params":["includeFilters","listIds"],"path":"/crm/v3/lists","scope":{"listIds":{"at":"listIds","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"post-/crm/v3/lists_/crm/v3/lists","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/lists","scope":{"listFolderId":{"at":"/listFolderId","from":"body","optional":true,"type":"number"},"name":{"at":"/name","from":"body"},"objectTypeId":{"at":"/objectTypeId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/lists/folders_/crm/v3/lists/folders","method":"GET","origin":"https://api.hubapi.com","params":["folderId"],"path":"/crm/v3/lists/folders","scope":{"folderId":{"at":"folderId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.folders","body":"json","effects":["write"],"id":"post-/crm/v3/lists/folders_/crm/v3/lists/folders","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/lists/folders","scope":{"name":{"at":"/name","from":"body"},"parentFolderId":{"at":"/parentFolderId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.move_list","body":"json","effects":["write"],"id":"put-/crm/v3/lists/folders/move-list_/crm/v3/lists/folders/move-list","method":"PUT","origin":"https://api.hubapi.com","path":"/crm/v3/lists/folders/move-list","scope":{"listId":{"at":"/listId","from":"body"},"newFolderId":{"at":"/newFolderId","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.folders","effects":["delete"],"id":"delete-/crm/v3/lists/folders/{folderId}_/crm/v3/lists/folders/{folderId}","method":"DELETE","origin":"https://api.hubapi.com","path":"/crm/v3/lists/folders/{folderId}","scope":{"folderId":{"at":"folderId","from":"path"}}},
+    {"action":"write.move","effects":["write"],"id":"put-/crm/v3/lists/folders/{folderId}/move/{newParentFolderId}_/crm/v3/lists/folders/{folderId}/move/{newParentFolderId}","method":"PUT","origin":"https://api.hubapi.com","path":"/crm/v3/lists/folders/{folderId}/move/{newParentFolderId}","scope":{"folderId":{"at":"folderId","from":"path"},"newParentFolderId":{"at":"newParentFolderId","from":"path"}}},
+    {"action":"write.folders","effects":["write"],"id":"put-/crm/v3/lists/folders/{folderId}/rename_/crm/v3/lists/folders/{folderId}/rename","method":"PUT","origin":"https://api.hubapi.com","params":["newFolderName"],"path":"/crm/v3/lists/folders/{folderId}/rename","scope":{"folderId":{"at":"folderId","from":"path"},"newFolderName":{"at":"newFolderName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/lists/idmapping_/crm/v3/lists/idmapping","method":"GET","origin":"https://api.hubapi.com","params":["legacyListId"],"path":"/crm/v3/lists/idmapping","scope":{"legacyListId":{"at":"legacyListId","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.idmapping","body":"json","effects":["write"],"id":"post-/crm/v3/lists/idmapping_/crm/v3/lists/idmapping","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/lists/idmapping","scope":{"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/lists/object-type-id/{objectTypeId}/name/{listName}_/crm/v3/lists/object-type-id/{objectTypeId}/name/{listName}","method":"GET","origin":"https://api.hubapi.com","params":["includeFilters"],"path":"/crm/v3/lists/object-type-id/{objectTypeId}/name/{listName}","scope":{"listName":{"at":"listName","from":"path"},"objectTypeId":{"at":"objectTypeId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"post-/crm/v3/lists/records/memberships/batch/read_/crm/v3/lists/records/memberships/batch/read","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/lists/records/memberships/batch/read","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/lists/records/{objectTypeId}/{recordId}/memberships_/crm/v3/lists/records/{objectTypeId}/{recordId}/memberships","method":"GET","origin":"https://api.hubapi.com","path":"/crm/v3/lists/records/{objectTypeId}/{recordId}/memberships","scope":{"objectTypeId":{"at":"objectTypeId","from":"path"},"recordId":{"at":"recordId","from":"path"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"post-/crm/v3/lists/search_/crm/v3/lists/search","method":"POST","origin":"https://api.hubapi.com","path":"/crm/v3/lists/search","scope":{"listIds":{"at":"/listIds","from":"body","optional":true,"type":"array"},"objectTypeId":{"at":"/objectTypeId","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.lists","effects":["delete"],"id":"delete-/crm/v3/lists/{listId}_/crm/v3/lists/{listId}","method":"DELETE","origin":"https://api.hubapi.com","path":"/crm/v3/lists/{listId}","scope":{"listId":{"at":"listId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/lists/{listId}_/crm/v3/lists/{listId}","method":"GET","origin":"https://api.hubapi.com","params":["includeFilters"],"path":"/crm/v3/lists/{listId}","scope":{"listId":{"at":"listId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.memberships","effects":["delete"],"id":"delete-/crm/v3/lists/{listId}/memberships_/crm/v3/lists/{listId}/memberships","method":"DELETE","origin":"https://api.hubapi.com","path":"/crm/v3/lists/{listId}/memberships","scope":{"listId":{"at":"listId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/lists/{listId}/memberships_/crm/v3/lists/{listId}/memberships","method":"GET","origin":"https://api.hubapi.com","params":["after","before","limit"],"path":"/crm/v3/lists/{listId}/memberships","scope":{"listId":{"at":"listId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.add","body":"json","effects":["write"],"id":"put-/crm/v3/lists/{listId}/memberships/add_/crm/v3/lists/{listId}/memberships/add","method":"PUT","origin":"https://api.hubapi.com","path":"/crm/v3/lists/{listId}/memberships/add","scope":{"listId":{"at":"listId","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"delete.add_and_remove","body":"json","effects":["delete"],"id":"put-/crm/v3/lists/{listId}/memberships/add-and-remove_/crm/v3/lists/{listId}/memberships/add-and-remove","method":"PUT","origin":"https://api.hubapi.com","path":"/crm/v3/lists/{listId}/memberships/add-and-remove","scope":{"listId":{"at":"listId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.add_from","effects":["write"],"id":"put-/crm/v3/lists/{listId}/memberships/add-from/{sourceListId}_/crm/v3/lists/{listId}/memberships/add-from/{sourceListId}","method":"PUT","origin":"https://api.hubapi.com","path":"/crm/v3/lists/{listId}/memberships/add-from/{sourceListId}","scope":{"listId":{"at":"listId","from":"path"},"sourceListId":{"at":"sourceListId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/lists/{listId}/memberships/join-order_/crm/v3/lists/{listId}/memberships/join-order","method":"GET","origin":"https://api.hubapi.com","params":["after","before","limit"],"path":"/crm/v3/lists/{listId}/memberships/join-order","scope":{"listId":{"at":"listId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.remove","body":"json","effects":["delete"],"id":"put-/crm/v3/lists/{listId}/memberships/remove_/crm/v3/lists/{listId}/memberships/remove","method":"PUT","origin":"https://api.hubapi.com","path":"/crm/v3/lists/{listId}/memberships/remove","scope":{"listId":{"at":"listId","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"write.lists","effects":["write"],"id":"put-/crm/v3/lists/{listId}/restore_/crm/v3/lists/{listId}/restore","method":"PUT","origin":"https://api.hubapi.com","path":"/crm/v3/lists/{listId}/restore","scope":{"listId":{"at":"listId","from":"path"}}},
+    {"action":"delete.schedule_conversion","effects":["delete"],"id":"delete-/crm/v3/lists/{listId}/schedule-conversion_/crm/v3/lists/{listId}/schedule-conversion","method":"DELETE","origin":"https://api.hubapi.com","path":"/crm/v3/lists/{listId}/schedule-conversion","scope":{"listId":{"at":"listId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/lists/{listId}/schedule-conversion_/crm/v3/lists/{listId}/schedule-conversion","method":"GET","origin":"https://api.hubapi.com","path":"/crm/v3/lists/{listId}/schedule-conversion","scope":{"listId":{"at":"listId","from":"path"}}},
+    {"action":"write.schedule_conversion","body":"json","effects":["write"],"id":"put-/crm/v3/lists/{listId}/schedule-conversion_/crm/v3/lists/{listId}/schedule-conversion","method":"PUT","origin":"https://api.hubapi.com","path":"/crm/v3/lists/{listId}/schedule-conversion","scope":{"listId":{"at":"listId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get-/crm/v3/lists/{listId}/size-and-edits-history/between_/crm/v3/lists/{listId}/size-and-edits-history/between","method":"GET","origin":"https://api.hubapi.com","params":["endDate","startDate"],"path":"/crm/v3/lists/{listId}/size-and-edits-history/between","scope":{"listId":{"at":"listId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.update_list_filters","body":"json","effects":["write"],"id":"put-/crm/v3/lists/{listId}/update-list-filters_/crm/v3/lists/{listId}/update-list-filters","method":"PUT","origin":"https://api.hubapi.com","params":["enrollObjectsInWorkflows"],"path":"/crm/v3/lists/{listId}/update-list-filters","scope":{"listId":{"at":"listId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.update_list_name","effects":["write"],"id":"put-/crm/v3/lists/{listId}/update-list-name_/crm/v3/lists/{listId}/update-list-name","method":"PUT","origin":"https://api.hubapi.com","params":["includeFilters","listName"],"path":"/crm/v3/lists/{listId}/update-list-name","scope":{"listId":{"at":"listId","from":"path"},"listName":{"at":"listName","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get-/marketing/v3/forms_/marketing/v3/forms","method":"GET","origin":"https://api.hubapi.com","params":["after","archived","formTypes","limit"],"path":"/marketing/v3/forms","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.forms","body":"json","effects":["write"],"id":"post-/marketing/v3/forms_/marketing/v3/forms","method":"POST","origin":"https://api.hubapi.com","path":"/marketing/v3/forms","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.forms","effects":["delete"],"id":"delete-/marketing/v3/forms/{formId}_archive","method":"DELETE","origin":"https://api.hubapi.com","path":"/marketing/v3/forms/{formId}","scope":{"formId":{"at":"formId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get-/marketing/v3/forms/{formId}_getById","method":"GET","origin":"https://api.hubapi.com","params":["archived"],"path":"/marketing/v3/forms/{formId}","scope":{"formId":{"at":"formId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.forms","body":"json","effects":["write"],"id":"patch-/marketing/v3/forms/{formId}_update","method":"PATCH","origin":"https://api.hubapi.com","path":"/marketing/v3/forms/{formId}","scope":{"formId":{"at":"formId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.forms","body":"json","effects":["write"],"id":"put-/marketing/v3/forms/{formId}_replace","method":"PUT","origin":"https://api.hubapi.com","path":"/marketing/v3/forms/{formId}","scope":{"formId":{"at":"formId","from":"path"},"id":{"at":"/id","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}}
   ]
 }

@@ -3,25 +3,308 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "Access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+      {
+        "key": "token",
+        "label": "Access token",
+        "secret": true,
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ]
+      }
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.intercom.io", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}}},
-    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "value": "token",
+              "origin": "https://api.intercom.io",
+              "path": "/",
+              "header": "Authorization",
+              "prefix": "Bearer "
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "team",
+      "strangers": true,
+      "sends": "anyone"
+    },
     "actions": {
-      "read": {"title": "Read conversations and contacts"},
-      "write.contacts": {"title": "Create and edit contacts"},
-      "send.reply": {"title": "Reply to conversations"},
-      "delete": {"title": "Delete contacts"}
+      "read": {
+        "title": "Read conversations and contacts"
+      },
+      "write.contacts": {
+        "title": "Create and edit contacts"
+      },
+      "send.reply": {
+        "title": "Reply to conversations"
+      },
+      "delete": {
+        "title": "Delete contacts"
+      },
+      "write.away": {
+        "title": "write: away"
+      },
+      "write.articles": {
+        "title": "write: articles"
+      },
+      "delete.articles": {
+        "title": "delete: articles"
+      },
+      "write.companies": {
+        "title": "write: companies"
+      },
+      "delete.companies": {
+        "title": "delete: companies"
+      },
+      "write.merge": {
+        "title": "write: merge"
+      },
+      "send.notes": {
+        "title": "send: notes"
+      },
+      "admin.subscriptions": {
+        "title": "admin: subscriptions"
+      },
+      "delete.subscriptions": {
+        "title": "delete: subscriptions"
+      },
+      "write.tags": {
+        "title": "write: tags"
+      },
+      "delete.tags": {
+        "title": "delete: tags"
+      },
+      "write.conversations": {
+        "title": "write: conversations"
+      },
+      "write.redact": {
+        "title": "write: redact"
+      },
+      "write.convert": {
+        "title": "write: convert"
+      },
+      "write.customers": {
+        "title": "write: customers"
+      },
+      "delete.customers": {
+        "title": "delete: customers"
+      },
+      "write.parts": {
+        "title": "write: parts"
+      },
+      "execute.conversations": {
+        "title": "execute: conversations"
+      },
+      "write.data_attributes": {
+        "title": "write: data_attributes"
+      },
+      "write.events": {
+        "title": "write: events"
+      },
+      "write.summaries": {
+        "title": "write: summaries"
+      },
+      "write.cancel": {
+        "title": "write: cancel"
+      },
+      "write.data": {
+        "title": "write: data"
+      },
+      "write.collections": {
+        "title": "write: collections"
+      },
+      "delete.collections": {
+        "title": "delete: collections"
+      },
+      "send.messages": {
+        "title": "send: messages"
+      },
+      "write.news_items": {
+        "title": "write: news_items"
+      },
+      "delete.news_items": {
+        "title": "delete: news_items"
+      },
+      "send.phone_call_redirects": {
+        "title": "send: phone_call_redirects"
+      },
+      "write.ticket_types": {
+        "title": "write: ticket_types"
+      },
+      "write.attributes": {
+        "title": "write: attributes"
+      },
+      "write.tickets": {
+        "title": "write: tickets"
+      },
+      "write.visitors": {
+        "title": "write: visitors"
+      }
     }
   },
   "operations": [
-    {"id": "conversations.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.intercom.io", "path": "/conversations", "headers": {"Intercom-Version": "2.16"}, "params": ["per_page", "starting_after"], "scope": {}},
-    {"id": "conversations.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.intercom.io", "path": "/conversations/{conversation}", "headers": {"Intercom-Version": "2.16"}, "scope": {"conversation": {"from": "path", "at": "conversation"}}},
-    {"id": "contacts.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.intercom.io", "path": "/contacts", "headers": {"Intercom-Version": "2.16"}, "params": ["per_page", "starting_after"], "scope": {}},
-    {"id": "contacts.create", "action": "write.contacts", "effects": ["write"], "method": "POST", "origin": "https://api.intercom.io", "path": "/contacts", "headers": {"Intercom-Version": "2.16"}, "body": "json", "scope": {"contact": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "conversations.reply", "action": "send.reply", "effects": ["send"], "method": "POST", "origin": "https://api.intercom.io", "path": "/conversations/{conversation}/reply", "headers": {"Intercom-Version": "2.16"}, "body": "json", "scope": {"conversation": {"from": "path", "at": "conversation"}, "reply": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "contacts.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.intercom.io", "path": "/contacts/{contact}", "headers": {"Intercom-Version": "2.16"}, "scope": {"contact": {"from": "path", "at": "contact"}}},
-    {"id": "contacts.update", "action": "write.contacts", "effects": ["write"], "method": "PUT", "origin": "https://api.intercom.io", "path": "/contacts/{contact}", "headers": {"Intercom-Version": "2.16"}, "body": "json", "scope": {"contact": {"from": "path", "at": "contact"}, "changes": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "contacts.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.intercom.io", "path": "/contacts/{contact}", "headers": {"Intercom-Version": "2.16"}, "scope": {"contact": {"from": "path", "at": "contact"}}}
+    {"action":"read","effects":["read"],"headers":{"Intercom-Version":"2.16"},"id":"conversations.list","method":"GET","origin":"https://api.intercom.io","params":["per_page","starting_after"],"path":"/conversations","scope":{}},
+    {"action":"read","effects":["read"],"headers":{"Intercom-Version":"2.16"},"id":"conversations.get","method":"GET","origin":"https://api.intercom.io","path":"/conversations/{conversation}","scope":{"conversation":{"at":"conversation","from":"path"}}},
+    {"action":"read","effects":["read"],"headers":{"Intercom-Version":"2.16"},"id":"contacts.list","method":"GET","origin":"https://api.intercom.io","params":["per_page","starting_after"],"path":"/contacts","scope":{}},
+    {"action":"write.contacts","body":"json","effects":["write"],"headers":{"Intercom-Version":"2.16"},"id":"contacts.create","method":"POST","origin":"https://api.intercom.io","path":"/contacts","scope":{"contact":{"at":"","from":"body","type":"object"}}},
+    {"action":"send.reply","body":"json","effects":["send"],"headers":{"Intercom-Version":"2.16"},"id":"conversations.reply","method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation}/reply","scope":{"conversation":{"at":"conversation","from":"path"},"reply":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"headers":{"Intercom-Version":"2.16"},"id":"contacts.get","method":"GET","origin":"https://api.intercom.io","path":"/contacts/{contact}","scope":{"contact":{"at":"contact","from":"path"}}},
+    {"action":"write.contacts","body":"json","effects":["write"],"headers":{"Intercom-Version":"2.16"},"id":"contacts.update","method":"PUT","origin":"https://api.intercom.io","path":"/contacts/{contact}","scope":{"changes":{"at":"","from":"body","type":"object"},"contact":{"at":"contact","from":"path"}}},
+    {"action":"delete","effects":["delete"],"headers":{"Intercom-Version":"2.16"},"id":"contacts.delete","method":"DELETE","origin":"https://api.intercom.io","path":"/contacts/{contact}","scope":{"contact":{"at":"contact","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"listAdmins","method":"GET","origin":"https://api.intercom.io","params":["display_avatar"],"path":"/admins","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"listActivityLogs","method":"GET","origin":"https://api.intercom.io","params":["created_at_after","created_at_before"],"path":"/admins/activity_logs","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"retrieveAdmin","method":"GET","origin":"https://api.intercom.io","path":"/admins/{admin_id}","scope":{"admin_id":{"at":"admin_id","from":"path"}}},
+    {"action":"write.away","effects":["write"],"id":"setAwayAdmin","method":"PUT","origin":"https://api.intercom.io","path":"/admins/{admin_id}/away","scope":{"admin_id":{"at":"admin_id","from":"path"}}},
+    {"action":"write.away","body":"json","effects":["write"],"id":"setAwayAdmin.json.3ab91141446d","method":"PUT","origin":"https://api.intercom.io","path":"/admins/{admin_id}/away","scope":{"admin_id":{"at":"admin_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"listArticles","method":"GET","origin":"https://api.intercom.io","params":["page","per_page"],"path":"/articles","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.articles","effects":["write"],"id":"createArticle","method":"POST","origin":"https://api.intercom.io","path":"/articles","scope":{}},
+    {"action":"write.articles","body":"json","effects":["write"],"id":"createArticle.json.fe5e88a17ae8","method":"POST","origin":"https://api.intercom.io","path":"/articles","scope":{"author_id":{"at":"/author_id","from":"body","type":"number"},"parent_id":{"at":"/parent_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"searchArticles","method":"GET","origin":"https://api.intercom.io","params":["phrase","state","help_center_id","highlight"],"path":"/articles/search","scope":{"help_center_id":{"at":"help_center_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.articles","effects":["delete"],"id":"deleteArticle","method":"DELETE","origin":"https://api.intercom.io","path":"/articles/{article_id}","scope":{"article_id":{"at":"article_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"retrieveArticle","method":"GET","origin":"https://api.intercom.io","path":"/articles/{article_id}","scope":{"article_id":{"at":"article_id","from":"path"}}},
+    {"action":"write.articles","effects":["write"],"id":"updateArticle","method":"PUT","origin":"https://api.intercom.io","path":"/articles/{article_id}","scope":{"article_id":{"at":"article_id","from":"path"}}},
+    {"action":"write.articles","body":"json","effects":["write"],"id":"updateArticle.json.9667ef75e3fe","method":"PUT","origin":"https://api.intercom.io","path":"/articles/{article_id}","scope":{"article_id":{"at":"article_id","from":"path"},"author_id":{"at":"/author_id","from":"body","optional":true,"type":"number"},"parent_id":{"at":"/parent_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"retrieveCompany","method":"GET","origin":"https://api.intercom.io","params":["name","company_id","tag_id","segment_id","page","per_page"],"path":"/companies","scope":{"company_id":{"at":"company_id","from":"query","optional":true},"name":{"at":"name","from":"query","optional":true},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"segment_id":{"at":"segment_id","from":"query","optional":true},"tag_id":{"at":"tag_id","from":"query","optional":true}}},
+    {"action":"write.companies","effects":["write"],"id":"createOrUpdateCompany","method":"POST","origin":"https://api.intercom.io","path":"/companies","scope":{}},
+    {"action":"write.companies","body":"json","effects":["write"],"id":"createOrUpdateCompany.json.8e8f978d3cab","method":"POST","origin":"https://api.intercom.io","path":"/companies","scope":{"company_id":{"at":"/company_id","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"listAllCompanies","method":"POST","origin":"https://api.intercom.io","params":["page","per_page","order"],"path":"/companies/list","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"scrollOverAllCompanies","method":"GET","origin":"https://api.intercom.io","params":["scroll_param"],"path":"/companies/scroll","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.companies","effects":["delete"],"id":"deleteCompany","method":"DELETE","origin":"https://api.intercom.io","path":"/companies/{company_id}","scope":{"company_id":{"at":"company_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"RetrieveACompanyById","method":"GET","origin":"https://api.intercom.io","path":"/companies/{company_id}","scope":{"company_id":{"at":"company_id","from":"path"}}},
+    {"action":"write.companies","effects":["write"],"id":"UpdateCompany","method":"PUT","origin":"https://api.intercom.io","path":"/companies/{company_id}","scope":{"company_id":{"at":"company_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"ListAttachedContacts","method":"GET","origin":"https://api.intercom.io","params":["page","per_page"],"path":"/companies/{company_id}/contacts","scope":{"company_id":{"at":"company_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"ListAttachedSegmentsForCompanies","method":"GET","origin":"https://api.intercom.io","path":"/companies/{company_id}/segments","scope":{"company_id":{"at":"company_id","from":"path"}}},
+    {"action":"write.contacts","effects":["write"],"id":"CreateContact","method":"POST","origin":"https://api.intercom.io","path":"/contacts","scope":{}},
+    {"action":"write.merge","effects":["write"],"id":"MergeContact","method":"POST","origin":"https://api.intercom.io","path":"/contacts/merge","scope":{}},
+    {"action":"write.merge","body":"json","effects":["write"],"id":"MergeContact.json.5eba82ae8f46","method":"POST","origin":"https://api.intercom.io","path":"/contacts/merge","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"SearchContacts","method":"POST","origin":"https://api.intercom.io","path":"/contacts/search","scope":{}},
+    {"action":"read","body":"json","effects":["read"],"id":"SearchContacts.json.1fd752623249","method":"POST","origin":"https://api.intercom.io","path":"/contacts/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.contacts","effects":["write"],"id":"UpdateContact","method":"PUT","origin":"https://api.intercom.io","path":"/contacts/{contact_id}","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+    {"action":"write.contacts","effects":["write"],"id":"ArchiveContact","method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/archive","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"listCompaniesForAContact","method":"GET","origin":"https://api.intercom.io","params":["page","per_page"],"path":"/contacts/{contact_id}/companies","scope":{"contact_id":{"at":"contact_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.companies","effects":["write"],"id":"attachContactToACompany","method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/companies","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+    {"action":"write.companies","body":"json","effects":["write"],"id":"attachContactToACompany.json.f6fa799ea758","method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/companies","scope":{"contact_id":{"at":"contact_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.companies","effects":["delete"],"id":"detachContactFromACompany","method":"DELETE","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/companies/{company_id}","scope":{"company_id":{"at":"company_id","from":"path"},"contact_id":{"at":"contact_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"listNotes","method":"GET","origin":"https://api.intercom.io","params":["page","per_page"],"path":"/contacts/{contact_id}/notes","scope":{"contact_id":{"at":"contact_id","from":"path"},"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"send.notes","effects":["send"],"id":"createNote","method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/notes","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+    {"action":"send.notes","body":"json","effects":["send"],"id":"createNote.json.70a49b0946a8","method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/notes","scope":{"admin_id":{"at":"/admin_id","from":"body","optional":true},"contact_id":{"at":"contact_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"listSegmentsForAContact","method":"GET","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/segments","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"listSubscriptionsForAContact","method":"GET","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/subscriptions","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+    {"action":"admin.subscriptions","effects":["admin"],"id":"attachSubscriptionTypeToContact","method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/subscriptions","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+    {"action":"admin.subscriptions","body":"json","effects":["admin"],"id":"attachSubscriptionTypeToContact.json.d81c712d2cc2","method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/subscriptions","scope":{"contact_id":{"at":"contact_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.subscriptions","effects":["delete"],"id":"detachSubscriptionTypeToContact","method":"DELETE","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/subscriptions/{subscription_id}","scope":{"contact_id":{"at":"contact_id","from":"path"},"subscription_id":{"at":"subscription_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"listTagsForAContact","method":"GET","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/tags","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+    {"action":"write.tags","effects":["write"],"id":"attachTagToContact","method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/tags","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+    {"action":"write.tags","body":"json","effects":["write"],"id":"attachTagToContact.json.81dbbcbffa1f","method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/tags","scope":{"contact_id":{"at":"contact_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.tags","effects":["delete"],"id":"detachTagFromContact","method":"DELETE","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/tags/{tag_id}","scope":{"contact_id":{"at":"contact_id","from":"path"},"tag_id":{"at":"tag_id","from":"path"}}},
+    {"action":"write.contacts","effects":["write"],"id":"UnarchiveContact","method":"POST","origin":"https://api.intercom.io","path":"/contacts/{contact_id}/unarchive","scope":{"contact_id":{"at":"contact_id","from":"path"}}},
+    {"action":"write.conversations","effects":["write"],"id":"createConversation","method":"POST","origin":"https://api.intercom.io","path":"/conversations","scope":{}},
+    {"action":"write.conversations","body":"json","effects":["write"],"id":"createConversation.json.43048216ba50","method":"POST","origin":"https://api.intercom.io","path":"/conversations","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.redact","effects":["write"],"id":"redactConversation","method":"POST","origin":"https://api.intercom.io","path":"/conversations/redact","scope":{}},
+    {"action":"write.redact","body":"json","effects":["write"],"id":"redactConversation.json.54a78b73bf6f","method":"POST","origin":"https://api.intercom.io","path":"/conversations/redact","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"searchConversations","method":"POST","origin":"https://api.intercom.io","path":"/conversations/search","scope":{}},
+    {"action":"read","body":"json","effects":["read"],"id":"searchConversations.json.2dae9fb238d3","method":"POST","origin":"https://api.intercom.io","path":"/conversations/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.conversations","effects":["write"],"id":"updateConversation","method":"PUT","origin":"https://api.intercom.io","params":["display_as"],"path":"/conversations/{conversation_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.conversations","body":"json","effects":["write"],"id":"updateConversation.json.5cb6bdc1a5a8","method":"PUT","origin":"https://api.intercom.io","params":["display_as"],"path":"/conversations/{conversation_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.convert","effects":["write"],"id":"convertConversationToTicket","method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/convert","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
+    {"action":"write.convert","body":"json","effects":["write"],"id":"convertConversationToTicket.json.fd8eb50f053c","method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/convert","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"/ticket_type_id","from":"body"}}},
+    {"action":"write.customers","effects":["write"],"id":"attachContactToConversation","method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/customers","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
+    {"action":"write.customers","body":"json","effects":["write"],"id":"attachContactToConversation.json.293d0850c267","method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/customers","scope":{"admin_id":{"at":"/admin_id","from":"body","optional":true},"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.customers","effects":["delete"],"id":"detachContactFromConversation","method":"DELETE","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/customers/{contact_id}","scope":{"contact_id":{"at":"contact_id","from":"path"},"conversation_id":{"at":"conversation_id","from":"path"}}},
+    {"action":"delete.customers","body":"json","effects":["delete"],"id":"detachContactFromConversation.json.43edde3c8074","method":"DELETE","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/customers/{contact_id}","scope":{"admin_id":{"at":"/admin_id","from":"body"},"contact_id":{"at":"contact_id","from":"path"},"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.parts","effects":["write"],"id":"manageConversation","method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/parts","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
+    {"action":"write.parts","body":"json","effects":["write"],"id":"manageConversation.json.7eaa940ceca6","method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/parts","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"send.reply","effects":["send"],"id":"replyConversation","method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/reply","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
+    {"action":"execute.conversations","effects":["execute"],"id":"autoAssignConversation","method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/run_assignment_rules","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
+    {"action":"write.tags","effects":["write"],"id":"attachTagToConversation","method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/tags","scope":{"conversation_id":{"at":"conversation_id","from":"path"}}},
+    {"action":"write.tags","body":"json","effects":["write"],"id":"attachTagToConversation.json.9229b3434acd","method":"POST","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/tags","scope":{"admin_id":{"at":"/admin_id","from":"body"},"conversation_id":{"at":"conversation_id","from":"path"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.tags","effects":["delete"],"id":"detachTagFromConversation","method":"DELETE","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/tags/{tag_id}","scope":{"conversation_id":{"at":"conversation_id","from":"path"},"tag_id":{"at":"tag_id","from":"path"}}},
+    {"action":"delete.tags","body":"json","effects":["delete"],"id":"detachTagFromConversation.json.26fd60ab1ae2","method":"DELETE","origin":"https://api.intercom.io","path":"/conversations/{conversation_id}/tags/{tag_id}","scope":{"admin_id":{"at":"/admin_id","from":"body"},"conversation_id":{"at":"conversation_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"tag_id":{"at":"tag_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"listDataAttributes","method":"GET","origin":"https://api.intercom.io","params":["model","include_archived"],"path":"/data_attributes","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.data_attributes","effects":["write"],"id":"createDataAttribute","method":"POST","origin":"https://api.intercom.io","path":"/data_attributes","scope":{}},
+    {"action":"write.data_attributes","body":"json","effects":["write"],"id":"createDataAttribute.json.311a9fefa638","method":"POST","origin":"https://api.intercom.io","path":"/data_attributes","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.data_attributes","effects":["write"],"id":"updateDataAttribute","method":"PUT","origin":"https://api.intercom.io","path":"/data_attributes/{data_attribute_id}","scope":{"data_attribute_id":{"at":"data_attribute_id","from":"path"}}},
+    {"action":"write.data_attributes","body":"json","effects":["write"],"id":"updateDataAttribute.json.eb4fccd874e3","method":"PUT","origin":"https://api.intercom.io","path":"/data_attributes/{data_attribute_id}","scope":{"data_attribute_id":{"at":"data_attribute_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"downloadDataExport","method":"GET","origin":"https://api.intercom.io","path":"/download/content/data/{job_identifier}","scope":{"job_identifier":{"at":"job_identifier","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"lisDataEvents","method":"GET","origin":"https://api.intercom.io","params":["filter","type","summary","per_page"],"path":"/events","scope":{"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.events","effects":["write"],"id":"createDataEvent","method":"POST","origin":"https://api.intercom.io","path":"/events","scope":{}},
+    {"action":"write.events","body":"json","effects":["write"],"id":"createDataEvent.json.500901532370","method":"POST","origin":"https://api.intercom.io","path":"/events","scope":{"email":{"at":"/email","from":"body","optional":true},"event_name":{"at":"/event_name","from":"body","optional":true},"id":{"at":"/id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","optional":true}}},
+    {"action":"write.summaries","effects":["write"],"id":"dataEventSummaries","method":"POST","origin":"https://api.intercom.io","path":"/events/summaries","scope":{}},
+    {"action":"write.summaries","body":"json","effects":["write"],"id":"dataEventSummaries.json.fefc86f4485d","method":"POST","origin":"https://api.intercom.io","path":"/events/summaries","scope":{"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","optional":true}}},
+    {"action":"write.cancel","effects":["write"],"id":"cancelDataExport","method":"POST","origin":"https://api.intercom.io","path":"/export/cancel/{job_identifier}","scope":{"job_identifier":{"at":"job_identifier","from":"path"}}},
+    {"action":"write.data","effects":["write"],"id":"createDataExport","method":"POST","origin":"https://api.intercom.io","path":"/export/content/data","scope":{}},
+    {"action":"write.data","body":"json","effects":["write"],"id":"createDataExport.json.81799637a2a1","method":"POST","origin":"https://api.intercom.io","path":"/export/content/data","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getDataExport","method":"GET","origin":"https://api.intercom.io","path":"/export/content/data/{job_identifier}","scope":{"job_identifier":{"at":"job_identifier","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"listAllCollections","method":"GET","origin":"https://api.intercom.io","params":["page","per_page"],"path":"/help_center/collections","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.collections","effects":["write"],"id":"createCollection","method":"POST","origin":"https://api.intercom.io","path":"/help_center/collections","scope":{}},
+    {"action":"write.collections","body":"json","effects":["write"],"id":"createCollection.json.1f08cf44577c","method":"POST","origin":"https://api.intercom.io","path":"/help_center/collections","scope":{"help_center_id":{"at":"/help_center_id","from":"body","optional":true,"type":"number"},"name":{"at":"/name","from":"body"},"parent_id":{"at":"/parent_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.collections","effects":["delete"],"id":"deleteCollection","method":"DELETE","origin":"https://api.intercom.io","path":"/help_center/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"retrieveCollection","method":"GET","origin":"https://api.intercom.io","path":"/help_center/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+    {"action":"write.collections","effects":["write"],"id":"updateCollection","method":"PUT","origin":"https://api.intercom.io","path":"/help_center/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"}}},
+    {"action":"write.collections","body":"json","effects":["write"],"id":"updateCollection.json.9401c308fca3","method":"PUT","origin":"https://api.intercom.io","path":"/help_center/collections/{collection_id}","scope":{"collection_id":{"at":"collection_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"parent_id":{"at":"/parent_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"listHelpCenters","method":"GET","origin":"https://api.intercom.io","params":["page","per_page"],"path":"/help_center/help_centers","scope":{"page":{"at":"page","from":"query","optional":true},"per_page":{"at":"per_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"retrieveHelpCenter","method":"GET","origin":"https://api.intercom.io","path":"/help_center/help_centers/{help_center_id}","scope":{"help_center_id":{"at":"help_center_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"identifyAdmin","method":"GET","origin":"https://api.intercom.io","path":"/me","scope":{}},
+    {"action":"send.messages","effects":["send"],"id":"createMessage","method":"POST","origin":"https://api.intercom.io","path":"/messages","scope":{}},
+    {"action":"send.messages","body":"json","effects":["send"],"id":"createMessage.json.a33aed1ab095","method":"POST","origin":"https://api.intercom.io","path":"/messages","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"listNewsItems","method":"GET","origin":"https://api.intercom.io","path":"/news/news_items","scope":{}},
+    {"action":"write.news_items","effects":["write"],"id":"createNewsItem","method":"POST","origin":"https://api.intercom.io","path":"/news/news_items","scope":{}},
+    {"action":"write.news_items","body":"json","effects":["write"],"id":"createNewsItem.json.ef4a17bfaff9","method":"POST","origin":"https://api.intercom.io","path":"/news/news_items","scope":{"request":{"at":"","from":"body","type":"object"},"sender_id":{"at":"/sender_id","from":"body","type":"number"}}},
+    {"action":"delete.news_items","effects":["delete"],"id":"deleteNewsItem","method":"DELETE","origin":"https://api.intercom.io","path":"/news/news_items/{news_item_id}","scope":{"news_item_id":{"at":"news_item_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"retrieveNewsItem","method":"GET","origin":"https://api.intercom.io","path":"/news/news_items/{news_item_id}","scope":{"news_item_id":{"at":"news_item_id","from":"path"}}},
+    {"action":"write.news_items","effects":["write"],"id":"updateNewsItem","method":"PUT","origin":"https://api.intercom.io","path":"/news/news_items/{news_item_id}","scope":{"news_item_id":{"at":"news_item_id","from":"path"}}},
+    {"action":"write.news_items","body":"json","effects":["write"],"id":"updateNewsItem.json.1fb89a45cea4","method":"PUT","origin":"https://api.intercom.io","path":"/news/news_items/{news_item_id}","scope":{"news_item_id":{"at":"news_item_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"sender_id":{"at":"/sender_id","from":"body","type":"number"}}},
+    {"action":"read","effects":["read"],"id":"listNewsfeeds","method":"GET","origin":"https://api.intercom.io","path":"/news/newsfeeds","scope":{}},
+    {"action":"read","effects":["read"],"id":"retrieveNewsfeed","method":"GET","origin":"https://api.intercom.io","path":"/news/newsfeeds/{newsfeed_id}","scope":{"newsfeed_id":{"at":"newsfeed_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"listLiveNewsfeedItems","method":"GET","origin":"https://api.intercom.io","path":"/news/newsfeeds/{newsfeed_id}/items","scope":{"newsfeed_id":{"at":"newsfeed_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"retrieveNote","method":"GET","origin":"https://api.intercom.io","path":"/notes/{note_id}","scope":{"note_id":{"at":"note_id","from":"path"}}},
+    {"action":"send.phone_call_redirects","effects":["send"],"id":"createPhoneSwitch","method":"POST","origin":"https://api.intercom.io","path":"/phone_call_redirects","scope":{}},
+    {"action":"send.phone_call_redirects","body":"json","effects":["send"],"id":"createPhoneSwitch.json.0ab2b47b485c","method":"POST","origin":"https://api.intercom.io","path":"/phone_call_redirects","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"listSegments","method":"GET","origin":"https://api.intercom.io","params":["include_count"],"path":"/segments","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"retrieveSegment","method":"GET","origin":"https://api.intercom.io","path":"/segments/{segment_id}","scope":{"segment_id":{"at":"segment_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"listSubscriptionTypes","method":"GET","origin":"https://api.intercom.io","path":"/subscription_types","scope":{}},
+    {"action":"read","effects":["read"],"id":"listTags","method":"GET","origin":"https://api.intercom.io","path":"/tags","scope":{}},
+    {"action":"write.tags","effects":["write"],"id":"createTag","method":"POST","origin":"https://api.intercom.io","path":"/tags","scope":{}},
+    {"action":"write.tags","body":"json","effects":["write"],"id":"createTag.json.1f3dba19c781","method":"POST","origin":"https://api.intercom.io","path":"/tags","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.tags","effects":["delete"],"id":"deleteTag","method":"DELETE","origin":"https://api.intercom.io","path":"/tags/{tag_id}","scope":{"tag_id":{"at":"tag_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"findTag","method":"GET","origin":"https://api.intercom.io","path":"/tags/{tag_id}","scope":{"tag_id":{"at":"tag_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"listTeams","method":"GET","origin":"https://api.intercom.io","path":"/teams","scope":{}},
+    {"action":"read","effects":["read"],"id":"retrieveTeam","method":"GET","origin":"https://api.intercom.io","path":"/teams/{team_id}","scope":{"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"listTicketTypes","method":"GET","origin":"https://api.intercom.io","path":"/ticket_types","scope":{}},
+    {"action":"write.ticket_types","effects":["write"],"id":"createTicketType","method":"POST","origin":"https://api.intercom.io","path":"/ticket_types","scope":{}},
+    {"action":"write.ticket_types","body":"json","effects":["write"],"id":"createTicketType.json.791dd42b552d","method":"POST","origin":"https://api.intercom.io","path":"/ticket_types","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getTicketType","method":"GET","origin":"https://api.intercom.io","path":"/ticket_types/{ticket_type_id}","scope":{"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
+    {"action":"write.ticket_types","effects":["write"],"id":"updateTicketType","method":"PUT","origin":"https://api.intercom.io","path":"/ticket_types/{ticket_type_id}","scope":{"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
+    {"action":"write.ticket_types","body":"json","effects":["write"],"id":"updateTicketType.json.0c3420272e18","method":"PUT","origin":"https://api.intercom.io","path":"/ticket_types/{ticket_type_id}","scope":{"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
+    {"action":"write.attributes","effects":["write"],"id":"createTicketTypeAttribute","method":"POST","origin":"https://api.intercom.io","path":"/ticket_types/{ticket_type_id}/attributes","scope":{"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
+    {"action":"write.attributes","body":"json","effects":["write"],"id":"createTicketTypeAttribute.json.a60d219e8ff5","method":"POST","origin":"https://api.intercom.io","path":"/ticket_types/{ticket_type_id}/attributes","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
+    {"action":"write.attributes","effects":["write"],"id":"updateTicketTypeAttribute","method":"PUT","origin":"https://api.intercom.io","path":"/ticket_types/{ticket_type_id}/attributes/{attribute_id}","scope":{"attribute_id":{"at":"attribute_id","from":"path"},"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
+    {"action":"write.attributes","body":"json","effects":["write"],"id":"updateTicketTypeAttribute.json.1d63bc7a5226","method":"PUT","origin":"https://api.intercom.io","path":"/ticket_types/{ticket_type_id}/attributes/{attribute_id}","scope":{"attribute_id":{"at":"attribute_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"ticket_type_id","from":"path"}}},
+    {"action":"write.tickets","effects":["write"],"id":"createTicket","method":"POST","origin":"https://api.intercom.io","path":"/tickets","scope":{}},
+    {"action":"write.tickets","body":"json","effects":["write"],"id":"createTicket.json.4150391b7ecb","method":"POST","origin":"https://api.intercom.io","path":"/tickets","scope":{"company_id":{"at":"/company_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"ticket_type_id":{"at":"/ticket_type_id","from":"body"}}},
+    {"action":"read","effects":["read"],"id":"searchTickets","method":"POST","origin":"https://api.intercom.io","path":"/tickets/search","scope":{}},
+    {"action":"read","body":"json","effects":["read"],"id":"searchTickets.json.6249ef3edf0f","method":"POST","origin":"https://api.intercom.io","path":"/tickets/search","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getTicket","method":"GET","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+    {"action":"write.tickets","effects":["write"],"id":"updateTicket","method":"PUT","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+    {"action":"write.tickets","body":"json","effects":["write"],"id":"updateTicket.json.fa53d95ae614","method":"PUT","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}","scope":{"request":{"at":"","from":"body","type":"object"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+    {"action":"send.reply","effects":["send"],"id":"replyTicket","method":"POST","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}/reply","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+    {"action":"send.reply","body":"json","effects":["send"],"id":"replyTicket.json.1b68b582559a","method":"POST","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}/reply","scope":{"request":{"at":"","from":"body","type":"object"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+    {"action":"write.tags","effects":["write"],"id":"attachTagToTicket","method":"POST","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}/tags","scope":{"ticket_id":{"at":"ticket_id","from":"path"}}},
+    {"action":"write.tags","body":"json","effects":["write"],"id":"attachTagToTicket.json.3cdb5dfeab9b","method":"POST","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}/tags","scope":{"admin_id":{"at":"/admin_id","from":"body"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+    {"action":"delete.tags","effects":["delete"],"id":"detachTagFromTicket","method":"DELETE","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}/tags/{tag_id}","scope":{"tag_id":{"at":"tag_id","from":"path"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+    {"action":"delete.tags","body":"json","effects":["delete"],"id":"detachTagFromTicket.json.e49eaaf0011c","method":"DELETE","origin":"https://api.intercom.io","path":"/tickets/{ticket_id}/tags/{tag_id}","scope":{"admin_id":{"at":"/admin_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"tag_id":{"at":"tag_id","from":"path"},"ticket_id":{"at":"ticket_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"retrieveVisitorWithUserId","method":"GET","origin":"https://api.intercom.io","params":["user_id"],"path":"/visitors","scope":{"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"query"}}},
+    {"action":"write.visitors","effects":["write"],"id":"updateVisitor","method":"PUT","origin":"https://api.intercom.io","path":"/visitors","scope":{}},
+    {"action":"write.visitors","body":"json","effects":["write"],"id":"updateVisitor.json.756629b0d844","method":"PUT","origin":"https://api.intercom.io","path":"/visitors","scope":{"id":{"at":"/id","from":"body","optional":true},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","optional":true}}},
+    {"action":"write.convert","effects":["write"],"id":"convertVisitor","method":"POST","origin":"https://api.intercom.io","path":"/visitors/convert","scope":{}},
+    {"action":"write.convert","body":"json","effects":["write"],"id":"convertVisitor.json.9c4ed184584e","method":"POST","origin":"https://api.intercom.io","path":"/visitors/convert","scope":{"request":{"at":"","from":"body","type":"object"}}}
   ]
 }

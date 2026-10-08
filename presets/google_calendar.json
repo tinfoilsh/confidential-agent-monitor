@@ -3,26 +3,134 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "Google account", "secret": true, "path": ["connections", "", "http", "values", "token"],
-       "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{MONITOR_GOOGLE_CLIENT_ID}", "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}", "scope": "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.calendarlist.readonly https://www.googleapis.com/auth/calendar.freebusy", "prompt": "consent"}}
+      {
+        "key": "token",
+        "label": "Google account",
+        "secret": true,
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ],
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "token_url": "https://oauth2.googleapis.com/token",
+          "client_id": "{MONITOR_GOOGLE_CLIENT_ID}",
+          "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}",
+          "scope": "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.calendarlist.readonly https://www.googleapis.com/auth/calendar.freebusy",
+          "prompt": "consent"
+        }
+      }
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://www.googleapis.com", "path": "/calendar/v3", "header": "Authorization", "prefix": "Bearer "}]}}},
-    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "value": "token",
+              "origin": "https://www.googleapis.com",
+              "path": "/calendar/v3",
+              "header": "Authorization",
+              "prefix": "Bearer "
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "me",
+      "strangers": true,
+      "sends": "anyone"
+    },
     "actions": {
-      "read": {"title": "Read calendars, events and availability"},
-      "write": {"title": "Create events without guests"},
-      "send.invite": {"title": "Invite guests, and edit or cancel events guests may see"}
+      "read": {
+        "title": "Read calendars, events and availability"
+      },
+      "write": {
+        "title": "Create events without guests"
+      },
+      "send.invite": {
+        "title": "Invite guests, and edit or cancel events guests may see"
+      },
+      "delete.acl": {
+        "title": "delete: acl"
+      },
+      "share.acl": {
+        "title": "share: acl"
+      },
+      "write.watch": {
+        "title": "write: watch"
+      },
+      "delete.calendar_list": {
+        "title": "delete: calendar_list"
+      },
+      "write.calendar_list": {
+        "title": "write: calendar_list"
+      },
+      "delete.clear": {
+        "title": "delete: clear"
+      },
+      "delete.calendars": {
+        "title": "delete: calendars"
+      },
+      "write.calendars": {
+        "title": "write: calendars"
+      },
+      "pay.calendars": {
+        "title": "pay: calendars"
+      },
+      "write.stop": {
+        "title": "write: stop"
+      },
+      "write.events": {
+        "title": "write: events"
+      },
+      "write.quick_add": {
+        "title": "write: quick_add"
+      }
     }
   },
   "operations": [
-    {"id": "calendarList.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.googleapis.com", "path": "/calendar/v3/users/me/calendarList", "params": ["maxResults", "pageToken", "minAccessRole", "showDeleted", "showHidden", "syncToken"], "scope": {}},
-    {"id": "events.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.googleapis.com", "path": "/calendar/v3/calendars/{calendar}/events", "params": ["timeMin", "timeMax", "q", "singleEvents", "orderBy", "pageToken", "maxResults", "showDeleted", "updatedMin", "syncToken", "timeZone", "iCalUID", "eventTypes"], "scope": {"calendar": {"from": "path", "at": "calendar"}}},
-    {"id": "events.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.googleapis.com", "path": "/calendar/v3/calendars/{calendar}/events/{event}", "params": ["timeZone", "maxAttendees"], "scope": {"calendar": {"from": "path", "at": "calendar"}, "event": {"from": "path", "at": "event"}}},
-    {"id": "freebusy.query", "action": "read", "effects": ["read"], "method": "POST", "origin": "https://www.googleapis.com", "path": "/calendar/v3/freeBusy", "body": "json", "scope": {}},
-    {"id": "events.insert", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://www.googleapis.com", "path": "/calendar/v3/calendars/{calendar}/events", "query": {"sendUpdates": null, "sendNotifications": null}, "params": ["conferenceDataVersion", "supportsAttachments", "maxAttendees"], "fields": {"/attendees": null}, "body": "json", "scope": {"calendar": {"from": "path", "at": "calendar"}, "event": {"from": "body", "at": "", "type": "object"}}, "grant": ["calendar"]},
-    {"id": "events.insert.invite", "action": "send.invite", "effects": ["write", "send"], "method": "POST", "origin": "https://www.googleapis.com", "path": "/calendar/v3/calendars/{calendar}/events", "query": {"sendUpdates": "all", "sendNotifications": null}, "params": ["conferenceDataVersion", "supportsAttachments", "maxAttendees"], "body": "json", "scope": {"calendar": {"from": "path", "at": "calendar"}, "event": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "events.patch", "action": "send.invite", "effects": ["write", "send"], "method": "PATCH", "origin": "https://www.googleapis.com", "path": "/calendar/v3/calendars/{calendar}/events/{event}", "query": {"sendNotifications": null}, "params": ["sendUpdates", "conferenceDataVersion", "supportsAttachments", "maxAttendees"], "body": "json", "scope": {"calendar": {"from": "path", "at": "calendar"}, "event": {"from": "path", "at": "event"}, "changes": {"from": "body", "at": "", "type": "object"}, "query": {"from": "query", "at": "", "type": "object"}}},
-    {"id": "events.update", "action": "send.invite", "effects": ["write", "send"], "method": "PUT", "origin": "https://www.googleapis.com", "path": "/calendar/v3/calendars/{calendar}/events/{event}", "query": {"sendNotifications": null}, "params": ["sendUpdates", "conferenceDataVersion", "supportsAttachments", "maxAttendees"], "body": "json", "scope": {"calendar": {"from": "path", "at": "calendar"}, "event": {"from": "path", "at": "event"}, "changes": {"from": "body", "at": "", "type": "object"}, "query": {"from": "query", "at": "", "type": "object"}}},
-    {"id": "events.delete", "action": "send.invite", "effects": ["delete", "send"], "method": "DELETE", "origin": "https://www.googleapis.com", "path": "/calendar/v3/calendars/{calendar}/events/{event}", "query": {"sendNotifications": null}, "params": ["sendUpdates"], "scope": {"calendar": {"from": "path", "at": "calendar"}, "event": {"from": "path", "at": "event"}, "query": {"from": "query", "at": "", "type": "object"}}}
+    {"action":"read","effects":["read"],"id":"calendarList.list","method":"GET","origin":"https://www.googleapis.com","params":["maxResults","pageToken","minAccessRole","showDeleted","showHidden","syncToken"],"path":"/calendar/v3/users/me/calendarList","scope":{}},
+    {"action":"read","effects":["read"],"id":"events.list","method":"GET","origin":"https://www.googleapis.com","params":["timeMin","timeMax","q","singleEvents","orderBy","pageToken","maxResults","showDeleted","updatedMin","syncToken","timeZone","iCalUID","eventTypes"],"path":"/calendar/v3/calendars/{calendar}/events","scope":{"calendar":{"at":"calendar","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"events.get","method":"GET","origin":"https://www.googleapis.com","params":["timeZone","maxAttendees"],"path":"/calendar/v3/calendars/{calendar}/events/{event}","scope":{"calendar":{"at":"calendar","from":"path"},"event":{"at":"event","from":"path"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"freebusy.query","method":"POST","origin":"https://www.googleapis.com","path":"/calendar/v3/freeBusy","scope":{}},
+    {"action":"write","body":"json","effects":["write"],"fields":{"/attendees":null},"grant":["calendar"],"id":"events.insert","method":"POST","origin":"https://www.googleapis.com","params":["conferenceDataVersion","supportsAttachments","maxAttendees"],"path":"/calendar/v3/calendars/{calendar}/events","query":{"sendNotifications":null,"sendUpdates":null},"scope":{"calendar":{"at":"calendar","from":"path"},"event":{"at":"","from":"body","type":"object"}}},
+    {"action":"send.invite","body":"json","effects":["write","send"],"id":"events.insert.invite","method":"POST","origin":"https://www.googleapis.com","params":["conferenceDataVersion","supportsAttachments","maxAttendees"],"path":"/calendar/v3/calendars/{calendar}/events","query":{"sendNotifications":null,"sendUpdates":"all"},"scope":{"calendar":{"at":"calendar","from":"path"},"event":{"at":"","from":"body","type":"object"}}},
+    {"action":"send.invite","body":"json","effects":["write","send"],"id":"events.patch","method":"PATCH","origin":"https://www.googleapis.com","params":["sendUpdates","conferenceDataVersion","supportsAttachments","maxAttendees"],"path":"/calendar/v3/calendars/{calendar}/events/{event}","query":{"sendNotifications":null},"scope":{"calendar":{"at":"calendar","from":"path"},"changes":{"at":"","from":"body","type":"object"},"event":{"at":"event","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"send.invite","body":"json","effects":["write","send"],"id":"events.update","method":"PUT","origin":"https://www.googleapis.com","params":["sendUpdates","conferenceDataVersion","supportsAttachments","maxAttendees"],"path":"/calendar/v3/calendars/{calendar}/events/{event}","query":{"sendNotifications":null},"scope":{"calendar":{"at":"calendar","from":"path"},"changes":{"at":"","from":"body","type":"object"},"event":{"at":"event","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"send.invite","effects":["delete","send"],"id":"events.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["sendUpdates"],"path":"/calendar/v3/calendars/{calendar}/events/{event}","query":{"sendNotifications":null},"scope":{"calendar":{"at":"calendar","from":"path"},"event":{"at":"event","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.acl","effects":["delete"],"id":"acl.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp"],"path":"/calendar/v3/calendars/{calendarId}/acl/{ruleId}","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"},"ruleId":{"at":"ruleId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"acl.get","method":"GET","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp"],"path":"/calendar/v3/calendars/{calendarId}/acl/{ruleId}","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"},"ruleId":{"at":"ruleId","from":"path"}}},
+    {"action":"share.acl","body":"json","effects":["share"],"id":"acl.insert","method":"POST","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","sendNotifications"],"path":"/calendar/v3/calendars/{calendarId}/acl","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"acl.list","method":"GET","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","maxResults","pageToken","showDeleted","syncToken"],"path":"/calendar/v3/calendars/{calendarId}/acl","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"share.acl","body":"json","effects":["share"],"id":"acl.patch","method":"PATCH","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","sendNotifications"],"path":"/calendar/v3/calendars/{calendarId}/acl/{ruleId}","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"ruleId":{"at":"ruleId","from":"path"}}},
+    {"action":"share.acl","body":"json","effects":["share"],"id":"acl.update","method":"PUT","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","sendNotifications"],"path":"/calendar/v3/calendars/{calendarId}/acl/{ruleId}","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"ruleId":{"at":"ruleId","from":"path"}}},
+    {"action":"write.watch","body":"json","effects":["write"],"id":"acl.watch","method":"POST","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","maxResults","pageToken","showDeleted","syncToken"],"path":"/calendar/v3/calendars/{calendarId}/acl/watch","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.calendar_list","effects":["delete"],"id":"calendarList.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp"],"path":"/calendar/v3/users/me/calendarList/{calendarId}","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"calendarList.get","method":"GET","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp"],"path":"/calendar/v3/users/me/calendarList/{calendarId}","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.calendar_list","body":"json","effects":["write"],"id":"calendarList.insert","method":"POST","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","colorRgbFormat"],"path":"/calendar/v3/users/me/calendarList","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.calendar_list","body":"json","effects":["write"],"id":"calendarList.patch","method":"PATCH","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","colorRgbFormat"],"path":"/calendar/v3/users/me/calendarList/{calendarId}","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.calendar_list","body":"json","effects":["write"],"id":"calendarList.update","method":"PUT","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","colorRgbFormat"],"path":"/calendar/v3/users/me/calendarList/{calendarId}","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.watch","body":"json","effects":["write"],"id":"calendarList.watch","method":"POST","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","maxResults","minAccessRole","pageToken","showDeleted","showHidden","showOwnOrganizationOnly","syncToken"],"path":"/calendar/v3/users/me/calendarList/watch","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.clear","effects":["delete"],"id":"calendars.clear","method":"POST","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp"],"path":"/calendar/v3/calendars/{calendarId}/clear","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.calendars","effects":["delete"],"id":"calendars.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp"],"path":"/calendar/v3/calendars/{calendarId}","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"calendars.get","method":"GET","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp"],"path":"/calendar/v3/calendars/{calendarId}","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.calendars","body":"json","effects":["write"],"id":"calendars.insert","method":"POST","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp"],"path":"/calendar/v3/calendars","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.calendars","body":"json","effects":["write"],"id":"calendars.patch","method":"PATCH","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp"],"path":"/calendar/v3/calendars/{calendarId}","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"pay.calendars","effects":["pay"],"id":"calendars.transferOwnership","method":"POST","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","newDataOwner","useAdminAccess"],"path":"/calendar/v3/calendars/{calendarId}/transferOwnership","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.calendars","body":"json","effects":["write"],"id":"calendars.update","method":"PUT","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp"],"path":"/calendar/v3/calendars/{calendarId}","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.stop","body":"json","effects":["write"],"id":"channels.stop","method":"POST","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp"],"path":"/calendar/v3/channels/stop","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"colors.get","method":"GET","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp"],"path":"/calendar/v3/colors","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.events","body":"json","effects":["write"],"id":"events.import","method":"POST","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","conferenceDataVersion","eventLabelVersion","supportsAttachments"],"path":"/calendar/v3/calendars/{calendarId}/events/import","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"events.instances","method":"GET","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","alwaysIncludeEmail","maxAttendees","maxResults","originalStart","pageToken","showDeleted","timeMax","timeMin","timeZone"],"path":"/calendar/v3/calendars/{calendarId}/events/{eventId}/instances","scope":{"calendarId":{"at":"calendarId","from":"path"},"eventId":{"at":"eventId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.events","effects":["write"],"id":"events.move","method":"POST","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","destination","sendNotifications","sendUpdates"],"path":"/calendar/v3/calendars/{calendarId}/events/{eventId}/move","scope":{"calendarId":{"at":"calendarId","from":"path"},"eventId":{"at":"eventId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.quick_add","effects":["write"],"id":"events.quickAdd","method":"POST","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","sendNotifications","sendUpdates","text"],"path":"/calendar/v3/calendars/{calendarId}/events/quickAdd","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.watch","body":"json","effects":["write"],"id":"events.watch","method":"POST","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","alwaysIncludeEmail","eventTypes","iCalUID","maxAttendees","maxResults","orderBy","pageToken","privateExtendedProperty","q","sharedExtendedProperty","showDeleted","showHiddenInvitations","singleEvents","syncToken","timeMax","timeMin","timeZone","updatedMin"],"path":"/calendar/v3/calendars/{calendarId}/events/watch","scope":{"calendarId":{"at":"calendarId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"settings.get","method":"GET","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp"],"path":"/calendar/v3/users/me/settings/{setting}","scope":{"query":{"at":"","from":"query","type":"object"},"setting":{"at":"setting","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"settings.list","method":"GET","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","maxResults","pageToken","syncToken"],"path":"/calendar/v3/users/me/settings","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.watch","body":"json","effects":["write"],"id":"settings.watch","method":"POST","origin":"https://www.googleapis.com","params":["alt","fields","prettyPrint","quotaUser","userIp","maxResults","pageToken","syncToken"],"path":"/calendar/v3/users/me/settings/watch","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}}
   ]
 }

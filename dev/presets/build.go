@@ -17,6 +17,7 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"time"
 )
 
 // Some docs sites rate-limit clients that do not look like a browser.
@@ -32,12 +33,13 @@ var (
 
 // A lockEntry is what update resolved a spec to: an immutable URL where the source has one, and the content's hash.
 type lockEntry struct {
-	Source   string `json:"source"`
-	URL      string `json:"url"`
-	Commit   string `json:"commit,omitempty"`
-	Revision string `json:"revision,omitempty"`
-	SHA256   string `json:"sha256"`
-	Bytes    int    `json:"bytes"`
+	Source    string `json:"source"`
+	URL       string `json:"url"`
+	Commit    string `json:"commit,omitempty"`
+	Revision  string `json:"revision,omitempty"`
+	SHA256    string `json:"sha256"`
+	Bytes     int    `json:"bytes"`
+	CheckedAt string `json:"checked_at,omitempty"`
 }
 
 type lockFile map[string][]lockEntry
@@ -55,9 +57,12 @@ func (l lockFile) entry(service string, ref specRef) (lockEntry, error) {
 func cached(sum string) string { return filepath.Join(cacheDir, sum) }
 
 func download(url string) ([]byte, error) {
-	req, _ := http.NewRequest(http.MethodGet, url, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Set("User-Agent", userAgent)
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := (&http.Client{Timeout: 45 * time.Second}).Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -114,11 +119,12 @@ func resolve(ref specRef, old lockEntry) (lockEntry, []byte, error) {
 		e.URL = fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/%s", ref.GitHub, e.Commit, ref.File)
 		if old.Commit == e.Commit {
 			if _, err := os.Stat(cached(old.SHA256)); err == nil {
+				old.CheckedAt = time.Now().UTC().Format(time.RFC3339)
 				return old, nil, nil
 			}
 		}
 	}
-	src, err := download(e.URL)
+	src, err := sourceBytes(ref, e.URL)
 	if err != nil {
 		return e, nil, err
 	}
@@ -129,11 +135,23 @@ func resolve(ref specRef, old lockEntry) (lockEntry, []byte, error) {
 	}
 	e.SHA256, err = store(src)
 	e.Bytes = len(src)
+	e.CheckedAt = time.Now().UTC().Format(time.RFC3339)
+	// Documentation sources are mutable and assembled from multiple pages.
+	// Ship their exact normalized bytes so a fresh checkout can reproduce them.
+	if err == nil && (ref.Format == "slack" || ref.Format == "airtable") {
+		err = os.MkdirAll("snapshots", 0o755)
+		if err == nil {
+			err = os.WriteFile(filepath.Join("snapshots", e.SHA256), src, 0o644)
+		}
+	}
 	return e, src, err
 }
 
 // fetch downloads every locked spec missing from the cache, refusing content that is not what the lock names.
 func fetch(sources map[string]source, lock lockFile) error {
+	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
+		return err
+	}
 	var failed []string
 	for _, name := range sortedKeys(sources) {
 		for _, ref := range sources[name].Specs {
@@ -142,8 +160,19 @@ func fetch(sources map[string]source, lock lockFile) error {
 				if _, statErr := os.Stat(cached(e.SHA256)); statErr == nil {
 					continue
 				}
+				if src, snapshotErr := os.ReadFile(filepath.Join("snapshots", e.SHA256)); snapshotErr == nil {
+					h := sha256.Sum256(src)
+					if hex.EncodeToString(h[:]) != e.SHA256 {
+						failed = append(failed, name+": snapshot hash mismatch")
+						continue
+					}
+					if _, err := store(src); err != nil {
+						failed = append(failed, name+": "+err.Error())
+					}
+					continue
+				}
 				var src []byte
-				if src, err = download(e.URL); err == nil {
+				if src, err = sourceBytes(ref, e.URL); err == nil {
 					var sum string
 					if sum, err = store(src); err == nil && sum != e.SHA256 {
 						os.Remove(cached(sum))
@@ -175,9 +204,12 @@ func (l lockFile) dirty(name string, src source) bool {
 // update resolves the named services' specs, or else only the dirty ones, in parallel,
 // and prints the routes each change adds and removes.
 func update(sources map[string]source, lock lockFile, only []string) error {
-	for name := range lock {
-		if len(sources[name].Specs) == 0 {
-			delete(lock, name)
+	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
+		return err
+	}
+	for _, name := range only {
+		if _, ok := sources[name]; !ok {
+			return fmt.Errorf("unknown source %q", name)
 		}
 	}
 	var names []string
@@ -187,16 +219,30 @@ func update(sources map[string]source, lock lockFile, only []string) error {
 		}
 	}
 	entries, logs := make([][]lockEntry, len(names)), make([]string, len(names))
+	errs := make([]error, len(names))
 	var wg sync.WaitGroup
 	slots := make(chan struct{}, updateWorkers)
 	for i, name := range names {
 		wg.Go(func() {
 			slots <- struct{}{}
 			defer func() { <-slots }()
-			entries[i], logs[i] = updateService(name, sources[name], lock)
+			entries[i], logs[i], errs[i] = updateService(name, sources[name], lock)
 		})
 	}
 	wg.Wait()
+	for i, err := range errs {
+		if err != nil {
+			fmt.Print(logs[i])
+		}
+	}
+	if err := errors.Join(errs...); err != nil {
+		return err
+	}
+	for name := range lock {
+		if len(sources[name].Specs) == 0 {
+			delete(lock, name)
+		}
+	}
 	for i, name := range names {
 		fmt.Print(logs[i])
 		if len(entries[i]) > 0 {
@@ -208,13 +254,15 @@ func update(sources map[string]source, lock lockFile, only []string) error {
 	return nil
 }
 
-func updateService(name string, src source, lock lockFile) ([]lockEntry, string) {
+func updateService(name string, src source, lock lockFile) ([]lockEntry, string, error) {
 	var entries []lockEntry
 	var log strings.Builder
+	var failures []error
 	for _, ref := range src.Specs {
 		old, oldErr := lock.entry(name, ref)
 		e, after, err := resolve(ref, old)
 		if err != nil {
+			failures = append(failures, fmt.Errorf("%s: %w", name, err))
 			fmt.Fprintf(&log, "%s: %v\n", name, err)
 			if oldErr == nil {
 				entries = append(entries, old)
@@ -235,7 +283,7 @@ func updateService(name string, src source, lock lockFile) ([]lockEntry, string)
 			fmt.Fprintln(&log, "  -", r)
 		}
 	}
-	return entries, log.String()
+	return entries, log.String(), errors.Join(failures...)
 }
 
 func short(e lockEntry) string {
@@ -298,11 +346,14 @@ var parsedCache = map[string]parsed{}
 
 // read parses a locked spec from the cache, refusing bytes that do not match the lock.
 func read(ref specRef, e lockEntry) (parsed, error) {
-	key := e.SHA256 + ref.Origin + ref.Path
+	key := strings.Join([]string{e.SHA256, ref.Format, ref.Origin, ref.Path, e.URL}, "\x00")
 	if p, ok := parsedCache[key]; ok {
 		return p, nil
 	}
 	src, err := os.ReadFile(cached(e.SHA256))
+	if errors.Is(err, os.ErrNotExist) {
+		src, err = os.ReadFile(filepath.Join("snapshots", e.SHA256))
+	}
 	if err != nil {
 		return parsed{}, fmt.Errorf("%s is not cached; run fetch", ref.source())
 	}
@@ -310,7 +361,9 @@ func read(ref specRef, e lockEntry) (parsed, error) {
 		return parsed{}, fmt.Errorf("cached %s does not match the lock", ref.source())
 	}
 	p, err := parseSpec(ref, src, e.URL)
-	parsedCache[key] = p
+	if err == nil {
+		parsedCache[key] = p
+	}
 	return p, err
 }
 
@@ -328,6 +381,10 @@ func parseSpec(ref specRef, src []byte, location string) (parsed, error) {
 	switch ref.Format {
 	case "openapi", "swagger":
 		return parseOpenAPI(src, ref.Format == "swagger", location)
+	case "airtable":
+		return parseOpenAPI(src, false, location)
+	case "slack":
+		return parseDocumentation(src)
 	case "discovery":
 		return parseDiscovery(src)
 	case "graphql":
@@ -352,6 +409,7 @@ func specOps(name string, src source, lock lockFile) (parsed, error) {
 		if err != nil {
 			return out, err
 		}
+		out.Warnings = append(out.Warnings, p.Warnings...)
 		include := regexp.MustCompile(ref.Include)
 		for _, o := range p.Ops {
 			if !include.MatchString(o.Path) {
@@ -359,6 +417,16 @@ func specOps(name string, src source, lock lockFile) (parsed, error) {
 			}
 			if ref.Origin != "" {
 				o.Origin = ref.Origin
+			}
+			if o.SourceID == "" {
+				o.SourceID = o.ID
+				if o.SourceID == "" {
+					o.SourceID = o.Method + " " + o.Path
+				}
+			}
+			if o.SourceURL == "" {
+				o.SourceURL = e.URL
+				o.SourceHash = e.SHA256
 			}
 			out.Ops = append(out.Ops, o)
 		}
@@ -370,12 +438,13 @@ func specOps(name string, src source, lock lockFile) (parsed, error) {
 }
 
 type drafted struct {
-	op     specOp
-	effect string
-	action string
-	scope  obj
-	grant  []string
-	merged int
+	op      specOp
+	effect  string
+	effects []string
+	action  string
+	scope   obj
+	grant   []string
+	merged  int
 }
 
 // segmentsOverlap says whether some request path could match both patterns.
@@ -429,12 +498,12 @@ func literals(p string) int {
 	return n
 }
 
-func sameMap(a, b map[string]string) bool {
+func sameMap[V comparable](a, b map[string]V) bool {
 	if len(a) != len(b) {
 		return false
 	}
 	for k, v := range a {
-		if b[k] != v {
+		if other, ok := b[k]; !ok || other != v {
 			return false
 		}
 	}
@@ -456,8 +525,8 @@ func overlaps(a, b specOp) bool {
 	return segmentsOverlap(a.Path, b.Path)
 }
 
-// draftOps drafts every operation, folding each one a more general route would also match into that route,
-// since the monitor refuses a request two operations match.
+// draftOps preserves every source operation. Collisions belong in the coverage
+// report; deleting an operation here would lose its effects and resource scope.
 func draftOps(p parsed, ai bool, credQuery string) []drafted {
 	var out []drafted
 	for _, o := range p.Ops {
@@ -466,20 +535,34 @@ func draftOps(p parsed, ai bool, credQuery string) []drafted {
 		}
 		o.Method = strings.ToUpper(o.Method)
 		d := drafted{op: o, effect: draftEffect(o, ai)}
+		d.effects = slices.Clone(o.Effects)
+		if len(d.effects) == 0 {
+			d.effects = []string{d.effect}
+			if ai && d.effect == "generate" {
+				d.effects = []string{"generate", "pay", "send"}
+			}
+		} else {
+			d.effect = d.effects[0]
+		}
 		d.action = d.effect
 		if r := resource(o); d.effect != "read" && r != "" {
 			d.action = d.effect + "." + r
 		}
-		var keys []string
 		for _, m := range pathParam.FindAllStringSubmatch(o.Path, -1) {
 			name := strings.TrimSuffix(m[1], "*")
 			if d.scope.get(name) == nil {
 				d.scope = append(d.scope, kv{name, obj{{"from", "path"}, {"at", name}}})
-				keys = append(keys, name)
 			}
 		}
 		for _, r := range o.Required {
-			if d.scope.get(r.Name) != nil || (r.From == "body" && o.Body != "json") {
+			if r.From == "body" && o.Body != "json" {
+				continue
+			}
+			name := r.Name
+			if d.scope.get(name) != nil {
+				name = r.From + "." + name
+			}
+			if d.scope.get(name) != nil {
 				continue
 			}
 			at := r.Name
@@ -490,54 +573,45 @@ func draftOps(p parsed, ai bool, credQuery string) []drafted {
 			if r.Type != "string" {
 				spec = append(spec, kv{"type", r.Type})
 			}
-			d.scope = append(d.scope, kv{r.Name, spec})
-			keys = append(keys, r.Name)
-		}
-		// An approval for something that discloses or pays shows the request; it is limited to the resource it names.
-		if o.Body == "json" && slices.Contains([]string{"pay", "publish", "share", "send"}, d.effect) && d.scope.get("request") == nil {
-			d.scope = append(d.scope, kv{"request", obj{{"from", "body"}, {"at", ""}, {"type", "object"}}})
-			if len(keys) > 0 {
-				d.grant = keys
+			if r.Optional {
+				spec = append(spec, kv{"optional", true})
 			}
+			d.scope = append(d.scope, kv{name, spec})
+		}
+		// Generated approvals bind the whole request, including optional selectors.
+		// Broader reusable grants must come from reviewed provider overrides.
+		bind := func(name string, spec obj) {
+			for d.scope.get(name) != nil {
+				name = "request." + name
+			}
+			d.scope = append(d.scope, kv{name, spec})
+		}
+		if len(o.Params) > 0 || len(o.Query) > 0 {
+			bind("query", obj{{"from", "query"}, {"at", ""}, {"type", "object"}})
+		}
+		if o.Body == "json" {
+			typ := o.BodyType
+			if typ == "" {
+				typ = "object"
+			}
+			bind("request", obj{{"from", "body"}, {"at", ""}, {"type", typ}})
+		}
+		if o.Body == "form" {
+			bind("request", obj{{"from", "form"}, {"at", ""}, {"type", "object"}})
+		}
+		if o.Body == "graphql" {
+			bind("arguments", obj{{"from", "argument"}, {"at", ""}, {"type", "object"}})
 		}
 		o.Params = slices.DeleteFunc(o.Params, func(q string) bool { _, ok := o.Query[q]; return ok || q == credQuery })
 		d.op = o
 		out = append(out, d)
-	}
-	// The more general of two overlapping routes keeps both effects; the more specific one is dropped.
-	for i := 0; i < len(out); i++ {
-		for j := i + 1; j < len(out); j++ {
-			if !overlaps(out[i].op, out[j].op) {
-				continue
-			}
-			keep, drop := i, j
-			if literals(out[j].op.Path) < literals(out[i].op.Path) {
-				keep, drop = j, i
-			}
-			k, dr := &out[keep], out[drop]
-			if slices.Index(effectOrder, dr.effect) < slices.Index(effectOrder, k.effect) {
-				k.effect, k.action = dr.effect, dr.action
-			}
-			for _, q := range dr.op.Params {
-				if !slices.Contains(k.op.Params, q) {
-					k.op.Params = append(k.op.Params, q)
-				}
-			}
-			k.merged += dr.merged + 1
-			out = slices.Delete(out, drop, drop+1)
-			if drop == i {
-				i--
-				break
-			}
-			j--
-		}
 	}
 	return out
 }
 
 func operationObj(d drafted, id string) obj {
 	o := d.op
-	op := obj{{"id", id}, {"action", d.action}, {"effects", []string{d.effect}}, {"method", o.Method}, {"origin", o.Origin}, {"path", o.Path}}
+	op := obj{{"id", id}, {"action", d.action}, {"effects", d.effects}, {"method", o.Method}, {"origin", o.Origin}, {"path", o.Path}}
 	if len(o.Query) > 0 {
 		op = append(op, kv{"query", o.Query})
 	}

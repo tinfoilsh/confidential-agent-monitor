@@ -3,30 +3,266 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "API token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+      {
+        "key": "token",
+        "label": "API token",
+        "secret": true,
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ]
+      }
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.todoist.com", "path": "/api/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
-    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "value": "token",
+              "origin": "https://api.todoist.com",
+              "path": "/api/v1",
+              "header": "Authorization",
+              "prefix": "Bearer "
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "me",
+      "strangers": true,
+      "sends": "anyone"
+    },
     "actions": {
-      "read": {"title": "Read projects and tasks"},
-      "write": {"title": "Create and edit tasks"},
-      "write.projects": {"title": "Create and edit projects"},
-      "delete": {"title": "Delete tasks and projects"}
+      "read": {
+        "title": "Read projects and tasks"
+      },
+      "write": {
+        "title": "Create and edit tasks"
+      },
+      "write.projects": {
+        "title": "Create and edit projects"
+      },
+      "delete": {
+        "title": "Delete tasks and projects"
+      },
+      "delete.access_tokens": {
+        "title": "delete: access_tokens"
+      },
+      "write.migrate_personal_token": {
+        "title": "write: migrate_personal_token"
+      },
+      "send.comments": {
+        "title": "send: comments"
+      },
+      "delete.comments": {
+        "title": "delete: comments"
+      },
+      "send.reactions": {
+        "title": "send: reactions"
+      },
+      "delete.remove": {
+        "title": "delete: remove"
+      },
+      "delete.emails": {
+        "title": "delete: emails"
+      },
+      "write.emails": {
+        "title": "write: emails"
+      },
+      "write.folders": {
+        "title": "write: folders"
+      },
+      "delete.folders": {
+        "title": "delete: folders"
+      },
+      "write.labels": {
+        "title": "write: labels"
+      },
+      "write.rename": {
+        "title": "write: rename"
+      },
+      "delete.labels": {
+        "title": "delete: labels"
+      },
+      "write.location_reminders": {
+        "title": "write: location_reminders"
+      },
+      "delete.location_reminders": {
+        "title": "delete: location_reminders"
+      },
+      "write.notification_setting": {
+        "title": "write: notification_setting"
+      },
+      "write.cancel_plan_with_redirect_to_stripe": {
+        "title": "write: cancel_plan_with_redirect_to_stripe"
+      },
+      "write.reactivate_plan": {
+        "title": "write: reactivate_plan"
+      },
+      "write.reminders": {
+        "title": "write: reminders"
+      },
+      "delete.reminders": {
+        "title": "delete: reminders"
+      },
+      "share.revoke": {
+        "title": "share: revoke"
+      },
+      "write.sections": {
+        "title": "write: sections"
+      },
+      "delete.sections": {
+        "title": "delete: sections"
+      },
+      "write.quick": {
+        "title": "write: quick"
+      },
+      "write.tasks": {
+        "title": "write: tasks"
+      },
+      "write.import_into_project_from_template_id": {
+        "title": "write: import_into_project_from_template_id"
+      },
+      "delete.uploads": {
+        "title": "delete: uploads"
+      },
+      "write.top_up": {
+        "title": "write: top_up"
+      },
+      "admin.workspaces": {
+        "title": "admin: workspaces"
+      },
+      "delete.delete": {
+        "title": "delete: delete"
+      },
+      "share.invitations": {
+        "title": "share: invitations"
+      },
+      "write.join": {
+        "title": "write: join"
+      },
+      "delete.workspaces": {
+        "title": "delete: workspaces"
+      },
+      "share.users": {
+        "title": "share: users"
+      },
+      "delete.users": {
+        "title": "delete: users"
+      },
+      "admin.users": {
+        "title": "admin: users"
+      }
     }
   },
   "operations": [
-    {"id": "projects.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.todoist.com", "path": "/api/v1/projects", "params": ["cursor", "limit"], "scope": {}},
-    {"id": "tasks.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.todoist.com", "path": "/api/v1/tasks", "params": ["project_id", "section_id", "parent_id", "label", "ids", "cursor", "limit"], "scope": {}},
-    {"id": "tasks.filter", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.todoist.com", "path": "/api/v1/tasks/filter", "params": ["query", "lang", "cursor", "limit"], "scope": {}},
-    {"id": "tasks.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.todoist.com", "path": "/api/v1/tasks/{task}", "scope": {"task": {"from": "path", "at": "task"}}},
-    {"id": "tasks.create", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://api.todoist.com", "path": "/api/v1/tasks", "body": "json", "scope": {"task": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "tasks.update", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://api.todoist.com", "path": "/api/v1/tasks/{task}", "body": "json", "scope": {"task": {"from": "path", "at": "task"}, "changes": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "tasks.close", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://api.todoist.com", "path": "/api/v1/tasks/{task}/close", "scope": {"task": {"from": "path", "at": "task"}}},
-    {"id": "tasks.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.todoist.com", "path": "/api/v1/tasks/{task}", "scope": {"task": {"from": "path", "at": "task"}}},
-    {"id": "tasks.reopen", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://api.todoist.com", "path": "/api/v1/tasks/{task}/reopen", "scope": {"task": {"from": "path", "at": "task"}}},
-    {"id": "projects.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.todoist.com", "path": "/api/v1/projects/{project}", "scope": {"project": {"from": "path", "at": "project"}}},
-    {"id": "projects.create", "action": "write.projects", "effects": ["write"], "method": "POST", "origin": "https://api.todoist.com", "path": "/api/v1/projects", "body": "json", "scope": {"project": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "projects.update", "action": "write.projects", "effects": ["write"], "method": "POST", "origin": "https://api.todoist.com", "path": "/api/v1/projects/{project}", "body": "json", "scope": {"project": {"from": "path", "at": "project"}, "changes": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "projects.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.todoist.com", "path": "/api/v1/projects/{project}", "scope": {"project": {"from": "path", "at": "project"}}}
+    {"action":"read","effects":["read"],"id":"projects.list","method":"GET","origin":"https://api.todoist.com","params":["cursor","limit"],"path":"/api/v1/projects","scope":{}},
+    {"action":"read","effects":["read"],"id":"tasks.list","method":"GET","origin":"https://api.todoist.com","params":["project_id","section_id","parent_id","label","ids","cursor","limit"],"path":"/api/v1/tasks","scope":{}},
+    {"action":"read","effects":["read"],"id":"tasks.filter","method":"GET","origin":"https://api.todoist.com","params":["query","lang","cursor","limit"],"path":"/api/v1/tasks/filter","scope":{}},
+    {"action":"read","effects":["read"],"id":"tasks.get","method":"GET","origin":"https://api.todoist.com","path":"/api/v1/tasks/{task}","scope":{"task":{"at":"task","from":"path"}}},
+    {"action":"write","body":"json","effects":["write"],"id":"tasks.create","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/tasks","scope":{"task":{"at":"","from":"body","type":"object"}}},
+    {"action":"write","body":"json","effects":["write"],"id":"tasks.update","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/tasks/{task}","scope":{"changes":{"at":"","from":"body","type":"object"},"task":{"at":"task","from":"path"}}},
+    {"action":"write","effects":["write"],"id":"tasks.close","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/tasks/{task}/close","scope":{"task":{"at":"task","from":"path"}}},
+    {"action":"delete","effects":["delete"],"id":"tasks.delete","method":"DELETE","origin":"https://api.todoist.com","path":"/api/v1/tasks/{task}","scope":{"task":{"at":"task","from":"path"}}},
+    {"action":"write","effects":["write"],"id":"tasks.reopen","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/tasks/{task}/reopen","scope":{"task":{"at":"task","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"projects.get","method":"GET","origin":"https://api.todoist.com","path":"/api/v1/projects/{project}","scope":{"project":{"at":"project","from":"path"}}},
+    {"action":"write.projects","body":"json","effects":["write"],"id":"projects.create","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/projects","scope":{"project":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.projects","body":"json","effects":["write"],"id":"projects.update","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/projects/{project}","scope":{"changes":{"at":"","from":"body","type":"object"},"project":{"at":"project","from":"path"}}},
+    {"action":"delete","effects":["delete"],"id":"projects.delete","method":"DELETE","origin":"https://api.todoist.com","path":"/api/v1/projects/{project}","scope":{"project":{"at":"project","from":"path"}}},
+    {"action":"delete.access_tokens","effects":["delete"],"id":"revoke_access_token_api_api_v1_access_tokens_delete","method":"DELETE","origin":"https://api.todoist.com","params":["client_id","client_secret","access_token"],"path":"/api/v1/access_tokens","scope":{"client_id":{"at":"client_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.migrate_personal_token","body":"json","effects":["write"],"id":"migrate_personal_token_api_v1_access_tokens_migrate_personal_token_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/access_tokens/migrate_personal_token","scope":{"client_id":{"at":"/client_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_activity_logs_api_v1_activities_get","method":"GET","origin":"https://api.todoist.com","params":["object_type","object_id","parent_project_id","parent_item_id","include_parent_object","include_child_objects","initiator_id","initiator_id_null","event_type","ensure_last_state","object_event_types","workspace_id","annotate_notes","annotate_parents","cursor","limit","date_from","date_to"],"path":"/api/v1/activities","scope":{"initiator_id":{"at":"initiator_id","from":"query","optional":true},"object_id":{"at":"object_id","from":"query","optional":true},"parent_item_id":{"at":"parent_item_id","from":"query","optional":true},"parent_project_id":{"at":"parent_project_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"get_backups_api_v1_backups_get","method":"GET","origin":"https://api.todoist.com","params":["mfa_token"],"path":"/api/v1/backups","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"download_backup_api_v1_backups_download_get","method":"GET","origin":"https://api.todoist.com","params":["file"],"path":"/api/v1/backups/download","scope":{"file":{"at":"file","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_comments_api_v1_comments_get","method":"GET","origin":"https://api.todoist.com","params":["project_id","task_id","cursor","limit","public_key"],"path":"/api/v1/comments","scope":{"project_id":{"at":"project_id","from":"query","optional":true},"public_key":{"at":"public_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"query","optional":true}}},
+    {"action":"send.comments","body":"json","effects":["send"],"id":"create_comment_api_v1_comments_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/comments","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.comments","effects":["delete"],"id":"delete_comment_api_v1_comments__comment_id__delete","method":"DELETE","origin":"https://api.todoist.com","path":"/api/v1/comments/{comment_id}","scope":{"comment_id":{"at":"comment_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_comment_api_v1_comments__comment_id__get","method":"GET","origin":"https://api.todoist.com","path":"/api/v1/comments/{comment_id}","scope":{"comment_id":{"at":"comment_id","from":"path"}}},
+    {"action":"send.comments","body":"json","effects":["send"],"id":"update_comment_api_v1_comments__comment_id__post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/comments/{comment_id}","scope":{"comment_id":{"at":"comment_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"send.reactions","body":"json","effects":["send"],"id":"add_comment_reaction_api_v1_comments__comment_id__reactions_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/comments/{comment_id}/reactions","scope":{"comment_id":{"at":"comment_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.remove","body":"json","effects":["delete"],"id":"remove_comment_reaction_api_v1_comments__comment_id__reactions_remove_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/comments/{comment_id}/reactions/remove","scope":{"comment_id":{"at":"comment_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.emails","effects":["delete"],"id":"email_disable_api_v1_emails_delete","method":"DELETE","origin":"https://api.todoist.com","params":["obj_type","obj_id"],"path":"/api/v1/emails","scope":{"obj_id":{"at":"obj_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.emails","body":"json","effects":["write"],"id":"email_get_or_create_api_v1_emails_put","method":"PUT","origin":"https://api.todoist.com","path":"/api/v1/emails","scope":{"obj_id":{"at":"/obj_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_folders_api_v1_folders_get","method":"GET","origin":"https://api.todoist.com","params":["workspace_id","cursor","limit"],"path":"/api/v1/folders","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query"}}},
+    {"action":"write.folders","body":"json","effects":["write"],"id":"create_folder_api_v1_folders_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/folders","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","type":"number"}}},
+    {"action":"delete.folders","effects":["delete"],"id":"delete_folder_api_v1_folders__folder_id__delete","method":"DELETE","origin":"https://api.todoist.com","path":"/api/v1/folders/{folder_id}","scope":{"folder_id":{"at":"folder_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_folder_api_v1_folders__folder_id__get","method":"GET","origin":"https://api.todoist.com","path":"/api/v1/folders/{folder_id}","scope":{"folder_id":{"at":"folder_id","from":"path"}}},
+    {"action":"write.folders","body":"json","effects":["write"],"id":"update_folder_api_v1_folders__folder_id__post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/folders/{folder_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"id_mappings_api_v1_id_mappings__obj_name___obj_ids__get","method":"GET","origin":"https://api.todoist.com","path":"/api/v1/id_mappings/{obj_name}/{obj_ids}","scope":{"obj_ids":{"at":"obj_ids","from":"path"},"obj_name":{"at":"obj_name","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_labels_api_v1_labels_get","method":"GET","origin":"https://api.todoist.com","params":["cursor","limit"],"path":"/api/v1/labels","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.labels","body":"json","effects":["write"],"id":"create_label_api_v1_labels_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/labels","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"search_labels_api_v1_labels_search_get","method":"GET","origin":"https://api.todoist.com","params":["query","cursor","limit"],"path":"/api/v1/labels/search","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"shared_labels_api_v1_labels_shared_get","method":"GET","origin":"https://api.todoist.com","params":["omit_personal","cursor","limit"],"path":"/api/v1/labels/shared","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.remove","body":"json","effects":["delete"],"id":"shared_labels_remove_api_v1_labels_shared_remove_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/labels/shared/remove","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.rename","body":"json","effects":["write"],"id":"shared_labels_rename_api_v1_labels_shared_rename_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/labels/shared/rename","scope":{"name":{"at":"/name","from":"body"},"new_name":{"at":"/new_name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.labels","effects":["delete"],"id":"delete_label_api_v1_labels__label_id__delete","method":"DELETE","origin":"https://api.todoist.com","path":"/api/v1/labels/{label_id}","scope":{"label_id":{"at":"label_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_label_api_v1_labels__label_id__get","method":"GET","origin":"https://api.todoist.com","path":"/api/v1/labels/{label_id}","scope":{"label_id":{"at":"label_id","from":"path"}}},
+    {"action":"write.labels","body":"json","effects":["write"],"id":"update_label_api_v1_labels__label_id__post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/labels/{label_id}","scope":{"label_id":{"at":"label_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_location_reminders_api_v1_location_reminders_get","method":"GET","origin":"https://api.todoist.com","params":["task_id","cursor","limit"],"path":"/api/v1/location_reminders","scope":{"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"query","optional":true}}},
+    {"action":"write.location_reminders","body":"json","effects":["write"],"id":"create_location_reminder_api_v1_location_reminders_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/location_reminders","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"/task_id","from":"body"}}},
+    {"action":"delete.location_reminders","effects":["delete"],"id":"delete_location_reminder_api_v1_location_reminders__reminder_id__delete","method":"DELETE","origin":"https://api.todoist.com","path":"/api/v1/location_reminders/{reminder_id}","scope":{"reminder_id":{"at":"reminder_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_location_reminder_api_v1_location_reminders__reminder_id__get","method":"GET","origin":"https://api.todoist.com","path":"/api/v1/location_reminders/{reminder_id}","scope":{"reminder_id":{"at":"reminder_id","from":"path"}}},
+    {"action":"write.location_reminders","body":"json","effects":["write"],"id":"update_location_reminder_api_v1_location_reminders__reminder_id__post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/location_reminders/{reminder_id}","scope":{"reminder_id":{"at":"reminder_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.notification_setting","body":"json","effects":["write"],"id":"update_notification_setting_api_v1_notification_setting_put","method":"PUT","origin":"https://api.todoist.com","path":"/api/v1/notification_setting","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.cancel_plan_with_redirect_to_stripe","body":"json","effects":["write"],"id":"cancel_plan_with_redirect_to_stripe_api_v1_payments_cancel_plan_with_redirect_to_stripe_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/payments/cancel_plan_with_redirect_to_stripe","scope":{"request":{"at":"","from":"body","type":"object"},"return_url":{"at":"/return_url","from":"body","optional":true}}},
+    {"action":"read","effects":["read"],"id":"get_subscription_info_api_v1_payments_get_subscription_info_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/payments/get_subscription_info","scope":{}},
+    {"action":"write.reactivate_plan","effects":["write"],"id":"reactivate_plan_api_v1_payments_reactivate_plan_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/payments/reactivate_plan","scope":{}},
+    {"action":"read","effects":["read"],"id":"get_archived_api_v1_projects_archived_get","method":"GET","origin":"https://api.todoist.com","params":["cursor","limit"],"path":"/api/v1/projects/archived","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"permissions_api_v1_projects_permissions_get","method":"GET","origin":"https://api.todoist.com","path":"/api/v1/projects/permissions","scope":{}},
+    {"action":"read","effects":["read"],"id":"search_projects_api_v1_projects_search_get","method":"GET","origin":"https://api.todoist.com","params":["query","cursor","limit"],"path":"/api/v1/projects/search","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.projects","effects":["write"],"id":"archive_project_api_v1_projects__project_id__archive_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/projects/{project_id}/archive","scope":{"project_id":{"at":"project_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_project_collaborators_api_v1_projects__project_id__collaborators_get","method":"GET","origin":"https://api.todoist.com","params":["cursor","limit","public_key"],"path":"/api/v1/projects/{project_id}/collaborators","scope":{"project_id":{"at":"project_id","from":"path"},"public_key":{"at":"public_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.projects","effects":["write"],"id":"join_api_v1_projects__project_id__join_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/projects/{project_id}/join","scope":{"project_id":{"at":"project_id","from":"path"}}},
+    {"action":"write.projects","effects":["write"],"id":"unarchive_project_api_v1_projects__project_id__unarchive_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/projects/{project_id}/unarchive","scope":{"project_id":{"at":"project_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_reminders_api_v1_reminders_get","method":"GET","origin":"https://api.todoist.com","params":["task_id","cursor","limit"],"path":"/api/v1/reminders","scope":{"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"query","optional":true}}},
+    {"action":"write.reminders","body":"json","effects":["write"],"id":"create_reminder_api_v1_reminders_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/reminders","scope":{"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"/task_id","from":"body"}}},
+    {"action":"delete.reminders","effects":["delete"],"id":"delete_reminder_api_v1_reminders__reminder_id__delete","method":"DELETE","origin":"https://api.todoist.com","path":"/api/v1/reminders/{reminder_id}","scope":{"reminder_id":{"at":"reminder_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_reminder_api_v1_reminders__reminder_id__get","method":"GET","origin":"https://api.todoist.com","path":"/api/v1/reminders/{reminder_id}","scope":{"reminder_id":{"at":"reminder_id","from":"path"}}},
+    {"action":"write.reminders","body":"json","effects":["write"],"id":"update_reminder_api_v1_reminders__reminder_id__post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/reminders/{reminder_id}","scope":{"reminder_id":{"at":"reminder_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"share.revoke","body":"json","effects":["share"],"id":"revoke_token_rfc7009_compliant_api_v1_revoke_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/revoke","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_sections_api_v1_sections_get","method":"GET","origin":"https://api.todoist.com","params":["project_id","workspace_id","cursor","limit","public_key"],"path":"/api/v1/sections","scope":{"project_id":{"at":"project_id","from":"query","optional":true},"public_key":{"at":"public_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+    {"action":"write.sections","body":"json","effects":["write"],"id":"create_section_api_v1_sections_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/sections","scope":{"name":{"at":"/name","from":"body"},"project_id":{"at":"/project_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"search_sections_api_v1_sections_search_get","method":"GET","origin":"https://api.todoist.com","params":["query","project_id","workspace_id","cursor","limit"],"path":"/api/v1/sections/search","scope":{"project_id":{"at":"project_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+    {"action":"delete.sections","effects":["delete"],"id":"delete_section_api_v1_sections__section_id__delete","method":"DELETE","origin":"https://api.todoist.com","path":"/api/v1/sections/{section_id}","scope":{"section_id":{"at":"section_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_section_api_v1_sections__section_id__get","method":"GET","origin":"https://api.todoist.com","params":["public_key"],"path":"/api/v1/sections/{section_id}","scope":{"public_key":{"at":"public_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"section_id":{"at":"section_id","from":"path"}}},
+    {"action":"write.sections","body":"json","effects":["write"],"id":"update_section_api_v1_sections__section_id__post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/sections/{section_id}","scope":{"request":{"at":"","from":"body","type":"object"},"section_id":{"at":"section_id","from":"path"}}},
+    {"action":"write.sections","effects":["write"],"id":"archive_section_api_v1_sections__section_id__archive_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/sections/{section_id}/archive","scope":{"section_id":{"at":"section_id","from":"path"}}},
+    {"action":"write.sections","effects":["write"],"id":"unarchive_section_api_v1_sections__section_id__unarchive_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/sections/{section_id}/unarchive","scope":{"section_id":{"at":"section_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"tasks_completed_by_completion_date_api_v1_tasks_completed_by_completion_date_get","method":"GET","origin":"https://api.todoist.com","params":["since","until","workspace_id","project_id","section_id","parent_id","filter_query","filter_lang","cursor","limit","public_key"],"path":"/api/v1/tasks/completed/by_completion_date","scope":{"parent_id":{"at":"parent_id","from":"query","optional":true},"project_id":{"at":"project_id","from":"query","optional":true},"public_key":{"at":"public_key","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"section_id":{"at":"section_id","from":"query","optional":true},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"tasks_completed_by_due_date_api_v1_tasks_completed_by_due_date_get","method":"GET","origin":"https://api.todoist.com","params":["since","until","workspace_id","project_id","section_id","parent_id","filter_query","filter_lang","cursor","limit"],"path":"/api/v1/tasks/completed/by_due_date","scope":{"parent_id":{"at":"parent_id","from":"query","optional":true},"project_id":{"at":"project_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"section_id":{"at":"section_id","from":"query","optional":true},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"get_productivity_stats_api_v1_tasks_completed_stats_get","method":"GET","origin":"https://api.todoist.com","path":"/api/v1/tasks/completed/stats","scope":{}},
+    {"action":"write.quick","body":"json","effects":["write"],"id":"quick_add_api_v1_tasks_quick_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/tasks/quick","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.tasks","body":"json","effects":["write"],"id":"move_task_api_v1_tasks__task_id__move_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/tasks/{task_id}/move","scope":{"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"export_as_file_api_v1_templates_file_get","method":"GET","origin":"https://api.todoist.com","params":["project_id","use_relative_dates"],"path":"/api/v1/templates/file","scope":{"project_id":{"at":"project_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.import_into_project_from_template_id","body":"json","effects":["write"],"id":"import_into_project_from_template_id_api_v1_templates_import_into_project_from_template_id_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/templates/import_into_project_from_template_id","scope":{"project_id":{"at":"/project_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"/template_id","from":"body"}}},
+    {"action":"read","effects":["read"],"id":"export_as_url_api_v1_templates_url_get","method":"GET","origin":"https://api.todoist.com","params":["project_id","use_relative_dates"],"path":"/api/v1/templates/url","scope":{"project_id":{"at":"project_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.uploads","effects":["delete"],"id":"delete_upload_api_v1_uploads_delete","method":"DELETE","origin":"https://api.todoist.com","params":["file_url"],"path":"/api/v1/uploads","scope":{"file_url":{"at":"file_url","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"usage_billing_history_api_v1_usage_billing_history_get","method":"GET","origin":"https://api.todoist.com","params":["product","types","cursor","limit"],"path":"/api/v1/usage_billing/history","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"usage_billing_state_api_v1_usage_billing_state_get","method":"GET","origin":"https://api.todoist.com","params":["product"],"path":"/api/v1/usage_billing/state","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.top_up","body":"json","effects":["write"],"id":"usage_billing_top_up_api_v1_usage_billing_top_up_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/usage_billing/top_up","scope":{"request":{"at":"","from":"body","type":"object"},"return_url":{"at":"/return_url","from":"body"}}},
+    {"action":"read","effects":["read"],"id":"usage_billing_usage_summary_api_v1_usage_billing_usage_summary_get","method":"GET","origin":"https://api.todoist.com","params":["product","category","since","until","group_by"],"path":"/api/v1/usage_billing/usage_summary","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"user_info_api_v1_user_get","method":"GET","origin":"https://api.todoist.com","path":"/api/v1/user","scope":{}},
+    {"action":"read","effects":["read"],"id":"get_workspaces_api_v1_workspaces_get","method":"GET","origin":"https://api.todoist.com","path":"/api/v1/workspaces","scope":{}},
+    {"action":"admin.workspaces","body":"json","effects":["admin"],"id":"create_workspace_api_v1_workspaces_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/workspaces","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"invitations_api_v1_workspaces_invitations_get","method":"GET","origin":"https://api.todoist.com","params":["workspace_id"],"path":"/api/v1/workspaces/invitations","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query"}}},
+    {"action":"read","effects":["read"],"id":"all_invitations_api_v1_workspaces_invitations_all_get","method":"GET","origin":"https://api.todoist.com","params":["workspace_id"],"path":"/api/v1/workspaces/invitations/all","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query"}}},
+    {"action":"delete.delete","body":"json","effects":["delete"],"id":"delete_invitation_api_v1_workspaces_invitations_delete_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/workspaces/invitations/delete","scope":{"request":{"at":"","from":"body","type":"object"},"user_email":{"at":"/user_email","from":"body"},"workspace_id":{"at":"/workspace_id","from":"body","type":"number"}}},
+    {"action":"share.invitations","effects":["share"],"id":"accept_invitation_api_v1_workspaces_invitations__invite_code__accept_put","method":"PUT","origin":"https://api.todoist.com","path":"/api/v1/workspaces/invitations/{invite_code}/accept","scope":{"invite_code":{"at":"invite_code","from":"path"}}},
+    {"action":"share.invitations","effects":["share"],"id":"reject_invitation_api_v1_workspaces_invitations__invite_code__reject_put","method":"PUT","origin":"https://api.todoist.com","path":"/api/v1/workspaces/invitations/{invite_code}/reject","scope":{"invite_code":{"at":"invite_code","from":"path"}}},
+    {"action":"write.join","body":"json","effects":["write"],"id":"join_api_v1_workspaces_join_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/workspaces/join","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"plan_details_api_v1_workspaces_plan_details_get","method":"GET","origin":"https://api.todoist.com","params":["workspace_id"],"path":"/api/v1/workspaces/plan_details","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query"}}},
+    {"action":"read","effects":["read"],"id":"get_workspaces_users_api_v1_workspaces_users_get","method":"GET","origin":"https://api.todoist.com","params":["workspace_id","cursor","limit","sort"],"path":"/api/v1/workspaces/users","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+    {"action":"delete.workspaces","effects":["delete"],"id":"delete_workspace_api_v1_workspaces__workspace_id__delete","method":"DELETE","origin":"https://api.todoist.com","path":"/api/v1/workspaces/{workspace_id}","scope":{"workspace_id":{"at":"workspace_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_workspace_api_v1_workspaces__workspace_id__get","method":"GET","origin":"https://api.todoist.com","path":"/api/v1/workspaces/{workspace_id}","scope":{"workspace_id":{"at":"workspace_id","from":"path"}}},
+    {"action":"admin.workspaces","body":"json","effects":["admin"],"id":"update_workspace_api_v1_workspaces__workspace_id__post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/workspaces/{workspace_id}","scope":{"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"active_projects_api_v1_workspaces__workspace_id__projects_active_get","method":"GET","origin":"https://api.todoist.com","params":["cursor","limit"],"path":"/api/v1/workspaces/{workspace_id}/projects/active","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"archived_projects_api_v1_workspaces__workspace_id__projects_archived_get","method":"GET","origin":"https://api.todoist.com","params":["cursor","limit"],"path":"/api/v1/workspaces/{workspace_id}/projects/archived","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+    {"action":"share.users","body":"json","effects":["share"],"id":"invite_workspace_users_api_v1_workspaces__workspace_id__users_invite_post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/workspaces/{workspace_id}/users/invite","scope":{"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+    {"action":"delete.users","effects":["delete"],"id":"remove_workspace_user_api_v1_workspaces__workspace_id__users__user_id__delete","method":"DELETE","origin":"https://api.todoist.com","path":"/api/v1/workspaces/{workspace_id}/users/{user_id}","scope":{"user_id":{"at":"user_id","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}},
+    {"action":"admin.users","body":"json","effects":["admin"],"id":"update_workspace_user_api_v1_workspaces__workspace_id__users__user_id__post","method":"POST","origin":"https://api.todoist.com","path":"/api/v1/workspaces/{workspace_id}/users/{user_id}","scope":{"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"user_id","from":"path"},"workspace_id":{"at":"workspace_id","from":"path"}}}
   ]
 }

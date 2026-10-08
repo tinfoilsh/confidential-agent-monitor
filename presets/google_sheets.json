@@ -3,31 +3,94 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "Google account", "secret": true, "path": ["connections", "", "http", "values", "token"],
-       "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{MONITOR_GOOGLE_CLIENT_ID}", "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}", "scope": "https://www.googleapis.com/auth/spreadsheets", "prompt": "consent"}}
+      {
+        "key": "token",
+        "label": "Google account",
+        "secret": true,
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ],
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "token_url": "https://oauth2.googleapis.com/token",
+          "client_id": "{MONITOR_GOOGLE_CLIENT_ID}",
+          "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}",
+          "scope": "https://www.googleapis.com/auth/spreadsheets",
+          "prompt": "consent"
+        }
+      }
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets", "header": "Authorization", "prefix": "Bearer "}]}}},
-    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "value": "token",
+              "origin": "https://sheets.googleapis.com",
+              "path": "/v4/spreadsheets",
+              "header": "Authorization",
+              "prefix": "Bearer "
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "me",
+      "strangers": true,
+      "sends": "anyone"
+    },
     "actions": {
-      "read": {"title": "Read spreadsheets and ranges"},
-      "write": {"title": "Edit values entered as raw text"},
-      "execute.formulas": {"title": "Create spreadsheets and enter values parsed as formulas, which can fetch URLs"},
-      "delete": {"title": "Clear ranges"},
-      "admin.structure": {"title": "Change sheets, protection and structure (batch update)"}
+      "read": {
+        "title": "Read spreadsheets and ranges"
+      },
+      "write": {
+        "title": "Edit values entered as raw text"
+      },
+      "execute.formulas": {
+        "title": "Create spreadsheets and enter values parsed as formulas, which can fetch URLs"
+      },
+      "delete": {
+        "title": "Clear ranges"
+      },
+      "admin.structure": {
+        "title": "Change sheets, protection and structure (batch update)"
+      },
+      "write.sheets": {
+        "title": "write: sheets"
+      },
+      "delete.values": {
+        "title": "delete: values"
+      },
+      "write.values": {
+        "title": "write: values"
+      }
     }
   },
   "operations": [
-    {"id": "spreadsheets.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}", "params": ["ranges", "includeGridData", "excludeTablesInBandedRanges", "fields"], "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}}},
-    {"id": "values.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values/{range}", "params": ["majorDimension", "valueRenderOption", "dateTimeRenderOption"], "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "range": {"from": "path", "at": "range"}}},
-    {"id": "values.batchGet", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values:batchGet", "params": ["ranges", "majorDimension", "valueRenderOption", "dateTimeRenderOption"], "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}}},
-    {"id": "spreadsheets.create", "action": "execute.formulas", "effects": ["write", "execute", "send"], "method": "POST", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets", "body": "json", "scope": {"spreadsheet": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "values.update", "action": "write", "effects": ["write"], "method": "PUT", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values/{range}", "query": {"valueInputOption": "RAW"}, "params": ["includeValuesInResponse", "responseValueRenderOption", "responseDateTimeRenderOption"], "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "range": {"from": "path", "at": "range"}}},
-    {"id": "values.update.formulas", "action": "execute.formulas", "effects": ["write", "execute", "send"], "method": "PUT", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values/{range}", "query": {"valueInputOption": "USER_ENTERED"}, "params": ["includeValuesInResponse", "responseValueRenderOption", "responseDateTimeRenderOption"], "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "range": {"from": "path", "at": "range"}, "values": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "values.append", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values/{range}:append", "query": {"valueInputOption": "RAW"}, "params": ["insertDataOption", "includeValuesInResponse", "responseValueRenderOption", "responseDateTimeRenderOption"], "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "range": {"from": "path", "at": "range"}}},
-    {"id": "values.append.formulas", "action": "execute.formulas", "effects": ["write", "execute", "send"], "method": "POST", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values/{range}:append", "query": {"valueInputOption": "USER_ENTERED"}, "params": ["insertDataOption", "includeValuesInResponse", "responseValueRenderOption", "responseDateTimeRenderOption"], "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "range": {"from": "path", "at": "range"}, "values": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "values.batchUpdate", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values:batchUpdate", "fields": {"/valueInputOption": "RAW"}, "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}}},
-    {"id": "values.batchUpdate.formulas", "action": "execute.formulas", "effects": ["write", "execute", "send"], "method": "POST", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values:batchUpdate", "fields": {"/valueInputOption": "USER_ENTERED"}, "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "data": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "values.clear", "action": "delete", "effects": ["delete"], "method": "POST", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}/values/{range}:clear", "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "range": {"from": "path", "at": "range"}}},
-    {"id": "spreadsheets.batchUpdate", "action": "admin.structure", "effects": ["write", "delete", "admin", "execute", "send"], "method": "POST", "origin": "https://sheets.googleapis.com", "path": "/v4/spreadsheets/{spreadsheet}:batchUpdate", "body": "json", "scope": {"spreadsheet": {"from": "path", "at": "spreadsheet"}, "requests": {"from": "body", "at": "", "type": "object"}}}
+    {"action":"read","effects":["read"],"id":"spreadsheets.get","method":"GET","origin":"https://sheets.googleapis.com","params":["ranges","includeGridData","excludeTablesInBandedRanges","fields"],"path":"/v4/spreadsheets/{spreadsheet}","scope":{"spreadsheet":{"at":"spreadsheet","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"values.get","method":"GET","origin":"https://sheets.googleapis.com","params":["majorDimension","valueRenderOption","dateTimeRenderOption"],"path":"/v4/spreadsheets/{spreadsheet}/values/{range}","scope":{"range":{"at":"range","from":"path"},"spreadsheet":{"at":"spreadsheet","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"values.batchGet","method":"GET","origin":"https://sheets.googleapis.com","params":["ranges","majorDimension","valueRenderOption","dateTimeRenderOption"],"path":"/v4/spreadsheets/{spreadsheet}/values:batchGet","scope":{"spreadsheet":{"at":"spreadsheet","from":"path"}}},
+    {"action":"execute.formulas","body":"json","effects":["write","execute","send"],"id":"spreadsheets.create","method":"POST","origin":"https://sheets.googleapis.com","path":"/v4/spreadsheets","scope":{"spreadsheet":{"at":"","from":"body","type":"object"}}},
+    {"action":"write","body":"json","effects":["write"],"id":"values.update","method":"PUT","origin":"https://sheets.googleapis.com","params":["includeValuesInResponse","responseValueRenderOption","responseDateTimeRenderOption"],"path":"/v4/spreadsheets/{spreadsheet}/values/{range}","query":{"valueInputOption":"RAW"},"scope":{"range":{"at":"range","from":"path"},"spreadsheet":{"at":"spreadsheet","from":"path"}}},
+    {"action":"execute.formulas","body":"json","effects":["write","execute","send"],"id":"values.update.formulas","method":"PUT","origin":"https://sheets.googleapis.com","params":["includeValuesInResponse","responseValueRenderOption","responseDateTimeRenderOption"],"path":"/v4/spreadsheets/{spreadsheet}/values/{range}","query":{"valueInputOption":"USER_ENTERED"},"scope":{"range":{"at":"range","from":"path"},"spreadsheet":{"at":"spreadsheet","from":"path"},"values":{"at":"","from":"body","type":"object"}}},
+    {"action":"write","body":"json","effects":["write"],"id":"values.append","method":"POST","origin":"https://sheets.googleapis.com","params":["insertDataOption","includeValuesInResponse","responseValueRenderOption","responseDateTimeRenderOption"],"path":"/v4/spreadsheets/{spreadsheet}/values/{range}:append","query":{"valueInputOption":"RAW"},"scope":{"range":{"at":"range","from":"path"},"spreadsheet":{"at":"spreadsheet","from":"path"}}},
+    {"action":"execute.formulas","body":"json","effects":["write","execute","send"],"id":"values.append.formulas","method":"POST","origin":"https://sheets.googleapis.com","params":["insertDataOption","includeValuesInResponse","responseValueRenderOption","responseDateTimeRenderOption"],"path":"/v4/spreadsheets/{spreadsheet}/values/{range}:append","query":{"valueInputOption":"USER_ENTERED"},"scope":{"range":{"at":"range","from":"path"},"spreadsheet":{"at":"spreadsheet","from":"path"},"values":{"at":"","from":"body","type":"object"}}},
+    {"action":"write","body":"json","effects":["write"],"fields":{"/valueInputOption":"RAW"},"id":"values.batchUpdate","method":"POST","origin":"https://sheets.googleapis.com","path":"/v4/spreadsheets/{spreadsheet}/values:batchUpdate","scope":{"spreadsheet":{"at":"spreadsheet","from":"path"}}},
+    {"action":"execute.formulas","body":"json","effects":["write","execute","send"],"fields":{"/valueInputOption":"USER_ENTERED"},"id":"values.batchUpdate.formulas","method":"POST","origin":"https://sheets.googleapis.com","path":"/v4/spreadsheets/{spreadsheet}/values:batchUpdate","scope":{"data":{"at":"","from":"body","type":"object"},"spreadsheet":{"at":"spreadsheet","from":"path"}}},
+    {"action":"delete","body":"json","effects":["delete"],"id":"values.clear","method":"POST","origin":"https://sheets.googleapis.com","path":"/v4/spreadsheets/{spreadsheet}/values/{range}:clear","scope":{"range":{"at":"range","from":"path"},"spreadsheet":{"at":"spreadsheet","from":"path"}}},
+    {"action":"admin.structure","body":"json","effects":["write","delete","admin","execute","send"],"id":"spreadsheets.batchUpdate","method":"POST","origin":"https://sheets.googleapis.com","path":"/v4/spreadsheets/{spreadsheet}:batchUpdate","scope":{"requests":{"at":"","from":"body","type":"object"},"spreadsheet":{"at":"spreadsheet","from":"path"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"spreadsheets.getByDataFilter","method":"POST","origin":"https://sheets.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/spreadsheets/{spreadsheetId}:getByDataFilter","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"spreadsheetId":{"at":"spreadsheetId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"spreadsheets.developerMetadata.get","method":"GET","origin":"https://sheets.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/spreadsheets/{spreadsheetId}/developerMetadata/{metadataId}","scope":{"metadataId":{"at":"metadataId","from":"path"},"query":{"at":"","from":"query","type":"object"},"spreadsheetId":{"at":"spreadsheetId","from":"path"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"spreadsheets.developerMetadata.search","method":"POST","origin":"https://sheets.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/spreadsheets/{spreadsheetId}/developerMetadata:search","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"spreadsheetId":{"at":"spreadsheetId","from":"path"}}},
+    {"action":"write.sheets","body":"json","effects":["write"],"id":"spreadsheets.sheets.copyTo","method":"POST","origin":"https://sheets.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/spreadsheets/{spreadsheetId}/sheets/{sheetId}:copyTo","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"sheetId":{"at":"sheetId","from":"path"},"spreadsheetId":{"at":"spreadsheetId","from":"path"}}},
+    {"action":"delete.values","body":"json","effects":["delete"],"id":"spreadsheets.values.batchClear","method":"POST","origin":"https://sheets.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/spreadsheets/{spreadsheetId}/values:batchClear","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"spreadsheetId":{"at":"spreadsheetId","from":"path"}}},
+    {"action":"delete.values","body":"json","effects":["delete"],"id":"spreadsheets.values.batchClearByDataFilter","method":"POST","origin":"https://sheets.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/spreadsheets/{spreadsheetId}/values:batchClearByDataFilter","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"spreadsheetId":{"at":"spreadsheetId","from":"path"}}},
+    {"action":"read","body":"json","effects":["read"],"id":"spreadsheets.values.batchGetByDataFilter","method":"POST","origin":"https://sheets.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/spreadsheets/{spreadsheetId}/values:batchGetByDataFilter","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"spreadsheetId":{"at":"spreadsheetId","from":"path"}}},
+    {"action":"write.values","body":"json","effects":["write"],"id":"spreadsheets.values.batchUpdateByDataFilter","method":"POST","origin":"https://sheets.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v4/spreadsheets/{spreadsheetId}/values:batchUpdateByDataFilter","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"spreadsheetId":{"at":"spreadsheetId","from":"path"}}}
   ]
 }

@@ -3,23 +3,573 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "Bot token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+      {
+        "key": "token",
+        "label": "Bot token",
+        "secret": true,
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ]
+      }
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://discord.com", "path": "/api/v10", "header": "Authorization", "prefix": "Bot "}]}}},
-    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "value": "token",
+              "origin": "https://discord.com",
+              "path": "/api/v10",
+              "header": "Authorization",
+              "prefix": "Bot "
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "team",
+      "strangers": true,
+      "sends": "anyone"
+    },
     "actions": {
-      "read": {"title": "Read channels, messages and members"},
-      "send.message": {"title": "Post and edit messages"},
-      "delete": {"title": "Delete messages"}
+      "read": {
+        "title": "Read channels, messages and members"
+      },
+      "send.message": {
+        "title": "Post and edit messages"
+      },
+      "delete": {
+        "title": "Delete messages"
+      },
+      "write.@me": {
+        "title": "write: @me"
+      },
+      "write.applications": {
+        "title": "write: applications"
+      },
+      "write.commands": {
+        "title": "write: commands"
+      },
+      "delete.commands": {
+        "title": "delete: commands"
+      },
+      "write.emojis": {
+        "title": "write: emojis"
+      },
+      "delete.emojis": {
+        "title": "delete: emojis"
+      },
+      "write.entitlements": {
+        "title": "write: entitlements"
+      },
+      "delete.entitlements": {
+        "title": "delete: entitlements"
+      },
+      "write.consume": {
+        "title": "write: consume"
+      },
+      "share.permissions": {
+        "title": "share: permissions"
+      },
+      "write.metadata": {
+        "title": "write: metadata"
+      },
+      "delete.channels": {
+        "title": "delete: channels"
+      },
+      "write.channels": {
+        "title": "write: channels"
+      },
+      "share.channels": {
+        "title": "share: channels"
+      },
+      "send.messages": {
+        "title": "send: messages"
+      },
+      "delete.bulk_delete": {
+        "title": "delete: bulk_delete"
+      },
+      "delete.pins": {
+        "title": "delete: pins"
+      },
+      "write.pins": {
+        "title": "write: pins"
+      },
+      "write.messages": {
+        "title": "write: messages"
+      },
+      "write.crosspost": {
+        "title": "write: crosspost"
+      },
+      "delete.reactions": {
+        "title": "delete: reactions"
+      },
+      "delete.@me": {
+        "title": "delete: @me"
+      },
+      "write.threads": {
+        "title": "write: threads"
+      },
+      "delete.permissions": {
+        "title": "delete: permissions"
+      },
+      "write.expire": {
+        "title": "write: expire"
+      },
+      "delete.recipients": {
+        "title": "delete: recipients"
+      },
+      "send.recipients": {
+        "title": "send: recipients"
+      },
+      "send.channels": {
+        "title": "send: channels"
+      },
+      "delete.thread_members": {
+        "title": "delete: thread_members"
+      },
+      "write.thread_members": {
+        "title": "write: thread_members"
+      },
+      "execute.typing": {
+        "title": "execute: typing"
+      },
+      "write.voice_status": {
+        "title": "write: voice_status"
+      },
+      "admin.webhooks": {
+        "title": "admin: webhooks"
+      },
+      "write.guilds": {
+        "title": "write: guilds"
+      },
+      "write.rules": {
+        "title": "write: rules"
+      },
+      "delete.rules": {
+        "title": "delete: rules"
+      },
+      "delete.bans": {
+        "title": "delete: bans"
+      },
+      "write.bans": {
+        "title": "write: bans"
+      },
+      "write.bulk_ban": {
+        "title": "write: bulk_ban"
+      },
+      "write.incident_actions": {
+        "title": "write: incident_actions"
+      },
+      "delete.integrations": {
+        "title": "delete: integrations"
+      },
+      "delete.members": {
+        "title": "delete: members"
+      },
+      "admin.members": {
+        "title": "admin: members"
+      },
+      "delete.roles": {
+        "title": "delete: roles"
+      },
+      "admin.roles": {
+        "title": "admin: roles"
+      },
+      "write.onboarding": {
+        "title": "write: onboarding"
+      },
+      "write.prune": {
+        "title": "write: prune"
+      },
+      "write.requests": {
+        "title": "write: requests"
+      },
+      "write.scheduled_events": {
+        "title": "write: scheduled_events"
+      },
+      "delete.scheduled_events": {
+        "title": "delete: scheduled_events"
+      },
+      "write.exceptions": {
+        "title": "write: exceptions"
+      },
+      "delete.exceptions": {
+        "title": "delete: exceptions"
+      },
+      "write.soundboard_sounds": {
+        "title": "write: soundboard_sounds"
+      },
+      "delete.soundboard_sounds": {
+        "title": "delete: soundboard_sounds"
+      },
+      "delete.stickers": {
+        "title": "delete: stickers"
+      },
+      "write.stickers": {
+        "title": "write: stickers"
+      },
+      "write.templates": {
+        "title": "write: templates"
+      },
+      "delete.templates": {
+        "title": "delete: templates"
+      },
+      "write.voice_states": {
+        "title": "write: voice_states"
+      },
+      "write.welcome_screen": {
+        "title": "write: welcome_screen"
+      },
+      "write.widget": {
+        "title": "write: widget"
+      },
+      "write.callback": {
+        "title": "write: callback"
+      },
+      "delete.invites": {
+        "title": "delete: invites"
+      },
+      "share.bulk_add": {
+        "title": "share: bulk_add"
+      },
+      "share.bulk_delete": {
+        "title": "share: bulk_delete"
+      },
+      "delete.target_users": {
+        "title": "delete: target_users"
+      },
+      "share.target_users": {
+        "title": "share: target_users"
+      },
+      "write.lobbies": {
+        "title": "write: lobbies"
+      },
+      "delete.lobbies": {
+        "title": "delete: lobbies"
+      },
+      "write.channel_linking": {
+        "title": "write: channel_linking"
+      },
+      "share.@me": {
+        "title": "share: @me"
+      },
+      "write.bulk": {
+        "title": "write: bulk"
+      },
+      "share.members": {
+        "title": "share: members"
+      },
+      "write.moderation_metadata": {
+        "title": "write: moderation_metadata"
+      },
+      "write.unmerge": {
+        "title": "write: unmerge"
+      },
+      "write.bot": {
+        "title": "write: bot"
+      },
+      "admin.token": {
+        "title": "admin: token"
+      },
+      "write.stage_instances": {
+        "title": "write: stage_instances"
+      },
+      "delete.stage_instances": {
+        "title": "delete: stage_instances"
+      },
+      "delete.role_connection": {
+        "title": "delete: role_connection"
+      },
+      "write.role_connection": {
+        "title": "write: role_connection"
+      },
+      "delete.guilds": {
+        "title": "delete: guilds"
+      },
+      "delete.webhooks": {
+        "title": "delete: webhooks"
+      },
+      "execute.webhooks": {
+        "title": "execute: webhooks"
+      },
+      "execute.github": {
+        "title": "execute: github"
+      },
+      "delete.@original": {
+        "title": "delete: @original"
+      },
+      "write.@original": {
+        "title": "write: @original"
+      },
+      "delete.messages": {
+        "title": "delete: messages"
+      },
+      "execute.slack": {
+        "title": "execute: slack"
+      }
     }
   },
   "operations": [
-    {"id": "channels.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://discord.com", "path": "/api/v10/channels/{channel}", "scope": {"channel": {"from": "path", "at": "channel"}}},
-    {"id": "messages.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://discord.com", "path": "/api/v10/channels/{channel}/messages", "params": ["around", "before", "after", "limit"], "scope": {"channel": {"from": "path", "at": "channel"}}},
-    {"id": "messages.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://discord.com", "path": "/api/v10/channels/{channel}/messages/{message}", "scope": {"channel": {"from": "path", "at": "channel"}, "message": {"from": "path", "at": "message"}}},
-    {"id": "guild.members.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://discord.com", "path": "/api/v10/guilds/{guild}/members", "params": ["limit", "after"], "scope": {"guild": {"from": "path", "at": "guild"}}},
-    {"id": "messages.create", "action": "send.message", "effects": ["send"], "method": "POST", "origin": "https://discord.com", "path": "/api/v10/channels/{channel}/messages", "body": "json", "scope": {"channel": {"from": "path", "at": "channel"}, "message": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "messages.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://discord.com", "path": "/api/v10/channels/{channel}/messages/{message}", "scope": {"channel": {"from": "path", "at": "channel"}, "message": {"from": "path", "at": "message"}}},
-    {"id": "messages.update", "action": "send.message", "effects": ["send"], "method": "PATCH", "origin": "https://discord.com", "path": "/api/v10/channels/{channel}/messages/{message}", "body": "json", "scope": {"channel": {"from": "path", "at": "channel"}, "message": {"from": "path", "at": "message"}, "changes": {"from": "body", "at": "", "type": "object"}}}
+    {"action":"read","effects":["read"],"id":"channels.get","method":"GET","origin":"https://discord.com","path":"/api/v10/channels/{channel}","scope":{"channel":{"at":"channel","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"messages.list","method":"GET","origin":"https://discord.com","params":["around","before","after","limit"],"path":"/api/v10/channels/{channel}/messages","scope":{"channel":{"at":"channel","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"messages.get","method":"GET","origin":"https://discord.com","path":"/api/v10/channels/{channel}/messages/{message}","scope":{"channel":{"at":"channel","from":"path"},"message":{"at":"message","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"guild.members.list","method":"GET","origin":"https://discord.com","params":["limit","after"],"path":"/api/v10/guilds/{guild}/members","scope":{"guild":{"at":"guild","from":"path"}}},
+    {"action":"send.message","body":"json","effects":["send"],"id":"messages.create","method":"POST","origin":"https://discord.com","path":"/api/v10/channels/{channel}/messages","scope":{"channel":{"at":"channel","from":"path"},"message":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"messages.delete","method":"DELETE","origin":"https://discord.com","path":"/api/v10/channels/{channel}/messages/{message}","scope":{"channel":{"at":"channel","from":"path"},"message":{"at":"message","from":"path"}}},
+    {"action":"send.message","body":"json","effects":["send"],"id":"messages.update","method":"PATCH","origin":"https://discord.com","path":"/api/v10/channels/{channel}/messages/{message}","scope":{"changes":{"at":"","from":"body","type":"object"},"channel":{"at":"channel","from":"path"},"message":{"at":"message","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_my_application","method":"GET","origin":"https://discord.com","path":"/api/v10/applications/@me","scope":{}},
+    {"action":"write.@me","body":"json","effects":["write"],"id":"update_my_application","method":"PATCH","origin":"https://discord.com","path":"/api/v10/applications/@me","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_application","method":"GET","origin":"https://discord.com","path":"/api/v10/applications/{application_id}","scope":{"application_id":{"at":"application_id","from":"path"}}},
+    {"action":"write.applications","body":"json","effects":["write"],"id":"update_application","method":"PATCH","origin":"https://discord.com","path":"/api/v10/applications/{application_id}","scope":{"application_id":{"at":"application_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"applications_get_activity_instance","method":"GET","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/activity-instances/{instance_id}","scope":{"application_id":{"at":"application_id","from":"path"},"instance_id":{"at":"instance_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"list_application_commands","method":"GET","origin":"https://discord.com","params":["with_localizations"],"path":"/api/v10/applications/{application_id}/commands","scope":{"application_id":{"at":"application_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.commands","body":"json","effects":["write"],"id":"create_application_command","method":"POST","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/commands","scope":{"application_id":{"at":"application_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.commands","body":"json","effects":["write"],"id":"bulk_set_application_commands","method":"PUT","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/commands","scope":{"application_id":{"at":"application_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.commands","effects":["delete"],"id":"delete_application_command","method":"DELETE","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/commands/{command_id}","scope":{"application_id":{"at":"application_id","from":"path"},"command_id":{"at":"command_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_application_command","method":"GET","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/commands/{command_id}","scope":{"application_id":{"at":"application_id","from":"path"},"command_id":{"at":"command_id","from":"path"}}},
+    {"action":"write.commands","body":"json","effects":["write"],"id":"update_application_command","method":"PATCH","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/commands/{command_id}","scope":{"application_id":{"at":"application_id","from":"path"},"command_id":{"at":"command_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"list_application_emojis","method":"GET","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/emojis","scope":{"application_id":{"at":"application_id","from":"path"}}},
+    {"action":"write.emojis","body":"json","effects":["write"],"id":"create_application_emoji","method":"POST","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/emojis","scope":{"application_id":{"at":"application_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.emojis","effects":["delete"],"id":"delete_application_emoji","method":"DELETE","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/emojis/{emoji_id}","scope":{"application_id":{"at":"application_id","from":"path"},"emoji_id":{"at":"emoji_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_application_emoji","method":"GET","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/emojis/{emoji_id}","scope":{"application_id":{"at":"application_id","from":"path"},"emoji_id":{"at":"emoji_id","from":"path"}}},
+    {"action":"write.emojis","body":"json","effects":["write"],"id":"update_application_emoji","method":"PATCH","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/emojis/{emoji_id}","scope":{"application_id":{"at":"application_id","from":"path"},"emoji_id":{"at":"emoji_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_entitlements","method":"GET","origin":"https://discord.com","params":["user_id","sku_ids","guild_id","before","after","limit","exclude_ended","exclude_deleted","only_active"],"path":"/api/v10/applications/{application_id}/entitlements","scope":{"application_id":{"at":"application_id","from":"path"},"guild_id":{"at":"guild_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"sku_ids":{"at":"sku_ids","from":"query","optional":true},"user_id":{"at":"user_id","from":"query","optional":true}}},
+    {"action":"write.entitlements","body":"json","effects":["write"],"id":"create_entitlement","method":"POST","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/entitlements","scope":{"application_id":{"at":"application_id","from":"path"},"owner_id":{"at":"/owner_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"sku_id":{"at":"/sku_id","from":"body"}}},
+    {"action":"delete.entitlements","effects":["delete"],"id":"delete_entitlement","method":"DELETE","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/entitlements/{entitlement_id}","scope":{"application_id":{"at":"application_id","from":"path"},"entitlement_id":{"at":"entitlement_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_entitlement","method":"GET","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/entitlements/{entitlement_id}","scope":{"application_id":{"at":"application_id","from":"path"},"entitlement_id":{"at":"entitlement_id","from":"path"}}},
+    {"action":"write.consume","effects":["write"],"id":"consume_entitlement","method":"POST","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/entitlements/{entitlement_id}/consume","scope":{"application_id":{"at":"application_id","from":"path"},"entitlement_id":{"at":"entitlement_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_application_commands","method":"GET","origin":"https://discord.com","params":["with_localizations"],"path":"/api/v10/applications/{application_id}/guilds/{guild_id}/commands","scope":{"application_id":{"at":"application_id","from":"path"},"guild_id":{"at":"guild_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.commands","body":"json","effects":["write"],"id":"create_guild_application_command","method":"POST","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/guilds/{guild_id}/commands","scope":{"application_id":{"at":"application_id","from":"path"},"guild_id":{"at":"guild_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.commands","body":"json","effects":["write"],"id":"bulk_set_guild_application_commands","method":"PUT","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/guilds/{guild_id}/commands","scope":{"application_id":{"at":"application_id","from":"path"},"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_application_command_permissions","method":"GET","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/guilds/{guild_id}/commands/permissions","scope":{"application_id":{"at":"application_id","from":"path"},"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"delete.commands","effects":["delete"],"id":"delete_guild_application_command","method":"DELETE","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/guilds/{guild_id}/commands/{command_id}","scope":{"application_id":{"at":"application_id","from":"path"},"command_id":{"at":"command_id","from":"path"},"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_application_command","method":"GET","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/guilds/{guild_id}/commands/{command_id}","scope":{"application_id":{"at":"application_id","from":"path"},"command_id":{"at":"command_id","from":"path"},"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"write.commands","body":"json","effects":["write"],"id":"update_guild_application_command","method":"PATCH","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/guilds/{guild_id}/commands/{command_id}","scope":{"application_id":{"at":"application_id","from":"path"},"command_id":{"at":"command_id","from":"path"},"guild_id":{"at":"guild_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_application_command_permissions","method":"GET","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions","scope":{"application_id":{"at":"application_id","from":"path"},"command_id":{"at":"command_id","from":"path"},"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"share.permissions","body":"json","effects":["share"],"id":"set_guild_application_command_permissions","method":"PUT","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions","scope":{"application_id":{"at":"application_id","from":"path"},"command_id":{"at":"command_id","from":"path"},"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_application_role_connections_metadata","method":"GET","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/role-connections/metadata","scope":{"application_id":{"at":"application_id","from":"path"}}},
+    {"action":"write.metadata","body":"json","effects":["write"],"id":"update_application_role_connections_metadata","method":"PUT","origin":"https://discord.com","path":"/api/v10/applications/{application_id}/role-connections/metadata","scope":{"application_id":{"at":"application_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.channels","effects":["delete"],"id":"delete_channel","method":"DELETE","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}","scope":{"channel_id":{"at":"channel_id","from":"path"}}},
+    {"action":"write.channels","body":"json","effects":["write"],"id":"update_channel","method":"PATCH","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.channels","body":"json","effects":["write"],"id":"follow_channel","method":"POST","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/followers","scope":{"channel_id":{"at":"channel_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"webhook_channel_id":{"at":"/webhook_channel_id","from":"body"}}},
+    {"action":"read","effects":["read"],"id":"list_channel_invites","method":"GET","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/invites","scope":{"channel_id":{"at":"channel_id","from":"path"}}},
+    {"action":"share.channels","body":"json","effects":["share"],"id":"create_channel_invite","method":"POST","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/invites","scope":{"channel_id":{"at":"channel_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"share.channels","body":"form","effects":["share"],"id":"create_channel_invite.form.08917e1773fa","method":"POST","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/invites","scope":{"channel_id":{"at":"channel_id","from":"path"},"request":{"at":"","from":"form","type":"object"}}},
+    {"action":"send.messages","body":"form","effects":["send"],"id":"create_message","method":"POST","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/messages","scope":{"channel_id":{"at":"channel_id","from":"path"},"request":{"at":"","from":"form","type":"object"},"sticker_ids":{"at":"sticker_ids","from":"form","optional":true}}},
+    {"action":"delete.bulk_delete","body":"json","effects":["delete"],"id":"bulk_delete_messages","method":"POST","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/messages/bulk-delete","scope":{"channel_id":{"at":"channel_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"list_pins","method":"GET","origin":"https://discord.com","params":["before","limit"],"path":"/api/v10/channels/{channel_id}/messages/pins","scope":{"channel_id":{"at":"channel_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.pins","effects":["delete"],"id":"delete_pin","method":"DELETE","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/messages/pins/{message_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"message_id":{"at":"message_id","from":"path"}}},
+    {"action":"write.pins","effects":["write"],"id":"create_pin","method":"PUT","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/messages/pins/{message_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"message_id":{"at":"message_id","from":"path"}}},
+    {"action":"write.messages","body":"form","effects":["write"],"id":"update_message","method":"PATCH","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/messages/{message_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"message_id":{"at":"message_id","from":"path"},"request":{"at":"","from":"form","type":"object"},"sticker_ids":{"at":"sticker_ids","from":"form","optional":true}}},
+    {"action":"write.crosspost","effects":["write"],"id":"crosspost_message","method":"POST","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/messages/{message_id}/crosspost","scope":{"channel_id":{"at":"channel_id","from":"path"},"message_id":{"at":"message_id","from":"path"}}},
+    {"action":"delete.reactions","effects":["delete"],"id":"delete_all_message_reactions","method":"DELETE","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/messages/{message_id}/reactions","scope":{"channel_id":{"at":"channel_id","from":"path"},"message_id":{"at":"message_id","from":"path"}}},
+    {"action":"delete.reactions","effects":["delete"],"id":"delete_all_message_reactions_by_emoji","method":"DELETE","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}","scope":{"channel_id":{"at":"channel_id","from":"path"},"emoji_name":{"at":"emoji_name","from":"path"},"message_id":{"at":"message_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"list_message_reactions_by_emoji","method":"GET","origin":"https://discord.com","params":["after","limit","type"],"path":"/api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}","scope":{"channel_id":{"at":"channel_id","from":"path"},"emoji_name":{"at":"emoji_name","from":"path"},"message_id":{"at":"message_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.@me","effects":["delete"],"id":"delete_my_message_reaction","method":"DELETE","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}/@me","scope":{"channel_id":{"at":"channel_id","from":"path"},"emoji_name":{"at":"emoji_name","from":"path"},"message_id":{"at":"message_id","from":"path"}}},
+    {"action":"write.@me","effects":["write"],"id":"add_my_message_reaction","method":"PUT","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}/@me","scope":{"channel_id":{"at":"channel_id","from":"path"},"emoji_name":{"at":"emoji_name","from":"path"},"message_id":{"at":"message_id","from":"path"}}},
+    {"action":"delete.reactions","effects":["delete"],"id":"delete_user_message_reaction","method":"DELETE","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/messages/{message_id}/reactions/{emoji_name}/{user_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"emoji_name":{"at":"emoji_name","from":"path"},"message_id":{"at":"message_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"write.threads","body":"json","effects":["write"],"id":"create_thread_from_message","method":"POST","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/messages/{message_id}/threads","scope":{"channel_id":{"at":"channel_id","from":"path"},"message_id":{"at":"message_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.permissions","effects":["delete"],"id":"delete_channel_permission_overwrite","method":"DELETE","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/permissions/{overwrite_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"overwrite_id":{"at":"overwrite_id","from":"path"}}},
+    {"action":"share.permissions","body":"json","effects":["share"],"id":"set_channel_permission_overwrite","method":"PUT","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/permissions/{overwrite_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"overwrite_id":{"at":"overwrite_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"deprecated_list_pins","method":"GET","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/pins","scope":{"channel_id":{"at":"channel_id","from":"path"}}},
+    {"action":"delete.pins","effects":["delete"],"id":"deprecated_delete_pin","method":"DELETE","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/pins/{message_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"message_id":{"at":"message_id","from":"path"}}},
+    {"action":"write.pins","effects":["write"],"id":"deprecated_create_pin","method":"PUT","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/pins/{message_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"message_id":{"at":"message_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_answer_voters","method":"GET","origin":"https://discord.com","params":["after","limit"],"path":"/api/v10/channels/{channel_id}/polls/{message_id}/answers/{answer_id}","scope":{"answer_id":{"at":"answer_id","from":"path"},"channel_id":{"at":"channel_id","from":"path"},"message_id":{"at":"message_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.expire","effects":["write"],"id":"poll_expire","method":"POST","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/polls/{message_id}/expire","scope":{"channel_id":{"at":"channel_id","from":"path"},"message_id":{"at":"message_id","from":"path"}}},
+    {"action":"delete.recipients","effects":["delete"],"id":"delete_group_dm_user","method":"DELETE","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/recipients/{user_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"send.recipients","body":"json","effects":["send"],"id":"add_group_dm_user","method":"PUT","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/recipients/{user_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"send.channels","body":"json","effects":["send"],"id":"send_soundboard_sound","method":"POST","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/send-soundboard-sound","scope":{"channel_id":{"at":"channel_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"sound_id":{"at":"/sound_id","from":"body"}}},
+    {"action":"read","effects":["read"],"id":"list_thread_members","method":"GET","origin":"https://discord.com","params":["with_member","limit","after"],"path":"/api/v10/channels/{channel_id}/thread-members","scope":{"channel_id":{"at":"channel_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.@me","effects":["delete"],"id":"leave_thread","method":"DELETE","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/thread-members/@me","scope":{"channel_id":{"at":"channel_id","from":"path"}}},
+    {"action":"write.@me","effects":["write"],"id":"join_thread","method":"PUT","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/thread-members/@me","scope":{"channel_id":{"at":"channel_id","from":"path"}}},
+    {"action":"delete.thread_members","effects":["delete"],"id":"delete_thread_member","method":"DELETE","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/thread-members/{user_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_thread_member","method":"GET","origin":"https://discord.com","params":["with_member"],"path":"/api/v10/channels/{channel_id}/thread-members/{user_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"write.thread_members","effects":["write"],"id":"add_thread_member","method":"PUT","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/thread-members/{user_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"write.threads","body":"json","effects":["write"],"id":"create_thread","method":"POST","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/threads","scope":{"channel_id":{"at":"channel_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.threads","body":"form","effects":["write"],"id":"create_thread.form.ba8cd1000da8","method":"POST","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/threads","scope":{"channel_id":{"at":"channel_id","from":"path"},"request":{"at":"","from":"form","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"list_private_archived_threads","method":"GET","origin":"https://discord.com","params":["before","limit"],"path":"/api/v10/channels/{channel_id}/threads/archived/private","scope":{"channel_id":{"at":"channel_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"list_public_archived_threads","method":"GET","origin":"https://discord.com","params":["before","limit"],"path":"/api/v10/channels/{channel_id}/threads/archived/public","scope":{"channel_id":{"at":"channel_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"thread_search","method":"GET","origin":"https://discord.com","params":["name","slop","min_id","max_id","tag","tag_setting","archived","sort_by","sort_order","limit","offset"],"path":"/api/v10/channels/{channel_id}/threads/search","scope":{"channel_id":{"at":"channel_id","from":"path"},"max_id":{"at":"max_id","from":"query","optional":true},"min_id":{"at":"min_id","from":"query","optional":true},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"execute.typing","effects":["execute"],"id":"trigger_typing_indicator","method":"POST","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/typing","scope":{"channel_id":{"at":"channel_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"list_my_private_archived_threads","method":"GET","origin":"https://discord.com","params":["before","limit"],"path":"/api/v10/channels/{channel_id}/users/@me/threads/archived/private","scope":{"channel_id":{"at":"channel_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.voice_status","body":"json","effects":["write"],"id":"update_voice_channel_status","method":"PUT","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/voice-status","scope":{"channel_id":{"at":"channel_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"list_channel_webhooks","method":"GET","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/webhooks","scope":{"channel_id":{"at":"channel_id","from":"path"}}},
+    {"action":"admin.webhooks","body":"json","effects":["admin"],"id":"create_webhook","method":"POST","origin":"https://discord.com","path":"/api/v10/channels/{channel_id}/webhooks","scope":{"channel_id":{"at":"channel_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_gateway","method":"GET","origin":"https://discord.com","path":"/api/v10/gateway","scope":{}},
+    {"action":"read","effects":["read"],"id":"get_bot_gateway","method":"GET","origin":"https://discord.com","path":"/api/v10/gateway/bot","scope":{}},
+    {"action":"read","effects":["read"],"id":"get_guild_template","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/templates/{code}","scope":{"code":{"at":"code","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guild","method":"GET","origin":"https://discord.com","params":["with_counts"],"path":"/api/v10/guilds/{guild_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.guilds","body":"json","effects":["write"],"id":"update_guild","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_audit_log_entries","method":"GET","origin":"https://discord.com","params":["user_id","target_id","action_type","before","after","limit"],"path":"/api/v10/guilds/{guild_id}/audit-logs","scope":{"guild_id":{"at":"guild_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"target_id":{"at":"target_id","from":"query","optional":true},"user_id":{"at":"user_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"list_auto_moderation_rules","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/auto-moderation/rules","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"write.rules","body":"json","effects":["write"],"id":"create_auto_moderation_rule","method":"POST","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/auto-moderation/rules","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.rules","effects":["delete"],"id":"delete_auto_moderation_rule","method":"DELETE","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/auto-moderation/rules/{rule_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"rule_id":{"at":"rule_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_auto_moderation_rule","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/auto-moderation/rules/{rule_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"rule_id":{"at":"rule_id","from":"path"}}},
+    {"action":"write.rules","body":"json","effects":["write"],"id":"update_auto_moderation_rule","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/auto-moderation/rules/{rule_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"rule_id":{"at":"rule_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_bans","method":"GET","origin":"https://discord.com","params":["limit","before","after"],"path":"/api/v10/guilds/{guild_id}/bans","scope":{"guild_id":{"at":"guild_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.bans","body":"json","effects":["delete"],"id":"unban_user_from_guild","method":"DELETE","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/bans/{user_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_ban","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/bans/{user_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"write.bans","body":"json","effects":["write"],"id":"ban_user_from_guild","method":"PUT","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/bans/{user_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"write.bulk_ban","body":"json","effects":["write"],"id":"bulk_ban_users_from_guild","method":"POST","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/bulk-ban","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_ids":{"at":"/user_ids","from":"body","type":"array"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_channels","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/channels","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"write.channels","body":"json","effects":["write"],"id":"bulk_update_guild_channels","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/channels","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"write.channels","body":"json","effects":["write"],"id":"create_guild_channel","method":"POST","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/channels","scope":{"guild_id":{"at":"guild_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_emojis","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/emojis","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"write.emojis","body":"json","effects":["write"],"id":"create_guild_emoji","method":"POST","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/emojis","scope":{"guild_id":{"at":"guild_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.emojis","effects":["delete"],"id":"delete_guild_emoji","method":"DELETE","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/emojis/{emoji_id}","scope":{"emoji_id":{"at":"emoji_id","from":"path"},"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_emoji","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/emojis/{emoji_id}","scope":{"emoji_id":{"at":"emoji_id","from":"path"},"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"write.emojis","body":"json","effects":["write"],"id":"update_guild_emoji","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/emojis/{emoji_id}","scope":{"emoji_id":{"at":"emoji_id","from":"path"},"guild_id":{"at":"guild_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.incident_actions","body":"json","effects":["write"],"id":"update_guild_incident_actions","method":"PUT","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/incident-actions","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_integrations","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/integrations","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"delete.integrations","effects":["delete"],"id":"delete_guild_integration","method":"DELETE","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/integrations/{integration_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"integration_id":{"at":"integration_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_invites","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/invites","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"write.@me","body":"json","effects":["write"],"id":"update_my_guild_member","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/members/@me","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"search_guild_members","method":"GET","origin":"https://discord.com","params":["limit","query"],"path":"/api/v10/guilds/{guild_id}/members/search","scope":{"guild_id":{"at":"guild_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.members","effects":["delete"],"id":"delete_guild_member","method":"DELETE","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/members/{user_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_member","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/members/{user_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"admin.members","body":"json","effects":["admin"],"id":"update_guild_member","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/members/{user_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"admin.members","body":"json","effects":["admin"],"id":"add_guild_member","method":"PUT","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/members/{user_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"delete.roles","effects":["delete"],"id":"delete_guild_member_role","method":"DELETE","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/members/{user_id}/roles/{role_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"role_id":{"at":"role_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"admin.roles","effects":["admin"],"id":"add_guild_member_role","method":"PUT","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/members/{user_id}/roles/{role_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"role_id":{"at":"role_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"guild_search","method":"GET","origin":"https://discord.com","params":["sort_by","sort_order","content","slop","author_id","author_type","mentions","mentions_role_id","replied_to_user_id","replied_to_message_id","mention_everyone","min_id","max_id","limit","offset","has","link_hostname","embed_provider","embed_type","attachment_extension","attachment_filename","pinned","include_nsfw","channel_id"],"path":"/api/v10/guilds/{guild_id}/messages/search","scope":{"attachment_filename":{"at":"attachment_filename","from":"query","optional":true},"author_id":{"at":"author_id","from":"query","optional":true},"channel_id":{"at":"channel_id","from":"query","optional":true},"guild_id":{"at":"guild_id","from":"path"},"link_hostname":{"at":"link_hostname","from":"query","optional":true},"max_id":{"at":"max_id","from":"query","optional":true},"mentions_role_id":{"at":"mentions_role_id","from":"query","optional":true},"min_id":{"at":"min_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"replied_to_message_id":{"at":"replied_to_message_id","from":"query","optional":true},"replied_to_user_id":{"at":"replied_to_user_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"get_guild_new_member_welcome","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/new-member-welcome","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guilds_onboarding","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/onboarding","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"write.onboarding","body":"json","effects":["write"],"id":"put_guilds_onboarding","method":"PUT","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/onboarding","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_preview","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/preview","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"preview_prune_guild","method":"GET","origin":"https://discord.com","params":["days","include_roles"],"path":"/api/v10/guilds/{guild_id}/prune","scope":{"guild_id":{"at":"guild_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.prune","body":"json","effects":["write"],"id":"prune_guild","method":"POST","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/prune","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_voice_regions","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/regions","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_join_requests","method":"GET","origin":"https://discord.com","params":["status","limit","before","after"],"path":"/api/v10/guilds/{guild_id}/requests","scope":{"guild_id":{"at":"guild_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.requests","body":"json","effects":["write"],"id":"action_guild_join_request","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/requests/{request_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"request_id":{"at":"request_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_roles","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/roles","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"admin.roles","body":"json","effects":["admin"],"id":"bulk_update_guild_roles","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/roles","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"admin.roles","body":"json","effects":["admin"],"id":"create_guild_role","method":"POST","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/roles","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"guild_role_member_counts","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/roles/member-counts","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"delete.roles","effects":["delete"],"id":"delete_guild_role","method":"DELETE","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/roles/{role_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"role_id":{"at":"role_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_role","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/roles/{role_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"role_id":{"at":"role_id","from":"path"}}},
+    {"action":"admin.roles","body":"json","effects":["admin"],"id":"update_guild_role","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/roles/{role_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"role_id":{"at":"role_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_scheduled_events","method":"GET","origin":"https://discord.com","params":["with_user_count"],"path":"/api/v10/guilds/{guild_id}/scheduled-events","scope":{"guild_id":{"at":"guild_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.scheduled_events","body":"json","effects":["write"],"id":"create_guild_scheduled_event","method":"POST","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/scheduled-events","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.scheduled_events","effects":["delete"],"id":"delete_guild_scheduled_event","method":"DELETE","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"guild_scheduled_event_id":{"at":"guild_scheduled_event_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_scheduled_event","method":"GET","origin":"https://discord.com","params":["with_user_count"],"path":"/api/v10/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"guild_scheduled_event_id":{"at":"guild_scheduled_event_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.scheduled_events","body":"json","effects":["write"],"id":"update_guild_scheduled_event","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"guild_scheduled_event_id":{"at":"guild_scheduled_event_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.exceptions","body":"json","effects":["write"],"id":"create_guild_scheduled_event_exception","method":"POST","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/exceptions","scope":{"guild_id":{"at":"guild_id","from":"path"},"guild_scheduled_event_id":{"at":"guild_scheduled_event_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.exceptions","effects":["delete"],"id":"delete_guild_scheduled_event_exception","method":"DELETE","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/exceptions/{exception_id}","scope":{"exception_id":{"at":"exception_id","from":"path"},"guild_id":{"at":"guild_id","from":"path"},"guild_scheduled_event_id":{"at":"guild_scheduled_event_id","from":"path"}}},
+    {"action":"write.exceptions","body":"json","effects":["write"],"id":"update_guild_scheduled_event_exception","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/exceptions/{exception_id}","scope":{"exception_id":{"at":"exception_id","from":"path"},"guild_id":{"at":"guild_id","from":"path"},"guild_scheduled_event_id":{"at":"guild_scheduled_event_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_scheduled_event_users","method":"GET","origin":"https://discord.com","params":["with_member","limit","before","after"],"path":"/api/v10/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/users","scope":{"guild_id":{"at":"guild_id","from":"path"},"guild_scheduled_event_id":{"at":"guild_scheduled_event_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"count_guild_scheduled_event_users","method":"GET","origin":"https://discord.com","params":["guild_scheduled_event_exception_ids"],"path":"/api/v10/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/users/counts","scope":{"guild_id":{"at":"guild_id","from":"path"},"guild_scheduled_event_exception_ids":{"at":"guild_scheduled_event_exception_ids","from":"query","optional":true},"guild_scheduled_event_id":{"at":"guild_scheduled_event_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_scheduled_event_exception_users","method":"GET","origin":"https://discord.com","params":["with_member","limit","before","after"],"path":"/api/v10/guilds/{guild_id}/scheduled-events/{guild_scheduled_event_id}/{guild_scheduled_event_exception_id}/users","scope":{"guild_id":{"at":"guild_id","from":"path"},"guild_scheduled_event_exception_id":{"at":"guild_scheduled_event_exception_id","from":"path"},"guild_scheduled_event_id":{"at":"guild_scheduled_event_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_soundboard_sounds","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/soundboard-sounds","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"write.soundboard_sounds","body":"json","effects":["write"],"id":"create_guild_soundboard_sound","method":"POST","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/soundboard-sounds","scope":{"guild_id":{"at":"guild_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.soundboard_sounds","effects":["delete"],"id":"delete_guild_soundboard_sound","method":"DELETE","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/soundboard-sounds/{sound_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"sound_id":{"at":"sound_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_soundboard_sound","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/soundboard-sounds/{sound_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"sound_id":{"at":"sound_id","from":"path"}}},
+    {"action":"write.soundboard_sounds","body":"json","effects":["write"],"id":"update_guild_soundboard_sound","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/soundboard-sounds/{sound_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"sound_id":{"at":"sound_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_stickers","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/stickers","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"delete.stickers","effects":["delete"],"id":"delete_guild_sticker","method":"DELETE","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/stickers/{sticker_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"sticker_id":{"at":"sticker_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_sticker","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/stickers/{sticker_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"sticker_id":{"at":"sticker_id","from":"path"}}},
+    {"action":"write.stickers","body":"json","effects":["write"],"id":"update_guild_sticker","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/stickers/{sticker_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"sticker_id":{"at":"sticker_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"list_guild_templates","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/templates","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"write.templates","body":"json","effects":["write"],"id":"create_guild_template","method":"POST","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/templates","scope":{"guild_id":{"at":"guild_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.templates","effects":["delete"],"id":"delete_guild_template","method":"DELETE","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/templates/{code}","scope":{"code":{"at":"code","from":"path"},"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"write.templates","body":"json","effects":["write"],"id":"update_guild_template","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/templates/{code}","scope":{"code":{"at":"code","from":"path"},"guild_id":{"at":"guild_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.templates","effects":["write"],"id":"sync_guild_template","method":"PUT","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/templates/{code}","scope":{"code":{"at":"code","from":"path"},"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_active_guild_threads","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/threads/active","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_vanity_url","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/vanity-url","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_self_voice_state","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/voice-states/@me","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"write.@me","body":"json","effects":["write"],"id":"update_self_voice_state","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/voice-states/@me","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_voice_state","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/voice-states/{user_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"write.voice_states","body":"json","effects":["write"],"id":"update_voice_state","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/voice-states/{user_id}","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_webhooks","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/webhooks","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_welcome_screen","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/welcome-screen","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"write.welcome_screen","body":"json","effects":["write"],"id":"update_guild_welcome_screen","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/welcome-screen","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_widget_settings","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/widget","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"write.widget","body":"json","effects":["write"],"id":"update_guild_widget_settings","method":"PATCH","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/widget","scope":{"guild_id":{"at":"guild_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_widget","method":"GET","origin":"https://discord.com","path":"/api/v10/guilds/{guild_id}/widget.json","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_guild_widget_png","method":"GET","origin":"https://discord.com","params":["style"],"path":"/api/v10/guilds/{guild_id}/widget.png","scope":{"guild_id":{"at":"guild_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.callback","body":"json","effects":["write"],"id":"create_interaction_response","method":"POST","origin":"https://discord.com","params":["with_response"],"path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback","scope":{"interaction_id":{"at":"interaction_id","from":"path"},"interaction_token":{"at":"interaction_token","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.callback","body":"form","effects":["write"],"id":"create_interaction_response.form.42a5b4eb3d09","method":"POST","origin":"https://discord.com","params":["with_response"],"path":"/api/v10/interactions/{interaction_id}/{interaction_token}/callback","scope":{"interaction_id":{"at":"interaction_id","from":"path"},"interaction_token":{"at":"interaction_token","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+    {"action":"delete.invites","effects":["delete"],"id":"invite_revoke","method":"DELETE","origin":"https://discord.com","path":"/api/v10/invites/{code}","scope":{"code":{"at":"code","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"invite_resolve","method":"GET","origin":"https://discord.com","params":["with_counts","guild_scheduled_event_id","target_channel_id","target_message_id"],"path":"/api/v10/invites/{code}","scope":{"code":{"at":"code","from":"path"},"guild_scheduled_event_id":{"at":"guild_scheduled_event_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"target_channel_id":{"at":"target_channel_id","from":"query","optional":true},"target_message_id":{"at":"target_message_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"get_invite_target_users","method":"GET","origin":"https://discord.com","path":"/api/v10/invites/{code}/target-users","scope":{"code":{"at":"code","from":"path"}}},
+    {"action":"share.bulk_add","body":"json","effects":["share"],"id":"bulk_add_invite_target_users","method":"POST","origin":"https://discord.com","path":"/api/v10/invites/{code}/target-users/bulk-add","scope":{"code":{"at":"code","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_ids":{"at":"/user_ids","from":"body","type":"array"}}},
+    {"action":"share.bulk_delete","body":"json","effects":["share"],"id":"bulk_remove_invite_target_users","method":"POST","origin":"https://discord.com","path":"/api/v10/invites/{code}/target-users/bulk-delete","scope":{"code":{"at":"code","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_ids":{"at":"/user_ids","from":"body","type":"array"}}},
+    {"action":"read","effects":["read"],"id":"get_invite_target_users_job_status","method":"GET","origin":"https://discord.com","path":"/api/v10/invites/{code}/target-users/job-status","scope":{"code":{"at":"code","from":"path"}}},
+    {"action":"delete.target_users","effects":["delete"],"id":"remove_invite_target_user","method":"DELETE","origin":"https://discord.com","path":"/api/v10/invites/{code}/target-users/{user_id}","scope":{"code":{"at":"code","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"share.target_users","effects":["share"],"id":"add_invite_target_user","method":"PUT","origin":"https://discord.com","path":"/api/v10/invites/{code}/target-users/{user_id}","scope":{"code":{"at":"code","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"write.lobbies","body":"json","effects":["write"],"id":"create_lobby","method":"POST","origin":"https://discord.com","path":"/api/v10/lobbies","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.lobbies","body":"json","effects":["write"],"id":"create_or_join_lobby","method":"PUT","origin":"https://discord.com","path":"/api/v10/lobbies","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.lobbies","effects":["delete"],"id":"delete_lobby","method":"DELETE","origin":"https://discord.com","path":"/api/v10/lobbies/{lobby_id}","scope":{"lobby_id":{"at":"lobby_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_lobby","method":"GET","origin":"https://discord.com","path":"/api/v10/lobbies/{lobby_id}","scope":{"lobby_id":{"at":"lobby_id","from":"path"}}},
+    {"action":"write.lobbies","body":"json","effects":["write"],"id":"edit_lobby","method":"PATCH","origin":"https://discord.com","path":"/api/v10/lobbies/{lobby_id}","scope":{"lobby_id":{"at":"lobby_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.channel_linking","body":"json","effects":["write"],"id":"edit_lobby_channel_link","method":"PATCH","origin":"https://discord.com","path":"/api/v10/lobbies/{lobby_id}/channel-linking","scope":{"lobby_id":{"at":"lobby_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.@me","effects":["delete"],"id":"leave_lobby","method":"DELETE","origin":"https://discord.com","path":"/api/v10/lobbies/{lobby_id}/members/@me","scope":{"lobby_id":{"at":"lobby_id","from":"path"}}},
+    {"action":"share.@me","effects":["share"],"id":"create_linked_lobby_guild_invite_for_self","method":"POST","origin":"https://discord.com","path":"/api/v10/lobbies/{lobby_id}/members/@me/invites","scope":{"lobby_id":{"at":"lobby_id","from":"path"}}},
+    {"action":"write.bulk","body":"json","effects":["write"],"id":"bulk_update_lobby_members","method":"POST","origin":"https://discord.com","path":"/api/v10/lobbies/{lobby_id}/members/bulk","scope":{"lobby_id":{"at":"lobby_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.members","effects":["delete"],"id":"delete_lobby_member","method":"DELETE","origin":"https://discord.com","path":"/api/v10/lobbies/{lobby_id}/members/{user_id}","scope":{"lobby_id":{"at":"lobby_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"admin.members","body":"json","effects":["admin"],"id":"add_lobby_member","method":"PUT","origin":"https://discord.com","path":"/api/v10/lobbies/{lobby_id}/members/{user_id}","scope":{"lobby_id":{"at":"lobby_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"share.members","effects":["share"],"id":"create_linked_lobby_guild_invite_for_user","method":"POST","origin":"https://discord.com","path":"/api/v10/lobbies/{lobby_id}/members/{user_id}/invites","scope":{"lobby_id":{"at":"lobby_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_lobby_messages","method":"GET","origin":"https://discord.com","params":["limit"],"path":"/api/v10/lobbies/{lobby_id}/messages","scope":{"lobby_id":{"at":"lobby_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"send.messages","body":"json","effects":["send"],"id":"create_lobby_message","method":"POST","origin":"https://discord.com","path":"/api/v10/lobbies/{lobby_id}/messages","scope":{"lobby_id":{"at":"lobby_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"send.messages","body":"form","effects":["send"],"id":"create_lobby_message.form.07616f396134","method":"POST","origin":"https://discord.com","path":"/api/v10/lobbies/{lobby_id}/messages","scope":{"lobby_id":{"at":"lobby_id","from":"path"},"request":{"at":"","from":"form","type":"object"},"sticker_ids":{"at":"sticker_ids","from":"form","optional":true}}},
+    {"action":"write.moderation_metadata","body":"json","effects":["write"],"id":"update_lobby_message_external_moderation_metadata","method":"PUT","origin":"https://discord.com","path":"/api/v10/lobbies/{lobby_id}/messages/{message_id}/moderation-metadata","scope":{"lobby_id":{"at":"lobby_id","from":"path"},"message_id":{"at":"message_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.moderation_metadata","body":"form","effects":["write"],"id":"update_lobby_message_external_moderation_metadata.form.aae4eca56a56","method":"PUT","origin":"https://discord.com","path":"/api/v10/lobbies/{lobby_id}/messages/{message_id}/moderation-metadata","scope":{"lobby_id":{"at":"lobby_id","from":"path"},"message_id":{"at":"message_id","from":"path"},"request":{"at":"","from":"form","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_my_oauth2_authorization","method":"GET","origin":"https://discord.com","path":"/api/v10/oauth2/@me","scope":{}},
+    {"action":"read","effects":["read"],"id":"get_my_oauth2_application","method":"GET","origin":"https://discord.com","path":"/api/v10/oauth2/applications/@me","scope":{}},
+    {"action":"read","effects":["read"],"id":"get_public_keys","method":"GET","origin":"https://discord.com","path":"/api/v10/oauth2/keys","scope":{}},
+    {"action":"read","effects":["read"],"id":"get_openid_connect_userinfo","method":"GET","origin":"https://discord.com","path":"/api/v10/oauth2/userinfo","scope":{}},
+    {"action":"write.moderation_metadata","body":"json","effects":["write"],"id":"update_user_message_external_moderation_metadata","method":"PUT","origin":"https://discord.com","path":"/api/v10/partner-sdk/dms/{user_id_1}/{user_id_2}/messages/{message_id}/moderation-metadata","scope":{"message_id":{"at":"message_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id_1":{"at":"user_id_1","from":"path"},"user_id_2":{"at":"user_id_2","from":"path"}}},
+    {"action":"write.moderation_metadata","body":"form","effects":["write"],"id":"update_user_message_external_moderation_metadata.form.0a8377ff5d85","method":"PUT","origin":"https://discord.com","path":"/api/v10/partner-sdk/dms/{user_id_1}/{user_id_2}/messages/{message_id}/moderation-metadata","scope":{"message_id":{"at":"message_id","from":"path"},"request":{"at":"","from":"form","type":"object"},"user_id_1":{"at":"user_id_1","from":"path"},"user_id_2":{"at":"user_id_2","from":"path"}}},
+    {"action":"write.unmerge","body":"json","effects":["write"],"id":"partner_sdk_unmerge_provisional_account","method":"POST","origin":"https://discord.com","path":"/api/v10/partner-sdk/provisional-accounts/unmerge","scope":{"client_id":{"at":"/client_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.bot","body":"json","effects":["write"],"id":"bot_partner_sdk_unmerge_provisional_account","method":"POST","origin":"https://discord.com","path":"/api/v10/partner-sdk/provisional-accounts/unmerge/bot","scope":{"external_user_id":{"at":"/external_user_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"admin.token","body":"json","effects":["admin"],"id":"partner_sdk_token","method":"POST","origin":"https://discord.com","path":"/api/v10/partner-sdk/token","scope":{"client_id":{"at":"/client_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.bot","body":"json","effects":["write"],"id":"bot_partner_sdk_token","method":"POST","origin":"https://discord.com","path":"/api/v10/partner-sdk/token/bot","scope":{"external_user_id":{"at":"/external_user_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get_sku_subscriptions","method":"GET","origin":"https://discord.com","params":["before","after","limit","user_id"],"path":"/api/v10/skus/{sku_id}/subscriptions","scope":{"query":{"at":"","from":"query","type":"object"},"sku_id":{"at":"sku_id","from":"path"},"user_id":{"at":"user_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"get_sku_subscription","method":"GET","origin":"https://discord.com","params":["user_id"],"path":"/api/v10/skus/{sku_id}/subscriptions/{subscription_id}","scope":{"query":{"at":"","from":"query","type":"object"},"sku_id":{"at":"sku_id","from":"path"},"subscription_id":{"at":"subscription_id","from":"path"},"user_id":{"at":"user_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"get_soundboard_default_sounds","method":"GET","origin":"https://discord.com","path":"/api/v10/soundboard-default-sounds","scope":{}},
+    {"action":"write.stage_instances","body":"json","effects":["write"],"id":"create_stage_instance","method":"POST","origin":"https://discord.com","path":"/api/v10/stage-instances","scope":{"channel_id":{"at":"/channel_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"topic":{"at":"/topic","from":"body"}}},
+    {"action":"delete.stage_instances","effects":["delete"],"id":"delete_stage_instance","method":"DELETE","origin":"https://discord.com","path":"/api/v10/stage-instances/{channel_id}","scope":{"channel_id":{"at":"channel_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_stage_instance","method":"GET","origin":"https://discord.com","path":"/api/v10/stage-instances/{channel_id}","scope":{"channel_id":{"at":"channel_id","from":"path"}}},
+    {"action":"write.stage_instances","body":"json","effects":["write"],"id":"update_stage_instance","method":"PATCH","origin":"https://discord.com","path":"/api/v10/stage-instances/{channel_id}","scope":{"channel_id":{"at":"channel_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"topic":{"at":"/topic","from":"body","optional":true}}},
+    {"action":"read","effects":["read"],"id":"list_sticker_packs","method":"GET","origin":"https://discord.com","path":"/api/v10/sticker-packs","scope":{}},
+    {"action":"read","effects":["read"],"id":"get_sticker_pack","method":"GET","origin":"https://discord.com","path":"/api/v10/sticker-packs/{pack_id}","scope":{"pack_id":{"at":"pack_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_sticker","method":"GET","origin":"https://discord.com","path":"/api/v10/stickers/{sticker_id}","scope":{"sticker_id":{"at":"sticker_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_my_user","method":"GET","origin":"https://discord.com","path":"/api/v10/users/@me","scope":{}},
+    {"action":"write.@me","body":"json","effects":["write"],"id":"update_my_user","method":"PATCH","origin":"https://discord.com","path":"/api/v10/users/@me","scope":{"request":{"at":"","from":"body","type":"object"},"username":{"at":"/username","from":"body"}}},
+    {"action":"read","effects":["read"],"id":"get_current_user_application_entitlements","method":"GET","origin":"https://discord.com","params":["sku_ids","exclude_consumed"],"path":"/api/v10/users/@me/applications/{application_id}/entitlements","scope":{"application_id":{"at":"application_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"sku_ids":{"at":"sku_ids","from":"query","optional":true}}},
+    {"action":"delete.role_connection","effects":["delete"],"id":"delete_application_user_role_connection","method":"DELETE","origin":"https://discord.com","path":"/api/v10/users/@me/applications/{application_id}/role-connection","scope":{"application_id":{"at":"application_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_application_user_role_connection","method":"GET","origin":"https://discord.com","path":"/api/v10/users/@me/applications/{application_id}/role-connection","scope":{"application_id":{"at":"application_id","from":"path"}}},
+    {"action":"write.role_connection","body":"json","effects":["write"],"id":"update_application_user_role_connection","method":"PUT","origin":"https://discord.com","path":"/api/v10/users/@me/applications/{application_id}/role-connection","scope":{"application_id":{"at":"application_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"send.channels","body":"json","effects":["send"],"id":"create_dm","method":"POST","origin":"https://discord.com","path":"/api/v10/users/@me/channels","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"list_my_connections","method":"GET","origin":"https://discord.com","path":"/api/v10/users/@me/connections","scope":{}},
+    {"action":"read","effects":["read"],"id":"list_my_guilds","method":"GET","origin":"https://discord.com","params":["before","after","limit","shard","with_counts"],"path":"/api/v10/users/@me/guilds","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.guilds","effects":["delete"],"id":"leave_guild","method":"DELETE","origin":"https://discord.com","path":"/api/v10/users/@me/guilds/{guild_id}","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_my_guild_member","method":"GET","origin":"https://discord.com","path":"/api/v10/users/@me/guilds/{guild_id}/member","scope":{"guild_id":{"at":"guild_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_user","method":"GET","origin":"https://discord.com","path":"/api/v10/users/{user_id}","scope":{"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"list_voice_regions","method":"GET","origin":"https://discord.com","path":"/api/v10/voice/regions","scope":{}},
+    {"action":"delete.webhooks","effects":["delete"],"id":"delete_webhook","method":"DELETE","origin":"https://discord.com","path":"/api/v10/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_webhook","method":"GET","origin":"https://discord.com","path":"/api/v10/webhooks/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+    {"action":"admin.webhooks","body":"json","effects":["admin"],"id":"update_webhook","method":"PATCH","origin":"https://discord.com","path":"/api/v10/webhooks/{webhook_id}","scope":{"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"webhook_id":{"at":"webhook_id","from":"path"}}},
+    {"action":"delete.webhooks","effects":["delete"],"id":"delete_webhook_by_token","method":"DELETE","origin":"https://discord.com","path":"/api/v10/webhooks/{webhook_id}/{webhook_token}","scope":{"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_webhook_by_token","method":"GET","origin":"https://discord.com","path":"/api/v10/webhooks/{webhook_id}/{webhook_token}","scope":{"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"admin.webhooks","body":"json","effects":["admin"],"id":"update_webhook_by_token","method":"PATCH","origin":"https://discord.com","path":"/api/v10/webhooks/{webhook_id}/{webhook_token}","scope":{"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"execute.webhooks","body":"json","effects":["execute"],"id":"execute_webhook","method":"POST","origin":"https://discord.com","params":["wait","thread_id","with_components"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"execute.webhooks","body":"form","effects":["execute"],"id":"execute_webhook.form.1694a64d24fb","method":"POST","origin":"https://discord.com","params":["wait","thread_id","with_components"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"execute.github","body":"json","effects":["execute"],"id":"execute_github_compatible_webhook","method":"POST","origin":"https://discord.com","params":["wait","thread_id"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}/github","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"delete.@original","effects":["delete"],"id":"delete_original_webhook_message","method":"DELETE","origin":"https://discord.com","params":["thread_id"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}/messages/@original","scope":{"query":{"at":"","from":"query","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_original_webhook_message","method":"GET","origin":"https://discord.com","params":["thread_id"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}/messages/@original","scope":{"query":{"at":"","from":"query","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"write.@original","body":"json","effects":["write"],"id":"update_original_webhook_message","method":"PATCH","origin":"https://discord.com","params":["thread_id","with_components"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}/messages/@original","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"write.@original","body":"form","effects":["write"],"id":"update_original_webhook_message.form.235ef572c4ab","method":"PATCH","origin":"https://discord.com","params":["thread_id","with_components"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}/messages/@original","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"delete.messages","effects":["delete"],"id":"delete_webhook_message","method":"DELETE","origin":"https://discord.com","params":["thread_id"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}","scope":{"message_id":{"at":"message_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"get_webhook_message","method":"GET","origin":"https://discord.com","params":["thread_id"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}","scope":{"message_id":{"at":"message_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"write.messages","body":"json","effects":["write"],"id":"update_webhook_message","method":"PATCH","origin":"https://discord.com","params":["thread_id","with_components"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}","scope":{"message_id":{"at":"message_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"write.messages","body":"form","effects":["write"],"id":"update_webhook_message.form.4a2aab92e6b6","method":"PATCH","origin":"https://discord.com","params":["thread_id","with_components"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}/messages/{message_id}","scope":{"message_id":{"at":"message_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"execute.slack","body":"json","effects":["execute"],"id":"execute_slack_compatible_webhook","method":"POST","origin":"https://discord.com","params":["wait","thread_id"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}/slack","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}},
+    {"action":"execute.slack","body":"form","effects":["execute"],"id":"execute_slack_compatible_webhook.form.83b22aeffc6c","method":"POST","origin":"https://discord.com","params":["wait","thread_id"],"path":"/api/v10/webhooks/{webhook_id}/{webhook_token}/slack","scope":{"icon_url":{"at":"icon_url","from":"form","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"},"thread_id":{"at":"thread_id","from":"query","optional":true},"username":{"at":"username","from":"form","optional":true},"webhook_id":{"at":"webhook_id","from":"path"},"webhook_token":{"at":"webhook_token","from":"path"}}}
   ]
 }

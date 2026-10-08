@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+	"time"
 )
 
 const (
@@ -172,15 +173,19 @@ func services(c catalog) []*service {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: presets services|update|fetch|draft [service...]; update with no services resolves only those sources.json changed")
+		fmt.Fprintln(os.Stderr, "usage: presets services|update|fetch|draft|generate|check [service...]; update --all refreshes every source; check --reviewed requires complete review")
 		os.Exit(2)
 	}
-	c, err := load[catalog](catalogPath)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	var err error
+	var all []*service
+	if os.Args[1] == "services" || os.Args[1] == "draft" {
+		var c catalog
+		if c, err = load[catalog](catalogPath); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		all = services(c)
 	}
-	all := services(c)
 	switch os.Args[1] {
 	case "services":
 		out, _ := json.MarshalIndent(all, "", "  ")
@@ -198,15 +203,58 @@ func main() {
 			break
 		}
 		if os.Args[1] == "fetch" {
+			if len(os.Args) > 2 {
+				selected := map[string]source{}
+				for _, name := range os.Args[2:] {
+					src, ok := sources[name]
+					if !ok {
+						err = fmt.Errorf("unknown source %q", name)
+						break
+					}
+					selected[name] = src
+				}
+				if err != nil {
+					break
+				}
+				sources = selected
+			}
 			err = fetch(sources, lock)
 			break
 		}
-		if err = update(sources, lock, os.Args[2:]); err == nil {
-			out, _ := json.MarshalIndent(lock, "", "  ")
-			err = os.WriteFile(lockPath, append(out, '\n'), 0o644)
+		names := os.Args[2:]
+		if slices.Contains(names, "--all") {
+			names = sortedKeys(sources)
+		}
+		if err = update(sources, lock, names); err == nil {
+			err = writeJSON(lockPath, lock)
 		}
 	case "draft":
 		err = draftAll(all, os.Args[2:])
+	case "generate":
+		err = generate(os.Args[2:])
+	case "check":
+		var names []string
+		var reviewed bool
+		var maxAge time.Duration
+		for _, arg := range os.Args[2:] {
+			switch {
+			case arg == "--reviewed":
+				reviewed = true
+			case strings.HasPrefix(arg, "--max-age="):
+				maxAge, err = time.ParseDuration(strings.TrimPrefix(arg, "--max-age="))
+				if err == nil && maxAge <= 0 {
+					err = fmt.Errorf("max-age must be positive")
+				}
+			default:
+				names = append(names, arg)
+			}
+			if err != nil {
+				break
+			}
+		}
+		if err == nil {
+			err = check(names, reviewed, maxAge)
+		}
 	default:
 		err = fmt.Errorf("unknown command %s", os.Args[1])
 	}

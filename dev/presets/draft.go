@@ -11,12 +11,14 @@ import (
 
 // A source is a service's entry in sources.json: where its specs are, or the native connector it maps to.
 type source struct {
-	Title  string    `json:"title,omitempty"`
-	Preset string    `json:"preset,omitempty"`
-	Native string    `json:"native,omitempty"`
-	Specs  []specRef `json:"specs"`
-	Auth   *specAuth `json:"auth,omitempty"`
-	Note   string    `json:"note,omitempty"`
+	Title      string            `json:"title,omitempty"`
+	Preset     string            `json:"preset,omitempty"`
+	Native     string            `json:"native,omitempty"`
+	Specs      []specRef         `json:"specs"`
+	Auth       *specAuth         `json:"auth,omitempty"`
+	Note       string            `json:"note,omitempty"`
+	Families   []string          `json:"families,omitempty"`
+	Exclusions map[string]string `json:"exclusions,omitempty"`
 }
 
 // A specRef is where a spec lives: a file at a GitHub ref, which update pins to a commit, or a plain URL, pinned only by hash.
@@ -100,7 +102,9 @@ func resource(o specOp) string {
 		return strings.Trim(snake(strings.ReplaceAll(s, "-", "_")), "_")
 	}
 	if len(o.Tags) > 0 {
-		return snake(strings.ReplaceAll(o.Tags[0], " ", "_"))
+		if tag := o.Tags[0]; tag != "do_not_render" {
+			return snake(strings.ReplaceAll(tag, " ", "_"))
+		}
 	}
 	return ""
 }

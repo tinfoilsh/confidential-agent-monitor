@@ -4,6 +4,7 @@ go 1.27.1
 
 require (
 	github.com/getkin/kin-openapi v0.149.0
+	github.com/oasdiff/yaml v0.1.1
 	github.com/rbretecher/go-postman-collection v0.9.0
 	github.com/vektah/gqlparser/v2 v2.5.60
 	google.golang.org/api v0.300.0
@@ -25,7 +26,6 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.22 // indirect
 	github.com/googleapis/gax-go/v2 v2.26.2 // indirect
-	github.com/oasdiff/yaml v0.1.1 // indirect
 	github.com/oasdiff/yaml3 v0.0.14 // indirect
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.3 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect

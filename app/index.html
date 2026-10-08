@@ -200,9 +200,26 @@
   .live-screen:focus { outline: 2px solid var(--link); outline-offset: 1px; }
   .live-screen img { width: 100%; height: auto; }
   .live-error { margin: 0; padding: 0 6px 6px; }
+  .integration-nav { display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 4px 0 10px; border-bottom: 1px solid var(--line); }
+  .integration-nav [aria-current=page] { color: var(--text); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+  .integration-guide { max-width: 58rem; overflow-wrap: anywhere; }
+  .integration-guide h1 { font-size: 18px; line-height: 26px; margin: 8px 0; }
+  .integration-guide h2 { font-size: 13px; line-height: 22px; text-transform: none; letter-spacing: 0; color: var(--text); margin-top: 14px; }
+  .integration-guide p { margin: 6px 0 10px; }
+  .integration-guide li { margin: 4px 0; }
+  .integration-guide ol { padding-left: 20px; }
+  .integration-guide pre { padding: 8px; word-break: normal; overflow-wrap: anywhere; }
+  .integration-options { display: grid; gap: 8px; margin: 12px 0; }
+  .integration-option { display: block; padding: 10px; border: 1px solid var(--edge); border-radius: 4px; background: var(--card); color: var(--text); }
+  .integration-option:hover { background: var(--hover); }
+  .integration-option strong, .integration-option span { display: block; margin-bottom: 4px; }
+  .integration-code { margin: 12px 0; }
+  .integration-code .row { gap: 12px; }
+  .integration-code pre { margin-top: 4px; }
   @container details (min-width: 620px) {
     .account-overview { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
     .settings-fields { grid-template-columns: 1fr 1fr; }
+    .integration-options { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
   @media (prefers-color-scheme: dark) {
     .effect-read, .level-read { color: #b0d4e9; background: #26353f; border-color: #405665; }
@@ -446,7 +463,7 @@ function render() {
     scope = kind === "activity" && ["agent", "account"].includes(args[0]) && args[1] ? args.slice(0, 2) : null;
   }
   if (kind !== "request") requestSource = location.hash.slice(1) || "activity";
-  const panes = { request: requestPane, agent, "agent-settings": agentSettings, pair, account, add, preset: presetPage, rules, settings };
+  const panes = { request: requestPane, agent, "agent-settings": agentSettings, pair, account, add, preset: presetPage, rules, settings, integrations };
   const parts = (html) => html.map((content, i) => [`${location.hash}/${i}`, content]).filter(([, content]) => content);
   $("app").classList.toggle("with-pane", !!panes[kind]);
   $("list").setAttribute("role", panes[kind] ? "complementary" : "main");
@@ -499,6 +516,7 @@ function sidebar(kind, arg) {
     ]), link(["preset"], `<span class="new">New preset…</span>`, 1, kind === "preset" && !arg)] : []),
     link(["rules"], "Rules", 0, kind === "rules", saved || ""),
     link(["activity"], "Activity", 0, kind === "activity" || kind === "request" && requestSource.startsWith("activity")),
+    link(["integrations"], "Integrations", 0, kind === "integrations"),
     link(["settings"], "Settings", 0, kind === "settings"),
   ];
 }
@@ -668,6 +686,7 @@ function agentSettings(name) {
   if (!ids()[name]) return [head(esc(name)), `<p class="empty">No agent ${esc(name)}.</p>`];
   const others = Object.keys(ids()).filter((n) => n !== name);
   return [head(esc(name), "Settings", "agent/" + encodeURIComponent(name)),
+    `<section><a href="#integrations">Connect your tools</a><p class="muted">Setup guides for wrapped commands, Monitor shell, and the MCP gateway.</p></section>`,
     `<section>${disclosure("setup", "Setup", `<label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre><label>Environment</label><pre>${esc(view.setup[name]) || "No secrets to substitute."}</pre>`)}</section>`,
     `<section>${disclosure("replace-key", "Replace key", `<p class="muted">Use this after recreating the sandbox. The agent starts clean.</p><textarea id="pubkey" rows="2"></textarea>
       <div class="row"><span></span><button onclick="patch({ identities: { [${q(name)}]: { key: $('pubkey').value.trim() } } })">Replace key</button></div>`)}</section>`,
@@ -1307,6 +1326,85 @@ function liveNavigate() {
   const url = $("live-url").value.trim();
   if (url) liveAct({ action: "navigate", url: url.includes("://") ? url : "https://" + url });
   $("live-screen").focus();
+}
+
+const integrationCode = (id, title, text, copy = true) => `<div class="integration-code"><div class="row"><span>${esc(title)}</span>${copy ? `<button type="button" onclick="copyIntegration(${q(id)})" aria-label="Copy ${esc(title)}">Copy</button>` : `<span class="badge">Proposed command</span>`}</div><pre id="${esc(id)}">${esc(text)}</pre></div>`;
+
+const copyIntegration = run(async (id) => {
+  const block = $(id);
+  try {
+    await navigator.clipboard.writeText(block.textContent);
+    toast("Copied");
+  } catch {
+    const selection = window.getSelection();
+    if (selection) {
+      const range = document.createRange();
+      range.selectNodeContents(block);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+    toast(selection ? "Text selected. Press Cmd-C or Ctrl-C to copy." : "Select the command text and copy it.");
+  }
+});
+
+function integrations(page = "start") {
+  const pages = { start: "Start here", wrapped: "Wrap commands", shell: "Monitor shell", mcp: "MCP gateway", plan: "Delivery plan" };
+  if (!Object.hasOwn(pages, page)) page = "start";
+  const setupLinks = Object.keys(ids()).map((name) => `<li><a href="#agent-settings/${encodeURIComponent(name)}">${esc(name)} setup</a></li>`).join("");
+  const contents = {
+    start: `<h1>Use Monitor from your tools</h1><p>Keep service credentials in Monitor. Connect a command, a terminal session, or an agent through an identity with the access you choose.</p>
+      <div class="integration-options">
+        <a class="integration-option" href="#integrations/wrapped"><strong>Wrap commands</strong><span>Run an existing CLI or script through Monitor.</span><small class="ok">Available in the laptop client</small></a>
+        <a class="integration-option" href="#integrations/shell"><strong>Monitor shell</strong><span>Use the same setup for an entire terminal session.</span><small class="ok">Available in the laptop client</small></a>
+        <a class="integration-option" href="#integrations/mcp"><strong>MCP gateway</strong><span>Connect an MCP client to the tools your identity can reach.</span><small class="ok">Managed local endpoint</small></a>
+      </div>
+      <h2>Set up an identity first</h2><ol>
+        <li>Add the service in <b>Add account</b> and configure its credentials in Monitor.</li>
+        <li>Create a dedicated SSH key on the computer running your tools. <a href="#pair">Pair its public key</a> as an agent, even when you will use it from your own terminal.</li>
+        <li>Open that agent and grant access to the accounts it needs. Use separate identities for your laptop and automated workers when they need different permissions.</li>
+        <li>Configure an SSH alias named <code>monitor</code> for the Monitor server, using that private key and the host key shown in the agent's settings. The SSH address and port come from your deployment, not the web app URL.</li>
+      </ol><p>The private SSH key stays on your computer. Tool integrations use that identity; they do not need the web app's owner key.</p>
+      <h2>Your agent setup</h2>${setupLinks ? `<ul>${setupLinks}</ul>` : `<p>No agents are paired yet. <a href="#pair">Pair an agent</a> to get started.</p>`}
+      <p>Agent settings include the host key, CA certificate, and credential placeholders. If the existing Monitor client is installed, <code>monitor connections --json</code> checks which connections its SSH identity can reach.</p>
+      <h2>Install the client</h2><p>Use Python 3.11 or newer and OpenSSH. From the Monitor repository:</p>
+      ${integrationCode("integration-install", "Install on your laptop", 'mkdir -p "$HOME/.local/bin"\ninstall -m 755 client/monitor "$HOME/.local/bin/monitor"\nexport PATH="$HOME/.local/bin:$PATH"\nmonitor connections --json')}
+      <p>The Go binary embeds the same client. The commands below use your paired SSH alias and verify its host key. See <code>docs/laptop-client.md</code> in the repository for complete SSH setup and local profile examples.</p>`,
+    wrapped: `<h1>Wrap an existing command</h1><p><span class="badge">Available</span> Run a CLI or script locally, with its service requests routed through Monitor. Keep the command's arguments, working directory, output, and exit status.</p>
+      ${integrationCode("integration-run", "Run a command", "monitor run -- gh api user\nmonitor run -- ./release.sh")}
+      <h2>How it works</h2><ol><li>Use your paired SSH alias, or select a configured local profile.</li><li>The client opens a tunnel and prepares proxy settings, certificate trust, and the selected accounts' credential placeholders.</li><li>It starts the command and passes those settings to its children. Monitor checks requests and substitutes the real credentials before sending them upstream.</li><li>When the command exits, the client closes its tunnel and temporary files.</li></ol>
+      <h2>When to use it</h2><p>Start here for an existing GitHub workflow, a one-off command, or a script. With a configured profile, use <code>monitor --profile work run -- gh pr list</code>.</p>
+      <h2>Compatibility</h2><p>Programs must support the configured proxy and certificate settings. This mode does not force every network request through Monitor. Git HTTPS receives proxy, trust, and placeholder credential settings. SSH remotes need a separate Monitor SSH connection. Account policy and preset coverage still apply to each request.</p>
+      <p>The wrapper stops if setup fails and ends the child session if its tunnel is lost. It never retries writes automatically. Your parent terminal keeps its original environment.</p>
+      <h2>Use your accounts</h2><p>All connections are available by default. Shared credential names get separate variables per connection, such as <code>MONITOR_CREDENTIAL_ANTHROPIC_TOKEN</code>. For a tool that needs one account default, use <code>monitor run --connection work -- gh api user</code>. Connection names come from <code>monitor connections</code>.</p>`,
+    shell: `<h1>Start a Monitor shell</h1><p><span class="badge">Available</span> Open a local terminal session with the same connection setup as a wrapped command.</p>
+      ${integrationCode("integration-shell", "Open a shell", "monitor shell\ngh api user\nexit")}
+      <h2>How it works</h2><p>The shell uses the wrapper's profiles, tunnel, credential placeholders, and certificate handling. Its prompt shows the active SSH alias or profile. Commands run in your local working directory.</p>
+      <p>Type <code>exit</code> to return to the original terminal environment. User startup files are skipped to preserve routing and account selection. Each nested Monitor session owns its own tunnel.</p>
+      <h2>When to use it</h2><p>Use a shell for a sequence of commands that share an identity. Choose <code>monitor run</code> for automation that needs a single command and a predictable exit status.</p>
+      <h2>What it covers</h2><p>This session configures cooperating tools and their children. Other terminals and desktop apps have their own environments. A managed workspace with network restrictions is a separate option when every connection must pass through Monitor.</p>
+      <h2>Select a shell</h2><p>Use <code>monitor shell --shell /bin/bash</code> or <code>monitor shell --shell /bin/zsh</code>. The shell includes all connections by default. Use the connection-specific credential variables when names overlap. The Linux integration suite exercises both shells; macOS validation remains open.</p>`,
+    mcp: `<h1>Connect an MCP client</h1><p><span class="badge">Available</span> The gateway combines configured MCP connections into one Streamable HTTP server. Your SSH identity determines which accounts it can reach; tool calls still follow Monitor policy.</p>
+      <h2>1. Prepare the connection</h2><p>Complete the <a href="#integrations/start">identity setup</a>. Add an account with an MCP connection, grant the paired identity access, and review tools awaiting approval on the account page. An HTTP API connection alone does not add tools to this gateway.</p>
+      <p>The commands below assume an SSH alias named <code>monitor</code> with the correct identity and a verified host key. You need an MCP client that supports Streamable HTTP.</p>
+      <h2>2. Keep the gateway running</h2>
+      ${integrationCode("integration-mcp-serve", "Serve the gateway", "monitor mcp serve --listen 127.0.0.1:8400")}
+      <p>The client checks MCP initialization and tool discovery before reporting readiness. Put <code>--ssh-config /path/to/ssh_config</code> before <code>mcp</code> to use a separate configuration. Use port 0 to choose a free port.</p>
+      <h2>3. Add a server in your MCP client</h2><ul><li>Name: <code>monitor</code></li><li>Transport: <b>Streamable HTTP</b></li><li>URL:</li></ul>
+      ${integrationCode("integration-endpoint", "MCP server URL", "http://127.0.0.1:8400/")}
+      <p>No provider token or owner key goes in the client configuration. The SSH tunnel authenticates to Monitor. Programs on this computer can use the local endpoint as that identity; close the tunnel with Ctrl-C when finished.</p>
+      <h2>4. Check the connection</h2><p>Refresh the client's tool list. Tool names start with their Monitor connection name and <code>__</code>, such as <code>work-mcp__list_issues</code>. Call a read tool and check <a href="#activity">Activity</a> for the expected agent and account. Requests that need a decision appear in <a href="#needs">Approvals</a>.</p>
+      <h2>If it does not connect</h2><ul><li><b>SSH fails:</b> check the server address, paired public key, private key, and host key.</li><li><b>No tools:</b> check account access, the MCP connection's status, and tool review. An identity with no reachable MCP connections cannot open the gateway.</li><li><b>Client cannot reach the URL:</b> keep the tunnel running on the same computer as the client. A client in a container has its own localhost.</li><li><b>A tool fails or times out:</b> inspect Activity and the provider state before retrying a change.</li></ul>
+      <p>Clients that only support stdio still need a separate adapter. <code>monitor mcp stdio</code> is not implemented.</p>`,
+    plan: `<h1>Delivery plan</h1><p>Ship one client with shared setup for all three approaches. Start with macOS and Linux. Wrapped commands, bash and zsh sessions, local profiles, and managed MCP HTTP forwarding are implemented. Enrollment automation, diagnostics, stdio, and macOS acceptance testing remain open. The milestones below describe the full release criteria.</p>
+      <ol><li><b>Package setup and diagnostics.</b> Distribute the existing client independently of the sandbox. Add local profiles, identity enrollment instructions, pinned host keys, certificate setup, account selection, and <code>monitor doctor</code>. A fresh laptop must discover its allowed connections without a provider token.</li>
+        <li><b>Ship wrapped commands.</b> Add <code>monitor run -- …</code>, process-scoped proxy and trust settings, placeholder mapping, Git transport setup, signal forwarding, and cleanup. Verify the GitHub workflow from reading an issue through pushing a branch and opening a PR.</li>
+        <li><b>Ship Monitor shell.</b> Reuse the wrapper for interactive bash and zsh sessions. Show the active profile, handle nested sessions and disconnects, and restore the original environment on exit.</li>
+        <li><b>Package the MCP gateway.</b> Add a managed local HTTP endpoint, readiness checks, and a stdio adapter. Provide validated client configuration examples and clear account/tool status. This work can proceed alongside the wrapper after shared setup.</li>
+        <li><b>Finish onboarding and verify the release.</b> Replace proposed examples with tested commands. Add per-identity setup downloads and checks to this page. Verify approvals, revoked access, reconnects, occupied ports, and missing permissions on both supported operating systems.</li></ol>
+      <h2>Ready to release when</h2><p>A user with no local GitHub login can set up an identity, run a GitHub command, enter and leave a shell, and call an MCP tool by following these guides. Activity shows the right identity and account. A denied action stays denied, and interrupted writes are never retried automatically.</p>
+      <p>The wrapper and shell cover tools that honor their connection settings. Enforced network routing remains a separate managed-workspace feature.</p>`,
+  };
+  return [head("Integrations"), `<nav class="integration-nav" aria-label="Integration guides">${Object.entries(pages).map(([key, title]) => `<a href="#integrations/${key}" ${page === key ? 'aria-current="page"' : ""}>${title}</a>`).join("")}</nav>`, `<article class="integration-guide">${contents[page]}</article>`];
 }
 
 const settings = () => [head("Settings"), `<section><h2>Lattices</h2>

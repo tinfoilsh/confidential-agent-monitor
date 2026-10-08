@@ -1,1 +1,5 @@
 .cache/
+/candidates/
+/coverage/
+/snapshots/
+.generate-*

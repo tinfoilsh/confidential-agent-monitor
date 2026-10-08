@@ -30,7 +30,7 @@ const (
 	messageQuery  = "data.monitor.messages.decision"
 )
 
-//go:embed policy/*.rego presets/*.rego
+//go:embed presets/policy/*.rego presets/*.rego
 var policyFiles embed.FS
 
 var (
@@ -86,7 +86,9 @@ func (d *decision) authority() string {
 }
 
 var policySources = sync.OnceValue(func() map[string]string {
-	files, _ := fs.Glob(policyFiles, "*/*.rego")
+	files, _ := fs.Glob(policyFiles, "presets/*.rego")
+	shared, _ := fs.Glob(policyFiles, "presets/policy/*.rego")
+	files = append(files, shared...)
 	sources := map[string]string{}
 	for _, name := range files {
 		src, _ := policyFiles.ReadFile(name)

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	_ "github.com/joho/godotenv/autoload"
+	"github.com/joho/godotenv"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/browser"
 	"github.com/tinfoilsh/monitor/connector/email"
@@ -48,6 +48,14 @@ var connectorKinds = map[string]func() connector.Connector{
 }
 
 func main() {
+	if clientCommand(os.Args[1:]) {
+		if err := execClient(os.Args[1:]); err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+	// Client commands inherit only the caller's environment, never server secrets.
+	_ = godotenv.Load()
 	listen := flag.String("listen", "127.0.0.1:2223", "SSH address, opened after unlock")
 	api := flag.String("api", "127.0.0.1:8080", "owner API address")
 	bucket := flag.String("bucket", "", "blob URL holding the encrypted state")

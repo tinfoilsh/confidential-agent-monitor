@@ -42,6 +42,8 @@ podman run -d --name "$name" --hostname workspace --privileged --systemd=always 
 until [[ $(podman exec "$name" systemctl is-system-running --wait 2> /dev/null) =~ running|degraded ]]; do
   [[ $(podman inspect -f '{{.State.Running}}' "$name") == true ]] || { podman logs "$name"; exit 1; }
 done
+# Use the same client implementation as laptop sessions.
+podman cp client/monitor "$name:/usr/local/bin/monitor"
 # The entrypoint binds the disk's /home over the path .dev/env names, so .dev joins after boot.
 podman exec "$name" sh -c "mkdir -p '$dev' && mount --bind /srv/monitor '$dev'"
 podman exec "$name" sh -c "grep -v _PROXY= '$dev/env' > /etc/profile.d/monitor.sh &&

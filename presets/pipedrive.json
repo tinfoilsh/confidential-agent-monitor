@@ -3,29 +3,787 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "API token (Personal preferences > API)", "secret": true, "path": ["connections", "", "http", "values", "token"]}
+      {
+        "key": "token",
+        "label": "API token (Personal preferences > API)",
+        "secret": true,
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ]
+      }
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.pipedrive.com", "path": "/api/v2", "header": "X-Api-Token"}]}}},
-    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "value": "token",
+              "origin": "https://api.pipedrive.com",
+              "path": "/api/v2",
+              "header": "X-Api-Token"
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "team",
+      "strangers": true,
+      "sends": "anyone"
+    },
     "actions": {
-      "read": {"title": "Read deals, persons and activities"},
-      "write.deals": {"title": "Create and edit deals"},
-      "write.activities": {"title": "Create activities"},
-      "write.persons": {"title": "Create and edit persons"},
-      "delete": {"title": "Delete deals and persons"}
+      "read": {
+        "title": "Read deals, persons and activities"
+      },
+      "write.deals": {
+        "title": "Create and edit deals"
+      },
+      "write.activities": {
+        "title": "Create activities"
+      },
+      "write.persons": {
+        "title": "Create and edit persons"
+      },
+      "delete": {
+        "title": "Delete deals and persons"
+      },
+      "write.activity_types": {
+        "title": "write: activity_types"
+      },
+      "delete.activity_types": {
+        "title": "delete: activity_types"
+      },
+      "send.call_logs": {
+        "title": "send: call_logs"
+      },
+      "delete.call_logs": {
+        "title": "delete: call_logs"
+      },
+      "send.recordings": {
+        "title": "send: recordings"
+      },
+      "write.channels": {
+        "title": "write: channels"
+      },
+      "write.receive": {
+        "title": "write: receive"
+      },
+      "delete.conversations": {
+        "title": "delete: conversations"
+      },
+      "delete.channels": {
+        "title": "delete: channels"
+      },
+      "delete.deal_fields": {
+        "title": "delete: deal_fields"
+      },
+      "write.deal_fields": {
+        "title": "write: deal_fields"
+      },
+      "delete.followers": {
+        "title": "delete: followers"
+      },
+      "write.participants": {
+        "title": "write: participants"
+      },
+      "delete.participants": {
+        "title": "delete: participants"
+      },
+      "write.files": {
+        "title": "write: files"
+      },
+      "write.remote": {
+        "title": "write: remote"
+      },
+      "write.remote_link": {
+        "title": "write: remote_link"
+      },
+      "delete.files": {
+        "title": "delete: files"
+      },
+      "delete.filters": {
+        "title": "delete: filters"
+      },
+      "write.filters": {
+        "title": "write: filters"
+      },
+      "write.goals": {
+        "title": "write: goals"
+      },
+      "delete.goals": {
+        "title": "delete: goals"
+      },
+      "write.lead_labels": {
+        "title": "write: lead_labels"
+      },
+      "delete.lead_labels": {
+        "title": "delete: lead_labels"
+      },
+      "write.leads": {
+        "title": "write: leads"
+      },
+      "delete.leads": {
+        "title": "delete: leads"
+      },
+      "write.legacy_teams": {
+        "title": "write: legacy_teams"
+      },
+      "delete.users": {
+        "title": "delete: users"
+      },
+      "admin.users": {
+        "title": "admin: users"
+      },
+      "delete.mail_threads": {
+        "title": "delete: mail_threads"
+      },
+      "write.mail_threads": {
+        "title": "write: mail_threads"
+      },
+      "write.user_provider_links": {
+        "title": "write: user_provider_links"
+      },
+      "delete.user_provider_links": {
+        "title": "delete: user_provider_links"
+      },
+      "send.notes": {
+        "title": "send: notes"
+      },
+      "delete.notes": {
+        "title": "delete: notes"
+      },
+      "write.notes": {
+        "title": "write: notes"
+      },
+      "send.comments": {
+        "title": "send: comments"
+      },
+      "delete.comments": {
+        "title": "delete: comments"
+      },
+      "write.comments": {
+        "title": "write: comments"
+      },
+      "admin.token": {
+        "title": "admin: token"
+      },
+      "delete.organization_fields": {
+        "title": "delete: organization_fields"
+      },
+      "write.organization_fields": {
+        "title": "write: organization_fields"
+      },
+      "write.organization_relationships": {
+        "title": "write: organization_relationships"
+      },
+      "delete.organization_relationships": {
+        "title": "delete: organization_relationships"
+      },
+      "admin.organizations": {
+        "title": "admin: organizations"
+      },
+      "delete.person_fields": {
+        "title": "delete: person_fields"
+      },
+      "write.person_fields": {
+        "title": "write: person_fields"
+      },
+      "delete.picture": {
+        "title": "delete: picture"
+      },
+      "write.picture": {
+        "title": "write: picture"
+      },
+      "delete.product_fields": {
+        "title": "delete: product_fields"
+      },
+      "write.product_fields": {
+        "title": "write: product_fields"
+      },
+      "write.products": {
+        "title": "write: products"
+      },
+      "write.projects": {
+        "title": "write: projects"
+      },
+      "delete.projects": {
+        "title": "delete: projects"
+      },
+      "write.tasks": {
+        "title": "write: tasks"
+      },
+      "admin.roles": {
+        "title": "admin: roles"
+      },
+      "delete.roles": {
+        "title": "delete: roles"
+      },
+      "write.pipelines": {
+        "title": "write: pipelines"
+      },
+      "admin.settings": {
+        "title": "admin: settings"
+      },
+      "delete.tasks": {
+        "title": "delete: tasks"
+      },
+      "admin.webhooks": {
+        "title": "admin: webhooks"
+      },
+      "delete.webhooks": {
+        "title": "delete: webhooks"
+      },
+      "delete.activities": {
+        "title": "delete: activities"
+      },
+      "write.boards": {
+        "title": "write: boards"
+      },
+      "delete.boards": {
+        "title": "delete: boards"
+      },
+      "delete.options": {
+        "title": "delete: options"
+      },
+      "write.options": {
+        "title": "write: options"
+      },
+      "write.lead": {
+        "title": "write: lead"
+      },
+      "write.discounts": {
+        "title": "write: discounts"
+      },
+      "delete.discounts": {
+        "title": "delete: discounts"
+      },
+      "write.installments": {
+        "title": "write: installments"
+      },
+      "delete.installments": {
+        "title": "delete: installments"
+      },
+      "delete.products": {
+        "title": "delete: products"
+      },
+      "write.bulk": {
+        "title": "write: bulk"
+      },
+      "write.deal": {
+        "title": "write: deal"
+      },
+      "delete.organizations": {
+        "title": "delete: organizations"
+      },
+      "write.phases": {
+        "title": "write: phases"
+      },
+      "delete.phases": {
+        "title": "delete: phases"
+      },
+      "execute.pipelines": {
+        "title": "execute: pipelines"
+      },
+      "delete.pipelines": {
+        "title": "delete: pipelines"
+      },
+      "delete.images": {
+        "title": "delete: images"
+      },
+      "generate.images": {
+        "title": "generate: images"
+      },
+      "write.images": {
+        "title": "write: images"
+      },
+      "write.variations": {
+        "title": "write: variations"
+      },
+      "delete.variations": {
+        "title": "delete: variations"
+      },
+      "write.project_fields": {
+        "title": "write: project_fields"
+      },
+      "delete.project_fields": {
+        "title": "delete: project_fields"
+      },
+      "write.stages": {
+        "title": "write: stages"
+      },
+      "delete.stages": {
+        "title": "delete: stages"
+      }
     }
   },
   "operations": [
-    {"id": "deals.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.pipedrive.com", "path": "/api/v2/deals", "params": ["status", "limit", "cursor", "owner_id"], "scope": {}},
-    {"id": "deals.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.pipedrive.com", "path": "/api/v2/deals/{deal}", "scope": {"deal": {"from": "path", "at": "deal"}}},
-    {"id": "persons.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.pipedrive.com", "path": "/api/v2/persons", "params": ["limit", "cursor"], "scope": {}},
-    {"id": "deals.create", "action": "write.deals", "effects": ["write"], "method": "POST", "origin": "https://api.pipedrive.com", "path": "/api/v2/deals", "fields": {"/visible_to": null}, "body": "json", "scope": {"deal": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "deals.update", "action": "write.deals", "effects": ["write"], "method": "PATCH", "origin": "https://api.pipedrive.com", "path": "/api/v2/deals/{deal}", "fields": {"/visible_to": null, "/is_deleted": null}, "body": "json", "scope": {"deal": {"from": "path", "at": "deal"}, "changes": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "activities.create", "action": "write.activities", "effects": ["write"], "method": "POST", "origin": "https://api.pipedrive.com", "path": "/api/v2/activities", "body": "json", "scope": {"activity": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "deals.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.pipedrive.com", "path": "/api/v2/deals/{deal}", "scope": {"deal": {"from": "path", "at": "deal"}}},
-    {"id": "persons.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.pipedrive.com", "path": "/api/v2/persons/{person}", "scope": {"person": {"from": "path", "at": "person"}}},
-    {"id": "persons.create", "action": "write.persons", "effects": ["write"], "method": "POST", "origin": "https://api.pipedrive.com", "path": "/api/v2/persons", "fields": {"/visible_to": null}, "body": "json", "scope": {"person": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "persons.update", "action": "write.persons", "effects": ["write"], "method": "PATCH", "origin": "https://api.pipedrive.com", "path": "/api/v2/persons/{person}", "fields": {"/visible_to": null}, "body": "json", "scope": {"person": {"from": "path", "at": "person"}, "changes": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "persons.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://api.pipedrive.com", "path": "/api/v2/persons/{person}", "scope": {"person": {"from": "path", "at": "person"}}}
+    {"action":"read","effects":["read"],"id":"deals.list","method":"GET","origin":"https://api.pipedrive.com","params":["status","limit","cursor","owner_id"],"path":"/api/v2/deals","scope":{}},
+    {"action":"read","effects":["read"],"id":"deals.get","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{deal}","scope":{"deal":{"at":"deal","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"persons.list","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/api/v2/persons","scope":{}},
+    {"action":"write.deals","body":"json","effects":["write"],"fields":{"/visible_to":null},"id":"deals.create","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/deals","scope":{"deal":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.deals","body":"json","effects":["write"],"fields":{"/is_deleted":null,"/visible_to":null},"id":"deals.update","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{deal}","scope":{"changes":{"at":"","from":"body","type":"object"},"deal":{"at":"deal","from":"path"}}},
+    {"action":"write.activities","body":"json","effects":["write"],"id":"activities.create","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/activities","scope":{"activity":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"deals.delete","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{deal}","scope":{"deal":{"at":"deal","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"persons.get","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/persons/{person}","scope":{"person":{"at":"person","from":"path"}}},
+    {"action":"write.persons","body":"json","effects":["write"],"fields":{"/visible_to":null},"id":"persons.create","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/persons","scope":{"person":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.persons","body":"json","effects":["write"],"fields":{"/visible_to":null},"id":"persons.update","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/persons/{person}","scope":{"changes":{"at":"","from":"body","type":"object"},"person":{"at":"person","from":"path"}}},
+    {"action":"delete","effects":["delete"],"id":"persons.delete","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/persons/{person}","scope":{"person":{"at":"person","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getActivityFields","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/activityFields","scope":{}},
+    {"action":"read","effects":["read"],"id":"getActivityTypes","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/activityTypes","scope":{}},
+    {"action":"write.activity_types","effects":["write"],"id":"addActivityType","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/activityTypes","scope":{}},
+    {"action":"write.activity_types","body":"json","effects":["write"],"id":"addActivityType.json.9524d14f25cf","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/activityTypes","scope":{"icon_key":{"at":"/icon_key","from":"body"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.activity_types","effects":["delete"],"id":"deleteActivityType","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/activityTypes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.activity_types","effects":["write"],"id":"updateActivityType","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/activityTypes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.activity_types","body":"json","effects":["write"],"id":"updateActivityType.json.055989d183f6","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/activityTypes/{id}","scope":{"icon_key":{"at":"/icon_key","from":"body","optional":true},"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getCompanyAddons","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/billing/subscriptions/addons","scope":{}},
+    {"action":"read","effects":["read"],"id":"getUserCallLogs","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit"],"path":"/v1/callLogs","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"send.call_logs","effects":["send"],"id":"addCallLog","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/callLogs","scope":{}},
+    {"action":"send.call_logs","body":"json","effects":["send"],"id":"addCallLog.json.331e0048f0f1","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/callLogs","scope":{"activity_id":{"at":"/activity_id","from":"body","optional":true,"type":"number"},"deal_id":{"at":"/deal_id","from":"body","optional":true,"type":"number"},"lead_id":{"at":"/lead_id","from":"body","optional":true},"org_id":{"at":"/org_id","from":"body","optional":true,"type":"number"},"person_id":{"at":"/person_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","optional":true,"type":"number"}}},
+    {"action":"delete.call_logs","effects":["delete"],"id":"deleteCallLog","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/callLogs/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getCallLog","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/callLogs/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"send.recordings","effects":["send"],"id":"addCallLogAudioFile","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/callLogs/{id}/recordings","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.channels","effects":["write"],"id":"addChannel","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/channels","scope":{}},
+    {"action":"write.channels","body":"json","effects":["write"],"id":"addChannel.json.8d0516e0f474","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/channels","scope":{"avatar_url":{"at":"/avatar_url","from":"body","optional":true},"name":{"at":"/name","from":"body"},"provider_channel_id":{"at":"/provider_channel_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.receive","effects":["write"],"id":"receiveMessage","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/channels/messages/receive","scope":{}},
+    {"action":"write.receive","body":"json","effects":["write"],"id":"receiveMessage.json.368b42e85ca5","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/channels/messages/receive","scope":{"channel_id":{"at":"/channel_id","from":"body"},"conversation_id":{"at":"/conversation_id","from":"body"},"id":{"at":"/id","from":"body"},"request":{"at":"","from":"body","type":"object"},"sender_id":{"at":"/sender_id","from":"body"}}},
+    {"action":"delete.conversations","effects":["delete"],"id":"deleteConversation","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/channels/{channel-id}/conversations/{conversation-id}","scope":{"channel-id":{"at":"channel-id","from":"path"},"conversation-id":{"at":"conversation-id","from":"path"}}},
+    {"action":"delete.channels","effects":["delete"],"id":"deleteChannel","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/channels/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getCurrencies","method":"GET","origin":"https://api.pipedrive.com","params":["term"],"path":"/v1/currencies","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.deal_fields","effects":["delete"],"id":"deleteDealFields","method":"DELETE","origin":"https://api.pipedrive.com","params":["ids"],"path":"/v1/dealFields","scope":{"ids":{"at":"ids","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getDealFields","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit"],"path":"/v1/dealFields","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.deal_fields","effects":["write"],"id":"addDealField","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/dealFields","scope":{}},
+    {"action":"write.deal_fields","body":"json","effects":["write"],"id":"addDealField.json.2ce2b088f297","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/dealFields","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.deal_fields","effects":["delete"],"id":"deleteDealField","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/dealFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getDealField","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/dealFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.deal_fields","effects":["write"],"id":"updateDealField","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/dealFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.deal_fields","body":"json","effects":["write"],"id":"updateDealField.json.caf25cafce16","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/dealFields/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getArchivedDeals","method":"GET","origin":"https://api.pipedrive.com","params":["user_id","filter_id","person_id","org_id","product_id","pipeline_id","stage_id","status","start","limit","sort","owned_by_you"],"path":"/v1/deals/archived","scope":{"filter_id":{"at":"filter_id","from":"query","optional":true},"org_id":{"at":"org_id","from":"query","optional":true},"person_id":{"at":"person_id","from":"query","optional":true},"pipeline_id":{"at":"pipeline_id","from":"query","optional":true},"product_id":{"at":"product_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"stage_id":{"at":"stage_id","from":"query","optional":true},"user_id":{"at":"user_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"getDealsSummary","method":"GET","origin":"https://api.pipedrive.com","params":["status","filter_id","user_id","pipeline_id","stage_id"],"path":"/v1/deals/summary","scope":{"filter_id":{"at":"filter_id","from":"query","optional":true},"pipeline_id":{"at":"pipeline_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"stage_id":{"at":"stage_id","from":"query","optional":true},"user_id":{"at":"user_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"getArchivedDealsSummary","method":"GET","origin":"https://api.pipedrive.com","params":["status","filter_id","user_id","pipeline_id","stage_id"],"path":"/v1/deals/summary/archived","scope":{"filter_id":{"at":"filter_id","from":"query","optional":true},"pipeline_id":{"at":"pipeline_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"stage_id":{"at":"stage_id","from":"query","optional":true},"user_id":{"at":"user_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"getDealsTimeline","method":"GET","origin":"https://api.pipedrive.com","params":["start_date","interval","amount","field_key","user_id","pipeline_id","filter_id","exclude_deals","totals_convert_currency"],"path":"/v1/deals/timeline","scope":{"field_key":{"at":"field_key","from":"query"},"filter_id":{"at":"filter_id","from":"query","optional":true},"pipeline_id":{"at":"pipeline_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"getArchivedDealsTimeline","method":"GET","origin":"https://api.pipedrive.com","params":["start_date","interval","amount","field_key","user_id","pipeline_id","filter_id","exclude_deals","totals_convert_currency"],"path":"/v1/deals/timeline/archived","scope":{"field_key":{"at":"field_key","from":"query"},"filter_id":{"at":"filter_id","from":"query","optional":true},"pipeline_id":{"at":"pipeline_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"getDealChangelog","method":"GET","origin":"https://api.pipedrive.com","params":["cursor","limit"],"path":"/v1/deals/{id}/changelog","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.deals","effects":["write"],"id":"duplicateDeal","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/deals/{id}/duplicate","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getDealFiles","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit","sort"],"path":"/v1/deals/{id}/files","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getDealUpdates","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit","all_changes","items"],"path":"/v1/deals/{id}/flow","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getDealFollowers","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/deals/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.deals","effects":["write"],"id":"addDealFollower","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/deals/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.deals","body":"json","effects":["write"],"id":"addDealFollower.json.8749ad9f4964","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/deals/{id}/followers","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"delete.followers","effects":["delete"],"id":"deleteDealFollower","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/deals/{id}/followers/{follower_id}","scope":{"follower_id":{"at":"follower_id","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getDealMailMessages","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit","include_body"],"path":"/v1/deals/{id}/mailMessages","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.deals","effects":["write"],"id":"mergeDeals","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/deals/{id}/merge","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.deals","body":"json","effects":["write"],"id":"mergeDeals.json.bcae77af473b","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/deals/{id}/merge","scope":{"id":{"at":"id","from":"path"},"merge_with_id":{"at":"/merge_with_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getDealParticipants","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit"],"path":"/v1/deals/{id}/participants","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.participants","effects":["write"],"id":"addDealParticipant","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/deals/{id}/participants","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.participants","body":"json","effects":["write"],"id":"addDealParticipant.json.0738a69afbda","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/deals/{id}/participants","scope":{"id":{"at":"id","from":"path"},"person_id":{"at":"/person_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.participants","effects":["delete"],"id":"deleteDealParticipant","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/deals/{id}/participants/{deal_participant_id}","scope":{"deal_participant_id":{"at":"deal_participant_id","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getDealParticipantsChangelog","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/v1/deals/{id}/participantsChangelog","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getDealUsers","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/deals/{id}/permittedUsers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getFiles","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit","sort"],"path":"/v1/files","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.files","effects":["write"],"id":"addFile","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/files","scope":{}},
+    {"action":"write.remote","effects":["write"],"id":"addFileAndLinkIt","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/files/remote","scope":{}},
+    {"action":"write.remote","body":"form","effects":["write"],"id":"addFileAndLinkIt.form.589564db3f7d","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/files/remote","scope":{"item_id":{"at":"item_id","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+    {"action":"write.remote_link","effects":["write"],"id":"linkFileToItem","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/files/remoteLink","scope":{}},
+    {"action":"write.remote_link","body":"form","effects":["write"],"id":"linkFileToItem.form.b38967b3473a","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/files/remoteLink","scope":{"item_id":{"at":"item_id","from":"form"},"remote_id":{"at":"remote_id","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+    {"action":"delete.files","effects":["delete"],"id":"deleteFile","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/files/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getFile","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/files/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.files","effects":["write"],"id":"updateFile","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/files/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.files","body":"form","effects":["write"],"id":"updateFile.form.36ad9f4265bd","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/files/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"downloadFile","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/files/{id}/download","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"delete.filters","effects":["delete"],"id":"deleteFilters","method":"DELETE","origin":"https://api.pipedrive.com","params":["ids"],"path":"/v1/filters","scope":{"ids":{"at":"ids","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getFilters","method":"GET","origin":"https://api.pipedrive.com","params":["type"],"path":"/v1/filters","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.filters","effects":["write"],"id":"addFilter","method":"POST","origin":"https://api.pipedrive.com","params":["include_field_code"],"path":"/v1/filters","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.filters","body":"json","effects":["write"],"id":"addFilter.json.93173b55f812","method":"POST","origin":"https://api.pipedrive.com","params":["include_field_code"],"path":"/v1/filters","scope":{"name":{"at":"/name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getFilterHelpers","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/filters/helpers","scope":{}},
+    {"action":"delete.filters","effects":["delete"],"id":"deleteFilter","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/filters/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getFilter","method":"GET","origin":"https://api.pipedrive.com","params":["include_field_code"],"path":"/v1/filters/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.filters","effects":["write"],"id":"updateFilter","method":"PUT","origin":"https://api.pipedrive.com","params":["include_field_code"],"path":"/v1/filters/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.filters","body":"json","effects":["write"],"id":"updateFilter.json.fe4df7cf3984","method":"PUT","origin":"https://api.pipedrive.com","params":["include_field_code"],"path":"/v1/filters/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.goals","effects":["write"],"id":"addGoal","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/goals","scope":{}},
+    {"action":"write.goals","body":"json","effects":["write"],"id":"addGoal.json.4c870f352024","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/goals","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getGoals","method":"GET","origin":"https://api.pipedrive.com","params":["type.name","title","is_active","assignee.id","assignee.type","expected_outcome.target","expected_outcome.tracking_metric","expected_outcome.currency_id","type.params.pipeline_id","type.params.stage_id","type.params.activity_type_id","period.start","period.end"],"path":"/v1/goals/find","scope":{"expected_outcome.currency_id":{"at":"expected_outcome.currency_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"type.params.activity_type_id":{"at":"type.params.activity_type_id","from":"query","optional":true},"type.params.pipeline_id":{"at":"type.params.pipeline_id","from":"query","optional":true},"type.params.stage_id":{"at":"type.params.stage_id","from":"query","optional":true}}},
+    {"action":"delete.goals","effects":["delete"],"id":"deleteGoal","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/goals/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.goals","effects":["write"],"id":"updateGoal","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/goals/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.goals","body":"json","effects":["write"],"id":"updateGoal.json.3d5353fdddc2","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/goals/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getGoalResult","method":"GET","origin":"https://api.pipedrive.com","params":["period.start","period.end"],"path":"/v1/goals/{id}/results","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getLeadFields","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit"],"path":"/v1/leadFields","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getLeadLabels","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/leadLabels","scope":{}},
+    {"action":"write.lead_labels","effects":["write"],"id":"addLeadLabel","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/leadLabels","scope":{}},
+    {"action":"write.lead_labels","body":"json","effects":["write"],"id":"addLeadLabel.json.98fe3ac3bfc6","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/leadLabels","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.lead_labels","effects":["delete"],"id":"deleteLeadLabel","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/leadLabels/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.lead_labels","effects":["write"],"id":"updateLeadLabel","method":"PATCH","origin":"https://api.pipedrive.com","path":"/v1/leadLabels/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.lead_labels","body":"json","effects":["write"],"id":"updateLeadLabel.json.c81cc7ae1739","method":"PATCH","origin":"https://api.pipedrive.com","path":"/v1/leadLabels/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getLeadSources","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/leadSources","scope":{}},
+    {"action":"read","effects":["read"],"id":"getLeads","method":"GET","origin":"https://api.pipedrive.com","params":["limit","start","owner_id","person_id","organization_id","filter_id","updated_since","sort"],"path":"/v1/leads","scope":{"filter_id":{"at":"filter_id","from":"query","optional":true},"organization_id":{"at":"organization_id","from":"query","optional":true},"owner_id":{"at":"owner_id","from":"query","optional":true},"person_id":{"at":"person_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.leads","effects":["write"],"id":"addLead","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/leads","scope":{}},
+    {"action":"write.leads","body":"json","effects":["write"],"id":"addLead.json.57476a17c3c5","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/leads","scope":{"channel":{"at":"/channel","from":"body","optional":true,"type":"number"},"channel_id":{"at":"/channel_id","from":"body","optional":true},"label_ids":{"at":"/label_ids","from":"body","optional":true,"type":"array"},"organization_id":{"at":"/organization_id","from":"body","optional":true,"type":"number"},"origin_id":{"at":"/origin_id","from":"body","optional":true},"owner_id":{"at":"/owner_id","from":"body","optional":true,"type":"number"},"person_id":{"at":"/person_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getArchivedLeads","method":"GET","origin":"https://api.pipedrive.com","params":["limit","start","owner_id","person_id","organization_id","filter_id","sort"],"path":"/v1/leads/archived","scope":{"filter_id":{"at":"filter_id","from":"query","optional":true},"organization_id":{"at":"organization_id","from":"query","optional":true},"owner_id":{"at":"owner_id","from":"query","optional":true},"person_id":{"at":"person_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"searchLeads","method":"GET","origin":"https://api.pipedrive.com","params":["term","fields","exact_match","person_id","organization_id","include_fields","start","limit"],"path":"/v1/leads/search","scope":{"organization_id":{"at":"organization_id","from":"query","optional":true},"person_id":{"at":"person_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.leads","effects":["delete"],"id":"deleteLead","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/leads/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getLead","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/leads/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.leads","effects":["write"],"id":"updateLead","method":"PATCH","origin":"https://api.pipedrive.com","path":"/v1/leads/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.leads","body":"json","effects":["write"],"id":"updateLead.json.bd43c632aa39","method":"PATCH","origin":"https://api.pipedrive.com","path":"/v1/leads/{id}","scope":{"channel":{"at":"/channel","from":"body","optional":true,"type":"number"},"channel_id":{"at":"/channel_id","from":"body","optional":true},"id":{"at":"id","from":"path"},"label_ids":{"at":"/label_ids","from":"body","optional":true,"type":"array"},"organization_id":{"at":"/organization_id","from":"body","optional":true,"type":"number"},"owner_id":{"at":"/owner_id","from":"body","optional":true,"type":"number"},"person_id":{"at":"/person_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getLeadUsers","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/leads/{id}/permittedUsers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getTeams","method":"GET","origin":"https://api.pipedrive.com","params":["order_by","skip_users"],"path":"/v1/legacyTeams","scope":{"query":{"at":"","from":"query","type":"object"},"skip_users":{"at":"skip_users","from":"query","optional":true}}},
+    {"action":"write.legacy_teams","effects":["write"],"id":"addTeam","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/legacyTeams","scope":{}},
+    {"action":"write.legacy_teams","body":"json","effects":["write"],"id":"addTeam.json.7dd783e96daa","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/legacyTeams","scope":{"manager_id":{"at":"/manager_id","from":"body","type":"number"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"users":{"at":"/users","from":"body","optional":true,"type":"array"}}},
+    {"action":"read","effects":["read"],"id":"getUserTeams","method":"GET","origin":"https://api.pipedrive.com","params":["order_by","skip_users"],"path":"/v1/legacyTeams/user/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"skip_users":{"at":"skip_users","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"getTeam","method":"GET","origin":"https://api.pipedrive.com","params":["skip_users"],"path":"/v1/legacyTeams/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"skip_users":{"at":"skip_users","from":"query","optional":true}}},
+    {"action":"write.legacy_teams","effects":["write"],"id":"updateTeam","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/legacyTeams/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.legacy_teams","body":"json","effects":["write"],"id":"updateTeam.json.5e0ac134831d","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/legacyTeams/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.users","effects":["delete"],"id":"deleteTeamUser","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/legacyTeams/{id}/users","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"delete.users","body":"json","effects":["delete"],"id":"deleteTeamUser.json.cb9af090232d","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/legacyTeams/{id}/users","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"users":{"at":"/users","from":"body","type":"array"}}},
+    {"action":"read","effects":["read"],"id":"getTeamUsers","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/legacyTeams/{id}/users","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"admin.users","effects":["admin"],"id":"addTeamUser","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/legacyTeams/{id}/users","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"admin.users","body":"json","effects":["admin"],"id":"addTeamUser.json.1c7e51e0bd83","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/legacyTeams/{id}/users","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"users":{"at":"/users","from":"body","type":"array"}}},
+    {"action":"read","effects":["read"],"id":"getMailMessage","method":"GET","origin":"https://api.pipedrive.com","params":["include_body"],"path":"/v1/mailbox/mailMessages/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getMailThreads","method":"GET","origin":"https://api.pipedrive.com","params":["folder","start","limit"],"path":"/v1/mailbox/mailThreads","scope":{"folder":{"at":"folder","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.mail_threads","effects":["delete"],"id":"deleteMailThread","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/mailbox/mailThreads/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getMailThread","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/mailbox/mailThreads/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.mail_threads","effects":["write"],"id":"updateMailThreadDetails","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/mailbox/mailThreads/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.mail_threads","body":"form","effects":["write"],"id":"updateMailThreadDetails.form.84279f1bf1b2","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/mailbox/mailThreads/{id}","scope":{"deal_id":{"at":"deal_id","from":"form","optional":true},"id":{"at":"id","from":"path"},"lead_id":{"at":"lead_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getMailThreadMessages","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/mailbox/mailThreads/{id}/mailMessages","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.user_provider_links","effects":["write"],"id":"saveUserProviderLink","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/meetings/userProviderLinks","scope":{}},
+    {"action":"write.user_provider_links","body":"json","effects":["write"],"id":"saveUserProviderLink.json.42a20679f5cf","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/meetings/userProviderLinks","scope":{"company_id":{"at":"/company_id","from":"body","type":"number"},"marketplace_client_id":{"at":"/marketplace_client_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","type":"number"},"user_provider_id":{"at":"/user_provider_id","from":"body"}}},
+    {"action":"delete.user_provider_links","effects":["delete"],"id":"deleteUserProviderLink","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/meetings/userProviderLinks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getNoteFields","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/noteFields","scope":{}},
+    {"action":"read","effects":["read"],"id":"getNotes","method":"GET","origin":"https://api.pipedrive.com","params":["user_id","lead_id","deal_id","person_id","org_id","project_id","task_id","start","limit","sort","start_date","end_date","updated_since","pinned_to_lead_flag","pinned_to_deal_flag","pinned_to_organization_flag","pinned_to_person_flag","pinned_to_project_flag","pinned_to_task_flag"],"path":"/v1/notes","scope":{"deal_id":{"at":"deal_id","from":"query","optional":true},"lead_id":{"at":"lead_id","from":"query","optional":true},"org_id":{"at":"org_id","from":"query","optional":true},"person_id":{"at":"person_id","from":"query","optional":true},"project_id":{"at":"project_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"query","optional":true},"user_id":{"at":"user_id","from":"query","optional":true}}},
+    {"action":"send.notes","effects":["send"],"id":"addNote","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/notes","scope":{}},
+    {"action":"send.notes","body":"json","effects":["send"],"id":"addNote.json.03fc9552f2ba","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/notes","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.notes","effects":["delete"],"id":"deleteNote","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/notes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getNote","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/notes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.notes","effects":["write"],"id":"updateNote","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/notes/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.notes","body":"json","effects":["write"],"id":"updateNote.json.a86e82690c9a","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/notes/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getNoteComments","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit"],"path":"/v1/notes/{id}/comments","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"send.comments","effects":["send"],"id":"addNoteComment","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/notes/{id}/comments","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"send.comments","body":"json","effects":["send"],"id":"addNoteComment.json.65aa74bdf291","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/notes/{id}/comments","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.comments","effects":["delete"],"id":"deleteComment","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/notes/{id}/comments/{commentId}","scope":{"commentId":{"at":"commentId","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getComment","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/notes/{id}/comments/{commentId}","scope":{"commentId":{"at":"commentId","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"write.comments","effects":["write"],"id":"updateCommentForNote","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/notes/{id}/comments/{commentId}","scope":{"commentId":{"at":"commentId","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"write.comments","body":"json","effects":["write"],"id":"updateCommentForNote.json.d8706758d70e","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/notes/{id}/comments/{commentId}","scope":{"commentId":{"at":"commentId","from":"path"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"authorize","method":"GET","origin":"https://api.pipedrive.com","params":["client_id","redirect_uri","state"],"path":"/oauth/authorize","scope":{"client_id":{"at":"client_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"get-tokens","method":"POST","origin":"https://api.pipedrive.com","path":"/oauth/token","scope":{}},
+    {"action":"read","body":"form","effects":["read"],"id":"get-tokens.form.43fca6b4d0d6","method":"POST","origin":"https://api.pipedrive.com","path":"/oauth/token","scope":{"request":{"at":"","from":"form","type":"object"}}},
+    {"action":"admin.token","effects":["admin"],"id":"refresh-tokens","method":"POST","origin":"https://api.pipedrive.com","path":"/oauth/token/","scope":{}},
+    {"action":"admin.token","body":"form","effects":["admin"],"id":"refresh-tokens.form.1ea7062130fd","method":"POST","origin":"https://api.pipedrive.com","path":"/oauth/token/","scope":{"request":{"at":"","from":"form","type":"object"}}},
+    {"action":"delete.organization_fields","effects":["delete"],"id":"deleteOrganizationFields","method":"DELETE","origin":"https://api.pipedrive.com","params":["ids"],"path":"/v1/organizationFields","scope":{"ids":{"at":"ids","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizationFields","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit"],"path":"/v1/organizationFields","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.organization_fields","effects":["write"],"id":"addOrganizationField","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/organizationFields","scope":{}},
+    {"action":"write.organization_fields","body":"json","effects":["write"],"id":"addOrganizationField.json.eddaf0e7d508","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/organizationFields","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.organization_fields","effects":["delete"],"id":"deleteOrganizationField","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/organizationFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizationField","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/organizationFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.organization_fields","effects":["write"],"id":"updateOrganizationField","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/organizationFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.organization_fields","body":"json","effects":["write"],"id":"updateOrganizationField.json.02b710ac20e7","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/organizationFields/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizationRelationships","method":"GET","origin":"https://api.pipedrive.com","params":["org_id"],"path":"/v1/organizationRelationships","scope":{"org_id":{"at":"org_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.organization_relationships","effects":["write"],"id":"addOrganizationRelationship","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/organizationRelationships","scope":{}},
+    {"action":"write.organization_relationships","body":"json","effects":["write"],"id":"addOrganizationRelationship.json.13c80b07cabe","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/organizationRelationships","scope":{"org_id":{"at":"/org_id","from":"body","optional":true,"type":"number"},"rel_linked_org_id":{"at":"/rel_linked_org_id","from":"body","type":"number"},"rel_owner_org_id":{"at":"/rel_owner_org_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.organization_relationships","effects":["delete"],"id":"deleteOrganizationRelationship","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/organizationRelationships/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizationRelationship","method":"GET","origin":"https://api.pipedrive.com","params":["org_id"],"path":"/v1/organizationRelationships/{id}","scope":{"id":{"at":"id","from":"path"},"org_id":{"at":"org_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.organization_relationships","effects":["write"],"id":"updateOrganizationRelationship","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/organizationRelationships/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.organization_relationships","body":"json","effects":["write"],"id":"updateOrganizationRelationship.json.e0faab7b8cb3","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/organizationRelationships/{id}","scope":{"id":{"at":"id","from":"path"},"org_id":{"at":"/org_id","from":"body","optional":true,"type":"number"},"rel_linked_org_id":{"at":"/rel_linked_org_id","from":"body","optional":true,"type":"number"},"rel_owner_org_id":{"at":"/rel_owner_org_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizationChangelog","method":"GET","origin":"https://api.pipedrive.com","params":["cursor","limit"],"path":"/v1/organizations/{id}/changelog","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizationFiles","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit","sort"],"path":"/v1/organizations/{id}/files","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizationUpdates","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit","all_changes","items"],"path":"/v1/organizations/{id}/flow","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizationFollowers","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/organizations/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"admin.organizations","effects":["admin"],"id":"addOrganizationFollower","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/organizations/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"admin.organizations","body":"json","effects":["admin"],"id":"addOrganizationFollower.json.4229b90a74f2","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/organizations/{id}/followers","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"delete.followers","effects":["delete"],"id":"deleteOrganizationFollower","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/organizations/{id}/followers/{follower_id}","scope":{"follower_id":{"at":"follower_id","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizationMailMessages","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit","include_body"],"path":"/v1/organizations/{id}/mailMessages","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"admin.organizations","effects":["admin"],"id":"mergeOrganizations","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/organizations/{id}/merge","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"admin.organizations","body":"json","effects":["admin"],"id":"mergeOrganizations.json.49f5a8f6310e","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/organizations/{id}/merge","scope":{"id":{"at":"id","from":"path"},"merge_with_id":{"at":"/merge_with_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizationUsers","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/organizations/{id}/permittedUsers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getPermissionSets","method":"GET","origin":"https://api.pipedrive.com","params":["app"],"path":"/v1/permissionSets","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getPermissionSet","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/permissionSets/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getPermissionSetAssignments","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit"],"path":"/v1/permissionSets/{id}/assignments","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.person_fields","effects":["delete"],"id":"deletePersonFields","method":"DELETE","origin":"https://api.pipedrive.com","params":["ids"],"path":"/v1/personFields","scope":{"ids":{"at":"ids","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getPersonFields","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit"],"path":"/v1/personFields","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.person_fields","effects":["write"],"id":"addPersonField","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/personFields","scope":{}},
+    {"action":"write.person_fields","body":"json","effects":["write"],"id":"addPersonField.json.afbc8b01f750","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/personFields","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.person_fields","effects":["delete"],"id":"deletePersonField","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/personFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getPersonField","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/personFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.person_fields","effects":["write"],"id":"updatePersonField","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/personFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.person_fields","body":"json","effects":["write"],"id":"updatePersonField.json.9b3331fd2b0e","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/personFields/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getPersonChangelog","method":"GET","origin":"https://api.pipedrive.com","params":["cursor","limit"],"path":"/v1/persons/{id}/changelog","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getPersonFiles","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit","sort"],"path":"/v1/persons/{id}/files","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getPersonUpdates","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit","all_changes","items"],"path":"/v1/persons/{id}/flow","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getPersonFollowers","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/persons/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.persons","effects":["write"],"id":"addPersonFollower","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/persons/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.persons","body":"json","effects":["write"],"id":"addPersonFollower.json.fe19166dcf45","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/persons/{id}/followers","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"delete.followers","effects":["delete"],"id":"deletePersonFollower","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/persons/{id}/followers/{follower_id}","scope":{"follower_id":{"at":"follower_id","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getPersonMailMessages","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit","include_body"],"path":"/v1/persons/{id}/mailMessages","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.persons","effects":["write"],"id":"mergePersons","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/persons/{id}/merge","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.persons","body":"json","effects":["write"],"id":"mergePersons.json.65af86a91901","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/persons/{id}/merge","scope":{"id":{"at":"id","from":"path"},"merge_with_id":{"at":"/merge_with_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getPersonUsers","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/persons/{id}/permittedUsers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"delete.picture","effects":["delete"],"id":"deletePersonPicture","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/persons/{id}/picture","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.picture","effects":["write"],"id":"addPersonPicture","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/persons/{id}/picture","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getPersonProducts","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit"],"path":"/v1/persons/{id}/products","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getPipelineConversionStatistics","method":"GET","origin":"https://api.pipedrive.com","params":["start_date","end_date","user_id"],"path":"/v1/pipelines/{id}/conversion_statistics","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"getPipelineDeals","method":"GET","origin":"https://api.pipedrive.com","params":["filter_id","user_id","everyone","stage_id","start","limit","get_summary","totals_convert_currency"],"path":"/v1/pipelines/{id}/deals","scope":{"filter_id":{"at":"filter_id","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"stage_id":{"at":"stage_id","from":"query","optional":true},"user_id":{"at":"user_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"getPipelineMovementStatistics","method":"GET","origin":"https://api.pipedrive.com","params":["start_date","end_date","user_id"],"path":"/v1/pipelines/{id}/movement_statistics","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"query","optional":true}}},
+    {"action":"delete.product_fields","effects":["delete"],"id":"deleteProductFields","method":"DELETE","origin":"https://api.pipedrive.com","params":["ids"],"path":"/v1/productFields","scope":{"ids":{"at":"ids","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getProductFields","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit"],"path":"/v1/productFields","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.product_fields","effects":["write"],"id":"addProductField","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/productFields","scope":{}},
+    {"action":"write.product_fields","body":"json","effects":["write"],"id":"addProductField.json.5382c7b428d6","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/productFields","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.product_fields","effects":["delete"],"id":"deleteProductField","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/productFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProductField","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/productFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.product_fields","effects":["write"],"id":"updateProductField","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/productFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.product_fields","body":"json","effects":["write"],"id":"updateProductField.json.7950b4c1e56a","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/productFields/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getProductDeals","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit","status"],"path":"/v1/products/{id}/deals","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getProductFiles","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit","sort"],"path":"/v1/products/{id}/files","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getProductFollowers","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit"],"path":"/v1/products/{id}/followers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.products","effects":["write"],"id":"addProductFollower","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/products/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.products","body":"json","effects":["write"],"id":"addProductFollower.json.dad273846170","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/products/{id}/followers","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"delete.followers","effects":["delete"],"id":"deleteProductFollower","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/products/{id}/followers/{follower_id}","scope":{"follower_id":{"at":"follower_id","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProductUsers","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/products/{id}/permittedUsers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProjectTemplates","method":"GET","origin":"https://api.pipedrive.com","params":["cursor","limit"],"path":"/v1/projectTemplates","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getProjectTemplate","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/projectTemplates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProjects","method":"GET","origin":"https://api.pipedrive.com","params":["cursor","limit","filter_id","status","phase_id","include_archived"],"path":"/v1/projects","scope":{"filter_id":{"at":"filter_id","from":"query","optional":true},"phase_id":{"at":"phase_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.projects","effects":["write"],"id":"addProject","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/projects","scope":{}},
+    {"action":"write.projects","body":"json","effects":["write"],"id":"addProject.json.a4a00ac260b9","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/projects","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getProjectsBoards","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/projects/boards","scope":{}},
+    {"action":"read","effects":["read"],"id":"getProjectsBoard","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/projects/boards/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProjectsPhases","method":"GET","origin":"https://api.pipedrive.com","params":["board_id"],"path":"/v1/projects/phases","scope":{"board_id":{"at":"board_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getProjectsPhase","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/projects/phases/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"delete.projects","effects":["delete"],"id":"deleteProject","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/projects/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProject","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/projects/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.projects","effects":["write"],"id":"updateProject","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/projects/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.projects","body":"json","effects":["write"],"id":"updateProject.json.e11ef60297b5","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/projects/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getProjectActivities","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/projects/{id}/activities","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.projects","effects":["write"],"id":"archiveProject","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/projects/{id}/archive","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProjectGroups","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/projects/{id}/groups","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProjectPlan","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/projects/{id}/plan","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.activities","effects":["write"],"id":"putProjectPlanActivity","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/projects/{id}/plan/activities/{activityId}","scope":{"activityId":{"at":"activityId","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"write.activities","body":"json","effects":["write"],"id":"putProjectPlanActivity.json.d66e398989d2","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/projects/{id}/plan/activities/{activityId}","scope":{"activityId":{"at":"activityId","from":"path"},"group_id":{"at":"/group_id","from":"body","optional":true,"type":"number"},"id":{"at":"id","from":"path"},"phase_id":{"at":"/phase_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.tasks","effects":["write"],"id":"putProjectPlanTask","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/projects/{id}/plan/tasks/{taskId}","scope":{"id":{"at":"id","from":"path"},"taskId":{"at":"taskId","from":"path"}}},
+    {"action":"write.tasks","body":"json","effects":["write"],"id":"putProjectPlanTask.json.9e377857003f","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/projects/{id}/plan/tasks/{taskId}","scope":{"group_id":{"at":"/group_id","from":"body","optional":true,"type":"number"},"id":{"at":"id","from":"path"},"phase_id":{"at":"/phase_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"taskId":{"at":"taskId","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProjectTasks","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/projects/{id}/tasks","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getRecents","method":"GET","origin":"https://api.pipedrive.com","params":["since_timestamp","items","start","limit"],"path":"/v1/recents","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getRoles","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit"],"path":"/v1/roles","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"admin.roles","effects":["admin"],"id":"addRole","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/roles","scope":{}},
+    {"action":"admin.roles","body":"json","effects":["admin"],"id":"addRole.json.dbe974f1e2da","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/roles","scope":{"name":{"at":"/name","from":"body"},"parent_role_id":{"at":"/parent_role_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.roles","effects":["delete"],"id":"deleteRole","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/roles/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getRole","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/roles/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"admin.roles","effects":["admin"],"id":"updateRole","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/roles/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"admin.roles","body":"json","effects":["admin"],"id":"updateRole.json.178dd7bc9ec0","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/roles/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"parent_role_id":{"at":"/parent_role_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.roles","effects":["delete"],"id":"deleteRoleAssignment","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/roles/{id}/assignments","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"delete.roles","body":"json","effects":["delete"],"id":"deleteRoleAssignment.json.67409b1f233e","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/roles/{id}/assignments","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"read","effects":["read"],"id":"getRoleAssignments","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit"],"path":"/v1/roles/{id}/assignments","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"admin.roles","effects":["admin"],"id":"addRoleAssignment","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/roles/{id}/assignments","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"admin.roles","body":"json","effects":["admin"],"id":"addRoleAssignment.json.5eeddf478f87","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/roles/{id}/assignments","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"read","effects":["read"],"id":"getRolePipelines","method":"GET","origin":"https://api.pipedrive.com","params":["visible"],"path":"/v1/roles/{id}/pipelines","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.pipelines","effects":["write"],"id":"updateRolePipelines","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/roles/{id}/pipelines","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.pipelines","body":"json","effects":["write"],"id":"updateRolePipelines.json.50b5917679b3","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/roles/{id}/pipelines","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getRoleSettings","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/roles/{id}/settings","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"admin.settings","effects":["admin"],"id":"addOrUpdateRoleSetting","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/roles/{id}/settings","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"admin.settings","body":"json","effects":["admin"],"id":"addOrUpdateRoleSetting.json.69b23e09c604","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/roles/{id}/settings","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"setting_key":{"at":"/setting_key","from":"body"}}},
+    {"action":"read","effects":["read"],"id":"getStageDeals","method":"GET","origin":"https://api.pipedrive.com","params":["filter_id","user_id","everyone","start","limit"],"path":"/v1/stages/{id}/deals","scope":{"filter_id":{"at":"filter_id","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"getTasks","method":"GET","origin":"https://api.pipedrive.com","params":["cursor","limit","assignee_id","project_id","parent_task_id","done"],"path":"/v1/tasks","scope":{"assignee_id":{"at":"assignee_id","from":"query","optional":true},"parent_task_id":{"at":"parent_task_id","from":"query","optional":true},"project_id":{"at":"project_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.tasks","effects":["write"],"id":"addTask","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/tasks","scope":{}},
+    {"action":"write.tasks","body":"json","effects":["write"],"id":"addTask.json.c0ded2dfc4e9","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/tasks","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.tasks","effects":["delete"],"id":"deleteTask","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/tasks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getTask","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/tasks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.tasks","effects":["write"],"id":"updateTask","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/tasks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.tasks","body":"json","effects":["write"],"id":"updateTask.json.358db3f542d0","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/tasks/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getUserConnections","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/userConnections","scope":{}},
+    {"action":"read","effects":["read"],"id":"getUserSettings","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/userSettings","scope":{}},
+    {"action":"read","effects":["read"],"id":"getUsers","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/users","scope":{}},
+    {"action":"admin.users","effects":["admin"],"id":"addUser","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/users","scope":{}},
+    {"action":"admin.users","body":"json","effects":["admin"],"id":"addUser.json.2d51466cf972","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/users","scope":{"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"findUsersByName","method":"GET","origin":"https://api.pipedrive.com","params":["term","search_by_email"],"path":"/v1/users/find","scope":{"query":{"at":"","from":"query","type":"object"},"search_by_email":{"at":"search_by_email","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"getCurrentUser","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/users/me","scope":{}},
+    {"action":"read","effects":["read"],"id":"getUser","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/users/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"admin.users","effects":["admin"],"id":"updateUser","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/users/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"admin.users","body":"json","effects":["admin"],"id":"updateUser.json.6da9237dc47f","method":"PUT","origin":"https://api.pipedrive.com","path":"/v1/users/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getUserFollowers","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/users/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getUserPermissions","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/users/{id}/permissions","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getUserRoleAssignments","method":"GET","origin":"https://api.pipedrive.com","params":["start","limit"],"path":"/v1/users/{id}/roleAssignments","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getUserRoleSettings","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/users/{id}/roleSettings","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getWebhooks","method":"GET","origin":"https://api.pipedrive.com","path":"/v1/webhooks","scope":{}},
+    {"action":"admin.webhooks","effects":["admin"],"id":"addWebhook","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/webhooks","scope":{}},
+    {"action":"admin.webhooks","body":"json","effects":["admin"],"id":"addWebhook.json.f5c9f2cfaff9","method":"POST","origin":"https://api.pipedrive.com","path":"/v1/webhooks","scope":{"http_auth_user":{"at":"/http_auth_user","from":"body","optional":true},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"subscription_url":{"at":"/subscription_url","from":"body"},"user_id":{"at":"/user_id","from":"body","optional":true,"type":"number"}}},
+    {"action":"delete.webhooks","effects":["delete"],"id":"deleteWebhook","method":"DELETE","origin":"https://api.pipedrive.com","path":"/v1/webhooks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getActivities","method":"GET","origin":"https://api.pipedrive.com","params":["filter_id","ids","owner_id","deal_id","lead_id","person_id","org_id","done","updated_since","updated_until","sort_by","sort_direction","include_fields","limit","cursor"],"path":"/api/v2/activities","scope":{"deal_id":{"at":"deal_id","from":"query","optional":true},"filter_id":{"at":"filter_id","from":"query","optional":true},"ids":{"at":"ids","from":"query","optional":true},"lead_id":{"at":"lead_id","from":"query","optional":true},"org_id":{"at":"org_id","from":"query","optional":true},"owner_id":{"at":"owner_id","from":"query","optional":true},"person_id":{"at":"person_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.activities","effects":["write"],"id":"addActivity","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/activities","scope":{}},
+    {"action":"delete.activities","effects":["delete"],"id":"deleteActivity","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/activities/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getActivity","method":"GET","origin":"https://api.pipedrive.com","params":["include_fields"],"path":"/api/v2/activities/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.activities","effects":["write"],"id":"updateActivity","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/activities/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.activities","body":"json","effects":["write"],"id":"updateActivity.json.d41771ab5600","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/activities/{id}","scope":{"deal_id":{"at":"/deal_id","from":"body","optional":true,"type":"number"},"id":{"at":"id","from":"path"},"lead_id":{"at":"/lead_id","from":"body","optional":true},"org_id":{"at":"/org_id","from":"body","optional":true,"type":"number"},"owner_id":{"at":"/owner_id","from":"body","optional":true,"type":"number"},"project_id":{"at":"/project_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getActivityFields.none.176ac2b65d23","method":"GET","origin":"https://api.pipedrive.com","params":["include_fields","limit","cursor"],"path":"/api/v2/activityFields","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getActivityField","method":"GET","origin":"https://api.pipedrive.com","params":["include_fields"],"path":"/api/v2/activityFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getProjectsBoards.none.4f53abfd6165","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/boards","scope":{}},
+    {"action":"write.boards","body":"json","effects":["write"],"id":"addProjectBoard","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/boards","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.boards","effects":["delete"],"id":"deleteProjectBoard","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/boards/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProjectsBoard.none.d38995fbd41d","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/boards/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.boards","effects":["write"],"id":"updateProjectBoard","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/boards/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.boards","body":"json","effects":["write"],"id":"updateProjectBoard.json.1f56ee4504d0","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/boards/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getDealFields.none.8b74db3ba4b8","method":"GET","origin":"https://api.pipedrive.com","params":["include_fields","limit","cursor"],"path":"/api/v2/dealFields","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.deal_fields","body":"json","effects":["write"],"id":"addDealField.json.c33711efcbc2","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/dealFields","scope":{"field_name":{"at":"/field_name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.deal_fields","effects":["delete"],"id":"deleteDealField.none.73aac3c03e26","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/dealFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getDealField.none.7f8e9dc3ec1c","method":"GET","origin":"https://api.pipedrive.com","params":["include_fields"],"path":"/api/v2/dealFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.deal_fields","body":"json","effects":["write"],"id":"updateDealField.json.f5bfac4d6b16","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/dealFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"},"field_name":{"at":"/field_name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.options","body":"json","effects":["delete"],"id":"deleteDealFieldOptions","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/dealFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"write.options","body":"json","effects":["write"],"id":"updateDealFieldOptions","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/dealFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"write.options","body":"json","effects":["write"],"id":"addDealFieldOptions","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/dealFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"write.deals","effects":["write"],"id":"addDeal","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/deals","scope":{}},
+    {"action":"read","effects":["read"],"id":"getArchivedDeals.none.1e9789271918","method":"GET","origin":"https://api.pipedrive.com","params":["filter_id","ids","owner_id","person_id","org_id","pipeline_id","stage_id","status","updated_since","updated_until","sort_by","sort_direction","include_fields","custom_fields","limit","cursor"],"path":"/api/v2/deals/archived","scope":{"filter_id":{"at":"filter_id","from":"query","optional":true},"ids":{"at":"ids","from":"query","optional":true},"org_id":{"at":"org_id","from":"query","optional":true},"owner_id":{"at":"owner_id","from":"query","optional":true},"person_id":{"at":"person_id","from":"query","optional":true},"pipeline_id":{"at":"pipeline_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"stage_id":{"at":"stage_id","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"getInstallments","method":"GET","origin":"https://api.pipedrive.com","params":["deal_ids","cursor","limit","sort_by","sort_direction"],"path":"/api/v2/deals/installments","scope":{"deal_ids":{"at":"deal_ids","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getDealsProducts","method":"GET","origin":"https://api.pipedrive.com","params":["deal_ids","cursor","limit","sort_by","sort_direction"],"path":"/api/v2/deals/products","scope":{"deal_ids":{"at":"deal_ids","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"searchDeals","method":"GET","origin":"https://api.pipedrive.com","params":["term","fields","exact_match","person_id","organization_id","status","include_fields","limit","cursor"],"path":"/api/v2/deals/search","scope":{"organization_id":{"at":"organization_id","from":"query","optional":true},"person_id":{"at":"person_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.deals","effects":["write"],"id":"updateDeal","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.lead","effects":["write"],"id":"convertDealToLead","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/convert/lead","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getDealConversionStatus","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/convert/status/{conversion_id}","scope":{"conversion_id":{"at":"conversion_id","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getAdditionalDiscounts","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/discounts","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.discounts","effects":["write"],"id":"postAdditionalDiscount","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/discounts","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.discounts","body":"json","effects":["write"],"id":"postAdditionalDiscount.json.7875b9c7a70c","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/discounts","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.discounts","effects":["delete"],"id":"deleteAdditionalDiscount","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/discounts/{discount_id}","scope":{"discount_id":{"at":"discount_id","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"write.discounts","effects":["write"],"id":"updateAdditionalDiscount","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/discounts/{discount_id}","scope":{"discount_id":{"at":"discount_id","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"write.discounts","body":"json","effects":["write"],"id":"updateAdditionalDiscount.json.b20bb8b07995","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/discounts/{discount_id}","scope":{"discount_id":{"at":"discount_id","from":"path"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getDealFollowers.none.6f5b32a39b47","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/api/v2/deals/{id}/followers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.deals","effects":["write"],"id":"addDealFollower.none.288e48f4981b","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.deals","body":"json","effects":["write"],"id":"addDealFollower.json.f3e04b571985","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/followers","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"read","effects":["read"],"id":"getDealFollowersChangelog","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/api/v2/deals/{id}/followers/changelog","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.followers","effects":["delete"],"id":"deleteDealFollower.none.770420f356d0","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/followers/{follower_id}","scope":{"follower_id":{"at":"follower_id","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"write.installments","effects":["write"],"id":"postInstallment","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/installments","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.installments","body":"json","effects":["write"],"id":"postInstallment.json.32bb78ae26de","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/installments","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.installments","effects":["delete"],"id":"deleteInstallment","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/installments/{installment_id}","scope":{"id":{"at":"id","from":"path"},"installment_id":{"at":"installment_id","from":"path"}}},
+    {"action":"write.installments","effects":["write"],"id":"updateInstallment","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/installments/{installment_id}","scope":{"id":{"at":"id","from":"path"},"installment_id":{"at":"installment_id","from":"path"}}},
+    {"action":"write.installments","body":"json","effects":["write"],"id":"updateInstallment.json.ad8faad01629","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/installments/{installment_id}","scope":{"id":{"at":"id","from":"path"},"installment_id":{"at":"installment_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.products","effects":["delete"],"id":"deleteManyDealProducts","method":"DELETE","origin":"https://api.pipedrive.com","params":["ids"],"path":"/api/v2/deals/{id}/products","scope":{"id":{"at":"id","from":"path"},"ids":{"at":"ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getDealProducts","method":"GET","origin":"https://api.pipedrive.com","params":["cursor","limit","sort_by","sort_direction"],"path":"/api/v2/deals/{id}/products","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.products","effects":["write"],"id":"addDealProduct","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/products","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.products","body":"json","effects":["write"],"id":"addDealProduct.json.81e45e89ca89","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/products","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.bulk","effects":["write"],"id":"addManyDealProducts","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/products/bulk","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.bulk","body":"json","effects":["write"],"id":"addManyDealProducts.json.cf55cfadba6e","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/products/bulk","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.products","effects":["delete"],"id":"deleteDealProduct","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/products/{product_attachment_id}","scope":{"id":{"at":"id","from":"path"},"product_attachment_id":{"at":"product_attachment_id","from":"path"}}},
+    {"action":"write.products","effects":["write"],"id":"updateDealProduct","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/products/{product_attachment_id}","scope":{"id":{"at":"id","from":"path"},"product_attachment_id":{"at":"product_attachment_id","from":"path"}}},
+    {"action":"write.products","body":"json","effects":["write"],"id":"updateDealProduct.json.89c2435435ee","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/deals/{id}/products/{product_attachment_id}","scope":{"id":{"at":"id","from":"path"},"product_attachment_id":{"at":"product_attachment_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"searchItem","method":"GET","origin":"https://api.pipedrive.com","params":["term","item_types","fields","search_for_related_items","exact_match","include_fields","limit","cursor"],"path":"/api/v2/itemSearch","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"searchItemByField","method":"GET","origin":"https://api.pipedrive.com","params":["term","entity_type","match","field","limit","cursor"],"path":"/api/v2/itemSearch/field","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"searchLeads.none.35d1e5f899e4","method":"GET","origin":"https://api.pipedrive.com","params":["term","fields","exact_match","person_id","organization_id","include_fields","limit","cursor"],"path":"/api/v2/leads/search","scope":{"organization_id":{"at":"organization_id","from":"query","optional":true},"person_id":{"at":"person_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.deal","effects":["write"],"id":"convertLeadToDeal","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/leads/{id}/convert/deal","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.deal","body":"json","effects":["write"],"id":"convertLeadToDeal.json.5b484bcde79c","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/leads/{id}/convert/deal","scope":{"id":{"at":"id","from":"path"},"pipeline_id":{"at":"/pipeline_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"stage_id":{"at":"/stage_id","from":"body","optional":true,"type":"number"}}},
+    {"action":"read","effects":["read"],"id":"getLeadConversionStatus","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/leads/{id}/convert/status/{conversion_id}","scope":{"conversion_id":{"at":"conversion_id","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizationFields.none.00b6e61cd24b","method":"GET","origin":"https://api.pipedrive.com","params":["include_fields","limit","cursor"],"path":"/api/v2/organizationFields","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.organization_fields","body":"json","effects":["write"],"id":"addOrganizationField.json.d1c3cfa2e600","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/organizationFields","scope":{"field_name":{"at":"/field_name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.organization_fields","effects":["delete"],"id":"deleteOrganizationField.none.9d1635a5b153","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/organizationFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizationField.none.fa1952fb3a7b","method":"GET","origin":"https://api.pipedrive.com","params":["include_fields"],"path":"/api/v2/organizationFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.organization_fields","body":"json","effects":["write"],"id":"updateOrganizationField.json.76255f2f5063","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/organizationFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"},"field_name":{"at":"/field_name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.options","body":"json","effects":["delete"],"id":"deleteOrganizationFieldOptions","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/organizationFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"write.options","body":"json","effects":["write"],"id":"updateOrganizationFieldOptions","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/organizationFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"write.options","body":"json","effects":["write"],"id":"addOrganizationFieldOptions","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/organizationFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizations","method":"GET","origin":"https://api.pipedrive.com","params":["filter_id","ids","owner_id","updated_since","updated_until","sort_by","sort_direction","include_fields","custom_fields","include_option_labels","include_labels","limit","cursor"],"path":"/api/v2/organizations","scope":{"filter_id":{"at":"filter_id","from":"query","optional":true},"ids":{"at":"ids","from":"query","optional":true},"owner_id":{"at":"owner_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"admin.organizations","effects":["admin"],"id":"addOrganization","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/organizations","scope":{}},
+    {"action":"admin.organizations","body":"json","effects":["admin"],"id":"addOrganization.json.b1ad6135a7ec","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/organizations","scope":{"label_ids":{"at":"/label_ids","from":"body","optional":true,"type":"array"},"name":{"at":"/name","from":"body"},"owner_id":{"at":"/owner_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"searchOrganization","method":"GET","origin":"https://api.pipedrive.com","params":["term","fields","exact_match","limit","cursor"],"path":"/api/v2/organizations/search","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.organizations","effects":["delete"],"id":"deleteOrganization","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/organizations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getOrganization","method":"GET","origin":"https://api.pipedrive.com","params":["include_fields","custom_fields","include_option_labels","include_labels"],"path":"/api/v2/organizations/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"admin.organizations","effects":["admin"],"id":"updateOrganization","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/organizations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"admin.organizations","body":"json","effects":["admin"],"id":"updateOrganization.json.42a810a9642b","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/organizations/{id}","scope":{"id":{"at":"id","from":"path"},"label_ids":{"at":"/label_ids","from":"body","optional":true,"type":"array"},"name":{"at":"/name","from":"body","optional":true},"owner_id":{"at":"/owner_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizationFollowers.none.c7aaae09ddfd","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/api/v2/organizations/{id}/followers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"admin.organizations","effects":["admin"],"id":"addOrganizationFollower.none.ba296058af99","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/organizations/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"admin.organizations","body":"json","effects":["admin"],"id":"addOrganizationFollower.json.d0ebd000fa53","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/organizations/{id}/followers","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"read","effects":["read"],"id":"getOrganizationFollowersChangelog","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/api/v2/organizations/{id}/followers/changelog","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.followers","effects":["delete"],"id":"deleteOrganizationFollower.none.0519a39378d0","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/organizations/{id}/followers/{follower_id}","scope":{"follower_id":{"at":"follower_id","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getPersonFields.none.309a3d0f4c31","method":"GET","origin":"https://api.pipedrive.com","params":["include_fields","limit","cursor"],"path":"/api/v2/personFields","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.person_fields","body":"json","effects":["write"],"id":"addPersonField.json.8bf3d89c5d1e","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/personFields","scope":{"field_name":{"at":"/field_name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.person_fields","effects":["delete"],"id":"deletePersonField.none.d6a979c4a125","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/personFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getPersonField.none.7b1e6027decf","method":"GET","origin":"https://api.pipedrive.com","params":["include_fields"],"path":"/api/v2/personFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.person_fields","body":"json","effects":["write"],"id":"updatePersonField.json.16b0cfdf5202","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/personFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"},"field_name":{"at":"/field_name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.options","body":"json","effects":["delete"],"id":"deletePersonFieldOptions","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/personFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"write.options","body":"json","effects":["write"],"id":"updatePersonFieldOptions","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/personFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"write.options","body":"json","effects":["write"],"id":"addPersonFieldOptions","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/personFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"write.persons","effects":["write"],"id":"addPerson","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/persons","scope":{}},
+    {"action":"read","effects":["read"],"id":"searchPersons","method":"GET","origin":"https://api.pipedrive.com","params":["term","fields","exact_match","organization_id","include_fields","limit","cursor"],"path":"/api/v2/persons/search","scope":{"organization_id":{"at":"organization_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.persons","effects":["write"],"id":"updatePerson","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/persons/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getPersonFollowers.none.0cf8def61c5f","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/api/v2/persons/{id}/followers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.persons","effects":["write"],"id":"addPersonFollower.none.6478e1374e24","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/persons/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.persons","body":"json","effects":["write"],"id":"addPersonFollower.json.1764afa492d3","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/persons/{id}/followers","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"read","effects":["read"],"id":"getPersonFollowersChangelog","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/api/v2/persons/{id}/followers/changelog","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.followers","effects":["delete"],"id":"deletePersonFollower.none.af8cf1f02c0e","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/persons/{id}/followers/{follower_id}","scope":{"follower_id":{"at":"follower_id","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getPersonPicture","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/persons/{id}/picture","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProjectsPhases.none.b89a6f8c6bd1","method":"GET","origin":"https://api.pipedrive.com","params":["board_id"],"path":"/api/v2/phases","scope":{"board_id":{"at":"board_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.phases","body":"json","effects":["write"],"id":"addProjectPhase","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/phases","scope":{"board_id":{"at":"/board_id","from":"body","type":"number"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.phases","effects":["delete"],"id":"deleteProjectPhase","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/phases/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProjectsPhase.none.6aae0cba3839","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/phases/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.phases","effects":["write"],"id":"updateProjectPhase","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/phases/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.phases","body":"json","effects":["write"],"id":"updateProjectPhase.json.d34724856a5b","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/phases/{id}","scope":{"board_id":{"at":"/board_id","from":"body","optional":true,"type":"number"},"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getPipelines","method":"GET","origin":"https://api.pipedrive.com","params":["sort_by","sort_direction","limit","cursor"],"path":"/api/v2/pipelines","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"execute.pipelines","effects":["execute"],"id":"addPipeline","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/pipelines","scope":{}},
+    {"action":"execute.pipelines","body":"json","effects":["execute"],"id":"addPipeline.json.e4d3585ef906","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/pipelines","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.pipelines","effects":["delete"],"id":"deletePipeline","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/pipelines/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getPipeline","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/pipelines/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.pipelines","effects":["write"],"id":"updatePipeline","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/pipelines/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.pipelines","body":"json","effects":["write"],"id":"updatePipeline.json.f886bad00ee5","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/pipelines/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getProductFields.none.42da984590b2","method":"GET","origin":"https://api.pipedrive.com","params":["include_fields","limit","cursor"],"path":"/api/v2/productFields","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.product_fields","body":"json","effects":["write"],"id":"addProductField.json.0ad0f14adeba","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/productFields","scope":{"field_name":{"at":"/field_name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.product_fields","effects":["delete"],"id":"deleteProductField.none.5f7c7fe645a3","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/productFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProductField.none.d75e44a3df5b","method":"GET","origin":"https://api.pipedrive.com","params":["include_fields"],"path":"/api/v2/productFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.product_fields","body":"json","effects":["write"],"id":"updateProductField.json.7fcbd3330c8d","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/productFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"},"field_name":{"at":"/field_name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.options","body":"json","effects":["delete"],"id":"deleteProductFieldOptions","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/productFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"write.options","body":"json","effects":["write"],"id":"updateProductFieldOptions","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/productFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"write.options","body":"json","effects":["write"],"id":"addProductFieldOptions","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/productFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"read","effects":["read"],"id":"getProducts","method":"GET","origin":"https://api.pipedrive.com","params":["owner_id","ids","custom_fields","filter_id","cursor","limit","sort_by","sort_direction","updated_since"],"path":"/api/v2/products","scope":{"filter_id":{"at":"filter_id","from":"query","optional":true},"ids":{"at":"ids","from":"query","optional":true},"owner_id":{"at":"owner_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.products","effects":["write"],"id":"addProduct","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/products","scope":{}},
+    {"action":"write.products","body":"json","effects":["write"],"id":"addProduct.json.ef5174a354fb","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/products","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"searchProducts","method":"GET","origin":"https://api.pipedrive.com","params":["term","fields","exact_match","include_fields","limit","cursor"],"path":"/api/v2/products/search","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.products","effects":["delete"],"id":"deleteProduct","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProduct","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.products","effects":["write"],"id":"updateProduct","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.products","body":"json","effects":["write"],"id":"updateProduct.json.efd0d0d4b415","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"write.products","effects":["write"],"id":"duplicateProduct","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}/duplicate","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProductFollowers.none.dc15aaf955db","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/api/v2/products/{id}/followers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.products","effects":["write"],"id":"addProductFollower.none.9aa0d8d754c1","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}/followers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.products","body":"json","effects":["write"],"id":"addProductFollower.json.153a1e37f93e","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}/followers","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"read","effects":["read"],"id":"getProductFollowersChangelog","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/api/v2/products/{id}/followers/changelog","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.followers","effects":["delete"],"id":"deleteProductFollower.none.4040ccd34b3e","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}/followers/{follower_id}","scope":{"follower_id":{"at":"follower_id","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"delete.images","effects":["delete"],"id":"deleteProductImage","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}/images","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProductImage","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}/images","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"generate.images","effects":["generate"],"id":"uploadProductImage","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}/images","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.images","effects":["write"],"id":"updateProductImage","method":"PUT","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}/images","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProductVariations","method":"GET","origin":"https://api.pipedrive.com","params":["cursor","limit"],"path":"/api/v2/products/{id}/variations","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.variations","effects":["write"],"id":"addProductVariation","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}/variations","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.variations","body":"json","effects":["write"],"id":"addProductVariation.json.3ba73fee7b96","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}/variations","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.variations","effects":["delete"],"id":"deleteProductVariation","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}/variations/{product_variation_id}","scope":{"id":{"at":"id","from":"path"},"product_variation_id":{"at":"product_variation_id","from":"path"}}},
+    {"action":"write.variations","effects":["write"],"id":"updateProductVariation","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}/variations/{product_variation_id}","scope":{"id":{"at":"id","from":"path"},"product_variation_id":{"at":"product_variation_id","from":"path"}}},
+    {"action":"write.variations","body":"json","effects":["write"],"id":"updateProductVariation.json.788583a4b735","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/products/{id}/variations/{product_variation_id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"product_variation_id":{"at":"product_variation_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getProjectFields","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/api/v2/projectFields","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.project_fields","body":"json","effects":["write"],"id":"addProjectField","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/projectFields","scope":{"field_name":{"at":"/field_name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.project_fields","effects":["delete"],"id":"deleteProjectField","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/projectFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProjectField","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/projectFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"}}},
+    {"action":"write.project_fields","body":"json","effects":["write"],"id":"updateProjectField","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/projectFields/{field_code}","scope":{"field_code":{"at":"field_code","from":"path"},"field_name":{"at":"/field_name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.options","body":"json","effects":["delete"],"id":"deleteProjectFieldOptions","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/projectFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"write.options","body":"json","effects":["write"],"id":"updateProjectFieldOptions","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/projectFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"write.options","body":"json","effects":["write"],"id":"addProjectFieldOptions","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/projectFields/{field_code}/options","scope":{"field_code":{"at":"field_code","from":"path"},"request":{"at":"","from":"body","type":"array"}}},
+    {"action":"read","effects":["read"],"id":"getProjectTemplates.none.e4a4c78df50e","method":"GET","origin":"https://api.pipedrive.com","params":["cursor","limit"],"path":"/api/v2/projectTemplates","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getProjectTemplate.none.1f7327a79b6f","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/projectTemplates/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProjects.none.b0daf4020cba","method":"GET","origin":"https://api.pipedrive.com","params":["filter_id","status","phase_id","deal_id","person_id","org_id","limit","cursor"],"path":"/api/v2/projects","scope":{"deal_id":{"at":"deal_id","from":"query","optional":true},"filter_id":{"at":"filter_id","from":"query","optional":true},"org_id":{"at":"org_id","from":"query","optional":true},"person_id":{"at":"person_id","from":"query","optional":true},"phase_id":{"at":"phase_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.projects","body":"json","effects":["write"],"id":"addProject.json.af196b4956d7","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/projects","scope":{"board_id":{"at":"/board_id","from":"body","optional":true,"type":"number"},"deal_ids":{"at":"/deal_ids","from":"body","optional":true,"type":"array"},"label_ids":{"at":"/label_ids","from":"body","optional":true,"type":"array"},"org_ids":{"at":"/org_ids","from":"body","optional":true,"type":"array"},"owner_id":{"at":"/owner_id","from":"body","optional":true,"type":"number"},"person_ids":{"at":"/person_ids","from":"body","optional":true,"type":"array"},"phase_id":{"at":"/phase_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"/template_id","from":"body","optional":true,"type":"number"}}},
+    {"action":"read","effects":["read"],"id":"getArchivedProjects","method":"GET","origin":"https://api.pipedrive.com","params":["filter_id","status","phase_id","limit","cursor"],"path":"/api/v2/projects/archived","scope":{"filter_id":{"at":"filter_id","from":"query","optional":true},"phase_id":{"at":"phase_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"searchProjects","method":"GET","origin":"https://api.pipedrive.com","params":["term","fields","exact_match","person_id","organization_id","limit","cursor"],"path":"/api/v2/projects/search","scope":{"organization_id":{"at":"organization_id","from":"query","optional":true},"person_id":{"at":"person_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete.projects","effects":["delete"],"id":"deleteProject.none.0638836014c8","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/projects/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProject.none.ca62134a392b","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/projects/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.projects","effects":["write"],"id":"updateProject.none.fe2e3639684b","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/projects/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.projects","body":"json","effects":["write"],"id":"updateProject.json.a3c1c0b2c79e","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/projects/{id}","scope":{"board_id":{"at":"/board_id","from":"body","optional":true,"type":"number"},"deal_ids":{"at":"/deal_ids","from":"body","optional":true,"type":"array"},"id":{"at":"id","from":"path"},"label_ids":{"at":"/label_ids","from":"body","optional":true,"type":"array"},"org_ids":{"at":"/org_ids","from":"body","optional":true,"type":"array"},"owner_id":{"at":"/owner_id","from":"body","optional":true,"type":"number"},"person_ids":{"at":"/person_ids","from":"body","optional":true,"type":"array"},"phase_id":{"at":"/phase_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"/template_id","from":"body","optional":true,"type":"number"}}},
+    {"action":"write.projects","effects":["write"],"id":"archiveProject.none.a4606cb4b464","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/projects/{id}/archive","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getProjectChangelog","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/api/v2/projects/{id}/changelog","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getProjectUsers","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/projects/{id}/permittedUsers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getStages","method":"GET","origin":"https://api.pipedrive.com","params":["pipeline_id","sort_by","sort_direction","limit","cursor"],"path":"/api/v2/stages","scope":{"pipeline_id":{"at":"pipeline_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.stages","effects":["write"],"id":"addStage","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/stages","scope":{}},
+    {"action":"write.stages","body":"json","effects":["write"],"id":"addStage.json.31f4fa063867","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/stages","scope":{"name":{"at":"/name","from":"body"},"pipeline_id":{"at":"/pipeline_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.stages","effects":["delete"],"id":"deleteStage","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/stages/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getStage","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/stages/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.stages","effects":["write"],"id":"updateStage","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/stages/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.stages","body":"json","effects":["write"],"id":"updateStage.json.0b32d30a8885","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/stages/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"pipeline_id":{"at":"/pipeline_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getTasks.none.0e641d973b97","method":"GET","origin":"https://api.pipedrive.com","params":["cursor","limit","is_done","is_milestone","assignee_id","project_id","parent_task_id"],"path":"/api/v2/tasks","scope":{"assignee_id":{"at":"assignee_id","from":"query","optional":true},"parent_task_id":{"at":"parent_task_id","from":"query","optional":true},"project_id":{"at":"project_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"write.tasks","body":"json","effects":["write"],"id":"addTask.json.0aba47edfe13","method":"POST","origin":"https://api.pipedrive.com","path":"/api/v2/tasks","scope":{"assignee_id":{"at":"/assignee_id","from":"body","optional":true,"type":"number"},"assignee_ids":{"at":"/assignee_ids","from":"body","optional":true,"type":"array"},"parent_task_id":{"at":"/parent_task_id","from":"body","optional":true,"type":"number"},"project_id":{"at":"/project_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"delete.tasks","effects":["delete"],"id":"deleteTask.none.d416cc7c5daa","method":"DELETE","origin":"https://api.pipedrive.com","path":"/api/v2/tasks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"getTask.none.41cdc111b3b5","method":"GET","origin":"https://api.pipedrive.com","path":"/api/v2/tasks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.tasks","effects":["write"],"id":"updateTask.none.606d313ca003","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/tasks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"write.tasks","body":"json","effects":["write"],"id":"updateTask.json.764d9e80e9d5","method":"PATCH","origin":"https://api.pipedrive.com","path":"/api/v2/tasks/{id}","scope":{"assignee_id":{"at":"/assignee_id","from":"body","optional":true,"type":"number"},"assignee_ids":{"at":"/assignee_ids","from":"body","optional":true,"type":"array"},"id":{"at":"id","from":"path"},"parent_task_id":{"at":"/parent_task_id","from":"body","optional":true,"type":"number"},"project_id":{"at":"/project_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"getUserFollowers.none.7535aca1bb68","method":"GET","origin":"https://api.pipedrive.com","params":["limit","cursor"],"path":"/api/v2/users/{id}/followers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}}
   ]
 }

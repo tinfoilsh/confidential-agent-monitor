@@ -27,14 +27,21 @@ type specOp struct {
 	ID, Summary, Method, Origin, Path string
 	Tags                              []string
 	Params                            []string
-	Query                             map[string]string // literal query conditions
-	Required                          []param           // required query or body members that may name a resource
+	Query                             map[string]any // literal query conditions; nil requires absence
+	Required                          []param        // resource selectors; Optional distinguishes required members
 	Body                              string
 	Headers, Fields                   map[string]string
 	GraphQL                           []string
+	BodyType                          string
+	SourceID, SourceURL, SourceHash   string
+	Unsupported                       string
+	Effects                           []string
 }
 
-type param struct{ Name, From, Type string }
+type param struct {
+	Name, From, Type string
+	Optional         bool
+}
 
 // A specAuth is where a spec says its credential goes.
 // User puts the secret in the Basic username, as BambooHR does.
@@ -48,8 +55,9 @@ type specAuth struct {
 }
 
 type parsed struct {
-	Ops  []specOp
-	Auth *specAuth
+	Ops      []specOp
+	Auth     *specAuth
+	Warnings []string
 }
 
 // Google's global parameters that carry credentials; every other documented parameter is allowed.
@@ -58,7 +66,7 @@ var credentialParams = []string{"key", "access_token", "oauth_token"}
 var (
 	multiParam  = regexp.MustCompile(`\{[^}]*\}[^/{]*\{`)
 	pathParam   = regexp.MustCompile(`\{([^}]+)\}`)
-	resourceKey = regexp.MustCompile(`(?i)(^|_)(id|ids|key|name|slug|arn|url|owner|repo|channel|user|email|board|project|team|org|folder|file|sheet|calendar|database|table|bucket|list|space|workspace|site|drive|page|account|chat|thread|queue|topic)$|[a-z](Id|Ids|Key|Name|Arn|Url)$`)
+	resourceKey = regexp.MustCompile(`(?i)(^|_)(id|ids|keys?|names?|slug|arn|url|owners?|repos?|channels?|users?|emails?|boards?|projects?|teams?|orgs?|folders?|files?|sheets?|calendars?|databases?|tables?|buckets?|lists?|spaces?|workspaces?|sites?|drives?|pages?|accounts?|chats?|threads?|queues?|topics?|groups?|records?|recipients?)$|[a-z](Id|Ids|Key|Name|Arn|Url)$`)
 )
 
 // patternPath turns a spec path into the preset syntax: one {name} per segment, a greedy last segment as {name*}.
@@ -82,14 +90,30 @@ func patternPath(p string) string {
 }
 
 func splitServer(raw string) (origin, base string) {
+	// A templated hostname still has a concrete API base path.
+	if _, rest, ok := strings.Cut(raw, "://"); ok {
+		host, path, _ := strings.Cut(rest, "/")
+		if strings.Contains(host, "{") {
+			return "{origin}", strings.TrimSuffix("/"+path, "/")
+		}
+	}
 	u, err := url.Parse(raw)
-	if err != nil || u.Host == "" || strings.Contains(u.Host, "{") {
+	if err != nil {
 		return "{origin}", ""
+	}
+	if u.Host == "" || u.Scheme != "https" {
+		return "{origin}", strings.TrimSuffix(u.Path, "/")
 	}
 	return "https://" + strings.ToLower(u.Host), strings.TrimSuffix(u.Path, "/")
 }
 
 func parseOpenAPI(src []byte, swagger bool, location string) (parsed, error) {
+	// Response schemas are not part of request recognition. Some vendor specs
+	// contain invalid response-only schemas; do not let those hide valid routes.
+	var err error
+	if src, err = requestDocument(src, swagger); err != nil {
+		return parsed{}, err
+	}
 	var doc *openapi3.T
 	loader := openapi3.NewLoader()
 	if swagger {
@@ -109,7 +133,9 @@ func parseOpenAPI(src []byte, swagger bool, location string) (parsed, error) {
 		if err != nil {
 			return parsed{}, err
 		}
-		loader.IsExternalRefsAllowed = true
+		// Source bytes are locked. External request refs must be bundled before
+		// import so generation cannot silently depend on mutable network content.
+		loader.IsExternalRefsAllowed = false
 		if doc, err = loader.LoadFromDataWithPath(src, base); err != nil {
 			return parsed{}, err
 		}
@@ -119,6 +145,13 @@ func parseOpenAPI(src []byte, swagger bool, location string) (parsed, error) {
 		origin, base = splitServer(doc.Servers[0].URL)
 	}
 	var out parsed
+	var diagnostics struct {
+		Refs []string `json:"x-monitor-unresolved-refs"`
+	}
+	_ = json.Unmarshal(src, &diagnostics)
+	for _, ref := range diagnostics.Refs {
+		out.Warnings = append(out.Warnings, "unresolved request schema: "+ref)
+	}
 	if doc.Components == nil {
 		doc.Components = &openapi3.Components{}
 	}
@@ -147,32 +180,71 @@ func parseOpenAPI(src []byte, swagger bool, location string) (parsed, error) {
 		}
 	}) {
 		item := doc.Paths.Value(p)
-		for method, op := range item.Operations() {
-			o := specOp{ID: op.OperationID, Summary: op.Summary + " " + op.Description, Method: method, Origin: origin, Path: patternPath(base + p), Tags: op.Tags, Body: "none"}
+		for _, method := range sortedKeys(item.Operations()) {
+			op := item.Operations()[method]
+			route, query, err := requestPath(p)
+			if err != nil {
+				return parsed{}, err
+			}
+			o := specOp{ID: op.OperationID, SourceID: op.OperationID, Summary: op.Summary + " " + op.Description, Method: method, Origin: origin, Path: patternPath(base + route), Query: query, Tags: op.Tags, Body: "none"}
+			if o.SourceID == "" {
+				o.SourceID = method + " " + p
+			}
+			if len(item.Servers) > 0 {
+				var itemBase string
+				o.Origin, itemBase = splitServer(item.Servers[0].URL)
+				o.Path = patternPath(itemBase + route)
+			}
 			if op.Servers != nil && len(*op.Servers) > 0 {
 				var opBase string
 				o.Origin, opBase = splitServer((*op.Servers)[0].URL)
-				o.Path = patternPath(opBase + p)
+				o.Path = patternPath(opBase + route)
 			}
 			for _, ref := range append(slices.Clone(item.Parameters), op.Parameters...) {
 				if q := ref.Value; q != nil && q.In == "query" && !slices.Contains(o.Params, q.Name) {
 					o.Params = append(o.Params, q.Name)
-					if q.Required && resourceKey.MatchString(q.Name) {
-						o.Required = append(o.Required, param{q.Name, "query", "string"})
+					if resourceKey.MatchString(q.Name) {
+						o.Required = append(o.Required, param{q.Name, "query", "string", !q.Required})
 					}
 				}
 			}
 			if rb := op.RequestBody; rb != nil && rb.Value != nil {
-				o.Body = "any"
-				json, form := rb.Value.Content.Get("application/json"), rb.Value.Content.Get("application/x-www-form-urlencoded")
-				switch {
-				case len(rb.Value.Content) == 1 && json != nil && rb.Value.Required:
-					o.Body = "json"
-					o.Required = append(o.Required, members(json.Schema, "body")...)
-				case len(rb.Value.Content) == 1 && form != nil && rb.Value.Required:
-					o.Body = "form"
-					o.Required = append(o.Required, members(form.Schema, "form")...)
+				if len(rb.Value.Content) == 0 {
+					o.Unsupported = "request body has no documented encoding"
+					out.Ops = append(out.Ops, o)
+					continue
 				}
+				if !rb.Value.Required {
+					out.Ops = append(out.Ops, o)
+				}
+				for _, media := range sortedKeys(rb.Value.Content) {
+					variant := o
+					variant.Required = slices.Clone(o.Required)
+					variant.Body = "opaque"
+					content := rb.Value.Content[media]
+					switch {
+					case media == "application/json" || strings.HasSuffix(media, "+json"):
+						variant.Body, variant.BodyType = "json", "object"
+						if content.Schema != nil && content.Schema.Value != nil {
+							for _, typ := range []string{"array", "string", "boolean", "number", "integer", "null"} {
+								if content.Schema.Value.Type.Is(typ) {
+									variant.BodyType = typ
+									if typ == "integer" {
+										variant.BodyType = "number"
+									}
+								}
+							}
+						}
+						variant.Required = append(variant.Required, members(content.Schema, "body")...)
+					case media == "application/x-www-form-urlencoded":
+						variant.Body = "form"
+						variant.Required = append(variant.Required, members(content.Schema, "form")...)
+					default:
+						variant.Unsupported = "body encoding requires inspection: " + media
+					}
+					out.Ops = append(out.Ops, variant)
+				}
+				continue
 			}
 			out.Ops = append(out.Ops, o)
 		}
@@ -180,22 +252,27 @@ func parseOpenAPI(src []byte, swagger bool, location string) (parsed, error) {
 	return out, nil
 }
 
-// members lists a body schema's required scalar members that may name a resource.
+// members lists scalar and array resource selectors, preserving optionality.
 func members(ref *openapi3.SchemaRef, from string) []param {
 	if ref == nil || ref.Value == nil {
 		return nil
 	}
 	var out []param
-	for _, name := range ref.Value.Required {
+	for _, name := range sortedKeys(ref.Value.Properties) {
 		p := ref.Value.Properties[name]
 		if p == nil || p.Value == nil || !resourceKey.MatchString(name) {
 			continue
 		}
+		optional := !slices.Contains(ref.Value.Required, name)
 		switch t := p.Value.Type; {
+		case from == "form":
+			out = append(out, param{name, from, "string", optional})
 		case t.Is("string"):
-			out = append(out, param{name, from, "string"})
+			out = append(out, param{name, from, "string", optional})
 		case t.Is("integer"), t.Is("number"):
-			out = append(out, param{name, from, "number"})
+			out = append(out, param{name, from, "number", optional})
+		case t.Is("array"):
+			out = append(out, param{name, from, "array", optional})
 		}
 	}
 	return out
@@ -288,7 +365,11 @@ func parseGraphQL(src []byte, origin, path string) (parsed, error) {
 		return parsed{}, err
 	}
 	var out parsed
-	for kind, root := range map[string]*ast.Definition{"query": schema.Query, "mutation": schema.Mutation} {
+	for _, kind := range []string{"query", "mutation"} {
+		root := schema.Query
+		if kind == "mutation" {
+			root = schema.Mutation
+		}
 		if root == nil {
 			continue
 		}
@@ -299,7 +380,22 @@ func parseGraphQL(src []byte, origin, path string) (parsed, error) {
 			o := specOp{ID: f.Name, Summary: f.Description, Method: "POST", Origin: origin, Path: path, Body: "graphql", GraphQL: []string{kind, f.Name}, Tags: []string{kind}}
 			for _, a := range f.Arguments {
 				if a.Type.NonNull && resourceKey.MatchString(a.Name) {
-					o.Required = append(o.Required, param{a.Name, "argument", "string"})
+					typ := "string"
+					if a.Type.Elem != nil {
+						typ = "array"
+					} else {
+						switch a.Type.NamedType {
+						case "Int", "Float":
+							typ = "number"
+						case "Boolean":
+							typ = "boolean"
+						default:
+							if def := schema.Types[a.Type.NamedType]; def != nil && def.Kind == ast.InputObject {
+								typ = "object"
+							}
+						}
+					}
+					o.Required = append(o.Required, param{a.Name, "argument", typ, false})
 				}
 			}
 			out.Ops = append(out.Ops, o)
@@ -358,7 +454,7 @@ func parseBotocore(src []byte) (parsed, error) {
 			o.Fields = map[string]string{"Action": name}
 			for _, r := range shape.Required {
 				if resourceKey.MatchString(r) && m.Shapes[shape.Members[r].Shape].Type == "string" {
-					o.Required = append(o.Required, param{r, "form", "string"})
+					o.Required = append(o.Required, param{r, "form", "string", false})
 				}
 			}
 		case "rest-json", "rest-xml":
@@ -368,7 +464,7 @@ func parseBotocore(src []byte) (parsed, error) {
 				o.Body = "none"
 			}
 			if query != "" {
-				o.Query = map[string]string{}
+				o.Query = map[string]any{}
 				for _, kv := range strings.Split(query, "&") {
 					k, v, _ := strings.Cut(kv, "=")
 					o.Query[k] = v

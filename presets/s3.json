@@ -3,27 +3,175 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "origin", "label": "Service endpoint, no bucket (https://your-endpoint.example.com)",
-       "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
-      {"key": "bucket_path", "label": "Bucket path prefix this credential may sign (e.g. /mybucket)", "path": ["connections", "", "http", "slots", 0, "path"]},
-      {"key": "region", "label": "Region (as required by your provider; use \"auto\" if none applies)", "path": ["connections", "", "http", "slots", 0, "sigv4", "region"]},
-      {"key": "access_key", "label": "Access key ID", "secret": true, "path": ["connections", "", "http", "values", "access_key"]},
-      {"key": "secret_key", "label": "Secret access key", "secret": true, "path": ["connections", "", "http", "values", "secret_key"]}
+      {
+        "key": "origin",
+        "label": "Service endpoint, no bucket (https://your-endpoint.example.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "connections",
+            "",
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "key": "bucket_path",
+        "label": "Bucket path prefix this credential may sign (e.g. /mybucket)",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "slots",
+          0,
+          "path"
+        ]
+      },
+      {
+        "key": "region",
+        "label": "Region (as required by your provider; use \"auto\" if none applies)",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "slots",
+          0,
+          "sigv4",
+          "region"
+        ]
+      },
+      {
+        "key": "access_key",
+        "label": "Access key ID",
+        "secret": true,
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "access_key"
+        ]
+      },
+      {
+        "key": "secret_key",
+        "label": "Secret access key",
+        "secret": true,
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "secret_key"
+        ]
+      }
     ],
-    "connections": {"": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/example-bucket", "sigv4": {"service": "s3", "region": "auto", "secret": "secret_key"}}]}}},
-    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "value": "access_key",
+              "origin": "https://example.com",
+              "path": "/example-bucket",
+              "sigv4": {
+                "service": "s3",
+                "region": "auto",
+                "secret": "secret_key"
+              }
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "team",
+      "strangers": true,
+      "sends": "anyone"
+    },
     "actions": {
-      "read": {"title": "List and read objects"},
-      "pay.requester": {"title": "Read objects from requester-pays buckets (billed to this account)"},
-      "write": {"title": "Write objects"},
-      "delete": {"title": "Delete objects"}
+      "read": {
+        "title": "List and read objects"
+      },
+      "pay.requester": {
+        "title": "Read objects from requester-pays buckets (billed to this account)"
+      },
+      "write": {
+        "title": "Write objects"
+      },
+      "delete": {
+        "title": "Delete objects"
+      }
     }
   },
   "operations": [
-    {"id": "bucket.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/{bucket}", "query": {"list-type": "2"}, "params": ["prefix", "delimiter", "max-keys", "continuation-token"], "headers": {"X-Amz-Request-Payer": null}, "scope": {"bucket": {"from": "path", "at": "bucket"}}},
-    {"id": "object.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/{bucket}/{key*}", "headers": {"X-Amz-Request-Payer": null}, "scope": {"bucket": {"from": "path", "at": "bucket"}, "key": {"from": "path", "at": "key"}}},
-    {"id": "object.get.requester_pays", "action": "pay.requester", "effects": ["read", "pay"], "method": "GET", "origin": "{origin}", "path": "/{bucket}/{key*}", "headers": {"X-Amz-Request-Payer": "requester"}, "scope": {"bucket": {"from": "path", "at": "bucket"}, "key": {"from": "path", "at": "key"}}},
-    {"id": "object.put", "action": "write", "effects": ["write"], "method": "PUT", "origin": "{origin}", "path": "/{bucket}/{key*}", "headers": {"X-Amz-Copy-Source": null, "X-Amz-Acl": null, "X-Amz-Grant-Read": null, "X-Amz-Grant-Write": null, "X-Amz-Grant-Read-Acp": null, "X-Amz-Grant-Write-Acp": null, "X-Amz-Grant-Full-Control": null, "X-Amz-Tagging": null, "X-Amz-Object-Lock-Mode": null, "X-Amz-Object-Lock-Retain-Until-Date": null, "X-Amz-Object-Lock-Legal-Hold": null, "X-Amz-Website-Redirect-Location": null, "X-Amz-Request-Payer": null}, "body": "any", "scope": {"bucket": {"from": "path", "at": "bucket"}, "key": {"from": "path", "at": "key"}}},
-    {"id": "object.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/{bucket}/{key*}", "headers": {"X-Amz-Request-Payer": null, "X-Amz-Bypass-Governance-Retention": null}, "scope": {"bucket": {"from": "path", "at": "bucket"}, "key": {"from": "path", "at": "key"}}}
+    {"action":"read","effects":["read"],"headers":{"X-Amz-Request-Payer":null},"id":"bucket.list","method":"GET","origin":"{origin}","params":["prefix","delimiter","max-keys","continuation-token"],"path":"/{bucket}","query":{"list-type":"2"},"scope":{"bucket":{"at":"bucket","from":"path"}}},
+    {"action":"read","effects":["read"],"headers":{"X-Amz-Request-Payer":null},"id":"object.get","method":"GET","origin":"{origin}","path":"/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+    {"action":"pay.requester","effects":["read","pay"],"headers":{"X-Amz-Request-Payer":"requester"},"id":"object.get.requester_pays","method":"GET","origin":"{origin}","path":"/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+    {"action":"write","body":"any","effects":["write"],"headers":{"X-Amz-Acl":null,"X-Amz-Copy-Source":null,"X-Amz-Grant-Full-Control":null,"X-Amz-Grant-Read":null,"X-Amz-Grant-Read-Acp":null,"X-Amz-Grant-Write":null,"X-Amz-Grant-Write-Acp":null,"X-Amz-Object-Lock-Legal-Hold":null,"X-Amz-Object-Lock-Mode":null,"X-Amz-Object-Lock-Retain-Until-Date":null,"X-Amz-Request-Payer":null,"X-Amz-Tagging":null,"X-Amz-Website-Redirect-Location":null},"id":"object.put","method":"PUT","origin":"{origin}","path":"/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+    {"action":"delete","effects":["delete"],"headers":{"X-Amz-Bypass-Governance-Retention":null,"X-Amz-Request-Payer":null},"id":"object.delete","method":"DELETE","origin":"{origin}","path":"/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"ListBuckets","method":"GET","origin":"{origin}","path":"/","scope":{}},
+    {"action":"delete","effects":["delete"],"id":"DeleteBucket","method":"DELETE","origin":"{origin}","path":"/{Bucket}","scope":{"Bucket":{"at":"Bucket","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"HeadBucket","method":"HEAD","origin":"{origin}","path":"/{Bucket}","scope":{"Bucket":{"at":"Bucket","from":"path"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketAccelerateConfiguration","method":"GET","origin":"{origin}","params":["accelerate"],"path":"/{Bucket}#accelerate","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketAcl","method":"GET","origin":"{origin}","params":["acl"],"path":"/{Bucket}#acl","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"ListBucketAnalyticsConfigurations","method":"GET","origin":"{origin}","params":["continuation-token","analytics"],"path":"/{Bucket}#analytics","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"DeleteBucketAnalyticsConfiguration","method":"DELETE","origin":"{origin}","params":["id","analytics"],"path":"/{Bucket}#analytics&id","scope":{"Bucket":{"at":"Bucket","from":"path"},"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketAnalyticsConfiguration","method":"GET","origin":"{origin}","params":["id","analytics"],"path":"/{Bucket}#analytics&id","scope":{"Bucket":{"at":"Bucket","from":"path"},"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"DeleteBucketCors","method":"DELETE","origin":"{origin}","params":["cors"],"path":"/{Bucket}#cors","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketCors","method":"GET","origin":"{origin}","params":["cors"],"path":"/{Bucket}#cors","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"DeleteBucketEncryption","method":"DELETE","origin":"{origin}","params":["encryption"],"path":"/{Bucket}#encryption","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketEncryption","method":"GET","origin":"{origin}","params":["encryption"],"path":"/{Bucket}#encryption","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"ListBucketIntelligentTieringConfigurations","method":"GET","origin":"{origin}","params":["continuation-token","intelligent-tiering"],"path":"/{Bucket}#intelligent-tiering","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"DeleteBucketIntelligentTieringConfiguration","method":"DELETE","origin":"{origin}","params":["id","intelligent-tiering"],"path":"/{Bucket}#intelligent-tiering&id","scope":{"Bucket":{"at":"Bucket","from":"path"},"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketIntelligentTieringConfiguration","method":"GET","origin":"{origin}","params":["id","intelligent-tiering"],"path":"/{Bucket}#intelligent-tiering&id","scope":{"Bucket":{"at":"Bucket","from":"path"},"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"ListBucketInventoryConfigurations","method":"GET","origin":"{origin}","params":["continuation-token","inventory"],"path":"/{Bucket}#inventory","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"DeleteBucketInventoryConfiguration","method":"DELETE","origin":"{origin}","params":["id","inventory"],"path":"/{Bucket}#inventory&id","scope":{"Bucket":{"at":"Bucket","from":"path"},"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketInventoryConfiguration","method":"GET","origin":"{origin}","params":["id","inventory"],"path":"/{Bucket}#inventory&id","scope":{"Bucket":{"at":"Bucket","from":"path"},"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"DeleteBucketLifecycle","method":"DELETE","origin":"{origin}","params":["lifecycle"],"path":"/{Bucket}#lifecycle","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketLifecycleConfiguration","method":"GET","origin":"{origin}","params":["lifecycle"],"path":"/{Bucket}#lifecycle","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketLifecycle","method":"GET","origin":"{origin}","params":["lifecycle"],"path":"/{Bucket}#lifecycle&deprecated!","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"ListObjectsV2","method":"GET","origin":"{origin}","params":["delimiter","encoding-type","max-keys","prefix","continuation-token","fetch-owner","start-after","MaxKeys","ContinuationToken","list-type"],"path":"/{Bucket}#list-type=2","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketLocation","method":"GET","origin":"{origin}","params":["location"],"path":"/{Bucket}#location","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketLogging","method":"GET","origin":"{origin}","params":["logging"],"path":"/{Bucket}#logging","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"ListBucketMetricsConfigurations","method":"GET","origin":"{origin}","params":["continuation-token","metrics"],"path":"/{Bucket}#metrics","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"DeleteBucketMetricsConfiguration","method":"DELETE","origin":"{origin}","params":["id","metrics"],"path":"/{Bucket}#metrics&id","scope":{"Bucket":{"at":"Bucket","from":"path"},"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketMetricsConfiguration","method":"GET","origin":"{origin}","params":["id","metrics"],"path":"/{Bucket}#metrics&id","scope":{"Bucket":{"at":"Bucket","from":"path"},"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketNotificationConfiguration","method":"GET","origin":"{origin}","params":["notification"],"path":"/{Bucket}#notification","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketNotification","method":"GET","origin":"{origin}","params":["notification"],"path":"/{Bucket}#notification&deprecated!","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetObjectLockConfiguration","method":"GET","origin":"{origin}","params":["object-lock"],"path":"/{Bucket}#object-lock","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"DeleteBucketOwnershipControls","method":"DELETE","origin":"{origin}","params":["ownershipControls"],"path":"/{Bucket}#ownershipControls","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketOwnershipControls","method":"GET","origin":"{origin}","params":["ownershipControls"],"path":"/{Bucket}#ownershipControls","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"DeleteBucketPolicy","method":"DELETE","origin":"{origin}","params":["policy"],"path":"/{Bucket}#policy","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketPolicy","method":"GET","origin":"{origin}","params":["policy"],"path":"/{Bucket}#policy","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketPolicyStatus","method":"GET","origin":"{origin}","params":["policyStatus"],"path":"/{Bucket}#policyStatus","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"DeletePublicAccessBlock","method":"DELETE","origin":"{origin}","params":["publicAccessBlock"],"path":"/{Bucket}#publicAccessBlock","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetPublicAccessBlock","method":"GET","origin":"{origin}","params":["publicAccessBlock"],"path":"/{Bucket}#publicAccessBlock","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"DeleteBucketReplication","method":"DELETE","origin":"{origin}","params":["replication"],"path":"/{Bucket}#replication","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketReplication","method":"GET","origin":"{origin}","params":["replication"],"path":"/{Bucket}#replication","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketRequestPayment","method":"GET","origin":"{origin}","params":["requestPayment"],"path":"/{Bucket}#requestPayment","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"DeleteBucketTagging","method":"DELETE","origin":"{origin}","params":["tagging"],"path":"/{Bucket}#tagging","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketTagging","method":"GET","origin":"{origin}","params":["tagging"],"path":"/{Bucket}#tagging","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"ListMultipartUploads","method":"GET","origin":"{origin}","params":["delimiter","encoding-type","key-marker","max-uploads","prefix","upload-id-marker","MaxUploads","KeyMarker","UploadIdMarker","uploads"],"path":"/{Bucket}#uploads","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketVersioning","method":"GET","origin":"{origin}","params":["versioning"],"path":"/{Bucket}#versioning","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"ListObjectVersions","method":"GET","origin":"{origin}","params":["delimiter","encoding-type","key-marker","max-keys","prefix","version-id-marker","MaxKeys","KeyMarker","VersionIdMarker","versions"],"path":"/{Bucket}#versions","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"DeleteBucketWebsite","method":"DELETE","origin":"{origin}","params":["website"],"path":"/{Bucket}#website","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"GetBucketWebsite","method":"GET","origin":"{origin}","params":["website"],"path":"/{Bucket}#website","scope":{"Bucket":{"at":"Bucket","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"read","effects":["read"],"id":"HeadObject","method":"HEAD","origin":"{origin}","params":["versionId","partNumber"],"path":"/{Bucket}/{Key}","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"},"versionId":{"at":"versionId","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"GetObjectAcl","method":"GET","origin":"{origin}","params":["versionId","acl"],"path":"/{Bucket}/{Key}#acl","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"},"versionId":{"at":"versionId","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"GetObjectAttributes","method":"GET","origin":"{origin}","params":["versionId","attributes"],"path":"/{Bucket}/{Key}#attributes&x-amz-object-attributes","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"},"versionId":{"at":"versionId","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"GetObjectLegalHold","method":"GET","origin":"{origin}","params":["versionId","legal-hold"],"path":"/{Bucket}/{Key}#legal-hold","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"},"versionId":{"at":"versionId","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"GetObjectRetention","method":"GET","origin":"{origin}","params":["versionId","retention"],"path":"/{Bucket}/{Key}#retention","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"},"versionId":{"at":"versionId","from":"query","optional":true}}},
+    {"action":"delete","effects":["delete"],"id":"DeleteObjectTagging","method":"DELETE","origin":"{origin}","params":["versionId","tagging"],"path":"/{Bucket}/{Key}#tagging","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"},"versionId":{"at":"versionId","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"GetObjectTagging","method":"GET","origin":"{origin}","params":["versionId","tagging"],"path":"/{Bucket}/{Key}#tagging","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"},"versionId":{"at":"versionId","from":"query","optional":true}}},
+    {"action":"read","effects":["read"],"id":"GetObjectTorrent","method":"GET","origin":"{origin}","params":["torrent"],"path":"/{Bucket}/{Key}#torrent","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"delete","effects":["delete"],"id":"AbortMultipartUpload","method":"DELETE","origin":"{origin}","params":["uploadId"],"path":"/{Bucket}/{Key}#uploadId","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"},"uploadId":{"at":"uploadId","from":"query"}}},
+    {"action":"read","effects":["read"],"id":"ListParts","method":"GET","origin":"{origin}","params":["max-parts","part-number-marker","uploadId","MaxParts","PartNumberMarker"],"path":"/{Bucket}/{Key}#uploadId","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"},"uploadId":{"at":"uploadId","from":"query"}}},
+    {"action":"write","effects":["write"],"id":"UploadPartCopy","method":"PUT","origin":"{origin}","params":["partNumber","uploadId"],"path":"/{Bucket}/{Key}#x-amz-copy-source&partNumber&uploadId","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"},"uploadId":{"at":"uploadId","from":"query"}}}
   ]
 }

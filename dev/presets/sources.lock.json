@@ -23,6 +23,15 @@
       "bytes": 1273231
     }
   ],
+  "airtable": [
+    {
+      "source": "https://airtable.com/developers/web/api/introduction",
+      "url": "https://airtable.com/developers/web/api/introduction",
+      "sha256": "bbc4b4b724ce89f6cfd309d807bc81b836c6915ccdcc18773afccc6be43123fb",
+      "bytes": 514688,
+      "checked_at": "2026-10-07T17:53:52.739509+00:00"
+    }
+  ],
   "airtop": [
     {
       "source": "https://docs.airtop.ai/openapi.json",
@@ -1602,6 +1611,14 @@
     }
   ],
   "slack": [
+    {
+      "source": "https://docs.slack.dev/sitemap.xml",
+      "url": "https://docs.slack.dev/sitemap.xml",
+      "revision": "index-only",
+      "sha256": "0b2bb9dad757d28b6269d6415778b2824741ade47ef03af9fa6c1719964fc6bd",
+      "bytes": 129221,
+      "checked_at": "2026-10-07T17:59:00.370598+00:00"
+    },
     {
       "source": "github:slackapi/slack-api-specs@master:web-api/slack_web_openapi_v2.json",
       "url": "https://raw.githubusercontent.com/slackapi/slack-api-specs/bc08db49625630e3585bf2f1322128ea04f2a7f3/web-api/slack_web_openapi_v2.json",

@@ -1,6 +1,12 @@
 Each preset has a `<name>.json` record and may have a shipped `<name>.rego`
 module. Accounts select it with `"preset": "<name>"`.
 
+These JSON files are also the baseline for the [API preset generator](../dev/presets/README.md).
+Edit accepted definitions here. The generator reads them directly and writes
+proposals and reports to ignored directories under `dev/presets/`.
+`drafts/` holds presets loaded only when a development monitor uses `-drafts`;
+`policy/` holds the shared policy modules used by shipped presets.
+
 The SFTP, MQTT, and NATS protocol presets include setup forms and operation
 permissions. See [file and broker protocols](../docs/file-and-broker-protocols.md)
 for client commands, supported versions, limits, and scoped owner policies.
