@@ -1,39 +1,59 @@
 {
-  "title": "Google Tasks",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {
-        "key": "token",
-        "label": "Google account",
-        "secret": true,
-        "path": [
-          "connections",
-          "",
-          "http",
-          "values",
-          "token"
-        ],
-        "oauth": {
-          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
-          "token_url": "https://oauth2.googleapis.com/token",
-          "client_id": "{MONITOR_GOOGLE_CLIENT_ID}",
-          "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}",
-          "scope": "https://www.googleapis.com/auth/tasks",
-          "prompt": "consent"
-        }
+    "actions": {
+      "tasks": {
+        "title": "Tasks"
+      },
+      "tasks.lists": {
+        "title": "Lists"
+      },
+      "tasks.lists.clear": {
+        "title": "Clear"
+      },
+      "tasks.lists.clear.delete": {
+        "title": "Delete"
+      },
+      "tasks.lists.tasks": {
+        "title": "Tasks"
+      },
+      "tasks.lists.tasks.delete": {
+        "title": "Delete"
+      },
+      "tasks.lists.tasks.read": {
+        "title": "Read"
+      },
+      "tasks.lists.tasks.write": {
+        "title": "Create and edit"
+      },
+      "tasks.users": {
+        "title": "Users"
+      },
+      "tasks.users.me": {
+        "title": "Me"
+      },
+      "tasks.users.me.lists": {
+        "title": "Lists"
+      },
+      "tasks.users.me.lists.delete": {
+        "title": "Delete"
+      },
+      "tasks.users.me.lists.read": {
+        "title": "Read"
+      },
+      "tasks.users.me.lists.write": {
+        "title": "Create and edit"
       }
-    ],
+    },
     "connections": {
       "": {
         "http": {
           "slots": [
             {
-              "value": "token",
+              "header": "Authorization",
               "origin": "https://tasks.googleapis.com",
               "path": "/tasks/v1",
-              "header": "Authorization",
-              "prefix": "Bearer "
+              "prefix": "Bearer ",
+              "value": "token"
             }
           ]
         }
@@ -41,38 +61,48 @@
     },
     "defaults": {
       "contents": "me",
-      "strangers": true,
-      "sends": "me"
+      "sends": "me",
+      "strangers": true
     },
-    "actions": {
-      "read": {
-        "title": "Read task lists and tasks"
-      },
-      "write": {
-        "title": "Create, edit, complete and move tasks and lists"
-      },
-      "delete": {
-        "title": "Delete tasks and lists, and clear completed tasks"
-      },
-      "write.lists": {
-        "title": "write: lists"
+    "fields": [
+      {
+        "key": "token",
+        "label": "Google account",
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "client_id": "{MONITOR_GOOGLE_CLIENT_ID}",
+          "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}",
+          "prompt": "consent",
+          "scope": "https://www.googleapis.com/auth/tasks",
+          "token_url": "https://oauth2.googleapis.com/token"
+        },
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ],
+        "secret": true
       }
-    }
+    ],
+    "group": "api"
   },
+  "title": "Google Tasks",
   "operations": [
-    {"action":"read","effects":["read"],"id":"tasklists.list","method":"GET","origin":"https://tasks.googleapis.com","params":["maxResults","pageToken"],"path":"/tasks/v1/users/@me/lists","scope":{}},
-    {"action":"read","effects":["read"],"id":"tasklists.get","method":"GET","origin":"https://tasks.googleapis.com","path":"/tasks/v1/users/@me/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"tasks.list","method":"GET","origin":"https://tasks.googleapis.com","params":["completedMax","completedMin","dueMax","dueMin","maxResults","pageToken","showCompleted","showDeleted","showHidden","showAssigned","updatedMin"],"path":"/tasks/v1/lists/{list}/tasks","scope":{"list":{"at":"list","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"tasks.get","method":"GET","origin":"https://tasks.googleapis.com","path":"/tasks/v1/lists/{list}/tasks/{task}","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"tasklists.insert","method":"POST","origin":"https://tasks.googleapis.com","path":"/tasks/v1/users/@me/lists","scope":{}},
-    {"action":"write","body":"json","effects":["write"],"id":"tasklists.patch","method":"PATCH","origin":"https://tasks.googleapis.com","path":"/tasks/v1/users/@me/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"tasks.insert","method":"POST","origin":"https://tasks.googleapis.com","params":["parent","previous"],"path":"/tasks/v1/lists/{list}/tasks","scope":{"list":{"at":"list","from":"path"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"tasks.patch","method":"PATCH","origin":"https://tasks.googleapis.com","path":"/tasks/v1/lists/{list}/tasks/{task}","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"tasks.update","method":"PUT","origin":"https://tasks.googleapis.com","path":"/tasks/v1/lists/{list}/tasks/{task}","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
-    {"action":"write","effects":["write"],"id":"tasks.move","method":"POST","origin":"https://tasks.googleapis.com","params":["parent","previous","destinationTasklist"],"path":"/tasks/v1/lists/{list}/tasks/{task}/move","scope":{"list":{"at":"list","from":"path"},"query":{"at":"","from":"query","type":"object"},"task":{"at":"task","from":"path"}}},
-    {"action":"delete","effects":["delete"],"id":"tasks.delete","method":"DELETE","origin":"https://tasks.googleapis.com","path":"/tasks/v1/lists/{list}/tasks/{task}","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
-    {"action":"delete","effects":["delete"],"id":"tasks.clear","method":"POST","origin":"https://tasks.googleapis.com","path":"/tasks/v1/lists/{list}/clear","scope":{"list":{"at":"list","from":"path"}}},
-    {"action":"delete","effects":["delete"],"id":"tasklists.delete","method":"DELETE","origin":"https://tasks.googleapis.com","path":"/tasks/v1/users/@me/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
-    {"action":"write.lists","body":"json","effects":["write"],"id":"tasklists.update","method":"PUT","origin":"https://tasks.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/tasks/v1/users/@me/lists/{tasklist}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tasklist":{"at":"tasklist","from":"path"}}}
+    {"action":"tasks.users.me.lists.read","effects":["read"],"id":"tasklists.list","method":"GET","origin":"https://tasks.googleapis.com","params":["maxResults","pageToken"],"path":"/tasks/v1/users/@me/lists","scope":{}},
+    {"action":"tasks.users.me.lists.read","effects":["read"],"id":"tasklists.get","method":"GET","origin":"https://tasks.googleapis.com","path":"/tasks/v1/users/@me/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
+    {"action":"tasks.lists.tasks.read","effects":["read"],"id":"tasks.list","method":"GET","origin":"https://tasks.googleapis.com","params":["completedMax","completedMin","dueMax","dueMin","maxResults","pageToken","showCompleted","showDeleted","showHidden","showAssigned","updatedMin"],"path":"/tasks/v1/lists/{list}/tasks","scope":{"list":{"at":"list","from":"path"}}},
+    {"action":"tasks.lists.tasks.read","effects":["read"],"id":"tasks.get","method":"GET","origin":"https://tasks.googleapis.com","path":"/tasks/v1/lists/{list}/tasks/{task}","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
+    {"action":"tasks.users.me.lists.write","body":"json","effects":["write"],"id":"tasklists.insert","method":"POST","origin":"https://tasks.googleapis.com","path":"/tasks/v1/users/@me/lists","scope":{}},
+    {"action":"tasks.users.me.lists.write","body":"json","effects":["write"],"id":"tasklists.patch","method":"PATCH","origin":"https://tasks.googleapis.com","path":"/tasks/v1/users/@me/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
+    {"action":"tasks.lists.tasks.write","body":"json","effects":["write"],"id":"tasks.insert","method":"POST","origin":"https://tasks.googleapis.com","params":["parent","previous"],"path":"/tasks/v1/lists/{list}/tasks","scope":{"list":{"at":"list","from":"path"}}},
+    {"action":"tasks.lists.tasks.write","body":"json","effects":["write"],"id":"tasks.patch","method":"PATCH","origin":"https://tasks.googleapis.com","path":"/tasks/v1/lists/{list}/tasks/{task}","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
+    {"action":"tasks.lists.tasks.write","body":"json","effects":["write"],"id":"tasks.update","method":"PUT","origin":"https://tasks.googleapis.com","path":"/tasks/v1/lists/{list}/tasks/{task}","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
+    {"action":"tasks.lists.tasks.write","effects":["write"],"id":"tasks.move","method":"POST","origin":"https://tasks.googleapis.com","params":["parent","previous","destinationTasklist"],"path":"/tasks/v1/lists/{list}/tasks/{task}/move","scope":{"list":{"at":"list","from":"path"},"query":{"at":"","from":"query","type":"object"},"task":{"at":"task","from":"path"}}},
+    {"action":"tasks.lists.tasks.delete","effects":["delete"],"id":"tasks.delete","method":"DELETE","origin":"https://tasks.googleapis.com","path":"/tasks/v1/lists/{list}/tasks/{task}","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
+    {"action":"tasks.lists.clear.delete","effects":["delete"],"id":"tasks.clear","method":"POST","origin":"https://tasks.googleapis.com","path":"/tasks/v1/lists/{list}/clear","scope":{"list":{"at":"list","from":"path"}}},
+    {"action":"tasks.users.me.lists.delete","effects":["delete"],"id":"tasklists.delete","method":"DELETE","origin":"https://tasks.googleapis.com","path":"/tasks/v1/users/@me/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
+    {"action":"tasks.users.me.lists.write","body":"json","effects":["write"],"id":"tasklists.update","method":"PUT","origin":"https://tasks.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/tasks/v1/users/@me/lists/{tasklist}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tasklist":{"at":"tasklist","from":"path"}}}
   ]
 }

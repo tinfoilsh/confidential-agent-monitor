@@ -1,31 +1,86 @@
 {
-  "title": "Notion",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {
-        "key": "token",
-        "label": "Internal integration secret",
-        "secret": true,
-        "path": [
-          "connections",
-          "",
-          "http",
-          "values",
-          "token"
-        ]
+    "actions": {
+      "blocks": {
+        "title": "Blocks"
+      },
+      "blocks.children": {
+        "title": "Children"
+      },
+      "blocks.children.read": {
+        "title": "Read"
+      },
+      "blocks.children.write": {
+        "title": "Create and edit"
+      },
+      "blocks.delete": {
+        "title": "Delete"
+      },
+      "blocks.read": {
+        "title": "Read"
+      },
+      "blocks.write": {
+        "title": "Create and edit"
+      },
+      "comments": {
+        "title": "Comments"
+      },
+      "comments.read": {
+        "title": "Read"
+      },
+      "data_sources": {
+        "title": "Data sources"
+      },
+      "data_sources.read": {
+        "title": "Read"
+      },
+      "databases": {
+        "title": "Databases"
+      },
+      "databases.read": {
+        "title": "Read"
+      },
+      "databases.write": {
+        "title": "Create and edit"
+      },
+      "pages": {
+        "title": "Pages"
+      },
+      "pages.properties": {
+        "title": "Properties"
+      },
+      "pages.properties.read": {
+        "title": "Read"
+      },
+      "pages.read": {
+        "title": "Read"
+      },
+      "pages.write": {
+        "title": "Create and edit"
+      },
+      "search": {
+        "title": "Search"
+      },
+      "search.read": {
+        "title": "Read"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.read": {
+        "title": "Read"
       }
-    ],
+    },
     "connections": {
       "": {
         "http": {
           "slots": [
             {
-              "value": "token",
+              "header": "Authorization",
               "origin": "https://api.notion.com",
               "path": "/v1",
-              "header": "Authorization",
-              "prefix": "Bearer "
+              "prefix": "Bearer ",
+              "value": "token"
             }
           ]
         }
@@ -33,54 +88,50 @@
     },
     "defaults": {
       "contents": "team",
-      "strangers": true,
-      "sends": "anyone"
+      "sends": "anyone",
+      "strangers": true
     },
-    "actions": {
-      "read": {
-        "title": "Search and read pages, databases, data sources and blocks"
-      },
-      "write.pages": {
-        "title": "Create, edit and trash pages"
-      },
-      "write.blocks": {
-        "title": "Append content blocks"
-      },
-      "delete.blocks": {
-        "title": "delete: blocks"
-      },
-      "write.children": {
-        "title": "write: children"
-      },
-      "write.databases": {
-        "title": "write: databases"
+    "fields": [
+      {
+        "key": "token",
+        "label": "Internal integration secret",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ],
+        "secret": true
       }
-    }
+    ],
+    "group": "api"
   },
+  "title": "Notion",
   "operations": [
-    {"action":"read","body":"json","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"search","method":"POST","origin":"https://api.notion.com","path":"/v1/search","scope":{}},
-    {"action":"read","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"pages.retrieve","method":"GET","origin":"https://api.notion.com","path":"/v1/pages/{page}","scope":{"page":{"at":"page","from":"path"}}},
-    {"action":"read","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"databases.retrieve","method":"GET","origin":"https://api.notion.com","path":"/v1/databases/{database}","scope":{"database":{"at":"database","from":"path"}}},
-    {"action":"read","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"data_sources.retrieve","method":"GET","origin":"https://api.notion.com","path":"/v1/data_sources/{data_source}","scope":{"data_source":{"at":"data_source","from":"path"}}},
-    {"action":"read","body":"json","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"data_sources.query","method":"POST","origin":"https://api.notion.com","path":"/v1/data_sources/{data_source}/query","scope":{"data_source":{"at":"data_source","from":"path"}}},
-    {"action":"read","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"blocks.children.list","method":"GET","origin":"https://api.notion.com","params":["page_size","start_cursor"],"path":"/v1/blocks/{block}/children","scope":{"block":{"at":"block","from":"path"}}},
-    {"action":"write.pages","body":"json","effects":["write"],"headers":{"Notion-Version":"2026-03-11"},"id":"pages.create","method":"POST","origin":"https://api.notion.com","path":"/v1/pages","scope":{"page":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.pages","body":"json","effects":["write","delete"],"headers":{"Notion-Version":"2026-03-11"},"id":"pages.update","method":"PATCH","origin":"https://api.notion.com","path":"/v1/pages/{page}","scope":{"changes":{"at":"","from":"body","type":"object"},"page":{"at":"page","from":"path"}}},
-    {"action":"write.blocks","body":"json","effects":["write"],"headers":{"Notion-Version":"2026-03-11"},"id":"blocks.children.append","method":"PATCH","origin":"https://api.notion.com","path":"/v1/blocks/{block}/children","scope":{"block":{"at":"block","from":"path"},"children":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete.blocks","effects":["delete"],"id":"deleteABlock","method":"DELETE","origin":"https://api.notion.com","path":"/v1/blocks/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"retrieveABlock","method":"GET","origin":"https://api.notion.com","path":"/v1/blocks/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.blocks","effects":["write"],"id":"updateABlock","method":"PATCH","origin":"https://api.notion.com","path":"/v1/blocks/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.blocks","body":"json","effects":["write"],"id":"updateABlock.json.d1ac8a892d21","method":"PATCH","origin":"https://api.notion.com","path":"/v1/blocks/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.children","effects":["write"],"id":"appendBlockChildren","method":"PATCH","origin":"https://api.notion.com","path":"/v1/blocks/{id}/children","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"retrieveComments","method":"GET","origin":"https://api.notion.com","params":["block_id","page_size"],"path":"/v1/comments","scope":{"block_id":{"at":"block_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","body":"form","effects":["read"],"id":"retrieveComments.form.b2e011507753","method":"GET","origin":"https://api.notion.com","params":["block_id","page_size"],"path":"/v1/comments","scope":{"block_id":{"at":"block_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
-    {"action":"write.databases","effects":["write"],"id":"updateADatabase","method":"PATCH","origin":"https://api.notion.com","path":"/v1/databases/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.databases","body":"json","effects":["write"],"id":"updateADatabase.json.6eb2b3cad451","method":"PATCH","origin":"https://api.notion.com","path":"/v1/databases/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"queryADatabase","method":"POST","origin":"https://api.notion.com","path":"/v1/databases/{id}/query","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","body":"json","effects":["read"],"id":"queryADatabase.json.bfb786f02afa","method":"POST","origin":"https://api.notion.com","path":"/v1/databases/{id}/query","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.pages","effects":["write"],"id":"updatePageProperties","method":"PATCH","origin":"https://api.notion.com","path":"/v1/pages/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"retrieveAPagePropertyItem","method":"GET","origin":"https://api.notion.com","path":"/v1/pages/{page_id}/properties/{property_id}","scope":{"page_id":{"at":"page_id","from":"path"},"property_id":{"at":"property_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"retrieveAUser","method":"GET","origin":"https://api.notion.com","path":"/v1/users/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","body":"form","effects":["read"],"id":"retrieveAUser.form.731227b146e9","method":"GET","origin":"https://api.notion.com","path":"/v1/users/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"form","type":"object"}}}
+    {"action":"search.read","body":"json","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"search","method":"POST","origin":"https://api.notion.com","path":"/v1/search","scope":{}},
+    {"action":"pages.read","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"pages.retrieve","method":"GET","origin":"https://api.notion.com","path":"/v1/pages/{page}","scope":{"page":{"at":"page","from":"path"}}},
+    {"action":"databases.read","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"databases.retrieve","method":"GET","origin":"https://api.notion.com","path":"/v1/databases/{database}","scope":{"database":{"at":"database","from":"path"}}},
+    {"action":"data_sources.read","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"data_sources.retrieve","method":"GET","origin":"https://api.notion.com","path":"/v1/data_sources/{data_source}","scope":{"data_source":{"at":"data_source","from":"path"}}},
+    {"action":"data_sources.read","body":"json","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"data_sources.query","method":"POST","origin":"https://api.notion.com","path":"/v1/data_sources/{data_source}/query","scope":{"data_source":{"at":"data_source","from":"path"}}},
+    {"action":"blocks.children.read","effects":["read"],"headers":{"Notion-Version":"2026-03-11"},"id":"blocks.children.list","method":"GET","origin":"https://api.notion.com","params":["page_size","start_cursor"],"path":"/v1/blocks/{block}/children","scope":{"block":{"at":"block","from":"path"}}},
+    {"action":"pages.write","body":"json","effects":["write"],"headers":{"Notion-Version":"2026-03-11"},"id":"pages.create","method":"POST","origin":"https://api.notion.com","path":"/v1/pages","scope":{"page":{"at":"","from":"body","type":"object"}}},
+    {"action":"pages.write","body":"json","effects":["write","delete"],"headers":{"Notion-Version":"2026-03-11"},"id":"pages.update","method":"PATCH","origin":"https://api.notion.com","path":"/v1/pages/{page}","scope":{"changes":{"at":"","from":"body","type":"object"},"page":{"at":"page","from":"path"}}},
+    {"action":"blocks.children.write","body":"json","effects":["write"],"headers":{"Notion-Version":"2026-03-11"},"id":"blocks.children.append","method":"PATCH","origin":"https://api.notion.com","path":"/v1/blocks/{block}/children","scope":{"block":{"at":"block","from":"path"},"children":{"at":"","from":"body","type":"object"}}},
+    {"action":"blocks.delete","effects":["delete"],"id":"deleteABlock","method":"DELETE","origin":"https://api.notion.com","path":"/v1/blocks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"blocks.read","effects":["read"],"id":"retrieveABlock","method":"GET","origin":"https://api.notion.com","path":"/v1/blocks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"blocks.write","effects":["write"],"id":"updateABlock","method":"PATCH","origin":"https://api.notion.com","path":"/v1/blocks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"blocks.write","body":"json","effects":["write"],"id":"updateABlock.json.d1ac8a892d21","method":"PATCH","origin":"https://api.notion.com","path":"/v1/blocks/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"blocks.children.write","effects":["write"],"id":"appendBlockChildren","method":"PATCH","origin":"https://api.notion.com","path":"/v1/blocks/{id}/children","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"comments.read","effects":["read"],"id":"retrieveComments","method":"GET","origin":"https://api.notion.com","params":["block_id","page_size"],"path":"/v1/comments","scope":{"block_id":{"at":"block_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"comments.read","body":"form","effects":["read"],"id":"retrieveComments.form.b2e011507753","method":"GET","origin":"https://api.notion.com","params":["block_id","page_size"],"path":"/v1/comments","scope":{"block_id":{"at":"block_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"form","type":"object"}}},
+    {"action":"databases.write","effects":["write"],"id":"updateADatabase","method":"PATCH","origin":"https://api.notion.com","path":"/v1/databases/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"databases.write","body":"json","effects":["write"],"id":"updateADatabase.json.6eb2b3cad451","method":"PATCH","origin":"https://api.notion.com","path":"/v1/databases/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"databases.read","effects":["read"],"id":"queryADatabase","method":"POST","origin":"https://api.notion.com","path":"/v1/databases/{id}/query","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"databases.read","body":"json","effects":["read"],"id":"queryADatabase.json.bfb786f02afa","method":"POST","origin":"https://api.notion.com","path":"/v1/databases/{id}/query","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"pages.write","effects":["write"],"id":"updatePageProperties","method":"PATCH","origin":"https://api.notion.com","path":"/v1/pages/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"pages.properties.read","effects":["read"],"id":"retrieveAPagePropertyItem","method":"GET","origin":"https://api.notion.com","path":"/v1/pages/{page_id}/properties/{property_id}","scope":{"page_id":{"at":"page_id","from":"path"},"property_id":{"at":"property_id","from":"path"}}},
+    {"action":"users.read","effects":["read"],"id":"retrieveAUser","method":"GET","origin":"https://api.notion.com","path":"/v1/users/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"users.read","body":"form","effects":["read"],"id":"retrieveAUser.form.731227b146e9","method":"GET","origin":"https://api.notion.com","path":"/v1/users/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"form","type":"object"}}}
   ]
 }

@@ -90,7 +90,7 @@ func writeJSON(path string, value any) error {
 		return err
 	}
 	// Keep generated operation records on individual lines, like shipped presets.
-	if filepath.Dir(path) == candidatesDir {
+	if filepath.Dir(path) == candidatesDir || filepath.Dir(path) == shippedDir {
 		if record, ok := value.(map[string]any); ok {
 			header := maps.Clone(record)
 			delete(header, "operations")
@@ -101,7 +101,15 @@ func writeJSON(path string, value any) error {
 			var out bytes.Buffer
 			out.Write(bytes.TrimSuffix(prefix, []byte("\n}")))
 			out.WriteString(",\n  \"operations\": [\n")
-			ops := record["operations"].([]map[string]any)
+			var ops []map[string]any
+			switch values := record["operations"].(type) {
+			case []map[string]any:
+				ops = values
+			case []any:
+				for _, value := range values {
+					ops = append(ops, value.(map[string]any))
+				}
+			}
 			for i, op := range ops {
 				if i > 0 {
 					out.WriteString(",\n")
@@ -405,18 +413,7 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 	slices.Sort(r.UnmappedShipped)
 	r.Counts["unmapped_shipped"] = len(r.UnmappedShipped)
 	candidate["operations"] = operations
-	catalog, _ := candidate["catalog"].(map[string]any)
-	actions, _ := catalog["actions"].(map[string]any)
-	if actions == nil {
-		actions = map[string]any{}
-		catalog["actions"] = actions
-	}
-	for _, op := range operations {
-		action := op["action"].(string)
-		if _, ok := actions[action]; !ok {
-			actions[action] = map[string]any{"title": strings.ReplaceAll(action, ".", ": ")}
-		}
-	}
+	r.Counts["regrouped"] = groupRecord(candidate, groupHints(operations, p, name))
 	r.Counts["source_variants"] = len(r.Operations)
 	r.Counts["descriptors"] = len(operations)
 	r.Counts["conflicts"] = len(r.Conflicts)

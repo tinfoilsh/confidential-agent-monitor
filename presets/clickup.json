@@ -1,30 +1,598 @@
 {
-  "title": "ClickUp",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {
-        "key": "token",
-        "label": "API token",
-        "secret": true,
-        "path": [
-          "connections",
-          "",
-          "http",
-          "values",
-          "token"
-        ]
+    "actions": {
+      "checklist": {
+        "title": "Checklist"
+      },
+      "checklist.checklist_item": {
+        "title": "Checklist item"
+      },
+      "checklist.checklist_item.delete": {
+        "title": "Delete"
+      },
+      "checklist.checklist_item.write": {
+        "title": "Create and edit"
+      },
+      "checklist.delete": {
+        "title": "Delete"
+      },
+      "checklist.write": {
+        "title": "Create and edit"
+      },
+      "comment": {
+        "title": "Comment"
+      },
+      "comment.delete": {
+        "title": "Delete"
+      },
+      "comment.reply": {
+        "title": "Reply"
+      },
+      "comment.reply.read": {
+        "title": "Read"
+      },
+      "comment.reply.send": {
+        "title": "Send"
+      },
+      "comment.write": {
+        "title": "Create and edit"
+      },
+      "folder": {
+        "title": "Folder"
+      },
+      "folder.delete": {
+        "title": "Delete"
+      },
+      "folder.field": {
+        "title": "Field"
+      },
+      "folder.field.read": {
+        "title": "Read"
+      },
+      "folder.guest": {
+        "title": "Guest"
+      },
+      "folder.guest.delete": {
+        "title": "Delete"
+      },
+      "folder.guest.write": {
+        "title": "Create and edit"
+      },
+      "folder.list_template": {
+        "title": "List template"
+      },
+      "folder.list_template.write": {
+        "title": "Create and edit"
+      },
+      "folder.position": {
+        "title": "Position"
+      },
+      "folder.position.write": {
+        "title": "Create and edit"
+      },
+      "folder.read": {
+        "title": "Read"
+      },
+      "folder.view": {
+        "title": "View"
+      },
+      "folder.view.read": {
+        "title": "Read"
+      },
+      "folder.view.write": {
+        "title": "Create and edit"
+      },
+      "folder.write": {
+        "title": "Create and edit"
+      },
+      "goal": {
+        "title": "Goal"
+      },
+      "goal.delete": {
+        "title": "Delete"
+      },
+      "goal.key_result": {
+        "title": "Key result"
+      },
+      "goal.key_result.write": {
+        "title": "Create and edit"
+      },
+      "goal.read": {
+        "title": "Read"
+      },
+      "goal.write": {
+        "title": "Create and edit"
+      },
+      "group": {
+        "title": "Group"
+      },
+      "group.admin": {
+        "title": "Manage"
+      },
+      "group.delete": {
+        "title": "Delete"
+      },
+      "group.read": {
+        "title": "Read"
+      },
+      "key_result": {
+        "title": "Key result"
+      },
+      "key_result.delete": {
+        "title": "Delete"
+      },
+      "key_result.write": {
+        "title": "Create and edit"
+      },
+      "list": {
+        "title": "List"
+      },
+      "list.comment": {
+        "title": "Comment"
+      },
+      "list.comment.read": {
+        "title": "Read"
+      },
+      "list.comment.send": {
+        "title": "Send"
+      },
+      "list.delete": {
+        "title": "Delete"
+      },
+      "list.field": {
+        "title": "Field"
+      },
+      "list.field.read": {
+        "title": "Read"
+      },
+      "list.guest": {
+        "title": "Guest"
+      },
+      "list.guest.delete": {
+        "title": "Delete"
+      },
+      "list.guest.write": {
+        "title": "Create and edit"
+      },
+      "list.member": {
+        "title": "Member"
+      },
+      "list.member.read": {
+        "title": "Read"
+      },
+      "list.read": {
+        "title": "Read"
+      },
+      "list.task": {
+        "title": "Task"
+      },
+      "list.task.delete": {
+        "title": "Delete"
+      },
+      "list.task.read": {
+        "title": "Read"
+      },
+      "list.task.write": {
+        "title": "Create and edit"
+      },
+      "list.task_template": {
+        "title": "Task template"
+      },
+      "list.task_template.write": {
+        "title": "Create and edit"
+      },
+      "list.view": {
+        "title": "View"
+      },
+      "list.view.read": {
+        "title": "Read"
+      },
+      "list.view.write": {
+        "title": "Create and edit"
+      },
+      "list.write": {
+        "title": "Create and edit"
+      },
+      "oauth": {
+        "title": "Oauth"
+      },
+      "oauth.token": {
+        "title": "Token"
+      },
+      "oauth.token.read": {
+        "title": "Read"
+      },
+      "space": {
+        "title": "Space"
+      },
+      "space.delete": {
+        "title": "Delete"
+      },
+      "space.field": {
+        "title": "Field"
+      },
+      "space.field.read": {
+        "title": "Read"
+      },
+      "space.folder": {
+        "title": "Folder"
+      },
+      "space.folder.read": {
+        "title": "Read"
+      },
+      "space.folder.write": {
+        "title": "Create and edit"
+      },
+      "space.folder_template": {
+        "title": "Folder template"
+      },
+      "space.folder_template.write": {
+        "title": "Create and edit"
+      },
+      "space.list_template": {
+        "title": "List template"
+      },
+      "space.list_template.write": {
+        "title": "Create and edit"
+      },
+      "space.read": {
+        "title": "Read"
+      },
+      "space.tag": {
+        "title": "Tag"
+      },
+      "space.tag.delete": {
+        "title": "Delete"
+      },
+      "space.tag.read": {
+        "title": "Read"
+      },
+      "space.tag.write": {
+        "title": "Create and edit"
+      },
+      "space.view": {
+        "title": "View"
+      },
+      "space.view.read": {
+        "title": "Read"
+      },
+      "space.view.write": {
+        "title": "Create and edit"
+      },
+      "space.write": {
+        "title": "Create and edit"
+      },
+      "task": {
+        "title": "Task"
+      },
+      "task.bulk_time_in_status": {
+        "title": "Bulk time in status"
+      },
+      "task.bulk_time_in_status.task_ids": {
+        "title": "Task ids"
+      },
+      "task.bulk_time_in_status.task_ids.read": {
+        "title": "Read"
+      },
+      "task.checklist": {
+        "title": "Checklist"
+      },
+      "task.checklist.write": {
+        "title": "Create and edit"
+      },
+      "task.comment": {
+        "title": "Comment"
+      },
+      "task.comment.read": {
+        "title": "Read"
+      },
+      "task.comment.send": {
+        "title": "Send"
+      },
+      "task.delete": {
+        "title": "Delete"
+      },
+      "task.dependency": {
+        "title": "Dependency"
+      },
+      "task.dependency.delete": {
+        "title": "Delete"
+      },
+      "task.dependency.write": {
+        "title": "Create and edit"
+      },
+      "task.field": {
+        "title": "Field"
+      },
+      "task.field.delete": {
+        "title": "Delete"
+      },
+      "task.field.write": {
+        "title": "Create and edit"
+      },
+      "task.guest": {
+        "title": "Guest"
+      },
+      "task.guest.delete": {
+        "title": "Delete"
+      },
+      "task.guest.write": {
+        "title": "Create and edit"
+      },
+      "task.link": {
+        "title": "Link"
+      },
+      "task.link.delete": {
+        "title": "Delete"
+      },
+      "task.link.share": {
+        "title": "Share"
+      },
+      "task.member": {
+        "title": "Member"
+      },
+      "task.member.read": {
+        "title": "Read"
+      },
+      "task.read": {
+        "title": "Read"
+      },
+      "task.tag": {
+        "title": "Tag"
+      },
+      "task.tag.delete": {
+        "title": "Delete"
+      },
+      "task.tag.write": {
+        "title": "Create and edit"
+      },
+      "task.time": {
+        "title": "Time"
+      },
+      "task.time.delete": {
+        "title": "Delete"
+      },
+      "task.time.read": {
+        "title": "Read"
+      },
+      "task.time.write": {
+        "title": "Create and edit"
+      },
+      "task.time_in_status": {
+        "title": "Time in status"
+      },
+      "task.time_in_status.read": {
+        "title": "Read"
+      },
+      "task.write": {
+        "title": "Create and edit"
+      },
+      "team": {
+        "title": "Team"
+      },
+      "team.custom_item": {
+        "title": "Custom item"
+      },
+      "team.custom_item.read": {
+        "title": "Read"
+      },
+      "team.customroles": {
+        "title": "Customroles"
+      },
+      "team.customroles.read": {
+        "title": "Read"
+      },
+      "team.field": {
+        "title": "Field"
+      },
+      "team.field.read": {
+        "title": "Read"
+      },
+      "team.folder_template": {
+        "title": "Folder template"
+      },
+      "team.folder_template.read": {
+        "title": "Read"
+      },
+      "team.goal": {
+        "title": "Goal"
+      },
+      "team.goal.read": {
+        "title": "Read"
+      },
+      "team.goal.write": {
+        "title": "Create and edit"
+      },
+      "team.group": {
+        "title": "Group"
+      },
+      "team.group.admin": {
+        "title": "Manage"
+      },
+      "team.guest": {
+        "title": "Guest"
+      },
+      "team.guest.delete": {
+        "title": "Delete"
+      },
+      "team.guest.read": {
+        "title": "Read"
+      },
+      "team.guest.share": {
+        "title": "Share"
+      },
+      "team.guest.write": {
+        "title": "Create and edit"
+      },
+      "team.plan": {
+        "title": "Plan"
+      },
+      "team.plan.read": {
+        "title": "Read"
+      },
+      "team.read": {
+        "title": "Read"
+      },
+      "team.seats": {
+        "title": "Seats"
+      },
+      "team.seats.read": {
+        "title": "Read"
+      },
+      "team.shared": {
+        "title": "Shared"
+      },
+      "team.shared.read": {
+        "title": "Read"
+      },
+      "team.space": {
+        "title": "Space"
+      },
+      "team.space.read": {
+        "title": "Read"
+      },
+      "team.space.write": {
+        "title": "Create and edit"
+      },
+      "team.task": {
+        "title": "Task"
+      },
+      "team.task.read": {
+        "title": "Read"
+      },
+      "team.task_template": {
+        "title": "Task template"
+      },
+      "team.task_template.read": {
+        "title": "Read"
+      },
+      "team.template": {
+        "title": "Template"
+      },
+      "team.template.read": {
+        "title": "Read"
+      },
+      "team.time_entries": {
+        "title": "Time entries"
+      },
+      "team.time_entries.current": {
+        "title": "Current"
+      },
+      "team.time_entries.current.read": {
+        "title": "Read"
+      },
+      "team.time_entries.delete": {
+        "title": "Delete"
+      },
+      "team.time_entries.history": {
+        "title": "History"
+      },
+      "team.time_entries.history.read": {
+        "title": "Read"
+      },
+      "team.time_entries.read": {
+        "title": "Read"
+      },
+      "team.time_entries.tags": {
+        "title": "Tags"
+      },
+      "team.time_entries.tags.delete": {
+        "title": "Delete"
+      },
+      "team.time_entries.tags.read": {
+        "title": "Read"
+      },
+      "team.time_entries.tags.write": {
+        "title": "Create and edit"
+      },
+      "team.time_entries.write": {
+        "title": "Create and edit"
+      },
+      "team.user": {
+        "title": "Account"
+      },
+      "team.user.admin": {
+        "title": "Manage"
+      },
+      "team.user.delete": {
+        "title": "Delete"
+      },
+      "team.user.read": {
+        "title": "Read"
+      },
+      "team.user.share": {
+        "title": "Share"
+      },
+      "team.view": {
+        "title": "View"
+      },
+      "team.view.read": {
+        "title": "Read"
+      },
+      "team.view.write": {
+        "title": "Create and edit"
+      },
+      "team.webhook": {
+        "title": "Webhook"
+      },
+      "team.webhook.admin": {
+        "title": "Manage"
+      },
+      "team.webhook.read": {
+        "title": "Read"
+      },
+      "user": {
+        "title": "Account"
+      },
+      "user.read": {
+        "title": "Read"
+      },
+      "view": {
+        "title": "View"
+      },
+      "view.comment": {
+        "title": "Comment"
+      },
+      "view.comment.read": {
+        "title": "Read"
+      },
+      "view.comment.send": {
+        "title": "Send"
+      },
+      "view.delete": {
+        "title": "Delete"
+      },
+      "view.read": {
+        "title": "Read"
+      },
+      "view.task": {
+        "title": "Task"
+      },
+      "view.task.read": {
+        "title": "Read"
+      },
+      "view.write": {
+        "title": "Create and edit"
+      },
+      "webhook": {
+        "title": "Webhook"
+      },
+      "webhook.admin": {
+        "title": "Manage"
+      },
+      "webhook.delete": {
+        "title": "Delete"
       }
-    ],
+    },
     "connections": {
       "": {
         "http": {
           "slots": [
             {
-              "value": "token",
+              "header": "Authorization",
               "origin": "https://api.clickup.com",
               "path": "/api/v2",
-              "header": "Authorization"
+              "value": "token"
             }
           ]
         }
@@ -32,310 +600,165 @@
     },
     "defaults": {
       "contents": "team",
-      "strangers": true,
-      "sends": "anyone"
+      "sends": "anyone",
+      "strangers": true
     },
-    "actions": {
-      "read": {
-        "title": "Read workspaces, lists and tasks"
-      },
-      "write.tasks": {
-        "title": "Create and edit tasks"
-      },
-      "send.comment": {
-        "title": "Comment on tasks"
-      },
-      "delete": {
-        "title": "Delete tasks"
-      },
-      "delete.checklist": {
-        "title": "delete: checklist"
-      },
-      "write.checklist": {
-        "title": "write: checklist"
-      },
-      "delete.checklist_item": {
-        "title": "delete: checklist_item"
-      },
-      "write.checklist_item": {
-        "title": "write: checklist_item"
-      },
-      "delete.comment": {
-        "title": "delete: comment"
-      },
-      "write.comment": {
-        "title": "write: comment"
-      },
-      "send.reply": {
-        "title": "send: reply"
-      },
-      "delete.folder": {
-        "title": "delete: folder"
-      },
-      "write.folder": {
-        "title": "write: folder"
-      },
-      "delete.guest": {
-        "title": "delete: guest"
-      },
-      "write.guest": {
-        "title": "write: guest"
-      },
-      "write.list": {
-        "title": "write: list"
-      },
-      "write.list_template": {
-        "title": "write: list_template"
-      },
-      "write.position": {
-        "title": "write: position"
-      },
-      "write.view": {
-        "title": "write: view"
-      },
-      "delete.goal": {
-        "title": "delete: goal"
-      },
-      "write.goal": {
-        "title": "write: goal"
-      },
-      "write.key_result": {
-        "title": "write: key_result"
-      },
-      "delete.group": {
-        "title": "delete: group"
-      },
-      "admin.group": {
-        "title": "admin: group"
-      },
-      "delete.key_result": {
-        "title": "delete: key_result"
-      },
-      "delete.list": {
-        "title": "delete: list"
-      },
-      "delete.task": {
-        "title": "delete: task"
-      },
-      "write.task": {
-        "title": "write: task"
-      },
-      "write.task_template": {
-        "title": "write: task_template"
-      },
-      "delete.space": {
-        "title": "delete: space"
-      },
-      "write.space": {
-        "title": "write: space"
-      },
-      "write.folder_template": {
-        "title": "write: folder_template"
-      },
-      "write.tag": {
-        "title": "write: tag"
-      },
-      "delete.tag": {
-        "title": "delete: tag"
-      },
-      "delete.dependency": {
-        "title": "delete: dependency"
-      },
-      "write.dependency": {
-        "title": "write: dependency"
-      },
-      "delete.field": {
-        "title": "delete: field"
-      },
-      "write.field": {
-        "title": "write: field"
-      },
-      "delete.link": {
-        "title": "delete: link"
-      },
-      "share.link": {
-        "title": "share: link"
-      },
-      "write.time": {
-        "title": "write: time"
-      },
-      "delete.time": {
-        "title": "delete: time"
-      },
-      "write.time_entries": {
-        "title": "write: time_entries"
-      },
-      "share.guest": {
-        "title": "share: guest"
-      },
-      "delete.tags": {
-        "title": "delete: tags"
-      },
-      "write.tags": {
-        "title": "write: tags"
-      },
-      "delete.time_entries": {
-        "title": "delete: time_entries"
-      },
-      "share.user": {
-        "title": "share: user"
-      },
-      "delete.user": {
-        "title": "delete: user"
-      },
-      "admin.user": {
-        "title": "admin: user"
-      },
-      "admin.webhook": {
-        "title": "admin: webhook"
-      },
-      "delete.view": {
-        "title": "delete: view"
-      },
-      "delete.webhook": {
-        "title": "delete: webhook"
+    "fields": [
+      {
+        "key": "token",
+        "label": "API token",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ],
+        "secret": true
       }
-    }
+    ],
+    "group": "api"
   },
+  "title": "ClickUp",
   "operations": [
-    {"action":"read","effects":["read"],"id":"team.list","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team","scope":{}},
-    {"action":"read","effects":["read"],"id":"space.list","method":"GET","origin":"https://api.clickup.com","params":["archived"],"path":"/api/v2/team/{team}/space","scope":{"team":{"at":"team","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"list.tasks.list","method":"GET","origin":"https://api.clickup.com","params":["archived","page","order_by","statuses[]"],"path":"/api/v2/list/{list}/task","scope":{"list":{"at":"list","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"task.get","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/task/{task}","scope":{"task":{"at":"task","from":"path"}}},
-    {"action":"write.tasks","body":"json","effects":["write"],"id":"list.task.create","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/list/{list}/task","scope":{"list":{"at":"list","from":"path"},"task":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.tasks","body":"json","effects":["write"],"id":"task.update","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/task/{task}","scope":{"changes":{"at":"","from":"body","type":"object"},"task":{"at":"task","from":"path"}}},
-    {"action":"send.comment","body":"json","effects":["send"],"id":"task.comment.create","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/task/{task}/comment","scope":{"comment":{"at":"","from":"body","type":"object"},"task":{"at":"task","from":"path"}}},
-    {"action":"delete","effects":["delete"],"id":"task.delete","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/task/{task}","scope":{"task":{"at":"task","from":"path"}}},
-    {"action":"delete.checklist","effects":["delete"],"id":"DeleteChecklist","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/checklist/{checklist_id}","scope":{"checklist_id":{"at":"checklist_id","from":"path"}}},
-    {"action":"write.checklist","body":"json","effects":["write"],"id":"EditChecklist","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/checklist/{checklist_id}","scope":{"checklist_id":{"at":"checklist_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.checklist","body":"json","effects":["write"],"id":"CreateChecklistItem","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/checklist/{checklist_id}/checklist_item","scope":{"checklist_id":{"at":"checklist_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete.checklist_item","effects":["delete"],"id":"DeleteChecklistItem","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/checklist/{checklist_id}/checklist_item/{checklist_item_id}","scope":{"checklist_id":{"at":"checklist_id","from":"path"},"checklist_item_id":{"at":"checklist_item_id","from":"path"}}},
-    {"action":"write.checklist_item","body":"json","effects":["write"],"id":"EditChecklistItem","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/checklist/{checklist_id}/checklist_item/{checklist_item_id}","scope":{"checklist_id":{"at":"checklist_id","from":"path"},"checklist_item_id":{"at":"checklist_item_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete.comment","effects":["delete"],"id":"DeleteComment","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/comment/{comment_id}","scope":{"comment_id":{"at":"comment_id","from":"path"}}},
-    {"action":"write.comment","body":"json","effects":["write"],"id":"UpdateComment","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/comment/{comment_id}","scope":{"comment_id":{"at":"comment_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"GetThreadedComments","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/comment/{comment_id}/reply","scope":{"comment_id":{"at":"comment_id","from":"path"}}},
-    {"action":"send.reply","body":"json","effects":["send"],"id":"CreateThreadedComment","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/comment/{comment_id}/reply","scope":{"comment_id":{"at":"comment_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete.folder","effects":["delete"],"id":"DeleteFolder","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}","scope":{"folder_id":{"at":"folder_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetFolder","method":"GET","origin":"https://api.clickup.com","params":["include_subfolders"],"path":"/api/v2/folder/{folder_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.folder","body":"json","effects":["write"],"id":"UpdateFolder","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"getFolderAvailableFields","method":"GET","origin":"https://api.clickup.com","params":["include_applied_objects"],"path":"/api/v2/folder/{folder_id}/field","scope":{"folder_id":{"at":"folder_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.guest","effects":["delete"],"id":"RemoveGuestFromFolder","method":"DELETE","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/folder/{folder_id}/guest/{guest_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"guest_id":{"at":"guest_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.guest","body":"json","effects":["write"],"id":"AddGuestToFolder","method":"POST","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/folder/{folder_id}/guest/{guest_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"guest_id":{"at":"guest_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"GetLists","method":"GET","origin":"https://api.clickup.com","params":["archived"],"path":"/api/v2/folder/{folder_id}/list","scope":{"folder_id":{"at":"folder_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.list","body":"json","effects":["write"],"id":"CreateList","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}/list","scope":{"folder_id":{"at":"folder_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.list_template","body":"json","effects":["write"],"id":"CreateFolderListFromTemplate","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}/list_template/{template_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"template_id","from":"path"}}},
-    {"action":"write.position","body":"json","effects":["write"],"id":"MoveFolder","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}/position","scope":{"folder_id":{"at":"folder_id","from":"path"},"parent_folder_id":{"at":"/parent_folder_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"/space_id","from":"body","optional":true}}},
-    {"action":"read","effects":["read"],"id":"GetFolderViews","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}/view","scope":{"folder_id":{"at":"folder_id","from":"path"}}},
-    {"action":"write.view","body":"json","effects":["write"],"id":"CreateFolderView","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}/view","scope":{"folder_id":{"at":"folder_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete.goal","effects":["delete"],"id":"DeleteGoal","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/goal/{goal_id}","scope":{"goal_id":{"at":"goal_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetGoal","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/goal/{goal_id}","scope":{"goal_id":{"at":"goal_id","from":"path"}}},
-    {"action":"write.goal","body":"json","effects":["write"],"id":"UpdateGoal","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/goal/{goal_id}","scope":{"add_owners":{"at":"/add_owners","from":"body","type":"array"},"goal_id":{"at":"goal_id","from":"path"},"name":{"at":"/name","from":"body"},"rem_owners":{"at":"/rem_owners","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.key_result","body":"json","effects":["write"],"id":"CreateKeyResult","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/goal/{goal_id}/key_result","scope":{"goal_id":{"at":"goal_id","from":"path"},"list_ids":{"at":"/list_ids","from":"body","type":"array"},"name":{"at":"/name","from":"body"},"owners":{"at":"/owners","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"task_ids":{"at":"/task_ids","from":"body","type":"array"}}},
-    {"action":"read","effects":["read"],"id":"GetTeams1","method":"GET","origin":"https://api.clickup.com","params":["team_id","group_ids"],"path":"/api/v2/group","scope":{"group_ids":{"at":"group_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"query"}}},
-    {"action":"delete.group","effects":["delete"],"id":"DeleteTeam","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/group/{group_id}","scope":{"group_id":{"at":"group_id","from":"path"}}},
-    {"action":"admin.group","body":"json","effects":["admin"],"id":"UpdateTeam","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/group/{group_id}","scope":{"group_id":{"at":"group_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete.key_result","effects":["delete"],"id":"DeleteKeyResult","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/key_result/{key_result_id}","scope":{"key_result_id":{"at":"key_result_id","from":"path"}}},
-    {"action":"write.key_result","body":"json","effects":["write"],"id":"EditKeyResult","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/key_result/{key_result_id}","scope":{"key_result_id":{"at":"key_result_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete.list","effects":["delete"],"id":"DeleteList","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}","scope":{"list_id":{"at":"list_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetList","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}","scope":{"list_id":{"at":"list_id","from":"path"}}},
-    {"action":"write.list","body":"json","effects":["write"],"id":"UpdateList","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}","scope":{"list_id":{"at":"list_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"GetListComments","method":"GET","origin":"https://api.clickup.com","params":["start","start_id"],"path":"/api/v2/list/{list_id}/comment","scope":{"list_id":{"at":"list_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"start_id":{"at":"start_id","from":"query","optional":true}}},
-    {"action":"send.comment","body":"json","effects":["send"],"id":"CreateListComment","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/comment","scope":{"list_id":{"at":"list_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"GetAccessibleCustomFields","method":"GET","origin":"https://api.clickup.com","params":["include_applied_objects"],"path":"/api/v2/list/{list_id}/field","scope":{"list_id":{"at":"list_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.guest","effects":["delete"],"id":"RemoveGuestFromList","method":"DELETE","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/list/{list_id}/guest/{guest_id}","scope":{"guest_id":{"at":"guest_id","from":"path"},"list_id":{"at":"list_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.guest","body":"json","effects":["write"],"id":"AddGuestToList","method":"POST","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/list/{list_id}/guest/{guest_id}","scope":{"guest_id":{"at":"guest_id","from":"path"},"list_id":{"at":"list_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"GetListMembers","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/member","scope":{"list_id":{"at":"list_id","from":"path"}}},
-    {"action":"delete.task","effects":["delete"],"id":"RemoveTaskFromList","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/task/{task_id}","scope":{"list_id":{"at":"list_id","from":"path"},"task_id":{"at":"task_id","from":"path"}}},
-    {"action":"write.task","effects":["write"],"id":"AddTaskToList","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/task/{task_id}","scope":{"list_id":{"at":"list_id","from":"path"},"task_id":{"at":"task_id","from":"path"}}},
-    {"action":"write.task_template","body":"json","effects":["write"],"id":"CreateTaskFromTemplate","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/taskTemplate/{template_id}","scope":{"list_id":{"at":"list_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"template_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetListViews","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/view","scope":{"list_id":{"at":"list_id","from":"path"}}},
-    {"action":"write.view","body":"json","effects":["write"],"id":"CreateListView","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/view","scope":{"list_id":{"at":"list_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","body":"json","effects":["read"],"id":"GetAccessToken","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/oauth/token","scope":{"client_id":{"at":"/client_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","body":"form","effects":["read"],"id":"GetAccessToken.form.efdb2a7992fc","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/oauth/token","scope":{"client_id":{"at":"client_id","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
-    {"action":"delete.space","effects":["delete"],"id":"DeleteSpace","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}","scope":{"space_id":{"at":"space_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetSpace","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}","scope":{"space_id":{"at":"space_id","from":"path"}}},
-    {"action":"write.space","body":"json","effects":["write"],"id":"UpdateSpace","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"getSpaceAvailableFields","method":"GET","origin":"https://api.clickup.com","params":["include_applied_objects"],"path":"/api/v2/space/{space_id}/field","scope":{"query":{"at":"","from":"query","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetFolders","method":"GET","origin":"https://api.clickup.com","params":["archived"],"path":"/api/v2/space/{space_id}/folder","scope":{"query":{"at":"","from":"query","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
-    {"action":"write.folder","body":"json","effects":["write"],"id":"CreateFolder","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/folder","scope":{"name":{"at":"/name","from":"body"},"parent_folder_id":{"at":"/parent_folder_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
-    {"action":"write.folder_template","body":"json","effects":["write"],"id":"CreateFolderFromTemplate","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/folder_template/{template_id}","scope":{"name":{"at":"/name","from":"body"},"parent_folder_id":{"at":"/parent_folder_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"},"template_id":{"at":"template_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetFolderlessLists","method":"GET","origin":"https://api.clickup.com","params":["archived"],"path":"/api/v2/space/{space_id}/list","scope":{"query":{"at":"","from":"query","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
-    {"action":"write.list","body":"json","effects":["write"],"id":"CreateFolderlessList","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/list","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
-    {"action":"write.list_template","body":"json","effects":["write"],"id":"CreateSpaceListFromTemplate","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/list_template/{template_id}","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"},"template_id":{"at":"template_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetSpaceTags","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/tag","scope":{"space_id":{"at":"space_id","from":"path"}}},
-    {"action":"write.tag","body":"json","effects":["write"],"id":"CreateSpaceTag","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/tag","scope":{"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
-    {"action":"delete.tag","body":"json","effects":["delete"],"id":"DeleteSpaceTag","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/tag/{tag_name}","scope":{"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"},"tag_name":{"at":"tag_name","from":"path"}}},
-    {"action":"write.tag","body":"json","effects":["write"],"id":"EditSpaceTag","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/tag/{tag_name}","scope":{"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"},"tag_name":{"at":"tag_name","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetSpaceViews","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/view","scope":{"space_id":{"at":"space_id","from":"path"}}},
-    {"action":"write.view","body":"json","effects":["write"],"id":"CreateSpaceView","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/view","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetBulkTasks'TimeinStatus","method":"GET","origin":"https://api.clickup.com","params":["task_ids","custom_task_ids","team_id"],"path":"/api/v2/task/bulk_time_in_status/task_ids","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"task_ids":{"at":"task_ids","from":"query"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"write.task","body":"json","effects":["write"],"id":"CreateChecklist","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/checklist","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"name":{"at":"/name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"read","effects":["read"],"id":"GetTaskComments","method":"GET","origin":"https://api.clickup.com","params":["custom_task_ids","team_id","start","start_id"],"path":"/api/v2/task/{task_id}/comment","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"start_id":{"at":"start_id","from":"query","optional":true},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"delete.dependency","effects":["delete"],"id":"DeleteDependency","method":"DELETE","origin":"https://api.clickup.com","params":["depends_on","dependency_of","custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/dependency","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"write.dependency","body":"json","effects":["write"],"id":"AddDependency","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/dependency","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"delete.field","effects":["delete"],"id":"RemoveCustomFieldValue","method":"DELETE","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/field/{field_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"field_id":{"at":"field_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"write.field","body":"json","effects":["write"],"id":"SetCustomFieldValue","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/field/{field_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"field_id":{"at":"field_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"delete.guest","effects":["delete"],"id":"RemoveGuestFromTask","method":"DELETE","origin":"https://api.clickup.com","params":["include_shared","custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/guest/{guest_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"guest_id":{"at":"guest_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"write.guest","body":"json","effects":["write"],"id":"AddGuestToTask","method":"POST","origin":"https://api.clickup.com","params":["include_shared","custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/guest/{guest_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"guest_id":{"at":"guest_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"delete.link","effects":["delete"],"id":"DeleteTaskLink","method":"DELETE","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/link/{links_to}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"links_to":{"at":"links_to","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"share.link","effects":["share"],"id":"AddTaskLink","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/link/{links_to}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"links_to":{"at":"links_to","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"read","effects":["read"],"id":"GetTaskMembers","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/task/{task_id}/member","scope":{"task_id":{"at":"task_id","from":"path"}}},
-    {"action":"write.task","body":"json","effects":["write"],"id":"mergeTasks","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/task/{task_id}/merge","scope":{"request":{"at":"","from":"body","type":"object"},"source_task_ids":{"at":"/source_task_ids","from":"body","type":"array"},"task_id":{"at":"task_id","from":"path"}}},
-    {"action":"delete.tag","effects":["delete"],"id":"RemoveTagFromTask","method":"DELETE","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/tag/{tag_name}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"tag_name":{"at":"tag_name","from":"path"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"write.tag","effects":["write"],"id":"AddTagToTask","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/tag/{tag_name}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"tag_name":{"at":"tag_name","from":"path"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"read","effects":["read"],"id":"Gettrackedtime","method":"GET","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/time","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"write.time","body":"json","effects":["write"],"id":"Tracktime","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/time","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"delete.time","effects":["delete"],"id":"Deletetimetracked","method":"DELETE","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/time/{interval_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"interval_id":{"at":"interval_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"write.time","body":"json","effects":["write"],"id":"Edittimetracked","method":"PUT","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/time/{interval_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"interval_id":{"at":"interval_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"read","effects":["read"],"id":"GetTask'sTimeinStatus","method":"GET","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/time_in_status","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"read","effects":["read"],"id":"GetFilteredTeamTasks","method":"GET","origin":"https://api.clickup.com","params":["page","order_by","reverse","subtasks","space_ids[]","project_ids[]","list_ids[]","statuses[]","include_closed","assignees[]","tags[]","due_date_gt","due_date_lt","date_created_gt","date_created_lt","date_updated_gt","date_updated_lt","date_done_gt","date_done_lt","custom_fields","parent","include_markdown_description","custom_items[]"],"path":"/api/v2/team/{team_Id}/task","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"team_Id":{"at":"team_Id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"Gettimeentrieswithinadaterange","method":"GET","origin":"https://api.clickup.com","params":["start_date","end_date","assignee","include_task_tags","include_location_names","include_approval_history","include_approval_details","space_id","folder_id","list_id","task_id","custom_task_ids","team_id","is_billable"],"path":"/api/v2/team/{team_Id}/time_entries","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"folder_id":{"at":"folder_id","from":"query","optional":true},"include_location_names":{"at":"include_location_names","from":"query","optional":true},"list_id":{"at":"list_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"space_id":{"at":"space_id","from":"query","optional":true},"task_id":{"at":"task_id","from":"query","optional":true},"team_Id":{"at":"team_Id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
-    {"action":"write.time_entries","body":"json","effects":["write"],"id":"Createatimeentry","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/team/{team_Id}/time_entries","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"team_Id":{"at":"team_Id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true},"tid":{"at":"/tid","from":"body","optional":true}}},
-    {"action":"write.time_entries","body":"json","effects":["write"],"id":"StartatimeEntry","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/team/{team_Id}/time_entries/start","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"team_Id":{"at":"team_Id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true},"tid":{"at":"/tid","from":"body","optional":true}}},
-    {"action":"read","effects":["read"],"id":"GetCustomItems","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/custom_item","scope":{"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetCustomRoles","method":"GET","origin":"https://api.clickup.com","params":["include_members"],"path":"/api/v2/team/{team_id}/customroles","scope":{"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"getTeamAvailableFields","method":"GET","origin":"https://api.clickup.com","params":["include_applied_objects"],"path":"/api/v2/team/{team_id}/field","scope":{"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetFolderTemplates","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/folder_template","scope":{"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetGoals","method":"GET","origin":"https://api.clickup.com","params":["include_completed"],"path":"/api/v2/team/{team_id}/goal","scope":{"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"write.goal","body":"json","effects":["write"],"id":"CreateGoal","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/goal","scope":{"name":{"at":"/name","from":"body"},"owners":{"at":"/owners","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"admin.group","body":"json","effects":["admin"],"id":"CreateUserGroup","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/group","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"share.guest","body":"json","effects":["share"],"id":"InviteGuestToWorkspace","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","optional":true,"type":"number"},"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"delete.guest","effects":["delete"],"id":"RemoveGuestFromWorkspace","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest/{guest_id}","scope":{"guest_id":{"at":"guest_id","from":"path"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetGuest","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest/{guest_id}","scope":{"guest_id":{"at":"guest_id","from":"path"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"write.guest","effects":["write"],"id":"EditGuestOnWorkspace","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest/{guest_id}","scope":{"guest_id":{"at":"guest_id","from":"path"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"write.guest","body":"json","effects":["write"],"id":"EditGuestOnWorkspace.json.2946870080ba","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest/{guest_id}","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","optional":true,"type":"number"},"guest_id":{"at":"guest_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetListTemplates","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/list_template","scope":{"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetWorkspaceplan","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/plan","scope":{"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetWorkspaceseats","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/seats","scope":{"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"SharedHierarchy","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/shared","scope":{"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"write.space","body":"json","effects":["write"],"id":"CreateSpace","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/space","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetTaskTemplates","method":"GET","origin":"https://api.clickup.com","params":["page"],"path":"/api/v2/team/{team_id}/taskTemplate","scope":{"page":{"at":"page","from":"query"},"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"Getrunningtimeentry","method":"GET","origin":"https://api.clickup.com","params":["assignee"],"path":"/api/v2/team/{team_id}/time_entries/current","scope":{"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"write.time_entries","effects":["write"],"id":"StopatimeEntry","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/stop","scope":{"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"delete.tags","body":"json","effects":["delete"],"id":"Removetagsfromtimeentries","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/tags","scope":{"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"},"time_entry_ids":{"at":"/time_entry_ids","from":"body","type":"array"}}},
-    {"action":"read","effects":["read"],"id":"Getalltagsfromtimeentries","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/tags","scope":{"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"write.tags","body":"json","effects":["write"],"id":"Addtagsfromtimeentries","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/tags","scope":{"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"},"time_entry_ids":{"at":"/time_entry_ids","from":"body","type":"array"}}},
-    {"action":"write.tags","body":"json","effects":["write"],"id":"Changetagnamesfromtimeentries","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/tags","scope":{"name":{"at":"/name","from":"body"},"new_name":{"at":"/new_name","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"delete.time_entries","effects":["delete"],"id":"DeleteatimeEntry","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/{timer_id}","scope":{"team_id":{"at":"team_id","from":"path"},"timer_id":{"at":"timer_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"Getsingulartimeentry","method":"GET","origin":"https://api.clickup.com","params":["include_task_tags","include_location_names","include_approval_history","include_approval_details"],"path":"/api/v2/team/{team_id}/time_entries/{timer_id}","scope":{"include_location_names":{"at":"include_location_names","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"},"timer_id":{"at":"timer_id","from":"path"}}},
-    {"action":"write.time_entries","body":"json","effects":["write"],"id":"UpdateatimeEntry","method":"PUT","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/team/{team_id}/time_entries/{timer_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"query.team_id":{"at":"team_id","from":"query","optional":true},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"},"tid":{"at":"/tid","from":"body","optional":true},"timer_id":{"at":"timer_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"Gettimeentryhistory","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/{timer_id}/history","scope":{"team_id":{"at":"team_id","from":"path"},"timer_id":{"at":"timer_id","from":"path"}}},
-    {"action":"share.user","body":"json","effects":["share"],"id":"InviteUserToWorkspace","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/user","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","optional":true,"type":"number"},"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"delete.user","effects":["delete"],"id":"RemoveUserFromWorkspace","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/user/{user_id}","scope":{"team_id":{"at":"team_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetUser","method":"GET","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/team/{team_id}/user/{user_id}","scope":{"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
-    {"action":"admin.user","body":"json","effects":["admin"],"id":"EditUserOnWorkspace","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/user/{user_id}","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"},"user_id":{"at":"user_id","from":"path"},"username":{"at":"/username","from":"body"}}},
-    {"action":"read","effects":["read"],"id":"GetTeamViews","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/view","scope":{"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"write.view","body":"json","effects":["write"],"id":"CreateTeamView","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/view","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetWebhooks","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/webhook","scope":{"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"admin.webhook","body":"json","effects":["admin"],"id":"CreateWebhook","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/webhook","scope":{"folder_id":{"at":"/folder_id","from":"body","optional":true,"type":"number"},"list_id":{"at":"/list_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"/space_id","from":"body","optional":true,"type":"number"},"task_id":{"at":"/task_id","from":"body","optional":true},"team_id":{"at":"team_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetAuthorizedUser","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/user","scope":{}},
-    {"action":"delete.view","effects":["delete"],"id":"DeleteView","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/view/{view_id}","scope":{"view_id":{"at":"view_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetView","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/view/{view_id}","scope":{"view_id":{"at":"view_id","from":"path"}}},
-    {"action":"write.view","body":"json","effects":["write"],"id":"UpdateView","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/view/{view_id}","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"view_id":{"at":"view_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetChatViewComments","method":"GET","origin":"https://api.clickup.com","params":["start","start_id"],"path":"/api/v2/view/{view_id}/comment","scope":{"query":{"at":"","from":"query","type":"object"},"start_id":{"at":"start_id","from":"query","optional":true},"view_id":{"at":"view_id","from":"path"}}},
-    {"action":"send.comment","body":"json","effects":["send"],"id":"CreateChatViewComment","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/view/{view_id}/comment","scope":{"request":{"at":"","from":"body","type":"object"},"view_id":{"at":"view_id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"GetViewTasks","method":"GET","origin":"https://api.clickup.com","params":["page"],"path":"/api/v2/view/{view_id}/task","scope":{"page":{"at":"page","from":"query"},"query":{"at":"","from":"query","type":"object"},"view_id":{"at":"view_id","from":"path"}}},
-    {"action":"delete.webhook","effects":["delete"],"id":"DeleteWebhook","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/webhook/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
-    {"action":"admin.webhook","body":"json","effects":["admin"],"id":"UpdateWebhook","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/webhook/{webhook_id}","scope":{"request":{"at":"","from":"body","type":"object"},"webhook_id":{"at":"webhook_id","from":"path"}}}
+    {"action":"team.read","effects":["read"],"id":"team.list","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team","scope":{}},
+    {"action":"team.space.read","effects":["read"],"id":"space.list","method":"GET","origin":"https://api.clickup.com","params":["archived"],"path":"/api/v2/team/{team}/space","scope":{"team":{"at":"team","from":"path"}}},
+    {"action":"list.task.read","effects":["read"],"id":"list.tasks.list","method":"GET","origin":"https://api.clickup.com","params":["archived","page","order_by","statuses[]"],"path":"/api/v2/list/{list}/task","scope":{"list":{"at":"list","from":"path"}}},
+    {"action":"task.read","effects":["read"],"id":"task.get","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/task/{task}","scope":{"task":{"at":"task","from":"path"}}},
+    {"action":"list.task.write","body":"json","effects":["write"],"id":"list.task.create","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/list/{list}/task","scope":{"list":{"at":"list","from":"path"},"task":{"at":"","from":"body","type":"object"}}},
+    {"action":"task.write","body":"json","effects":["write"],"id":"task.update","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/task/{task}","scope":{"changes":{"at":"","from":"body","type":"object"},"task":{"at":"task","from":"path"}}},
+    {"action":"task.comment.send","body":"json","effects":["send"],"id":"task.comment.create","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/task/{task}/comment","scope":{"comment":{"at":"","from":"body","type":"object"},"task":{"at":"task","from":"path"}}},
+    {"action":"task.delete","effects":["delete"],"id":"task.delete","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/task/{task}","scope":{"task":{"at":"task","from":"path"}}},
+    {"action":"checklist.delete","effects":["delete"],"id":"DeleteChecklist","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/checklist/{checklist_id}","scope":{"checklist_id":{"at":"checklist_id","from":"path"}}},
+    {"action":"checklist.write","body":"json","effects":["write"],"id":"EditChecklist","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/checklist/{checklist_id}","scope":{"checklist_id":{"at":"checklist_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"checklist.checklist_item.write","body":"json","effects":["write"],"id":"CreateChecklistItem","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/checklist/{checklist_id}/checklist_item","scope":{"checklist_id":{"at":"checklist_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"checklist.checklist_item.delete","effects":["delete"],"id":"DeleteChecklistItem","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/checklist/{checklist_id}/checklist_item/{checklist_item_id}","scope":{"checklist_id":{"at":"checklist_id","from":"path"},"checklist_item_id":{"at":"checklist_item_id","from":"path"}}},
+    {"action":"checklist.checklist_item.write","body":"json","effects":["write"],"id":"EditChecklistItem","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/checklist/{checklist_id}/checklist_item/{checklist_item_id}","scope":{"checklist_id":{"at":"checklist_id","from":"path"},"checklist_item_id":{"at":"checklist_item_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"comment.delete","effects":["delete"],"id":"DeleteComment","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/comment/{comment_id}","scope":{"comment_id":{"at":"comment_id","from":"path"}}},
+    {"action":"comment.write","body":"json","effects":["write"],"id":"UpdateComment","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/comment/{comment_id}","scope":{"comment_id":{"at":"comment_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"comment.reply.read","effects":["read"],"id":"GetThreadedComments","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/comment/{comment_id}/reply","scope":{"comment_id":{"at":"comment_id","from":"path"}}},
+    {"action":"comment.reply.send","body":"json","effects":["send"],"id":"CreateThreadedComment","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/comment/{comment_id}/reply","scope":{"comment_id":{"at":"comment_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"folder.delete","effects":["delete"],"id":"DeleteFolder","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}","scope":{"folder_id":{"at":"folder_id","from":"path"}}},
+    {"action":"folder.read","effects":["read"],"id":"GetFolder","method":"GET","origin":"https://api.clickup.com","params":["include_subfolders"],"path":"/api/v2/folder/{folder_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"folder.write","body":"json","effects":["write"],"id":"UpdateFolder","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"folder.field.read","effects":["read"],"id":"getFolderAvailableFields","method":"GET","origin":"https://api.clickup.com","params":["include_applied_objects"],"path":"/api/v2/folder/{folder_id}/field","scope":{"folder_id":{"at":"folder_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"folder.guest.delete","effects":["delete"],"id":"RemoveGuestFromFolder","method":"DELETE","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/folder/{folder_id}/guest/{guest_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"guest_id":{"at":"guest_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"folder.guest.write","body":"json","effects":["write"],"id":"AddGuestToFolder","method":"POST","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/folder/{folder_id}/guest/{guest_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"guest_id":{"at":"guest_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"folder.read","effects":["read"],"id":"GetLists","method":"GET","origin":"https://api.clickup.com","params":["archived"],"path":"/api/v2/folder/{folder_id}/list","scope":{"folder_id":{"at":"folder_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"folder.write","body":"json","effects":["write"],"id":"CreateList","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}/list","scope":{"folder_id":{"at":"folder_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"folder.list_template.write","body":"json","effects":["write"],"id":"CreateFolderListFromTemplate","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}/list_template/{template_id}","scope":{"folder_id":{"at":"folder_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"template_id","from":"path"}}},
+    {"action":"folder.position.write","body":"json","effects":["write"],"id":"MoveFolder","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}/position","scope":{"folder_id":{"at":"folder_id","from":"path"},"parent_folder_id":{"at":"/parent_folder_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"/space_id","from":"body","optional":true}}},
+    {"action":"folder.view.read","effects":["read"],"id":"GetFolderViews","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}/view","scope":{"folder_id":{"at":"folder_id","from":"path"}}},
+    {"action":"folder.view.write","body":"json","effects":["write"],"id":"CreateFolderView","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/folder/{folder_id}/view","scope":{"folder_id":{"at":"folder_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"goal.delete","effects":["delete"],"id":"DeleteGoal","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/goal/{goal_id}","scope":{"goal_id":{"at":"goal_id","from":"path"}}},
+    {"action":"goal.read","effects":["read"],"id":"GetGoal","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/goal/{goal_id}","scope":{"goal_id":{"at":"goal_id","from":"path"}}},
+    {"action":"goal.write","body":"json","effects":["write"],"id":"UpdateGoal","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/goal/{goal_id}","scope":{"add_owners":{"at":"/add_owners","from":"body","type":"array"},"goal_id":{"at":"goal_id","from":"path"},"name":{"at":"/name","from":"body"},"rem_owners":{"at":"/rem_owners","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"goal.key_result.write","body":"json","effects":["write"],"id":"CreateKeyResult","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/goal/{goal_id}/key_result","scope":{"goal_id":{"at":"goal_id","from":"path"},"list_ids":{"at":"/list_ids","from":"body","type":"array"},"name":{"at":"/name","from":"body"},"owners":{"at":"/owners","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"task_ids":{"at":"/task_ids","from":"body","type":"array"}}},
+    {"action":"group.read","effects":["read"],"id":"GetTeams1","method":"GET","origin":"https://api.clickup.com","params":["team_id","group_ids"],"path":"/api/v2/group","scope":{"group_ids":{"at":"group_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"query"}}},
+    {"action":"group.delete","effects":["delete"],"id":"DeleteTeam","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/group/{group_id}","scope":{"group_id":{"at":"group_id","from":"path"}}},
+    {"action":"group.admin","body":"json","effects":["admin"],"id":"UpdateTeam","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/group/{group_id}","scope":{"group_id":{"at":"group_id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"key_result.delete","effects":["delete"],"id":"DeleteKeyResult","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/key_result/{key_result_id}","scope":{"key_result_id":{"at":"key_result_id","from":"path"}}},
+    {"action":"key_result.write","body":"json","effects":["write"],"id":"EditKeyResult","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/key_result/{key_result_id}","scope":{"key_result_id":{"at":"key_result_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"list.delete","effects":["delete"],"id":"DeleteList","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}","scope":{"list_id":{"at":"list_id","from":"path"}}},
+    {"action":"list.read","effects":["read"],"id":"GetList","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}","scope":{"list_id":{"at":"list_id","from":"path"}}},
+    {"action":"list.write","body":"json","effects":["write"],"id":"UpdateList","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}","scope":{"list_id":{"at":"list_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"list.comment.read","effects":["read"],"id":"GetListComments","method":"GET","origin":"https://api.clickup.com","params":["start","start_id"],"path":"/api/v2/list/{list_id}/comment","scope":{"list_id":{"at":"list_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"start_id":{"at":"start_id","from":"query","optional":true}}},
+    {"action":"list.comment.send","body":"json","effects":["send"],"id":"CreateListComment","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/comment","scope":{"list_id":{"at":"list_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"list.field.read","effects":["read"],"id":"GetAccessibleCustomFields","method":"GET","origin":"https://api.clickup.com","params":["include_applied_objects"],"path":"/api/v2/list/{list_id}/field","scope":{"list_id":{"at":"list_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"list.guest.delete","effects":["delete"],"id":"RemoveGuestFromList","method":"DELETE","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/list/{list_id}/guest/{guest_id}","scope":{"guest_id":{"at":"guest_id","from":"path"},"list_id":{"at":"list_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"list.guest.write","body":"json","effects":["write"],"id":"AddGuestToList","method":"POST","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/list/{list_id}/guest/{guest_id}","scope":{"guest_id":{"at":"guest_id","from":"path"},"list_id":{"at":"list_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"list.member.read","effects":["read"],"id":"GetListMembers","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/member","scope":{"list_id":{"at":"list_id","from":"path"}}},
+    {"action":"list.task.delete","effects":["delete"],"id":"RemoveTaskFromList","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/task/{task_id}","scope":{"list_id":{"at":"list_id","from":"path"},"task_id":{"at":"task_id","from":"path"}}},
+    {"action":"list.task.write","effects":["write"],"id":"AddTaskToList","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/task/{task_id}","scope":{"list_id":{"at":"list_id","from":"path"},"task_id":{"at":"task_id","from":"path"}}},
+    {"action":"list.task_template.write","body":"json","effects":["write"],"id":"CreateTaskFromTemplate","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/taskTemplate/{template_id}","scope":{"list_id":{"at":"list_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"template_id":{"at":"template_id","from":"path"}}},
+    {"action":"list.view.read","effects":["read"],"id":"GetListViews","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/view","scope":{"list_id":{"at":"list_id","from":"path"}}},
+    {"action":"list.view.write","body":"json","effects":["write"],"id":"CreateListView","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/list/{list_id}/view","scope":{"list_id":{"at":"list_id","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"oauth.token.read","body":"json","effects":["read"],"id":"GetAccessToken","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/oauth/token","scope":{"client_id":{"at":"/client_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"oauth.token.read","body":"form","effects":["read"],"id":"GetAccessToken.form.efdb2a7992fc","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/oauth/token","scope":{"client_id":{"at":"client_id","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+    {"action":"space.delete","effects":["delete"],"id":"DeleteSpace","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}","scope":{"space_id":{"at":"space_id","from":"path"}}},
+    {"action":"space.read","effects":["read"],"id":"GetSpace","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}","scope":{"space_id":{"at":"space_id","from":"path"}}},
+    {"action":"space.write","body":"json","effects":["write"],"id":"UpdateSpace","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
+    {"action":"space.field.read","effects":["read"],"id":"getSpaceAvailableFields","method":"GET","origin":"https://api.clickup.com","params":["include_applied_objects"],"path":"/api/v2/space/{space_id}/field","scope":{"query":{"at":"","from":"query","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
+    {"action":"space.folder.read","effects":["read"],"id":"GetFolders","method":"GET","origin":"https://api.clickup.com","params":["archived"],"path":"/api/v2/space/{space_id}/folder","scope":{"query":{"at":"","from":"query","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
+    {"action":"space.folder.write","body":"json","effects":["write"],"id":"CreateFolder","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/folder","scope":{"name":{"at":"/name","from":"body"},"parent_folder_id":{"at":"/parent_folder_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
+    {"action":"space.folder_template.write","body":"json","effects":["write"],"id":"CreateFolderFromTemplate","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/folder_template/{template_id}","scope":{"name":{"at":"/name","from":"body"},"parent_folder_id":{"at":"/parent_folder_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"},"template_id":{"at":"template_id","from":"path"}}},
+    {"action":"space.read","effects":["read"],"id":"GetFolderlessLists","method":"GET","origin":"https://api.clickup.com","params":["archived"],"path":"/api/v2/space/{space_id}/list","scope":{"query":{"at":"","from":"query","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
+    {"action":"space.write","body":"json","effects":["write"],"id":"CreateFolderlessList","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/list","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
+    {"action":"space.list_template.write","body":"json","effects":["write"],"id":"CreateSpaceListFromTemplate","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/list_template/{template_id}","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"},"template_id":{"at":"template_id","from":"path"}}},
+    {"action":"space.tag.read","effects":["read"],"id":"GetSpaceTags","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/tag","scope":{"space_id":{"at":"space_id","from":"path"}}},
+    {"action":"space.tag.write","body":"json","effects":["write"],"id":"CreateSpaceTag","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/tag","scope":{"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
+    {"action":"space.tag.delete","body":"json","effects":["delete"],"id":"DeleteSpaceTag","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/tag/{tag_name}","scope":{"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"},"tag_name":{"at":"tag_name","from":"path"}}},
+    {"action":"space.tag.write","body":"json","effects":["write"],"id":"EditSpaceTag","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/tag/{tag_name}","scope":{"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"},"tag_name":{"at":"tag_name","from":"path"}}},
+    {"action":"space.view.read","effects":["read"],"id":"GetSpaceViews","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/view","scope":{"space_id":{"at":"space_id","from":"path"}}},
+    {"action":"space.view.write","body":"json","effects":["write"],"id":"CreateSpaceView","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/space/{space_id}/view","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"space_id","from":"path"}}},
+    {"action":"task.bulk_time_in_status.task_ids.read","effects":["read"],"id":"GetBulkTasks'TimeinStatus","method":"GET","origin":"https://api.clickup.com","params":["task_ids","custom_task_ids","team_id"],"path":"/api/v2/task/bulk_time_in_status/task_ids","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"task_ids":{"at":"task_ids","from":"query"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.checklist.write","body":"json","effects":["write"],"id":"CreateChecklist","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/checklist","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"name":{"at":"/name","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.comment.read","effects":["read"],"id":"GetTaskComments","method":"GET","origin":"https://api.clickup.com","params":["custom_task_ids","team_id","start","start_id"],"path":"/api/v2/task/{task_id}/comment","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"start_id":{"at":"start_id","from":"query","optional":true},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.dependency.delete","effects":["delete"],"id":"DeleteDependency","method":"DELETE","origin":"https://api.clickup.com","params":["depends_on","dependency_of","custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/dependency","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.dependency.write","body":"json","effects":["write"],"id":"AddDependency","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/dependency","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.field.delete","effects":["delete"],"id":"RemoveCustomFieldValue","method":"DELETE","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/field/{field_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"field_id":{"at":"field_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.field.write","body":"json","effects":["write"],"id":"SetCustomFieldValue","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/field/{field_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"field_id":{"at":"field_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.guest.delete","effects":["delete"],"id":"RemoveGuestFromTask","method":"DELETE","origin":"https://api.clickup.com","params":["include_shared","custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/guest/{guest_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"guest_id":{"at":"guest_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.guest.write","body":"json","effects":["write"],"id":"AddGuestToTask","method":"POST","origin":"https://api.clickup.com","params":["include_shared","custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/guest/{guest_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"guest_id":{"at":"guest_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.link.delete","effects":["delete"],"id":"DeleteTaskLink","method":"DELETE","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/link/{links_to}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"links_to":{"at":"links_to","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.link.share","effects":["share"],"id":"AddTaskLink","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/link/{links_to}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"links_to":{"at":"links_to","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.member.read","effects":["read"],"id":"GetTaskMembers","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/task/{task_id}/member","scope":{"task_id":{"at":"task_id","from":"path"}}},
+    {"action":"task.write","body":"json","effects":["write"],"id":"mergeTasks","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/task/{task_id}/merge","scope":{"request":{"at":"","from":"body","type":"object"},"source_task_ids":{"at":"/source_task_ids","from":"body","type":"array"},"task_id":{"at":"task_id","from":"path"}}},
+    {"action":"task.tag.delete","effects":["delete"],"id":"RemoveTagFromTask","method":"DELETE","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/tag/{tag_name}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"tag_name":{"at":"tag_name","from":"path"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.tag.write","effects":["write"],"id":"AddTagToTask","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/tag/{tag_name}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"tag_name":{"at":"tag_name","from":"path"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.time.read","effects":["read"],"id":"Gettrackedtime","method":"GET","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/time","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.time.write","body":"json","effects":["write"],"id":"Tracktime","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/time","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.time.delete","effects":["delete"],"id":"Deletetimetracked","method":"DELETE","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/time/{interval_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"interval_id":{"at":"interval_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.time.write","body":"json","effects":["write"],"id":"Edittimetracked","method":"PUT","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/time/{interval_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"interval_id":{"at":"interval_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"task.time_in_status.read","effects":["read"],"id":"GetTask'sTimeinStatus","method":"GET","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/task/{task_id}/time_in_status","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"task_id":{"at":"task_id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"team.task.read","effects":["read"],"id":"GetFilteredTeamTasks","method":"GET","origin":"https://api.clickup.com","params":["page","order_by","reverse","subtasks","space_ids[]","project_ids[]","list_ids[]","statuses[]","include_closed","assignees[]","tags[]","due_date_gt","due_date_lt","date_created_gt","date_created_lt","date_updated_gt","date_updated_lt","date_done_gt","date_done_lt","custom_fields","parent","include_markdown_description","custom_items[]"],"path":"/api/v2/team/{team_Id}/task","scope":{"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"team_Id":{"at":"team_Id","from":"path"}}},
+    {"action":"team.time_entries.read","effects":["read"],"id":"Gettimeentrieswithinadaterange","method":"GET","origin":"https://api.clickup.com","params":["start_date","end_date","assignee","include_task_tags","include_location_names","include_approval_history","include_approval_details","space_id","folder_id","list_id","task_id","custom_task_ids","team_id","is_billable"],"path":"/api/v2/team/{team_Id}/time_entries","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"folder_id":{"at":"folder_id","from":"query","optional":true},"include_location_names":{"at":"include_location_names","from":"query","optional":true},"list_id":{"at":"list_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"space_id":{"at":"space_id","from":"query","optional":true},"task_id":{"at":"task_id","from":"query","optional":true},"team_Id":{"at":"team_Id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true}}},
+    {"action":"team.time_entries.write","body":"json","effects":["write"],"id":"Createatimeentry","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/team/{team_Id}/time_entries","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"team_Id":{"at":"team_Id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true},"tid":{"at":"/tid","from":"body","optional":true}}},
+    {"action":"team.time_entries.write","body":"json","effects":["write"],"id":"StartatimeEntry","method":"POST","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/team/{team_Id}/time_entries/start","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"team_Id":{"at":"team_Id","from":"path"},"team_id":{"at":"team_id","from":"query","optional":true},"tid":{"at":"/tid","from":"body","optional":true}}},
+    {"action":"team.custom_item.read","effects":["read"],"id":"GetCustomItems","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/custom_item","scope":{"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.customroles.read","effects":["read"],"id":"GetCustomRoles","method":"GET","origin":"https://api.clickup.com","params":["include_members"],"path":"/api/v2/team/{team_id}/customroles","scope":{"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.field.read","effects":["read"],"id":"getTeamAvailableFields","method":"GET","origin":"https://api.clickup.com","params":["include_applied_objects"],"path":"/api/v2/team/{team_id}/field","scope":{"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.folder_template.read","effects":["read"],"id":"GetFolderTemplates","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/folder_template","scope":{"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.goal.read","effects":["read"],"id":"GetGoals","method":"GET","origin":"https://api.clickup.com","params":["include_completed"],"path":"/api/v2/team/{team_id}/goal","scope":{"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.goal.write","body":"json","effects":["write"],"id":"CreateGoal","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/goal","scope":{"name":{"at":"/name","from":"body"},"owners":{"at":"/owners","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.group.admin","body":"json","effects":["admin"],"id":"CreateUserGroup","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/group","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.guest.share","body":"json","effects":["share"],"id":"InviteGuestToWorkspace","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","optional":true,"type":"number"},"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.guest.delete","effects":["delete"],"id":"RemoveGuestFromWorkspace","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest/{guest_id}","scope":{"guest_id":{"at":"guest_id","from":"path"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.guest.read","effects":["read"],"id":"GetGuest","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest/{guest_id}","scope":{"guest_id":{"at":"guest_id","from":"path"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.guest.write","effects":["write"],"id":"EditGuestOnWorkspace","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest/{guest_id}","scope":{"guest_id":{"at":"guest_id","from":"path"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.guest.write","body":"json","effects":["write"],"id":"EditGuestOnWorkspace.json.2946870080ba","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/guest/{guest_id}","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","optional":true,"type":"number"},"guest_id":{"at":"guest_id","from":"path"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.template.read","effects":["read"],"id":"GetListTemplates","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/list_template","scope":{"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.plan.read","effects":["read"],"id":"GetWorkspaceplan","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/plan","scope":{"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.seats.read","effects":["read"],"id":"GetWorkspaceseats","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/seats","scope":{"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.shared.read","effects":["read"],"id":"SharedHierarchy","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/shared","scope":{"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.space.write","body":"json","effects":["write"],"id":"CreateSpace","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/space","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.task_template.read","effects":["read"],"id":"GetTaskTemplates","method":"GET","origin":"https://api.clickup.com","params":["page"],"path":"/api/v2/team/{team_id}/taskTemplate","scope":{"page":{"at":"page","from":"query"},"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.time_entries.current.read","effects":["read"],"id":"Getrunningtimeentry","method":"GET","origin":"https://api.clickup.com","params":["assignee"],"path":"/api/v2/team/{team_id}/time_entries/current","scope":{"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.time_entries.write","effects":["write"],"id":"StopatimeEntry","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/stop","scope":{"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.time_entries.tags.delete","body":"json","effects":["delete"],"id":"Removetagsfromtimeentries","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/tags","scope":{"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"},"time_entry_ids":{"at":"/time_entry_ids","from":"body","type":"array"}}},
+    {"action":"team.time_entries.tags.read","effects":["read"],"id":"Getalltagsfromtimeentries","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/tags","scope":{"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.time_entries.tags.write","body":"json","effects":["write"],"id":"Addtagsfromtimeentries","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/tags","scope":{"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"},"time_entry_ids":{"at":"/time_entry_ids","from":"body","type":"array"}}},
+    {"action":"team.time_entries.tags.write","body":"json","effects":["write"],"id":"Changetagnamesfromtimeentries","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/tags","scope":{"name":{"at":"/name","from":"body"},"new_name":{"at":"/new_name","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.time_entries.delete","effects":["delete"],"id":"DeleteatimeEntry","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/{timer_id}","scope":{"team_id":{"at":"team_id","from":"path"},"timer_id":{"at":"timer_id","from":"path"}}},
+    {"action":"team.time_entries.read","effects":["read"],"id":"Getsingulartimeentry","method":"GET","origin":"https://api.clickup.com","params":["include_task_tags","include_location_names","include_approval_history","include_approval_details"],"path":"/api/v2/team/{team_id}/time_entries/{timer_id}","scope":{"include_location_names":{"at":"include_location_names","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"},"timer_id":{"at":"timer_id","from":"path"}}},
+    {"action":"team.time_entries.write","body":"json","effects":["write"],"id":"UpdateatimeEntry","method":"PUT","origin":"https://api.clickup.com","params":["custom_task_ids","team_id"],"path":"/api/v2/team/{team_id}/time_entries/{timer_id}","scope":{"custom_task_ids":{"at":"custom_task_ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"query.team_id":{"at":"team_id","from":"query","optional":true},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"},"tid":{"at":"/tid","from":"body","optional":true},"timer_id":{"at":"timer_id","from":"path"}}},
+    {"action":"team.time_entries.history.read","effects":["read"],"id":"Gettimeentryhistory","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/time_entries/{timer_id}/history","scope":{"team_id":{"at":"team_id","from":"path"},"timer_id":{"at":"timer_id","from":"path"}}},
+    {"action":"team.user.share","body":"json","effects":["share"],"id":"InviteUserToWorkspace","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/user","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","optional":true,"type":"number"},"email":{"at":"/email","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.user.delete","effects":["delete"],"id":"RemoveUserFromWorkspace","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/user/{user_id}","scope":{"team_id":{"at":"team_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"team.user.read","effects":["read"],"id":"GetUser","method":"GET","origin":"https://api.clickup.com","params":["include_shared"],"path":"/api/v2/team/{team_id}/user/{user_id}","scope":{"query":{"at":"","from":"query","type":"object"},"team_id":{"at":"team_id","from":"path"},"user_id":{"at":"user_id","from":"path"}}},
+    {"action":"team.user.admin","body":"json","effects":["admin"],"id":"EditUserOnWorkspace","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/user/{user_id}","scope":{"custom_role_id":{"at":"/custom_role_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"},"user_id":{"at":"user_id","from":"path"},"username":{"at":"/username","from":"body"}}},
+    {"action":"team.view.read","effects":["read"],"id":"GetTeamViews","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/view","scope":{"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.view.write","body":"json","effects":["write"],"id":"CreateTeamView","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/view","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.webhook.read","effects":["read"],"id":"GetWebhooks","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/webhook","scope":{"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"team.webhook.admin","body":"json","effects":["admin"],"id":"CreateWebhook","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/team/{team_id}/webhook","scope":{"folder_id":{"at":"/folder_id","from":"body","optional":true,"type":"number"},"list_id":{"at":"/list_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"space_id":{"at":"/space_id","from":"body","optional":true,"type":"number"},"task_id":{"at":"/task_id","from":"body","optional":true},"team_id":{"at":"team_id","from":"path"}}},
+    {"action":"user.read","effects":["read"],"id":"GetAuthorizedUser","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/user","scope":{}},
+    {"action":"view.delete","effects":["delete"],"id":"DeleteView","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/view/{view_id}","scope":{"view_id":{"at":"view_id","from":"path"}}},
+    {"action":"view.read","effects":["read"],"id":"GetView","method":"GET","origin":"https://api.clickup.com","path":"/api/v2/view/{view_id}","scope":{"view_id":{"at":"view_id","from":"path"}}},
+    {"action":"view.write","body":"json","effects":["write"],"id":"UpdateView","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/view/{view_id}","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"view_id":{"at":"view_id","from":"path"}}},
+    {"action":"view.comment.read","effects":["read"],"id":"GetChatViewComments","method":"GET","origin":"https://api.clickup.com","params":["start","start_id"],"path":"/api/v2/view/{view_id}/comment","scope":{"query":{"at":"","from":"query","type":"object"},"start_id":{"at":"start_id","from":"query","optional":true},"view_id":{"at":"view_id","from":"path"}}},
+    {"action":"view.comment.send","body":"json","effects":["send"],"id":"CreateChatViewComment","method":"POST","origin":"https://api.clickup.com","path":"/api/v2/view/{view_id}/comment","scope":{"request":{"at":"","from":"body","type":"object"},"view_id":{"at":"view_id","from":"path"}}},
+    {"action":"view.task.read","effects":["read"],"id":"GetViewTasks","method":"GET","origin":"https://api.clickup.com","params":["page"],"path":"/api/v2/view/{view_id}/task","scope":{"page":{"at":"page","from":"query"},"query":{"at":"","from":"query","type":"object"},"view_id":{"at":"view_id","from":"path"}}},
+    {"action":"webhook.delete","effects":["delete"],"id":"DeleteWebhook","method":"DELETE","origin":"https://api.clickup.com","path":"/api/v2/webhook/{webhook_id}","scope":{"webhook_id":{"at":"webhook_id","from":"path"}}},
+    {"action":"webhook.admin","body":"json","effects":["admin"],"id":"UpdateWebhook","method":"PUT","origin":"https://api.clickup.com","path":"/api/v2/webhook/{webhook_id}","scope":{"request":{"at":"","from":"body","type":"object"},"webhook_id":{"at":"webhook_id","from":"path"}}}
   ]
 }

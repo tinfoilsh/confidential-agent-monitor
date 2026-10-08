@@ -10,3 +10,7 @@ test_*.py
 *.test
 *.test.*
 testdata/
+
+!dev/presets/grouping_test.go
+!dev/presets/generate_test.go
+!grouping_policy_test.go

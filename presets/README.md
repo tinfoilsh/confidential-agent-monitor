@@ -44,12 +44,20 @@ name. The shipped module still applies. Drafts load JSON only. Owner Rego
 continues to live in `config.policies`; the `custom` preset recognizes
 `data.sentinel.operation`.
 
-GitHub's REST operations now live in `github.json`. They retain the former
-`github_api` operation IDs, effects, scopes, and grants, and use GitHub's
-permission names: `open.issues`, `comment`, `open.pulls`, `merge`, and `push`.
+GitHub's REST operations live in `github.json`. They keep their operation IDs,
+effects, scopes, and grants, and use resource-based permission names such as
+`repos.issues.open`, `repos.issues.comments.comment`, and `repos.contents.push`.
 The module handles Git smart HTTP, GraphQL, and MCP, and applies the account's
 public/private repository settings across protocols. Unlisted REST requests
 are unknown and require approval. They no longer inherit a blanket read rule.
+
+API action catalogs include resource parents and capability leaves. The account
+and agent views display the same collapsible hierarchy. A parent permission
+applies to its descendants unless a more specific override is set. The generator's
+`group` command rebuilds these names for existing shipped operations; `generate`
+and `draft` use the same grouping for their output. Grouping preserves each
+operation's effects and request constraints. Action renames have no compatibility
+mapping: existing overrides and custom policies must use the new names.
 
 Stored configs migrate during unlock. Legacy configuration patches also migrate
 before validation. Migration replaces `template` and `policy_options.preset`

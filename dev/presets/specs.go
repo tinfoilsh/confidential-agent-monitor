@@ -26,6 +26,7 @@ import (
 type specOp struct {
 	ID, Summary, Method, Origin, Path string
 	Tags                              []string
+	Resource                          string // schema resource for field-based APIs
 	Params                            []string
 	Query                             map[string]any // literal query conditions; nil requires absence
 	Required                          []param        // resource selectors; Optional distinguishes required members
@@ -378,6 +379,16 @@ func parseGraphQL(src []byte, origin, path string) (parsed, error) {
 				continue
 			}
 			o := specOp{ID: f.Name, Summary: f.Description, Method: "POST", Origin: origin, Path: path, Body: "graphql", GraphQL: []string{kind, f.Name}, Tags: []string{kind}}
+			resource := f.Type.Name()
+			if def := schema.Types[resource]; def != nil && def.Kind == ast.Object {
+				for _, suffix := range []string{"Connection", "Payload", "Response", "Result"} {
+					resource = strings.TrimSuffix(resource, suffix)
+				}
+				resource = resourceWords(resource)
+				if resource != "" && !slices.Contains(groupVerbs, resource) {
+					o.Resource = resource
+				}
+			}
 			for _, a := range f.Arguments {
 				if a.Type.NonNull && resourceKey.MatchString(a.Name) {
 					typ := "string"

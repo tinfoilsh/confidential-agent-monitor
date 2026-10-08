@@ -127,7 +127,11 @@
   .row { display: flex; gap: 6px; align-items: center; justify-content: space-between; margin-top: 4px; }
   .row > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .access-actions { display: grid; gap: 4px; padding: 4px 0 0 32px; }
-  .access-actions > .access-action { display: grid; grid-template-columns: minmax(0, 1fr) auto; margin: 0; }
+  .access-actions .access-action { display: grid; grid-template-columns: minmax(0, 1fr) auto; margin: 0; }
+  .access-children { display: grid; gap: 4px; padding: 4px 0 4px 14px; border-left: 1px solid var(--line); margin-left: 4px; }
+  .access-action-group > summary { cursor: pointer; list-style: none; }
+  .access-group-title::before { content: "▸"; display: inline-block; width: 12px; color: var(--muted); }
+  .access-action-group[open] > summary > .access-group-title::before { content: "▾"; }
   table { width: 100%; border-collapse: collapse; }
   th { text-align: left; font-weight: 400; color: var(--dim); }
   td { padding: 2px 4px 2px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -275,14 +279,24 @@ const actionsOf = (account) => ({ ...groupsOf(account), ...entry(account).action
 const operationsOf = (account) => entry(account).operations ?? [];
 const groupsOf = (account) => Object.fromEntries(operationsOf(account).map((o) => [o.action, { title: o.action }]));
 // effectsOf unions the effects of every operation under an action, so a group shows its strictest obligations.
+const effectGroups = new WeakMap();
 const effectsOf = (account, k) => {
-  const actions = entry(account).actions ?? {}, lineage = k.split(".").map((_, i, parts) => parts.slice(0, i + 1).join(".")).reverse();
+  const preset = entry(account), actions = preset.actions ?? {};
+  let groups = effectGroups.get(preset);
+  if (!groups) {
+    groups = new Map();
+    const add = (action, effects) => action.split(".").forEach((_, i, parts) => {
+      const key = parts.slice(0, i + 1).join(".");
+      if (!groups.has(key)) groups.set(key, new Set());
+      for (const effect of effects) groups.get(key).add(effect);
+    });
+    for (const [action, meta] of Object.entries(actions)) add(action, meta.effects ?? []);
+    for (const op of preset.operations ?? []) add(op.action, op.effects);
+    effectGroups.set(preset, groups);
+  }
+  const lineage = k.split(".").map((_, i, parts) => parts.slice(0, i + 1).join(".")).reverse();
   const inherited = lineage.find((a) => actions[a]?.effects);
-  return [...new Set([
-    ...(actions[inherited]?.effects ?? []),
-    ...Object.entries(actions).filter(([a]) => a.startsWith(k + ".")).flatMap(([, a]) => a.effects ?? []),
-    ...operationsOf(account).filter((o) => o.action === k || o.action.startsWith(k + ".")).flatMap((o) => o.effects),
-  ])];
+  return [...new Set([...(actions[inherited]?.effects ?? []), ...(groups.get(k) ?? [])])];
 };
 const tree = (actions) => Object.entries(actions).sort(([a], [b]) => a.localeCompare(b)).map(([k, x]) => [k, x, k.split(".").length - 1]);
 const fill = (text, scope) => text.replace(/\{(\w+)\}/g, (m, k) => scope?.[k] ?? m);
@@ -644,18 +658,30 @@ function mode(access, vocabulary, effects, k) {
     ?? (access.level === "allow" && has("ask") ? "ask" : has("change") ? (access.level === "read" ? "off" : access.level) : "allow");
 }
 
+function accessActions(name, a, access) {
+  const c = entry(a);
+  const renderAction = (node) => {
+    const k = node.key, effects = effectsOf(a, k), children = [...node.children.values()];
+    const inherited = mode({ ...access, actions: { ...access.actions, [k]: null } }, c.vocabulary, effects, k), own = access.actions?.[k];
+    const overrides = Object.keys(access.actions ?? {}).filter((action) => action.startsWith(k + ".") && access.actions[action]).length;
+    const label = `${esc(node.title)}${overrides ? ` <small class="muted" title="${overrides} overrides">${overrides}</small>` : ""}`;
+    const buttons = `<span class="seg" role="group" aria-label="${esc(k)} permission">${Object.entries(MODES).map(([m, t]) =>
+      `<button class="${m === own ? "primary" : !own && m === inherited ? "inherited" : ""}" aria-label="${esc(t + " " + k)}" aria-pressed="${m === own}" onclick="event.preventDefault(); event.stopPropagation(); patchAccess(${q(name)}, ${q(a)}, { actions: { [${q(k)}]: ${q(m === own ? null : m)} } })">${t}</button>`).join("")}</span>`;
+    const title = `title="${esc(effects.join(", "))}"`;
+    return children.length
+      ? `<details class="access-action-group" data-disclosure="${esc(name + "/" + a + "/" + k)}"><summary class="access-action" role="button" aria-label="${esc(node.title)}"><span class="access-group-title" ${title}>${label}</span>${buttons}</summary><div class="access-children">${children.map(renderAction).join("")}</div></details>`
+      : `<div class="access-action"><span ${title}>${label}</span>${buttons}</div>`;
+  };
+  return actionTree(a).map(renderAction);
+}
+
 function agent(name) {
   const id = ids()[name];
   if (!id) return [head(esc(name)), `<p class="empty">No agent ${esc(name)}.</p>`];
   const levels = Object.entries(accounts()).map(([a, acc]) => {
     const access = id.accounts?.[a] ?? { level: "off" };
     const c = entry(a);
-    const actions = access.level === "off" ? [] : tree(actionsOf(a)).map(([k, x]) => {
-      const effects = effectsOf(a, k), inherited = mode({ ...access, actions: { ...access.actions, [k]: null } }, c.vocabulary, effects, k);
-      const own = access.actions?.[k];
-      return `<div class="row access-action"><span title="${esc(effects.join(", "))}">${esc(x.title)}</span><span class="seg">${Object.entries(MODES).map(([m, t]) =>
-        `<button class="${m === own ? "primary" : !own && m === inherited ? "inherited" : ""}" onclick="patchAccess(${q(name)}, ${q(a)}, { actions: { [${q(k)}]: ${q(m === own ? null : m)} } })">${t}</button>`).join("")}</span></div>`;
-    });
+    const actions = access.level === "off" ? [] : accessActions(name, a, access);
     const overrides = Object.values(access.actions ?? {}).filter(Boolean).length;
     const key = `access/${encodeURIComponent(name)}/${encodeURIComponent(a)}`, open = actions.length > 0 && expanded.has(key);
     return `<div class="acct"><div class="row"><button class="access-toggle" aria-label="Actions for ${esc(a)}" aria-expanded="${open}" aria-controls="${esc(key)}" ${actions.length ? "" : "disabled"} onclick="toggle(${q(key)})">
@@ -1070,7 +1096,7 @@ function credentialMode(a, key, mode) {
   else $(mode === "keep" ? "replace-" + key : "credential-cancel-" + key).focus();
 }
 
-function accountActions(a) {
+function actionTree(a) {
   const roots = new Map();
   for (const [key, action] of tree(actionsOf(a))) {
     let children = roots;
@@ -1082,6 +1108,10 @@ function accountActions(a) {
       children = node.children;
     });
   }
+  return [...roots.values()];
+}
+
+function accountActions(a) {
   const count = (node) => Number(!!node.action) + [...node.children.values()].reduce((n, child) => n + count(child), 0);
   const renderAction = (node) => {
     const effects = effectsOf(a, node.key), children = [...node.children.values()];
@@ -1092,7 +1122,7 @@ function accountActions(a) {
       ? `<details class="action-group" data-disclosure="${esc(a + "/" + node.key)}"><summary class="capability">${row}</summary><div class="action-children">${children.map(renderAction).join("")}</div></details>`
       : `<div class="capability">${row}</div>`;
   };
-  return [...roots.values()].map(renderAction).join("") || `<p class="empty">This preset doesn't define any actions yet.</p>`;
+  return actionTree(a).map(renderAction).join("") || `<p class="empty">This preset doesn't define any actions yet.</p>`;
 }
 
 function accountUsers(a) {

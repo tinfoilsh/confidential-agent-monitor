@@ -1,46 +1,225 @@
 {
-  "title": "Google Drive",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {
-        "key": "token",
-        "label": "Google account",
-        "secret": true,
-        "path": [
-          "connections",
-          "",
-          "http",
-          "values",
-          "token"
-        ],
-        "oauth": {
-          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
-          "token_url": "https://oauth2.googleapis.com/token",
-          "client_id": "{MONITOR_GOOGLE_CLIENT_ID}",
-          "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}",
-          "scope": "https://www.googleapis.com/auth/drive",
-          "prompt": "consent"
-        }
+    "actions": {
+      "drive": {
+        "title": "Drive"
+      },
+      "drive.about": {
+        "title": "About"
+      },
+      "drive.about.read": {
+        "title": "Read"
+      },
+      "drive.apps": {
+        "title": "Apps"
+      },
+      "drive.apps.read": {
+        "title": "Read"
+      },
+      "drive.changes": {
+        "title": "Changes"
+      },
+      "drive.changes.page_token": {
+        "title": "Page token"
+      },
+      "drive.changes.page_token.read": {
+        "title": "Read"
+      },
+      "drive.changes.read": {
+        "title": "Read"
+      },
+      "drive.changes.watch": {
+        "title": "Watch"
+      },
+      "drive.changes.watch.write": {
+        "title": "Create and edit"
+      },
+      "drive.channels": {
+        "title": "Channels"
+      },
+      "drive.channels.write": {
+        "title": "Create and edit"
+      },
+      "drive.drives": {
+        "title": "Drives"
+      },
+      "drive.drives.delete": {
+        "title": "Delete"
+      },
+      "drive.drives.hide": {
+        "title": "Hide"
+      },
+      "drive.drives.hide.write": {
+        "title": "Create and edit"
+      },
+      "drive.drives.read": {
+        "title": "Read"
+      },
+      "drive.drives.unhide": {
+        "title": "Unhide"
+      },
+      "drive.drives.unhide.write": {
+        "title": "Create and edit"
+      },
+      "drive.drives.write": {
+        "title": "Create and edit"
+      },
+      "drive.files": {
+        "title": "Files"
+      },
+      "drive.files.accessproposals": {
+        "title": "Accessproposals"
+      },
+      "drive.files.accessproposals.read": {
+        "title": "Read"
+      },
+      "drive.files.accessproposals.write": {
+        "title": "Create and edit"
+      },
+      "drive.files.admin": {
+        "title": "Manage"
+      },
+      "drive.files.approvals": {
+        "title": "Approvals"
+      },
+      "drive.files.approvals.read": {
+        "title": "Read"
+      },
+      "drive.files.approvals.write": {
+        "title": "Create and edit"
+      },
+      "drive.files.comments": {
+        "title": "Comments"
+      },
+      "drive.files.comments.delete": {
+        "title": "Delete"
+      },
+      "drive.files.comments.read": {
+        "title": "Read"
+      },
+      "drive.files.comments.replies": {
+        "title": "Replies"
+      },
+      "drive.files.comments.replies.delete": {
+        "title": "Delete"
+      },
+      "drive.files.comments.replies.read": {
+        "title": "Read"
+      },
+      "drive.files.comments.replies.send": {
+        "title": "Send"
+      },
+      "drive.files.comments.replies.write": {
+        "title": "Create and edit"
+      },
+      "drive.files.comments.send": {
+        "title": "Send"
+      },
+      "drive.files.comments.write": {
+        "title": "Create and edit"
+      },
+      "drive.files.delete": {
+        "title": "Delete"
+      },
+      "drive.files.generate_cse_token": {
+        "title": "Generate cse token"
+      },
+      "drive.files.generate_cse_token.read": {
+        "title": "Read"
+      },
+      "drive.files.generate_ids": {
+        "title": "Generate ids"
+      },
+      "drive.files.generate_ids.read": {
+        "title": "Read"
+      },
+      "drive.files.labels": {
+        "title": "Labels"
+      },
+      "drive.files.labels.read": {
+        "title": "Read"
+      },
+      "drive.files.modify_labels": {
+        "title": "Modify labels"
+      },
+      "drive.files.modify_labels.write": {
+        "title": "Create and edit"
+      },
+      "drive.files.permissions": {
+        "title": "Permissions"
+      },
+      "drive.files.permissions.read": {
+        "title": "Read"
+      },
+      "drive.files.permissions.share": {
+        "title": "Share"
+      },
+      "drive.files.read": {
+        "title": "Read"
+      },
+      "drive.files.revisions": {
+        "title": "Revisions"
+      },
+      "drive.files.revisions.delete": {
+        "title": "Delete"
+      },
+      "drive.files.revisions.read": {
+        "title": "Read"
+      },
+      "drive.files.revisions.write": {
+        "title": "Create and edit"
+      },
+      "drive.files.trash": {
+        "title": "Trash"
+      },
+      "drive.files.trash.delete": {
+        "title": "Delete"
+      },
+      "drive.files.watch": {
+        "title": "Watch"
+      },
+      "drive.files.watch.write": {
+        "title": "Create and edit"
+      },
+      "drive.files.write": {
+        "title": "Create and edit"
+      },
+      "drive.operations": {
+        "title": "Operations"
+      },
+      "drive.operations.read": {
+        "title": "Read"
+      },
+      "drive.teamdrives": {
+        "title": "Teamdrives"
+      },
+      "drive.teamdrives.delete": {
+        "title": "Delete"
+      },
+      "drive.teamdrives.read": {
+        "title": "Read"
+      },
+      "drive.teamdrives.write": {
+        "title": "Create and edit"
       }
-    ],
+    },
     "connections": {
       "": {
         "http": {
           "slots": [
             {
-              "value": "token",
+              "header": "Authorization",
               "origin": "https://www.googleapis.com",
               "path": "/drive/v3",
-              "header": "Authorization",
-              "prefix": "Bearer "
+              "prefix": "Bearer ",
+              "value": "token"
             },
             {
-              "value": "token",
+              "header": "Authorization",
               "origin": "https://www.googleapis.com",
               "path": "/upload/drive/v3",
-              "header": "Authorization",
-              "prefix": "Bearer "
+              "prefix": "Bearer ",
+              "value": "token"
             }
           ]
         }
@@ -48,155 +227,99 @@
     },
     "defaults": {
       "contents": "me",
-      "strangers": true,
-      "sends": "anyone"
+      "sends": "anyone",
+      "strangers": true
     },
-    "actions": {
-      "read": {
-        "title": "List, read, download and export files"
-      },
-      "write": {
-        "title": "Create, upload and copy files"
-      },
-      "admin.metadata": {
-        "title": "Change file metadata: rename, trash, sharing settings and restrictions"
-      },
-      "delete": {
-        "title": "Delete files permanently"
-      },
-      "share": {
-        "title": "Share files and change permissions"
-      },
-      "write.accessproposals": {
-        "title": "write: accessproposals"
-      },
-      "write.approvals": {
-        "title": "write: approvals"
-      },
-      "write.watch": {
-        "title": "write: watch"
-      },
-      "write.stop": {
-        "title": "write: stop"
-      },
-      "send.comments": {
-        "title": "send: comments"
-      },
-      "delete.comments": {
-        "title": "delete: comments"
-      },
-      "write.comments": {
-        "title": "write: comments"
-      },
-      "write.drives": {
-        "title": "write: drives"
-      },
-      "delete.drives": {
-        "title": "delete: drives"
-      },
-      "write.hide": {
-        "title": "write: hide"
-      },
-      "write.unhide": {
-        "title": "write: unhide"
-      },
-      "delete.trash": {
-        "title": "delete: trash"
-      },
-      "write.modify_labels": {
-        "title": "write: modify_labels"
-      },
-      "share.permissions": {
-        "title": "share: permissions"
-      },
-      "send.replies": {
-        "title": "send: replies"
-      },
-      "delete.replies": {
-        "title": "delete: replies"
-      },
-      "write.replies": {
-        "title": "write: replies"
-      },
-      "delete.revisions": {
-        "title": "delete: revisions"
-      },
-      "write.revisions": {
-        "title": "write: revisions"
-      },
-      "write.teamdrives": {
-        "title": "write: teamdrives"
-      },
-      "delete.teamdrives": {
-        "title": "delete: teamdrives"
+    "fields": [
+      {
+        "key": "token",
+        "label": "Google account",
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "client_id": "{MONITOR_GOOGLE_CLIENT_ID}",
+          "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}",
+          "prompt": "consent",
+          "scope": "https://www.googleapis.com/auth/drive",
+          "token_url": "https://oauth2.googleapis.com/token"
+        },
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ],
+        "secret": true
       }
-    }
+    ],
+    "group": "api"
   },
+  "title": "Google Drive",
   "operations": [
-    {"action":"read","effects":["read"],"id":"files.list","method":"GET","origin":"https://www.googleapis.com","params":["q","pageSize","pageToken","fields","orderBy","spaces","corpora","driveId","includeItemsFromAllDrives","supportsAllDrives"],"path":"/drive/v3/files","query":{"useDomainAdminAccess":null},"scope":{}},
-    {"action":"read","effects":["read"],"id":"files.get","method":"GET","origin":"https://www.googleapis.com","params":["fields","alt","supportsAllDrives","acknowledgeAbuse"],"path":"/drive/v3/files/{file}","scope":{"file":{"at":"file","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"files.export","method":"GET","origin":"https://www.googleapis.com","params":["mimeType"],"path":"/drive/v3/files/{file}/export","scope":{"file":{"at":"file","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"permissions.list","method":"GET","origin":"https://www.googleapis.com","params":["pageSize","pageToken","fields","supportsAllDrives"],"path":"/drive/v3/files/{file}/permissions","query":{"useDomainAdminAccess":null},"scope":{"file":{"at":"file","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"drives.list","method":"GET","origin":"https://www.googleapis.com","params":["pageSize","pageToken","q","fields"],"path":"/drive/v3/drives","query":{"useDomainAdminAccess":null},"scope":{}},
-    {"action":"write","body":"json","effects":["write"],"fields":{"/copyRequiresWriterPermission":null,"/writersCanShare":null},"id":"files.create","method":"POST","origin":"https://www.googleapis.com","params":["fields","supportsAllDrives"],"path":"/drive/v3/files","scope":{"file":{"at":"","from":"body","type":"object"}}},
-    {"action":"write","body":"any","effects":["write"],"id":"files.upload","method":"POST","origin":"https://www.googleapis.com","params":["fields","supportsAllDrives"],"path":"/upload/drive/v3/files","query":{"uploadType":"media"},"scope":{}},
-    {"action":"admin.metadata","body":"json","effects":["write","delete","share","admin"],"id":"files.update","method":"PATCH","origin":"https://www.googleapis.com","params":["fields","supportsAllDrives"],"path":"/drive/v3/files/{file}","scope":{"file":{"at":"file","from":"path"},"metadata":{"at":"","from":"body","type":"object"}}},
-    {"action":"write","body":"json","effects":["write"],"fields":{"/copyRequiresWriterPermission":null,"/writersCanShare":null},"id":"files.copy","method":"POST","origin":"https://www.googleapis.com","params":["fields","supportsAllDrives"],"path":"/drive/v3/files/{file}/copy","scope":{"copy":{"at":"","from":"body","type":"object"},"file":{"at":"file","from":"path"}}},
-    {"action":"delete","effects":["delete"],"id":"files.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["supportsAllDrives"],"path":"/drive/v3/files/{file}","scope":{"file":{"at":"file","from":"path"}}},
-    {"action":"share","body":"json","effects":["share","send"],"id":"permissions.create","method":"POST","origin":"https://www.googleapis.com","params":["sendNotificationEmail","emailMessage","supportsAllDrives","fields"],"path":"/drive/v3/files/{file}/permissions","query":{"enforceExpansiveAccess":null,"enforceSingleParent":null,"moveToNewOwnersRoot":null,"transferOwnership":null,"useDomainAdminAccess":null},"scope":{"file":{"at":"file","from":"path"},"permission":{"at":"","from":"body","type":"object"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"share","effects":["share"],"id":"permissions.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["supportsAllDrives"],"path":"/drive/v3/files/{file}/permissions/{permission}","query":{"useDomainAdminAccess":null},"scope":{"file":{"at":"file","from":"path"},"permission":{"at":"permission","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"about.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/about","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"accessproposals.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/accessproposals/{proposalId}","scope":{"fileId":{"at":"fileId","from":"path"},"proposalId":{"at":"proposalId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"accessproposals.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/drive/v3/files/{fileId}/accessproposals","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.accessproposals","body":"json","effects":["write"],"id":"accessproposals.resolve","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/accessproposals/{proposalId}:resolve","scope":{"fileId":{"at":"fileId","from":"path"},"proposalId":{"at":"proposalId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.approvals","body":"json","effects":["write"],"id":"approvals.approve","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/approvals/{approvalId}:approve","scope":{"approvalId":{"at":"approvalId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.approvals","body":"json","effects":["write"],"id":"approvals.cancel","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/approvals/{approvalId}:cancel","scope":{"approvalId":{"at":"approvalId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.approvals","body":"json","effects":["write"],"id":"approvals.comment","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/approvals/{approvalId}:comment","scope":{"approvalId":{"at":"approvalId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.approvals","body":"json","effects":["write"],"id":"approvals.decline","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/approvals/{approvalId}:decline","scope":{"approvalId":{"at":"approvalId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"approvals.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/approvals/{approvalId}","scope":{"approvalId":{"at":"approvalId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"approvals.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/drive/v3/files/{fileId}/approvals","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.approvals","body":"json","effects":["write"],"id":"approvals.reassign","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/approvals/{approvalId}:reassign","scope":{"approvalId":{"at":"approvalId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.approvals","body":"json","effects":["write"],"id":"approvals.start","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/approvals:start","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"apps.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/apps/{appId}","scope":{"appId":{"at":"appId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"apps.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","appFilterExtensions","appFilterMimeTypes","languageCode"],"path":"/drive/v3/apps","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"changes.getStartPageToken","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","driveId","supportsAllDrives","supportsTeamDrives","teamDriveId"],"path":"/drive/v3/changes/startPageToken","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"changes.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","driveId","includeCorpusRemovals","includeItemsFromAllDrives","includeLabels","includePermissionsForView","includeRemoved","includeTeamDriveItems","pageSize","pageToken","restrictToMyDrive","spaces","supportsAllDrives","supportsTeamDrives","teamDriveId"],"path":"/drive/v3/changes","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.watch","body":"json","effects":["write"],"id":"changes.watch","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","driveId","includeCorpusRemovals","includeItemsFromAllDrives","includeLabels","includePermissionsForView","includeRemoved","includeTeamDriveItems","pageSize","pageToken","restrictToMyDrive","spaces","supportsAllDrives","supportsTeamDrives","teamDriveId"],"path":"/drive/v3/changes/watch","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.stop","body":"json","effects":["write"],"id":"channels.stop","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/channels/stop","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"send.comments","body":"json","effects":["send"],"id":"comments.create","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/comments","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete.comments","effects":["delete"],"id":"comments.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/comments/{commentId}","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"comments.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","includeDeleted"],"path":"/drive/v3/files/{fileId}/comments/{commentId}","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"comments.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","includeDeleted","pageSize","pageToken","startModifiedTime"],"path":"/drive/v3/files/{fileId}/comments","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.comments","body":"json","effects":["write"],"id":"comments.update","method":"PATCH","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/comments/{commentId}","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.drives","body":"json","effects":["write"],"id":"drives.create","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","requestId"],"path":"/drive/v3/drives","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete.drives","effects":["delete"],"id":"drives.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","allowItemDeletion","useDomainAdminAccess"],"path":"/drive/v3/drives/{driveId}","scope":{"driveId":{"at":"driveId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"drives.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useDomainAdminAccess"],"path":"/drive/v3/drives/{driveId}","scope":{"driveId":{"at":"driveId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.hide","effects":["write"],"id":"drives.hide","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/drives/{driveId}/hide","scope":{"driveId":{"at":"driveId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.unhide","effects":["write"],"id":"drives.unhide","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/drives/{driveId}/unhide","scope":{"driveId":{"at":"driveId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.drives","body":"json","effects":["write"],"id":"drives.update","method":"PATCH","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useDomainAdminAccess"],"path":"/drive/v3/drives/{driveId}","scope":{"driveId":{"at":"driveId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"files.download","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","mimeType","revisionId"],"path":"/drive/v3/files/{fileId}/download","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.trash","effects":["delete"],"id":"files.emptyTrash","method":"DELETE","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","driveId","enforceSingleParent"],"path":"/drive/v3/files/trash","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"files.generateCseToken","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","fileId","parent"],"path":"/drive/v3/files/generateCseToken","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"files.generateIds","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","count","space","type"],"path":"/drive/v3/files/generateIds","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"files.listLabels","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","pageToken"],"path":"/drive/v3/files/{fileId}/listLabels","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.modify_labels","body":"json","effects":["write"],"id":"files.modifyLabels","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/modifyLabels","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.watch","body":"json","effects":["write"],"id":"files.watch","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","acknowledgeAbuse","includeLabels","includePermissionsForView","supportsAllDrives","supportsTeamDrives"],"path":"/drive/v3/files/{fileId}/watch","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"operations.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/operations/{name}","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"permissions.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","supportsAllDrives","supportsTeamDrives","useDomainAdminAccess"],"path":"/drive/v3/files/{fileId}/permissions/{permissionId}","scope":{"fileId":{"at":"fileId","from":"path"},"permissionId":{"at":"permissionId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"share.permissions","body":"json","effects":["share"],"id":"permissions.update","method":"PATCH","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","enforceExpansiveAccess","removeExpiration","supportsAllDrives","supportsTeamDrives","transferOwnership","useDomainAdminAccess"],"path":"/drive/v3/files/{fileId}/permissions/{permissionId}","scope":{"fileId":{"at":"fileId","from":"path"},"permissionId":{"at":"permissionId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"send.replies","body":"json","effects":["send"],"id":"replies.create","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/comments/{commentId}/replies","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete.replies","effects":["delete"],"id":"replies.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/comments/{commentId}/replies/{replyId}","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"replyId":{"at":"replyId","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"replies.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","includeDeleted"],"path":"/drive/v3/files/{fileId}/comments/{commentId}/replies/{replyId}","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"replyId":{"at":"replyId","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"replies.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","includeDeleted","pageSize","pageToken"],"path":"/drive/v3/files/{fileId}/comments/{commentId}/replies","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.replies","body":"json","effects":["write"],"id":"replies.update","method":"PATCH","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/comments/{commentId}/replies/{replyId}","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"replyId":{"at":"replyId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete.revisions","effects":["delete"],"id":"revisions.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/revisions/{revisionId}","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"revisionId":{"at":"revisionId","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"revisions.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","acknowledgeAbuse"],"path":"/drive/v3/files/{fileId}/revisions/{revisionId}","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"revisionId":{"at":"revisionId","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"revisions.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/drive/v3/files/{fileId}/revisions","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.revisions","body":"json","effects":["write"],"id":"revisions.update","method":"PATCH","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/revisions/{revisionId}","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"revisionId":{"at":"revisionId","from":"path"}}},
-    {"action":"write.teamdrives","body":"json","effects":["write"],"id":"teamdrives.create","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","requestId"],"path":"/drive/v3/teamdrives","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete.teamdrives","effects":["delete"],"id":"teamdrives.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/teamdrives/{teamDriveId}","scope":{"query":{"at":"","from":"query","type":"object"},"teamDriveId":{"at":"teamDriveId","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"teamdrives.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useDomainAdminAccess"],"path":"/drive/v3/teamdrives/{teamDriveId}","scope":{"query":{"at":"","from":"query","type":"object"},"teamDriveId":{"at":"teamDriveId","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"teamdrives.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken","q","useDomainAdminAccess"],"path":"/drive/v3/teamdrives","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.teamdrives","body":"json","effects":["write"],"id":"teamdrives.update","method":"PATCH","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useDomainAdminAccess"],"path":"/drive/v3/teamdrives/{teamDriveId}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"teamDriveId":{"at":"teamDriveId","from":"path"}}}
+    {"action":"drive.files.read","effects":["read"],"id":"files.list","method":"GET","origin":"https://www.googleapis.com","params":["q","pageSize","pageToken","fields","orderBy","spaces","corpora","driveId","includeItemsFromAllDrives","supportsAllDrives"],"path":"/drive/v3/files","query":{"useDomainAdminAccess":null},"scope":{}},
+    {"action":"drive.files.read","effects":["read"],"id":"files.get","method":"GET","origin":"https://www.googleapis.com","params":["fields","alt","supportsAllDrives","acknowledgeAbuse"],"path":"/drive/v3/files/{file}","scope":{"file":{"at":"file","from":"path"}}},
+    {"action":"drive.files.read","effects":["read"],"id":"files.export","method":"GET","origin":"https://www.googleapis.com","params":["mimeType"],"path":"/drive/v3/files/{file}/export","scope":{"file":{"at":"file","from":"path"}}},
+    {"action":"drive.files.permissions.read","effects":["read"],"id":"permissions.list","method":"GET","origin":"https://www.googleapis.com","params":["pageSize","pageToken","fields","supportsAllDrives"],"path":"/drive/v3/files/{file}/permissions","query":{"useDomainAdminAccess":null},"scope":{"file":{"at":"file","from":"path"}}},
+    {"action":"drive.drives.read","effects":["read"],"id":"drives.list","method":"GET","origin":"https://www.googleapis.com","params":["pageSize","pageToken","q","fields"],"path":"/drive/v3/drives","query":{"useDomainAdminAccess":null},"scope":{}},
+    {"action":"drive.files.write","body":"json","effects":["write"],"fields":{"/copyRequiresWriterPermission":null,"/writersCanShare":null},"id":"files.create","method":"POST","origin":"https://www.googleapis.com","params":["fields","supportsAllDrives"],"path":"/drive/v3/files","scope":{"file":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.write","body":"any","effects":["write"],"id":"files.upload","method":"POST","origin":"https://www.googleapis.com","params":["fields","supportsAllDrives"],"path":"/upload/drive/v3/files","query":{"uploadType":"media"},"scope":{}},
+    {"action":"drive.files.admin","body":"json","effects":["write","delete","share","admin"],"id":"files.update","method":"PATCH","origin":"https://www.googleapis.com","params":["fields","supportsAllDrives"],"path":"/drive/v3/files/{file}","scope":{"file":{"at":"file","from":"path"},"metadata":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.write","body":"json","effects":["write"],"fields":{"/copyRequiresWriterPermission":null,"/writersCanShare":null},"id":"files.copy","method":"POST","origin":"https://www.googleapis.com","params":["fields","supportsAllDrives"],"path":"/drive/v3/files/{file}/copy","scope":{"copy":{"at":"","from":"body","type":"object"},"file":{"at":"file","from":"path"}}},
+    {"action":"drive.files.delete","effects":["delete"],"id":"files.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["supportsAllDrives"],"path":"/drive/v3/files/{file}","scope":{"file":{"at":"file","from":"path"}}},
+    {"action":"drive.files.permissions.share","body":"json","effects":["share","send"],"id":"permissions.create","method":"POST","origin":"https://www.googleapis.com","params":["sendNotificationEmail","emailMessage","supportsAllDrives","fields"],"path":"/drive/v3/files/{file}/permissions","query":{"enforceExpansiveAccess":null,"enforceSingleParent":null,"moveToNewOwnersRoot":null,"transferOwnership":null,"useDomainAdminAccess":null},"scope":{"file":{"at":"file","from":"path"},"permission":{"at":"","from":"body","type":"object"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.permissions.share","effects":["share"],"id":"permissions.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["supportsAllDrives"],"path":"/drive/v3/files/{file}/permissions/{permission}","query":{"useDomainAdminAccess":null},"scope":{"file":{"at":"file","from":"path"},"permission":{"at":"permission","from":"path"}}},
+    {"action":"drive.about.read","effects":["read"],"id":"about.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/about","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.accessproposals.read","effects":["read"],"id":"accessproposals.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/accessproposals/{proposalId}","scope":{"fileId":{"at":"fileId","from":"path"},"proposalId":{"at":"proposalId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.accessproposals.read","effects":["read"],"id":"accessproposals.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/drive/v3/files/{fileId}/accessproposals","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.accessproposals.write","body":"json","effects":["write"],"id":"accessproposals.resolve","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/accessproposals/{proposalId}:resolve","scope":{"fileId":{"at":"fileId","from":"path"},"proposalId":{"at":"proposalId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.approvals.write","body":"json","effects":["write"],"id":"approvals.approve","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/approvals/{approvalId}:approve","scope":{"approvalId":{"at":"approvalId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.approvals.write","body":"json","effects":["write"],"id":"approvals.cancel","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/approvals/{approvalId}:cancel","scope":{"approvalId":{"at":"approvalId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.approvals.write","body":"json","effects":["write"],"id":"approvals.comment","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/approvals/{approvalId}:comment","scope":{"approvalId":{"at":"approvalId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.approvals.write","body":"json","effects":["write"],"id":"approvals.decline","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/approvals/{approvalId}:decline","scope":{"approvalId":{"at":"approvalId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.approvals.read","effects":["read"],"id":"approvals.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/approvals/{approvalId}","scope":{"approvalId":{"at":"approvalId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.approvals.read","effects":["read"],"id":"approvals.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/drive/v3/files/{fileId}/approvals","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.approvals.write","body":"json","effects":["write"],"id":"approvals.reassign","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/approvals/{approvalId}:reassign","scope":{"approvalId":{"at":"approvalId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.approvals.write","body":"json","effects":["write"],"id":"approvals.start","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/approvals:start","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.apps.read","effects":["read"],"id":"apps.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/apps/{appId}","scope":{"appId":{"at":"appId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.apps.read","effects":["read"],"id":"apps.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","appFilterExtensions","appFilterMimeTypes","languageCode"],"path":"/drive/v3/apps","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.changes.page_token.read","effects":["read"],"id":"changes.getStartPageToken","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","driveId","supportsAllDrives","supportsTeamDrives","teamDriveId"],"path":"/drive/v3/changes/startPageToken","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.changes.read","effects":["read"],"id":"changes.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","driveId","includeCorpusRemovals","includeItemsFromAllDrives","includeLabels","includePermissionsForView","includeRemoved","includeTeamDriveItems","pageSize","pageToken","restrictToMyDrive","spaces","supportsAllDrives","supportsTeamDrives","teamDriveId"],"path":"/drive/v3/changes","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.changes.watch.write","body":"json","effects":["write"],"id":"changes.watch","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","driveId","includeCorpusRemovals","includeItemsFromAllDrives","includeLabels","includePermissionsForView","includeRemoved","includeTeamDriveItems","pageSize","pageToken","restrictToMyDrive","spaces","supportsAllDrives","supportsTeamDrives","teamDriveId"],"path":"/drive/v3/changes/watch","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.channels.write","body":"json","effects":["write"],"id":"channels.stop","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/channels/stop","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.comments.send","body":"json","effects":["send"],"id":"comments.create","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/comments","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.comments.delete","effects":["delete"],"id":"comments.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/comments/{commentId}","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.comments.read","effects":["read"],"id":"comments.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","includeDeleted"],"path":"/drive/v3/files/{fileId}/comments/{commentId}","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.comments.read","effects":["read"],"id":"comments.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","includeDeleted","pageSize","pageToken","startModifiedTime"],"path":"/drive/v3/files/{fileId}/comments","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.comments.write","body":"json","effects":["write"],"id":"comments.update","method":"PATCH","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/comments/{commentId}","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.drives.write","body":"json","effects":["write"],"id":"drives.create","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","requestId"],"path":"/drive/v3/drives","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.drives.delete","effects":["delete"],"id":"drives.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","allowItemDeletion","useDomainAdminAccess"],"path":"/drive/v3/drives/{driveId}","scope":{"driveId":{"at":"driveId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.drives.read","effects":["read"],"id":"drives.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useDomainAdminAccess"],"path":"/drive/v3/drives/{driveId}","scope":{"driveId":{"at":"driveId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.drives.hide.write","effects":["write"],"id":"drives.hide","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/drives/{driveId}/hide","scope":{"driveId":{"at":"driveId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.drives.unhide.write","effects":["write"],"id":"drives.unhide","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/drives/{driveId}/unhide","scope":{"driveId":{"at":"driveId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.drives.write","body":"json","effects":["write"],"id":"drives.update","method":"PATCH","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useDomainAdminAccess"],"path":"/drive/v3/drives/{driveId}","scope":{"driveId":{"at":"driveId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.read","effects":["read"],"id":"files.download","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","mimeType","revisionId"],"path":"/drive/v3/files/{fileId}/download","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.trash.delete","effects":["delete"],"id":"files.emptyTrash","method":"DELETE","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","driveId","enforceSingleParent"],"path":"/drive/v3/files/trash","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.generate_cse_token.read","effects":["read"],"id":"files.generateCseToken","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","fileId","parent"],"path":"/drive/v3/files/generateCseToken","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.generate_ids.read","effects":["read"],"id":"files.generateIds","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","count","space","type"],"path":"/drive/v3/files/generateIds","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.labels.read","effects":["read"],"id":"files.listLabels","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","maxResults","pageToken"],"path":"/drive/v3/files/{fileId}/listLabels","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.modify_labels.write","body":"json","effects":["write"],"id":"files.modifyLabels","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/modifyLabels","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.watch.write","body":"json","effects":["write"],"id":"files.watch","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","acknowledgeAbuse","includeLabels","includePermissionsForView","supportsAllDrives","supportsTeamDrives"],"path":"/drive/v3/files/{fileId}/watch","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.operations.read","effects":["read"],"id":"operations.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/operations/{name}","scope":{"name":{"at":"name","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.permissions.read","effects":["read"],"id":"permissions.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","supportsAllDrives","supportsTeamDrives","useDomainAdminAccess"],"path":"/drive/v3/files/{fileId}/permissions/{permissionId}","scope":{"fileId":{"at":"fileId","from":"path"},"permissionId":{"at":"permissionId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.permissions.share","body":"json","effects":["share"],"id":"permissions.update","method":"PATCH","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","enforceExpansiveAccess","removeExpiration","supportsAllDrives","supportsTeamDrives","transferOwnership","useDomainAdminAccess"],"path":"/drive/v3/files/{fileId}/permissions/{permissionId}","scope":{"fileId":{"at":"fileId","from":"path"},"permissionId":{"at":"permissionId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.comments.replies.send","body":"json","effects":["send"],"id":"replies.create","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/comments/{commentId}/replies","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.comments.replies.delete","effects":["delete"],"id":"replies.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/comments/{commentId}/replies/{replyId}","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"replyId":{"at":"replyId","from":"path"}}},
+    {"action":"drive.files.comments.replies.read","effects":["read"],"id":"replies.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","includeDeleted"],"path":"/drive/v3/files/{fileId}/comments/{commentId}/replies/{replyId}","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"replyId":{"at":"replyId","from":"path"}}},
+    {"action":"drive.files.comments.replies.read","effects":["read"],"id":"replies.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","includeDeleted","pageSize","pageToken"],"path":"/drive/v3/files/{fileId}/comments/{commentId}/replies","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.comments.replies.write","body":"json","effects":["write"],"id":"replies.update","method":"PATCH","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/comments/{commentId}/replies/{replyId}","scope":{"commentId":{"at":"commentId","from":"path"},"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"replyId":{"at":"replyId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.files.revisions.delete","effects":["delete"],"id":"revisions.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/revisions/{revisionId}","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"revisionId":{"at":"revisionId","from":"path"}}},
+    {"action":"drive.files.revisions.read","effects":["read"],"id":"revisions.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","acknowledgeAbuse"],"path":"/drive/v3/files/{fileId}/revisions/{revisionId}","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"revisionId":{"at":"revisionId","from":"path"}}},
+    {"action":"drive.files.revisions.read","effects":["read"],"id":"revisions.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/drive/v3/files/{fileId}/revisions","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.files.revisions.write","body":"json","effects":["write"],"id":"revisions.update","method":"PATCH","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/files/{fileId}/revisions/{revisionId}","scope":{"fileId":{"at":"fileId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"revisionId":{"at":"revisionId","from":"path"}}},
+    {"action":"drive.teamdrives.write","body":"json","effects":["write"],"id":"teamdrives.create","method":"POST","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","requestId"],"path":"/drive/v3/teamdrives","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"drive.teamdrives.delete","effects":["delete"],"id":"teamdrives.delete","method":"DELETE","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/drive/v3/teamdrives/{teamDriveId}","scope":{"query":{"at":"","from":"query","type":"object"},"teamDriveId":{"at":"teamDriveId","from":"path"}}},
+    {"action":"drive.teamdrives.read","effects":["read"],"id":"teamdrives.get","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useDomainAdminAccess"],"path":"/drive/v3/teamdrives/{teamDriveId}","scope":{"query":{"at":"","from":"query","type":"object"},"teamDriveId":{"at":"teamDriveId","from":"path"}}},
+    {"action":"drive.teamdrives.read","effects":["read"],"id":"teamdrives.list","method":"GET","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken","q","useDomainAdminAccess"],"path":"/drive/v3/teamdrives","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"drive.teamdrives.write","body":"json","effects":["write"],"id":"teamdrives.update","method":"PATCH","origin":"https://www.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","useDomainAdminAccess"],"path":"/drive/v3/teamdrives/{teamDriveId}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"teamDriveId":{"at":"teamDriveId","from":"path"}}}
   ]
 }

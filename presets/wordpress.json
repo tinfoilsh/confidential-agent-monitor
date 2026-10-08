@@ -1,29 +1,110 @@
 {
-  "title": "WordPress",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your site URL (https://yoursite.example.com)",
-       "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
-      {"key": "username", "label": "Username", "secret": true, "path": ["connections", "", "http", "values", "username"]},
-      {"key": "apppassword", "label": "Application password", "secret": true, "path": ["connections", "", "http", "values", "apppassword"]}
-    ],
-    "connections": {"": {"http": {"slots": [
-      {"value": "username", "origin": "https://example.com", "path": "/wp-json/wp/v2", "basic": "user"},
-      {"value": "apppassword", "origin": "https://example.com", "path": "/wp-json/wp/v2", "basic": "password"}
-    ]}}},
-    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
-      "read": {"title": "Read posts"},
-      "write.posts": {"title": "Create and edit posts, including publishing"},
-      "delete": {"title": "Delete posts"}
-    }
+      "wp_json": {
+        "title": "Wp json"
+      },
+      "wp_json.wp": {
+        "title": "Wp"
+      },
+      "wp_json.wp.posts": {
+        "title": "Posts"
+      },
+      "wp_json.wp.posts.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wp.posts.read": {
+        "title": "Read"
+      },
+      "wp_json.wp.posts.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "basic": "user",
+              "origin": "https://example.com",
+              "path": "/wp-json/wp/v2",
+              "value": "username"
+            },
+            {
+              "basic": "password",
+              "origin": "https://example.com",
+              "path": "/wp-json/wp/v2",
+              "value": "apppassword"
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "team",
+      "sends": "anyone",
+      "strangers": true
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your site URL (https://yoursite.example.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "connections",
+            "",
+            "http",
+            "slots",
+            0,
+            "origin"
+          ],
+          [
+            "connections",
+            "",
+            "http",
+            "slots",
+            1,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "key": "username",
+        "label": "Username",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "username"
+        ],
+        "secret": true
+      },
+      {
+        "key": "apppassword",
+        "label": "Application password",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "apppassword"
+        ],
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "WordPress",
   "operations": [
-    {"id": "posts.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wp-json/wp/v2/posts", "params": ["page", "per_page", "search", "status"], "scope": {}},
-    {"id": "posts.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wp-json/wp/v2/posts/{post}", "scope": {"post": {"from": "path", "at": "post"}}},
-    {"id": "posts.create", "action": "write.posts", "effects": ["write", "publish"], "method": "POST", "origin": "{origin}", "path": "/wp-json/wp/v2/posts", "body": "json", "scope": {"post": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "posts.update", "action": "write.posts", "effects": ["write", "publish"], "method": "POST", "origin": "{origin}", "path": "/wp-json/wp/v2/posts/{post}", "body": "json", "scope": {"post": {"from": "path", "at": "post"}, "changes": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "posts.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/wp-json/wp/v2/posts/{post}", "params": ["force"], "scope": {"post": {"from": "path", "at": "post"}, "query": {"from": "query", "at": "", "type": "object"}}}
+    {"action":"wp_json.wp.posts.read","effects":["read"],"id":"posts.list","method":"GET","origin":"{origin}","params":["page","per_page","search","status"],"path":"/wp-json/wp/v2/posts","scope":{}},
+    {"action":"wp_json.wp.posts.read","effects":["read"],"id":"posts.get","method":"GET","origin":"{origin}","path":"/wp-json/wp/v2/posts/{post}","scope":{"post":{"at":"post","from":"path"}}},
+    {"action":"wp_json.wp.posts.write","body":"json","effects":["write","publish"],"id":"posts.create","method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/posts","scope":{"post":{"at":"","from":"body","type":"object"}}},
+    {"action":"wp_json.wp.posts.write","body":"json","effects":["write","publish"],"id":"posts.update","method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/posts/{post}","scope":{"changes":{"at":"","from":"body","type":"object"},"post":{"at":"post","from":"path"}}},
+    {"action":"wp_json.wp.posts.delete","effects":["delete"],"id":"posts.delete","method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/posts/{post}","scope":{"post":{"at":"post","from":"path"},"query":{"at":"","from":"query","type":"object"}}}
   ]
 }

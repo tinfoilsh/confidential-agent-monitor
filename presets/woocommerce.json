@@ -1,34 +1,128 @@
 {
-  "title": "WooCommerce",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your store's site URL (https://yourstore.example.com)",
-       "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
-      {"key": "consumer_key", "label": "Consumer key", "secret": true, "path": ["connections", "", "http", "values", "consumer_key"]},
-      {"key": "consumer_secret", "label": "Consumer secret", "secret": true, "path": ["connections", "", "http", "values", "consumer_secret"]}
-    ],
-    "connections": {"": {"http": {"slots": [
-      {"value": "consumer_key", "origin": "https://example.com", "path": "/wp-json/wc/v3", "basic": "user"},
-      {"value": "consumer_secret", "origin": "https://example.com", "path": "/wp-json/wc/v3", "basic": "password"}
-    ]}}},
-    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
-      "read": {"title": "Read products and orders"},
-      "write.products": {"title": "Create and edit products, including publishing"},
-      "write.orders": {"title": "Edit orders, including marking them paid and changing status"},
-      "pay.refunds": {"title": "Issue order refunds"},
-      "delete": {"title": "Delete products"}
-    }
+      "wp_json": {
+        "title": "Wp json"
+      },
+      "wp_json.wc": {
+        "title": "Wc"
+      },
+      "wp_json.wc.orders": {
+        "title": "Orders"
+      },
+      "wp_json.wc.orders.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.orders.refunds": {
+        "title": "Refunds"
+      },
+      "wp_json.wc.orders.refunds.pay": {
+        "title": "Make payments"
+      },
+      "wp_json.wc.orders.write": {
+        "title": "Create and edit"
+      },
+      "wp_json.wc.products": {
+        "title": "Products"
+      },
+      "wp_json.wc.products.delete": {
+        "title": "Delete"
+      },
+      "wp_json.wc.products.read": {
+        "title": "Read"
+      },
+      "wp_json.wc.products.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "basic": "user",
+              "origin": "https://example.com",
+              "path": "/wp-json/wc/v3",
+              "value": "consumer_key"
+            },
+            {
+              "basic": "password",
+              "origin": "https://example.com",
+              "path": "/wp-json/wc/v3",
+              "value": "consumer_secret"
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "team",
+      "sends": "anyone",
+      "strangers": true
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your store's site URL (https://yourstore.example.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "connections",
+            "",
+            "http",
+            "slots",
+            0,
+            "origin"
+          ],
+          [
+            "connections",
+            "",
+            "http",
+            "slots",
+            1,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "key": "consumer_key",
+        "label": "Consumer key",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "consumer_key"
+        ],
+        "secret": true
+      },
+      {
+        "key": "consumer_secret",
+        "label": "Consumer secret",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "consumer_secret"
+        ],
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "WooCommerce",
   "operations": [
-    {"id": "products.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wp-json/wc/v3/products", "params": ["page", "per_page", "search", "status"], "scope": {}},
-    {"id": "products.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wp-json/wc/v3/products/{product}", "scope": {"product": {"from": "path", "at": "product"}}},
-    {"id": "orders.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/wp-json/wc/v3/orders", "params": ["page", "per_page", "status"], "scope": {}},
-    {"id": "products.create", "action": "write.products", "effects": ["write", "publish"], "method": "POST", "origin": "{origin}", "path": "/wp-json/wc/v3/products", "body": "json", "scope": {"product": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "products.update", "action": "write.products", "effects": ["write", "publish"], "method": "PUT", "origin": "{origin}", "path": "/wp-json/wc/v3/products/{product}", "body": "json", "scope": {"product": {"from": "path", "at": "product"}, "changes": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "orders.update", "action": "write.orders", "effects": ["write", "pay", "send"], "method": "PUT", "origin": "{origin}", "path": "/wp-json/wc/v3/orders/{order}", "body": "json", "scope": {"order": {"from": "path", "at": "order"}, "changes": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "orders.refunds.create", "action": "pay.refunds", "effects": ["pay"], "method": "POST", "origin": "{origin}", "path": "/wp-json/wc/v3/orders/{order}/refunds", "body": "json", "scope": {"order": {"from": "path", "at": "order"}, "refund": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "products.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/wp-json/wc/v3/products/{product}", "params": ["force"], "scope": {"product": {"from": "path", "at": "product"}, "query": {"from": "query", "at": "", "type": "object"}}}
+    {"action":"wp_json.wc.products.read","effects":["read"],"id":"products.list","method":"GET","origin":"{origin}","params":["page","per_page","search","status"],"path":"/wp-json/wc/v3/products","scope":{}},
+    {"action":"wp_json.wc.products.read","effects":["read"],"id":"products.get","method":"GET","origin":"{origin}","path":"/wp-json/wc/v3/products/{product}","scope":{"product":{"at":"product","from":"path"}}},
+    {"action":"wp_json.wc.orders.read","effects":["read"],"id":"orders.list","method":"GET","origin":"{origin}","params":["page","per_page","status"],"path":"/wp-json/wc/v3/orders","scope":{}},
+    {"action":"wp_json.wc.products.write","body":"json","effects":["write","publish"],"id":"products.create","method":"POST","origin":"{origin}","path":"/wp-json/wc/v3/products","scope":{"product":{"at":"","from":"body","type":"object"}}},
+    {"action":"wp_json.wc.products.write","body":"json","effects":["write","publish"],"id":"products.update","method":"PUT","origin":"{origin}","path":"/wp-json/wc/v3/products/{product}","scope":{"changes":{"at":"","from":"body","type":"object"},"product":{"at":"product","from":"path"}}},
+    {"action":"wp_json.wc.orders.write","body":"json","effects":["write","pay","send"],"id":"orders.update","method":"PUT","origin":"{origin}","path":"/wp-json/wc/v3/orders/{order}","scope":{"changes":{"at":"","from":"body","type":"object"},"order":{"at":"order","from":"path"}}},
+    {"action":"wp_json.wc.orders.refunds.pay","body":"json","effects":["pay"],"id":"orders.refunds.create","method":"POST","origin":"{origin}","path":"/wp-json/wc/v3/orders/{order}/refunds","scope":{"order":{"at":"order","from":"path"},"refund":{"at":"","from":"body","type":"object"}}},
+    {"action":"wp_json.wc.products.delete","effects":["delete"],"id":"products.delete","method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/v3/products/{product}","scope":{"product":{"at":"product","from":"path"},"query":{"at":"","from":"query","type":"object"}}}
   ]
 }

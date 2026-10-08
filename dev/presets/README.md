@@ -13,6 +13,11 @@ GOWORK=off go run . check slack anthropic airtable
 # Inventory every source mapped to a shipped API preset.
 GOWORK=off go run . generate
 GOWORK=off go run . check
+
+# Regroup existing shipped operations without adding endpoints.
+GOWORK=off go run . group
+# Then refresh candidates and their coverage reports.
+GOWORK=off go run . generate
 ```
 
 `generate` and `check` return a nonzero exit status for missing or failed sources. They continue through the other selected providers, preserving useful results and writing an error report for each failure. The current all-provider commands fail for six configured source gaps: Dropbox, Salesforce, Shopify, Supabase, WooCommerce, and WordPress.
@@ -31,7 +36,29 @@ The files have different roles:
 
 Git ignores `.cache/`, `candidates/`, `coverage/`, `snapshots/`, and temporary `.generate-*` files. Keep the generator code, source definitions and lock, and shipped presets in version control. Run `fetch` and `generate` before checking candidates in a fresh checkout. If an upstream source no longer serves the locked content, restore the matching local cache or snapshot, or run `update` for that provider and review the changed lock before regenerating.
 
-Regeneration reads the shipped presets on every run and preserves their operation IDs, actions, effects, request constraints, scopes, grants, and destinations. It only writes candidates and coverage reports. There is no separate baseline folder to keep in sync. Changing a shipped preset invalidates its previous coverage report until regeneration.
+Regeneration reads the shipped presets on every run and preserves their operation IDs, effects, request constraints, scopes, grants, and destinations. It groups actions by resource and writes candidates and coverage reports. There is no separate baseline folder to keep in sync. Changing a shipped preset invalidates its previous coverage report until regeneration.
+
+Actions use resource paths followed by a capability, such as `repos.hooks.read`,
+`orgs.hooks.admin`, or `customers.write`. Catalog entries include every parent,
+so the app can collapse groups and set permissions at any level. Effects stay
+on each operation and continue to determine its obligations independently of
+its display group. Read operations receive resource-specific actions too.
+
+Grouping uses enclosing URL resources, strips transport/version segments and
+terminal operation verbs, and handles dotted RPC methods. GraphQL uses schema
+return types when available, falling back to field names. Source categories
+provide a fallback for paths without literal resources. A source can override
+an ambiguous group in `sources.json` with `"groups": {"operationId": "resource.subresource"}`.
+These keys name source operation IDs; unknown keys and malformed group paths
+are errors. Both `draft` and `generate` use these rules.
+
+`group [preset-or-source...]` writes the grouping into shipped presets, using
+only their existing operations. With no arguments it processes all shipped API
+presets. It uses cached source metadata where available and otherwise the shipped
+routes. Native and MCP presets keep their protocol/tool action catalogs, which
+use the same tree UI. Repeated grouping produces the same result. This is a
+breaking action-name change: update agent overrides and custom policies to use
+the new names. No aliases or permission migration are generated.
 
 Accept additions in the corresponding `../../presets/<name>.json`, preserving its account setup and existing operations. Source names can differ from preset names; use the `preset` mapping in `sources.json`. The Confluence source group includes Jira, so divide its operations between the Confluence and Jira presets instead of copying the combined candidate into either one. Regenerate after accepting changes so the next proposal uses the updated shipped definitions.
 

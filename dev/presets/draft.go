@@ -19,6 +19,7 @@ type source struct {
 	Note       string            `json:"note,omitempty"`
 	Families   []string          `json:"families,omitempty"`
 	Exclusions map[string]string `json:"exclusions,omitempty"`
+	Groups     map[string]string `json:"groups,omitempty"` // source operation ID -> resource hierarchy
 }
 
 // A specRef is where a spec lives: a file at a GitHub ref, which update pins to a commit, or a plain URL, pinned only by hash.

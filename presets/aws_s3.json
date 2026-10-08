@@ -1,7 +1,46 @@
 {
-  "title": "AWS S3",
   "catalog": {
-    "group": "api",
+    "actions": {
+      "s3": {
+        "title": "S3"
+      },
+      "s3.delete": {
+        "title": "Delete"
+      },
+      "s3.pay": {
+        "title": "Make payments"
+      },
+      "s3.read": {
+        "title": "Read"
+      },
+      "s3.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "origin": "https://example-bucket.s3.us-east-1.amazonaws.com",
+              "path": "/",
+              "sigv4": {
+                "region": "us-east-1",
+                "secret": "secret_key",
+                "service": "s3",
+                "session": "session_token"
+              },
+              "value": "access_key"
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "team",
+      "sends": "anyone",
+      "strangers": true
+    },
     "fields": [
       {
         "key": "origin",
@@ -37,103 +76,64 @@
       {
         "key": "access_key",
         "label": "Access key ID",
-        "secret": true,
         "path": [
           "connections",
           "",
           "http",
           "values",
           "access_key"
-        ]
+        ],
+        "secret": true
       },
       {
         "key": "secret_key",
         "label": "Secret access key",
-        "secret": true,
         "path": [
           "connections",
           "",
           "http",
           "values",
           "secret_key"
-        ]
+        ],
+        "secret": true
       },
       {
         "key": "session_token",
         "label": "Session token (temporary credentials only)",
-        "secret": true,
         "path": [
           "connections",
           "",
           "http",
           "values",
           "session_token"
-        ]
+        ],
+        "secret": true
       }
     ],
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "value": "access_key",
-              "origin": "https://example-bucket.s3.us-east-1.amazonaws.com",
-              "path": "/",
-              "sigv4": {
-                "service": "s3",
-                "region": "us-east-1",
-                "secret": "secret_key",
-                "session": "session_token"
-              }
-            }
-          ]
-        }
-      }
-    },
-    "defaults": {
-      "contents": "team",
-      "strangers": true,
-      "sends": "anyone"
-    },
-    "actions": {
-      "read": {
-        "title": "List and read objects"
-      },
-      "pay.requester": {
-        "title": "Read objects from requester-pays buckets (billed to this account)"
-      },
-      "write": {
-        "title": "Write objects"
-      },
-      "delete": {
-        "title": "Delete objects"
-      },
-      "delete.s3": {
-        "title": "delete: s3"
-      }
-    }
+    "group": "api"
   },
+  "title": "AWS S3",
   "operations": [
-    {"action":"read","effects":["read"],"headers":{"X-Amz-Request-Payer":null},"id":"object.list","method":"GET","origin":"{origin}","params":["prefix","delimiter","max-keys","continuation-token"],"path":"/","query":{"list-type":"2"},"scope":{}},
-    {"action":"read","effects":["read"],"headers":{"X-Amz-Request-Payer":null},"id":"object.get","method":"GET","origin":"{origin}","path":"/{key*}","scope":{"key":{"at":"key","from":"path"}}},
-    {"action":"pay.requester","effects":["read","pay"],"headers":{"X-Amz-Request-Payer":"requester"},"id":"object.get.requester_pays","method":"GET","origin":"{origin}","path":"/{key*}","scope":{"key":{"at":"key","from":"path"}}},
-    {"action":"write","body":"any","effects":["write"],"headers":{"X-Amz-Acl":null,"X-Amz-Copy-Source":null,"X-Amz-Grant-Full-Control":null,"X-Amz-Grant-Read":null,"X-Amz-Grant-Read-Acp":null,"X-Amz-Grant-Write":null,"X-Amz-Grant-Write-Acp":null,"X-Amz-Object-Lock-Legal-Hold":null,"X-Amz-Object-Lock-Mode":null,"X-Amz-Object-Lock-Retain-Until-Date":null,"X-Amz-Request-Payer":null,"X-Amz-Tagging":null,"X-Amz-Website-Redirect-Location":null},"id":"object.put","method":"PUT","origin":"{origin}","path":"/{key*}","scope":{"key":{"at":"key","from":"path"}}},
-    {"action":"delete","effects":["delete"],"headers":{"X-Amz-Bypass-Governance-Retention":null,"X-Amz-Request-Payer":null},"id":"object.delete","method":"DELETE","origin":"{origin}","path":"/{key*}","scope":{"key":{"at":"key","from":"path"}}},
-    {"action":"delete.s3","effects":["delete"],"id":"AbortMultipartUpload","method":"DELETE","origin":"{origin}","params":["uploadId"],"path":"/{Bucket}/{Key*}","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.s3","effects":["delete"],"id":"DeleteObject","method":"DELETE","origin":"{origin}","params":["versionId"],"path":"/{Bucket}/{Key*}","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.s3","effects":["delete"],"id":"DeleteObjectAnnotation","method":"DELETE","origin":"{origin}","params":["annotationName","versionId"],"path":"/{Bucket}/{Key*}","query":{"annotation":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.s3","effects":["delete"],"id":"DeleteObjectTagging","method":"DELETE","origin":"{origin}","params":["versionId"],"path":"/{Bucket}/{Key*}","query":{"tagging":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"GetObject","method":"GET","origin":"{origin}","params":["partNumber","response-cache-control","response-content-disposition","response-content-encoding","response-content-language","response-content-type","response-expires","versionId"],"path":"/{Bucket}/{Key*}","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"GetObjectAcl","method":"GET","origin":"{origin}","params":["versionId"],"path":"/{Bucket}/{Key*}","query":{"acl":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"GetObjectAnnotation","method":"GET","origin":"{origin}","params":["annotationName","versionId"],"path":"/{Bucket}/{Key*}","query":{"annotation":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"GetObjectAttributes","method":"GET","origin":"{origin}","params":["versionId"],"path":"/{Bucket}/{Key*}","query":{"attributes":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"GetObjectLegalHold","method":"GET","origin":"{origin}","params":["versionId"],"path":"/{Bucket}/{Key*}","query":{"legal-hold":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"GetObjectRetention","method":"GET","origin":"{origin}","params":["versionId"],"path":"/{Bucket}/{Key*}","query":{"retention":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"GetObjectTagging","method":"GET","origin":"{origin}","params":["versionId"],"path":"/{Bucket}/{Key*}","query":{"tagging":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"GetObjectTorrent","method":"GET","origin":"{origin}","path":"/{Bucket}/{Key*}","query":{"torrent":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"HeadBucket","method":"HEAD","origin":"{origin}","path":"/{Bucket}","scope":{"Bucket":{"at":"Bucket","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"HeadObject","method":"HEAD","origin":"{origin}","params":["partNumber","response-cache-control","response-content-disposition","response-content-encoding","response-content-language","response-content-type","response-expires","versionId"],"path":"/{Bucket}/{Key*}","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"ListObjectAnnotations","method":"GET","origin":"{origin}","params":["annotation-prefix","continuation-token","max-annotation-results","versionId"],"path":"/{Bucket}/{Key*}","query":{"annotation":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"ListParts","method":"GET","origin":"{origin}","params":["max-parts","part-number-marker","uploadId"],"path":"/{Bucket}/{Key*}","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}}
+    {"action":"s3.read","effects":["read"],"headers":{"X-Amz-Request-Payer":null},"id":"object.list","method":"GET","origin":"{origin}","params":["prefix","delimiter","max-keys","continuation-token"],"path":"/","query":{"list-type":"2"},"scope":{}},
+    {"action":"s3.read","effects":["read"],"headers":{"X-Amz-Request-Payer":null},"id":"object.get","method":"GET","origin":"{origin}","path":"/{key*}","scope":{"key":{"at":"key","from":"path"}}},
+    {"action":"s3.pay","effects":["read","pay"],"headers":{"X-Amz-Request-Payer":"requester"},"id":"object.get.requester_pays","method":"GET","origin":"{origin}","path":"/{key*}","scope":{"key":{"at":"key","from":"path"}}},
+    {"action":"s3.write","body":"any","effects":["write"],"headers":{"X-Amz-Acl":null,"X-Amz-Copy-Source":null,"X-Amz-Grant-Full-Control":null,"X-Amz-Grant-Read":null,"X-Amz-Grant-Read-Acp":null,"X-Amz-Grant-Write":null,"X-Amz-Grant-Write-Acp":null,"X-Amz-Object-Lock-Legal-Hold":null,"X-Amz-Object-Lock-Mode":null,"X-Amz-Object-Lock-Retain-Until-Date":null,"X-Amz-Request-Payer":null,"X-Amz-Tagging":null,"X-Amz-Website-Redirect-Location":null},"id":"object.put","method":"PUT","origin":"{origin}","path":"/{key*}","scope":{"key":{"at":"key","from":"path"}}},
+    {"action":"s3.delete","effects":["delete"],"headers":{"X-Amz-Bypass-Governance-Retention":null,"X-Amz-Request-Payer":null},"id":"object.delete","method":"DELETE","origin":"{origin}","path":"/{key*}","scope":{"key":{"at":"key","from":"path"}}},
+    {"action":"s3.delete","effects":["delete"],"id":"AbortMultipartUpload","method":"DELETE","origin":"{origin}","params":["uploadId"],"path":"/{Bucket}/{Key*}","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"s3.delete","effects":["delete"],"id":"DeleteObject","method":"DELETE","origin":"{origin}","params":["versionId"],"path":"/{Bucket}/{Key*}","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"s3.delete","effects":["delete"],"id":"DeleteObjectAnnotation","method":"DELETE","origin":"{origin}","params":["annotationName","versionId"],"path":"/{Bucket}/{Key*}","query":{"annotation":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"s3.delete","effects":["delete"],"id":"DeleteObjectTagging","method":"DELETE","origin":"{origin}","params":["versionId"],"path":"/{Bucket}/{Key*}","query":{"tagging":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"s3.read","effects":["read"],"id":"GetObject","method":"GET","origin":"{origin}","params":["partNumber","response-cache-control","response-content-disposition","response-content-encoding","response-content-language","response-content-type","response-expires","versionId"],"path":"/{Bucket}/{Key*}","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"s3.read","effects":["read"],"id":"GetObjectAcl","method":"GET","origin":"{origin}","params":["versionId"],"path":"/{Bucket}/{Key*}","query":{"acl":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"s3.read","effects":["read"],"id":"GetObjectAnnotation","method":"GET","origin":"{origin}","params":["annotationName","versionId"],"path":"/{Bucket}/{Key*}","query":{"annotation":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"s3.read","effects":["read"],"id":"GetObjectAttributes","method":"GET","origin":"{origin}","params":["versionId"],"path":"/{Bucket}/{Key*}","query":{"attributes":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"s3.read","effects":["read"],"id":"GetObjectLegalHold","method":"GET","origin":"{origin}","params":["versionId"],"path":"/{Bucket}/{Key*}","query":{"legal-hold":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"s3.read","effects":["read"],"id":"GetObjectRetention","method":"GET","origin":"{origin}","params":["versionId"],"path":"/{Bucket}/{Key*}","query":{"retention":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"s3.read","effects":["read"],"id":"GetObjectTagging","method":"GET","origin":"{origin}","params":["versionId"],"path":"/{Bucket}/{Key*}","query":{"tagging":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"s3.read","effects":["read"],"id":"GetObjectTorrent","method":"GET","origin":"{origin}","path":"/{Bucket}/{Key*}","query":{"torrent":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"s3.read","effects":["read"],"id":"HeadBucket","method":"HEAD","origin":"{origin}","path":"/{Bucket}","scope":{"Bucket":{"at":"Bucket","from":"path"}}},
+    {"action":"s3.read","effects":["read"],"id":"HeadObject","method":"HEAD","origin":"{origin}","params":["partNumber","response-cache-control","response-content-disposition","response-content-encoding","response-content-language","response-content-type","response-expires","versionId"],"path":"/{Bucket}/{Key*}","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"s3.read","effects":["read"],"id":"ListObjectAnnotations","method":"GET","origin":"{origin}","params":["annotation-prefix","continuation-token","max-annotation-results","versionId"],"path":"/{Bucket}/{Key*}","query":{"annotation":""},"scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"s3.read","effects":["read"],"id":"ListParts","method":"GET","origin":"{origin}","params":["max-parts","part-number-marker","uploadId"],"path":"/{Bucket}/{Key*}","scope":{"Bucket":{"at":"Bucket","from":"path"},"Key":{"at":"Key","from":"path"},"query":{"at":"","from":"query","type":"object"}}}
   ]
 }

@@ -1,26 +1,94 @@
 {
-  "title": "Shopify",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your Shopify store (https://yourshop.myshopify.com)",
-       "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
-      {"key": "token", "label": "Admin API access token", "secret": true, "path": ["connections", "", "http", "values", "token"]}
-    ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://example.myshopify.com", "path": "/admin/api/2026-10", "header": "X-Shopify-Access-Token"}]}}},
-    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
-      "read": {"title": "Read products and orders"},
-      "write.products": {"title": "Create and edit products, including publishing"},
-      "write.orders": {"title": "Cancel orders, including refunds"}
-    }
+      "order": {
+        "title": "Order"
+      },
+      "order.write": {
+        "title": "Create and edit"
+      },
+      "orders": {
+        "title": "Orders"
+      },
+      "orders.read": {
+        "title": "Read"
+      },
+      "product": {
+        "title": "Product"
+      },
+      "product.read": {
+        "title": "Read"
+      },
+      "product.write": {
+        "title": "Create and edit"
+      },
+      "products": {
+        "title": "Products"
+      },
+      "products.read": {
+        "title": "Read"
+      }
+    },
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "header": "X-Shopify-Access-Token",
+              "origin": "https://example.myshopify.com",
+              "path": "/admin/api/2026-10",
+              "value": "token"
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "team",
+      "sends": "anyone",
+      "strangers": true
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your Shopify store (https://yourshop.myshopify.com)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "connections",
+            "",
+            "http",
+            "slots",
+            0,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "key": "token",
+        "label": "Admin API access token",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ],
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Shopify",
   "operations": [
-    {"id": "products", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/admin/api/2026-10/graphql.json", "body": "graphql", "graphql": {"operation": "query", "field": "products"}, "scope": {}},
-    {"id": "product", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/admin/api/2026-10/graphql.json", "body": "graphql", "graphql": {"operation": "query", "field": "product"}, "scope": {"id": {"from": "argument", "at": "/id"}}},
-    {"id": "orders", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/admin/api/2026-10/graphql.json", "body": "graphql", "graphql": {"operation": "query", "field": "orders"}, "scope": {}},
-    {"id": "productCreate", "action": "write.products", "effects": ["write", "publish"], "method": "POST", "origin": "{origin}", "path": "/admin/api/2026-10/graphql.json", "body": "graphql", "graphql": {"operation": "mutation", "field": "productCreate"}, "scope": {"input": {"from": "argument", "at": "", "type": "object"}}},
-    {"id": "productUpdate", "action": "write.products", "effects": ["write", "publish"], "method": "POST", "origin": "{origin}", "path": "/admin/api/2026-10/graphql.json", "body": "graphql", "graphql": {"operation": "mutation", "field": "productUpdate"}, "scope": {"input": {"from": "argument", "at": "", "type": "object"}}},
-    {"id": "orderCancel", "action": "write.orders", "effects": ["write", "delete", "pay"], "method": "POST", "origin": "{origin}", "path": "/admin/api/2026-10/graphql.json", "body": "graphql", "graphql": {"operation": "mutation", "field": "orderCancel"}, "scope": {"input": {"from": "argument", "at": "", "type": "object"}}}
+    {"action":"products.read","body":"graphql","effects":["read"],"graphql":{"field":"products","operation":"query"},"id":"products","method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{}},
+    {"action":"product.read","body":"graphql","effects":["read"],"graphql":{"field":"product","operation":"query"},"id":"product","method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{"id":{"at":"/id","from":"argument"}}},
+    {"action":"orders.read","body":"graphql","effects":["read"],"graphql":{"field":"orders","operation":"query"},"id":"orders","method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{}},
+    {"action":"product.write","body":"graphql","effects":["write","publish"],"graphql":{"field":"productCreate","operation":"mutation"},"id":"productCreate","method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{"input":{"at":"","from":"argument","type":"object"}}},
+    {"action":"product.write","body":"graphql","effects":["write","publish"],"graphql":{"field":"productUpdate","operation":"mutation"},"id":"productUpdate","method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{"input":{"at":"","from":"argument","type":"object"}}},
+    {"action":"order.write","body":"graphql","effects":["write","delete","pay"],"graphql":{"field":"orderCancel","operation":"mutation"},"id":"orderCancel","method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{"input":{"at":"","from":"argument","type":"object"}}}
   ]
 }

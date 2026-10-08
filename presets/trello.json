@@ -1,48 +1,1084 @@
 {
-  "title": "Trello",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {
-        "key": "key",
-        "label": "API key",
-        "secret": true,
-        "path": [
-          "connections",
-          "",
-          "http",
-          "values",
-          "key"
-        ]
+    "actions": {
+      "actions": {
+        "title": "Actions"
       },
-      {
-        "key": "token",
-        "label": "API token",
-        "secret": true,
-        "path": [
-          "connections",
-          "",
-          "http",
-          "values",
-          "token"
-        ]
+      "actions.board": {
+        "title": "Board"
+      },
+      "actions.board.read": {
+        "title": "Read"
+      },
+      "actions.card": {
+        "title": "Card"
+      },
+      "actions.card.read": {
+        "title": "Read"
+      },
+      "actions.delete": {
+        "title": "Delete"
+      },
+      "actions.member": {
+        "title": "Member"
+      },
+      "actions.member.read": {
+        "title": "Read"
+      },
+      "actions.member_creator": {
+        "title": "Member creator"
+      },
+      "actions.member_creator.read": {
+        "title": "Read"
+      },
+      "actions.organization": {
+        "title": "Organization"
+      },
+      "actions.organization.read": {
+        "title": "Read"
+      },
+      "actions.reactions": {
+        "title": "Reactions"
+      },
+      "actions.reactions.delete": {
+        "title": "Delete"
+      },
+      "actions.reactions.read": {
+        "title": "Read"
+      },
+      "actions.reactions.send": {
+        "title": "Send"
+      },
+      "actions.reactions_summary": {
+        "title": "Reactions summary"
+      },
+      "actions.reactions_summary.read": {
+        "title": "Read"
+      },
+      "actions.read": {
+        "title": "Read"
+      },
+      "actions.text": {
+        "title": "Text"
+      },
+      "actions.text.write": {
+        "title": "Create and edit"
+      },
+      "actions.write": {
+        "title": "Create and edit"
+      },
+      "applications": {
+        "title": "Applications"
+      },
+      "applications.compliance": {
+        "title": "Compliance"
+      },
+      "applications.compliance.read": {
+        "title": "Read"
+      },
+      "batch": {
+        "title": "Batch"
+      },
+      "batch.read": {
+        "title": "Read"
+      },
+      "boards": {
+        "title": "Boards"
+      },
+      "boards.actions": {
+        "title": "Actions"
+      },
+      "boards.actions.read": {
+        "title": "Read"
+      },
+      "boards.board_plugins": {
+        "title": "Board plugins"
+      },
+      "boards.board_plugins.delete": {
+        "title": "Delete"
+      },
+      "boards.board_plugins.read": {
+        "title": "Read"
+      },
+      "boards.board_plugins.write": {
+        "title": "Create and edit"
+      },
+      "boards.board_stars": {
+        "title": "Board stars"
+      },
+      "boards.board_stars.read": {
+        "title": "Read"
+      },
+      "boards.calendar_key": {
+        "title": "Calendar key"
+      },
+      "boards.calendar_key.generate": {
+        "title": "Generate"
+      },
+      "boards.calendar_key.generate.generate": {
+        "title": "Generate"
+      },
+      "boards.cards": {
+        "title": "Cards"
+      },
+      "boards.cards.read": {
+        "title": "Read"
+      },
+      "boards.checklists": {
+        "title": "Checklists"
+      },
+      "boards.checklists.read": {
+        "title": "Read"
+      },
+      "boards.custom_fields": {
+        "title": "Custom fields"
+      },
+      "boards.custom_fields.read": {
+        "title": "Read"
+      },
+      "boards.delete": {
+        "title": "Delete"
+      },
+      "boards.email_key": {
+        "title": "Email key"
+      },
+      "boards.email_key.generate": {
+        "title": "Generate"
+      },
+      "boards.email_key.generate.generate": {
+        "title": "Generate"
+      },
+      "boards.exports": {
+        "title": "Exports"
+      },
+      "boards.exports.delete": {
+        "title": "Delete"
+      },
+      "boards.exports.most_recent": {
+        "title": "Most recent"
+      },
+      "boards.exports.most_recent.read": {
+        "title": "Read"
+      },
+      "boards.exports.read": {
+        "title": "Read"
+      },
+      "boards.exports.write": {
+        "title": "Create and edit"
+      },
+      "boards.id_tags": {
+        "title": "Id tags"
+      },
+      "boards.id_tags.write": {
+        "title": "Create and edit"
+      },
+      "boards.labels": {
+        "title": "Labels"
+      },
+      "boards.labels.read": {
+        "title": "Read"
+      },
+      "boards.labels.write": {
+        "title": "Create and edit"
+      },
+      "boards.lists": {
+        "title": "Lists"
+      },
+      "boards.lists.read": {
+        "title": "Read"
+      },
+      "boards.lists.write": {
+        "title": "Create and edit"
+      },
+      "boards.mark_as_viewed": {
+        "title": "Mark as viewed"
+      },
+      "boards.mark_as_viewed.write": {
+        "title": "Create and edit"
+      },
+      "boards.members": {
+        "title": "Members"
+      },
+      "boards.members.admin": {
+        "title": "Manage"
+      },
+      "boards.members.delete": {
+        "title": "Delete"
+      },
+      "boards.members.read": {
+        "title": "Read"
+      },
+      "boards.memberships": {
+        "title": "Memberships"
+      },
+      "boards.memberships.admin": {
+        "title": "Manage"
+      },
+      "boards.memberships.read": {
+        "title": "Read"
+      },
+      "boards.my_prefs": {
+        "title": "My prefs"
+      },
+      "boards.my_prefs.email_position": {
+        "title": "Email position"
+      },
+      "boards.my_prefs.email_position.write": {
+        "title": "Create and edit"
+      },
+      "boards.my_prefs.id_email": {
+        "title": "Id email"
+      },
+      "boards.my_prefs.id_email.write": {
+        "title": "Create and edit"
+      },
+      "boards.my_prefs.show_sidebar": {
+        "title": "Show sidebar"
+      },
+      "boards.my_prefs.show_sidebar.write": {
+        "title": "Create and edit"
+      },
+      "boards.my_prefs.show_sidebar_activity": {
+        "title": "Show sidebar activity"
+      },
+      "boards.my_prefs.show_sidebar_activity.write": {
+        "title": "Create and edit"
+      },
+      "boards.my_prefs.show_sidebar_board_actions": {
+        "title": "Show sidebar board actions"
+      },
+      "boards.my_prefs.show_sidebar_board_actions.write": {
+        "title": "Create and edit"
+      },
+      "boards.my_prefs.show_sidebar_members": {
+        "title": "Show sidebar members"
+      },
+      "boards.my_prefs.show_sidebar_members.write": {
+        "title": "Create and edit"
+      },
+      "boards.plugins": {
+        "title": "Plugins"
+      },
+      "boards.plugins.read": {
+        "title": "Read"
+      },
+      "boards.read": {
+        "title": "Read"
+      },
+      "boards.write": {
+        "title": "Create and edit"
+      },
+      "cards": {
+        "title": "Cards"
+      },
+      "cards.actions": {
+        "title": "Actions"
+      },
+      "cards.actions.comments": {
+        "title": "Comments"
+      },
+      "cards.actions.comments.delete": {
+        "title": "Delete"
+      },
+      "cards.actions.comments.send": {
+        "title": "Send"
+      },
+      "cards.actions.comments.write": {
+        "title": "Create and edit"
+      },
+      "cards.actions.read": {
+        "title": "Read"
+      },
+      "cards.attachments": {
+        "title": "Attachments"
+      },
+      "cards.attachments.delete": {
+        "title": "Delete"
+      },
+      "cards.attachments.read": {
+        "title": "Read"
+      },
+      "cards.attachments.write": {
+        "title": "Create and edit"
+      },
+      "cards.board": {
+        "title": "Board"
+      },
+      "cards.board.read": {
+        "title": "Read"
+      },
+      "cards.check_item": {
+        "title": "Check item"
+      },
+      "cards.check_item.delete": {
+        "title": "Delete"
+      },
+      "cards.check_item.read": {
+        "title": "Read"
+      },
+      "cards.check_item.write": {
+        "title": "Create and edit"
+      },
+      "cards.checklist": {
+        "title": "Checklist"
+      },
+      "cards.checklist.check_item": {
+        "title": "Check item"
+      },
+      "cards.checklist.check_item.write": {
+        "title": "Create and edit"
+      },
+      "cards.checklists": {
+        "title": "Checklists"
+      },
+      "cards.checklists.delete": {
+        "title": "Delete"
+      },
+      "cards.checklists.read": {
+        "title": "Read"
+      },
+      "cards.checklists.write": {
+        "title": "Create and edit"
+      },
+      "cards.custom_field": {
+        "title": "Custom field"
+      },
+      "cards.custom_field.item": {
+        "title": "Item"
+      },
+      "cards.custom_field.item.write": {
+        "title": "Create and edit"
+      },
+      "cards.custom_field_items": {
+        "title": "Custom field items"
+      },
+      "cards.custom_field_items.read": {
+        "title": "Read"
+      },
+      "cards.custom_fields": {
+        "title": "Custom fields"
+      },
+      "cards.custom_fields.write": {
+        "title": "Create and edit"
+      },
+      "cards.delete": {
+        "title": "Delete"
+      },
+      "cards.id_labels": {
+        "title": "Id labels"
+      },
+      "cards.id_labels.delete": {
+        "title": "Delete"
+      },
+      "cards.id_labels.write": {
+        "title": "Create and edit"
+      },
+      "cards.id_members": {
+        "title": "Id members"
+      },
+      "cards.id_members.delete": {
+        "title": "Delete"
+      },
+      "cards.id_members.write": {
+        "title": "Create and edit"
+      },
+      "cards.item_states": {
+        "title": "Item states"
+      },
+      "cards.item_states.read": {
+        "title": "Read"
+      },
+      "cards.labels": {
+        "title": "Labels"
+      },
+      "cards.labels.write": {
+        "title": "Create and edit"
+      },
+      "cards.mark_associated_notifications": {
+        "title": "Mark associated notifications"
+      },
+      "cards.mark_associated_notifications.write": {
+        "title": "Create and edit"
+      },
+      "cards.members": {
+        "title": "Members"
+      },
+      "cards.members.read": {
+        "title": "Read"
+      },
+      "cards.members_voted": {
+        "title": "Members voted"
+      },
+      "cards.members_voted.delete": {
+        "title": "Delete"
+      },
+      "cards.members_voted.read": {
+        "title": "Read"
+      },
+      "cards.members_voted.write": {
+        "title": "Create and edit"
+      },
+      "cards.plugin_data": {
+        "title": "Plugin data"
+      },
+      "cards.plugin_data.read": {
+        "title": "Read"
+      },
+      "cards.read": {
+        "title": "Read"
+      },
+      "cards.stickers": {
+        "title": "Stickers"
+      },
+      "cards.stickers.delete": {
+        "title": "Delete"
+      },
+      "cards.stickers.read": {
+        "title": "Read"
+      },
+      "cards.stickers.write": {
+        "title": "Create and edit"
+      },
+      "cards.write": {
+        "title": "Create and edit"
+      },
+      "checklists": {
+        "title": "Checklists"
+      },
+      "checklists.board": {
+        "title": "Board"
+      },
+      "checklists.board.read": {
+        "title": "Read"
+      },
+      "checklists.cards": {
+        "title": "Cards"
+      },
+      "checklists.cards.read": {
+        "title": "Read"
+      },
+      "checklists.check_items": {
+        "title": "Check items"
+      },
+      "checklists.check_items.delete": {
+        "title": "Delete"
+      },
+      "checklists.check_items.read": {
+        "title": "Read"
+      },
+      "checklists.delete": {
+        "title": "Delete"
+      },
+      "checklists.items": {
+        "title": "Items"
+      },
+      "checklists.items.read": {
+        "title": "Read"
+      },
+      "checklists.items.write": {
+        "title": "Create and edit"
+      },
+      "checklists.read": {
+        "title": "Read"
+      },
+      "checklists.write": {
+        "title": "Create and edit"
+      },
+      "custom_fields": {
+        "title": "Custom fields"
+      },
+      "custom_fields.delete": {
+        "title": "Delete"
+      },
+      "custom_fields.options": {
+        "title": "Options"
+      },
+      "custom_fields.options.delete": {
+        "title": "Delete"
+      },
+      "custom_fields.options.read": {
+        "title": "Read"
+      },
+      "custom_fields.read": {
+        "title": "Read"
+      },
+      "custom_fields.write": {
+        "title": "Create and edit"
+      },
+      "emoji": {
+        "title": "Emoji"
+      },
+      "emoji.read": {
+        "title": "Read"
+      },
+      "enterprises": {
+        "title": "Enterprises"
+      },
+      "enterprises.admins": {
+        "title": "Admins"
+      },
+      "enterprises.admins.admin": {
+        "title": "Manage"
+      },
+      "enterprises.admins.delete": {
+        "title": "Delete"
+      },
+      "enterprises.admins.read": {
+        "title": "Read"
+      },
+      "enterprises.auditlog": {
+        "title": "Auditlog"
+      },
+      "enterprises.auditlog.read": {
+        "title": "Read"
+      },
+      "enterprises.claimable_organizations": {
+        "title": "Claimable organizations"
+      },
+      "enterprises.claimable_organizations.read": {
+        "title": "Read"
+      },
+      "enterprises.enterprise_join_request": {
+        "title": "Enterprise join request"
+      },
+      "enterprises.enterprise_join_request.bulk": {
+        "title": "Bulk"
+      },
+      "enterprises.enterprise_join_request.bulk.write": {
+        "title": "Create and edit"
+      },
+      "enterprises.members": {
+        "title": "Members"
+      },
+      "enterprises.members.deactivated": {
+        "title": "Deactivated"
+      },
+      "enterprises.members.deactivated.admin": {
+        "title": "Manage"
+      },
+      "enterprises.members.licensed": {
+        "title": "Licensed"
+      },
+      "enterprises.members.licensed.write": {
+        "title": "Create and edit"
+      },
+      "enterprises.members.read": {
+        "title": "Read"
+      },
+      "enterprises.organizations": {
+        "title": "Organizations"
+      },
+      "enterprises.organizations.admin": {
+        "title": "Manage"
+      },
+      "enterprises.organizations.bulk": {
+        "title": "Bulk"
+      },
+      "enterprises.organizations.bulk.read": {
+        "title": "Read"
+      },
+      "enterprises.organizations.delete": {
+        "title": "Delete"
+      },
+      "enterprises.organizations.read": {
+        "title": "Read"
+      },
+      "enterprises.pending_organizations": {
+        "title": "Pending organizations"
+      },
+      "enterprises.pending_organizations.read": {
+        "title": "Read"
+      },
+      "enterprises.read": {
+        "title": "Read"
+      },
+      "enterprises.signup_url": {
+        "title": "Signup url"
+      },
+      "enterprises.signup_url.read": {
+        "title": "Read"
+      },
+      "enterprises.tokens": {
+        "title": "Tokens"
+      },
+      "enterprises.tokens.admin": {
+        "title": "Manage"
+      },
+      "enterprises.transferrable": {
+        "title": "Transferrable"
+      },
+      "enterprises.transferrable.bulk": {
+        "title": "Bulk"
+      },
+      "enterprises.transferrable.bulk.read": {
+        "title": "Read"
+      },
+      "enterprises.transferrable.organization": {
+        "title": "Organization"
+      },
+      "enterprises.transferrable.organization.read": {
+        "title": "Read"
+      },
+      "labels": {
+        "title": "Labels"
+      },
+      "labels.delete": {
+        "title": "Delete"
+      },
+      "labels.read": {
+        "title": "Read"
+      },
+      "labels.write": {
+        "title": "Create and edit"
+      },
+      "lists": {
+        "title": "Lists"
+      },
+      "lists.actions": {
+        "title": "Actions"
+      },
+      "lists.actions.read": {
+        "title": "Read"
+      },
+      "lists.all_cards": {
+        "title": "All cards"
+      },
+      "lists.all_cards.write": {
+        "title": "Create and edit"
+      },
+      "lists.board": {
+        "title": "Board"
+      },
+      "lists.board.read": {
+        "title": "Read"
+      },
+      "lists.cards": {
+        "title": "Cards"
+      },
+      "lists.cards.read": {
+        "title": "Read"
+      },
+      "lists.closed": {
+        "title": "Closed"
+      },
+      "lists.closed.write": {
+        "title": "Create and edit"
+      },
+      "lists.id_board": {
+        "title": "Id board"
+      },
+      "lists.id_board.write": {
+        "title": "Create and edit"
+      },
+      "lists.read": {
+        "title": "Read"
+      },
+      "lists.write": {
+        "title": "Create and edit"
+      },
+      "members": {
+        "title": "Members"
+      },
+      "members.actions": {
+        "title": "Actions"
+      },
+      "members.actions.read": {
+        "title": "Read"
+      },
+      "members.admin": {
+        "title": "Manage"
+      },
+      "members.avatar": {
+        "title": "Avatar"
+      },
+      "members.avatar.write": {
+        "title": "Create and edit"
+      },
+      "members.board_backgrounds": {
+        "title": "Board backgrounds"
+      },
+      "members.board_backgrounds.delete": {
+        "title": "Delete"
+      },
+      "members.board_backgrounds.read": {
+        "title": "Read"
+      },
+      "members.board_backgrounds.write": {
+        "title": "Create and edit"
+      },
+      "members.board_stars": {
+        "title": "Board stars"
+      },
+      "members.board_stars.delete": {
+        "title": "Delete"
+      },
+      "members.board_stars.read": {
+        "title": "Read"
+      },
+      "members.board_stars.write": {
+        "title": "Create and edit"
+      },
+      "members.boards": {
+        "title": "Boards"
+      },
+      "members.boards.read": {
+        "title": "Read"
+      },
+      "members.boards_invited": {
+        "title": "Boards invited"
+      },
+      "members.boards_invited.read": {
+        "title": "Read"
+      },
+      "members.cards": {
+        "title": "Cards"
+      },
+      "members.cards.read": {
+        "title": "Read"
+      },
+      "members.custom_board_backgrounds": {
+        "title": "Custom board backgrounds"
+      },
+      "members.custom_board_backgrounds.delete": {
+        "title": "Delete"
+      },
+      "members.custom_board_backgrounds.read": {
+        "title": "Read"
+      },
+      "members.custom_board_backgrounds.write": {
+        "title": "Create and edit"
+      },
+      "members.custom_emoji": {
+        "title": "Custom emoji"
+      },
+      "members.custom_emoji.read": {
+        "title": "Read"
+      },
+      "members.custom_emoji.write": {
+        "title": "Create and edit"
+      },
+      "members.custom_stickers": {
+        "title": "Custom stickers"
+      },
+      "members.custom_stickers.delete": {
+        "title": "Delete"
+      },
+      "members.custom_stickers.read": {
+        "title": "Read"
+      },
+      "members.custom_stickers.write": {
+        "title": "Create and edit"
+      },
+      "members.notification_channel_settings": {
+        "title": "Notification channel settings"
+      },
+      "members.notification_channel_settings.read": {
+        "title": "Read"
+      },
+      "members.notification_channel_settings.write": {
+        "title": "Create and edit"
+      },
+      "members.notifications": {
+        "title": "Notifications"
+      },
+      "members.notifications.read": {
+        "title": "Read"
+      },
+      "members.one_time_messages_dismissed": {
+        "title": "One time messages dismissed"
+      },
+      "members.one_time_messages_dismissed.write": {
+        "title": "Create and edit"
+      },
+      "members.organizations": {
+        "title": "Organizations"
+      },
+      "members.organizations.read": {
+        "title": "Read"
+      },
+      "members.organizations_invited": {
+        "title": "Organizations invited"
+      },
+      "members.organizations_invited.read": {
+        "title": "Read"
+      },
+      "members.read": {
+        "title": "Read"
+      },
+      "members.saved_searches": {
+        "title": "Saved searches"
+      },
+      "members.saved_searches.admin": {
+        "title": "Manage"
+      },
+      "members.saved_searches.delete": {
+        "title": "Delete"
+      },
+      "members.saved_searches.read": {
+        "title": "Read"
+      },
+      "members.saved_searches.write": {
+        "title": "Create and edit"
+      },
+      "members.tokens": {
+        "title": "Tokens"
+      },
+      "members.tokens.read": {
+        "title": "Read"
+      },
+      "notifications": {
+        "title": "Notifications"
+      },
+      "notifications.all": {
+        "title": "All"
+      },
+      "notifications.all.write": {
+        "title": "Create and edit"
+      },
+      "notifications.board": {
+        "title": "Board"
+      },
+      "notifications.board.read": {
+        "title": "Read"
+      },
+      "notifications.card": {
+        "title": "Card"
+      },
+      "notifications.card.read": {
+        "title": "Read"
+      },
+      "notifications.member": {
+        "title": "Member"
+      },
+      "notifications.member.read": {
+        "title": "Read"
+      },
+      "notifications.member_creator": {
+        "title": "Member creator"
+      },
+      "notifications.member_creator.read": {
+        "title": "Read"
+      },
+      "notifications.organization": {
+        "title": "Organization"
+      },
+      "notifications.organization.read": {
+        "title": "Read"
+      },
+      "notifications.read": {
+        "title": "Read"
+      },
+      "notifications.unread": {
+        "title": "Unread"
+      },
+      "notifications.unread.write": {
+        "title": "Create and edit"
+      },
+      "notifications.write": {
+        "title": "Create and edit"
+      },
+      "organizations": {
+        "title": "Organizations"
+      },
+      "organizations.actions": {
+        "title": "Actions"
+      },
+      "organizations.actions.read": {
+        "title": "Read"
+      },
+      "organizations.admin": {
+        "title": "Manage"
+      },
+      "organizations.boards": {
+        "title": "Boards"
+      },
+      "organizations.boards.read": {
+        "title": "Read"
+      },
+      "organizations.delete": {
+        "title": "Delete"
+      },
+      "organizations.exports": {
+        "title": "Exports"
+      },
+      "organizations.exports.admin": {
+        "title": "Manage"
+      },
+      "organizations.exports.read": {
+        "title": "Read"
+      },
+      "organizations.logo": {
+        "title": "Logo"
+      },
+      "organizations.logo.delete": {
+        "title": "Delete"
+      },
+      "organizations.logo.write": {
+        "title": "Create and edit"
+      },
+      "organizations.members": {
+        "title": "Members"
+      },
+      "organizations.members.admin": {
+        "title": "Manage"
+      },
+      "organizations.members.all": {
+        "title": "All"
+      },
+      "organizations.members.all.delete": {
+        "title": "Delete"
+      },
+      "organizations.members.deactivated": {
+        "title": "Deactivated"
+      },
+      "organizations.members.deactivated.admin": {
+        "title": "Manage"
+      },
+      "organizations.members.delete": {
+        "title": "Delete"
+      },
+      "organizations.members.read": {
+        "title": "Read"
+      },
+      "organizations.memberships": {
+        "title": "Memberships"
+      },
+      "organizations.memberships.read": {
+        "title": "Read"
+      },
+      "organizations.new_billable_guests": {
+        "title": "New billable guests"
+      },
+      "organizations.new_billable_guests.read": {
+        "title": "Read"
+      },
+      "organizations.plugin_data": {
+        "title": "Plugin data"
+      },
+      "organizations.plugin_data.read": {
+        "title": "Read"
+      },
+      "organizations.prefs": {
+        "title": "Prefs"
+      },
+      "organizations.prefs.associated_domain": {
+        "title": "Associated domain"
+      },
+      "organizations.prefs.associated_domain.delete": {
+        "title": "Delete"
+      },
+      "organizations.prefs.org_invite_restrict": {
+        "title": "Org invite restrict"
+      },
+      "organizations.prefs.org_invite_restrict.delete": {
+        "title": "Delete"
+      },
+      "organizations.read": {
+        "title": "Read"
+      },
+      "organizations.tags": {
+        "title": "Tags"
+      },
+      "organizations.tags.delete": {
+        "title": "Delete"
+      },
+      "organizations.tags.read": {
+        "title": "Read"
+      },
+      "organizations.tags.write": {
+        "title": "Create and edit"
+      },
+      "plugins": {
+        "title": "Plugins"
+      },
+      "plugins.compliance": {
+        "title": "Compliance"
+      },
+      "plugins.compliance.member_privacy": {
+        "title": "Member privacy"
+      },
+      "plugins.compliance.member_privacy.read": {
+        "title": "Read"
+      },
+      "plugins.listings": {
+        "title": "Listings"
+      },
+      "plugins.listings.write": {
+        "title": "Create and edit"
+      },
+      "plugins.read": {
+        "title": "Read"
+      },
+      "plugins.write": {
+        "title": "Create and edit"
+      },
+      "search": {
+        "title": "Search"
+      },
+      "search.members": {
+        "title": "Members"
+      },
+      "search.members.read": {
+        "title": "Read"
+      },
+      "search.read": {
+        "title": "Read"
+      },
+      "tokens": {
+        "title": "Tokens"
+      },
+      "tokens.delete": {
+        "title": "Delete"
+      },
+      "tokens.member": {
+        "title": "Member"
+      },
+      "tokens.member.read": {
+        "title": "Read"
+      },
+      "tokens.read": {
+        "title": "Read"
+      },
+      "tokens.webhooks": {
+        "title": "Webhooks"
+      },
+      "tokens.webhooks.admin": {
+        "title": "Manage"
+      },
+      "tokens.webhooks.delete": {
+        "title": "Delete"
+      },
+      "tokens.webhooks.read": {
+        "title": "Read"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
       }
-    ],
+    },
     "connections": {
       "": {
         "http": {
           "slots": [
             {
-              "value": "key",
               "origin": "https://api.trello.com",
               "path": "/1",
-              "query": "key"
+              "query": "key",
+              "value": "key"
             },
             {
-              "value": "token",
               "origin": "https://api.trello.com",
               "path": "/1",
-              "query": "token"
+              "query": "token",
+              "value": "token"
             }
           ]
         }
@@ -50,539 +1086,307 @@
     },
     "defaults": {
       "contents": "team",
-      "strangers": true,
-      "sends": "anyone"
+      "sends": "anyone",
+      "strangers": true
     },
-    "actions": {
-      "read": {
-        "title": "Read boards, lists and cards"
-      },
-      "write.cards": {
-        "title": "Create and edit cards"
-      },
-      "send.comment": {
-        "title": "Comment on cards"
-      },
-      "delete": {
-        "title": "Delete cards"
-      },
-      "send.reactions": {
-        "title": "send: reactions"
-      },
-      "delete.reactions": {
-        "title": "delete: reactions"
-      },
-      "delete.actions": {
-        "title": "delete: actions"
-      },
-      "write.actions": {
-        "title": "write: actions"
-      },
-      "write.text": {
-        "title": "write: text"
-      },
-      "write.boards": {
-        "title": "write: boards"
-      },
-      "delete.boards": {
-        "title": "delete: boards"
-      },
-      "write.board_plugins": {
-        "title": "write: board_plugins"
-      },
-      "delete.board_plugins": {
-        "title": "delete: board_plugins"
-      },
-      "generate.generate": {
-        "title": "generate: generate"
-      },
-      "delete.exports": {
-        "title": "delete: exports"
-      },
-      "write.id_tags": {
-        "title": "write: id_tags"
-      },
-      "write.labels": {
-        "title": "write: labels"
-      },
-      "write.lists": {
-        "title": "write: lists"
-      },
-      "admin.members": {
-        "title": "admin: members"
-      },
-      "delete.members": {
-        "title": "delete: members"
-      },
-      "admin.memberships": {
-        "title": "admin: memberships"
-      },
-      "write.email_position": {
-        "title": "write: email_position"
-      },
-      "write.id_email_list": {
-        "title": "write: id_email_list"
-      },
-      "write.show_sidebar": {
-        "title": "write: show_sidebar"
-      },
-      "write.show_sidebar_activity": {
-        "title": "write: show_sidebar_activity"
-      },
-      "write.show_sidebar_board_actions": {
-        "title": "write: show_sidebar_board_actions"
-      },
-      "write.show_sidebar_members": {
-        "title": "write: show_sidebar_members"
-      },
-      "write.check_item": {
-        "title": "write: check_item"
-      },
-      "write.item": {
-        "title": "write: item"
-      },
-      "write.custom_fields": {
-        "title": "write: custom_fields"
-      },
-      "delete.comments": {
-        "title": "delete: comments"
-      },
-      "write.comments": {
-        "title": "write: comments"
-      },
-      "write.attachments": {
-        "title": "write: attachments"
-      },
-      "delete.attachments": {
-        "title": "delete: attachments"
-      },
-      "delete.check_item": {
-        "title": "delete: check_item"
-      },
-      "delete.checklists": {
-        "title": "delete: checklists"
-      },
-      "write.id_labels": {
-        "title": "write: id_labels"
-      },
-      "delete.id_labels": {
-        "title": "delete: id_labels"
-      },
-      "write.id_members": {
-        "title": "write: id_members"
-      },
-      "delete.id_members": {
-        "title": "delete: id_members"
-      },
-      "write.members_voted": {
-        "title": "write: members_voted"
-      },
-      "delete.members_voted": {
-        "title": "delete: members_voted"
-      },
-      "write.stickers": {
-        "title": "write: stickers"
-      },
-      "delete.stickers": {
-        "title": "delete: stickers"
-      },
-      "write.checklists": {
-        "title": "write: checklists"
-      },
-      "delete.check_items": {
-        "title": "delete: check_items"
-      },
-      "delete.custom_fields": {
-        "title": "delete: custom_fields"
-      },
-      "delete.options": {
-        "title": "delete: options"
-      },
-      "write.bulk": {
-        "title": "write: bulk"
-      },
-      "delete.admins": {
-        "title": "delete: admins"
-      },
-      "admin.admins": {
-        "title": "admin: admins"
-      },
-      "write.licensed": {
-        "title": "write: licensed"
-      },
-      "admin.organizations": {
-        "title": "admin: organizations"
-      },
-      "delete.organizations": {
-        "title": "delete: organizations"
-      },
-      "admin.tokens": {
-        "title": "admin: tokens"
-      },
-      "delete.labels": {
-        "title": "delete: labels"
-      },
-      "write.id_board": {
-        "title": "write: id_board"
-      },
-      "write.avatar": {
-        "title": "write: avatar"
-      },
-      "write.board_backgrounds": {
-        "title": "write: board_backgrounds"
-      },
-      "delete.board_backgrounds": {
-        "title": "delete: board_backgrounds"
-      },
-      "write.board_stars": {
-        "title": "write: board_stars"
-      },
-      "delete.board_stars": {
-        "title": "delete: board_stars"
-      },
-      "write.custom_board_backgrounds": {
-        "title": "write: custom_board_backgrounds"
-      },
-      "delete.custom_board_backgrounds": {
-        "title": "delete: custom_board_backgrounds"
-      },
-      "write.custom_emoji": {
-        "title": "write: custom_emoji"
-      },
-      "write.custom_stickers": {
-        "title": "write: custom_stickers"
-      },
-      "delete.custom_stickers": {
-        "title": "delete: custom_stickers"
-      },
-      "write.notification_channel_settings": {
-        "title": "write: notification_channel_settings"
-      },
-      "write.one_time_messages_dismissed": {
-        "title": "write: one_time_messages_dismissed"
-      },
-      "delete.saved_searches": {
-        "title": "delete: saved_searches"
-      },
-      "write.saved_searches": {
-        "title": "write: saved_searches"
-      },
-      "write.read": {
-        "title": "write: read"
-      },
-      "write.notifications": {
-        "title": "write: notifications"
-      },
-      "write.unread": {
-        "title": "write: unread"
-      },
-      "delete.logo": {
-        "title": "delete: logo"
-      },
-      "write.logo": {
-        "title": "write: logo"
-      },
-      "delete.all": {
-        "title": "delete: all"
-      },
-      "delete.associated_domain": {
-        "title": "delete: associated_domain"
-      },
-      "delete.org_invite_restrict": {
-        "title": "delete: org_invite_restrict"
-      },
-      "write.tags": {
-        "title": "write: tags"
-      },
-      "delete.tags": {
-        "title": "delete: tags"
-      },
-      "write.listings": {
-        "title": "write: listings"
-      },
-      "write.plugins": {
-        "title": "write: plugins"
-      },
-      "delete.tokens": {
-        "title": "delete: tokens"
-      },
-      "admin.webhooks": {
-        "title": "admin: webhooks"
-      },
-      "delete.webhooks": {
-        "title": "delete: webhooks"
+    "fields": [
+      {
+        "key": "key",
+        "label": "API key",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "key"
+        ],
+        "secret": true
+      },
+      {
+        "key": "token",
+        "label": "API token",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ],
+        "secret": true
       }
-    }
+    ],
+    "group": "api"
   },
+  "title": "Trello",
   "operations": [
-    {"action":"read","effects":["read"],"id":"boards.get","method":"GET","origin":"https://api.trello.com","params":["key","token","fields","lists","cards"],"path":"/1/boards/{board}","scope":{"board":{"at":"board","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"lists.cards.get","method":"GET","origin":"https://api.trello.com","params":["key","token","fields"],"path":"/1/lists/{list}/cards","scope":{"list":{"at":"list","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"cards.get","method":"GET","origin":"https://api.trello.com","params":["key","token","fields"],"path":"/1/cards/{card}","scope":{"card":{"at":"card","from":"path"}}},
-    {"action":"write.cards","effects":["write"],"id":"cards.create","method":"POST","origin":"https://api.trello.com","params":["key","token","idList","name","desc","due","idMembers"],"path":"/1/cards","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.cards","effects":["write"],"id":"cards.update","method":"PUT","origin":"https://api.trello.com","params":["key","token","name","desc","due","closed","idList","idMembers"],"path":"/1/cards/{card}","scope":{"card":{"at":"card","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"send.comment","effects":["send"],"id":"cards.comments.create","method":"POST","origin":"https://api.trello.com","params":["key","token","text"],"path":"/1/cards/{card}/actions/comments","scope":{"card":{"at":"card","from":"path"},"text":{"at":"text","from":"query"}}},
-    {"action":"delete","effects":["delete"],"id":"cards.delete","method":"DELETE","origin":"https://api.trello.com","params":["key","token"],"path":"/1/cards/{card}","scope":{"card":{"at":"card","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-actions-idaction-reactions","method":"GET","origin":"https://api.trello.com","params":["member","emoji"],"path":"/1/actions/{idAction}/reactions","scope":{"idAction":{"at":"idAction","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"send.reactions","effects":["send"],"id":"post-actions-idaction-reactions","method":"POST","origin":"https://api.trello.com","path":"/1/actions/{idAction}/reactions","scope":{"idAction":{"at":"idAction","from":"path"}}},
-    {"action":"send.reactions","body":"json","effects":["send"],"id":"post-actions-idaction-reactions.json.2dc9d5946815","method":"POST","origin":"https://api.trello.com","path":"/1/actions/{idAction}/reactions","scope":{"idAction":{"at":"idAction","from":"path"},"request":{"at":"","from":"body","type":"object"},"shortName":{"at":"/shortName","from":"body","optional":true}}},
-    {"action":"delete.reactions","effects":["delete"],"id":"delete-actions-idaction-reactions-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/actions/{idAction}/reactions/{id}","scope":{"id":{"at":"id","from":"path"},"idAction":{"at":"idAction","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-actions-idaction-reactions-id","method":"GET","origin":"https://api.trello.com","params":["member","emoji"],"path":"/1/actions/{idAction}/reactions/{id}","scope":{"id":{"at":"id","from":"path"},"idAction":{"at":"idAction","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-actions-idaction-reactionsummary","method":"GET","origin":"https://api.trello.com","path":"/1/actions/{idAction}/reactionsSummary","scope":{"idAction":{"at":"idAction","from":"path"}}},
-    {"action":"delete.actions","effects":["delete"],"id":"delete-actions-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/actions/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-actions-id","method":"GET","origin":"https://api.trello.com","params":["display","entities","fields","member","member_fields","memberCreator","memberCreator_fields"],"path":"/1/actions/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.actions","effects":["write"],"id":"put-actions-id","method":"PUT","origin":"https://api.trello.com","params":["text"],"path":"/1/actions/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-actions-id-board","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/actions/{id}/board","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-actions-id-card","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/actions/{id}/card","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-actions-id-list","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/actions/{id}/list","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-actions-id-member","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/actions/{id}/member","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-actions-id-membercreator","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/actions/{id}/memberCreator","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-actions-id-organization","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/actions/{id}/organization","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.text","effects":["write"],"id":"put-actions-id-text","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/actions/{id}/text","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-actions-id-field","method":"GET","origin":"https://api.trello.com","path":"/1/actions/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"applications-key-compliance","method":"GET","origin":"https://api.trello.com","path":"/1/applications/{key}/compliance","scope":{"key":{"at":"key","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-batch","method":"GET","origin":"https://api.trello.com","params":["urls"],"path":"/1/batch","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.boards","effects":["write"],"id":"post-boards","method":"POST","origin":"https://api.trello.com","params":["name","defaultLabels","defaultLists","desc","idOrganization","idBoardSource","keepFromSource","powerUps","prefs_permissionLevel","prefs_voting","prefs_comments","prefs_invitations","prefs_selfJoin","prefs_cardCovers","prefs_background","prefs_cardAging"],"path":"/1/boards/","scope":{"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-actions","method":"GET","origin":"https://api.trello.com","params":["fields","filter","format","idModels","limit","member","member_fields","memberCreator","memberCreator_fields","page","reactions","before","since"],"path":"/1/boards/{boardId}/actions","scope":{"boardId":{"at":"boardId","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-boardstars","method":"GET","origin":"https://api.trello.com","params":["filter"],"path":"/1/boards/{boardId}/boardStars","scope":{"boardId":{"at":"boardId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.boards","effects":["delete"],"id":"delete-boards-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/boards/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.boards","effects":["write"],"id":"put-boards-id","method":"PUT","origin":"https://api.trello.com","params":["name","desc","closed","subscribed","idOrganization","prefs/permissionLevel","prefs/selfJoin","prefs/cardCovers","prefs/hideVotes","prefs/invitations","prefs/voting","prefs/comments","prefs/background","prefs/cardAging","prefs/calendarFeedEnabled"],"path":"/1/boards/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-boardplugins","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/boardPlugins","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.board_plugins","effects":["write"],"id":"post-boards-id-boardplugins","method":"POST","origin":"https://api.trello.com","params":["idPlugin"],"path":"/1/boards/{id}/boardPlugins","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.board_plugins","effects":["delete"],"id":"delete-boards-id-boardplugins","method":"DELETE","origin":"https://api.trello.com","path":"/1/boards/{id}/boardPlugins/{idPlugin}","scope":{"id":{"at":"id","from":"path"},"idPlugin":{"at":"idPlugin","from":"path"}}},
-    {"action":"generate.generate","effects":["generate"],"id":"post-boards-id-calendarkey-generate","method":"POST","origin":"https://api.trello.com","path":"/1/boards/{id}/calendarKey/generate","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-cards","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/cards","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-cards-filter","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/cards/{filter}","scope":{"filter":{"at":"filter","from":"path"},"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"boards-id-checklists","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/checklists","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-customfields","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/customFields","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"generate.generate","effects":["generate"],"id":"post-boards-id-emailkey-generate","method":"POST","origin":"https://api.trello.com","path":"/1/boards/{id}/emailKey/generate","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.boards","effects":["write"],"id":"post-boards-id-exports","method":"POST","origin":"https://api.trello.com","params":["attachments","attachment_age"],"path":"/1/boards/{id}/exports","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-exports-mostrecent","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/exports/mostRecent","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"delete.exports","effects":["delete"],"id":"delete-boards-id-exports-idexport","method":"DELETE","origin":"https://api.trello.com","path":"/1/boards/{id}/exports/{idExport}","scope":{"id":{"at":"id","from":"path"},"idExport":{"at":"idExport","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-exports-idexport","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/exports/{idExport}","scope":{"id":{"at":"id","from":"path"},"idExport":{"at":"idExport","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-exports-idexport-download","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/exports/{idExport}/download","scope":{"id":{"at":"id","from":"path"},"idExport":{"at":"idExport","from":"path"}}},
-    {"action":"write.id_tags","effects":["write"],"id":"post-boards-id-idtags","method":"POST","origin":"https://api.trello.com","params":["value"],"path":"/1/boards/{id}/idTags","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-labels","method":"GET","origin":"https://api.trello.com","params":["fields","limit"],"path":"/1/boards/{id}/labels","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.labels","effects":["write"],"id":"post-boards-id-labels","method":"POST","origin":"https://api.trello.com","params":["name","color"],"path":"/1/boards/{id}/labels","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-lists","method":"GET","origin":"https://api.trello.com","params":["cards","card_fields","filter","fields"],"path":"/1/boards/{id}/lists","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.lists","effects":["write"],"id":"post-boards-id-lists","method":"POST","origin":"https://api.trello.com","params":["name","pos"],"path":"/1/boards/{id}/lists","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-lists-filter","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/lists/{filter}","scope":{"filter":{"at":"filter","from":"path"},"id":{"at":"id","from":"path"}}},
-    {"action":"write.boards","effects":["write"],"id":"post-boards-id-markedasviewed","method":"POST","origin":"https://api.trello.com","path":"/1/boards/{id}/markAsViewed","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-members","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/members","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"admin.members","effects":["admin"],"id":"put-boards-id-members","method":"PUT","origin":"https://api.trello.com","params":["email","type"],"path":"/1/boards/{id}/members","scope":{"email":{"at":"email","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"admin.members","body":"json","effects":["admin"],"id":"put-boards-id-members.json.40268f721667","method":"PUT","origin":"https://api.trello.com","params":["email","type"],"path":"/1/boards/{id}/members","scope":{"email":{"at":"email","from":"query"},"fullName":{"at":"/fullName","from":"body","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete.members","effects":["delete"],"id":"boardsidmembersidmember","method":"DELETE","origin":"https://api.trello.com","path":"/1/boards/{id}/members/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"}}},
-    {"action":"admin.members","effects":["admin"],"id":"put-boards-id-members-idmember","method":"PUT","origin":"https://api.trello.com","params":["type","allowBillableGuest"],"path":"/1/boards/{id}/members/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-memberships","method":"GET","origin":"https://api.trello.com","params":["filter","activity","orgMemberType","member","member_fields"],"path":"/1/boards/{id}/memberships","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"admin.memberships","effects":["admin"],"id":"put-boards-id-memberships-idmembership","method":"PUT","origin":"https://api.trello.com","params":["type","member_fields"],"path":"/1/boards/{id}/memberships/{idMembership}","scope":{"id":{"at":"id","from":"path"},"idMembership":{"at":"idMembership","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.email_position","effects":["write"],"id":"put-boards-id-myprefs-emailposition","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/boards/{id}/myPrefs/emailPosition","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.id_email_list","effects":["write"],"id":"put-boards-id-myprefs-idemaillist","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/boards/{id}/myPrefs/idEmailList","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.show_sidebar","effects":["write"],"id":"put-boards-id-myPrefs-showsidebar","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/boards/{id}/myPrefs/showSidebar","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.show_sidebar_activity","effects":["write"],"id":"put-boards-id-myPrefs-showsidebaractivity","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/boards/{id}/myPrefs/showSidebarActivity","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.show_sidebar_board_actions","effects":["write"],"id":"put-boards-id-myPrefs-showsidebarboardactions","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/boards/{id}/myPrefs/showSidebarBoardActions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.show_sidebar_members","effects":["write"],"id":"put-boards-id-myPrefs-showsidebarmembers","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/boards/{id}/myPrefs/showSidebarMembers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-board-id-plugins","method":"GET","origin":"https://api.trello.com","params":["filter"],"path":"/1/boards/{id}/plugins","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-boards-id-field","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}},
-    {"action":"write.check_item","effects":["write"],"id":"put-cards-idcard-checklist-idchecklist-checkitem-idcheckitem","method":"PUT","origin":"https://api.trello.com","params":["pos"],"path":"/1/cards/{idCard}/checklist/{idChecklist}/checkItem/{idCheckItem}","scope":{"idCard":{"at":"idCard","from":"path"},"idCheckItem":{"at":"idCheckItem","from":"path"},"idChecklist":{"at":"idChecklist","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.item","effects":["write"],"id":"put-cards-idcard-customfield-idcustomfield-item","method":"PUT","origin":"https://api.trello.com","path":"/1/cards/{idCard}/customField/{idCustomField}/item","scope":{"idCard":{"at":"idCard","from":"path"},"idCustomField":{"at":"idCustomField","from":"path"}}},
-    {"action":"write.item","body":"json","effects":["write"],"id":"put-cards-idcard-customfield-idcustomfield-item.json.0da10d2b11bf","method":"PUT","origin":"https://api.trello.com","path":"/1/cards/{idCard}/customField/{idCustomField}/item","scope":{"idCard":{"at":"idCard","from":"path"},"idCustomField":{"at":"idCustomField","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.custom_fields","effects":["write"],"id":"put-cards-idcard-customfields","method":"PUT","origin":"https://api.trello.com","path":"/1/cards/{idCard}/customFields","scope":{"idCard":{"at":"idCard","from":"path"}}},
-    {"action":"write.custom_fields","body":"json","effects":["write"],"id":"put-cards-idcard-customfields.json.20389f8d4878","method":"PUT","origin":"https://api.trello.com","path":"/1/cards/{idCard}/customFields","scope":{"idCard":{"at":"idCard","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-actions","method":"GET","origin":"https://api.trello.com","params":["filter","page"],"path":"/1/cards/{id}/actions","scope":{"id":{"at":"id","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.comments","effects":["delete"],"id":"delete-cards-id-actions-id-comments","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/actions/{idAction}/comments","scope":{"id":{"at":"id","from":"path"},"idAction":{"at":"idAction","from":"path"}}},
-    {"action":"write.comments","effects":["write"],"id":"put-cards-id-actions-idaction-comments","method":"PUT","origin":"https://api.trello.com","params":["text"],"path":"/1/cards/{id}/actions/{idAction}/comments","scope":{"id":{"at":"id","from":"path"},"idAction":{"at":"idAction","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-attachments","method":"GET","origin":"https://api.trello.com","params":["fields","filter"],"path":"/1/cards/{id}/attachments","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.attachments","effects":["write"],"id":"post-cards-id-attachments","method":"POST","origin":"https://api.trello.com","params":["name","file","mimeType","url","setCover"],"path":"/1/cards/{id}/attachments","scope":{"file":{"at":"file","from":"query","optional":true},"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"url":{"at":"url","from":"query","optional":true}}},
-    {"action":"delete.attachments","effects":["delete"],"id":"deleted-cards-id-attachments-idattachment","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/attachments/{idAttachment}","scope":{"id":{"at":"id","from":"path"},"idAttachment":{"at":"idAttachment","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-attachments-idattachment","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/attachments/{idAttachment}","scope":{"id":{"at":"id","from":"path"},"idAttachment":{"at":"idAttachment","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-board","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/board","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.check_item","effects":["delete"],"id":"delete-cards-id-checkitem-idcheckitem","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/checkItem/{idCheckItem}","scope":{"id":{"at":"id","from":"path"},"idCheckItem":{"at":"idCheckItem","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-checkitem-idcheckitem","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/checkItem/{idCheckItem}","scope":{"id":{"at":"id","from":"path"},"idCheckItem":{"at":"idCheckItem","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.check_item","effects":["write"],"id":"put-cards-id-checkitem-idcheckitem","method":"PUT","origin":"https://api.trello.com","params":["name","state","idChecklist","pos","due","dueReminder","idMember"],"path":"/1/cards/{id}/checkItem/{idCheckItem}","scope":{"id":{"at":"id","from":"path"},"idCheckItem":{"at":"idCheckItem","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-checkitemstates","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/checkItemStates","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-checklists","method":"GET","origin":"https://api.trello.com","params":["checkItems","checkItem_fields","filter","fields"],"path":"/1/cards/{id}/checklists","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.cards","effects":["write"],"id":"post-cards-id-checklists","method":"POST","origin":"https://api.trello.com","params":["name","idChecklistSource","pos"],"path":"/1/cards/{id}/checklists","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.checklists","effects":["delete"],"id":"delete-cards-id-checklists-idchecklist","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/checklists/{idChecklist}","scope":{"id":{"at":"id","from":"path"},"idChecklist":{"at":"idChecklist","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-customfielditems","method":"GET","origin":"https://api.trello.com","path":"/1/cards/{id}/customFieldItems","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.id_labels","effects":["write"],"id":"post-cards-id-idlabels","method":"POST","origin":"https://api.trello.com","params":["value"],"path":"/1/cards/{id}/idLabels","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.id_labels","effects":["delete"],"id":"delete-cards-id-idlabels-idlabel","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/idLabels/{idLabel}","scope":{"id":{"at":"id","from":"path"},"idLabel":{"at":"idLabel","from":"path"}}},
-    {"action":"write.id_members","effects":["write"],"id":"post-cards-id-idmembers","method":"POST","origin":"https://api.trello.com","params":["value"],"path":"/1/cards/{id}/idMembers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.id_members","effects":["delete"],"id":"delete-id-idmembers-idmember","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/idMembers/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"}}},
-    {"action":"write.labels","effects":["write"],"id":"post-cards-id-labels","method":"POST","origin":"https://api.trello.com","params":["color","name"],"path":"/1/cards/{id}/labels","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-list","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/list","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.cards","effects":["write"],"id":"post-cards-id-markassociatednotificationsread","method":"POST","origin":"https://api.trello.com","path":"/1/cards/{id}/markAssociatedNotificationsRead","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-members","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/members","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-membersvoted","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/membersVoted","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.members_voted","effects":["write"],"id":"cardsidmembersvoted-1","method":"POST","origin":"https://api.trello.com","params":["value"],"path":"/1/cards/{id}/membersVoted","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.members_voted","effects":["delete"],"id":"delete-cards-id-membersvoted-idmember","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/membersVoted/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-plugindata","method":"GET","origin":"https://api.trello.com","path":"/1/cards/{id}/pluginData","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-stickers","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/stickers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.stickers","effects":["write"],"id":"post-cards-id-stickers","method":"POST","origin":"https://api.trello.com","params":["image","top","left","zIndex","rotate"],"path":"/1/cards/{id}/stickers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.stickers","effects":["delete"],"id":"delete-cards-id-stickers-idsticker","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/stickers/{idSticker}","scope":{"id":{"at":"id","from":"path"},"idSticker":{"at":"idSticker","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-stickers-idsticker","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/stickers/{idSticker}","scope":{"id":{"at":"id","from":"path"},"idSticker":{"at":"idSticker","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.stickers","effects":["write"],"id":"put-cards-id-stickers-idsticker","method":"PUT","origin":"https://api.trello.com","params":["top","left","zIndex","rotate"],"path":"/1/cards/{id}/stickers/{idSticker}","scope":{"id":{"at":"id","from":"path"},"idSticker":{"at":"idSticker","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-cards-id-field","method":"GET","origin":"https://api.trello.com","path":"/1/cards/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}},
-    {"action":"write.checklists","effects":["write"],"id":"post-checklists","method":"POST","origin":"https://api.trello.com","params":["idCard","name","pos","idChecklistSource"],"path":"/1/checklists","scope":{"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.checklists","effects":["delete"],"id":"delete-checklists-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/checklists/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-checklists-id","method":"GET","origin":"https://api.trello.com","params":["cards","checkItems","checkItem_fields","fields"],"path":"/1/checklists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.checklists","effects":["write"],"id":"put-checlists-id","method":"PUT","origin":"https://api.trello.com","params":["name","pos"],"path":"/1/checklists/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-checklists-id-board","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/checklists/{id}/board","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-checklists-id-cards","method":"GET","origin":"https://api.trello.com","path":"/1/checklists/{id}/cards","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-checklists-id-checkitems","method":"GET","origin":"https://api.trello.com","params":["filter","fields"],"path":"/1/checklists/{id}/checkItems","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.checklists","effects":["write"],"id":"post-checklists-id-checkitems","method":"POST","origin":"https://api.trello.com","params":["name","pos","checked","due","dueReminder","idMember"],"path":"/1/checklists/{id}/checkItems","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.check_items","effects":["delete"],"id":"delete-checklists-id-checkitems-idcheckitem","method":"DELETE","origin":"https://api.trello.com","path":"/1/checklists/{id}/checkItems/{idCheckItem}","scope":{"id":{"at":"id","from":"path"},"idCheckItem":{"at":"idCheckItem","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-checklists-id-checkitems-idcheckitem","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/checklists/{id}/checkItems/{idCheckItem}","scope":{"id":{"at":"id","from":"path"},"idCheckItem":{"at":"idCheckItem","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-checklists-id-field","method":"GET","origin":"https://api.trello.com","path":"/1/checklists/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}},
-    {"action":"write.checklists","effects":["write"],"id":"put-checklists-id-field","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/checklists/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.custom_fields","effects":["write"],"id":"post-customfields","method":"POST","origin":"https://api.trello.com","path":"/1/customFields","scope":{}},
-    {"action":"write.custom_fields","body":"json","effects":["write"],"id":"post-customfields.json.fe8b1cff5ecc","method":"POST","origin":"https://api.trello.com","path":"/1/customFields","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete.custom_fields","effects":["delete"],"id":"delete-customfields-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/customFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-customfields-id","method":"GET","origin":"https://api.trello.com","path":"/1/customFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.custom_fields","effects":["write"],"id":"put-customfields-id","method":"PUT","origin":"https://api.trello.com","path":"/1/customFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.custom_fields","body":"json","effects":["write"],"id":"put-customfields-id.json.9ebd394ea100","method":"PUT","origin":"https://api.trello.com","path":"/1/customFields/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"post-customfields-id-options","method":"GET","origin":"https://api.trello.com","path":"/1/customFields/{id}/options","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-customfields-id-options","method":"POST","origin":"https://api.trello.com","path":"/1/customFields/{id}/options","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"delete.options","effects":["delete"],"id":"delete-customfields-options-idcustomfieldoption","method":"DELETE","origin":"https://api.trello.com","path":"/1/customFields/{id}/options/{idCustomFieldOption}","scope":{"id":{"at":"id","from":"path"},"idCustomFieldOption":{"at":"idCustomFieldOption","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-customfields-options-idcustomfieldoption","method":"GET","origin":"https://api.trello.com","path":"/1/customFields/{id}/options/{idCustomFieldOption}","scope":{"id":{"at":"id","from":"path"},"idCustomFieldOption":{"at":"idCustomFieldOption","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"emoji","method":"GET","origin":"https://api.trello.com","params":["locale","spritesheets"],"path":"/1/emoji","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.bulk","effects":["write"],"id":"put-enterprises-id-enterpriseJoinRequest-bulk","method":"PUT","origin":"https://api.trello.com","params":["idOrganizations"],"path":"/1/enterprises/${id}/enterpriseJoinRequest/bulk","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-enterprises-id","method":"GET","origin":"https://api.trello.com","params":["fields","members","member_fields","member_filter","member_sort","member_sortBy","member_sortOrder","member_startIndex","member_count","organizations","organization_fields","organization_paid_accounts","organization_memberships"],"path":"/1/enterprises/{id}","scope":{"id":{"at":"id","from":"path"},"organization_paid_accounts":{"at":"organization_paid_accounts","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-enterprises-id-admins","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/enterprises/{id}/admins","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.admins","effects":["delete"],"id":"enterprises-id-organizations-idmember","method":"DELETE","origin":"https://api.trello.com","path":"/1/enterprises/{id}/admins/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"}}},
-    {"action":"admin.admins","effects":["admin"],"id":"put-enterprises-id-admins-idmember","method":"PUT","origin":"https://api.trello.com","path":"/1/enterprises/{id}/admins/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-enterprises-id-auditlog","method":"GET","origin":"https://api.trello.com","path":"/1/enterprises/{id}/auditlog","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-enterprises-id-claimableOrganizations","method":"GET","origin":"https://api.trello.com","params":["limit","cursor","name","activeSince","inactiveSince"],"path":"/1/enterprises/{id}/claimableOrganizations","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-enterprises-id-members","method":"GET","origin":"https://api.trello.com","params":["fields","filter","sort","sortBy","sortOrder","startIndex","count","organization_fields","board_fields"],"path":"/1/enterprises/{id}/members","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-users-id","method":"GET","origin":"https://api.trello.com","params":["licensed","deactivated","collaborator","managed","admin","activeSince","inactiveSince","search","cursor"],"path":"/1/enterprises/{id}/members/query","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-enterprises-id-members-idmember","method":"GET","origin":"https://api.trello.com","params":["fields","organization_fields","board_fields"],"path":"/1/enterprises/{id}/members/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"admin.members","effects":["admin"],"id":"enterprises-id-members-idMember-deactivated","method":"PUT","origin":"https://api.trello.com","params":["value","fields","organization_fields","board_fields"],"path":"/1/enterprises/{id}/members/{idMember}/deactivated","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.licensed","effects":["write"],"id":"put-enterprises-id-members-idmember-licensed","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/enterprises/{id}/members/{idMember}/licensed","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-enterprises-id-organizations","method":"GET","origin":"https://api.trello.com","params":["fields","filter","startIndex","count"],"path":"/1/enterprises/{id}/organizations","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"admin.organizations","effects":["admin"],"id":"put-enterprises-id-organizations","method":"PUT","origin":"https://api.trello.com","params":["idOrganization"],"path":"/1/enterprises/{id}/organizations","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-enterprises-id-organizations-bulk-idOrganizations","method":"GET","origin":"https://api.trello.com","path":"/1/enterprises/{id}/organizations/bulk/{idOrganizations}","scope":{"id":{"at":"id","from":"path"},"idOrganizations":{"at":"idOrganizations","from":"path"}}},
-    {"action":"delete.organizations","effects":["delete"],"id":"delete-enterprises-id-organizations-idorg","method":"DELETE","origin":"https://api.trello.com","path":"/1/enterprises/{id}/organizations/{idOrg}","scope":{"id":{"at":"id","from":"path"},"idOrg":{"at":"idOrg","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-enterprises-id-pendingOrganizations","method":"GET","origin":"https://api.trello.com","params":["activeSince","inactiveSince"],"path":"/1/enterprises/{id}/pendingOrganizations","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-enterprises-id-signupurl","method":"GET","origin":"https://api.trello.com","params":["authenticate","confirmationAccepted","returnUrl","tosAccepted"],"path":"/1/enterprises/{id}/signupUrl","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"returnUrl":{"at":"returnUrl","from":"query","optional":true}}},
-    {"action":"admin.tokens","effects":["admin"],"id":"post-enterprises-id-tokens","method":"POST","origin":"https://api.trello.com","params":["expiration"],"path":"/1/enterprises/{id}/tokens","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-enterprises-id-transferrable-bulk-idOrganizations","method":"GET","origin":"https://api.trello.com","path":"/1/enterprises/{id}/transferrable/bulk/{idOrganizations}","scope":{"id":{"at":"id","from":"path"},"idOrganizations":{"at":"idOrganizations","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-enterprises-id-transferrable-organization-idOrganization","method":"GET","origin":"https://api.trello.com","path":"/1/enterprises/{id}/transferrable/organization/{idOrganization}","scope":{"id":{"at":"id","from":"path"},"idOrganization":{"at":"idOrganization","from":"path"}}},
-    {"action":"write.labels","effects":["write"],"id":"post-labels","method":"POST","origin":"https://api.trello.com","params":["name","color","idBoard"],"path":"/1/labels","scope":{"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.labels","effects":["delete"],"id":"delete-labels-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/labels/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-labels-id","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/labels/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.labels","effects":["write"],"id":"put-labels-id","method":"PUT","origin":"https://api.trello.com","params":["name","color"],"path":"/1/labels/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.labels","effects":["write"],"id":"put-labels-id-field","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/labels/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.lists","effects":["write"],"id":"post-lists","method":"POST","origin":"https://api.trello.com","params":["name","idBoard","idListSource","pos"],"path":"/1/lists","scope":{"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-lists-id","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/lists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.lists","effects":["write"],"id":"put-lists-id","method":"PUT","origin":"https://api.trello.com","params":["name","closed","idBoard","pos","subscribed"],"path":"/1/lists/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-lists-id-actions","method":"GET","origin":"https://api.trello.com","params":["filter"],"path":"/1/lists/{id}/actions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.lists","effects":["write"],"id":"post-lists-id-archiveallcards","method":"POST","origin":"https://api.trello.com","path":"/1/lists/{id}/archiveAllCards","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-lists-id-board","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/lists/{id}/board","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.lists","effects":["write"],"id":"put-lists-id-closed","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/lists/{id}/closed","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.id_board","effects":["write"],"id":"put-id-idboard","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/lists/{id}/idBoard","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.lists","effects":["write"],"id":"post-lists-id-moveallcards","method":"POST","origin":"https://api.trello.com","params":["idBoard","idList"],"path":"/1/lists/{id}/moveAllCards","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.lists","effects":["write"],"id":"put-lists-id-field","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/lists/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members=id","method":"GET","origin":"https://api.trello.com","params":["actions","boards","boardBackgrounds","boardsInvited","boardsInvited_fields","boardStars","cards","customBoardBackgrounds","customEmoji","customStickers","fields","notifications","organizations","organization_fields","organization_paid_account","organizationsInvited","organizationsInvited_fields","paid_account","savedSearches","tokens"],"path":"/1/members/{id}","scope":{"boards":{"at":"boards","from":"query","optional":true},"id":{"at":"id","from":"path"},"organization_paid_account":{"at":"organization_paid_account","from":"query","optional":true},"paid_account":{"at":"paid_account","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"admin.members","effects":["admin"],"id":"put-members-id","method":"PUT","origin":"https://api.trello.com","params":["fullName","initials","username","bio","avatarSource","prefs/colorBlind","prefs/locale","prefs/minutesBetweenSummaries"],"path":"/1/members/{id}","scope":{"fullName":{"at":"fullName","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"username":{"at":"username","from":"query","optional":true}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-actions","method":"GET","origin":"https://api.trello.com","params":["filter"],"path":"/1/members/{id}/actions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.avatar","effects":["write"],"id":"membersidavatar","method":"POST","origin":"https://api.trello.com","params":["file"],"path":"/1/members/{id}/avatar","scope":{"file":{"at":"file","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-boardbackgrounds","method":"GET","origin":"https://api.trello.com","params":["filter"],"path":"/1/members/{id}/boardBackgrounds","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.board_backgrounds","effects":["write"],"id":"post-members-id-boardbackgrounds-1","method":"POST","origin":"https://api.trello.com","params":["file"],"path":"/1/members/{id}/boardBackgrounds","scope":{"file":{"at":"file","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.board_backgrounds","effects":["delete"],"id":"delete-members-id-boardbackgrounds-idbackground","method":"DELETE","origin":"https://api.trello.com","path":"/1/members/{id}/boardBackgrounds/{idBackground}","scope":{"id":{"at":"id","from":"path"},"idBackground":{"at":"idBackground","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-boardbackgrounds-idbackground","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/members/{id}/boardBackgrounds/{idBackground}","scope":{"id":{"at":"id","from":"path"},"idBackground":{"at":"idBackground","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.board_backgrounds","effects":["write"],"id":"put-members-id-boardbackgrounds-idbackground","method":"PUT","origin":"https://api.trello.com","params":["brightness","tile"],"path":"/1/members/{id}/boardBackgrounds/{idBackground}","scope":{"id":{"at":"id","from":"path"},"idBackground":{"at":"idBackground","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-boardstars","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/boardStars","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.board_stars","effects":["write"],"id":"post-members-id-boardstars","method":"POST","origin":"https://api.trello.com","params":["idBoard","pos"],"path":"/1/members/{id}/boardStars","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.board_stars","effects":["delete"],"id":"delete-members-id-boardstars-idstar","method":"DELETE","origin":"https://api.trello.com","path":"/1/members/{id}/boardStars/{idStar}","scope":{"id":{"at":"id","from":"path"},"idStar":{"at":"idStar","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-boardstars-idstar","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/boardStars/{idStar}","scope":{"id":{"at":"id","from":"path"},"idStar":{"at":"idStar","from":"path"}}},
-    {"action":"write.board_stars","effects":["write"],"id":"put-members-id-boardstars-idstar","method":"PUT","origin":"https://api.trello.com","params":["pos"],"path":"/1/members/{id}/boardStars/{idStar}","scope":{"id":{"at":"id","from":"path"},"idStar":{"at":"idStar","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-boards","method":"GET","origin":"https://api.trello.com","params":["filter","fields","lists","organization","organization_fields"],"path":"/1/members/{id}/boards","scope":{"id":{"at":"id","from":"path"},"lists":{"at":"lists","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-boardsinvited","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/members/{id}/boardsInvited","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-cards","method":"GET","origin":"https://api.trello.com","params":["filter"],"path":"/1/members/{id}/cards","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-customboardbackgrounds","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/customBoardBackgrounds","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.custom_board_backgrounds","effects":["write"],"id":"membersidcustomboardbackgrounds-1","method":"POST","origin":"https://api.trello.com","params":["file"],"path":"/1/members/{id}/customBoardBackgrounds","scope":{"file":{"at":"file","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.custom_board_backgrounds","effects":["delete"],"id":"delete-members-id-customboardbackgrounds-idbackground","method":"DELETE","origin":"https://api.trello.com","path":"/1/members/{id}/customBoardBackgrounds/{idBackground}","scope":{"id":{"at":"id","from":"path"},"idBackground":{"at":"idBackground","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-customboardbackgrounds-idbackground","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/customBoardBackgrounds/{idBackground}","scope":{"id":{"at":"id","from":"path"},"idBackground":{"at":"idBackground","from":"path"}}},
-    {"action":"write.custom_board_backgrounds","effects":["write"],"id":"put-members-id-customboardbackgrounds-idbackground","method":"PUT","origin":"https://api.trello.com","params":["brightness","tile"],"path":"/1/members/{id}/customBoardBackgrounds/{idBackground}","scope":{"id":{"at":"id","from":"path"},"idBackground":{"at":"idBackground","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-customemoji","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/customEmoji","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.custom_emoji","effects":["write"],"id":"post-members-id-customemoji","method":"POST","origin":"https://api.trello.com","params":["file","name"],"path":"/1/members/{id}/customEmoji","scope":{"file":{"at":"file","from":"query"},"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"membersidcustomemojiidemoji","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/members/{id}/customEmoji/{idEmoji}","scope":{"id":{"at":"id","from":"path"},"idEmoji":{"at":"idEmoji","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-customstickers","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/customStickers","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.custom_stickers","effects":["write"],"id":"post-members-id-customstickers","method":"POST","origin":"https://api.trello.com","params":["file"],"path":"/1/members/{id}/customStickers","scope":{"file":{"at":"file","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.custom_stickers","effects":["delete"],"id":"delete-members-id-customstickers-idsticker","method":"DELETE","origin":"https://api.trello.com","path":"/1/members/{id}/customStickers/{idSticker}","scope":{"id":{"at":"id","from":"path"},"idSticker":{"at":"idSticker","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-customstickers-idsticker","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/members/{id}/customStickers/{idSticker}","scope":{"id":{"at":"id","from":"path"},"idSticker":{"at":"idSticker","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-notificationChannelSettings","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/notificationChannelSettings","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.notification_channel_settings","body":"json","effects":["write"],"id":"put-members-id-notificationChannelSettings","method":"PUT","origin":"https://api.trello.com","path":"/1/members/{id}/notificationChannelSettings","scope":{"channel":{"at":"/channel","from":"body"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-notificationChannelSettings-channel","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/notificationChannelSettings/{channel}","scope":{"channel":{"at":"channel","from":"path"},"id":{"at":"id","from":"path"}}},
-    {"action":"write.notification_channel_settings","body":"json","effects":["write"],"id":"put-members-id-notificationChannelSettings-channel","method":"PUT","origin":"https://api.trello.com","path":"/1/members/{id}/notificationChannelSettings/{channel}","scope":{"channel":{"at":"channel","from":"path"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.notification_channel_settings","effects":["write"],"id":"put-members-id-notificationChannelSettings-channel-blockedKeys","method":"PUT","origin":"https://api.trello.com","path":"/1/members/{id}/notificationChannelSettings/{channel}/{blockedKeys}","scope":{"blockedKeys":{"at":"blockedKeys","from":"path"},"channel":{"at":"channel","from":"path"},"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-notifications","method":"GET","origin":"https://api.trello.com","params":["entities","display","filter","read_filter","fields","limit","page","before","since","memberCreator","memberCreator_fields"],"path":"/1/members/{id}/notifications","scope":{"id":{"at":"id","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.one_time_messages_dismissed","effects":["write"],"id":"post-members-id-onetimemessagesdismissed","method":"POST","origin":"https://api.trello.com","params":["value"],"path":"/1/members/{id}/oneTimeMessagesDismissed","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-organizations","method":"GET","origin":"https://api.trello.com","params":["filter","fields","paid_account"],"path":"/1/members/{id}/organizations","scope":{"id":{"at":"id","from":"path"},"paid_account":{"at":"paid_account","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-organizationsinvited","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/members/{id}/organizationsInvited","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-savedsearches","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/savedSearches","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"admin.members","effects":["admin"],"id":"post-members-id-savedsearches","method":"POST","origin":"https://api.trello.com","params":["name","query","pos"],"path":"/1/members/{id}/savedSearches","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.saved_searches","effects":["delete"],"id":"delete-members-id-savedsearches-idsearch","method":"DELETE","origin":"https://api.trello.com","path":"/1/members/{id}/savedSearches/{idSearch}","scope":{"id":{"at":"id","from":"path"},"idSearch":{"at":"idSearch","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-savedsearches-idsearch","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/savedSearches/{idSearch}","scope":{"id":{"at":"id","from":"path"},"idSearch":{"at":"idSearch","from":"path"}}},
-    {"action":"write.saved_searches","effects":["write"],"id":"put-members-id-savedsearches-idsearch","method":"PUT","origin":"https://api.trello.com","params":["name","query","pos"],"path":"/1/members/{id}/savedSearches/{idSearch}","scope":{"id":{"at":"id","from":"path"},"idSearch":{"at":"idSearch","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-tokens","method":"GET","origin":"https://api.trello.com","params":["webhooks"],"path":"/1/members/{id}/tokens","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-members-id-field","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}},
-    {"action":"write.read","effects":["write"],"id":"post-notifications-all-read","method":"POST","origin":"https://api.trello.com","params":["read","ids"],"path":"/1/notifications/all/read","scope":{"ids":{"at":"ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-notifications-id","method":"GET","origin":"https://api.trello.com","params":["board","board_fields","card","card_fields","display","entities","fields","list","member","member_fields","memberCreator","memberCreator_fields","organization","organization_fields"],"path":"/1/notifications/{id}","scope":{"board":{"at":"board","from":"query","optional":true},"id":{"at":"id","from":"path"},"list":{"at":"list","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.notifications","effects":["write"],"id":"put-notifications-id","method":"PUT","origin":"https://api.trello.com","params":["unread"],"path":"/1/notifications/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-notifications-id-board","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/notifications/{id}/board","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-notifications-id-card","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/notifications/{id}/card","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-notifications-id-list","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/notifications/{id}/list","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"notificationsidmember","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/notifications/{id}/member","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-notifications-id-membercreator","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/notifications/{id}/memberCreator","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-notifications-id-organization","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/notifications/{id}/organization","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.unread","effects":["write"],"id":"put-notifications-id-unread","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/notifications/{id}/unread","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-notifications-id-field","method":"GET","origin":"https://api.trello.com","path":"/1/notifications/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}},
-    {"action":"admin.organizations","effects":["admin"],"id":"post-organizations","method":"POST","origin":"https://api.trello.com","params":["displayName","desc","name","website"],"path":"/1/organizations","scope":{"displayName":{"at":"displayName","from":"query"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.organizations","effects":["delete"],"id":"delete-organizations-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/organizations/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-organizations-id","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"admin.organizations","effects":["admin"],"id":"put-organizations-id","method":"PUT","origin":"https://api.trello.com","params":["name","displayName","desc","website","prefs/associatedDomain","prefs/externalMembersDisabled","prefs/googleAppsVersion","prefs/boardVisibilityRestrict/org","prefs/boardVisibilityRestrict/private","prefs/boardVisibilityRestrict/public","prefs/orgInviteRestrict","prefs/permissionLevel"],"path":"/1/organizations/{id}","scope":{"displayName":{"at":"displayName","from":"query","optional":true},"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-organizations-id-actions","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}/actions","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-organizations-id-boards","method":"GET","origin":"https://api.trello.com","params":["filter","fields"],"path":"/1/organizations/{id}/boards","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-organizations-id-exports","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}/exports","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"admin.organizations","effects":["admin"],"id":"post-organizations-id-exports","method":"POST","origin":"https://api.trello.com","params":["attachments"],"path":"/1/organizations/{id}/exports","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.logo","effects":["delete"],"id":"delete-organizations-id-logo","method":"DELETE","origin":"https://api.trello.com","path":"/1/organizations/{id}/logo","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.logo","effects":["write"],"id":"post-organizations-id-logo","method":"POST","origin":"https://api.trello.com","params":["file"],"path":"/1/organizations/{id}/logo","scope":{"file":{"at":"file","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-organizations-id-members","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}/members","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"admin.members","effects":["admin"],"id":"put-organizations-id-members","method":"PUT","origin":"https://api.trello.com","params":["email","fullName","type"],"path":"/1/organizations/{id}/members","scope":{"email":{"at":"email","from":"query"},"fullName":{"at":"fullName","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.members","effects":["delete"],"id":"delete-organizations-id-members","method":"DELETE","origin":"https://api.trello.com","path":"/1/organizations/{id}/members/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"}}},
-    {"action":"admin.members","effects":["admin"],"id":"put-organizations-id-members-idmember","method":"PUT","origin":"https://api.trello.com","params":["type"],"path":"/1/organizations/{id}/members/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.all","effects":["delete"],"id":"organizations-id-members-idmember-all","method":"DELETE","origin":"https://api.trello.com","path":"/1/organizations/{id}/members/{idMember}/all","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"}}},
-    {"action":"admin.members","effects":["admin"],"id":"put-organizations-id-members-idmember-deactivated","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/organizations/{id}/members/{idMember}/deactivated","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-organizations-id-memberships","method":"GET","origin":"https://api.trello.com","params":["filter","member"],"path":"/1/organizations/{id}/memberships","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-organizations-id-memberships-idmembership","method":"GET","origin":"https://api.trello.com","params":["member"],"path":"/1/organizations/{id}/memberships/{idMembership}","scope":{"id":{"at":"id","from":"path"},"idMembership":{"at":"idMembership","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-organizations-id-newbillableguests-idboard","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}/newBillableGuests/{idBoard}","scope":{"id":{"at":"id","from":"path"},"idBoard":{"at":"idBoard","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-organizations-id-plugindata","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}/pluginData","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"delete.associated_domain","effects":["delete"],"id":"delete-organizations-id-prefs-associateddomain","method":"DELETE","origin":"https://api.trello.com","path":"/1/organizations/{id}/prefs/associatedDomain","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"delete.org_invite_restrict","effects":["delete"],"id":"delete-organizations-id-prefs-orginviterestrict","method":"DELETE","origin":"https://api.trello.com","path":"/1/organizations/{id}/prefs/orgInviteRestrict","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-organizations-id-tags","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}/tags","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.tags","effects":["write"],"id":"post-organizations-id-tags","method":"POST","origin":"https://api.trello.com","path":"/1/organizations/{id}/tags","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"delete.tags","effects":["delete"],"id":"delete-organizations-id-tags-idtag","method":"DELETE","origin":"https://api.trello.com","path":"/1/organizations/{id}/tags/{idTag}","scope":{"id":{"at":"id","from":"path"},"idTag":{"at":"idTag","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-organizations-id-field","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}},
-    {"action":"write.listings","effects":["write"],"id":"post-plugins-idplugin-listing","method":"POST","origin":"https://api.trello.com","path":"/1/plugins/{idPlugin}/listings","scope":{"idPlugin":{"at":"idPlugin","from":"path"}}},
-    {"action":"write.listings","body":"json","effects":["write"],"id":"post-plugins-idplugin-listing.json.43a9314a1270","method":"POST","origin":"https://api.trello.com","path":"/1/plugins/{idPlugin}/listings","scope":{"idPlugin":{"at":"idPlugin","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.listings","effects":["write"],"id":"put-plugins-idplugin-listings-idlisting","method":"PUT","origin":"https://api.trello.com","path":"/1/plugins/{idPlugin}/listings/{idListing}","scope":{"idListing":{"at":"idListing","from":"path"},"idPlugin":{"at":"idPlugin","from":"path"}}},
-    {"action":"write.listings","body":"json","effects":["write"],"id":"put-plugins-idplugin-listings-idlisting.json.3e2f1a80e033","method":"PUT","origin":"https://api.trello.com","path":"/1/plugins/{idPlugin}/listings/{idListing}","scope":{"idListing":{"at":"idListing","from":"path"},"idPlugin":{"at":"idPlugin","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-plugins-id","method":"GET","origin":"https://api.trello.com","path":"/1/plugins/{id}/","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"write.plugins","effects":["write"],"id":"put-plugins-id","method":"PUT","origin":"https://api.trello.com","path":"/1/plugins/{id}/","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-plugins-id-compliance-memberprivacy","method":"GET","origin":"https://api.trello.com","path":"/1/plugins/{id}/compliance/memberPrivacy","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-search","method":"GET","origin":"https://api.trello.com","params":["query","idBoards","idOrganizations","idCards","modelTypes","board_fields","boards_limit","board_organization","card_fields","cards_limit","cards_page","card_board","card_list","card_members","card_stickers","card_attachments","organization_fields","organizations_limit","member_fields","members_limit","partial"],"path":"/1/search","scope":{"card_board":{"at":"card_board","from":"query","optional":true},"card_list":{"at":"card_list","from":"query","optional":true},"cards_page":{"at":"cards_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-search-members","method":"GET","origin":"https://api.trello.com","params":["query","limit","idBoard","idOrganization","onlyOrgMembers"],"path":"/1/search/members/","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"get-tokens-token","method":"GET","origin":"https://api.trello.com","params":["fields","webhooks"],"path":"/1/tokens/{token}","scope":{"query":{"at":"","from":"query","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"delete.tokens","effects":["delete"],"id":"delete-token","method":"DELETE","origin":"https://api.trello.com","path":"/1/tokens/{token}/","scope":{"token":{"at":"token","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-tokens-token-member","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/tokens/{token}/member","scope":{"query":{"at":"","from":"query","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-tokens-token-webhooks","method":"GET","origin":"https://api.trello.com","path":"/1/tokens/{token}/webhooks","scope":{"token":{"at":"token","from":"path"}}},
-    {"action":"admin.webhooks","effects":["admin"],"id":"post-tokens-token-webhooks","method":"POST","origin":"https://api.trello.com","params":["description","callbackURL","idModel"],"path":"/1/tokens/{token}/webhooks","scope":{"callbackURL":{"at":"callbackURL","from":"query"},"query":{"at":"","from":"query","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"delete.webhooks","effects":["delete"],"id":"delete-tokens-token-webhooks-idwebhook","method":"DELETE","origin":"https://api.trello.com","path":"/1/tokens/{token}/webhooks/{idWebhook}","scope":{"idWebhook":{"at":"idWebhook","from":"path"},"token":{"at":"token","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-tokens-token-webhooks-idwebhook","method":"GET","origin":"https://api.trello.com","path":"/1/tokens/{token}/webhooks/{idWebhook}","scope":{"idWebhook":{"at":"idWebhook","from":"path"},"token":{"at":"token","from":"path"}}},
-    {"action":"admin.webhooks","effects":["admin"],"id":"tokenstokenwebhooks-1","method":"PUT","origin":"https://api.trello.com","params":["description","callbackURL","idModel"],"path":"/1/tokens/{token}/webhooks/{idWebhook}","scope":{"callbackURL":{"at":"callbackURL","from":"query","optional":true},"idWebhook":{"at":"idWebhook","from":"path"},"query":{"at":"","from":"query","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"admin.webhooks","effects":["admin"],"id":"post-webhooks","method":"POST","origin":"https://api.trello.com","params":["description","callbackURL","idModel","active"],"path":"/1/webhooks/","scope":{"callbackURL":{"at":"callbackURL","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"delete.webhooks","effects":["delete"],"id":"delete-webhooks-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/webhooks/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"get-webhooks-id","method":"GET","origin":"https://api.trello.com","path":"/1/webhooks/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"admin.webhooks","effects":["admin"],"id":"put-webhooks-id","method":"PUT","origin":"https://api.trello.com","params":["description","callbackURL","idModel","active"],"path":"/1/webhooks/{id}","scope":{"callbackURL":{"at":"callbackURL","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"webhooksidfield","method":"GET","origin":"https://api.trello.com","path":"/1/webhooks/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}}
+    {"action":"boards.read","effects":["read"],"id":"boards.get","method":"GET","origin":"https://api.trello.com","params":["key","token","fields","lists","cards"],"path":"/1/boards/{board}","scope":{"board":{"at":"board","from":"path"}}},
+    {"action":"lists.cards.read","effects":["read"],"id":"lists.cards.get","method":"GET","origin":"https://api.trello.com","params":["key","token","fields"],"path":"/1/lists/{list}/cards","scope":{"list":{"at":"list","from":"path"}}},
+    {"action":"cards.read","effects":["read"],"id":"cards.get","method":"GET","origin":"https://api.trello.com","params":["key","token","fields"],"path":"/1/cards/{card}","scope":{"card":{"at":"card","from":"path"}}},
+    {"action":"cards.write","effects":["write"],"id":"cards.create","method":"POST","origin":"https://api.trello.com","params":["key","token","idList","name","desc","due","idMembers"],"path":"/1/cards","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.write","effects":["write"],"id":"cards.update","method":"PUT","origin":"https://api.trello.com","params":["key","token","name","desc","due","closed","idList","idMembers"],"path":"/1/cards/{card}","scope":{"card":{"at":"card","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.actions.comments.send","effects":["send"],"id":"cards.comments.create","method":"POST","origin":"https://api.trello.com","params":["key","token","text"],"path":"/1/cards/{card}/actions/comments","scope":{"card":{"at":"card","from":"path"},"text":{"at":"text","from":"query"}}},
+    {"action":"cards.delete","effects":["delete"],"id":"cards.delete","method":"DELETE","origin":"https://api.trello.com","params":["key","token"],"path":"/1/cards/{card}","scope":{"card":{"at":"card","from":"path"}}},
+    {"action":"actions.reactions.read","effects":["read"],"id":"get-actions-idaction-reactions","method":"GET","origin":"https://api.trello.com","params":["member","emoji"],"path":"/1/actions/{idAction}/reactions","scope":{"idAction":{"at":"idAction","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"actions.reactions.send","effects":["send"],"id":"post-actions-idaction-reactions","method":"POST","origin":"https://api.trello.com","path":"/1/actions/{idAction}/reactions","scope":{"idAction":{"at":"idAction","from":"path"}}},
+    {"action":"actions.reactions.send","body":"json","effects":["send"],"id":"post-actions-idaction-reactions.json.2dc9d5946815","method":"POST","origin":"https://api.trello.com","path":"/1/actions/{idAction}/reactions","scope":{"idAction":{"at":"idAction","from":"path"},"request":{"at":"","from":"body","type":"object"},"shortName":{"at":"/shortName","from":"body","optional":true}}},
+    {"action":"actions.reactions.delete","effects":["delete"],"id":"delete-actions-idaction-reactions-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/actions/{idAction}/reactions/{id}","scope":{"id":{"at":"id","from":"path"},"idAction":{"at":"idAction","from":"path"}}},
+    {"action":"actions.reactions.read","effects":["read"],"id":"get-actions-idaction-reactions-id","method":"GET","origin":"https://api.trello.com","params":["member","emoji"],"path":"/1/actions/{idAction}/reactions/{id}","scope":{"id":{"at":"id","from":"path"},"idAction":{"at":"idAction","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"actions.reactions_summary.read","effects":["read"],"id":"get-actions-idaction-reactionsummary","method":"GET","origin":"https://api.trello.com","path":"/1/actions/{idAction}/reactionsSummary","scope":{"idAction":{"at":"idAction","from":"path"}}},
+    {"action":"actions.delete","effects":["delete"],"id":"delete-actions-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/actions/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"actions.read","effects":["read"],"id":"get-actions-id","method":"GET","origin":"https://api.trello.com","params":["display","entities","fields","member","member_fields","memberCreator","memberCreator_fields"],"path":"/1/actions/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"actions.write","effects":["write"],"id":"put-actions-id","method":"PUT","origin":"https://api.trello.com","params":["text"],"path":"/1/actions/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"actions.board.read","effects":["read"],"id":"get-actions-id-board","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/actions/{id}/board","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"actions.card.read","effects":["read"],"id":"get-actions-id-card","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/actions/{id}/card","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"actions.read","effects":["read"],"id":"get-actions-id-list","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/actions/{id}/list","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"actions.member.read","effects":["read"],"id":"get-actions-id-member","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/actions/{id}/member","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"actions.member_creator.read","effects":["read"],"id":"get-actions-id-membercreator","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/actions/{id}/memberCreator","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"actions.organization.read","effects":["read"],"id":"get-actions-id-organization","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/actions/{id}/organization","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"actions.text.write","effects":["write"],"id":"put-actions-id-text","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/actions/{id}/text","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"actions.read","effects":["read"],"id":"get-actions-id-field","method":"GET","origin":"https://api.trello.com","path":"/1/actions/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"applications.compliance.read","effects":["read"],"id":"applications-key-compliance","method":"GET","origin":"https://api.trello.com","path":"/1/applications/{key}/compliance","scope":{"key":{"at":"key","from":"path"}}},
+    {"action":"batch.read","effects":["read"],"id":"get-batch","method":"GET","origin":"https://api.trello.com","params":["urls"],"path":"/1/batch","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.write","effects":["write"],"id":"post-boards","method":"POST","origin":"https://api.trello.com","params":["name","defaultLabels","defaultLists","desc","idOrganization","idBoardSource","keepFromSource","powerUps","prefs_permissionLevel","prefs_voting","prefs_comments","prefs_invitations","prefs_selfJoin","prefs_cardCovers","prefs_background","prefs_cardAging"],"path":"/1/boards/","scope":{"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.actions.read","effects":["read"],"id":"get-boards-id-actions","method":"GET","origin":"https://api.trello.com","params":["fields","filter","format","idModels","limit","member","member_fields","memberCreator","memberCreator_fields","page","reactions","before","since"],"path":"/1/boards/{boardId}/actions","scope":{"boardId":{"at":"boardId","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.board_stars.read","effects":["read"],"id":"get-boards-id-boardstars","method":"GET","origin":"https://api.trello.com","params":["filter"],"path":"/1/boards/{boardId}/boardStars","scope":{"boardId":{"at":"boardId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.delete","effects":["delete"],"id":"delete-boards-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/boards/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"boards.write","effects":["write"],"id":"put-boards-id","method":"PUT","origin":"https://api.trello.com","params":["name","desc","closed","subscribed","idOrganization","prefs/permissionLevel","prefs/selfJoin","prefs/cardCovers","prefs/hideVotes","prefs/invitations","prefs/voting","prefs/comments","prefs/background","prefs/cardAging","prefs/calendarFeedEnabled"],"path":"/1/boards/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.board_plugins.read","effects":["read"],"id":"get-boards-id-boardplugins","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/boardPlugins","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"boards.board_plugins.write","effects":["write"],"id":"post-boards-id-boardplugins","method":"POST","origin":"https://api.trello.com","params":["idPlugin"],"path":"/1/boards/{id}/boardPlugins","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.board_plugins.delete","effects":["delete"],"id":"delete-boards-id-boardplugins","method":"DELETE","origin":"https://api.trello.com","path":"/1/boards/{id}/boardPlugins/{idPlugin}","scope":{"id":{"at":"id","from":"path"},"idPlugin":{"at":"idPlugin","from":"path"}}},
+    {"action":"boards.calendar_key.generate.generate","effects":["generate"],"id":"post-boards-id-calendarkey-generate","method":"POST","origin":"https://api.trello.com","path":"/1/boards/{id}/calendarKey/generate","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"boards.cards.read","effects":["read"],"id":"get-boards-id-cards","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/cards","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"boards.cards.read","effects":["read"],"id":"get-boards-id-cards-filter","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/cards/{filter}","scope":{"filter":{"at":"filter","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"boards.checklists.read","effects":["read"],"id":"boards-id-checklists","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/checklists","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"boards.custom_fields.read","effects":["read"],"id":"get-boards-id-customfields","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/customFields","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"boards.email_key.generate.generate","effects":["generate"],"id":"post-boards-id-emailkey-generate","method":"POST","origin":"https://api.trello.com","path":"/1/boards/{id}/emailKey/generate","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"boards.exports.write","effects":["write"],"id":"post-boards-id-exports","method":"POST","origin":"https://api.trello.com","params":["attachments","attachment_age"],"path":"/1/boards/{id}/exports","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.exports.most_recent.read","effects":["read"],"id":"get-boards-id-exports-mostrecent","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/exports/mostRecent","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"boards.exports.delete","effects":["delete"],"id":"delete-boards-id-exports-idexport","method":"DELETE","origin":"https://api.trello.com","path":"/1/boards/{id}/exports/{idExport}","scope":{"id":{"at":"id","from":"path"},"idExport":{"at":"idExport","from":"path"}}},
+    {"action":"boards.exports.read","effects":["read"],"id":"get-boards-id-exports-idexport","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/exports/{idExport}","scope":{"id":{"at":"id","from":"path"},"idExport":{"at":"idExport","from":"path"}}},
+    {"action":"boards.exports.read","effects":["read"],"id":"get-boards-id-exports-idexport-download","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/exports/{idExport}/download","scope":{"id":{"at":"id","from":"path"},"idExport":{"at":"idExport","from":"path"}}},
+    {"action":"boards.id_tags.write","effects":["write"],"id":"post-boards-id-idtags","method":"POST","origin":"https://api.trello.com","params":["value"],"path":"/1/boards/{id}/idTags","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.labels.read","effects":["read"],"id":"get-boards-id-labels","method":"GET","origin":"https://api.trello.com","params":["fields","limit"],"path":"/1/boards/{id}/labels","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.labels.write","effects":["write"],"id":"post-boards-id-labels","method":"POST","origin":"https://api.trello.com","params":["name","color"],"path":"/1/boards/{id}/labels","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.lists.read","effects":["read"],"id":"get-boards-id-lists","method":"GET","origin":"https://api.trello.com","params":["cards","card_fields","filter","fields"],"path":"/1/boards/{id}/lists","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.lists.write","effects":["write"],"id":"post-boards-id-lists","method":"POST","origin":"https://api.trello.com","params":["name","pos"],"path":"/1/boards/{id}/lists","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.lists.read","effects":["read"],"id":"get-boards-id-lists-filter","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/lists/{filter}","scope":{"filter":{"at":"filter","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"boards.mark_as_viewed.write","effects":["write"],"id":"post-boards-id-markedasviewed","method":"POST","origin":"https://api.trello.com","path":"/1/boards/{id}/markAsViewed","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"boards.members.read","effects":["read"],"id":"get-boards-id-members","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/members","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"boards.members.admin","effects":["admin"],"id":"put-boards-id-members","method":"PUT","origin":"https://api.trello.com","params":["email","type"],"path":"/1/boards/{id}/members","scope":{"email":{"at":"email","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.members.admin","body":"json","effects":["admin"],"id":"put-boards-id-members.json.40268f721667","method":"PUT","origin":"https://api.trello.com","params":["email","type"],"path":"/1/boards/{id}/members","scope":{"email":{"at":"email","from":"query"},"fullName":{"at":"/fullName","from":"body","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"boards.members.delete","effects":["delete"],"id":"boardsidmembersidmember","method":"DELETE","origin":"https://api.trello.com","path":"/1/boards/{id}/members/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"}}},
+    {"action":"boards.members.admin","effects":["admin"],"id":"put-boards-id-members-idmember","method":"PUT","origin":"https://api.trello.com","params":["type","allowBillableGuest"],"path":"/1/boards/{id}/members/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.memberships.read","effects":["read"],"id":"get-boards-id-memberships","method":"GET","origin":"https://api.trello.com","params":["filter","activity","orgMemberType","member","member_fields"],"path":"/1/boards/{id}/memberships","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.memberships.admin","effects":["admin"],"id":"put-boards-id-memberships-idmembership","method":"PUT","origin":"https://api.trello.com","params":["type","member_fields"],"path":"/1/boards/{id}/memberships/{idMembership}","scope":{"id":{"at":"id","from":"path"},"idMembership":{"at":"idMembership","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.my_prefs.email_position.write","effects":["write"],"id":"put-boards-id-myprefs-emailposition","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/boards/{id}/myPrefs/emailPosition","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.my_prefs.id_email.write","effects":["write"],"id":"put-boards-id-myprefs-idemaillist","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/boards/{id}/myPrefs/idEmailList","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.my_prefs.show_sidebar.write","effects":["write"],"id":"put-boards-id-myPrefs-showsidebar","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/boards/{id}/myPrefs/showSidebar","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.my_prefs.show_sidebar_activity.write","effects":["write"],"id":"put-boards-id-myPrefs-showsidebaractivity","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/boards/{id}/myPrefs/showSidebarActivity","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.my_prefs.show_sidebar_board_actions.write","effects":["write"],"id":"put-boards-id-myPrefs-showsidebarboardactions","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/boards/{id}/myPrefs/showSidebarBoardActions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.my_prefs.show_sidebar_members.write","effects":["write"],"id":"put-boards-id-myPrefs-showsidebarmembers","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/boards/{id}/myPrefs/showSidebarMembers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.plugins.read","effects":["read"],"id":"get-board-id-plugins","method":"GET","origin":"https://api.trello.com","params":["filter"],"path":"/1/boards/{id}/plugins","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"boards.read","effects":["read"],"id":"get-boards-id-field","method":"GET","origin":"https://api.trello.com","path":"/1/boards/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"cards.checklist.check_item.write","effects":["write"],"id":"put-cards-idcard-checklist-idchecklist-checkitem-idcheckitem","method":"PUT","origin":"https://api.trello.com","params":["pos"],"path":"/1/cards/{idCard}/checklist/{idChecklist}/checkItem/{idCheckItem}","scope":{"idCard":{"at":"idCard","from":"path"},"idCheckItem":{"at":"idCheckItem","from":"path"},"idChecklist":{"at":"idChecklist","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.custom_field.item.write","effects":["write"],"id":"put-cards-idcard-customfield-idcustomfield-item","method":"PUT","origin":"https://api.trello.com","path":"/1/cards/{idCard}/customField/{idCustomField}/item","scope":{"idCard":{"at":"idCard","from":"path"},"idCustomField":{"at":"idCustomField","from":"path"}}},
+    {"action":"cards.custom_field.item.write","body":"json","effects":["write"],"id":"put-cards-idcard-customfield-idcustomfield-item.json.0da10d2b11bf","method":"PUT","origin":"https://api.trello.com","path":"/1/cards/{idCard}/customField/{idCustomField}/item","scope":{"idCard":{"at":"idCard","from":"path"},"idCustomField":{"at":"idCustomField","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"cards.custom_fields.write","effects":["write"],"id":"put-cards-idcard-customfields","method":"PUT","origin":"https://api.trello.com","path":"/1/cards/{idCard}/customFields","scope":{"idCard":{"at":"idCard","from":"path"}}},
+    {"action":"cards.custom_fields.write","body":"json","effects":["write"],"id":"put-cards-idcard-customfields.json.20389f8d4878","method":"PUT","origin":"https://api.trello.com","path":"/1/cards/{idCard}/customFields","scope":{"idCard":{"at":"idCard","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"cards.actions.read","effects":["read"],"id":"get-cards-id-actions","method":"GET","origin":"https://api.trello.com","params":["filter","page"],"path":"/1/cards/{id}/actions","scope":{"id":{"at":"id","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.actions.comments.delete","effects":["delete"],"id":"delete-cards-id-actions-id-comments","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/actions/{idAction}/comments","scope":{"id":{"at":"id","from":"path"},"idAction":{"at":"idAction","from":"path"}}},
+    {"action":"cards.actions.comments.write","effects":["write"],"id":"put-cards-id-actions-idaction-comments","method":"PUT","origin":"https://api.trello.com","params":["text"],"path":"/1/cards/{id}/actions/{idAction}/comments","scope":{"id":{"at":"id","from":"path"},"idAction":{"at":"idAction","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.attachments.read","effects":["read"],"id":"get-cards-id-attachments","method":"GET","origin":"https://api.trello.com","params":["fields","filter"],"path":"/1/cards/{id}/attachments","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.attachments.write","effects":["write"],"id":"post-cards-id-attachments","method":"POST","origin":"https://api.trello.com","params":["name","file","mimeType","url","setCover"],"path":"/1/cards/{id}/attachments","scope":{"file":{"at":"file","from":"query","optional":true},"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"url":{"at":"url","from":"query","optional":true}}},
+    {"action":"cards.attachments.delete","effects":["delete"],"id":"deleted-cards-id-attachments-idattachment","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/attachments/{idAttachment}","scope":{"id":{"at":"id","from":"path"},"idAttachment":{"at":"idAttachment","from":"path"}}},
+    {"action":"cards.attachments.read","effects":["read"],"id":"get-cards-id-attachments-idattachment","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/attachments/{idAttachment}","scope":{"id":{"at":"id","from":"path"},"idAttachment":{"at":"idAttachment","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.board.read","effects":["read"],"id":"get-cards-id-board","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/board","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.check_item.delete","effects":["delete"],"id":"delete-cards-id-checkitem-idcheckitem","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/checkItem/{idCheckItem}","scope":{"id":{"at":"id","from":"path"},"idCheckItem":{"at":"idCheckItem","from":"path"}}},
+    {"action":"cards.check_item.read","effects":["read"],"id":"get-cards-id-checkitem-idcheckitem","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/checkItem/{idCheckItem}","scope":{"id":{"at":"id","from":"path"},"idCheckItem":{"at":"idCheckItem","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.check_item.write","effects":["write"],"id":"put-cards-id-checkitem-idcheckitem","method":"PUT","origin":"https://api.trello.com","params":["name","state","idChecklist","pos","due","dueReminder","idMember"],"path":"/1/cards/{id}/checkItem/{idCheckItem}","scope":{"id":{"at":"id","from":"path"},"idCheckItem":{"at":"idCheckItem","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.item_states.read","effects":["read"],"id":"get-cards-id-checkitemstates","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/checkItemStates","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.checklists.read","effects":["read"],"id":"get-cards-id-checklists","method":"GET","origin":"https://api.trello.com","params":["checkItems","checkItem_fields","filter","fields"],"path":"/1/cards/{id}/checklists","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.checklists.write","effects":["write"],"id":"post-cards-id-checklists","method":"POST","origin":"https://api.trello.com","params":["name","idChecklistSource","pos"],"path":"/1/cards/{id}/checklists","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.checklists.delete","effects":["delete"],"id":"delete-cards-id-checklists-idchecklist","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/checklists/{idChecklist}","scope":{"id":{"at":"id","from":"path"},"idChecklist":{"at":"idChecklist","from":"path"}}},
+    {"action":"cards.custom_field_items.read","effects":["read"],"id":"get-cards-id-customfielditems","method":"GET","origin":"https://api.trello.com","path":"/1/cards/{id}/customFieldItems","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"cards.id_labels.write","effects":["write"],"id":"post-cards-id-idlabels","method":"POST","origin":"https://api.trello.com","params":["value"],"path":"/1/cards/{id}/idLabels","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.id_labels.delete","effects":["delete"],"id":"delete-cards-id-idlabels-idlabel","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/idLabels/{idLabel}","scope":{"id":{"at":"id","from":"path"},"idLabel":{"at":"idLabel","from":"path"}}},
+    {"action":"cards.id_members.write","effects":["write"],"id":"post-cards-id-idmembers","method":"POST","origin":"https://api.trello.com","params":["value"],"path":"/1/cards/{id}/idMembers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.id_members.delete","effects":["delete"],"id":"delete-id-idmembers-idmember","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/idMembers/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"}}},
+    {"action":"cards.labels.write","effects":["write"],"id":"post-cards-id-labels","method":"POST","origin":"https://api.trello.com","params":["color","name"],"path":"/1/cards/{id}/labels","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.read","effects":["read"],"id":"get-cards-id-list","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/list","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.mark_associated_notifications.write","effects":["write"],"id":"post-cards-id-markassociatednotificationsread","method":"POST","origin":"https://api.trello.com","path":"/1/cards/{id}/markAssociatedNotificationsRead","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"cards.members.read","effects":["read"],"id":"get-cards-id-members","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/members","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.members_voted.read","effects":["read"],"id":"get-cards-id-membersvoted","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/membersVoted","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.members_voted.write","effects":["write"],"id":"cardsidmembersvoted-1","method":"POST","origin":"https://api.trello.com","params":["value"],"path":"/1/cards/{id}/membersVoted","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.members_voted.delete","effects":["delete"],"id":"delete-cards-id-membersvoted-idmember","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/membersVoted/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"}}},
+    {"action":"cards.plugin_data.read","effects":["read"],"id":"get-cards-id-plugindata","method":"GET","origin":"https://api.trello.com","path":"/1/cards/{id}/pluginData","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"cards.stickers.read","effects":["read"],"id":"get-cards-id-stickers","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/stickers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.stickers.write","effects":["write"],"id":"post-cards-id-stickers","method":"POST","origin":"https://api.trello.com","params":["image","top","left","zIndex","rotate"],"path":"/1/cards/{id}/stickers","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.stickers.delete","effects":["delete"],"id":"delete-cards-id-stickers-idsticker","method":"DELETE","origin":"https://api.trello.com","path":"/1/cards/{id}/stickers/{idSticker}","scope":{"id":{"at":"id","from":"path"},"idSticker":{"at":"idSticker","from":"path"}}},
+    {"action":"cards.stickers.read","effects":["read"],"id":"get-cards-id-stickers-idsticker","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/cards/{id}/stickers/{idSticker}","scope":{"id":{"at":"id","from":"path"},"idSticker":{"at":"idSticker","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.stickers.write","effects":["write"],"id":"put-cards-id-stickers-idsticker","method":"PUT","origin":"https://api.trello.com","params":["top","left","zIndex","rotate"],"path":"/1/cards/{id}/stickers/{idSticker}","scope":{"id":{"at":"id","from":"path"},"idSticker":{"at":"idSticker","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"cards.read","effects":["read"],"id":"get-cards-id-field","method":"GET","origin":"https://api.trello.com","path":"/1/cards/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"checklists.write","effects":["write"],"id":"post-checklists","method":"POST","origin":"https://api.trello.com","params":["idCard","name","pos","idChecklistSource"],"path":"/1/checklists","scope":{"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"checklists.delete","effects":["delete"],"id":"delete-checklists-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/checklists/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"checklists.read","effects":["read"],"id":"get-checklists-id","method":"GET","origin":"https://api.trello.com","params":["cards","checkItems","checkItem_fields","fields"],"path":"/1/checklists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"checklists.write","effects":["write"],"id":"put-checlists-id","method":"PUT","origin":"https://api.trello.com","params":["name","pos"],"path":"/1/checklists/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"checklists.board.read","effects":["read"],"id":"get-checklists-id-board","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/checklists/{id}/board","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"checklists.cards.read","effects":["read"],"id":"get-checklists-id-cards","method":"GET","origin":"https://api.trello.com","path":"/1/checklists/{id}/cards","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"checklists.items.read","effects":["read"],"id":"get-checklists-id-checkitems","method":"GET","origin":"https://api.trello.com","params":["filter","fields"],"path":"/1/checklists/{id}/checkItems","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"checklists.items.write","effects":["write"],"id":"post-checklists-id-checkitems","method":"POST","origin":"https://api.trello.com","params":["name","pos","checked","due","dueReminder","idMember"],"path":"/1/checklists/{id}/checkItems","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"checklists.check_items.delete","effects":["delete"],"id":"delete-checklists-id-checkitems-idcheckitem","method":"DELETE","origin":"https://api.trello.com","path":"/1/checklists/{id}/checkItems/{idCheckItem}","scope":{"id":{"at":"id","from":"path"},"idCheckItem":{"at":"idCheckItem","from":"path"}}},
+    {"action":"checklists.check_items.read","effects":["read"],"id":"get-checklists-id-checkitems-idcheckitem","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/checklists/{id}/checkItems/{idCheckItem}","scope":{"id":{"at":"id","from":"path"},"idCheckItem":{"at":"idCheckItem","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"checklists.read","effects":["read"],"id":"get-checklists-id-field","method":"GET","origin":"https://api.trello.com","path":"/1/checklists/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"checklists.write","effects":["write"],"id":"put-checklists-id-field","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/checklists/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"custom_fields.write","effects":["write"],"id":"post-customfields","method":"POST","origin":"https://api.trello.com","path":"/1/customFields","scope":{}},
+    {"action":"custom_fields.write","body":"json","effects":["write"],"id":"post-customfields.json.fe8b1cff5ecc","method":"POST","origin":"https://api.trello.com","path":"/1/customFields","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"custom_fields.delete","effects":["delete"],"id":"delete-customfields-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/customFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"custom_fields.read","effects":["read"],"id":"get-customfields-id","method":"GET","origin":"https://api.trello.com","path":"/1/customFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"custom_fields.write","effects":["write"],"id":"put-customfields-id","method":"PUT","origin":"https://api.trello.com","path":"/1/customFields/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"custom_fields.write","body":"json","effects":["write"],"id":"put-customfields-id.json.9ebd394ea100","method":"PUT","origin":"https://api.trello.com","path":"/1/customFields/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"custom_fields.options.read","effects":["read"],"id":"post-customfields-id-options","method":"GET","origin":"https://api.trello.com","path":"/1/customFields/{id}/options","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"custom_fields.options.read","effects":["read"],"id":"get-customfields-id-options","method":"POST","origin":"https://api.trello.com","path":"/1/customFields/{id}/options","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"custom_fields.options.delete","effects":["delete"],"id":"delete-customfields-options-idcustomfieldoption","method":"DELETE","origin":"https://api.trello.com","path":"/1/customFields/{id}/options/{idCustomFieldOption}","scope":{"id":{"at":"id","from":"path"},"idCustomFieldOption":{"at":"idCustomFieldOption","from":"path"}}},
+    {"action":"custom_fields.options.read","effects":["read"],"id":"get-customfields-options-idcustomfieldoption","method":"GET","origin":"https://api.trello.com","path":"/1/customFields/{id}/options/{idCustomFieldOption}","scope":{"id":{"at":"id","from":"path"},"idCustomFieldOption":{"at":"idCustomFieldOption","from":"path"}}},
+    {"action":"emoji.read","effects":["read"],"id":"emoji","method":"GET","origin":"https://api.trello.com","params":["locale","spritesheets"],"path":"/1/emoji","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"enterprises.enterprise_join_request.bulk.write","effects":["write"],"id":"put-enterprises-id-enterpriseJoinRequest-bulk","method":"PUT","origin":"https://api.trello.com","params":["idOrganizations"],"path":"/1/enterprises/${id}/enterpriseJoinRequest/bulk","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"enterprises.read","effects":["read"],"id":"get-enterprises-id","method":"GET","origin":"https://api.trello.com","params":["fields","members","member_fields","member_filter","member_sort","member_sortBy","member_sortOrder","member_startIndex","member_count","organizations","organization_fields","organization_paid_accounts","organization_memberships"],"path":"/1/enterprises/{id}","scope":{"id":{"at":"id","from":"path"},"organization_paid_accounts":{"at":"organization_paid_accounts","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"enterprises.admins.read","effects":["read"],"id":"get-enterprises-id-admins","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/enterprises/{id}/admins","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"enterprises.admins.delete","effects":["delete"],"id":"enterprises-id-organizations-idmember","method":"DELETE","origin":"https://api.trello.com","path":"/1/enterprises/{id}/admins/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"}}},
+    {"action":"enterprises.admins.admin","effects":["admin"],"id":"put-enterprises-id-admins-idmember","method":"PUT","origin":"https://api.trello.com","path":"/1/enterprises/{id}/admins/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"}}},
+    {"action":"enterprises.auditlog.read","effects":["read"],"id":"get-enterprises-id-auditlog","method":"GET","origin":"https://api.trello.com","path":"/1/enterprises/{id}/auditlog","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"enterprises.claimable_organizations.read","effects":["read"],"id":"get-enterprises-id-claimableOrganizations","method":"GET","origin":"https://api.trello.com","params":["limit","cursor","name","activeSince","inactiveSince"],"path":"/1/enterprises/{id}/claimableOrganizations","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"enterprises.members.read","effects":["read"],"id":"get-enterprises-id-members","method":"GET","origin":"https://api.trello.com","params":["fields","filter","sort","sortBy","sortOrder","startIndex","count","organization_fields","board_fields"],"path":"/1/enterprises/{id}/members","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"enterprises.members.read","effects":["read"],"id":"get-users-id","method":"GET","origin":"https://api.trello.com","params":["licensed","deactivated","collaborator","managed","admin","activeSince","inactiveSince","search","cursor"],"path":"/1/enterprises/{id}/members/query","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"enterprises.members.read","effects":["read"],"id":"get-enterprises-id-members-idmember","method":"GET","origin":"https://api.trello.com","params":["fields","organization_fields","board_fields"],"path":"/1/enterprises/{id}/members/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"enterprises.members.deactivated.admin","effects":["admin"],"id":"enterprises-id-members-idMember-deactivated","method":"PUT","origin":"https://api.trello.com","params":["value","fields","organization_fields","board_fields"],"path":"/1/enterprises/{id}/members/{idMember}/deactivated","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"enterprises.members.licensed.write","effects":["write"],"id":"put-enterprises-id-members-idmember-licensed","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/enterprises/{id}/members/{idMember}/licensed","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"enterprises.organizations.read","effects":["read"],"id":"get-enterprises-id-organizations","method":"GET","origin":"https://api.trello.com","params":["fields","filter","startIndex","count"],"path":"/1/enterprises/{id}/organizations","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"enterprises.organizations.admin","effects":["admin"],"id":"put-enterprises-id-organizations","method":"PUT","origin":"https://api.trello.com","params":["idOrganization"],"path":"/1/enterprises/{id}/organizations","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"enterprises.organizations.bulk.read","effects":["read"],"id":"get-enterprises-id-organizations-bulk-idOrganizations","method":"GET","origin":"https://api.trello.com","path":"/1/enterprises/{id}/organizations/bulk/{idOrganizations}","scope":{"id":{"at":"id","from":"path"},"idOrganizations":{"at":"idOrganizations","from":"path"}}},
+    {"action":"enterprises.organizations.delete","effects":["delete"],"id":"delete-enterprises-id-organizations-idorg","method":"DELETE","origin":"https://api.trello.com","path":"/1/enterprises/{id}/organizations/{idOrg}","scope":{"id":{"at":"id","from":"path"},"idOrg":{"at":"idOrg","from":"path"}}},
+    {"action":"enterprises.pending_organizations.read","effects":["read"],"id":"get-enterprises-id-pendingOrganizations","method":"GET","origin":"https://api.trello.com","params":["activeSince","inactiveSince"],"path":"/1/enterprises/{id}/pendingOrganizations","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"enterprises.signup_url.read","effects":["read"],"id":"get-enterprises-id-signupurl","method":"GET","origin":"https://api.trello.com","params":["authenticate","confirmationAccepted","returnUrl","tosAccepted"],"path":"/1/enterprises/{id}/signupUrl","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"returnUrl":{"at":"returnUrl","from":"query","optional":true}}},
+    {"action":"enterprises.tokens.admin","effects":["admin"],"id":"post-enterprises-id-tokens","method":"POST","origin":"https://api.trello.com","params":["expiration"],"path":"/1/enterprises/{id}/tokens","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"enterprises.transferrable.bulk.read","effects":["read"],"id":"get-enterprises-id-transferrable-bulk-idOrganizations","method":"GET","origin":"https://api.trello.com","path":"/1/enterprises/{id}/transferrable/bulk/{idOrganizations}","scope":{"id":{"at":"id","from":"path"},"idOrganizations":{"at":"idOrganizations","from":"path"}}},
+    {"action":"enterprises.transferrable.organization.read","effects":["read"],"id":"get-enterprises-id-transferrable-organization-idOrganization","method":"GET","origin":"https://api.trello.com","path":"/1/enterprises/{id}/transferrable/organization/{idOrganization}","scope":{"id":{"at":"id","from":"path"},"idOrganization":{"at":"idOrganization","from":"path"}}},
+    {"action":"labels.write","effects":["write"],"id":"post-labels","method":"POST","origin":"https://api.trello.com","params":["name","color","idBoard"],"path":"/1/labels","scope":{"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"labels.delete","effects":["delete"],"id":"delete-labels-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/labels/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"labels.read","effects":["read"],"id":"get-labels-id","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/labels/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"labels.write","effects":["write"],"id":"put-labels-id","method":"PUT","origin":"https://api.trello.com","params":["name","color"],"path":"/1/labels/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"labels.write","effects":["write"],"id":"put-labels-id-field","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/labels/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"lists.write","effects":["write"],"id":"post-lists","method":"POST","origin":"https://api.trello.com","params":["name","idBoard","idListSource","pos"],"path":"/1/lists","scope":{"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"lists.read","effects":["read"],"id":"get-lists-id","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/lists/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"lists.write","effects":["write"],"id":"put-lists-id","method":"PUT","origin":"https://api.trello.com","params":["name","closed","idBoard","pos","subscribed"],"path":"/1/lists/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"lists.actions.read","effects":["read"],"id":"get-lists-id-actions","method":"GET","origin":"https://api.trello.com","params":["filter"],"path":"/1/lists/{id}/actions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"lists.all_cards.write","effects":["write"],"id":"post-lists-id-archiveallcards","method":"POST","origin":"https://api.trello.com","path":"/1/lists/{id}/archiveAllCards","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"lists.board.read","effects":["read"],"id":"get-lists-id-board","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/lists/{id}/board","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"lists.closed.write","effects":["write"],"id":"put-lists-id-closed","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/lists/{id}/closed","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"lists.id_board.write","effects":["write"],"id":"put-id-idboard","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/lists/{id}/idBoard","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"lists.all_cards.write","effects":["write"],"id":"post-lists-id-moveallcards","method":"POST","origin":"https://api.trello.com","params":["idBoard","idList"],"path":"/1/lists/{id}/moveAllCards","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"lists.write","effects":["write"],"id":"put-lists-id-field","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/lists/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.read","effects":["read"],"id":"get-members=id","method":"GET","origin":"https://api.trello.com","params":["actions","boards","boardBackgrounds","boardsInvited","boardsInvited_fields","boardStars","cards","customBoardBackgrounds","customEmoji","customStickers","fields","notifications","organizations","organization_fields","organization_paid_account","organizationsInvited","organizationsInvited_fields","paid_account","savedSearches","tokens"],"path":"/1/members/{id}","scope":{"boards":{"at":"boards","from":"query","optional":true},"id":{"at":"id","from":"path"},"organization_paid_account":{"at":"organization_paid_account","from":"query","optional":true},"paid_account":{"at":"paid_account","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.admin","effects":["admin"],"id":"put-members-id","method":"PUT","origin":"https://api.trello.com","params":["fullName","initials","username","bio","avatarSource","prefs/colorBlind","prefs/locale","prefs/minutesBetweenSummaries"],"path":"/1/members/{id}","scope":{"fullName":{"at":"fullName","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"},"username":{"at":"username","from":"query","optional":true}}},
+    {"action":"members.actions.read","effects":["read"],"id":"get-members-id-actions","method":"GET","origin":"https://api.trello.com","params":["filter"],"path":"/1/members/{id}/actions","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.avatar.write","effects":["write"],"id":"membersidavatar","method":"POST","origin":"https://api.trello.com","params":["file"],"path":"/1/members/{id}/avatar","scope":{"file":{"at":"file","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.board_backgrounds.read","effects":["read"],"id":"get-members-id-boardbackgrounds","method":"GET","origin":"https://api.trello.com","params":["filter"],"path":"/1/members/{id}/boardBackgrounds","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.board_backgrounds.write","effects":["write"],"id":"post-members-id-boardbackgrounds-1","method":"POST","origin":"https://api.trello.com","params":["file"],"path":"/1/members/{id}/boardBackgrounds","scope":{"file":{"at":"file","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.board_backgrounds.delete","effects":["delete"],"id":"delete-members-id-boardbackgrounds-idbackground","method":"DELETE","origin":"https://api.trello.com","path":"/1/members/{id}/boardBackgrounds/{idBackground}","scope":{"id":{"at":"id","from":"path"},"idBackground":{"at":"idBackground","from":"path"}}},
+    {"action":"members.board_backgrounds.read","effects":["read"],"id":"get-members-id-boardbackgrounds-idbackground","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/members/{id}/boardBackgrounds/{idBackground}","scope":{"id":{"at":"id","from":"path"},"idBackground":{"at":"idBackground","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.board_backgrounds.write","effects":["write"],"id":"put-members-id-boardbackgrounds-idbackground","method":"PUT","origin":"https://api.trello.com","params":["brightness","tile"],"path":"/1/members/{id}/boardBackgrounds/{idBackground}","scope":{"id":{"at":"id","from":"path"},"idBackground":{"at":"idBackground","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.board_stars.read","effects":["read"],"id":"get-members-id-boardstars","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/boardStars","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"members.board_stars.write","effects":["write"],"id":"post-members-id-boardstars","method":"POST","origin":"https://api.trello.com","params":["idBoard","pos"],"path":"/1/members/{id}/boardStars","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.board_stars.delete","effects":["delete"],"id":"delete-members-id-boardstars-idstar","method":"DELETE","origin":"https://api.trello.com","path":"/1/members/{id}/boardStars/{idStar}","scope":{"id":{"at":"id","from":"path"},"idStar":{"at":"idStar","from":"path"}}},
+    {"action":"members.board_stars.read","effects":["read"],"id":"get-members-id-boardstars-idstar","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/boardStars/{idStar}","scope":{"id":{"at":"id","from":"path"},"idStar":{"at":"idStar","from":"path"}}},
+    {"action":"members.board_stars.write","effects":["write"],"id":"put-members-id-boardstars-idstar","method":"PUT","origin":"https://api.trello.com","params":["pos"],"path":"/1/members/{id}/boardStars/{idStar}","scope":{"id":{"at":"id","from":"path"},"idStar":{"at":"idStar","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.boards.read","effects":["read"],"id":"get-members-id-boards","method":"GET","origin":"https://api.trello.com","params":["filter","fields","lists","organization","organization_fields"],"path":"/1/members/{id}/boards","scope":{"id":{"at":"id","from":"path"},"lists":{"at":"lists","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.boards_invited.read","effects":["read"],"id":"get-members-id-boardsinvited","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/members/{id}/boardsInvited","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.cards.read","effects":["read"],"id":"get-members-id-cards","method":"GET","origin":"https://api.trello.com","params":["filter"],"path":"/1/members/{id}/cards","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.custom_board_backgrounds.read","effects":["read"],"id":"get-members-id-customboardbackgrounds","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/customBoardBackgrounds","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"members.custom_board_backgrounds.write","effects":["write"],"id":"membersidcustomboardbackgrounds-1","method":"POST","origin":"https://api.trello.com","params":["file"],"path":"/1/members/{id}/customBoardBackgrounds","scope":{"file":{"at":"file","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.custom_board_backgrounds.delete","effects":["delete"],"id":"delete-members-id-customboardbackgrounds-idbackground","method":"DELETE","origin":"https://api.trello.com","path":"/1/members/{id}/customBoardBackgrounds/{idBackground}","scope":{"id":{"at":"id","from":"path"},"idBackground":{"at":"idBackground","from":"path"}}},
+    {"action":"members.custom_board_backgrounds.read","effects":["read"],"id":"get-members-id-customboardbackgrounds-idbackground","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/customBoardBackgrounds/{idBackground}","scope":{"id":{"at":"id","from":"path"},"idBackground":{"at":"idBackground","from":"path"}}},
+    {"action":"members.custom_board_backgrounds.write","effects":["write"],"id":"put-members-id-customboardbackgrounds-idbackground","method":"PUT","origin":"https://api.trello.com","params":["brightness","tile"],"path":"/1/members/{id}/customBoardBackgrounds/{idBackground}","scope":{"id":{"at":"id","from":"path"},"idBackground":{"at":"idBackground","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.custom_emoji.read","effects":["read"],"id":"get-members-id-customemoji","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/customEmoji","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"members.custom_emoji.write","effects":["write"],"id":"post-members-id-customemoji","method":"POST","origin":"https://api.trello.com","params":["file","name"],"path":"/1/members/{id}/customEmoji","scope":{"file":{"at":"file","from":"query"},"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.custom_emoji.read","effects":["read"],"id":"membersidcustomemojiidemoji","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/members/{id}/customEmoji/{idEmoji}","scope":{"id":{"at":"id","from":"path"},"idEmoji":{"at":"idEmoji","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.custom_stickers.read","effects":["read"],"id":"get-members-id-customstickers","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/customStickers","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"members.custom_stickers.write","effects":["write"],"id":"post-members-id-customstickers","method":"POST","origin":"https://api.trello.com","params":["file"],"path":"/1/members/{id}/customStickers","scope":{"file":{"at":"file","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.custom_stickers.delete","effects":["delete"],"id":"delete-members-id-customstickers-idsticker","method":"DELETE","origin":"https://api.trello.com","path":"/1/members/{id}/customStickers/{idSticker}","scope":{"id":{"at":"id","from":"path"},"idSticker":{"at":"idSticker","from":"path"}}},
+    {"action":"members.custom_stickers.read","effects":["read"],"id":"get-members-id-customstickers-idsticker","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/members/{id}/customStickers/{idSticker}","scope":{"id":{"at":"id","from":"path"},"idSticker":{"at":"idSticker","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.notification_channel_settings.read","effects":["read"],"id":"get-members-id-notificationChannelSettings","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/notificationChannelSettings","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"members.notification_channel_settings.write","body":"json","effects":["write"],"id":"put-members-id-notificationChannelSettings","method":"PUT","origin":"https://api.trello.com","path":"/1/members/{id}/notificationChannelSettings","scope":{"channel":{"at":"/channel","from":"body"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"members.notification_channel_settings.read","effects":["read"],"id":"get-members-id-notificationChannelSettings-channel","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/notificationChannelSettings/{channel}","scope":{"channel":{"at":"channel","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"members.notification_channel_settings.write","body":"json","effects":["write"],"id":"put-members-id-notificationChannelSettings-channel","method":"PUT","origin":"https://api.trello.com","path":"/1/members/{id}/notificationChannelSettings/{channel}","scope":{"channel":{"at":"channel","from":"path"},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"members.notification_channel_settings.write","effects":["write"],"id":"put-members-id-notificationChannelSettings-channel-blockedKeys","method":"PUT","origin":"https://api.trello.com","path":"/1/members/{id}/notificationChannelSettings/{channel}/{blockedKeys}","scope":{"blockedKeys":{"at":"blockedKeys","from":"path"},"channel":{"at":"channel","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"members.notifications.read","effects":["read"],"id":"get-members-id-notifications","method":"GET","origin":"https://api.trello.com","params":["entities","display","filter","read_filter","fields","limit","page","before","since","memberCreator","memberCreator_fields"],"path":"/1/members/{id}/notifications","scope":{"id":{"at":"id","from":"path"},"page":{"at":"page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.one_time_messages_dismissed.write","effects":["write"],"id":"post-members-id-onetimemessagesdismissed","method":"POST","origin":"https://api.trello.com","params":["value"],"path":"/1/members/{id}/oneTimeMessagesDismissed","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.organizations.read","effects":["read"],"id":"get-members-id-organizations","method":"GET","origin":"https://api.trello.com","params":["filter","fields","paid_account"],"path":"/1/members/{id}/organizations","scope":{"id":{"at":"id","from":"path"},"paid_account":{"at":"paid_account","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.organizations_invited.read","effects":["read"],"id":"get-members-id-organizationsinvited","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/members/{id}/organizationsInvited","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.saved_searches.read","effects":["read"],"id":"get-members-id-savedsearches","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/savedSearches","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"members.saved_searches.admin","effects":["admin"],"id":"post-members-id-savedsearches","method":"POST","origin":"https://api.trello.com","params":["name","query","pos"],"path":"/1/members/{id}/savedSearches","scope":{"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.saved_searches.delete","effects":["delete"],"id":"delete-members-id-savedsearches-idsearch","method":"DELETE","origin":"https://api.trello.com","path":"/1/members/{id}/savedSearches/{idSearch}","scope":{"id":{"at":"id","from":"path"},"idSearch":{"at":"idSearch","from":"path"}}},
+    {"action":"members.saved_searches.read","effects":["read"],"id":"get-members-id-savedsearches-idsearch","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/savedSearches/{idSearch}","scope":{"id":{"at":"id","from":"path"},"idSearch":{"at":"idSearch","from":"path"}}},
+    {"action":"members.saved_searches.write","effects":["write"],"id":"put-members-id-savedsearches-idsearch","method":"PUT","origin":"https://api.trello.com","params":["name","query","pos"],"path":"/1/members/{id}/savedSearches/{idSearch}","scope":{"id":{"at":"id","from":"path"},"idSearch":{"at":"idSearch","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.tokens.read","effects":["read"],"id":"get-members-id-tokens","method":"GET","origin":"https://api.trello.com","params":["webhooks"],"path":"/1/members/{id}/tokens","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"members.read","effects":["read"],"id":"get-members-id-field","method":"GET","origin":"https://api.trello.com","path":"/1/members/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"notifications.all.write","effects":["write"],"id":"post-notifications-all-read","method":"POST","origin":"https://api.trello.com","params":["read","ids"],"path":"/1/notifications/all/read","scope":{"ids":{"at":"ids","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"notifications.read","effects":["read"],"id":"get-notifications-id","method":"GET","origin":"https://api.trello.com","params":["board","board_fields","card","card_fields","display","entities","fields","list","member","member_fields","memberCreator","memberCreator_fields","organization","organization_fields"],"path":"/1/notifications/{id}","scope":{"board":{"at":"board","from":"query","optional":true},"id":{"at":"id","from":"path"},"list":{"at":"list","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"notifications.write","effects":["write"],"id":"put-notifications-id","method":"PUT","origin":"https://api.trello.com","params":["unread"],"path":"/1/notifications/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"notifications.board.read","effects":["read"],"id":"get-notifications-id-board","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/notifications/{id}/board","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"notifications.card.read","effects":["read"],"id":"get-notifications-id-card","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/notifications/{id}/card","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"notifications.read","effects":["read"],"id":"get-notifications-id-list","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/notifications/{id}/list","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"notifications.member.read","effects":["read"],"id":"notificationsidmember","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/notifications/{id}/member","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"notifications.member_creator.read","effects":["read"],"id":"get-notifications-id-membercreator","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/notifications/{id}/memberCreator","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"notifications.organization.read","effects":["read"],"id":"get-notifications-id-organization","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/notifications/{id}/organization","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"notifications.unread.write","effects":["write"],"id":"put-notifications-id-unread","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/notifications/{id}/unread","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"notifications.read","effects":["read"],"id":"get-notifications-id-field","method":"GET","origin":"https://api.trello.com","path":"/1/notifications/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"organizations.admin","effects":["admin"],"id":"post-organizations","method":"POST","origin":"https://api.trello.com","params":["displayName","desc","name","website"],"path":"/1/organizations","scope":{"displayName":{"at":"displayName","from":"query"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"organizations.delete","effects":["delete"],"id":"delete-organizations-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/organizations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"organizations.read","effects":["read"],"id":"get-organizations-id","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"organizations.admin","effects":["admin"],"id":"put-organizations-id","method":"PUT","origin":"https://api.trello.com","params":["name","displayName","desc","website","prefs/associatedDomain","prefs/externalMembersDisabled","prefs/googleAppsVersion","prefs/boardVisibilityRestrict/org","prefs/boardVisibilityRestrict/private","prefs/boardVisibilityRestrict/public","prefs/orgInviteRestrict","prefs/permissionLevel"],"path":"/1/organizations/{id}","scope":{"displayName":{"at":"displayName","from":"query","optional":true},"id":{"at":"id","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"organizations.actions.read","effects":["read"],"id":"get-organizations-id-actions","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}/actions","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"organizations.boards.read","effects":["read"],"id":"get-organizations-id-boards","method":"GET","origin":"https://api.trello.com","params":["filter","fields"],"path":"/1/organizations/{id}/boards","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"organizations.exports.read","effects":["read"],"id":"get-organizations-id-exports","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}/exports","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"organizations.exports.admin","effects":["admin"],"id":"post-organizations-id-exports","method":"POST","origin":"https://api.trello.com","params":["attachments"],"path":"/1/organizations/{id}/exports","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"organizations.logo.delete","effects":["delete"],"id":"delete-organizations-id-logo","method":"DELETE","origin":"https://api.trello.com","path":"/1/organizations/{id}/logo","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"organizations.logo.write","effects":["write"],"id":"post-organizations-id-logo","method":"POST","origin":"https://api.trello.com","params":["file"],"path":"/1/organizations/{id}/logo","scope":{"file":{"at":"file","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"organizations.members.read","effects":["read"],"id":"get-organizations-id-members","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}/members","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"organizations.members.admin","effects":["admin"],"id":"put-organizations-id-members","method":"PUT","origin":"https://api.trello.com","params":["email","fullName","type"],"path":"/1/organizations/{id}/members","scope":{"email":{"at":"email","from":"query"},"fullName":{"at":"fullName","from":"query"},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"organizations.members.delete","effects":["delete"],"id":"delete-organizations-id-members","method":"DELETE","origin":"https://api.trello.com","path":"/1/organizations/{id}/members/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"}}},
+    {"action":"organizations.members.admin","effects":["admin"],"id":"put-organizations-id-members-idmember","method":"PUT","origin":"https://api.trello.com","params":["type"],"path":"/1/organizations/{id}/members/{idMember}","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"organizations.members.all.delete","effects":["delete"],"id":"organizations-id-members-idmember-all","method":"DELETE","origin":"https://api.trello.com","path":"/1/organizations/{id}/members/{idMember}/all","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"}}},
+    {"action":"organizations.members.deactivated.admin","effects":["admin"],"id":"put-organizations-id-members-idmember-deactivated","method":"PUT","origin":"https://api.trello.com","params":["value"],"path":"/1/organizations/{id}/members/{idMember}/deactivated","scope":{"id":{"at":"id","from":"path"},"idMember":{"at":"idMember","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"organizations.memberships.read","effects":["read"],"id":"get-organizations-id-memberships","method":"GET","origin":"https://api.trello.com","params":["filter","member"],"path":"/1/organizations/{id}/memberships","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"organizations.memberships.read","effects":["read"],"id":"get-organizations-id-memberships-idmembership","method":"GET","origin":"https://api.trello.com","params":["member"],"path":"/1/organizations/{id}/memberships/{idMembership}","scope":{"id":{"at":"id","from":"path"},"idMembership":{"at":"idMembership","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"organizations.new_billable_guests.read","effects":["read"],"id":"get-organizations-id-newbillableguests-idboard","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}/newBillableGuests/{idBoard}","scope":{"id":{"at":"id","from":"path"},"idBoard":{"at":"idBoard","from":"path"}}},
+    {"action":"organizations.plugin_data.read","effects":["read"],"id":"get-organizations-id-plugindata","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}/pluginData","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"organizations.prefs.associated_domain.delete","effects":["delete"],"id":"delete-organizations-id-prefs-associateddomain","method":"DELETE","origin":"https://api.trello.com","path":"/1/organizations/{id}/prefs/associatedDomain","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"organizations.prefs.org_invite_restrict.delete","effects":["delete"],"id":"delete-organizations-id-prefs-orginviterestrict","method":"DELETE","origin":"https://api.trello.com","path":"/1/organizations/{id}/prefs/orgInviteRestrict","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"organizations.tags.read","effects":["read"],"id":"get-organizations-id-tags","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}/tags","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"organizations.tags.write","effects":["write"],"id":"post-organizations-id-tags","method":"POST","origin":"https://api.trello.com","path":"/1/organizations/{id}/tags","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"organizations.tags.delete","effects":["delete"],"id":"delete-organizations-id-tags-idtag","method":"DELETE","origin":"https://api.trello.com","path":"/1/organizations/{id}/tags/{idTag}","scope":{"id":{"at":"id","from":"path"},"idTag":{"at":"idTag","from":"path"}}},
+    {"action":"organizations.read","effects":["read"],"id":"get-organizations-id-field","method":"GET","origin":"https://api.trello.com","path":"/1/organizations/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}},
+    {"action":"plugins.listings.write","effects":["write"],"id":"post-plugins-idplugin-listing","method":"POST","origin":"https://api.trello.com","path":"/1/plugins/{idPlugin}/listings","scope":{"idPlugin":{"at":"idPlugin","from":"path"}}},
+    {"action":"plugins.listings.write","body":"json","effects":["write"],"id":"post-plugins-idplugin-listing.json.43a9314a1270","method":"POST","origin":"https://api.trello.com","path":"/1/plugins/{idPlugin}/listings","scope":{"idPlugin":{"at":"idPlugin","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"plugins.listings.write","effects":["write"],"id":"put-plugins-idplugin-listings-idlisting","method":"PUT","origin":"https://api.trello.com","path":"/1/plugins/{idPlugin}/listings/{idListing}","scope":{"idListing":{"at":"idListing","from":"path"},"idPlugin":{"at":"idPlugin","from":"path"}}},
+    {"action":"plugins.listings.write","body":"json","effects":["write"],"id":"put-plugins-idplugin-listings-idlisting.json.3e2f1a80e033","method":"PUT","origin":"https://api.trello.com","path":"/1/plugins/{idPlugin}/listings/{idListing}","scope":{"idListing":{"at":"idListing","from":"path"},"idPlugin":{"at":"idPlugin","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"plugins.read","effects":["read"],"id":"get-plugins-id","method":"GET","origin":"https://api.trello.com","path":"/1/plugins/{id}/","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"plugins.write","effects":["write"],"id":"put-plugins-id","method":"PUT","origin":"https://api.trello.com","path":"/1/plugins/{id}/","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"plugins.compliance.member_privacy.read","effects":["read"],"id":"get-plugins-id-compliance-memberprivacy","method":"GET","origin":"https://api.trello.com","path":"/1/plugins/{id}/compliance/memberPrivacy","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"search.read","effects":["read"],"id":"get-search","method":"GET","origin":"https://api.trello.com","params":["query","idBoards","idOrganizations","idCards","modelTypes","board_fields","boards_limit","board_organization","card_fields","cards_limit","cards_page","card_board","card_list","card_members","card_stickers","card_attachments","organization_fields","organizations_limit","member_fields","members_limit","partial"],"path":"/1/search","scope":{"card_board":{"at":"card_board","from":"query","optional":true},"card_list":{"at":"card_list","from":"query","optional":true},"cards_page":{"at":"cards_page","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"search.members.read","effects":["read"],"id":"get-search-members","method":"GET","origin":"https://api.trello.com","params":["query","limit","idBoard","idOrganization","onlyOrgMembers"],"path":"/1/search/members/","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"tokens.read","effects":["read"],"id":"get-tokens-token","method":"GET","origin":"https://api.trello.com","params":["fields","webhooks"],"path":"/1/tokens/{token}","scope":{"query":{"at":"","from":"query","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"tokens.delete","effects":["delete"],"id":"delete-token","method":"DELETE","origin":"https://api.trello.com","path":"/1/tokens/{token}/","scope":{"token":{"at":"token","from":"path"}}},
+    {"action":"tokens.member.read","effects":["read"],"id":"get-tokens-token-member","method":"GET","origin":"https://api.trello.com","params":["fields"],"path":"/1/tokens/{token}/member","scope":{"query":{"at":"","from":"query","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"tokens.webhooks.read","effects":["read"],"id":"get-tokens-token-webhooks","method":"GET","origin":"https://api.trello.com","path":"/1/tokens/{token}/webhooks","scope":{"token":{"at":"token","from":"path"}}},
+    {"action":"tokens.webhooks.admin","effects":["admin"],"id":"post-tokens-token-webhooks","method":"POST","origin":"https://api.trello.com","params":["description","callbackURL","idModel"],"path":"/1/tokens/{token}/webhooks","scope":{"callbackURL":{"at":"callbackURL","from":"query"},"query":{"at":"","from":"query","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"tokens.webhooks.delete","effects":["delete"],"id":"delete-tokens-token-webhooks-idwebhook","method":"DELETE","origin":"https://api.trello.com","path":"/1/tokens/{token}/webhooks/{idWebhook}","scope":{"idWebhook":{"at":"idWebhook","from":"path"},"token":{"at":"token","from":"path"}}},
+    {"action":"tokens.webhooks.read","effects":["read"],"id":"get-tokens-token-webhooks-idwebhook","method":"GET","origin":"https://api.trello.com","path":"/1/tokens/{token}/webhooks/{idWebhook}","scope":{"idWebhook":{"at":"idWebhook","from":"path"},"token":{"at":"token","from":"path"}}},
+    {"action":"tokens.webhooks.admin","effects":["admin"],"id":"tokenstokenwebhooks-1","method":"PUT","origin":"https://api.trello.com","params":["description","callbackURL","idModel"],"path":"/1/tokens/{token}/webhooks/{idWebhook}","scope":{"callbackURL":{"at":"callbackURL","from":"query","optional":true},"idWebhook":{"at":"idWebhook","from":"path"},"query":{"at":"","from":"query","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"webhooks.admin","effects":["admin"],"id":"post-webhooks","method":"POST","origin":"https://api.trello.com","params":["description","callbackURL","idModel","active"],"path":"/1/webhooks/","scope":{"callbackURL":{"at":"callbackURL","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"webhooks.delete","effects":["delete"],"id":"delete-webhooks-id","method":"DELETE","origin":"https://api.trello.com","path":"/1/webhooks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"webhooks.read","effects":["read"],"id":"get-webhooks-id","method":"GET","origin":"https://api.trello.com","path":"/1/webhooks/{id}","scope":{"id":{"at":"id","from":"path"}}},
+    {"action":"webhooks.admin","effects":["admin"],"id":"put-webhooks-id","method":"PUT","origin":"https://api.trello.com","params":["description","callbackURL","idModel","active"],"path":"/1/webhooks/{id}","scope":{"callbackURL":{"at":"callbackURL","from":"query","optional":true},"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"webhooks.read","effects":["read"],"id":"webhooksidfield","method":"GET","origin":"https://api.trello.com","path":"/1/webhooks/{id}/{field}","scope":{"field":{"at":"field","from":"path"},"id":{"at":"id","from":"path"}}}
   ]
 }

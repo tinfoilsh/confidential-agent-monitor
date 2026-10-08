@@ -1,22 +1,64 @@
 {
-  "title": "Google Docs",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "token", "label": "Google account", "secret": true, "path": ["connections", "", "http", "values", "token"],
-       "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{MONITOR_GOOGLE_CLIENT_ID}", "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}", "scope": "https://www.googleapis.com/auth/documents", "prompt": "consent"}}
-    ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://docs.googleapis.com", "path": "/v1/documents", "header": "Authorization", "prefix": "Bearer "}]}}},
-    "defaults": {"contents": "me", "strangers": true, "sends": "anyone"},
     "actions": {
-      "read": {"title": "Read documents"},
-      "write": {"title": "Create documents"},
-      "write.batch": {"title": "Edit documents (inline images fetch their URLs)"}
-    }
+      "documents": {
+        "title": "Documents"
+      },
+      "documents.read": {
+        "title": "Read"
+      },
+      "documents.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "header": "Authorization",
+              "origin": "https://docs.googleapis.com",
+              "path": "/v1/documents",
+              "prefix": "Bearer ",
+              "value": "token"
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "me",
+      "sends": "anyone",
+      "strangers": true
+    },
+    "fields": [
+      {
+        "key": "token",
+        "label": "Google account",
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "client_id": "{MONITOR_GOOGLE_CLIENT_ID}",
+          "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}",
+          "prompt": "consent",
+          "scope": "https://www.googleapis.com/auth/documents",
+          "token_url": "https://oauth2.googleapis.com/token"
+        },
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ],
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Google Docs",
   "operations": [
-    {"id": "documents.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://docs.googleapis.com", "path": "/v1/documents/{document}", "params": ["includeTabsContent", "suggestionsViewMode"], "scope": {"document": {"from": "path", "at": "document"}}},
-    {"id": "documents.create", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://docs.googleapis.com", "path": "/v1/documents", "body": "json", "scope": {}},
-    {"id": "documents.batchUpdate", "action": "write.batch", "effects": ["write", "send"], "method": "POST", "origin": "https://docs.googleapis.com", "path": "/v1/documents/{document}:batchUpdate", "body": "json", "scope": {"document": {"from": "path", "at": "document"}, "requests": {"from": "body", "at": "", "type": "object"}}}
+    {"action":"documents.read","effects":["read"],"id":"documents.get","method":"GET","origin":"https://docs.googleapis.com","params":["includeTabsContent","suggestionsViewMode"],"path":"/v1/documents/{document}","scope":{"document":{"at":"document","from":"path"}}},
+    {"action":"documents.write","body":"json","effects":["write"],"id":"documents.create","method":"POST","origin":"https://docs.googleapis.com","path":"/v1/documents","scope":{}},
+    {"action":"documents.write","body":"json","effects":["write","send"],"id":"documents.batchUpdate","method":"POST","origin":"https://docs.googleapis.com","path":"/v1/documents/{document}:batchUpdate","scope":{"document":{"at":"document","from":"path"},"requests":{"at":"","from":"body","type":"object"}}}
   ]
 }

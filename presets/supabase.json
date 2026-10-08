@@ -1,35 +1,125 @@
 {
-  "title": "Supabase",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {"key": "origin", "label": "Your project URL (https://yourproject.supabase.co)",
-       "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
-      {"key": "apikey", "label": "Anon or publishable API key (avoid service_role; prefer a user JWT for the Authorization field below under RLS)", "secret": true, "path": ["connections", "", "http", "values", "apikey"]},
-      {"key": "jwt", "label": "User access token (JWT), so row level security applies", "secret": true, "path": ["connections", "", "http", "values", "jwt"]}
-    ],
-    "connections": {"": {"http": {"slots": [
-      {"value": "apikey", "origin": "https://example.supabase.co", "path": "/", "header": "Apikey"},
-      {"value": "jwt", "origin": "https://example.supabase.co", "path": "/", "header": "Authorization", "prefix": "Bearer "}
-    ]}}},
-    "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
-      "read": {"title": "Read table rows and storage objects"},
-      "write": {"title": "Insert and update table rows, and upload storage objects"},
-      "delete": {"title": "Delete table rows"},
-      "execute.rpc": {"title": "Call database functions (may have elevated authority; not ordinary CRUD)"}
-    }
+      "general": {
+        "title": "General"
+      },
+      "general.delete": {
+        "title": "Delete"
+      },
+      "general.execute": {
+        "title": "Run"
+      },
+      "general.read": {
+        "title": "Read"
+      },
+      "general.write": {
+        "title": "Create and edit"
+      },
+      "storage": {
+        "title": "Storage"
+      },
+      "storage.object": {
+        "title": "Object"
+      },
+      "storage.object.read": {
+        "title": "Read"
+      },
+      "storage.object.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "header": "Apikey",
+              "origin": "https://example.supabase.co",
+              "path": "/",
+              "value": "apikey"
+            },
+            {
+              "header": "Authorization",
+              "origin": "https://example.supabase.co",
+              "path": "/",
+              "prefix": "Bearer ",
+              "value": "jwt"
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "team",
+      "sends": "anyone",
+      "strangers": true
+    },
+    "fields": [
+      {
+        "key": "origin",
+        "label": "Your project URL (https://yourproject.supabase.co)",
+        "paths": [
+          [
+            "policy_options",
+            "origin"
+          ],
+          [
+            "connections",
+            "",
+            "http",
+            "slots",
+            0,
+            "origin"
+          ],
+          [
+            "connections",
+            "",
+            "http",
+            "slots",
+            1,
+            "origin"
+          ]
+        ]
+      },
+      {
+        "key": "apikey",
+        "label": "Anon or publishable API key (avoid service_role; prefer a user JWT for the Authorization field below under RLS)",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "apikey"
+        ],
+        "secret": true
+      },
+      {
+        "key": "jwt",
+        "label": "User access token (JWT), so row level security applies",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "jwt"
+        ],
+        "secret": true
+      }
+    ],
+    "group": "api"
   },
+  "title": "Supabase",
   "operations": [
-    {"id": "rest.select", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/rest/v1/{table}", "open_params": true, "headers": {"Accept-Profile": null, "Content-Profile": null}, "scope": {"table": {"from": "path", "at": "table"}}},
-    {"id": "rest.insert", "action": "write", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/rest/v1/{table}", "headers": {"Accept-Profile": null, "Content-Profile": null, "Prefer": null}, "body": "json", "scope": {"table": {"from": "path", "at": "table"}, "rows": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "rest.insert.returning", "action": "write", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/rest/v1/{table}", "headers": {"Accept-Profile": null, "Content-Profile": null, "Prefer": "return=representation"}, "body": "json", "scope": {"table": {"from": "path", "at": "table"}, "rows": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "rest.update", "action": "write", "effects": ["write"], "method": "PATCH", "origin": "{origin}", "path": "/rest/v1/{table}", "open_params": true, "headers": {"Accept-Profile": null, "Content-Profile": null, "Prefer": null}, "body": "json", "scope": {"table": {"from": "path", "at": "table"}, "filter": {"from": "query", "at": "", "type": "object"}, "changes": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "rest.update.returning", "action": "write", "effects": ["write"], "method": "PATCH", "origin": "{origin}", "path": "/rest/v1/{table}", "open_params": true, "headers": {"Accept-Profile": null, "Content-Profile": null, "Prefer": "return=representation"}, "body": "json", "scope": {"table": {"from": "path", "at": "table"}, "filter": {"from": "query", "at": "", "type": "object"}, "changes": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "rest.delete", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/rest/v1/{table}", "open_params": true, "headers": {"Accept-Profile": null, "Content-Profile": null, "Prefer": null}, "scope": {"table": {"from": "path", "at": "table"}, "filter": {"from": "query", "at": "", "type": "object"}}},
-    {"id": "rest.delete.returning", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/rest/v1/{table}", "open_params": true, "headers": {"Accept-Profile": null, "Content-Profile": null, "Prefer": "return=representation"}, "scope": {"table": {"from": "path", "at": "table"}, "filter": {"from": "query", "at": "", "type": "object"}}},
-    {"id": "rpc.call", "action": "execute.rpc", "effects": ["execute"], "method": "POST", "origin": "{origin}", "path": "/rest/v1/rpc/{function}", "headers": {"Accept-Profile": null, "Content-Profile": null, "Prefer": null}, "body": "json", "scope": {"function": {"from": "path", "at": "function"}, "arguments": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "storage.object.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/storage/v1/object/{bucket}/{key*}", "headers": {"Accept-Profile": null, "Content-Profile": null}, "scope": {"bucket": {"from": "path", "at": "bucket"}, "key": {"from": "path", "at": "key"}}},
-    {"id": "storage.object.upload", "action": "write", "effects": ["write"], "method": "POST", "origin": "{origin}", "path": "/storage/v1/object/{bucket}/{key*}", "headers": {"Accept-Profile": null, "Content-Profile": null, "X-Upsert": null}, "body": "any", "scope": {"bucket": {"from": "path", "at": "bucket"}, "key": {"from": "path", "at": "key"}}}
+    {"action":"general.read","effects":["read"],"headers":{"Accept-Profile":null,"Content-Profile":null},"id":"rest.select","method":"GET","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"table":{"at":"table","from":"path"}}},
+    {"action":"general.write","body":"json","effects":["write"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":null},"id":"rest.insert","method":"POST","origin":"{origin}","path":"/rest/v1/{table}","scope":{"rows":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
+    {"action":"general.write","body":"json","effects":["write"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":"return=representation"},"id":"rest.insert.returning","method":"POST","origin":"{origin}","path":"/rest/v1/{table}","scope":{"rows":{"at":"","from":"body","type":"object"},"table":{"at":"table","from":"path"}}},
+    {"action":"general.write","body":"json","effects":["write"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":null},"id":"rest.update","method":"PATCH","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"changes":{"at":"","from":"body","type":"object"},"filter":{"at":"","from":"query","type":"object"},"table":{"at":"table","from":"path"}}},
+    {"action":"general.write","body":"json","effects":["write"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":"return=representation"},"id":"rest.update.returning","method":"PATCH","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"changes":{"at":"","from":"body","type":"object"},"filter":{"at":"","from":"query","type":"object"},"table":{"at":"table","from":"path"}}},
+    {"action":"general.delete","effects":["delete"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":null},"id":"rest.delete","method":"DELETE","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"filter":{"at":"","from":"query","type":"object"},"table":{"at":"table","from":"path"}}},
+    {"action":"general.delete","effects":["delete"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":"return=representation"},"id":"rest.delete.returning","method":"DELETE","open_params":true,"origin":"{origin}","path":"/rest/v1/{table}","scope":{"filter":{"at":"","from":"query","type":"object"},"table":{"at":"table","from":"path"}}},
+    {"action":"general.execute","body":"json","effects":["execute"],"headers":{"Accept-Profile":null,"Content-Profile":null,"Prefer":null},"id":"rpc.call","method":"POST","origin":"{origin}","path":"/rest/v1/rpc/{function}","scope":{"arguments":{"at":"","from":"body","type":"object"},"function":{"at":"function","from":"path"}}},
+    {"action":"storage.object.read","effects":["read"],"headers":{"Accept-Profile":null,"Content-Profile":null},"id":"storage.object.get","method":"GET","origin":"{origin}","path":"/storage/v1/object/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}},
+    {"action":"storage.object.write","body":"any","effects":["write"],"headers":{"Accept-Profile":null,"Content-Profile":null,"X-Upsert":null},"id":"storage.object.upload","method":"POST","origin":"{origin}","path":"/storage/v1/object/{bucket}/{key*}","scope":{"bucket":{"at":"bucket","from":"path"},"key":{"at":"key","from":"path"}}}
   ]
 }

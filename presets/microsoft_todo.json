@@ -1,12 +1,422 @@
 {
-  "title": "Microsoft To Do",
   "catalog": {
-    "group": "api",
+    "actions": {
+      "me": {
+        "title": "Me"
+      },
+      "me.todo": {
+        "title": "Todo"
+      },
+      "me.todo.delete": {
+        "title": "Delete"
+      },
+      "me.todo.lists": {
+        "title": "Lists"
+      },
+      "me.todo.lists.count": {
+        "title": "Count"
+      },
+      "me.todo.lists.count.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.delete": {
+        "title": "Delete"
+      },
+      "me.todo.lists.delta": {
+        "title": "Delta"
+      },
+      "me.todo.lists.delta.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.extensions": {
+        "title": "Extensions"
+      },
+      "me.todo.lists.extensions.count": {
+        "title": "Count"
+      },
+      "me.todo.lists.extensions.count.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.extensions.delete": {
+        "title": "Delete"
+      },
+      "me.todo.lists.extensions.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.extensions.write": {
+        "title": "Create and edit"
+      },
+      "me.todo.lists.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks": {
+        "title": "Tasks"
+      },
+      "me.todo.lists.tasks.attachment_sessions": {
+        "title": "Attachment sessions"
+      },
+      "me.todo.lists.tasks.attachment_sessions.content": {
+        "title": "Content"
+      },
+      "me.todo.lists.tasks.attachment_sessions.content.delete": {
+        "title": "Delete"
+      },
+      "me.todo.lists.tasks.attachment_sessions.content.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.attachment_sessions.count": {
+        "title": "Count"
+      },
+      "me.todo.lists.tasks.attachment_sessions.count.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.attachment_sessions.delete": {
+        "title": "Delete"
+      },
+      "me.todo.lists.tasks.attachment_sessions.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.attachment_sessions.write": {
+        "title": "Create and edit"
+      },
+      "me.todo.lists.tasks.attachments": {
+        "title": "Attachments"
+      },
+      "me.todo.lists.tasks.attachments.count": {
+        "title": "Count"
+      },
+      "me.todo.lists.tasks.attachments.count.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.attachments.delete": {
+        "title": "Delete"
+      },
+      "me.todo.lists.tasks.attachments.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.attachments.session": {
+        "title": "Session"
+      },
+      "me.todo.lists.tasks.attachments.session.write": {
+        "title": "Create and edit"
+      },
+      "me.todo.lists.tasks.attachments.value": {
+        "title": "Value"
+      },
+      "me.todo.lists.tasks.attachments.value.delete": {
+        "title": "Delete"
+      },
+      "me.todo.lists.tasks.attachments.value.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.attachments.write": {
+        "title": "Create and edit"
+      },
+      "me.todo.lists.tasks.checklist_items": {
+        "title": "Checklist items"
+      },
+      "me.todo.lists.tasks.checklist_items.count": {
+        "title": "Count"
+      },
+      "me.todo.lists.tasks.checklist_items.count.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.checklist_items.delete": {
+        "title": "Delete"
+      },
+      "me.todo.lists.tasks.checklist_items.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.checklist_items.write": {
+        "title": "Create and edit"
+      },
+      "me.todo.lists.tasks.count": {
+        "title": "Count"
+      },
+      "me.todo.lists.tasks.count.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.delete": {
+        "title": "Delete"
+      },
+      "me.todo.lists.tasks.delta": {
+        "title": "Delta"
+      },
+      "me.todo.lists.tasks.delta.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.extensions": {
+        "title": "Extensions"
+      },
+      "me.todo.lists.tasks.extensions.count": {
+        "title": "Count"
+      },
+      "me.todo.lists.tasks.extensions.count.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.extensions.delete": {
+        "title": "Delete"
+      },
+      "me.todo.lists.tasks.extensions.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.extensions.write": {
+        "title": "Create and edit"
+      },
+      "me.todo.lists.tasks.linked_resources": {
+        "title": "Linked resources"
+      },
+      "me.todo.lists.tasks.linked_resources.count": {
+        "title": "Count"
+      },
+      "me.todo.lists.tasks.linked_resources.count.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.linked_resources.delete": {
+        "title": "Delete"
+      },
+      "me.todo.lists.tasks.linked_resources.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.linked_resources.write": {
+        "title": "Create and edit"
+      },
+      "me.todo.lists.tasks.read": {
+        "title": "Read"
+      },
+      "me.todo.lists.tasks.write": {
+        "title": "Create and edit"
+      },
+      "me.todo.lists.write": {
+        "title": "Create and edit"
+      },
+      "me.todo.read": {
+        "title": "Read"
+      },
+      "me.todo.write": {
+        "title": "Create and edit"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.todo": {
+        "title": "Todo"
+      },
+      "users.todo.delete": {
+        "title": "Delete"
+      },
+      "users.todo.lists": {
+        "title": "Lists"
+      },
+      "users.todo.lists.count": {
+        "title": "Count"
+      },
+      "users.todo.lists.count.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.delete": {
+        "title": "Delete"
+      },
+      "users.todo.lists.delta": {
+        "title": "Delta"
+      },
+      "users.todo.lists.delta.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.extensions": {
+        "title": "Extensions"
+      },
+      "users.todo.lists.extensions.count": {
+        "title": "Count"
+      },
+      "users.todo.lists.extensions.count.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.extensions.delete": {
+        "title": "Delete"
+      },
+      "users.todo.lists.extensions.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.extensions.write": {
+        "title": "Create and edit"
+      },
+      "users.todo.lists.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks": {
+        "title": "Tasks"
+      },
+      "users.todo.lists.tasks.attachment_sessions": {
+        "title": "Attachment sessions"
+      },
+      "users.todo.lists.tasks.attachment_sessions.content": {
+        "title": "Content"
+      },
+      "users.todo.lists.tasks.attachment_sessions.content.delete": {
+        "title": "Delete"
+      },
+      "users.todo.lists.tasks.attachment_sessions.content.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.attachment_sessions.count": {
+        "title": "Count"
+      },
+      "users.todo.lists.tasks.attachment_sessions.count.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.attachment_sessions.delete": {
+        "title": "Delete"
+      },
+      "users.todo.lists.tasks.attachment_sessions.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.attachment_sessions.write": {
+        "title": "Create and edit"
+      },
+      "users.todo.lists.tasks.attachments": {
+        "title": "Attachments"
+      },
+      "users.todo.lists.tasks.attachments.count": {
+        "title": "Count"
+      },
+      "users.todo.lists.tasks.attachments.count.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.attachments.delete": {
+        "title": "Delete"
+      },
+      "users.todo.lists.tasks.attachments.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.attachments.session": {
+        "title": "Session"
+      },
+      "users.todo.lists.tasks.attachments.session.write": {
+        "title": "Create and edit"
+      },
+      "users.todo.lists.tasks.attachments.value": {
+        "title": "Value"
+      },
+      "users.todo.lists.tasks.attachments.value.delete": {
+        "title": "Delete"
+      },
+      "users.todo.lists.tasks.attachments.value.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.attachments.write": {
+        "title": "Create and edit"
+      },
+      "users.todo.lists.tasks.checklist_items": {
+        "title": "Checklist items"
+      },
+      "users.todo.lists.tasks.checklist_items.count": {
+        "title": "Count"
+      },
+      "users.todo.lists.tasks.checklist_items.count.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.checklist_items.delete": {
+        "title": "Delete"
+      },
+      "users.todo.lists.tasks.checklist_items.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.checklist_items.write": {
+        "title": "Create and edit"
+      },
+      "users.todo.lists.tasks.count": {
+        "title": "Count"
+      },
+      "users.todo.lists.tasks.count.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.delete": {
+        "title": "Delete"
+      },
+      "users.todo.lists.tasks.delta": {
+        "title": "Delta"
+      },
+      "users.todo.lists.tasks.delta.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.extensions": {
+        "title": "Extensions"
+      },
+      "users.todo.lists.tasks.extensions.count": {
+        "title": "Count"
+      },
+      "users.todo.lists.tasks.extensions.count.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.extensions.delete": {
+        "title": "Delete"
+      },
+      "users.todo.lists.tasks.extensions.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.extensions.write": {
+        "title": "Create and edit"
+      },
+      "users.todo.lists.tasks.linked_resources": {
+        "title": "Linked resources"
+      },
+      "users.todo.lists.tasks.linked_resources.count": {
+        "title": "Count"
+      },
+      "users.todo.lists.tasks.linked_resources.count.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.linked_resources.delete": {
+        "title": "Delete"
+      },
+      "users.todo.lists.tasks.linked_resources.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.linked_resources.write": {
+        "title": "Create and edit"
+      },
+      "users.todo.lists.tasks.read": {
+        "title": "Read"
+      },
+      "users.todo.lists.tasks.write": {
+        "title": "Create and edit"
+      },
+      "users.todo.lists.write": {
+        "title": "Create and edit"
+      },
+      "users.todo.read": {
+        "title": "Read"
+      },
+      "users.todo.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "header": "Authorization",
+              "origin": "https://graph.microsoft.com",
+              "path": "/v1.0",
+              "prefix": "Bearer ",
+              "value": "token"
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "me",
+      "sends": "me",
+      "strangers": true
+    },
     "fields": [
       {
+        "default": "organizations",
         "key": "tenant",
         "label": "Microsoft Entra tenant (ID, domain, organizations or consumers)",
-        "default": "organizations",
         "paths": []
       },
       {
@@ -17,13 +427,19 @@
       {
         "key": "client_secret",
         "label": "Client secret",
-        "secret": true,
-        "paths": []
+        "paths": [],
+        "secret": true
       },
       {
         "key": "token",
         "label": "Microsoft account",
-        "secret": true,
+        "oauth": {
+          "auth_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "scope": "offline_access Tasks.ReadWrite",
+          "token_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
+        },
         "path": [
           "connections",
           "",
@@ -31,216 +447,124 @@
           "values",
           "token"
         ],
-        "oauth": {
-          "auth_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize",
-          "token_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token",
-          "client_id": "{client_id}",
-          "client_secret": "{client_secret}",
-          "scope": "offline_access Tasks.ReadWrite"
-        }
+        "secret": true
       }
     ],
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "value": "token",
-              "origin": "https://graph.microsoft.com",
-              "path": "/v1.0",
-              "header": "Authorization",
-              "prefix": "Bearer "
-            }
-          ]
-        }
-      }
-    },
-    "defaults": {
-      "contents": "me",
-      "strangers": true,
-      "sends": "me"
-    },
-    "actions": {
-      "read": {
-        "title": "Read task lists, tasks and checklists"
-      },
-      "write": {
-        "title": "Create, edit and complete tasks and lists"
-      },
-      "delete": {
-        "title": "Delete tasks and lists"
-      },
-      "delete.todo": {
-        "title": "delete: todo"
-      },
-      "write.todo": {
-        "title": "write: todo"
-      },
-      "write.extensions": {
-        "title": "write: extensions"
-      },
-      "delete.extensions": {
-        "title": "delete: extensions"
-      },
-      "delete.attachment_sessions": {
-        "title": "delete: attachment_sessions"
-      },
-      "write.attachment_sessions": {
-        "title": "write: attachment_sessions"
-      },
-      "delete.content": {
-        "title": "delete: content"
-      },
-      "write.attachments": {
-        "title": "write: attachments"
-      },
-      "write.create_upload_session": {
-        "title": "write: create_upload_session"
-      },
-      "delete.attachments": {
-        "title": "delete: attachments"
-      },
-      "delete.$value": {
-        "title": "delete: $value"
-      },
-      "delete.checklist_items": {
-        "title": "delete: checklist_items"
-      },
-      "write.checklist_items": {
-        "title": "write: checklist_items"
-      },
-      "write.linked_resources": {
-        "title": "write: linked_resources"
-      },
-      "delete.linked_resources": {
-        "title": "delete: linked_resources"
-      },
-      "write.lists": {
-        "title": "write: lists"
-      },
-      "delete.lists": {
-        "title": "delete: lists"
-      },
-      "write.tasks": {
-        "title": "write: tasks"
-      },
-      "delete.tasks": {
-        "title": "delete: tasks"
-      }
-    }
+    "group": "api"
   },
+  "title": "Microsoft To Do",
   "operations": [
-    {"action":"read","effects":["read"],"id":"lists.list","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$top","$skiptoken"],"path":"/v1.0/me/todo/lists","scope":{}},
-    {"action":"read","effects":["read"],"id":"lists.get","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"tasks.list","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$filter","$top","$skip","$orderby","$expand","$search","$count","$skiptoken"],"path":"/v1.0/me/todo/lists/{list}/tasks","scope":{"list":{"at":"list","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"tasks.get","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo/lists/{list}/tasks/{task}","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"checklistItems.list","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}/tasks/{task}/checklistItems","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"lists.create","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists","scope":{}},
-    {"action":"write","body":"json","effects":["write"],"id":"lists.update","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"tasks.create","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}/tasks","scope":{"list":{"at":"list","from":"path"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"tasks.update","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}/tasks/{task}","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"checklistItems.create","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}/tasks/{task}/checklistItems","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
-    {"action":"delete","effects":["delete"],"id":"tasks.delete","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}/tasks/{task}","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
-    {"action":"delete","effects":["delete"],"id":"lists.delete","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
-    {"action":"delete.todo","effects":["delete"],"id":"me.DeleteTodo","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo","scope":{}},
-    {"action":"read","effects":["read"],"id":"me.GetTodo","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"write.todo","body":"json","effects":["write"],"id":"me.UpdateTodo","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo","scope":{"request":{"at":"","from":"body","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.GetCount-c94a","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/$count","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.delta","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$select","$orderby","$expand"],"path":"/v1.0/me/todo/lists/delta()","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.ListExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/extensions","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"write.extensions","body":"json","effects":["write"],"id":"me.todo.lists.CreateExtensions","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/extensions","scope":{"request":{"at":"","from":"body","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.extensions.GetCount-0d35","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/extensions/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"delete.extensions","effects":["delete"],"id":"me.todo.lists.DeleteExtensions","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.GetExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"write.extensions","body":"json","effects":["write"],"id":"me.todo.lists.UpdateExtensions","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.GetCount-9825","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.todoTaskList.tasks.delta","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$select","$orderby","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/delta()","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.ListAttachmentSessions","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.attachmentSessions.GetCount-958a","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"delete.attachment_sessions","effects":["delete"],"id":"me.todo.lists.tasks.DeleteAttachmentSessions","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.GetAttachmentSessions","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"write.attachment_sessions","body":"json","effects":["write"],"id":"me.todo.lists.tasks.UpdateAttachmentSessions","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"delete.content","effects":["delete"],"id":"me.todo.lists.tasks.DeleteAttachmentSessionsContent","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}/content","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.GetAttachmentSessionsContent","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}/content","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.ListAttachments","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"write.attachments","body":"json","effects":["write"],"id":"me.todo.lists.tasks.CreateAttachments","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.attachments.GetCount-d4ef","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"write.create_upload_session","body":"json","effects":["write"],"id":"me.todo.lists.todoTaskList.tasks.todoTask.attachments.createUploadSession","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/createUploadSession","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"delete.attachments","effects":["delete"],"id":"me.todo.lists.tasks.DeleteAttachments","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.GetAttachments","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"delete.$value","effects":["delete"],"id":"me.todo.lists.tasks.DeleteAttachmentsContent","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}/$value","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.GetAttachmentsContent","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}/$value","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.checklistItems.GetCount-d5ac","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"delete.checklist_items","effects":["delete"],"id":"me.todo.lists.tasks.DeleteChecklistItems","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/{checklistItem-id}","scope":{"checklistItem-id":{"at":"checklistItem-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.GetChecklistItems","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/{checklistItem-id}","scope":{"checklistItem-id":{"at":"checklistItem-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"write.checklist_items","body":"json","effects":["write"],"id":"me.todo.lists.tasks.UpdateChecklistItems","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/{checklistItem-id}","scope":{"checklistItem-id":{"at":"checklistItem-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.ListExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"write.extensions","body":"json","effects":["write"],"id":"me.todo.lists.tasks.CreateExtensions","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.extensions.GetCount-bbc8","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"delete.extensions","effects":["delete"],"id":"me.todo.lists.tasks.DeleteExtensions","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.GetExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"write.extensions","body":"json","effects":["write"],"id":"me.todo.lists.tasks.UpdateExtensions","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.ListLinkedResources","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"write.linked_resources","body":"json","effects":["write"],"id":"me.todo.lists.tasks.CreateLinkedResources","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.linkedResources.GetCount-25ab","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"delete.linked_resources","effects":["delete"],"id":"me.todo.lists.tasks.DeleteLinkedResources","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/{linkedResource-id}","scope":{"linkedResource-id":{"at":"linkedResource-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"me.todo.lists.tasks.GetLinkedResources","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/{linkedResource-id}","scope":{"linkedResource-id":{"at":"linkedResource-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"write.linked_resources","body":"json","effects":["write"],"id":"me.todo.lists.tasks.UpdateLinkedResources","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/{linkedResource-id}","scope":{"linkedResource-id":{"at":"linkedResource-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
-    {"action":"delete.todo","effects":["delete"],"id":"users.DeleteTodo","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo","scope":{"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.GetTodo","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo","scope":{"query":{"at":"","from":"query","type":"object"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.todo","body":"json","effects":["write"],"id":"users.UpdateTodo","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo","scope":{"request":{"at":"","from":"body","type":"object"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.ListLists","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists","scope":{"query":{"at":"","from":"query","type":"object"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.lists","body":"json","effects":["write"],"id":"users.todo.CreateLists","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists","scope":{"request":{"at":"","from":"body","type":"object"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.GetCount-47c4","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/$count","scope":{"query":{"at":"","from":"query","type":"object"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.user.todo.lists.delta","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$select","$orderby","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/delta()","scope":{"query":{"at":"","from":"query","type":"object"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"delete.lists","effects":["delete"],"id":"users.todo.DeleteLists","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}","scope":{"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.GetLists","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.lists","body":"json","effects":["write"],"id":"users.todo.UpdateLists","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}","scope":{"request":{"at":"","from":"body","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.ListExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/extensions","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.extensions","body":"json","effects":["write"],"id":"users.todo.lists.CreateExtensions","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/extensions","scope":{"request":{"at":"","from":"body","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.extensions.GetCount-27f6","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/extensions/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"delete.extensions","effects":["delete"],"id":"users.todo.lists.DeleteExtensions","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.GetExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.extensions","body":"json","effects":["write"],"id":"users.todo.lists.UpdateExtensions","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.ListTasks","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.tasks","body":"json","effects":["write"],"id":"users.todo.lists.CreateTasks","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks","scope":{"request":{"at":"","from":"body","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.GetCount-9520","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.user.todo.lists.todoTaskList.tasks.delta","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$select","$orderby","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/delta()","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"delete.tasks","effects":["delete"],"id":"users.todo.lists.DeleteTasks","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}","scope":{"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.GetTasks","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.tasks","body":"json","effects":["write"],"id":"users.todo.lists.UpdateTasks","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.ListAttachmentSessions","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.attachmentSessions.GetCount-53ee","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"delete.attachment_sessions","effects":["delete"],"id":"users.todo.lists.tasks.DeleteAttachmentSessions","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.GetAttachmentSessions","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.attachment_sessions","body":"json","effects":["write"],"id":"users.todo.lists.tasks.UpdateAttachmentSessions","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"delete.content","effects":["delete"],"id":"users.todo.lists.tasks.DeleteAttachmentSessionsContent","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}/content","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.GetAttachmentSessionsContent","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}/content","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.ListAttachments","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.attachments","body":"json","effects":["write"],"id":"users.todo.lists.tasks.CreateAttachments","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.attachments.GetCount-e9c9","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.create_upload_session","body":"json","effects":["write"],"id":"users.user.todo.lists.todoTaskList.tasks.todoTask.attachments.createUploadSession","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/createUploadSession","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"delete.attachments","effects":["delete"],"id":"users.todo.lists.tasks.DeleteAttachments","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.GetAttachments","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"delete.$value","effects":["delete"],"id":"users.todo.lists.tasks.DeleteAttachmentsContent","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}/$value","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.GetAttachmentsContent","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}/$value","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.ListChecklistItems","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.tasks","body":"json","effects":["write"],"id":"users.todo.lists.tasks.CreateChecklistItems","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.checklistItems.GetCount-f104","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"delete.checklist_items","effects":["delete"],"id":"users.todo.lists.tasks.DeleteChecklistItems","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/{checklistItem-id}","scope":{"checklistItem-id":{"at":"checklistItem-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.GetChecklistItems","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/{checklistItem-id}","scope":{"checklistItem-id":{"at":"checklistItem-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.checklist_items","body":"json","effects":["write"],"id":"users.todo.lists.tasks.UpdateChecklistItems","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/{checklistItem-id}","scope":{"checklistItem-id":{"at":"checklistItem-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.ListExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.extensions","body":"json","effects":["write"],"id":"users.todo.lists.tasks.CreateExtensions","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.extensions.GetCount-c962","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"delete.extensions","effects":["delete"],"id":"users.todo.lists.tasks.DeleteExtensions","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.GetExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.extensions","body":"json","effects":["write"],"id":"users.todo.lists.tasks.UpdateExtensions","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.ListLinkedResources","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.linked_resources","body":"json","effects":["write"],"id":"users.todo.lists.tasks.CreateLinkedResources","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.linkedResources.GetCount-58c2","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"delete.linked_resources","effects":["delete"],"id":"users.todo.lists.tasks.DeleteLinkedResources","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/{linkedResource-id}","scope":{"linkedResource-id":{"at":"linkedResource-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"read","effects":["read"],"id":"users.todo.lists.tasks.GetLinkedResources","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/{linkedResource-id}","scope":{"linkedResource-id":{"at":"linkedResource-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
-    {"action":"write.linked_resources","body":"json","effects":["write"],"id":"users.todo.lists.tasks.UpdateLinkedResources","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/{linkedResource-id}","scope":{"linkedResource-id":{"at":"linkedResource-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}}
+    {"action":"me.todo.lists.read","effects":["read"],"id":"lists.list","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$top","$skiptoken"],"path":"/v1.0/me/todo/lists","scope":{}},
+    {"action":"me.todo.lists.read","effects":["read"],"id":"lists.get","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
+    {"action":"me.todo.lists.tasks.read","effects":["read"],"id":"tasks.list","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$filter","$top","$skip","$orderby","$expand","$search","$count","$skiptoken"],"path":"/v1.0/me/todo/lists/{list}/tasks","scope":{"list":{"at":"list","from":"path"}}},
+    {"action":"me.todo.lists.tasks.read","effects":["read"],"id":"tasks.get","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo/lists/{list}/tasks/{task}","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
+    {"action":"me.todo.lists.tasks.checklist_items.read","effects":["read"],"id":"checklistItems.list","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}/tasks/{task}/checklistItems","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
+    {"action":"me.todo.lists.write","body":"json","effects":["write"],"id":"lists.create","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists","scope":{}},
+    {"action":"me.todo.lists.write","body":"json","effects":["write"],"id":"lists.update","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
+    {"action":"me.todo.lists.tasks.write","body":"json","effects":["write"],"id":"tasks.create","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}/tasks","scope":{"list":{"at":"list","from":"path"}}},
+    {"action":"me.todo.lists.tasks.write","body":"json","effects":["write"],"id":"tasks.update","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}/tasks/{task}","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
+    {"action":"me.todo.lists.tasks.checklist_items.write","body":"json","effects":["write"],"id":"checklistItems.create","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}/tasks/{task}/checklistItems","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
+    {"action":"me.todo.lists.tasks.delete","effects":["delete"],"id":"tasks.delete","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}/tasks/{task}","scope":{"list":{"at":"list","from":"path"},"task":{"at":"task","from":"path"}}},
+    {"action":"me.todo.lists.delete","effects":["delete"],"id":"lists.delete","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{list}","scope":{"list":{"at":"list","from":"path"}}},
+    {"action":"me.todo.delete","effects":["delete"],"id":"me.DeleteTodo","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo","scope":{}},
+    {"action":"me.todo.read","effects":["read"],"id":"me.GetTodo","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"me.todo.write","body":"json","effects":["write"],"id":"me.UpdateTodo","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo","scope":{"request":{"at":"","from":"body","type":"object"}}},
+    {"action":"me.todo.lists.count.read","effects":["read"],"id":"me.todo.lists.GetCount-c94a","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/$count","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"me.todo.lists.delta.read","effects":["read"],"id":"me.todo.lists.delta","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$select","$orderby","$expand"],"path":"/v1.0/me/todo/lists/delta()","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"me.todo.lists.extensions.read","effects":["read"],"id":"me.todo.lists.ListExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/extensions","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.extensions.write","body":"json","effects":["write"],"id":"me.todo.lists.CreateExtensions","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/extensions","scope":{"request":{"at":"","from":"body","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.extensions.count.read","effects":["read"],"id":"me.todo.lists.extensions.GetCount-0d35","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/extensions/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.extensions.delete","effects":["delete"],"id":"me.todo.lists.DeleteExtensions","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.extensions.read","effects":["read"],"id":"me.todo.lists.GetExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.extensions.write","body":"json","effects":["write"],"id":"me.todo.lists.UpdateExtensions","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.count.read","effects":["read"],"id":"me.todo.lists.tasks.GetCount-9825","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.delta.read","effects":["read"],"id":"me.todo.lists.todoTaskList.tasks.delta","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$select","$orderby","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/delta()","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachment_sessions.read","effects":["read"],"id":"me.todo.lists.tasks.ListAttachmentSessions","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachment_sessions.count.read","effects":["read"],"id":"me.todo.lists.tasks.attachmentSessions.GetCount-958a","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachment_sessions.delete","effects":["delete"],"id":"me.todo.lists.tasks.DeleteAttachmentSessions","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachment_sessions.read","effects":["read"],"id":"me.todo.lists.tasks.GetAttachmentSessions","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachment_sessions.write","body":"json","effects":["write"],"id":"me.todo.lists.tasks.UpdateAttachmentSessions","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachment_sessions.content.delete","effects":["delete"],"id":"me.todo.lists.tasks.DeleteAttachmentSessionsContent","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}/content","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachment_sessions.content.read","effects":["read"],"id":"me.todo.lists.tasks.GetAttachmentSessionsContent","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}/content","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachments.read","effects":["read"],"id":"me.todo.lists.tasks.ListAttachments","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachments.write","body":"json","effects":["write"],"id":"me.todo.lists.tasks.CreateAttachments","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachments.count.read","effects":["read"],"id":"me.todo.lists.tasks.attachments.GetCount-d4ef","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachments.session.write","body":"json","effects":["write"],"id":"me.todo.lists.todoTaskList.tasks.todoTask.attachments.createUploadSession","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/createUploadSession","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachments.delete","effects":["delete"],"id":"me.todo.lists.tasks.DeleteAttachments","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachments.read","effects":["read"],"id":"me.todo.lists.tasks.GetAttachments","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachments.value.delete","effects":["delete"],"id":"me.todo.lists.tasks.DeleteAttachmentsContent","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}/$value","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.attachments.value.read","effects":["read"],"id":"me.todo.lists.tasks.GetAttachmentsContent","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}/$value","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.checklist_items.count.read","effects":["read"],"id":"me.todo.lists.tasks.checklistItems.GetCount-d5ac","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.checklist_items.delete","effects":["delete"],"id":"me.todo.lists.tasks.DeleteChecklistItems","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/{checklistItem-id}","scope":{"checklistItem-id":{"at":"checklistItem-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.checklist_items.read","effects":["read"],"id":"me.todo.lists.tasks.GetChecklistItems","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/{checklistItem-id}","scope":{"checklistItem-id":{"at":"checklistItem-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.checklist_items.write","body":"json","effects":["write"],"id":"me.todo.lists.tasks.UpdateChecklistItems","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/{checklistItem-id}","scope":{"checklistItem-id":{"at":"checklistItem-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.extensions.read","effects":["read"],"id":"me.todo.lists.tasks.ListExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.extensions.write","body":"json","effects":["write"],"id":"me.todo.lists.tasks.CreateExtensions","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.extensions.count.read","effects":["read"],"id":"me.todo.lists.tasks.extensions.GetCount-bbc8","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.extensions.delete","effects":["delete"],"id":"me.todo.lists.tasks.DeleteExtensions","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.extensions.read","effects":["read"],"id":"me.todo.lists.tasks.GetExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.extensions.write","body":"json","effects":["write"],"id":"me.todo.lists.tasks.UpdateExtensions","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.linked_resources.read","effects":["read"],"id":"me.todo.lists.tasks.ListLinkedResources","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.linked_resources.write","body":"json","effects":["write"],"id":"me.todo.lists.tasks.CreateLinkedResources","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.linked_resources.count.read","effects":["read"],"id":"me.todo.lists.tasks.linkedResources.GetCount-25ab","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.linked_resources.delete","effects":["delete"],"id":"me.todo.lists.tasks.DeleteLinkedResources","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/{linkedResource-id}","scope":{"linkedResource-id":{"at":"linkedResource-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.linked_resources.read","effects":["read"],"id":"me.todo.lists.tasks.GetLinkedResources","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/{linkedResource-id}","scope":{"linkedResource-id":{"at":"linkedResource-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"me.todo.lists.tasks.linked_resources.write","body":"json","effects":["write"],"id":"me.todo.lists.tasks.UpdateLinkedResources","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/me/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/{linkedResource-id}","scope":{"linkedResource-id":{"at":"linkedResource-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"}}},
+    {"action":"users.todo.delete","effects":["delete"],"id":"users.DeleteTodo","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo","scope":{"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.read","effects":["read"],"id":"users.GetTodo","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo","scope":{"query":{"at":"","from":"query","type":"object"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.write","body":"json","effects":["write"],"id":"users.UpdateTodo","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo","scope":{"request":{"at":"","from":"body","type":"object"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.read","effects":["read"],"id":"users.todo.ListLists","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists","scope":{"query":{"at":"","from":"query","type":"object"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.write","body":"json","effects":["write"],"id":"users.todo.CreateLists","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists","scope":{"request":{"at":"","from":"body","type":"object"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.count.read","effects":["read"],"id":"users.todo.lists.GetCount-47c4","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/$count","scope":{"query":{"at":"","from":"query","type":"object"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.delta.read","effects":["read"],"id":"users.user.todo.lists.delta","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$select","$orderby","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/delta()","scope":{"query":{"at":"","from":"query","type":"object"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.delete","effects":["delete"],"id":"users.todo.DeleteLists","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}","scope":{"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.read","effects":["read"],"id":"users.todo.GetLists","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.write","body":"json","effects":["write"],"id":"users.todo.UpdateLists","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}","scope":{"request":{"at":"","from":"body","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.extensions.read","effects":["read"],"id":"users.todo.lists.ListExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/extensions","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.extensions.write","body":"json","effects":["write"],"id":"users.todo.lists.CreateExtensions","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/extensions","scope":{"request":{"at":"","from":"body","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.extensions.count.read","effects":["read"],"id":"users.todo.lists.extensions.GetCount-27f6","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/extensions/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.extensions.delete","effects":["delete"],"id":"users.todo.lists.DeleteExtensions","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.extensions.read","effects":["read"],"id":"users.todo.lists.GetExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.extensions.write","body":"json","effects":["write"],"id":"users.todo.lists.UpdateExtensions","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.read","effects":["read"],"id":"users.todo.lists.ListTasks","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.write","body":"json","effects":["write"],"id":"users.todo.lists.CreateTasks","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks","scope":{"request":{"at":"","from":"body","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.count.read","effects":["read"],"id":"users.todo.lists.tasks.GetCount-9520","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.delta.read","effects":["read"],"id":"users.user.todo.lists.todoTaskList.tasks.delta","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$select","$orderby","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/delta()","scope":{"query":{"at":"","from":"query","type":"object"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.delete","effects":["delete"],"id":"users.todo.lists.DeleteTasks","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}","scope":{"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.read","effects":["read"],"id":"users.todo.lists.GetTasks","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.write","body":"json","effects":["write"],"id":"users.todo.lists.UpdateTasks","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachment_sessions.read","effects":["read"],"id":"users.todo.lists.tasks.ListAttachmentSessions","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachment_sessions.count.read","effects":["read"],"id":"users.todo.lists.tasks.attachmentSessions.GetCount-53ee","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachment_sessions.delete","effects":["delete"],"id":"users.todo.lists.tasks.DeleteAttachmentSessions","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachment_sessions.read","effects":["read"],"id":"users.todo.lists.tasks.GetAttachmentSessions","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachment_sessions.write","body":"json","effects":["write"],"id":"users.todo.lists.tasks.UpdateAttachmentSessions","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachment_sessions.content.delete","effects":["delete"],"id":"users.todo.lists.tasks.DeleteAttachmentSessionsContent","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}/content","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachment_sessions.content.read","effects":["read"],"id":"users.todo.lists.tasks.GetAttachmentSessionsContent","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachmentSessions/{attachmentSession-id}/content","scope":{"attachmentSession-id":{"at":"attachmentSession-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachments.read","effects":["read"],"id":"users.todo.lists.tasks.ListAttachments","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachments.write","body":"json","effects":["write"],"id":"users.todo.lists.tasks.CreateAttachments","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachments.count.read","effects":["read"],"id":"users.todo.lists.tasks.attachments.GetCount-e9c9","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachments.session.write","body":"json","effects":["write"],"id":"users.user.todo.lists.todoTaskList.tasks.todoTask.attachments.createUploadSession","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/createUploadSession","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachments.delete","effects":["delete"],"id":"users.todo.lists.tasks.DeleteAttachments","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachments.read","effects":["read"],"id":"users.todo.lists.tasks.GetAttachments","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachments.value.delete","effects":["delete"],"id":"users.todo.lists.tasks.DeleteAttachmentsContent","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}/$value","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.attachments.value.read","effects":["read"],"id":"users.todo.lists.tasks.GetAttachmentsContent","method":"GET","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/attachments/{attachmentBase-id}/$value","scope":{"attachmentBase-id":{"at":"attachmentBase-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.checklist_items.read","effects":["read"],"id":"users.todo.lists.tasks.ListChecklistItems","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.checklist_items.write","body":"json","effects":["write"],"id":"users.todo.lists.tasks.CreateChecklistItems","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.checklist_items.count.read","effects":["read"],"id":"users.todo.lists.tasks.checklistItems.GetCount-f104","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.checklist_items.delete","effects":["delete"],"id":"users.todo.lists.tasks.DeleteChecklistItems","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/{checklistItem-id}","scope":{"checklistItem-id":{"at":"checklistItem-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.checklist_items.read","effects":["read"],"id":"users.todo.lists.tasks.GetChecklistItems","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/{checklistItem-id}","scope":{"checklistItem-id":{"at":"checklistItem-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.checklist_items.write","body":"json","effects":["write"],"id":"users.todo.lists.tasks.UpdateChecklistItems","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/checklistItems/{checklistItem-id}","scope":{"checklistItem-id":{"at":"checklistItem-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.extensions.read","effects":["read"],"id":"users.todo.lists.tasks.ListExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.extensions.write","body":"json","effects":["write"],"id":"users.todo.lists.tasks.CreateExtensions","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.extensions.count.read","effects":["read"],"id":"users.todo.lists.tasks.extensions.GetCount-c962","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.extensions.delete","effects":["delete"],"id":"users.todo.lists.tasks.DeleteExtensions","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.extensions.read","effects":["read"],"id":"users.todo.lists.tasks.GetExtensions","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.extensions.write","body":"json","effects":["write"],"id":"users.todo.lists.tasks.UpdateExtensions","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/extensions/{extension-id}","scope":{"extension-id":{"at":"extension-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.linked_resources.read","effects":["read"],"id":"users.todo.lists.tasks.ListLinkedResources","method":"GET","origin":"https://graph.microsoft.com","params":["$top","$skip","$search","$filter","$count","$orderby","$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.linked_resources.write","body":"json","effects":["write"],"id":"users.todo.lists.tasks.CreateLinkedResources","method":"POST","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources","scope":{"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.linked_resources.count.read","effects":["read"],"id":"users.todo.lists.tasks.linkedResources.GetCount-58c2","method":"GET","origin":"https://graph.microsoft.com","params":["$search","$filter"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/$count","scope":{"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.linked_resources.delete","effects":["delete"],"id":"users.todo.lists.tasks.DeleteLinkedResources","method":"DELETE","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/{linkedResource-id}","scope":{"linkedResource-id":{"at":"linkedResource-id","from":"path"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.linked_resources.read","effects":["read"],"id":"users.todo.lists.tasks.GetLinkedResources","method":"GET","origin":"https://graph.microsoft.com","params":["$select","$expand"],"path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/{linkedResource-id}","scope":{"linkedResource-id":{"at":"linkedResource-id","from":"path"},"query":{"at":"","from":"query","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}},
+    {"action":"users.todo.lists.tasks.linked_resources.write","body":"json","effects":["write"],"id":"users.todo.lists.tasks.UpdateLinkedResources","method":"PATCH","origin":"https://graph.microsoft.com","path":"/v1.0/users/{user-id}/todo/lists/{todoTaskList-id}/tasks/{todoTask-id}/linkedResources/{linkedResource-id}","scope":{"linkedResource-id":{"at":"linkedResource-id","from":"path"},"request":{"at":"","from":"body","type":"object"},"todoTask-id":{"at":"todoTask-id","from":"path"},"todoTaskList-id":{"at":"todoTaskList-id","from":"path"},"user-id":{"at":"user-id","from":"path"}}}
   ]
 }

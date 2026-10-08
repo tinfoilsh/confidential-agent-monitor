@@ -1,31 +1,353 @@
 {
-  "title": "Telegram",
   "catalog": {
-    "group": "api",
-    "fields": [
-      {
-        "key": "token",
-        "label": "Bot token",
-        "secret": true,
-        "path": [
-          "connections",
-          "",
-          "http",
-          "values",
-          "token"
-        ]
+    "actions": {
+      "all_chat_messages": {
+        "title": "All chat messages"
+      },
+      "all_chat_messages.write": {
+        "title": "Create and edit"
+      },
+      "answer_callback": {
+        "title": "Answer callback"
+      },
+      "answer_callback.write": {
+        "title": "Create and edit"
+      },
+      "answer_inline": {
+        "title": "Answer inline"
+      },
+      "answer_inline.write": {
+        "title": "Create and edit"
+      },
+      "answer_pre_checkout": {
+        "title": "Answer pre checkout"
+      },
+      "answer_pre_checkout.write": {
+        "title": "Create and edit"
+      },
+      "answer_shipping": {
+        "title": "Answer shipping"
+      },
+      "answer_shipping.write": {
+        "title": "Create and edit"
+      },
+      "chat": {
+        "title": "Chat"
+      },
+      "chat.read": {
+        "title": "Read"
+      },
+      "chat.write": {
+        "title": "Create and edit"
+      },
+      "chat_action": {
+        "title": "Chat action"
+      },
+      "chat_action.send": {
+        "title": "Send"
+      },
+      "chat_administrator_custom_title": {
+        "title": "Chat administrator custom title"
+      },
+      "chat_administrator_custom_title.write": {
+        "title": "Create and edit"
+      },
+      "chat_administrators": {
+        "title": "Chat administrators"
+      },
+      "chat_administrators.write": {
+        "title": "Create and edit"
+      },
+      "chat_description": {
+        "title": "Chat description"
+      },
+      "chat_description.write": {
+        "title": "Create and edit"
+      },
+      "chat_invite_link": {
+        "title": "Chat invite link"
+      },
+      "chat_invite_link.share": {
+        "title": "Share"
+      },
+      "chat_member": {
+        "title": "Chat member"
+      },
+      "chat_member.write": {
+        "title": "Create and edit"
+      },
+      "chat_members_count": {
+        "title": "Chat members count"
+      },
+      "chat_members_count.write": {
+        "title": "Create and edit"
+      },
+      "chat_message": {
+        "title": "Chat message"
+      },
+      "chat_message.write": {
+        "title": "Create and edit"
+      },
+      "chat_permissions": {
+        "title": "Chat permissions"
+      },
+      "chat_permissions.write": {
+        "title": "Create and edit"
+      },
+      "chat_photo": {
+        "title": "Chat photo"
+      },
+      "chat_photo.delete": {
+        "title": "Delete"
+      },
+      "chat_sticker": {
+        "title": "Chat sticker"
+      },
+      "chat_sticker.delete": {
+        "title": "Delete"
+      },
+      "chat_sticker.write": {
+        "title": "Create and edit"
+      },
+      "chat_title": {
+        "title": "Chat title"
+      },
+      "chat_title.write": {
+        "title": "Create and edit"
+      },
+      "close": {
+        "title": "Close"
+      },
+      "close.write": {
+        "title": "Create and edit"
+      },
+      "contact": {
+        "title": "Contact"
+      },
+      "contact.send": {
+        "title": "Send"
+      },
+      "dice": {
+        "title": "Dice"
+      },
+      "dice.send": {
+        "title": "Send"
+      },
+      "file": {
+        "title": "File"
+      },
+      "file.write": {
+        "title": "Create and edit"
+      },
+      "forward_message": {
+        "title": "Forward message"
+      },
+      "forward_message.send": {
+        "title": "Send"
+      },
+      "game": {
+        "title": "Game"
+      },
+      "game.send": {
+        "title": "Send"
+      },
+      "game_high_scores": {
+        "title": "Game high scores"
+      },
+      "game_high_scores.write": {
+        "title": "Create and edit"
+      },
+      "game_score": {
+        "title": "Game score"
+      },
+      "game_score.write": {
+        "title": "Create and edit"
+      },
+      "invoice": {
+        "title": "Invoice"
+      },
+      "invoice.send": {
+        "title": "Send"
+      },
+      "kick_chat_member": {
+        "title": "Kick chat member"
+      },
+      "kick_chat_member.write": {
+        "title": "Create and edit"
+      },
+      "location": {
+        "title": "Location"
+      },
+      "location.send": {
+        "title": "Send"
+      },
+      "log_out": {
+        "title": "Log out"
+      },
+      "log_out.write": {
+        "title": "Create and edit"
+      },
+      "me": {
+        "title": "Me"
+      },
+      "me.read": {
+        "title": "Read"
+      },
+      "me.write": {
+        "title": "Create and edit"
+      },
+      "message": {
+        "title": "Message"
+      },
+      "message.delete": {
+        "title": "Delete"
+      },
+      "message.pay": {
+        "title": "Make payments"
+      },
+      "message.send": {
+        "title": "Send"
+      },
+      "message.write": {
+        "title": "Create and edit"
+      },
+      "message_caption": {
+        "title": "Message caption"
+      },
+      "message_caption.write": {
+        "title": "Create and edit"
+      },
+      "message_live_location": {
+        "title": "Message live location"
+      },
+      "message_live_location.write": {
+        "title": "Create and edit"
+      },
+      "message_reply_markup": {
+        "title": "Message reply markup"
+      },
+      "message_reply_markup.send": {
+        "title": "Send"
+      },
+      "message_text": {
+        "title": "Message text"
+      },
+      "message_text.send": {
+        "title": "Send"
+      },
+      "message_text.write": {
+        "title": "Create and edit"
+      },
+      "my_commands": {
+        "title": "My commands"
+      },
+      "my_commands.write": {
+        "title": "Create and edit"
+      },
+      "passport_data_errors": {
+        "title": "Passport data errors"
+      },
+      "passport_data_errors.write": {
+        "title": "Create and edit"
+      },
+      "photo": {
+        "title": "Photo"
+      },
+      "photo.pay": {
+        "title": "Make payments"
+      },
+      "photo.send": {
+        "title": "Send"
+      },
+      "poll": {
+        "title": "Poll"
+      },
+      "poll.send": {
+        "title": "Send"
+      },
+      "poll.write": {
+        "title": "Create and edit"
+      },
+      "promote_chat_member": {
+        "title": "Promote chat member"
+      },
+      "promote_chat_member.write": {
+        "title": "Create and edit"
+      },
+      "restrict_chat_member": {
+        "title": "Restrict chat member"
+      },
+      "restrict_chat_member.write": {
+        "title": "Create and edit"
+      },
+      "sticker": {
+        "title": "Sticker"
+      },
+      "sticker.write": {
+        "title": "Create and edit"
+      },
+      "sticker_from": {
+        "title": "Sticker from"
+      },
+      "sticker_from.delete": {
+        "title": "Delete"
+      },
+      "sticker_position_in": {
+        "title": "Sticker position in"
+      },
+      "sticker_position_in.write": {
+        "title": "Create and edit"
+      },
+      "unban_chat_member": {
+        "title": "Unban chat member"
+      },
+      "unban_chat_member.write": {
+        "title": "Create and edit"
+      },
+      "updates": {
+        "title": "Updates"
+      },
+      "updates.read": {
+        "title": "Read"
+      },
+      "updates.write": {
+        "title": "Create and edit"
+      },
+      "user_profile_photos": {
+        "title": "User profile photos"
+      },
+      "user_profile_photos.write": {
+        "title": "Create and edit"
+      },
+      "venue": {
+        "title": "Venue"
+      },
+      "venue.send": {
+        "title": "Send"
+      },
+      "webhook": {
+        "title": "Webhook"
+      },
+      "webhook.delete": {
+        "title": "Delete"
+      },
+      "webhook_info": {
+        "title": "Webhook info"
+      },
+      "webhook_info.write": {
+        "title": "Create and edit"
       }
-    ],
+    },
     "connections": {
       "": {
         "http": {
           "slots": [
             {
-              "value": "token",
               "origin": "https://api.telegram.org",
               "path": "/",
+              "prefix": "bot",
               "segment": 1,
-              "prefix": "bot"
+              "value": "token"
             }
           ]
         }
@@ -33,270 +355,143 @@
     },
     "defaults": {
       "contents": "team",
-      "strangers": true,
-      "sends": "anyone"
+      "sends": "anyone",
+      "strangers": true
     },
-    "actions": {
-      "read": {
-        "title": "Read the bot's own identity, chats and updates"
-      },
-      "send.message": {
-        "title": "Send and edit messages"
-      },
-      "pay.broadcast": {
-        "title": "Send paid broadcasts (allow_paid_broadcast; billed in Telegram Stars)"
-      },
-      "delete": {
-        "title": "Delete messages"
-      },
-      "write.answer_callback_query": {
-        "title": "write: answer_callback_query"
-      },
-      "write.answer_inline_query": {
-        "title": "write: answer_inline_query"
-      },
-      "write.answer_pre_checkout_query": {
-        "title": "write: answer_pre_checkout_query"
-      },
-      "write.answer_shipping_query": {
-        "title": "write: answer_shipping_query"
-      },
-      "write": {
-        "title": "write"
-      },
-      "delete.delete_chat_photo": {
-        "title": "delete: delete_chat_photo"
-      },
-      "delete.delete_chat_sticker_set": {
-        "title": "delete: delete_chat_sticker_set"
-      },
-      "delete.delete_message": {
-        "title": "delete: delete_message"
-      },
-      "delete.delete_sticker_from_set": {
-        "title": "delete: delete_sticker_from_set"
-      },
-      "delete.delete_webhook": {
-        "title": "delete: delete_webhook"
-      },
-      "write.edit_message_caption": {
-        "title": "write: edit_message_caption"
-      },
-      "write.edit_message_live_location": {
-        "title": "write: edit_message_live_location"
-      },
-      "send.edit_message_reply_markup": {
-        "title": "send: edit_message_reply_markup"
-      },
-      "write.edit_message_text": {
-        "title": "write: edit_message_text"
-      },
-      "share": {
-        "title": "share"
-      },
-      "send.forward_message": {
-        "title": "send: forward_message"
-      },
-      "write.get_chat": {
-        "title": "write: get_chat"
-      },
-      "write.get_chat_administrators": {
-        "title": "write: get_chat_administrators"
-      },
-      "write.get_chat_member": {
-        "title": "write: get_chat_member"
-      },
-      "write.get_chat_members_count": {
-        "title": "write: get_chat_members_count"
-      },
-      "write.get_file": {
-        "title": "write: get_file"
-      },
-      "write.get_game_high_scores": {
-        "title": "write: get_game_high_scores"
-      },
-      "write.get_me": {
-        "title": "write: get_me"
-      },
-      "write.get_my_commands": {
-        "title": "write: get_my_commands"
-      },
-      "write.get_sticker_set": {
-        "title": "write: get_sticker_set"
-      },
-      "write.get_updates": {
-        "title": "write: get_updates"
-      },
-      "write.get_user_profile_photos": {
-        "title": "write: get_user_profile_photos"
-      },
-      "write.get_webhook_info": {
-        "title": "write: get_webhook_info"
-      },
-      "write.kick_chat_member": {
-        "title": "write: kick_chat_member"
-      },
-      "write.log_out": {
-        "title": "write: log_out"
-      },
-      "write.promote_chat_member": {
-        "title": "write: promote_chat_member"
-      },
-      "write.restrict_chat_member": {
-        "title": "write: restrict_chat_member"
-      },
-      "send": {
-        "title": "send"
-      },
-      "write.set_chat_administrator_custom_title": {
-        "title": "write: set_chat_administrator_custom_title"
-      },
-      "write.set_chat_description": {
-        "title": "write: set_chat_description"
-      },
-      "write.set_chat_permissions": {
-        "title": "write: set_chat_permissions"
-      },
-      "write.set_chat_sticker_set": {
-        "title": "write: set_chat_sticker_set"
-      },
-      "write.set_chat_title": {
-        "title": "write: set_chat_title"
-      },
-      "write.set_game_score": {
-        "title": "write: set_game_score"
-      },
-      "write.set_my_commands": {
-        "title": "write: set_my_commands"
-      },
-      "write.set_passport_data_errors": {
-        "title": "write: set_passport_data_errors"
-      },
-      "write.set_sticker_position_in_set": {
-        "title": "write: set_sticker_position_in_set"
-      },
-      "write.unban_chat_member": {
-        "title": "write: unban_chat_member"
+    "fields": [
+      {
+        "key": "token",
+        "label": "Bot token",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "values",
+          "token"
+        ],
+        "secret": true
       }
-    }
+    ],
+    "group": "api"
   },
+  "title": "Telegram",
   "operations": [
-    {"action":"read","effects":["read"],"id":"getMe","method":"GET","origin":"https://api.telegram.org","path":"/bot{token}/getMe","scope":{}},
-    {"action":"read","effects":["read"],"id":"getChat","method":"GET","origin":"https://api.telegram.org","params":["chat_id"],"path":"/bot{token}/getChat","scope":{"query":{"at":"","from":"query","type":"object"}}},
-    {"action":"read","effects":["read"],"id":"getUpdates","method":"GET","origin":"https://api.telegram.org","params":["offset","limit","timeout","allowed_updates"],"path":"/bot{token}/getUpdates","scope":{}},
-    {"action":"send.message","body":"json","effects":["send"],"fields":{"/allow_paid_broadcast":null},"id":"sendMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendMessage","scope":{"message":{"at":"","from":"body","type":"object"}}},
-    {"action":"pay.broadcast","body":"json","effects":["send","pay"],"fields":{"/allow_paid_broadcast":true},"id":"sendMessage.paid_broadcast","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendMessage","scope":{"message":{"at":"","from":"body","type":"object"}}},
-    {"action":"send.message","body":"json","effects":["send"],"fields":{"/allow_paid_broadcast":null},"id":"sendPhoto","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendPhoto","scope":{"message":{"at":"","from":"body","type":"object"}}},
-    {"action":"pay.broadcast","body":"json","effects":["send","pay"],"fields":{"/allow_paid_broadcast":true},"id":"sendPhoto.paid_broadcast","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendPhoto","scope":{"message":{"at":"","from":"body","type":"object"}}},
-    {"action":"send.message","body":"json","effects":["send"],"id":"editMessageText","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageText","scope":{"message":{"at":"","from":"body","type":"object"}}},
-    {"action":"delete","body":"json","effects":["delete"],"id":"deleteMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteMessage","scope":{"message":{"at":"","from":"body","type":"object"}}},
-    {"action":"write.answer_callback_query","body":"json","effects":["write"],"id":"POST /bot{token}/answerCallbackQuery","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerCallbackQuery","scope":{"callback_query_id":{"at":"/callback_query_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"url":{"at":"/url","from":"body","optional":true}}},
-    {"action":"write.answer_callback_query","body":"form","effects":["write"],"id":"POST /bot{token}/answerCallbackQuery.form.1efb112ee600","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerCallbackQuery","scope":{"callback_query_id":{"at":"callback_query_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"url":{"at":"url","from":"form","optional":true}}},
-    {"action":"write.answer_inline_query","body":"json","effects":["write"],"id":"POST /bot{token}/answerInlineQuery","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerInlineQuery","scope":{"inline_query_id":{"at":"/inline_query_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.answer_inline_query","body":"form","effects":["write"],"id":"POST /bot{token}/answerInlineQuery.form.12ee24f00003","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerInlineQuery","scope":{"inline_query_id":{"at":"inline_query_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.answer_pre_checkout_query","body":"json","effects":["write"],"id":"POST /bot{token}/answerPreCheckoutQuery","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerPreCheckoutQuery","scope":{"pre_checkout_query_id":{"at":"/pre_checkout_query_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.answer_pre_checkout_query","body":"form","effects":["write"],"id":"POST /bot{token}/answerPreCheckoutQuery.form.4e6c8bebe6ec","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerPreCheckoutQuery","scope":{"pre_checkout_query_id":{"at":"pre_checkout_query_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.answer_shipping_query","body":"json","effects":["write"],"id":"POST /bot{token}/answerShippingQuery","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerShippingQuery","scope":{"request":{"at":"","from":"body","type":"object"},"shipping_query_id":{"at":"/shipping_query_id","from":"body"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.answer_shipping_query","body":"form","effects":["write"],"id":"POST /bot{token}/answerShippingQuery.form.2264b11a3532","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerShippingQuery","scope":{"request":{"at":"","from":"form","type":"object"},"shipping_query_id":{"at":"shipping_query_id","from":"form"},"token":{"at":"token","from":"path"}}},
-    {"action":"write","effects":["write"],"id":"POST /bot{token}/close","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/close","scope":{"token":{"at":"token","from":"path"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"POST /bot{token}/copyMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/copyMessage","scope":{"message_id":{"at":"/message_id","from":"body","type":"number"},"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write","body":"form","effects":["write"],"id":"POST /bot{token}/copyMessage.form.0593ce359295","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/copyMessage","scope":{"chat_id":{"at":"chat_id","from":"form"},"from_chat_id":{"at":"from_chat_id","from":"form"},"message_id":{"at":"message_id","from":"form"},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"delete.delete_chat_photo","body":"json","effects":["delete"],"id":"POST /bot{token}/deleteChatPhoto","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteChatPhoto","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"delete.delete_chat_photo","body":"form","effects":["delete"],"id":"POST /bot{token}/deleteChatPhoto.form.b5051c42885c","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteChatPhoto","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"delete.delete_chat_sticker_set","body":"json","effects":["delete"],"id":"POST /bot{token}/deleteChatStickerSet","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteChatStickerSet","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"delete.delete_chat_sticker_set","body":"form","effects":["delete"],"id":"POST /bot{token}/deleteChatStickerSet.form.458b2e403684","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteChatStickerSet","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"delete.delete_message","body":"form","effects":["delete"],"id":"POST /bot{token}/deleteMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteMessage","scope":{"chat_id":{"at":"chat_id","from":"form"},"message_id":{"at":"message_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"delete.delete_sticker_from_set","body":"json","effects":["delete"],"id":"POST /bot{token}/deleteStickerFromSet","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteStickerFromSet","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"delete.delete_sticker_from_set","body":"form","effects":["delete"],"id":"POST /bot{token}/deleteStickerFromSet.form.da6f5e9d7239","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteStickerFromSet","scope":{"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"delete.delete_webhook","body":"json","effects":["delete"],"id":"POST /bot{token}/deleteWebhook","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteWebhook","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"delete.delete_webhook","body":"form","effects":["delete"],"id":"POST /bot{token}/deleteWebhook.form.889bc6d0d77c","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteWebhook","scope":{"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.edit_message_caption","body":"json","effects":["write"],"id":"POST /bot{token}/editMessageCaption","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageCaption","scope":{"inline_message_id":{"at":"/inline_message_id","from":"body","optional":true},"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.edit_message_caption","body":"form","effects":["write"],"id":"POST /bot{token}/editMessageCaption.form.9aa9d3a3b7c2","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageCaption","scope":{"chat_id":{"at":"chat_id","from":"form","optional":true},"inline_message_id":{"at":"inline_message_id","from":"form","optional":true},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.edit_message_live_location","body":"json","effects":["write"],"id":"POST /bot{token}/editMessageLiveLocation","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageLiveLocation","scope":{"inline_message_id":{"at":"/inline_message_id","from":"body","optional":true},"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.edit_message_live_location","body":"form","effects":["write"],"id":"POST /bot{token}/editMessageLiveLocation.form.ee6afa5d5096","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageLiveLocation","scope":{"chat_id":{"at":"chat_id","from":"form","optional":true},"inline_message_id":{"at":"inline_message_id","from":"form","optional":true},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send.edit_message_reply_markup","body":"json","effects":["send"],"id":"POST /bot{token}/editMessageReplyMarkup","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageReplyMarkup","scope":{"inline_message_id":{"at":"/inline_message_id","from":"body","optional":true},"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send.edit_message_reply_markup","body":"form","effects":["send"],"id":"POST /bot{token}/editMessageReplyMarkup.form.06b051796c00","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageReplyMarkup","scope":{"chat_id":{"at":"chat_id","from":"form","optional":true},"inline_message_id":{"at":"inline_message_id","from":"form","optional":true},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.edit_message_text","body":"form","effects":["write"],"id":"POST /bot{token}/editMessageText","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageText","scope":{"chat_id":{"at":"chat_id","from":"form","optional":true},"inline_message_id":{"at":"inline_message_id","from":"form","optional":true},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"share","body":"json","effects":["share"],"id":"POST /bot{token}/exportChatInviteLink","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/exportChatInviteLink","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"share","body":"form","effects":["share"],"id":"POST /bot{token}/exportChatInviteLink.form.81f17a9b3f11","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/exportChatInviteLink","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send.forward_message","body":"json","effects":["send"],"id":"POST /bot{token}/forwardMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/forwardMessage","scope":{"message_id":{"at":"/message_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send.forward_message","body":"form","effects":["send"],"id":"POST /bot{token}/forwardMessage.form.e22a6b5ca692","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/forwardMessage","scope":{"chat_id":{"at":"chat_id","from":"form"},"from_chat_id":{"at":"from_chat_id","from":"form"},"message_id":{"at":"message_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_chat","body":"json","effects":["write"],"id":"POST /bot{token}/getChat","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChat","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_chat","body":"form","effects":["write"],"id":"POST /bot{token}/getChat.form.9733f1a5ffcf","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChat","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_chat_administrators","body":"json","effects":["write"],"id":"POST /bot{token}/getChatAdministrators","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChatAdministrators","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_chat_administrators","body":"form","effects":["write"],"id":"POST /bot{token}/getChatAdministrators.form.ba1a4631cd10","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChatAdministrators","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_chat_member","body":"json","effects":["write"],"id":"POST /bot{token}/getChatMember","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChatMember","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
-    {"action":"write.get_chat_member","body":"form","effects":["write"],"id":"POST /bot{token}/getChatMember.form.7e3d380009e3","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChatMember","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
-    {"action":"write.get_chat_members_count","body":"json","effects":["write"],"id":"POST /bot{token}/getChatMembersCount","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChatMembersCount","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_chat_members_count","body":"form","effects":["write"],"id":"POST /bot{token}/getChatMembersCount.form.ee028d769afd","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChatMembersCount","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_file","body":"json","effects":["write"],"id":"POST /bot{token}/getFile","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getFile","scope":{"file_id":{"at":"/file_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_file","body":"form","effects":["write"],"id":"POST /bot{token}/getFile.form.303c061a6400","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getFile","scope":{"file_id":{"at":"file_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_game_high_scores","body":"json","effects":["write"],"id":"POST /bot{token}/getGameHighScores","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getGameHighScores","scope":{"chat_id":{"at":"/chat_id","from":"body","optional":true,"type":"number"},"inline_message_id":{"at":"/inline_message_id","from":"body","optional":true},"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
-    {"action":"write.get_game_high_scores","body":"form","effects":["write"],"id":"POST /bot{token}/getGameHighScores.form.001131772bf1","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getGameHighScores","scope":{"chat_id":{"at":"chat_id","from":"form","optional":true},"inline_message_id":{"at":"inline_message_id","from":"form","optional":true},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
-    {"action":"write.get_me","effects":["write"],"id":"POST /bot{token}/getMe","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getMe","scope":{"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_my_commands","effects":["write"],"id":"POST /bot{token}/getMyCommands","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getMyCommands","scope":{"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_sticker_set","body":"json","effects":["write"],"id":"POST /bot{token}/getStickerSet","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getStickerSet","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_sticker_set","body":"form","effects":["write"],"id":"POST /bot{token}/getStickerSet.form.c98a2cdb53db","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getStickerSet","scope":{"name":{"at":"name","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_updates","body":"json","effects":["write"],"id":"POST /bot{token}/getUpdates","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getUpdates","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_updates","body":"form","effects":["write"],"id":"POST /bot{token}/getUpdates.form.d3b6fe26ad1b","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getUpdates","scope":{"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.get_user_profile_photos","body":"json","effects":["write"],"id":"POST /bot{token}/getUserProfilePhotos","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getUserProfilePhotos","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
-    {"action":"write.get_user_profile_photos","body":"form","effects":["write"],"id":"POST /bot{token}/getUserProfilePhotos.form.f911dc930f58","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getUserProfilePhotos","scope":{"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
-    {"action":"write.get_webhook_info","effects":["write"],"id":"POST /bot{token}/getWebhookInfo","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getWebhookInfo","scope":{"token":{"at":"token","from":"path"}}},
-    {"action":"write.kick_chat_member","body":"json","effects":["write"],"id":"POST /bot{token}/kickChatMember","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/kickChatMember","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
-    {"action":"write.kick_chat_member","body":"form","effects":["write"],"id":"POST /bot{token}/kickChatMember.form.c650eb303ebf","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/kickChatMember","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"POST /bot{token}/leaveChat","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/leaveChat","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write","body":"form","effects":["write"],"id":"POST /bot{token}/leaveChat.form.16fd59872da2","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/leaveChat","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.log_out","effects":["write"],"id":"POST /bot{token}/logOut","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/logOut","scope":{"token":{"at":"token","from":"path"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"POST /bot{token}/pinChatMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/pinChatMessage","scope":{"message_id":{"at":"/message_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write","body":"form","effects":["write"],"id":"POST /bot{token}/pinChatMessage.form.5e85f01959e4","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/pinChatMessage","scope":{"chat_id":{"at":"chat_id","from":"form"},"message_id":{"at":"message_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.promote_chat_member","body":"json","effects":["write"],"id":"POST /bot{token}/promoteChatMember","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/promoteChatMember","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
-    {"action":"write.promote_chat_member","body":"form","effects":["write"],"id":"POST /bot{token}/promoteChatMember.form.7393af160538","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/promoteChatMember","scope":{"can_invite_users":{"at":"can_invite_users","from":"form","optional":true},"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
-    {"action":"write.restrict_chat_member","body":"json","effects":["write"],"id":"POST /bot{token}/restrictChatMember","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/restrictChatMember","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
-    {"action":"write.restrict_chat_member","body":"form","effects":["write"],"id":"POST /bot{token}/restrictChatMember.form.c8bc3cb65cc1","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/restrictChatMember","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
-    {"action":"send","body":"json","effects":["send"],"id":"POST /bot{token}/sendChatAction","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendChatAction","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"form","effects":["send"],"id":"POST /bot{token}/sendChatAction.form.a410b91e7380","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendChatAction","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"json","effects":["send"],"id":"POST /bot{token}/sendContact","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendContact","scope":{"first_name":{"at":"/first_name","from":"body"},"last_name":{"at":"/last_name","from":"body","optional":true},"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"form","effects":["send"],"id":"POST /bot{token}/sendContact.form.1223088ed1ed","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendContact","scope":{"chat_id":{"at":"chat_id","from":"form"},"first_name":{"at":"first_name","from":"form"},"last_name":{"at":"last_name","from":"form","optional":true},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"json","effects":["send"],"id":"POST /bot{token}/sendDice","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendDice","scope":{"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"form","effects":["send"],"id":"POST /bot{token}/sendDice.form.e50375aec768","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendDice","scope":{"chat_id":{"at":"chat_id","from":"form"},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"json","effects":["send"],"id":"POST /bot{token}/sendGame","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendGame","scope":{"chat_id":{"at":"/chat_id","from":"body","type":"number"},"game_short_name":{"at":"/game_short_name","from":"body"},"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"form","effects":["send"],"id":"POST /bot{token}/sendGame.form.fb3df73c98a1","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendGame","scope":{"chat_id":{"at":"chat_id","from":"form"},"game_short_name":{"at":"game_short_name","from":"form"},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"json","effects":["send"],"id":"POST /bot{token}/sendInvoice","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendInvoice","scope":{"chat_id":{"at":"/chat_id","from":"body","type":"number"},"photo_url":{"at":"/photo_url","from":"body","optional":true},"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"form","effects":["send"],"id":"POST /bot{token}/sendInvoice.form.87aa24c176c4","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendInvoice","scope":{"chat_id":{"at":"chat_id","from":"form"},"need_email":{"at":"need_email","from":"form","optional":true},"need_name":{"at":"need_name","from":"form","optional":true},"photo_url":{"at":"photo_url","from":"form","optional":true},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"json","effects":["send"],"id":"POST /bot{token}/sendLocation","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendLocation","scope":{"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"form","effects":["send"],"id":"POST /bot{token}/sendLocation.form.2075389cfdca","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendLocation","scope":{"chat_id":{"at":"chat_id","from":"form"},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"form","effects":["send"],"id":"POST /bot{token}/sendMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendMessage","scope":{"chat_id":{"at":"chat_id","from":"form"},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"json","effects":["send"],"id":"POST /bot{token}/sendPoll","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendPoll","scope":{"correct_option_id":{"at":"/correct_option_id","from":"body","optional":true,"type":"number"},"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"form","effects":["send"],"id":"POST /bot{token}/sendPoll.form.bdc1a12dbbea","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendPoll","scope":{"chat_id":{"at":"chat_id","from":"form"},"correct_option_id":{"at":"correct_option_id","from":"form","optional":true},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"json","effects":["send"],"id":"POST /bot{token}/sendVenue","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendVenue","scope":{"foursquare_id":{"at":"/foursquare_id","from":"body","optional":true},"google_place_id":{"at":"/google_place_id","from":"body","optional":true},"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"send","body":"form","effects":["send"],"id":"POST /bot{token}/sendVenue.form.400ff2f12f8e","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendVenue","scope":{"chat_id":{"at":"chat_id","from":"form"},"foursquare_id":{"at":"foursquare_id","from":"form","optional":true},"google_place_id":{"at":"google_place_id","from":"form","optional":true},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.set_chat_administrator_custom_title","body":"json","effects":["write"],"id":"POST /bot{token}/setChatAdministratorCustomTitle","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatAdministratorCustomTitle","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
-    {"action":"write.set_chat_administrator_custom_title","body":"form","effects":["write"],"id":"POST /bot{token}/setChatAdministratorCustomTitle.form.f9680cde0ded","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatAdministratorCustomTitle","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
-    {"action":"write.set_chat_description","body":"json","effects":["write"],"id":"POST /bot{token}/setChatDescription","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatDescription","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.set_chat_description","body":"form","effects":["write"],"id":"POST /bot{token}/setChatDescription.form.d3eb8b04e907","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatDescription","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.set_chat_permissions","body":"json","effects":["write"],"id":"POST /bot{token}/setChatPermissions","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatPermissions","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.set_chat_permissions","body":"form","effects":["write"],"id":"POST /bot{token}/setChatPermissions.form.99beae8502a4","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatPermissions","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.set_chat_sticker_set","body":"json","effects":["write"],"id":"POST /bot{token}/setChatStickerSet","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatStickerSet","scope":{"request":{"at":"","from":"body","type":"object"},"sticker_set_name":{"at":"/sticker_set_name","from":"body"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.set_chat_sticker_set","body":"form","effects":["write"],"id":"POST /bot{token}/setChatStickerSet.form.bfb7c20b6508","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatStickerSet","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"sticker_set_name":{"at":"sticker_set_name","from":"form"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.set_chat_title","body":"json","effects":["write"],"id":"POST /bot{token}/setChatTitle","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatTitle","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.set_chat_title","body":"form","effects":["write"],"id":"POST /bot{token}/setChatTitle.form.82aa9f3d492d","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatTitle","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.set_game_score","body":"json","effects":["write"],"id":"POST /bot{token}/setGameScore","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setGameScore","scope":{"chat_id":{"at":"/chat_id","from":"body","optional":true,"type":"number"},"inline_message_id":{"at":"/inline_message_id","from":"body","optional":true},"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
-    {"action":"write.set_game_score","body":"form","effects":["write"],"id":"POST /bot{token}/setGameScore.form.1e42a8a70b96","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setGameScore","scope":{"chat_id":{"at":"chat_id","from":"form","optional":true},"inline_message_id":{"at":"inline_message_id","from":"form","optional":true},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
-    {"action":"write.set_my_commands","body":"json","effects":["write"],"id":"POST /bot{token}/setMyCommands","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setMyCommands","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.set_my_commands","body":"form","effects":["write"],"id":"POST /bot{token}/setMyCommands.form.8f386175475a","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setMyCommands","scope":{"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.set_passport_data_errors","body":"json","effects":["write"],"id":"POST /bot{token}/setPassportDataErrors","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setPassportDataErrors","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
-    {"action":"write.set_passport_data_errors","body":"form","effects":["write"],"id":"POST /bot{token}/setPassportDataErrors.form.50eaf0ff92d1","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setPassportDataErrors","scope":{"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
-    {"action":"write.set_sticker_position_in_set","body":"json","effects":["write"],"id":"POST /bot{token}/setStickerPositionInSet","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setStickerPositionInSet","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.set_sticker_position_in_set","body":"form","effects":["write"],"id":"POST /bot{token}/setStickerPositionInSet.form.51fe9a69b64b","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setStickerPositionInSet","scope":{"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"POST /bot{token}/stopMessageLiveLocation","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/stopMessageLiveLocation","scope":{"inline_message_id":{"at":"/inline_message_id","from":"body","optional":true},"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write","body":"form","effects":["write"],"id":"POST /bot{token}/stopMessageLiveLocation.form.eaf8cf233380","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/stopMessageLiveLocation","scope":{"chat_id":{"at":"chat_id","from":"form","optional":true},"inline_message_id":{"at":"inline_message_id","from":"form","optional":true},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"POST /bot{token}/stopPoll","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/stopPoll","scope":{"message_id":{"at":"/message_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write","body":"form","effects":["write"],"id":"POST /bot{token}/stopPoll.form.10ef7f3d28bc","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/stopPoll","scope":{"chat_id":{"at":"chat_id","from":"form"},"message_id":{"at":"message_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write.unban_chat_member","body":"json","effects":["write"],"id":"POST /bot{token}/unbanChatMember","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/unbanChatMember","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
-    {"action":"write.unban_chat_member","body":"form","effects":["write"],"id":"POST /bot{token}/unbanChatMember.form.11f04ae781d0","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/unbanChatMember","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"POST /bot{token}/unpinAllChatMessages","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/unpinAllChatMessages","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write","body":"form","effects":["write"],"id":"POST /bot{token}/unpinAllChatMessages.form.1d31d020673e","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/unpinAllChatMessages","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write","body":"json","effects":["write"],"id":"POST /bot{token}/unpinChatMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/unpinChatMessage","scope":{"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
-    {"action":"write","body":"form","effects":["write"],"id":"POST /bot{token}/unpinChatMessage.form.759ead2989df","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/unpinChatMessage","scope":{"chat_id":{"at":"chat_id","from":"form"},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}}
+    {"action":"me.read","effects":["read"],"id":"getMe","method":"GET","origin":"https://api.telegram.org","path":"/bot{token}/getMe","scope":{}},
+    {"action":"chat.read","effects":["read"],"id":"getChat","method":"GET","origin":"https://api.telegram.org","params":["chat_id"],"path":"/bot{token}/getChat","scope":{"query":{"at":"","from":"query","type":"object"}}},
+    {"action":"updates.read","effects":["read"],"id":"getUpdates","method":"GET","origin":"https://api.telegram.org","params":["offset","limit","timeout","allowed_updates"],"path":"/bot{token}/getUpdates","scope":{}},
+    {"action":"message.send","body":"json","effects":["send"],"fields":{"/allow_paid_broadcast":null},"id":"sendMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendMessage","scope":{"message":{"at":"","from":"body","type":"object"}}},
+    {"action":"message.pay","body":"json","effects":["send","pay"],"fields":{"/allow_paid_broadcast":true},"id":"sendMessage.paid_broadcast","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendMessage","scope":{"message":{"at":"","from":"body","type":"object"}}},
+    {"action":"photo.send","body":"json","effects":["send"],"fields":{"/allow_paid_broadcast":null},"id":"sendPhoto","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendPhoto","scope":{"message":{"at":"","from":"body","type":"object"}}},
+    {"action":"photo.pay","body":"json","effects":["send","pay"],"fields":{"/allow_paid_broadcast":true},"id":"sendPhoto.paid_broadcast","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendPhoto","scope":{"message":{"at":"","from":"body","type":"object"}}},
+    {"action":"message_text.send","body":"json","effects":["send"],"id":"editMessageText","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageText","scope":{"message":{"at":"","from":"body","type":"object"}}},
+    {"action":"message.delete","body":"json","effects":["delete"],"id":"deleteMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteMessage","scope":{"message":{"at":"","from":"body","type":"object"}}},
+    {"action":"answer_callback.write","body":"json","effects":["write"],"id":"POST /bot{token}/answerCallbackQuery","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerCallbackQuery","scope":{"callback_query_id":{"at":"/callback_query_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"url":{"at":"/url","from":"body","optional":true}}},
+    {"action":"answer_callback.write","body":"form","effects":["write"],"id":"POST /bot{token}/answerCallbackQuery.form.1efb112ee600","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerCallbackQuery","scope":{"callback_query_id":{"at":"callback_query_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"url":{"at":"url","from":"form","optional":true}}},
+    {"action":"answer_inline.write","body":"json","effects":["write"],"id":"POST /bot{token}/answerInlineQuery","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerInlineQuery","scope":{"inline_query_id":{"at":"/inline_query_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"answer_inline.write","body":"form","effects":["write"],"id":"POST /bot{token}/answerInlineQuery.form.12ee24f00003","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerInlineQuery","scope":{"inline_query_id":{"at":"inline_query_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"answer_pre_checkout.write","body":"json","effects":["write"],"id":"POST /bot{token}/answerPreCheckoutQuery","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerPreCheckoutQuery","scope":{"pre_checkout_query_id":{"at":"/pre_checkout_query_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"answer_pre_checkout.write","body":"form","effects":["write"],"id":"POST /bot{token}/answerPreCheckoutQuery.form.4e6c8bebe6ec","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerPreCheckoutQuery","scope":{"pre_checkout_query_id":{"at":"pre_checkout_query_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"answer_shipping.write","body":"json","effects":["write"],"id":"POST /bot{token}/answerShippingQuery","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerShippingQuery","scope":{"request":{"at":"","from":"body","type":"object"},"shipping_query_id":{"at":"/shipping_query_id","from":"body"},"token":{"at":"token","from":"path"}}},
+    {"action":"answer_shipping.write","body":"form","effects":["write"],"id":"POST /bot{token}/answerShippingQuery.form.2264b11a3532","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/answerShippingQuery","scope":{"request":{"at":"","from":"form","type":"object"},"shipping_query_id":{"at":"shipping_query_id","from":"form"},"token":{"at":"token","from":"path"}}},
+    {"action":"close.write","effects":["write"],"id":"POST /bot{token}/close","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/close","scope":{"token":{"at":"token","from":"path"}}},
+    {"action":"message.write","body":"json","effects":["write"],"id":"POST /bot{token}/copyMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/copyMessage","scope":{"message_id":{"at":"/message_id","from":"body","type":"number"},"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"message.write","body":"form","effects":["write"],"id":"POST /bot{token}/copyMessage.form.0593ce359295","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/copyMessage","scope":{"chat_id":{"at":"chat_id","from":"form"},"from_chat_id":{"at":"from_chat_id","from":"form"},"message_id":{"at":"message_id","from":"form"},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_photo.delete","body":"json","effects":["delete"],"id":"POST /bot{token}/deleteChatPhoto","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteChatPhoto","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_photo.delete","body":"form","effects":["delete"],"id":"POST /bot{token}/deleteChatPhoto.form.b5051c42885c","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteChatPhoto","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_sticker.delete","body":"json","effects":["delete"],"id":"POST /bot{token}/deleteChatStickerSet","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteChatStickerSet","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_sticker.delete","body":"form","effects":["delete"],"id":"POST /bot{token}/deleteChatStickerSet.form.458b2e403684","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteChatStickerSet","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"message.delete","body":"form","effects":["delete"],"id":"POST /bot{token}/deleteMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteMessage","scope":{"chat_id":{"at":"chat_id","from":"form"},"message_id":{"at":"message_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"sticker_from.delete","body":"json","effects":["delete"],"id":"POST /bot{token}/deleteStickerFromSet","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteStickerFromSet","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"sticker_from.delete","body":"form","effects":["delete"],"id":"POST /bot{token}/deleteStickerFromSet.form.da6f5e9d7239","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteStickerFromSet","scope":{"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"webhook.delete","body":"json","effects":["delete"],"id":"POST /bot{token}/deleteWebhook","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteWebhook","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"webhook.delete","body":"form","effects":["delete"],"id":"POST /bot{token}/deleteWebhook.form.889bc6d0d77c","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/deleteWebhook","scope":{"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"message_caption.write","body":"json","effects":["write"],"id":"POST /bot{token}/editMessageCaption","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageCaption","scope":{"inline_message_id":{"at":"/inline_message_id","from":"body","optional":true},"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"message_caption.write","body":"form","effects":["write"],"id":"POST /bot{token}/editMessageCaption.form.9aa9d3a3b7c2","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageCaption","scope":{"chat_id":{"at":"chat_id","from":"form","optional":true},"inline_message_id":{"at":"inline_message_id","from":"form","optional":true},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"message_live_location.write","body":"json","effects":["write"],"id":"POST /bot{token}/editMessageLiveLocation","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageLiveLocation","scope":{"inline_message_id":{"at":"/inline_message_id","from":"body","optional":true},"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"message_live_location.write","body":"form","effects":["write"],"id":"POST /bot{token}/editMessageLiveLocation.form.ee6afa5d5096","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageLiveLocation","scope":{"chat_id":{"at":"chat_id","from":"form","optional":true},"inline_message_id":{"at":"inline_message_id","from":"form","optional":true},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"message_reply_markup.send","body":"json","effects":["send"],"id":"POST /bot{token}/editMessageReplyMarkup","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageReplyMarkup","scope":{"inline_message_id":{"at":"/inline_message_id","from":"body","optional":true},"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"message_reply_markup.send","body":"form","effects":["send"],"id":"POST /bot{token}/editMessageReplyMarkup.form.06b051796c00","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageReplyMarkup","scope":{"chat_id":{"at":"chat_id","from":"form","optional":true},"inline_message_id":{"at":"inline_message_id","from":"form","optional":true},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"message_text.write","body":"form","effects":["write"],"id":"POST /bot{token}/editMessageText","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/editMessageText","scope":{"chat_id":{"at":"chat_id","from":"form","optional":true},"inline_message_id":{"at":"inline_message_id","from":"form","optional":true},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_invite_link.share","body":"json","effects":["share"],"id":"POST /bot{token}/exportChatInviteLink","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/exportChatInviteLink","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_invite_link.share","body":"form","effects":["share"],"id":"POST /bot{token}/exportChatInviteLink.form.81f17a9b3f11","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/exportChatInviteLink","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"forward_message.send","body":"json","effects":["send"],"id":"POST /bot{token}/forwardMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/forwardMessage","scope":{"message_id":{"at":"/message_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"forward_message.send","body":"form","effects":["send"],"id":"POST /bot{token}/forwardMessage.form.e22a6b5ca692","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/forwardMessage","scope":{"chat_id":{"at":"chat_id","from":"form"},"from_chat_id":{"at":"from_chat_id","from":"form"},"message_id":{"at":"message_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat.write","body":"json","effects":["write"],"id":"POST /bot{token}/getChat","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChat","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat.write","body":"form","effects":["write"],"id":"POST /bot{token}/getChat.form.9733f1a5ffcf","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChat","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_administrators.write","body":"json","effects":["write"],"id":"POST /bot{token}/getChatAdministrators","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChatAdministrators","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_administrators.write","body":"form","effects":["write"],"id":"POST /bot{token}/getChatAdministrators.form.ba1a4631cd10","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChatAdministrators","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_member.write","body":"json","effects":["write"],"id":"POST /bot{token}/getChatMember","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChatMember","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"chat_member.write","body":"form","effects":["write"],"id":"POST /bot{token}/getChatMember.form.7e3d380009e3","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChatMember","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
+    {"action":"chat_members_count.write","body":"json","effects":["write"],"id":"POST /bot{token}/getChatMembersCount","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChatMembersCount","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_members_count.write","body":"form","effects":["write"],"id":"POST /bot{token}/getChatMembersCount.form.ee028d769afd","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getChatMembersCount","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"file.write","body":"json","effects":["write"],"id":"POST /bot{token}/getFile","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getFile","scope":{"file_id":{"at":"/file_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"file.write","body":"form","effects":["write"],"id":"POST /bot{token}/getFile.form.303c061a6400","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getFile","scope":{"file_id":{"at":"file_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"game_high_scores.write","body":"json","effects":["write"],"id":"POST /bot{token}/getGameHighScores","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getGameHighScores","scope":{"chat_id":{"at":"/chat_id","from":"body","optional":true,"type":"number"},"inline_message_id":{"at":"/inline_message_id","from":"body","optional":true},"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"game_high_scores.write","body":"form","effects":["write"],"id":"POST /bot{token}/getGameHighScores.form.001131772bf1","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getGameHighScores","scope":{"chat_id":{"at":"chat_id","from":"form","optional":true},"inline_message_id":{"at":"inline_message_id","from":"form","optional":true},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
+    {"action":"me.write","effects":["write"],"id":"POST /bot{token}/getMe","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getMe","scope":{"token":{"at":"token","from":"path"}}},
+    {"action":"my_commands.write","effects":["write"],"id":"POST /bot{token}/getMyCommands","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getMyCommands","scope":{"token":{"at":"token","from":"path"}}},
+    {"action":"sticker.write","body":"json","effects":["write"],"id":"POST /bot{token}/getStickerSet","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getStickerSet","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"sticker.write","body":"form","effects":["write"],"id":"POST /bot{token}/getStickerSet.form.c98a2cdb53db","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getStickerSet","scope":{"name":{"at":"name","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"updates.write","body":"json","effects":["write"],"id":"POST /bot{token}/getUpdates","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getUpdates","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"updates.write","body":"form","effects":["write"],"id":"POST /bot{token}/getUpdates.form.d3b6fe26ad1b","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getUpdates","scope":{"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"user_profile_photos.write","body":"json","effects":["write"],"id":"POST /bot{token}/getUserProfilePhotos","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getUserProfilePhotos","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"user_profile_photos.write","body":"form","effects":["write"],"id":"POST /bot{token}/getUserProfilePhotos.form.f911dc930f58","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getUserProfilePhotos","scope":{"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
+    {"action":"webhook_info.write","effects":["write"],"id":"POST /bot{token}/getWebhookInfo","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/getWebhookInfo","scope":{"token":{"at":"token","from":"path"}}},
+    {"action":"kick_chat_member.write","body":"json","effects":["write"],"id":"POST /bot{token}/kickChatMember","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/kickChatMember","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"kick_chat_member.write","body":"form","effects":["write"],"id":"POST /bot{token}/kickChatMember.form.c650eb303ebf","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/kickChatMember","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
+    {"action":"chat.write","body":"json","effects":["write"],"id":"POST /bot{token}/leaveChat","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/leaveChat","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat.write","body":"form","effects":["write"],"id":"POST /bot{token}/leaveChat.form.16fd59872da2","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/leaveChat","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"log_out.write","effects":["write"],"id":"POST /bot{token}/logOut","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/logOut","scope":{"token":{"at":"token","from":"path"}}},
+    {"action":"chat_message.write","body":"json","effects":["write"],"id":"POST /bot{token}/pinChatMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/pinChatMessage","scope":{"message_id":{"at":"/message_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_message.write","body":"form","effects":["write"],"id":"POST /bot{token}/pinChatMessage.form.5e85f01959e4","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/pinChatMessage","scope":{"chat_id":{"at":"chat_id","from":"form"},"message_id":{"at":"message_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"promote_chat_member.write","body":"json","effects":["write"],"id":"POST /bot{token}/promoteChatMember","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/promoteChatMember","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"promote_chat_member.write","body":"form","effects":["write"],"id":"POST /bot{token}/promoteChatMember.form.7393af160538","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/promoteChatMember","scope":{"can_invite_users":{"at":"can_invite_users","from":"form","optional":true},"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
+    {"action":"restrict_chat_member.write","body":"json","effects":["write"],"id":"POST /bot{token}/restrictChatMember","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/restrictChatMember","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"restrict_chat_member.write","body":"form","effects":["write"],"id":"POST /bot{token}/restrictChatMember.form.c8bc3cb65cc1","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/restrictChatMember","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
+    {"action":"chat_action.send","body":"json","effects":["send"],"id":"POST /bot{token}/sendChatAction","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendChatAction","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_action.send","body":"form","effects":["send"],"id":"POST /bot{token}/sendChatAction.form.a410b91e7380","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendChatAction","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"contact.send","body":"json","effects":["send"],"id":"POST /bot{token}/sendContact","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendContact","scope":{"first_name":{"at":"/first_name","from":"body"},"last_name":{"at":"/last_name","from":"body","optional":true},"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"contact.send","body":"form","effects":["send"],"id":"POST /bot{token}/sendContact.form.1223088ed1ed","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendContact","scope":{"chat_id":{"at":"chat_id","from":"form"},"first_name":{"at":"first_name","from":"form"},"last_name":{"at":"last_name","from":"form","optional":true},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"dice.send","body":"json","effects":["send"],"id":"POST /bot{token}/sendDice","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendDice","scope":{"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"dice.send","body":"form","effects":["send"],"id":"POST /bot{token}/sendDice.form.e50375aec768","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendDice","scope":{"chat_id":{"at":"chat_id","from":"form"},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"game.send","body":"json","effects":["send"],"id":"POST /bot{token}/sendGame","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendGame","scope":{"chat_id":{"at":"/chat_id","from":"body","type":"number"},"game_short_name":{"at":"/game_short_name","from":"body"},"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"game.send","body":"form","effects":["send"],"id":"POST /bot{token}/sendGame.form.fb3df73c98a1","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendGame","scope":{"chat_id":{"at":"chat_id","from":"form"},"game_short_name":{"at":"game_short_name","from":"form"},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"invoice.send","body":"json","effects":["send"],"id":"POST /bot{token}/sendInvoice","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendInvoice","scope":{"chat_id":{"at":"/chat_id","from":"body","type":"number"},"photo_url":{"at":"/photo_url","from":"body","optional":true},"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"invoice.send","body":"form","effects":["send"],"id":"POST /bot{token}/sendInvoice.form.87aa24c176c4","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendInvoice","scope":{"chat_id":{"at":"chat_id","from":"form"},"need_email":{"at":"need_email","from":"form","optional":true},"need_name":{"at":"need_name","from":"form","optional":true},"photo_url":{"at":"photo_url","from":"form","optional":true},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"location.send","body":"json","effects":["send"],"id":"POST /bot{token}/sendLocation","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendLocation","scope":{"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"location.send","body":"form","effects":["send"],"id":"POST /bot{token}/sendLocation.form.2075389cfdca","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendLocation","scope":{"chat_id":{"at":"chat_id","from":"form"},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"message.send","body":"form","effects":["send"],"id":"POST /bot{token}/sendMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendMessage","scope":{"chat_id":{"at":"chat_id","from":"form"},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"poll.send","body":"json","effects":["send"],"id":"POST /bot{token}/sendPoll","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendPoll","scope":{"correct_option_id":{"at":"/correct_option_id","from":"body","optional":true,"type":"number"},"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"poll.send","body":"form","effects":["send"],"id":"POST /bot{token}/sendPoll.form.bdc1a12dbbea","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendPoll","scope":{"chat_id":{"at":"chat_id","from":"form"},"correct_option_id":{"at":"correct_option_id","from":"form","optional":true},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"venue.send","body":"json","effects":["send"],"id":"POST /bot{token}/sendVenue","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendVenue","scope":{"foursquare_id":{"at":"/foursquare_id","from":"body","optional":true},"google_place_id":{"at":"/google_place_id","from":"body","optional":true},"reply_to_message_id":{"at":"/reply_to_message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"venue.send","body":"form","effects":["send"],"id":"POST /bot{token}/sendVenue.form.400ff2f12f8e","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/sendVenue","scope":{"chat_id":{"at":"chat_id","from":"form"},"foursquare_id":{"at":"foursquare_id","from":"form","optional":true},"google_place_id":{"at":"google_place_id","from":"form","optional":true},"reply_to_message_id":{"at":"reply_to_message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_administrator_custom_title.write","body":"json","effects":["write"],"id":"POST /bot{token}/setChatAdministratorCustomTitle","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatAdministratorCustomTitle","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"chat_administrator_custom_title.write","body":"form","effects":["write"],"id":"POST /bot{token}/setChatAdministratorCustomTitle.form.f9680cde0ded","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatAdministratorCustomTitle","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
+    {"action":"chat_description.write","body":"json","effects":["write"],"id":"POST /bot{token}/setChatDescription","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatDescription","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_description.write","body":"form","effects":["write"],"id":"POST /bot{token}/setChatDescription.form.d3eb8b04e907","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatDescription","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_permissions.write","body":"json","effects":["write"],"id":"POST /bot{token}/setChatPermissions","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatPermissions","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_permissions.write","body":"form","effects":["write"],"id":"POST /bot{token}/setChatPermissions.form.99beae8502a4","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatPermissions","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_sticker.write","body":"json","effects":["write"],"id":"POST /bot{token}/setChatStickerSet","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatStickerSet","scope":{"request":{"at":"","from":"body","type":"object"},"sticker_set_name":{"at":"/sticker_set_name","from":"body"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_sticker.write","body":"form","effects":["write"],"id":"POST /bot{token}/setChatStickerSet.form.bfb7c20b6508","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatStickerSet","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"sticker_set_name":{"at":"sticker_set_name","from":"form"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_title.write","body":"json","effects":["write"],"id":"POST /bot{token}/setChatTitle","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatTitle","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_title.write","body":"form","effects":["write"],"id":"POST /bot{token}/setChatTitle.form.82aa9f3d492d","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setChatTitle","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"game_score.write","body":"json","effects":["write"],"id":"POST /bot{token}/setGameScore","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setGameScore","scope":{"chat_id":{"at":"/chat_id","from":"body","optional":true,"type":"number"},"inline_message_id":{"at":"/inline_message_id","from":"body","optional":true},"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"game_score.write","body":"form","effects":["write"],"id":"POST /bot{token}/setGameScore.form.1e42a8a70b96","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setGameScore","scope":{"chat_id":{"at":"chat_id","from":"form","optional":true},"inline_message_id":{"at":"inline_message_id","from":"form","optional":true},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
+    {"action":"my_commands.write","body":"json","effects":["write"],"id":"POST /bot{token}/setMyCommands","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setMyCommands","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"my_commands.write","body":"form","effects":["write"],"id":"POST /bot{token}/setMyCommands.form.8f386175475a","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setMyCommands","scope":{"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"passport_data_errors.write","body":"json","effects":["write"],"id":"POST /bot{token}/setPassportDataErrors","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setPassportDataErrors","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"passport_data_errors.write","body":"form","effects":["write"],"id":"POST /bot{token}/setPassportDataErrors.form.50eaf0ff92d1","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setPassportDataErrors","scope":{"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
+    {"action":"sticker_position_in.write","body":"json","effects":["write"],"id":"POST /bot{token}/setStickerPositionInSet","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setStickerPositionInSet","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"sticker_position_in.write","body":"form","effects":["write"],"id":"POST /bot{token}/setStickerPositionInSet.form.51fe9a69b64b","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/setStickerPositionInSet","scope":{"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"message_live_location.write","body":"json","effects":["write"],"id":"POST /bot{token}/stopMessageLiveLocation","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/stopMessageLiveLocation","scope":{"inline_message_id":{"at":"/inline_message_id","from":"body","optional":true},"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"message_live_location.write","body":"form","effects":["write"],"id":"POST /bot{token}/stopMessageLiveLocation.form.eaf8cf233380","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/stopMessageLiveLocation","scope":{"chat_id":{"at":"chat_id","from":"form","optional":true},"inline_message_id":{"at":"inline_message_id","from":"form","optional":true},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"poll.write","body":"json","effects":["write"],"id":"POST /bot{token}/stopPoll","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/stopPoll","scope":{"message_id":{"at":"/message_id","from":"body","type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"poll.write","body":"form","effects":["write"],"id":"POST /bot{token}/stopPoll.form.10ef7f3d28bc","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/stopPoll","scope":{"chat_id":{"at":"chat_id","from":"form"},"message_id":{"at":"message_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"unban_chat_member.write","body":"json","effects":["write"],"id":"POST /bot{token}/unbanChatMember","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/unbanChatMember","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"/user_id","from":"body","type":"number"}}},
+    {"action":"unban_chat_member.write","body":"form","effects":["write"],"id":"POST /bot{token}/unbanChatMember.form.11f04ae781d0","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/unbanChatMember","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"},"user_id":{"at":"user_id","from":"form"}}},
+    {"action":"all_chat_messages.write","body":"json","effects":["write"],"id":"POST /bot{token}/unpinAllChatMessages","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/unpinAllChatMessages","scope":{"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"all_chat_messages.write","body":"form","effects":["write"],"id":"POST /bot{token}/unpinAllChatMessages.form.1d31d020673e","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/unpinAllChatMessages","scope":{"chat_id":{"at":"chat_id","from":"form"},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_message.write","body":"json","effects":["write"],"id":"POST /bot{token}/unpinChatMessage","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/unpinChatMessage","scope":{"message_id":{"at":"/message_id","from":"body","optional":true,"type":"number"},"request":{"at":"","from":"body","type":"object"},"token":{"at":"token","from":"path"}}},
+    {"action":"chat_message.write","body":"form","effects":["write"],"id":"POST /bot{token}/unpinChatMessage.form.759ead2989df","method":"POST","origin":"https://api.telegram.org","path":"/bot{token}/unpinChatMessage","scope":{"chat_id":{"at":"chat_id","from":"form"},"message_id":{"at":"message_id","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"},"token":{"at":"token","from":"path"}}}
   ]
 }

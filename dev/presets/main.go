@@ -173,7 +173,7 @@ func services(c catalog) []*service {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: presets services|update|fetch|draft|generate|check [service...]; update --all refreshes every source; check --reviewed requires complete review")
+		fmt.Fprintln(os.Stderr, "usage: presets services|update|fetch|draft|group|generate|check [service...]; group regroups shipped operations; update --all refreshes every source; check --reviewed requires complete review")
 		os.Exit(2)
 	}
 	var err error
@@ -232,6 +232,8 @@ func main() {
 		err = draftAll(all, os.Args[2:])
 	case "generate":
 		err = generate(os.Args[2:])
+	case "group":
+		err = groupShipped(os.Args[2:])
 	case "check":
 		var names []string
 		var reviewed bool

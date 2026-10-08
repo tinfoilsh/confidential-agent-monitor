@@ -400,6 +400,7 @@ func parseSpec(ref specRef, src []byte, location string) (parsed, error) {
 // specOps reads a service's specs, keeping the paths each one's include selects and applying its origin.
 func specOps(name string, src source, lock lockFile) (parsed, error) {
 	var out parsed
+	usedGroups := map[string]bool{}
 	for _, ref := range src.Specs {
 		e, err := lock.entry(name, ref)
 		if err != nil {
@@ -428,10 +429,22 @@ func specOps(name string, src source, lock lockFile) (parsed, error) {
 				o.SourceURL = e.URL
 				o.SourceHash = e.SHA256
 			}
+			if group, ok := src.Groups[o.SourceID]; ok {
+				if !groupPath.MatchString(group) {
+					return out, fmt.Errorf("%s: invalid resource group %q for %s", name, group, o.SourceID)
+				}
+				o.Resource = group
+				usedGroups[o.SourceID] = true
+			}
 			out.Ops = append(out.Ops, o)
 		}
 		if out.Auth == nil {
 			out.Auth = p.Auth
+		}
+	}
+	for id := range src.Groups {
+		if !usedGroups[id] {
+			return out, fmt.Errorf("%s: resource group names unknown or excluded source operation %q", name, id)
 		}
 	}
 	return out, nil
@@ -544,10 +557,7 @@ func draftOps(p parsed, ai bool, credQuery string) []drafted {
 		} else {
 			d.effect = d.effects[0]
 		}
-		d.action = d.effect
-		if r := resource(o); d.effect != "read" && r != "" {
-			d.action = d.effect + "." + r
-		}
+		d.action = groupedAction(o, d.effect)
 		for _, m := range pathParam.FindAllStringSubmatch(o.Path, -1) {
 			name := strings.TrimSuffix(m[1], "*")
 			if d.scope.get(name) == nil {
@@ -738,21 +748,16 @@ func draftService(s *service, src source, lock lockFile, effects map[string]int,
 		return "refused: no credential slot", len(ops), merged, matched, missing, nil
 	}
 	var actions obj
+	actionCatalog := map[string]any{}
 	var opObjs []obj
 	seen := map[string]int{}
 	for _, d := range ops {
-		if actions.get(d.action) == nil {
-			title := strings.ToUpper(d.action[:1]) + strings.ReplaceAll(strings.ReplaceAll(d.action[1:], ".", ": "), "_", " ")
-			if d.action == "read" {
-				title = "Read everything the account can see"
-			}
-			actions = append(actions, kv{d.action, obj{{"title", title}}})
-		}
+		addActionParents(actionCatalog, d.action)
 		opObjs = append(opObjs, operationObj(d, opID(d, seen)))
 	}
-	slices.SortStableFunc(actions, func(a, b kv) int {
-		return strings.Compare(a.K, b.K)
-	})
+	for _, key := range sortedKeys(actionCatalog) {
+		actions = append(actions, kv{key, actionCatalog[key]})
+	}
 	title := src.Title
 	if title == "" {
 		title = s.Title
