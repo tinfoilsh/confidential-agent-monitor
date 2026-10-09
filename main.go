@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/joho/godotenv"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/browser"
 	"github.com/tinfoilsh/monitor/connector/email"
@@ -50,7 +49,6 @@ var connectorKinds = map[string]func() connector.Server{
 }
 
 func main() {
-	_ = godotenv.Load()
 	listen := flag.String("listen", "127.0.0.1:2223", "SSH address; it refuses agents until unlock")
 	api := flag.String("api", "127.0.0.1:8080", "owner API address")
 	bucketURL := flag.String("bucket", "", "blob URL holding the encrypted state")

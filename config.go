@@ -1,28 +1,21 @@
 package main
 
 import (
-	"crypto/sha256"
 	"embed"
-	"encoding/hex"
 	"encoding/json"
-	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"io/fs"
-	"log"
 	"maps"
 	"net/netip"
-	"os"
-	"path"
-	"regexp"
 	"slices"
 	"strings"
 	"sync"
 	"time"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
-	"github.com/gobwas/glob"
 	toml "github.com/pelletier/go-toml/v2"
+	"github.com/pelletier/go-toml/v2/unstable/edit"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/connector/mcp"
@@ -58,7 +51,7 @@ type rule struct {
 	Operation    string         `json:"operation,omitempty"`
 	Definition   string         `json:"definition,omitempty"`
 	Scope        map[string]any `json:"scope"`
-	Requirements requirements   `json:"requirements"`
+	Requirements []requirement  `json:"requirements"`
 }
 
 type account struct {
@@ -77,10 +70,6 @@ type latticeOptions struct {
 }
 
 type config struct {
-	Monitor struct {
-		Version int               `json:"version"`
-		Presets map[string]string `json:"presets,omitempty"`
-	} `json:"monitor"`
 	Lattices      latticeOptions      `json:"lattices"`
 	AllowNetworks []netip.Prefix      `json:"allow_networks"`
 	Accounts      map[string]account  `json:"accounts"`
@@ -91,7 +80,6 @@ type config struct {
 	// Presets contains the source overrides; resolved holds the compiled definitions.
 	Presets  map[string]map[string]any `json:"presets,omitempty"`
 	resolved map[string]*presetRecord
-	pins     []tomlChange
 }
 
 func readSource(source string) (map[string]any, error) {
@@ -144,67 +132,90 @@ func jsonValue(v any) (any, error) {
 	}
 }
 
-// policyPresets evaluates only captured preset contents. No environment lookup
-// or new shipped version can change the meaning of an already-applied source.
-// It captures pinned shipped definitions in p.Bases and records new pins in cfg.pins.
-func policyPresets(cfg *config, p *policyDocument) (map[string]*presetRecord, error) {
-	shipped, err := presets()
-	if err != nil {
-		return nil, err
-	}
-	out := maps.Clone(shipped)
-	pins, owned := cfg.Monitor.Presets, cfg.Presets
-	if pins == nil {
-		pins = map[string]string{}
-		cfg.Monitor.Presets = pins
-	}
-	names := map[string]bool{}
-	for _, a := range cfg.Accounts {
-		names[a.Preset] = true
-	}
-	for name := range pins {
-		names[name] = true
-	}
-	for name := range owned {
-		names[name] = true
-	}
-	for _, name := range slices.Sorted(maps.Keys(names)) {
-		if _, pinned := pins[name]; !pinned && shipped[name] != nil {
-			pins[name] = shipped[name].hash
-			cfg.pins = append(cfg.pins, tomlChange{path: []string{"monitor", "presets", name}, value: pins[name]})
+// sourceChange replaces or deletes one source value. Tables and rules retain
+// their names; edits never reconstruct source from a derived configuration.
+type sourceChange struct {
+	Path   []string `json:"path"`
+	Value  any      `json:"value,omitempty"`
+	Delete bool     `json:"delete,omitempty"`
+}
+
+// TOML has no null and cannot represent every JSON number exactly. A tagged JSON
+// literal preserves those values. An object containing the reserved tag is itself
+// escaped, so arbitrary request scopes and MCP schemas round-trip without loss.
+func tomlValue(v any) (any, error) {
+	switch x := v.(type) {
+	case nil:
+		return map[string]any{"$json": "null"}, nil
+	case json.Number:
+		if n, err := x.Int64(); err == nil {
+			return n, nil
 		}
-		raw := json.RawMessage(`{}`)
-		if hash, pinned := pins[name]; pinned {
-			if p.Bases[hash] == nil && shipped[name] != nil && shipped[name].hash == hash {
-				p.Bases[hash] = shipped[name].source
-			}
-			if raw = p.Bases[hash]; raw == nil {
-				return nil, fmt.Errorf("preset %s has an unavailable content hash", name)
-			}
+		return map[string]any{"$json": x.String()}, nil
+	case map[string]any:
+		if _, reserved := x["$json"]; reserved {
+			raw, err := json.Marshal(x)
+			return map[string]any{"$json": string(raw)}, err
 		}
-		if shipped[name] != nil && owned[name] == nil && pins[name] == shipped[name].hash {
-			continue
-		}
-		if owned[name] != nil {
-			patch, err := json.Marshal(owned[name])
-			if err == nil {
-				raw, err = jsonpatch.MergePatch(raw, patch)
-			}
-			if err != nil {
+		out := map[string]any{}
+		for k, val := range x {
+			var err error
+			if out[k], err = tomlValue(val); err != nil {
 				return nil, err
 			}
 		}
-		if out[name], err = decodePreset(raw); err != nil {
-			return nil, fmt.Errorf("preset %s: %w", name, err)
+		return out, nil
+	case []any:
+		out := make([]any, len(x))
+		for i, val := range x {
+			var err error
+			if out[i], err = tomlValue(val); err != nil {
+				return nil, err
+			}
+		}
+		return out, nil
+	default:
+		return v, nil
+	}
+}
+
+func renderTOML(v map[string]any) (string, error) {
+	encoded, err := tomlValue(v)
+	if err != nil {
+		return "", err
+	}
+	text, err := toml.Marshal(encoded)
+	return string(text), err
+}
+
+// editSource changes only the requested paths, preserving unrelated source text.
+func editSource(source string, changes []sourceChange) (string, error) {
+	doc, err := edit.Parse([]byte(source))
+	if err != nil {
+		return "", err
+	}
+	for _, change := range changes {
+		if change.Delete {
+			doc.Delete(change.Path)
+			continue
+		}
+		if err := doc.Set(change.Path, change.Value); err != nil {
+			doc.Delete(change.Path)
+			if err := doc.Set(change.Path, change.Value); err != nil {
+				return "", err
+			}
 		}
 	}
-	return out, nil
+	if len(doc.Bytes()) > maxPolicyBytes {
+		return "", errors.New("policy source is too large")
+	}
+	return doc.String(), nil
 }
 
 // compileSource decodes configuration, binds credentials by name and drops orphaned ones.
 // Only runtime handles receive secret values.
-func compileSource(p *policyDocument, secrets secretStore) (*config, map[string]*connection, error) {
-	source, err := readSource(p.Source)
+func compileSource(policy string, secrets secretStore) (*config, map[string]*connection, error) {
+	source, err := readSource(policy)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -213,7 +224,6 @@ func compileSource(p *policyDocument, secrets secretStore) (*config, map[string]
 		return nil, nil, err
 	}
 	cfg := &config{Lattices: latticeOptions{Confidentiality: true}}
-	cfg.Monitor.Version = 1
 	raw, err := json.Marshal(decoded)
 	if err == nil {
 		err = facts.DecodeNumbers(raw, cfg)
@@ -221,19 +231,29 @@ func compileSource(p *policyDocument, secrets secretStore) (*config, map[string]
 	if err != nil {
 		return nil, nil, err
 	}
-	if cfg.Monitor.Version != 1 {
-		return nil, nil, errors.New("unsupported policy format version")
-	}
-	if cfg.resolved, err = policyPresets(cfg, p); err != nil {
+	shipped, err := presets()
+	if err != nil {
 		return nil, nil, err
+	}
+	cfg.resolved = maps.Clone(shipped)
+	for name, override := range cfg.Presets {
+		raw := json.RawMessage(`{}`)
+		if shipped[name] != nil {
+			raw = shipped[name].source
+		}
+		patch, err := json.Marshal(override)
+		if err == nil {
+			raw, err = jsonpatch.MergePatch(raw, patch)
+		}
+		if err == nil {
+			cfg.resolved[name], err = decodePreset(raw)
+		}
+		if err != nil {
+			return nil, nil, fmt.Errorf("preset %s: %w", name, err)
+		}
 	}
 	connections := map[string]*connection{}
 	for acct, a := range cfg.Accounts {
-		for _, pattern := range a.PolicyOptions.Private {
-			if _, err := glob.Compile(pattern, '/'); err != nil {
-				return nil, nil, fmt.Errorf("account %s: invalid private pattern %q: %w", acct, pattern, err)
-			}
-		}
 		if _, ok := cfg.resolved[a.Preset]; !ok {
 			return nil, nil, fmt.Errorf("account %s has unknown preset %s", acct, a.Preset)
 		}
@@ -270,14 +290,22 @@ func compileSource(p *policyDocument, secrets secretStore) (*config, map[string]
 					SecretValues() map[string]*credential.Value
 				}); ok {
 					c.Secrets = credentials.SecretValues()
-					names := catalogSecrets(cfg.resolved[a.Preset], key, kind)
-					if len(names) == 0 {
-						// Custom connections inherit unset editors from catalogs for their protocol.
-						for _, preset := range cfg.resolved {
-							names = append(names, catalogSecrets(preset, "*", kind)...)
+					names := slices.Collect(maps.Keys(c.Secrets))
+					for _, raw := range cfg.resolved[a.Preset].Catalog.Fields {
+						var field struct {
+							Path  []string   `json:"path"`
+							Paths [][]string `json:"paths"`
+						}
+						if json.Unmarshal(raw, &field) != nil {
+							continue
+						}
+						for _, path := range append(field.Paths, field.Path) {
+							if len(path) == 5 && slices.Equal(path[:4], []string{"connections", key, kind, "secrets"}) {
+								names = append(names, path[4])
+							}
 						}
 					}
-					for _, name := range append(names, slices.Collect(maps.Keys(c.Secrets))...) {
+					for _, name := range names {
 						if c.Secrets[name] == nil {
 							c.Secrets[name] = new(credential.Value)
 						} else if c.Secrets[name].Raw() != nil {
@@ -324,9 +352,6 @@ type presetRecord struct {
 	MCP         *mcp.Preset    `json:"mcp,omitempty"`
 	PublicScope []string       `json:"public_scope,omitempty"`
 	source      json.RawMessage
-	hash        string
-	http        *web.CompiledPreset
-	mcp         *mcp.CompiledPreset
 }
 type presetCatalog struct {
 	Group       string                     `json:"group,omitempty"`
@@ -342,8 +367,7 @@ type presetAction struct {
 }
 
 func decodePreset(raw []byte) (*presetRecord, error) {
-	sum := sha256.Sum256(raw)
-	p := presetRecord{source: raw, hash: hex.EncodeToString(sum[:])}
+	p := presetRecord{source: raw}
 	if err := facts.DecodeNumbers(raw, &p); err != nil {
 		return nil, err
 	}
@@ -353,18 +377,6 @@ func decodePreset(raw []byte) (*presetRecord, error) {
 	for name, a := range p.Catalog.Actions {
 		if a.Effects != nil && !facts.ValidEffects(a.Effects) {
 			return nil, fmt.Errorf("invalid effects for action %s", name)
-		}
-	}
-	if p.HTTP != nil {
-		var err error
-		if p.http, err = p.HTTP.Compile(); err != nil {
-			return nil, err
-		}
-	}
-	if p.MCP != nil {
-		var err error
-		if p.mcp, err = p.MCP.Compile(); err != nil {
-			return nil, err
 		}
 	}
 	return &p, nil
@@ -385,98 +397,30 @@ func actionLineage(action string) []string {
 //go:embed presets/*.json
 var presetFiles embed.FS
 
-// A preset reads {MONITOR_X} only if MONITOR_X_PRESETS lists its name.
-var envRef = regexp.MustCompile(`\{(MONITOR_\w+)\}`)
-
-// draftFiles holds unreviewed presets a dev monitor loads from disk with -drafts; they are never embedded.
+// draftFiles holds unreviewed presets a dev monitor loads from disk with -drafts; they are never embedded and never replace a shipped preset.
 var draftFiles fs.FS
 
 var presets = sync.OnceValues(func() (map[string]*presetRecord, error) {
-	files, _ := fs.Glob(presetFiles, "presets/*.json")
+	shipped, _ := fs.Sub(presetFiles, "presets")
 	out := map[string]*presetRecord{}
-	for _, file := range files {
-		name, p, err := presetFile(presetFiles, file)
-		if err != nil {
-			return nil, err
-		}
-		out[name] = p
-	}
-	if draftFiles == nil {
-		return out, nil
-	}
-	// Each draft is checked alone, so a malformed one is skipped rather than stopping the monitor.
-	drafts, _ := fs.Glob(draftFiles, "*.json")
-	for _, file := range drafts {
-		name, p, err := presetFile(draftFiles, file)
-		if _, ok := out[name]; ok && err == nil {
-			err = errors.New("a shipped preset has this name")
-		}
-		if err == nil {
-			out[name] = p
+	for _, fsys := range []fs.FS{shipped, draftFiles} {
+		if fsys == nil {
 			continue
 		}
-		log.Printf("draft %s: %v", file, err)
+		files, _ := fs.Glob(fsys, "*.json")
+		for _, file := range files {
+			name := strings.TrimSuffix(file, ".json")
+			if out[name] != nil {
+				continue
+			}
+			src, err := fs.ReadFile(fsys, file)
+			if err == nil {
+				out[name], err = decodePreset(src)
+			}
+			if err != nil {
+				return nil, fmt.Errorf("preset %s: %w", file, err)
+			}
+		}
 	}
 	return out, nil
 })
-
-func presetFile(fsys fs.FS, file string) (string, *presetRecord, error) {
-	name := strings.TrimSuffix(path.Base(file), ".json")
-	src, err := fs.ReadFile(fsys, file)
-	if err != nil {
-		return "", nil, err
-	}
-	src = withEnv(name, src)
-	p, err := decodePreset(src)
-	if err != nil {
-		return "", nil, fmt.Errorf("%s: %w", file, err)
-	}
-	return name, p, nil
-}
-
-func withEnv(name string, src []byte) []byte {
-	return envRef.ReplaceAllFunc(src, func(ref []byte) []byte {
-		key := string(ref[1 : len(ref)-1])
-		if !slices.Contains(strings.Split(os.Getenv(key+"_PRESETS"), ","), name) {
-			return nil
-		}
-		quoted, _ := jsontext.AppendQuote(nil, os.Getenv(key))
-		return quoted[1 : len(quoted)-1]
-	})
-}
-
-type catalogEntry struct {
-	*presetCatalog
-	Title      string                       `json:"title"`
-	Operations *map[string]web.Operation    `json:"operations,omitempty"`
-	Vocabulary map[string]facts.Obligations `json:"vocabulary"`
-}
-
-// catalog exposes setup metadata and operations from the resolved records.
-func catalog(all map[string]*presetRecord) map[string]catalogEntry {
-	entries := map[string]catalogEntry{}
-	for name, p := range all {
-		entry := catalogEntry{presetCatalog: p.Catalog, Title: p.Title, Vocabulary: facts.Effects}
-		if p.HTTP != nil {
-			entry.Operations = &p.HTTP.Operations
-		}
-		entries[name] = entry
-	}
-	return entries
-}
-
-func catalogSecrets(p *presetRecord, key, kind string) (names []string) {
-	for _, raw := range p.Catalog.Fields {
-		var field struct {
-			Path []string `json:"path"`
-		}
-		if json.Unmarshal(raw, &field) != nil {
-			continue
-		}
-		path := field.Path
-		if len(path) == 5 && path[0] == "connections" && (key == "*" || path[1] == key) && path[2] == kind && path[3] == "secrets" {
-			names = append(names, path[4])
-		}
-	}
-	return
-}

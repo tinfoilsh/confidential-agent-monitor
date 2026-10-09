@@ -8,6 +8,7 @@ import (
 	"maps"
 	"net"
 	"net/http"
+	"reflect"
 	"slices"
 	"strings"
 	"time"
@@ -210,82 +211,63 @@ func (r *admissionRequest) Describe(c connector.Context) (facts.Facts, error) {
 const agentHost = "agent.monitor"
 
 // Discovery describes reachable connections, not the owner's configuration or credentials.
+// HTTP connections add public routing and placeholder data, never credentials.
 type agentConnection struct {
-	Name    string `json:"name"`
-	Account string `json:"account"`
-	Kind    string `json:"kind"`
-	Host    string `json:"host"`
-	State   string `json:"state"`
-	Access  access `json:"access"`
-}
-
-// Client setup contains public routing and placeholder data, never credentials.
-type agentSetupConnection struct {
 	Name         string            `json:"name"`
+	Account      string            `json:"account"`
+	Kind         string            `json:"kind"`
+	Host         string            `json:"host"`
+	State        string            `json:"state"`
+	Access       access            `json:"access"`
 	Hosts        []string          `json:"hosts"`
-	Origins      []string          `json:"origins"`
+	Slots        []web.Slot        `json:"slots"`
 	Placeholders map[string]string `json:"placeholders"`
-	Git          []agentGitSlot    `json:"git"`
-}
-
-type agentGitSlot struct {
-	Origin   string `json:"origin"`
-	Path     string `json:"path"`
-	Password string `json:"password"`
-}
-
-type agentSetup struct {
-	Version     int                    `json:"version"`
-	Identity    string                 `json:"identity"`
-	CA          string                 `json:"ca"`
-	Connections []agentSetupConnection `json:"http"`
 }
 
 func (m *monitor) agentHandler(key string) http.Handler {
 	mux := http.NewServeMux()
-	m.agentPolicyRoutes(mux, key)
-	mux.HandleFunc("GET /setup", agentJSON(m, key, func(r *http.Request, _ struct{}, p principal) (any, error) {
-		st := m.live.Load()
-		result := agentSetup{Version: 1, Identity: p.Name, CA: m.doc.Keys.CACert, Connections: []agentSetupConnection{}}
-		for _, name := range slices.Sorted(maps.Keys(st.connections)) {
-			c := st.connections[name]
-			h, ok := c.connector.(*web.HTTP)
-			if !ok || !p.reaches(c.account) {
-				continue
-			}
-			setup := agentSetupConnection{Name: name, Hosts: h.Hosts, Origins: []string{}, Placeholders: map[string]string{}, Git: []agentGitSlot{}}
-			for secret := range h.Names() {
-				setup.Placeholders[secret] = web.Placeholder(name, secret)
-			}
-			for _, slot := range h.Slots {
-				if !slices.Contains(setup.Origins, slot.Origin) {
-					setup.Origins = append(setup.Origins, slot.Origin)
-				}
-				if slot.Basic == "password" && slot.Origin == "https://github.com" && setup.Placeholders[slot.Value] != "" {
-					setup.Git = append(setup.Git, agentGitSlot{slot.Origin, slot.Path, setup.Placeholders[slot.Value]})
-				}
-			}
-			result.Connections = append(result.Connections, setup)
-		}
-		return result, nil
-	}))
 	mux.HandleFunc("GET /connections", agentJSON(m, key, func(r *http.Request, _ struct{}, p principal) (any, error) {
 		st := m.live.Load()
-		connections := []agentConnection{}
+		result := struct {
+			Identity    string            `json:"identity"`
+			CA          string            `json:"ca"`
+			Connections []agentConnection `json:"connections"`
+		}{p.Name, m.doc.Keys.CACert, []agentConnection{}}
 		for _, name := range slices.Sorted(maps.Keys(st.connections)) {
 			c := st.connections[name]
 			if !p.reaches(c.account) {
 				continue
 			}
-			status := c.status()
-			connections = append(connections, agentConnection{
-				Name: name, Account: c.account, Kind: c.protocol, Host: name + ".monitor",
-				State: status.State, Access: p.Accounts[c.account],
-			})
+			ac := agentConnection{Name: name, Account: c.account, Kind: c.protocol, Host: name + ".monitor",
+				State: c.status().State, Access: p.Accounts[c.account]}
+			if h, ok := c.connector.(*web.HTTP); ok {
+				ac.Hosts, ac.Slots, ac.Placeholders = h.Hosts, h.Slots, map[string]string{}
+				for secret := range h.Names() {
+					ac.Placeholders[secret] = web.Placeholder(name, secret)
+				}
+			}
+			result.Connections = append(result.Connections, ac)
 		}
-		return struct {
-			Connections []agentConnection `json:"connections"`
-		}{connections}, nil
+		return result, nil
+	}))
+	show := func() (any, error) {
+		st := m.live.Load()
+		p := st.principals[key]
+		visible, _, err := agentView(st.cfg, p)
+		if err != nil {
+			return nil, err
+		}
+		source, err := renderTOML(visible)
+		return map[string]any{"identity": p.Name, "source": source}, err
+	}
+	mux.HandleFunc("GET /policy", agentJSON(m, key, func(*http.Request, struct{}, principal) (any, error) {
+		return show()
+	}))
+	mux.HandleFunc("POST /policy/proposals", agentJSON(m, key, func(r *http.Request, input proposalInput, p principal) (any, error) {
+		if err := m.proposePolicy(r.Context(), p, input); err != nil {
+			return nil, err
+		}
+		return show()
 	}))
 	return mux
 }
@@ -333,4 +315,117 @@ func agentJSON[T any](m *monitor, key string, fn func(*http.Request, T, principa
 		}
 		return fn(r, input, p)
 	})
+}
+
+const (
+	maxProposalBytes   = 64 << 10
+	maxProposalReason  = 4096
+	maxProposalDeletes = 64
+)
+
+type proposalInput struct {
+	Source string     `json:"source"`
+	Reason string     `json:"reason"`
+	Delete [][]string `json:"delete,omitempty"`
+}
+
+// agentView splits the configuration into the settings p may read and propose
+// changing, and the rest, which a proposal must leave unchanged.
+func agentView(cfg *config, p principal) (visible, rest map[string]any, err error) {
+	if rest, err = facts.JSON[map[string]any](cfg); err != nil {
+		return nil, nil, err
+	}
+	identities, _ := rest["identities"].(map[string]any)
+	identity, _ := identities[p.Name].(map[string]any)
+	accounts, _ := rest["accounts"].(map[string]any)
+	reachable := map[string]any{}
+	for name, a := range accounts {
+		if p.reaches(name) {
+			reachable[name] = take(a.(map[string]any), "contents", "strangers", "sends", "policy_options")
+		}
+	}
+	visible = map[string]any{"lattices": rest["lattices"], "identities": map[string]any{p.Name: take(identity, "accounts", "rules")}, "accounts": reachable}
+	delete(rest, "lattices")
+	return visible, rest, nil
+}
+
+// take moves the named fields out of m.
+func take(m map[string]any, fields ...string) map[string]any {
+	out := map[string]any{}
+	for _, field := range fields {
+		if value, ok := m[field]; ok {
+			out[field] = value
+			delete(m, field)
+		}
+	}
+	return out
+}
+
+// fragmentChanges sets each leaf of a TOML fragment, merging it into the source.
+func fragmentChanges(v map[string]any, path []string) (changes []sourceChange) {
+	for _, key := range slices.Sorted(maps.Keys(v)) {
+		at := append(slices.Clone(path), key)
+		if table, ok := v[key].(map[string]any); ok && len(table) > 0 {
+			changes = append(changes, fragmentChanges(table, at)...)
+		} else {
+			changes = append(changes, sourceChange{Path: at, Value: v[key]})
+		}
+	}
+	return changes
+}
+
+// proposePolicy holds an agent's change as an approval card and applies it once the owner allows it.
+func (m *monitor) proposePolicy(ctx context.Context, p principal, input proposalInput) (err error) {
+	if len(input.Source) > maxProposalBytes || len(input.Reason) > maxProposalReason || strings.TrimSpace(input.Reason) == "" || len(input.Delete) > maxProposalDeletes {
+		return fmt.Errorf("proposal needs a reason of 1-%d bytes, at most %d bytes of TOML, and at most %d deletions", maxProposalReason, maxProposalBytes, maxProposalDeletes)
+	}
+	patch, err := readSource(input.Source)
+	if err != nil {
+		return err
+	}
+	changes := fragmentChanges(patch, nil)
+	for _, path := range input.Delete {
+		changes = append(changes, sourceChange{Path: path, Delete: true})
+	}
+	base := m.doc.Policy
+	source, err := editSource(base, changes)
+	if err != nil {
+		return err
+	}
+	if source == base {
+		return errors.New("proposal does not change policy")
+	}
+	next, st, err := m.prepareCandidate(ctx, source, nil)
+	if err != nil {
+		return err
+	}
+	_, before, err := agentView(m.live.Load().cfg, p)
+	if err != nil {
+		return err
+	}
+	_, after, err := agentView(st.cfg, p)
+	if err != nil {
+		return err
+	}
+	if !reflect.DeepEqual(before, after) {
+		return errors.New("proposal may edit only your permissions, reachable accounts' policy settings, or lattice switches")
+	}
+	diff, err := m.policyPreview(next, st)
+	if err != nil {
+		return err
+	}
+	r := m.addRecord(&decision{Facts: &facts.Facts{Version: facts.Version, Principal: facts.Principal{Key: p.Key, Name: p.Name},
+		Title: "Change policy", Parameters: map[string]any{}, Details: facts.Details{Policy: diff}},
+		Requirements: []requirement{{ID: "policy", Message: input.Reason}}})
+	defer func() { r.settle(err) }()
+	if err = m.await(ctx, r); err != nil {
+		return err
+	}
+	if m.doc.Policy != base {
+		return errPolicyConflict
+	}
+	if next, st, err = m.prepareCandidate(ctx, next.Policy, nil); err != nil {
+		return err
+	}
+	return m.activate(ctx, next, st)
 }

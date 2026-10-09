@@ -24,7 +24,7 @@ func (r *Request) Describe(c connector.Context) (facts.Facts, error) {
 	}
 	f := facts.Facts{Details: details}
 	h := r.HTTP
-	p, _ := c.Spec.(*CompiledPreset)
+	p, _ := c.Spec.(*Preset)
 	if p != nil {
 		return p.Match(r, c, f)
 	}
@@ -42,6 +42,16 @@ func (r *Request) Describe(c connector.Context) (facts.Facts, error) {
 type Preset struct {
 	Operations map[string]Operation `json:"operations"`
 	Slots      bool                 `json:"slots,omitempty"`
+	routes     map[routeKey]*routeNode
+}
+
+// UnmarshalJSON compiles the operations, so only a validated preset can match requests.
+func (p *Preset) UnmarshalJSON(raw []byte) error {
+	type plain Preset
+	if err := facts.DecodeNumbers(raw, (*plain)(p)); err != nil {
+		return err
+	}
+	return p.compile()
 }
 
 func (p *Preset) validate() error {
@@ -340,19 +350,11 @@ type routeNode struct {
 	exact, rest []*compiledOperation
 }
 
-// CompiledPreset retains a validated specification; only it can match requests.
-type CompiledPreset struct {
-	routes map[routeKey]*routeNode
-	slots  bool
-}
-
-// Compile takes ownership of spec and its maps and slices.
-func (spec *Preset) Compile() (*CompiledPreset, error) {
-	p := spec
+func (p *Preset) compile() error {
 	if err := p.validate(); err != nil {
-		return nil, err
+		return err
 	}
-	compiled := &CompiledPreset{routes: map[routeKey]*routeNode{}, slots: p.Slots}
+	p.routes = map[routeKey]*routeNode{}
 	for id, operation := range p.Operations {
 		if operation.Enabled != nil && !*operation.Enabled {
 			continue
@@ -361,20 +363,20 @@ func (spec *Preset) Compile() (*CompiledPreset, error) {
 		o := &operation
 		parts, err := compilePath(o.Path)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		var selectors []compiledSelector
 		for _, name := range slices.Sorted(maps.Keys(o.Scope)) {
 			spec, err := compileSelector(o.Scope[name])
 			if err != nil {
-				return nil, err
+				return err
 			}
 			spec.name = name
 			selectors = append(selectors, spec)
 		}
 		definition, err := json.Marshal([]any{o, p.Slots})
 		if err != nil {
-			return nil, err
+			return err
 		}
 		op := &compiledOperation{operation: o, path: parts, selectors: selectors, definition: definition,
 			params: map[string]bool{}, fields: map[string]func(any) (any, bool){}}
@@ -388,15 +390,15 @@ func (spec *Preset) Compile() (*CompiledPreset, error) {
 			for at := range o.Fields {
 				op.fields[at], err = connector.CompilePointer(at)
 				if err != nil {
-					return nil, err
+					return err
 				}
 			}
 		}
 		key := routeKey{o.Origin, o.Method}
-		node := compiled.routes[key]
+		node := p.routes[key]
 		if node == nil {
 			node = &routeNode{}
-			compiled.routes[key] = node
+			p.routes[key] = node
 		}
 		if parts == nil {
 			node.rest = append(node.rest, op)
@@ -429,7 +431,7 @@ func (spec *Preset) Compile() (*CompiledPreset, error) {
 			node.exact = append(node.exact, op)
 		}
 	}
-	return compiled, nil
+	return nil
 }
 
 func (node *routeNode) candidates(path []string, out []*compiledOperation) []*compiledOperation {
@@ -449,11 +451,11 @@ func (node *routeNode) candidates(path []string, out []*compiledOperation) []*co
 
 // Match selects exactly one reviewed operation. Unknown requests keep their
 // protocol details, but receive no operation or inferred effects.
-func (p *CompiledPreset) Match(r *Request, c connector.Context, f facts.Facts) (facts.Facts, error) {
+func (p *Preset) Match(r *Request, c connector.Context, f facts.Facts) (facts.Facts, error) {
 	h := r.HTTP
 	f.Title = fmt.Sprintf("%s: %s %s", c.Title, h.Method, h.Path)
 	config, _ := c.Config.(*HTTP)
-	if p.slots && (config == nil || !slices.ContainsFunc(config.Slots, func(slot Slot) bool {
+	if p.Slots && (config == nil || !slices.ContainsFunc(config.Slots, func(slot Slot) bool {
 		return h.Origin == slot.Origin && under(h.Path, slot.Path)
 	})) {
 		return f, fmt.Errorf("the request is outside this API's address")

@@ -461,7 +461,7 @@ function previewConfig(state, body) {
     const previous = state.view.presets[name] ?? state.view.presets.custom, catalog = file.catalog ?? {};
     state.view.presets[name] = { ...previous, ...catalog, title: typeof file.title === "string" ? file.title : name,
       fields: Array.isArray(catalog.fields) ? catalog.fields : previous.fields ?? [],
-      actions: catalog.actions ?? {}, operations: file.http?.operations ?? {}, vocabulary: previous.vocabulary };
+      actions: catalog.actions ?? {}, operations: file.http?.operations ?? {} };
   }
 }
 
@@ -696,10 +696,9 @@ function mode(access, vocabulary, effects, k) {
 }
 
 function accessActions(name, a, access) {
-  const c = entry(a);
   const renderAction = (node) => {
     const k = node.key, effects = effectsOf(a, k), children = [...node.children.values()];
-    const inherited = mode({ ...access, actions: { ...access.actions, [k]: null } }, c.vocabulary, effects, k), own = access.actions?.[k];
+    const inherited = mode({ ...access, actions: { ...access.actions, [k]: null } }, view.vocabulary, effects, k), own = access.actions?.[k];
     const overrides = Object.keys(access.actions ?? {}).filter((action) => action.startsWith(k + ".") && access.actions[action]).length;
     const label = `${esc(node.title)}${overrides ? ` <small class="muted" title="${overrides} overrides">${overrides}</small>` : ""}`;
     const buttons = `<span class="seg" role="group" aria-label="${esc(k)} permission">${Object.entries(MODES).map(([m, t]) =>
@@ -799,7 +798,7 @@ const loadShipped = run(async (name) => {
   presetLoads.add(name);
   const generation = view.generation;
   try {
-    shippedFiles[name] = await api("GET", "/presets/" + encodeURIComponent(name) + "?effective");
+    shippedFiles[name] = await api("GET", "/presets/" + encodeURIComponent(name));
     presetGenerations[name] = generation;
   } finally { presetLoads.delete(name); }
   render();
@@ -1480,7 +1479,7 @@ const previewPolicy = run(async () => {
 const applyPolicySource = run(async () => {
   const editor = policyEditor, preview = editor?.preview;
   if (!preview) throw new Error("Review the policy diff before applying.");
-  await edit(() => {}, () => api("POST", "/policy", { source: preview.source }), { message: "Policy applied" });
+  await edit(() => {}, () => api("POST", "/policy", { source: editor.draft }), { message: "Policy applied" });
   if (policyEditor === editor) await loadPolicy();
 });
 function downloadPolicyText(source, filename) {

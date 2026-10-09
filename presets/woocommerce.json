@@ -94,7 +94,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "consumer_key"
         ],
         "secret": true
@@ -106,7 +106,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "consumer_secret"
         ],
         "secret": true

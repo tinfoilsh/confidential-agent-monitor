@@ -79,7 +79,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "username"
         ],
         "secret": true
@@ -91,7 +91,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "apppassword"
         ],
         "secret": true

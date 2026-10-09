@@ -2096,7 +2096,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "key"
         ],
         "secret": true

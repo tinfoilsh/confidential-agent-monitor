@@ -1236,7 +1236,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "token"
         ],
         "secret": true

@@ -5139,13 +5139,14 @@
             "connections",
             "",
             "http",
-            "values",
+            "secrets",
             "GITHUB_TOKEN"
           ],
           [
             "connections",
             "mcp",
             "mcp",
+            "secrets",
             "token"
           ]
         ],

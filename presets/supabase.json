@@ -89,7 +89,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "apikey"
         ],
         "secret": true
@@ -101,7 +101,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "jwt"
         ],
         "secret": true

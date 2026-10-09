@@ -97,22 +97,13 @@ default owner_deny := []
 
 owner_deny := data.sentinel.deny
 
-valid_owner_deny if {
-	is_array(owner_deny)
-	every msg in owner_deny { is_string(msg) }
+# Element types are checked when the decision is decoded; a wrong container would deny nothing.
+deny contains "owner policy deny must be a set or array of strings" if {
+	not is_array(owner_deny)
+	not is_set(owner_deny)
 }
 
-valid_owner_deny if {
-	is_set(owner_deny)
-	every msg in owner_deny { is_string(msg) }
-}
-
-deny contains "owner policy deny must be a set or array of strings" if not valid_owner_deny
-
-deny contains msg if {
-	valid_owner_deny
-	some msg in owner_deny
-}
+deny contains msg if some msg in owner_deny
 
 deny contains "this agent may not do this on the account" if mode == "off"
 
@@ -156,11 +147,7 @@ approval_collection if is_set(owner_approvals)
 valid_owner_approvals if {
 	approval_collection
 	every r in owner_approvals {
-		is_object(r)
-		object.keys(r) == {"id", "message"}
-		is_string(r.id)
 		regex.match(`^owner\.[a-zA-Z0-9][a-zA-Z0-9_.-]*$`, r.id)
-		is_string(r.message)
 		trim_space(r.message) != ""
 	}
 	# Repeated identical entries are harmless; conflicting messages for one ID are not.

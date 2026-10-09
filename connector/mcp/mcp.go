@@ -129,7 +129,7 @@ func (r *Request) Describe(c connector.Context) (facts.Facts, error) {
 	f.Parameters = map[string]any{"arguments": args}
 	f.Details.MCP.Arguments = args
 	f.Operation = &facts.Operation{Action: action}
-	if p, _ := c.Spec.(*CompiledPreset); p != nil {
+	if p, _ := c.Spec.(*Preset); p != nil {
 		scope, err := p.scope.Select(args)
 		maps.Copy(f.Parameters, scope)
 		f.Definition = p.definition
@@ -140,24 +140,21 @@ func (r *Request) Describe(c connector.Context) (facts.Facts, error) {
 
 // Preset selects service resource identifiers from tool arguments.
 type Preset struct {
-	Scope map[string]Selector `json:"scope,omitempty"`
-}
-
-type CompiledPreset struct {
+	Scope      map[string]Selector `json:"scope,omitempty"`
 	scope      selectors
 	definition json.RawMessage
 }
 
-func (p *Preset) Compile() (*CompiledPreset, error) {
-	scope, err := compileSelectors(p.Scope)
-	if err != nil {
-		return nil, err
+func (p *Preset) UnmarshalJSON(raw []byte) error {
+	type plain Preset
+	err := facts.DecodeNumbers(raw, (*plain)(p))
+	if err == nil {
+		p.scope, err = compileSelectors(p.Scope)
 	}
-	definition, err := json.Marshal(p)
-	if err != nil {
-		return nil, err
+	if err == nil {
+		p.definition, err = json.Marshal((*plain)(p))
 	}
-	return &CompiledPreset{scope: scope, definition: definition}, nil
+	return err
 }
 
 // Selector selects a typed value from a JSON document.

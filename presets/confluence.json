@@ -1570,7 +1570,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "email"
         ],
         "secret": true
@@ -1582,7 +1582,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "apitoken"
         ],
         "secret": true

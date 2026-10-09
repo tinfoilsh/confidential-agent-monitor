@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 	"iter"
+	"log"
 	"maps"
 	"net"
 	"slices"
@@ -27,6 +28,8 @@ import (
 
 	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/credential"
+	"github.com/tinfoilsh/monitor/connector/mcp"
 	"github.com/tinfoilsh/monitor/facts"
 	"gocloud.dev/blob"
 	"gocloud.dev/gcerrors"
@@ -44,14 +47,8 @@ type sealed struct {
 	Generation uint64                 `json:"generation"`
 	Keys       keyMaterial            `json:"keys"`
 	Labels     map[string]facts.Label `json:"labels"`
-	Policy     *policyDocument        `json:"policy,omitempty"`
+	Policy     string                 `json:"policy"`
 	Secrets    secretStore            `json:"secrets,omitempty"`
-}
-
-// Source and the preset contents named by its hashes define the policy.
-type policyDocument struct {
-	Source string                     `json:"source"`
-	Bases  map[string]json.RawMessage `json:"bases"`
 }
 
 type state struct {
@@ -112,7 +109,7 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error 
 	if err != nil {
 		return err
 	}
-	sl := sealed{Labels: map[string]facts.Label{}, Policy: &policyDocument{Source: "[monitor]\nversion = 1\n\n[lattices]\nconfidentiality = true\nintegrity = false\n", Bases: map[string]json.RawMessage{}}}
+	sl := sealed{Labels: map[string]facts.Label{}}
 	raw, err := m.store.ReadAll(ctx, stateObject)
 	if gcerrors.Code(err) != gcerrors.NotFound || minimum != 0 {
 		if err != nil {
@@ -166,10 +163,6 @@ func (m *monitor) activate(ctx context.Context, next sealed, s *state) error {
 	m.reconcile(s)
 	m.live.Store(s)
 	return nil
-}
-
-func (c *connection) path() []string {
-	return []string{"accounts", c.account, "connections", c.key, c.protocol}
 }
 
 // Provider writes preserve the connector and publish only after persistence.
@@ -249,6 +242,65 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *
 	return s, nil
 }
 
+// prepareCandidate validates source without publishing anything.
+func (m *monitor) prepareCandidate(ctx context.Context, source string, secrets secretStore) (sealed, *state, error) {
+	next := m.doc
+	next.Policy = source
+	next.Secrets = secrets
+	if secrets == nil {
+		next.Secrets = m.doc.Secrets.clone()
+	}
+	st, err := m.build(ctx, next, m.live.Load().Env, m.live.Load())
+	return next, st, err
+}
+
+func (m *monitor) editPolicy(ctx context.Context, changes []sourceChange) error {
+	if len(changes) == 0 {
+		return nil
+	}
+	secrets := m.doc.Secrets.clone()
+	var edits []sourceChange
+	for _, change := range changes {
+		if len(change.Path) == 0 {
+			return errors.New("an edit requires a source path")
+		}
+		if change.Delete && change.Value != nil {
+			return errors.New("a deletion cannot have a value")
+		}
+		// Credentials live in the sealed store; removing a connection drops its own.
+		if isCredentialPath(change.Path) {
+			var raw json.RawMessage
+			if change.Value != nil {
+				raw, _ = json.Marshal(change.Value)
+			}
+			secrets.set(credentialID(change.Path), raw)
+			continue
+		}
+		if !change.Delete {
+			var err error
+			if change.Value, err = tomlValue(change.Value); err != nil {
+				return err
+			}
+		}
+		edits = append(edits, change)
+	}
+	source, err := editSource(m.doc.Policy, edits)
+	if err != nil {
+		return err
+	}
+	// Compilation drops credentials without a connection, so compare against what this edit wrote.
+	next, st, err := m.prepareCandidate(ctx, source, secrets.clone())
+	if err != nil {
+		return err
+	}
+	for id, raw := range secrets.all() {
+		if next.Secrets.get(id) == nil && !bytes.Equal(raw, m.doc.Secrets.get(id)) {
+			return fmt.Errorf("credential %v has no connection", id)
+		}
+	}
+	return m.activate(ctx, next, st)
+}
+
 func connectionName(account, key string) string {
 	if key != "" {
 		return account + "-" + key
@@ -284,6 +336,101 @@ func (m *monitor) observe(ctx context.Context, fingerprint string, l facts.Label
 	return nil
 }
 
+// Compilation fills settings; reconciliation starts runtime resources after persistence.
+type connection struct {
+	Secrets                      map[string]*credential.Value
+	name, protocol, account, key string
+	config                       json.RawMessage
+	connector                    connector.Server
+	ctx                          context.Context
+	cancel                       context.CancelFunc
+	ready, done                  chan struct{}
+	incoming                     chan *connector.Stream
+	err                          error // Published by closing done.
+}
+
+// reconcile never waits for upstreams. Replacements wait for their predecessors,
+// including when a connection is removed and immediately re-added.
+func (m *monitor) reconcile(s *state) {
+	for name, c := range m.running {
+		if s.connections[name] != c {
+			c.cancel()
+			select {
+			case <-c.done:
+				delete(m.running, name)
+			default:
+			}
+		}
+	}
+	for name, c := range s.connections {
+		previous := m.running[name]
+		if previous == c {
+			continue
+		}
+		c.ctx, c.cancel = context.WithCancel(context.Background())
+		c.ready, c.done, c.incoming = make(chan struct{}), make(chan struct{}), make(chan *connector.Stream)
+		m.running[name] = c
+		go func() {
+			defer close(c.done)
+			defer c.cancel()
+			if previous != nil {
+				<-previous.done
+			}
+			if c.ctx.Err() != nil {
+				return
+			}
+			serve := func() {
+				var streams sync.WaitGroup
+				defer streams.Wait()
+				close(c.ready)
+				for {
+					select {
+					case stream := <-c.incoming:
+						streams.Go(func() { defer stream.Close(); c.connector.Serve(stream, &s.Env) })
+					case <-c.ctx.Done():
+						return
+					}
+				}
+			}
+			if runner, ok := c.connector.(connector.Runner); ok {
+				c.err = runner.Run(c.ctx, &s.Env, serve)
+			} else {
+				serve()
+			}
+			if c.err != nil && c.ctx.Err() == nil {
+				log.Printf("connector %s: %v", c.name, c.err)
+			}
+		}()
+	}
+}
+
+type connectionStatus struct {
+	State   string `json:"state"`
+	Error   string `json:"error,omitempty"`
+	Details any    `json:"details,omitempty"`
+}
+
+func (c *connection) status() connectionStatus {
+	select {
+	case <-c.done:
+		if c.err != nil {
+			return connectionStatus{State: "error", Error: c.err.Error()}
+		}
+		return connectionStatus{State: "stopped"}
+	default:
+	}
+	select {
+	case <-c.ready:
+		result := connectionStatus{State: "ready"}
+		if reporter, ok := c.connector.(*mcp.Server); ok {
+			result.Details = reporter.Status()
+		}
+		return result
+	default:
+		return connectionStatus{State: "connecting"}
+	}
+}
+
 const (
 	caLifetime   = 10 * 365 * 24 * time.Hour
 	leafLifetime = 24 * time.Hour
@@ -296,12 +443,6 @@ type keyMaterial struct {
 	CAKey   string `json:"ca_key"`
 }
 
-type authority struct {
-	ca     tls.Certificate
-	mu     sync.Mutex
-	leaves map[string]*tls.Certificate
-}
-
 func loadCA(k *keyMaterial) (*tls.Config, error) {
 	if k.CACert == "" {
 		if err := createCA(k); err != nil {
@@ -312,8 +453,7 @@ func loadCA(k *keyMaterial) (*tls.Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	a := &authority{ca: ca, leaves: map[string]*tls.Certificate{}}
-	return &tls.Config{GetCertificate: a.certificate}, nil
+	return &tls.Config{GetCertificate: func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) { return leaf(ca, hello) }}, nil
 }
 
 func createCA(k *keyMaterial) error {
@@ -344,18 +484,13 @@ func createCA(k *keyMaterial) error {
 }
 
 // Without SNI, the leaf is minted for the channel's target.
-func (a *authority) certificate(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
+func leaf(ca tls.Certificate, hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
 	name := hello.ServerName
 	if c, ok := hello.Conn.(*connector.Stream); ok && name == "" {
 		name = c.Host
 	}
 	if name == "" {
 		return nil, errors.New("a selected connection needs TLS server name indication")
-	}
-	a.mu.Lock()
-	defer a.mu.Unlock()
-	if leaf := a.leaves[name]; leaf != nil && time.Now().Before(leaf.Leaf.NotAfter) {
-		return leaf, nil
 	}
 	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	if err != nil {
@@ -374,17 +509,11 @@ func (a *authority) certificate(hello *tls.ClientHelloInfo) (*tls.Certificate, e
 	} else {
 		template.DNSNames = []string{name}
 	}
-	der, err := x509.CreateCertificate(rand.Reader, template, a.ca.Leaf, &key.PublicKey, a.ca.PrivateKey)
+	der, err := x509.CreateCertificate(rand.Reader, template, ca.Leaf, &key.PublicKey, ca.PrivateKey)
 	if err != nil {
 		return nil, err
 	}
-	parsed, err := x509.ParseCertificate(der)
-	if err != nil {
-		return nil, err
-	}
-	leaf := &tls.Certificate{Certificate: [][]byte{der}, PrivateKey: key, Leaf: parsed}
-	a.leaves[name] = leaf
-	return leaf, nil
+	return &tls.Certificate{Certificate: [][]byte{der}, PrivateKey: key}, nil
 }
 
 func loadHostKey(k *keyMaterial) (ssh.Signer, error) {

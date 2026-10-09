@@ -91,7 +91,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "access_key"
         ],
         "secret": true
@@ -103,7 +103,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "secret_key"
         ],
         "secret": true

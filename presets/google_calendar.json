@@ -162,12 +162,23 @@
     },
     "fields": [
       {
+        "key": "client_id",
+        "label": "Google OAuth client ID",
+        "paths": []
+      },
+      {
+        "key": "client_secret",
+        "label": "Google OAuth client secret",
+        "paths": [],
+        "secret": true
+      },
+      {
         "key": "token",
         "label": "Google account",
         "oauth": {
           "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
-          "client_id": "{MONITOR_GOOGLE_CLIENT_ID}",
-          "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
           "prompt": "consent",
           "scope": "https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.calendarlist.readonly https://www.googleapis.com/auth/calendar.freebusy",
           "token_url": "https://oauth2.googleapis.com/token"
@@ -176,7 +187,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "token"
         ],
         "secret": true

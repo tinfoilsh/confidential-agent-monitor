@@ -7,7 +7,7 @@ pairing, and saved approvals update the same source through go-toml's editing AP
 Untouched text and comments stay in place.
 
 Monitor stores the source inside its encrypted state, alongside separately
-stored credentials and captured preset definitions. A downloaded file is a copy;
+stored credentials. A downloaded file is a copy;
 apply it through the web app or CLI to change the running policy. Stored state
 requires policy source; legacy JSON configuration is not supported.
 
@@ -16,9 +16,6 @@ requires policy source; legacy JSON configuration is not supported.
 These are example sections of a policy:
 
 ```toml
-[monitor]
-version = 1
-
 [lattices]
 confidentiality = true
 integrity = false
@@ -49,10 +46,10 @@ override to inherit its default again. The preset editor saves overrides using
 the same rules. Trust requirements come from the effects vocabulary. Both `write`
 and `generate` require trust when integrity enforcement is enabled.
 
-Monitor fills in `monitor.presets` with content hashes and retains the referenced
-preset definitions in encrypted state. Those pins keep an existing policy's
-preset behavior stable across server updates. The effective-policy view expands
-these definitions and defaults so you can inspect what the source means.
+Shipped presets come from the running server, so a server update can change
+them; saved approvals stop applying to an operation whose definition changed.
+The effective-policy view expands preset definitions and defaults so you can
+inspect what the source means.
 
 Credentials live only in encrypted state, keyed by account, connection, and
 secret name. Each connector uses a single `secrets` map. Set them through account
@@ -61,7 +58,7 @@ credential leaves policy source unchanged. Source, effective-policy and agent
 views contain no credentials.
 
 This format does not load older documents with pointer-keyed credentials or
-mailboxes. Migrate those documents before upgrading. Captured presets and owner
+mailboxes. Migrate those documents before upgrading. Owner preset
 overrides must omit operation `id` and `requires_trust` fields. The facts and
 approval semantics version is 7; saved approvals need to be granted again.
 

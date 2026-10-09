@@ -740,7 +740,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "sid"
         ],
         "secret": true
@@ -752,7 +752,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "token"
         ],
         "secret": true

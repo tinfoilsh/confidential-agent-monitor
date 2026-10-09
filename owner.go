@@ -3,7 +3,6 @@ package main
 import (
 	"cmp"
 	"context"
-	"crypto/rand"
 	"crypto/subtle"
 	"embed"
 	"encoding/base64"
@@ -11,15 +10,14 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/fs"
 	"net/http"
-	"os"
 	"slices"
 	"strings"
-	"time"
 
+	"github.com/pmezard/go-difflib/difflib"
 	"github.com/tinfoilsh/monitor/connector/browser"
 	"github.com/tinfoilsh/monitor/connector/credential"
+	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/facts"
 	"golang.org/x/crypto/ssh"
 )
@@ -29,23 +27,7 @@ const maxDocumentBytes = 16 << 20
 //go:embed app
 var app embed.FS
 
-// Dev runs use the working tree so UI edits only need a browser refresh.
-// A standalone binary still has the embedded app when no local copy exists.
-func appHandler(dev bool) http.Handler {
-	if dev {
-		local := os.DirFS("app")
-		if info, err := fs.Stat(local, "index.html"); err == nil && !info.IsDir() {
-			files := http.StripPrefix("/app/", http.FileServerFS(local))
-			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Cache-Control", "no-store")
-				// HTTP dates only have second precision; rapid edits can share a timestamp.
-				r.Header.Del("If-Modified-Since")
-				files.ServeHTTP(w, r)
-			})
-		}
-	}
-	return http.FileServerFS(app)
-}
+var errPolicyConflict = errors.New("policy changed; reload it and review a new diff before applying")
 
 type fieldMetadata struct {
 	Path []string `json:"path"`
@@ -54,14 +36,22 @@ type fieldMetadata struct {
 
 // ownerView exposes credential status without credential values.
 type ownerView struct {
-	Generation uint64                      `json:"generation"`
-	Config     json.RawMessage             `json:"config"`
-	HostKey    string                      `json:"host_key"`
-	CA         string                      `json:"ca"`
-	Fields     map[string][]fieldMetadata  `json:"fields"`
-	Status     map[string]connectionStatus `json:"status"`
-	Labels     map[string]facts.Label      `json:"labels"`
-	Presets    map[string]catalogEntry     `json:"presets"`
+	Generation uint64                       `json:"generation"`
+	Config     json.RawMessage              `json:"config"`
+	HostKey    string                       `json:"host_key"`
+	CA         string                       `json:"ca"`
+	Fields     map[string][]fieldMetadata   `json:"fields"`
+	Status     map[string]connectionStatus  `json:"status"`
+	Labels     map[string]facts.Label       `json:"labels"`
+	Presets    map[string]catalogEntry      `json:"presets"`
+	Vocabulary map[string]facts.Obligations `json:"vocabulary"`
+}
+
+// A catalogEntry exposes a preset's setup metadata and operations.
+type catalogEntry struct {
+	*presetCatalog
+	Title      string                    `json:"title"`
+	Operations *map[string]web.Operation `json:"operations,omitempty"`
 }
 
 func (m *monitor) view(err error) (any, error) {
@@ -70,30 +60,28 @@ func (m *monitor) view(err error) (any, error) {
 	}
 	s := m.live.Load()
 	v := ownerView{Generation: m.doc.Generation, HostKey: string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), CA: m.doc.Keys.CACert,
-		Fields: map[string][]fieldMetadata{}, Status: map[string]connectionStatus{}, Labels: map[string]facts.Label{}, Presets: catalog(s.cfg.resolved)}
-	v.Config, v.Fields, err = configView(m.doc, s)
-	if err != nil {
+		Fields: map[string][]fieldMetadata{}, Status: map[string]connectionStatus{}, Labels: map[string]facts.Label{}, Presets: map[string]catalogEntry{}, Vocabulary: facts.Effects}
+	if v.Config, err = json.Marshal(s.cfg); err != nil {
 		return nil, err
 	}
 	for _, c := range s.connections {
 		v.Status[c.name] = c.status()
+		for name := range c.Secrets {
+			path := []string{"connections", c.key, c.protocol, "secrets", name}
+			v.Fields[c.account] = append(v.Fields[c.account], fieldMetadata{path, credential.Describe(m.doc.Secrets.get(secretID{c.account, c.key, name}))})
+		}
 	}
 	for _, p := range s.principals {
 		v.Labels[p.Name] = m.currentLabel(p.Key)
 	}
-	return v, nil
-}
-
-func configView(doc sealed, st *state) (json.RawMessage, map[string][]fieldMetadata, error) {
-	fields := map[string][]fieldMetadata{}
-	for _, c := range st.connections {
-		for name := range c.Secrets {
-			path := append(c.path(), "secrets", name)
-			fields[c.account] = append(fields[c.account], fieldMetadata{path[2:], credential.Describe(doc.Secrets.get(secretID{c.account, c.key, name}))})
+	for name, p := range s.cfg.resolved {
+		entry := catalogEntry{presetCatalog: p.Catalog, Title: p.Title}
+		if p.HTTP != nil {
+			entry.Operations = &p.HTTP.Operations
 		}
+		v.Presets[name] = entry
 	}
-	raw, err := json.Marshal(st.cfg)
-	return raw, fields, err
+	return v, nil
 }
 
 type unlockInput struct {
@@ -110,11 +98,17 @@ type finishSignInInput struct {
 type decisionInput struct {
 	Decision string `json:"decision"`
 }
+type sourceInput struct {
+	Source string `json:"source"`
+}
+type editsInput struct {
+	Changes []sourceChange `json:"changes"`
+}
 
 func (m *monitor) handler() http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("POST /unlock", jsonHandler(maxDocumentBytes, func(r *http.Request, req unlockInput) (any, error) {
-		key, err := m.authenticate(r, false)
+		key, err := ownerKey(r)
 		if err != nil {
 			return nil, err
 		}
@@ -125,22 +119,11 @@ func (m *monitor) handler() http.Handler {
 	}))
 	mux.Handle("GET /{$}", owned(m, func(_ *http.Request, _ struct{}) (any, error) { return m.view(nil) }))
 	mux.Handle("GET /presets/{name}", owned(m, func(r *http.Request, _ struct{}) (any, error) {
-		if r.URL.Query().Has("effective") {
-			preset := m.live.Load().cfg.resolved[r.PathValue("name")]
-			if preset == nil {
-				return nil, errors.New("unknown preset")
-			}
-			source, err := facts.JSON[map[string]any](preset)
-			if err != nil {
-				return nil, err
-			}
-			return source, nil
+		preset := m.live.Load().cfg.resolved[r.PathValue("name")]
+		if preset == nil {
+			return nil, errors.New("unknown preset")
 		}
-		src, err := presetFiles.ReadFile("presets/" + r.PathValue("name") + ".json")
-		if err != nil && draftFiles != nil {
-			src, err = fs.ReadFile(draftFiles, r.PathValue("name")+".json")
-		}
-		return json.RawMessage(src), err
+		return preset, nil
 	}))
 	mux.Handle("POST /labels/{identity}", owned(m, func(r *http.Request, l facts.Label) (any, error) {
 		var fingerprint string
@@ -170,15 +153,39 @@ func (m *monitor) handler() http.Handler {
 	mux.Handle("GET /connections/{name}/browser", m.authenticated(m.browserControl))
 	mux.Handle("POST /connections/{name}/browser", m.authenticated(m.browserControl))
 	mux.Handle("GET /requests", owned(m, func(_ *http.Request, _ struct{}) (any, error) {
-		newest := slices.Clone(m.records)
+		newest := append([]*record{}, m.records...)
 		slices.Reverse(newest)
 		return newest, nil
 	}))
 	mux.Handle("POST /requests/{id}", owned(m, func(r *http.Request, req decisionInput) (any, error) {
 		return nil, m.answer(r.Context(), r.PathValue("id"), req.Decision)
 	}))
-	m.policyRoutes(mux)
-	mux.Handle("GET /app/", appHandler(m.dev))
+	mux.Handle("GET /policy", owned(m, func(r *http.Request, _ struct{}) (any, error) {
+		result := map[string]any{"source": m.doc.Policy}
+		var err error
+		if r.URL.Query().Has("effective") {
+			result["effective"], err = effectiveSource(m.live.Load())
+		}
+		return result, err
+	}))
+	mux.Handle("POST /policy/preview", owned(m, func(r *http.Request, input sourceInput) (any, error) {
+		next, st, err := m.prepareCandidate(r.Context(), input.Source, nil)
+		if err != nil {
+			return nil, err
+		}
+		return m.policyPreview(next, st)
+	}))
+	mux.Handle("POST /policy", owned(m, func(r *http.Request, input sourceInput) (any, error) {
+		next, st, err := m.prepareCandidate(r.Context(), input.Source, nil)
+		if err == nil {
+			err = m.activate(r.Context(), next, st)
+		}
+		return m.view(err)
+	}))
+	mux.Handle("POST /policy/edits", owned(m, func(r *http.Request, input editsInput) (any, error) {
+		return m.view(m.editPolicy(r.Context(), input.Changes))
+	}))
+	mux.Handle("GET /app/", http.FileServerFS(app))
 	return mux
 }
 
@@ -249,16 +256,9 @@ func (m *monitor) browserControl(w http.ResponseWriter, r *http.Request) {
 
 var errLocked = errors.New("the monitor is locked")
 
-func (m *monitor) authenticate(r *http.Request, unlocked bool) ([]byte, error) {
+func ownerKey(r *http.Request) ([]byte, error) {
 	key, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer "))
 	if err != nil || len(key) != ownerKeyBytes {
-		return nil, errOwner
-	}
-	// owner is set before live is published and never changes after.
-	if unlocked && m.live.Load() == nil {
-		return nil, errLocked
-	}
-	if unlocked && subtle.ConstantTimeCompare(key, m.owner) != 1 {
 		return nil, errOwner
 	}
 	return key, nil
@@ -291,7 +291,15 @@ func owned[T any](m *monitor, fn func(*http.Request, T) (any, error)) http.Handl
 // authenticated serves the owner without the monitor's lock, for calls that wait on the network.
 func (m *monitor) authenticated(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if _, err := m.authenticate(r, true); err != nil {
+		key, err := ownerKey(r)
+		// owner is set before live is published and never changes after.
+		if err == nil && m.live.Load() == nil {
+			err = errLocked
+		}
+		if err == nil && subtle.ConstantTimeCompare(key, m.owner) != 1 {
+			err = errOwner
+		}
+		if err != nil {
 			responseError(w, err)
 			return
 		}
@@ -331,113 +339,38 @@ func jsonHandler[T any](limit int64, fn func(*http.Request, T) (any, error)) htt
 	}
 }
 
-const (
-	approvalWait = 2 * time.Minute
-	maxRecords   = 1000
-
-	statePending  = "pending"
-	stateExpired  = "expired"
-	stateAllowed  = "allowed"
-	stateRefused  = "refused"
-	stateApproved = "approved"
-	stateDenied   = "denied"
-
-	answerOnce = "once"
-	answerSave = "save"
-	answerDeny = "deny"
-)
-
-// A record is one decision; requests are the pending and expired ones.
-type record struct {
-	ID      string    `json:"id"`
-	State   string    `json:"state"`
-	Time    time.Time `json:"time"`
-	Expires time.Time `json:"expires,omitzero"`
-	*decision
-	answered chan struct{}
-}
-
-func (m *monitor) addRecord(d *decision) *record {
-	r := &record{ID: rand.Text(), Time: time.Now(), State: stateAllowed, decision: d}
-	m.records = append(m.records, r)
-	if len(m.records) > maxRecords {
-		m.records = m.records[1:]
-	}
-	return r
-}
-
-// await holds a record for the owner's answer, releasing the lock while it waits.
-func (m *monitor) await(ctx context.Context, r *record) error {
-	r.State, r.Expires, r.answered = statePending, r.Time.Add(approvalWait), make(chan struct{})
-	m.mu.Unlock()
-	wait, cancel := context.WithDeadline(ctx, r.Expires)
-	select {
-	case <-r.answered:
-	case <-wait.Done():
-	}
-	cancel()
-	m.mu.Lock()
-	switch r.State {
-	case statePending:
-		r.State = stateExpired
-		return errors.New("waiting for the owner's approval in the monitor timed out")
-	case stateDenied:
-		return errors.New("the owner denied this request")
-	}
-	return nil
-}
-
-// settle marks a record refused when its request fails for a reason other than the owner's answer.
-func (r *record) settle(err error) {
-	if err != nil && r.State != stateDenied && r.State != stateExpired {
-		r.State = stateRefused
-		if len(r.Deny) == 0 {
-			r.Deny = []string{err.Error()}
-		}
-	}
-}
-
-// Expired requests can still save a rule, but cannot resume the original call.
-func (m *monitor) answer(ctx context.Context, id, choice string) error {
-	if !slices.Contains([]string{answerOnce, answerSave, answerDeny}, choice) {
-		return fmt.Errorf("decision must be %s, %s or %s", answerOnce, answerSave, answerDeny)
-	}
-	i := slices.IndexFunc(m.records, func(r *record) bool { return r.ID == id })
-	if i < 0 {
-		return fmt.Errorf("no request %s", id)
-	}
-	r := m.records[i]
-	if r.State != statePending && !(r.State == stateExpired && choice == answerSave) {
-		return fmt.Errorf("request %s is %s", id, r.State)
-	}
-	if choice == answerSave {
-		if err := m.saveRule(ctx, r); err != nil {
-			return err
-		}
-	}
-	if r.State == statePending {
-		r.State = stateApproved
-		if choice == answerDeny {
-			r.State = stateDenied
-		}
-		close(r.answered)
-	}
-	return nil
-}
-
-func (m *monitor) saveRule(ctx context.Context, r *record) error {
-	f := r.Facts
-	if f.Operation == nil || f.Operation.ID == "" {
-		return errors.New("a request without a known operation cannot be saved")
-	}
-	p, exists := m.live.Load().principals[f.Principal.Key]
-	if !exists || p.Name != f.Principal.Name {
-		return errors.New("the requesting identity was revoked or replaced")
-	}
-	value, err := json.Marshal(rule{Account: f.Account, Action: f.Operation.Action, Operation: f.Operation.ID,
-		Definition: r.Definition, Scope: r.Grant, Requirements: slices.Clone(r.Requirements)})
+// effectiveSource renders an already compiled state; reading it cannot compile
+// or change policy. Configuration contains no credential values.
+func effectiveSource(st *state) (string, error) {
+	v, err := facts.JSON[map[string]any](st.cfg)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return m.editPolicy(ctx, []sourceChange{{Path: []string{"identities", p.Name, "rules", r.ID}, Value: value}})
+	ps := map[string]any{}
+	for _, acc := range st.cfg.Accounts {
+		if ps[acc.Preset], err = facts.JSON[map[string]any](st.cfg.resolved[acc.Preset]); err != nil {
+			return "", err
+		}
+	}
+	v["presets"] = ps
+	return renderTOML(v)
+}
+
+func (m *monitor) policyPreview(next sealed, st *state) (*facts.Policy, error) {
+	before, err := effectiveSource(m.live.Load())
+	if err != nil {
+		return nil, err
+	}
+	after, err := effectiveSource(st)
+	if err != nil {
+		return nil, err
+	}
+	diff := func(a, b string) string {
+		text, _ := difflib.GetUnifiedDiffString(difflib.UnifiedDiff{
+			A: difflib.SplitLines(a), B: difflib.SplitLines(b),
+			FromFile: "active/policy.toml", ToFile: "proposed/policy.toml", Context: 3,
+		})
+		return text
+	}
+	return &facts.Policy{SourceDiff: diff(m.doc.Policy, next.Policy), EffectiveDiff: diff(before, after)}, nil
 }

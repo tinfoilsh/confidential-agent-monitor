@@ -3,6 +3,7 @@ package main
 import (
 	"cmp"
 	"context"
+	"crypto/rand"
 	"crypto/sha256"
 	_ "embed"
 	"encoding/hex"
@@ -13,6 +14,7 @@ import (
 	"maps"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/open-policy-agent/opa/v1/rego"
@@ -40,7 +42,7 @@ type input struct {
 type decision struct {
 	Facts        *facts.Facts   `json:"facts"`
 	Deny         []string       `json:"deny"`
-	Requirements requirements   `json:"requirements"`
+	Requirements []requirement  `json:"requirements"`
 	Sends        string         `json:"sends"`
 	Next         facts.Label    `json:"next"`
 	Definition   string         `json:"definition"`
@@ -52,8 +54,6 @@ type requirement struct {
 	ID      string `json:"id"`
 	Message string `json:"message"`
 }
-
-type requirements []requirement
 
 func (d *decision) authority() string {
 	raw, _ := json.Marshal([]any{d.Facts.Parameters, d.Definition, d.Grant})
@@ -101,17 +101,31 @@ func preparePolicy(ctx context.Context, cfg *config) (q rego.PreparedEvalQuery, 
 	return q, hex.EncodeToString(h.Sum(nil)), err
 }
 
-// describe asks the connector what parsed input does under current settings.
-// It runs again after approval, without reparsing or executing.
-func describe(record *presetRecord, request connector.Request, c *connection, a account) (facts.Facts, error) {
+// evaluate asks the connector what parsed input does under live routing, settings and label,
+// then decides it on one snapshot. It runs again after approval, without reparsing or executing.
+func (m *monitor) evaluate(ctx context.Context, in input) (*decision, principal, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, principal{}, err
+	}
+	st := m.live.Load()
+	p, ok := st.principals[in.Key]
+	if !ok {
+		return nil, p, errNoAgent
+	}
+	c := st.connections[in.Connection]
+	if c == nil {
+		return nil, p, errors.New("connection removed")
+	}
+	a := st.cfg.Accounts[c.account]
+	record := st.cfg.resolved[a.Preset]
 	cc := connector.Context{Title: record.Title, Connection: c.name, Config: c.connector, Options: a.PolicyOptions}
 	switch c.protocol {
 	case "http":
-		cc.Spec = record.http
+		cc.Spec = record.HTTP
 	case "mcp":
-		cc.Spec = record.mcp
+		cc.Spec = record.MCP
 	}
-	f, err := request.Describe(cc)
+	f, describeErr := in.Request.Describe(cc)
 	f.Version, f.Account, f.Service, f.Connection = facts.Version, c.account, a.Preset, c.name
 	if f.Kind == "" {
 		f.Kind = facts.KindOperation
@@ -135,14 +149,7 @@ func describe(record *presetRecord, request connector.Request, c *connection, a 
 	if f.Scope == nil {
 		f.Scope = f.Parameters
 	}
-	return f, err
-}
-
-// decide evaluates policy on one snapshot of the described request.
-func (st *state) decide(ctx context.Context, request connector.Request, p principal, c *connection, a account, label facts.Label) (*decision, error) {
-	record := st.cfg.resolved[a.Preset]
-	f, describeErr := describe(record, request, c, a)
-	f.Principal, f.Context.Label = facts.Principal{Key: p.Key, Name: p.Name}, label
+	f.Principal, f.Context.Label = facts.Principal{Key: p.Key, Name: p.Name}, m.currentLabel(p.Key)
 	// Approval definitions bind semantics and configuration, independently of facts
 	// shown to users. Display edits and current labels do not invalidate a grant.
 	raw, _ := json.Marshal([]any{st.program, st.cfg.Lattices, f.Kind, a.Preset, c.name, c.config, a.PolicyOptions,
@@ -151,12 +158,12 @@ func (st *state) decide(ctx context.Context, request connector.Request, p princi
 	definition := hex.EncodeToString(sum[:])
 	grant, err := facts.JSON[map[string]any](f.Scope)
 	if err != nil {
-		return nil, fmt.Errorf("approval scope: %w", err)
+		return nil, p, fmt.Errorf("approval scope: %w", err)
 	}
 	// Policy and audit share one snapshot, independent of connector buffers.
 	f, policyFacts, err := f.Snapshot()
 	if err != nil {
-		return nil, err
+		return nil, p, err
 	}
 	access, _ := facts.JSON[map[string]any](p.Accounts[c.account])
 	// Each evaluation owns its lazy objects: OPA caches fields as it reads them.
@@ -165,38 +172,20 @@ func (st *state) decide(ctx context.Context, request connector.Request, p princi
 		"account":       map[string]any{"contents": a.Contents, "strangers": a.Strangers, "sends": a.Sends, "private": a.PolicyOptions.Private, "public_scope": record.PublicScope}})
 	results, err := st.query.Eval(ctx, rego.EvalParsedInput(parsed))
 	if err != nil {
-		return nil, fmt.Errorf("policy: %w", err)
+		return nil, p, fmt.Errorf("policy: %w", err)
 	}
 	if len(results) != 1 || len(results[0].Expressions) != 1 {
-		return nil, errors.New("policy returned no decision")
+		return nil, p, errors.New("policy returned no decision")
 	}
 	d, err := facts.JSON[decision](results[0].Expressions[0].Value)
 	if err != nil {
-		return nil, fmt.Errorf("policy returned an invalid decision: %w", err)
+		return nil, p, fmt.Errorf("policy returned an invalid decision: %w", err)
 	}
 	d.Facts, d.Grant, d.Definition = &f, grant, definition
 	if describeErr != nil {
 		d.Deny = append(d.Deny, describeErr.Error())
 	}
-	return &d, nil
-}
-
-// evaluate decides input with live routing, settings and label under the lock.
-func (m *monitor) evaluate(ctx context.Context, in input) (*decision, principal, error) {
-	if err := ctx.Err(); err != nil {
-		return nil, principal{}, err
-	}
-	st := m.live.Load()
-	p, ok := st.principals[in.Key]
-	if !ok {
-		return nil, p, errNoAgent
-	}
-	c := st.connections[in.Connection]
-	if c == nil {
-		return nil, p, errors.New("connection removed")
-	}
-	d, err := st.decide(ctx, in.Request, p, c, st.cfg.Accounts[c.account], m.currentLabel(p.Key))
-	return d, p, err
+	return &d, p, nil
 }
 
 // gate evaluates and records a request under the authorization lock; approval waits release it.
@@ -254,4 +243,115 @@ func refusal(deny []string) error {
 	reason := strings.Join(deny, "; ")
 	log.Printf("denied: %s", reason)
 	return errors.New(reason)
+}
+
+const (
+	approvalWait = 2 * time.Minute
+	maxRecords   = 1000
+
+	statePending  = "pending"
+	stateExpired  = "expired"
+	stateAllowed  = "allowed"
+	stateRefused  = "refused"
+	stateApproved = "approved"
+	stateDenied   = "denied"
+
+	answerOnce = "once"
+	answerSave = "save"
+	answerDeny = "deny"
+)
+
+// A record is one decision; requests are the pending and expired ones.
+type record struct {
+	ID      string    `json:"id"`
+	State   string    `json:"state"`
+	Time    time.Time `json:"time"`
+	Expires time.Time `json:"expires,omitzero"`
+	*decision
+	answered chan struct{}
+}
+
+func (m *monitor) addRecord(d *decision) *record {
+	r := &record{ID: rand.Text(), Time: time.Now(), State: stateAllowed, decision: d}
+	m.records = append(m.records, r)
+	if len(m.records) > maxRecords {
+		m.records = m.records[1:]
+	}
+	return r
+}
+
+// await holds a record for the owner's answer, releasing the lock while it waits.
+func (m *monitor) await(ctx context.Context, r *record) error {
+	r.State, r.Expires, r.answered = statePending, r.Time.Add(approvalWait), make(chan struct{})
+	m.mu.Unlock()
+	wait, cancel := context.WithDeadline(ctx, r.Expires)
+	select {
+	case <-r.answered:
+	case <-wait.Done():
+	}
+	cancel()
+	m.mu.Lock()
+	switch r.State {
+	case statePending:
+		r.State = stateExpired
+		return errors.New("waiting for the owner's approval in the monitor timed out")
+	case stateDenied:
+		return errors.New("the owner denied this request")
+	}
+	return nil
+}
+
+// settle marks a record refused when its request fails for a reason other than the owner's answer.
+func (r *record) settle(err error) {
+	if err != nil && r.State != stateDenied && r.State != stateExpired {
+		r.State = stateRefused
+		if len(r.Deny) == 0 {
+			r.Deny = []string{err.Error()}
+		}
+	}
+}
+
+// Expired requests can still save a rule, but cannot resume the original call.
+func (m *monitor) answer(ctx context.Context, id, choice string) error {
+	if !slices.Contains([]string{answerOnce, answerSave, answerDeny}, choice) {
+		return fmt.Errorf("decision must be %s, %s or %s", answerOnce, answerSave, answerDeny)
+	}
+	i := slices.IndexFunc(m.records, func(r *record) bool { return r.ID == id })
+	if i < 0 {
+		return fmt.Errorf("no request %s", id)
+	}
+	r := m.records[i]
+	if r.State != statePending && !(r.State == stateExpired && choice == answerSave) {
+		return fmt.Errorf("request %s is %s", id, r.State)
+	}
+	if choice == answerSave {
+		if err := m.saveRule(ctx, r); err != nil {
+			return err
+		}
+	}
+	if r.State == statePending {
+		r.State = stateApproved
+		if choice == answerDeny {
+			r.State = stateDenied
+		}
+		close(r.answered)
+	}
+	return nil
+}
+
+func (m *monitor) saveRule(ctx context.Context, r *record) error {
+	f := r.Facts
+	if f.Operation == nil || f.Operation.ID == "" {
+		return errors.New("a request without a known operation cannot be saved")
+	}
+	p, exists := m.live.Load().principals[f.Principal.Key]
+	if !exists || p.Name != f.Principal.Name {
+		return errors.New("the requesting identity was revoked or replaced")
+	}
+	value, err := facts.JSON[map[string]any](rule{Account: f.Account, Action: f.Operation.Action, Operation: f.Operation.ID,
+		Definition: r.Definition, Scope: r.Grant, Requirements: slices.Clone(r.Requirements)})
+	if err != nil {
+		return err
+	}
+	return m.editPolicy(ctx, []sourceChange{{Path: []string{"identities", p.Name, "rules", r.ID}, Value: value}})
 }

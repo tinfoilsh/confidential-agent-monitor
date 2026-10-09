@@ -221,7 +221,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "api_key"
         ],
         "secret": true

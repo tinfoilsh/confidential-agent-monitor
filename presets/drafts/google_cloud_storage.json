@@ -3,7 +3,18 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "Google Cloud Storage account", "secret": true, "path": ["connections", "", "http", "secrets", "token"], "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{MONITOR_GOOGLE_CLIENT_ID}", "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}", "scope": "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloud-platform.read-only https://www.googleapis.com/auth/devstorage.full_control https://www.googleapis.com/auth/devstorage.read_only https://www.googleapis.com/auth/devstorage.read_write"}}
+      {
+        "key": "client_id",
+        "label": "Google OAuth client ID",
+        "paths": []
+      },
+      {
+        "key": "client_secret",
+        "label": "Google OAuth client secret",
+        "paths": [],
+        "secret": true
+      },
+      {"key": "token", "label": "Google Cloud Storage account", "secret": true, "path": ["connections", "", "http", "secrets", "token"], "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloud-platform.read-only https://www.googleapis.com/auth/devstorage.full_control https://www.googleapis.com/auth/devstorage.read_only https://www.googleapis.com/auth/devstorage.read_write"}}
     ],
     "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://storage.googleapis.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},

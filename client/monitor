@@ -334,7 +334,7 @@ class Session:
         if route:
             matches, best = [], -1
             for connection in self.routes:
-                origins = [urlsplit(origin) for origin in connection["origins"]]
+                origins = [urlsplit(slot["origin"]) for slot in connection["slots"] or []]
                 exact = any(o.hostname == host and (o.port or 443) == port for o in origins)
                 score = len(host) if exact else -1
                 if port in (80, 443):
@@ -411,16 +411,13 @@ class Session:
 
     def environment(self, selected, profile):
         try:
-            setup = json.loads(self.client.request("agent.monitor", "GET", "/setup"))
-            if setup["version"] != 1:
-                raise MonitorError("unsupported Monitor setup version; update the client")
-            connections = setup["http"]
+            setup = json.loads(self.client.request("agent.monitor", "GET", "/connections"))
+            connections = [c for c in setup["connections"] if c["kind"] == "http"]
             ca = setup["ca"]
-            if not isinstance(connections, list) or not isinstance(ca, str) or not ca:
+            if not isinstance(ca, str) or not ca:
                 raise ValueError()
         except (ValueError, KeyError, TypeError) as error:
-            raise MonitorError("invalid client setup; update the Monitor server to support GET /setup") from error
-        catalog = {c["name"]: c for c in self.client.connections()}
+            raise MonitorError("invalid connection catalog from the monitor") from error
         credential_names = {name for c in connections for name in c["placeholders"]}
         if selected:
             missing = set(selected) - {c["name"] for c in connections}
@@ -429,7 +426,7 @@ class Session:
             connections = [c for c in connections if c["name"] in selected]
         for connection in connections:
             name = connection["name"]
-            if catalog.get(name, {}).get("state") != "ready":
+            if connection["state"] != "ready":
                 if selected:
                     raise MonitorError(f"connection {name!r} is not ready; check monitor connections")
                 print(f"monitor: connection {name!r} is not ready; other connections remain available", file=sys.stderr)
@@ -472,7 +469,9 @@ class Session:
             env["MONITOR_SSH_CONFIG"] = os.path.abspath(self.client.ssh_config)
         else:
             env.pop("MONITOR_SSH_CONFIG", None)
-        git_slots = [slot for c in connections for slot in c["git"]]
+        git_slots = [{"origin": s["origin"], "path": s.get("path", ""), "password": c["placeholders"][s["value"]]}
+                     for c in connections for s in c["slots"] or []
+                     if s.get("basic") == "password" and s["origin"] == "https://github.com" and s["value"] in c["placeholders"]]
         helper = self.directory / "git-credential"
         helper.write_text(GIT_HELPER.replace("SLOTS = []", "SLOTS = " + repr(git_slots)))
         helper.chmod(0o700)

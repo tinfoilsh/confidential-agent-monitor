@@ -2659,7 +2659,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "login"
         ],
         "secret": true
@@ -2671,7 +2671,7 @@
           "connections",
           "",
           "http",
-          "values",
+          "secrets",
           "apitoken"
         ],
         "secret": true
