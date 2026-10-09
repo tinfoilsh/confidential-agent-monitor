@@ -3,7 +3,7 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "Google Slides account", "secret": true, "path": ["connections", "", "http", "values", "token"], "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{MONITOR_GOOGLE_CLIENT_ID}", "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}", "scope": "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/presentations"}}
+      {"key": "token", "label": "Google Slides account", "secret": true, "path": ["connections", "", "http", "secrets", "token"], "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{MONITOR_GOOGLE_CLIENT_ID}", "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}", "scope": "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/presentations"}}
     ],
     "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://slides.googleapis.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
@@ -13,12 +13,12 @@
     }
   },
   "http": {
-    "operations": [
-    {"id": "presentations.batchUpdate", "action": "write.presentations", "effects": ["write"], "method": "POST", "origin": "https://slides.googleapis.com", "path": "/v1/presentations/{presentationId}:batchUpdate", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {"presentationId": {"from": "path", "at": "presentationId"}}},
-    {"id": "presentations.create", "action": "write.presentations", "effects": ["write"], "method": "POST", "origin": "https://slides.googleapis.com", "path": "/v1/presentations", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {}},
-    {"id": "presentations.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slides.googleapis.com", "path": "/v1/presentations/{presentationsId}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "commentsViewMode"], "scope": {"presentationsId": {"from": "path", "at": "presentationsId"}}},
-    {"id": "presentations.pages.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slides.googleapis.com", "path": "/v1/presentations/{presentationId}/pages/{pageObjectId}", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "commentsViewMode"], "scope": {"presentationId": {"from": "path", "at": "presentationId"}, "pageObjectId": {"from": "path", "at": "pageObjectId"}}},
-    {"id": "presentations.pages.getThumbnail", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://slides.googleapis.com", "path": "/v1/presentations/{presentationId}/pages/{pageObjectId}/thumbnail", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol", "thumbnailProperties.mimeType", "thumbnailProperties.thumbnailSize"], "scope": {"presentationId": {"from": "path", "at": "presentationId"}, "pageObjectId": {"from": "path", "at": "pageObjectId"}}}
-  ]
+    "operations": {
+      "presentations.batchUpdate": {"action":"write.presentations","effects":["write"],"method":"POST","origin":"https://slides.googleapis.com","path":"/v1/presentations/{presentationId}:batchUpdate","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{"presentationId":{"from":"path","at":"presentationId"}}},
+      "presentations.create": {"action":"write.presentations","effects":["write"],"method":"POST","origin":"https://slides.googleapis.com","path":"/v1/presentations","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
+      "presentations.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://slides.googleapis.com","path":"/v1/presentations/{presentationsId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","commentsViewMode"],"scope":{"presentationsId":{"from":"path","at":"presentationsId"}}},
+      "presentations.pages.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://slides.googleapis.com","path":"/v1/presentations/{presentationId}/pages/{pageObjectId}","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","commentsViewMode"],"scope":{"presentationId":{"from":"path","at":"presentationId"},"pageObjectId":{"from":"path","at":"pageObjectId"}}},
+      "presentations.pages.getThumbnail": {"action":"read","effects":["read"],"method":"GET","origin":"https://slides.googleapis.com","path":"/v1/presentations/{presentationId}/pages/{pageObjectId}/thumbnail","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","thumbnailProperties.mimeType","thumbnailProperties.thumbnailSize"],"scope":{"presentationId":{"from":"path","at":"presentationId"},"pageObjectId":{"from":"path","at":"pageObjectId"}}}
+    }
   }
 }

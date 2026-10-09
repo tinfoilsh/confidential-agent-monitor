@@ -4,51 +4,59 @@
 <title>Monitor</title>
 <style>
   :root {
-    --bg: #fff; --side: #eaf3f8; --hover: #e3f4fd; --line: #cadbe5; --edge: #9db9cb; --text: #253e50; --muted: #6b8495; --dim: #4d6b80;
+    --bg: #fff; --side: #edf0f3; --hover: #e1f5fa; --line: #d0dce2; --edge: #a3b5c1; --text: #263c4b; --muted: #526a7b; --dim: #445f72;
     --link: #0369a1; --ok: #15803d; --warn: #b45309; --bad: #b91c1c;
-    --control: linear-gradient(#fff, #f2f9fd 46%, #dcebf5 52%, #edf7fc);
-    --selected: linear-gradient(#eefaff, #d7effb 46%, #bcdef1 52%, #d6effb);
-    --panel: radial-gradient(ellipse at 12% 0%, #fff, transparent 65%), linear-gradient(145deg, #eef5f8, #dae6ed 65%, #dcedec);
-    --nav: linear-gradient(#f9fcff, #e5edf4); --card: linear-gradient(155deg, #fff, #f0f8fc);
-    --bar: linear-gradient(#faffff, #eaf5fb 46%, #d6e7f3 52%, #e9f5fc);
-    --primary: #548ead; --primary-fill: linear-gradient(#d6eefb, #9ed3ed 46%, #7cbfdf 52%, #b1def2); --on-primary: #173f56;
-    --shine: #ffffffd9; --shadow: #214e7026;
+    --control: linear-gradient(#fff, #f4f7f9 46%, #dce3e9 52%, #f0f5f8);
+    --selected: linear-gradient(#e5fbff, #c0edf6 46%, #98d6e6 52%, #c7eff6);
+    --panel: radial-gradient(ellipse at 14% 0%, #ffffffed, transparent 58%),
+      radial-gradient(ellipse 110% 65% at -10% 110%, transparent 58%, #ffffff80 58.3%, #ffffff12 59%, transparent 66%),
+      radial-gradient(ellipse at 95% 105%, #a4e4cba6, transparent 58%),
+      radial-gradient(ellipse at 5% 100%, #91d9ee80, transparent 55%), linear-gradient(145deg, #edf4f7, #dcebf0 65%, #deeee8);
+    --nav: linear-gradient(110deg, #ffffff80, transparent 65%), linear-gradient(#fafbfc, #e2e7ec);
+    --card: linear-gradient(155deg, #fff, #f9fcfd);
+    --bar: linear-gradient(#fff, #f1f4f7 46%, #e0e7ec 52%, #f0f4f7);
+    --primary: #719ba9; --primary-fill: radial-gradient(ellipse 85% 90% at 30% -20%, #ffffffed 15%, #ffffff1a 68%, transparent 70%), linear-gradient(#f0fbfd, #d7ebf0 46%, #bad8e1 52%, #e1f2f5); --on-primary: #294653;
+    --shine: #fffffff2; --shadow: #25485f24; --rim: #657d904d; --glint: #c6faff;
+    --focus-halo: #42c5e64d;
     color-scheme: light dark;
   }
   @media (prefers-color-scheme: dark) {
     :root { --bg: #182833; --side: #213847; --hover: #2b4b60; --line: #365366; --edge: #567b93; --text: #e2f0fa; --muted: #9ab5c8; --dim: #b1c8d8; --link: #8bd9ff; --ok: #79dca3; --warn: #f5cc7c; --bad: #ffa5a5;
       --control: linear-gradient(#4c7089, #3b5d76 46%, #29495f 52%, #355b73);
       --selected: linear-gradient(#527f9a, #3e6c89 46%, #2a5671 52%, #396b86);
-      --panel: radial-gradient(ellipse at 12% 0%, #46697e66, transparent 65%), linear-gradient(145deg, #263d4d, #192e3e 65%, #203b40);
+      --panel: radial-gradient(ellipse at 12% 0%, #46697e66, transparent 65%),
+        radial-gradient(ellipse 110% 65% at -10% 110%, transparent 58%, #a5e7ed24 58.3%, #a5e7ed05 59%, transparent 66%),
+        radial-gradient(ellipse at 95% 105%, #72c7a91a, transparent 58%),
+        radial-gradient(ellipse at 5% 100%, #54bfd91a, transparent 55%), linear-gradient(145deg, #263d4d, #192e3e 65%, #203b40);
       --nav: linear-gradient(#294253, #1c303e); --card: linear-gradient(155deg, #2b4659, #1d3546);
       --bar: linear-gradient(#496a82, #3b5b73 46%, #2c4a60 52%, #365c73);
-      --primary: #83bfdf; --primary-fill: linear-gradient(#d4effb, #8fc9e2 46%, #65abcf 52%, #a1d5eb); --on-primary: #142735;
-      --shine: #ffffff29; --shadow: #0004;
+      --primary: #8db5c4; --primary-fill: radial-gradient(ellipse 85% 90% at 30% -20%, #ffffffa6 15%, #ffffff0d 68%, transparent 70%), linear-gradient(#e0f2f7, #bfdee7 46%, #a3c8d5 52%, #d4eaf0); --on-primary: #243f4e;
+      --shine: #ffffff29; --shadow: #0004; --rim: #07182399; --glint: #b7ecff80; --focus-halo: #68d7ff4d;
     }
   }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
-  body { margin: 0; background: var(--bg); color: var(--text); font: 12px/20px system-ui, sans-serif; }
-  pre, textarea, .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 13px/22px "Segoe UI", "Frutiger", "Trebuchet MS", sans-serif; }
+  pre, textarea, .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; }
   #app { display: grid; grid-template-columns: 240px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); height: 100vh; height: 100dvh; }
   #app.with-pane { grid-template-columns: 240px minmax(0, 1fr) 280px; }
-  #tree { grid-column: 1; grid-row: 1; border-right: 1px solid var(--edge); padding: 4px 0; overflow: auto; background: var(--nav); box-shadow: inset -1px 0 var(--shine); }
+  #tree { grid-column: 1; grid-row: 1; border-right: 1px solid var(--edge); padding: 4px 0; overflow: auto; background: var(--nav); box-shadow: inset -1px 0 var(--shine), inset -3px 0 5px var(--shadow); }
   #list { grid-column: 2; grid-row: 1; min-width: 0; padding: 0; border-bottom: 0; overflow: auto; background: var(--card); }
   #pane { grid-column: 2; grid-row: 1; min-width: 0; background: var(--panel); padding: 0 8px 8px; overflow: auto; container: details / inline-size; }
   .with-pane #list { grid-column: 3; border-left: 1px solid var(--edge); }
   .with-pane #list .group { flex-wrap: wrap; gap: 4px 8px; padding: 4px 8px; border-bottom: 1px solid var(--edge); background: var(--bar); box-shadow: inset 0 1px var(--shine); }
   .with-pane .ev { grid-template-columns: minmax(0, 1fr) auto; gap: 0 6px; padding: 5px 8px; }
-  .with-pane .ev > :nth-child(1) { grid-column: 1; grid-row: 3; font-size: 10px; }
+  .with-pane .ev > :nth-child(1) { grid-column: 1; grid-row: 3; font-size: 11px; }
   .with-pane .ev > :nth-child(2) { grid-column: 1; grid-row: 1; font-weight: 600; }
-  .with-pane .ev > :nth-child(3) { grid-column: 2; grid-row: 1; font-size: 10px; max-width: 110px; }
+  .with-pane .ev > :nth-child(3) { grid-column: 2; grid-row: 1; font-size: 11px; max-width: 110px; }
   .with-pane .ev > :nth-child(4) { grid-column: 1 / -1; grid-row: 2; white-space: normal; overflow-wrap: anywhere; }
-  .with-pane .ev > :nth-child(5) { grid-column: 2; grid-row: 3; font-size: 10px; }
+  .with-pane .ev > :nth-child(5) { grid-column: 2; grid-row: 3; font-size: 11px; }
   .with-pane .ev.hd { display: none; }
   .with-pane .q { grid-template-columns: 10px minmax(0, 1fr) auto; gap: 0 6px; padding: 4px 8px; border-bottom: 1px solid var(--line); }
   .with-pane .q > :nth-child(2) { grid-column: 2; grid-row: 1; }
   .with-pane .q > :nth-child(3) { grid-column: 2 / -1; grid-row: 2; white-space: normal; overflow-wrap: anywhere; }
   .with-pane .q > :nth-child(3) > b { display: block; }
-  .with-pane .q > :last-child { grid-column: 3; grid-row: 1; font-size: 10px; }
+  .with-pane .q > :last-child { grid-column: 3; grid-row: 1; font-size: 11px; }
   @media (max-width: 1100px) {
     #app, #app.with-pane { grid-template-columns: 180px minmax(0, 1fr); }
     #app.with-pane { grid-template-columns: 180px minmax(0, 1fr) 240px; }
@@ -59,8 +67,8 @@
     #app.with-pane #list { grid-column: 2; grid-row: 2; border-left: 0; border-top: 1px solid var(--edge); }
   }
   @media (max-width: 640px) {
-    #app, #app.with-pane { grid-template-columns: minmax(0, 1fr); grid-template-rows: 64px minmax(0, 1fr); }
-    #app.with-pane { grid-template-rows: 64px minmax(0, 1fr) 140px; }
+    #app, #app.with-pane { grid-template-columns: minmax(0, 1fr); grid-template-rows: 104px minmax(0, 1fr); }
+    #app.with-pane { grid-template-rows: 104px minmax(0, 1fr) 140px; }
     #app #tree { grid-column: 1; grid-row: 1; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 2px 6px; border-right: 0; border-bottom: 1px solid var(--edge); }
     #tree .node { padding: 0 4px; }
     #app #pane, #app #list { grid-column: 1; grid-row: 2; }
@@ -74,31 +82,32 @@
   .node { display: flex; gap: 4px; align-items: center; padding: 0 8px 0 calc(6px + var(--depth) * 12px); color: inherit; white-space: nowrap; cursor: pointer; }
   .node > i { width: 10px; flex-shrink: 0; font-size: 9px; font-style: normal; color: var(--muted); }
   .node > span { overflow: hidden; text-overflow: ellipsis; }
-  .node > small { margin-left: auto; padding-left: 8px; font-size: 10px; color: var(--muted); }
+  .node > small { margin-left: auto; padding-left: 8px; font-size: 11px; color: var(--muted); }
   .node:hover, .q:hover, .ev:hover { background: var(--hover); }
-  .node.on, .q.on, .ev.on { background: var(--selected); box-shadow: inset 0 1px var(--shine), inset 0 -1px var(--edge); }
+  .node.on, .q.on, .ev.on { --muted: var(--text); background: var(--selected); box-shadow: inset 0 1px var(--shine), inset 0 -1px var(--primary), inset 0 -2px var(--glint); }
   .group { display: flex; gap: 8px; align-items: center; padding: 2px 8px; }
   .q, .ev { display: grid; gap: 8px; align-items: center; padding: 0 8px; color: inherit; white-space: nowrap; }
   .q { grid-template-columns: 10px 64px minmax(0, 1fr) auto; }
   .ev { grid-template-columns: 64px 72px 96px 1fr 64px; border-bottom: 1px solid var(--line); }
   .q > span, .ev > span { overflow: hidden; text-overflow: ellipsis; }
   .bang { font-weight: 700; color: var(--warn); }
-  h2, .hd { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 2px; }
+  h2, .hd { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 2px; }
   header { display: flex; gap: 8px; align-items: center; padding: 4px 0; }
   header > .x { margin-left: auto; color: var(--muted); }
   #pane > header { margin-bottom: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
   .labels { display: inline-flex; align-items: center; gap: 6px; }
   .labels select { width: auto; }
   section { padding: 8px 0; border-bottom: 1px solid var(--line); }
-  button { font: inherit; font-size: 11px; line-height: 18px; padding: 0 6px; border: 1px solid var(--edge); border-radius: 4px; background: var(--control); color: var(--text); box-shadow: inset 0 1px var(--shine), 0 1px 3px var(--shadow); cursor: pointer; }
-  button:hover { background: var(--selected); border-color: var(--link); }
-  button:active { background: var(--selected); box-shadow: inset 0 1px 2px var(--shadow); }
-  button.primary { background: var(--primary-fill); border-color: var(--primary); color: var(--on-primary); }
-  button.primary:hover { border-color: var(--link); box-shadow: inset 0 1px var(--shine), 0 0 5px var(--edge); }
+  button { font: inherit; font-size: 12px; line-height: 20px; padding: 1px 8px; border: 1px solid var(--edge); border-radius: 4px; background: var(--control); color: var(--text); box-shadow: inset 0 1px var(--shine), inset 0 -1px var(--rim), 0 1px 3px var(--shadow); cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--link); box-shadow: inset 0 1px var(--shine), inset 0 -1px var(--glint), 0 0 5px var(--focus-halo); }
+  button.primary { background: var(--primary-fill); border-color: var(--primary); color: var(--on-primary); box-shadow: inset 0 1px var(--shine), inset 0 -1px var(--rim), inset 0 -2px var(--glint), 0 1px 3px var(--shadow); }
+  button.primary:hover:not(:disabled) { box-shadow: inset 0 1px var(--shine), inset 0 -1px var(--rim), inset 0 -2px var(--glint), 0 0 7px var(--focus-halo); }
+  button:active:not(:disabled):not(.link):not(.access-toggle) { box-shadow: inset 0 2px 4px var(--rim), inset 0 -1px var(--shine); }
+  button:disabled { opacity: .55; cursor: default; }
   button.inherited { border-color: var(--text); }
   button.danger { color: var(--bad); }
   button.link { padding: 0; border: 0; background: none; box-shadow: none; color: var(--link); }
-  button.link:hover { text-decoration: underline; }
+  button.link:hover:not(:disabled) { box-shadow: none; text-decoration: underline; }
   .secret-input { display: flex; gap: 6px; align-items: center; }
   .secret-input input { min-width: 0; }
   .secret-input button { flex-shrink: 0; }
@@ -121,7 +130,7 @@
   .access-toggle > b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .access-toggle > i { width: 10px; flex-shrink: 0; font-size: 9px; font-style: normal; color: var(--muted); }
   .access-toggle > .connector-icon { margin-right: 0; }
-  .access-toggle:hover, .access-toggle:active { background: none; box-shadow: none; }
+  .access-toggle:hover:not(:disabled), .access-toggle:active { background: none; box-shadow: none; }
   .access-toggle:hover:not(:disabled) > b { color: var(--link); }
   .access-toggle:disabled { cursor: default; }
   .row { display: flex; gap: 6px; align-items: center; justify-content: space-between; margin-top: 4px; }
@@ -141,10 +150,15 @@
   .empty { padding: 0 8px; }
   #toast { position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: .4rem 1rem; max-width: 40rem; }
   #saving { position: fixed; right: 8px; bottom: 8px; padding: 1px 6px; border: 1px solid var(--edge); background: var(--control); color: var(--dim); font-size: 11px; }
-  :is(a, button, summary, input, select, textarea):focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  :is(a, button, summary, input, select, textarea) { transition: border-color 140ms ease, box-shadow 140ms ease, background-color 140ms ease; }
+  :is(a, button, summary, input, select, textarea):focus-visible { outline: 2px solid var(--link); outline-offset: 2px; box-shadow: 0 0 0 4px var(--focus-halo); }
+  .node:focus-visible { outline-offset: -2px; }
+  @media (prefers-reduced-motion: reduce) {
+    :is(a, button, summary, input, select, textarea) { transition: none; }
+  }
   .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-bottom: 3px; }
   .section-heading h2 { margin: 0; color: var(--dim); }
-  .section-heading > a { font-size: 10px; }
+  .section-heading > a { font-size: 11px; }
   .count { margin-left: 4px; font-weight: 400; color: var(--muted); }
   .action-list > * + * { border-top: 1px solid var(--line); }
   .capability { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center; gap: 4px; padding: 2px 4px; list-style: none; }
@@ -154,32 +168,32 @@
   .action-group[open] > summary.capability::before { content: "▾"; }
   summary.capability:hover { background: var(--hover); }
   .capability-name { overflow-wrap: anywhere; }
-  .capability-name small { margin-left: 5px; color: var(--muted); font-size: 10px; font-weight: 400; }
+  .capability-name small { margin-left: 5px; color: var(--muted); font-size: 11px; font-weight: 400; }
   .action-group > summary .capability-name { font-weight: 600; }
   .action-children { margin-left: 8px; border-left: 1px solid var(--edge); }
   .effects { display: flex; flex-wrap: wrap; justify-content: flex-end; align-self: center; gap: 3px; max-width: 110px; }
-  .badge { display: inline-block; padding: 0 4px; border: 1px solid var(--edge); border-radius: 2px; background: var(--bg); color: var(--dim); font-size: 10px; line-height: 14px; white-space: nowrap; }
+  .badge { display: inline-block; padding: 0 4px; border: 1px solid var(--edge); border-radius: 2px; background: var(--bg); color: var(--dim); font-size: 11px; line-height: 16px; white-space: nowrap; }
   .effect-read, .level-read { color: #31657e; background: #edf7fc; border-color: #c8e0ec; }
   .effect-write, .level-ask { color: #805d25; background: #faf5e9; border-color: #e7dabd; }
   .effect-send { color: #69568c; background: #f4f1fa; border-color: #ded5ed; }
   .effect-delete, .effect-admin { color: #963e3e; background: #fff2ef; border-color: #ebcec8; }
   .level-allow { color: #43733d; background: #eff7e9; border-color: #cdddbe; }
-  .usage-columns { display: flex; justify-content: space-between; padding: 0 4px; font-size: 10px; color: var(--muted); border-bottom: 1px solid var(--line); }
+  .usage-columns { display: flex; justify-content: space-between; padding: 0 4px; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--line); }
   .agent-list { padding: 0; margin: 0; list-style: none; }
   .agent-list li + li { border-top: 1px solid var(--line); }
   .agent-link { display: flex; gap: 6px; align-items: center; justify-content: space-between; padding: 2px 4px; }
   .agent-link:hover { background: var(--hover); }
   .agent-info { min-width: 0; overflow-wrap: anywhere; }
   .agent-info strong { font-weight: 500; }
-  .agent-info small { margin-left: 5px; font-size: 10px; color: var(--muted); }
+  .agent-info small { margin-left: 5px; font-size: 11px; color: var(--muted); }
   .agent-link > .badge { flex-shrink: 0; }
   .account-header { padding: 8px 0; align-items: center; }
-  .account-header h1 { margin: 0; font-size: 16px; line-height: 24px; font-weight: 600; overflow-wrap: anywhere; }
-  .account-header .connector-icon { width: 22px; height: 22px; margin-right: 0; padding: 2px; background: var(--bg); border-radius: 3px; }
+  .account-header h1 { margin: 0; font-size: 20px; line-height: 28px; font-weight: 600; overflow-wrap: anywhere; }
+  .account-header .connector-icon { width: 26px; height: 26px; margin-right: 0; padding: 3px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; box-shadow: inset 0 1px var(--shine), 0 1px 2px var(--shadow); }
   .account-overview { display: grid; gap: 8px; align-items: start; margin-bottom: 8px; }
   .account-card { min-width: 0; padding: 0; border: 1px solid var(--edge); border-radius: 4px; overflow: hidden; background: var(--card); box-shadow: inset 0 1px var(--shine), 0 3px 9px var(--shadow); }
   .account-card .section-heading { padding: 4px 6px; margin: 0; background: var(--bar); border-bottom: 1px solid var(--edge); box-shadow: inset 0 1px var(--shine); }
-  .account-card .section-heading h2 { font-size: 11px; text-transform: none; letter-spacing: 0; }
+  .account-card .section-heading h2 { font-size: 12px; text-transform: none; letter-spacing: 0; }
   .account-card .capability { padding: 3px 6px; }
   .account-card .usage-columns { padding: 1px 6px; }
   .account-card .agent-link { justify-content: flex-start; padding: 4px 6px; }
@@ -248,9 +262,9 @@ const WHO = { me: "Only me", team: "My team", anyone: "Anyone" };
 const SEES = { me: "only you", team: "your team", anyone: "anyone" };
 const STATE_CLASS = { allowed: "", approved: "", refused: "bad", denied: "bad", expired: "muted", pending: "warn" };
 // A new preset starts as one bearer-token API; the owner sets its origin, slots and operations.
-const NEW_PRESET = { catalog: { group: "api", fields: [{ key: "token", label: "API token", secret: true, path: ["connections", "", "http", "values", "token"] }],
+const NEW_PRESET = { catalog: { group: "api", fields: [{ key: "token", label: "API token", secret: true, path: ["connections", "", "http", "secrets", "token"] }],
   connections: { "": { http: { slots: [{ value: "token", origin: "https://api.example.com", path: "/", header: "Authorization", prefix: "Bearer " }] } } },
-  defaults: { contents: "me", strangers: true, sends: "me" } }, http: { operations: [] } };
+  defaults: { contents: "me", strangers: true, sends: "me" } }, http: { operations: {} } };
 
 // Keep the activity filter and return route while a request is open.
 let view = null, records = [], locked = false, scope = null, requestSource = "activity";
@@ -276,7 +290,7 @@ const entry = (account) => view.presets[accounts()[account]?.preset] ?? view.pre
 const actionsOf = (account) => ({ ...groupsOf(account), ...entry(account).actions, ...Object.fromEntries(Object.values(accounts()[account]?.connections ?? {})
   .flatMap((c) => c.mcp?.pin?.tools ?? []).map((t) => [`${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`, { title: t.title || t.name }])) });
 // Record operations also contribute permission groups to their preset.
-const operationsOf = (account) => entry(account).operations ?? [];
+const operationsOf = (account) => Object.values(entry(account).operations ?? {});
 const groupsOf = (account) => Object.fromEntries(operationsOf(account).map((o) => [o.action, { title: o.action }]));
 // effectsOf unions the effects of every operation under an action, so a group shows its strictest obligations.
 const effectGroups = new WeakMap();
@@ -291,7 +305,7 @@ const effectsOf = (account, k) => {
       for (const effect of effects) groups.get(key).add(effect);
     });
     for (const [action, meta] of Object.entries(actions)) add(action, meta.effects ?? []);
-    for (const op of preset.operations ?? []) add(op.action, op.effects);
+    for (const op of Object.values(preset.operations ?? {})) add(op.action, op.effects);
     effectGroups.set(preset, groups);
   }
   const lineage = k.split(".").map((_, i, parts) => parts.slice(0, i + 1).join(".")).reverse();
@@ -320,7 +334,8 @@ const run = (fn) => async (...args) => {
 };
 
 async function api(method, path, body) {
-  const res = await fetch(path, { method, headers: { Authorization: "Bearer " + sessionStorage.getItem(KEY) }, body: body && JSON.stringify(body) });
+  const headers = { Authorization: "Bearer " + sessionStorage.getItem(KEY) };
+  const res = await fetch(path, { method, headers, body: body && JSON.stringify(body) });
   const text = await res.text();
   if (res.status === 401) sessionStorage.removeItem(KEY);
   locked = res.status === 423;
@@ -408,33 +423,56 @@ async function flushEdits() {
   }
 }
 
-// JSON merge patch: null deletes a property; arrays replace the entire value.
-function mergePatch(target, patch) {
-  if (!patch || typeof patch !== "object" || Array.isArray(patch)) return structuredClone(patch);
-  const out = target && typeof target === "object" && !Array.isArray(target) ? { ...target } : {};
-  for (const [key, value] of Object.entries(patch)) {
-    if (value === null) delete out[key];
-    else Object.defineProperty(out, key, { value: mergePatch(Object.hasOwn(out, key) ? out[key] : undefined, value), enumerable: true, configurable: true, writable: true });
-  }
-  return out;
+// Controls address source values; named rules and operations stay named.
+function sourceChanges(body, path = []) {
+  return Object.entries(body).flatMap(([key, value]) => {
+    const at = [...path, key];
+    if (value === null) return [{ path: at, delete: true }];
+    const atomic = key === "scope" || key === "fields" || key === "query" || key === "headers" ||
+      at[0] === "identities" && at[2] === "rules" && at.length === 4 || value?.oauth || value?.$json;
+    if (!atomic && value && typeof value === "object" && !Array.isArray(value) && Object.keys(value).length)
+      return sourceChanges(value, at);
+    return [{ path: at, value }];
+  });
 }
 
+function applyChanges(target, changes) {
+  for (const change of changes) {
+    let parent = target;
+    for (const key of change.path.slice(0, -1)) {
+      if (!Object.hasOwn(parent, key) || !parent[key] || typeof parent[key] !== "object")
+        Object.defineProperty(parent, key, { value: {}, enumerable: true, configurable: true, writable: true });
+      parent = parent[key];
+    }
+    const key = change.path.at(-1);
+    if (change.delete) delete parent[key];
+    else Object.defineProperty(parent, key, { value: structuredClone(change.value), enumerable: true, configurable: true, writable: true });
+  }
+  return target;
+}
+
+const sendChanges = (body) => api("POST", "/policy/edits", { changes: sourceChanges(body) });
+
 function previewConfig(state, body) {
-  state.view.config = mergePatch(state.view.config, body);
+  state.view.config = applyChanges(state.view.config, sourceChanges(body));
   for (const name of Object.keys(body.presets ?? {})) {
     const file = state.view.config.presets?.[name] ?? shippedFiles[name];
     if (!file) continue; // A shipped preset not fetched yet needs the server's resolved catalog.
     const previous = state.view.presets[name] ?? state.view.presets.custom, catalog = file.catalog ?? {};
     state.view.presets[name] = { ...previous, ...catalog, title: typeof file.title === "string" ? file.title : name,
       fields: Array.isArray(catalog.fields) ? catalog.fields : previous.fields ?? [],
-      actions: catalog.actions ?? {}, operations: file.http?.operations ?? [], vocabulary: previous.vocabulary };
+      actions: catalog.actions ?? {}, operations: file.http?.operations ?? {}, vocabulary: previous.vocabulary };
   }
 }
 
 const patch = run((body, then, update = () => {}) => {
   body = JSON.parse(JSON.stringify(body));
-  return edit((state) => { previewConfig(state, body); update(state); }, () => api("PATCH", "/", body), { then });
+  return edit((state) => { previewConfig(state, body); update(state); }, () => sendChanges(body), { then });
 });
+
+const changeSettings = (changes, options) => edit(
+  (state) => { applyChanges(state.view.config, changes); },
+  () => api("POST", "/policy/edits", { changes }), options);
 
 // sync redraws only the keyed parts whose markup changed, so open details, focus and typed input elsewhere survive.
 const drawn = new WeakMap();
@@ -477,7 +515,7 @@ function render() {
     scope = kind === "activity" && ["agent", "account"].includes(args[0]) && args[1] ? args.slice(0, 2) : null;
   }
   if (kind !== "request") requestSource = location.hash.slice(1) || "activity";
-  const panes = { request: requestPane, agent, "agent-settings": agentSettings, pair, account, add, preset: presetPage, rules, settings, integrations };
+  const panes = { request: requestPane, agent, "agent-settings": agentSettings, pair, account, add, preset: presetPage, rules, settings, integrations, policy: policyPage, proposal: proposalPage };
   const parts = (html) => html.map((content, i) => [`${location.hash}/${i}`, content]).filter(([, content]) => content);
   $("app").classList.toggle("with-pane", !!panes[kind]);
   $("list").setAttribute("role", panes[kind] ? "complementary" : "main");
@@ -485,6 +523,8 @@ function render() {
   sync($("tree"), sidebar(kind, args[0]));
   sync($("list"), list(kind === "request" && args[0]));
   sync($("pane"), panes[kind] ? parts(panes[kind](...args)) : []);
+  // Restore a draft when returning to the page without replacing the textarea on each keystroke.
+  if (kind === "policy" && policyEditor && $("policy-source")?.value !== policyEditor.draft) $("policy-source").value = policyEditor.draft;
   liveSync();
 }
 
@@ -513,7 +553,7 @@ function sidebar(kind, arg) {
     groups.get(group).push(preset);
   }
   for (const entries of groups.values()) entries.sort(([a], [b]) => Number(custom.includes(b)) - Number(custom.includes(a)));
-  const saved = Object.values(ids()).reduce((n, id) => n + (id.rules?.length ?? 0), 0);
+  const saved = Object.values(ids()).reduce((n, id) => n + Object.keys(id.rules ?? {}).length, 0);
   return [
     node("needs", `href="#needs"`, `${pending.length ? `<span class="bang">!</span> ` : ""}Approvals`, 0,
       { count: pending.length || "", on: kind === "needs" || kind === "request" && requestSource === "needs" }),
@@ -529,6 +569,7 @@ function sidebar(kind, arg) {
         Object.keys(accounts()).filter((a) => entry(a) === c).length || "")) : []),
     ]), link(["preset"], `<span class="new">New preset…</span>`, 1, kind === "preset" && !arg)] : []),
     link(["rules"], "Rules", 0, kind === "rules", saved || ""),
+    link(["policy"], "Policy", 0, kind === "policy" || kind === "proposal", (view.policy_proposals ?? []).filter((p) => p.state === "pending").length || ""),
     link(["activity"], "Activity", 0, kind === "activity" || kind === "request" && requestSource.startsWith("activity")),
     link(["integrations"], "Integrations", 0, kind === "integrations"),
     link(["settings"], "Settings", 0, kind === "settings"),
@@ -552,7 +593,6 @@ const unlock = run(async () => {
 });
 
 function summary(e) {
-  if (e?.message) return `${e.message.from} → ${e.message.to}`;
   if (e?.http) return `${e.http.method} ${e.http.host}${e.http.path}`;
   if (e?.smtp) return `To ${e.smtp.to.join(", ")}${e.mail?.subject ? `: ${e.mail.subject}` : ""}`;
   if (e?.imap) return `${e.imap.command} ${e.imap.args}`;
@@ -561,8 +601,7 @@ function summary(e) {
 }
 
 function reasons(r) {
-  const messages = new Map((r.reasons ?? []).map((reason) => [reason.id, reason.message]));
-  return (r.gaps ?? r.waives ?? []).map((id) => messages.get(id) ?? id);
+  return (r.requirements ?? []).map((requirement) => requirement.message);
 }
 
 // A saved approval binds one operation and its grant. The text names fields, not values, which can be whole messages;
@@ -618,11 +657,11 @@ const answer = run((id, decision) => {
     state.records = state.records.map((r) => r.id === id ? { ...r, savingDecision: true,
       state: r.state === "pending" ? decision === "deny" ? "denied" : "approved" : r.state } : r);
     const identity = state.view.config.identities?.[request.facts.principal.name];
-    if (decision === "save" && identity) identity.rules = [...(identity.rules ?? []), {
+    if (decision === "save" && identity) identity.rules = { ...(identity.rules ?? {}), [request.id]: {
       account: request.facts.account, action: request.facts.operation.action, operation: request.facts.operation.id,
       definition: request.definition,
-      scope: request.grant ?? {}, waives: request.gaps ?? [], reasons: request.reasons ?? [],
-    }];
+      scope: request.grant ?? {}, requirements: request.requirements ?? [],
+    }};
   }, () => api("POST", `/requests/${id}`, { decision }), { message: decision === "save" ? "Rule saved" : decision === "deny" ? "Denied" : "Approved" });
 });
 
@@ -690,7 +729,6 @@ function agent(name) {
   const reaches = (pred) => Object.entries(accounts()).some(([a, acc]) => (id.accounts?.[a]?.level ?? "off") !== "off" && pred(acc));
   const hint = lattices().confidentiality && reaches((acc) => acc.preset === "web") && reaches((acc) => acc.contents !== "anyone")
     ? `<p class="muted">Browsing needs approval after reading private data.</p>` : "";
-  const others = Object.keys(ids()).filter((n) => n !== name);
   const l = view.labels[name] ?? {};
   const point = (axis, values) => {
     const lattice = axis === "trust" ? "integrity" : "confidentiality";
@@ -701,7 +739,6 @@ function agent(name) {
   return [head(esc(name), `<span class="labels" title="${esc(labelStatus(l))}">${point("trust", { trusted: "Trusted", untrusted: "Untrusted" })}${point("audience", WHO)}</span>`),
     id.profile || hint ? `<section>${id.profile ? `<p class="warn">Profiling is on. Requests run without checks.</p>` : ""}${hint}</section>` : "",
     `<section><h2>Access</h2>${levels.join("") || `<p class="empty">No accounts yet.</p>`}</section>`,
-    messageSettings(name, others),
     `<section><a href="#agent-settings/${encodeURIComponent(name)}">Settings</a></section>`];
 }
 
@@ -718,38 +755,14 @@ function agentSettings(name) {
 }
 
 function rulesSection(name) {
-  const list = (ids()[name].rules ?? []).map((r, i) => `<div class="row"><span>${esc(ruleSentence(r))}${r.operation
-    ? `<details><summary class="muted">grant</summary><pre>${esc(JSON.stringify(r.scope))}</pre></details>` : ""}</span><button onclick="removeRule(${q(name)}, ${i})">Remove</button></div>`);
+  const list = Object.entries(ids()[name].rules ?? {}).map(([id, r]) => `<div class="row"><span>${esc(ruleSentence(r))}${r.operation
+    ? `<details><summary class="muted">grant</summary><pre>${esc(JSON.stringify(r.scope))}</pre></details>` : ""}</span><button onclick="removeRule(${q(name)}, ${q(id)})">Remove</button></div>`);
   return `<section><h2>${esc(name)}</h2>${list.join("")}</section>`;
 }
 
-const rules = () => [head("Rules"), ...Object.keys(ids()).filter((n) => ids()[n].rules?.length).map(rulesSection)];
+const rules = () => [head("Rules"), ...Object.keys(ids()).filter((n) => Object.keys(ids()[n].rules ?? {}).length).map(rulesSection)];
 
-function messageSettings(name, peers) {
-  if (!peers.length) return "";
-  const messages = ids()[name].messages ?? {};
-  return `<section>${disclosure("messages", "Messages", `<p class="muted">Both agents must allow a channel. Changing its limits or revoking it clears queued messages.</p>
-    <table><tr><th>Agent</th><th>May send to</th><th>Receive audience</th><th>Receive trust</th></tr>${peers.map((peer) => {
-      const limit = messages.receive?.[peer];
-      return `<tr><td>${esc(peer)}</td><td><input type="checkbox" ${messages.send?.includes(peer) ? "checked" : ""} onchange="setMessageSend(${q(name)}, ${q(peer)}, this.checked)"></td>
-        <td><select onchange="setMessageReceive(${q(name)}, ${q(peer)}, 'audience', this.value)">${["off", "anyone", "team", "me"].map((v) => opt(v, v, limit?.audience ?? "off")).join("")}</select></td>
-        <td><select ${limit ? "" : "disabled"} onchange="setMessageReceive(${q(name)}, ${q(peer)}, 'trust', this.value)">${["trusted", "untrusted"].map((v) => opt(v, v, limit?.trust ?? "trusted")).join("")}</select></td></tr>`;
-    }).join("")}</table>`)}</section>`;
-}
-
-const setMessageSend = (name, peer, enabled) => {
-  const send = (ids()[name].messages?.send ?? []).filter((p) => p !== peer);
-  if (enabled) send.push(peer);
-  return patch({ identities: { [name]: { messages: { send } } } });
-};
-
-const setMessageReceive = (name, peer, axis, value) => patch({ identities: { [name]: { messages: { receive: {
-  [peer]: value === "off" ? null : { audience: "anyone", trust: "trusted", ...ids()[name].messages?.receive?.[peer], [axis]: value },
-} } } } });
-
-const removeAgent = (name) => patch({ identities: Object.fromEntries(Object.entries(ids()).map(([peer, id]) => [peer,
-  peer === name ? null : { messages: id.messages ? { send: (id.messages.send ?? []).filter((p) => p !== name), receive: { [name]: null } } : null },
-])) }, "activity");
+const removeAgent = (name) => patch({ identities: { [name]: null } }, "activity");
 
 const patchAccess = (name, account, access) => patch({ identities: { [name]: { accounts: { [account]: access } } } });
 
@@ -760,13 +773,12 @@ const setLabel = run((name, label) => edit((state) => {
   } };
 }, () => api("POST", "/labels/" + encodeURIComponent(name), label)));
 
-const removeRule = (name, i) => patch({ identities: { [name]: { rules: ids()[name].rules.filter((_, j) => j !== i) } } });
+const removeRule = (name, id) => patch({ identities: { [name]: { rules: { [id]: null } } } });
 
-// Explicit deletions replace the nested account map in one atomic merge patch.
-const copySettings = (name) => {
+const copySettings = run((name) => {
   const from = ids()[$("from").value];
-  return patch({ identities: { [name]: { accounts: changes(ids()[name].accounts, from.accounts ?? {}), rules: from.rules ?? [] } } });
-};
+  return changeSettings(["accounts", "rules"].map((key) => ({ path: ["identities", name, key], value: structuredClone(from[key] ?? {}) })));
+});
 
 const mcpKeys = (a) => Object.entries(accounts()[a].connections ?? {}).filter(([, kinds]) => kinds.mcp).map(([key]) => key);
 const connName = (a, key) => (key ? `${a}-${key}` : a);
@@ -775,18 +787,24 @@ function accountStatus(a) {
   const states = mcpKeys(a).map((k) => view.status[connName(a, k)] ?? {});
   if (states.some((s) => s.error)) return `<span class="bad">Can't connect</span>`;
   if (states.some((s) => s.state === "connecting")) return `<span class="muted">Connecting…</span>`;
-  const blocked = states.reduce((n, s) => n + (s.blocked ?? 0), 0);
+  const blocked = states.reduce((n, s) => n + (s.details?.blocked ?? 0), 0);
   return blocked ? `<span class="warn">${blocked} tools await review</span>` : "";
 }
 
-// Shipped preset files, fetched as written so an owner's copy keeps their order and environment references.
-const shippedFiles = {};
+// The full active definition includes pinned defaults and any TOML overrides.
+const shippedFiles = {}, presetGenerations = {}, presetLoads = new Set();
 const loadShipped = run(async (name) => {
-  shippedFiles[name] = await api("GET", "/presets/" + encodeURIComponent(name));
+  if (presetLoads.has(name)) return;
+  presetLoads.add(name);
+  const generation = view.generation;
+  try {
+    shippedFiles[name] = await api("GET", "/presets/" + encodeURIComponent(name) + "?effective");
+    presetGenerations[name] = generation;
+  } finally { presetLoads.delete(name); }
   render();
 });
-// The owner's version of a preset, else the shipped file once fetched, else a new preset.
-const presetFile = (name) => view.config.presets?.[name] ?? shippedFiles[name] ?? (view.presets[name] ? undefined : { title: name, ...NEW_PRESET });
+const presetFile = (name) => presetGenerations[name] === view.generation && shippedFiles[name] ? shippedFiles[name]
+  : view.presets[name] ? undefined : { title: name, ...NEW_PRESET };
 
 // Preset files keep one field, action and operation per line, as the shipped files do.
 const EXPANDED = ["", "catalog", "catalog.fields", "catalog.actions", "http", "http.operations"];
@@ -806,7 +824,7 @@ function downloadPreset(name) {
 }
 
 // An unmatched request on a preset's account can become one of its operations.
-const draftLink = (r) => r.facts?.operation == null && r.facts?.details?.http && accounts()[r.facts.account] && Array.isArray(entry(r.facts.account).operations)
+const draftLink = (r) => r.facts?.operation == null && r.facts?.details?.http && accounts()[r.facts.account] && entry(r.facts.account).operations
   ? `<a href="#preset/${encodeURIComponent(accounts()[r.facts.account].preset)}/${r.id}">Add operation</a>` : "";
 
 // The draft matches only this exact path; the owner turns segments into {parameters} and sets its effects and scope.
@@ -824,7 +842,10 @@ function presetPage(name, from) {
     return [head("Preset " + esc(name)), `<p class="empty">Loading…</p>`];
   }
   const file = structuredClone(presetFile(name)), r = records.find((r) => r.id === from);
-  if (r?.facts?.details?.http) file.http = { ...file.http, operations: [...(file.http?.operations ?? []), draftOperation(r.facts.details)] };
+  if (r?.facts?.details?.http) {
+    const { id, ...operation } = draftOperation(r.facts.details);
+    file.http = { ...file.http, operations: { ...(file.http?.operations ?? {}), [id]: operation } };
+  }
   const users = Object.entries(accounts()).filter(([, acc]) => acc.preset === name).map(([a]) => a);
   return [head("Preset " + esc(name)), `<section><p class="muted">Changes apply to every account using it: ${esc(users.join(", ") || "none yet")}.</p>
     <textarea id="preset" rows="40">${esc(presetText(file))}</textarea>
@@ -833,7 +854,11 @@ function presetPage(name, from) {
 }
 
 const savePreset = run(async (name) => {
-  await patch({ presets: { [name]: changes(view.config.presets?.[name], JSON.parse($("preset").value)) } }, "preset/" + encodeURIComponent(name));
+  const value = JSON.parse($("preset").value);
+  for (const id of Object.keys(presetFile(name)?.http?.operations ?? {})) {
+    if (value.http?.operations && !Object.hasOwn(value.http.operations, id)) value.http.operations[id] = { enabled: false };
+  }
+  await edit(() => {}, () => api("POST", "/policy/edits", { changes: [{ path: ["presets", name], value }] }), { then: "preset/" + encodeURIComponent(name) });
 });
 
 function questions(a) {
@@ -882,24 +907,7 @@ const fieldsOf = (c) => c.fields ?? [];
 // A field with no paths, such as an OAuth client ID, only fills the account's templates when it is created.
 const plain = (c) => fieldsOf(c).filter((f) => !f.secret && paths(f).length);
 const fieldValue = (acc, f) => atPath(acc, f.path ?? paths(f)[0]) ?? (f.list ? [] : f.json ? {} : "");
-// A merge patch replaces an array whole, so a setting inside one, such as a slot's origin, rewrites a copy of its array.
-function putSetting(update, acc, path, value) {
-  const n = path.findIndex((_, i) => i > 0 && Array.isArray(atPath(acc, path.slice(0, i))));
-  if (n < 0) return putPath(update, path, value);
-  const list = atPath(update, path.slice(0, n)) ?? JSON.parse(JSON.stringify(atPath(acc, path.slice(0, n))));
-  path.slice(n, -1).reduce((o, k) => o[k], list)[path.at(-1)] = value;
-  putPath(update, path.slice(0, n), list);
-}
 const filled = (c, values) => JSON.parse(JSON.stringify(c), (_, v) => typeof v === "string" ? fill(v, values) : v);
-
-// Used for the custom JSON editor so removed settings become explicit deletions.
-function changes(before, after) {
-  if (JSON.stringify(before) === JSON.stringify(after)) return undefined;
-  if (after === null || typeof after !== "object" || Array.isArray(after)) return after;
-  return Object.fromEntries([...new Set([...Object.keys(before ?? {}), ...Object.keys(after)])]
-    .map((key) => [key, Object.hasOwn(after, key) ? changes(before?.[key], after[key]) : null])
-    .filter(([, value]) => value !== undefined));
-}
 
 function setupField(f, preset) {
   const field = `<label for="f-${esc(f.key)}">${esc(f.oauth ? "Access token" : f.label)}</label>${input(f.oauth ? { ...f, label: "Access token", hint: "Paste your access token here" } : f, f.default)}
@@ -956,7 +964,7 @@ const addAccount = run(async (preset, signInKey) => {
   const buttons = [$("account-add"), ...fields.filter((f) => f.oauth).map((f) => $("signin-" + f.key))];
   buttons.forEach((button) => { button.disabled = true; });
   try {
-    await edit((state) => previewConfig(state, body), () => api("PATCH", "/", body), { message: "Account added" });
+    await edit((state) => previewConfig(state, body), () => sendChanges(body), { message: "Account added" });
     if (location.hash !== from) return;
     location.hash = "account/" + encodeURIComponent(name);
     if (signInKey !== undefined) {
@@ -1028,14 +1036,14 @@ const addCustomAPI = run(async () => {
   if (Object.hasOwn(accounts(), name)) throw new Error("An account with that name already exists. Choose another name.");
   if (!token.trim()) throw new Error("Enter the API key or token.");
   const slot = readAPISlot();
-  const acc = { preset: "custom_api", ...answers(), connections: { "": { http: { slots: [slot], values: { token } } } } };
+  const acc = { preset: "custom_api", ...answers(), connections: { "": { http: { slots: [slot], secrets: { token } } } } };
   const body = { accounts: { [name]: acc } };
   const agent = $("api-agent")?.value;
   if (agent) body.identities = { [agent]: { accounts: { [name]: { level: $("api-access").value } } } };
   const from = location.hash;
   $("api-add").disabled = true;
   try {
-    await edit((state) => previewConfig(state, body), () => api("PATCH", "/", body), { message: "Account added" });
+    await edit((state) => previewConfig(state, body), () => sendChanges(body), { message: "Account added" });
     if (location.hash === from) location.hash = "account/" + encodeURIComponent(name);
   } finally { if ($("api-add")) $("api-add").disabled = false; }
 });
@@ -1153,9 +1161,9 @@ function account(a) {
 }
 
 function review(a, key, c) {
-  const name = connName(a, key), s = view.status[name] ?? {};
-  if (s.state === "connecting") return `<section><h2>${esc(name)}</h2><p class="muted">Connecting…</p></section>`;
-  if (s.error) return `<section><h2>${esc(name)}</h2><p class="bad">Can't connect: ${esc(s.error)}</p></section>`;
+  const name = connName(a, key), status = view.status[name] ?? {}, s = status.details ?? {};
+  if (status.state === "connecting") return `<section><h2>${esc(name)}</h2><p class="muted">Connecting…</p></section>`;
+  if (status.error) return `<section><h2>${esc(name)}</h2><p class="bad">Can't connect: ${esc(status.error)}</p></section>`;
   if (!s.blocked) return "";
   const count = (sign) => s.changes.filter((x) => x.startsWith(sign)).length;
   return `<section><h2>${esc(name)}</h2><p>${c.title} changed its tools: ${count("+")} new, ${count("~")} changed, ${count("-")} removed.</p>
@@ -1163,29 +1171,36 @@ function review(a, key, c) {
     <div class="row"><span></span><button class="primary" onclick="approve(${q(a)}, ${q(key)})">Approve</button></div></section>`;
 }
 
-const approve = (a, key) => patch({ accounts: { [a]: { connections: { [key]: { mcp: { pin: view.status[connName(a, key)].pin } } } } } }, undefined,
-  (state) => { state.view.status[connName(a, key)] = { ...state.view.status[connName(a, key)], blocked: 0, changes: [] }; });
+const approve = (a, key) => patch({ accounts: { [a]: { connections: { [key]: { mcp: { pin: view.status[connName(a, key)].details.pin } } } } } }, undefined,
+  (state) => { state.view.status[connName(a, key)] = { ...state.view.status[connName(a, key)], details: { blocked: 0, changes: [] } }; });
 
 const saveAccount = run(async (a) => {
-  const acc = accounts()[a], update = answers();
-  if (acc.preset === "custom_api") putPath(update, ["connections", "", "http", "slots"], [readAPISlot(acc.connections?.[""]?.http?.slots?.[0]?.value)]);
-  for (const f of plain(entry(a))) {
-    const value = read(f);
-    const delta = changes(fieldValue(acc, f), value);
-    if (delta !== undefined) for (const path of paths(f)) putSetting(update, acc, path, delta);
-  }
+  const acc = accounts()[a], updated = structuredClone(acc), changed = new Set(), removals = [];
+  const set = (path, value) => {
+    if (JSON.stringify(atPath(acc, path)) === JSON.stringify(value)) return;
+    putPath(updated, path, value);
+    // Several controls can edit the same array; submit its final value once.
+    const n = path.findIndex((_, i) => i > 0 && Array.isArray(atPath(updated, path.slice(0, i))));
+    changed.add(JSON.stringify(n < 0 ? path : path.slice(0, n)));
+  };
+  for (const [key, value] of Object.entries(answers())) set([key], value);
+  if (acc.preset === "custom_api") set(["connections", "", "http", "slots"], [readAPISlot(acc.connections?.[""]?.http?.slots?.[0]?.value)]);
+  for (const f of plain(entry(a))) for (const path of paths(f)) set(path, read(f));
   const credentials = credentialFields(a), modes = credentials.map((f) => $("mode-" + f.key));
   for (const f of credentials) {
     const mode = $("mode-" + f.key).value;
     if (mode === "replace") {
       const value = read(f);
       if (value === "") throw new Error(`Enter a value for ${f.label}, or cancel the replacement.`);
-      putPath(update, f.path, value);
+      set(f.path, value);
     }
-    if (mode === "clear") putPath(update, f.path, null);
+    if (mode === "clear") removals.push({ path: ["accounts", a, ...f.path], delete: true });
   }
-  const body = { accounts: { [a]: update } };
-  await edit((state) => previewConfig(state, body), () => api("PATCH", "/", body));
+  const changes = [...changed].map((key) => {
+    const path = JSON.parse(key);
+    return { path: ["accounts", a, ...path], value: atPath(updated, path) };
+  });
+  await changeSettings([...changes, ...removals]);
   credentials.forEach((f, i) => {
     if ($("mode-" + f.key) === modes[i] && modes[i].value !== "keep") credentialMode(a, f.key, "keep");
   });
@@ -1435,8 +1450,97 @@ function integrations(page = "start") {
   return [head("Integrations"), `<nav class="integration-nav" aria-label="Integration guides">${Object.entries(pages).map(([key, title]) => `<a href="#integrations/${key}" ${page === key ? 'aria-current="page"' : ""}>${title}</a>`).join("")}</nav>`, `<article class="integration-guide">${contents[page]}</article>`];
 }
 
+// Polling leaves the draft alone. A preview is valid only for the draft that produced it.
+let policyEditor = null, policyLoading = false, policyLoadError = "";
+const proposalReviews = new Map(), proposalLoads = new Set(), proposalLoadErrors = new Map();
+const loadPolicy = run(async () => {
+  if (policyLoading) return;
+  policyLoading = true;
+  policyLoadError = "";
+  try {
+    const saved = await api("GET", "/policy?effective");
+    policyEditor = { ...saved, draft: saved.source, preview: null };
+  } catch (err) {
+    policyLoadError = err.message;
+    throw err;
+  } finally { policyLoading = false; }
+  render();
+});
+function changePolicy(text) {
+  policyEditor.draft = text;
+  policyEditor.preview = null;
+  render();
+}
+const previewPolicy = run(async () => {
+  const editor = policyEditor, draft = editor.draft;
+  const result = await api("POST", "/policy/preview", { source: draft });
+  if (policyEditor === editor && editor.draft === draft) editor.preview = result;
+  render();
+});
+const applyPolicySource = run(async () => {
+  const editor = policyEditor, preview = editor?.preview;
+  if (!preview) throw new Error("Review the policy diff before applying.");
+  await edit(() => {}, () => api("POST", "/policy", { source: preview.source }), { message: "Policy applied" });
+  if (policyEditor === editor) await loadPolicy();
+});
+function downloadPolicyText(source, filename) {
+  const url = URL.createObjectURL(new Blob([source], { type: "application/toml" }));
+  Object.assign(document.createElement("a"), { href: url, download: filename }).click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+const downloadActivePolicy = run(async () => {
+  const saved = await api("GET", "/policy");
+  downloadPolicyText(saved.source, "policy.toml");
+});
+function policyPage() {
+  if (!policyEditor) {
+    if (policyLoadError) return [head("Policy"), `<section><p class="bad">${esc(policyLoadError)}</p><button onclick="loadPolicy()">Retry</button></section>`];
+    if (!policyLoading) loadPolicy();
+    return [head("Policy"), `<p class="empty">Loading policy…</p>`];
+  }
+  const p = policyEditor;
+  const proposals = (view.policy_proposals ?? []).slice().reverse();
+  return [head("Policy"),
+    `<section><p>This file is the source of truth for saved permissions. Changes made elsewhere in Monitor update it too.</p>
+      <p class="muted">Credentials are stored separately.</p>
+      <div class="row"><button onclick="loadPolicy()">Reload active file</button><button onclick="downloadActivePolicy()">Download active policy.toml</button></div></section>`,
+    `<section><label for="policy-source">policy.toml</label><textarea id="policy-source" rows="30" spellcheck="false" oninput="changePolicy(this.value)">${esc(p.source)}</textarea></section>`,
+    `<section><div class="row"><button onclick="previewPolicy()">Validate and review diff</button><button class="primary" ${!p.preview ? "disabled" : ""} onclick="applyPolicySource()">Apply reviewed change</button></div></section>`,
+    p.preview ? `<section><h2>Source changes</h2><pre>${esc(p.preview.source_diff || "No source changes.")}</pre><h2>Effective changes</h2><pre>${esc(p.preview.effective_diff || "No effective changes.")}</pre></section>` : "",
+    `<section><details><summary>Effective policy, including preset definitions</summary><pre>${esc(p.effective)}</pre></details></section>`,
+    `<section><h2>Agent proposals</h2>${proposals.length ? proposals.map((proposal) => `<div class="row"><a href="#proposal/${encodeURIComponent(proposal.id)}">${esc(proposal.agent)}: ${esc(proposal.reason)}</a><span>${esc(proposal.state)}</span></div>`).join("") : `<p class="muted">No proposals.</p>`}</section>`];
+}
+const loadProposal = run(async (id) => {
+  if (proposalLoads.has(id)) return;
+  proposalLoads.add(id);
+  proposalLoadErrors.delete(id);
+  try { proposalReviews.set(id, await api("GET", "/policy/proposals/" + encodeURIComponent(id))); }
+  catch (err) { proposalLoadErrors.set(id, err.message); throw err; }
+  finally { proposalLoads.delete(id); }
+  render();
+});
+const reviewProposal = run(async (id, decision) => {
+  const p = proposalReviews.get(id)?.proposal;
+  if (!p || p.state !== "pending") return;
+  await edit(() => {}, () => api("POST", "/policy/proposals/" + encodeURIComponent(id), { decision }), { message: decision === "approve" ? "Proposal applied" : "Proposal rejected" });
+  policyEditor = null;
+  await loadProposal(id);
+});
+function proposalPage(id) {
+  const review = proposalReviews.get(id);
+  if (!review && proposalLoadErrors.has(id)) return [head("Policy proposal", "Policy", "policy"), `<section><p class="bad">${esc(proposalLoadErrors.get(id))}</p><button onclick="loadProposal(${q(id)})">Retry</button></section>`];
+  if (!review) { if (!proposalLoads.has(id)) loadProposal(id); return [head("Policy proposal"), `<p class="empty">Loading proposal…</p>`]; }
+  const p = review.proposal, current = (view.policy_proposals ?? []).find((x) => x.id === id) ?? p;
+  const stale = current.stale ?? review.stale;
+  return [head("Policy proposal", "Policy", "policy"),
+    `<section><h2>${esc(p.agent)}</h2><p>${esc(p.reason)}</p><p class="muted">${esc(current.state)} · ${esc(new Date(p.time).toLocaleString())}</p>
+      ${stale && current.state === "pending" ? `<p class="warn">The policy changed after this proposal. Ask the agent to submit a new proposal against the current policy.</p>` : ""}
+      ${current.state === "pending" ? `<div class="row"><button onclick="reviewProposal(${q(id)}, 'reject')">Reject</button><button class="primary" ${stale ? "disabled" : ""} onclick="reviewProposal(${q(id)}, 'approve')">Approve these changes</button></div>` : ""}</section>`,
+    `<section><h2>Source changes</h2><pre>${esc(review.source_diff)}</pre><h2>Effective changes</h2><pre>${esc(review.effective_diff ?? "Reload and resubmit this proposal to review its effective changes.")}</pre></section>`];
+}
+
 const settings = () => [head("Settings"), `<section><h2>Lattices</h2>
-  <p class="muted">Applies to all agents, connector requests and messages.</p>
+  <p class="muted">Applies to all agents and connector requests.</p>
   <label><input type="checkbox" ${lattices().confidentiality ? "checked" : ""} onchange="patch({ lattices: { confidentiality: this.checked } })"> Confidentiality lattice</label>
   <p class="muted">Restrict where agents can send private data. On by default.</p>
   <label><input type="checkbox" ${lattices().integrity ? "checked" : ""} onchange="patch({ lattices: { integrity: this.checked } })"> Integrity lattice</label>

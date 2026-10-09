@@ -116,15 +116,15 @@
   },
   "title": "WooCommerce",
   "http": {
-    "operations": [
-    {"action":"wp_json.wc.products.read","effects":["read"],"id":"products.list","method":"GET","origin":"{origin}","params":["page","per_page","search","status"],"path":"/wp-json/wc/v3/products","scope":{}},
-    {"action":"wp_json.wc.products.read","effects":["read"],"id":"products.get","method":"GET","origin":"{origin}","path":"/wp-json/wc/v3/products/{product}","scope":{"product":{"at":"product","from":"path"}}},
-    {"action":"wp_json.wc.orders.read","effects":["read"],"id":"orders.list","method":"GET","origin":"{origin}","params":["page","per_page","status"],"path":"/wp-json/wc/v3/orders","scope":{}},
-    {"action":"wp_json.wc.products.write","body":"json","effects":["write","publish"],"id":"products.create","method":"POST","origin":"{origin}","path":"/wp-json/wc/v3/products","scope":{"product":{"at":"","from":"body","type":"object"}}},
-    {"action":"wp_json.wc.products.write","body":"json","effects":["write","publish"],"id":"products.update","method":"PUT","origin":"{origin}","path":"/wp-json/wc/v3/products/{product}","scope":{"changes":{"at":"","from":"body","type":"object"},"product":{"at":"product","from":"path"}}},
-    {"action":"wp_json.wc.orders.write","body":"json","effects":["write","pay","send"],"id":"orders.update","method":"PUT","origin":"{origin}","path":"/wp-json/wc/v3/orders/{order}","scope":{"changes":{"at":"","from":"body","type":"object"},"order":{"at":"order","from":"path"}}},
-    {"action":"wp_json.wc.orders.refunds.pay","body":"json","effects":["pay"],"id":"orders.refunds.create","method":"POST","origin":"{origin}","path":"/wp-json/wc/v3/orders/{order}/refunds","scope":{"order":{"at":"order","from":"path"},"refund":{"at":"","from":"body","type":"object"}}},
-    {"action":"wp_json.wc.products.delete","effects":["delete"],"id":"products.delete","method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/v3/products/{product}","scope":{"product":{"at":"product","from":"path"},"query":{"at":"","from":"query","type":"object"}}}
-  ]
+    "operations": {
+      "orders.list": {"action":"wp_json.wc.orders.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page","status"],"path":"/wp-json/wc/v3/orders","scope":{}},
+      "orders.refunds.create": {"action":"wp_json.wc.orders.refunds.pay","body":"json","effects":["pay"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/v3/orders/{order}/refunds","scope":{"order":{"at":"order","from":"path"},"refund":{"at":"","from":"body","type":"object"}}},
+      "orders.update": {"action":"wp_json.wc.orders.write","body":"json","effects":["write","pay","send"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/v3/orders/{order}","scope":{"changes":{"at":"","from":"body","type":"object"},"order":{"at":"order","from":"path"}}},
+      "products.create": {"action":"wp_json.wc.products.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wc/v3/products","scope":{"product":{"at":"","from":"body","type":"object"}}},
+      "products.delete": {"action":"wp_json.wc.products.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wc/v3/products/{product}","scope":{"product":{"at":"product","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "products.get": {"action":"wp_json.wc.products.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wp-json/wc/v3/products/{product}","scope":{"product":{"at":"product","from":"path"}}},
+      "products.list": {"action":"wp_json.wc.products.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page","search","status"],"path":"/wp-json/wc/v3/products","scope":{}},
+      "products.update": {"action":"wp_json.wc.products.write","body":"json","effects":["write","publish"],"method":"PUT","origin":"{origin}","path":"/wp-json/wc/v3/products/{product}","scope":{"changes":{"at":"","from":"body","type":"object"},"product":{"at":"product","from":"path"}}}
+    }
   }
 }

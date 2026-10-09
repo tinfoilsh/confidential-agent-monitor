@@ -9,7 +9,7 @@
     "connections": {"": {"mcp": {"url": "https://mcp.vercel.com"}}},
     "defaults": {"contents": "team", "sends": "me", "strangers": true},
     "fields": [
-      {"key": "token", "label": "Token", "path": ["connections", "", "mcp", "token"], "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://mcp.vercel.com"}}
+      {"key": "token", "label": "Token", "path": ["connections", "", "mcp", "secrets", "token"], "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://mcp.vercel.com"}}
     ]
   }
 }

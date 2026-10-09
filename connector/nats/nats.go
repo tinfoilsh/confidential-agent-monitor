@@ -20,7 +20,6 @@ import (
 
 	nats "github.com/nats-io/nats.go"
 	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/facts"
 )
 
@@ -30,20 +29,15 @@ const (
 )
 
 type NATS struct {
-	Address  string           `json:"url"`
-	User     string           `json:"user"`
-	Password credential.Value `json:"password"`
-	Token    credential.Value `json:"token"`
-	url      *url.URL
-}
-
-func (n *NATS) Fields() []connector.Field {
-	return []connector.Field{{Path: []string{"password"}, Value: &n.Password, Redact: true}, {Path: []string{"token"}, Value: &n.Token, Redact: true}}
+	connector.SecretConfig
+	Address string `json:"url"`
+	User    string `json:"user"`
+	url     *url.URL
 }
 
 func (n *NATS) UnmarshalJSON(raw []byte) error {
 	type plain NATS
-	if err := connector.Decode(raw, (*plain)(n)); err != nil {
+	if err := facts.DecodeNumbers(raw, (*plain)(n)); err != nil {
 		return err
 	}
 	u, err := connector.ParseURL(n.Address)
@@ -88,7 +82,6 @@ type client struct {
 }
 
 func (n *NATS) Serve(s *connector.Stream, e *connector.Env) {
-	defer s.Close()
 	c := &client{s: s, subs: map[string]*nats.Subscription{}}
 	// Cluster addresses, upstream names and authentication details never leave
 	// the connector. Clients reconnect through the monitor's own address.
@@ -114,12 +107,12 @@ func (n *NATS) Serve(s *connector.Stream, e *connector.Env) {
 		c.fail("connection refused")
 		return
 	}
-	password, err := n.Password.Value(s.Context)
+	password, err := n.Secret(s.Context, "password")
 	if err != nil {
 		c.fail("credential unavailable")
 		return
 	}
-	token, err := n.Token.Value(s.Context)
+	token, err := n.Secret(s.Context, "token")
 	if err != nil || token != "" && (password != "" || n.User != "") {
 		c.fail("invalid credential configuration")
 		return
@@ -144,9 +137,7 @@ func (n *NATS) Serve(s *connector.Stream, e *connector.Env) {
 		return
 	}
 	c.up = up
-	defer up.Close()
-	stop := context.AfterFunc(s.Context, up.Close)
-	defer stop()
+	defer s.Interrupt(connector.CloseFunc(up.Close))()
 	if err := c.ok(); err != nil {
 		return
 	}
@@ -454,7 +445,7 @@ func subjectValid(s string, filter bool) bool {
 
 type Request facts.NATS
 
-func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+func (v *Request) Describe(c connector.Context) (facts.Facts, error) {
 	details := facts.Details{NATS: (*facts.NATS)(v)}
 	action := ""
 	if slices.Contains([]string{"connect", "subscribe", "receive", "publish"}, v.Command) {
@@ -470,9 +461,7 @@ func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval
 	if action == "publish" && control {
 		action = "admin"
 	}
-	op := &facts.Operation{ID: v.Command, Action: action, RequiresTrust: action == "consume"}
-	if action == "" {
-		op = nil
-	}
-	return facts.Facts{Operation: op, Title: "NATS " + v.Command + " " + v.Subject, Parameters: connector.JSONFields(v), Details: details, Context: facts.Context{Sends: "account"}}, connector.Approval{}, nil
+	op := &facts.Operation{ID: v.Command, Action: action}
+	parameters, _ := facts.JSON[map[string]any](v)
+	return facts.Facts{Operation: op, Title: "NATS " + v.Command + " " + v.Subject, Parameters: parameters, Details: details, Context: facts.Context{Sends: "account"}}, nil
 }

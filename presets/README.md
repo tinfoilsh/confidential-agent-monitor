@@ -1,11 +1,11 @@
 Each preset has a `<name>.json` record. Accounts select it with
-`"preset": "<name>"`. Owner entries in `config.presets` replace the entire
-record of the same name.
+`"preset": "<name>"`. Owner entries in `config.presets` override the corresponding fields in the
+pinned record of the same name.
 
 The catalog contains setup fields, connections, defaults, and permission actions.
 Protocol definitions have their own sections:
 
-- `http.operations` contains reviewed HTTP operations, including GraphQL matchers.
+- `http.operations` maps operation IDs to reviewed HTTP operations, including GraphQL matchers. IDs also determine candidate evaluation order; ambiguous matches are rejected.
 - `http.slots` requires requests to stay within the connection's configured API addresses.
 - `mcp.scope` selects service resource identifiers from MCP tool arguments.
 - `public_scope` names the extracted parameters that identify public or private resources across protocols.
@@ -17,15 +17,14 @@ For example:
   "title": "Example",
   "catalog": {"actions": {"items.read": {"title": "Read items"}}},
   "http": {
-    "operations": [{
-      "id": "items.get",
+    "operations": {"items.get": {
       "action": "items.read",
       "effects": ["read"],
       "method": "GET",
       "origin": "https://api.example.com",
       "path": "/items/{id}",
       "scope": {"id": {"from": "path", "at": "id"}}
-    }]
+    }}
   },
   "mcp": {
     "scope": {"id": {"at": "/id", "optional": true}}
@@ -43,42 +42,42 @@ Each connector describes its own parsed requests in Go. HTTP and GraphQL matchin
 live in `connector/web`; MCP argument selection lives in `connector/mcp`.
 Preset validation compiles JSON paths, orders selectors, and indexes HTTP
 operations by origin, method, and path. Matching still rejects overlapping
-operations. HTTP metadata selectors read struct fields directly, without
-serializing the request body.
-The shared `facts` package defines and validates the snapshot, owns label
+operations. HTTP metadata selectors use the shared JSON field conversion.
+The shared `facts` package defines the snapshot, owns label
 observation, and supplies label ordering and the effect vocabulary. The same
-effect obligations drive Go validation and disclosure defaults, Rego policy, and
-the app's permission display. They are included in the policy program's approval
-hash. `facts.Details` has typed fields for each protocol, such as
+effect vocabulary drives preset validation and the app's permission display.
+Go computes `operation.obligations` and `operation.lineage` for Rego to read.
+These facts are included in each operation's approval definition hash. `facts.Details` has typed fields for each protocol, such as
 `f.Details.HTTP.Method` and `f.Details.MCP.Arguments`. Protocol data types live in
 `facts`; parsing and description methods stay in their connectors. A new protocol
-adds its detail type and snapshot copying to `facts`.
+adds its detail type to `facts`.
 
 A parsed request implements `connector.Request.Describe`. It returns facts,
-approval scope and definition dependencies, and any validation error. It must
-not mutate its input or perform I/O. The monitor supplies current redacted
-connection settings and preset sections on every evaluation, including after
+with non-serialized approval scope and definition dependencies, and any
+validation error. It must not mutate its input or perform I/O. The monitor
+supplies the live connector, typed policy options, and protocol preset on every
+evaluation, including after
 an owner approves a waiting request.
 
 `policy.go` finalizes every description by resolving catalog effects, account
-labels, and public/private resource settings, then calling `Facts.Validate`.
-Invalid effects, labels, and request kinds are refused. A connector returns a null
-operation for an unknown request. An action with no configured effects also stays
-unknown; an explicit empty effect list is malformed.
+labels, and public/private resource settings. Effects and configured labels are
+validated when loaded or compiled. Connectors supply request kinds, which default
+to `operation`. The monitor treats an empty action or one without configured
+effects as unknown; preset compilation rejects explicit empty effect lists.
 Action effects inherit from the nearest configured ancestor. HTTP
 operations supply their own effects. Renaming a preset does not change how its
-requests are described. An explicit, empty `http.operations` list leaves HTTP
+requests are described. An explicit, empty `http.operations` map leaves HTTP
 requests unknown. A preset without an HTTP section uses the connector's generic
 browse/submit actions when its catalog defines their effects.
 
-Policy and audit receive the same frozen snapshot. `Facts.Clone` copies mutable
-maps, slices, and pointers while sharing immutable strings. Bodies and
-service-specific parameters retain exact JSON numbers. Common fields live at
+Policy and audit receive independent views of the same JSON snapshot.
+`Facts.Snapshot` uses standard JSON encoding and preserves exact numbers
+in bodies and service-specific parameters. Common fields live at
 `input.facts.operation`, `input.facts.parameters`, and `input.facts.context`.
 `input.facts.principal.key` and `.name` identify the requesting agent and come from
 the monitor's current identity settings. `input.facts.kind` is `operation`,
-`admission`, or `message`; omitted kinds from connector descriptions default to
-`operation`. Admission and message authorization use this field. Protocol detail
+`admission`; omitted kinds from connector descriptions default to
+`operation`. Admission authorization uses this field. Protocol detail
 keys do not select authorization behavior.
 Protocol details live at `input.facts.details.http`, `input.facts.details.mcp`,
 and the corresponding names for other connectors. For example:
@@ -97,19 +96,19 @@ approval using both common and protocol-specific facts. They do not supply
 operation descriptions.
 Unknown requests have a null operation and require approval; malformed or
 ambiguous matches are refused. Approval grants and definition hashes stay
-outside the facts snapshot. Decisions contain `facts`, `deny`, `gaps`, `reasons`, `next`,
+outside the facts snapshot. Decisions contain `facts`, `deny`, `requirements`, `next`,
 `grant`, and `definition`; the app reads operation, title, parameters, principal,
 account, and the current label from `facts`. Audit records add lifecycle fields
-and results without duplicating those facts. Failed message evaluations retain
-the requesting principal, account, title, and current label.
+without duplicating those facts.
 
 The Rego rules in `policy/` compute access restrictions, label-flow checks, and
 saved approval waivers. Every request evaluates the same prepared query,
 `data.monitor.decision`. Owner policies receive `input.facts` and
 `input.authorization`; they can also read `data.monitor.gaps` to inspect remaining
-approval requirements. Lattice settings are available in `data.lattices`.
+approval requirements. Lattice settings are available in `data.lattices`, and
+label levels in `data.levels`. Description errors are appended to denials in Go.
 `data.sentinel.deny` adds owner denial messages. Owner policies cannot define
-rules or data under `monitor` or `lattices`, which the monitor reserves.
+rules or data under `monitor`, `lattices`, or `levels`, which the monitor reserves.
 An undefined deny rule adds no restrictions. A defined rule must return a set or
 array of strings; malformed output and evaluation errors refuse the request.
 
@@ -138,10 +137,10 @@ identical entries are accepted; conflicting messages for one ID, malformed
 entries, and evaluation errors refuse the request. Owner requirements add to
 built-in checks and cannot override a denial.
 
-`gaps` contains the remaining requirement IDs. `reasons` contains the matching
-`{id, message}` objects, including explanations for built-in requirements.
-Saved approvals waive IDs for the same operation, scope, and definition. They
-also retain the reason messages for display; those messages grant no authority.
+`requirements` contains the remaining `{id, message}` objects, including
+explanations for built-in requirements. Saved rules carry the same collection;
+only each requirement's ID grants authority. Messages are for display.
+Saved approvals waive IDs for the same operation, scope, and definition.
 Use a stable ID for each requirement. A new requirement that appears while a
 request waits cannot be covered by an approval of the earlier requirements.
 Policy and data edits invalidate saved approvals through the existing definition
@@ -151,23 +150,32 @@ Approval rules can inspect `data.monitor.base_gaps`, the remaining built-in
 requirements after saved waivers. Denial rules can inspect `data.monitor.gaps`,
 which also includes custom requirements. An approval rule that depends on the
 final gaps or reasons is recursive and is rejected when the policy is compiled.
-Custom requirements can pause operations and connection admission. Message
-requests cannot wait for approval, so a matching requirement refuses the message
-with its explanation.
+Custom requirements can pause operations and connection admission.
 
-The monitor prepares Rego once per configuration and supplies a fresh lazy input
-object for each evaluation. Common facts use native objects, so reading access,
-operation, or label fields does not serialize protocol bodies. Protocol details
-keep their JSON representation and are converted when a rule reads them. Policy
-results are decoded directly into the decision without a JSON round trip.
+Configuration publication requires compiled accounts, presets, selectors, and
+Rego. Request handlers accept those compiled types and never compile on demand.
+`facts.Facts.Snapshot` encodes facts with `encoding/json` and decodes independent
+audit and policy views with `facts.DecodeNumbers`. The audit view retains the original
+encoding, including exact numbers and JSON omission rules.
+OPA receives a fresh lazy object for each evaluation.
 
-Request evaluation runs outside the global flow lock. Before
-admission, the monitor verifies that the configuration snapshot and agent label
-are unchanged; otherwise it reevaluates under the lock. Label updates and their
-durable writes remain ordered with authorization.
+`monitor.transact` owns configuration publication, labels, approval
+records, and stream retirement under one mutex. Connector requests read the
+current configuration and label, evaluate, record the decision and persist the
+observation in one transaction.
 
-Go computes `next` with the same label observation function used for mailbox
-history. Admission leaves the current label unchanged. Observations continue to
+Approval waits release the transaction. Resuming a request requires a fresh
+check of the approved operation and requirement IDs. Owner HTTP bodies are read
+before the transaction. Handlers explicitly capture or update state under the
+lock, then write responses after it ends. Compilation and OAuth network calls
+run outside the transaction.
+
+Observations use the same commit path. Failed persistence keeps restrictive
+labels in memory and marks the request refused. A later observation retries any
+outstanding label write.
+
+Go computes `next` by joining the current label with the observation.
+Admission leaves the current label unchanged. Observations continue to
 record both label axes when their enforcement switches are off.
 
 Saved approvals bind the selected operation, effects, scope, disclosure, relevant
@@ -178,12 +186,11 @@ cannot resume under an earlier approval. This schema replaces the old top-level
 Custom policies must use the facts paths above. Existing saved approvals do not
 apply to the new facts version.
 
-`facts.Version` versions the public snapshot schema. Separately,
-`approvalSemanticsVersion` in `policy.go` binds compiled Go behavior into every
-approval definition. Bump it when parsing, description, normalization, label, or
-approval semantics change, even if the facts schema and Rego sources stay the
-same. Display-only changes do not require a bump. Changes to either version
-invalidate earlier saved approvals.
+`facts.Version` versions the public snapshot schema and binds compiled Go
+behavior into every approval definition. Bump it when parsing, description,
+normalization, label, or approval semantics change, even if the facts schema and
+Rego sources stay the same. Display-only changes do not require a bump. A version
+change invalidates earlier saved approvals.
 
 GitHub's HTTP section covers REST, Git smart HTTP, and GraphQL. Its MCP section
 extracts repository identifiers. The common `public_scope` setting applies the
@@ -205,6 +212,9 @@ and writes proposals under `dev/presets/`. Edit accepted definitions here.
 The SFTP, MQTT, and NATS presets include setup forms and operation permissions.
 See [file and broker protocols](../docs/file-and-broker-protocols.md) for supported
 commands, limits, and scoped owner policies.
+
+IMAP and Redis destinations require `imaps://` and `rediss://` URLs. Configuration
+validation rejects plaintext and unknown schemes before a connection starts.
 
 `dev/setup`, also called by `dev/sandbox`, seeds a fresh store with only the
 credential-free Web account. Set `MONITOR_CONFIG=/path/to/config.json` to import

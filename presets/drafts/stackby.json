@@ -3,7 +3,7 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}
+      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "secrets", "api_key"]}
     ],
     "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://stackby.com", "path": "/", "header": "api-key"}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
@@ -14,11 +14,11 @@
     }
   },
   "http": {
-    "operations": [
-    {"id": "GET /", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://stackby.com", "path": "/", "scope": {}},
-    {"id": "POST /", "action": "write", "effects": ["write"], "method": "POST", "origin": "https://stackby.com", "path": "/", "body": "any", "scope": {}},
-    {"id": "PATCH /", "action": "write", "effects": ["write"], "method": "PATCH", "origin": "https://stackby.com", "path": "/", "body": "any", "scope": {}},
-    {"id": "DELETE /", "action": "delete", "effects": ["delete"], "method": "DELETE", "origin": "https://stackby.com", "path": "/", "body": "any", "scope": {}}
-  ]
+    "operations": {
+      "DELETE /": {"action":"delete","effects":["delete"],"method":"DELETE","origin":"https://stackby.com","path":"/","body":"any","scope":{}},
+      "GET /": {"action":"read","effects":["read"],"method":"GET","origin":"https://stackby.com","path":"/","scope":{}},
+      "PATCH /": {"action":"write","effects":["write"],"method":"PATCH","origin":"https://stackby.com","path":"/","body":"any","scope":{}},
+      "POST /": {"action":"write","effects":["write"],"method":"POST","origin":"https://stackby.com","path":"/","body":"any","scope":{}}
+    }
   }
 }

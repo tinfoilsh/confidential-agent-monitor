@@ -10,7 +10,7 @@
     "defaults": {"contents": "team", "sends": "me", "strangers": true},
     "fields": [
       {"key": "url", "label": "Server URL", "default": "https://{shop}/api/ucp/mcp", "path": ["connections", "", "mcp", "url"]},
-      {"key": "token", "label": "Token", "path": ["connections", "", "mcp", "token"], "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "{url}"}}
+      {"key": "token", "label": "Token", "path": ["connections", "", "mcp", "secrets", "token"], "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "{url}"}}
     ]
   }
 }

@@ -129,15 +129,7 @@ func addActionParents(actions map[string]any, action string) {
 func groupRecord(record map[string]any, hints map[string]specOp) int {
 	catalog := record["catalog"].(map[string]any)
 	oldActions, _ := catalog["actions"].(map[string]any)
-	var ops []map[string]any
-	switch values := httpSection(record)["operations"].(type) {
-	case []map[string]any:
-		ops = values
-	case []any:
-		for _, value := range values {
-			ops = append(ops, value.(map[string]any))
-		}
-	}
+	ops, _ := httpSection(record)["operations"].(map[string]any)
 	if len(ops) == 0 {
 		return 0
 	}
@@ -154,8 +146,9 @@ func groupRecord(record map[string]any, hints map[string]specOp) int {
 		}
 	}
 	changed := 0
-	for _, op := range ops {
-		id, old := op["id"].(string), op["action"].(string)
+	for id, value := range ops {
+		op := value.(map[string]any)
+		old := op["action"].(string)
 		o := operationSpec(op)
 		if hint, ok := hints[id]; ok {
 			o.Tags, o.Resource = hint.Tags, hint.Resource
@@ -188,7 +181,6 @@ func groupRecord(record map[string]any, hints map[string]specOp) int {
 		addActionParents(actions, next)
 	}
 	catalog["actions"] = actions
-	httpSection(record)["operations"] = ops
 	return changed
 }
 
@@ -232,7 +224,7 @@ func groupShipped(only []string) error {
 		if err != nil {
 			return err
 		}
-		ops, _ := httpSection(record)["operations"].([]any)
+		ops, _ := httpSection(record)["operations"].(map[string]any)
 		if len(ops) == 0 {
 			continue
 		}

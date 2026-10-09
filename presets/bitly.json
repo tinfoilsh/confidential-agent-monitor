@@ -9,7 +9,7 @@
     "connections": {"": {"mcp": {"url": "https://api-ssl.bitly.com/v4/mcp"}}},
     "defaults": {"contents": "team", "sends": "me", "strangers": true},
     "fields": [
-      {"key": "token", "label": "Token", "path": ["connections", "", "mcp", "token"], "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://api-ssl.bitly.com/v4/mcp"}}
+      {"key": "token", "label": "Token", "path": ["connections", "", "mcp", "secrets", "token"], "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://api-ssl.bitly.com/v4/mcp"}}
     ]
   }
 }

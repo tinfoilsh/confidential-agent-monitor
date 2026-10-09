@@ -455,9 +455,7 @@ type drafted struct {
 	effect  string
 	effects []string
 	action  string
-	scope   obj
-	grant   []string
-	merged  int
+	scope   map[string]any
 }
 
 // segmentsOverlap says whether some request path could match both patterns.
@@ -501,53 +499,20 @@ func paramParts(s string) (prefix, suffix string, ok bool) {
 	return s[:i], s[j+1:], true
 }
 
-func literals(p string) int {
-	n := 0
-	for _, s := range strings.Split(p, "/") {
-		if !strings.Contains(s, "{") {
-			n++
-		}
-	}
-	return n
-}
-
-func sameMap[V comparable](a, b map[string]V) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for k, v := range a {
-		if other, ok := b[k]; !ok || other != v {
-			return false
-		}
-	}
-	return true
-}
-
 func bodiesOverlap(a, b string) bool {
 	return a == b || a == "any" || b == "any"
 }
 
-func overlaps(a, b specOp) bool {
-	if a.Method != b.Method || a.Origin != b.Origin || !bodiesOverlap(a.Body, b.Body) ||
-		!sameMap(a.Query, b.Query) || !sameMap(a.Headers, b.Headers) || !sameMap(a.Fields, b.Fields) {
-		return false
-	}
-	if a.GraphQL != nil || b.GraphQL != nil {
-		return a.GraphQL != nil && b.GraphQL != nil && a.GraphQL[0] == b.GraphQL[0] && a.GraphQL[1] == b.GraphQL[1]
-	}
-	return segmentsOverlap(a.Path, b.Path)
-}
-
 // draftOps preserves every source operation. Collisions belong in the coverage
 // report; deleting an operation here would lose its effects and resource scope.
-func draftOps(p parsed, ai bool, credQuery string) []drafted {
+func draftOps(p parsed, ai bool) []drafted {
 	var out []drafted
 	for _, o := range p.Ops {
 		if o.Method == "" || o.Path == "" {
 			continue
 		}
 		o.Method = strings.ToUpper(o.Method)
-		d := drafted{op: o, effect: draftEffect(o, ai)}
+		d := drafted{op: o, effect: draftEffect(o, ai), scope: map[string]any{}}
 		d.effects = slices.Clone(o.Effects)
 		if len(d.effects) == 0 {
 			d.effects = []string{d.effect}
@@ -560,8 +525,8 @@ func draftOps(p parsed, ai bool, credQuery string) []drafted {
 		d.action = groupedAction(o, d.effect)
 		for _, m := range pathParam.FindAllStringSubmatch(o.Path, -1) {
 			name := strings.TrimSuffix(m[1], "*")
-			if d.scope.get(name) == nil {
-				d.scope = append(d.scope, kv{name, obj{{"from", "path"}, {"at", name}}})
+			if d.scope[name] == nil {
+				d.scope[name] = map[string]any{"from": "path", "at": name}
 			}
 		}
 		for _, r := range o.Required {
@@ -569,202 +534,102 @@ func draftOps(p parsed, ai bool, credQuery string) []drafted {
 				continue
 			}
 			name := r.Name
-			if d.scope.get(name) != nil {
+			if d.scope[name] != nil {
 				name = r.From + "." + name
 			}
-			if d.scope.get(name) != nil {
+			if d.scope[name] != nil {
 				continue
 			}
 			at := r.Name
 			if r.From == "body" || r.From == "argument" {
 				at = "/" + r.Name
 			}
-			spec := obj{{"from", r.From}, {"at", at}}
+			spec := map[string]any{"from": r.From, "at": at}
 			if r.Type != "string" {
-				spec = append(spec, kv{"type", r.Type})
+				spec["type"] = r.Type
 			}
 			if r.Optional {
-				spec = append(spec, kv{"optional", true})
+				spec["optional"] = true
 			}
-			d.scope = append(d.scope, kv{name, spec})
+			d.scope[name] = spec
 		}
 		// Generated approvals bind the whole request, including optional selectors.
 		// Broader reusable grants must come from reviewed provider overrides.
-		bind := func(name string, spec obj) {
-			for d.scope.get(name) != nil {
+		bind := func(name string, spec map[string]any) {
+			for d.scope[name] != nil {
 				name = "request." + name
 			}
-			d.scope = append(d.scope, kv{name, spec})
+			d.scope[name] = spec
 		}
 		if len(o.Params) > 0 || len(o.Query) > 0 {
-			bind("query", obj{{"from", "query"}, {"at", ""}, {"type", "object"}})
+			bind("query", map[string]any{"from": "query", "at": "", "type": "object"})
 		}
 		if o.Body == "json" {
 			typ := o.BodyType
 			if typ == "" {
 				typ = "object"
 			}
-			bind("request", obj{{"from", "body"}, {"at", ""}, {"type", typ}})
+			bind("request", map[string]any{"from": "body", "at": "", "type": typ})
 		}
 		if o.Body == "form" {
-			bind("request", obj{{"from", "form"}, {"at", ""}, {"type", "object"}})
+			bind("request", map[string]any{"from": "form", "at": "", "type": "object"})
 		}
 		if o.Body == "graphql" {
-			bind("arguments", obj{{"from", "argument"}, {"at", ""}, {"type", "object"}})
+			bind("arguments", map[string]any{"from": "argument", "at": "", "type": "object"})
 		}
-		o.Params = slices.DeleteFunc(o.Params, func(q string) bool { _, ok := o.Query[q]; return ok || q == credQuery })
+		o.Params = slices.DeleteFunc(o.Params, func(q string) bool { _, ok := o.Query[q]; return ok })
 		d.op = o
 		out = append(out, d)
 	}
 	return out
 }
 
-func operationObj(d drafted, id string) obj {
+func operationObj(d drafted, id string) map[string]any {
 	o := d.op
-	op := obj{{"id", id}, {"action", d.action}, {"effects", d.effects}, {"method", o.Method}, {"origin", o.Origin}, {"path", o.Path}}
+	op := map[string]any{"id": id, "action": d.action, "effects": jsonStrings(d.effects), "method": o.Method, "origin": o.Origin, "path": o.Path}
 	if len(o.Query) > 0 {
-		op = append(op, kv{"query", o.Query})
+		op["query"] = o.Query
 	}
 	if len(o.Headers) > 0 {
-		op = append(op, kv{"headers", o.Headers})
+		headers := map[string]any{}
+		for key, value := range o.Headers {
+			headers[key] = value
+		}
+		op["headers"] = headers
 	}
 	if len(o.Fields) > 0 {
-		op = append(op, kv{"fields", o.Fields})
+		op["fields"] = o.Fields
 	}
 	if len(o.Params) > 0 && o.GraphQL == nil {
-		op = append(op, kv{"params", o.Params})
+		op["params"] = jsonStrings(o.Params)
 	}
 	if o.Body != "none" {
-		op = append(op, kv{"body", o.Body})
+		op["body"] = o.Body
 	}
 	if o.GraphQL != nil {
-		op = append(op, kv{"graphql", obj{{"operation", o.GraphQL[0]}, {"field", o.GraphQL[1]}}})
+		op["graphql"] = map[string]any{"operation": o.GraphQL[0], "field": o.GraphQL[1]}
 	}
 	scope := d.scope
 	if scope == nil {
-		scope = obj{}
+		scope = map[string]any{}
 	}
-	op = append(op, kv{"scope", scope})
-	if d.grant != nil {
-		op = append(op, kv{"grant", d.grant})
-	}
+	op["scope"] = scope
 	return op
 }
 
-// opID is the spec's operation id, else method and path; repeats get a numeric suffix.
-func opID(d drafted, seen map[string]int) string {
-	id := d.op.ID
-	if id == "" || d.op.GraphQL == nil && strings.Contains(d.op.ID, " ") && d.op.Summary == d.op.ID {
-		id = d.op.Method + " " + d.op.Path
+func jsonStrings(values []string) []any {
+	out := make([]any, len(values))
+	for i, value := range values {
+		out[i] = value
 	}
-	seen[id]++
-	if seen[id] > 1 {
-		id = fmt.Sprintf("%s.%d", id, seen[id])
-	}
-	return id
+	return out
 }
 
-// isAI says whether the service's own node is an AI one; a LangChain loader for a service does not make it one.
-func isAI(s *service) bool {
-	n := s.Nodes[0]
-	return strings.HasPrefix(n.Name, "@n8n/n8n-nodes-langchain") || slices.Contains(n.Categories, "AI")
-}
+var paramSeg = regexp.MustCompile(`\{[^}]*\}`)
 
-// draftAll writes a draft for every service with a spec and no shipped preset, and the report rows for all of them.
-func draftAll(all []*service, only []string) error {
-	sources, err := load[map[string]source](sourcesPath)
-	if err != nil {
-		return err
+func routeShape(method, path string, graphql any) string {
+	if g, ok := graphql.(map[string]any); ok {
+		return fmt.Sprintf("graphql %v %v", g["operation"], g["field"])
 	}
-	lock, err := load[lockFile](lockPath)
-	if err != nil {
-		return err
-	}
-	if err := os.MkdirAll(draftsDir, 0o755); err != nil {
-		return err
-	}
-	var results []result
-	for _, s := range all {
-		if len(only) > 0 && !slices.Contains(only, s.Name) {
-			continue
-		}
-		src, ok := sources[s.Name]
-		r := result{Service: s.Name, Note: src.Note, Effects: map[string]int{}}
-		for _, ref := range src.Specs {
-			r.Sources = append(r.Sources, ref.Kind+" "+ref.URL)
-		}
-		switch {
-		case !ok:
-			r.Status = "no source entry"
-		case src.Native != "":
-			r.Status = "native " + src.Native
-		case len(src.Specs) == 0:
-			r.Status = "no spec found"
-		default:
-			r.Status, r.Ops, r.Merged, r.Matched, r.Missing, r.Adds = draftService(s, src, lock, r.Effects, &r.Note)
-		}
-		results = append(results, r)
-	}
-	out, _ := json.MarshalIndent(results, "", "  ")
-	return os.WriteFile(filepath.Join(cacheDir, "report.json"), out, 0o644)
-}
-
-func draftService(s *service, src source, lock lockFile, effects map[string]int, note *string) (status string, n, merged int, matched, missing, adds []string) {
-	p, err := specOps(s.Name, src, lock)
-	if err != nil {
-		return "spec error: " + err.Error(), 0, 0, nil, nil, nil
-	}
-	credQuery := ""
-	if src.Auth != nil {
-		credQuery = src.Auth.Query
-	}
-	ops := draftOps(p, isAI(s), credQuery)
-	for _, d := range ops {
-		merged += d.merged
-		effects[d.effect]++
-	}
-	matched, missing = crossCheck(s, ops)
-	if src.Preset != "" {
-		adds, err = shippedAdds(src.Preset, ops)
-		if err != nil {
-			return "shipped preset unreadable: " + err.Error(), len(ops), merged, matched, missing, nil
-		}
-		return "shipped as " + src.Preset, len(ops), merged, matched, missing, adds
-	}
-	if len(ops) == 0 {
-		return "spec has no operations", 0, 0, matched, missing, nil
-	}
-	var fields, connections obj
-	var catNote string
-	if src.Specs[0].Format == "botocore" {
-		fields, connections = awsCatalog(p.Auth.SigV4)
-	} else {
-		fields, connections, catNote = catalogFor(s, src, p, ops)
-	}
-	if catNote != "" {
-		*note = strings.TrimPrefix(*note+"; "+catNote, "; ")
-	}
-	if fields == nil {
-		return "refused: no credential slot", len(ops), merged, matched, missing, nil
-	}
-	var actions obj
-	actionCatalog := map[string]any{}
-	var opObjs []obj
-	seen := map[string]int{}
-	for _, d := range ops {
-		addActionParents(actionCatalog, d.action)
-		opObjs = append(opObjs, operationObj(d, opID(d, seen)))
-	}
-	for _, key := range sortedKeys(actionCatalog) {
-		actions = append(actions, kv{key, actionCatalog[key]})
-	}
-	title := src.Title
-	if title == "" {
-		title = s.Title
-	}
-	text := presetText(title, fields, actions, connections, defaults, opObjs)
-	if err := os.WriteFile(filepath.Join(draftsDir, s.Name+".json"), []byte(text), 0o644); err != nil {
-		return "write failed: " + err.Error(), len(ops), merged, matched, missing, nil
-	}
-	return "drafted", len(ops), merged, matched, missing, nil
+	return method + " " + paramSeg.ReplaceAllString(path, "{}")
 }

@@ -2,7 +2,6 @@ package session
 
 import (
 	"cmp"
-	"context"
 	"fmt"
 	"io"
 	"log"
@@ -28,23 +27,23 @@ const (
 var refusedRequests = []string{"auth-agent-req@openssh.com", "x11-req"}
 
 type SSH struct {
-	Key     string `json:"key"`
+	connector.SecretConfig
 	Host    string `json:"host"`
 	Port    int    `json:"port"`
 	User    string `json:"user"`
 	HostKey string `json:"host_key"`
 }
 
-func (t *SSH) Fields() []connector.Field {
-	return []connector.Field{{Path: []string{"key"}, Redact: true}}
-}
-
-func (t *SSH) dial(ctx context.Context, e *connector.Env) (*ssh.Client, error) {
+func (t *SSH) dial(s *connector.Stream, e *connector.Env) (*ssh.Client, error) {
 	hostKey, _, _, _, err := ssh.ParseAuthorizedKey([]byte(t.HostKey))
 	if err != nil {
 		return nil, fmt.Errorf("host_key: %w", err)
 	}
-	signer, err := ssh.ParsePrivateKey([]byte(t.Key))
+	secret, err := t.Secret(s.Context, "key")
+	if err != nil {
+		return nil, err
+	}
+	signer, err := ssh.ParsePrivateKey([]byte(secret))
 	if err != nil {
 		return nil, err
 	}
@@ -54,12 +53,11 @@ func (t *SSH) dial(ctx context.Context, e *connector.Env) (*ssh.Client, error) {
 		hostKeyAlgorithms = []string{ssh.KeyAlgoRSASHA512, ssh.KeyAlgoRSASHA256, ssh.KeyAlgoRSA}
 	}
 	addr := net.JoinHostPort(t.Host, strconv.Itoa(cmp.Or(t.Port, sshPort)))
-	conn, err := e.Dialer.DialContext(ctx, "tcp", addr)
+	conn, err := e.Dialer.DialContext(s.Context, "tcp", addr)
 	if err != nil {
 		return nil, err
 	}
-	stop := context.AfterFunc(ctx, func() { conn.Close() })
-	defer stop()
+	s.Interrupt(conn)
 	c, chans, reqs, err := ssh.NewClientConn(conn, addr, &ssh.ClientConfig{
 		User:              t.User,
 		Auth:              []ssh.AuthMethod{ssh.PublicKeys(signer)},
@@ -67,22 +65,26 @@ func (t *SSH) dial(ctx context.Context, e *connector.Env) (*ssh.Client, error) {
 		HostKeyAlgorithms: hostKeyAlgorithms,
 	})
 	if err != nil {
-		conn.Close()
 		return nil, err
 	}
 	return ssh.NewClient(c, chans, reqs), nil
 }
 
 func (t *SSH) Serve(s *connector.Stream, e *connector.Env) {
-	inner, chans, reqs, err := innerSSH(s, e.HostKey)
+	t.serve(s, e, func(up *ssh.Client, nc ssh.NewChannel) {
+		relayChannel(up, nc, func(r *ssh.Request) error { return s.Gate(eventForSSH(r)) })
+	})
+}
+
+func (t *SSH) serve(s *connector.Stream, e *connector.Env, pump func(*ssh.Client, ssh.NewChannel)) {
+	_, chans, reqs, err := innerSSH(s, e.HostKey)
 	if err != nil {
 		return
 	}
 	var workers sync.WaitGroup
 	defer func() { s.Close(); workers.Wait() }()
-	defer inner.Close()
 	go ssh.DiscardRequests(reqs)
-	up, err := t.dial(s.Context, e)
+	up, err := t.dial(s, e)
 	if err != nil {
 		log.Printf("%s: %v", t.Host, err)
 		return
@@ -90,11 +92,10 @@ func (t *SSH) Serve(s *connector.Stream, e *connector.Env) {
 	defer s.Interrupt(up)()
 	workers.Go(func() {
 		up.Wait()
-		inner.Close()
+		s.Close()
 	})
-	check := func(r *ssh.Request) error { return s.Gate(eventForSSH(r)) }
 	for nc := range chans {
-		workers.Go(func() { relayChannel(up, nc, check) })
+		workers.Go(func() { pump(up, nc) })
 	}
 }
 
@@ -150,7 +151,7 @@ func forwardRequests(dst ssh.Channel, reqs <-chan *ssh.Request, check func(*ssh.
 }
 
 func eventForSSH(r *ssh.Request) *SSHRequest {
-	layer := &SSHDetails{Request: r.Type}
+	layer := &facts.SSH{Request: r.Type}
 	e := &SSHRequest{SSH: layer}
 	switch r.Type {
 	case requestExec:
@@ -158,7 +159,7 @@ func eventForSSH(r *ssh.Request) *SSHRequest {
 		if ssh.Unmarshal(r.Payload, &p) == nil {
 			layer.Command = p.Command
 			if args := argv(p.Command); args != nil {
-				e.Command = &CommandDetails{Argv: args}
+				e.Command = &facts.Command{Argv: args}
 			}
 		}
 	case "subsystem":
@@ -167,7 +168,7 @@ func eventForSSH(r *ssh.Request) *SSHRequest {
 			layer.Subsystem = p.Name
 		}
 	case "env":
-		var p SSHEnv
+		var p facts.SSHEnv
 		if ssh.Unmarshal(r.Payload, &p) == nil {
 			layer.Env = &p
 		}
@@ -228,33 +229,13 @@ func innerSSH(s *connector.Stream, hostKey ssh.Signer) (*ssh.ServerConn, <-chan 
 	return ssh.NewServerConn(s, cfg)
 }
 
-type SSHDetails = facts.SSH
+type SSHRequest facts.Details
 
-type SSHEnv = facts.SSHEnv
-
-type CommandDetails = facts.Command
-
-type SSHRequest struct {
-	SSH     *SSHDetails     `json:"ssh"`
-	Command *CommandDetails `json:"command,omitempty"`
-	Payload *GitDetails     `json:"payload,omitempty"`
-}
-
-func (r *SSHRequest) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
-	details := facts.Details{SSH: r.SSH}
-	if r.Command != nil {
-		details.Command = r.Command
-	}
-	if r.Payload != nil {
-		details.Payload = r.Payload
-	}
+func (r *SSHRequest) Describe(c connector.Context) (facts.Facts, error) {
+	details := facts.Details(*r)
 	v := r.SSH
 	if v == nil {
-		return facts.Facts{Details: details}, connector.Approval{}, nil
-	}
-	var config struct{ Host string }
-	if err := c.DecodeConfig(&config); err != nil {
-		return facts.Facts{Details: details}, connector.Approval{}, err
+		return facts.Facts{Details: details}, nil
 	}
 	action := map[string]string{"pty-req": "session", "env": "session", "window-change": "session", "signal": "session", "break": "session", "exec": "run", "shell": "shell"}[v.Request]
 	if v.Request == "subsystem" && v.Subsystem == "sftp" {
@@ -264,14 +245,14 @@ func (r *SSHRequest) Describe(c connector.Context) (facts.Facts, connector.Appro
 	if v.Command != "" {
 		scope["command"] = v.Command
 	}
-	host := config.Host
+	host := ""
+	if config, ok := c.Config.(*SSH); ok {
+		host = config.Host
+	}
 	title := map[string]string{"run": "Run " + v.Command + " on " + host, "shell": "Open a shell on " + host, "files": "Transfer files on " + host}[action]
 	if title == "" {
 		title = "SSH " + v.Request
 	}
-	op := &facts.Operation{Action: action, RequiresTrust: action == "files"}
-	if action == "" {
-		op = nil
-	}
-	return facts.Facts{Operation: op, Title: title, Parameters: scope, Details: details}, connector.Approval{}, nil
+	op := &facts.Operation{Action: action}
+	return facts.Facts{Operation: op, Title: title, Parameters: scope, Details: details}, nil
 }

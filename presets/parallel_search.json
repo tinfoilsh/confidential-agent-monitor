@@ -9,7 +9,7 @@
     "connections": {"": {"mcp": {"url": "https://search-mcp.parallel.ai/mcp"}}},
     "defaults": {"contents": "team", "sends": "me", "strangers": true},
     "fields": [
-      {"key": "token", "label": "API key", "path": ["connections", "", "mcp", "token"], "secret": true}
+      {"key": "token", "label": "API key", "path": ["connections", "", "mcp", "secrets", "token"], "secret": true}
     ]
   }
 }

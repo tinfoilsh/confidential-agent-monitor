@@ -111,28 +111,22 @@ func writeJSON(path string, value any) error {
 				}
 				fmt.Fprintf(&out, "    %s: %s,\n", keyJSON, valueJSON)
 			}
-			out.WriteString("    \"operations\": [\n")
-			var ops []map[string]any
-			switch values := httpSection(record)["operations"].(type) {
-			case []map[string]any:
-				ops = values
-			case []any:
-				for _, value := range values {
-					ops = append(ops, value.(map[string]any))
-				}
-			}
-			for i, op := range ops {
+			out.WriteString("    \"operations\": {\n")
+			ops, _ := httpSection(record)["operations"].(map[string]any)
+			for i, id := range sortedKeys(ops) {
 				if i > 0 {
 					out.WriteString(",\n")
 				}
-				line, err := json.Marshal(op)
+				key, _ := json.Marshal(id)
+				operation := maps.Clone(ops[id].(map[string]any))
+				delete(operation, "id")
+				line, err := json.Marshal(operation)
 				if err != nil {
 					return err
 				}
-				out.WriteString("      ")
-				out.Write(line)
+				fmt.Fprintf(&out, "      %s: %s", key, line)
 			}
-			out.WriteString("\n    ]\n  }\n}")
+			out.WriteString("\n    }\n  }\n}")
 			data = out.Bytes()
 		}
 	}
@@ -152,12 +146,6 @@ func writeJSON(path string, value any) error {
 		return err
 	}
 	return os.Rename(f.Name(), path)
-}
-
-func objectMap(o obj) map[string]any {
-	var m map[string]any
-	_ = json.Unmarshal([]byte(compact(o)), &m)
-	return m
 }
 
 func operationSpec(op map[string]any) specOp {
@@ -266,11 +254,11 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 		if candidate == nil {
 			candidate = maps.Clone(p)
 		}
-		if ops, ok := httpSection(p)["operations"].([]any); ok {
-			for _, o := range ops {
-				if m, ok := o.(map[string]any); ok {
-					baseline = append(baseline, m)
-				}
+		if ops, ok := httpSection(p)["operations"].(map[string]any); ok {
+			for _, id := range sortedKeys(ops) {
+				op := maps.Clone(ops[id].(map[string]any))
+				op["id"] = id
+				baseline = append(baseline, op)
 			}
 		}
 	}
@@ -355,8 +343,8 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 					r.Operations = append(r.Operations, entry)
 					continue
 				}
-				d := draftOps(parsed{Ops: []specOp{o}}, name == "anthropic" || name == "open_ai" || name == "google_gemini", "")[0]
-				definition := objectMap(operationObj(d, ""))
+				d := draftOps(parsed{Ops: []specOp{o}}, name == "anthropic" || name == "open_ai" || name == "google_gemini")[0]
+				definition := operationObj(d, "")
 				fingerprint, _ := json.Marshal(definition)
 				if id, ok := generated[string(fingerprint)]; ok {
 					entry.Descriptors = []string{id}
@@ -423,7 +411,13 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 	}
 	slices.Sort(r.UnmappedShipped)
 	r.Counts["unmapped_shipped"] = len(r.UnmappedShipped)
-	httpSection(candidate)["operations"] = operations
+	named := map[string]any{}
+	for _, op := range operations {
+		definition := maps.Clone(op)
+		delete(definition, "id")
+		named[op["id"].(string)] = definition
+	}
+	httpSection(candidate)["operations"] = named
 	r.Counts["regrouped"] = groupRecord(candidate, groupHints(operations, p, name))
 	r.Counts["source_variants"] = len(r.Operations)
 	r.Counts["descriptors"] = len(operations)

@@ -14,8 +14,8 @@
     "defaults": {"contents": "me", "sends": "me", "strangers": true},
     "fields": [
       {"key": "url", "label": "Broker URL", "hint": "tls://user@broker.example.com:4222", "path": ["connections", "", "nats", "url"]},
-      {"key": "password", "label": "Password", "default": "", "secret": true, "path": ["connections", "", "nats", "password"]},
-      {"key": "token", "label": "Token, instead of user and password", "default": "", "secret": true, "path": ["connections", "", "nats", "token"]}
+      {"key": "password", "label": "Password", "default": "", "secret": true, "path": ["connections", "", "nats", "secrets", "password"]},
+      {"key": "token", "label": "Token, instead of user and password", "default": "", "secret": true, "path": ["connections", "", "nats", "secrets", "token"]}
     ]
   }
 }

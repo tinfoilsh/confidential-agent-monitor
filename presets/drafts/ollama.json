@@ -4,7 +4,7 @@
     "group": "api",
     "fields": [
       {"key": "origin", "label": "Your Ollama origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
-      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}
+      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "secrets", "api_key"]}
     ],
     "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://example.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
@@ -24,22 +24,22 @@
     }
   },
   "http": {
-    "operations": [
-    {"id": "headBlob", "action": "read", "effects": ["read"], "method": "HEAD", "origin": "{origin}", "path": "/api/blobs/{digest}", "scope": {"digest": {"from": "path", "at": "digest"}}},
-    {"id": "createBlob", "action": "generate.blobs", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/api/blobs/{digest}", "body": "any", "scope": {"digest": {"from": "path", "at": "digest"}}},
-    {"id": "chat", "action": "send.chat", "effects": ["send"], "method": "POST", "origin": "{origin}", "path": "/api/chat", "body": "json", "scope": {"request": {"from": "body", "at": "", "type": "object"}}},
-    {"id": "copy", "action": "generate.copy", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/api/copy", "body": "json", "scope": {}},
-    {"id": "create", "action": "generate.create", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/api/create", "body": "json", "scope": {}},
-    {"id": "delete", "action": "delete.delete", "effects": ["delete"], "method": "DELETE", "origin": "{origin}", "path": "/api/delete", "body": "json", "scope": {}},
-    {"id": "embed", "action": "generate.embed", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/api/embed", "body": "json", "scope": {}},
-    {"id": "generate", "action": "generate.generate", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/api/generate", "body": "json", "scope": {}},
-    {"id": "ps", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/ps", "scope": {}},
-    {"id": "pull", "action": "generate.pull", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/api/pull", "body": "json", "scope": {}},
-    {"id": "push", "action": "generate.push", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/api/push", "body": "json", "scope": {}},
-    {"id": "show", "action": "generate.show", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/api/show", "body": "json", "scope": {}},
-    {"id": "list", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/tags", "scope": {}},
-    {"id": "version", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/api/version", "scope": {}},
-    {"id": "systemone", "action": "generate.systemone", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/v1/systemone", "body": "json", "scope": {}}
-  ]
+    "operations": {
+      "chat": {"action":"send.chat","effects":["send"],"method":"POST","origin":"{origin}","path":"/api/chat","body":"json","scope":{"request":{"from":"body","at":"","type":"object"}}},
+      "copy": {"action":"generate.copy","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/copy","body":"json","scope":{}},
+      "create": {"action":"generate.create","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/create","body":"json","scope":{}},
+      "createBlob": {"action":"generate.blobs","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/blobs/{digest}","body":"any","scope":{"digest":{"from":"path","at":"digest"}}},
+      "delete": {"action":"delete.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/api/delete","body":"json","scope":{}},
+      "embed": {"action":"generate.embed","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/embed","body":"json","scope":{}},
+      "generate": {"action":"generate.generate","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/generate","body":"json","scope":{}},
+      "headBlob": {"action":"read","effects":["read"],"method":"HEAD","origin":"{origin}","path":"/api/blobs/{digest}","scope":{"digest":{"from":"path","at":"digest"}}},
+      "list": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/tags","scope":{}},
+      "ps": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/ps","scope":{}},
+      "pull": {"action":"generate.pull","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/pull","body":"json","scope":{}},
+      "push": {"action":"generate.push","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/push","body":"json","scope":{}},
+      "show": {"action":"generate.show","effects":["generate"],"method":"POST","origin":"{origin}","path":"/api/show","body":"json","scope":{}},
+      "systemone": {"action":"generate.systemone","effects":["generate"],"method":"POST","origin":"{origin}","path":"/v1/systemone","body":"json","scope":{}},
+      "version": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/api/version","scope":{}}
+    }
   }
 }

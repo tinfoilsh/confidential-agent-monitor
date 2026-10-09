@@ -118,24 +118,24 @@
   },
   "title": "Salesforce",
   "http": {
-    "operations": [
-    {"action":"services.data.read","effects":["read"],"id":"query","method":"GET","origin":"{origin}","params":["q"],"path":"/services/data/v62.0/query","scope":{}},
-    {"action":"services.data.sobjects.read","effects":["read"],"id":"sobjects.get","method":"GET","origin":"{origin}","params":["fields"],"path":"/services/data/v62.0/sobjects/{object}/{id}","scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}},
-    {"action":"services.data.sobjects.account.write","body":"json","effects":["write"],"id":"accounts.create","method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Account","scope":{"record":{"at":"","from":"body","type":"object"}}},
-    {"action":"services.data.sobjects.account.write","body":"json","effects":["write"],"id":"accounts.update","method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Account/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
-    {"action":"services.data.sobjects.account.delete","effects":["delete"],"id":"accounts.delete","method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Account/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"services.data.sobjects.contact.write","body":"json","effects":["write"],"id":"contacts.create","method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Contact","scope":{"record":{"at":"","from":"body","type":"object"}}},
-    {"action":"services.data.sobjects.contact.write","body":"json","effects":["write"],"id":"contacts.update","method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Contact/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
-    {"action":"services.data.sobjects.contact.delete","effects":["delete"],"id":"contacts.delete","method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Contact/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"services.data.sobjects.lead.write","body":"json","effects":["write"],"id":"leads.create","method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Lead","scope":{"record":{"at":"","from":"body","type":"object"}}},
-    {"action":"services.data.sobjects.lead.write","body":"json","effects":["write"],"id":"leads.update","method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Lead/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
-    {"action":"services.data.sobjects.lead.delete","effects":["delete"],"id":"leads.delete","method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Lead/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"services.data.sobjects.opportunity.write","body":"json","effects":["write"],"id":"opportunities.create","method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Opportunity","scope":{"record":{"at":"","from":"body","type":"object"}}},
-    {"action":"services.data.sobjects.opportunity.write","body":"json","effects":["write"],"id":"opportunities.update","method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Opportunity/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
-    {"action":"services.data.sobjects.opportunity.delete","effects":["delete"],"id":"opportunities.delete","method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Opportunity/{id}","scope":{"id":{"at":"id","from":"path"}}},
-    {"action":"services.data.sobjects.case.write","body":"json","effects":["write"],"id":"cases.create","method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Case","scope":{"record":{"at":"","from":"body","type":"object"}}},
-    {"action":"services.data.sobjects.case.write","body":"json","effects":["write"],"id":"cases.update","method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Case/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
-    {"action":"services.data.sobjects.case.delete","effects":["delete"],"id":"cases.delete","method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Case/{id}","scope":{"id":{"at":"id","from":"path"}}}
-  ]
+    "operations": {
+      "accounts.create": {"action":"services.data.sobjects.account.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Account","scope":{"record":{"at":"","from":"body","type":"object"}}},
+      "accounts.delete": {"action":"services.data.sobjects.account.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Account/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "accounts.update": {"action":"services.data.sobjects.account.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Account/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
+      "cases.create": {"action":"services.data.sobjects.case.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Case","scope":{"record":{"at":"","from":"body","type":"object"}}},
+      "cases.delete": {"action":"services.data.sobjects.case.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Case/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "cases.update": {"action":"services.data.sobjects.case.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Case/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
+      "contacts.create": {"action":"services.data.sobjects.contact.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Contact","scope":{"record":{"at":"","from":"body","type":"object"}}},
+      "contacts.delete": {"action":"services.data.sobjects.contact.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Contact/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "contacts.update": {"action":"services.data.sobjects.contact.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Contact/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
+      "leads.create": {"action":"services.data.sobjects.lead.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Lead","scope":{"record":{"at":"","from":"body","type":"object"}}},
+      "leads.delete": {"action":"services.data.sobjects.lead.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Lead/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "leads.update": {"action":"services.data.sobjects.lead.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Lead/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
+      "opportunities.create": {"action":"services.data.sobjects.opportunity.write","body":"json","effects":["write"],"method":"POST","origin":"{origin}","path":"/services/data/v62.0/sobjects/Opportunity","scope":{"record":{"at":"","from":"body","type":"object"}}},
+      "opportunities.delete": {"action":"services.data.sobjects.opportunity.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","path":"/services/data/v62.0/sobjects/Opportunity/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "opportunities.update": {"action":"services.data.sobjects.opportunity.write","body":"json","effects":["write"],"method":"PATCH","origin":"{origin}","path":"/services/data/v62.0/sobjects/Opportunity/{id}","scope":{"changes":{"at":"","from":"body","type":"object"},"id":{"at":"id","from":"path"}}},
+      "query": {"action":"services.data.read","effects":["read"],"method":"GET","origin":"{origin}","params":["q"],"path":"/services/data/v62.0/query","scope":{}},
+      "sobjects.get": {"action":"services.data.sobjects.read","effects":["read"],"method":"GET","origin":"{origin}","params":["fields"],"path":"/services/data/v62.0/sobjects/{object}/{id}","scope":{"id":{"at":"id","from":"path"},"object":{"at":"object","from":"path"}}}
+    }
   }
 }

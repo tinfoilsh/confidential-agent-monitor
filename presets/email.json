@@ -11,7 +11,7 @@
     "defaults": {"contents": "me", "sends": "me", "strangers": true},
     "fields": [
       {"key": "address", "label": "Own email address, for policy", "path": ["policy_options", "address"]},
-      {"key": "password", "label": "App password", "paths": [["connections", "imap", "imap", "password"], ["connections", "smtp", "smtp", "password"]], "secret": true},
+      {"key": "password", "label": "App password", "paths": [["connections", "imap", "imap", "secrets", "password"], ["connections", "smtp", "smtp", "secrets", "password"]], "secret": true},
       {"default": "imaps://imap.gmail.com", "key": "imap_url", "label": "IMAP URL", "path": ["connections", "imap", "imap", "url"]},
       {"default": "smtps://smtp.gmail.com", "key": "smtp_url", "label": "SMTP URL", "path": ["connections", "smtp", "smtp", "url"]},
       {"edit_only": true, "key": "imap_user", "label": "IMAP user", "path": ["connections", "imap", "imap", "user"]},

@@ -53,7 +53,16 @@ fi
 temporary=$(mktemp "$bin_dir/.monitor.XXXXXXXX")
 trap 'rm -f -- "$temporary"' EXIT
 trap 'exit 1' HUP INT TERM
-cp -- "$source_dir/client/monitor" "$temporary"
+python3 - "$source_dir/client" "$temporary" <<'PY'
+from pathlib import Path
+import importlib.util
+import sys
+directory = Path(sys.argv[1])
+spec = importlib.util.spec_from_file_location("monitor_vm", directory / "monitor_vm.py")
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+Path(sys.argv[2]).write_bytes(module.bundle(directory / "monitor"))
+PY
 chmod 755 "$temporary"
 "$temporary" --help >/dev/null
 mv -f -- "$temporary" "$destination"

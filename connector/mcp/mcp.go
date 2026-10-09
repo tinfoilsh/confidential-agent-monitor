@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"maps"
 	"net/http"
 	"net/url"
@@ -17,15 +18,11 @@ import (
 )
 
 type Server struct {
-	Token    credential.Value   `json:"token"`
+	connector.SecretConfig
 	URL      string             `json:"url"`
 	Pin      *sentinel.Snapshot `json:"pin"`
 	upstream *sentinel.Upstream
 	current  *sentinel.Snapshot
-}
-
-func (m *Server) Fields() []connector.Field {
-	return []connector.Field{{Path: []string{"token"}, Value: &m.Token, Redact: true}}
 }
 
 // bearer asks the credential on every request, so a refreshed token replaces an expired one.
@@ -65,32 +62,29 @@ func (m *Server) Run(ctx context.Context, e *connector.Env, in *connector.Listen
 func (m *Server) connect(ctx context.Context, client *http.Client) error {
 	ctx, cancel := context.WithTimeout(ctx, connector.DialTimeout)
 	defer cancel()
-	if len(m.Token.Raw()) > 0 {
+	if token := m.Secrets["token"]; token != nil && len(token.Raw()) > 0 {
 		if u, err := url.Parse(m.URL); err != nil || u.Scheme != "https" {
 			return errors.New("an MCP token needs an https server URL")
 		}
-		client.Transport = bearer{&m.Token, client.Transport}
+		client.Transport = bearer{token, client.Transport}
 	}
 	session, err := sdk.NewClient(&sdk.Implementation{Name: "monitor", Version: sentinel.Version}, nil).
 		Connect(ctx, &sdk.StreamableClientTransport{Endpoint: m.URL, HTTPClient: client}, nil)
 	if err != nil {
 		return err
 	}
-	// The review needs its own snapshot, since NewUpstream keeps none and edits the tools it inspects.
 	cur, err := sentinel.Inspect(ctx, session)
-	if err == nil {
-		m.upstream, err = sentinel.NewUpstream(ctx, m.URL, session, m.Pin)
-	}
 	if err != nil {
 		session.Close()
 		return err
 	}
 	m.current = cur
+	m.upstream = sentinel.NewUpstream(m.URL, session, m.Pin, cur)
 	return nil
 }
 
 func (m *Server) Status() any {
-	status := map[string]any{"state": "ready", "blocked": m.upstream.Blocked}
+	status := map[string]any{"blocked": m.upstream.Blocked}
 	if m.upstream.Blocked > 0 {
 		status["changes"], status["pin"] = m.Pin.Diff(m.current), m.current
 	}
@@ -119,64 +113,92 @@ type Request struct {
 	ReadOnly  bool            `json:"read_only"`
 }
 
-func (r *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+func (r *Request) Describe(c connector.Context) (facts.Facts, error) {
 	f := facts.Facts{Details: facts.Details{MCP: &facts.MCP{Tool: r.Tool, Arguments: r.Arguments, ReadOnly: r.ReadOnly}}, Title: "Use " + r.Tool}
 	action := "use." + r.Tool
 	if r.ReadOnly {
 		action = "read." + r.Tool
 	}
 	var args any
-	if err := connector.DecodeNumbers(r.Arguments, &args); err != nil {
-		return f, connector.Approval{}, err
+	if err := facts.DecodeNumbers(r.Arguments, &args); err != nil {
+		return f, err
 	}
 	f.Parameters = map[string]any{"arguments": args}
 	f.Details.MCP.Arguments = args
-	f.Operation = &facts.Operation{Action: action, RequiresTrust: !r.ReadOnly}
-	var approval connector.Approval
-	if p, _ := c.Specs["mcp"].(*Preset); p != nil {
-		if p.definition == nil {
-			copy := *p
-			if err := copy.Validate(); err != nil {
-				return f, approval, err
-			}
-			p = &copy
-		}
-		var errs []error
-		for _, name := range p.names {
-			spec := p.Scope[name]
-			value, present := spec.Read(args)
-			if err := connector.CheckSelection(name, value, present, spec.Type, spec.Optional); err != nil {
-				errs = append(errs, err)
-			} else if present {
-				f.Parameters[name] = value
-			}
-		}
-		approval.Definition = p.definition
-		return f, approval, errors.Join(errs...)
+	f.Operation = &facts.Operation{Action: action}
+	if p, _ := c.Spec.(*CompiledPreset); p != nil {
+		scope, err := p.scope.Select(args)
+		maps.Copy(f.Parameters, scope)
+		f.Definition = p.definition
+		return f, err
 	}
-	return f, approval, nil
+	return f, nil
 }
 
 // Preset selects service resource identifiers from tool arguments.
 type Preset struct {
-	Scope      map[string]connector.JSONSelector `json:"scope,omitempty"`
-	names      []string
+	Scope map[string]Selector `json:"scope,omitempty"`
+}
+
+type CompiledPreset struct {
+	scope      selectors
 	definition json.RawMessage
 }
 
-func (p *Preset) Validate() error {
-	scope := maps.Clone(p.Scope)
-	for name, spec := range scope {
-		compiled, err := spec.Compile()
-		if err != nil {
-			return err
-		}
-		scope[name] = compiled
+func (p *Preset) Compile() (*CompiledPreset, error) {
+	scope, err := compileSelectors(p.Scope)
+	if err != nil {
+		return nil, err
 	}
 	definition, err := json.Marshal(p)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	p.Scope, p.names, p.definition = scope, slices.Sorted(maps.Keys(scope)), definition
-	return nil
+	return &CompiledPreset{scope: scope, definition: definition}, nil
+}
+
+// Selector selects a typed value from a JSON document.
+type Selector struct {
+	At       string `json:"at"`
+	Type     string `json:"type,omitempty"`
+	Optional bool   `json:"optional,omitempty"`
+}
+
+type compiledSelector struct {
+	name string
+	Selector
+	read func(any) (any, bool)
+}
+
+// selectors keeps compiled MCP scope entries in name order.
+type selectors []compiledSelector
+
+func compileSelectors(specs map[string]Selector) (selectors, error) {
+	out := make(selectors, 0, len(specs))
+	for _, name := range slices.Sorted(maps.Keys(specs)) {
+		spec := specs[name]
+		if !connector.ValidJSONType(spec.Type) {
+			return nil, fmt.Errorf("invalid selector type %q", spec.Type)
+		}
+		read, err := connector.CompilePointer(spec.At)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, compiledSelector{name: name, Selector: spec, read: read})
+	}
+	return out, nil
+}
+
+func (scope selectors) Select(doc any) (map[string]any, error) {
+	out := make(map[string]any, len(scope))
+	var errs []error
+	for _, spec := range scope {
+		value, present := spec.read(doc)
+		if err := connector.CheckSelection(spec.name, value, present, spec.Type, spec.Optional); err != nil {
+			errs = append(errs, err)
+		} else if present {
+			out[spec.name] = value
+		}
+	}
+	return out, errors.Join(errs...)
 }

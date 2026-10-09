@@ -17,7 +17,6 @@ const (
 	sourcesPath = "sources.json"
 	lockPath    = "sources.lock.json"
 	cacheDir    = ".cache"
-	draftsDir   = "../../presets/drafts"
 	shippedDir  = "../../presets"
 )
 
@@ -38,10 +37,8 @@ type catalog struct {
 type node struct {
 	Name        string   `json:"name"`
 	DisplayName string   `json:"displayName"`
-	Categories  []string `json:"categories"`
 	Credentials []string `json:"credentials"`
 	Origins     []string `json:"origins"`
-	Endpoints   []string `json:"endpoints"`
 	Resources   []struct {
 		Resource   string `json:"resource"`
 		Operations []struct {
@@ -51,34 +48,16 @@ type node struct {
 }
 
 type credential struct {
-	Name        string `json:"name"`
-	DisplayName string `json:"displayName"`
-	Kind        string `json:"kind"`
-	Fields      []struct {
-		Name    string `json:"name"`
-		Label   string `json:"label"`
-		Secret  bool   `json:"secret"`
-		Default any    `json:"default"`
-	} `json:"fields"`
-	Authenticate *struct {
-		Properties struct {
-			Headers map[string]any `json:"headers"`
-			Qs      map[string]any `json:"qs"`
-			Auth    map[string]any `json:"auth"`
-			Body    map[string]any `json:"body"`
-		} `json:"properties"`
-	} `json:"authenticate"`
-	OAuth map[string]any `json:"oauth"`
+	Name string `json:"name"`
 }
 
 type service struct {
-	Name        string        `json:"name"`
-	Title       string        `json:"title"`
-	Nodes       []*node       `json:"-"`
-	Credentials []*credential `json:"-"`
-	NodeNames   []string      `json:"nodes"`
-	CredNames   []string      `json:"credentials"`
-	Origins     []string      `json:"origins"`
+	Name      string   `json:"name"`
+	Title     string   `json:"title"`
+	Nodes     []*node  `json:"-"`
+	NodeNames []string `json:"nodes"`
+	CredNames []string `json:"credentials"`
+	Origins   []string `json:"origins"`
 }
 
 var (
@@ -156,7 +135,6 @@ func services(c catalog) []*service {
 			for _, cr := range n.Credentials {
 				if !slices.Contains(s.CredNames, cr) && creds[cr] != nil {
 					s.CredNames = append(s.CredNames, cr)
-					s.Credentials = append(s.Credentials, creds[cr])
 				}
 			}
 			s.NodeNames = append(s.NodeNames, n.Name)
@@ -173,12 +151,12 @@ func services(c catalog) []*service {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: presets services|update|fetch|draft|group|generate|check [service...]; group regroups shipped operations; update --all refreshes every source; check --reviewed requires complete review")
+		fmt.Fprintln(os.Stderr, "usage: presets services|update|fetch|group|generate|check [service...]; group regroups shipped operations; update --all refreshes every source; check --reviewed requires complete review")
 		os.Exit(2)
 	}
 	var err error
 	var all []*service
-	if os.Args[1] == "services" || os.Args[1] == "draft" {
+	if os.Args[1] == "services" {
 		var c catalog
 		if c, err = load[catalog](catalogPath); err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -228,8 +206,6 @@ func main() {
 		if err = update(sources, lock, names); err == nil {
 			err = writeJSON(lockPath, lock)
 		}
-	case "draft":
-		err = draftAll(all, os.Args[2:])
 	case "generate":
 		err = generate(os.Args[2:])
 	case "group":

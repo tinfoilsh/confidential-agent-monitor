@@ -4,6 +4,10 @@ This tool inventories API requests and proposes monitor actions, effect sets, re
 
 Run commands from `dev/presets`. This directory is a separate Go module, so use `GOWORK=off`.
 
+`generate` is the single candidate pipeline. The old `draft` command and its
+credential catalog inference have been removed; existing static draft presets
+remain available to the development monitor.
+
 ```sh
 # Reproduce candidates from the locked inputs.
 GOWORK=off go run . fetch slack anthropic airtable
@@ -36,7 +40,8 @@ The files have different roles:
 
 Git ignores `.cache/`, `candidates/`, `coverage/`, `snapshots/`, and temporary `.generate-*` files. Keep the generator code, source definitions and lock, and shipped presets in version control. Run `fetch` and `generate` before checking candidates in a fresh checkout. If an upstream source no longer serves the locked content, restore the matching local cache or snapshot, or run `update` for that provider and review the changed lock before regenerating.
 
-HTTP definitions live under `http.operations`; protocol sections such as `mcp` remain separate.
+HTTP definitions live under `http.operations`, an object keyed by operation ID;
+protocol sections such as `mcp` remain separate.
 
 Regeneration reads the shipped presets on every run and preserves their operation IDs, effects, request constraints, scopes, grants, and destinations. It groups actions by resource and writes candidates and coverage reports. There is no separate baseline folder to keep in sync. Changing a shipped preset invalidates its previous coverage report until regeneration.
 
@@ -52,7 +57,7 @@ return types when available, falling back to field names. Source categories
 provide a fallback for paths without literal resources. A source can override
 an ambiguous group in `sources.json` with `"groups": {"operationId": "resource.subresource"}`.
 These keys name source operation IDs; unknown keys and malformed group paths
-are errors. Both `draft` and `generate` use these rules.
+are errors. `generate` uses these rules.
 
 `group [preset-or-source...]` writes the grouping into shipped presets, using
 only their existing operations. With no arguments it processes all shipped API

@@ -13,9 +13,9 @@
             {"value": "GITHUB_TOKEN", "origin": "https://api.github.com", "header": "Authorization", "prefix": "Bearer "},
             {"value": "GITHUB_TOKEN", "origin": "https://github.com", "basic": "password"}
           ],
-          "values": {"GITHUB_TOKEN": "ghp_REAL"}
+          "secrets": {"GITHUB_TOKEN": "ghp_REAL"}
         } },
-        "mcp": { "mcp": { "url": "https://api.githubcopilot.com/mcp/", "token": "ghp_REAL" } }
+        "mcp": { "mcp": { "url": "https://api.githubcopilot.com/mcp/", "secrets": {"token": "ghp_REAL"} } }
       }
     },
     "gmail": {
@@ -23,8 +23,8 @@
       "policy_options": { "address": "me@gmail.com" },
       "contents": "me", "strangers": true, "sends": "me",
       "connections": {
-        "imap": { "imap": { "url": "imaps://imap.gmail.com", "user": "me@gmail.com", "password": "APP_PASSWORD" } },
-        "smtp": { "smtp": { "url": "smtps://smtp.gmail.com", "user": "me@gmail.com", "password": "APP_PASSWORD" } }
+        "imap": { "imap": { "url": "imaps://imap.gmail.com", "user": "me@gmail.com", "secrets": {"password": "APP_PASSWORD"} } },
+        "smtp": { "smtp": { "url": "smtps://smtp.gmail.com", "user": "me@gmail.com", "secrets": {"password": "APP_PASSWORD"} } }
       }
     },
     "slack": {
@@ -32,7 +32,7 @@
       "contents": "team", "strangers": true, "sends": "me",
       "connections": { "": { "http": {
         "slots": [{"value": "token", "origin": "https://slack.com", "path": "/api", "header": "Authorization", "prefix": "Bearer "}],
-        "values": {"token": "xoxb-REAL"}
+        "secrets": {"token": "xoxb-REAL"}
       } } }
     },
     "backups": {
@@ -41,7 +41,7 @@
       "connections": { "": { "http": {
         "slots": [{"value": "access_key", "origin": "https://my-backups.s3.us-east-1.amazonaws.com", "path": "/",
                    "sigv4": {"service": "s3", "region": "us-east-1", "secret": "secret_key"}}],
-        "values": {"access_key": "AKIA_REAL", "secret_key": "SECRET_REAL"}
+        "secrets": {"access_key": "AKIA_REAL", "secret_key": "SECRET_REAL"}
       } } }
     },
     "web": {
@@ -50,22 +50,22 @@
     },
     "box2": {
       "preset": "custom", "contents": "team", "strangers": false, "sends": "me",
-      "connections": { "": { "ssh": {"host": "box2.example.com", "user": "deploy", "host_key": "ssh-ed25519 AAAA...", "key": "-----BEGIN OPENSSH PRIVATE KEY-----\n..."} } }
+      "connections": { "": { "ssh": {"host": "box2.example.com", "user": "deploy", "host_key": "ssh-ed25519 AAAA...", "secrets": {"key": "-----BEGIN OPENSSH PRIVATE KEY-----\n..."}} } }
     },
     "local": {
       "preset": "custom", "contents": "me", "strangers": false, "sends": "me",
       "connections": {
-        "gh": { "cli": {"path": "/usr/bin/gh", "env": {"HOME": "/var/lib/monitor", "GH_TOKEN": "ghp_REAL"}} },
-        "gpg": { "cli": { "path": "/usr/bin/gpg", "env": { "GNUPGHOME": "/var/lib/monitor/gnupg" }, "stdin": "git" } },
+        "gh": { "cli": {"path": "/usr/bin/gh", "secrets": {"HOME": "/var/lib/monitor", "GH_TOKEN": "ghp_REAL"}} },
+        "gpg": { "cli": { "path": "/usr/bin/gpg", "secrets": { "GNUPGHOME": "/var/lib/monitor/gnupg" }, "stdin": "git" } },
         "gpgagent": { "gpg-agent": "/var/lib/monitor/gnupg/S.gpg-agent" },
-        "sshkey": { "ssh-agent": {"keys": {"0": "-----BEGIN OPENSSH PRIVATE KEY-----\n..."}} }
+        "sshkey": { "ssh-agent": {"secrets": {"0": "-----BEGIN OPENSSH PRIVATE KEY-----\n..."}} }
       }
     },
     "db": {
       "preset": "custom", "contents": "team", "strangers": false, "sends": "me",
       "connections": {
-        "": { "postgres": {"url": "postgres://app@db.example.com/app?sslmode=verify-full", "password": "REAL"} },
-        "cache": { "redis": {"url": "rediss://default@cache.example.com:6380", "password": "REAL"} }
+        "": { "postgres": {"url": "postgres://app@db.example.com/app?sslmode=verify-full", "secrets": {"password": "REAL"}} },
+        "cache": { "redis": {"url": "rediss://default@cache.example.com:6380", "secrets": {"password": "REAL"}} }
       }
     }
   }

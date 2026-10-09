@@ -84,13 +84,13 @@
   },
   "title": "Shopify",
   "http": {
-    "operations": [
-    {"action":"products.read","body":"graphql","effects":["read"],"graphql":{"field":"products","operation":"query"},"id":"products","method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{}},
-    {"action":"product.read","body":"graphql","effects":["read"],"graphql":{"field":"product","operation":"query"},"id":"product","method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{"id":{"at":"/id","from":"argument"}}},
-    {"action":"orders.read","body":"graphql","effects":["read"],"graphql":{"field":"orders","operation":"query"},"id":"orders","method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{}},
-    {"action":"product.write","body":"graphql","effects":["write","publish"],"graphql":{"field":"productCreate","operation":"mutation"},"id":"productCreate","method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{"input":{"at":"","from":"argument","type":"object"}}},
-    {"action":"product.write","body":"graphql","effects":["write","publish"],"graphql":{"field":"productUpdate","operation":"mutation"},"id":"productUpdate","method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{"input":{"at":"","from":"argument","type":"object"}}},
-    {"action":"order.write","body":"graphql","effects":["write","delete","pay"],"graphql":{"field":"orderCancel","operation":"mutation"},"id":"orderCancel","method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{"input":{"at":"","from":"argument","type":"object"}}}
-  ]
+    "operations": {
+      "orderCancel": {"action":"order.write","body":"graphql","effects":["write","delete","pay"],"graphql":{"field":"orderCancel","operation":"mutation"},"method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{"input":{"at":"","from":"argument","type":"object"}}},
+      "orders": {"action":"orders.read","body":"graphql","effects":["read"],"graphql":{"field":"orders","operation":"query"},"method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{}},
+      "product": {"action":"product.read","body":"graphql","effects":["read"],"graphql":{"field":"product","operation":"query"},"method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{"id":{"at":"/id","from":"argument"}}},
+      "productCreate": {"action":"product.write","body":"graphql","effects":["write","publish"],"graphql":{"field":"productCreate","operation":"mutation"},"method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{"input":{"at":"","from":"argument","type":"object"}}},
+      "productUpdate": {"action":"product.write","body":"graphql","effects":["write","publish"],"graphql":{"field":"productUpdate","operation":"mutation"},"method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{"input":{"at":"","from":"argument","type":"object"}}},
+      "products": {"action":"products.read","body":"graphql","effects":["read"],"graphql":{"field":"products","operation":"query"},"method":"POST","origin":"{origin}","path":"/admin/api/2026-10/graphql.json","scope":{}}
+    }
   }
 }

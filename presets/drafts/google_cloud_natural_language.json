@@ -3,7 +3,7 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "Google Cloud Natural Language account", "secret": true, "path": ["connections", "", "http", "values", "token"], "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{MONITOR_GOOGLE_CLIENT_ID}", "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}", "scope": "https://www.googleapis.com/auth/cloud-language https://www.googleapis.com/auth/cloud-platform"}}
+      {"key": "token", "label": "Google Cloud Natural Language account", "secret": true, "path": ["connections", "", "http", "secrets", "token"], "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{MONITOR_GOOGLE_CLIENT_ID}", "client_secret": "{MONITOR_GOOGLE_CLIENT_SECRET}", "scope": "https://www.googleapis.com/auth/cloud-language https://www.googleapis.com/auth/cloud-platform"}}
     ],
     "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://language.googleapis.com", "path": "/v2", "header": "Authorization", "prefix": "Bearer "}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
@@ -13,12 +13,12 @@
     }
   },
   "http": {
-    "operations": [
-    {"id": "documents.analyzeEntities", "action": "generate.documents", "effects": ["generate"], "method": "POST", "origin": "https://language.googleapis.com", "path": "/v2/documents:analyzeEntities", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {}},
-    {"id": "documents.analyzeSentiment", "action": "generate.documents", "effects": ["generate"], "method": "POST", "origin": "https://language.googleapis.com", "path": "/v2/documents:analyzeSentiment", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {}},
-    {"id": "documents.annotateText", "action": "write.documents", "effects": ["write"], "method": "POST", "origin": "https://language.googleapis.com", "path": "/v2/documents:annotateText", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {}},
-    {"id": "documents.classifyText", "action": "generate.documents", "effects": ["generate"], "method": "POST", "origin": "https://language.googleapis.com", "path": "/v2/documents:classifyText", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {}},
-    {"id": "documents.moderateText", "action": "generate.documents", "effects": ["generate"], "method": "POST", "origin": "https://language.googleapis.com", "path": "/v2/documents:moderateText", "params": ["$.xgafv", "alt", "callback", "fields", "prettyPrint", "quotaUser", "uploadType", "upload_protocol"], "body": "json", "scope": {}}
-  ]
+    "operations": {
+      "documents.analyzeEntities": {"action":"generate.documents","effects":["generate"],"method":"POST","origin":"https://language.googleapis.com","path":"/v2/documents:analyzeEntities","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
+      "documents.analyzeSentiment": {"action":"generate.documents","effects":["generate"],"method":"POST","origin":"https://language.googleapis.com","path":"/v2/documents:analyzeSentiment","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
+      "documents.annotateText": {"action":"write.documents","effects":["write"],"method":"POST","origin":"https://language.googleapis.com","path":"/v2/documents:annotateText","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
+      "documents.classifyText": {"action":"generate.documents","effects":["generate"],"method":"POST","origin":"https://language.googleapis.com","path":"/v2/documents:classifyText","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}},
+      "documents.moderateText": {"action":"generate.documents","effects":["generate"],"method":"POST","origin":"https://language.googleapis.com","path":"/v2/documents:moderateText","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"body":"json","scope":{}}
+    }
   }
 }

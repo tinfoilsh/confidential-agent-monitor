@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"slices"
@@ -17,6 +18,7 @@ import (
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/kb"
+	"github.com/tinfoilsh/monitor/facts"
 )
 
 const (
@@ -81,7 +83,11 @@ func (b *Browser) ServeOwner(w http.ResponseWriter, r *http.Request) {
 	b.mu.Unlock()
 	var c control
 	if r.Method == http.MethodPost {
-		if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
+		raw, err := io.ReadAll(r.Body)
+		if err == nil {
+			err = facts.DecodeNumbers(raw, &c)
+		}
+		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -235,7 +241,12 @@ func (b *Browser) capture(r *http.Request) (frame, error) {
 			break
 		}
 	}
-	tabCtx, epoch, dialog := b.tabs[active], b.epoch, b.dialogs[active]
+	selected, epoch := b.tabs[active], b.epoch
+	var tabCtx context.Context
+	var dialog bool
+	if selected != nil {
+		tabCtx, dialog = selected.context, selected.dialog
+	}
 	b.mu.Unlock()
 	for _, t := range pages {
 		f.Tabs = append(f.Tabs, tab{t.TargetID, t.URL, t.Title, t.TargetID == active})

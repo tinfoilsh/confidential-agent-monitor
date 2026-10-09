@@ -10,7 +10,7 @@
     "defaults": {"contents": "team", "sends": "me", "strangers": true},
     "fields": [
       {"key": "url", "label": "Server URL", "path": ["connections", "", "mcp", "url"]},
-      {"hint": "Leave empty to sign in", "key": "token", "label": "Token", "oauth": {"resource": "{url}"}, "path": ["connections", "", "mcp", "token"], "secret": true}
+      {"hint": "Leave empty to sign in", "key": "token", "label": "Token", "oauth": {"resource": "{url}"}, "path": ["connections", "", "mcp", "secrets", "token"], "secret": true}
     ]
   }
 }

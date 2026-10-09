@@ -3,6 +3,7 @@ package signer
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"strings"
@@ -24,8 +25,6 @@ var agentCommands = map[string]bool{
 
 type GPGAgent string
 
-func (*GPGAgent) Fields() []connector.Field { return nil }
-
 func (socket *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
 	up, err := (&net.Dialer{Timeout: connector.DialTimeout}).DialContext(s.Context, "unix", string(*socket))
 	if err != nil {
@@ -33,7 +32,7 @@ func (socket *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
 		return
 	}
 	defer s.Interrupt(up)()
-	defer connector.CopyReplies(s, up, up)()
+	defer connector.PumpReplies(s, func() { io.Copy(s, up) })()
 	sign := Request{Agent: agentGPG}
 	lines := bufio.NewScanner(s)
 	for lines.Scan() {

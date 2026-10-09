@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
-	"maps"
 	"net/netip"
 	"os"
 	"path"
@@ -17,7 +16,9 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/gobwas/glob"
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/connector/mcp"
 	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/facts"
@@ -30,8 +31,7 @@ var levels = []string{"off", "read", "ask", "allow"}
 type identity struct {
 	Key      string            `json:"key"`
 	Accounts map[string]access `json:"accounts"`
-	Rules    []rule            `json:"rules,omitempty"`
-	Messages *messageAccess    `json:"messages,omitempty"`
+	Rules    map[string]rule   `json:"rules,omitempty"`
 	// Profile admits every request unchanged and unlabeled, recording it, to learn what a client sends.
 	Profile bool `json:"profile,omitempty"`
 }
@@ -41,28 +41,22 @@ type access struct {
 	Actions map[string]string `json:"actions,omitempty"`
 }
 
-// A rule waives gaps for one matched operation under the definition the owner approved.
+// A rule waives requirements for one operation under the definition the owner approved.
 type rule struct {
-	Account    string           `json:"account"`
-	Action     string           `json:"action"`
-	Operation  string           `json:"operation,omitempty"`
-	Definition string           `json:"definition,omitempty"`
-	Scope      map[string]any   `json:"scope"`
-	Waives     []string         `json:"waives"`
-	Reasons    []approvalReason `json:"reasons,omitempty"` // Display snapshot only.
-}
-
-// policyOptions contains settings used only by policy, never connection setup.
-type policyOptions struct {
-	Private  []string `json:"private,omitempty"`
-	Address  string   `json:"address,omitempty"`
-	Origin   string   `json:"origin,omitempty"`
-	compiled *compiledOptions
+	Enabled      *bool          `json:"enabled,omitempty"`
+	Account      string         `json:"account"`
+	Action       string         `json:"action"`
+	Operation    string         `json:"operation,omitempty"`
+	Definition   string         `json:"definition,omitempty"`
+	Scope        map[string]any `json:"scope"`
+	Requirements requirements   `json:"requirements"`
 }
 
 type account struct {
+	name          string
+	private       []glob.Glob
 	Preset        string                    `json:"preset"`
-	PolicyOptions policyOptions             `json:"policy_options"`
+	PolicyOptions connector.PolicyOptions   `json:"policy_options"`
 	Contents      string                    `json:"contents"`
 	Strangers     bool                      `json:"strangers"`
 	Sends         string                    `json:"sends"`
@@ -76,6 +70,10 @@ type latticeOptions struct {
 }
 
 type config struct {
+	Monitor struct {
+		Version int               `json:"version"`
+		Presets map[string]string `json:"presets,omitempty"`
+	} `json:"monitor"`
 	Lattices      latticeOptions      `json:"lattices"`
 	AllowNetworks []netip.Prefix      `json:"allow_networks"`
 	Accounts      map[string]account  `json:"accounts"`
@@ -83,43 +81,45 @@ type config struct {
 	Policies      map[string]string   `json:"policies"`
 	Data          map[string]any      `json:"data"`
 
-	// Presets are the owner's, in the shipped file format; each replaces the shipped preset of its name.
+	// Presets contains the source overrides; resolved holds the compiled definitions.
 	Presets  map[string]map[string]any `json:"presets,omitempty"`
 	resolved map[string]*presetRecord
+	pins     []tomlChange
 }
 
-// parse decodes the owner's config without starting anything.
-func parse(raw []byte) (*config, map[string]*connection, error) {
-	cfg := config{Lattices: latticeOptions{Confidentiality: true}}
-	if err := connector.DecodeNumbers(raw, &cfg); err != nil {
-		return nil, nil, err
-	}
-	for _, reserved := range []string{"definitions", "presets", "lattices", "monitor"} {
-		if _, ok := cfg.Data[reserved]; ok {
-			return nil, nil, fmt.Errorf("data.%s is reserved for the monitor", reserved)
+func (a *account) compile(name string) error {
+	a.name = name
+	a.private = nil
+	for _, pattern := range a.PolicyOptions.Private {
+		g, err := glob.Compile(pattern, '/')
+		if err != nil {
+			return fmt.Errorf("account %s: invalid private pattern %q: %w", name, pattern, err)
 		}
+		a.private = append(a.private, g)
 	}
-	resolved, err := withOwned(cfg.Presets)
-	if err != nil {
+	return nil
+}
+
+func (cfg *config) compile(resolved map[string]*presetRecord) (*config, map[string]*connection, error) {
+	if err := cfg.validateData(); err != nil {
 		return nil, nil, err
 	}
 	cfg.resolved = resolved
 	connections := map[string]*connection{}
 	for acct, a := range cfg.Accounts {
+		if err := a.compile(acct); err != nil {
+			return nil, nil, err
+		}
+		cfg.Accounts[acct] = a
 		if _, ok := resolved[a.Preset]; !ok {
 			return nil, nil, fmt.Errorf("account %s has unknown preset %s", acct, a.Preset)
 		}
 		if !slices.Contains(facts.Audiences, a.Contents) || !slices.Contains(facts.Audiences, a.Sends) {
 			return nil, nil, fmt.Errorf("account %s: contents and sends must be one of %v", acct, facts.Audiences)
 		}
-		a.PolicyOptions.compiled, err = compileOptions(a.PolicyOptions)
-		if err != nil {
-			return nil, nil, fmt.Errorf("account %s: %w", acct, err)
-		}
-		cfg.Accounts[acct] = a
 		for key, kinds := range a.Connections {
 			name := connectionName(acct, key)
-			if name == "messages" || name == "mcp" || name == "agent" {
+			if name+".monitor" == discoveryHost || name+".monitor" == gatewayHost {
 				return nil, nil, fmt.Errorf("connection name %s is reserved for the monitor", name)
 			}
 			if connections[name] != nil {
@@ -139,19 +139,32 @@ func parse(raw []byte) (*config, map[string]*connection, error) {
 				}
 				raw, _ := json.Marshal(spec)
 				instance := newConnector()
-				if err := connector.Decode(raw, instance); err != nil {
+				if err := facts.DecodeNumbers(raw, instance); err != nil {
 					return nil, nil, fmt.Errorf("connection %s: %w", name, err)
 				}
-				connections[name] = &connection{name: name, protocol: kind, account: acct, key: key,
-					config: raw, connector: instance}
-				connections[name].publicConfig = redactedConnection(connections[name])
+				c := &connection{name: name, protocol: kind, account: acct, key: key, config: raw, connector: instance}
+				if credentials, ok := instance.(interface {
+					SecretValues() map[string]*credential.Value
+				}); ok {
+					c.Secrets = credentials.SecretValues()
+					names := catalogSecrets(resolved[a.Preset], key, kind)
+					if len(names) == 0 {
+						// Custom connections inherit unset editors from catalogs for their protocol.
+						for _, preset := range resolved {
+							names = append(names, catalogSecrets(preset, "*", kind)...)
+						}
+					}
+					for _, name := range names {
+						if c.Secrets[name] == nil {
+							c.Secrets[name] = new(credential.Value)
+						}
+					}
+				}
+				connections[name] = c
 			}
 		}
 	}
 	for name, id := range cfg.Identities {
-		if err := validateMessageAccess(name, id.Messages, cfg.Identities); err != nil {
-			return nil, nil, err
-		}
 		for acct, a := range id.Accounts {
 			if _, ok := cfg.Accounts[acct]; !ok || !slices.Contains(levels, a.Level) {
 				return nil, nil, fmt.Errorf("identity %s: account %s must exist and have a level in %v", name, acct, levels)
@@ -163,7 +176,7 @@ func parse(raw []byte) (*config, map[string]*connection, error) {
 			}
 		}
 	}
-	return &cfg, connections, nil
+	return cfg, connections, nil
 }
 
 // A presetRecord contains reviewed protocol definitions and account setup metadata.
@@ -173,6 +186,10 @@ type presetRecord struct {
 	HTTP        *web.Preset    `json:"http,omitempty"`
 	MCP         *mcp.Preset    `json:"mcp,omitempty"`
 	PublicScope []string       `json:"public_scope,omitempty"`
+	source      json.RawMessage
+	hash        string
+	http        *web.CompiledPreset
+	mcp         *mcp.CompiledPreset
 }
 type presetCatalog struct {
 	Group       string                     `json:"group,omitempty"`
@@ -188,8 +205,8 @@ type presetAction struct {
 }
 
 func decodePreset(raw []byte) (*presetRecord, error) {
-	var p presetRecord
-	if err := connector.DecodeNumbers(raw, &p); err != nil {
+	p := presetRecord{source: raw, hash: contentHash(string(raw))}
+	if err := facts.DecodeNumbers(raw, &p); err != nil {
 		return nil, err
 	}
 	if p.Catalog == nil {
@@ -201,27 +218,39 @@ func decodePreset(raw []byte) (*presetRecord, error) {
 		}
 	}
 	if p.HTTP != nil {
-		if err := p.HTTP.Validate(); err != nil {
+		var err error
+		if p.http, err = p.HTTP.Compile(); err != nil {
 			return nil, err
 		}
 	}
 	if p.MCP != nil {
-		if err := p.MCP.Validate(); err != nil {
+		var err error
+		if p.mcp, err = p.MCP.Compile(); err != nil {
 			return nil, err
 		}
 	}
 	return &p, nil
 }
-func (r *presetRecord) EffectsFor(action string) []string {
-	for action != "" && r.Catalog != nil {
-		if effects := r.Catalog.Actions[action].Effects; effects != nil {
-			return slices.Clone(effects)
-		}
+func actionLineage(action string) []string {
+	var lineage []string
+	for action != "" {
+		lineage = append(lineage, action)
 		i := strings.LastIndexByte(action, '.')
 		if i < 0 {
 			break
 		}
 		action = action[:i]
+	}
+	return lineage
+}
+
+func (r *presetRecord) EffectsFor(lineage []string) []string {
+	if r.Catalog != nil {
+		for _, action := range lineage {
+			if effects := r.Catalog.Actions[action].Effects; effects != nil {
+				return effects
+			}
+		}
 	}
 	return nil
 }
@@ -237,17 +266,16 @@ var draftFiles fs.FS
 
 var presets = sync.OnceValues(func() (map[string]*presetRecord, error) {
 	files, _ := fs.Glob(presetFiles, "presets/*.json")
-	shipped := map[string]map[string]any{}
+	out := map[string]*presetRecord{}
 	for _, file := range files {
 		name, p, err := presetFile(presetFiles, file)
 		if err != nil {
 			return nil, err
 		}
-		shipped[name] = p
+		out[name] = p
 	}
-	out, err := checked(map[string]*presetRecord{}, shipped)
-	if err != nil || draftFiles == nil {
-		return out, err
+	if draftFiles == nil {
+		return out, nil
 	}
 	// Each draft is checked alone, so a malformed one is skipped rather than stopping the monitor.
 	drafts, _ := fs.Glob(draftFiles, "*.json")
@@ -257,30 +285,23 @@ var presets = sync.OnceValues(func() (map[string]*presetRecord, error) {
 			err = errors.New("a shipped preset has this name")
 		}
 		if err == nil {
-			var next map[string]*presetRecord
-			if next, err = checked(maps.Clone(out), map[string]map[string]any{name: p}); err == nil {
-				out = next
-				continue
-			}
+			out[name] = p
+			continue
 		}
 		log.Printf("draft %s: %v", file, err)
 	}
 	return out, nil
 })
 
-func presetFile(fsys fs.FS, file string) (string, map[string]any, error) {
+func presetFile(fsys fs.FS, file string) (string, *presetRecord, error) {
 	name := strings.TrimSuffix(path.Base(file), ".json")
 	src, err := fs.ReadFile(fsys, file)
 	if err != nil {
 		return "", nil, err
 	}
 	src = withEnv(name, src)
-	// encoding/json keeps the last of repeated names, which could silently drop a condition.
-	if !jsontext.Value(src).IsValid() {
-		return "", nil, fmt.Errorf("%s is not valid JSON or repeats a name", file)
-	}
-	var p map[string]any
-	if err := connector.DecodeNumbers(src, &p); err != nil {
+	p, err := decodePreset(src)
+	if err != nil {
 		return "", nil, fmt.Errorf("%s: %w", file, err)
 	}
 	return name, p, nil
@@ -297,48 +318,10 @@ func withEnv(name string, src []byte) []byte {
 	})
 }
 
-// withOwned returns the shipped presets with the owner's in place of any of the same name.
-// An owner's preset reads the environment as a shipped one of its name would.
-func withOwned(owned map[string]map[string]any) (map[string]*presetRecord, error) {
-	shipped, err := presets()
-	if err != nil || len(owned) == 0 {
-		return shipped, err
-	}
-	files := map[string]map[string]any{}
-	for name, file := range owned {
-		raw, _ := json.Marshal(file)
-		var p map[string]any
-		if err := connector.DecodeNumbers(withEnv(name, raw), &p); err != nil {
-			return nil, fmt.Errorf("preset %s: %w", name, err)
-		}
-		files[name] = p
-	}
-	return checked(maps.Clone(shipped), files)
-}
-
-// checked validates the data used to build facts. Policy compilation is separate.
-func checked(out map[string]*presetRecord, files map[string]map[string]any) (map[string]*presetRecord, error) {
-	for name, file := range files {
-		if name == "" {
-			return nil, fmt.Errorf("preset needs a name")
-		}
-		raw, err := json.Marshal(file)
-		if err != nil {
-			return nil, err
-		}
-		record, err := decodePreset(raw)
-		if err != nil {
-			return nil, fmt.Errorf("preset %s: %w", name, err)
-		}
-		out[name] = record
-	}
-	return out, nil
-}
-
 type catalogEntry struct {
 	*presetCatalog
 	Title      string                       `json:"title"`
-	Operations *[]web.Operation             `json:"operations,omitempty"`
+	Operations *map[string]web.Operation    `json:"operations,omitempty"`
 	Vocabulary map[string]facts.Obligations `json:"vocabulary"`
 }
 
@@ -353,4 +336,32 @@ func catalog(all map[string]*presetRecord) map[string]catalogEntry {
 		entries[name] = entry
 	}
 	return entries
+}
+
+func (cfg *config) validateData() error {
+	for _, reserved := range []string{"lattices", "levels", "monitor"} {
+		if _, ok := cfg.Data[reserved]; ok {
+			return fmt.Errorf("data.%s is reserved for the monitor", reserved)
+		}
+	}
+	return nil
+}
+
+func catalogSecrets(p *presetRecord, key, kind string) (names []string) {
+	if p.Catalog == nil {
+		return
+	}
+	for _, raw := range p.Catalog.Fields {
+		var field struct {
+			Path []string `json:"path"`
+		}
+		if json.Unmarshal(raw, &field) != nil {
+			continue
+		}
+		path := field.Path
+		if len(path) == 5 && path[0] == "connections" && (key == "*" || path[1] == key) && path[2] == kind && path[3] == "secrets" {
+			names = append(names, path[4])
+		}
+	}
+	return
 }

@@ -3,7 +3,7 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "app_id", "label": "App ID", "secret": true, "path": ["connections", "", "http", "values", "app_id"]}
+      {"key": "app_id", "label": "App ID", "secret": true, "path": ["connections", "", "http", "secrets", "app_id"]}
     ],
     "connections": {"": {"http": {"slots": [{"value": "app_id", "origin": "https://www.wolframalpha.com", "path": "/api/v1", "query": "api_key"}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
@@ -12,9 +12,9 @@
     }
   },
   "http": {
-    "operations": [
-    {"id": "getWolframCloudResults", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.wolframalpha.com", "path": "/api/v1/cloud-plugin", "params": ["input"], "scope": {}},
-    {"id": "getWolframAlphaResults", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.wolframalpha.com", "path": "/api/v1/llm-api", "params": ["input"], "scope": {}}
-  ]
+    "operations": {
+      "getWolframAlphaResults": {"action":"read","effects":["read"],"method":"GET","origin":"https://www.wolframalpha.com","path":"/api/v1/llm-api","params":["input"],"scope":{}},
+      "getWolframCloudResults": {"action":"read","effects":["read"],"method":"GET","origin":"https://www.wolframalpha.com","path":"/api/v1/cloud-plugin","params":["input"],"scope":{}}
+    }
   }
 }

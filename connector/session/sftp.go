@@ -9,7 +9,6 @@ import (
 	"io"
 	"path"
 	"strings"
-	"sync"
 	"unicode/utf8"
 
 	"github.com/tinfoilsh/monitor/connector"
@@ -28,71 +27,53 @@ type SFTP struct {
 const maxSFTPPacket = 1 << 20
 
 func (t *SFTP) Serve(s *connector.Stream, e *connector.Env) {
-	inner, chans, reqs, err := innerSSH(s, e.HostKey)
-	if err != nil {
-		return
-	}
-	defer inner.Close()
-	go ssh.DiscardRequests(reqs)
-	up, err := t.dial(s.Context, e)
-	if err != nil {
-		return
-	}
-	defer s.Interrupt(up)()
-	var workers sync.WaitGroup
-	defer workers.Wait()
-	defer s.Close()
-	defer up.Close()
-	defer inner.Close()
-	for nc := range chans {
+	t.serve(s, e, func(up *ssh.Client, nc ssh.NewChannel) {
 		if nc.ChannelType() != channelSession {
 			nc.Reject(ssh.Prohibited, "only SFTP sessions are supported")
-			continue
+			return
 		}
 		ch, requests, err := nc.Accept()
 		if err != nil {
-			continue
+			return
 		}
-		workers.Go(func() {
-			defer ch.Close()
-			for r := range requests {
-				var subsystem struct{ Name string }
-				if r.Type != "subsystem" || ssh.Unmarshal(r.Payload, &subsystem) != nil || subsystem.Name != "sftp" {
-					if r.WantReply {
-						r.Reply(false, nil)
-					}
-					continue
-				}
-				session, err := up.NewSession()
-				if err != nil {
-					r.Reply(false, nil)
-					return
-				}
-				defer session.Close()
-				reader, err := session.StdoutPipe()
-				if err != nil {
-					r.Reply(false, nil)
-					return
-				}
-				writer, err := session.StdinPipe()
-				if err != nil {
-					r.Reply(false, nil)
-					return
-				}
-				if err := session.RequestSubsystem("sftp"); err != nil {
-					r.Reply(false, nil)
-					return
-				}
+		defer ch.Close()
+		for r := range requests {
+			var subsystem struct{ Name string }
+			if r.Type != "subsystem" || ssh.Unmarshal(r.Payload, &subsystem) != nil || subsystem.Name != "sftp" {
 				if r.WantReply {
-					r.Reply(true, nil)
+					r.Reply(false, nil)
 				}
-				go ssh.DiscardRequests(requests)
-				p := sftpProxy{up: reader, out: writer, gate: s.Gate, handles: map[string]*sftpHandle{}}
-				p.serve(ch, cmp.Or(t.Root, "/"))
+				continue
+			}
+			session, err := up.NewSession()
+			if err != nil {
+				r.Reply(false, nil)
 				return
 			}
-		})
-	}
+			defer session.Close()
+			reader, err := session.StdoutPipe()
+			if err != nil {
+				r.Reply(false, nil)
+				return
+			}
+			writer, err := session.StdinPipe()
+			if err != nil {
+				r.Reply(false, nil)
+				return
+			}
+			if err := session.RequestSubsystem("sftp"); err != nil {
+				r.Reply(false, nil)
+				return
+			}
+			if r.WantReply {
+				r.Reply(true, nil)
+			}
+			go ssh.DiscardRequests(requests)
+			p := sftpProxy{up: reader, out: writer, gate: s.Gate, handles: map[string]*sftpHandle{}}
+			p.serve(ch, cmp.Or(t.Root, "/"))
+			return
+		}
+	})
 }
 
 type sftpHandle struct {
@@ -522,7 +503,7 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 
 type SFTPRequest facts.SFTP
 
-func (v *SFTPRequest) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+func (v *SFTPRequest) Describe(c connector.Context) (facts.Facts, error) {
 	details := facts.Details{SFTP: (*facts.SFTP)(v)}
 	action := map[string]string{
 		"read": "read", "stat": "read", "lstat": "read", "fstat": "read", "opendir": "read", "readdir": "read", "realpath": "read", "readlink": "read",
@@ -538,7 +519,7 @@ func (v *SFTPRequest) Describe(c connector.Context) (facts.Facts, connector.Appr
 			action = "write"
 		}
 	}
-	scope := connector.JSONFields(v)
+	scope, _ := facts.JSON[map[string]any](v)
 	delete(scope, "command")
 	delete(scope, "offset")
 	delete(scope, "size")
@@ -547,8 +528,5 @@ func (v *SFTPRequest) Describe(c connector.Context) (facts.Facts, connector.Appr
 		effects = []string{"session"}
 	}
 	op := &facts.Operation{ID: v.Command, Action: action, Effects: effects}
-	if action == "" {
-		op = nil
-	}
-	return facts.Facts{Operation: op, Title: "SFTP " + v.Command + " " + v.Path, Parameters: scope, Details: details}, connector.Approval{}, nil
+	return facts.Facts{Operation: op, Title: "SFTP " + v.Command + " " + v.Path, Parameters: scope, Details: details}, nil
 }

@@ -3,7 +3,7 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "secret", "label": "Secret", "secret": true, "path": ["connections", "", "http", "values", "secret"]}
+      {"key": "secret", "label": "Secret", "secret": true, "path": ["connections", "", "http", "secrets", "secret"]}
     ],
     "connections": {"": {"http": {"slots": [{"value": "secret", "origin": "https://api-m.paypal.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
@@ -21,27 +21,27 @@
     }
   },
   "http": {
-    "operations": [
-    {"id": "payouts.post", "action": "pay.payouts", "effects": ["pay"], "method": "POST", "origin": "https://api-m.paypal.com", "path": "/v1/payments/payouts", "body": "any", "scope": {}},
-    {"id": "payouts-item.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-m.paypal.com", "path": "/v1/payments/payouts-item/{payout_item_id}", "scope": {"payout_item_id": {"from": "path", "at": "payout_item_id"}}},
-    {"id": "payouts-item.cancel", "action": "write.payouts_item", "effects": ["write"], "method": "POST", "origin": "https://api-m.paypal.com", "path": "/v1/payments/payouts-item/{payout_item_id}/cancel", "scope": {"payout_item_id": {"from": "path", "at": "payout_item_id"}}},
-    {"id": "payouts.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-m.paypal.com", "path": "/v1/payments/payouts/{id}", "params": ["fields", "page", "page_size", "total_required"], "scope": {"id": {"from": "path", "at": "id"}}},
-    {"id": "simulate-event.post", "action": "write.simulate_event", "effects": ["write"], "method": "POST", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/simulate-event", "body": "any", "scope": {}},
-    {"id": "verify-webhook-signature.post", "action": "write.verify_webhook_signature", "effects": ["write"], "method": "POST", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/verify-webhook-signature", "body": "any", "scope": {}},
-    {"id": "webhooks.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks", "params": ["anchor_type"], "scope": {}},
-    {"id": "webhooks.post", "action": "admin.webhooks", "effects": ["admin"], "method": "POST", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks", "body": "any", "scope": {}},
-    {"id": "webhooks-event-types.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks-event-types", "scope": {}},
-    {"id": "webhooks-events.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks-events", "params": ["page_size", "start_time", "end_time", "transaction_id", "event_type"], "scope": {}},
-    {"id": "webhooks-events.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks-events/{event_id}", "scope": {"event_id": {"from": "path", "at": "event_id"}}},
-    {"id": "webhooks-events.resend", "action": "send.resend", "effects": ["send"], "method": "POST", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks-events/{event_id}/resend", "body": "any", "scope": {"event_id": {"from": "path", "at": "event_id"}}},
-    {"id": "webhooks-lookup.post", "action": "write.webhooks_lookup", "effects": ["write"], "method": "POST", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks-lookup", "scope": {}},
-    {"id": "webhooks-lookup.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks-lookup", "scope": {}},
-    {"id": "webhooks-lookup.delete", "action": "delete.webhooks_lookup", "effects": ["delete"], "method": "DELETE", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks-lookup/{webhook_lookup_id}", "scope": {"webhook_lookup_id": {"from": "path", "at": "webhook_lookup_id"}}},
-    {"id": "webhooks-lookup.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks-lookup/{webhook_lookup_id}", "scope": {"webhook_lookup_id": {"from": "path", "at": "webhook_lookup_id"}}},
-    {"id": "webhooks.delete", "action": "delete.webhooks", "effects": ["delete"], "method": "DELETE", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks/{webhook_id}", "scope": {"webhook_id": {"from": "path", "at": "webhook_id"}}},
-    {"id": "webhooks.get", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks/{webhook_id}", "scope": {"webhook_id": {"from": "path", "at": "webhook_id"}}},
-    {"id": "webhooks.update", "action": "admin.webhooks", "effects": ["admin"], "method": "PATCH", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks/{webhook_id}", "body": "any", "scope": {"webhook_id": {"from": "path", "at": "webhook_id"}}},
-    {"id": "event-types.list", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api-m.paypal.com", "path": "/v1/notifications/webhooks/{webhook_id}/event-types", "scope": {"webhook_id": {"from": "path", "at": "webhook_id"}}}
-  ]
+    "operations": {
+      "event-types.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks/{webhook_id}/event-types","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
+      "payouts-item.cancel": {"action":"write.payouts_item","effects":["write"],"method":"POST","origin":"https://api-m.paypal.com","path":"/v1/payments/payouts-item/{payout_item_id}/cancel","scope":{"payout_item_id":{"from":"path","at":"payout_item_id"}}},
+      "payouts-item.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/payments/payouts-item/{payout_item_id}","scope":{"payout_item_id":{"from":"path","at":"payout_item_id"}}},
+      "payouts.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/payments/payouts/{id}","params":["fields","page","page_size","total_required"],"scope":{"id":{"from":"path","at":"id"}}},
+      "payouts.post": {"action":"pay.payouts","effects":["pay"],"method":"POST","origin":"https://api-m.paypal.com","path":"/v1/payments/payouts","body":"any","scope":{}},
+      "simulate-event.post": {"action":"write.simulate_event","effects":["write"],"method":"POST","origin":"https://api-m.paypal.com","path":"/v1/notifications/simulate-event","body":"any","scope":{}},
+      "verify-webhook-signature.post": {"action":"write.verify_webhook_signature","effects":["write"],"method":"POST","origin":"https://api-m.paypal.com","path":"/v1/notifications/verify-webhook-signature","body":"any","scope":{}},
+      "webhooks-event-types.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-event-types","scope":{}},
+      "webhooks-events.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-events/{event_id}","scope":{"event_id":{"from":"path","at":"event_id"}}},
+      "webhooks-events.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-events","params":["page_size","start_time","end_time","transaction_id","event_type"],"scope":{}},
+      "webhooks-events.resend": {"action":"send.resend","effects":["send"],"method":"POST","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-events/{event_id}/resend","body":"any","scope":{"event_id":{"from":"path","at":"event_id"}}},
+      "webhooks-lookup.delete": {"action":"delete.webhooks_lookup","effects":["delete"],"method":"DELETE","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-lookup/{webhook_lookup_id}","scope":{"webhook_lookup_id":{"from":"path","at":"webhook_lookup_id"}}},
+      "webhooks-lookup.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-lookup/{webhook_lookup_id}","scope":{"webhook_lookup_id":{"from":"path","at":"webhook_lookup_id"}}},
+      "webhooks-lookup.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-lookup","scope":{}},
+      "webhooks-lookup.post": {"action":"write.webhooks_lookup","effects":["write"],"method":"POST","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks-lookup","scope":{}},
+      "webhooks.delete": {"action":"delete.webhooks","effects":["delete"],"method":"DELETE","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
+      "webhooks.get": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks/{webhook_id}","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}},
+      "webhooks.list": {"action":"read","effects":["read"],"method":"GET","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks","params":["anchor_type"],"scope":{}},
+      "webhooks.post": {"action":"admin.webhooks","effects":["admin"],"method":"POST","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks","body":"any","scope":{}},
+      "webhooks.update": {"action":"admin.webhooks","effects":["admin"],"method":"PATCH","origin":"https://api-m.paypal.com","path":"/v1/notifications/webhooks/{webhook_id}","body":"any","scope":{"webhook_id":{"from":"path","at":"webhook_id"}}}
+    }
   }
 }

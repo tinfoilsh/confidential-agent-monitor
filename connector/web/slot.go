@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
 )
@@ -30,18 +29,11 @@ var FormTypes = map[string][]string{"username": {"", "text", "email", "tel"}, "p
 
 // Credentials are a connection's values and the slots where each may be placed.
 type Credentials struct {
-	Values map[string]*credential.Value `json:"values"`
-	Slots  []Slot                       `json:"slots"`
+	connector.SecretConfig
+	Slots []Slot `json:"slots"`
 }
 
-func (c *Credentials) Fields() (fields []connector.Field) {
-	for name, value := range c.Values {
-		fields = append(fields, connector.Field{Path: []string{"values", name}, Value: value, Redact: true})
-	}
-	return
-}
-
-func (c *Credentials) Names() iter.Seq[string] { return maps.Keys(c.Values) }
+func (c *Credentials) Names() iter.Seq[string] { return maps.Keys(c.Secrets) }
 
 // Validate checks every slot; a browser places values only in form fields, and HTTP never does.
 func (c *Credentials) Validate(form bool) error {

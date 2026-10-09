@@ -3,7 +3,7 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "access_token", "label": "Access Token", "secret": true, "path": ["connections", "", "http", "values", "access_token"]}
+      {"key": "access_token", "label": "Access Token", "secret": true, "path": ["connections", "", "http", "secrets", "access_token"]}
     ],
     "connections": {"": {"http": {"slots": [{"value": "access_token", "origin": "https://api.surveymonkey.com", "path": "/v3", "header": "Authorization", "prefix": "Bearer "}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
@@ -13,22 +13,22 @@
     }
   },
   "http": {
-    "operations": [
-    {"id": "GetResponseDetails", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/actions1/surveys/{surveyId}/responses/{responseId}/details", "params": ["simple", "question_ids"], "scope": {"surveyId": {"from": "path", "at": "surveyId"}, "responseId": {"from": "path", "at": "responseId"}}},
-    {"id": "GetResponseDetailsNoPages", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/actions2/surveys/{surveyId}/responses/{responseId}/details", "params": ["simple", "question_ids"], "scope": {"surveyId": {"from": "path", "at": "surveyId"}, "responseId": {"from": "path", "at": "responseId"}}},
-    {"id": "GetSurveyCollector", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/collectors/{collectorId}", "scope": {"collectorId": {"from": "path", "at": "collectorId"}}},
-    {"id": "GetSurveyMessages", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/collectors/{collectorId}/messages", "scope": {"collectorId": {"from": "path", "at": "collectorId"}}},
-    {"id": "SendMessage", "action": "send.messages", "effects": ["send"], "method": "POST", "origin": "https://api.surveymonkey.com", "path": "/v3/collectors/{collectorId}/messages/{messageId}/send", "params": ["surveyId"], "body": "any", "scope": {"collectorId": {"from": "path", "at": "collectorId"}, "messageId": {"from": "path", "at": "messageId"}, "surveyId": {"from": "query", "at": "surveyId"}}},
-    {"id": "GetSurveys", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/surveys", "scope": {}},
-    {"id": "GetSurvey", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/surveys/{surveyId}", "scope": {"surveyId": {"from": "path", "at": "surveyId"}}},
-    {"id": "GetSurveyCollectors", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/surveys/{surveyId}/collectors", "scope": {"surveyId": {"from": "path", "at": "surveyId"}}},
-    {"id": "GetSurveyPages", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/surveys/{surveyId}/pages", "scope": {"surveyId": {"from": "path", "at": "surveyId"}}},
-    {"id": "GetSurveyPageQuestions", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/surveys/{surveyId}/pages/{pageId}/questions", "scope": {"surveyId": {"from": "path", "at": "surveyId"}, "pageId": {"from": "path", "at": "pageId"}}},
-    {"id": "OnSurveyCreated", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/trigger1/surveys", "scope": {}},
-    {"id": "OnSurveyCollectorCreated", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/trigger2/surveys/{surveyId}/collectors", "scope": {"surveyId": {"from": "path", "at": "surveyId"}}},
-    {"id": "OnNewResponseAddedCollector", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/trigger3/collectors/{collectorId}/responses/bulk", "params": ["surveyId"], "scope": {"collectorId": {"from": "path", "at": "collectorId"}, "surveyId": {"from": "query", "at": "surveyId"}}},
-    {"id": "OnNewResponseAddedSurvey", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/trigger4/surveys/{surveyId}/responses/bulk", "scope": {"surveyId": {"from": "path", "at": "surveyId"}}},
-    {"id": "OnNewResponseToQuestionAdded", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.surveymonkey.com", "path": "/v3/trigger5/surveys/{surveyId}/responses/bulk", "params": ["page_ids", "question_ids"], "scope": {"surveyId": {"from": "path", "at": "surveyId"}}}
-  ]
+    "operations": {
+      "GetResponseDetails": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.surveymonkey.com","path":"/v3/actions1/surveys/{surveyId}/responses/{responseId}/details","params":["simple","question_ids"],"scope":{"surveyId":{"from":"path","at":"surveyId"},"responseId":{"from":"path","at":"responseId"}}},
+      "GetResponseDetailsNoPages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.surveymonkey.com","path":"/v3/actions2/surveys/{surveyId}/responses/{responseId}/details","params":["simple","question_ids"],"scope":{"surveyId":{"from":"path","at":"surveyId"},"responseId":{"from":"path","at":"responseId"}}},
+      "GetSurvey": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.surveymonkey.com","path":"/v3/surveys/{surveyId}","scope":{"surveyId":{"from":"path","at":"surveyId"}}},
+      "GetSurveyCollector": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.surveymonkey.com","path":"/v3/collectors/{collectorId}","scope":{"collectorId":{"from":"path","at":"collectorId"}}},
+      "GetSurveyCollectors": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.surveymonkey.com","path":"/v3/surveys/{surveyId}/collectors","scope":{"surveyId":{"from":"path","at":"surveyId"}}},
+      "GetSurveyMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.surveymonkey.com","path":"/v3/collectors/{collectorId}/messages","scope":{"collectorId":{"from":"path","at":"collectorId"}}},
+      "GetSurveyPageQuestions": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.surveymonkey.com","path":"/v3/surveys/{surveyId}/pages/{pageId}/questions","scope":{"surveyId":{"from":"path","at":"surveyId"},"pageId":{"from":"path","at":"pageId"}}},
+      "GetSurveyPages": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.surveymonkey.com","path":"/v3/surveys/{surveyId}/pages","scope":{"surveyId":{"from":"path","at":"surveyId"}}},
+      "GetSurveys": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.surveymonkey.com","path":"/v3/surveys","scope":{}},
+      "OnNewResponseAddedCollector": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.surveymonkey.com","path":"/v3/trigger3/collectors/{collectorId}/responses/bulk","params":["surveyId"],"scope":{"collectorId":{"from":"path","at":"collectorId"},"surveyId":{"from":"query","at":"surveyId"}}},
+      "OnNewResponseAddedSurvey": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.surveymonkey.com","path":"/v3/trigger4/surveys/{surveyId}/responses/bulk","scope":{"surveyId":{"from":"path","at":"surveyId"}}},
+      "OnNewResponseToQuestionAdded": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.surveymonkey.com","path":"/v3/trigger5/surveys/{surveyId}/responses/bulk","params":["page_ids","question_ids"],"scope":{"surveyId":{"from":"path","at":"surveyId"}}},
+      "OnSurveyCollectorCreated": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.surveymonkey.com","path":"/v3/trigger2/surveys/{surveyId}/collectors","scope":{"surveyId":{"from":"path","at":"surveyId"}}},
+      "OnSurveyCreated": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.surveymonkey.com","path":"/v3/trigger1/surveys","scope":{}},
+      "SendMessage": {"action":"send.messages","effects":["send"],"method":"POST","origin":"https://api.surveymonkey.com","path":"/v3/collectors/{collectorId}/messages/{messageId}/send","params":["surveyId"],"body":"any","scope":{"collectorId":{"from":"path","at":"collectorId"},"messageId":{"from":"path","at":"messageId"},"surveyId":{"from":"query","at":"surveyId"}}}
+    }
   }
 }

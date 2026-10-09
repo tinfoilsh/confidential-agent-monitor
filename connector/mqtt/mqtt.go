@@ -36,7 +36,6 @@ func (m *MQTT) UnmarshalJSON(raw []byte) error {
 }
 
 func (m *MQTT) Serve(s *connector.Stream, e *connector.Env) {
-	defer s.Close()
 	reader := bufio.NewReader(s)
 	packet, err := readPacket(reader)
 	if err != nil {
@@ -69,7 +68,7 @@ func (m *MQTT) Serve(s *connector.Stream, e *connector.Env) {
 		refuse(5)
 		return
 	}
-	password, err := m.Password.Value(s.Context)
+	password, err := m.Secret(s.Context, "password")
 	if err != nil || len(password) > 65535 || len(m.URL.User.Username()) > 65535 {
 		refuse(4)
 		return
@@ -105,9 +104,7 @@ func (m *MQTT) Serve(s *connector.Stream, e *connector.Env) {
 		return
 	}
 	p := proxy{s: s, up: up, pending: map[uint16]*packets.PublishPacket{}}
-	done := make(chan struct{})
-	go func() { defer close(done); defer s.Close(); p.replies(replies) }()
-	defer func() { s.Close(); up.Close(); <-done }()
+	defer connector.PumpReplies(s, func() { p.replies(replies) })()
 	for {
 		packet, err := readPacket(reader)
 		if err != nil {
@@ -356,7 +353,7 @@ func topicValid(s string, filter bool) bool {
 
 type Request facts.MQTT
 
-func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+func (v *Request) Describe(c connector.Context) (facts.Facts, error) {
 	details := facts.Details{MQTT: (*facts.MQTT)(v)}
 	action := ""
 	if slices.Contains([]string{"connect", "subscribe", "receive", "publish"}, v.Command) {
@@ -366,8 +363,6 @@ func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval
 		action = "retain"
 	}
 	op := &facts.Operation{ID: v.Command, Action: action}
-	if action == "" {
-		op = nil
-	}
-	return facts.Facts{Operation: op, Title: "MQTT " + v.Command + " " + v.Topic, Parameters: connector.JSONFields(v), Details: details, Context: facts.Context{Sends: "account"}}, connector.Approval{}, nil
+	parameters, _ := facts.JSON[map[string]any](v)
+	return facts.Facts{Operation: op, Title: "MQTT " + v.Command + " " + v.Topic, Parameters: parameters, Details: details, Context: facts.Context{Sends: "account"}}, nil
 }

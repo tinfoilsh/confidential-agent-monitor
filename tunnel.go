@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"maps"
 	"net"
@@ -69,16 +69,18 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 		nc.Reject(ssh.ConnectionFailed, "malformed direct-tcpip request")
 		return
 	}
-	if target.Host == messageHost {
-		m.forwardMessages(p, nc, target.Port)
+	switch target.Host {
+	case discoveryHost:
+		m.serveAgentHTTP(p, nc, target.Port, target.Host, readHeaderTimeout, func(*connector.Stream) http.Handler { return m.discoveryHandler(p.Key) })
 		return
-	}
-	if target.Host == gatewayHost {
-		m.forwardGateway(p, nc, target.Port)
-		return
-	}
-	if target.Host == discoveryHost {
-		m.forwardDiscovery(p, nc, target.Port)
+	case gatewayHost:
+		if len(gatewayUpstreams(m.live.Load(), p.Key)) == 0 {
+			nc.Reject(ssh.Prohibited, "this identity reaches no MCP connection")
+			return
+		}
+		m.serveAgentHTTP(p, nc, target.Port, target.Host, 0, func(stream *connector.Stream) http.Handler {
+			return sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server { return m.gatewayServer(p.Key, stream) }, &sdk.StreamableHTTPOptions{Stateless: true})
+		})
 		return
 	}
 	st := m.live.Load()
@@ -105,9 +107,9 @@ func (m *monitor) forward(p principal, nc ssh.NewChannel) {
 		s.Host = ""
 	}
 	s.Gate = func(request connector.Request) error {
-		return m.gate(s.Context, input{stream: s, Principal: p, Connection: c.name, Request: request}, c.account)
+		return m.gate(s.Context, input{stream: s, Key: p.Key, Connection: c.name, Request: request})
 	}
-	if err := m.gate(s.Context, input{Principal: p, Connection: c.name, Request: &admissionRequest{Host: target.Host, Port: target.Port}}, c.account); err != nil {
+	if err := m.gate(s.Context, input{Key: p.Key, Connection: c.name, Request: &admissionRequest{Host: target.Host, Port: target.Port}}); err != nil {
 		s.Close()
 		nc.Reject(ssh.Prohibited, err.Error())
 		return
@@ -140,7 +142,7 @@ func (st *state) route(p principal, host string, port uint32) (*connection, bool
 	best, tied := -1, false
 	var selected *connection
 	for _, c := range st.connections {
-		r, ok := c.connector.(connector.Claimer)
+		r, ok := c.connector.(*web.HTTP)
 		if !ok || !p.reaches(c.account) {
 			continue
 		}
@@ -180,32 +182,30 @@ func (m *monitor) authorized(_ ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permis
 // Connector streams are registered before any connector can consume their data.
 // Mailbox channels are separate and remain available after a label changes.
 func (m *monitor) trackStream(fingerprint string, s *connector.Stream) error {
-	m.flow.Lock()
-	defer m.flow.Unlock()
-	if _, ok := m.live.Load().principals[fingerprint]; !ok {
-		return errNoAgent
-	}
-	if m.streams == nil {
-		m.streams = map[string]map[*connector.Stream]struct{}{}
-	}
-	if m.streams[fingerprint] == nil {
-		m.streams[fingerprint] = map[*connector.Stream]struct{}{}
-	}
-	m.streams[fingerprint][s] = struct{}{}
-	context.AfterFunc(s.Context, func() {
-		m.flow.Lock()
-		defer m.flow.Unlock()
-		delete(m.streams[fingerprint], s)
-		if len(m.streams[fingerprint]) == 0 {
-			delete(m.streams, fingerprint)
+	return m.transact(func(tx *transaction) error {
+		if _, ok := tx.live.Load().principals[fingerprint]; !ok {
+			return errNoAgent
 		}
+		if tx.streams[fingerprint] == nil {
+			tx.streams[fingerprint] = map[*connector.Stream]struct{}{}
+		}
+		tx.streams[fingerprint][s] = struct{}{}
+		context.AfterFunc(s.Context, func() {
+			m.transact(func(tx *transaction) error {
+				delete(tx.streams[fingerprint], s)
+				if len(tx.streams[fingerprint]) == 0 {
+					delete(tx.streams, fingerprint)
+				}
+				return nil
+			})
+		})
+		return nil
 	})
-	return nil
 }
 
-// retireStreamsLocked requires flow. Closing the client side prevents further
+// Closing the client side prevents further
 // input under an old authorization, including on raw SSH and CLI streams.
-func (m *monitor) retireStreamsLocked(fingerprint string, source *connector.Stream) {
+func (m *transaction) retireStreams(fingerprint string, source *connector.Stream) {
 	for s := range m.streams[fingerprint] {
 		if s == source {
 			continue
@@ -220,10 +220,10 @@ func (m *monitor) retireStreamsLocked(fingerprint string, source *connector.Stre
 
 type admissionRequest facts.TCP
 
-func (r *admissionRequest) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+func (r *admissionRequest) Describe(c connector.Context) (facts.Facts, error) {
 	return facts.Facts{Kind: facts.KindAdmission, Operation: &facts.Operation{Action: "session.admit", Effects: []string{"session"}},
-		Title: "Open " + c.Connection, Parameters: connector.JSONFields(r), Details: facts.Details{TCP: (*facts.TCP)(r)},
-		Context: facts.Context{Observes: c.Label, Sends: c.Label.Audience}}, connector.Approval{}, nil
+		Title: "Open " + c.Connection, Parameters: map[string]any{"host": r.Host, "port": r.Port}, Details: facts.Details{TCP: (*facts.TCP)(r)},
+		Context: facts.Context{Observes: c.Label, Sends: c.Label.Audience}}, nil
 }
 
 const discoveryHost = "agent.monitor"
@@ -262,16 +262,9 @@ type agentSetup struct {
 
 func (m *monitor) discoveryHandler(key string) http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /setup", func(w http.ResponseWriter, r *http.Request) {
-		m.mu.Lock()
-		ca := m.doc.Keys.CACert
-		st := m.live.Load()
-		m.mu.Unlock()
-		p, ok := st.principals[key]
-		if !ok {
-			http.Error(w, "identity removed", http.StatusForbidden)
-			return
-		}
+	m.agentPolicyRoutes(mux, key)
+	mux.HandleFunc("GET /setup", agentJSON(m, key, func(r *http.Request, _ struct{}, base policyBase, p principal) (any, error) {
+		st, ca := base.state, base.doc.Keys.CACert
 		result := agentSetup{Version: 1, Identity: p.Name, CA: ca, Connections: []agentSetupConnection{}}
 		for _, name := range slices.Sorted(maps.Keys(st.connections)) {
 			c := st.connections[name]
@@ -293,83 +286,27 @@ func (m *monitor) discoveryHandler(key string) http.Handler {
 			}
 			result.Connections = append(result.Connections, setup)
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Cache-Control", "no-store")
-		json.NewEncoder(w).Encode(result)
-	})
-	mux.HandleFunc("GET /connections", func(w http.ResponseWriter, r *http.Request) {
-		st := m.live.Load()
-		p, ok := st.principals[key]
-		if !ok {
-			http.Error(w, "identity removed", http.StatusForbidden)
-			return
-		}
+		return result, nil
+	}))
+	mux.HandleFunc("GET /connections", agentJSON(m, key, func(r *http.Request, _ struct{}, base policyBase, p principal) (any, error) {
+		st := base.state
 		connections := []agentConnection{}
 		for _, name := range slices.Sorted(maps.Keys(st.connections)) {
 			c := st.connections[name]
 			if !p.reaches(c.account) {
 				continue
 			}
-			state := "connecting"
-			select {
-			case <-c.done:
-				state = "stopped"
-				if c.err != nil {
-					state = "error"
-				}
-			default:
-				select {
-				case <-c.ready:
-					state = "ready"
-				default:
-				}
-			}
+			status := c.status()
 			connections = append(connections, agentConnection{
 				Name: name, Account: c.account, Kind: c.protocol, Host: name + ".monitor",
-				State: state, Access: p.Accounts[c.account],
+				State: status.State, Access: p.Accounts[c.account],
 			})
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Cache-Control", "no-store")
-		json.NewEncoder(w).Encode(struct {
+		return struct {
 			Connections []agentConnection `json:"connections"`
-		}{connections})
-	})
+		}{connections}, nil
+	}))
 	return mux
-}
-
-// The SSH identity supplies authorization; the owner API is never exposed here.
-func (m *monitor) forwardDiscovery(p principal, nc ssh.NewChannel, port uint32) {
-	if port != 80 {
-		nc.Reject(ssh.Prohibited, "agent.monitor uses HTTP on port 80 inside the SSH tunnel")
-		return
-	}
-	ch, reqs, err := nc.Accept()
-	if err != nil {
-		return
-	}
-	go ssh.DiscardRequests(reqs)
-	ctx, cancel := context.WithTimeout(context.Background(), readHeaderTimeout)
-	defer cancel()
-	s := connector.NewStream(ctx)
-	s.Conn, s.Name = channelConn{ch}, discoveryHost
-	defer s.Close()
-	if err := m.trackStream(p.Key, s); err != nil {
-		return
-	}
-	in := connector.NewListener()
-	defer in.Close()
-	stop := context.AfterFunc(s.Context, func() { in.Close(); s.Close() })
-	defer stop()
-	server := &http.Server{Handler: m.discoveryHandler(p.Key), MaxHeaderBytes: 8192,
-		ReadHeaderTimeout: readHeaderTimeout,
-		ConnContext:       func(context.Context, net.Conn) context.Context { return s.Context }}
-	server.SetKeepAlivesEnabled(false)
-	defer server.Close()
-	go in.Hand(s)
-	if err := server.Serve(in); err != nil && !errors.Is(err, net.ErrClosed) && !errors.Is(err, http.ErrServerClosed) {
-		log.Printf("discovery HTTP: %v", err)
-	}
 }
 
 const (
@@ -378,14 +315,10 @@ const (
 	gatewaySeparator = "__"
 )
 
-// forwardGateway serves every MCP connection the identity reaches as one server, each tool prefixed with its connection's name.
-func (m *monitor) forwardGateway(p principal, nc ssh.NewChannel, port uint32) {
+// The SSH identity supplies authorization; the owner API is never exposed here.
+func (m *monitor) serveAgentHTTP(p principal, nc ssh.NewChannel, port uint32, host string, timeout time.Duration, handler func(*connector.Stream) http.Handler) {
 	if port != gatewayPort {
-		nc.Reject(ssh.Prohibited, "mcp.monitor uses HTTP on port 80 inside the SSH tunnel")
-		return
-	}
-	if len(gatewayUpstreams(m.live.Load(), p.Key)) == 0 {
-		nc.Reject(ssh.Prohibited, "this identity reaches no MCP connection")
+		nc.Reject(ssh.Prohibited, fmt.Sprintf("%s uses HTTP on port %d inside the SSH tunnel", host, gatewayPort))
 		return
 	}
 	ch, reqs, err := nc.Accept()
@@ -393,20 +326,26 @@ func (m *monitor) forwardGateway(p principal, nc ssh.NewChannel, port uint32) {
 		return
 	}
 	go ssh.DiscardRequests(reqs)
-	s := connector.NewStream(context.Background())
-	s.Conn, s.Name = channelConn{ch}, gatewayHost
-	defer s.Close()
-	if err := m.trackStream(p.Key, s); err != nil {
+	ctx := context.Background()
+	if timeout != 0 {
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, timeout)
+		defer cancel()
+	}
+	stream := connector.NewStream(ctx)
+	stream.Conn, stream.Name = channelConn{ch}, host
+	defer stream.Close()
+	if err := m.trackStream(p.Key, stream); err != nil {
 		return
 	}
-	in := connector.NewListener()
-	defer in.Close()
-	stop := context.AfterFunc(s.Context, func() { in.Close() })
-	defer stop()
-	go in.Hand(s)
-	handler := sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server { return m.gatewayServer(p.Key, s) }, &sdk.StreamableHTTPOptions{Stateless: true})
-	if err := connector.ServeHTTP(s.Context, in, func() {}, handler); err != nil && !errors.Is(err, net.ErrClosed) && !errors.Is(err, http.ErrServerClosed) {
-		log.Printf("MCP gateway: %v", err)
+	in := connector.NewListener(stream.Context)
+	server := &http.Server{Handler: handler(stream), MaxHeaderBytes: 8192, ReadHeaderTimeout: readHeaderTimeout,
+		ConnContext: func(context.Context, net.Conn) context.Context { return stream.Context }}
+	server.SetKeepAlivesEnabled(timeout == 0)
+	defer server.Close()
+	go in.Hand(stream)
+	if err := server.Serve(in); err != nil && !errors.Is(err, net.ErrClosed) && !errors.Is(err, http.ErrServerClosed) {
+		log.Printf("%s HTTP: %v", host, err)
 	}
 }
 
@@ -417,7 +356,7 @@ func (m *monitor) gatewayServer(key string, s *connector.Stream) *sdk.Server {
 	var upstreams []*connection
 	var instructions []string
 	for _, c := range gatewayUpstreams(st, key) {
-		if m.gate(s.Context, input{Principal: p, Connection: c.name, Request: &admissionRequest{Host: gatewayHost, Port: gatewayPort}}, c.account) != nil {
+		if m.gate(s.Context, input{Key: p.Key, Connection: c.name, Request: &admissionRequest{Host: gatewayHost, Port: gatewayPort}}) != nil {
 			continue
 		}
 		upstreams = append(upstreams, c)
@@ -428,7 +367,7 @@ func (m *monitor) gatewayServer(key string, s *connector.Stream) *sdk.Server {
 	server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: sentinel.Version}, &sdk.ServerOptions{Instructions: strings.Join(instructions, "\n\n")})
 	for _, c := range upstreams {
 		c.connector.(*mcp.Server).Register(server, c.name+gatewaySeparator, func(request connector.Request) error {
-			return m.gate(s.Context, input{stream: s, Principal: p, Connection: c.name, Request: request}, c.account)
+			return m.gate(s.Context, input{stream: s, Key: p.Key, Connection: c.name, Request: request})
 		})
 	}
 	return server
@@ -442,19 +381,26 @@ func gatewayUpstreams(st *state, key string) (upstreams []*connection) {
 	}
 	for _, name := range slices.Sorted(maps.Keys(st.connections)) {
 		c := st.connections[name]
-		if _, isMCP := c.connector.(*mcp.Server); !isMCP || !p.reaches(c.account) || c.ready == nil {
-			continue
-		}
-		select {
-		case <-c.done:
-			continue
-		default:
-		}
-		select {
-		case <-c.ready:
+		if _, isMCP := c.connector.(*mcp.Server); isMCP && p.reaches(c.account) && c.status().State == "ready" {
 			upstreams = append(upstreams, c)
-		default:
 		}
 	}
 	return upstreams
+}
+
+func agentJSON[T any](m *monitor, key string, fn func(*http.Request, T, policyBase, principal) (any, error)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
+		base, err := m.policySnapshot()
+		if err != nil {
+			responseError(w, err)
+			return
+		}
+		p, ok := base.state.principals[key]
+		if !ok {
+			responseError(w, errNoAgent)
+			return
+		}
+		jsonHandler(96<<10, func(r *http.Request, input T) (any, error) { return fn(r, input, base, p) })(w, r)
+	}
 }

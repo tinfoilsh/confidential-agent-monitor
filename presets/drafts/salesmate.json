@@ -3,7 +3,7 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "session_token", "label": "Session Token", "secret": true, "path": ["connections", "", "http", "values", "session_token"]}
+      {"key": "session_token", "label": "Session Token", "secret": true, "path": ["connections", "", "http", "secrets", "session_token"]}
     ],
     "connections": {"": {"http": {"slots": [{"value": "session_token", "origin": "https://apis.salesmate.io", "path": "/", "header": "accessToken"}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
@@ -15,12 +15,12 @@
     }
   },
   "http": {
-    "operations": [
-    {"id": "GET /", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://apis.salesmate.io", "path": "/", "scope": {}},
-    {"id": "POST /", "action": "write.v1", "effects": ["write"], "method": "POST", "origin": "https://apis.salesmate.io", "path": "/", "body": "any", "scope": {}},
-    {"id": "PUT /", "action": "write.v1", "effects": ["write"], "method": "PUT", "origin": "https://apis.salesmate.io", "path": "/", "body": "any", "scope": {}},
-    {"id": "DELETE /", "action": "delete.v1", "effects": ["delete"], "method": "DELETE", "origin": "https://apis.salesmate.io", "path": "/", "body": "any", "scope": {}},
-    {"id": "PATCH /", "action": "write.v4", "effects": ["write"], "method": "PATCH", "origin": "https://apis.salesmate.io", "path": "/", "body": "any", "scope": {}}
-  ]
+    "operations": {
+      "DELETE /": {"action":"delete.v1","effects":["delete"],"method":"DELETE","origin":"https://apis.salesmate.io","path":"/","body":"any","scope":{}},
+      "GET /": {"action":"read","effects":["read"],"method":"GET","origin":"https://apis.salesmate.io","path":"/","scope":{}},
+      "PATCH /": {"action":"write.v4","effects":["write"],"method":"PATCH","origin":"https://apis.salesmate.io","path":"/","body":"any","scope":{}},
+      "POST /": {"action":"write.v1","effects":["write"],"method":"POST","origin":"https://apis.salesmate.io","path":"/","body":"any","scope":{}},
+      "PUT /": {"action":"write.v1","effects":["write"],"method":"PUT","origin":"https://apis.salesmate.io","path":"/","body":"any","scope":{}}
+    }
   }
 }

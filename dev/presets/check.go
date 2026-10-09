@@ -99,19 +99,14 @@ func checkReport(r generationReport, src source, locked []lockEntry, digest stri
 	if hex.EncodeToString(sum[:]) != r.CandidateSHA256 {
 		return fmt.Errorf("candidate changed without a matching coverage report")
 	}
-	ops, ok := httpSection(p)["operations"].([]any)
+	ops, ok := httpSection(p)["operations"].(map[string]any)
 	if !ok {
-		return fmt.Errorf("candidate operations is not an array")
+		return fmt.Errorf("candidate operations is not an object")
 	}
 	ids := map[string]bool{}
-	for _, raw := range ops {
-		op, ok := raw.(map[string]any)
-		if !ok {
-			return fmt.Errorf("candidate operation is not an object")
-		}
-		id, _ := op["id"].(string)
-		if id == "" || ids[id] {
-			return fmt.Errorf("missing or repeated descriptor id %q", id)
+	for id, raw := range ops {
+		if _, ok := raw.(map[string]any); !ok || id == "" {
+			return fmt.Errorf("candidate operation needs a name and object")
 		}
 		ids[id] = true
 	}

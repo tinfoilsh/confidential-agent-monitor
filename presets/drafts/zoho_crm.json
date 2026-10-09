@@ -5,7 +5,7 @@
     "fields": [
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "secret": true, "paths": []},
-      {"key": "token", "label": "Zoho CRM account", "secret": true, "path": ["connections", "", "http", "values", "token"], "oauth": {"auth_url": "https://accounts.zoho.com/oauth/v2/auth", "token_url": "https://accounts.zoho.com/oauth/v2/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "ZohoCRM.modules.ALL ZohoCRM.settings.all ZohoCRM.users.all"}}
+      {"key": "token", "label": "Zoho CRM account", "secret": true, "path": ["connections", "", "http", "secrets", "token"], "oauth": {"auth_url": "https://accounts.zoho.com/oauth/v2/auth", "token_url": "https://accounts.zoho.com/oauth/v2/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "ZohoCRM.modules.ALL ZohoCRM.settings.all ZohoCRM.users.all"}}
     ],
     "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://www.zohoapis.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
@@ -20,22 +20,22 @@
     }
   },
   "http": {
-    "operations": [
-    {"id": "deleteRecords", "action": "delete.records", "effects": ["delete"], "method": "DELETE", "origin": "https://www.zohoapis.com", "path": "/{module}", "params": ["ids"], "scope": {"module": {"from": "path", "at": "module"}}},
-    {"id": "updateRecords", "action": "write.records", "effects": ["write"], "method": "PUT", "origin": "https://www.zohoapis.com", "path": "/{module}", "body": "json", "scope": {"module": {"from": "path", "at": "module"}}},
-    {"id": "getRecords", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.zohoapis.com", "path": "/{module}", "params": ["fields", "territory_id", "ids", "cvid", "filters", "cross_filters", "filterId", "per_page", "page", "page_token", "sort_order", "sort_by", "converted", "include_child"], "scope": {"module": {"from": "path", "at": "module"}}},
-    {"id": "createRecords", "action": "write.records", "effects": ["write"], "method": "POST", "origin": "https://www.zohoapis.com", "path": "/{module}", "body": "json", "scope": {"module": {"from": "path", "at": "module"}}},
-    {"id": "upsertRecords", "action": "write.upsert", "effects": ["write"], "method": "POST", "origin": "https://www.zohoapis.com", "path": "/{module}/upsert", "body": "json", "scope": {"module": {"from": "path", "at": "module"}}},
-    {"id": "deleteRecord", "action": "delete.records", "effects": ["delete"], "method": "DELETE", "origin": "https://www.zohoapis.com", "path": "/{module}/{recordId}", "scope": {"module": {"from": "path", "at": "module"}, "recordId": {"from": "path", "at": "recordId"}}},
-    {"id": "getRecord", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.zohoapis.com", "path": "/{module}/{recordId}", "params": ["type", "page", "per_page", "module", "include"], "scope": {"module": {"from": "path", "at": "module"}, "recordId": {"from": "path", "at": "recordId"}}},
-    {"id": "updateRecord", "action": "write.records", "effects": ["write"], "method": "PUT", "origin": "https://www.zohoapis.com", "path": "/{module}/{recordId}", "body": "json", "scope": {"module": {"from": "path", "at": "module"}, "recordId": {"from": "path", "at": "recordId"}}},
-    {"id": "cloneRecord", "action": "execute.actions", "effects": ["execute"], "method": "POST", "origin": "https://www.zohoapis.com", "path": "/{module}/{recordId}/actions/clone", "body": "json", "scope": {"module": {"from": "path", "at": "module"}, "recordId": {"from": "path", "at": "recordId"}}},
-    {"id": "updateField", "action": "write.fields", "effects": ["write"], "method": "PATCH", "origin": "https://www.zohoapis.com", "path": "/settings/fields", "params": ["module"], "body": "json", "scope": {}},
-    {"id": "createFields", "action": "write.fields", "effects": ["write"], "method": "POST", "origin": "https://www.zohoapis.com", "path": "/settings/fields", "params": ["module"], "body": "json", "scope": {}},
-    {"id": "getFieldsWithID", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.zohoapis.com", "path": "/settings/fields/{fieldId}", "params": ["module", "include", "type"], "scope": {"fieldId": {"from": "path", "at": "fieldId"}}},
-    {"id": "putFieldsWithId", "action": "write.fields", "effects": ["write"], "method": "PATCH", "origin": "https://www.zohoapis.com", "path": "/settings/fields/{fieldId}", "params": ["module"], "body": "json", "scope": {"fieldId": {"from": "path", "at": "fieldId"}}},
-    {"id": "deleteCustomField", "action": "delete.fields", "effects": ["delete"], "method": "DELETE", "origin": "https://www.zohoapis.com", "path": "/settings/fields/{fieldId}", "params": ["module"], "scope": {"fieldId": {"from": "path", "at": "fieldId"}}},
-    {"id": "getScheduledJobs", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://www.zohoapis.com", "path": "/settings/fields/{fieldId}/actions/scheduled_jobs", "params": ["job_id", "module", "page", "per_page"], "scope": {"fieldId": {"from": "path", "at": "fieldId"}}}
-  ]
+    "operations": {
+      "cloneRecord": {"action":"execute.actions","effects":["execute"],"method":"POST","origin":"https://www.zohoapis.com","path":"/{module}/{recordId}/actions/clone","body":"json","scope":{"module":{"from":"path","at":"module"},"recordId":{"from":"path","at":"recordId"}}},
+      "createFields": {"action":"write.fields","effects":["write"],"method":"POST","origin":"https://www.zohoapis.com","path":"/settings/fields","params":["module"],"body":"json","scope":{}},
+      "createRecords": {"action":"write.records","effects":["write"],"method":"POST","origin":"https://www.zohoapis.com","path":"/{module}","body":"json","scope":{"module":{"from":"path","at":"module"}}},
+      "deleteCustomField": {"action":"delete.fields","effects":["delete"],"method":"DELETE","origin":"https://www.zohoapis.com","path":"/settings/fields/{fieldId}","params":["module"],"scope":{"fieldId":{"from":"path","at":"fieldId"}}},
+      "deleteRecord": {"action":"delete.records","effects":["delete"],"method":"DELETE","origin":"https://www.zohoapis.com","path":"/{module}/{recordId}","scope":{"module":{"from":"path","at":"module"},"recordId":{"from":"path","at":"recordId"}}},
+      "deleteRecords": {"action":"delete.records","effects":["delete"],"method":"DELETE","origin":"https://www.zohoapis.com","path":"/{module}","params":["ids"],"scope":{"module":{"from":"path","at":"module"}}},
+      "getFieldsWithID": {"action":"read","effects":["read"],"method":"GET","origin":"https://www.zohoapis.com","path":"/settings/fields/{fieldId}","params":["module","include","type"],"scope":{"fieldId":{"from":"path","at":"fieldId"}}},
+      "getRecord": {"action":"read","effects":["read"],"method":"GET","origin":"https://www.zohoapis.com","path":"/{module}/{recordId}","params":["type","page","per_page","module","include"],"scope":{"module":{"from":"path","at":"module"},"recordId":{"from":"path","at":"recordId"}}},
+      "getRecords": {"action":"read","effects":["read"],"method":"GET","origin":"https://www.zohoapis.com","path":"/{module}","params":["fields","territory_id","ids","cvid","filters","cross_filters","filterId","per_page","page","page_token","sort_order","sort_by","converted","include_child"],"scope":{"module":{"from":"path","at":"module"}}},
+      "getScheduledJobs": {"action":"read","effects":["read"],"method":"GET","origin":"https://www.zohoapis.com","path":"/settings/fields/{fieldId}/actions/scheduled_jobs","params":["job_id","module","page","per_page"],"scope":{"fieldId":{"from":"path","at":"fieldId"}}},
+      "putFieldsWithId": {"action":"write.fields","effects":["write"],"method":"PATCH","origin":"https://www.zohoapis.com","path":"/settings/fields/{fieldId}","params":["module"],"body":"json","scope":{"fieldId":{"from":"path","at":"fieldId"}}},
+      "updateField": {"action":"write.fields","effects":["write"],"method":"PATCH","origin":"https://www.zohoapis.com","path":"/settings/fields","params":["module"],"body":"json","scope":{}},
+      "updateRecord": {"action":"write.records","effects":["write"],"method":"PUT","origin":"https://www.zohoapis.com","path":"/{module}/{recordId}","body":"json","scope":{"module":{"from":"path","at":"module"},"recordId":{"from":"path","at":"recordId"}}},
+      "updateRecords": {"action":"write.records","effects":["write"],"method":"PUT","origin":"https://www.zohoapis.com","path":"/{module}","body":"json","scope":{"module":{"from":"path","at":"module"}}},
+      "upsertRecords": {"action":"write.upsert","effects":["write"],"method":"POST","origin":"https://www.zohoapis.com","path":"/{module}/upsert","body":"json","scope":{"module":{"from":"path","at":"module"}}}
+    }
   }
 }

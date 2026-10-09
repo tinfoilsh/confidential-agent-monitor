@@ -3,7 +3,6 @@ package connector
 import (
 	"context"
 	"crypto/tls"
-	"encoding/json"
 	"errors"
 	"io"
 	"net"
@@ -20,31 +19,10 @@ import (
 
 const DialTimeout = 30 * time.Second
 
-// A connector either runs a server or handles individual streams.
-type Connector interface {
-	// Fields declares credentials and redacted values at relative JSON paths.
-	Fields() []Field
-}
-
-type runner interface {
+// Server handles independent streams; Runner owns a persistent protocol runtime.
+type Server interface{ Serve(*Stream, *Env) }
+type Runner interface {
 	Run(context.Context, *Env, *Listener, func()) error
-}
-
-type streamHandler interface{ Serve(*Stream, *Env) }
-
-// Run owns resources and waits for stream handlers to finish on cancellation.
-func Run(c Connector, ctx context.Context, e *Env, in *Listener, ready func()) error {
-	if r, ok := c.(runner); ok {
-		return r.Run(ctx, e, in, ready)
-	}
-	return ServeStreams(in, ready, func(s *Stream) { c.(streamHandler).Serve(s, e) })
-}
-
-// Status is shown to the owner.
-type Reporter interface{ Status() any }
-
-type Claimer interface {
-	Claim(host string, port uint32) int
 }
 
 type Env struct {
@@ -117,9 +95,7 @@ func NewStream(ctx context.Context) *Stream {
 }
 
 func (s *Stream) Close() error {
-	if s.cancel != nil {
-		s.cancel()
-	}
+	s.cancel()
 	if s.Conn != nil {
 		return s.Conn.Close()
 	}
@@ -142,7 +118,7 @@ func ParseURL(raw string) (*url.URL, error) {
 		return nil, errors.New("destination requires a URL with a scheme and host")
 	}
 	if _, set := u.User.Password(); set || u.Query().Has("password") {
-		return nil, errors.New("use the password field for URL authentication")
+		return nil, errors.New("use secrets.password for URL authentication")
 	}
 	return u, nil
 }
@@ -172,8 +148,8 @@ type Listener struct {
 	cancel context.CancelFunc
 }
 
-func NewListener() *Listener {
-	ctx, cancel := context.WithCancel(context.Background())
+func NewListener(ctx context.Context) *Listener {
+	ctx, cancel := context.WithCancel(ctx)
 	return &Listener{conns: make(chan *Stream), ctx: ctx, cancel: cancel}
 }
 func (l *Listener) Accept() (net.Conn, error) {
@@ -188,30 +164,27 @@ func (l *Listener) Close() error { l.cancel(); return nil }
 func (*Listener) Addr() net.Addr { return &net.TCPAddr{} }
 
 func (l *Listener) Hand(s *Stream) {
-	closeStream := sync.OnceFunc(func() { s.Close() })
-	stop := context.AfterFunc(l.ctx, closeStream)
-	context.AfterFunc(s.Context, func() { stop(); closeStream() })
+	stop := context.AfterFunc(l.ctx, func() { s.Close() })
+	defer stop()
+	defer s.Close()
 	select {
 	case l.conns <- s:
-	case <-l.ctx.Done():
-		s.Close()
+		<-s.Context.Done()
 	case <-s.Context.Done():
-		s.Close()
 	}
 }
 
-// CopyReplies returns cleanup that closes both sides and joins the reply pump.
-func CopyReplies(s *Stream, up net.Conn, replies io.Reader) func() {
+// PumpReplies runs a protocol reply loop until the stream ends, then joins it.
+func PumpReplies(s *Stream, pump func()) func() {
 	done := make(chan struct{})
-	go func() { defer close(done); io.Copy(s, replies); s.Close() }()
-	return func() { s.Close(); up.Close(); <-done }
+	go func() { defer close(done); pump(); s.Close() }()
+	return func() { s.Close(); <-done }
 }
 
 // ServeStreams adapts blocking stream handlers and waits for every handler on exit.
 func ServeStreams(in *Listener, ready func(), serve func(*Stream)) error {
 	var workers sync.WaitGroup
 	defer workers.Wait()
-	defer in.Close()
 	ready()
 	for {
 		c, err := in.Accept()
@@ -236,21 +209,26 @@ func StreamOf(c net.Conn) *Stream {
 // Request retains parsed input while an approval is pending. Describe must be
 // pure: the monitor calls it again with current settings before execution.
 type Request interface {
-	Describe(Context) (facts.Facts, Approval, error)
+	Describe(Context) (facts.Facts, error)
 }
 
-// Context contains current, redacted settings. Specs contains the typed preset
-// sections supplied by the monitor; each connector reads its own section.
+// PolicyOptions contains settings used only by policy, never connection setup.
+type PolicyOptions struct {
+	Private []string `json:"private,omitempty"`
+	Address string   `json:"address,omitempty"`
+	Origin  string   `json:"origin,omitempty"`
+}
+
+// Context contains current settings and the preset for the connection protocol.
 type Context struct {
 	Title, Connection  string
 	Label, Observation facts.Label
-	Config, Options    json.RawMessage
-	Specs              map[string]any
+	Config             any
+	Options            PolicyOptions
+	Spec               any
 }
 
-// Approval carries the selected scope and reviewed definition to the monitor.
-// Neither is part of the public facts snapshot.
-type Approval struct {
-	Scope      map[string]any
-	Definition any
-}
+// CloseFunc adapts a library's close function to stream lifetime management.
+type CloseFunc func()
+
+func (close CloseFunc) Close() error { close(); return nil }

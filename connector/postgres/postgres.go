@@ -25,12 +25,11 @@ const (
 type Postgres struct{ connector.Endpoint }
 
 func (r *Postgres) Serve(s *connector.Stream, e *connector.Env) {
-	client, backend, startup, err := startup(s, e.TLS)
+	_, backend, startup, err := startup(s, e.TLS)
 	if err != nil {
 		log.Printf("postgres startup: %v", err)
 		return
 	}
-	defer client.Close()
 	up, err := r.connect(s, e, startup)
 	if err != nil {
 		log.Printf("postgres: %v", err)
@@ -82,7 +81,7 @@ func (r *Postgres) connect(s *connector.Stream, e *connector.Env, startup *pgpro
 	if err != nil {
 		return nil, err
 	}
-	config.Password, err = r.Password.Value(s.Context)
+	config.Password, err = r.Secret(s.Context, "password")
 	if err != nil {
 		return nil, err
 	}
@@ -105,11 +104,7 @@ func (r *Postgres) connect(s *connector.Stream, e *connector.Env, startup *pgpro
 func relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.HijackedConn) {
 	var status atomic.Uint32
 	status.Store(uint32(up.TxStatus))
-	done := make(chan struct{})
-	defer func() { s.Close(); up.Conn.Close(); <-done }()
-	go func() {
-		defer close(done)
-		defer s.Close()
+	defer connector.PumpReplies(s, func() {
 		for {
 			msg, err := up.Frontend.Receive()
 			if err != nil {
@@ -123,7 +118,7 @@ func relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.Hij
 				return
 			}
 		}
-	}()
+	})()
 	for {
 		msg, err := backend.Receive()
 		if err != nil {
@@ -157,13 +152,13 @@ func relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.Hij
 
 type Request facts.Postgres
 
-func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+func (v *Request) Describe(c connector.Context) (facts.Facts, error) {
 	details := facts.Details{Postgres: (*facts.Postgres)(v)}
 	action := "write"
 	if plainRead(v.SQL) {
 		action = "read"
 	}
-	return facts.Facts{Operation: &facts.Operation{Action: action, RequiresTrust: action == "write"}, Title: "Run " + v.SQL, Parameters: map[string]any{"sql": v.SQL}, Details: details}, connector.Approval{}, nil
+	return facts.Facts{Operation: &facts.Operation{Action: action}, Title: "Run " + v.SQL, Parameters: map[string]any{"sql": v.SQL}, Details: details}, nil
 }
 
 var sqlFirst = regexp.MustCompile(`^\w+`)

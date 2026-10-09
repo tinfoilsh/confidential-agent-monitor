@@ -23,6 +23,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/facts"
 )
 
 const (
@@ -49,7 +50,7 @@ type HTTP struct {
 
 func (h *HTTP) UnmarshalJSON(raw []byte) error {
 	type plain HTTP
-	if err := connector.Decode(raw, (*plain)(h)); err != nil {
+	if err := facts.DecodeNumbers(raw, (*plain)(h)); err != nil {
 		return err
 	}
 	return h.Validate(false)
@@ -73,7 +74,7 @@ func (h *HTTP) Run(ctx context.Context, e *connector.Env, in *connector.Listener
 // The screened request already names its upstream; substitution is the last change before it is sent.
 func (h *HTTP) proxy(base http.RoundTripper) *httputil.ReverseProxy {
 	return &httputil.ReverseProxy{
-		Transport: substitution{base, h.Values},
+		Transport: substitution{base, h.Secrets},
 		Rewrite:   func(*httputil.ProxyRequest) {},
 		// The error may quote the request with its credentials in place.
 		ErrorHandler: func(w http.ResponseWriter, r *http.Request, _ error) {
@@ -106,7 +107,7 @@ func (h *HTTP) screen(r *http.Request, s *connector.Stream) (*http.Request, erro
 	switch {
 	case s.Host != "" && (host != strings.ToLower(s.Host) || port != s.Port):
 		return r, fmt.Errorf("a channel to %s:%d cannot carry a request for %s:%d", s.Host, s.Port, host, port)
-	case h.score(host, port) < 0:
+	case h.Claim(host, port) < 0:
 		return r, fmt.Errorf("this connection does not serve %s:%d", host, port)
 	case !slices.Contains(Methods, r.Method):
 		return r, fmt.Errorf("method %s is refused", r.Method)
@@ -136,7 +137,7 @@ func (h *HTTP) screen(r *http.Request, s *connector.Stream) (*http.Request, erro
 	origin := origin(scheme, host, port)
 	r.URL.Scheme, r.URL.Host, r.URL.RawPath, r.URL.RawQuery = scheme, strings.TrimPrefix(origin, scheme+"://"), "", encodeQuery(query)
 	r.Host = r.URL.Host
-	layer := &HTTPDetails{Method: r.Method, Origin: origin, Host: host, Path: r.URL.Path, Query: query, Headers: r.Header.Clone()}
+	layer := &facts.HTTP{Method: r.Method, Origin: origin, Host: host, Path: r.URL.Path, Query: query, Headers: r.Header.Clone()}
 	if err := inspect(r, layer); err != nil {
 		return r, err
 	}
@@ -242,7 +243,7 @@ func encodeQuery(q url.Values) string {
 }
 
 // inspect decodes a complete body of at most maxBodyBytes without repeated names; anything else is opaque and still forwarded.
-func inspect(r *http.Request, layer *HTTPDetails) error {
+func inspect(r *http.Request, layer *facts.HTTP) error {
 	body, err := io.ReadAll(io.LimitReader(r.Body, maxBodyBytes+1))
 	if err != nil {
 		return err
@@ -291,7 +292,7 @@ func decodeJSON(body []byte) (any, error) {
 		return nil, errAmbiguousJSON
 	}
 	var v any
-	return v, connector.DecodeNumbers(body, &v)
+	return v, facts.DecodeNumbers(body, &v)
 }
 
 // fold maps a rune to the least rune that strings.EqualFold, and so Go's JSON decoder, treats as equal.
@@ -334,12 +335,9 @@ func Placeholder(connection, secret string) string {
 	return placeholderPrefix + connection + "_" + secret
 }
 
+// Claim ranks exact slot origins by their length and host patterns, which serve only default ports, by theirs.
 func (h *HTTP) Claim(host string, port uint32) int {
-	return h.score(strings.ToLower(host), port)
-}
-
-// score ranks exact slot origins by their length and host patterns, which serve only default ports, by theirs.
-func (h *HTTP) score(host string, port uint32) int {
+	host = strings.ToLower(host)
 	score := -1
 	for _, s := range h.Slots {
 		if s.host == host && s.port == port {

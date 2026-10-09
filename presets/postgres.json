@@ -10,7 +10,7 @@
     "defaults": {"contents": "me", "sends": "me", "strangers": true},
     "fields": [
       {"hint": "postgres://user@host/db", "key": "url", "label": "Connection URL", "path": ["connections", "", "postgres", "url"]},
-      {"default": "", "key": "password", "label": "Password", "path": ["connections", "", "postgres", "password"], "secret": true}
+      {"default": "", "key": "password", "label": "Password", "path": ["connections", "", "postgres", "secrets", "password"], "secret": true}
     ]
   }
 }

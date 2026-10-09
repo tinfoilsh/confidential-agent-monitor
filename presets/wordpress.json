@@ -101,12 +101,12 @@
   },
   "title": "WordPress",
   "http": {
-    "operations": [
-    {"action":"wp_json.wp.posts.read","effects":["read"],"id":"posts.list","method":"GET","origin":"{origin}","params":["page","per_page","search","status"],"path":"/wp-json/wp/v2/posts","scope":{}},
-    {"action":"wp_json.wp.posts.read","effects":["read"],"id":"posts.get","method":"GET","origin":"{origin}","path":"/wp-json/wp/v2/posts/{post}","scope":{"post":{"at":"post","from":"path"}}},
-    {"action":"wp_json.wp.posts.write","body":"json","effects":["write","publish"],"id":"posts.create","method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/posts","scope":{"post":{"at":"","from":"body","type":"object"}}},
-    {"action":"wp_json.wp.posts.write","body":"json","effects":["write","publish"],"id":"posts.update","method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/posts/{post}","scope":{"changes":{"at":"","from":"body","type":"object"},"post":{"at":"post","from":"path"}}},
-    {"action":"wp_json.wp.posts.delete","effects":["delete"],"id":"posts.delete","method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/posts/{post}","scope":{"post":{"at":"post","from":"path"},"query":{"at":"","from":"query","type":"object"}}}
-  ]
+    "operations": {
+      "posts.create": {"action":"wp_json.wp.posts.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/posts","scope":{"post":{"at":"","from":"body","type":"object"}}},
+      "posts.delete": {"action":"wp_json.wp.posts.delete","effects":["delete"],"method":"DELETE","origin":"{origin}","params":["force"],"path":"/wp-json/wp/v2/posts/{post}","scope":{"post":{"at":"post","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "posts.get": {"action":"wp_json.wp.posts.read","effects":["read"],"method":"GET","origin":"{origin}","path":"/wp-json/wp/v2/posts/{post}","scope":{"post":{"at":"post","from":"path"}}},
+      "posts.list": {"action":"wp_json.wp.posts.read","effects":["read"],"method":"GET","origin":"{origin}","params":["page","per_page","search","status"],"path":"/wp-json/wp/v2/posts","scope":{}},
+      "posts.update": {"action":"wp_json.wp.posts.write","body":"json","effects":["write","publish"],"method":"POST","origin":"{origin}","path":"/wp-json/wp/v2/posts/{post}","scope":{"changes":{"at":"","from":"body","type":"object"},"post":{"at":"post","from":"path"}}}
+    }
   }
 }

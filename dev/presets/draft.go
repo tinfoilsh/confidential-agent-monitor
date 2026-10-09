@@ -1,9 +1,6 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
 	"regexp"
 	"slices"
 	"strings"
@@ -163,99 +160,4 @@ func lastPart(id string) string {
 		return id[i+1:]
 	}
 	return id
-}
-
-// kv keeps JSON members in the order presetText writes them.
-type kv struct {
-	K string
-	V any
-}
-type obj []kv
-
-func (o obj) get(k string) any {
-	for _, e := range o {
-		if e.K == k {
-			return e.V
-		}
-	}
-	return nil
-}
-
-func compact(v any) string {
-	switch v := v.(type) {
-	case obj:
-		var parts []string
-		for _, e := range v {
-			parts = append(parts, quote(e.K)+": "+compact(e.V))
-		}
-		return "{" + strings.Join(parts, ", ") + "}"
-	case []any:
-		var parts []string
-		for _, x := range v {
-			parts = append(parts, compact(x))
-		}
-		return "[" + strings.Join(parts, ", ") + "]"
-	case []string:
-		return compact(anys(v))
-	case map[string]string:
-		var o obj
-		for _, k := range slices.Sorted(func(yield func(string) bool) {
-			for k := range v {
-				if !yield(k) {
-					return
-				}
-			}
-		}) {
-			o = append(o, kv{k, v[k]})
-		}
-		return compact(o)
-	case string:
-		return quote(v)
-	default:
-		b, _ := json.Marshal(v)
-		return string(b)
-	}
-}
-
-func anys[T any](xs []T) []any {
-	out := make([]any, len(xs))
-	for i, x := range xs {
-		out[i] = x
-	}
-	return out
-}
-
-// quote matches JSON.stringify, which leaves <, > and & unescaped.
-func quote(s string) string {
-	var b bytes.Buffer
-	enc := json.NewEncoder(&b)
-	enc.SetEscapeHTML(false)
-	enc.Encode(s)
-	return strings.TrimSpace(b.String())
-}
-
-// presetText writes a preset as the app's presetText does: one field, action and operation per line.
-func presetText(title string, fields, actions obj, connections, defaults any, ops []obj) string {
-	lines := func(items []string, indent string) string {
-		if len(items) == 0 {
-			return "[]"
-		}
-		return "[\n" + indent + "  " + strings.Join(items, ",\n"+indent+"  ") + "\n" + indent + "]"
-	}
-	var fs, as, os []string
-	for _, f := range fields {
-		fs = append(fs, compact(f.V))
-	}
-	for _, a := range actions {
-		as = append(as, quote(a.K)+": "+compact(a.V))
-	}
-	for _, o := range ops {
-		os = append(os, compact(o))
-	}
-	acts := "{}"
-	if len(as) > 0 {
-		acts = "{\n      " + strings.Join(as, ",\n      ") + "\n    }"
-	}
-	return fmt.Sprintf("{\n  \"title\": %s,\n  \"catalog\": {\n    \"group\": \"api\",\n    \"fields\": %s,\n    \"connections\": %s,\n    \"defaults\": %s,\n    \"actions\": %s\n  },\n  \"http\": {\n    \"operations\": %s\n  }\n}\n",
-		quote(title), lines(fs, "    "), compact(connections), compact(defaults), acts, lines(os, "    "))
 }

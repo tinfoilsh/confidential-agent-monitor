@@ -3,7 +3,7 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "values", "api_key"]}
+      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "secrets", "api_key"]}
     ],
     "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://api.pushcut.io", "path": "/v1", "header": "API-Key"}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
@@ -15,12 +15,12 @@
     }
   },
   "http": {
-    "operations": [
-    {"id": "GetDevices", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.pushcut.io", "path": "/v1/devices", "scope": {}},
-    {"id": "GetNotifications", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://api.pushcut.io", "path": "/v1/notifications", "scope": {}},
-    {"id": "SendNotification", "action": "send.notifications", "effects": ["send"], "method": "POST", "origin": "https://api.pushcut.io", "path": "/v1/notifications/{notificationName}", "body": "json", "scope": {"notificationName": {"from": "path", "at": "notificationName"}, "request": {"from": "body", "at": "", "type": "object"}}, "grant": ["notificationName"]},
-    {"id": "ActionExecuted", "action": "admin.subscriptions", "effects": ["admin"], "method": "POST", "origin": "https://api.pushcut.io", "path": "/v1/subscriptions", "body": "json", "scope": {"url": {"from": "body", "at": "/url"}, "actionName": {"from": "body", "at": "/actionName"}}},
-    {"id": "DeleteSubscription", "action": "delete.subscriptions", "effects": ["delete"], "method": "DELETE", "origin": "https://api.pushcut.io", "path": "/v1/subscriptions/{subscriptionId}", "scope": {"subscriptionId": {"from": "path", "at": "subscriptionId"}}}
-  ]
+    "operations": {
+      "ActionExecuted": {"action":"admin.subscriptions","effects":["admin"],"method":"POST","origin":"https://api.pushcut.io","path":"/v1/subscriptions","body":"json","scope":{"url":{"from":"body","at":"/url"},"actionName":{"from":"body","at":"/actionName"}}},
+      "DeleteSubscription": {"action":"delete.subscriptions","effects":["delete"],"method":"DELETE","origin":"https://api.pushcut.io","path":"/v1/subscriptions/{subscriptionId}","scope":{"subscriptionId":{"from":"path","at":"subscriptionId"}}},
+      "GetDevices": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pushcut.io","path":"/v1/devices","scope":{}},
+      "GetNotifications": {"action":"read","effects":["read"],"method":"GET","origin":"https://api.pushcut.io","path":"/v1/notifications","scope":{}},
+      "SendNotification": {"action":"send.notifications","effects":["send"],"method":"POST","origin":"https://api.pushcut.io","path":"/v1/notifications/{notificationName}","body":"json","scope":{"notificationName":{"from":"path","at":"notificationName"},"request":{"from":"body","at":"","type":"object"}},"grant":["notificationName"]}
+    }
   }
 }

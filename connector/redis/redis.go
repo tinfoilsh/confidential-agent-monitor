@@ -2,6 +2,8 @@ package redis
 
 import (
 	"bufio"
+	"errors"
+	"io"
 	"log"
 	"slices"
 	"strings"
@@ -22,6 +24,16 @@ var containerCommands = []string{
 
 type Redis struct{ connector.Endpoint }
 
+func (r *Redis) UnmarshalJSON(raw []byte) error {
+	if err := r.Endpoint.UnmarshalJSON(raw); err != nil {
+		return err
+	}
+	if r.URL.Scheme != "rediss" {
+		return errors.New("Redis requires a rediss:// URL to protect credentials with TLS")
+	}
+	return nil
+}
+
 func (r *Redis) Serve(s *connector.Stream, e *connector.Env) {
 	u := &r.URL
 	up, err := connector.DialURL(s.Context, e.Dialer, u, "rediss", redisPort, redisPort)
@@ -31,7 +43,7 @@ func (r *Redis) Serve(s *connector.Stream, e *connector.Env) {
 	}
 	defer s.Interrupt(up)()
 	user := u.User.Username()
-	pass, err := r.Password.Value(s.Context)
+	pass, err := r.Secret(s.Context, "password")
 	if err != nil {
 		log.Printf("credential: %v", err)
 		return
@@ -47,7 +59,7 @@ func (r *Redis) Serve(s *connector.Stream, e *connector.Env) {
 			return
 		}
 	}
-	defer connector.CopyReplies(s, up, replies)()
+	defer connector.PumpReplies(s, func() { io.Copy(s, replies) })()
 	commands := redcon.NewReader(s)
 	for {
 		cmd, err := commands.ReadCommand()
@@ -78,8 +90,6 @@ func (r *Redis) Serve(s *connector.Stream, e *connector.Env) {
 
 func commandName(argv []string) string {
 	switch {
-	case len(argv) == 0:
-		return ""
 	case len(argv) > 1 && slices.Contains(containerCommands, strings.ToUpper(argv[0])):
 		return strings.ToUpper(argv[0] + "|" + argv[1])
 	}
@@ -87,9 +97,6 @@ func commandName(argv []string) string {
 }
 
 func reauthorize(args [][]byte, user, pass string) ([][]byte, bool) {
-	if len(args) == 0 {
-		return nil, false
-	}
 	switch strings.ToUpper(string(args[0])) {
 	case "AUTH":
 		return authArgs(user, pass), true
@@ -124,13 +131,13 @@ func encode(args [][]byte) []byte {
 
 type Request facts.Redis
 
-func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+func (v *Request) Describe(c connector.Context) (facts.Facts, error) {
 	details := facts.Details{Redis: (*facts.Redis)(v)}
 	action := "write"
 	if slices.Contains(redisReads, v.Command) {
 		action = "read"
 	}
-	return facts.Facts{Operation: &facts.Operation{Action: action, RequiresTrust: action == "write"}, Title: strings.Join(v.Argv[:min(2, len(v.Argv))], " "), Parameters: map[string]any{"command": v.Command, "argv": v.Argv}, Details: details}, connector.Approval{}, nil
+	return facts.Facts{Operation: &facts.Operation{Action: action}, Title: strings.Join(v.Argv[:min(2, len(v.Argv))], " "), Parameters: map[string]any{"command": v.Command, "argv": v.Argv}, Details: details}, nil
 }
 
 var redisReads = strings.Fields("AUTH HELLO PING ECHO SELECT QUIT MULTI EXEC DISCARD WATCH UNWATCH SUBSCRIBE PSUBSCRIBE UNSUBSCRIBE PUNSUBSCRIBE INFO DBSIZE TIME COMMAND COMMAND|COUNT COMMAND|DOCS COMMAND|INFO COMMAND|LIST COMMAND|GETKEYS COMMAND|GETKEYSANDFLAGS CLIENT|SETNAME CLIENT|SETINFO CLIENT|GETNAME CLIENT|ID CLIENT|INFO TYPE TTL PTTL EXISTS KEYS SCAN RANDOMKEY DUMP OBJECT|ENCODING OBJECT|FREQ OBJECT|IDLETIME OBJECT|REFCOUNT GET MGET GETRANGE STRLEN GETBIT BITCOUNT PFCOUNT HGET HMGET HGETALL HKEYS HVALS HLEN HEXISTS HSCAN LRANGE LLEN LINDEX LPOS SMEMBERS SISMEMBER SMISMEMBER SCARD SSCAN ZRANGE ZRANGEBYSCORE ZREVRANGE ZREVRANGEBYSCORE ZSCORE ZMSCORE ZCARD ZCOUNT ZRANK ZREVRANK ZSCAN XRANGE XREVRANGE XREAD XLEN XINFO|CONSUMERS XINFO|GROUPS XINFO|STREAM GEOPOS GEODIST GEOSEARCH")

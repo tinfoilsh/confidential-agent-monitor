@@ -2,18 +2,16 @@
 package facts
 
 import (
-	"bytes"
-	"encoding/json"
-	"errors"
-	"fmt"
 	"maps"
 	"net/http"
 	"net/url"
 	"slices"
 )
 
-// Version identifies the public facts schema.
-const Version = 4
+// Version identifies the facts schema and approval semantics. Bump it when
+// parsing, description, normalization, label, or approval semantics change.
+// This invalidates saved approvals; display-only edits do not need a bump.
+const Version = 6
 
 // Label levels are ordered from most restrictive to least restrictive.
 // Policy derives its rank tables from these same lists.
@@ -27,7 +25,6 @@ type Kind string
 const (
 	KindOperation Kind = "operation"
 	KindAdmission Kind = "admission"
-	KindMessage   Kind = "message"
 )
 
 type Principal struct {
@@ -46,10 +43,11 @@ func (l Label) Valid() bool {
 }
 
 type Operation struct {
-	ID            string   `json:"id"`
-	Action        string   `json:"action"`
-	Effects       []string `json:"effects"`
-	RequiresTrust bool     `json:"requires_trust"`
+	ID          string      `json:"id"`
+	Action      string      `json:"action"`
+	Effects     []string    `json:"effects"`
+	Obligations Obligations `json:"obligations"`
+	Lineage     []string    `json:"lineage"`
 }
 
 type Context struct {
@@ -57,12 +55,14 @@ type Context struct {
 	Sends    string `json:"sends"`
 	Observes Label  `json:"observes"`
 	Cause    string `json:"cause"`
-	Channel  *Label `json:"channel,omitempty"`
 }
 
 // Facts is the snapshot shared by authorization and audit.
 // Protocol details use typed fields; service parameters remain JSON values.
 type Facts struct {
+	Scope      map[string]any `json:"-"`
+	Definition any            `json:"-"`
+	encoded    []byte         // The immutable audit encoding after Snapshot.
 	Version    int            `json:"version"`
 	Kind       Kind           `json:"kind"`
 	Principal  Principal      `json:"principal"`
@@ -95,7 +95,6 @@ type Details struct {
 	Redis    *Redis    `json:"redis,omitempty"`
 	Postgres *Postgres `json:"postgres,omitempty"`
 	Sign     *Sign     `json:"sign,omitempty"`
-	Message  *Message  `json:"message,omitempty"`
 	TCP      *TCP      `json:"tcp,omitempty"`
 }
 
@@ -229,17 +228,6 @@ type Sign struct {
 	Op        string `json:"op,omitempty"`
 }
 
-type Message struct {
-	Action  string `json:"action"`
-	Peer    string `json:"peer"`
-	From    string `json:"from"`
-	To      string `json:"to"`
-	ID      string `json:"id,omitempty"`
-	Body    any    `json:"body,omitempty"`
-	Channel Label  `json:"channel"`
-	Cause   string `json:"cause"`
-}
-
 type TCP struct {
 	Host string `json:"host"`
 	Port uint32 `json:"port"`
@@ -263,8 +251,8 @@ type Obligations struct {
 var Effects = map[string]Obligations{
 	"read":     {},
 	"session":  {},
-	"write":    {Change: true},
-	"generate": {Change: true},
+	"write":    {Change: true, Trust: true},
+	"generate": {Change: true, Trust: true},
 	"delete":   {Change: true, Trust: true},
 	"admin":    {Change: true, Trust: true},
 	"execute":  {Change: true, Trust: true},
@@ -298,7 +286,7 @@ func ObligationsFor(effects []string) (out Obligations) {
 	return out
 }
 
-// Observe joins request observations and mailbox history, preserving provenance
+// Observe joins request observations, preserving provenance
 // on axes that do not become more restrictive. Both labels must be valid.
 func (l Label) Observe(observed Label, cause string) Label {
 	l.Because = maps.Clone(l.Because)
@@ -312,234 +300,4 @@ func (l Label) Observe(observed Label, cause string) Label {
 		l.Trust, l.Because["trust"] = observed.Trust, cause
 	}
 	return l
-}
-
-// Validate checks the resolved snapshot for every connector before policy
-// runs. Unknown requests have no operation; malformed descriptions are denied.
-func (f Facts) Validate() error {
-	var errs []error
-	if !slices.Contains([]Kind{KindOperation, KindAdmission, KindMessage}, f.Kind) {
-		errs = append(errs, fmt.Errorf("invalid request kind %q", f.Kind))
-	}
-	if op := f.Operation; op != nil && (op.ID == "" || op.Action == "" || !ValidEffects(op.Effects)) {
-		errs = append(errs, errors.New("the recognized operation is malformed"))
-	}
-	if !f.Context.Label.Valid() {
-		errs = append(errs, errors.New("the agent label is invalid"))
-	}
-	if !f.Context.Observes.Valid() {
-		errs = append(errs, errors.New("the observation label is invalid"))
-	}
-	if !slices.Contains(Audiences, f.Context.Sends) {
-		errs = append(errs, errors.New("the disclosure audience is invalid"))
-	}
-	if channel := f.Context.Channel; channel != nil && !channel.Valid() {
-		errs = append(errs, errors.New("the message channel label is invalid"))
-	}
-	if f.Kind == KindMessage && (f.Context.Channel == nil || f.Operation == nil) {
-		errs = append(errs, errors.New("a message requires an operation and channel label"))
-	}
-	if f.Kind == KindAdmission && f.Operation == nil {
-		errs = append(errs, errors.New("admission requires an operation"))
-	}
-	return errors.Join(errs...)
-}
-
-// CloneJSON owns the mutable parts of a JSON value while retaining immutable
-// strings and exact numbers. Other Go values retain encoding/json's
-// representation through the fallback.
-func CloneJSON(value any) (any, error) {
-	switch v := value.(type) {
-	case nil, string, bool:
-		return v, nil
-	case json.Number:
-		if _, err := json.Marshal(v); err != nil {
-			return nil, err
-		}
-		return v, nil
-	case map[string]any:
-		if v == nil {
-			return nil, nil
-		}
-		out := make(map[string]any, len(v))
-		for key, field := range v {
-			frozen, err := CloneJSON(field)
-			if err != nil {
-				return nil, err
-			}
-			out[key] = frozen
-		}
-		return out, nil
-	case map[string][]string:
-		if v == nil {
-			return nil, nil
-		}
-		out := make(map[string]any, len(v))
-		for key, field := range v {
-			frozen, _ := CloneJSON(field)
-			out[key] = frozen
-		}
-		return out, nil
-	case []any:
-		if v == nil {
-			return nil, nil
-		}
-		out := make([]any, len(v))
-		for i, field := range v {
-			frozen, err := CloneJSON(field)
-			if err != nil {
-				return nil, err
-			}
-			out[i] = frozen
-		}
-		return out, nil
-	case []string:
-		if v == nil {
-			return nil, nil
-		}
-		out := make([]any, len(v))
-		for i, field := range v {
-			out[i] = field
-		}
-		return out, nil
-	default:
-		raw, err := json.Marshal(value)
-		if err != nil {
-			return nil, err
-		}
-		var out any
-		decoder := json.NewDecoder(bytes.NewReader(raw))
-		decoder.UseNumber()
-		if err := decoder.Decode(&out); err != nil {
-			return nil, err
-		}
-		return out, nil
-	}
-}
-
-// Clone freezes the mutable values shared with a parsed request. Protocol fields
-// stay typed; only service-defined JSON bodies and parameters need a JSON copier.
-func (f Facts) Clone() (Facts, error) {
-	var err error
-	f.Parameters, err = cloneObject(f.Parameters)
-	if err != nil {
-		return f, err
-	}
-	f.Operation = clone(f.Operation)
-	if f.Operation != nil {
-		f.Operation.Effects = slices.Clone(f.Operation.Effects)
-	}
-	f.Context.Label.Because = maps.Clone(f.Context.Label.Because)
-	f.Context.Observes.Because = maps.Clone(f.Context.Observes.Because)
-	f.Context.Channel = clone(f.Context.Channel)
-	if f.Context.Channel != nil {
-		f.Context.Channel.Because = maps.Clone(f.Context.Channel.Because)
-	}
-	d := &f.Details
-	d.HTTP = clone(d.HTTP)
-	if h := d.HTTP; h != nil {
-		h.Query, h.Headers, h.Form = cloneValues(h.Query), cloneValues(h.Headers), cloneValues(h.Form)
-		h.Secrets = slices.Clone(h.Secrets)
-		h.Body, err = CloneJSON(h.Body)
-		if err != nil {
-			return f, err
-		}
-		h.HeaderJSON, err = cloneObject(h.HeaderJSON)
-		if err != nil {
-			return f, err
-		}
-	}
-	d.GraphQL = clone(d.GraphQL)
-	if g := d.GraphQL; g != nil {
-		g.Fields = slices.Clone(g.Fields)
-		for i := range g.Fields {
-			g.Fields[i].Arguments, err = cloneObject(g.Fields[i].Arguments)
-			if err != nil {
-				return f, err
-			}
-		}
-	}
-	d.MCP = clone(d.MCP)
-	if m := d.MCP; m != nil {
-		m.Arguments, err = CloneJSON(m.Arguments)
-		if err != nil {
-			return f, err
-		}
-	}
-	d.SSH = clone(d.SSH)
-	if d.SSH != nil {
-		d.SSH.Env = clone(d.SSH.Env)
-	}
-	d.Command = clone(d.Command)
-	if d.Command != nil {
-		d.Command.Argv = slices.Clone(d.Command.Argv)
-	}
-	d.Payload = clone(d.Payload)
-	if d.Payload != nil {
-		d.Payload.Parents = slices.Clone(d.Payload.Parents)
-	}
-	d.SMTP = clone(d.SMTP)
-	if d.SMTP != nil {
-		d.SMTP.To = slices.Clone(d.SMTP.To)
-	}
-	d.Mail = clone(d.Mail)
-	if m := d.Mail; m != nil {
-		m.From, m.To, m.Cc, m.Attachments = slices.Clone(m.From), slices.Clone(m.To), slices.Clone(m.Cc), slices.Clone(m.Attachments)
-	}
-	d.SFTP = clone(d.SFTP)
-	if d.SFTP != nil {
-		d.SFTP.Attributes = maps.Clone(d.SFTP.Attributes)
-	}
-	d.Browser = clone(d.Browser)
-	if d.Browser != nil {
-		d.Browser.Secrets = slices.Clone(d.Browser.Secrets)
-	}
-	d.Redis = clone(d.Redis)
-	if d.Redis != nil {
-		d.Redis.Argv = slices.Clone(d.Redis.Argv)
-	}
-	d.MQTT = clone(d.MQTT)
-	if d.MQTT != nil {
-		d.MQTT.Payload = slices.Clone(d.MQTT.Payload)
-	}
-	d.NATS = clone(d.NATS)
-	if d.NATS != nil {
-		d.NATS.Payload = slices.Clone(d.NATS.Payload)
-		d.NATS.Headers = cloneValues(d.NATS.Headers)
-	}
-	d.IMAP, d.Postgres, d.Sign, d.TCP = clone(d.IMAP), clone(d.Postgres), clone(d.Sign), clone(d.TCP)
-	d.Message = clone(d.Message)
-	if m := d.Message; m != nil {
-		m.Body, err = CloneJSON(m.Body)
-		if err != nil {
-			return f, err
-		}
-		m.Channel.Because = maps.Clone(m.Channel.Because)
-	}
-	return f, nil
-}
-
-func clone[T any](value *T) *T {
-	if value == nil {
-		return nil
-	}
-	copy := *value
-	return &copy
-}
-
-func cloneValues[M ~map[string][]string](values M) M {
-	if values == nil {
-		return nil
-	}
-	out := make(M, len(values))
-	for key, value := range values {
-		out[key] = slices.Clone(value)
-	}
-	return out
-}
-
-func cloneObject(value map[string]any) (map[string]any, error) {
-	frozen, err := CloneJSON(value)
-	out, _ := frozen.(map[string]any)
-	return out, err
 }

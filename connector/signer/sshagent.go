@@ -16,14 +16,7 @@ const (
 var errAgentSignsOnly = errors.New("the monitor's agent only signs")
 
 type SSHAgent struct {
-	Keys map[string]string `json:"keys"`
-}
-
-func (keys *SSHAgent) Fields() (fields []connector.Field) {
-	for name := range keys.Keys {
-		fields = append(fields, connector.Field{Path: []string{"keys", name}, Redact: true})
-	}
-	return
+	connector.SecretConfig
 }
 
 type gatedAgent struct {
@@ -33,7 +26,12 @@ type gatedAgent struct {
 
 func (keys *SSHAgent) Serve(s *connector.Stream, _ *connector.Env) {
 	keyring := agent.NewKeyring().(agent.ExtendedAgent)
-	for _, encoded := range keys.Keys {
+	for _, value := range keys.Secrets {
+		encoded, err := value.Value(s.Context)
+		if err != nil {
+			log.Print(err)
+			return
+		}
 		key, err := ssh.ParseRawPrivateKey([]byte(encoded))
 		if err != nil {
 			log.Print(err)
@@ -42,10 +40,6 @@ func (keys *SSHAgent) Serve(s *connector.Stream, _ *connector.Env) {
 		keyring.Add(agent.AddedKey{PrivateKey: key})
 	}
 	agent.ServeAgent(gatedAgent{keyring, s}, s)
-}
-
-func (a gatedAgent) Sign(key ssh.PublicKey, data []byte) (*ssh.Signature, error) {
-	return a.SignWithFlags(key, data, 0)
 }
 
 func (a gatedAgent) SignWithFlags(key ssh.PublicKey, data []byte, flags agent.SignatureFlags) (*ssh.Signature, error) {
@@ -60,10 +54,6 @@ func (gatedAgent) Remove(ssh.PublicKey) error { return errAgentSignsOnly }
 func (gatedAgent) RemoveAll() error           { return errAgentSignsOnly }
 func (gatedAgent) Lock([]byte) error          { return errAgentSignsOnly }
 func (gatedAgent) Unlock([]byte) error        { return errAgentSignsOnly }
-func (gatedAgent) Extension(string, []byte) ([]byte, error) {
-	return nil, agent.ErrExtensionUnsupported
-}
-
 func signEvent(key ssh.PublicKey, data []byte) *Request {
 	sign := &Request{Agent: "ssh", Key: ssh.FingerprintSHA256(key), Purpose: "other"}
 	var sig struct {

@@ -2,6 +2,7 @@ package email
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -22,6 +23,16 @@ var imapLiteral = regexp.MustCompile(`\{(\d+)(\+?)\}$`)
 
 type IMAP struct{ connector.Endpoint }
 
+func (r *IMAP) UnmarshalJSON(raw []byte) error {
+	if err := r.Endpoint.UnmarshalJSON(raw); err != nil {
+		return err
+	}
+	if r.URL.Scheme != "imaps" {
+		return errors.New("IMAP requires an imaps:// URL to protect credentials with TLS")
+	}
+	return nil
+}
+
 func (r *IMAP) Serve(s *connector.Stream, e *connector.Env) {
 	u := &r.URL
 	up, err := connector.DialURL(s.Context, e.Dialer, u, "imaps", "143", "993")
@@ -34,7 +45,7 @@ func (r *IMAP) Serve(s *connector.Stream, e *connector.Env) {
 	if _, err := replies.ReadString('\n'); err != nil {
 		return
 	}
-	pass, err := r.Password.Value(s.Context)
+	pass, err := r.Secret(s.Context, "password")
 	if err != nil {
 		log.Printf("credential: %v", err)
 		return
@@ -55,7 +66,7 @@ func (r *IMAP) Serve(s *connector.Stream, e *connector.Env) {
 		}
 	}
 	fmt.Fprintf(s, "* PREAUTH monitor\r\n")
-	defer connector.CopyReplies(s, up, replies)()
+	defer connector.PumpReplies(s, func() { io.Copy(s, replies) })()
 	commands := bufio.NewReader(s)
 	mailbox := ""
 	for {
@@ -116,7 +127,7 @@ func forwardIMAP(dst io.Writer, src *bufio.Reader, line string) error {
 
 type IMAPRequest facts.IMAP
 
-func (v *IMAPRequest) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+func (v *IMAPRequest) Describe(c connector.Context) (facts.Facts, error) {
 	details := facts.Details{IMAP: (*facts.IMAP)(v)}
 	action := ""
 	if slices.Contains(strings.Fields("CAPABILITY CHECK ENABLE EXAMINE FETCH ID IDLE LIST LOGOUT LSUB NAMESPACE NOOP SEARCH SELECT STATUS UNSELECT"), v.Command) {
@@ -126,8 +137,5 @@ func (v *IMAPRequest) Describe(c connector.Context) (facts.Facts, connector.Appr
 		action = "organize"
 	}
 	op := &facts.Operation{Action: action}
-	if action == "" {
-		op = nil
-	}
-	return facts.Facts{Operation: op, Title: v.Command + " " + v.Mailbox, Parameters: map[string]any{"mailbox": v.Mailbox, "args": v.Args}, Details: details}, connector.Approval{}, nil
+	return facts.Facts{Operation: op, Title: v.Command + " " + v.Mailbox, Parameters: map[string]any{"mailbox": v.Mailbox, "args": v.Args}, Details: details}, nil
 }

@@ -4,9 +4,9 @@ import (
 	"cmp"
 	"context"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -68,17 +68,20 @@ type Browser struct {
 	// op serializes commands on the browser. mu guards the fields below and is never held across a browser call.
 	op      sync.Mutex
 	mu      sync.Mutex
-	tab     context.Context
-	tabs    map[target.ID]context.Context
-	closers map[target.ID]context.CancelCauseFunc
+	tabs    map[target.ID]*tabState
 	order   []target.ID // From least to most recently used; the last is the active tab.
 	held    bool
 	epoch   int                // Changes whenever control passes.
 	stop    context.CancelFunc // Ends the agent's command in progress.
 	running *running           // The command in progress on a tab, which a dialog the tab opens ends.
-	dialogs map[target.ID]bool // Tabs showing a dialog.
 	seen    document           // The document of the latest snapshot, whose refs carry gen.
 	gen     int
+}
+
+type tabState struct {
+	context context.Context
+	close   context.CancelCauseFunc
+	dialog  bool
 }
 
 type running struct {
@@ -97,13 +100,15 @@ type request struct {
 	Ref  string `json:"ref"`
 	Text string `json:"text"`
 	// connection names the placeholders; slot is the form slot a fill's placeholder names.
+	node       cdp.BackendNodeID
+	generation int
 	connection string
 	slot       *web.Slot
 }
 
 func (b *Browser) UnmarshalJSON(raw []byte) error {
 	type plain Browser
-	if err := connector.Decode(raw, (*plain)(b)); err != nil {
+	if err := facts.DecodeNumbers(raw, (*plain)(b)); err != nil {
 		return err
 	}
 	return b.Validate(true)
@@ -147,10 +152,10 @@ func (b *Browser) Run(ctx context.Context, e *connector.Env, in *connector.Liste
 		return err
 	}
 	id := chromedp.FromContext(tab).Target.TargetID
-	b.root, b.tabs, b.closers, b.order = tab, map[target.ID]context.Context{}, map[target.ID]context.CancelCauseFunc{}, []target.ID{id}
-	b.tabs[id], b.closers[id] = context.WithCancelCause(tab)
-	b.tab, b.dialogs = b.tabs[id], map[target.ID]bool{}
-	b.watch(b.tab, id)
+	b.root, b.tabs, b.order = tab, map[target.ID]*tabState{}, []target.ID{id}
+	tabCtx, closeTab := context.WithCancelCause(tab)
+	b.tabs[id] = &tabState{context: tabCtx, close: closeTab}
+	b.watch(tabCtx, id)
 	// Chrome does not answer input to a tab that the input closes, so a closed tab ends its commands.
 	go func() {
 		for e, err := range chromedp.BrowserEvents(tab, target.TargetDestroyed) {
@@ -158,8 +163,10 @@ func (b *Browser) Run(ctx context.Context, e *connector.Env, in *connector.Liste
 				return
 			}
 			b.mu.Lock()
-			if closer := b.closers[e.TargetID]; closer != nil {
-				closer(errClosed)
+			if tab := b.tabs[e.TargetID]; tab != nil {
+				tab.close(errClosed)
+				delete(b.tabs, e.TargetID)
+				b.order = slices.DeleteFunc(b.order, func(id target.ID) bool { return id == e.TargetID })
 			}
 			b.mu.Unlock()
 		}
@@ -194,11 +201,25 @@ func (b *Browser) proxy(e *connector.Env) (net.Listener, error) {
 // The browser is free while the policy decides, so the command runs only if control did not pass and the page did not move meanwhile.
 func (b *Browser) handle(command string, do func(context.Context, request) ([]byte, string, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		epoch, err := b.admit()
+		b.mu.Lock()
+		epoch := b.epoch
+		b.mu.Unlock()
+		var err error
 		var req request
-		if err == nil && r.Method == http.MethodPost {
-			if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		if r.Method == http.MethodPost {
+			raw, err := io.ReadAll(http.MaxBytesReader(w, r.Body, 1<<20))
+			if err == nil {
+				err = facts.DecodeNumbers(raw, &req)
+			}
+			if err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+		}
+		if slices.Contains(inputs, command) {
+			req.node, req.generation, err = backend(req.Ref)
+			if err != nil {
+				fail(w, forbidden{err})
 				return
 			}
 		}
@@ -256,16 +277,6 @@ func (b *Browser) handle(command string, do func(context.Context, request) ([]by
 	}
 }
 
-// admit records the control epoch a request arrives in, before its body; a request that waits past a pause does not run after it.
-func (b *Browser) admit() (int, error) {
-	b.mu.Lock()
-	defer b.mu.Unlock()
-	if b.held {
-		return 0, errHeld
-	}
-	return b.epoch, nil
-}
-
 // within runs fn on the active tab for an agent command, with the page it acts on: the destination of navigate,
 // otherwise the tab's document. Input must name a ref from a snapshot of that document since control last passed.
 // A pause ends fn through its context.
@@ -303,12 +314,8 @@ func (b *Browser) within(r *http.Request, epoch int, command string, req request
 	case command == "navigate":
 		page = req.URL
 	case slices.Contains(inputs, command):
-		_, gen, err := backend(req.Ref)
-		if err != nil {
-			return forbidden{err}
-		}
 		b.mu.Lock()
-		fresh := gen == b.gen && doc == b.seen
+		fresh := req.generation == b.gen && doc == b.seen
 		b.mu.Unlock()
 		if !fresh {
 			return fmt.Errorf("%w; it is now %s", errMoved, page)
@@ -340,7 +347,9 @@ func (b *Browser) watch(tab context.Context, id target.ID) {
 				return
 			}
 			b.mu.Lock()
-			b.dialogs[id] = true
+			if tab := b.tabs[id]; tab != nil {
+				tab.dialog = true
+			}
 			if b.running != nil && b.running.tab == id {
 				b.running.interrupt(errDialog)
 			}
@@ -353,7 +362,9 @@ func (b *Browser) watch(tab context.Context, id target.ID) {
 				return
 			}
 			b.mu.Lock()
-			delete(b.dialogs, id)
+			if tab := b.tabs[id]; tab != nil {
+				tab.dialog = false
+			}
 			b.mu.Unlock()
 		}
 	}()
@@ -381,7 +392,7 @@ func (b *Browser) observe(doc document, lines []byte) []byte {
 	return refLine.ReplaceAll(lines, fmt.Appendf(nil, "${1}%s%d ", genSeparator, b.gen))
 }
 
-// follow takes in the tabs the browser opened and drops the closed ones, under op, so a look at the browser never changes
+// follow takes in the tabs the browser opened, under op, so a look at the browser never changes
 // which tab a command acts on. For the agent the newest tab becomes active, so a popup takes over from its opener;
 // for the owner the active tab stays until they pick another. Closing the active tab returns to the one used before it.
 func (b *Browser) follow(guard context.Context, newest bool) error {
@@ -392,7 +403,6 @@ func (b *Browser) follow(guard context.Context, newest bool) error {
 	if err != nil {
 		return err
 	}
-	var opened []target.ID
 	for _, t := range pages {
 		b.mu.Lock()
 		known := b.tabs[t.TargetID] != nil
@@ -405,8 +415,9 @@ func (b *Browser) follow(guard context.Context, newest bool) error {
 			return err
 		}
 		b.mu.Lock()
-		b.tabs[t.TargetID], b.closers[t.TargetID] = context.WithCancelCause(tab)
-		b.watch(b.tabs[t.TargetID], t.TargetID)
+		tabCtx, closeTab := context.WithCancelCause(tab)
+		b.tabs[t.TargetID] = &tabState{context: tabCtx, close: closeTab}
+		b.watch(tabCtx, t.TargetID)
 		// The owner has not used a tab the page opened; it waits until they pick it.
 		if newest {
 			b.order = append(b.order, t.TargetID)
@@ -414,28 +425,11 @@ func (b *Browser) follow(guard context.Context, newest bool) error {
 			b.order = append([]target.ID{t.TargetID}, b.order...)
 		}
 		b.mu.Unlock()
-		opened = append(opened, t.TargetID)
 	}
 	b.mu.Lock()
-	b.order = slices.DeleteFunc(b.order, func(id target.ID) bool {
-		closed := !slices.ContainsFunc(pages, func(t *target.Info) bool { return t.TargetID == id })
-		if closed {
-			b.closers[id](errClosed)
-			delete(b.tabs, id)
-			delete(b.closers, id)
-		}
-		return closed
-	})
-	previous := b.tab
-	if newest && len(opened) > 0 {
-		b.use(opened[len(opened)-1])
-	}
 	id, err := b.choose()
-	if err == nil {
-		b.tab = b.tabs[id]
-	}
 	b.mu.Unlock()
-	if err != nil || b.tab == previous {
+	if err != nil {
 		return err
 	}
 	// A real browser brings the tab it switches to forward; the page sees itself as visible.
@@ -483,9 +477,10 @@ func (b *Browser) pages(ctx context.Context) ([]*target.Info, error) {
 func (b *Browser) command(guard context.Context) (context.Context, context.CancelFunc) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
-	timed, cancel := context.WithTimeout(b.tab, commandTimeout)
+	id, _ := b.choose()
+	timed, cancel := context.WithTimeout(b.tabs[id].context, commandTimeout)
 	ctx, interrupt := context.WithCancelCause(timed)
-	r := &running{chromedp.FromContext(b.tab).Target.TargetID, interrupt}
+	r := &running{id, interrupt}
 	b.running = r
 	stop := context.AfterFunc(guard, cancel)
 	return ctx, func() {
@@ -525,10 +520,7 @@ func (b *Browser) secret(ctx context.Context, command string, req request) (*web
 		}
 		return nil, nil
 	}
-	id, _, err := backend(req.Ref)
-	if err != nil {
-		return nil, err
-	}
+	id := req.node
 	origin, err := b.frameOrigin(ctx, id)
 	if err != nil {
 		return nil, err
@@ -601,10 +593,7 @@ func (b *Browser) navigate(ctx context.Context, req request) ([]byte, string, er
 
 // click presses the mouse at the centre of the node's first box, as a person would.
 func (b *Browser) click(ctx context.Context, req request) ([]byte, string, error) {
-	id, _, err := backend(req.Ref)
-	if err != nil {
-		return nil, "", err
-	}
+	id := req.node
 	if _, err := chromedp.Call(ctx, dom.ScrollIntoViewIfNeeded, dom.ScrollIntoViewIfNeededParams{BackendNodeID: id}); err != nil {
 		return nil, "", err
 	}
@@ -619,17 +608,15 @@ func (b *Browser) click(ctx context.Context, req request) ([]byte, string, error
 
 // fill replaces the field's text, with the slot's value in place of its placeholder.
 func (b *Browser) fill(ctx context.Context, req request) ([]byte, string, error) {
-	id, _, err := backend(req.Ref)
-	if err != nil {
-		return nil, "", err
-	}
+	id := req.node
 	text := req.Text
 	if req.slot != nil {
 		// The page may have changed while the owner decided.
 		if slot, err := b.secret(ctx, "fill", req); slot != req.slot {
 			return nil, "", cmp.Or(err, errors.New("the field no longer takes this credential"))
 		}
-		if text, err = b.Values[req.slot.Value].Value(ctx); err != nil {
+		var err error
+		if text, err = b.Secrets[req.slot.Value].Value(ctx); err != nil {
 			return nil, "", fmt.Errorf("credential %s is unavailable", req.slot.Value)
 		}
 	}
@@ -651,14 +638,11 @@ func (b *Browser) fill(ctx context.Context, req request) ([]byte, string, error)
 
 // typeText presses keys in the ref's element.
 func (b *Browser) typeText(ctx context.Context, req request) ([]byte, string, error) {
-	id, _, err := backend(req.Ref)
-	if err != nil {
-		return nil, "", err
-	}
+	id := req.node
 	if _, err := chromedp.Call(ctx, dom.Focus, dom.FocusParams{BackendNodeID: id}); err != nil {
 		return nil, "", err
 	}
-	_, err = chromedp.Run(ctx, chromedp.KeyEvent(req.Text))
+	_, err := chromedp.Run(ctx, chromedp.KeyEvent(req.Text))
 	return nil, "", err
 }
 
@@ -692,24 +676,18 @@ func (b *Browser) call(ctx context.Context, function string) (string, error) {
 
 type Request facts.Browser
 
-func (v *Request) Describe(c connector.Context) (facts.Facts, connector.Approval, error) {
+func (v *Request) Describe(c connector.Context) (facts.Facts, error) {
 	details := facts.Details{Browser: (*facts.Browser)(v)}
-	var config struct{ Slots []json.RawMessage }
-	if err := c.DecodeConfig(&config); err != nil {
-		return facts.Facts{Details: details}, connector.Approval{}, err
-	}
+	config, _ := c.Config.(*Browser)
 	action := map[string]string{"navigate": "browse", "snapshot": "browse", "text": "browse", "screenshot": "browse", "click": "submit", "type": "submit", "fill": "submit"}[v.Command]
 	scope := map[string]any{"host": v.Host}
 	if len(v.Secrets) > 0 {
 		action, scope["secrets"] = "login", v.Secrets
 	}
 	observes := c.Observation
-	if len(config.Slots) == 0 {
+	if config == nil || len(config.Slots) == 0 {
 		observes.Audience = "anyone"
 	}
-	op := &facts.Operation{Action: action, RequiresTrust: action == "login"}
-	if action == "" {
-		op = nil
-	}
-	return facts.Facts{Operation: op, Title: v.Command + " " + v.URL, Parameters: scope, Details: details, Context: facts.Context{Observes: observes}}, connector.Approval{}, nil
+	op := &facts.Operation{Action: action}
+	return facts.Facts{Operation: op, Title: v.Command + " " + v.URL, Parameters: scope, Details: details, Context: facts.Context{Observes: observes}}, nil
 }

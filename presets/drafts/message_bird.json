@@ -3,7 +3,7 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "access_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "values", "access_key"]}
+      {"key": "access_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "secrets", "access_key"]}
     ],
     "connections": {"": {"http": {"slots": [{"value": "access_key", "origin": "https://rest.messagebird.com", "path": "/messages", "header": "Authorization", "prefix": "AccessKey "}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
@@ -14,11 +14,11 @@
     }
   },
   "http": {
-    "operations": [
-    {"id": "POST /messages/messages", "action": "send.messages", "effects": ["send"], "method": "POST", "origin": "https://rest.messagebird.com", "path": "/messages/messages", "body": "any", "scope": {}},
-    {"id": "GET /messages/messages", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://rest.messagebird.com", "path": "/messages/messages", "params": ["originator", "recipient", "direction", "limit", "offset", "searchterm", "type", "contact_id", "status", "from", "until"], "scope": {}},
-    {"id": "DELETE /messages/messages/{messageId}", "action": "delete.messages", "effects": ["delete"], "method": "DELETE", "origin": "https://rest.messagebird.com", "path": "/messages/messages/{messageId}", "scope": {"messageId": {"from": "path", "at": "messageId"}}},
-    {"id": "GET /messages/messages/{messageId}", "action": "read", "effects": ["read"], "method": "GET", "origin": "https://rest.messagebird.com", "path": "/messages/messages/{messageId}", "scope": {"messageId": {"from": "path", "at": "messageId"}}}
-  ]
+    "operations": {
+      "DELETE /messages/messages/{messageId}": {"action":"delete.messages","effects":["delete"],"method":"DELETE","origin":"https://rest.messagebird.com","path":"/messages/messages/{messageId}","scope":{"messageId":{"from":"path","at":"messageId"}}},
+      "GET /messages/messages": {"action":"read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","path":"/messages/messages","params":["originator","recipient","direction","limit","offset","searchterm","type","contact_id","status","from","until"],"scope":{}},
+      "GET /messages/messages/{messageId}": {"action":"read","effects":["read"],"method":"GET","origin":"https://rest.messagebird.com","path":"/messages/messages/{messageId}","scope":{"messageId":{"from":"path","at":"messageId"}}},
+      "POST /messages/messages": {"action":"send.messages","effects":["send"],"method":"POST","origin":"https://rest.messagebird.com","path":"/messages/messages","body":"any","scope":{}}
+    }
   }
 }

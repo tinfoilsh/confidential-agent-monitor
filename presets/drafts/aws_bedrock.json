@@ -5,9 +5,9 @@
     "fields": [
       {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
       {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["connections", "", "http", "slots", 0, "sigv4", "region"]},
-      {"key": "access_key", "label": "Access key ID", "secret": true, "path": ["connections", "", "http", "values", "access_key"]},
-      {"key": "secret_key", "label": "Secret access key", "secret": true, "path": ["connections", "", "http", "values", "secret_key"]},
-      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "path": ["connections", "", "http", "values", "session_token"]}
+      {"key": "access_key", "label": "Access key ID", "secret": true, "path": ["connections", "", "http", "secrets", "access_key"]},
+      {"key": "secret_key", "label": "Secret access key", "secret": true, "path": ["connections", "", "http", "secrets", "secret_key"]},
+      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "path": ["connections", "", "http", "secrets", "session_token"]}
     ],
     "connections": {"": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "sigv4": {"service": "bedrock", "region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
@@ -22,18 +22,18 @@
     }
   },
   "http": {
-    "operations": [
-    {"id": "ApplyGuardrail", "action": "generate.apply", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/guardrail/{guardrailIdentifier}/version/{guardrailVersion}/apply", "body": "any", "scope": {"guardrailIdentifier": {"from": "path", "at": "guardrailIdentifier"}, "guardrailVersion": {"from": "path", "at": "guardrailVersion"}}},
-    {"id": "Converse", "action": "generate.converse", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/model/{modelId}/converse", "body": "any", "scope": {"modelId": {"from": "path", "at": "modelId"}}},
-    {"id": "ConverseStream", "action": "generate.converse_stream", "effects": ["generate"], "method": "POST", "origin": "{origin}", "path": "/model/{modelId}/converse-stream", "body": "any", "scope": {"modelId": {"from": "path", "at": "modelId"}}},
-    {"id": "CountTokens", "action": "read", "effects": ["read"], "method": "POST", "origin": "{origin}", "path": "/model/{modelId}/count-tokens", "body": "any", "scope": {"modelId": {"from": "path", "at": "modelId"}}},
-    {"id": "GetAsyncInvoke", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/async-invoke/{invocationArn}", "scope": {"invocationArn": {"from": "path", "at": "invocationArn"}}},
-    {"id": "InvokeGuardrailChecks", "action": "execute.invoke", "effects": ["execute"], "method": "POST", "origin": "{origin}", "path": "/guardrail-checks/invoke", "body": "any", "scope": {}},
-    {"id": "InvokeModel", "action": "execute.model", "effects": ["execute"], "method": "POST", "origin": "{origin}", "path": "/model/{modelId}/invoke", "body": "any", "scope": {"modelId": {"from": "path", "at": "modelId"}}},
-    {"id": "InvokeModelWithBidirectionalStream", "action": "execute.model", "effects": ["execute"], "method": "POST", "origin": "{origin}", "path": "/model/{modelId}/invoke-with-bidirectional-stream", "body": "any", "scope": {"modelId": {"from": "path", "at": "modelId"}}},
-    {"id": "InvokeModelWithResponseStream", "action": "execute.model", "effects": ["execute"], "method": "POST", "origin": "{origin}", "path": "/model/{modelId}/invoke-with-response-stream", "body": "any", "scope": {"modelId": {"from": "path", "at": "modelId"}}},
-    {"id": "ListAsyncInvokes", "action": "read", "effects": ["read"], "method": "GET", "origin": "{origin}", "path": "/async-invoke", "params": ["maxResults", "nextToken", "sortBy", "sortOrder", "statusEquals", "submitTimeAfter", "submitTimeBefore"], "scope": {}},
-    {"id": "StartAsyncInvoke", "action": "execute.async_invoke", "effects": ["execute"], "method": "POST", "origin": "{origin}", "path": "/async-invoke", "body": "any", "scope": {}}
-  ]
+    "operations": {
+      "ApplyGuardrail": {"action":"generate.apply","effects":["generate"],"method":"POST","origin":"{origin}","path":"/guardrail/{guardrailIdentifier}/version/{guardrailVersion}/apply","body":"any","scope":{"guardrailIdentifier":{"from":"path","at":"guardrailIdentifier"},"guardrailVersion":{"from":"path","at":"guardrailVersion"}}},
+      "Converse": {"action":"generate.converse","effects":["generate"],"method":"POST","origin":"{origin}","path":"/model/{modelId}/converse","body":"any","scope":{"modelId":{"from":"path","at":"modelId"}}},
+      "ConverseStream": {"action":"generate.converse_stream","effects":["generate"],"method":"POST","origin":"{origin}","path":"/model/{modelId}/converse-stream","body":"any","scope":{"modelId":{"from":"path","at":"modelId"}}},
+      "CountTokens": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/model/{modelId}/count-tokens","body":"any","scope":{"modelId":{"from":"path","at":"modelId"}}},
+      "GetAsyncInvoke": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/async-invoke/{invocationArn}","scope":{"invocationArn":{"from":"path","at":"invocationArn"}}},
+      "InvokeGuardrailChecks": {"action":"execute.invoke","effects":["execute"],"method":"POST","origin":"{origin}","path":"/guardrail-checks/invoke","body":"any","scope":{}},
+      "InvokeModel": {"action":"execute.model","effects":["execute"],"method":"POST","origin":"{origin}","path":"/model/{modelId}/invoke","body":"any","scope":{"modelId":{"from":"path","at":"modelId"}}},
+      "InvokeModelWithBidirectionalStream": {"action":"execute.model","effects":["execute"],"method":"POST","origin":"{origin}","path":"/model/{modelId}/invoke-with-bidirectional-stream","body":"any","scope":{"modelId":{"from":"path","at":"modelId"}}},
+      "InvokeModelWithResponseStream": {"action":"execute.model","effects":["execute"],"method":"POST","origin":"{origin}","path":"/model/{modelId}/invoke-with-response-stream","body":"any","scope":{"modelId":{"from":"path","at":"modelId"}}},
+      "ListAsyncInvokes": {"action":"read","effects":["read"],"method":"GET","origin":"{origin}","path":"/async-invoke","params":["maxResults","nextToken","sortBy","sortOrder","statusEquals","submitTimeAfter","submitTimeBefore"],"scope":{}},
+      "StartAsyncInvoke": {"action":"execute.async_invoke","effects":["execute"],"method":"POST","origin":"{origin}","path":"/async-invoke","body":"any","scope":{}}
+    }
   }
 }

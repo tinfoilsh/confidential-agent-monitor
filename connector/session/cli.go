@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/facts"
 	"golang.org/x/crypto/ssh"
 )
@@ -24,26 +23,18 @@ const (
 )
 
 type CLI struct {
-	Path  string                       `json:"path"`
-	Env   map[string]*credential.Value `json:"env"`
-	Stdin string                       `json:"stdin"`
-}
-
-func (t *CLI) Fields() (fields []connector.Field) {
-	for name, value := range t.Env {
-		fields = append(fields, connector.Field{Path: []string{"env", name}, Value: value, Redact: true})
-	}
-	return
+	connector.SecretConfig
+	Path  string `json:"path"`
+	Stdin string `json:"stdin"`
 }
 
 func (t *CLI) Serve(s *connector.Stream, e *connector.Env) {
-	inner, chans, reqs, err := innerSSH(s, e.HostKey)
+	_, chans, reqs, err := innerSSH(s, e.HostKey)
 	if err != nil {
 		return
 	}
 	var workers sync.WaitGroup
 	defer func() { s.Close(); workers.Wait() }()
-	defer inner.Close()
 	go ssh.DiscardRequests(reqs)
 	for nc := range chans {
 		if nc.ChannelType() != channelSession {
@@ -87,7 +78,7 @@ func (t *CLI) execute(ctx context.Context, args []string, stdin io.Reader, ch ss
 	cmd := exec.CommandContext(ctx, t.Path, args[1:]...)
 	cmd.WaitDelay = time.Second
 	cmd.Env = []string{}
-	for name, v := range t.Env {
+	for name, v := range t.Secrets {
 		value, err := v.Value(ctx)
 		if err != nil {
 			log.Printf("cli credential: %v", err)
@@ -108,9 +99,9 @@ func (t *CLI) execute(ctx context.Context, args []string, stdin io.Reader, ch ss
 	return exitRefused
 }
 
-func gitObject(b []byte) *GitDetails {
+func gitObject(b []byte) *facts.Git {
 	header, message, _ := bytes.Cut(b, []byte("\n\n"))
-	object := &GitDetails{Message: string(message), Parents: []string{}}
+	object := &facts.Git{Message: string(message), Parents: []string{}}
 	for line := range strings.SplitSeq(string(header), "\n") {
 		key, value, _ := strings.Cut(line, " ")
 		switch key {
@@ -137,5 +128,3 @@ func gitObject(b []byte) *GitDetails {
 	}
 	return object
 }
-
-type GitDetails = facts.Git

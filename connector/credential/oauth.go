@@ -89,9 +89,6 @@ func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage,
 	if v.grant == nil {
 		return nil, errors.New("the secret is not an oauth grant")
 	}
-	if client == nil {
-		return nil, errors.New("sign-in needs the guarded client")
-	}
 	s := &SignIn{State: rand.Text(), grant: *v.grant, client: client, verifier: oauth2.GenerateVerifier()}
 	if s.grant.AuthURL == "" {
 		if err := s.register(ctx, redirect); err != nil {
@@ -113,15 +110,12 @@ func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage,
 
 // register discovers the resource's authorization server (RFC 9728, RFC 8414) and registers with it (RFC 7591).
 func (s *SignIn) register(ctx context.Context, redirect string) error {
-	u, err := url.Parse(s.grant.Resource)
-	if err != nil {
-		return err
-	}
-	metadata := u.Scheme + "://" + u.Host + "/.well-known/oauth-protected-resource" + u.Path
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.grant.Resource, nil)
 	if err != nil {
 		return err
 	}
+	u := req.URL
+	metadata := u.Scheme + "://" + u.Host + "/.well-known/oauth-protected-resource" + u.Path
 	resp, err := s.client.Do(req)
 	if err != nil {
 		return err
