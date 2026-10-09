@@ -130,10 +130,6 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (*stat
 	if sl.Generation < minimum {
 		return nil, fmt.Errorf("stored generation %d is older than %d", sl.Generation, minimum)
 	}
-	var migrated bool
-	if sl.Config, migrated, err = migratePresets(sl.Config); err != nil {
-		return nil, err
-	}
 	fresh := sl.Keys == keyMaterial{}
 	var env connector.Env
 	if env.TLS, err = loadCA(&sl.Keys); err != nil {
@@ -142,7 +138,7 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (*stat
 	if env.HostKey, err = loadHostKey(&sl.Keys); err != nil {
 		return nil, err
 	}
-	if fresh || migrated {
+	if fresh {
 		sl.Generation++
 	}
 	if sl.Labels == nil {
@@ -153,7 +149,7 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (*stat
 		return nil, err
 	}
 	ln, err := net.Listen("tcp", m.listen)
-	if err == nil && (fresh || migrated) {
+	if err == nil && fresh {
 		if err = m.persist(ctx, sl, key); err != nil {
 			ln.Close()
 		}
@@ -176,9 +172,6 @@ func (m *monitor) patch(ctx context.Context, patch []byte) (*state, error) {
 	}
 	config, err := jsonpatch.MergePatch(m.doc.Config, patch)
 	if err != nil {
-		return nil, err
-	}
-	if config, _, err = migratePresets(config); err != nil {
 		return nil, err
 	}
 	old := m.live.Load()

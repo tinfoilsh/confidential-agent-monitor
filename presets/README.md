@@ -102,10 +102,23 @@ account, and the current label from `facts`. Audit records add lifecycle fields
 and results without duplicating those facts. Failed message evaluations retain
 the requesting principal, account, title, and current label.
 
-Configurations without owner policies or custom data use the built-in Go
-decision path. Equivalence tests compare it with the shipped Rego rules. Owner
-policies and custom data use the complete Rego program, preserving access to its
-helper rules. Request evaluation runs outside the global flow lock. Before
+The Rego rules in `policy/` compute access restrictions, label-flow checks, and
+saved approval waivers. Every request evaluates the same prepared query,
+`data.monitor.decision`. Owner policies receive `input.facts` and
+`input.authorization`; they can also read `data.monitor.gaps` to inspect remaining
+approval requirements. Lattice settings are available in `data.lattices`.
+`data.sentinel.deny` adds owner denial messages. Owner policies cannot define
+rules or data under `monitor` or `lattices`, which the monitor reserves.
+An undefined deny rule adds no restrictions. A defined rule must return a set or
+array of strings; malformed output and evaluation errors refuse the request.
+
+The monitor prepares Rego once per configuration and supplies a fresh lazy input
+object for each evaluation. Common facts use native objects, so reading access,
+operation, or label fields does not serialize protocol bodies. Protocol details
+keep their JSON representation and are converted when a rule reads them. Policy
+results are decoded directly into the decision without a JSON round trip.
+
+Request evaluation runs outside the global flow lock. Before
 admission, the monitor verifies that the configuration snapshot and agent label
 are unchanged; otherwise it reevaluates under the lock. Label updates and their
 durable writes remain ordered with authorization.
@@ -143,8 +156,8 @@ API catalogs use resource parents and capability leaves. The most specific
 permission override wins. The account and agent views display the same hierarchy.
 The [preset generator](../dev/presets/README.md) reads these files as its baseline
 and writes proposals under `dev/presets/`. Edit accepted definitions here.
-`drafts/` holds records loaded only with `-drafts`; `policy/` contains shared
-authorization rules. Service-specific Rego modules are no longer loaded.
+`drafts/` holds records loaded only with `-drafts`. Authorization rules live in
+`policy/`; owner Rego policies live in `config.policies`.
 
 The SFTP, MQTT, and NATS presets include setup forms and operation permissions.
 See [file and broker protocols](../docs/file-and-broker-protocols.md) for supported

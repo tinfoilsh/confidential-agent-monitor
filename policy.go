@@ -4,21 +4,19 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
-	"embed"
+	_ "embed"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/fs"
 	"log"
 	"maps"
-	"path"
 	"slices"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/gobwas/glob"
+	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/open-policy-agent/opa/v1/storage/inmem"
 	"github.com/tinfoilsh/monitor/connector"
@@ -26,15 +24,16 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-const decisionQuery = "data.monitor.decision"
-
 // Bump this when compiled parsing, description, normalization, label, or approval
 // semantics change. It invalidates saved approvals even if the facts schema and
 // Rego sources stay the same. Display-only edits do not require a bump.
-const approvalSemanticsVersion = 3
+const approvalSemanticsVersion = 6
 
-//go:embed presets/policy/*.rego
-var policyFiles embed.FS
+//go:embed presets/policy/lib.rego
+var policySource string
+
+//go:embed presets/policy/labels.rego
+var labelPolicySource string
 
 var (
 	errExpired = errors.New("waiting for the owner's approval in the monitor timed out")
@@ -83,31 +82,8 @@ func (d *decision) operationID() string {
 	return d.Facts.Operation.ID
 }
 
-var policySources = sync.OnceValue(func() map[string]string {
-	files, _ := fs.Glob(policyFiles, "presets/policy/*.rego")
-	sources := map[string]string{}
-	for _, name := range files {
-		src, _ := policyFiles.ReadFile(name)
-		sources[name] = string(src)
-	}
-	// Keep the shared vocabulary in the policy sources so approval hashes bind it.
-	vocabulary, _ := json.Marshal(facts.Effects)
-	sources["effects.rego"] = "package monitor\nvocabulary := " + string(vocabulary)
-	levels, _ := json.Marshal(map[string][]string{"audiences": facts.Audiences, "trusts": facts.Trusts})
-	sources["label-levels.rego"] = "package monitor.labels\nlevels := " + string(levels)
-	return sources
-})
-
-func policyModules() (opts []func(*rego.Rego)) {
-	for name, src := range policySources() {
-		opts = append(opts, rego.Module(name, src))
-	}
-	return opts
-}
-
-// policyQuery authorizes the snapshot described by each request.
+// policyQuery holds the prepared authorization policy for one configuration.
 type policyQuery struct {
-	builtIn          bool
 	query            rego.PreparedEvalQuery
 	presets          map[string]*presetRecord
 	program          string
@@ -120,46 +96,88 @@ type compiledOptions struct {
 	private []glob.Glob
 }
 
-func compileOptions(options policyOptions) *compiledOptions {
+func compileOptions(options policyOptions) (*compiledOptions, error) {
 	raw, _ := json.Marshal(options)
 	out := &compiledOptions{raw: raw}
 	for _, pattern := range options.Private {
-		if g, err := glob.Compile(pattern, '/'); err == nil {
-			out.private = append(out.private, g)
+		g, err := glob.Compile(pattern, '/')
+		if err != nil {
+			return nil, fmt.Errorf("invalid private pattern %q: %w", pattern, err)
 		}
+		out.private = append(out.private, g)
 	}
-	return out
+	return out, nil
 }
 
 func preparePolicy(ctx context.Context, cfg *config) (program policyQuery, err error) {
 	for name, a := range cfg.Accounts {
-		a.PolicyOptions.compiled = compileOptions(a.PolicyOptions)
-		cfg.Accounts[name] = a
+		if a.PolicyOptions.compiled == nil {
+			a.PolicyOptions.compiled, err = compileOptions(a.PolicyOptions)
+			if err != nil {
+				return program, fmt.Errorf("account %s: %w", name, err)
+			}
+			cfg.Accounts[name] = a
+		}
+	}
+	for _, reserved := range []string{"monitor", "lattices"} {
+		if _, ok := cfg.Data[reserved]; ok {
+			return program, fmt.Errorf("data.%s is reserved for the monitor", reserved)
+		}
+	}
+	vocabulary, err := json.Marshal(facts.Effects)
+	if err != nil {
+		return program, err
+	}
+	levels, err := json.Marshal(map[string][]string{"audiences": facts.Audiences, "trusts": facts.Trusts})
+	if err != nil {
+		return program, err
+	}
+	modules := map[string]string{
+		"monitor/lib.rego":     policySource,
+		"monitor/labels.rego":  labelPolicySource,
+		"monitor/effects.rego": "package monitor\nvocabulary := " + string(vocabulary),
+		"monitor/levels.rego":  "package monitor.labels\nlevels := " + string(levels),
 	}
 	data := maps.Clone(cfg.Data)
 	if data == nil {
 		data = map[string]any{}
 	}
 	data["lattices"] = map[string]any{"confidentiality": cfg.Lattices.Confidentiality, "integrity": cfg.Lattices.Integrity}
+	opts := []func(*rego.Rego){rego.Query("data.monitor.decision"),
+		rego.Store(inmem.NewFromObjectWithOpts(data, inmem.OptReturnASTValuesOnRead(true))), rego.StrictBuiltinErrors(true)}
+	for _, name := range slices.Sorted(maps.Keys(cfg.Policies)) {
+		filename := "policies/" + name
+		module, err := ast.ParseModule(filename, cfg.Policies[name])
+		if err != nil {
+			return program, err
+		}
+		for _, reserved := range []string{"data.monitor", "data.lattices"} {
+			if module.Package.Path.HasPrefix(ast.MustParseRef(reserved)) {
+				return program, fmt.Errorf("policy %s: %s is reserved for the monitor", name, reserved)
+			}
+		}
+		modules[filename] = cfg.Policies[name]
+		opts = append(opts, rego.ParsedModule(module))
+	}
 	h := sha256.New()
 	fmt.Fprintf(h, "facts-v%d", facts.Version)
-	for _, name := range slices.Sorted(maps.Keys(policySources())) {
-		fmt.Fprintf(h, "%q%q", name, policySources()[name])
+	for _, name := range slices.Sorted(maps.Keys(modules)) {
+		source := modules[name]
+		fmt.Fprintf(h, "%q%q", name, source)
+		if strings.HasPrefix(name, "monitor/") {
+			opts = append(opts, rego.Module(name, source))
+		}
 	}
-	for _, name := range slices.Sorted(maps.Keys(cfg.Policies)) {
-		fmt.Fprintf(h, "%q%q", name, cfg.Policies[name])
+	raw, err := json.Marshal(cfg.Data)
+	if err != nil {
+		return program, err
 	}
-	raw, _ := json.Marshal(cfg.Data)
 	h.Write(raw)
-	opts := append(policyModules(), rego.Query(decisionQuery), rego.Store(inmem.NewFromObject(data)))
-	for name, src := range cfg.Policies {
-		opts = append(opts, rego.Module(path.Join("policies", name), src))
-	}
 	q, err := rego.New(opts...).PrepareForEval(ctx)
 	if err != nil {
 		return program, err
 	}
-	program = policyQuery{builtIn: len(cfg.Policies) == 0 && len(cfg.Data) == 0, query: q, presets: cfg.resolved, program: hex.EncodeToString(h.Sum(nil)), lattices: cfg.Lattices, semanticsVersion: approvalSemanticsVersion}
+	program = policyQuery{query: q, presets: cfg.resolved, program: hex.EncodeToString(h.Sum(nil)), lattices: cfg.Lattices, semanticsVersion: approvalSemanticsVersion}
 	return program, nil
 }
 
@@ -177,7 +195,11 @@ func describeRequest(presets map[string]*presetRecord, in input) (facts.Facts, c
 	}
 	options := a.PolicyOptions.compiled
 	if options == nil {
-		options = compileOptions(a.PolicyOptions)
+		var err error
+		options, err = compileOptions(a.PolicyOptions)
+		if err != nil {
+			return facts.Facts{}, connector.Approval{}, fmt.Errorf("account %s: %w", a.Name, err)
+		}
 	}
 	c := connector.Context{Connection: in.Connection, Config: in.ConnectionConfig, Options: options.raw,
 		Label: in.Label, Observation: observation, Specs: map[string]any{}}
@@ -234,7 +256,7 @@ func describeRequest(presets map[string]*presetRecord, in input) (facts.Facts, c
 		f.Context.Sends = a.Sends
 	}
 	if record != nil {
-		record.applyVisibility(&f, a, sendsOverride)
+		record.applyVisibility(&f, a, sendsOverride, options.private)
 		binding.Definition = []any{binding.Definition, record.PublicScope}
 	}
 	if f.Operation == nil {
@@ -250,7 +272,7 @@ func describeRequest(presets map[string]*presetRecord, in input) (facts.Facts, c
 }
 
 // applyVisibility applies the preset's public resource scopes to account labels.
-func (record *presetRecord) applyVisibility(f *facts.Facts, account *namedAccount, sendsOverride string) {
+func (record *presetRecord) applyVisibility(f *facts.Facts, account *namedAccount, sendsOverride string, privatePatterns []glob.Glob) {
 	ctx := &f.Context
 	if len(record.PublicScope) == 0 {
 		return
@@ -264,11 +286,7 @@ func (record *presetRecord) applyVisibility(f *facts.Facts, account *namedAccoun
 		parts = append(parts, value)
 	}
 	scope := strings.Join(parts, "/")
-	options := account.PolicyOptions.compiled
-	if options == nil {
-		options = compileOptions(account.PolicyOptions)
-	}
-	private := slices.ContainsFunc(options.private, func(g glob.Glob) bool { return g.Match(scope) })
+	private := slices.ContainsFunc(privatePatterns, func(g glob.Glob) bool { return g.Match(scope) })
 
 	if !private {
 		ctx.Observes.Audience = "anyone"
@@ -309,128 +327,90 @@ func evaluateDecision(ctx context.Context, q policyQuery, in input) (*decision, 
 	if describeErr != nil {
 		errs = append(errs, describeErr.Error())
 	}
-	var d decision
-	if q.builtIn {
-		d = builtInDecision(f, in, q.lattices, definition, grant, errs)
-	} else {
-		auth := map[string]any{"access": in.Access, "rules": in.Rules, "definition": definition, "grant": grant, "errors": errs}
-		rs, err := q.query.Eval(ctx, rego.EvalInput(map[string]any{"facts": f, "authorization": auth}))
-		if err != nil {
-			return nil, err
-		}
-		if len(rs) == 0 {
-			return nil, errors.New("policy decision is undefined")
-		}
-		raw, err := json.Marshal(rs[0].Expressions[0].Value)
-		if err != nil {
-			return nil, err
-		}
-		if err = connector.DecodeNumbers(raw, &d); err != nil {
-			return nil, err
-		}
+	auth := map[string]any{"access": policyAccess(in.Access), "rules": in.Rules, "definition": definition, "grant": grant, "errors": errs}
+	// Each evaluation owns its lazy objects: OPA caches fields as it reads them.
+	parsed := ast.LazyObject(map[string]any{"facts": policyFacts(f), "authorization": auth})
+	results, err := q.query.Eval(ctx, rego.EvalParsedInput(parsed))
+	if err != nil {
+		return nil, fmt.Errorf("policy: %w", err)
 	}
-	d.Facts = &f
-	d.Grant = grant
-	d.Definition = definition
-	d.Next = f.Context.Label
+	if len(results) != 1 || len(results[0].Expressions) != 1 {
+		return nil, errors.New("policy returned no decision")
+	}
+	output, ok := results[0].Expressions[0].Value.(map[string]any)
+	if !ok {
+		return nil, errors.New("policy returned an invalid decision")
+	}
+	d := &decision{Facts: &f, Grant: grant, Definition: definition, Next: f.Context.Label}
+	if d.Deny, err = policyMessages(output["deny"]); err != nil {
+		return nil, err
+	}
+	if d.Gaps, err = policyMessages(output["gaps"]); err != nil {
+		return nil, err
+	}
 	if f.Kind != facts.KindAdmission && describeErr == nil {
 		d.Next = d.Next.Observe(f.Context.Observes, f.Context.Cause)
 	}
-	return &d, nil
+	return d, nil
 }
 
-// builtInDecision mirrors the shipped Rego rules. Configurations with owner
-// modules or data still evaluate the complete Rego program, including helpers
-// those modules may reference. Equivalence tests exercise both paths.
-func builtInDecision(f facts.Facts, in input, lattices latticeOptions, definition string, grant map[string]any, errs []string) decision {
-	d := decision{Deny: []string{}, Gaps: []string{}}
-	for _, err := range errs {
-		if !slices.Contains(d.Deny, err) {
-			d.Deny = append(d.Deny, err)
-		}
+func policyMessages(value any) ([]string, error) {
+	values, ok := value.([]any)
+	if !ok {
+		return nil, errors.New("policy decision must contain sets or arrays of strings")
 	}
-	op := f.Operation
-	obligations := facts.Obligations{}
-	if op != nil {
-		obligations = facts.ObligationsFor(op.Effects)
+	messages := make([]string, 0, len(values))
+	for _, value := range values {
+		message, ok := value.(string)
+		if !ok {
+			return nil, errors.New("policy decision must contain only strings")
+		}
+		messages = append(messages, message)
 	}
-	mode := in.Access.Level
-	switch {
-	case !slices.Contains([]string{"read", "ask", "allow"}, mode):
-		mode = "off"
-	case op == nil && mode == "read":
-		mode = "off"
-	case op == nil:
-		mode = "ask"
-	default:
-		override := false
-		for name := op.Action; ; {
-			if value, ok := in.Access.Actions[name]; ok {
-				mode, override = value, true
-				break
-			}
-			at := strings.LastIndexByte(name, '.')
-			if at < 0 {
-				break
-			}
-			name = name[:at]
+	slices.Sort(messages)
+	return slices.Compact(messages), nil
+}
+
+// Expose common fields as native objects so OPA can read them without encoding
+// the full snapshot. Protocol structs retain their JSON representation and are
+// converted by OPA only when a policy reads details.
+func policyFacts(f facts.Facts) map[string]any {
+	var operation any
+	if op := f.Operation; op != nil {
+		var effects any
+		if op.Effects != nil {
+			effects = op.Effects
 		}
-		if !override {
-			switch {
-			case f.Kind == facts.KindAdmission:
-				mode = "allow"
-			case mode == "allow" && obligations.Ask:
-				mode = "ask"
-			case !obligations.Change:
-				mode = "allow"
-			case mode == "read":
-				mode = "off"
-			}
-		}
+		operation = map[string]any{"id": op.ID, "action": op.Action, "effects": effects, "requires_trust": op.RequiresTrust}
 	}
-	if mode == "off" {
-		d.Deny = append(d.Deny, "this agent may not do this on the account")
+	context := map[string]any{"label": policyLabel(f.Context.Label), "observes": policyLabel(f.Context.Observes),
+		"sends": f.Context.Sends, "cause": f.Context.Cause}
+	if f.Context.Channel != nil {
+		context["channel"] = policyLabel(*f.Context.Channel)
 	}
-	if f.Kind == facts.KindMessage && op != nil && op.Action != "message.receive" && f.Context.Channel != nil {
-		from, to := f.Context.Label, f.Context.Channel
-		flows := to != nil && from.Valid() && to.Valid()
-		if flows && lattices.Confidentiality {
-			flows = slices.Index(facts.Audiences, from.Audience) >= slices.Index(facts.Audiences, to.Audience)
-		}
-		if flows && lattices.Integrity {
-			flows = slices.Index(facts.Trusts, from.Trust) >= slices.Index(facts.Trusts, to.Trust)
-		}
-		if !flows {
-			d.Deny = append(d.Deny, "the agent's label cannot flow to this message channel")
-		}
+	var parameters any
+	if f.Parameters != nil {
+		parameters = f.Parameters
 	}
-	if f.Kind != facts.KindAdmission && f.Kind != facts.KindMessage {
-		if mode != "allow" {
-			d.Gaps = append(d.Gaps, "ask")
-		}
-		audience, sends := slices.Index(facts.Audiences, f.Context.Label.Audience), slices.Index(facts.Audiences, f.Context.Sends)
-		if lattices.Confidentiality && (audience >= 0 && sends >= 0 && sends > audience) {
-			d.Gaps = append(d.Gaps, "audience")
-		}
-		if lattices.Integrity && f.Context.Label.Trust == "untrusted" && (op == nil || obligations.Trust || op.RequiresTrust) {
-			d.Gaps = append(d.Gaps, "trust")
-		}
-		if op != nil && len(d.Gaps) > 0 {
-			for _, rule := range in.Rules {
-				if rule.Account != f.Account || rule.Action != op.Action || rule.Operation != op.ID || rule.Definition != definition {
-					continue
-				}
-				if !connector.EqualJSON(connector.JSONFields(rule.Scope), grant) {
-					continue
-				}
-				d.Gaps = slices.DeleteFunc(d.Gaps, func(gap string) bool { return slices.Contains(rule.Waives, gap) })
-			}
-		}
+	return map[string]any{"version": f.Version, "kind": string(f.Kind), "principal": f.Principal,
+		"account": f.Account, "service": f.Service, "connection": f.Connection,
+		"operation": operation, "parameters": parameters, "title": f.Title, "details": f.Details, "context": context}
+}
+
+func policyLabel(l label) map[string]any {
+	out := map[string]any{"audience": l.Audience, "trust": l.Trust}
+	if len(l.Because) > 0 {
+		out["because"] = l.Because
 	}
-	slices.Sort(d.Deny)
-	d.Deny = slices.Compact(d.Deny)
-	slices.Sort(d.Gaps)
-	return d
+	return out
+}
+
+func policyAccess(a access) map[string]any {
+	out := map[string]any{"level": a.Level}
+	if len(a.Actions) > 0 {
+		out["actions"] = a.Actions
+	}
+	return out
 }
 
 // Approval definitions bind semantics and configuration, independently of facts
