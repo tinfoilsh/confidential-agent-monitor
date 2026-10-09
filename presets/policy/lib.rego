@@ -1,10 +1,18 @@
 package monitor
 
+import input.account as acct
 import input.authorization as a
 import input.facts as f
 import input.facts.operation as op
 
 audiences := {name: rank | some rank, name in data.levels.audiences}
+
+ranks := {"audience": audiences, "trust": {name: rank | some rank, name in data.levels.trusts}}
+
+obligation(name) if {
+	some effect in op.effects
+	data.levels.effects[effect][name]
+}
 
 mode := "off" if not a.access.level in {"read", "ask", "allow"}
 
@@ -21,14 +29,69 @@ else := "allow" if f.kind == "admission"
 
 else := "ask" if {
 	a.access.level == "allow"
-	op.obligations.ask
+	obligation("ask")
 }
 
-else := "allow" if not op.obligations.change
+else := "allow" if not obligation("change")
 
 else := "off" if a.access.level == "read"
 
 else := a.access.level
+
+# A request names a resource when every public scope parameter is a nonempty string.
+scope := [v | some key in acct.public_scope; v := f.parameters[key]; is_string(v); v != ""]
+
+scoped if {
+	some _ in acct.public_scope
+	count(scope) == count(acct.public_scope)
+}
+
+private if {
+	some pattern in acct.private
+	glob.match(pattern, ["/"], concat("/", scope))
+}
+
+public if {
+	scoped
+	not private
+}
+
+observation := {"audience": acct.contents, "trust": "untrusted"} if acct.strangers
+else := {"audience": acct.contents, "trust": "trusted"}
+
+hinted := object.union(observation, {k: v | some k in {"audience", "trust"}; v := f.context.observes[k]; v != ""})
+
+observes := {"audience": "me", "trust": "untrusted"} if op == null
+else := object.union(hinted, {"audience": "anyone"}) if public
+else := hinted
+
+sends := "anyone" if {
+	public
+	obligation("change")
+} else := acct.sends if {
+	scoped
+	obligation("change")
+	f.context.sends == ""
+} else := "anyone" if {
+	f.context.sends == ""
+	obligation("discloses")
+} else := acct.sends if f.context.sends in {"", "account"}
+else := f.context.sends
+
+# The label keeps each axis's provenance unless this request makes it more restrictive.
+lowered contains axis if {
+	some axis, rank in ranks
+	rank[observes[axis]] < rank[f.context.label[axis]]
+}
+
+level(axis) := observes[axis] if axis in lowered
+else := f.context.label[axis]
+
+next := {
+	"audience": level("audience"),
+	"trust": level("trust"),
+	"because": object.union(because, {axis: f.account | some axis in lowered}),
+}
 
 default owner_deny := []
 
@@ -54,13 +117,13 @@ deny contains msg if {
 deny contains "this agent may not do this on the account" if mode == "off"
 
 needs_trust if op == null
-needs_trust if op.obligations.trust
+needs_trust if obligation("trust")
 
 gap contains "ask" if mode != "allow"
 
 gap contains "audience" if {
 	data.lattices.confidentiality
-	not audiences[f.context.sends] <= audiences[f.context.label.audience]
+	not audiences[sends] <= audiences[f.context.label.audience]
 }
 
 gap contains "trust" if {
@@ -114,7 +177,7 @@ recipients := {"me": "you", "team": "your team", "anyone": "anyone"}
 
 builtin_messages := {
 	"ask": ask_message,
-	"audience": sprintf("This agent has seen private data from %s; this request can disclose it to %s.", [object.get(because, "audience", "an earlier request"), object.get(recipients, f.context.sends, "an unknown audience")]),
+	"audience": sprintf("This agent has seen private data from %s; this request can disclose it to %s.", [object.get(because, "audience", "an earlier request"), object.get(recipients, sends, "an unknown audience")]),
 	"trust": sprintf("This agent has read untrusted content from %s; this operation requires trust.", [object.get(because, "trust", "an earlier request")]),
 }
 
@@ -128,4 +191,4 @@ reasons contains r if {
 
 gaps := {r.id | some r in reasons}
 
-decision := {"deny": deny, "requirements": reasons}
+decision := {"deny": deny, "requirements": reasons, "sends": sends, "next": next}

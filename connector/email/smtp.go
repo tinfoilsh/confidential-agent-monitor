@@ -26,9 +26,8 @@ const (
 
 type SMTP struct{ connector.Endpoint }
 
-func (r *SMTP) Run(_ context.Context, e *connector.Env, in *connector.Listener, ready func()) error {
-	server := smtp.NewServer(smtp.BackendFunc(func(c *smtp.Conn) (smtp.Session, error) {
-		s := connector.StreamOf(c.Conn())
+func (r *SMTP) Serve(s *connector.Stream, e *connector.Env) {
+	server := smtp.NewServer(smtp.BackendFunc(func(*smtp.Conn) (smtp.Session, error) {
 		return &smtpSession{stream: s, relay: r, env: e}, nil
 	}))
 	server.Domain = "monitor"
@@ -36,8 +35,7 @@ func (r *SMTP) Run(_ context.Context, e *connector.Env, in *connector.Listener, 
 	server.AllowInsecureAuth = true
 	server.TLSConfig = e.TLS
 	defer server.Shutdown(context.Background())
-	ready()
-	return server.Serve(in)
+	server.Serve(connector.Listen(s, s))
 }
 
 type smtpSession struct {

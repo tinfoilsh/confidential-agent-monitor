@@ -56,12 +56,17 @@ func (h *HTTP) UnmarshalJSON(raw []byte) error {
 	return h.Validate(false)
 }
 
-func (h *HTTP) Run(ctx context.Context, e *connector.Env, in *connector.Listener, ready func()) error {
+// HTTP and HTTPS arrive on the same tunnel; only port 80 is plain.
+func (h *HTTP) Serve(s *connector.Stream, e *connector.Env) {
 	transport := e.Transport()
 	defer transport.CloseIdleConnections()
 	proxy := h.proxy(transport)
-	return connector.ServeHTTP(ctx, tlsListener{in, e}, ready, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		r, err := h.screen(r, connector.RequestStream(r))
+	var c net.Conn = s
+	if s.Port != httpPort {
+		c = tls.Server(s, e.TLS)
+	}
+	connector.ServeHTTP(s, c, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r, err := h.screen(r, s)
 		if err != nil {
 			log.Printf("refused %s %s%s: %v", r.Method, r.Host, r.URL.Path, err)
 			http.Error(w, err.Error(), http.StatusForbidden)
@@ -82,20 +87,6 @@ func (h *HTTP) proxy(base http.RoundTripper) *httputil.ReverseProxy {
 			http.Error(w, "the upstream request failed", http.StatusBadGateway)
 		},
 	}
-}
-
-// HTTP and HTTPS arrive on the same tunnel listener; only port 80 is plain.
-type tlsListener struct {
-	net.Listener
-	env *connector.Env
-}
-
-func (l tlsListener) Accept() (net.Conn, error) {
-	c, err := l.Listener.Accept()
-	if err == nil && connector.StreamOf(c).Port != httpPort {
-		c = tls.Server(c, l.env.TLS)
-	}
-	return c, err
 }
 
 // screen gates the canonical request with its placeholders; a selected connection, unlike a routed one, has no host to match.

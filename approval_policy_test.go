@@ -204,24 +204,24 @@ func TestOwnerApprovalRecheck(t *testing.T) {
 	in := approvalInput()
 	p := principal{Key: "key", Name: "agent", identity: identity{Accounts: map[string]access{"payments": in.Access}}}
 	in.Principal = p
-	cfg := &config{Accounts: map[string]account{"payments": *in.Account}}
-	m := &monitor{streams: map[string]map[*connector.Stream]struct{}{}, running: map[string]*connection{}, doc: sealed{Labels: map[string]facts.Label{}}}
-	m.live.Store(&state{cfg: fixtureConfig(cfg), connections: map[string]*connection{"payments": {name: "payments", account: "payments"}}, decision: q.decision, principals: map[string]principal{p.Key: p}})
+	cfg := &config{Accounts: map[string]account{"payments": in.Account.account}}
+	m := &monitor{streams: map[*connector.Stream]string{}, running: map[string]*connection{}, doc: sealed{Labels: map[string]facts.Label{}}}
+	m.live.Store(&state{cfg: fixtureConfig(cfg), connections: map[string]*connection{"payments": {name: "payments", account: "payments"}}, query: q.query, program: q.program, principals: map[string]principal{p.Key: p}})
 	d, err := m.refreshAndEvaluate(t.Context(), &in, "payments")
 	if err != nil {
 		t.Fatal(err)
 	}
 	r := &record{State: stateApproved, decision: d}
-	if _, err := m.recheck(t.Context(), stateApproved, r, &in, "payments"); err != nil {
+	if _, err := m.recheckFixture(t.Context(), r, &in, "payments"); err != nil {
 		t.Fatalf("unchanged request did not resume: %v", err)
 	}
 	m.doc.Labels[p.Key] = facts.Label{Audience: "anyone", Trust: "trusted", Because: map[string]string{"audience": "Updated explanation."}}
-	got, err := m.recheck(t.Context(), stateApproved, r, &in, "payments")
+	got, err := m.recheckFixture(t.Context(), r, &in, "payments")
 	if err != nil || got.Requirements[0].Message != "Updated explanation." {
 		t.Fatalf("message changed authority: %+v, %v", got, err)
 	}
 	m.doc.Labels[p.Key] = facts.Label{Audience: "me", Trust: "trusted"}
-	if _, err := m.recheck(t.Context(), stateApproved, r, &in, "payments"); !errors.Is(err, errChanged) {
+	if _, err := m.recheckFixture(t.Context(), r, &in, "payments"); !errors.Is(err, errChanged) {
 		t.Fatalf("new requirement resumed under an earlier approval: %v", err)
 	}
 }

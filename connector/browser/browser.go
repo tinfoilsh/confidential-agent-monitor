@@ -114,7 +114,7 @@ func (b *Browser) UnmarshalJSON(raw []byte) error {
 	return b.Validate(true)
 }
 
-func (b *Browser) Run(ctx context.Context, e *connector.Env, in *connector.Listener, ready func()) error {
+func (b *Browser) Run(ctx context.Context, e *connector.Env, serve func()) error {
 	proxy, err := b.proxy(e)
 	if err != nil {
 		return err
@@ -171,15 +171,20 @@ func (b *Browser) Run(ctx context.Context, e *connector.Env, in *connector.Liste
 			b.mu.Unlock()
 		}
 	}()
+	serve()
+	return nil
+}
+
+func (b *Browser) Serve(s *connector.Stream, _ *connector.Env) {
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /navigate", b.handle("navigate", b.navigate))
-	mux.HandleFunc("GET /snapshot", b.handle("snapshot", b.snapshot))
-	mux.HandleFunc("GET /text", b.handle("text", b.text))
-	mux.HandleFunc("GET /screenshot", b.handle("screenshot", b.screenshot))
-	mux.HandleFunc("POST /click", b.handle("click", b.click))
-	mux.HandleFunc("POST /type", b.handle("type", b.typeText))
-	mux.HandleFunc("POST /fill", b.handle("fill", b.fill))
-	return connector.ServeHTTP(ctx, in, ready, mux)
+	mux.HandleFunc("POST /navigate", b.handle(s, "navigate", b.navigate))
+	mux.HandleFunc("GET /snapshot", b.handle(s, "snapshot", b.snapshot))
+	mux.HandleFunc("GET /text", b.handle(s, "text", b.text))
+	mux.HandleFunc("GET /screenshot", b.handle(s, "screenshot", b.screenshot))
+	mux.HandleFunc("POST /click", b.handle(s, "click", b.click))
+	mux.HandleFunc("POST /type", b.handle(s, "type", b.typeText))
+	mux.HandleFunc("POST /fill", b.handle(s, "fill", b.fill))
+	connector.ServeHTTP(s, s, mux)
 }
 
 // proxy sends the browser's traffic through the monitor's dialer, so it reaches only allowed networks.
@@ -199,7 +204,7 @@ func (b *Browser) proxy(e *connector.Env) (net.Listener, error) {
 
 // handle gates each command on the page it acts on; one tab serves every request in turn.
 // The browser is free while the policy decides, so the command runs only if control did not pass and the page did not move meanwhile.
-func (b *Browser) handle(command string, do func(context.Context, request) ([]byte, string, error)) http.HandlerFunc {
+func (b *Browser) handle(stream *connector.Stream, command string, do func(context.Context, request) ([]byte, string, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		b.mu.Lock()
 		epoch := b.epoch
@@ -223,7 +228,6 @@ func (b *Browser) handle(command string, do func(context.Context, request) ([]by
 				return
 			}
 		}
-		stream := connector.RequestStream(r)
 		req.connection = stream.Name
 		var page string
 		if err == nil {
@@ -684,7 +688,8 @@ func (v *Request) Describe(c connector.Context) (facts.Facts, error) {
 	if len(v.Secrets) > 0 {
 		action, scope["secrets"] = "login", v.Secrets
 	}
-	observes := c.Observation
+	// Without saved logins the browser sees only the public web.
+	var observes facts.Label
 	if config == nil || len(config.Slots) == 0 {
 		observes.Audience = "anyone"
 	}

@@ -1080,7 +1080,7 @@ def policy_command(client, args):
         owner = OwnerClient(args.owner_url, private_read(Path(args.owner_key_file).expanduser()))
     if args.policy_action in ("diff", "apply") and owner is None:
         raise MonitorError("policy diff and apply require owner authentication")
-    if args.policy_action in ("propose", "proposals") and owner is not None:
+    if args.policy_action == "propose" and owner is not None:
         raise MonitorError("proposals use the agent's SSH identity; omit owner options")
     if args.policy_action == "show":
         if args.effective and owner is None:
@@ -1090,9 +1090,6 @@ def policy_command(client, args):
             print(json.dumps(result, indent=2))
         else:
             print(result["effective" if args.effective else "source"], end="")
-        return 0
-    if args.policy_action == "proposals":
-        print(json.dumps(json.loads(client.request("agent.monitor", "GET", "/policy/proposals")), indent=2))
         return 0
     source = sys.stdin.read() if args.file == "-" else Path(args.file).read_text()
     body = {"source": source}
@@ -1135,9 +1132,8 @@ def parser():
     show_policy = policy_commands.add_parser("show", help="show your policy settings as TOML")
     show_policy.add_argument("--json", action="store_true", help="show the response as JSON")
     show_policy.add_argument("--effective", action="store_true", help="expand presets and defaults; requires owner authentication")
-    policy_commands.add_parser("proposals", help="list your proposals and their review status")
     for action in ("propose", "diff", "apply"):
-        command = policy_commands.add_parser(action, help={"propose": "submit a TOML patch for owner review", "diff": "validate and preview a replacement policy", "apply": "apply a replacement policy"}[action])
+        command = policy_commands.add_parser(action, help={"propose": "submit a TOML patch and wait for the owner to approve it", "diff": "validate and preview a replacement policy", "apply": "apply a replacement policy"}[action])
         command.add_argument("file", help="TOML file, or - for stdin")
         if action == "propose":
             command.add_argument("--reason", required=True, help="explain why the policy change is needed")

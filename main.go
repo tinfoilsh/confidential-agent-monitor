@@ -2,16 +2,16 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"flag"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
+	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/browser"
 	"github.com/tinfoilsh/monitor/connector/email"
 	"github.com/tinfoilsh/monitor/connector/mcp"
@@ -27,72 +27,62 @@ import (
 	_ "gocloud.dev/blob/s3blob"
 )
 
-const readHeaderTimeout = 30 * time.Second
+const (
+	readHeaderTimeout = 30 * time.Second
+	stateObject       = "monitor.enc"
+)
 
 // The kind is also the protocol policies see.
-var connectorKinds = map[string]func() any{
-	"http":      func() any { return new(web.HTTP) },
-	"mcp":       func() any { return new(mcp.Server) },
-	"ssh":       func() any { return new(session.SSH) },
-	"sftp":      func() any { return new(session.SFTP) },
-	"mqtt":      func() any { return new(mqtt.MQTT) },
-	"nats":      func() any { return new(nats.NATS) },
-	"cli":       func() any { return new(session.CLI) },
-	"ssh-agent": func() any { return new(signer.SSHAgent) },
-	"gpg-agent": func() any { return new(signer.GPGAgent) },
-	"imap":      func() any { return new(email.IMAP) },
-	"smtp":      func() any { return new(email.SMTP) },
-	"redis":     func() any { return new(redis.Redis) },
-	"postgres":  func() any { return new(postgres.Postgres) },
+var connectorKinds = map[string]func() connector.Server{
+	"http":      func() connector.Server { return new(web.HTTP) },
+	"mcp":       func() connector.Server { return new(mcp.Server) },
+	"ssh":       func() connector.Server { return new(session.SSH) },
+	"sftp":      func() connector.Server { return new(session.SFTP) },
+	"mqtt":      func() connector.Server { return new(mqtt.MQTT) },
+	"nats":      func() connector.Server { return new(nats.NATS) },
+	"cli":       func() connector.Server { return new(session.CLI) },
+	"ssh-agent": func() connector.Server { return new(signer.SSHAgent) },
+	"gpg-agent": func() connector.Server { return new(signer.GPGAgent) },
+	"imap":      func() connector.Server { return new(email.IMAP) },
+	"smtp":      func() connector.Server { return new(email.SMTP) },
+	"redis":     func() connector.Server { return new(redis.Redis) },
+	"postgres":  func() connector.Server { return new(postgres.Postgres) },
 }
 
 func main() {
 	_ = godotenv.Load()
-	listen := flag.String("listen", "127.0.0.1:2223", "SSH address, opened after unlock")
+	listen := flag.String("listen", "127.0.0.1:2223", "SSH address; it refuses agents until unlock")
 	api := flag.String("api", "127.0.0.1:8080", "owner API address")
-	bucket := flag.String("bucket", "", "blob URL holding the encrypted state")
-	object := flag.String("object", "monitor.enc", "key of the encrypted state")
-	corpus := flag.String("corpus", "", "with a file:// bucket, append each request to a preset's account here")
+	bucketURL := flag.String("bucket", "", "blob URL holding the encrypted state")
 	drafts := flag.String("drafts", "", "with a file:// bucket, also load the draft presets in this directory")
 	extension := flag.String("extension", "", "the english-only extension directory; browser connections need it")
 	flag.Parse()
 	if flag.NArg() != 0 {
 		log.Fatal("unexpected server arguments; use the separately installed monitor client")
 	}
+	dev := strings.HasPrefix(*bucketURL, "file://")
 	if *drafts != "" {
-		if !strings.HasPrefix(*bucket, "file://") {
+		if !dev {
 			log.Fatal("-drafts loads unreviewed presets, so it needs a file:// bucket")
 		}
 		draftFiles = os.DirFS(*drafts)
 	}
 	if *extension != "" {
-		connectorKinds["browser"] = func() any { return &browser.Browser{Extension: *extension} }
+		connectorKinds["browser"] = func() connector.Server { return &browser.Browser{Extension: *extension} }
 	}
-	if err := run(*listen, *api, *bucket, *object, *corpus); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func run(listen, api, bucketURL, object, corpus string) error {
-	dev := strings.HasPrefix(bucketURL, "file://")
 	if !dev {
 		delete(connectorKinds, "cli")
 		delete(connectorKinds, "gpg-agent")
 	}
-	bucket, err := blob.OpenBucket(context.Background(), bucketURL)
+	bucket, err := blob.OpenBucket(context.Background(), *bucketURL)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-	m := &monitor{store: bucket, object: object, listen: listen, dev: dev}
-	if corpus != "" {
-		if !dev {
-			return errors.New("-corpus holds request bodies in plain text, so it needs a file:// bucket")
-		}
-		f, err := os.OpenFile(corpus, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o600)
-		if err != nil {
-			return err
-		}
-		m.corpus = json.NewEncoder(f)
+	ln, err := net.Listen("tcp", *listen)
+	if err != nil {
+		log.Fatal(err)
 	}
-	return (&http.Server{Addr: api, Handler: m.handler(), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe()
+	m := &monitor{store: bucket, dev: dev}
+	go m.serveSSH(ln)
+	log.Fatal((&http.Server{Addr: *api, Handler: m.handler(), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
 }

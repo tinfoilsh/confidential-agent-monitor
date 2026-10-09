@@ -25,7 +25,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	jsonpatch "github.com/evanphx/json-patch/v5"
+	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/facts"
 	"gocloud.dev/blob"
@@ -48,33 +48,35 @@ type sealed struct {
 	Secrets    secretStore            `json:"secrets,omitempty"`
 }
 
+// Source and the preset contents named by its hashes define the policy.
+type policyDocument struct {
+	Source string                     `json:"source"`
+	Bases  map[string]json.RawMessage `json:"bases"`
+}
+
 type state struct {
 	cfg         *config
 	connections map[string]*connection
 	principals  map[string]principal
-	decision    policyQuery
+	query       rego.PreparedEvalQuery
+	program     string
 	connector.Env
 }
 
 type monitor struct {
-	live        atomic.Pointer[state]
-	mu          sync.Mutex
-	doc         sealed
-	labelsDirty bool // A failed write must not let a later request skip label persistence.
-	owner       []byte
-	store       *blob.Bucket
-	object      string
-	listen      string
-	running     map[string]*connection
-	revision    uint64 // Changes only when policy or credentials change.
+	live    atomic.Pointer[state]
+	mu      sync.Mutex
+	doc     sealed
+	owner   []byte
+	store   *blob.Bucket
+	running map[string]*connection
 	// mu owns authorization transactions, including documents, records and streams.
-	streams map[string]map[*connector.Stream]struct{}
+	streams map[*connector.Stream]string
 	records []*record
-	// Only with a file:// bucket: corpus receives every request to a preset's account, and identities may profile.
-	dev    bool
-	corpus *json.Encoder
+	// Only with a file:// bucket: identities may profile.
+	dev bool
 	// signIns holds the finish of each started sign-in, keyed by its state.
-	signIns map[string]pendingSignIn
+	signIns sync.Map
 }
 
 type principal struct {
@@ -100,7 +102,7 @@ func newAEAD(key []byte) (cipher.AEAD, error) {
 func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if s := m.live.Load(); s != nil {
+	if m.live.Load() != nil {
 		if subtle.ConstantTimeCompare(key, m.owner) != 1 {
 			return errOwner
 		}
@@ -110,8 +112,8 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error 
 	if err != nil {
 		return err
 	}
-	sl := sealed{Policy: &policyDocument{Source: "[monitor]\nversion = 1\n\n[lattices]\nconfidentiality = true\nintegrity = false\n"}}
-	raw, err := m.store.ReadAll(ctx, m.object)
+	sl := sealed{Labels: map[string]facts.Label{}, Policy: &policyDocument{Source: "[monitor]\nversion = 1\n\n[lattices]\nconfidentiality = true\nintegrity = false\n", Bases: map[string]json.RawMessage{}}}
+	raw, err := m.store.ReadAll(ctx, stateObject)
 	if gcerrors.Code(err) != gcerrors.NotFound || minimum != 0 {
 		if err != nil {
 			return err
@@ -120,15 +122,15 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error 
 		if err != nil {
 			return errOwner
 		}
+		// Unknown stored fields are ignored.
 		sl = sealed{}
-		if err := facts.DecodeNumbers(plain, &sl); err != nil {
+		if err := json.Unmarshal(plain, &sl); err != nil {
 			return err
 		}
 	}
 	if sl.Generation < minimum {
 		return fmt.Errorf("stored generation %d is older than %d", sl.Generation, minimum)
 	}
-	fresh := sl.Keys == keyMaterial{}
 	var env connector.Env
 	if env.TLS, err = loadCA(&sl.Keys); err != nil {
 		return err
@@ -136,91 +138,33 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error 
 	if env.HostKey, err = loadHostKey(&sl.Keys); err != nil {
 		return err
 	}
-	if sl.Labels == nil {
-		sl.Labels = map[string]facts.Label{}
-	}
-	if sl.Policy == nil {
-		return errors.New("stored document has no policy source")
-	}
-	if sl.Secrets == nil {
-		sl.Secrets = secretStore{}
-	}
-	if sl.Policy.Bases == nil {
-		sl.Policy.Bases = map[string]json.RawMessage{}
-	}
-	if fresh {
-		sl.Generation++
-	}
-	s, err := m.build(ctx, sl, env, nil, nil)
+	s, err := m.build(ctx, sl, env, nil)
 	if err != nil {
 		return err
 	}
-	sl.Secrets.prune(s.connections)
-	ln, err := net.Listen("tcp", m.listen)
-	if err == nil && fresh {
-		if err = m.persist(ctx, sl, key); err != nil {
-			ln.Close()
-		}
-	}
-	if err != nil {
-		return err
-	}
-	m.owner = key
-	m.doc = sl
-	m.signIns = map[string]pendingSignIn{}
-	m.streams = map[string]map[*connector.Stream]struct{}{}
-	m.running = map[string]*connection{}
-	m.reconcile(s)
-	m.live.Store(s)
-	m.revision++
-	go m.serveSSH(ln)
-	return nil
+	m.owner, m.streams, m.running = key, map[*connector.Stream]string{}, map[string]*connection{}
+	return m.activate(ctx, sl, s)
 }
 
-// activate publishes exactly the state that was prepared outside the lock.
-func (m *transaction) activate(ctx context.Context, candidate *policyCandidate) error {
-	if candidate.base.revision != m.revision {
-		return errPolicyConflict
-	}
-	old, s := m.live.Load(), candidate.state
-	next := m.doc
-	policy := *candidate.doc.Policy
-	next.Policy = &policy
-	next.Policy.Proposals = slices.Clone(m.doc.Policy.Proposals)
-	if candidate.proposal != "" {
-		p, i, err := m.doc.Policy.findProposal(candidate.proposal)
-		if err != nil {
-			return err
-		}
-		if p.State != proposalPending || p.BaseSource != m.doc.Policy.Source {
-			return errPolicyConflict
-		}
-		principal, ok := old.principals[p.Key]
-		if !ok || principal.Name != p.Agent {
-			return errors.New("the proposing identity was revoked or replaced")
-		}
-		next.Policy.Proposals[i].State = proposalApproved
-	}
-	next.Secrets = candidate.doc.Secrets.clone()
-	next.Secrets.prune(s.connections)
-	next.Generation++
-	next.Labels = maps.Clone(m.doc.Labels)
+// activate persists a candidate prepared under the same lock, then publishes it.
+func (m *monitor) activate(ctx context.Context, next sealed, s *state) error {
+	old := m.live.Load()
+	next.Labels = maps.Clone(next.Labels)
 	maps.DeleteFunc(next.Labels, func(key string, _ facts.Label) bool { _, ok := s.principals[key]; return !ok })
 	if err := m.commit(ctx, next); err != nil {
 		return err
 	}
-	for key := range m.streams {
+	for stream, key := range m.streams {
 		p, exists := s.principals[key]
 		sameAccess := maps.EqualFunc(old.principals[key].Accounts, p.Accounts, func(a, b access) bool {
 			return a.Level == b.Level && maps.Equal(a.Actions, b.Actions)
 		})
 		if !exists || !sameAccess || s.cfg.Lattices != old.cfg.Lattices {
-			m.retireStreams(key, nil)
+			stream.Close()
 		}
 	}
-	(*monitor)(m).reconcile(s)
+	m.reconcile(s)
 	m.live.Store(s)
-	m.revision++
 	return nil
 }
 
@@ -228,55 +172,39 @@ func (c *connection) path() []string {
 	return []string{"accounts", c.account, "connections", c.key, c.protocol}
 }
 
-func sameCredential(a, b json.RawMessage) bool {
-	if len(a) == 0 || len(b) == 0 {
-		return len(a) == len(b)
-	}
-	return jsonpatch.Equal(a, b)
-}
-
 // Provider writes preserve the connector and publish only after persistence.
-func (m *transaction) replaceValue(ctx context.Context, c *connection, id secretID, before, after json.RawMessage) error {
-	if m.live.Load().connections[c.name] != c || !sameCredential(m.doc.Secrets.get(id), before) {
+func (m *monitor) replaceValue(ctx context.Context, c *connection, id secretID, before, after json.RawMessage) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	if m.live.Load().connections[c.name] != c || !bytes.Equal(m.doc.Secrets.get(id), before) {
 		return errors.New("credential changed; start again")
 	}
 	next := m.doc
 	next.Secrets = next.Secrets.clone()
 	next.Secrets.set(id, bytes.Clone(after))
+	return m.commit(ctx, next)
+}
+
+// Queue changes are published only after persistence.
+func (m *monitor) commit(ctx context.Context, next sealed) error {
 	next.Generation++
-	if err := m.commit(ctx, next); err != nil {
-		return err
-	}
-	m.revision++
-	return nil
-}
-
-// persist writes a document without publishing it or touching runtime resources.
-func (m *monitor) persist(ctx context.Context, sl sealed, key []byte) error {
-	plain, err := json.Marshal(sl)
+	plain, err := json.Marshal(next)
 	if err != nil {
 		return err
 	}
-	aead, err := newAEAD(key)
+	aead, err := newAEAD(m.owner)
 	if err != nil {
 		return err
 	}
-	return m.store.WriteAll(ctx, m.object, aead.Seal(nil, nil, plain, nil), nil)
-}
-
-// Queue changes are published only after persistence;
-// label changes already applied by setLabel remain restrictive on failure.
-func (m *transaction) commit(ctx context.Context, next sealed) error {
-	if err := (*monitor)(m).persist(ctx, next, m.owner); err != nil {
+	if err := m.store.WriteAll(ctx, stateObject, aead.Seal(nil, nil, plain, nil), nil); err != nil {
 		return err
 	}
 	m.doc = next
-	m.labelsDirty = false
 	return nil
 }
 
 // build validates without starting anything or mutating live credentials.
-func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *state, updated map[secretID]bool) (*state, error) {
+func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *state) (*state, error) {
 	cfg, definitions, err := compileSource(sl.Policy, sl.Secrets)
 	if err != nil {
 		return nil, err
@@ -287,25 +215,17 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *
 	for name, definition := range definitions {
 		if old != nil && slices.Equal(old.cfg.AllowNetworks, cfg.AllowNetworks) {
 			previous := old.connections[name]
-			if previous != nil && previous.account == definition.account && previous.protocol == definition.protocol && jsonpatch.Equal(previous.config, definition.config) {
-				same := true
-				for id := range updated {
-					if id[0] == definition.account && id[1] == definition.key {
-						same = false
-						break
-					}
-				}
-				if same {
-					s.connections[name] = previous
-					continue
-				}
+			if previous != nil && previous.account == definition.account && previous.protocol == definition.protocol && bytes.Equal(previous.config, definition.config) &&
+				maps.EqualFunc(m.doc.Secrets[definition.account][definition.key], sl.Secrets[definition.account][definition.key], slices.Equal[json.RawMessage]) {
+				s.connections[name] = previous
+				continue
 			}
 		}
 		for name, value := range definition.Secrets {
 			id := secretID{definition.account, definition.key, name}
 			value.Client = client
 			value.Save = func(ctx context.Context, before, after json.RawMessage) error {
-				return m.transact(func(tx *transaction) error { return tx.replaceValue(ctx, definition, id, before, after) })
+				return m.replaceValue(ctx, definition, id, before, after)
 			}
 		}
 	}
@@ -323,7 +243,7 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *
 		}
 		s.principals[fingerprint] = principal{Key: fingerprint, Name: name, identity: id}
 	}
-	if s.decision, err = preparePolicy(ctx, cfg); err != nil {
+	if s.query, s.program, err = preparePolicy(ctx, cfg); err != nil {
 		return nil, err
 	}
 	return s, nil
@@ -336,30 +256,32 @@ func connectionName(account, key string) string {
 	return account
 }
 
-func (m *transaction) currentLabel(fingerprint string) facts.Label {
+func (m *monitor) currentLabel(fingerprint string) facts.Label {
 	if l, ok := m.doc.Labels[fingerprint]; ok {
 		return l
 	}
 	return cleanLabel
 }
 
-// Keep the new label in memory even if
-// persistence fails. The stream observing the data may finish its own request.
-func (m *transaction) setLabel(fingerprint string, l facts.Label, source *connector.Stream) {
-	old := m.currentLabel(fingerprint)
-	changed := old.Trust != l.Trust || old.Audience != l.Audience
-	if !changed && maps.Equal(old.Because, l.Because) {
-		return
+// observe persists a changed label before the request runs.
+// The stream observing the data may finish its own request.
+func (m *monitor) observe(ctx context.Context, fingerprint string, l facts.Label, source *connector.Stream) error {
+	if old := m.currentLabel(fingerprint); old.Trust == l.Trust && old.Audience == l.Audience {
+		return nil
 	}
-	m.doc.Labels = maps.Clone(m.doc.Labels)
-	l.Because = maps.Clone(l.Because)
-	m.doc.Labels[fingerprint] = l
-	m.doc.Generation++
-	m.labelsDirty = true
-	lattices := m.live.Load().cfg.Lattices
-	if lattices.Integrity && old.Trust != l.Trust || lattices.Confidentiality && old.Audience != l.Audience {
-		m.retireStreams(fingerprint, source)
+	next := m.doc
+	next.Labels = maps.Clone(m.doc.Labels)
+	next.Labels[fingerprint] = l
+	if err := m.commit(ctx, next); err != nil {
+		return err
 	}
+	// Closing the client side prevents further input under an old label, including on raw SSH and CLI streams.
+	for s, key := range m.streams {
+		if key == fingerprint && s != source {
+			s.Close()
+		}
+	}
+	return nil
 }
 
 const (
@@ -481,6 +403,12 @@ func loadHostKey(k *keyMaterial) (ssh.Signer, error) {
 }
 
 type secretID [3]string
+
+func isCredentialPath(path []string) bool {
+	return len(path) == 7 && path[0] == "accounts" && path[2] == "connections" && path[5] == "secrets"
+}
+func credentialID(path []string) secretID { return secretID{path[1], path[3], path[6]} }
+
 type secretStore map[string]map[string]map[string]json.RawMessage
 
 func (s secretStore) get(id secretID) json.RawMessage { return s[id[0]][id[1]][id[2]] }
@@ -516,13 +444,4 @@ func (s secretStore) clone() secretStore {
 		out.set(id, raw)
 	}
 	return out
-}
-
-func (s secretStore) prune(connections map[string]*connection) {
-	for id := range s.all() {
-		c := connections[connectionName(id[0], id[1])]
-		if c == nil || c.account != id[0] || c.key != id[1] || c.Secrets == nil {
-			s.set(id, nil)
-		}
-	}
 }

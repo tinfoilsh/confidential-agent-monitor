@@ -49,14 +49,24 @@ func (b bearer) RoundTrip(r *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
-func (m *Server) Run(ctx context.Context, e *connector.Env, in *connector.Listener, ready func()) error {
+func (m *Server) Run(ctx context.Context, e *connector.Env, serve func()) error {
 	client := e.Client()
 	defer client.CloseIdleConnections()
 	if err := m.connect(ctx, client); err != nil {
 		return err
 	}
 	defer m.upstream.Close()
-	return connector.ServeHTTP(ctx, in, ready, sdk.NewStreamableHTTPHandler(m.serve, &sdk.StreamableHTTPOptions{Stateless: true}))
+	serve()
+	return nil
+}
+
+// Serve builds a server per request, so each call is screened by the stream's gate.
+func (m *Server) Serve(s *connector.Stream, _ *connector.Env) {
+	connector.ServeHTTP(s, s, sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server {
+		server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: sentinel.Version}, nil)
+		m.Register(server, "", s.Gate)
+		return server
+	}, &sdk.StreamableHTTPOptions{Stateless: true}))
 }
 
 func (m *Server) connect(ctx context.Context, client *http.Client) error {
@@ -89,13 +99,6 @@ func (m *Server) Status() any {
 		status["changes"], status["pin"] = m.Pin.Diff(m.current), m.current
 	}
 	return status
-}
-
-// serve builds a server per request, so each call is screened by the gate of the stream it arrived on.
-func (m *Server) serve(r *http.Request) *sdk.Server {
-	server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: sentinel.Version}, nil)
-	m.Register(server, "", connector.RequestStream(r).Gate)
-	return server
 }
 
 // Register adds the pinned tools under prefix; the gate sees each tool's own name.

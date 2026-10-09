@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"sync"
 
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
@@ -15,11 +16,11 @@ type connection struct {
 	Secrets                      map[string]*credential.Value
 	name, protocol, account, key string
 	config                       json.RawMessage
-	connector                    any
+	connector                    connector.Server
 	ctx                          context.Context
 	cancel                       context.CancelFunc
 	ready, done                  chan struct{}
-	incoming                     *connector.Listener
+	incoming                     chan *connector.Stream
 	err                          error // Published by closing done.
 }
 
@@ -42,8 +43,7 @@ func (m *monitor) reconcile(s *state) {
 			continue
 		}
 		c.ctx, c.cancel = context.WithCancel(context.Background())
-		c.ready, c.done = make(chan struct{}), make(chan struct{})
-		c.incoming = connector.NewListener(c.ctx)
+		c.ready, c.done, c.incoming = make(chan struct{}), make(chan struct{}), make(chan *connector.Stream)
 		m.running[name] = c
 		go func() {
 			defer close(c.done)
@@ -54,11 +54,23 @@ func (m *monitor) reconcile(s *state) {
 			if c.ctx.Err() != nil {
 				return
 			}
+			serve := func() {
+				var streams sync.WaitGroup
+				defer streams.Wait()
+				close(c.ready)
+				for {
+					select {
+					case stream := <-c.incoming:
+						streams.Go(func() { defer stream.Close(); c.connector.Serve(stream, &s.Env) })
+					case <-c.ctx.Done():
+						return
+					}
+				}
+			}
 			if runner, ok := c.connector.(connector.Runner); ok {
-				c.err = runner.Run(c.ctx, &s.Env, c.incoming, func() { close(c.ready) })
+				c.err = runner.Run(c.ctx, &s.Env, serve)
 			} else {
-				server := c.connector.(connector.Server)
-				c.err = connector.ServeStreams(c.incoming, func() { close(c.ready) }, func(stream *connector.Stream) { server.Serve(stream, &s.Env) })
+				serve()
 			}
 			if c.err != nil && c.ctx.Err() == nil {
 				log.Printf("connector %s: %v", c.name, c.err)

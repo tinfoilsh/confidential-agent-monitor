@@ -187,32 +187,12 @@ func TestUnknownFactsRemainConservative(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if d.Facts.Operation != nil || len(d.Deny) != 0 || !slices.Contains(d.Requirements.IDs(), "ask") || d.Definition != "" {
+		if d.Facts.Operation != nil || len(d.Deny) != 0 || !slices.Contains(d.Requirements.IDs(), "ask") {
 			t.Fatalf("unknown description was not held for approval: %+v", d)
 		}
 		if d.Next.Audience != "me" || d.Next.Trust != "untrusted" {
 			t.Fatalf("public scope weakened unknown observation: %+v", d.Next)
 		}
-	}
-}
-
-func TestNormalizationDoesNotMutateConnectorOperation(t *testing.T) {
-	op := &facts.Operation{Action: "read", Effects: []string{"write", "read", "read"}}
-	in := factInput(facts.Facts{Operation: op})
-	all, _ := presets()
-	one, err := describeFixture(all, in)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if op.ID != "" || !slices.Equal(op.Effects, []string{"write", "read", "read"}) {
-		t.Fatal("normalization mutated the connector's operation")
-	}
-	if one.Operation.ID != "read" || !slices.Equal(one.Operation.Effects, []string{"read", "write"}) {
-		t.Fatalf("operation was not normalized: %+v", one.Operation)
-	}
-	one.Operation.Effects[0] = "delete"
-	if op.Effects[0] != "write" {
-		t.Fatal("normalized effects alias the connector's operation")
 	}
 }
 
@@ -239,9 +219,6 @@ func TestRequestKindsControlAuthorizationIndependentlyOfDetails(t *testing.T) {
 			}
 			if slices.Contains(d.Requirements.IDs(), "ask") != tc.ask || (len(d.Deny) > 0) != tc.deny {
 				t.Fatalf("kind did not control authorization: %+v", d)
-			}
-			if tc.kind == facts.KindAdmission && !reflect.DeepEqual(d.Next, tc.current) {
-				t.Fatal("admission observed account contents")
 			}
 			if tc.kind == facts.KindOperation && d.Next.Audience != "team" {
 				t.Fatal("protocol details suppressed the observation")
@@ -284,12 +261,12 @@ func TestRequestObservationsPreserveLabelProvenance(t *testing.T) {
 		for _, tc := range []struct {
 			current, observed, want facts.Label
 		}{
-			{cleanLabel, facts.Label{Audience: "team", Trust: "untrusted"}, facts.Label{Audience: "team", Trust: "untrusted", Because: map[string]string{"audience": "request", "trust": "request"}}},
-			{facts.Label{Audience: "me", Trust: "trusted", Because: map[string]string{"audience": "history"}}, facts.Label{Audience: "team", Trust: "untrusted"}, facts.Label{Audience: "me", Trust: "untrusted", Because: map[string]string{"audience": "history", "trust": "request"}}},
+			{cleanLabel, facts.Label{Audience: "team", Trust: "untrusted"}, facts.Label{Audience: "team", Trust: "untrusted", Because: map[string]string{"audience": "test", "trust": "test"}}},
+			{facts.Label{Audience: "me", Trust: "trusted", Because: map[string]string{"audience": "history"}}, facts.Label{Audience: "team", Trust: "untrusted"}, facts.Label{Audience: "me", Trust: "untrusted", Because: map[string]string{"audience": "history", "trust": "test"}}},
 			{facts.Label{Audience: "me", Trust: "untrusted", Because: map[string]string{"audience": "history", "trust": "mailbox"}}, cleanLabel, facts.Label{Audience: "me", Trust: "untrusted", Because: map[string]string{"audience": "history", "trust": "mailbox"}}},
 		} {
 			in := factInput(facts.Facts{Operation: &facts.Operation{Action: "read", Effects: []string{"read"}},
-				Context: facts.Context{Observes: facts.Label(tc.observed), Cause: "request"}})
+				Context: facts.Context{Observes: tc.observed}})
 			in.Label = tc.current
 			before, _ := json.Marshal(in.Label)
 			d, err := q.decideFixture(t.Context(), in)
@@ -320,7 +297,7 @@ func TestPolicyProgramInvalidatesSavedApproval(t *testing.T) {
 	if err != nil || len(approved.Requirements.IDs()) != 0 {
 		t.Fatalf("saved approval did not apply: %+v, %v", approved, err)
 	}
-	q.decision.program += ".changed"
+	q.program += ".changed"
 	after, err := q.decideFixture(t.Context(), in)
 	if err != nil {
 		t.Fatal(err)

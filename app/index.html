@@ -515,7 +515,7 @@ function render() {
     scope = kind === "activity" && ["agent", "account"].includes(args[0]) && args[1] ? args.slice(0, 2) : null;
   }
   if (kind !== "request") requestSource = location.hash.slice(1) || "activity";
-  const panes = { request: requestPane, agent, "agent-settings": agentSettings, pair, account, add, preset: presetPage, rules, settings, integrations, policy: policyPage, proposal: proposalPage };
+  const panes = { request: requestPane, agent, "agent-settings": agentSettings, pair, account, add, preset: presetPage, rules, settings, integrations, policy: policyPage };
   const parts = (html) => html.map((content, i) => [`${location.hash}/${i}`, content]).filter(([, content]) => content);
   $("app").classList.toggle("with-pane", !!panes[kind]);
   $("list").setAttribute("role", panes[kind] ? "complementary" : "main");
@@ -569,7 +569,7 @@ function sidebar(kind, arg) {
         Object.keys(accounts()).filter((a) => entry(a) === c).length || "")) : []),
     ]), link(["preset"], `<span class="new">New preset…</span>`, 1, kind === "preset" && !arg)] : []),
     link(["rules"], "Rules", 0, kind === "rules", saved || ""),
-    link(["policy"], "Policy", 0, kind === "policy" || kind === "proposal", (view.policy_proposals ?? []).filter((p) => p.state === "pending").length || ""),
+    link(["policy"], "Policy", 0, kind === "policy"),
     link(["activity"], "Activity", 0, kind === "activity" || kind === "request" && requestSource.startsWith("activity")),
     link(["integrations"], "Integrations", 0, kind === "integrations"),
     link(["settings"], "Settings", 0, kind === "settings"),
@@ -645,6 +645,7 @@ function requestPane(id) {
     `<section><div class="row"><span class="${STATE_CLASS[r.state]}">${r.state}</span><span class="muted">${new Date(r.time).toLocaleTimeString()}</span></div>
       <ul>${[...(r.deny ?? []), ...reasons(r)].map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
       <div class="mono">${esc(summary(r.facts?.details))}</div>
+      ${r.facts?.details?.policy ? `<h2>Source changes</h2><pre>${esc(r.facts.details.policy.source_diff)}</pre><h2>Effective changes</h2><pre>${esc(r.facts.details.policy.effective_diff || "No effective changes.")}</pre>` : ""}
       ${r.facts?.operation?.id ? disclosure("grant", `<span class="muted">${esc(r.facts?.operation?.id)} grant</span>`, `<pre>${esc(JSON.stringify(r.grant))}</pre>`) : ""}
       ${disclosure("request", "Policy facts", `<pre>${esc(JSON.stringify(r.facts, null, 2))}</pre>`)}
       ${draftLink(r) ? `<div class="row">${draftLink(r)}</div>` : ""}${buttons ? `<div class="decisions">${buttons}</div>` : ""}</section>`];
@@ -747,7 +748,7 @@ function agentSettings(name) {
   const others = Object.keys(ids()).filter((n) => n !== name);
   return [head(esc(name), "Settings", "agent/" + encodeURIComponent(name)),
     `<section><a href="#integrations">Connect your tools</a><p class="muted">Setup guides for wrapped commands, Monitor shell, and the MCP gateway.</p></section>`,
-    `<section>${disclosure("setup", "Setup", `<label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre><label>Environment</label><pre>${esc(view.setup[name]) || "No secrets to substitute."}</pre>`)}</section>`,
+    `<section>${disclosure("setup", "Setup", `<label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre>`)}</section>`,
     `<section>${disclosure("replace-key", "Replace key", `<p class="muted">Use this after recreating the sandbox. The agent starts clean.</p><textarea id="pubkey" rows="2"></textarea>
       <div class="row"><span></span><button onclick="patch({ identities: { [${q(name)}]: { key: $('pubkey').value.trim() } } })">Replace key</button></div>`)}</section>`,
     others.length ? `<section>${disclosure("copy-settings", "Copy settings", `<div class="row"><select id="from">${others.map((n) => opt(n, n)).join("")}</select><button onclick="copySettings(${q(name)})">Copy</button></div>`)}</section>` : "",
@@ -1452,7 +1453,6 @@ function integrations(page = "start") {
 
 // Polling leaves the draft alone. A preview is valid only for the draft that produced it.
 let policyEditor = null, policyLoading = false, policyLoadError = "";
-const proposalReviews = new Map(), proposalLoads = new Set(), proposalLoadErrors = new Map();
 const loadPolicy = run(async () => {
   if (policyLoading) return;
   policyLoading = true;
@@ -1499,7 +1499,6 @@ function policyPage() {
     return [head("Policy"), `<p class="empty">Loading policy…</p>`];
   }
   const p = policyEditor;
-  const proposals = (view.policy_proposals ?? []).slice().reverse();
   return [head("Policy"),
     `<section><p>This file is the source of truth for saved permissions. Changes made elsewhere in Monitor update it too.</p>
       <p class="muted">Credentials are stored separately.</p>
@@ -1507,38 +1506,8 @@ function policyPage() {
     `<section><label for="policy-source">policy.toml</label><textarea id="policy-source" rows="30" spellcheck="false" oninput="changePolicy(this.value)">${esc(p.source)}</textarea></section>`,
     `<section><div class="row"><button onclick="previewPolicy()">Validate and review diff</button><button class="primary" ${!p.preview ? "disabled" : ""} onclick="applyPolicySource()">Apply reviewed change</button></div></section>`,
     p.preview ? `<section><h2>Source changes</h2><pre>${esc(p.preview.source_diff || "No source changes.")}</pre><h2>Effective changes</h2><pre>${esc(p.preview.effective_diff || "No effective changes.")}</pre></section>` : "",
-    `<section><details><summary>Effective policy, including preset definitions</summary><pre>${esc(p.effective)}</pre></details></section>`,
-    `<section><h2>Agent proposals</h2>${proposals.length ? proposals.map((proposal) => `<div class="row"><a href="#proposal/${encodeURIComponent(proposal.id)}">${esc(proposal.agent)}: ${esc(proposal.reason)}</a><span>${esc(proposal.state)}</span></div>`).join("") : `<p class="muted">No proposals.</p>`}</section>`];
+    `<section><details><summary>Effective policy, including preset definitions</summary><pre>${esc(p.effective)}</pre></details></section>`];
 }
-const loadProposal = run(async (id) => {
-  if (proposalLoads.has(id)) return;
-  proposalLoads.add(id);
-  proposalLoadErrors.delete(id);
-  try { proposalReviews.set(id, await api("GET", "/policy/proposals/" + encodeURIComponent(id))); }
-  catch (err) { proposalLoadErrors.set(id, err.message); throw err; }
-  finally { proposalLoads.delete(id); }
-  render();
-});
-const reviewProposal = run(async (id, decision) => {
-  const p = proposalReviews.get(id)?.proposal;
-  if (!p || p.state !== "pending") return;
-  await edit(() => {}, () => api("POST", "/policy/proposals/" + encodeURIComponent(id), { decision }), { message: decision === "approve" ? "Proposal applied" : "Proposal rejected" });
-  policyEditor = null;
-  await loadProposal(id);
-});
-function proposalPage(id) {
-  const review = proposalReviews.get(id);
-  if (!review && proposalLoadErrors.has(id)) return [head("Policy proposal", "Policy", "policy"), `<section><p class="bad">${esc(proposalLoadErrors.get(id))}</p><button onclick="loadProposal(${q(id)})">Retry</button></section>`];
-  if (!review) { if (!proposalLoads.has(id)) loadProposal(id); return [head("Policy proposal"), `<p class="empty">Loading proposal…</p>`]; }
-  const p = review.proposal, current = (view.policy_proposals ?? []).find((x) => x.id === id) ?? p;
-  const stale = current.stale ?? review.stale;
-  return [head("Policy proposal", "Policy", "policy"),
-    `<section><h2>${esc(p.agent)}</h2><p>${esc(p.reason)}</p><p class="muted">${esc(current.state)} · ${esc(new Date(p.time).toLocaleString())}</p>
-      ${stale && current.state === "pending" ? `<p class="warn">The policy changed after this proposal. Ask the agent to submit a new proposal against the current policy.</p>` : ""}
-      ${current.state === "pending" ? `<div class="row"><button onclick="reviewProposal(${q(id)}, 'reject')">Reject</button><button class="primary" ${stale ? "disabled" : ""} onclick="reviewProposal(${q(id)}, 'approve')">Approve these changes</button></div>` : ""}</section>`,
-    `<section><h2>Source changes</h2><pre>${esc(review.source_diff)}</pre><h2>Effective changes</h2><pre>${esc(review.effective_diff ?? "Reload and resubmit this proposal to review its effective changes.")}</pre></section>`];
-}
-
 const settings = () => [head("Settings"), `<section><h2>Lattices</h2>
   <p class="muted">Applies to all agents and connector requests.</p>
   <label><input type="checkbox" ${lattices().confidentiality ? "checked" : ""} onchange="patch({ lattices: { confidentiality: this.checked } })"> Confidentiality lattice</label>

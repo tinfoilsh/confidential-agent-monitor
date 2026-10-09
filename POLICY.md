@@ -63,7 +63,7 @@ views contain no credentials.
 This format does not load older documents with pointer-keyed credentials or
 mailboxes. Migrate those documents before upgrading. Captured presets and owner
 overrides must omit operation `id` and `requires_trust` fields. The facts and
-approval semantics version is 6; saved approvals need to be granted again.
+approval semantics version is 7; saved approvals need to be granted again.
 
 TOML has no null value. Monitor uses `{ "$json" = "null" }` where an exact JSON
 value is needed, including saved approval scopes. The same form preserves numbers
@@ -93,7 +93,6 @@ An agent uses its paired SSH identity:
 ```sh
 monitor policy show
 monitor policy propose change.toml --reason 'Allow reading this account for the report'
-monitor policy proposals
 ```
 
 `change.toml` is a TOML fragment merged into the active source. For example:
@@ -110,17 +109,19 @@ Pass `-` as the file name to read TOML from stdin.
 Agents can inspect and propose changes to their own account permissions and
 rules, policy settings on accounts they can reach, and the lattice switches.
 They cannot inspect credentials, connection settings, or other identities, and
-cannot apply edits. The owner reviews the source and effective changes under
-**Policy → Agent proposals**. Approval applies that proposal atomically. If the
-active source has changed since submission, the agent must submit a new proposal.
+cannot apply edits. Each proposal waits as an approval card that shows the source
+and effective changes. **Allow once** applies the proposal atomically, and **Deny**
+rejects it. The agent's command waits for the answer. If the owner does not answer
+before the approval wait ends, the proposal expires. If the active source changes
+before approval, the proposal fails and the agent must submit a new one.
 
 The owner API exposes `GET /policy`, `GET /policy?effective`,
 `POST /policy/preview`, and `POST /policy`. These two POST endpoints take a JSON object
-with a `source` string. Owner review uses `GET /policy/proposals/{id}` and
-`POST /policy/proposals/{id}` with `{"decision":"approve"}` or
-`{"decision":"reject"}`. On the agent's SSH transport, `agent.monitor` provides
-`GET /policy` and `GET`/`POST /policy/proposals`. Proposal submissions take
-`source`, `reason`, and optional `delete`, an array of arrays of path components.
+with a `source` string. Proposals appear in `GET /requests`, and the owner answers
+them with `POST /requests/{id}` like other approvals. On the agent's SSH transport,
+`agent.monitor` provides `GET /policy` and `POST /policy/proposals`. Proposal
+submissions take `source`, `reason`, and optional `delete`, an array of arrays of
+path components. The response arrives after the owner answers.
 
 Account settings and pairing use `POST /policy/edits`. Each change replaces one
 source value or explicitly deletes it. Values can contain JSON null without

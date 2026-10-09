@@ -10,17 +10,4 @@ test_*.py
 *.test
 *.test.*
 testdata/
-
-!dev/presets/grouping_test.go
-!dev/presets/generate_test.go
-!grouping_policy_test.go
-
-!policy_optimization_test.go
-!conversion_review_test.go
-!connector/web/preset_test.go
-!approval_policy_test.go
-!approval_ui_test.mjs
-!client/test_launch.py
-!client_launch_test.go
-!client/test_vm.py
 __pycache__/

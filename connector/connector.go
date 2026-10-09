@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"net/netip"
 	"net/url"
-	"sync"
 	"time"
 
 	"code.dny.dev/ssrf"
@@ -19,10 +18,10 @@ import (
 
 const DialTimeout = 30 * time.Second
 
-// Server handles independent streams; Runner owns a persistent protocol runtime.
+// Server handles one stream. A Runner also holds what its streams share: it calls serve once ready, which returns after the last stream.
 type Server interface{ Serve(*Stream, *Env) }
 type Runner interface {
-	Run(context.Context, *Env, *Listener, func()) error
+	Run(ctx context.Context, e *Env, serve func()) error
 }
 
 type Env struct {
@@ -46,23 +45,31 @@ func (e *Env) Client() *http.Client {
 	}
 }
 
-type streamKey struct{}
-
-func RequestStream(r *http.Request) *Stream { return r.Context().Value(streamKey{}).(*Stream) }
-
-func ServeHTTP(ctx context.Context, in net.Listener, ready func(), handler http.Handler) error {
-	server := &http.Server{
-		ReadHeaderTimeout: DialTimeout,
-		BaseContext:       func(net.Listener) context.Context { return ctx },
-		ConnContext: func(ctx context.Context, c net.Conn) context.Context {
-			return context.WithValue(ctx, streamKey{}, StreamOf(c))
-		},
-		Handler: handler,
-	}
+// ServeHTTP serves the requests on c, the stream itself or TLS over it, until the stream ends.
+func ServeHTTP(s *Stream, c net.Conn, handler http.Handler) {
+	server := &http.Server{Handler: handler, BaseContext: func(net.Listener) context.Context { return s.Context }}
 	defer server.Shutdown(context.Background())
-	ready()
-	return server.Serve(in)
+	server.Serve(Listen(s, c))
 }
+
+// Listen yields c once and then waits for s to end, for servers that only accept listeners.
+func Listen(s *Stream, c net.Conn) net.Listener { return &listener{s, c} }
+
+type listener struct {
+	s    *Stream
+	next net.Conn
+}
+
+func (l *listener) Accept() (net.Conn, error) {
+	if c := l.next; c != nil {
+		l.next = nil
+		return c, nil
+	}
+	<-l.s.Context.Done()
+	return nil, net.ErrClosed
+}
+func (l *listener) Close() error { return l.s.Close() }
+func (*listener) Addr() net.Addr { return &net.TCPAddr{} }
 
 // The guard checks the resolved address, so DNS cannot steer an upstream into a refused range.
 func NewDialer(allowed []netip.Prefix) *net.Dialer {
@@ -89,17 +96,16 @@ type Stream struct {
 	Gate func(Request) error
 }
 
-func NewStream(ctx context.Context) *Stream {
+// NewStream carries c until ctx ends or the stream closes.
+func NewStream(ctx context.Context, c net.Conn) *Stream {
 	ctx, cancel := context.WithCancel(ctx)
-	return &Stream{Context: ctx, cancel: cancel}
+	context.AfterFunc(ctx, func() { c.Close() })
+	return &Stream{Context: ctx, cancel: cancel, Conn: c}
 }
 
 func (s *Stream) Close() error {
 	s.cancel()
-	if s.Conn != nil {
-		return s.Conn.Close()
-	}
-	return nil
+	return s.Conn.Close()
 }
 
 // Interrupt closes an upstream if its stream ends, including during handshakes.
@@ -141,69 +147,11 @@ func DialURL(ctx context.Context, d *net.Dialer, u *url.URL, secure, port, secur
 	return d.DialContext(ctx, "tcp", target)
 }
 
-// Listener closes every admitted or queued stream when canceled.
-type Listener struct {
-	conns  chan *Stream
-	ctx    context.Context
-	cancel context.CancelFunc
-}
-
-func NewListener(ctx context.Context) *Listener {
-	ctx, cancel := context.WithCancel(ctx)
-	return &Listener{conns: make(chan *Stream), ctx: ctx, cancel: cancel}
-}
-func (l *Listener) Accept() (net.Conn, error) {
-	select {
-	case c := <-l.conns:
-		return c, nil
-	case <-l.ctx.Done():
-		return nil, net.ErrClosed
-	}
-}
-func (l *Listener) Close() error { l.cancel(); return nil }
-func (*Listener) Addr() net.Addr { return &net.TCPAddr{} }
-
-func (l *Listener) Hand(s *Stream) {
-	stop := context.AfterFunc(l.ctx, func() { s.Close() })
-	defer stop()
-	defer s.Close()
-	select {
-	case l.conns <- s:
-		<-s.Context.Done()
-	case <-s.Context.Done():
-	}
-}
-
 // PumpReplies runs a protocol reply loop until the stream ends, then joins it.
 func PumpReplies(s *Stream, pump func()) func() {
 	done := make(chan struct{})
 	go func() { defer close(done); pump(); s.Close() }()
 	return func() { s.Close(); <-done }
-}
-
-// ServeStreams adapts blocking stream handlers and waits for every handler on exit.
-func ServeStreams(in *Listener, ready func(), serve func(*Stream)) error {
-	var workers sync.WaitGroup
-	defer workers.Wait()
-	ready()
-	for {
-		c, err := in.Accept()
-		if err != nil {
-			return err
-		}
-		workers.Go(func() {
-			s := StreamOf(c)
-			defer s.Close()
-			serve(s)
-		})
-	}
-}
-
-func StreamOf(c net.Conn) *Stream {
-	if tc, ok := c.(*tls.Conn); ok {
-		c = tc.NetConn()
-	}
-	return c.(*Stream)
 }
 
 // Request retains parsed input while an approval is pending. Describe must be
@@ -221,11 +169,10 @@ type PolicyOptions struct {
 
 // Context contains current settings and the preset for the connection protocol.
 type Context struct {
-	Title, Connection  string
-	Label, Observation facts.Label
-	Config             any
-	Options            PolicyOptions
-	Spec               any
+	Title, Connection string
+	Config            any
+	Options           PolicyOptions
+	Spec              any
 }
 
 // CloseFunc adapts a library's close function to stream lifetime management.

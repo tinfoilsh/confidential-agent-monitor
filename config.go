@@ -1,13 +1,16 @@
 package main
 
 import (
+	"crypto/sha256"
 	"embed"
+	"encoding/hex"
 	"encoding/json"
 	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"io/fs"
 	"log"
+	"maps"
 	"net/netip"
 	"os"
 	"path"
@@ -15,8 +18,11 @@ import (
 	"slices"
 	"strings"
 	"sync"
+	"time"
 
+	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/gobwas/glob"
+	toml "github.com/pelletier/go-toml/v2"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/connector/mcp"
@@ -24,7 +30,10 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-const mcpNameChars = "abcdefghijklmnopqrstuvwxyz0123456789-"
+const (
+	mcpNameChars   = "abcdefghijklmnopqrstuvwxyz0123456789-"
+	maxPolicyBytes = 2 << 20
+)
 
 var levels = []string{"off", "read", "ask", "allow"}
 
@@ -53,8 +62,6 @@ type rule struct {
 }
 
 type account struct {
-	name          string
-	private       []glob.Glob
 	Preset        string                    `json:"preset"`
 	PolicyOptions connector.PolicyOptions   `json:"policy_options"`
 	Contents      string                    `json:"contents"`
@@ -87,31 +94,147 @@ type config struct {
 	pins     []tomlChange
 }
 
-func (a *account) compile(name string) error {
-	a.name = name
-	a.private = nil
-	for _, pattern := range a.PolicyOptions.Private {
-		g, err := glob.Compile(pattern, '/')
-		if err != nil {
-			return fmt.Errorf("account %s: invalid private pattern %q: %w", name, pattern, err)
-		}
-		a.private = append(a.private, g)
+func readSource(source string) (map[string]any, error) {
+	if len(source) > maxPolicyBytes {
+		return nil, errors.New("policy source is too large")
 	}
-	return nil
+	var v map[string]any
+	if err := toml.Unmarshal([]byte(source), &v); err != nil {
+		return nil, fmt.Errorf("policy TOML: %w", err)
+	}
+	if v == nil {
+		v = map[string]any{}
+	}
+	return v, nil
 }
 
-func (cfg *config) compile(resolved map[string]*presetRecord) (*config, map[string]*connection, error) {
-	if err := cfg.validateData(); err != nil {
+func jsonValue(v any) (any, error) {
+	switch x := v.(type) {
+	case map[string]any:
+		if literal, ok := x["$json"]; ok {
+			s, ok := literal.(string)
+			if !ok || len(x) != 1 {
+				return nil, errors.New("$json must be the only field of a JSON literal")
+			}
+			var val any
+			err := facts.DecodeNumbers([]byte(s), &val)
+			return val, err
+		}
+		out := map[string]any{}
+		for k, val := range x {
+			var err error
+			if out[k], err = jsonValue(val); err != nil {
+				return nil, err
+			}
+		}
+		return out, nil
+	case []any:
+		out := make([]any, len(x))
+		for i, val := range x {
+			var err error
+			if out[i], err = jsonValue(val); err != nil {
+				return nil, err
+			}
+		}
+		return out, nil
+	case time.Time, toml.LocalDate, toml.LocalTime, toml.LocalDateTime:
+		return nil, errors.New("policy dates and times must be quoted strings")
+	default:
+		return v, nil
+	}
+}
+
+// policyPresets evaluates only captured preset contents. No environment lookup
+// or new shipped version can change the meaning of an already-applied source.
+// It captures pinned shipped definitions in p.Bases and records new pins in cfg.pins.
+func policyPresets(cfg *config, p *policyDocument) (map[string]*presetRecord, error) {
+	shipped, err := presets()
+	if err != nil {
+		return nil, err
+	}
+	out := maps.Clone(shipped)
+	pins, owned := cfg.Monitor.Presets, cfg.Presets
+	if pins == nil {
+		pins = map[string]string{}
+		cfg.Monitor.Presets = pins
+	}
+	names := map[string]bool{}
+	for _, a := range cfg.Accounts {
+		names[a.Preset] = true
+	}
+	for name := range pins {
+		names[name] = true
+	}
+	for name := range owned {
+		names[name] = true
+	}
+	for _, name := range slices.Sorted(maps.Keys(names)) {
+		if _, pinned := pins[name]; !pinned && shipped[name] != nil {
+			pins[name] = shipped[name].hash
+			cfg.pins = append(cfg.pins, tomlChange{path: []string{"monitor", "presets", name}, value: pins[name]})
+		}
+		raw := json.RawMessage(`{}`)
+		if hash, pinned := pins[name]; pinned {
+			if p.Bases[hash] == nil && shipped[name] != nil && shipped[name].hash == hash {
+				p.Bases[hash] = shipped[name].source
+			}
+			if raw = p.Bases[hash]; raw == nil {
+				return nil, fmt.Errorf("preset %s has an unavailable content hash", name)
+			}
+		}
+		if shipped[name] != nil && owned[name] == nil && pins[name] == shipped[name].hash {
+			continue
+		}
+		if owned[name] != nil {
+			patch, err := json.Marshal(owned[name])
+			if err == nil {
+				raw, err = jsonpatch.MergePatch(raw, patch)
+			}
+			if err != nil {
+				return nil, err
+			}
+		}
+		if out[name], err = decodePreset(raw); err != nil {
+			return nil, fmt.Errorf("preset %s: %w", name, err)
+		}
+	}
+	return out, nil
+}
+
+// compileSource decodes configuration, binds credentials by name and drops orphaned ones.
+// Only runtime handles receive secret values.
+func compileSource(p *policyDocument, secrets secretStore) (*config, map[string]*connection, error) {
+	source, err := readSource(p.Source)
+	if err != nil {
 		return nil, nil, err
 	}
-	cfg.resolved = resolved
+	decoded, err := jsonValue(source)
+	if err != nil {
+		return nil, nil, err
+	}
+	cfg := &config{Lattices: latticeOptions{Confidentiality: true}}
+	cfg.Monitor.Version = 1
+	raw, err := json.Marshal(decoded)
+	if err == nil {
+		err = facts.DecodeNumbers(raw, cfg)
+	}
+	if err != nil {
+		return nil, nil, err
+	}
+	if cfg.Monitor.Version != 1 {
+		return nil, nil, errors.New("unsupported policy format version")
+	}
+	if cfg.resolved, err = policyPresets(cfg, p); err != nil {
+		return nil, nil, err
+	}
 	connections := map[string]*connection{}
 	for acct, a := range cfg.Accounts {
-		if err := a.compile(acct); err != nil {
-			return nil, nil, err
+		for _, pattern := range a.PolicyOptions.Private {
+			if _, err := glob.Compile(pattern, '/'); err != nil {
+				return nil, nil, fmt.Errorf("account %s: invalid private pattern %q: %w", acct, pattern, err)
+			}
 		}
-		cfg.Accounts[acct] = a
-		if _, ok := resolved[a.Preset]; !ok {
+		if _, ok := cfg.resolved[a.Preset]; !ok {
 			return nil, nil, fmt.Errorf("account %s has unknown preset %s", acct, a.Preset)
 		}
 		if !slices.Contains(facts.Audiences, a.Contents) || !slices.Contains(facts.Audiences, a.Sends) {
@@ -119,7 +242,7 @@ func (cfg *config) compile(resolved map[string]*presetRecord) (*config, map[stri
 		}
 		for key, kinds := range a.Connections {
 			name := connectionName(acct, key)
-			if name+".monitor" == discoveryHost || name+".monitor" == gatewayHost {
+			if name+".monitor" == agentHost || name+".monitor" == mcpHost {
 				return nil, nil, fmt.Errorf("connection name %s is reserved for the monitor", name)
 			}
 			if connections[name] != nil {
@@ -147,16 +270,18 @@ func (cfg *config) compile(resolved map[string]*presetRecord) (*config, map[stri
 					SecretValues() map[string]*credential.Value
 				}); ok {
 					c.Secrets = credentials.SecretValues()
-					names := catalogSecrets(resolved[a.Preset], key, kind)
+					names := catalogSecrets(cfg.resolved[a.Preset], key, kind)
 					if len(names) == 0 {
 						// Custom connections inherit unset editors from catalogs for their protocol.
-						for _, preset := range resolved {
+						for _, preset := range cfg.resolved {
 							names = append(names, catalogSecrets(preset, "*", kind)...)
 						}
 					}
-					for _, name := range names {
+					for _, name := range append(names, slices.Collect(maps.Keys(c.Secrets))...) {
 						if c.Secrets[name] == nil {
 							c.Secrets[name] = new(credential.Value)
+						} else if c.Secrets[name].Raw() != nil {
+							return nil, nil, errors.New("set credentials through account settings")
 						}
 					}
 				}
@@ -175,6 +300,18 @@ func (cfg *config) compile(resolved map[string]*presetRecord) (*config, map[stri
 				}
 			}
 		}
+	}
+	for id, secret := range secrets.all() {
+		c := connections[connectionName(id[0], id[1])]
+		if c == nil || c.account != id[0] || c.key != id[1] || c.Secrets == nil {
+			secrets.set(id, nil)
+			continue
+		}
+		value := new(credential.Value)
+		if err := value.UnmarshalJSON(secret); err != nil {
+			return nil, nil, fmt.Errorf("credential %v: %w", id, err)
+		}
+		c.Secrets[id[2]] = value
 	}
 	return cfg, connections, nil
 }
@@ -205,7 +342,8 @@ type presetAction struct {
 }
 
 func decodePreset(raw []byte) (*presetRecord, error) {
-	p := presetRecord{source: raw, hash: contentHash(string(raw))}
+	sum := sha256.Sum256(raw)
+	p := presetRecord{source: raw, hash: hex.EncodeToString(sum[:])}
 	if err := facts.DecodeNumbers(raw, &p); err != nil {
 		return nil, err
 	}
@@ -242,17 +380,6 @@ func actionLineage(action string) []string {
 		action = action[:i]
 	}
 	return lineage
-}
-
-func (r *presetRecord) EffectsFor(lineage []string) []string {
-	if r.Catalog != nil {
-		for _, action := range lineage {
-			if effects := r.Catalog.Actions[action].Effects; effects != nil {
-				return effects
-			}
-		}
-	}
-	return nil
 }
 
 //go:embed presets/*.json
@@ -338,19 +465,7 @@ func catalog(all map[string]*presetRecord) map[string]catalogEntry {
 	return entries
 }
 
-func (cfg *config) validateData() error {
-	for _, reserved := range []string{"lattices", "levels", "monitor"} {
-		if _, ok := cfg.Data[reserved]; ok {
-			return fmt.Errorf("data.%s is reserved for the monitor", reserved)
-		}
-	}
-	return nil
-}
-
 func catalogSecrets(p *presetRecord, key, kind string) (names []string) {
-	if p.Catalog == nil {
-		return
-	}
 	for _, raw := range p.Catalog.Fields {
 		var field struct {
 			Path []string `json:"path"`

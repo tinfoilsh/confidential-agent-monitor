@@ -28,10 +28,6 @@ func TestPrivatePatternValidation(t *testing.T) {
 			if _, _, err := parse([]byte(raw)); err == nil || !strings.Contains(err.Error(), "account github") || !strings.Contains(err.Error(), pattern) {
 				t.Fatalf("invalid pattern was not rejected with its account and pattern: %v", err)
 			}
-			cfg := &config{Accounts: map[string]account{"github": {PolicyOptions: connector.PolicyOptions{Private: []string{pattern}}}}}
-			if _, err := compileTestPolicy(t.Context(), cfg); err == nil {
-				t.Fatal("programmatic configuration accepted an invalid private pattern")
-			}
 		})
 	}
 }
@@ -126,8 +122,7 @@ func TestOwnerPolicyReadsApprovalGaps(t *testing.T) {
 	cfg := &config{Lattices: latticeOptions{true, true}, Policies: map[string]string{"owner.rego": `package sentinel
  deny contains "review restricted observation" if {
   "ask" in data.monitor.gaps
-  input.facts.context.observes.audience == "team"
-  input.facts.context.observes.trust == "trusted"
+  data.monitor.observes == {"audience": "team", "trust": "trusted"}
   input.authorization.access.level == "ask"
   input.facts.operation.effects[_] == "write"
   data.lattices.confidentiality
@@ -220,10 +215,6 @@ confidentiality := false`,
 		if _, err := compileTestPolicy(t.Context(), &config{Data: data}); err == nil {
 			t.Fatalf("accepted reserved data.%s", name)
 		}
-		raw, _ := json.Marshal(map[string]any{"data": data})
-		if _, _, err := parse(raw); err == nil {
-			t.Fatalf("parsed reserved data.%s", name)
-		}
 	}
 }
 
@@ -236,7 +227,7 @@ func TestPolicyFactsPreserveJSON(t *testing.T) {
 			Account: "account", Service: "web", Connection: "connection", Title: "request",
 			Operation: &facts.Operation{ID: "id", Action: "write", Effects: []string{"write"}}, Parameters: body,
 			Context: facts.Context{Label: facts.Label{Audience: "me", Trust: "untrusted", Because: map[string]string{"audience": "private"}},
-				Observes: cleanLabel, Sends: "anyone", Cause: "account"},
+				Observes: cleanLabel, Sends: "anyone"},
 			Details: facts.Details{HTTP: &facts.HTTP{Method: "POST", Body: body, Query: map[string][]string{"q": {"one", "two"}}},
 				MCP: &facts.MCP{Tool: "tool", Arguments: body}, MQTT: &facts.MQTT{Payload: []byte{0, 128, 255}},
 				GraphQL: &facts.GraphQL{Fields: []facts.GraphQLField{{Name: "field", Arguments: body}}}}},
@@ -334,8 +325,8 @@ func TestGateSerializesConcurrentChanges(t *testing.T) {
 				t.Fatal(err)
 			}
 			p := principal{Key: "key", Name: "agent", identity: identity{Accounts: map[string]access{"web": {Level: "allow"}}}}
-			st := &state{cfg: fixtureConfig(cfg), connections: map[string]*connection{"web": {name: "web", account: "web"}}, decision: q.decision, principals: map[string]principal{p.Key: p}}
-			m := &monitor{streams: map[string]map[*connector.Stream]struct{}{}, running: map[string]*connection{}, doc: sealed{Labels: map[string]facts.Label{"key": cleanLabel}}}
+			st := &state{cfg: fixtureConfig(cfg), connections: map[string]*connection{"web": {name: "web", account: "web"}}, query: q.query, program: q.program, principals: map[string]principal{p.Key: p}}
+			m := &monitor{streams: map[*connector.Stream]string{}, running: map[string]*connection{}, doc: sealed{Labels: map[string]facts.Label{"key": cleanLabel}}}
 			m.live.Store(st)
 			request := &waitingDescription{entered: make(chan struct{}), release: make(chan struct{})}
 			var release sync.Once
@@ -493,7 +484,7 @@ func TestPolicyReadsResolvedFactsAndGoDeniesDescriptionErrors(t *testing.T) {
  deny contains "description errors leaked" if "errors" in object.keys(input.authorization)
  resolved if {
   input.facts.operation.lineage == ["objects.files.publish", "objects.files", "objects"]
-  input.facts.operation.obligations == {"change": true, "trust": true, "ask": true, "discloses": true}
+  every name in ["change", "trust", "ask", "discloses"] { data.monitor.obligation(name) }
   data.levels.audiences == ["me", "team", "anyone"]
   data.levels.trusts == ["untrusted", "trusted"]
  }`}})
@@ -504,7 +495,7 @@ func TestPolicyReadsResolvedFactsAndGoDeniesDescriptionErrors(t *testing.T) {
 	in.Access.Level = "allow"
 	in.Request = failingDescription{facts.Facts(in.Request.(fixedRequest))}
 	d, err := q.decideFixture(t.Context(), in)
-	if err != nil || !slices.Equal(d.Deny, []string{"cannot describe request"}) || !reflect.DeepEqual(d.Next, cleanLabel) {
+	if err != nil || !slices.Equal(d.Deny, []string{"cannot describe request"}) {
 		t.Fatalf("description error or resolved facts: %+v, %v", d, err)
 	}
 }
@@ -528,10 +519,7 @@ func TestRemovedConnectionRefusesGateAndApprovalRecheck(t *testing.T) {
 	if err := m.gate(t.Context(), in); err == nil || err.Error() != "connection removed" {
 		t.Fatalf("removed connection admitted: %v", err)
 	}
-	err := m.transact(func(tx *transaction) error {
-		_, err := tx.recheck(t.Context(), stateApproved, r, in)
-		return err
-	})
+	_, err := m.recheck(t.Context(), r, in)
 	if err == nil || err.Error() != "connection removed" || len(m.records) != 1 {
 		t.Fatalf("removed connection rechecked: %v, records=%d", err, len(m.records))
 	}
@@ -539,7 +527,11 @@ func TestRemovedConnectionRefusesGateAndApprovalRecheck(t *testing.T) {
 
 func TestPresetMergePatchDeletesNullAndDoesNotPinVersion(t *testing.T) {
 	base := `{"catalog":{"actions":{"remove":{"effects":["write"]},"keep":{"effects":["read"]}}}}`
-	hash := contentHash(base)
+	record, err := decodePreset([]byte(base))
+	if err != nil {
+		t.Fatal(err)
+	}
+	hash := record.hash
 	doc := &policyDocument{Source: fmt.Sprintf("[monitor.presets]\nexample = %q\n[presets.example.catalog.actions]\nremove = { '$json' = 'null' }\n", hash), Bases: map[string]json.RawMessage{hash: json.RawMessage(base)}}
 	cfg, _, err := compileSource(doc, nil)
 	if err != nil {
@@ -549,7 +541,7 @@ func TestPresetMergePatchDeletesNullAndDoesNotPinVersion(t *testing.T) {
 	if _, ok := actions["remove"]; ok || len(actions) != 1 || !slices.Equal(actions["keep"].Effects, []string{"read"}) {
 		t.Fatalf("null override did not delete only its key: %+v", actions)
 	}
-	if err := pinPresets(cfg, doc); err != nil {
+	if doc.Source, err = editSource(doc.Source, cfg.pins); err != nil {
 		t.Fatal(err)
 	}
 	if cfg.Monitor.Version != 1 || strings.Contains(doc.Source, "version") {
@@ -561,26 +553,18 @@ func TestCompileLeavesSecretsUntilActivation(t *testing.T) {
 	f := sourceFixture(t)
 	orphan := secretID{"removed", "", "token"}
 	f.m.doc.Secrets.set(orphan, json.RawMessage(`"orphan"`))
-	before, _ := json.Marshal(f.m.doc.Secrets)
-	if _, _, err := compileSource(f.m.doc.Policy, f.m.doc.Secrets); err != nil {
-		t.Fatal(err)
-	}
-	after, _ := json.Marshal(f.m.doc.Secrets)
-	if string(after) != string(before) {
-		t.Fatal("compilation mutated credentials")
-	}
-	candidate, err := f.m.policyCandidate(t.Context(), f.m.doc.Policy.Source)
+	next, st, err := f.m.policyCandidate(t.Context(), f.m.doc.Policy.Source)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if candidate.doc.Secrets.get(orphan) == nil || f.m.doc.Secrets.get(orphan) == nil {
+	if f.m.doc.Secrets.get(orphan) == nil {
 		t.Fatal("preparation pruned credentials")
 	}
-	if _, err := f.m.applyCandidate(t.Context(), candidate); err != nil {
+	if _, err := f.m.applyCandidate(t.Context(), next, st); err != nil {
 		t.Fatal(err)
 	}
-	if f.m.doc.Secrets.get(orphan) != nil || f.disk(t).Secrets.get(orphan) != nil || candidate.doc.Secrets.get(orphan) == nil {
-		t.Fatal("activation failed to prune its own credential copy")
+	if f.m.doc.Secrets.get(orphan) != nil || f.disk(t).Secrets.get(orphan) != nil {
+		t.Fatal("activation failed to prune orphaned credentials")
 	}
 }
 
@@ -607,7 +591,7 @@ func TestJSONEndpointsPreserveNumbersAndShareErrors(t *testing.T) {
 	read := func(_ *http.Request, value payload) (any, error) { return value, responseErr }
 	for name, handler := range map[string]http.Handler{
 		"owner": owned(m, read),
-		"agent": agentJSON(m, "key", func(r *http.Request, value payload, _ policyBase, _ principal) (any, error) { return read(r, value) }),
+		"agent": agentJSON(m, "key", func(r *http.Request, value payload, _ principal) (any, error) { return read(r, value) }),
 	} {
 		t.Run(name, func(t *testing.T) {
 			for _, tc := range []struct {

@@ -1,53 +1,30 @@
 package main
 
 import (
+	"bytes"
 	"context"
-	"crypto/rand"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
 	"net/http"
+	"reflect"
 	"slices"
 	"strings"
-	"time"
 
 	toml "github.com/pelletier/go-toml/v2"
+	"github.com/pelletier/go-toml/v2/unstable/edit"
 	"github.com/pmezard/go-difflib/difflib"
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var errPolicyConflict = errors.New("policy changed; reload it and review a new diff before applying")
-
 const (
-	proposalPending  = "pending"
-	proposalApproved = "approved"
-	proposalRejected = "rejected"
+	maxProposalBytes   = 64 << 10
+	maxProposalReason  = 4096
+	maxProposalDeletes = 64
 )
 
-type policyProposal struct {
-	ID         string    `json:"id"`
-	Agent      string    `json:"agent"`
-	Key        string    `json:"key"`
-	Reason     string    `json:"reason"`
-	Time       time.Time `json:"time"`
-	State      string    `json:"state"`
-	BaseSource string    `json:"base_source"`
-	Source     string    `json:"source"`
-}
-
-type proposalSummary struct {
-	ID     string    `json:"id"`
-	Agent  string    `json:"agent"`
-	Reason string    `json:"reason"`
-	Time   time.Time `json:"time"`
-	State  string    `json:"state"`
-	Stale  bool      `json:"stale"`
-}
-
-func (p policyProposal) summary(source string) proposalSummary {
-	return proposalSummary{p.ID, p.Agent, p.Reason, p.Time, p.State, p.BaseSource != source}
-}
+var errPolicyConflict = errors.New("policy changed; reload it and review a new diff before applying")
 
 type sourceInput struct {
 	Source string `json:"source"`
@@ -61,20 +38,6 @@ type proposalInput struct {
 	Delete [][]string `json:"delete,omitempty"`
 }
 
-type policyBase struct {
-	doc      sealed
-	state    *state
-	revision uint64
-}
-
-type policyCandidate struct {
-	base     policyBase
-	doc      sealed
-	state    *state
-	proposal string
-	updated  map[secretID]bool // Changed credentials; true means set, false means deleted.
-}
-
 // sourceChange replaces or deletes one source value. Tables and rules retain
 // their names; edits never reconstruct source from a derived configuration.
 type sourceChange struct {
@@ -83,137 +46,153 @@ type sourceChange struct {
 	Delete bool            `json:"delete,omitempty"`
 }
 
-func (m *monitor) policySnapshot() (base policyBase, err error) {
-	err = m.transact(func(tx *transaction) error {
-		if tx.live.Load() == nil {
-			return errLocked
-		}
-		base = policyBase{doc: tx.doc, state: tx.live.Load(), revision: tx.revision}
-		return nil
-	})
-	return
+type tomlChange struct {
+	path   []string
+	value  any
+	delete bool
 }
 
-func (m *monitor) prepareCandidate(ctx context.Context, base policyBase, source string, secrets secretStore) (*policyCandidate, error) {
-	updated := map[secretID]bool{}
-	if secrets == nil {
-		secrets = base.doc.Secrets.clone()
-	} else {
-		for id, value := range secrets.all() {
-			if !sameCredential(value, base.doc.Secrets.get(id)) {
-				updated[id] = true
+// TOML has no null and cannot represent every JSON number exactly. A tagged JSON
+// literal preserves those values. An object containing the reserved tag is itself
+// escaped, so arbitrary request scopes and MCP schemas round-trip without loss.
+func tomlValue(v any) (any, error) {
+	switch x := v.(type) {
+	case nil:
+		return map[string]any{"$json": "null"}, nil
+	case json.Number:
+		if n, err := x.Int64(); err == nil {
+			return n, nil
+		}
+		return map[string]any{"$json": x.String()}, nil
+	case map[string]any:
+		if _, reserved := x["$json"]; reserved {
+			raw, err := json.Marshal(x)
+			return map[string]any{"$json": string(raw)}, err
+		}
+		out := map[string]any{}
+		for k, val := range x {
+			var err error
+			if out[k], err = tomlValue(val); err != nil {
+				return nil, err
 			}
 		}
-		for id := range base.doc.Secrets.all() {
-			if secrets.get(id) == nil {
-				updated[id] = false
+		return out, nil
+	case []any:
+		out := make([]any, len(x))
+		for i, val := range x {
+			var err error
+			if out[i], err = tomlValue(val); err != nil {
+				return nil, err
 			}
 		}
+		return out, nil
+	default:
+		return v, nil
 	}
-	next := base.doc
-	next.Policy = clonePolicy(base.doc.Policy)
-	next.Policy.Source = source
-	next.Secrets = secrets
-	st, err := m.build(ctx, next, base.state.Env, base.state, updated)
+}
+
+func renderTOML(v map[string]any) (string, error) {
+	encoded, err := tomlValue(v)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	if err := pinPresets(st.cfg, next.Policy); err != nil {
-		return nil, err
+	text, err := toml.Marshal(encoded)
+	return string(text), err
+}
+
+// editSource changes only the requested paths, preserving unrelated source text.
+func editSource(source string, changes []tomlChange) (string, error) {
+	doc, err := edit.Parse([]byte(source))
+	if err != nil {
+		return "", err
 	}
-	return &policyCandidate{base: base, doc: next, state: st, updated: updated}, nil
+	for _, change := range changes {
+		if change.delete {
+			doc.Delete(change.path)
+			continue
+		}
+		if err := doc.Set(change.path, change.value); err != nil {
+			doc.Delete(change.path)
+			if err := doc.Set(change.path, change.value); err != nil {
+				return "", err
+			}
+		}
+	}
+	if len(doc.Bytes()) > maxPolicyBytes {
+		return "", errors.New("policy source is too large")
+	}
+	return doc.String(), nil
+}
+
+// prepareCandidate validates source and pins its presets without publishing anything.
+func (m *monitor) prepareCandidate(ctx context.Context, source string, secrets secretStore) (sealed, *state, error) {
+	next := m.doc
+	policy := policyDocument{Source: source, Bases: maps.Clone(m.doc.Policy.Bases)}
+	next.Policy = &policy
+	next.Secrets = secrets
+	if secrets == nil {
+		next.Secrets = m.doc.Secrets.clone()
+	}
+	st, err := m.build(ctx, next, m.live.Load().Env, m.live.Load())
+	if err != nil {
+		return next, nil, err
+	}
+	policy.Source, err = editSource(source, st.cfg.pins)
+	return next, st, err
 }
 
 func (m *monitor) editPolicy(ctx context.Context, changes []sourceChange) error {
-	base, err := m.policySnapshot()
-	if err != nil {
-		return err
-	}
 	if len(changes) == 0 {
 		return nil
 	}
-	candidate, err := m.prepareEdits(ctx, base, changes)
-	if err != nil {
-		return err
-	}
-	return m.transact(func(tx *transaction) error { return tx.activate(ctx, candidate) })
-}
-
-func (m *monitor) prepareEdits(ctx context.Context, base policyBase, changes []sourceChange) (*policyCandidate, error) {
-	secrets := base.doc.Secrets.clone()
+	secrets := m.doc.Secrets.clone()
 	edits := make([]tomlChange, 0, len(changes))
 	for _, change := range changes {
 		if len(change.Path) == 0 {
-			return nil, errors.New("an edit requires a source path")
-		}
-		if change.Delete {
-			if len(change.Value) != 0 {
-				return nil, errors.New("a deletion cannot have a value")
-			}
-			for id := range secrets.all() {
-				c := base.state.connections[connectionName(id[0], id[1])]
-				path := append(c.path(), "secrets", id[2])
-				if len(change.Path) <= len(path) && slices.Equal(change.Path, path[:len(change.Path)]) {
-					secrets.set(id, nil)
-				}
-			}
-			if !isCredentialPath(change.Path) {
-				edits = append(edits, tomlChange{path: change.Path, delete: true})
-			}
-			continue
+			return errors.New("an edit requires a source path")
 		}
 		var value any
-		if err := facts.DecodeNumbers(change.Value, &value); err != nil {
-			return nil, err
+		if change.Delete {
+			if len(change.Value) != 0 {
+				return errors.New("a deletion cannot have a value")
+			}
+		} else if err := facts.DecodeNumbers(change.Value, &value); err != nil {
+			return err
 		}
-		value, secret := separateCredentials(change.Path, value, secrets)
-		if secret {
+		// Credentials live in the sealed store; removing a connection drops its own.
+		if isCredentialPath(change.Path) {
+			var raw json.RawMessage
+			if value != nil {
+				raw, _ = json.Marshal(value)
+			}
+			secrets.set(credentialID(change.Path), raw)
 			continue
 		}
-		value, err := tomlValue(value)
+		if change.Delete {
+			edits = append(edits, tomlChange{path: change.Path, delete: true})
+			continue
+		}
+		encoded, err := tomlValue(value)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		edits = append(edits, tomlChange{path: change.Path, value: value})
+		edits = append(edits, tomlChange{path: change.Path, value: encoded})
 	}
-	source, err := editSource(base.doc.Policy.Source, edits)
+	source, err := editSource(m.doc.Policy.Source, edits)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	candidate, err := m.prepareCandidate(ctx, base, source, secrets)
+	// Compilation drops credentials without a connection, so compare against what this edit wrote.
+	next, st, err := m.prepareCandidate(ctx, source, secrets.clone())
 	if err != nil {
-		return nil, err
+		return err
 	}
-	for id, set := range candidate.updated {
-		c := candidate.state.connections[connectionName(id[0], id[1])]
-		if set && (c == nil || c.account != id[0] || c.key != id[1] || c.Secrets == nil) {
-			return nil, fmt.Errorf("credential %v has no connection", id)
+	for id, raw := range secrets.all() {
+		if next.Secrets.get(id) == nil && !bytes.Equal(raw, m.doc.Secrets.get(id)) {
+			return fmt.Errorf("credential %v has no connection", id)
 		}
 	}
-	return candidate, nil
-}
-
-// Account settings write credentials directly to the sealed name store.
-func separateCredentials(path []string, value any, secrets secretStore) (any, bool) {
-	if isCredentialPath(path) {
-		var raw json.RawMessage
-		if value != nil {
-			raw, _ = json.Marshal(value)
-		}
-		secrets.set(credentialID(path), raw)
-		return nil, true
-	}
-	if object, ok := value.(map[string]any); ok {
-		for key, child := range object {
-			next, secret := separateCredentials(append(slices.Clone(path), key), child, secrets)
-			if secret {
-				delete(object, key)
-			} else {
-				object[key] = next
-			}
-		}
-	}
-	return value, false
+	return m.activate(ctx, next, st)
 }
 
 func sourceDiff(before, after string) string {
@@ -233,320 +212,177 @@ func effectiveSource(st *state) (string, error) {
 	}
 	ps := map[string]any{}
 	for _, acc := range st.cfg.Accounts {
-		preset, err := facts.JSON[map[string]any](st.cfg.resolved[acc.Preset])
-		if err != nil {
+		if ps[acc.Preset], err = facts.JSON[map[string]any](st.cfg.resolved[acc.Preset]); err != nil {
 			return "", err
 		}
-		ps[acc.Preset] = preset
 	}
 	v["presets"] = ps
-	encoded, err := tomlValue(v)
-	if err != nil {
-		return "", err
-	}
-	text, err := toml.Marshal(encoded)
-	return string(text), err
+	return renderTOML(v)
 }
 
-func policyPreview(next *policyCandidate) (map[string]any, error) {
-	before, err := effectiveSource(next.base.state)
+func (m *monitor) policyPreview(next sealed, st *state) (*facts.Policy, error) {
+	before, err := effectiveSource(m.live.Load())
 	if err != nil {
 		return nil, err
 	}
-	after, err := effectiveSource(next.state)
+	after, err := effectiveSource(st)
 	if err != nil {
 		return nil, err
 	}
-	return map[string]any{"source": next.doc.Policy.Source,
-		"source_diff": sourceDiff(next.base.doc.Policy.Source, next.doc.Policy.Source), "effective_diff": sourceDiff(before, after)}, nil
+	return &facts.Policy{SourceDiff: sourceDiff(m.doc.Policy.Source, next.Policy.Source), EffectiveDiff: sourceDiff(before, after)}, nil
 }
 
 func (m *monitor) policyRoutes(mux *http.ServeMux) {
 	mux.Handle("GET /policy", owned(m, func(r *http.Request, _ struct{}) (any, error) {
-		base, err := m.policySnapshot()
-		if err != nil {
-			return nil, err
-		}
-		result := map[string]any{"source": base.doc.Policy.Source}
+		result := map[string]any{"source": m.doc.Policy.Source}
+		var err error
 		if r.URL.Query().Has("effective") {
-			result["effective"], err = effectiveSource(base.state)
+			result["effective"], err = effectiveSource(m.live.Load())
 		}
 		return result, err
 	}))
 	mux.Handle("POST /policy/preview", owned(m, func(r *http.Request, input sourceInput) (any, error) {
-		base, err := m.policySnapshot()
+		next, st, err := m.prepareCandidate(r.Context(), input.Source, nil)
 		if err != nil {
 			return nil, err
 		}
-		next, err := m.prepareCandidate(r.Context(), base, input.Source, nil)
-		if err != nil {
-			return nil, err
-		}
-		return policyPreview(next)
+		diff, err := m.policyPreview(next, st)
+		return struct {
+			Source string `json:"source"`
+			*facts.Policy
+		}{next.Policy.Source, diff}, err
 	}))
 	mux.Handle("POST /policy", owned(m, func(r *http.Request, input sourceInput) (any, error) {
-		base, err := m.policySnapshot()
-		if err != nil {
-			return nil, err
-		}
-		next, err := m.prepareCandidate(r.Context(), base, input.Source, nil)
+		next, st, err := m.prepareCandidate(r.Context(), input.Source, nil)
 		if err == nil {
-			err = m.transact(func(tx *transaction) error { return tx.activate(r.Context(), next) })
+			err = m.activate(r.Context(), next, st)
 		}
 		return m.view(err)
 	}))
 	mux.Handle("POST /policy/edits", owned(m, func(r *http.Request, input editsInput) (any, error) {
-		err := m.editPolicy(r.Context(), input.Changes)
-		return m.view(err)
-	}))
-	mux.Handle("GET /policy/proposals/{id}", owned(m, func(r *http.Request, _ struct{}) (any, error) {
-		base, err := m.policySnapshot()
-		if err != nil {
-			return nil, err
-		}
-		p, _, err := base.doc.Policy.findProposal(r.PathValue("id"))
-		if err != nil {
-			return nil, err
-		}
-		result := map[string]any{"proposal": p.summary(base.doc.Policy.Source), "source": p.Source, "base_source": p.BaseSource,
-			"source_diff": sourceDiff(p.BaseSource, p.Source), "stale": p.BaseSource != base.doc.Policy.Source}
-		if p.BaseSource == base.doc.Policy.Source {
-			next, err := m.prepareCandidate(r.Context(), base, p.Source, nil)
-			if err != nil {
-				return nil, err
-			}
-			preview, err := policyPreview(next)
-			if err != nil {
-				return nil, err
-			}
-			result["effective_diff"] = preview["effective_diff"]
-		}
-		return result, nil
-	}))
-	mux.Handle("POST /policy/proposals/{id}", owned(m, func(r *http.Request, input decisionInput) (any, error) {
-		err := m.answerProposal(r.Context(), r.PathValue("id"), input)
-		return m.view(err)
+		return m.view(m.editPolicy(r.Context(), input.Changes))
 	}))
 }
 
-func (p *policyDocument) findProposal(id string) (policyProposal, int, error) {
-	for i, proposal := range p.Proposals {
-		if proposal.ID == id {
-			return proposal, i, nil
+// agentView splits the configuration into the settings p may read and propose
+// changing, and the rest, which a proposal must leave unchanged.
+func agentView(cfg *config, p principal) (visible, rest map[string]any, err error) {
+	if rest, err = facts.JSON[map[string]any](cfg); err != nil {
+		return nil, nil, err
+	}
+	identities, _ := rest["identities"].(map[string]any)
+	identity, _ := identities[p.Name].(map[string]any)
+	accounts, _ := rest["accounts"].(map[string]any)
+	reachable := map[string]any{}
+	for name, a := range accounts {
+		if p.reaches(name) {
+			reachable[name] = take(a.(map[string]any), "contents", "strangers", "sends", "policy_options")
 		}
 	}
-	return policyProposal{}, -1, errors.New("no such policy proposal")
+	visible = map[string]any{"lattices": rest["lattices"], "identities": map[string]any{p.Name: take(identity, "accounts", "rules")}, "accounts": reachable}
+	delete(rest, "lattices")
+	return visible, rest, nil
 }
 
-func (m *monitor) answerProposal(ctx context.Context, id string, input decisionInput) error {
-	if input.Decision == "reject" {
-		err := m.transact(func(tx *transaction) error {
-			p, i, err := tx.doc.Policy.findProposal(id)
-			if err != nil {
-				return err
-			}
-			if p.State != proposalPending {
-				return errors.New("proposal has already been reviewed")
-			}
-			next := tx.doc
-			next.Policy = clonePolicy(next.Policy)
-			next.Policy.Proposals[i].State = proposalRejected
-			next.Generation++
-			return tx.commit(ctx, next)
-		})
-		return err
-	}
-	if input.Decision != "approve" {
-		return errors.New("decision must be approve or reject")
-	}
-	base, err := m.policySnapshot()
-	if err != nil {
-		return err
-	}
-	p, _, err := base.doc.Policy.findProposal(id)
-	if err != nil {
-		return err
-	}
-	next, err := m.prepareCandidate(ctx, base, p.Source, nil)
-	if err != nil {
-		return err
-	}
-	next.proposal = id
-	return m.transact(func(tx *transaction) error { return tx.activate(ctx, next) })
-}
-
-// Fields visible to agents are also the fields they can propose changing.
-var agentPolicyFields = map[string][]string{
-	"lattices":   {"confidentiality", "integrity"},
-	"identities": {"accounts", "rules"},
-	"accounts":   {"contents", "strangers", "sends", "policy_options"},
-}
-
-func agentPolicySource(cfg *config, p principal) (string, error) {
-	v, err := facts.JSON[map[string]any](cfg)
-	if err != nil {
-		return "", err
-	}
+// take moves the named fields out of m.
+func take(m map[string]any, fields ...string) map[string]any {
 	out := map[string]any{}
-	for section, fields := range agentPolicyFields {
-		paths := [][]string{{section}}
-		switch section {
-		case "identities":
-			paths = [][]string{{section, p.Name}}
-		case "accounts":
-			paths = nil
-			for name := range p.Accounts {
-				if p.reaches(name) {
-					paths = append(paths, []string{section, name})
-				}
-			}
-			out[section] = map[string]any{}
-		}
-		for _, path := range paths {
-			visible := map[string]any{}
-			for _, field := range fields {
-				if value, ok := mapValue(v, append(slices.Clone(path), field)); ok {
-					visible[field] = value
-				}
-			}
-			if len(path) == 1 {
-				out[section] = visible
-			} else {
-				if out[section] == nil {
-					out[section] = map[string]any{}
-				}
-				out[section].(map[string]any)[path[1]] = visible
-			}
+	for _, field := range fields {
+		if value, ok := m[field]; ok {
+			out[field] = value
+			delete(m, field)
 		}
 	}
-	encoded, err := tomlValue(out)
-	if err != nil {
-		return "", err
-	}
-	raw, err := toml.Marshal(encoded)
-	return string(raw), err
+	return out
 }
 
-func proposalPathAllowed(p principal, path []string) bool {
-	if len(path) < 2 {
-		return false
-	}
-	fields := agentPolicyFields[path[0]]
-	switch path[0] {
-	case "lattices":
-		return len(path) == 2 && slices.Contains(fields, path[1])
-	case "identities":
-		return len(path) >= 3 && path[1] == p.Name && slices.Contains(fields, path[2])
-	case "accounts":
-		return len(path) >= 3 && p.reaches(path[1]) && slices.Contains(fields, path[2])
-	}
-	return false
-}
-
-func proposalChanges(p principal, v map[string]any, path []string, changes *[]tomlChange) error {
-	if len(v) == 0 && !proposalPathAllowed(p, path) {
-		return errors.New("proposal may edit only your permissions, reachable accounts' policy settings, or lattice switches")
-	}
-	for k, value := range v {
-		next := append(slices.Clone(path), k)
-		if obj, ok := value.(map[string]any); ok && len(obj) > 0 {
-			if err := proposalChanges(p, obj, next, changes); err != nil {
-				return err
-			}
+// fragmentChanges sets each leaf of a TOML fragment, merging it into the source.
+func fragmentChanges(v map[string]any, path []string) (changes []tomlChange) {
+	for _, key := range slices.Sorted(maps.Keys(v)) {
+		at := append(slices.Clone(path), key)
+		if table, ok := v[key].(map[string]any); ok && len(table) > 0 {
+			changes = append(changes, fragmentChanges(table, at)...)
 		} else {
-			if !proposalPathAllowed(p, next) {
-				return fmt.Errorf("proposal cannot edit %s", pointer(next))
-			}
-			*changes = append(*changes, tomlChange{path: next, value: value})
+			changes = append(changes, tomlChange{path: at, value: v[key]})
 		}
 	}
-	return nil
+	return changes
 }
 
-func (m *monitor) proposePolicy(ctx context.Context, base policyBase, p principal, input proposalInput) (proposalSummary, error) {
-
-	if len(input.Source) > 64<<10 || len(input.Reason) > 4096 || strings.TrimSpace(input.Reason) == "" || len(input.Delete) > 64 {
-		return proposalSummary{}, errors.New("proposal needs a reason of 1-4096 bytes, at most 64 KiB of TOML, and at most 64 deletions")
+// proposePolicy holds an agent's change as an approval card and applies it once the owner allows it.
+func (m *monitor) proposePolicy(ctx context.Context, p principal, input proposalInput) (err error) {
+	if len(input.Source) > maxProposalBytes || len(input.Reason) > maxProposalReason || strings.TrimSpace(input.Reason) == "" || len(input.Delete) > maxProposalDeletes {
+		return fmt.Errorf("proposal needs a reason of 1-%d bytes, at most %d bytes of TOML, and at most %d deletions", maxProposalReason, maxProposalBytes, maxProposalDeletes)
 	}
 	patch, err := readSource(input.Source)
 	if err != nil {
-		return proposalSummary{}, err
+		return err
 	}
-	var changes []tomlChange
-	if len(patch) > 0 {
-		if err := proposalChanges(p, patch, nil, &changes); err != nil {
-			return proposalSummary{}, err
-		}
-	}
+	changes := fragmentChanges(patch, nil)
 	for _, path := range input.Delete {
-		if !proposalPathAllowed(p, path) {
-			return proposalSummary{}, fmt.Errorf("proposal cannot delete %s", pointer(path))
-		}
 		changes = append(changes, tomlChange{path: path, delete: true})
 	}
-	source, err := editSource(base.doc.Policy.Source, changes)
+	base := m.doc.Policy.Source
+	source, err := editSource(base, changes)
 	if err != nil {
-		return proposalSummary{}, err
+		return err
 	}
-	if source == base.doc.Policy.Source {
-		return proposalSummary{}, errors.New("proposal does not change policy")
+	if source == base {
+		return errors.New("proposal does not change policy")
 	}
-	candidate, err := m.prepareCandidate(ctx, base, source, nil)
+	next, st, err := m.prepareCandidate(ctx, source, nil)
 	if err != nil {
-		return proposalSummary{}, err
+		return err
 	}
-	var proposal policyProposal
-	err = m.transact(func(tx *transaction) error {
-		if tx.revision != base.revision {
-			return errPolicyConflict
-		}
-		next := tx.doc
-		next.Policy = clonePolicy(next.Policy)
-		if len(next.Policy.Proposals) >= 32 {
-			i := slices.IndexFunc(next.Policy.Proposals, func(p policyProposal) bool { return p.State != proposalPending })
-			if i < 0 {
-				return errors.New("policy proposal queue is full")
-			}
-			next.Policy.Proposals = slices.Delete(next.Policy.Proposals, i, i+1)
-		}
-		count, size := 0, len(source)+len(base.doc.Policy.Source)
-		for _, proposal := range next.Policy.Proposals {
-			if proposal.State == proposalPending && proposal.Key == p.Key {
-				count++
-			}
-			size += len(proposal.Source) + len(proposal.BaseSource)
-		}
-		if count >= 4 || size > 8<<20 {
-			return errors.New("policy proposal queue is full")
-		}
-		var id [16]byte
-		if _, err := rand.Read(id[:]); err != nil {
-			return err
-		}
-		proposal = policyProposal{ID: hex.EncodeToString(id[:]), Agent: p.Name, Key: p.Key,
-			Reason: input.Reason, Time: time.Now().UTC(), State: proposalPending, BaseSource: base.doc.Policy.Source, Source: candidate.doc.Policy.Source}
-		next.Policy.Proposals = append(next.Policy.Proposals, proposal)
-		next.Generation++
-		return tx.commit(ctx, next)
-	})
-	return proposal.summary(base.doc.Policy.Source), err
+	_, before, err := agentView(m.live.Load().cfg, p)
+	if err != nil {
+		return err
+	}
+	_, after, err := agentView(st.cfg, p)
+	if err != nil {
+		return err
+	}
+	if !reflect.DeepEqual(before, after) {
+		return errors.New("proposal may edit only your permissions, reachable accounts' policy settings, or lattice switches")
+	}
+	diff, err := m.policyPreview(next, st)
+	if err != nil {
+		return err
+	}
+	r := m.addRecord(&decision{Facts: &facts.Facts{Version: facts.Version, Principal: facts.Principal{Key: p.Key, Name: p.Name},
+		Title: "Change policy", Parameters: map[string]any{}, Details: facts.Details{Policy: diff}},
+		Requirements: requirements{{ID: "policy", Message: input.Reason}}})
+	defer func() { r.settle(err) }()
+	if err = m.await(ctx, r); err != nil {
+		return err
+	}
+	if m.doc.Policy.Source != base {
+		return errPolicyConflict
+	}
+	if next, st, err = m.prepareCandidate(ctx, next.Policy.Source, nil); err != nil {
+		return err
+	}
+	return m.activate(ctx, next, st)
 }
 
 func (m *monitor) agentPolicyRoutes(mux *http.ServeMux, key string) {
-	mux.HandleFunc("GET /policy", agentJSON(m, key, func(_ *http.Request, _ struct{}, base policyBase, p principal) (any, error) {
-		source, err := agentPolicySource(base.state.cfg, p)
-		return map[string]any{"identity": p.Name, "source": source}, err
-	}))
-	mux.HandleFunc("GET /policy/proposals", agentJSON(m, key, func(_ *http.Request, _ struct{}, base policyBase, p principal) (any, error) {
-		list := []proposalSummary{}
-		for _, proposal := range base.doc.Policy.Proposals {
-			if proposal.Key == key {
-				list = append(list, proposal.summary(base.doc.Policy.Source))
-			}
+	show := func() (any, error) {
+		st := m.live.Load()
+		p := st.principals[key]
+		visible, _, err := agentView(st.cfg, p)
+		if err != nil {
+			return nil, err
 		}
-		return list, nil
+		source, err := renderTOML(visible)
+		return map[string]any{"identity": p.Name, "source": source}, err
+	}
+	mux.HandleFunc("GET /policy", agentJSON(m, key, func(*http.Request, struct{}, principal) (any, error) {
+		return show()
 	}))
-	mux.HandleFunc("POST /policy/proposals", agentJSON(m, key, func(r *http.Request, input proposalInput, base policyBase, p principal) (any, error) {
-		return m.proposePolicy(r.Context(), base, p, input)
+	mux.HandleFunc("POST /policy/proposals", agentJSON(m, key, func(r *http.Request, input proposalInput, p principal) (any, error) {
+		if err := m.proposePolicy(r.Context(), p, input); err != nil {
+			return nil, err
+		}
+		return show()
 	}))
 }

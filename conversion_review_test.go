@@ -9,7 +9,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/facts"
 )
 
@@ -30,7 +29,7 @@ func TestPolicyEditDoesNotWaitForCredentialRefresh(t *testing.T) {
 			c := f.m.live.Load().connections["web"]
 			path := append(c.path(), "secrets", "TOKEN")
 			grant, _ := json.Marshal(map[string]any{"oauth": map[string]any{"token_url": provider.URL, "client_id": "fixture", "auth_style": "params", "refresh_token": "old"}})
-			if err := f.m.editPolicy(t.Context(), []sourceChange{{Path: path, Value: grant}}); err != nil {
+			if _, err := f.m.editPolicyState(t.Context(), []sourceChange{{Path: path, Value: grant}}); err != nil {
 				t.Fatal(err)
 			}
 			c = f.m.live.Load().connections["web"]
@@ -44,7 +43,7 @@ func TestPolicyEditDoesNotWaitForCredentialRefresh(t *testing.T) {
 				change = sourceChange{Path: path, Delete: true}
 			}
 			edited := make(chan error, 1)
-			go func() { edited <- f.m.editPolicy(t.Context(), []sourceChange{change}) }()
+			go func() { _, err := f.m.editPolicyState(t.Context(), []sourceChange{change}); edited <- err }()
 			select {
 			case err := <-edited:
 				if err != nil {
@@ -70,16 +69,6 @@ func TestPolicyEditDoesNotWaitForCredentialRefresh(t *testing.T) {
 				t.Fatal("refresh restored a deleted credential")
 			}
 		})
-	}
-}
-
-func TestConnectorKindsImplementRuntimeInterface(t *testing.T) {
-	for kind, create := range connectorKinds {
-		switch create().(type) {
-		case connector.Runner, connector.Server:
-		default:
-			t.Fatalf("%s must implement Runner or Server", kind)
-		}
 	}
 }
 

@@ -15,7 +15,7 @@ mkdir -p "$dev/firefox" "$dev/store"
 if ! curl -s "$api" > /dev/null; then
   go build -o "$dev/monitor" .
   "$dev/monitor" -listen "$listen" -api "${api#http://}" -bucket "file://$dev/store?no_tmp_dir=true" \
-    ${MONITOR_PROFILE:+-corpus "$dev/corpus.jsonl"} -drafts presets/drafts -extension "$(realpath "${MONITOR_EXTENSION:-../english-only}")" > "$dev/monitor.log" 2>&1 &
+    -drafts presets/drafts -extension "$(realpath "${MONITOR_EXTENSION:-../english-only}")" > "$dev/monitor.log" 2>&1 &
 fi
 # The header file keeps the owner secret out of curl's arguments.
 owner() { curl -sS --fail-with-body --retry 10 --retry-connrefused -H @<(echo "Authorization: Bearer $(<"$dev/owner.key")") "$api$1" "${@:2}"; }
@@ -31,7 +31,7 @@ if jq -e '.generation == 1 and ((.config.accounts // {}) | length == 0) and ((.c
   fi
   jq '{changes: [to_entries[] | {path: [.key], value: .value}]}' "$dev/seed.json" | owner /policy/edits -d @- > "$dev/state.json"
 fi
-# MONITOR_PROFILE=1 lets the dev agent's requests all through, recorded with the corpus in .dev/corpus.jsonl.
+# MONITOR_PROFILE=1 lets the dev agent's requests all through, recorded in the owner's request log.
 jq --rawfile key "$dev/id.pub" --arg profile "${MONITOR_PROFILE:-}" \
   '.config as $config | ($config.identities.dev // {}) as $dev |
    {identities: {dev: ($dev + {key: $key, profile: ($profile != ""),

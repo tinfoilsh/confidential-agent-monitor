@@ -2,7 +2,6 @@
 package facts
 
 import (
-	"maps"
 	"net/http"
 	"net/url"
 	"slices"
@@ -11,7 +10,7 @@ import (
 // Version identifies the facts schema and approval semantics. Bump it when
 // parsing, description, normalization, label, or approval semantics change.
 // This invalidates saved approvals; display-only edits do not need a bump.
-const Version = 6
+const Version = 7
 
 // Label levels are ordered from most restrictive to least restrictive.
 // Policy derives its rank tables from these same lists.
@@ -43,18 +42,17 @@ func (l Label) Valid() bool {
 }
 
 type Operation struct {
-	ID          string      `json:"id"`
-	Action      string      `json:"action"`
-	Effects     []string    `json:"effects"`
-	Obligations Obligations `json:"obligations"`
-	Lineage     []string    `json:"lineage"`
+	ID      string   `json:"id"`
+	Action  string   `json:"action"`
+	Effects []string `json:"effects"`
+	Lineage []string `json:"lineage"`
 }
 
+// Sends and Observes are connector hints; policy resolves them with account settings.
 type Context struct {
 	Label    Label  `json:"label"`
 	Sends    string `json:"sends"`
 	Observes Label  `json:"observes"`
-	Cause    string `json:"cause"`
 }
 
 // Facts is the snapshot shared by authorization and audit.
@@ -96,6 +94,7 @@ type Details struct {
 	Postgres *Postgres `json:"postgres,omitempty"`
 	Sign     *Sign     `json:"sign,omitempty"`
 	TCP      *TCP      `json:"tcp,omitempty"`
+	Policy   *Policy   `json:"policy,omitempty"`
 }
 
 type HTTP struct {
@@ -233,6 +232,12 @@ type TCP struct {
 	Port uint32 `json:"port"`
 }
 
+// Policy is an agent's proposed change to the owner's policy source.
+type Policy struct {
+	SourceDiff    string `json:"source_diff"`
+	EffectiveDiff string `json:"effective_diff"`
+}
+
 type MCP struct {
 	Tool      string `json:"tool"`
 	Arguments any    `json:"arguments"`
@@ -272,32 +277,4 @@ func ValidEffects(effects []string) bool {
 		}
 	}
 	return true
-}
-
-// ObligationsFor combines the requirements of all effects on an operation.
-func ObligationsFor(effects []string) (out Obligations) {
-	for _, effect := range effects {
-		o := Effects[effect]
-		out.Change = out.Change || o.Change
-		out.Trust = out.Trust || o.Trust
-		out.Ask = out.Ask || o.Ask
-		out.Discloses = out.Discloses || o.Discloses
-	}
-	return out
-}
-
-// Observe joins request observations, preserving provenance
-// on axes that do not become more restrictive. Both labels must be valid.
-func (l Label) Observe(observed Label, cause string) Label {
-	l.Because = maps.Clone(l.Because)
-	if l.Because == nil {
-		l.Because = map[string]string{}
-	}
-	if slices.Index(Audiences, observed.Audience) < slices.Index(Audiences, l.Audience) {
-		l.Audience, l.Because["audience"] = observed.Audience, cause
-	}
-	if slices.Index(Trusts, observed.Trust) < slices.Index(Trusts, l.Trust) {
-		l.Trust, l.Because["trust"] = observed.Trust, cause
-	}
-	return l
 }
