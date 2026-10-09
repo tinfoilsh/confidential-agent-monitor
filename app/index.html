@@ -561,12 +561,8 @@ function summary(e) {
 }
 
 function reasons(r) {
-  const title = entry(r.facts.account).title;
-  return (r.gaps ?? []).map((g) => ({
-    ask: r.facts?.operation?.action == null ? `${title} has no operation defined for this request.` : `You asked to approve changes on ${r.facts.account}.`,
-    audience: `It has seen private data from ${r.facts.context.label.because?.audience}, and ${SEES[r.facts?.context?.sends]} can see this.`,
-    trust: `It has read content from strangers on ${r.facts.context.label.because?.trust}, so it may be following their instructions.`,
-  })[g]);
+  const messages = new Map((r.reasons ?? []).map((reason) => [reason.id, reason.message]));
+  return (r.gaps ?? r.waives ?? []).map((id) => messages.get(id) ?? id);
 }
 
 // A saved approval binds one operation and its grant. The text names fields, not values, which can be whole messages;
@@ -608,7 +604,7 @@ function requestPane(id) {
   const buttons = decide(r, saveText(r));
   return [head(esc(r.facts?.title || summary(r.facts?.details) || r.facts.account), `${esc(r.facts.principal.name)} · ${accountIcon(r.facts.account)}${esc(r.facts.account)}${r.state === "pending" ? ` · ${left(r)} left` : ""}`, requestSource),
     `<section><div class="row"><span class="${STATE_CLASS[r.state]}">${r.state}</span><span class="muted">${new Date(r.time).toLocaleTimeString()}</span></div>
-      <ul>${reasons(r).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
+      <ul>${[...(r.deny ?? []), ...reasons(r)].map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
       <div class="mono">${esc(summary(r.facts?.details))}</div>
       ${r.facts?.operation?.id ? disclosure("grant", `<span class="muted">${esc(r.facts?.operation?.id)} grant</span>`, `<pre>${esc(JSON.stringify(r.grant))}</pre>`) : ""}
       ${disclosure("request", "Policy facts", `<pre>${esc(JSON.stringify(r.facts, null, 2))}</pre>`)}
@@ -625,7 +621,7 @@ const answer = run((id, decision) => {
     if (decision === "save" && identity) identity.rules = [...(identity.rules ?? []), {
       account: request.facts.account, action: request.facts.operation.action, operation: request.facts.operation.id,
       definition: request.definition,
-      scope: request.grant ?? {}, waives: request.gaps ?? [],
+      scope: request.grant ?? {}, waives: request.gaps ?? [], reasons: request.reasons ?? [],
     }];
   }, () => api("POST", `/requests/${id}`, { decision }), { message: decision === "save" ? "Rule saved" : decision === "deny" ? "Denied" : "Approved" });
 });
@@ -647,7 +643,7 @@ const pairAgent = () => patch({ identities: { [$("name").value.trim()]: { key: $
 
 function ruleSentence(r) {
   if (!r.operation) return `Inactive: ${r.action} on ${r.account} was saved before approvals named an operation`;
-  return `${grantText(r.operation, r.scope, r.scope)} on ${r.account}, despite ${r.waives.join(" and ")}`;
+  return `${grantText(r.operation, r.scope, r.scope)} on ${r.account}. Approval covers: ${reasons(r).join(" ")}`;
 }
 
 // mode mirrors lib.rego: the most specific override wins, effects that ask still ask at allow,

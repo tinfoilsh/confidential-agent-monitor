@@ -17,3 +17,5 @@ testdata/
 
 !policy_optimization_test.go
 !connector/web/preset_test.go
+!approval_policy_test.go
+!approval_ui_test.mjs

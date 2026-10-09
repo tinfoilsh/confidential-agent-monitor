@@ -434,6 +434,7 @@ func (m *monitor) saveApproval(ctx context.Context, r *record) error {
 		Definition: r.Definition,
 		Scope:      r.Grant,
 		Waives:     r.Gaps,
+		Reasons:    slices.Clone(r.Reasons),
 	})
 	patch, err := json.Marshal(map[string]any{"identities": map[string]any{f.Principal.Name: map[string]any{"rules": rules}}})
 	if err != nil {

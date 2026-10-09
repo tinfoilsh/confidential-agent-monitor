@@ -92,11 +92,12 @@ deny contains "restricted host" if {
 }
 ```
 
-Owner policies remain in `config.policies`. They can deny requests using both
-common and protocol-specific facts. They do not supply operation descriptions.
+Owner policies remain in `config.policies`. They can deny requests or require
+approval using both common and protocol-specific facts. They do not supply
+operation descriptions.
 Unknown requests have a null operation and require approval; malformed or
 ambiguous matches are refused. Approval grants and definition hashes stay
-outside the facts snapshot. Decisions contain `facts`, `deny`, `gaps`, `next`,
+outside the facts snapshot. Decisions contain `facts`, `deny`, `gaps`, `reasons`, `next`,
 `grant`, and `definition`; the app reads operation, title, parameters, principal,
 account, and the current label from `facts`. Audit records add lifecycle fields
 and results without duplicating those facts. Failed message evaluations retain
@@ -111,6 +112,48 @@ approval requirements. Lattice settings are available in `data.lattices`.
 rules or data under `monitor` or `lattices`, which the monitor reserves.
 An undefined deny rule adds no restrictions. A defined rule must return a set or
 array of strings; malformed output and evaluation errors refuse the request.
+
+`data.sentinel.approvals` adds approval requirements. For example:
+
+```rego
+package sentinel
+
+approvals contains {"id": "owner.payment_limit", "message": "Payments above $500 need approval."} if {
+    input.facts.account == "payments"
+    "pay" in input.facts.operation.effects
+    input.facts.parameters.amount > 500
+}
+```
+
+The amount field must be extracted by the preset; the rule uses the units of that
+field. Built-in requirements still apply, including the default approval for
+payments. A custom requirement also applies when an action override allows the
+operation.
+
+An undefined approvals rule adds no requirements. A defined rule must return a
+set or array of objects containing exactly `id` and `message`. IDs must start
+with `owner.`, followed by an ASCII letter or digit and then letters, digits,
+underscores, dots, or hyphens. Messages must be nonempty strings. Repeated
+identical entries are accepted; conflicting messages for one ID, malformed
+entries, and evaluation errors refuse the request. Owner requirements add to
+built-in checks and cannot override a denial.
+
+`gaps` contains the remaining requirement IDs. `reasons` contains the matching
+`{id, message}` objects, including explanations for built-in requirements.
+Saved approvals waive IDs for the same operation, scope, and definition. They
+also retain the reason messages for display; those messages grant no authority.
+Use a stable ID for each requirement. A new requirement that appears while a
+request waits cannot be covered by an approval of the earlier requirements.
+Policy and data edits invalidate saved approvals through the existing definition
+hash, including edits to literal messages in policy source.
+
+Approval rules can inspect `data.monitor.base_gaps`, the remaining built-in
+requirements after saved waivers. Denial rules can inspect `data.monitor.gaps`,
+which also includes custom requirements. An approval rule that depends on the
+final gaps or reasons is recursive and is rejected when the policy is compiled.
+Custom requirements can pause operations and connection admission. Message
+requests cannot wait for approval, so a matching requirement refuses the message
+with its explanation.
 
 The monitor prepares Rego once per configuration and supplies a fresh lazy input
 object for each evaluation. Common facts use native objects, so reading access,

@@ -94,8 +94,61 @@ deny contains "the agent's label cannot flow to this message channel" if {
 	not data.monitor.labels.flows_to(f.context.label, f.context.channel)
 }
 
-gaps := set() if f.kind in {"admission", "message"}
+base_gaps := set() if f.kind in {"admission", "message"}
 
 else := gap - waived
 
-decision := {"deny": deny, "gaps": gaps}
+default owner_approvals := []
+
+owner_approvals := data.sentinel.approvals
+
+approval_collection if is_array(owner_approvals)
+approval_collection if is_set(owner_approvals)
+
+valid_owner_approvals if {
+	approval_collection
+	every r in owner_approvals {
+		is_object(r)
+		object.keys(r) == {"id", "message"}
+		is_string(r.id)
+		regex.match(`^owner\.[a-zA-Z0-9][a-zA-Z0-9_.-]*$`, r.id)
+		is_string(r.message)
+		trim_space(r.message) != ""
+	}
+	# Repeated identical entries are harmless; conflicting messages for one ID are not.
+	count({r.id | some r in owner_approvals}) == count({r | some r in owner_approvals})
+}
+
+deny contains "owner policy approvals must be a set or array of {id, message} objects with unique owner.* IDs and nonempty messages" if not valid_owner_approvals
+
+# Messages cannot wait for interactive approval.
+deny contains sprintf("Message delivery requires approval: %s", [r.message]) if {
+	f.kind == "message"
+	valid_owner_approvals
+	some r in owner_approvals
+}
+
+ask_message := sprintf("This request has no recognized operation on %s.", [f.account]) if op == null
+else := sprintf("This request needs your approval on %s.", [f.account])
+
+because := object.get(f.context.label, "because", {})
+recipients := {"me": "you", "team": "your team", "anyone": "anyone"}
+
+builtin_messages := {
+	"ask": ask_message,
+	"audience": sprintf("This agent has seen private data from %s; this request can disclose it to %s.", [object.get(because, "audience", "an earlier request"), object.get(recipients, f.context.sends, "an unknown audience")]),
+	"trust": sprintf("This agent has read untrusted content from %s; this operation requires trust.", [object.get(because, "trust", "an earlier request")]),
+}
+
+reasons contains {"id": id, "message": builtin_messages[id]} if some id in base_gaps
+
+reasons contains r if {
+	f.kind != "message"
+	valid_owner_approvals
+	some r in owner_approvals
+	not r.id in waived
+}
+
+gaps := {r.id | some r in reasons}
+
+decision := {"deny": deny, "gaps": gaps, "reasons": reasons}

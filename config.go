@@ -43,12 +43,13 @@ type access struct {
 
 // A rule waives gaps for one matched operation under the definition the owner approved.
 type rule struct {
-	Account    string         `json:"account"`
-	Action     string         `json:"action"`
-	Operation  string         `json:"operation,omitempty"`
-	Definition string         `json:"definition,omitempty"`
-	Scope      map[string]any `json:"scope"`
-	Waives     []string       `json:"waives"`
+	Account    string           `json:"account"`
+	Action     string           `json:"action"`
+	Operation  string           `json:"operation,omitempty"`
+	Definition string           `json:"definition,omitempty"`
+	Scope      map[string]any   `json:"scope"`
+	Waives     []string         `json:"waives"`
+	Reasons    []approvalReason `json:"reasons,omitempty"` // Display snapshot only.
 }
 
 // policyOptions contains settings used only by policy, never connection setup.

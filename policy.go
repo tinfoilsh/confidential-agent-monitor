@@ -27,7 +27,7 @@ import (
 // Bump this when compiled parsing, description, normalization, label, or approval
 // semantics change. It invalidates saved approvals even if the facts schema and
 // Rego sources stay the same. Display-only edits do not require a bump.
-const approvalSemanticsVersion = 6
+const approvalSemanticsVersion = 7
 
 //go:embed presets/policy/lib.rego
 var policySource string
@@ -61,12 +61,19 @@ type input struct {
 }
 
 type decision struct {
-	Facts      *facts.Facts   `json:"facts"`
-	Deny       []string       `json:"deny"`
-	Gaps       []string       `json:"gaps"`
-	Next       label          `json:"next"`
-	Definition string         `json:"definition"`
-	Grant      map[string]any `json:"grant"`
+	Facts      *facts.Facts     `json:"facts"`
+	Deny       []string         `json:"deny"`
+	Gaps       []string         `json:"gaps"`
+	Reasons    []approvalReason `json:"reasons"`
+	Next       label            `json:"next"`
+	Definition string           `json:"definition"`
+	Grant      map[string]any   `json:"grant"`
+}
+
+// IDs bind approval waivers; messages explain them without granting authority.
+type approvalReason struct {
+	ID      string `json:"id"`
+	Message string `json:"message"`
 }
 
 func (d *decision) authority() string {
@@ -348,6 +355,9 @@ func evaluateDecision(ctx context.Context, q policyQuery, in input) (*decision, 
 	if d.Gaps, err = policyMessages(output["gaps"]); err != nil {
 		return nil, err
 	}
+	if d.Reasons, err = policyReasons(output["reasons"], d.Gaps); err != nil {
+		return nil, err
+	}
 	if f.Kind != facts.KindAdmission && describeErr == nil {
 		d.Next = d.Next.Observe(f.Context.Observes, f.Context.Cause)
 	}
@@ -369,6 +379,33 @@ func policyMessages(value any) ([]string, error) {
 	}
 	slices.Sort(messages)
 	return slices.Compact(messages), nil
+}
+
+func policyReasons(value any, gaps []string) ([]approvalReason, error) {
+	values, ok := value.([]any)
+	if !ok || len(values) != len(gaps) {
+		return nil, errors.New("policy decision must explain every approval requirement")
+	}
+	reasons := make([]approvalReason, 0, len(values))
+	for _, value := range values {
+		obj, ok := value.(map[string]any)
+		if !ok || len(obj) != 2 {
+			return nil, errors.New("policy approval reasons must contain id and message")
+		}
+		id, idOK := obj["id"].(string)
+		message, messageOK := obj["message"].(string)
+		if !idOK || id == "" || !messageOK || strings.TrimSpace(message) == "" {
+			return nil, errors.New("policy approval reasons must contain nonempty strings")
+		}
+		reasons = append(reasons, approvalReason{ID: id, Message: message})
+	}
+	slices.SortFunc(reasons, func(a, b approvalReason) int { return strings.Compare(a.ID, b.ID) })
+	for i, reason := range reasons {
+		if reason.ID != gaps[i] {
+			return nil, errors.New("policy approval reasons must match the approval requirements")
+		}
+	}
+	return reasons, nil
 }
 
 // Expose common fields as native objects so OPA can read them without encoding
