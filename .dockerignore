@@ -1,0 +1,21 @@
+# Send only source to the builder. Never include local state or credentials.
+**
+!go.mod
+!go.sum
+!*.go
+!connector/
+!connector/**
+!facts/
+!facts/**
+!app/
+!app/**
+!presets/
+!presets/*.json
+!presets/policy/
+!presets/policy/**
+!internal/
+!internal/**
+**/*_test.go
+**/testdata/**
+**/.git/**
+**/__pycache__/**

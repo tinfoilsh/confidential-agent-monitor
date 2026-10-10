@@ -1,0 +1,71 @@
+# Reusable template. Provisioning replaces the placeholder after -owner-key-sha256 with the
+# owner key digest and publishes the result as each Monitor's measured configuration.
+cvm-version: SET_CVM_VERSION_AND_DIGEST_BEFORE_RELEASE
+cvm-network:
+  inbound-ports: [443, 22]
+cpus: 2
+memory: 2048
+
+shim:
+  upstream-port: 8080
+  authenticated: false
+  paths:
+    - /healthz
+    - /app/*
+    - /
+    - /unlock
+    - /presets/*
+    - /labels/*
+    - /accounts/*
+    - /sign-in/*
+    - /connections/*
+    - /requests*
+    - /policy*
+
+networks:
+  upstream:
+    egress: open
+
+attested-keys:
+  - id: host-ssh
+    key: ed25519
+    uid: 65532
+    gid: 65532
+
+volumes:
+  - name: state
+    # Opened at boot with this Monitor's key from its deployment secrets.
+    key-secret: MONITOR_STATE_KEY
+    owner: "65532:65532"
+    size: 1GiB
+
+containers:
+  - name: monitor
+    image: "ghcr.io/tinfoilsh/confidential-agent-monitor@sha256:0000000000000000000000000000000000000000000000000000000000000000"
+    user: "65532:65532"
+    keys: [host-ssh]
+    ports: ["22:2223"]
+    networks: [upstream]
+    persistent_volumes: [state:/var/lib/monitor]
+    command:
+      - -production
+      - -ssh-host-key
+      - /run/tinfoil/keys/host-ssh/private_key.pem
+      - -bucket
+      - file:///var/lib/monitor?no_tmp_dir=1
+      - -api
+      - 0.0.0.0:8080
+      - -listen
+      - 0.0.0.0:2223
+      - -owner-key-sha256
+      - TINFOIL_MONITOR_OWNER_KEY_SHA256
+    read_only: true
+    tmpfs:
+      /tmp: rw,noexec,nosuid,nodev,size=64m
+    restart: always
+    healthcheck:
+      test: ["CMD", "/monitor", "-healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

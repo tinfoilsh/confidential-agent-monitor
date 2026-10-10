@@ -11,10 +11,10 @@ import (
 	"slices"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
-	sentinel "github.com/tinfoilsh/mcp-sentinel"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/facts"
+	sentinel "github.com/tinfoilsh/monitor/internal/sentinel"
 )
 
 type Server struct {

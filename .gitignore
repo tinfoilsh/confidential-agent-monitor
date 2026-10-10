@@ -11,3 +11,7 @@ test_*.py
 *.test.*
 testdata/
 __pycache__/
+POLICY.md
+
+# Local test workflow
+/.github/workflows/routes.yml

@@ -9,6 +9,7 @@ import (
 	"crypto/ed25519"
 	"crypto/elliptic"
 	"crypto/rand"
+	"crypto/sha256"
 	"crypto/subtle"
 	"crypto/tls"
 	"crypto/x509"
@@ -67,6 +68,17 @@ type monitor struct {
 	owner   []byte
 	store   *blob.Bucket
 	running map[string]*connection
+
+	// A measured public digest prevents another caller claiming an empty store.
+	ownerKeyHash []byte
+	sshHostKey   ssh.Signer
+
+	// routesMu keeps SSH admission and routing independent of mu's policy commits.
+	// sessions records whether each connection's key had an identity when admitted.
+	routesMu sync.Mutex
+	routes   map[string]*routeSession
+	sessions map[*ssh.ServerConn]bool
+
 	// mu owns authorization transactions, including documents, records and streams.
 	streams map[*connector.Stream]string
 	records []*record
@@ -99,9 +111,18 @@ func newAEAD(key []byte) (cipher.AEAD, error) {
 func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	if len(m.ownerKeyHash) != 0 {
+		digest := sha256.Sum256(key)
+		if subtle.ConstantTimeCompare(digest[:], m.ownerKeyHash) != 1 {
+			return errOwner
+		}
+	}
 	if m.live.Load() != nil {
 		if subtle.ConstantTimeCompare(key, m.owner) != 1 {
 			return errOwner
+		}
+		if m.doc.Generation < minimum {
+			return fmt.Errorf("live generation %d is older than %d", m.doc.Generation, minimum)
 		}
 		return nil
 	}
@@ -132,8 +153,11 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error 
 	if env.TLS, err = loadCA(&sl.Keys); err != nil {
 		return err
 	}
-	if env.HostKey, err = loadHostKey(&sl.Keys); err != nil {
-		return err
+	env.HostKey = m.sshHostKey
+	if env.HostKey == nil {
+		if env.HostKey, err = loadHostKey(&sl.Keys); err != nil {
+			return err
+		}
 	}
 	s, err := m.build(ctx, sl, env, nil)
 	if err != nil {
@@ -156,7 +180,7 @@ func (m *monitor) activate(ctx context.Context, next sealed, s *state) error {
 		sameAccess := maps.EqualFunc(old.principals[key].Accounts, p.Accounts, func(a, b access) bool {
 			return a.Level == b.Level && maps.Equal(a.Actions, b.Actions)
 		})
-		if !exists || !sameAccess || s.cfg.Lattices != old.cfg.Lattices {
+		if !exists || old.principals[key].Routes != p.Routes || !sameAccess || s.cfg.Lattices != old.cfg.Lattices {
 			stream.Close()
 		}
 	}
@@ -281,6 +305,12 @@ func (m *monitor) editPolicy(ctx context.Context, changes []sourceChange) error 
 			if change.Value, err = tomlValue(change.Value); err != nil {
 				return err
 			}
+		}
+		// Replacing a table key by key gives it [header] sections instead of one inline line.
+		if table, ok := change.Value.(map[string]any); ok && len(table) > 0 && table["$json"] == nil {
+			edits = append(edits, sourceChange{Path: change.Path, Delete: true})
+			edits = append(edits, fragmentChanges(table, change.Path)...)
+			continue
 		}
 		edits = append(edits, change)
 	}

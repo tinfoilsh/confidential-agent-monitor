@@ -1,0 +1,86 @@
+name: Tinfoil Release
+run-name: Release ${{ inputs.version }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release tag, for example v0.1.0-demo.1'
+        required: true
+        type: string
+
+concurrency:
+  group: tinfoil-container-release-${{ inputs.version }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.push.outputs.digest }}
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+      - name: Check release inputs
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?$ ]] || exit 1
+          git ls-remote --tags origin "refs/tags/$VERSION" > /tmp/release-tags
+          if test -s /tmp/release-tags; then
+            echo "::error::Release tag already exists"
+            exit 1
+          fi
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          config = Path("tinfoil-config.yml").read_text()
+          if "SET_" in config:
+              raise SystemExit("Pin a CVM release supporting non-admin SSH port mappings before release")
+          if config.count("TINFOIL_MONITOR_OWNER_KEY_SHA256") != 1 or not re.search(r'- -owner-key-sha256\n\s+- TINFOIL_MONITOR_OWNER_KEY_SHA256\n', config):
+              raise SystemExit("Keep one owner digest placeholder after -owner-key-sha256")
+          PY
+      - name: Log in to GHCR
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build image
+        run: docker build --platform linux/amd64 --provenance=false --sbom=false -t localhost/monitor-cvm:demo .
+      - name: Push image
+        id: push
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}:${{ inputs.version }}
+        run: |
+          docker tag localhost/monitor-cvm:demo "$IMAGE"
+          docker push "$IMAGE"
+          ref=$(docker image inspect --format '{{index .RepoDigests 0}}' "$IMAGE")
+          echo "digest=${ref##*@}" >> "$GITHUB_OUTPUT"
+
+  prepare-release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - name: Pin image and create release tag
+        uses: tinfoilsh/update-container-action@5e0a3789316941664cee055706799114e0180565 # v0.6.0
+        with:
+          version: ${{ inputs.version }}
+          source-sha: ${{ github.sha }}
+          update-config: true
+          image-refs: |
+            ghcr.io/${{ github.repository }}@${{ needs.build.outputs.digest }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Measure and publish the new tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ inputs.version }}
+        run: gh workflow run tinfoil-release-publish.yml --ref "$VERSION"

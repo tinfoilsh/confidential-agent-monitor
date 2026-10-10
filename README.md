@@ -37,6 +37,16 @@ alias in `~/.ssh/config` with the server address, SSH port, private key, and pin
 host key. Check access with `monitor connections`. Use `monitor run --help`,
 `monitor shell --help`, or `monitor mcp serve --help` for command options.
 
+## Sandbox routes
+
+Sandboxes publish virtual ports 22 and 443 through an outbound SSH connection.
+Only identities with `routes = true` can connect to them. Clear "Open sandbox
+routes" or remove the identity in the web app to close and revoke its sessions.
+This permission does not grant account access.
+
+The CVM template maps guest port 22 to container port 2223 without admin
+privileges. Pin a runtime supporting this mapping before release.
+
 ## Launch Claude in a VM
 
 The VM runner uses Firecracker directly. It supports x86_64 Linux with

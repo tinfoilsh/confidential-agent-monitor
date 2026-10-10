@@ -31,6 +31,7 @@ const (
 var levels = []string{"off", "read", "ask", "allow"}
 
 type identity struct {
+	Routes   bool              `json:"routes,omitempty"`
 	Key      string            `json:"key"`
 	Accounts map[string]access `json:"accounts"`
 	Rules    map[string]rule   `json:"rules,omitempty"`
@@ -257,6 +258,17 @@ func compileSource(policy string, secrets secretStore) (*config, map[string]*con
 		if _, ok := cfg.resolved[a.Preset]; !ok {
 			return nil, nil, fmt.Errorf("account %s has unknown preset %s", acct, a.Preset)
 		}
+		base, _ := json.Marshal(presetCatalog{Connections: cfg.resolved[a.Preset].Catalog.Connections})
+		patch, _ := json.Marshal(a)
+		raw, err := jsonpatch.MergePatch(base, patch)
+		a = account{}
+		if err == nil {
+			err = facts.DecodeNumbers(raw, &a)
+		}
+		if err != nil {
+			return nil, nil, fmt.Errorf("account %s: %w", acct, err)
+		}
+		cfg.Accounts[acct] = a
 		if !slices.Contains(facts.Audiences, a.Contents) || !slices.Contains(facts.Audiences, a.Sends) {
 			return nil, nil, fmt.Errorf("account %s: contents and sends must be one of %v", acct, facts.Audiences)
 		}

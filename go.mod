@@ -21,7 +21,6 @@ require (
 	github.com/pkg/sftp v1.13.11
 	github.com/pmezard/go-difflib v1.0.0
 	github.com/tidwall/redcon v1.6.4
-	github.com/tinfoilsh/mcp-sentinel v0.0.0
 	github.com/vektah/gqlparser/v2 v2.5.58
 	gocloud.dev v0.46.0
 	golang.org/x/crypto v0.57.0
@@ -104,5 +103,3 @@ require (
 	google.golang.org/protobuf v1.36.12 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
-
-replace github.com/tinfoilsh/mcp-sentinel => ../mcp-sentinel-2

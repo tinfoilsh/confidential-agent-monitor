@@ -14,11 +14,11 @@ import (
 	"time"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
-	sentinel "github.com/tinfoilsh/mcp-sentinel"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/mcp"
 	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/facts"
+	sentinel "github.com/tinfoilsh/monitor/internal/sentinel"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -27,8 +27,16 @@ const (
 	fingerprintExtension = "fingerprint"
 )
 
+type forwardedAddress struct {
+	Host       string
+	Port       uint32
+	Origin     string
+	OriginPort uint32
+}
+
 func (m *monitor) serveSSH(ln net.Listener) {
 	log.Printf("monitor listening on %s", ln.Addr())
+	handshakes := make(chan struct{}, maxSSHHandshakes)
 	for {
 		nc, err := ln.Accept()
 		if err != nil {
@@ -37,21 +45,34 @@ func (m *monitor) serveSSH(ln net.Listener) {
 			}
 			return
 		}
+		st := m.live.Load()
+		if st == nil {
+			nc.Close()
+			continue
+		}
+		select {
+		case handshakes <- struct{}{}:
+		default:
+			nc.Close()
+			continue
+		}
 		go func() {
-			st := m.live.Load()
-			if st == nil {
-				nc.Close()
-				return
-			}
-			front := &ssh.ServerConfig{PublicKeyCallback: m.authorized}
+			front := &ssh.ServerConfig{PublicKeyCallback: m.authorized, MaxAuthTries: 3}
 			front.AddHostKey(st.HostKey)
+			nc.SetDeadline(time.Now().Add(sshHandshakeTimeout))
 			conn, chans, reqs, err := ssh.NewServerConn(nc, front)
+			<-handshakes
 			if err != nil {
 				nc.Close()
 				return
 			}
+			nc.SetDeadline(time.Time{})
 			defer conn.Close()
-			go ssh.DiscardRequests(reqs)
+			if !m.admitSession(conn) {
+				return
+			}
+			defer m.removeSession(conn)
+			go m.routeRequests(conn, reqs)
 			for nc := range chans {
 				go m.forward(conn.Permissions.Extensions[fingerprintExtension], nc)
 			}
@@ -64,17 +85,21 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 		nc.Reject(ssh.Prohibited, "only direct-tcpip channels are forwarded")
 		return
 	}
-	var target struct {
-		Host string
-		Port uint32
-		Rest []byte `ssh:"rest"`
-	}
+	var target forwardedAddress
 	if err := ssh.Unmarshal(nc.ExtraData(), &target); err != nil {
 		nc.Reject(ssh.ConnectionFailed, "malformed direct-tcpip request")
 		return
 	}
 	st := m.live.Load()
-	p := st.principals[key]
+	p, known := st.principals[key]
+	if !known {
+		nc.Reject(ssh.Prohibited, "key has no agent access")
+		return
+	}
+	if reservedRoute(target.Host) {
+		m.forwardRoute(key, p, st, target, nc)
+		return
+	}
 	ctx := context.Background()
 	var serve func(*connector.Stream)
 	switch target.Host {
@@ -122,8 +147,8 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 	if err != nil {
 		return
 	}
-	go ssh.DiscardRequests(reqs)
 	s := connector.NewStream(ctx, channelConn{ch})
+	go func() { ssh.DiscardRequests(reqs); s.Close() }()
 	// agent.monitor authorizes each request against live state, and an approved proposal must answer on its stream.
 	if target.Host != agentHost && !m.trackStream(key, s, st) {
 		s.Close()
@@ -174,13 +199,12 @@ func (channelConn) SetDeadline(time.Time) error      { return nil }
 func (channelConn) SetReadDeadline(time.Time) error  { return nil }
 func (channelConn) SetWriteDeadline(time.Time) error { return nil }
 
-// authorized reads the identities on every attempt, so keys change without a restart.
+// Any key authenticates so that it can publish its route. Key probes run this without a
+// signature, so it only labels the session; opening channels still needs a live identity.
 func (m *monitor) authorized(_ ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
-	fingerprint := ssh.FingerprintSHA256(key)
-	if _, ok := m.live.Load().principals[fingerprint]; ok {
-		return &ssh.Permissions{Extensions: map[string]string{fingerprintExtension: fingerprint}}, nil
-	}
-	return nil, errors.New("key is not authorized")
+	return &ssh.Permissions{Extensions: map[string]string{
+		fingerprintExtension: ssh.FingerprintSHA256(key), routeExtension: routeName(key),
+	}}, nil
 }
 
 // trackStream registers a stream before it carries data, so later changes to its identity's
@@ -363,15 +387,17 @@ func take(m map[string]any, fields ...string) map[string]any {
 
 // fragmentChanges sets each leaf of a TOML fragment, merging it into the source.
 func fragmentChanges(v map[string]any, path []string) (changes []sourceChange) {
+	var tables []sourceChange
 	for _, key := range slices.Sorted(maps.Keys(v)) {
 		at := append(slices.Clone(path), key)
-		if table, ok := v[key].(map[string]any); ok && len(table) > 0 {
-			changes = append(changes, fragmentChanges(table, at)...)
+		if table, ok := v[key].(map[string]any); ok && len(table) > 0 && table["$json"] == nil {
+			tables = append(tables, fragmentChanges(table, at)...)
 		} else {
 			changes = append(changes, sourceChange{Path: at, Value: v[key]})
 		}
 	}
-	return changes
+	// A table's own keys come first so its header precedes its subtables'.
+	return append(changes, tables...)
 }
 
 // proposePolicy holds an agent's change as an approval card and applies it once the owner allows it.

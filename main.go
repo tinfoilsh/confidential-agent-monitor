@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"flag"
 	"log"
 	"net"
@@ -24,6 +26,7 @@ import (
 	"gocloud.dev/blob"
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/s3blob"
+	"golang.org/x/crypto/ssh"
 )
 
 const (
@@ -54,14 +57,55 @@ func main() {
 	bucketURL := flag.String("bucket", "", "blob URL holding the encrypted state")
 	drafts := flag.String("drafts", "", "with a file:// bucket, also load the draft presets in this directory")
 	extension := flag.String("extension", "", "the english-only extension directory; browser connections need it")
+	production := flag.Bool("production", false, "disable development connectors and profiling, including with a file:// bucket")
+	ownerHash := flag.String("owner-key-sha256", "", "hex SHA-256 of the decoded owner key; required in production")
+	hostKey := flag.String("ssh-host-key", "", "runtime attested SSH private key")
+	healthcheck := flag.Bool("healthcheck", false, "check the local owner API and exit, including while locked")
 	flag.Parse()
 	if flag.NArg() != 0 {
 		log.Fatal("unexpected server arguments; use the separately installed monitor client")
 	}
-	dev := strings.HasPrefix(*bucketURL, "file://")
+	if *healthcheck {
+		client := &http.Client{Timeout: 5 * time.Second}
+		resp, err := client.Get("http://" + *api + "/healthz")
+		if err != nil {
+			log.Fatal(err)
+		}
+		resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			log.Fatalf("healthcheck: %s", resp.Status)
+		}
+		return
+	}
+	var ownerKeyHash []byte
+	if *ownerHash != "" {
+		var err error
+		ownerKeyHash, err = hex.DecodeString(*ownerHash)
+		if err != nil || len(ownerKeyHash) != sha256.Size {
+			log.Fatal("-owner-key-sha256 must be 64 hexadecimal characters")
+		}
+	} else if *production {
+		log.Fatal("-production requires -owner-key-sha256 to protect initial enrollment")
+	}
+	var hostSigner ssh.Signer
+	var err error
+	if *hostKey != "" {
+		data, err := os.ReadFile(*hostKey)
+		if err != nil {
+			log.Fatal(err)
+		}
+		hostSigner, err = ssh.ParsePrivateKey(data)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	if *production && hostSigner == nil {
+		log.Fatal("-production requires -ssh-host-key")
+	}
+	dev := !*production && strings.HasPrefix(*bucketURL, "file://")
 	if *drafts != "" {
 		if !dev {
-			log.Fatal("-drafts loads unreviewed presets, so it needs a file:// bucket")
+			log.Fatal("-drafts needs a development file:// bucket without -production")
 		}
 		draftFiles = os.DirFS(*drafts)
 	}
@@ -80,7 +124,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	m := &monitor{store: bucket, dev: dev}
+	m := &monitor{store: bucket, dev: dev, ownerKeyHash: ownerKeyHash, sshHostKey: hostSigner}
 	go m.serveSSH(ln)
 	log.Fatal((&http.Server{Addr: *api, Handler: m.handler(), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
 }

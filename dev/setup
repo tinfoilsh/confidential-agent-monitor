@@ -26,13 +26,13 @@ if jq -e '.generation == 1 and ((.config.accounts // {}) | length == 0) and ((.c
   if [[ -n ${MONITOR_CONFIG:-} ]]; then
     cp "$MONITOR_CONFIG" "$dev/seed.json"
   else
-    jq '{accounts: {web: ({preset: "web"} + .catalog.defaults + {connections: .catalog.connections})}}' \
+    jq '{accounts: {web: ({preset: "web"} + .catalog.defaults)}}' \
       presets/web.json > "$dev/seed.json"
   fi
   jq '{changes: [to_entries[] | {path: [.key], value: .value}]}' "$dev/seed.json" | owner /policy/edits -d @- > "$dev/state.json"
 fi
 # MONITOR_PROFILE=1 lets the dev agent's requests all through, recorded in the owner's request log.
-jq --rawfile key "$dev/id.pub" --arg profile "${MONITOR_PROFILE:-}" \
+jq --arg key "$(<"$dev/id.pub")" --arg profile "${MONITOR_PROFILE:-}" \
   '.config as $config | ($config.identities.dev // {}) as $dev |
    {identities: {dev: ($dev + {key: $key, profile: ($profile != ""),
      accounts: (($config.accounts // {}) | with_entries(.value = ($dev.accounts[.key] // {level: "allow"})))})}}' "$dev/state.json" |

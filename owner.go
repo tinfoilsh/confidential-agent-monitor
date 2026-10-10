@@ -107,6 +107,11 @@ type editsInput struct {
 
 func (m *monitor) handler() http.Handler {
 	mux := http.NewServeMux()
+	mux.Handle("GET /healthz", jsonHandler(0, func(_ *http.Request, _ struct{}) (any, error) {
+		return struct {
+			Locked bool `json:"locked"`
+		}{Locked: m.live.Load() == nil}, nil
+	}))
 	mux.Handle("POST /unlock", jsonHandler(maxDocumentBytes, func(r *http.Request, req unlockInput) (any, error) {
 		key, err := ownerKey(r)
 		if err != nil {
