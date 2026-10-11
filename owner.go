@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"slices"
 	"strings"
 
@@ -22,7 +23,10 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-const maxDocumentBytes = 16 << 20
+const (
+	maxDocumentBytes = 16 << 20
+	preflightMaxAge  = "600"
+)
 
 //go:embed app
 var app embed.FS
@@ -257,6 +261,47 @@ func (m *monitor) browserControl(w http.ResponseWriter, r *http.Request) {
 	}
 	r.Body = http.MaxBytesReader(w, r.Body, maxDocumentBytes)
 	b.ServeOwner(w, r)
+}
+
+// ownerOrigins parses a comma-separated list of exact browser origins, such as https://dash.tinfoil.sh.
+func ownerOrigins(list string) ([]string, error) {
+	var origins []string
+	for _, origin := range strings.Split(list, ",") {
+		if origin = strings.TrimSpace(origin); origin == "" {
+			continue
+		}
+		u, err := url.Parse(origin)
+		if err != nil || (u.Scheme != "https" && u.Scheme != "http") || u.Host == "" || u.Scheme+"://"+u.Host != origin {
+			return nil, fmt.Errorf("owner origin %q must be scheme://host[:port]", origin)
+		}
+		origins = append(origins, origin)
+	}
+	return origins, nil
+}
+
+// allowOrigins lets the listed origins call the owner API from a browser, such as a dashboard
+// holding the owner key in memory. Only the bearer key authenticates; credentials are never allowed.
+func allowOrigins(origins []string, next http.Handler) http.Handler {
+	if len(origins) == 0 {
+		return next
+	}
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Vary", "Origin")
+		origin := r.Header.Get("Origin")
+		if !slices.Contains(origins, origin) {
+			next.ServeHTTP(w, r)
+			return
+		}
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+		if r.Method == http.MethodOptions && r.Header.Get("Access-Control-Request-Method") != "" {
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
+			w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+			w.Header().Set("Access-Control-Max-Age", preflightMaxAge)
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 var errLocked = errors.New("the monitor is locked")

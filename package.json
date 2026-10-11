@@ -1,0 +1,14 @@
+{
+  "name": "@tinfoilsh/confidential-agent-monitor",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Monitor's owner API client and the account, permission and request semantics its web apps share.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./app/owner.d.ts",
+      "default": "./app/owner.js"
+    }
+  },
+  "files": ["app/owner.js", "app/owner.d.ts"]
+}

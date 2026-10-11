@@ -37,6 +37,30 @@ alias in `~/.ssh/config` with the server address, SSH port, private key, and pin
 host key. Check access with `monitor connections`. Use `monitor run --help`,
 `monitor shell --help`, or `monitor mcp serve --help` for command options.
 
+## Owner web apps
+
+The web app at `/app/` and embedding dashboards share `app/owner.js`. This
+module holds the owner API client, the policy edits for each owner action, and
+the account, permission, and request views. It also resolves connector icons
+from `app/icons/manifest.json`. Monitor serves the icon files at `/app/icons/`.
+`app/owner.d.ts` declares the module's types.
+`package.json` exports both files as `@tinfoilsh/confidential-agent-monitor`.
+Add owner behavior to `owner.js`, not to a client app. The server still
+validates every edit and decides every request.
+
+A dashboard on another origin calls the owner API from the browser. List its
+exact origins with `-owner-origins https://dash.tinfoil.sh,http://localhost:3000`.
+Unlisted origins get no CORS headers, and responses never allow credentials,
+so only the owner key authenticates a call.
+
+```sh
+node --test app_test.mjs approval_ui_test.mjs owner_test.mjs
+```
+
+`owner_test.mjs` builds Monitor and runs a throwaway server on
+`127.0.0.1:28080` and `127.0.0.1:22223`. Set `OWNER_TEST_API` and
+`OWNER_TEST_SSH` to use other addresses.
+
 ## Sandbox routes
 
 Sandboxes publish virtual ports 22 and 443 through an outbound SSH connection.

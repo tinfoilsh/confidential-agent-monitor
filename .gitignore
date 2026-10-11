@@ -6,6 +6,11 @@
 
 # Tests and fixtures
 *_test.*
+!template_test.go
+!storage_test.go
+!owner_test.mjs
+!app_test.mjs
+!approval_ui_test.mjs
 test_*.py
 *.test
 *.test.*

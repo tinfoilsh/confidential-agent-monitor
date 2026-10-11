@@ -1,0 +1,557 @@
+// The owner API client and the request, permission and account semantics shared by
+// Monitor's own app and embedding dashboards. The server remains the authority: these
+// functions shape edits and describe its answers.
+
+export const LEVELS = { off: "No access", read: "Read only", ask: "Ask", allow: "Allow" };
+export const MODES = { allow: "Allow", ask: "Ask", off: "Deny" };
+export const AUDIENCES = { me: "Only me", team: "My team", anyone: "Anyone" };
+export const TRUSTS = { trusted: "Trusted", untrusted: "Untrusted" };
+export const CATALOG_GROUPS = { api: "API", mcp: "MCP", protocol: "Protocol" };
+export const CREDENTIAL_STATUS = { "oauth-required": "Sign-in required", unset: "Not configured" };
+// A new preset starts as one bearer-token API; the owner sets its origin, slots and operations.
+export const NEW_PRESET = { catalog: { group: "api", fields: [{ key: "token", label: "API token", secret: true, path: ["connections", "", "http", "secrets", "token"] }],
+  connections: { "": { http: { slots: [{ value: "token", origin: "https://api.example.com", path: "/", header: "Authorization", prefix: "Bearer " }] } } },
+  defaults: { contents: "me", strangers: true, sends: "me" } }, http: { operations: {} } };
+const LOOPBACK = ["localhost", "127.0.0.1", "[::1]"];
+
+export class OwnerError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.status = status;
+  }
+}
+
+// Without an endpoint, requests go to the page's own origin; any given endpoint, even an empty one, must be a valid URL.
+// A remote owner API needs HTTPS. The key is never sent on a redirect.
+export function ownerClient({ endpoint, key, generation, fetch = (...args) => globalThis.fetch(...args) }) {
+  let base = "";
+  if (endpoint !== undefined) {
+    let url;
+    try { url = new URL(endpoint); } catch { throw new Error("Invalid monitor endpoint."); }
+    if (url.protocol !== "https:" && !(url.protocol === "http:" && LOOPBACK.includes(url.hostname))) throw new Error("The monitor endpoint must use HTTPS.");
+    if (url.username || url.password || url.search || url.hash) throw new Error("Invalid monitor endpoint.");
+    base = url.href.replace(/\/$/, "");
+  }
+  return ownerApi(async (method, path, body, signal) => {
+    const res = await fetch(base + path, { method, signal, cache: "no-store", credentials: "omit", redirect: "error",
+      headers: { Authorization: "Bearer " + key, ...(body !== undefined && { "Content-Type": "application/json" }) },
+      body: body === undefined ? undefined : JSON.stringify(body) });
+    const text = await res.text();
+    if (!res.ok) throw new OwnerError(text.trim() || `Request failed (${res.status})`, res.status);
+    return text ? JSON.parse(text) : null;
+  }, generation, base);
+}
+
+// With a known generation, an older view is a rollback, and a locked monitor unlocks at that minimum.
+export function ownerApi(request, generation, base = "") {
+  let minimum = generation;
+  const checked = (view) => {
+    if (minimum !== undefined && view) {
+      if (view.generation < minimum) throw new OwnerError("The monitor state is older than the last state you saw. Restore the latest monitor state before continuing.", 409);
+      minimum = view.generation;
+    }
+    return view;
+  };
+  const get = (path, signal) => request("GET", path, undefined, signal);
+  const post = (path, body, signal) => request("POST", path, body, signal);
+  const unlock = (at = minimum ?? 0, signal) => post("/unlock", { generation: at }, signal).then(checked);
+  return {
+    async read(signal) {
+      const [view, requests] = await Promise.all([get("/", signal), get("/requests", signal)]).catch(async (err) => {
+        if (err.status !== 423 || minimum === undefined) throw err;
+        return [await unlock(minimum, signal), await get("/requests", signal)];
+      });
+      return { view: checked(view), requests: requests ?? [] };
+    },
+    unlock,
+    edit: (changes, signal) => post("/policy/edits", { changes }, signal).then(checked),
+    decide: (id, decision, signal) => post(`/requests/${encodeURIComponent(id)}`, { decision }, signal),
+    label: (name, label, signal) => post(`/labels/${encodeURIComponent(name)}`, label, signal).then(checked),
+    preset: (name, signal) => get(`/presets/${encodeURIComponent(name)}`, signal),
+    policy: (effective, signal) => get(effective ? "/policy?effective" : "/policy", signal),
+    previewPolicy: (source, signal) => post("/policy/preview", { source }, signal),
+    applyPolicy: (source, signal) => post("/policy", { source }, signal).then(checked),
+    signIn: (account, path, redirect, credential, signal) => post(`/accounts/${encodeURIComponent(account)}/sign-in`, { path, redirect, credential }, signal),
+    finishSignIn: (state, code, signal) => post(`/sign-in/${encodeURIComponent(state)}`, { code }, signal).then(checked),
+    browser: (name, body, signal) => request(body ? "POST" : "GET", `/connections/${encodeURIComponent(name)}/browser`, body, signal),
+    icons: async (signal) => {
+      const manifest = await get(ICON_MANIFEST, signal);
+      return (preset) => connectorIcon(manifest, preset, base);
+    },
+  };
+}
+
+// Monitor serves connector icons with its app. The manifest names each preset's file and optional dark variant;
+// a preset without one shows the custom icon.
+const ICON_MANIFEST = "/app/icons/manifest.json";
+export function connectorIcon(manifest, preset, base = "") {
+  const icon = manifest?.[preset]?.src ? manifest[preset] : manifest?.custom ?? { src: "custom.svg" };
+  const url = (file) => `${base}/app/icons/${encodeURIComponent(file)}`;
+  return { src: url(icon.src), ...(icon.dark && { dark: url(icon.dark) }) };
+}
+
+// Controls address source values; named rules and operations stay named.
+export function sourceChanges(body, path = []) {
+  return Object.entries(body).flatMap(([key, value]) => {
+    const at = [...path, key];
+    if (value === null) return [{ path: at, delete: true }];
+    const atomic = key === "scope" || key === "fields" || key === "query" || key === "headers" ||
+      at[0] === "identities" && at[2] === "rules" && at.length === 4 || value?.oauth || value?.$json;
+    if (!atomic && value && typeof value === "object" && !Array.isArray(value) && Object.keys(value).length)
+      return sourceChanges(value, at);
+    return [{ path: at, value }];
+  });
+}
+
+export function applyChanges(target, changes) {
+  for (const change of changes) {
+    let parent = target;
+    for (const key of change.path.slice(0, -1)) {
+      if (!Object.hasOwn(parent, key) || !parent[key] || typeof parent[key] !== "object")
+        Object.defineProperty(parent, key, { value: {}, enumerable: true, configurable: true, writable: true });
+      parent = parent[key];
+    }
+    const key = change.path.at(-1);
+    if (change.delete) delete parent[key];
+    else Object.defineProperty(parent, key, { value: structuredClone(change.value), enumerable: true, configurable: true, writable: true });
+  }
+  return target;
+}
+
+// previewChanges shows edits before the server confirms them, including edited presets' catalogs.
+export function previewChanges(view, changes, shipped = {}) {
+  view.config = applyChanges(view.config, changes);
+  for (const name of new Set(changes.filter((c) => c.path[0] === "presets" && c.path.length > 1).map((c) => c.path[1]))) {
+    const file = view.config.presets?.[name] ?? shipped[name];
+    if (!file) continue; // A shipped preset not fetched yet needs the server's resolved catalog.
+    const previous = view.presets[name] ?? view.presets.custom, catalog = file.catalog ?? {};
+    view.presets[name] = { ...previous, ...catalog, title: typeof file.title === "string" ? file.title : name,
+      fields: Array.isArray(catalog.fields) ? catalog.fields : previous?.fields ?? [],
+      actions: catalog.actions ?? {}, operations: file.http?.operations ?? {} };
+  }
+  return view;
+}
+
+const identities = (view) => view.config.identities ?? {};
+const accounts = (view) => view.config.accounts ?? {};
+export const lattices = (view) => ({ confidentiality: view.config.lattices?.confidentiality ?? true, integrity: view.config.lattices?.integrity ?? false });
+export const presetOf = (view, account) => view.presets[accounts(view)[account]?.preset] ?? view.presets.custom;
+export const connectionName = (account, key) => (key ? `${account}-${key}` : account);
+const fill = (text, scope) => text.replace(/\{(\w+)\}/g, (m, k) => scope?.[k] ?? m);
+const filled = (c, values) => JSON.parse(JSON.stringify(c), (_, v) => typeof v === "string" ? fill(v, values) : v);
+const atPath = (object, path) => path.reduce((value, key) => value?.[key], object);
+// JSON values are equal regardless of key order, which differs between server responses and edited copies.
+const same = (a, b) => a === b || !!a && !!b && typeof a === "object" && typeof b === "object" && Array.isArray(a) === Array.isArray(b)
+  && Object.keys(a).length === Object.keys(b).length && Object.keys(a).every((k) => Object.hasOwn(b, k) && same(a[k], b[k]));
+function putPath(object, path, value) {
+  for (const key of path.slice(0, -1)) {
+    if (!Object.hasOwn(object, key)) Object.defineProperty(object, key, { value: {}, enumerable: true });
+    object = object[key];
+  }
+  Object.defineProperty(object, path.at(-1), { value, enumerable: true, configurable: true, writable: true });
+}
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+export function summary(e) {
+  if (e?.http) return `${e.http.method} ${e.http.host}${e.http.path}`;
+  if (e?.smtp) return `To ${e.smtp.to.join(", ")}${e.mail?.subject ? `: ${e.mail.subject}` : ""}`;
+  if (e?.imap) return `${e.imap.command} ${e.imap.args}`;
+  if (e?.mcp) return e.mcp.tool;
+  return "";
+}
+export const requestTitle = (r) => r.facts?.title || summary(r.facts?.details) || r.facts?.operation?.id || r.facts?.account;
+export const reasons = (r) => (r.requirements ?? []).map((requirement) => requirement.message);
+// A pending request past its deadline is expired, even before the next poll says so.
+export const stateAt = (r, now) => r.state === "pending" && r.expires && Date.parse(r.expires) <= now ? "expired" : r.state;
+export const pendingSoonest = (records) => records.filter((r) => r.state === "pending").sort((a, b) => new Date(a.expires) - new Date(b.expires));
+export function ordered(records, dismissed = []) {
+  const priority = (r) => r.state === "pending" ? 0 : r.state === "expired" && !dismissed.includes(r.id) ? 1 : 2;
+  return [...records].sort((a, b) => priority(a) - priority(b) || (a.state === "pending" && b.state === "pending" ? new Date(a.expires) - new Date(b.expires) : 0));
+}
+export function timeLeft(r, now = Date.now()) {
+  const s = Math.max(0, Math.round((new Date(r.expires) - now) / 1000));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
+
+// A saved approval binds one operation and its grant. The text names fields, not values, which can be whole messages;
+// fields left out of the grant are named as broad.
+export function grantText(operation, grant, scope) {
+  const fields = Object.keys(grant ?? {}), broad = Object.keys(scope ?? {}).filter((k) => !fields.includes(k));
+  return `Allow ${operation} ${fields.length ? "for the same " + fields.join(", ") : "for any request"}`
+    + (fields.length && broad.length ? `, with any ${broad.join(", ")}` : "");
+}
+export const saveText = (r) => grantText(r.facts?.operation?.id, r.grant, r.facts?.parameters);
+// Expired requests can still save a rule, but cannot resume the original call.
+export function decisions(r, now) {
+  const state = now === undefined ? r.state : stateAt(r, now);
+  const save = r.facts?.operation?.action != null && !!r.facts?.operation?.id;
+  return r.savingDecision ? {} : state === "pending" ? { once: true, save, deny: true } : state === "expired" ? { save, dismiss: true } : {};
+}
+export function ruleSentence(r) {
+  if (!r.operation) return `Inactive: ${r.action} on ${r.account} was saved before approvals named an operation`;
+  return `${grantText(r.operation, r.scope, r.scope)} on ${r.account}. Approval covers: ${reasons(r).join(" ")}`;
+}
+
+// Each pinned MCP tool is an action under read or use, by the hint the owner approved with the pin.
+export const actionsOf = (view, account) => ({ ...groupsOf(view, account), ...presetOf(view, account).actions, ...Object.fromEntries(Object.values(accounts(view)[account]?.connections ?? {})
+  .flatMap((c) => c.mcp?.pin?.tools ?? []).map((t) => [`${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`, { title: t.title || t.name }])) });
+// Record operations also contribute permission groups to their preset.
+const operationsOf = (view, account) => Object.values(presetOf(view, account).operations ?? {});
+const groupsOf = (view, account) => Object.fromEntries(operationsOf(view, account).map((o) => [o.action, { title: o.action }]));
+// effectsOf unions the effects of every operation under an action, so a group shows its strictest obligations.
+const effectGroups = new WeakMap();
+export const effectsOf = (view, account, k) => {
+  const preset = presetOf(view, account), actions = preset.actions ?? {};
+  let groups = effectGroups.get(preset);
+  if (!groups) {
+    groups = new Map();
+    const add = (action, effects) => action.split(".").forEach((_, i, parts) => {
+      const key = parts.slice(0, i + 1).join(".");
+      if (!groups.has(key)) groups.set(key, new Set());
+      for (const effect of effects) groups.get(key).add(effect);
+    });
+    for (const [action, meta] of Object.entries(actions)) add(action, meta.effects ?? []);
+    for (const op of Object.values(preset.operations ?? {})) add(op.action, op.effects ?? []);
+    effectGroups.set(preset, groups);
+  }
+  const lineage = k.split(".").map((_, i, parts) => parts.slice(0, i + 1).join(".")).reverse();
+  const inherited = lineage.find((a) => actions[a]?.effects);
+  return [...new Set([...(actions[inherited]?.effects ?? []), ...(groups.get(k) ?? [])])];
+};
+
+// mode mirrors lib.rego: the most specific override wins, effects that ask still ask at allow,
+// effects without change are allowed and the rest follow the level.
+export function mode(access, vocabulary, effects, k) {
+  const lineage = k.split(".").map((_, i, p) => p.slice(0, p.length - i).join("."));
+  const has = (name) => effects.some((e) => vocabulary[e]?.[name]);
+  return lineage.map((a) => access.actions?.[a]).find(Boolean)
+    ?? (access.level === "allow" && has("ask") ? "ask" : has("change") ? (access.level === "read" ? "off" : access.level) : "allow");
+}
+
+// actionTree nests dotted actions under titled groups, each with its effects and number of descendant actions.
+export function actionTree(view, account) {
+  const roots = [];
+  for (const [key, action] of Object.entries(actionsOf(view, account)).sort(([a], [b]) => a.localeCompare(b))) {
+    let children = roots;
+    key.split(".").forEach((part, i, parts) => {
+      const path = parts.slice(0, i + 1).join(".");
+      let node = children.find((n) => n.key === path);
+      if (!node) children.push(node = { key: path, title: part.charAt(0).toUpperCase() + part.slice(1).replace(/[_-]/g, " "), action: false, children: [] });
+      if (path === key) Object.assign(node, { title: action.title || key, action: true });
+      children = node.children;
+    });
+  }
+  const finish = (node) => {
+    node.children.forEach(finish);
+    return Object.assign(node, { effects: effectsOf(view, account, node.key), total: node.children.reduce((n, c) => n + Number(c.action) + c.total, 0) });
+  };
+  return roots.map(finish);
+}
+
+export const levelsOf = (account) => Object.entries(LEVELS).filter(([l]) => account?.preset !== "custom_api" || l !== "read");
+
+// agentAccess describes an agent's level for every account and, below it, each action's own and inherited mode.
+export function agentAccess(view, name) {
+  const id = identities(view)[name] ?? {};
+  return Object.entries(accounts(view)).map(([account, acc]) => {
+    const access = id.accounts?.[account] ?? { level: "off" };
+    const describe = (node) => ({ ...node, own: access.actions?.[node.key] ?? null,
+      inherited: mode({ ...access, actions: { ...access.actions, [node.key]: null } }, view.vocabulary, node.effects, node.key),
+      overrides: Object.keys(access.actions ?? {}).filter((action) => action.startsWith(node.key + ".") && access.actions[action]).length,
+      children: node.children.map(describe) });
+    return { account, preset: acc.preset, level: access.level, levels: levelsOf(acc), overrides: Object.values(access.actions ?? {}).filter(Boolean).length,
+      actions: access.level === "off" ? [] : actionTree(view, account).map(describe) };
+  });
+}
+
+export function browsingHint(view, name) {
+  const id = identities(view)[name] ?? {};
+  const reaches = (pred) => Object.entries(accounts(view)).some(([a, acc]) => (id.accounts?.[a]?.level ?? "off") !== "off" && pred(acc));
+  return lattices(view).confidentiality && reaches((acc) => acc.preset === "web") && reaches((acc) => acc.contents !== "anyone");
+}
+
+export function labelStatus(view, l) {
+  const on = lattices(view);
+  const lines = [on.confidentiality && l?.audience && l.audience !== "anyone" && `Has seen private data${l.because?.audience ? ` from ${l.because.audience}` : ""}`, on.integrity && l?.trust === "untrusted" && "Has read content from strangers"];
+  return lines.filter(Boolean).join(" · ") || "Clean";
+}
+
+export const accountUsers = (view, account) => Object.entries(identities(view)).filter(([, id]) => (id.accounts?.[account]?.level ?? "off") !== "off")
+  .map(([name, id]) => ({ name, level: id.accounts[account].level, profile: !!id.profile, overrides: Object.values(id.accounts[account].actions ?? {}).filter(Boolean).length }));
+
+const mcpKeys = (view, account) => Object.entries(accounts(view)[account]?.connections ?? {}).filter(([, kinds]) => kinds.mcp).map(([key]) => key);
+
+// reviews reports each MCP connection's progress and the tool changes awaiting the owner.
+export const reviews = (view, account) => mcpKeys(view, account).map((key) => {
+  const name = connectionName(account, key), status = view.status[name] ?? {}, s = status.details ?? {};
+  const count = (sign) => (s.changes ?? []).filter((x) => x.startsWith(sign)).length;
+  return { key, name, state: status.state, error: status.error, blocked: s.blocked ?? 0, added: count("+"), changed: count("~"), removed: count("-"), changes: s.changes ?? [] };
+});
+
+export function accountStatus(view, account) {
+  const states = reviews(view, account);
+  if (states.some((s) => s.error)) return { state: "error", blocked: 0 };
+  if (states.some((s) => s.state === "connecting")) return { state: "connecting", blocked: 0 };
+  const blocked = states.reduce((n, s) => n + s.blocked, 0);
+  return { state: blocked ? "review" : null, blocked };
+}
+
+export const liveConnection = (view, account) => {
+  const key = Object.entries(accounts(view)[account]?.connections ?? {}).find(([, c]) => c.browser)?.[0];
+  return key == null ? null : connectionName(account, key);
+};
+
+export const fieldPaths = (f) => f.paths ?? [f.path];
+const paths = fieldPaths;
+const fieldsOf = (c) => c?.fields ?? [];
+// A field with no paths, such as an OAuth client ID, only fills the account's templates when it is created.
+const plain = (c) => fieldsOf(c).filter((f) => !f.secret && paths(f).length);
+const fieldValue = (acc, f) => atPath(acc, f.path ?? paths(f)[0]) ?? (f.list ? [] : f.json ? {} : "");
+export const setupFields = (view, preset) => fieldsOf(view.presets[preset]).filter((f) => !f.edit_only);
+export const plainFields = (view, account) => plain(presetOf(view, account)).map((f) => ({ ...f, value: fieldValue(accounts(view)[account], f) }));
+export const fieldText = (f, value) => f.json ? (value === undefined ? "" : JSON.stringify(value, null, 2)) : f.list ? (value ?? []).join(", ") : value ?? "";
+export function readField(f, raw) {
+  const v = f.secret ? raw : raw.trim();
+  if (f.json) return v ? JSON.parse(v) : {};
+  return f.list ? v.split(/[\s,]+/).filter(Boolean) : v;
+}
+
+// A grant template fills from the account's plain settings; one that needs a setup-only value, such as an OAuth client, cannot.
+export function grantTemplate(view, account, f) {
+  const values = Object.fromEntries(plainFields(view, account).map((p) => [p.key, p.value]));
+  const grant = f?.oauth && filled(f.oauth, values);
+  return grant && !/\{\w+\}/.test(JSON.stringify(grant)) ? grant : undefined;
+}
+
+// Each stored credential with its status. A stored grant keeps its client and endpoints for sign-in;
+// only an unset or static value starts from the preset's template.
+export function credentialFields(view, account) {
+  return (view.fields?.[account] ?? []).map((meta) => {
+    const f = fieldsOf(presetOf(view, account)).find((f) => paths(f).some((path) => JSON.stringify(path) === JSON.stringify(meta.path)));
+    const field = { ...f, ...meta, key: meta.path.map(encodeURIComponent).join("/"), label: `${meta.path[1] ? meta.path[1] + ": " : ""}${f?.label ?? meta.path.at(-1)}`, secret: true, multiline: f ? !!f.multiline : true };
+    const grant = meta.kind.startsWith("oauth") ? undefined : grantTemplate(view, account, field);
+    return { ...field, status: CREDENTIAL_STATUS[meta.kind] ?? "Configured", signIn: meta.kind.startsWith("oauth") || !!grant, credential: grant && { oauth: grant } };
+  }).sort((a, b) => a.key.localeCompare(b.key));
+}
+
+export const signInLabel = (view, preset) => preset === "mcp" || !view.presets[preset] ? "Sign in" : "Sign in with " + view.presets[preset].title;
+
+export function catalog(view) {
+  const custom = ["custom_api", "mcp"].filter((name) => view.presets[name]);
+  const groups = new Map(Object.keys(CATALOG_GROUPS).map((g) => [g, []]));
+  for (const [name, preset] of Object.entries(view.presets).sort(([, a], [, b]) => a.title.localeCompare(b.title))) {
+    const group = preset.group ?? "api";
+    if (!groups.has(group)) groups.set(group, []);
+    groups.get(group).push({ name, title: preset.title, accounts: Object.values(accounts(view)).filter((acc) => acc.preset === name).length });
+  }
+  for (const entries of groups.values()) entries.sort((a, b) => Number(custom.includes(b.name)) - Number(custom.includes(a.name)));
+  return [...groups].filter(([, entries]) => entries.length).map(([group, presets]) => ({ group, title: CATALOG_GROUPS[group] ?? group, presets }));
+}
+
+// apiSettings describes a custom API account's slot as form settings; without an account, the defaults for a new one.
+export function apiSettings(view, account) {
+  const slot = account === undefined ? {} : accounts(view)[account]?.connections?.[""]?.http?.slots?.[0] ?? {};
+  const auth = slot.query ? "query" : slot.header && !(slot.header.toLowerCase() === "authorization" && slot.prefix === "Bearer ") ? "header" : "bearer";
+  return { url: slot.origin ? slot.origin + (slot.path === "/" ? "" : slot.path ?? "") : "", auth,
+    header: auth === "header" ? slot.header : "X-API-Key", prefix: auth === "header" ? slot.prefix ?? "" : "", query: slot.query ?? "api_key" };
+}
+
+export function apiSlot({ url: raw = "", auth, header = "", prefix = "", query = "" }, value = "token") {
+  let url;
+  try { url = new URL(raw.trim()); } catch { throw new Error("Enter the API's HTTPS URL, such as https://api.example.com."); }
+  if (url.protocol !== "https:" || url.port === "80" || url.username || url.password || url.search || url.hash) {
+    throw new Error("Use an HTTPS URL without credentials, query parameters, or a fragment.");
+  }
+  const slot = { value, origin: url.origin, path: url.pathname.replace(/\/+$/, "") || "/" };
+  switch (auth) {
+    case "bearer": return { ...slot, header: "Authorization", prefix: "Bearer " };
+    case "header": {
+      header = header.trim();
+      if (!/^[!#$%&'*+.^_`|~0-9a-z-]+$/i.test(header)) throw new Error("Enter a valid header name, such as X-API-Key.");
+      if (/[\r\n]/.test(prefix)) throw new Error("The header prefix must be on one line.");
+      return { ...slot, header, ...(prefix ? { prefix } : {}) };
+    }
+    case "query": {
+      query = query.trim();
+      if (!query || /[\s&=#?]/.test(query)) throw new Error("Enter a query parameter name, such as api_key.");
+      return { ...slot, query };
+    }
+    default: throw new Error("Choose an authentication method.");
+  }
+}
+
+// The agent sends this placeholder; Monitor substitutes the real key at the slot's address.
+export function apiSetup(view, account) {
+  const slot = accounts(view)[account]?.connections?.[""]?.http?.slots?.[0];
+  if (!slot) return null;
+  const placeholder = `tfm_${account}_${slot.value}`;
+  return { placeholder, address: slot.origin + (slot.path === "/" ? "" : slot.path ?? ""), header: slot.query ? undefined : slot.header,
+    query: slot.query, value: slot.query ? placeholder : (slot.prefix ?? "") + placeholder };
+}
+
+// An unmatched request on a preset's account can become one of its operations.
+export const draftable = (view, r) => r.facts?.operation == null && r.facts?.details?.http && accounts(view)[r.facts.account] && presetOf(view, r.facts.account).operations
+  ? accounts(view)[r.facts.account].preset : null;
+
+// The draft matches only this exact path; the owner turns segments into {parameters} and sets its effects and scope.
+export function draftOperation(e) {
+  const h = e.http, read = ["GET", "HEAD"].includes(h.method), params = Object.keys(h.query ?? {});
+  return { id: `${h.method} ${h.path}`, action: read ? "read" : "write", effects: [read ? "read" : "write"], method: h.method, origin: h.origin, path: h.path,
+    ...(params.length && { params }), ...(h.body_kind !== "none" && { body: ["json", "form"].includes(h.body_kind) ? h.body_kind : "any" }),
+    ...(e.graphql?.fields?.length === 1 && { body: "graphql", graphql: { operation: e.graphql.kind, field: e.graphql.fields[0].name } }), scope: {} };
+}
+
+export function withDraft(file, r) {
+  file = structuredClone(file);
+  if (r?.facts?.details?.http) {
+    const { id, ...operation } = draftOperation(r.facts.details);
+    file.http = { ...file.http, operations: { ...(file.http?.operations ?? {}), [id]: operation } };
+  }
+  return file;
+}
+
+export const newPreset = (name) => ({ title: name, ...structuredClone(NEW_PRESET) });
+
+// Preset files keep one field, action and operation per line, as the shipped files do.
+const EXPANDED = ["", "catalog", "catalog.fields", "catalog.actions", "http", "http.operations"];
+const compact = (v) => Array.isArray(v) ? `[${v.map(compact).join(", ")}]`
+  : v && typeof v === "object" ? `{${Object.entries(v).map(([k, x]) => `${JSON.stringify(k)}: ${compact(x)}`).join(", ")}}` : JSON.stringify(v);
+export function presetText(v, path = "", indent = "") {
+  if (!EXPANDED.includes(path) || v === null || typeof v !== "object") return compact(v);
+  const [open, close, items] = Array.isArray(v) ? ["[", "]", v.map((x) => presetText(x, path + ".*", indent + "  "))]
+    : ["{", "}", Object.entries(v).map(([k, x]) => `${JSON.stringify(k)}: ${presetText(x, path ? `${path}.${k}` : k, indent + "  ")}`)];
+  return items.length ? `${open}\n${indent}  ${items.join(`,\n${indent}  `)}\n${indent}${close}` : open + close;
+}
+
+// Each edit returns the source changes for POST /policy/edits.
+export const edits = {
+  pairAgent: (name, key) => sourceChanges({ identities: { [name.trim()]: { key: key.trim(), accounts: {} } } }),
+  removeAgent: (name) => [{ path: ["identities", name], delete: true }],
+  replaceKey: (name, key) => [{ path: ["identities", name, "key"], value: key.trim() }],
+  setRoutes: (name, routes) => [{ path: ["identities", name, "routes"], value: routes }],
+  // An action set to null inherits again.
+  setAccess: (name, account, access) => sourceChanges({ identities: { [name]: { accounts: { [account]: access } } } }),
+  copySettings: (view, from, name) => ["accounts", "rules"].map((key) => ({ path: ["identities", name, key], value: structuredClone(identities(view)[from]?.[key] ?? {}) })),
+  removeRule: (name, id) => [{ path: ["identities", name, "rules", id], delete: true }],
+  setLattice: (lattice, on) => [{ path: ["lattices", lattice], value: on }],
+  setNetworks: (text) => [{ path: ["allow_networks"], value: text.split(/\s+/).filter(Boolean) }],
+  setAccountPolicy: (account, source) => sourceChanges({ policies: { [account]: source.trim() || null } }),
+  approveTools: (view, account, key) => sourceChanges({ accounts: { [account]: { connections: { [key]: { mcp: { pin: view.status[connectionName(account, key)].details.pin } } } } } }),
+  // Identities may not name a missing account, so removing one also clears it from every agent.
+  removeAccount: (view, account) => sourceChanges({
+    accounts: { [account]: null },
+    policies: { [account]: null },
+    identities: Object.fromEntries(Object.keys(identities(view)).map((n) => [n, { accounts: { [account]: null } }])),
+  }),
+  // values holds every setup field read with readField; oauth names the fields that sign in instead of taking a token.
+  addAccount(view, preset, { name, values, answers, oauth = [] }) {
+    const c = view.presets[preset];
+    name = name.trim();
+    if (!name) throw new Error("Name this account.");
+    if (Object.hasOwn(accounts(view), name)) throw new Error("An account with that name already exists. Choose another name.");
+    const fields = setupFields(view, preset);
+    // Only the non-secret values fill a preset's connections; secrets go to their fields' paths.
+    const plainValues = Object.fromEntries(fields.filter((f) => !f.secret).map((f) => [f.key, values[f.key]]));
+    const connections = c.connections ? filled(c.connections, plainValues) : values.connections;
+    const acc = { preset, ...answers, ...JSON.stringify(connections) !== JSON.stringify(c.connections) && { connections } };
+    for (const f of fields) {
+      const value = f.oauth && oauth.includes(f.key) ? { oauth: filled(f.oauth, values) }
+        : f.secret && values[f.key] === "" ? null : values[f.key];
+      for (const path of paths(f)) putPath(acc, path, value);
+    }
+    return sourceChanges({ accounts: { [name]: acc } });
+  },
+  addCustomApi(view, { name, api, token, agent, level, answers }) {
+    name = name.trim();
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9-]*$/.test(name)) throw new Error("Name this account using letters, numbers, and hyphens.");
+    if (Object.hasOwn(accounts(view), name)) throw new Error("An account with that name already exists. Choose another name.");
+    if (!token.trim()) throw new Error("Enter the API key or token.");
+    const body = { accounts: { [name]: { preset: "custom_api", ...answers, connections: { "": { http: { slots: [apiSlot(api)], secrets: { token } } } } } } };
+    if (agent) body.identities = { [agent]: { accounts: { [name]: { level } } } };
+    return sourceChanges(body);
+  },
+  // credentials maps a credential field key to keep, replace with a value, or clear; unchanged settings send nothing.
+  saveAccount(view, account, { answers, api, values = {}, credentials = {} }) {
+    const acc = accounts(view)[account], updated = structuredClone(acc), changed = new Set(), removals = [];
+    const set = (path, value) => {
+      if (same(atPath(acc, path), value)) return;
+      putPath(updated, path, value);
+      // Several controls can edit the same array; submit its final value once.
+      const n = path.findIndex((_, i) => i > 0 && Array.isArray(atPath(updated, path.slice(0, i))));
+      changed.add(JSON.stringify(n < 0 ? path : path.slice(0, n)));
+    };
+    for (const [key, value] of Object.entries(answers)) set([key], value);
+    if (acc.preset === "custom_api") set(["connections", "", "http", "slots"], [apiSlot(api, acc.connections?.[""]?.http?.slots?.[0]?.value)]);
+    for (const f of plainFields(view, account)) if (Object.hasOwn(values, f.key)) for (const path of paths(f)) set(path, values[f.key]);
+    for (const f of credentialFields(view, account)) {
+      const { mode, value } = credentials[f.key] ?? {};
+      if (mode === "replace") {
+        if (value === "") throw new Error(`Enter a value for ${f.label}, or cancel the replacement.`);
+        set(f.path, value);
+      }
+      if (mode === "clear") removals.push({ path: ["accounts", account, ...f.path], delete: true });
+    }
+    return [...[...changed].map((key) => {
+      const path = JSON.parse(key);
+      return { path: ["accounts", account, ...path], value: atPath(updated, path) };
+    }), ...removals];
+  },
+  // Operations missing from an edited preset are disabled rather than left to the shipped definition.
+  savePreset(name, text, previous) {
+    const value = JSON.parse(text);
+    for (const id of Object.keys(previous?.http?.operations ?? {})) {
+      if (value.http?.operations && !Object.hasOwn(value.http.operations, id)) value.http.operations[id] = { enabled: false };
+    }
+    return [{ path: ["presets", name], value }];
+  },
+  removePreset: (name) => [{ path: ["presets", name], delete: true }],
+};
+
+// Setup guides for connecting tools. href maps a route such as ["pair"] or ["agent-settings", name] to a link, which
+// also carries the route as data-route; code blocks carry data-copy with the id of the text to copy.
+export const INTEGRATION_PAGES = { start: "Start here", wrapped: "Wrap commands", shell: "Monitor shell", mcp: "MCP gateway" };
+export function integrationGuide(view, page, href) {
+  const link = (route, text) => `<a href="${esc(href(route))}" data-route="${esc(route.join("/"))}">${text}</a>`;
+  const code = (id, title, text) => `<div class="integration-code"><div class="row"><span>${esc(title)}</span><button type="button" data-copy="${esc(id)}" aria-label="Copy ${esc(title)}">Copy</button></div><pre id="${esc(id)}">${esc(text)}</pre></div>`;
+  const setupLinks = Object.keys(identities(view)).map((name) => `<li>${link(["agent-settings", name], `${esc(name)} setup`)}</li>`).join("");
+  return {
+    start: `<h1>Use Monitor from your tools</h1><p>Keep service credentials in Monitor. Connect a command, a terminal session, or an agent through an identity with the access you choose.</p>
+      <h2>Set up an identity first</h2><ol>
+        <li>Add the service in <b>Add account</b> and configure its credentials in Monitor.</li>
+        <li>Create a dedicated SSH key on the computer running your tools. ${link(["pair"], "Pair its public key")} as an agent, even when you will use it from your own terminal.</li>
+        <li>Open that agent and grant access to the accounts it needs. Use separate identities for your laptop and automated workers when they need different permissions.</li>
+        <li>Configure an SSH alias named <code>monitor</code> for the Monitor server, using that private key and the host key shown in the agent's settings. The SSH address and port come from your deployment, not the web app URL.</li>
+      </ol><p>The private SSH key stays on your computer. Tool integrations use that identity; they do not need the web app's owner key.</p>
+      <h2>Your agent setup</h2>${setupLinks ? `<ul>${setupLinks}</ul>` : `<p>No agents are paired yet. ${link(["pair"], "Pair an agent")} to get started.</p>`}
+      <p>Agent settings include the host key, CA certificate, and credential placeholders. If the existing Monitor client is installed, <code>monitor connections --json</code> checks which connections its SSH identity can reach.</p>
+      <h2>Install the client</h2><p>Use Python 3.11 or newer and OpenSSH. From the Monitor repository:</p>
+      ${code("integration-install", "Install on your laptop", 'mkdir -p "$HOME/.local/bin"\ninstall -m 755 client/monitor "$HOME/.local/bin/monitor"\nexport PATH="$HOME/.local/bin:$PATH"\nmonitor connections --json')}
+      <p>The Go binary embeds the same client. The commands below use your paired SSH alias and verify its host key. See <code>docs/laptop-client.md</code> in the repository for complete SSH setup and local profile examples.</p>`,
+    wrapped: `<h1>Wrap an existing command</h1><p><span class="badge">Available</span> Run a CLI or script locally, with its service requests routed through Monitor. Keep the command's arguments, working directory, output, and exit status.</p>
+      ${code("integration-run", "Run a command", "monitor run -- gh api user\nmonitor run -- ./release.sh")}
+      <h2>How it works</h2><ol><li>Use your paired SSH alias, or select a configured local profile.</li><li>The client opens a tunnel and prepares proxy settings, certificate trust, and the selected accounts' credential placeholders.</li><li>It starts the command and passes those settings to its children. Monitor checks requests and substitutes the real credentials before sending them upstream.</li><li>When the command exits, the client closes its tunnel and temporary files.</li></ol>
+      <h2>When to use it</h2><p>Start here for an existing GitHub workflow, a one-off command, or a script. With a configured profile, use <code>monitor --profile work run -- gh pr list</code>.</p>
+      <h2>Compatibility</h2><p>Programs must support the configured proxy and certificate settings. This mode does not force every network request through Monitor. Git HTTPS receives proxy, trust, and placeholder credential settings. SSH remotes need a separate Monitor SSH connection. Account policy and preset coverage still apply to each request.</p>
+      <p>The wrapper stops if setup fails and ends the child session if its tunnel is lost. It never retries writes automatically. Your parent terminal keeps its original environment.</p>
+      <h2>Use your accounts</h2><p>All connections are available by default. Shared credential names get separate variables per connection, such as <code>MONITOR_CREDENTIAL_ANTHROPIC_TOKEN</code>. For a tool that needs one account default, use <code>monitor run --connection work -- gh api user</code>. Connection names come from <code>monitor connections</code>.</p>`,
+    shell: `<h1>Start a Monitor shell</h1><p><span class="badge">Available</span> Open a local terminal session with the same connection setup as a wrapped command.</p>
+      ${code("integration-shell", "Open a shell", "monitor shell\ngh api user\nexit")}
+      <h2>How it works</h2><p>The shell uses the wrapper's profiles, tunnel, credential placeholders, and certificate handling. Its prompt shows the active SSH alias or profile. Commands run in your local working directory.</p>
+      <p>Type <code>exit</code> to return to the original terminal environment. User startup files are skipped to preserve routing and account selection. Each nested Monitor session owns its own tunnel.</p>
+      <h2>When to use it</h2><p>Use a shell for a sequence of commands that share an identity. Choose <code>monitor run</code> for automation that needs a single command and a predictable exit status.</p>
+      <h2>What it covers</h2><p>This session configures cooperating tools and their children. Other terminals and desktop apps have their own environments. A managed workspace with network restrictions is a separate option when every connection must pass through Monitor.</p>
+      <h2>Select a shell</h2><p>Use <code>monitor shell --shell /bin/bash</code> or <code>monitor shell --shell /bin/zsh</code>. The shell includes all connections by default. Use the connection-specific credential variables when names overlap. The Linux integration suite exercises both shells; macOS validation remains open.</p>`,
+    mcp: `<h1>Connect an MCP client</h1><p><span class="badge">Available</span> The gateway combines configured MCP connections into one Streamable HTTP server. Your SSH identity determines which accounts it can reach; tool calls still follow Monitor policy.</p>
+      <h2>1. Prepare the connection</h2><p>Complete the ${link(["integrations", "start"], "identity setup")}. Add an account with an MCP connection, grant the paired identity access, and review tools awaiting approval on the account page. An HTTP API connection alone does not add tools to this gateway.</p>
+      <p>The commands below assume an SSH alias named <code>monitor</code> with the correct identity and a verified host key. You need an MCP client that supports Streamable HTTP.</p>
+      <h2>2. Keep the gateway running</h2>
+      ${code("integration-mcp-serve", "Serve the gateway", "monitor mcp serve --listen 127.0.0.1:8400")}
+      <p>The client checks MCP initialization and tool discovery before reporting readiness. Put <code>--ssh-config /path/to/ssh_config</code> before <code>mcp</code> to use a separate configuration. Use port 0 to choose a free port.</p>
+      <h2>3. Add a server in your MCP client</h2><ul><li>Name: <code>monitor</code></li><li>Transport: <b>Streamable HTTP</b></li><li>URL:</li></ul>
+      ${code("integration-endpoint", "MCP server URL", "http://127.0.0.1:8400/")}
+      <p>No provider token or owner key goes in the client configuration. The SSH tunnel authenticates to Monitor. Programs on this computer can use the local endpoint as that identity; close the tunnel with Ctrl-C when finished.</p>
+      <h2>4. Check the connection</h2><p>Refresh the client's tool list. Tool names start with their Monitor connection name and <code>__</code>, such as <code>work-mcp__list_issues</code>. Call a read tool and check ${link(["activity"], "Activity")} for the expected agent and account. Pending requests appear first. Open one to allow or deny it.</p>
+      <h2>If it does not connect</h2><ul><li><b>SSH fails:</b> check the server address, paired public key, private key, and host key.</li><li><b>No tools:</b> check account access, the MCP connection's status, and tool review. An identity with no reachable MCP connections cannot open the gateway.</li><li><b>Client cannot reach the URL:</b> keep the tunnel running on the same computer as the client. A client in a container has its own localhost.</li><li><b>A tool fails or times out:</b> inspect Activity and the provider state before retrying a change.</li></ul>
+      <p>Clients that only support stdio still need a separate adapter. <code>monitor mcp stdio</code> is not implemented.</p>`,
+  }[page] ?? "";
+}

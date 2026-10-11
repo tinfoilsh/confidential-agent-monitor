@@ -54,13 +54,14 @@ var connectorKinds = map[string]func() connector.Server{
 func main() {
 	listen := flag.String("listen", "127.0.0.1:2223", "SSH address; it refuses agents until unlock")
 	api := flag.String("api", "127.0.0.1:8080", "owner API address")
-	bucketURL := flag.String("bucket", "", "blob URL holding the encrypted state")
+	bucketURL := flag.String("bucket", os.Getenv("TINFOIL_STORAGE_BUCKET"), "blob URL holding the encrypted state")
 	drafts := flag.String("drafts", "", "with a file:// bucket, also load the draft presets in this directory")
 	extension := flag.String("extension", "", "the english-only extension directory; browser connections need it")
 	production := flag.Bool("production", false, "disable development connectors and profiling, including with a file:// bucket")
-	ownerHash := flag.String("owner-key-sha256", "", "hex SHA-256 of the decoded owner key; required in production")
+	ownerHash := flag.String("owner-key-sha256", os.Getenv("MONITOR_OWNER_KEY_SHA256"), "hex SHA-256 of the decoded owner key; required in production")
 	hostKey := flag.String("ssh-host-key", "", "runtime attested SSH private key")
 	healthcheck := flag.Bool("healthcheck", false, "check the local owner API and exit, including while locked")
+	originList := flag.String("owner-origins", "", "comma-separated browser origins allowed to call the owner API, such as https://dash.tinfoil.sh")
 	flag.Parse()
 	if flag.NArg() != 0 {
 		log.Fatal("unexpected server arguments; use the separately installed monitor client")
@@ -85,10 +86,13 @@ func main() {
 			log.Fatal("-owner-key-sha256 must be 64 hexadecimal characters")
 		}
 	} else if *production {
-		log.Fatal("-production requires -owner-key-sha256 to protect initial enrollment")
+		log.Fatal("-production requires MONITOR_OWNER_KEY_SHA256 or -owner-key-sha256 to protect initial enrollment")
+	}
+	origins, err := ownerOrigins(*originList)
+	if err != nil {
+		log.Fatal(err)
 	}
 	var hostSigner ssh.Signer
-	var err error
 	if *hostKey != "" {
 		data, err := os.ReadFile(*hostKey)
 		if err != nil {
@@ -126,5 +130,5 @@ func main() {
 	}
 	m := &monitor{store: bucket, dev: dev, ownerKeyHash: ownerKeyHash, sshHostKey: hostSigner}
 	go m.serveSSH(ln)
-	log.Fatal((&http.Server{Addr: *api, Handler: m.handler(), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
+	log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.handler()), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
 }
