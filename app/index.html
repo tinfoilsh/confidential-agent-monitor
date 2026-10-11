@@ -242,20 +242,15 @@
 <div id="app" hidden><aside id="tree" aria-label="Navigation"></aside><main id="pane" aria-label="Details" hidden></main><section id="list" aria-label="Activity"></section></div>
 <div id="toast" hidden></div>
 <div id="saving" role="status" hidden>Saving…</div>
-<script>
+<script type="module">
+import * as owner from "./owner.js";
+const { LEVELS, MODES, AUDIENCES: WHO, edits, sourceChanges, reasons, ruleSentence } = owner;
 const KEY = "monitor-owner-key", GENERATION = "monitor-generation", DISMISSED = "monitor-dismissed", RETURN = "monitor-sign-in-return";
 const REQUEST_POLL_MS = 5000, TOAST_MS = 5000, LIVE_POLL_MS = 1000, WHEEL_LINE_PX = 40;
 // Tab is left out so keyboard focus can leave the page view; the Tab button sends it.
 const LIVE_KEYS = ["Enter", "Backspace", "Delete", "Escape", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"];
-const LEVELS = { off: "No access", read: "Read only", ask: "Ask", allow: "Allow" }, MODES = { allow: "Allow", ask: "Ask", off: "Deny" }, AUDIENCES = ["me", "team", "anyone"];
-const CATALOG_GROUPS = { api: "API", mcp: "MCP", protocol: "Protocol" };
-const WHO = { me: "Only me", team: "My team", anyone: "Anyone" };
 const SEES = { me: "only you", team: "your team", anyone: "anyone" };
 const STATE_CLASS = { allowed: "", approved: "", refused: "bad", denied: "bad", expired: "muted", pending: "warn" };
-// A new preset starts as one bearer-token API; the owner sets its origin, slots and operations.
-const NEW_PRESET = { catalog: { group: "api", fields: [{ key: "token", label: "API token", secret: true, path: ["connections", "", "http", "secrets", "token"] }],
-  connections: { "": { http: { slots: [{ value: "token", origin: "https://api.example.com", path: "/", header: "Authorization", prefix: "Bearer " }] } } },
-  defaults: { contents: "me", strangers: true, sends: "me" } }, http: { operations: {} } };
 
 // Keep the activity filter and return route while a request is open.
 let view = null, records = [], locked = false, scope = null, requestSource = "activity";
@@ -270,47 +265,16 @@ const q = (v) => esc(JSON.stringify(v));
 const opt = (value, text, selected) => `<option value="${esc(value)}" ${value === selected ? "selected" : ""}>${esc(text)}</option>`;
 const ids = () => view.config.identities ?? {};
 const accounts = () => view.config.accounts ?? {};
-const lattices = () => ({ confidentiality: view.config.lattices?.confidentiality ?? true, integrity: view.config.lattices?.integrity ?? false });
+const lattices = () => owner.lattices(view);
 const connectorIcon = (type) => {
-  const icon = connectorIcons[type]?.src ? connectorIcons[type] : connectorIcons.custom ?? { src: "custom.svg" };
-  return `<picture class="connector-icon" aria-hidden="true">${icon.dark ? `<source media="(prefers-color-scheme: dark)" srcset="icons/${esc(icon.dark)}">` : ""}<img src="icons/${esc(icon.src)}" width="14" height="14" alt=""></picture>`;
+  const icon = owner.connectorIcon(connectorIcons, type);
+  return `<picture class="connector-icon" aria-hidden="true">${icon.dark ? `<source media="(prefers-color-scheme: dark)" srcset="${esc(icon.dark)}">` : ""}<img src="${esc(icon.src)}" width="14" height="14" alt=""></picture>`;
 };
 const accountIcon = (a) => connectorIcon(accounts()[a]?.preset ?? "custom");
-const entry = (account) => view.presets[accounts()[account]?.preset] ?? view.presets.custom;
-// Each pinned MCP tool is an action under read or use, by the hint the owner approved with the pin.
-const actionsOf = (account) => ({ ...groupsOf(account), ...entry(account).actions, ...Object.fromEntries(Object.values(accounts()[account]?.connections ?? {})
-  .flatMap((c) => c.mcp?.pin?.tools ?? []).map((t) => [`${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`, { title: t.title || t.name }])) });
-// Record operations also contribute permission groups to their preset.
-const operationsOf = (account) => Object.values(entry(account).operations ?? {});
-const groupsOf = (account) => Object.fromEntries(operationsOf(account).map((o) => [o.action, { title: o.action }]));
-// effectsOf unions the effects of every operation under an action, so a group shows its strictest obligations.
-const effectGroups = new WeakMap();
-const effectsOf = (account, k) => {
-  const preset = entry(account), actions = preset.actions ?? {};
-  let groups = effectGroups.get(preset);
-  if (!groups) {
-    groups = new Map();
-    const add = (action, effects) => action.split(".").forEach((_, i, parts) => {
-      const key = parts.slice(0, i + 1).join(".");
-      if (!groups.has(key)) groups.set(key, new Set());
-      for (const effect of effects) groups.get(key).add(effect);
-    });
-    for (const [action, meta] of Object.entries(actions)) add(action, meta.effects ?? []);
-    for (const op of Object.values(preset.operations ?? {})) add(op.action, op.effects);
-    effectGroups.set(preset, groups);
-  }
-  const lineage = k.split(".").map((_, i, parts) => parts.slice(0, i + 1).join(".")).reverse();
-  const inherited = lineage.find((a) => actions[a]?.effects);
-  return [...new Set([...(actions[inherited]?.effects ?? []), ...(groups.get(k) ?? [])])];
-};
-const tree = (actions) => Object.entries(actions).sort(([a], [b]) => a.localeCompare(b)).map(([k, x]) => [k, x, k.split(".").length - 1]);
-const fill = (text, scope) => text.replace(/\{(\w+)\}/g, (m, k) => scope?.[k] ?? m);
+const entry = (account) => owner.presetOf(view, account);
 const route = () => location.hash.slice(1).split("/").map(decodeURIComponent);
-const pendingSoonest = () => records.filter((r) => r.state === "pending").sort((a, b) => new Date(a.expires) - new Date(b.expires));
-const left = (r) => {
-  const s = Math.max(0, Math.round((new Date(r.expires) - Date.now()) / 1000));
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
-};
+const pendingSoonest = () => owner.pendingSoonest(records);
+const left = (r) => owner.timeLeft(r);
 
 function toast(text) {
   $("toast").textContent = text;
@@ -324,15 +288,14 @@ const run = (fn) => async (...args) => {
   try { return await fn(...args); } catch (err) { render(); toast(err.message); }
 };
 
-async function api(method, path, body) {
-  const headers = { Authorization: "Bearer " + sessionStorage.getItem(KEY) };
-  const res = await fetch(path, { method, headers, body: body && JSON.stringify(body) });
-  const text = await res.text();
+// Every response tells whether the monitor is locked; a rejected key is forgotten.
+async function observe(...args) {
+  const res = await fetch(...args);
   if (res.status === 401) sessionStorage.removeItem(KEY);
   locked = res.status === 423;
-  if (!res.ok) throw new Error(text.trim() || `Request failed (${res.status})`);
-  return text ? JSON.parse(text) : null;
+  return res;
 }
+const client = () => owner.ownerClient({ key: sessionStorage.getItem(KEY), fetch: observe });
 
 function remember(v) {
   serverState.view = v;
@@ -354,7 +317,7 @@ function project() {
 async function refresh() {
   if (pendingEdits.length || sending) return;
   const version = editVersion, poll = ++pollVersion;
-  const [next, log] = await Promise.all([api("GET", "/"), api("GET", "/requests")]);
+  const { view: next, requests: log } = await client().read();
   // A poll started before a click must never undo that click or a newer response.
   if (version !== editVersion || poll !== pollVersion || pendingEdits.length) return;
   serverState.records = log;
@@ -414,56 +377,12 @@ async function flushEdits() {
   }
 }
 
-// Controls address source values; named rules and operations stay named.
-function sourceChanges(body, path = []) {
-  return Object.entries(body).flatMap(([key, value]) => {
-    const at = [...path, key];
-    if (value === null) return [{ path: at, delete: true }];
-    const atomic = key === "scope" || key === "fields" || key === "query" || key === "headers" ||
-      at[0] === "identities" && at[2] === "rules" && at.length === 4 || value?.oauth || value?.$json;
-    if (!atomic && value && typeof value === "object" && !Array.isArray(value) && Object.keys(value).length)
-      return sourceChanges(value, at);
-    return [{ path: at, value }];
-  });
-}
+const changeSettings = (changes, options, update = () => {}) => edit(
+  (state) => { owner.previewChanges(state.view, changes, shippedFiles); update(state); },
+  () => client().edit(changes), options);
 
-function applyChanges(target, changes) {
-  for (const change of changes) {
-    let parent = target;
-    for (const key of change.path.slice(0, -1)) {
-      if (!Object.hasOwn(parent, key) || !parent[key] || typeof parent[key] !== "object")
-        Object.defineProperty(parent, key, { value: {}, enumerable: true, configurable: true, writable: true });
-      parent = parent[key];
-    }
-    const key = change.path.at(-1);
-    if (change.delete) delete parent[key];
-    else Object.defineProperty(parent, key, { value: structuredClone(change.value), enumerable: true, configurable: true, writable: true });
-  }
-  return target;
-}
-
-const sendChanges = (body) => api("POST", "/policy/edits", { changes: sourceChanges(body) });
-
-function previewConfig(state, body) {
-  state.view.config = applyChanges(state.view.config, sourceChanges(body));
-  for (const name of Object.keys(body.presets ?? {})) {
-    const file = state.view.config.presets?.[name] ?? shippedFiles[name];
-    if (!file) continue; // A shipped preset not fetched yet needs the server's resolved catalog.
-    const previous = state.view.presets[name] ?? state.view.presets.custom, catalog = file.catalog ?? {};
-    state.view.presets[name] = { ...previous, ...catalog, title: typeof file.title === "string" ? file.title : name,
-      fields: Array.isArray(catalog.fields) ? catalog.fields : previous.fields ?? [],
-      actions: catalog.actions ?? {}, operations: file.http?.operations ?? {} };
-  }
-}
-
-const patch = run((body, then, update = () => {}) => {
-  body = JSON.parse(JSON.stringify(body));
-  return edit((state) => { previewConfig(state, body); update(state); }, () => sendChanges(body), { then });
-});
-
-const changeSettings = (changes, options) => edit(
-  (state) => { applyChanges(state.view.config, changes); },
-  () => api("POST", "/policy/edits", { changes }), options);
+const commit = run((changes, then, update) => changeSettings(changes, { then }, update));
+const patch = (body, then, update) => commit(sourceChanges(JSON.parse(JSON.stringify(body))), then, update);
 
 // sync redraws only the keyed parts whose markup changed, so open details, focus and typed input elsewhere survive.
 const drawn = new WeakMap();
@@ -536,16 +455,7 @@ function toggle(key) {
 }
 
 function sidebar(kind, arg) {
-  const pending = pendingSoonest(), at = (k, a) => kind === k && arg === a;
-  const presets = Object.entries(view.presets).sort(([, a], [, b]) => a.title.localeCompare(b.title));
-  const custom = ["custom_api", "mcp"].filter((name) => view.presets[name]);
-  const groups = new Map(Object.keys(CATALOG_GROUPS).map((g) => [g, []]));
-  for (const preset of presets) {
-    const group = preset[1].group ?? "api";
-    if (!groups.has(group)) groups.set(group, []);
-    groups.get(group).push(preset);
-  }
-  for (const entries of groups.values()) entries.sort(([a], [b]) => Number(custom.includes(b)) - Number(custom.includes(a)));
+  const pending = pendingSoonest(), at = (k, a) => kind === k && arg === a, groups = owner.catalog(view);
   const saved = Object.values(ids()).reduce((n, id) => n + Object.keys(id.rules ?? {}).length, 0);
   return [
     link(["activity"], `${pending.length ? `<span class="bang">!</span> ` : ""}Activity`, 0,
@@ -555,11 +465,10 @@ function sidebar(kind, arg) {
       at("agent", n) || at("agent-settings", n))), link(["pair"], `<span class="new">Pair agent…</span>`, 1, kind === "pair")] : []),
     folder("accounts", "Accounts", Object.keys(accounts()).length),
     ...(expanded.has("accounts") ? Object.keys(accounts()).map((a) => link(["account", a], accountIcon(a) + esc(a), 1, at("account", a), accountStatus(a))) : []),
-    folder("add", "Add account", presets.length),
-    ...(expanded.has("add") ? [...[...groups].filter(([, entries]) => entries.length).flatMap(([group, entries]) => [
-      folder("add-group/" + group, esc(CATALOG_GROUPS[group] ?? group), entries.length, 1),
-      ...(expanded.has("add-group/" + group) ? entries.map(([t, c]) => link(["add", t], connectorIcon(t) + esc(c.title), 2, at("add", t),
-        Object.keys(accounts()).filter((a) => entry(a) === c).length || "")) : []),
+    folder("add", "Add account", groups.reduce((n, g) => n + g.presets.length, 0)),
+    ...(expanded.has("add") ? [...groups.flatMap(({ group, title, presets }) => [
+      folder("add-group/" + group, esc(title), presets.length, 1),
+      ...(expanded.has("add-group/" + group) ? presets.map((p) => link(["add", p.name], connectorIcon(p.name) + esc(p.title), 2, at("add", p.name), p.accounts || "")) : []),
     ]), link(["preset"], `<span class="new">New preset…</span>`, 1, kind === "preset" && !arg)] : []),
     link(["rules"], "Rules", 0, kind === "rules", saved || ""),
     link(["policy"], "Policy", 0, kind === "policy"),
@@ -579,42 +488,22 @@ const setKey = run(async () => {
 });
 
 const unlock = run(async () => {
-  remember(await api("POST", "/unlock", { generation: +localStorage.getItem(GENERATION) || 0 }));
+  remember(await client().unlock(+localStorage.getItem(GENERATION) || 0));
   await refresh();
   render();
 });
 
-function summary(e) {
-  if (e?.http) return `${e.http.method} ${e.http.host}${e.http.path}`;
-  if (e?.smtp) return `To ${e.smtp.to.join(", ")}${e.mail?.subject ? `: ${e.mail.subject}` : ""}`;
-  if (e?.imap) return `${e.imap.command} ${e.imap.args}`;
-  if (e?.mcp) return e.mcp.tool;
-  return "";
+const summary = owner.summary, saveText = owner.saveText;
+const saveButton = (r, text, primary) => `<button class="${primary ? "primary" : ""}" title="${esc(saveText(r))}" onclick="answer('${r.id}', 'save')">${esc(text)}</button>`;
+function decide(r, saveLabel) {
+  const d = owner.decisions(r);
+  return `${d.once ? `<button onclick="answer('${r.id}', 'once')">Allow once</button>` : ""}${d.save ? saveButton(r, saveLabel, d.once) : ""}`
+    + `${d.deny ? `<button class="danger" onclick="answer('${r.id}', 'deny')">Deny</button>` : ""}${d.dismiss ? `<button onclick="dismiss('${r.id}')">Dismiss</button>` : ""}`;
 }
-
-function reasons(r) {
-  return (r.requirements ?? []).map((requirement) => requirement.message);
-}
-
-// A saved approval binds one operation and its grant. The text names fields, not values, which can be whole messages;
-// fields left out of the grant are named as broad.
-function grantText(operation, grant, scope) {
-  const fields = Object.keys(grant ?? {}), broad = Object.keys(scope ?? {}).filter((k) => !fields.includes(k));
-  return `Allow ${operation} ${fields.length ? "for the same " + fields.join(", ") : "for any request"}`
-    + (fields.length && broad.length ? `, with any ${broad.join(", ")}` : "");
-}
-const saveText = (r) => grantText(r.facts?.operation?.id, r.grant, r.facts?.parameters);
-const saveButton = (r, text, primary) => r.facts?.operation?.action == null || !r.facts?.operation?.id ? ""
-  : `<button class="${primary ? "primary" : ""}" title="${esc(saveText(r))}" onclick="answer('${r.id}', 'save')">${esc(text)}</button>`;
-const decide = (r, saveLabel) => r.savingDecision ? "" : r.state === "pending"
-  ? `<button onclick="answer('${r.id}', 'once')">Allow once</button>${saveButton(r, saveLabel, true)}<button class="danger" onclick="answer('${r.id}', 'deny')">Deny</button>`
-  : r.state === "expired" ? `${saveButton(r, saveLabel)}<button onclick="dismiss('${r.id}')">Dismiss</button>` : "";
 
 function list(selected) {
   const dismissed = JSON.parse(localStorage.getItem(DISMISSED) ?? "[]");
-  const priority = (r) => r.state === "pending" ? 0 : r.state === "expired" && !dismissed.includes(r.id) ? 1 : 2;
-  const shown = records.filter((r) => !scope || (scope[0] === "agent" ? r.facts.principal.name : r.facts.account) === scope[1])
-    .sort((a, b) => priority(a) - priority(b) || (a.state === "pending" && b.state === "pending" ? new Date(a.expires) - new Date(b.expires) : 0));
+  const shown = owner.ordered(records.filter((r) => !scope || (scope[0] === "agent" ? r.facts.principal.name : r.facts.account) === scope[1]), dismissed);
   const pending = shown.filter((r) => r.state === "pending").length;
   return [
     ["activity", `<div class="group"><b>Activity</b>${pending ? `<span class="warn">${pending} pending</span>` : ""}${scope ? `<span class="muted">${esc(scope[1])} · <a href="#activity">All</a></span>` : ""}</div>`],
@@ -651,7 +540,7 @@ const answer = run((id, decision) => {
       definition: request.definition,
       scope: request.grant ?? {}, requirements: request.requirements ?? [],
     }};
-  }, () => api("POST", `/requests/${id}`, { decision }), { message: decision === "save" ? "Rule saved" : decision === "deny" ? "Denied" : "Approved" });
+  }, () => client().decide(id, decision), { message: decision === "save" ? "Rule saved" : decision === "deny" ? "Denied" : "Approved" });
 });
 
 function dismiss(id) {
@@ -659,35 +548,14 @@ function dismiss(id) {
   render();
 }
 
-function labelStatus(l) {
-  const lines = [lattices().confidentiality && l?.audience && l.audience !== "anyone" && `Has seen private data${l.because?.audience ? ` from ${l.because.audience}` : ""}`, lattices().integrity && l?.trust === "untrusted" && "Has read content from strangers"];
-  return lines.filter(Boolean).join(" · ") || "Clean";
-}
-
 const pair = () => [head("Pair an agent"), `<section><label>Name</label><input id="name"><label>Public key</label><textarea id="pubkey" rows="3"></textarea>
   <div class="row"><span></span><button class="primary" onclick="pairAgent()">Pair</button></div></section>`];
 
-const pairAgent = () => patch({ identities: { [$("name").value.trim()]: { key: $("pubkey").value.trim(), accounts: {} } } }, "agent/" + encodeURIComponent($("name").value.trim()));
+const pairAgent = () => commit(edits.pairAgent($("name").value, $("pubkey").value), "agent/" + encodeURIComponent($("name").value.trim()));
 
-function ruleSentence(r) {
-  if (!r.operation) return `Inactive: ${r.action} on ${r.account} was saved before approvals named an operation`;
-  return `${grantText(r.operation, r.scope, r.scope)} on ${r.account}. Approval covers: ${reasons(r).join(" ")}`;
-}
-
-// mode mirrors lib.rego: the most specific override wins, effects that ask still ask at allow,
-// effects without change are allowed and the rest follow the level.
-function mode(access, vocabulary, effects, k) {
-  const lineage = k.split(".").map((_, i, p) => p.slice(0, p.length - i).join("."));
-  const has = (name) => effects.some((e) => vocabulary[e]?.[name]);
-  return lineage.map((a) => access.actions?.[a]).find(Boolean)
-    ?? (access.level === "allow" && has("ask") ? "ask" : has("change") ? (access.level === "read" ? "off" : access.level) : "allow");
-}
-
-function accessActions(name, a, access) {
+function accessActions(name, a, nodes) {
   const renderAction = (node) => {
-    const k = node.key, effects = effectsOf(a, k), children = [...node.children.values()];
-    const inherited = mode({ ...access, actions: { ...access.actions, [k]: null } }, view.vocabulary, effects, k), own = access.actions?.[k];
-    const overrides = Object.keys(access.actions ?? {}).filter((action) => action.startsWith(k + ".") && access.actions[action]).length;
+    const { key: k, effects, children, inherited, own, overrides } = node;
     const label = `${esc(node.title)}${overrides ? ` <small class="muted" title="${overrides} overrides">${overrides}</small>` : ""}`;
     const buttons = `<span class="seg" role="group" aria-label="${esc(k)} permission">${Object.entries(MODES).map(([m, t]) =>
       `<button class="${m === own ? "primary" : !own && m === inherited ? "inherited" : ""}" aria-label="${esc(t + " " + k)}" aria-pressed="${m === own}" onclick="event.preventDefault(); event.stopPropagation(); patchAccess(${q(name)}, ${q(a)}, { actions: { [${q(k)}]: ${q(m === own ? null : m)} } })">${t}</button>`).join("")}</span>`;
@@ -696,27 +564,22 @@ function accessActions(name, a, access) {
       ? `<details class="access-action-group" data-disclosure="${esc(name + "/" + a + "/" + k)}"><summary class="access-action" role="button" aria-label="${esc(node.title)}"><span class="access-group-title" ${title}>${label}</span>${buttons}</summary><div class="access-children">${children.map(renderAction).join("")}</div></details>`
       : `<div class="access-action"><span ${title}>${label}</span>${buttons}</div>`;
   };
-  return actionTree(a).map(renderAction);
+  return nodes.map(renderAction);
 }
 
 function agent(name) {
   const id = ids()[name];
   if (!id) return [head(esc(name)), `<p class="empty">No agent ${esc(name)}.</p>`];
-  const levels = Object.entries(accounts()).map(([a, acc]) => {
-    const access = id.accounts?.[a] ?? { level: "off" };
-    const c = entry(a);
-    const actions = access.level === "off" ? [] : accessActions(name, a, access);
-    const overrides = Object.values(access.actions ?? {}).filter(Boolean).length;
+  const levels = owner.agentAccess(view, name).map(({ account: a, level, levels, overrides, actions: nodes }) => {
+    const actions = accessActions(name, a, nodes);
     const key = `access/${encodeURIComponent(name)}/${encodeURIComponent(a)}`, open = actions.length > 0 && expanded.has(key);
     return `<div class="acct"><div class="row"><button class="access-toggle" aria-label="Actions for ${esc(a)}" aria-expanded="${open}" aria-controls="${esc(key)}" ${actions.length ? "" : "disabled"} onclick="toggle(${q(key)})">
-      <i>${actions.length ? open ? "▾" : "▸" : ""}</i>${accountIcon(a)}<b>${esc(a)}</b>${overrides && access.level !== "off" ? `<small class="muted" title="${overrides} action overrides" aria-label="${overrides} action overrides">${overrides}</small>` : ""}</button>
-      <span class="seg" role="group" aria-label="Default access for ${esc(a)}">${Object.entries(LEVELS).filter(([l]) => acc.preset !== "custom_api" || l !== "read").map(([l, t]) =>
-        `<button class="${l === access.level ? "primary" : ""}" aria-pressed="${l === access.level}" onclick="patchAccess(${q(name)}, ${q(a)}, { level: ${q(l)} })">${t}</button>`).join("")}</span></div>
+      <i>${actions.length ? open ? "▾" : "▸" : ""}</i>${accountIcon(a)}<b>${esc(a)}</b>${overrides && level !== "off" ? `<small class="muted" title="${overrides} action overrides" aria-label="${overrides} action overrides">${overrides}</small>` : ""}</button>
+      <span class="seg" role="group" aria-label="Default access for ${esc(a)}">${levels.map(([l, t]) =>
+        `<button class="${l === level ? "primary" : ""}" aria-pressed="${l === level}" onclick="patchAccess(${q(name)}, ${q(a)}, { level: ${q(l)} })">${t}</button>`).join("")}</span></div>
       <div class="access-actions" id="${esc(key)}" ${open ? "" : "hidden"}>${actions.join("")}</div></div>`;
   });
-  const reaches = (pred) => Object.entries(accounts()).some(([a, acc]) => (id.accounts?.[a]?.level ?? "off") !== "off" && pred(acc));
-  const hint = lattices().confidentiality && reaches((acc) => acc.preset === "web") && reaches((acc) => acc.contents !== "anyone")
-    ? `<p class="muted">Browsing needs approval after reading private data.</p>` : "";
+  const hint = owner.browsingHint(view, name) ? `<p class="muted">Browsing needs approval after reading private data.</p>` : "";
   const l = view.labels[name] ?? {};
   const point = (axis, values) => {
     const lattice = axis === "trust" ? "integrity" : "confidentiality";
@@ -724,7 +587,7 @@ function agent(name) {
     return `<select aria-label="${axis === "trust" ? "Trust" : "Audience"}" onchange="setLabel(${q(name)}, { ...${q({ trust: l.trust, audience: l.audience })}, [${q(axis)}]: this.value })">
       ${Object.entries(values).map(([v, title]) => opt(v, title, l[axis])).join("")}</select>`;
   };
-  return [head(esc(name), `<span class="labels" title="${esc(labelStatus(l))}">${point("trust", { trusted: "Trusted", untrusted: "Untrusted" })}${point("audience", WHO)}</span>`),
+  return [head(esc(name), `<span class="labels" title="${esc(owner.labelStatus(view, l))}">${point("trust", owner.TRUSTS)}${point("audience", WHO)}</span>`),
     id.profile || hint ? `<section>${id.profile ? `<p class="warn">Profiling is on. Requests run without checks.</p>` : ""}${hint}</section>` : "",
     `<section><h2>Access</h2>${levels.join("") || `<p class="empty">No accounts yet.</p>`}</section>`,
     `<section><a href="#agent-settings/${encodeURIComponent(name)}">Settings</a></section>`];
@@ -737,8 +600,8 @@ function agentSettings(name) {
     `<section><a href="#integrations">Connect your tools</a><p class="muted">Setup guides for wrapped commands, Monitor shell, and the MCP gateway.</p></section>`,
     `<section>${disclosure("setup", "Setup", `<label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre>`)}</section>`,
     `<section>${disclosure("replace-key", "Replace key", `<p class="muted">Use this after recreating the sandbox. The agent starts clean.</p><textarea id="pubkey" rows="2"></textarea>
-      <div class="row"><span></span><button onclick="patch({ identities: { [${q(name)}]: { key: $('pubkey').value.trim() } } })">Replace key</button></div>`)}</section>`,
-    `<section><label><input type="checkbox" ${ids()[name].routes ? "checked" : ""} onchange="patch({ identities: { [${q(name)}]: { routes: this.checked } } })"> Open sandbox routes</label><p class="muted">Allows sandbox connections. Turning this off closes existing sessions.</p></section>`,
+      <div class="row"><span></span><button onclick="commit(edits.replaceKey(${q(name)}, $('pubkey').value))">Replace key</button></div>`)}</section>`,
+    `<section><label><input type="checkbox" ${ids()[name].routes ? "checked" : ""} onchange="commit(edits.setRoutes(${q(name)}, this.checked))"> Open sandbox routes</label><p class="muted">Allows sandbox connections. Turning this off closes existing sessions.</p></section>`,
     others.length ? `<section>${disclosure("copy-settings", "Copy settings", `<div class="row"><select id="from">${others.map((n) => opt(n, n)).join("")}</select><button onclick="copySettings(${q(name)})">Copy</button></div>`)}</section>` : "",
     `<section><button class="danger" onclick="removeAgent(${q(name)})">Remove agent</button></section>`];
 }
@@ -751,32 +614,25 @@ function rulesSection(name) {
 
 const rules = () => [head("Rules"), ...Object.keys(ids()).filter((n) => Object.keys(ids()[n].rules ?? {}).length).map(rulesSection)];
 
-const removeAgent = (name) => patch({ identities: { [name]: null } }, "activity");
+const removeAgent = (name) => commit(edits.removeAgent(name), "activity");
 
-const patchAccess = (name, account, access) => patch({ identities: { [name]: { accounts: { [account]: access } } } });
+const patchAccess = (name, account, access) => commit(edits.setAccess(name, account, access));
 
 const setLabel = run((name, label) => edit((state) => {
   state.view.labels[name] = { ...label, because: {
     ...(label.trust !== "trusted" && { trust: "the owner" }),
     ...(label.audience !== "anyone" && { audience: "the owner" }),
   } };
-}, () => api("POST", "/labels/" + encodeURIComponent(name), label)));
+}, () => client().label(name, label)));
 
-const removeRule = (name, id) => patch({ identities: { [name]: { rules: { [id]: null } } } });
+const removeRule = (name, id) => commit(edits.removeRule(name, id));
 
-const copySettings = run((name) => {
-  const from = ids()[$("from").value];
-  return changeSettings(["accounts", "rules"].map((key) => ({ path: ["identities", name, key], value: structuredClone(from[key] ?? {}) })));
-});
-
-const mcpKeys = (a) => Object.entries(accounts()[a].connections ?? {}).filter(([, kinds]) => kinds.mcp).map(([key]) => key);
-const connName = (a, key) => (key ? `${a}-${key}` : a);
+const copySettings = run((name) => changeSettings(edits.copySettings(view, $("from").value, name)));
 
 function accountStatus(a) {
-  const states = mcpKeys(a).map((k) => view.status[connName(a, k)] ?? {});
-  if (states.some((s) => s.error)) return `<span class="bad">Can't connect</span>`;
-  if (states.some((s) => s.state === "connecting")) return `<span class="muted">Connecting…</span>`;
-  const blocked = states.reduce((n, s) => n + (s.details?.blocked ?? 0), 0);
+  const { state, blocked } = owner.accountStatus(view, a);
+  if (state === "error") return `<span class="bad">Can't connect</span>`;
+  if (state === "connecting") return `<span class="muted">Connecting…</span>`;
   return blocked ? `<span class="warn">${blocked} tools await review</span>` : "";
 }
 
@@ -787,42 +643,21 @@ const loadShipped = run(async (name) => {
   presetLoads.add(name);
   const generation = view.generation;
   try {
-    shippedFiles[name] = await api("GET", "/presets/" + encodeURIComponent(name));
+    shippedFiles[name] = await client().preset(name);
     presetGenerations[name] = generation;
   } finally { presetLoads.delete(name); }
   render();
 });
 const presetFile = (name) => presetGenerations[name] === view.generation && shippedFiles[name] ? shippedFiles[name]
-  : view.presets[name] ? undefined : { title: name, ...NEW_PRESET };
-
-// Preset files keep one field, action and operation per line, as the shipped files do.
-const EXPANDED = ["", "catalog", "catalog.fields", "catalog.actions", "http", "http.operations"];
-const compact = (v) => Array.isArray(v) ? `[${v.map(compact).join(", ")}]`
-  : v && typeof v === "object" ? `{${Object.entries(v).map(([k, x]) => `${JSON.stringify(k)}: ${compact(x)}`).join(", ")}}` : JSON.stringify(v);
-function presetText(v, path = "", indent = "") {
-  if (!EXPANDED.includes(path) || v === null || typeof v !== "object") return compact(v);
-  const [open, close, items] = Array.isArray(v) ? ["[", "]", v.map((x) => presetText(x, path + ".*", indent + "  "))]
-    : ["{", "}", Object.entries(v).map(([k, x]) => `${JSON.stringify(k)}: ${presetText(x, path ? `${path}.${k}` : k, indent + "  ")}`)];
-  return items.length ? `${open}\n${indent}  ${items.join(`,\n${indent}  `)}\n${indent}${close}` : open + close;
-}
+  : view.presets[name] ? undefined : owner.newPreset(name);
 
 // Downloads the saved version, which the monitor has checked, as presets/<name>.json.
 function downloadPreset(name) {
-  const blob = new Blob([presetText(presetFile(name)) + "\n"], { type: "application/json" });
+  const blob = new Blob([owner.presetText(presetFile(name)) + "\n"], { type: "application/json" });
   Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: name + ".json" }).click();
 }
 
-// An unmatched request on a preset's account can become one of its operations.
-const draftLink = (r) => r.facts?.operation == null && r.facts?.details?.http && accounts()[r.facts.account] && entry(r.facts.account).operations
-  ? `<a href="#preset/${encodeURIComponent(accounts()[r.facts.account].preset)}/${r.id}">Add operation</a>` : "";
-
-// The draft matches only this exact path; the owner turns segments into {parameters} and sets its effects and scope.
-function draftOperation(e) {
-  const h = e.http, read = ["GET", "HEAD"].includes(h.method), params = Object.keys(h.query ?? {});
-  return { id: `${h.method} ${h.path}`, action: read ? "read" : "write", effects: [read ? "read" : "write"], method: h.method, origin: h.origin, path: h.path,
-    ...(params.length && { params }), ...(h.body_kind !== "none" && { body: ["json", "form"].includes(h.body_kind) ? h.body_kind : "any" }),
-    ...(e.graphql?.fields?.length === 1 && { body: "graphql", graphql: { operation: e.graphql.kind, field: e.graphql.fields[0].name } }), scope: {} };
-}
+const draftLink = (r) => owner.draftable(view, r) ? `<a href="#preset/${encodeURIComponent(owner.draftable(view, r))}/${r.id}">Add operation</a>` : "";
 
 function presetPage(name, from) {
   if (!name) return [head("New preset"), `<section><label>Name</label><div class="row"><input id="preset-name"><button onclick="location.hash = 'preset/' + encodeURIComponent($('preset-name').value.trim())">Create</button></div></section>`];
@@ -830,28 +665,21 @@ function presetPage(name, from) {
     loadShipped(name);
     return [head("Preset " + esc(name)), `<p class="empty">Loading…</p>`];
   }
-  const file = structuredClone(presetFile(name)), r = records.find((r) => r.id === from);
-  if (r?.facts?.details?.http) {
-    const { id, ...operation } = draftOperation(r.facts.details);
-    file.http = { ...file.http, operations: { ...(file.http?.operations ?? {}), [id]: operation } };
-  }
+  const file = owner.withDraft(presetFile(name), records.find((r) => r.id === from));
   const users = Object.entries(accounts()).filter(([, acc]) => acc.preset === name).map(([a]) => a);
   return [head("Preset " + esc(name)), `<section><p class="muted">Changes apply to every account using it: ${esc(users.join(", ") || "none yet")}.</p>
-    <textarea id="preset" rows="40">${esc(presetText(file))}</textarea>
-    <div class="row">${view.config.presets?.[name] ? `<button class="danger" onclick="patch({ presets: { [${q(name)}]: null } })">Remove your version</button>` : "<span></span>"}
+    <textarea id="preset" rows="40">${esc(owner.presetText(file))}</textarea>
+    <div class="row">${view.config.presets?.[name] ? `<button class="danger" onclick="commit(edits.removePreset(${q(name)}))">Remove your version</button>` : "<span></span>"}
       <span><button onclick="downloadPreset(${q(name)})">Download file</button> <button class="primary" onclick="savePreset(${q(name)})">Save</button></span></div></section>`];
 }
 
 const savePreset = run(async (name) => {
-  const value = JSON.parse($("preset").value);
-  for (const id of Object.keys(presetFile(name)?.http?.operations ?? {})) {
-    if (value.http?.operations && !Object.hasOwn(value.http.operations, id)) value.http.operations[id] = { enabled: false };
-  }
-  await edit(() => {}, () => api("POST", "/policy/edits", { changes: [{ path: ["presets", name], value }] }), { then: "preset/" + encodeURIComponent(name) });
+  const changes = edits.savePreset(name, $("preset").value, presetFile(name));
+  await edit(() => {}, () => client().edit(changes), { then: "preset/" + encodeURIComponent(name) });
 });
 
 function questions(a) {
-  const pick = (id, value) => `<select id="${id}">${AUDIENCES.map((x) => opt(x, WHO[x], value)).join("")}</select>`;
+  const pick = (id, value) => `<select id="${id}">${Object.entries(WHO).map(([x, title]) => opt(x, title, value)).join("")}</select>`;
   return `<label for="contents">Who should see what's in here?</label>${pick("contents", a.contents)}
     <label><input type="checkbox" id="strangers" ${a.strangers ? "checked" : ""}> Strangers can put content here</label>
     <label for="sends">Who sees what the agent sends here?</label>${pick("sends", a.sends)}`;
@@ -861,11 +689,11 @@ const answers = () => ({ contents: $("contents").value, strangers: $("strangers"
 
 function input(f, value, disabled = false) {
   const state = disabled ? "disabled" : "";
-  if (f.json) value = value === undefined ? "" : JSON.stringify(value, null, 2);
+  value = owner.fieldText(f, value);
   if (f.json || f.multiline) return `<textarea id="f-${esc(f.key)}" ${state} rows="6">${esc(value)}</textarea>`;
   if (f.secret) return `<div class="secret-input"><input id="f-${esc(f.key)}" ${state} type="password" autocomplete="new-password" spellcheck="false" placeholder="${esc(f.hint || "Paste your secret here")}" value="${esc(value)}">
     <button type="button" aria-controls="f-${esc(f.key)}" aria-pressed="false" aria-label="Show ${esc(f.label)}" onclick="toggleSecret(${q(f.key)}, this)">Show</button></div>`;
-  return `<input id="f-${esc(f.key)}" ${state} type="text" placeholder="${esc(f.hint)}" value="${esc(f.list ? (value ?? []).join(", ") : value)}">`;
+  return `<input id="f-${esc(f.key)}" ${state} type="text" placeholder="${esc(f.hint)}" value="${esc(value)}">`;
 }
 
 function toggleSecret(key, button) {
@@ -876,27 +704,7 @@ function toggleSecret(key, button) {
   button.setAttribute("aria-label", button.getAttribute("aria-label").replace(/^(Show|Hide)/, button.textContent));
 }
 
-function read(f) {
-  const raw = $("f-" + f.key).value;
-  const v = f.secret ? raw : raw.trim();
-  if (f.json) return v ? JSON.parse(v) : {};
-  return f.list ? v.split(/[\s,]+/).filter(Boolean) : v;
-}
-
-const atPath = (object, path) => path.reduce((value, key) => value?.[key], object);
-function putPath(object, path, value) {
-  for (const key of path.slice(0, -1)) {
-    if (!Object.hasOwn(object, key)) Object.defineProperty(object, key, { value: {}, enumerable: true });
-    object = object[key];
-  }
-  Object.defineProperty(object, path.at(-1), { value, enumerable: true, configurable: true, writable: true });
-}
-const paths = (f) => f.paths ?? [f.path];
-const fieldsOf = (c) => c.fields ?? [];
-// A field with no paths, such as an OAuth client ID, only fills the account's templates when it is created.
-const plain = (c) => fieldsOf(c).filter((f) => !f.secret && paths(f).length);
-const fieldValue = (acc, f) => atPath(acc, f.path ?? paths(f)[0]) ?? (f.list ? [] : f.json ? {} : "");
-const filled = (c, values) => JSON.parse(JSON.stringify(c), (_, v) => typeof v === "string" ? fill(v, values) : v);
+const read = (f) => owner.readField(f, $("f-" + f.key).value);
 
 function setupField(f, preset) {
   const field = `<label for="f-${esc(f.key)}">${esc(f.oauth ? "Access token" : f.label)}</label>${input(f.oauth ? { ...f, label: "Access token", hint: "Paste your access token here" } : f, f.default)}
@@ -912,19 +720,19 @@ function setupToken(preset, key) {
   button.textContent = field.hidden ? "Use an access token instead" : "Use sign-in instead";
   button.setAttribute("aria-expanded", String(!field.hidden));
   $("signin-" + key).hidden = !field.hidden;
-  const oauth = fieldsOf(view.presets[preset]).some((f) => !f.edit_only && f.oauth && $("token-field-" + f.key).hidden);
+  const oauth = owner.setupFields(view, preset).some((f) => f.oauth && $("token-field-" + f.key).hidden);
   $("account-add").textContent = oauth ? "Add without signing in" : "Add";
   $("account-add").classList.toggle("primary", !oauth);
   if (!field.hidden) $("f-" + key).focus();
 }
 
-const signInLabel = (preset) => preset === "mcp" || !view.presets[preset] ? "Sign in" : "Sign in with " + view.presets[preset].title;
+const signInLabel = (preset) => owner.signInLabel(view, preset);
 
 function add(preset) {
   const c = view.presets[preset];
   if (!c) return [head("Add account"), `<p class="empty">No preset ${esc(preset)}.</p>`];
   if (preset === "custom_api") return customAPIPage(c);
-  const fields = fieldsOf(c).filter((f) => !f.edit_only), oauth = fields.filter((f) => f.oauth);
+  const fields = owner.setupFields(view, preset), oauth = fields.filter((f) => f.oauth);
   return [head(connectorIcon(preset) + "Add " + esc(c.title)), `<section><label for="account-name">Name</label><input id="account-name" value="${esc(preset)}">
     ${fields.map((f) => setupField(f, preset)).join("")}
     ${questions(c.defaults)}<div class="row"><span></span><div class="credential-actions">
@@ -935,43 +743,31 @@ function add(preset) {
 
 const addAccount = run(async (preset, signInKey) => {
   if ($("account-add").disabled) return;
-  const c = view.presets[preset], name = $("account-name").value.trim();
-  if (!name) throw new Error("Name this account.");
-  if (Object.hasOwn(accounts(), name)) throw new Error("An account with that name already exists. Choose another name.");
-  const fields = fieldsOf(c).filter((f) => !f.edit_only);
-  const values = Object.fromEntries(fields.map((f) => [f.key, read(f)]));
-  // Only the non-secret values fill a preset's connections; secrets go to their fields' paths.
-  const plainValues = Object.fromEntries(fields.filter((f) => !f.secret).map((f) => [f.key, values[f.key]]));
-  const connections = c.connections ? filled(c.connections, plainValues) : values.connections;
-  const acc = { preset, ...answers(), ...JSON.stringify(connections) !== JSON.stringify(c.connections) && { connections } };
-  for (const f of fields) {
-    const value = f.oauth && $("token-field-" + f.key).hidden ? { oauth: filled(f.oauth, values) }
-      : f.secret && values[f.key] === "" ? null : values[f.key];
-    for (const path of paths(f)) putPath(acc, path, value);
-  }
-  const body = { accounts: { [name]: acc } }, from = location.hash;
+  const fields = owner.setupFields(view, preset), name = $("account-name").value.trim();
+  const changes = edits.addAccount(view, preset, { name, values: Object.fromEntries(fields.map((f) => [f.key, read(f)])), answers: answers(),
+    oauth: fields.filter((f) => f.oauth && $("token-field-" + f.key).hidden).map((f) => f.key) });
+  const from = location.hash;
   const buttons = [$("account-add"), ...fields.filter((f) => f.oauth).map((f) => $("signin-" + f.key))];
   buttons.forEach((button) => { button.disabled = true; });
   try {
-    await edit((state) => previewConfig(state, body), () => sendChanges(body), { message: "Account added" });
+    await changeSettings(changes, { message: "Account added" });
     if (location.hash !== from) return;
     location.hash = "account/" + encodeURIComponent(name);
     if (signInKey !== undefined) {
       const f = fields.find((f) => f.key === signInKey);
-      await signIn(name, paths(f)[0].map(encodeURIComponent).join("/"));
+      await signIn(name, owner.fieldPaths(f)[0].map(encodeURIComponent).join("/"));
     }
   } finally { buttons.forEach((button) => { button.disabled = false; }); }
 });
 
-function apiConnectionFields(slot = {}) {
-  const auth = slot.query ? "query" : slot.header && !(slot.header.toLowerCase() === "authorization" && slot.prefix === "Bearer ") ? "header" : "bearer";
-  const url = slot.origin ? slot.origin + (slot.path === "/" ? "" : slot.path ?? "") : "";
+function apiConnectionFields(a) {
+  const { url, auth, header, prefix, query } = owner.apiSettings(view, a);
   return `<label for="api-url">API URL</label><input id="api-url" type="url" required placeholder="https://api.example.com" value="${esc(url)}" autocomplete="off">
     <p class="muted">The credential is used only at this address and its paths.</p>
     <label for="api-auth">Authentication</label><select id="api-auth" onchange="apiAuthChanged()">${opt("bearer", "Bearer token", auth)}${opt("header", "API key in a header", auth)}${opt("query", "API key in a query parameter", auth)}</select>
-    <div id="api-header-fields" ${auth === "header" ? "" : "hidden"}><label for="api-header">Header name</label><input id="api-header" value="${esc(auth === "header" ? slot.header : "X-API-Key")}">
-      <label for="api-prefix">Prefix, if required</label><input id="api-prefix" value="${esc(auth === "header" ? slot.prefix : "")}" placeholder="Leave empty for a plain API key"></div>
-    <div id="api-query-fields" ${auth === "query" ? "" : "hidden"}><label for="api-query">Parameter name</label><input id="api-query" value="${esc(slot.query ?? "api_key")}"></div>`;
+    <div id="api-header-fields" ${auth === "header" ? "" : "hidden"}><label for="api-header">Header name</label><input id="api-header" value="${esc(header)}">
+      <label for="api-prefix">Prefix, if required</label><input id="api-prefix" value="${esc(prefix)}" placeholder="Leave empty for a plain API key"></div>
+    <div id="api-query-fields" ${auth === "query" ? "" : "hidden"}><label for="api-query">Parameter name</label><input id="api-query" value="${esc(query)}"></div>`;
 }
 
 function apiAuthChanged() {
@@ -979,29 +775,7 @@ function apiAuthChanged() {
   $("api-query-fields").hidden = $("api-auth").value !== "query";
 }
 
-function readAPISlot(value = "token") {
-  let url;
-  try { url = new URL($("api-url").value.trim()); } catch { throw new Error("Enter the API's HTTPS URL, such as https://api.example.com."); }
-  if (url.protocol !== "https:" || url.port === "80" || url.username || url.password || url.search || url.hash) {
-    throw new Error("Use an HTTPS URL without credentials, query parameters, or a fragment.");
-  }
-  const slot = { value, origin: url.origin, path: url.pathname.replace(/\/+$/, "") || "/" };
-  switch ($("api-auth").value) {
-    case "bearer": return { ...slot, header: "Authorization", prefix: "Bearer " };
-    case "header": {
-      const header = $("api-header").value.trim(), prefix = $("api-prefix").value;
-      if (!/^[!#$%&'*+.^_`|~0-9a-z-]+$/i.test(header)) throw new Error("Enter a valid header name, such as X-API-Key.");
-      if (/[\r\n]/.test(prefix)) throw new Error("The header prefix must be on one line.");
-      return { ...slot, header, ...(prefix ? { prefix } : {}) };
-    }
-    case "query": {
-      const query = $("api-query").value.trim();
-      if (!query || /[\s&=#?]/.test(query)) throw new Error("Enter a query parameter name, such as api_key.");
-      return { ...slot, query };
-    }
-    default: throw new Error("Choose an authentication method.");
-  }
-}
+const apiForm = () => ({ url: $("api-url").value, auth: $("api-auth").value, header: $("api-header").value, prefix: $("api-prefix").value, query: $("api-query").value });
 
 function customAPIPage(c) {
   const agents = Object.keys(ids()), selected = agents.length === 1 ? agents[0] : "";
@@ -1020,32 +794,24 @@ function customAPIPage(c) {
 
 const addCustomAPI = run(async () => {
   if ($("api-add").disabled) return;
-  const name = $("account-name").value.trim(), token = $("api-token").value;
-  if (!/^[a-zA-Z0-9][a-zA-Z0-9-]*$/.test(name)) throw new Error("Name this account using letters, numbers, and hyphens.");
-  if (Object.hasOwn(accounts(), name)) throw new Error("An account with that name already exists. Choose another name.");
-  if (!token.trim()) throw new Error("Enter the API key or token.");
-  const slot = readAPISlot();
-  const acc = { preset: "custom_api", ...answers(), connections: { "": { http: { slots: [slot], secrets: { token } } } } };
-  const body = { accounts: { [name]: acc } };
-  const agent = $("api-agent")?.value;
-  if (agent) body.identities = { [agent]: { accounts: { [name]: { level: $("api-access").value } } } };
+  const name = $("account-name").value.trim();
+  const changes = edits.addCustomApi(view, { name, api: apiForm(), token: $("api-token").value, agent: $("api-agent")?.value, level: $("api-access")?.value, answers: answers() });
   const from = location.hash;
   $("api-add").disabled = true;
   try {
-    await edit((state) => previewConfig(state, body), () => sendChanges(body), { message: "Account added" });
+    await changeSettings(changes, { message: "Account added" });
     if (location.hash === from) location.hash = "account/" + encodeURIComponent(name);
   } finally { if ($("api-add")) $("api-add").disabled = false; }
 });
 
 function apiAgentSetup(a) {
-  const slot = accounts()[a].connections?.[""]?.http?.slots?.[0];
-  if (!slot) return "";
-  const placeholder = `tfm_${a}_${slot.value}`;
+  const setup = owner.apiSetup(view, a);
+  if (!setup) return "";
   return `<section class="account-card account-settings"><div class="section-heading"><h2>Connect your agent</h2></div><div class="settings-fields"><div>
-    <label for="api-placeholder">Agent API key</label><div class="row"><input id="api-placeholder" readonly value="${esc(placeholder)}" onclick="this.select()"><button onclick="copyAPIPlaceholder()">Copy</button></div>
+    <label for="api-placeholder">Agent API key</label><div class="row"><input id="api-placeholder" readonly value="${esc(setup.placeholder)}" onclick="this.select()"><button onclick="copyAPIPlaceholder()">Copy</button></div>
     <p class="muted">Give your agent this placeholder as its API key. Requests must go through Monitor.</p>
-    <p>API address: <span class="mono">${esc(slot.origin + (slot.path === "/" ? "" : slot.path ?? ""))}</span></p>
-    <p>${slot.query ? `Query parameter: <span class="mono">${esc(slot.query)}=${esc(placeholder)}</span>` : `Header: <span class="mono">${esc(slot.header)}: ${esc((slot.prefix ?? "") + placeholder)}</span>`}</p>
+    <p>API address: <span class="mono">${esc(setup.address)}</span></p>
+    <p>${setup.query ? `Query parameter: <span class="mono">${esc(setup.query)}=${esc(setup.value)}</span>` : `Header: <span class="mono">${esc(setup.header)}: ${esc(setup.value)}</span>`}</p>
     <p class="muted">Access covers all operations at this address, including changes and deletions.</p>
   </div></div></section>`;
 }
@@ -1057,19 +823,13 @@ const copyAPIPlaceholder = run(async () => {
   toast("Placeholder copied");
 });
 
-function credentialFields(a) {
-  return (view.fields?.[a] ?? []).map((meta) => {
-    const f = fieldsOf(entry(a)).find((f) => paths(f).some((path) => JSON.stringify(path) === JSON.stringify(meta.path)));
-    return { ...f, ...meta, key: meta.path.map(encodeURIComponent).join("/"), label: `${meta.path[1] ? meta.path[1] + ": " : ""}${f?.label ?? meta.path.at(-1)}`, secret: true, multiline: f ? !!f.multiline : true };
-  }).sort((a, b) => a.key.localeCompare(b.key));
-}
+const credentialFields = (a) => owner.credentialFields(view, a);
 
 function credentialEditor(a, f) {
-  const status = f.kind === "oauth-required" ? "Sign-in required" : f.kind === "unset" ? "Not configured" : "Configured";
-  return `<div class="credential"><div>${esc(f.label)} · <span class="muted">${esc(status)}</span></div>
+  return `<div class="credential"><div>${esc(f.label)} · <span class="muted">${esc(f.status)}</span></div>
     <input type="hidden" id="mode-${esc(f.key)}" value="keep">
     <div id="credential-actions-${esc(f.key)}" class="credential-actions">
-      ${f.kind.startsWith("oauth") || grantTemplate(a, f) ? `<button class="primary" onclick="signIn(${q(a)}, ${q(f.key)})">${esc(signInLabel(accounts()[a].preset))}</button>` : ""}
+      ${f.signIn ? `<button class="primary" onclick="signIn(${q(a)}, ${q(f.key)})">${esc(signInLabel(accounts()[a].preset))}</button>` : ""}
       <button id="replace-${esc(f.key)}" onclick="credentialMode(${q(a)}, ${q(f.key)}, 'replace')">${f.kind === "unset" ? "Set value" : "Replace"}</button>
       ${f.kind !== "unset" ? `<button class="danger" onclick="credentialMode(${q(a)}, ${q(f.key)}, 'clear')">Remove</button>` : ""}</div>
     <div id="credential-edit-${esc(f.key)}" hidden></div>
@@ -1091,141 +851,80 @@ function credentialMode(a, key, mode) {
   else $(mode === "keep" ? "replace-" + key : "credential-cancel-" + key).focus();
 }
 
-function actionTree(a) {
-  const roots = new Map();
-  for (const [key, action] of tree(actionsOf(a))) {
-    let children = roots;
-    key.split(".").forEach((part, i, parts) => {
-      const path = parts.slice(0, i + 1).join(".");
-      if (!children.has(part)) children.set(part, { key: path, title: part.charAt(0).toUpperCase() + part.slice(1).replace(/[_-]/g, " "), children: new Map() });
-      const node = children.get(part);
-      if (path === key) { node.title = action.title || key; node.action = true; }
-      children = node.children;
-    });
-  }
-  return [...roots.values()];
-}
-
 function accountActions(a) {
-  const count = (node) => Number(!!node.action) + [...node.children.values()].reduce((n, child) => n + count(child), 0);
   const renderAction = (node) => {
-    const effects = effectsOf(a, node.key), children = [...node.children.values()];
-    const total = children.reduce((n, child) => n + count(child), 0);
+    const { effects, children, total } = node;
     const badges = effects.map((effect) => `<span class="badge ${["read", "write", "send", "delete", "admin"].includes(effect) ? "effect-" + effect : ""}">${esc(effect.charAt(0).toUpperCase() + effect.slice(1))}</span>`).join("");
     const row = `<span class="capability-name">${esc(node.title)}${children.length ? ` <small title="${total} subaction${total === 1 ? "" : "s"}" aria-label="${total} subaction${total === 1 ? "" : "s"}">${total}</small>` : ""}</span><span class="effects" aria-label="Effects">${badges || `<span class="muted">No effects</span>`}</span>`;
     return children.length
       ? `<details class="action-group" data-disclosure="${esc(a + "/" + node.key)}"><summary class="capability">${row}</summary><div class="action-children">${children.map(renderAction).join("")}</div></details>`
       : `<div class="capability">${row}</div>`;
   };
-  return actionTree(a).map(renderAction).join("") || `<p class="empty">This preset doesn't define any actions yet.</p>`;
+  return owner.actionTree(view, a).map(renderAction).join("") || `<p class="empty">This preset doesn't define any actions yet.</p>`;
 }
 
 function accountUsers(a) {
-  const users = Object.entries(ids()).filter(([, id]) => (id.accounts?.[a]?.level ?? "off") !== "off");
+  const users = owner.accountUsers(view, a);
   return `<section class="account-card"><div class="section-heading"><h2>Used by <span class="count">${users.length}</span></h2></div>
-    ${users.length ? `<div class="usage-columns"><span>Agent</span><span>Default access</span></div><ul class="agent-list">${users.map(([name, id]) => {
-      const access = id.accounts[a], overrides = Object.values(access.actions ?? {}).filter(Boolean).length;
-      return `<li><a class="agent-link" href="#agent/${encodeURIComponent(name)}"><span class="agent-info"><strong>${esc(name)}</strong>${id.profile ? ` <small>Profiling on</small>` : ""} <small>${overrides ? `${overrides} action override${overrides === 1 ? "" : "s"}` : "No action overrides"}</small></span>
-        <span class="badge ${["read", "ask", "allow"].includes(access.level) ? "level-" + access.level : ""}">${esc(LEVELS[access.level] ?? access.level)}</span></a></li>`;
-    }).join("")}</ul>` : `<p class="empty">No agents have access to this account.</p>`}</section>`;
+    ${users.length ? `<div class="usage-columns"><span>Agent</span><span>Default access</span></div><ul class="agent-list">${users.map(({ name, level, profile, overrides }) =>
+      `<li><a class="agent-link" href="#agent/${encodeURIComponent(name)}"><span class="agent-info"><strong>${esc(name)}</strong>${profile ? ` <small>Profiling on</small>` : ""} <small>${overrides ? `${overrides} action override${overrides === 1 ? "" : "s"}` : "No action overrides"}</small></span>
+        <span class="badge ${["read", "ask", "allow"].includes(level) ? "level-" + level : ""}">${esc(LEVELS[level] ?? level)}</span></a></li>`).join("")}</ul>` : `<p class="empty">No agents have access to this account.</p>`}</section>`;
 }
 
 function account(a) {
   const acc = accounts()[a];
   if (!acc) return [head(esc(a)), `<p class="empty">No account ${esc(a)}.</p>`];
   const c = entry(a);
-  const fields = plain(c), credentials = credentialFields(a);
+  const fields = owner.plainFields(view, a), credentials = credentialFields(a);
   return [`<header class="account-header">${accountIcon(a)}<h1>${esc(a)}</h1><span class="muted">${esc(c.title)} ${accountStatus(a)}</span><a class="x" href="#activity" aria-label="Close account">✕</a></header>`,
     liveCard(a),
     acc.preset === "custom_api" ? apiAgentSetup(a) : "",
-    `<div class="account-overview"><section class="account-card"><div class="section-heading"><h2>Actions <span class="count">${Object.keys(actionsOf(a)).length}</span></h2><a href="#preset/${encodeURIComponent(acc.preset)}">Edit preset</a></div>
+    `<div class="account-overview"><section class="account-card"><div class="section-heading"><h2>Actions <span class="count">${Object.keys(owner.actionsOf(view, a)).length}</span></h2><a href="#preset/${encodeURIComponent(acc.preset)}">Edit preset</a></div>
       <div class="action-list">${accountActions(a)}</div></section>${accountUsers(a)}</div>`,
     `<section class="account-card account-settings"><div class="section-heading"><h2>Account settings</h2></div><div class="settings-fields"><div>${questions(acc)}</div>
-      ${fields.length || credentials.length || acc.preset === "custom_api" ? `<div>${acc.preset === "custom_api" ? apiConnectionFields(acc.connections?.[""]?.http?.slots?.[0]) : ""}${fields.map((f) => `<label for="f-${esc(f.key)}">${esc(f.label)}</label>${input(f, fieldValue(acc, f))}`).join("")}${credentials.map((f) => credentialEditor(a, f)).join("")}</div>` : ""}</div>
+      ${fields.length || credentials.length || acc.preset === "custom_api" ? `<div>${acc.preset === "custom_api" ? apiConnectionFields(a) : ""}${fields.map((f) => `<label for="f-${esc(f.key)}">${esc(f.label)}</label>${input(f, f.value)}`).join("")}${credentials.map((f) => credentialEditor(a, f)).join("")}</div>` : ""}</div>
       <div class="card-footer"><button class="primary" onclick="saveAccount(${q(a)})">Save</button></div></section>`,
-    ...mcpKeys(a).map((k) => review(a, k, c)),
+    ...owner.reviews(view, a).map((s) => review(a, s, c)),
     `<section><details data-disclosure="custom-rules"><summary class="hd">Custom rules</summary><textarea id="policy" aria-label="Custom rules" rows="12">${esc(view.config.policies?.[a])}</textarea>
-      <div class="row"><span></span><button onclick="patch({ policies: { [${q(a)}]: $('policy').value.trim() || null } })">Save rules</button></div></details></section>`,
+      <div class="row"><span></span><button onclick="commit(edits.setAccountPolicy(${q(a)}, $('policy').value))">Save rules</button></div></details></section>`,
     `<section><button class="danger" onclick="removeAccount(${q(a)})">Remove account</button></section>`];
 }
 
-function review(a, key, c) {
-  const name = connName(a, key), status = view.status[name] ?? {}, s = status.details ?? {};
-  if (status.state === "connecting") return `<section><h2>${esc(name)}</h2><p class="muted">Connecting…</p></section>`;
-  if (status.error) return `<section><h2>${esc(name)}</h2><p class="bad">Can't connect: ${esc(status.error)}</p></section>`;
+function review(a, s, c) {
+  if (s.state === "connecting") return `<section><h2>${esc(s.name)}</h2><p class="muted">Connecting…</p></section>`;
+  if (s.error) return `<section><h2>${esc(s.name)}</h2><p class="bad">Can't connect: ${esc(s.error)}</p></section>`;
   if (!s.blocked) return "";
-  const count = (sign) => s.changes.filter((x) => x.startsWith(sign)).length;
-  return `<section><h2>${esc(name)}</h2><p>${c.title} changed its tools: ${count("+")} new, ${count("~")} changed, ${count("-")} removed.</p>
+  return `<section><h2>${esc(s.name)}</h2><p>${c.title} changed its tools: ${s.added} new, ${s.changed} changed, ${s.removed} removed.</p>
     <details><summary class="muted">${s.blocked} tools await review</summary><pre>${esc(s.changes.join("\n\n"))}</pre></details>
-    <div class="row"><span></span><button class="primary" onclick="approve(${q(a)}, ${q(key)})">Approve</button></div></section>`;
+    <div class="row"><span></span><button class="primary" onclick="approve(${q(a)}, ${q(s.key)})">Approve</button></div></section>`;
 }
 
-const approve = (a, key) => patch({ accounts: { [a]: { connections: { [key]: { mcp: { pin: view.status[connName(a, key)].details.pin } } } } } }, undefined,
-  (state) => { state.view.status[connName(a, key)] = { ...state.view.status[connName(a, key)], details: { blocked: 0, changes: [] } }; });
+const approve = (a, key, name = owner.connectionName(a, key)) => commit(edits.approveTools(view, a, key), undefined,
+  (state) => { state.view.status[name] = { ...state.view.status[name], details: { blocked: 0, changes: [] } }; });
 
 const saveAccount = run(async (a) => {
-  const acc = accounts()[a], updated = structuredClone(acc), changed = new Set(), removals = [];
-  const set = (path, value) => {
-    if (JSON.stringify(atPath(acc, path)) === JSON.stringify(value)) return;
-    putPath(updated, path, value);
-    // Several controls can edit the same array; submit its final value once.
-    const n = path.findIndex((_, i) => i > 0 && Array.isArray(atPath(updated, path.slice(0, i))));
-    changed.add(JSON.stringify(n < 0 ? path : path.slice(0, n)));
-  };
-  for (const [key, value] of Object.entries(answers())) set([key], value);
-  if (acc.preset === "custom_api") set(["connections", "", "http", "slots"], [readAPISlot(acc.connections?.[""]?.http?.slots?.[0]?.value)]);
-  for (const f of plain(entry(a))) for (const path of paths(f)) set(path, read(f));
   const credentials = credentialFields(a), modes = credentials.map((f) => $("mode-" + f.key));
-  for (const f of credentials) {
-    const mode = $("mode-" + f.key).value;
-    if (mode === "replace") {
-      const value = read(f);
-      if (value === "") throw new Error(`Enter a value for ${f.label}, or cancel the replacement.`);
-      set(f.path, value);
-    }
-    if (mode === "clear") removals.push({ path: ["accounts", a, ...f.path], delete: true });
-  }
-  const changes = [...changed].map((key) => {
-    const path = JSON.parse(key);
-    return { path: ["accounts", a, ...path], value: atPath(updated, path) };
-  });
-  await changeSettings([...changes, ...removals]);
+  await changeSettings(edits.saveAccount(view, a, { answers: answers(), api: accounts()[a].preset === "custom_api" ? apiForm() : undefined,
+    values: Object.fromEntries(owner.plainFields(view, a).map((f) => [f.key, read(f)])),
+    credentials: Object.fromEntries(credentials.map((f, i) => [f.key, { mode: modes[i].value, value: modes[i].value === "replace" ? read(f) : undefined }])) }));
   credentials.forEach((f, i) => {
     if ($("mode-" + f.key) === modes[i] && modes[i].value !== "keep") credentialMode(a, f.key, "keep");
   });
 });
 
-// A grant template fills from the account's plain settings; one that needs a setup-only value, such as an OAuth client, cannot.
-function grantTemplate(a, f) {
-  const values = Object.fromEntries(plain(entry(a)).map((p) => [p.key, fieldValue(accounts()[a], p)]));
-  const grant = f?.oauth && filled(f.oauth, values);
-  return grant && !/\{\w+\}/.test(JSON.stringify(grant)) ? grant : undefined;
-}
-
 // Sign-in leaves the current credential usable until the exchange succeeds.
 const signIn = run(async (a, key) => {
   const f = credentialFields(a).find((f) => f.key === key);
-  // A stored grant keeps its client and endpoints; only an unset or static value starts from the template.
-  const grant = f?.kind?.startsWith("oauth") ? undefined : grantTemplate(a, f);
-  const credential = grant && { oauth: grant };
-  const { url } = await api("POST", `/accounts/${encodeURIComponent(a)}/sign-in`, { path: f.path, redirect: location.origin + location.pathname, credential });
+  const { url } = await client().signIn(a, f.path, location.origin + location.pathname, f.credential);
   sessionStorage.setItem(RETURN, location.hash);
   location.href = url;
 });
 
-// Identities may not name a missing account, so removing one also clears it from every agent.
-const removeAccount = (a) => patch({
-  accounts: { [a]: null },
-  policies: { [a]: null },
-  identities: Object.fromEntries(Object.keys(ids()).map((n) => [n, { accounts: { [a]: null } }])),
-}, "activity");
+const removeAccount = (a) => commit(edits.removeAccount(view, a), "activity");
 
 // The live browser view keeps its markup fixed so polling never replaces the image, focus or typed text; liveSync owns its lifetime.
 let live = {};
-const liveConnection = (a) => {
-  const key = Object.entries(accounts()[a]?.connections ?? {}).find(([, c]) => c.browser)?.[0];
-  return key == null ? null : connName(a, key);
-};
+const liveConnection = (a) => owner.liveConnection(view, a);
 const liveCard = (a) => liveConnection(a) == null ? "" : `<section class="account-card live" aria-label="Browser"><div class="section-heading"><h2>Browser</h2>
   <span id="live-owner" class="live-owner" role="status"></span><button id="live-take" class="primary" onclick="liveOwn()"></button></div>
   <fieldset id="live-input" class="live-body" disabled>
@@ -1272,7 +971,7 @@ function paintLive() {
 async function liveRequest(l, body) {
   const seq = ++l.seq;
   if (body) l.after = seq;
-  const f = await api(body ? "POST" : "GET", `/connections/${encodeURIComponent(l.name)}/browser`, body);
+  const f = await client().browser(l.name, body);
   if (seq < l.after) return;
   Object.assign(l, { after: seq, frame: f, error: "" });
   paintLive();
@@ -1360,7 +1059,6 @@ function liveNavigate() {
   $("live-screen").focus();
 }
 
-const integrationCode = (id, title, text, copy = true) => `<div class="integration-code"><div class="row"><span>${esc(title)}</span>${copy ? `<button type="button" onclick="copyIntegration(${q(id)})" aria-label="Copy ${esc(title)}">Copy</button>` : `<span class="badge">Proposed command</span>`}</div><pre id="${esc(id)}">${esc(text)}</pre></div>`;
 
 const copyIntegration = run(async (id) => {
   const block = $(id);
@@ -1380,50 +1078,10 @@ const copyIntegration = run(async (id) => {
 });
 
 function integrations(page = "start") {
-  const pages = { start: "Start here", wrapped: "Wrap commands", shell: "Monitor shell", mcp: "MCP gateway" };
+  const pages = owner.INTEGRATION_PAGES;
   if (!Object.hasOwn(pages, page)) page = "start";
-  const setupLinks = Object.keys(ids()).map((name) => `<li><a href="#agent-settings/${encodeURIComponent(name)}">${esc(name)} setup</a></li>`).join("");
-  const contents = {
-    start: `<h1>Use Monitor from your tools</h1><p>Keep service credentials in Monitor. Connect a command, a terminal session, or an agent through an identity with the access you choose.</p>
-      <h2>Set up an identity first</h2><ol>
-        <li>Add the service in <b>Add account</b> and configure its credentials in Monitor.</li>
-        <li>Create a dedicated SSH key on the computer running your tools. <a href="#pair">Pair its public key</a> as an agent, even when you will use it from your own terminal.</li>
-        <li>Open that agent and grant access to the accounts it needs. Use separate identities for your laptop and automated workers when they need different permissions.</li>
-        <li>Configure an SSH alias named <code>monitor</code> for the Monitor server, using that private key and the host key shown in the agent's settings. The SSH address and port come from your deployment, not the web app URL.</li>
-      </ol><p>The private SSH key stays on your computer. Tool integrations use that identity; they do not need the web app's owner key.</p>
-      <h2>Your agent setup</h2>${setupLinks ? `<ul>${setupLinks}</ul>` : `<p>No agents are paired yet. <a href="#pair">Pair an agent</a> to get started.</p>`}
-      <p>Agent settings include the host key, CA certificate, and credential placeholders. If the existing Monitor client is installed, <code>monitor connections --json</code> checks which connections its SSH identity can reach.</p>
-      <h2>Install the client</h2><p>Use Python 3.11 or newer and OpenSSH. From the Monitor repository:</p>
-      ${integrationCode("integration-install", "Install on your laptop", 'mkdir -p "$HOME/.local/bin"\ninstall -m 755 client/monitor "$HOME/.local/bin/monitor"\nexport PATH="$HOME/.local/bin:$PATH"\nmonitor connections --json')}
-      <p>The Go binary embeds the same client. The commands below use your paired SSH alias and verify its host key. See <code>docs/laptop-client.md</code> in the repository for complete SSH setup and local profile examples.</p>`,
-    wrapped: `<h1>Wrap an existing command</h1><p><span class="badge">Available</span> Run a CLI or script locally, with its service requests routed through Monitor. Keep the command's arguments, working directory, output, and exit status.</p>
-      ${integrationCode("integration-run", "Run a command", "monitor run -- gh api user\nmonitor run -- ./release.sh")}
-      <h2>How it works</h2><ol><li>Use your paired SSH alias, or select a configured local profile.</li><li>The client opens a tunnel and prepares proxy settings, certificate trust, and the selected accounts' credential placeholders.</li><li>It starts the command and passes those settings to its children. Monitor checks requests and substitutes the real credentials before sending them upstream.</li><li>When the command exits, the client closes its tunnel and temporary files.</li></ol>
-      <h2>When to use it</h2><p>Start here for an existing GitHub workflow, a one-off command, or a script. With a configured profile, use <code>monitor --profile work run -- gh pr list</code>.</p>
-      <h2>Compatibility</h2><p>Programs must support the configured proxy and certificate settings. This mode does not force every network request through Monitor. Git HTTPS receives proxy, trust, and placeholder credential settings. SSH remotes need a separate Monitor SSH connection. Account policy and preset coverage still apply to each request.</p>
-      <p>The wrapper stops if setup fails and ends the child session if its tunnel is lost. It never retries writes automatically. Your parent terminal keeps its original environment.</p>
-      <h2>Use your accounts</h2><p>All connections are available by default. Shared credential names get separate variables per connection, such as <code>MONITOR_CREDENTIAL_ANTHROPIC_TOKEN</code>. For a tool that needs one account default, use <code>monitor run --connection work -- gh api user</code>. Connection names come from <code>monitor connections</code>.</p>`,
-    shell: `<h1>Start a Monitor shell</h1><p><span class="badge">Available</span> Open a local terminal session with the same connection setup as a wrapped command.</p>
-      ${integrationCode("integration-shell", "Open a shell", "monitor shell\ngh api user\nexit")}
-      <h2>How it works</h2><p>The shell uses the wrapper's profiles, tunnel, credential placeholders, and certificate handling. Its prompt shows the active SSH alias or profile. Commands run in your local working directory.</p>
-      <p>Type <code>exit</code> to return to the original terminal environment. User startup files are skipped to preserve routing and account selection. Each nested Monitor session owns its own tunnel.</p>
-      <h2>When to use it</h2><p>Use a shell for a sequence of commands that share an identity. Choose <code>monitor run</code> for automation that needs a single command and a predictable exit status.</p>
-      <h2>What it covers</h2><p>This session configures cooperating tools and their children. Other terminals and desktop apps have their own environments. A managed workspace with network restrictions is a separate option when every connection must pass through Monitor.</p>
-      <h2>Select a shell</h2><p>Use <code>monitor shell --shell /bin/bash</code> or <code>monitor shell --shell /bin/zsh</code>. The shell includes all connections by default. Use the connection-specific credential variables when names overlap. The Linux integration suite exercises both shells; macOS validation remains open.</p>`,
-    mcp: `<h1>Connect an MCP client</h1><p><span class="badge">Available</span> The gateway combines configured MCP connections into one Streamable HTTP server. Your SSH identity determines which accounts it can reach; tool calls still follow Monitor policy.</p>
-      <h2>1. Prepare the connection</h2><p>Complete the <a href="#integrations/start">identity setup</a>. Add an account with an MCP connection, grant the paired identity access, and review tools awaiting approval on the account page. An HTTP API connection alone does not add tools to this gateway.</p>
-      <p>The commands below assume an SSH alias named <code>monitor</code> with the correct identity and a verified host key. You need an MCP client that supports Streamable HTTP.</p>
-      <h2>2. Keep the gateway running</h2>
-      ${integrationCode("integration-mcp-serve", "Serve the gateway", "monitor mcp serve --listen 127.0.0.1:8400")}
-      <p>The client checks MCP initialization and tool discovery before reporting readiness. Put <code>--ssh-config /path/to/ssh_config</code> before <code>mcp</code> to use a separate configuration. Use port 0 to choose a free port.</p>
-      <h2>3. Add a server in your MCP client</h2><ul><li>Name: <code>monitor</code></li><li>Transport: <b>Streamable HTTP</b></li><li>URL:</li></ul>
-      ${integrationCode("integration-endpoint", "MCP server URL", "http://127.0.0.1:8400/")}
-      <p>No provider token or owner key goes in the client configuration. The SSH tunnel authenticates to Monitor. Programs on this computer can use the local endpoint as that identity; close the tunnel with Ctrl-C when finished.</p>
-      <h2>4. Check the connection</h2><p>Refresh the client's tool list. Tool names start with their Monitor connection name and <code>__</code>, such as <code>work-mcp__list_issues</code>. Call a read tool and check <a href="#activity">Activity</a> for the expected agent and account. Pending requests appear first. Open one to allow or deny it.</p>
-      <h2>If it does not connect</h2><ul><li><b>SSH fails:</b> check the server address, paired public key, private key, and host key.</li><li><b>No tools:</b> check account access, the MCP connection's status, and tool review. An identity with no reachable MCP connections cannot open the gateway.</li><li><b>Client cannot reach the URL:</b> keep the tunnel running on the same computer as the client. A client in a container has its own localhost.</li><li><b>A tool fails or times out:</b> inspect Activity and the provider state before retrying a change.</li></ul>
-      <p>Clients that only support stdio still need a separate adapter. <code>monitor mcp stdio</code> is not implemented.</p>`,
-  };
-  return [head("Integrations"), `<nav class="integration-nav" aria-label="Integration guides">${Object.entries(pages).map(([key, title]) => `<a href="#integrations/${key}" ${page === key ? 'aria-current="page"' : ""}>${title}</a>`).join("")}</nav>`, `<article class="integration-guide">${contents[page]}</article>`];
+  const html = owner.integrationGuide(view, page, (route) => "#" + route.map(encodeURIComponent).join("/"));
+  return [head("Integrations"), `<nav class="integration-nav" aria-label="Integration guides">${Object.entries(pages).map(([key, title]) => `<a href="#integrations/${key}" ${page === key ? 'aria-current="page"' : ""}>${title}</a>`).join("")}</nav>`, `<article class="integration-guide">${html}</article>`];
 }
 
 // Polling leaves the draft alone. A preview is valid only for the draft that produced it.
@@ -1433,7 +1091,7 @@ const loadPolicy = run(async () => {
   policyLoading = true;
   policyLoadError = "";
   try {
-    const saved = await api("GET", "/policy?effective");
+    const saved = await client().policy(true);
     policyEditor = { ...saved, draft: saved.source, preview: null };
   } catch (err) {
     policyLoadError = err.message;
@@ -1448,14 +1106,14 @@ function changePolicy(text) {
 }
 const previewPolicy = run(async () => {
   const editor = policyEditor, draft = editor.draft;
-  const result = await api("POST", "/policy/preview", { source: draft });
+  const result = await client().previewPolicy(draft);
   if (policyEditor === editor && editor.draft === draft) editor.preview = result;
   render();
 });
 const applyPolicySource = run(async () => {
   const editor = policyEditor, preview = editor?.preview;
   if (!preview) throw new Error("Review the policy diff before applying.");
-  await edit(() => {}, () => api("POST", "/policy", { source: editor.draft }), { message: "Policy applied" });
+  await edit(() => {}, () => client().applyPolicy(editor.draft), { message: "Policy applied" });
   if (policyEditor === editor) await loadPolicy();
 });
 function downloadPolicyText(source, filename) {
@@ -1464,7 +1122,7 @@ function downloadPolicyText(source, filename) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 const downloadActivePolicy = run(async () => {
-  const saved = await api("GET", "/policy");
+  const saved = await client().policy();
   downloadPolicyText(saved.source, "policy.toml");
 });
 function policyPage() {
@@ -1485,17 +1143,22 @@ function policyPage() {
 }
 const settings = () => [head("Settings"), `<section><h2>Lattices</h2>
   <p class="muted">Applies to all agents and connector requests.</p>
-  <label><input type="checkbox" ${lattices().confidentiality ? "checked" : ""} onchange="patch({ lattices: { confidentiality: this.checked } })"> Confidentiality lattice</label>
+  <label><input type="checkbox" ${lattices().confidentiality ? "checked" : ""} onchange="commit(edits.setLattice('confidentiality', this.checked))"> Confidentiality lattice</label>
   <p class="muted">Restrict where agents can send private data. On by default.</p>
-  <label><input type="checkbox" ${lattices().integrity ? "checked" : ""} onchange="patch({ lattices: { integrity: this.checked } })"> Integrity lattice</label>
+  <label><input type="checkbox" ${lattices().integrity ? "checked" : ""} onchange="commit(edits.setLattice('integrity', this.checked))"> Integrity lattice</label>
   <p class="muted">Restrict sensitive actions after agents read untrusted content. Off by default.</p>
   <p class="muted">Labels keep their history while enforcement is off. Access permissions, explicit approvals and custom rules still apply.</p>
   </section>`, `<section><h2>Networks</h2><label>Private networks the monitor may reach, one per line</label>
   <textarea id="networks" rows="4">${esc((view.config.allow_networks ?? []).join("\n"))}</textarea>
-  <div class="row"><span></span><button onclick="patch({ allow_networks: $('networks').value.split(/\\s+/).filter(Boolean) })">Save</button></div></section>`];
+  <div class="row"><span></span><button onclick="commit(edits.setNetworks($('networks').value))">Save</button></div></section>`];
 
 window.addEventListener("hashchange", render);
 document.addEventListener("visibilitychange", liveSync);
+document.addEventListener("click", (e) => { const id = e.target.closest?.("[data-copy]")?.dataset.copy; if (id) copyIntegration(id); });
+// Inline handlers in the rendered markup run in global scope.
+Object.assign(globalThis, { $, addAccount, addCustomAPI, answer, apiAuthChanged, applyPolicySource, approve, changePolicy, commit, copyAPIPlaceholder, copySettings,
+  credentialMode, dismiss, downloadActivePolicy, downloadPreset, edits, liveAct, liveClick, liveKey, liveNavigate, liveOwn, liveType, liveWheel, loadPolicy,
+  pairAgent, patchAccess, previewPolicy, removeAccount, removeAgent, removeRule, saveAccount, savePreset, setKey, setLabel, setupToken, signIn, toggle, toggleSecret, unlock });
 setInterval(run(async () => {
   if (!sessionStorage.getItem(KEY) || locked) return;
   await refresh();
@@ -1512,7 +1175,7 @@ run(async () => {
   if (!back.has("code")) return;
   render();
   toast("Finishing sign-in…");
-  remember(await api("POST", `/sign-in/${encodeURIComponent(back.get("state"))}`, { code: back.get("code") }));
+  remember(await client().finishSignIn(back.get("state"), back.get("code")));
   toast("Signed in");
 })().then(render);
 </script>

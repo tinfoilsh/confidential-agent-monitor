@@ -18,6 +18,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"io"
 	"iter"
 	"log"
 	"maps"
@@ -132,7 +133,27 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error 
 	}
 	sl := sealed{Labels: map[string]facts.Label{}}
 	raw, err := m.store.ReadAll(ctx, stateObject)
-	if gcerrors.Code(err) != gcerrors.NotFound || minimum != 0 {
+	missing := gcerrors.Code(err) == gcerrors.NotFound
+	// S3 hides missing objects behind AccessDenied when ListBucket is scoped
+	// by prefix. Confirm absence with an authorized prefix listing. A denied
+	// listing or an existing unreadable object must never reset the state.
+	if gcerrors.Code(err) == gcerrors.PermissionDenied && minimum == 0 {
+		items := m.store.List(&blob.ListOptions{Prefix: stateObject})
+		for {
+			item, listErr := items.Next(ctx)
+			if errors.Is(listErr, io.EOF) {
+				missing = true
+				break
+			}
+			if listErr != nil {
+				return errors.Join(err, listErr)
+			}
+			if item.Key == stateObject {
+				break
+			}
+		}
+	}
+	if !missing || minimum != 0 {
 		if err != nil {
 			return err
 		}

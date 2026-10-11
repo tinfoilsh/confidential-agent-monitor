@@ -6,6 +6,8 @@
 
 # Tests and fixtures
 *_test.*
+!template_test.go
+!storage_test.go
 test_*.py
 *.test
 *.test.*

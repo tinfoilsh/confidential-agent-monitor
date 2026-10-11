@@ -1,6 +1,5 @@
-# Reusable template. Provisioning replaces the placeholder after -owner-key-sha256 with the
-# owner key digest and publishes the result as each Monitor's measured configuration.
-cvm-version: SET_CVM_VERSION_AND_DIGEST_BEFORE_RELEASE
+# Provisioning binds MONITOR_OWNER_KEY_SHA256 as measured container env.
+cvm-version: 0.15.1-rc.2@sha256:ea4592d1970afcbfe0c5265e2e3c100225ee98c207ea98ce34e4fc530a0438a6
 cvm-network:
   inbound-ports: [443, 22]
 cpus: 2
@@ -32,13 +31,6 @@ attested-keys:
     uid: 65532
     gid: 65532
 
-volumes:
-  - name: state
-    # Opened at boot with this Monitor's key from its deployment secrets.
-    key-secret: MONITOR_STATE_KEY
-    owner: "65532:65532"
-    size: 1GiB
-
 containers:
   - name: monitor
     image: "ghcr.io/tinfoilsh/confidential-agent-monitor@sha256:0000000000000000000000000000000000000000000000000000000000000000"
@@ -46,19 +38,20 @@ containers:
     keys: [host-ssh]
     ports: ["22:2223"]
     networks: [upstream]
-    persistent_volumes: [state:/var/lib/monitor]
+    env:
+      - MONITOR_OWNER_KEY_SHA256
+      - TINFOIL_STORAGE_BUCKET
+      - AWS_CONTAINER_CREDENTIALS_FULL_URI
+    secrets:
+      - AWS_CONTAINER_AUTHORIZATION_TOKEN
     command:
       - -production
       - -ssh-host-key
       - /run/tinfoil/keys/host-ssh/private_key.pem
-      - -bucket
-      - file:///var/lib/monitor?no_tmp_dir=1
       - -api
       - 0.0.0.0:8080
       - -listen
       - 0.0.0.0:2223
-      - -owner-key-sha256
-      - TINFOIL_MONITOR_OWNER_KEY_SHA256
     read_only: true
     tmpfs:
       /tmp: rw,noexec,nosuid,nodev,size=64m
