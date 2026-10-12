@@ -90,7 +90,7 @@ jobs:
           image-refs: |
             ghcr.io/${{ github.repository }}@${{ needs.build.outputs.digest }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Measure and publish the new tag
+      - name: Verify runtime and publish the new tag
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
