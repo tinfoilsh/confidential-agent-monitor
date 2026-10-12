@@ -2,6 +2,7 @@ import base64
 import json
 from pathlib import Path
 import runpy
+import tempfile
 import unittest
 
 
@@ -28,6 +29,19 @@ class OwnerCredentialTests(unittest.TestCase):
         value = "keep these spaces   "
         owner = client["OwnerClient"]("https://monitor.example.com", value)
         self.assertEqual(base64.b64decode(owner.key), value.encode())
+
+    def test_private_file_preserves_all_newlines(self):
+        value = "first line\r\nsecond line\rlast line\n"
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "owner.key"
+            client["private_write"](path, value)
+            restored = client["private_read"](path)
+            self.assertEqual(restored, value)
+            self.assertEqual(base64.b64decode(client["owner_token"](restored)), value.encode())
+
+    def test_json_text_can_be_a_passphrase(self):
+        value = '{"version": "my passphrase"}'
+        self.assertEqual(base64.b64decode(client["owner_token"](value)), value.encode())
 
 
 if __name__ == "__main__":
