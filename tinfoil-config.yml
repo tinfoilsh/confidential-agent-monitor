@@ -39,8 +39,8 @@ containers:
     ports: ["22:2223"]
     networks: [upstream]
     env:
-      - MONITOR_OWNER_KEY_SHA256=
-      - MONITOR_OWNER_KEY_ARGON2ID=
+      - MONITOR_OWNER_KEY_SHA256: ""
+      - MONITOR_OWNER_KEY_ARGON2ID: ""
       - TINFOIL_STORAGE_BUCKET
       - AWS_CONTAINER_CREDENTIALS_FULL_URI
     secrets:

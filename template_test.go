@@ -24,9 +24,10 @@ func TestReleaseTemplateKeepsOwnerBindingAndState(t *testing.T) {
 			Inbound []int `yaml:"inbound-ports"`
 		} `yaml:"cvm-network"`
 		Containers []struct {
-			Name, User                   string
-			Command, Env, Ports, Secrets []string
-			Mounts                       []string `yaml:"persistent_volumes"`
+			Name, User              string
+			Command, Ports, Secrets []string
+			Env                     []any
+			Mounts                  []string `yaml:"persistent_volumes"`
 		}
 	}
 	if err := yaml.Unmarshal(raw, &config); err != nil {
@@ -38,7 +39,7 @@ func TestReleaseTemplateKeepsOwnerBindingAndState(t *testing.T) {
 	c := config.Containers[0]
 	wantCommand := []string{"-production", "-ssh-host-key", "/run/tinfoil/keys/host-ssh/private_key.pem", "-api", "0.0.0.0:8080", "-listen", "0.0.0.0:2223"}
 	if len(c.Mounts) != 0 || c.User != "65532:65532" || !reflect.DeepEqual(c.Command, wantCommand) ||
-		!reflect.DeepEqual(c.Env, []string{"MONITOR_OWNER_KEY_SHA256=", "MONITOR_OWNER_KEY_ARGON2ID=", "TINFOIL_STORAGE_BUCKET", "AWS_CONTAINER_CREDENTIALS_FULL_URI"}) ||
+		!reflect.DeepEqual(c.Env, []any{map[string]any{"MONITOR_OWNER_KEY_SHA256": ""}, map[string]any{"MONITOR_OWNER_KEY_ARGON2ID": ""}, "TINFOIL_STORAGE_BUCKET", "AWS_CONTAINER_CREDENTIALS_FULL_URI"}) ||
 		!reflect.DeepEqual(c.Secrets, []string{"AWS_CONTAINER_AUTHORIZATION_TOKEN"}) {
 		t.Fatal("Monitor must bind its owner and storage in measured env and obtain credentials through runtime secrets")
 	}
