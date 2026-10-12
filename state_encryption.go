@@ -7,12 +7,17 @@ import (
 	"golang.org/x/crypto/argon2"
 )
 
-// The versioned state format stores its own random salt. The public measured
-// owner verifier must never become a key that can decrypt private state.
+const (
+	minOwnerKeyBytes = 16
+	maxOwnerKeyBytes = 4096
+	ownerKeyBytes    = 32
+)
+
+// Local development passphrases use a versioned state format with a random salt.
 var stateMagic = []byte("TINFOIL-MONITOR-STATE\x00\x01")
 
-func stateEncryptionKey(secret, raw []byte, create, argonBound bool) (key, header []byte, err error) {
-	if create && (argonBound || len(secret) != ownerKeyBytes) {
+func stateEncryptionKey(secret, raw []byte, create bool) (key, header []byte, err error) {
+	if create && len(secret) != ownerKeyBytes {
 		header = make([]byte, len(stateMagic)+32)
 		copy(header, stateMagic)
 		if _, err := rand.Read(header[len(stateMagic):]); err != nil {

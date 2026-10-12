@@ -133,6 +133,7 @@ func (m *monitor) view(err error) (any, error) {
 }
 
 type unlockInput struct {
+	Initialize bool   `json:"initialize,omitempty"`
 	Generation uint64 `json:"generation"`
 	StorageKey []byte `json:"storage_key,omitempty"`
 }
@@ -183,12 +184,39 @@ func (m *monitor) ownerHandler(overSSH bool) http.Handler {
 			}
 		}
 		defer clear(key)
-		err := m.unlock(r.Context(), key, req.Generation)
+		err := m.unlockState(r.Context(), key, req.Generation, req.Initialize || m.ownerPublicKey == nil)
 		m.mu.Lock()
 		defer m.mu.Unlock()
 		return m.view(err)
 	}))
 	mux.Handle("GET /{$}", owned(m, func(_ *http.Request, _ struct{}) (any, error) { return m.view(nil) }))
+	mux.Handle("POST /enroll", owned(m, func(r *http.Request, input map[string]struct {
+		Key    string `json:"key"`
+		Routes bool   `json:"routes"`
+	}) (any, error) {
+		var changes []sourceChange
+		for name, id := range input {
+			key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(id.Key))
+			if err != nil {
+				return nil, err
+			}
+			fingerprint := ssh.FingerprintSHA256(key)
+			if existing, ok := m.live.Load().principals[fingerprint]; ok {
+				if id.Routes && !existing.Routes {
+					return nil, errors.New("device route access was revoked")
+				}
+				continue
+			}
+			if m.doc.Enrolled[fingerprint] {
+				return nil, errors.New("identity was revoked; restore access explicitly in Monitor")
+			}
+			if _, exists := m.live.Load().cfg.Identities[name]; exists {
+				return nil, errors.New("identity name belongs to another key")
+			}
+			changes = append(changes, sourceChange{Path: []string{"identities", name}, Value: map[string]any{"key": id.Key, "routes": id.Routes}})
+		}
+		return m.view(m.editPolicy(r.Context(), changes))
+	}))
 	mux.Handle("GET /presets/{name}", owned(m, func(r *http.Request, _ struct{}) (any, error) {
 		preset := m.live.Load().cfg.resolved[r.PathValue("name")]
 		if preset == nil {

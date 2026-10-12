@@ -64,18 +64,10 @@ enter the owner key from `.dev/owner.key`. Both interfaces support direct sign-i
 with an owner key or passphrase. The browser keeps it in tab session storage.
 Local development serves app files from this checkout so UI edits appear on reload.
 
-CVM deployments bind `MONITOR_OWNER_PUBLIC_KEY` in the measured config. The CLI
-keeps independent SSH and storage keys and sends `/unlock` over owner SSH.
-Run `tinfoil monitor open NAME` for the local UI, served with its owner API over
-attested SSH. Keep UI assets embedded in the measured binary. Private keys stay
-out of the browser; CAM checks the local session token, Host and Origin.
-Environment parameters use literal YAML mappings. Provisioning replaces empty
-defaults in the measured config; no bare runtime environment names are declared.
-
-Public-key deployments expose only health over public HTTP. Owner SSH works
-while locked; agents and devices must wait for unlock.
-SHA256 and passphrase deployments use the bearer API and browser sign-in;
-the standalone Python owner client also supports those deployments.
+Deployments require `MONITOR_OWNER_PUBLIC_KEY`; use `tinfoil monitor open NAME`
+for the local UI over attested SSH. Owner SSH works while locked; public HTTP
+serves health only. Bearer sign-in is limited to `file://` development without
+`-production`.
 
 ```sh
 node --test app_test.mjs approval_ui_test.mjs dashboard_test.mjs owner_test.mjs
@@ -87,20 +79,9 @@ node --test app_test.mjs approval_ui_test.mjs dashboard_test.mjs owner_test.mjs
 
 ## Sandbox routes
 
-Sandboxes publish virtual ports 22 and 443 through an outbound SSH connection.
-Only identities with `routes = true` can connect to them. Clear "Open sandbox
-routes" or remove the identity in the web app to close and revoke its sessions.
-This permission does not grant account access.
-
-Normal route names hash the publisher's SSH boot key. Before attestation, a
-device can find virtual port 443 at `bootstrap-<base32-sha256(owner-public-key)>.sandbox.invalid`.
-Publishers supply their measured owner public key as their SSH username. This is untrusted discovery:
-the device must verify fresh sandbox attestation and the boot TLS key before
-sending credentials. Duplicate claims fail closed; bootstrap names never
-open port 22.
-
-The CVM template maps guest port 22 to container port 2223 without admin
-privileges. Pin a runtime supporting this mapping before release.
+Sandboxes publish SSH and attestation over reverse SSH. Devices need `routes = true`;
+service access is granted separately. Bootstrap discovery is untrusted: clients
+verify fresh attestation and pin the endorsed SSH key before sending secrets.
 
 ## Launch Claude in a VM
 

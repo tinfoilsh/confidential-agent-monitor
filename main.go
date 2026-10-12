@@ -60,8 +60,6 @@ func main() {
 	extension := flag.String("extension", "", "the english-only extension directory; browser connections need it")
 	production := flag.Bool("production", false, "disable development connectors and profiling, including with a file:// bucket")
 	ownerPublic := flag.String("owner-public-key", os.Getenv("MONITOR_OWNER_PUBLIC_KEY"), "Ed25519 owner public key")
-	ownerHash := flag.String("owner-key-sha256", os.Getenv("MONITOR_OWNER_KEY_SHA256"), "legacy hex SHA-256 of a 32-byte owner key")
-	ownerArgon := flag.String("owner-key-argon2id", os.Getenv("MONITOR_OWNER_KEY_ARGON2ID"), "Argon2id owner commitment")
 	hostKey := flag.String("ssh-host-key", "", "runtime attested SSH private key")
 	healthcheck := flag.Bool("healthcheck", false, "check the local owner API and exit, including while locked")
 	originList := flag.String("owner-origins", "", "comma-separated browser origins allowed to call the owner API, such as https://dash.tinfoil.sh")
@@ -81,20 +79,11 @@ func main() {
 		}
 		return
 	}
-	var commitment *ownerCommitment
+	dev := !*production && strings.HasPrefix(*bucketURL, "file://")
 	var public ed25519.PublicKey
-	if *ownerPublic != "" {
-		if *ownerHash != "" || *ownerArgon != "" {
-			log.Fatal("set only MONITOR_OWNER_PUBLIC_KEY for SSH ownership")
-		}
+	if *ownerPublic != "" || !dev {
 		var err error
 		public, err = parseOwnerPublicKey(*ownerPublic)
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else if *production || *ownerHash != "" || *ownerArgon != "" {
-		var err error
-		commitment, err = parseOwnerCommitment(*ownerHash, *ownerArgon)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -117,7 +106,6 @@ func main() {
 	if (*production || public != nil) && hostSigner == nil {
 		log.Fatal("production and owner SSH require -ssh-host-key")
 	}
-	dev := !*production && strings.HasPrefix(*bucketURL, "file://")
 	if *drafts != "" {
 		if !dev {
 			log.Fatal("-drafts needs a development file:// bucket without -production")
@@ -139,7 +127,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	m := &monitor{store: bucket, dev: dev, ownerCommitment: commitment, ownerPublicKey: public, sshHostKey: hostSigner}
+	m := &monitor{store: bucket, dev: dev, ownerPublicKey: public, sshHostKey: hostSigner}
 	go m.serveSSH(ln)
 	log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.handler()), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
 }

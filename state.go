@@ -48,6 +48,7 @@ type sealed struct {
 	Labels     map[string]facts.Label `json:"labels"`
 	Policy     string                 `json:"policy"`
 	Secrets    secretStore            `json:"secrets,omitempty"`
+	Enrolled   map[string]bool        `json:"enrolled,omitempty"`
 }
 
 type state struct {
@@ -70,10 +71,8 @@ type monitor struct {
 	running       map[string]*connection
 	catalog       *ownerCatalog // Cached owner metadata, guarded by mu.
 
-	// A measured public digest prevents another caller claiming an empty store.
-	ownerCommitment *ownerCommitment
-	ownerPublicKey  ed25519.PublicKey
-	sshHostKey      ssh.Signer
+	ownerPublicKey ed25519.PublicKey
+	sshHostKey     ssh.Signer
 
 	// routesMu keeps SSH admission and routing independent of mu's policy commits.
 	// sessions records whether each connection's key had an identity when admitted.
@@ -111,6 +110,10 @@ func newAEAD(key []byte) (cipher.AEAD, error) {
 
 // The first unlock of an empty store makes its secret the owner's.
 func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error {
+	return m.unlockState(ctx, key, minimum, true)
+}
+
+func (m *monitor) unlockState(ctx context.Context, key []byte, minimum uint64, initialize bool) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if m.ownerPublicKey != nil && len(key) != 32 {
@@ -127,9 +130,6 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error 
 			return fmt.Errorf("live generation %d is older than %d", m.doc.Generation, minimum)
 		}
 		return nil
-	}
-	if m.ownerCommitment != nil && !m.ownerCommitment.matches(key) {
-		return errOwner
 	}
 	sl := sealed{Labels: map[string]facts.Label{}}
 	raw, err := m.store.ReadAll(ctx, stateObject)
@@ -153,10 +153,10 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error 
 			}
 		}
 	}
-	if err != nil && (!missing || minimum != 0) {
+	if err != nil && (!missing || minimum != 0 || !initialize) {
 		return err
 	}
-	storageKey, header, keyErr := stateEncryptionKey(key, raw, missing && minimum == 0, m.ownerCommitment != nil && m.ownerCommitment.salt != nil)
+	storageKey, header, keyErr := stateEncryptionKey(key, raw, missing && minimum == 0)
 	if keyErr != nil {
 		return keyErr
 	}
@@ -200,6 +200,13 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error 
 // activate persists a candidate prepared under the same lock, then publishes it.
 func (m *monitor) activate(ctx context.Context, next sealed, s *state) error {
 	old := m.live.Load()
+	next.Enrolled = maps.Clone(next.Enrolled)
+	if next.Enrolled == nil {
+		next.Enrolled = map[string]bool{}
+	}
+	for key := range s.principals {
+		next.Enrolled[key] = true
+	}
 	next.Labels = maps.Clone(next.Labels)
 	maps.DeleteFunc(next.Labels, func(key string, _ facts.Label) bool { _, ok := s.principals[key]; return !ok })
 	if err := m.commit(ctx, next); err != nil {
