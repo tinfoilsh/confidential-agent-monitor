@@ -90,6 +90,7 @@ func (m *monitor) view(err error) (any, error) {
 
 type unlockInput struct {
 	Generation uint64 `json:"generation"`
+	StorageKey []byte `json:"storage_key,omitempty"`
 }
 type signInInput struct {
 	Redirect   string          `json:"redirect"`
@@ -106,22 +107,39 @@ type sourceInput struct {
 	Source string `json:"source"`
 }
 type editsInput struct {
-	Changes []sourceChange `json:"changes"`
+	Generation *uint64        `json:"generation,omitempty"`
+	Changes    []sourceChange `json:"changes"`
 }
 
-func (m *monitor) handler() http.Handler {
+func (m *monitor) handler() http.Handler { return m.ownerHandler(false) }
+
+func (m *monitor) ownerHandler(overSSH bool) http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("GET /healthz", jsonHandler(0, func(_ *http.Request, _ struct{}) (any, error) {
 		return struct {
 			Locked bool `json:"locked"`
 		}{Locked: m.live.Load() == nil}, nil
 	}))
+	if m.ownerPublicKey != nil && !overSSH {
+		return mux
+	}
 	mux.Handle("POST /unlock", jsonHandler(maxDocumentBytes, func(r *http.Request, req unlockInput) (any, error) {
-		key, err := ownerKey(r)
-		if err != nil {
-			return nil, err
+		key := req.StorageKey
+		if m.ownerPublicKey != nil {
+			owner, ok := r.Context().Value(ownerSSHContextKey{}).(ownerSSHContext)
+			if !ok {
+				return nil, errOwner
+			}
+			req.Generation = max(req.Generation, owner.minimum)
+		} else {
+			var err error
+			key, err = ownerKey(r)
+			if err != nil {
+				return nil, err
+			}
 		}
-		err = m.unlock(r.Context(), key, req.Generation)
+		defer clear(key)
+		err := m.unlock(r.Context(), key, req.Generation)
 		m.mu.Lock()
 		defer m.mu.Unlock()
 		return m.view(err)
@@ -192,9 +210,17 @@ func (m *monitor) handler() http.Handler {
 		return m.view(err)
 	}))
 	mux.Handle("POST /policy/edits", owned(m, func(r *http.Request, input editsInput) (any, error) {
+		if input.Generation != nil && *input.Generation != m.doc.Generation {
+			return nil, errPolicyConflict
+		}
 		return m.view(m.editPolicy(r.Context(), input.Changes))
 	}))
-	mux.Handle("GET /app/", http.FileServerFS(app))
+	files := http.FileServerFS(app)
+	mux.HandleFunc("GET /app/", func(w http.ResponseWriter, r *http.Request) {
+		// Assets travel over the same attested SSH connection as owner requests.
+		w.Header().Set("Cache-Control", "no-store")
+		files.ServeHTTP(w, r)
+	})
 	return mux
 }
 
@@ -344,6 +370,20 @@ func owned[T any](m *monitor, fn func(*http.Request, T) (any, error)) http.Handl
 
 // authenticated serves the owner without the monitor's lock, for calls that wait on the network.
 func (m *monitor) authenticated(next http.HandlerFunc) http.HandlerFunc {
+	if m.ownerPublicKey != nil {
+		return func(w http.ResponseWriter, r *http.Request) {
+			if r.Context().Value(ownerSSHContextKey{}) == nil {
+				responseError(w, errOwner)
+				return
+			}
+			if m.live.Load() == nil {
+				responseError(w, errLocked)
+				return
+			}
+			next(w, r)
+		}
+	}
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		key, err := ownerKey(r)
 		// owner is set before live is published and never changes after.
@@ -387,6 +427,12 @@ func jsonHandler[T any](limit int64, fn func(*http.Request, T) (any, error)) htt
 		if err != nil {
 			responseError(w, err)
 			return
+		}
+		if owner, ok := r.Context().Value(ownerSSHContextKey{}).(ownerSSHContext); ok {
+			if err := owner.acknowledge(); err != nil {
+				responseError(w, err)
+				return
+			}
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(response)

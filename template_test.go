@@ -20,13 +20,15 @@ func TestReleaseTemplateKeepsOwnerBindingAndState(t *testing.T) {
 			Name, Size, Owner string
 			KeySecret         string `yaml:"key-secret"`
 		}
+		Shim       struct{ Paths []string }
 		CVMNetwork struct {
 			Inbound []int `yaml:"inbound-ports"`
 		} `yaml:"cvm-network"`
 		Containers []struct {
-			Name, User                   string
-			Command, Env, Ports, Secrets []string
-			Mounts                       []string `yaml:"persistent_volumes"`
+			Name, User              string
+			Command, Ports, Secrets []string
+			Env                     []map[string]string
+			Mounts                  []string `yaml:"persistent_volumes"`
 		}
 	}
 	if err := yaml.Unmarshal(raw, &config); err != nil {
@@ -38,9 +40,12 @@ func TestReleaseTemplateKeepsOwnerBindingAndState(t *testing.T) {
 	c := config.Containers[0]
 	wantCommand := []string{"-production", "-ssh-host-key", "/run/tinfoil/keys/host-ssh/private_key.pem", "-api", "0.0.0.0:8080", "-listen", "0.0.0.0:2223"}
 	if len(c.Mounts) != 0 || c.User != "65532:65532" || !reflect.DeepEqual(c.Command, wantCommand) ||
-		!reflect.DeepEqual(c.Env, []string{"MONITOR_OWNER_KEY_SHA256=", "MONITOR_OWNER_KEY_ARGON2ID=", "TINFOIL_STORAGE_BUCKET", "AWS_CONTAINER_CREDENTIALS_FULL_URI"}) ||
+		!reflect.DeepEqual(c.Env, []map[string]string{{"MONITOR_OWNER_PUBLIC_KEY": ""}, {"TINFOIL_STORAGE_BUCKET": ""}, {"AWS_CONTAINER_CREDENTIALS_FULL_URI": ""}}) ||
 		!reflect.DeepEqual(c.Secrets, []string{"AWS_CONTAINER_AUTHORIZATION_TOKEN"}) {
 		t.Fatal("Monitor must bind its owner and storage in measured env and obtain credentials through runtime secrets")
+	}
+	if !reflect.DeepEqual(config.Shim.Paths, []string{"/healthz"}) {
+		t.Fatal("public HTTP must expose only health")
 	}
 	if !reflect.DeepEqual(c.Ports, []string{"22:2223"}) || !reflect.DeepEqual(config.CVMNetwork.Inbound, []int{443, 22}) {
 		t.Fatal("Monitor must expose its native SSH endpoint")

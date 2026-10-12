@@ -12,6 +12,8 @@
 !app_test.mjs
 !approval_ui_test.mjs
 !owner_secret_test.go
+!owner_public_test.go
+!owner_ssh_test.go
 !client_owner_test.py
 test_*.py
 *.test

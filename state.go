@@ -71,6 +71,7 @@ type monitor struct {
 
 	// A measured public digest prevents another caller claiming an empty store.
 	ownerCommitment *ownerCommitment
+	ownerPublicKey  ed25519.PublicKey
 	sshHostKey      ssh.Signer
 
 	// routesMu keeps SSH admission and routing independent of mu's policy commits.
@@ -111,6 +112,9 @@ func newAEAD(key []byte) (cipher.AEAD, error) {
 func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	if m.ownerPublicKey != nil && len(key) != 32 {
+		return errOwner
+	}
 	if len(key) < minOwnerKeyBytes || len(key) > maxOwnerKeyBytes {
 		return errOwner
 	}
@@ -151,8 +155,7 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error 
 	if err != nil && (!missing || minimum != 0) {
 		return err
 	}
-	storageKey, header, keyErr := stateEncryptionKey(key, raw, missing && minimum == 0,
-		m.ownerCommitment != nil && m.ownerCommitment.salt != nil)
+	storageKey, header, keyErr := stateEncryptionKey(key, raw, missing && minimum == 0, m.ownerCommitment != nil && m.ownerCommitment.salt != nil)
 	if keyErr != nil {
 		return keyErr
 	}

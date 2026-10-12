@@ -767,7 +767,9 @@ def owner_token(value):
         record = json.loads(value)
     except (ValueError, TypeError):
         record = None
-    if isinstance(record, dict) and {"version", "key", "argon2id"} <= record.keys():
+    if isinstance(record, dict) and record.get("version") == 2:
+        raise MonitorError("owner signing requires an attested client; use tinfoil monitor open")
+    if isinstance(record, dict) and {"version", "key"} <= record.keys():
         if record.get("version") != 1 or not isinstance(record.get("key"), str):
             raise MonitorError("invalid owner key record")
         try:

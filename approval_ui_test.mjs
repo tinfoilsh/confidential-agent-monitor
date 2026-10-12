@@ -10,12 +10,13 @@ const source = readFileSync(new URL('./app/index.html', import.meta.url), 'utf8'
 function app() {
   const requests = [];
   const context = vm.createContext({
-    owner: ownerModule, URL, structuredClone, setTimeout: () => 1, clearTimeout() {},
+    owner: ownerModule, URL, URLSearchParams, structuredClone, setTimeout: () => 1, clearTimeout() {},
     location: { hash: '#request/1' },
     localStorage: { getItem: () => null, setItem() {}, removeItem() {} },
     sessionStorage: { getItem: () => null, setItem() {}, removeItem() {} },
     document: { title: '', getElementById: () => ({}) },
     fetch(path, options = {}) {
+      path = path.replace(/^\/api/, "");
       if (path === 'icons/manifest.json') return Promise.resolve({ ok: true, json: async () => ({}) });
       return new Promise(resolve => requests.push({ path, options, respond(body, status = 200) {
         resolve({ ok: status < 400, status, text: async () => body });
@@ -24,7 +25,7 @@ function app() {
   });
   const run = code => vm.runInContext(code, context);
   run(source);
-  run(`render = () => {}; toast = () => {};
+  run(`ownerSession = "test-local-session"; render = () => {}; toast = () => {};
     remember({generation: 1, config: {
       accounts: {work: {preset: "custom"}},
       identities: {bot: {accounts: {work: {level: "allow"}}, rules: {}}}
