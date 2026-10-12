@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"crypto/ed25519"
+	"encoding/base64"
+	"errors"
 	"flag"
 	"log"
 	"net"
@@ -56,6 +59,7 @@ func main() {
 	drafts := flag.String("drafts", "", "with a file:// bucket, also load the draft presets in this directory")
 	extension := flag.String("extension", "", "the english-only extension directory; browser connections need it")
 	production := flag.Bool("production", false, "disable development connectors and profiling, including with a file:// bucket")
+	ownerPublic := flag.String("owner-public-key", os.Getenv("MONITOR_OWNER_PUBLIC_KEY"), "Ed25519 owner public key")
 	ownerHash := flag.String("owner-key-sha256", os.Getenv("MONITOR_OWNER_KEY_SHA256"), "legacy hex SHA-256 of a 32-byte owner key")
 	ownerArgon := flag.String("owner-key-argon2id", os.Getenv("MONITOR_OWNER_KEY_ARGON2ID"), "Argon2id owner commitment")
 	hostKey := flag.String("ssh-host-key", "", "runtime attested SSH private key")
@@ -78,7 +82,17 @@ func main() {
 		return
 	}
 	var commitment *ownerCommitment
-	if *production || *ownerHash != "" || *ownerArgon != "" {
+	var public ed25519.PublicKey
+	if *ownerPublic != "" {
+		if *ownerHash != "" || *ownerArgon != "" {
+			log.Fatal("set only MONITOR_OWNER_PUBLIC_KEY for SSH ownership")
+		}
+		var err error
+		public, err = parseOwnerPublicKey(*ownerPublic)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else if *production || *ownerHash != "" || *ownerArgon != "" {
 		var err error
 		commitment, err = parseOwnerCommitment(*ownerHash, *ownerArgon)
 		if err != nil {
@@ -100,8 +114,8 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-	if *production && hostSigner == nil {
-		log.Fatal("-production requires -ssh-host-key")
+	if (*production || public != nil) && hostSigner == nil {
+		log.Fatal("production and owner SSH require -ssh-host-key")
 	}
 	dev := !*production && strings.HasPrefix(*bucketURL, "file://")
 	if *drafts != "" {
@@ -125,7 +139,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	m := &monitor{store: bucket, dev: dev, ownerCommitment: commitment, sshHostKey: hostSigner}
+	m := &monitor{store: bucket, dev: dev, ownerCommitment: commitment, ownerPublicKey: public, sshHostKey: hostSigner}
 	go m.serveSSH(ln)
 	log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.handler()), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
+}
+
+func parseOwnerPublicKey(value string) (ed25519.PublicKey, error) {
+	encoded, ok := strings.CutPrefix(value, "ed25519:")
+	key, err := base64.StdEncoding.Strict().DecodeString(encoded)
+	if !ok || err != nil || len(key) != ed25519.PublicKeySize || base64.StdEncoding.EncodeToString(key) != encoded {
+		return nil, errors.New("MONITOR_OWNER_PUBLIC_KEY must be ed25519: followed by a base64 public key")
+	}
+	return ed25519.PublicKey(key), nil
 }

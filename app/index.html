@@ -245,7 +245,9 @@
 <script type="module">
 import * as owner from "./owner.js";
 const { LEVELS, MODES, AUDIENCES: WHO, edits, sourceChanges, reasons, ruleSentence } = owner;
-const KEY = "monitor-owner-key", GENERATION = "monitor-generation", DISMISSED = "monitor-dismissed", RETURN = "monitor-sign-in-return";
+let ownerSession = sessionStorage.getItem("monitor-local-session");
+sessionStorage.removeItem("monitor-owner-key");
+const GENERATION = "monitor-generation", DISMISSED = "monitor-dismissed", RETURN = "monitor-sign-in-return";
 const REQUEST_POLL_MS = 5000, TOAST_MS = 5000, LIVE_POLL_MS = 1000, WHEEL_LINE_PX = 40;
 // Tab is left out so keyboard focus can leave the page view; the Tab button sends it.
 const LIVE_KEYS = ["Enter", "Backspace", "Delete", "Escape", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Home", "End", "PageUp", "PageDown"];
@@ -291,11 +293,11 @@ const run = (fn) => async (...args) => {
 // Every response tells whether the monitor is locked; a rejected key is forgotten.
 async function observe(...args) {
   const res = await fetch(...args);
-  if (res.status === 401) sessionStorage.removeItem(KEY);
+  if (res.status === 401) { ownerSession = null; sessionStorage.removeItem("monitor-local-session"); }
   locked = res.status === 423;
   return res;
 }
-const client = () => owner.ownerClient({ key: sessionStorage.getItem(KEY), fetch: observe });
+const client = () => owner.localOwnerClient({ token: ownerSession, fetch: observe });
 
 function remember(v) {
   serverState.view = v;
@@ -411,8 +413,8 @@ function sync(el, parts) {
 }
 
 function render() {
-  const gate = !sessionStorage.getItem(KEY) ? keyPage()
-    : locked ? `<section><p>Your monitor restarted.</p><button class="primary" onclick="unlock()">Unlock</button></section>`
+  const gate = !ownerSession ? keyPage()
+    : locked ? `<section><p>Your monitor restarted. Run <code>tinfoil monitor open NAME</code> again to unlock it and reopen the SSH connection.</p></section>`
     : !view ? `<p class="empty">Loading…</p>` : "";
   $("gate").hidden = !gate;
   $("app").hidden = !!gate;
@@ -478,29 +480,8 @@ function sidebar(kind, arg) {
 }
 
 function keyPage() {
-  return `<section><label for="key">Owner key or passphrase</label><input id="key" type="password" autocomplete="current-password" onpaste="pasteOwnerKey(event)"><div class="row"><span></span><button class="primary" onclick="setKey()">Continue</button></div></section>`;
+  return `<section><h2>Open Monitor from your CLI</h2><p>Run <code>tinfoil monitor open NAME</code> to open a local panel with an attested connection. Keep private credentials in the CLI.</p></section>`;
 }
-
-function pasteOwnerKey(event) {
-  const text = event.clipboardData?.getData("text") ?? "";
-  if (!/[\r\n]/.test(text)) return;
-  try { if (owner.encodeOwnerKey(text) === text.trim()) return; } catch {}
-  event.preventDefault();
-  toast("This field cannot accept line breaks. Use a single-line passphrase.");
-}
-
-const setKey = run(async () => {
-  sessionStorage.setItem(KEY, owner.encodeOwnerKey($("key").value));
-  $("key").value = "";
-  await refresh();
-  render();
-});
-
-const unlock = run(async () => {
-  remember(await client().unlock(+localStorage.getItem(GENERATION) || 0));
-  await refresh();
-  render();
-});
 
 const summary = owner.summary, saveText = owner.saveText;
 const saveButton = (r, text, primary) => `<button class="${primary ? "primary" : ""}" title="${esc(saveText(r))}" onclick="answer('${r.id}', 'save')">${esc(text)}</button>`;
@@ -946,7 +927,7 @@ const liveCard = (a) => liveConnection(a) == null ? "" : `<section class="accoun
   <p id="live-error" class="bad live-error" role="alert" hidden></p>
   <div class="card-footer"><span class="muted">Page dialog</span><fieldset id="live-dialog" class="seg" aria-label="Page dialog" disabled>
     <button onclick="liveAct({ action: 'dialog', accept: true })">Accept</button><button onclick="liveAct({ action: 'dialog', accept: false })">Dismiss</button></fieldset></div></section>`;
-const liveActive = () => live.name != null && !document.hidden && !locked && !!sessionStorage.getItem(KEY);
+const liveActive = () => live.name != null && !document.hidden && !locked && !!ownerSession;
 const liveReady = () => !!(live.frame?.owner && live.frame.frame) && !live.owning;
 
 function liveSync() {
@@ -1161,15 +1142,28 @@ const settings = () => [head("Settings"), `<section><h2>Lattices</h2>
   <textarea id="networks" rows="4">${esc((view.config.allow_networks ?? []).join("\n"))}</textarea>
   <div class="row"><span></span><button onclick="commit(edits.setNetworks($('networks').value))">Save</button></div></section>`];
 
-window.addEventListener("hashchange", render);
+const sessionFragment = new URLSearchParams(location.hash.slice(1));
+if (sessionFragment.has("session")) {
+  ownerSession = sessionFragment.get("session");
+  sessionStorage.setItem("monitor-local-session", ownerSession);
+  history.replaceState(null, "", location.pathname);
+}
+
+function hashChanged() {
+  // A restarted local SSH tunnel may reuse this origin. Reload to consume its new
+  // capability and discard pending requests from the previous session.
+  if (new URLSearchParams(location.hash.slice(1)).has("session")) location.reload();
+  else render();
+}
+window.addEventListener("hashchange", hashChanged);
 document.addEventListener("visibilitychange", liveSync);
 document.addEventListener("click", (e) => { const id = e.target.closest?.("[data-copy]")?.dataset.copy; if (id) copyIntegration(id); });
 // Inline handlers in the rendered markup run in global scope.
 Object.assign(globalThis, { $, addAccount, addCustomAPI, answer, apiAuthChanged, applyPolicySource, approve, changePolicy, commit, copyAPIPlaceholder, copySettings,
   credentialMode, dismiss, downloadActivePolicy, downloadPreset, edits, liveAct, liveClick, liveKey, liveNavigate, liveOwn, liveType, liveWheel, loadPolicy,
-  pairAgent, patchAccess, previewPolicy, removeAccount, removeAgent, removeRule, saveAccount, savePreset, setKey, pasteOwnerKey, setLabel, setupToken, signIn, toggle, toggleSecret, unlock });
+  pairAgent, patchAccess, previewPolicy, removeAccount, removeAgent, removeRule, saveAccount, savePreset, setLabel, setupToken, signIn, toggle, toggleSecret });
 setInterval(run(async () => {
-  if (!sessionStorage.getItem(KEY) || locked) return;
+  if (!ownerSession || locked) return;
   await refresh();
   render();
 }), REQUEST_POLL_MS);
@@ -1178,7 +1172,7 @@ const back = new URLSearchParams(location.search);
 if (back.has("state")) history.replaceState(null, "", location.pathname + (sessionStorage.getItem(RETURN) ?? ""));
 run(async () => {
   await iconsReady;
-  if (!sessionStorage.getItem(KEY)) return;
+  if (!ownerSession) return;
   await refresh();
   if (back.has("error")) throw new Error(back.get("error_description") ?? back.get("error"));
   if (!back.has("code")) return;

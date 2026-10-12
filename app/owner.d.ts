@@ -254,3 +254,5 @@ export const edits: {
   removePreset(name: string): Change[]
 }
 export function integrationGuide(view: View, page: string, href: (route: string[]) => string): string
+
+export function localOwnerClient(options: { token: string; generation?: number; fetch?: typeof globalThis.fetch }): ReturnType<typeof ownerClient>

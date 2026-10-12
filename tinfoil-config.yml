@@ -1,4 +1,4 @@
-# Provisioning sets exactly one measured owner commitment.
+# Provisioning sets the measured owner public key.
 cvm-version: 0.15.1-rc.3@sha256:e1c8d17c7d79663c365169a796eec06116f483825028fad5faddfe9839321217
 cvm-network:
   inbound-ports: [443, 22]
@@ -10,16 +10,6 @@ shim:
   authenticated: false
   paths:
     - /healthz
-    - /app/*
-    - /
-    - /unlock
-    - /presets/*
-    - /labels/*
-    - /accounts/*
-    - /sign-in/*
-    - /connections/*
-    - /requests*
-    - /policy*
 
 networks:
   upstream:
@@ -39,10 +29,9 @@ containers:
     ports: ["22:2223"]
     networks: [upstream]
     env:
-      - MONITOR_OWNER_KEY_SHA256=
-      - MONITOR_OWNER_KEY_ARGON2ID=
-      - TINFOIL_STORAGE_BUCKET
-      - AWS_CONTAINER_CREDENTIALS_FULL_URI
+      - MONITOR_OWNER_PUBLIC_KEY: ""
+      - TINFOIL_STORAGE_BUCKET: ""
+      - AWS_CONTAINER_CREDENTIALS_FULL_URI: ""
     secrets:
       - AWS_CONTAINER_AUTHORIZATION_TOKEN
     command:

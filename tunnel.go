@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/ed25519"
 	"errors"
 	"fmt"
 	"log"
@@ -45,8 +46,11 @@ func (m *monitor) serveSSH(ln net.Listener) {
 			}
 			return
 		}
-		st := m.live.Load()
-		if st == nil {
+		hostKey := m.sshHostKey
+		if st := m.live.Load(); st != nil {
+			hostKey = st.HostKey
+		}
+		if hostKey == nil {
 			nc.Close()
 			continue
 		}
@@ -58,7 +62,7 @@ func (m *monitor) serveSSH(ln net.Listener) {
 		}
 		go func() {
 			front := &ssh.ServerConfig{PublicKeyCallback: m.authorized, MaxAuthTries: 3}
-			front.AddHostKey(st.HostKey)
+			front.AddHostKey(hostKey)
 			nc.SetDeadline(time.Now().Add(sshHandshakeTimeout))
 			conn, chans, reqs, err := ssh.NewServerConn(nc, front)
 			<-handshakes
@@ -68,6 +72,13 @@ func (m *monitor) serveSSH(ln net.Listener) {
 			}
 			nc.SetDeadline(time.Time{})
 			defer conn.Close()
+			if conn.Permissions.Extensions[ownerSSHExtension] == "true" {
+				go ssh.DiscardRequests(reqs)
+				for nc := range chans {
+					go m.forwardOwner(nc)
+				}
+				return
+			}
 			if !m.admitSession(conn) {
 				return
 			}
@@ -202,6 +213,14 @@ func (channelConn) SetWriteDeadline(time.Time) error { return nil }
 // Any key authenticates so that it can publish its route. Key probes run this without a
 // signature, so it only labels the session; opening channels still needs a live identity.
 func (m *monitor) authorized(_ ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
+	if raw, ok := key.(ssh.CryptoPublicKey); ok && m.ownerPublicKey != nil {
+		if public, ok := raw.CryptoPublicKey().(ed25519.PublicKey); ok && m.ownerPublicKey.Equal(public) {
+			return &ssh.Permissions{Extensions: map[string]string{ownerSSHExtension: "true"}}, nil
+		}
+	}
+	if m.live.Load() == nil {
+		return nil, errLocked
+	}
 	return &ssh.Permissions{Extensions: map[string]string{
 		fingerprintExtension: ssh.FingerprintSHA256(key), routeExtension: routeName(key),
 	}}, nil

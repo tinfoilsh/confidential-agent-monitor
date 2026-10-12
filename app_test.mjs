@@ -19,9 +19,10 @@ function app() {
     return { getItem: key => entries.get(key) ?? null, setItem: (key, value) => entries.set(key, String(value)), removeItem: key => entries.delete(key) };
   };
   const context = vm.createContext({
-    owner: ownerModule, URL, structuredClone, setTimeout: () => 1, clearTimeout() {}, location: { hash: '#agent/bot' }, localStorage: storage(), sessionStorage: storage(),
+    owner: ownerModule, URL, URLSearchParams, structuredClone, setTimeout: () => 1, clearTimeout() {}, location: { hash: '#agent/bot' }, localStorage: storage(), sessionStorage: storage(),
     document: { title: '', getElementById(id) { if (!elements.has(id)) elements.set(id, { focus() {} }); return elements.get(id); } },
     fetch(path, options = {}) {
+      path = path.replace(/^\/api/, "");
       if (path === 'icons/manifest.json') return Promise.resolve({ ok: true, json: async () => ({}) });
       return new Promise(resolve => requests.push({ path, method: options.method, body: options.body && JSON.parse(options.body),
         respond(body, status = 200) { resolve({ ok: status >= 200 && status < 300, status, text: async () => typeof body === 'string' ? body : JSON.stringify(body) }); },
@@ -29,7 +30,7 @@ function app() {
     }, fixture: fixture(), notices,
   });
   vm.runInContext(source, context);
-  vm.runInContext('render = () => {}; toast = message => notices.push(message); remember(fixture);', context);
+  vm.runInContext('ownerSession = "test-local-session"; render = () => {}; toast = message => notices.push(message); remember(fixture);', context);
   return { requests, notices, elements, context, run: code => vm.runInContext(code, context),
     state: () => JSON.parse(vm.runInContext('JSON.stringify({view, records, pending: pendingEdits.length})', context)),
   };
@@ -47,6 +48,17 @@ function editedValues(request) {
 }
 const tick = () => new Promise(resolve => setImmediate(resolve));
 const level = a => a.state().view.config.identities.bot.accounts.work.level;
+
+test('opening a new bridge session in an existing tab reloads the session bootstrap', () => {
+  const a = app();
+  a.run('let reloads = 0; let renders = 0; location.reload = () => reloads++; render = () => renders++;');
+  a.run('location.hash = "#session=restarted-local-session"; hashChanged();');
+  assert.equal(a.run('reloads'), 1);
+  assert.equal(a.run('renders'), 0);
+  a.run('location.hash = "#policy"; hashChanged();');
+  assert.equal(a.run('reloads'), 1);
+  assert.equal(a.run('renders'), 1);
+});
 
 test('policy drafts survive polling and lose their preview when edited', () => {
   const a = app();
@@ -413,7 +425,7 @@ test('an empty replacement cannot silently erase an existing secret', async () =
 
 const browserApp = () => {
   const a = app();
-  a.run('serverState.view.config.accounts.web = {preset: "custom", connections: {"": {browser: {}}}}; project(); sessionStorage.setItem(KEY, "key"); location.hash = "#account/web"; liveSync()');
+  a.run('serverState.view.config.accounts.web = {preset: "custom", connections: {"": {browser: {}}}}; project(); ownerSession = "key"; location.hash = "#account/web"; liveSync()');
   return a;
 };
 const frame = (owner, token, extra = {}) => ({ owner, frame: token, url: 'http://site/', screenshot: 'AAAA', tabs: [{ id: 't1', url: 'http://site/', title: 'Site', active: true }], ...extra });
@@ -486,9 +498,14 @@ test('clicks map to screenshot pixels, and input is sent in order aimed at the f
 });
 
 
-test('owner panel rejects multiline paste before a password input strips it', () => {
+test('owner panel credentials stay in memory and are forgotten on authentication failure', async () => {
   const a = app();
-  a.run(`pasteOwnerKey({clipboardData: {getData: () => "line one\\nline two passphrase"}, preventDefault() { notices.push("prevented"); }})`);
-  assert.equal(a.notices[0], 'prevented');
-  assert.match(a.notices[1], /line breaks/);
+  a.run('ownerSession = "private-credential"');
+  assert.equal(a.run('sessionStorage.getItem("monitor-owner-key")'), null);
+  assert.match(a.run('keyPage()'), /tinfoil monitor open/);
+  assert.ok(!a.run('keyPage()').includes('<input'));
+  const pending = a.run('observe("/", {})');
+  a.requests[0].respond('refused', 401);
+  await pending;
+  assert.equal(a.run('ownerSession'), null);
 });

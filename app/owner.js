@@ -17,6 +17,7 @@ const LOOPBACK = ["localhost", "127.0.0.1", "[::1]"];
 // Human input preserves UTF-8 bytes, including whitespace. Old canonical
 // base64 32-byte keys keep their original meaning; base64 is only the wire format.
 export function encodeOwnerKey(input) {
+  if (typeof input === "string" && input.trim().startsWith("{")) throw new Error("Use tinfoil monitor open. Do not load private credential files into a remote web page.");
   if (typeof input !== "string") throw new Error("Enter your owner key or passphrase.");
   const legacy = input.trim();
   try {
@@ -38,6 +39,7 @@ export class OwnerError extends Error {
 // Without an endpoint, requests go to the page's own origin; any given endpoint, even an empty one, must be a valid URL.
 // A remote owner API needs HTTPS. The key is never sent on a redirect.
 export function ownerClient({ endpoint, key, generation, fetch = (...args) => globalThis.fetch(...args) }) {
+  if (typeof key === "string" && key.trim().startsWith("{")) throw new Error("Signing credentials require tinfoil monitor open and its attested connection.");
   let base = "";
   if (endpoint !== undefined) {
     let url;
@@ -529,9 +531,9 @@ export function integrationGuide(view, page, href) {
   const code = (id, title, text) => `<div class="integration-code"><div class="row"><span>${esc(title)}</span><button type="button" data-copy="${esc(id)}" aria-label="Copy ${esc(title)}">Copy</button></div><pre id="${esc(id)}">${esc(text)}</pre></div>`;
   const setupLinks = Object.keys(identities(view)).map((name) => `<li>${link(["agent-settings", name], `${esc(name)} setup`)}</li>`).join("");
   return {
-    start: `<h1>Use Monitor from your tools</h1><p>Keep service credentials in Monitor. Connect a command, a terminal session, or an agent through an identity with the access you choose.</p>
+    start: `<h1>Use Monitor from your tools</h1><p>Keep API keys and service sign-ins in Monitor, such as a GitHub token or an Anthropic API key. Connect a command, a terminal session, or an agent through an identity with the access you choose.</p>
       <h2>Set up an identity first</h2><ol>
-        <li>Add the service in <b>Add account</b> and configure its credentials in Monitor.</li>
+        <li>Choose a service in <b>Add account</b>, then paste its API key or sign in when prompted.</li>
         <li>Create a dedicated SSH key on the computer running your tools. ${link(["pair"], "Pair its public key")} as an agent, even when you will use it from your own terminal.</li>
         <li>Open that agent and grant access to the accounts it needs. Use separate identities for your laptop and automated workers when they need different permissions.</li>
         <li>Configure an SSH alias named <code>monitor</code> for the Monitor server, using that private key and the host key shown in the agent's settings. The SSH address and port come from your deployment, not the web app URL.</li>
@@ -568,4 +570,20 @@ export function integrationGuide(view, page, href) {
       <h2>If it does not connect</h2><ul><li><b>SSH fails:</b> check the server address, paired public key, private key, and host key.</li><li><b>No tools:</b> check account access, the MCP connection's status, and tool review. An identity with no reachable MCP connections cannot open the gateway.</li><li><b>Client cannot reach the URL:</b> keep the tunnel running on the same computer as the client. A client in a container has its own localhost.</li><li><b>A tool fails or times out:</b> inspect Activity and the provider state before retrying a change.</li></ul>
       <p>Clients that only support stdio still need a separate adapter. <code>monitor mcp stdio</code> is not implemented.</p>`,
   }[page] ?? "";
+}
+
+// CAM serves this UI through the CLI's attested SSH tunnel. Its session token
+// authorizes browser requests; private owner and storage keys never enter JS.
+export function localOwnerClient({ token, generation, fetch = (...args) => globalThis.fetch(...args) }) {
+  return ownerApi(async (method, path, body, signal) => {
+    if (!token) throw new OwnerError("Open this panel with tinfoil monitor open NAME.", 401);
+    if (path === "/unlock") throw new OwnerError("Run tinfoil monitor open NAME again to unlock over attested SSH.", 423);
+    const asset = path.startsWith("/app/");
+    const res = await fetch(asset ? path : "/api" + path, { method, signal, cache: "no-store", credentials: "omit", redirect: "error",
+      headers: { ...(!asset && { "X-Tinfoil-Session": token }), ...(body !== undefined && { "Content-Type": "application/json" }) },
+      body: body === undefined ? undefined : JSON.stringify(body) });
+    const text = await res.text();
+    if (!res.ok) throw new OwnerError(text.trim() || `Request failed (${res.status})`, res.status);
+    return text ? JSON.parse(text) : null;
+  }, generation);
 }

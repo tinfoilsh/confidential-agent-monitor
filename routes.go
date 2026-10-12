@@ -38,6 +38,13 @@ func routeName(key ssh.PublicKey) string {
 	return strings.ToLower(base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(digest[:])) + routeSuffix
 }
 
+// Bootstrap names locate an unverified publisher by its claimed owner public key. Only
+// HTTPS is reachable this way; the caller must attest it before sending secrets.
+func bootstrapRoute(identity string) string {
+	digest := sha256.Sum256([]byte(identity))
+	return "bootstrap-" + strings.ToLower(base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(digest[:])) + routeSuffix
+}
+
 func reservedRoute(host string) bool {
 	host = strings.TrimSuffix(strings.ToLower(host), ".")
 	return host == "sandbox.invalid" || strings.HasSuffix(host, routeSuffix)
@@ -151,6 +158,17 @@ func (m *monitor) forwardRoute(key string, p principal, st *state, target forwar
 	var publisher *ssh.ServerConn
 	if r != nil && (target.Port == 22 && r.ssh || target.Port == 443 && r.https) {
 		publisher = r.conn
+	}
+	if target.Port == 443 && strings.HasPrefix(target.Host, "bootstrap-") {
+		for _, candidate := range m.routes {
+			if candidate.https && bootstrapRoute(candidate.conn.User()) == target.Host {
+				if publisher != nil { // Ambiguous claims fail closed.
+					publisher = nil
+					break
+				}
+				publisher = candidate.conn
+			}
+		}
 	}
 	m.routesMu.Unlock()
 	if publisher == nil {
