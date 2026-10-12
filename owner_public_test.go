@@ -22,7 +22,7 @@ func TestOwnerSSHUnlockAndRecovery(t *testing.T) {
 	defer store.Close()
 	makeMonitor := func() *monitor { return &monitor{store: store, ownerPublicKey: public} }
 	m := makeMonitor()
-	body, _ := json.Marshal(unlockInput{StorageKey: key})
+	body, _ := json.Marshal(unlockInput{StorageKey: key, Initialize: true})
 	for _, path := range []string{"/unlock", "/owner/challenge", "/policy", "/app/"} {
 		r := httptest.NewRequest("POST", path, bytes.NewReader(body))
 		r.Header.Set("Authorization", "Bearer "+base64.StdEncoding.EncodeToString(key))
@@ -43,7 +43,7 @@ func TestOwnerSSHUnlockAndRecovery(t *testing.T) {
 
 	call := func(m *monitor, key []byte, floor uint64) *httptest.ResponseRecorder {
 		// Deliberately omit generation from the body; the channel floor must govern unlock.
-		data, _ := json.Marshal(unlockInput{StorageKey: key})
+		data, _ := json.Marshal(unlockInput{StorageKey: key, Initialize: true})
 		options := ownerChannelOptions{Host: "owner.monitor", Token: base64.RawURLEncoding.EncodeToString(seed), Generation: floor}
 		r := httptest.NewRequest("POST", "http://owner.monitor/api/unlock", bytes.NewReader(data))
 		r.Header.Set("X-Tinfoil-Session", options.Token)
