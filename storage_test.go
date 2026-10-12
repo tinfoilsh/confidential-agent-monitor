@@ -2,7 +2,7 @@ package main
 
 import (
 	"bytes"
-	"crypto/sha256"
+	"crypto/ed25519"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -115,8 +115,8 @@ func TestS3StateAndCredentialRenewal(t *testing.T) {
 	}
 	defer store.Close()
 	key := bytes.Repeat([]byte{7}, ownerKeyBytes)
-	digest := sha256.Sum256(key)
-	open := func() *monitor { return &monitor{store: store, ownerCommitment: &ownerCommitment{hash: digest[:]}} }
+	public := ed25519.NewKeyFromSeed(bytes.Repeat([]byte{1}, 32)).Public().(ed25519.PublicKey)
+	open := func() *monitor { return &monitor{store: store, ownerPublicKey: public} }
 	m := open()
 	if err := m.unlock(t.Context(), key, 0); err != nil {
 		t.Fatal(err)

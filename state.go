@@ -71,10 +71,8 @@ type monitor struct {
 	running       map[string]*connection
 	catalog       *ownerCatalog // Cached owner metadata, guarded by mu.
 
-	// A measured public digest prevents another caller claiming an empty store.
-	ownerCommitment *ownerCommitment
-	ownerPublicKey  ed25519.PublicKey
-	sshHostKey      ssh.Signer
+	ownerPublicKey ed25519.PublicKey
+	sshHostKey     ssh.Signer
 
 	// routesMu keeps SSH admission and routing independent of mu's policy commits.
 	// sessions records whether each connection's key had an identity when admitted.
@@ -133,9 +131,6 @@ func (m *monitor) unlockState(ctx context.Context, key []byte, minimum uint64, i
 		}
 		return nil
 	}
-	if m.ownerCommitment != nil && !m.ownerCommitment.matches(key) {
-		return errOwner
-	}
 	sl := sealed{Labels: map[string]facts.Label{}}
 	raw, err := m.store.ReadAll(ctx, stateObject)
 	missing := gcerrors.Code(err) == gcerrors.NotFound
@@ -161,7 +156,7 @@ func (m *monitor) unlockState(ctx context.Context, key []byte, minimum uint64, i
 	if err != nil && (!missing || minimum != 0 || !initialize) {
 		return err
 	}
-	storageKey, header, keyErr := stateEncryptionKey(key, raw, missing && minimum == 0, m.ownerCommitment != nil && m.ownerCommitment.salt != nil)
+	storageKey, header, keyErr := stateEncryptionKey(key, raw, missing && minimum == 0)
 	if keyErr != nil {
 		return keyErr
 	}

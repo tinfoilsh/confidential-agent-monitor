@@ -72,10 +72,10 @@ out of the browser; CAM checks the local session token, Host and Origin.
 Environment parameters use literal YAML mappings. Provisioning replaces empty
 defaults in the measured config; no bare runtime environment names are declared.
 
-Public-key deployments expose only health over public HTTP. Owner SSH works
-while locked; agents and devices must wait for unlock.
-SHA256 and passphrase deployments use the bearer API and browser sign-in;
-the standalone Python owner client also supports those deployments.
+Production and remote-storage deployments require the owner public key and expose
+only health over public HTTP. Owner SSH works while locked; agents and devices
+must wait for unlock. Direct bearer API and browser sign-in are available only
+for local development with a `file://` bucket without `-production`.
 
 ```sh
 node --test app_test.mjs approval_ui_test.mjs dashboard_test.mjs owner_test.mjs
