@@ -116,7 +116,7 @@ func TestS3StateAndCredentialRenewal(t *testing.T) {
 	defer store.Close()
 	key := bytes.Repeat([]byte{7}, ownerKeyBytes)
 	digest := sha256.Sum256(key)
-	open := func() *monitor { return &monitor{store: store, ownerKeyHash: digest[:]} }
+	open := func() *monitor { return &monitor{store: store, ownerCommitment: &ownerCommitment{hash: digest[:]}} }
 	m := open()
 	if err := m.unlock(t.Context(), key, 0); err != nil {
 		t.Fatal(err)

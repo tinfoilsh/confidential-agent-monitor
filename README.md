@@ -53,6 +53,17 @@ exact origins with `-owner-origins https://dash.tinfoil.sh,http://localhost:3000
 Unlisted origins get no CORS headers, and responses never allow credentials,
 so only the owner key authenticates a call.
 
+New deployments accept a supplied passphrase or key between 16 and 4096 UTF-8
+bytes. Keep it in your password manager; the dashboard and owner panel do not
+create it. Spaces are part of the passphrase. Existing base64 owner keys still
+work. The CLI accepts exact file contents, including a final newline.
+
+Provisioning publishes a salted `MONITOR_OWNER_KEY_ARGON2ID` commitment in the
+measured configuration. Monitor derives the private state encryption key with
+Argon2id and a separate random salt. The public commitment cannot decrypt the
+state. Existing `MONITOR_OWNER_KEY_SHA256` deployments and encrypted state keep
+their original keys and format. Set exactly one of these owner bindings.
+
 ```sh
 node --test app_test.mjs approval_ui_test.mjs owner_test.mjs
 ```

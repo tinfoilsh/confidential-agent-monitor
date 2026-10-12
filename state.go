@@ -9,7 +9,6 @@ import (
 	"crypto/ed25519"
 	"crypto/elliptic"
 	"crypto/rand"
-	"crypto/sha256"
 	"crypto/subtle"
 	"crypto/tls"
 	"crypto/x509"
@@ -40,8 +39,6 @@ import (
 
 var cleanLabel = facts.Label{Trust: "trusted", Audience: "anyone"}
 
-const ownerKeyBytes = 32
-
 var errOwner = errors.New("invalid owner secret")
 
 // sealed is the document encrypted in storage. The monitor owns it under mu.
@@ -63,16 +60,18 @@ type state struct {
 }
 
 type monitor struct {
-	live    atomic.Pointer[state]
-	mu      sync.Mutex
-	doc     sealed
-	owner   []byte
-	store   *blob.Bucket
-	running map[string]*connection
+	live          atomic.Pointer[state]
+	mu            sync.Mutex
+	doc           sealed
+	owner         []byte
+	storageKey    []byte
+	storageHeader []byte
+	store         *blob.Bucket
+	running       map[string]*connection
 
 	// A measured public digest prevents another caller claiming an empty store.
-	ownerKeyHash []byte
-	sshHostKey   ssh.Signer
+	ownerCommitment *ownerCommitment
+	sshHostKey      ssh.Signer
 
 	// routesMu keeps SSH admission and routing independent of mu's policy commits.
 	// sessions records whether each connection's key had an identity when admitted.
@@ -112,11 +111,8 @@ func newAEAD(key []byte) (cipher.AEAD, error) {
 func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if len(m.ownerKeyHash) != 0 {
-		digest := sha256.Sum256(key)
-		if subtle.ConstantTimeCompare(digest[:], m.ownerKeyHash) != 1 {
-			return errOwner
-		}
+	if len(key) < minOwnerKeyBytes || len(key) > maxOwnerKeyBytes {
+		return errOwner
 	}
 	if m.live.Load() != nil {
 		if subtle.ConstantTimeCompare(key, m.owner) != 1 {
@@ -127,9 +123,8 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error 
 		}
 		return nil
 	}
-	aead, err := newAEAD(key)
-	if err != nil {
-		return err
+	if m.ownerCommitment != nil && !m.ownerCommitment.matches(key) {
+		return errOwner
 	}
 	sl := sealed{Labels: map[string]facts.Label{}}
 	raw, err := m.store.ReadAll(ctx, stateObject)
@@ -153,11 +148,20 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error 
 			}
 		}
 	}
+	if err != nil && (!missing || minimum != 0) {
+		return err
+	}
+	storageKey, header, keyErr := stateEncryptionKey(key, raw, missing && minimum == 0,
+		m.ownerCommitment != nil && m.ownerCommitment.salt != nil)
+	if keyErr != nil {
+		return keyErr
+	}
+	aead, keyErr := newAEAD(storageKey)
+	if keyErr != nil {
+		return keyErr
+	}
 	if !missing || minimum != 0 {
-		if err != nil {
-			return err
-		}
-		plain, err := aead.Open(nil, nil, raw, nil)
+		plain, err := aead.Open(nil, nil, raw[len(header):], header)
 		if err != nil {
 			return errOwner
 		}
@@ -184,7 +188,8 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) error 
 	if err != nil {
 		return err
 	}
-	m.owner, m.streams, m.running = key, map[*connector.Stream]string{}, map[string]*connection{}
+	m.storageKey, m.storageHeader = storageKey, header
+	m.owner, m.streams, m.running = bytes.Clone(key), map[*connector.Stream]string{}, map[string]*connection{}
 	return m.activate(ctx, sl, s)
 }
 
@@ -230,11 +235,11 @@ func (m *monitor) commit(ctx context.Context, next sealed) error {
 	if err != nil {
 		return err
 	}
-	aead, err := newAEAD(m.owner)
+	aead, err := newAEAD(m.storageKey)
 	if err != nil {
 		return err
 	}
-	if err := m.store.WriteAll(ctx, stateObject, aead.Seal(nil, nil, plain, nil), nil); err != nil {
+	if err := m.store.WriteAll(ctx, stateObject, aead.Seal(bytes.Clone(m.storageHeader), nil, plain, m.storageHeader), nil); err != nil {
 		return err
 	}
 	m.doc = next

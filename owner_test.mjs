@@ -174,3 +174,13 @@ test('a real Monitor accepts the shared edits and enforces origins', async (t) =
   await assert.rejects(owner.ownerClient({ endpoint: base, key, generation: v.generation + 1 }).read(), (err) => err.status === 409);
   await assert.rejects(owner.ownerClient({ endpoint: base, key: randomBytes(32).toString('base64') }).read(), (err) => err.status === 401);
 });
+
+
+test('owner input preserves passphrase bytes and recognizes old keys', () => {
+  const passphrase = '  Café workspace 🔐\n';
+  assert.equal(Buffer.from(owner.encodeOwnerKey(passphrase), 'base64').toString(), passphrase);
+  const legacy = randomBytes(32).toString('base64');
+  assert.equal(owner.encodeOwnerKey('  ' + legacy + '\n'), legacy);
+  for (const invalid of ['', 'short', 'é'.repeat(2049)]) assert.throws(() => owner.encodeOwnerKey(invalid));
+  assert.equal(Buffer.from(owner.encodeOwnerKey('é'.repeat(8)), 'base64').length, 16);
+});

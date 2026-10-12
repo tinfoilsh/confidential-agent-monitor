@@ -14,6 +14,20 @@ export const NEW_PRESET = { catalog: { group: "api", fields: [{ key: "token", la
   defaults: { contents: "me", strangers: true, sends: "me" } }, http: { operations: {} } };
 const LOOPBACK = ["localhost", "127.0.0.1", "[::1]"];
 
+// Human input preserves UTF-8 bytes, including whitespace. Old canonical
+// base64 32-byte keys keep their original meaning; base64 is only the wire format.
+export function encodeOwnerKey(input) {
+  if (typeof input !== "string") throw new Error("Enter your owner key or passphrase.");
+  const legacy = input.trim();
+  try {
+    const decoded = atob(legacy);
+    if (decoded.length === 32 && btoa(decoded) === legacy) return legacy;
+  } catch {}
+  const bytes = new TextEncoder().encode(input);
+  if (bytes.length < 16 || bytes.length > 4096) throw new Error("Use an owner key or passphrase between 16 and 4096 UTF-8 bytes.");
+  return btoa(String.fromCharCode(...bytes));
+}
+
 export class OwnerError extends Error {
   constructor(message, status) {
     super(message);
