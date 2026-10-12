@@ -478,11 +478,20 @@ function sidebar(kind, arg) {
 }
 
 function keyPage() {
-  return `<section><label>Owner key</label><input id="key" type="password"><div class="row"><span></span><button class="primary" onclick="setKey()">Continue</button></div></section>`;
+  return `<section><label for="key">Owner key or passphrase</label><input id="key" type="password" autocomplete="current-password" onpaste="pasteOwnerKey(event)"><div class="row"><span></span><button class="primary" onclick="setKey()">Continue</button></div></section>`;
+}
+
+function pasteOwnerKey(event) {
+  const text = event.clipboardData?.getData("text") ?? "";
+  if (!/[\r\n]/.test(text)) return;
+  try { if (owner.encodeOwnerKey(text) === text.trim()) return; } catch {}
+  event.preventDefault();
+  toast("This field cannot accept line breaks. Use a single-line passphrase.");
 }
 
 const setKey = run(async () => {
-  sessionStorage.setItem(KEY, $("key").value.trim());
+  sessionStorage.setItem(KEY, owner.encodeOwnerKey($("key").value));
+  $("key").value = "";
   await refresh();
   render();
 });
@@ -1158,7 +1167,7 @@ document.addEventListener("click", (e) => { const id = e.target.closest?.("[data
 // Inline handlers in the rendered markup run in global scope.
 Object.assign(globalThis, { $, addAccount, addCustomAPI, answer, apiAuthChanged, applyPolicySource, approve, changePolicy, commit, copyAPIPlaceholder, copySettings,
   credentialMode, dismiss, downloadActivePolicy, downloadPreset, edits, liveAct, liveClick, liveKey, liveNavigate, liveOwn, liveType, liveWheel, loadPolicy,
-  pairAgent, patchAccess, previewPolicy, removeAccount, removeAgent, removeRule, saveAccount, savePreset, setKey, setLabel, setupToken, signIn, toggle, toggleSecret, unlock });
+  pairAgent, patchAccess, previewPolicy, removeAccount, removeAgent, removeRule, saveAccount, savePreset, setKey, pasteOwnerKey, setLabel, setupToken, signIn, toggle, toggleSecret, unlock });
 setInterval(run(async () => {
   if (!sessionStorage.getItem(KEY) || locked) return;
   await refresh();

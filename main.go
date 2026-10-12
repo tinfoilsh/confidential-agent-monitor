@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"flag"
 	"log"
 	"net"
@@ -58,7 +56,8 @@ func main() {
 	drafts := flag.String("drafts", "", "with a file:// bucket, also load the draft presets in this directory")
 	extension := flag.String("extension", "", "the english-only extension directory; browser connections need it")
 	production := flag.Bool("production", false, "disable development connectors and profiling, including with a file:// bucket")
-	ownerHash := flag.String("owner-key-sha256", os.Getenv("MONITOR_OWNER_KEY_SHA256"), "hex SHA-256 of the decoded owner key; required in production")
+	ownerHash := flag.String("owner-key-sha256", os.Getenv("MONITOR_OWNER_KEY_SHA256"), "legacy hex SHA-256 of a 32-byte owner key")
+	ownerArgon := flag.String("owner-key-argon2id", os.Getenv("MONITOR_OWNER_KEY_ARGON2ID"), "Argon2id owner commitment")
 	hostKey := flag.String("ssh-host-key", "", "runtime attested SSH private key")
 	healthcheck := flag.Bool("healthcheck", false, "check the local owner API and exit, including while locked")
 	originList := flag.String("owner-origins", "", "comma-separated browser origins allowed to call the owner API, such as https://dash.tinfoil.sh")
@@ -78,15 +77,13 @@ func main() {
 		}
 		return
 	}
-	var ownerKeyHash []byte
-	if *ownerHash != "" {
+	var commitment *ownerCommitment
+	if *production || *ownerHash != "" || *ownerArgon != "" {
 		var err error
-		ownerKeyHash, err = hex.DecodeString(*ownerHash)
-		if err != nil || len(ownerKeyHash) != sha256.Size {
-			log.Fatal("-owner-key-sha256 must be 64 hexadecimal characters")
+		commitment, err = parseOwnerCommitment(*ownerHash, *ownerArgon)
+		if err != nil {
+			log.Fatal(err)
 		}
-	} else if *production {
-		log.Fatal("-production requires MONITOR_OWNER_KEY_SHA256 or -owner-key-sha256 to protect initial enrollment")
 	}
 	origins, err := ownerOrigins(*originList)
 	if err != nil {
@@ -128,7 +125,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	m := &monitor{store: bucket, dev: dev, ownerKeyHash: ownerKeyHash, sshHostKey: hostSigner}
+	m := &monitor{store: bucket, dev: dev, ownerCommitment: commitment, sshHostKey: hostSigner}
 	go m.serveSSH(ln)
 	log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.handler()), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
 }

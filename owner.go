@@ -307,8 +307,12 @@ func allowOrigins(origins []string, next http.Handler) http.Handler {
 var errLocked = errors.New("the monitor is locked")
 
 func ownerKey(r *http.Request) ([]byte, error) {
-	key, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer "))
-	if err != nil || len(key) != ownerKeyBytes {
+	token, ok := strings.CutPrefix(r.Header.Get("Authorization"), "Bearer ")
+	if !ok || len(token) > base64.StdEncoding.EncodedLen(maxOwnerKeyBytes) {
+		return nil, errOwner
+	}
+	key, err := base64.StdEncoding.Strict().DecodeString(token)
+	if err != nil || len(key) < minOwnerKeyBytes || len(key) > maxOwnerKeyBytes {
 		return nil, errOwner
 	}
 	return key, nil

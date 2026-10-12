@@ -145,6 +145,8 @@ export class OwnerError extends Error {
   constructor(message: string, status: number)
 }
 export function ownerClient(options: { endpoint?: string; key: string; generation?: number; fetch?: typeof fetch }): OwnerApi
+/** Encode supplied passphrase or legacy owner key for ownerClient's key option. */
+export function encodeOwnerKey(input: string): string
 export function ownerApi(request: Request, generation?: number, base?: string): OwnerApi
 
 export const LEVELS: { [L in Level]: string }

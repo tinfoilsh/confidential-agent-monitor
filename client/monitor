@@ -761,11 +761,38 @@ def launch_lock(path):
         yield
 
 
+def owner_token(value):
+    """Preserve supplied text; recognize old random keys and CLI key records."""
+    try:
+        record = json.loads(value)
+    except (ValueError, TypeError):
+        record = None
+    if isinstance(record, dict) and "version" in record:
+        if record.get("version") != 1 or not isinstance(record.get("key"), str):
+            raise MonitorError("invalid owner key record")
+        try:
+            raw = base64.b64decode(record["key"], validate=True)
+        except (ValueError, TypeError) as error:
+            raise MonitorError("invalid owner key record") from error
+    else:
+        legacy = value.strip()
+        try:
+            raw = base64.b64decode(legacy, validate=True)
+            if len(raw) == 32 and base64.b64encode(raw).decode() == legacy:
+                return legacy
+        except (ValueError, TypeError):
+            pass
+        raw = value.encode("utf-8")
+    if not 16 <= len(raw) <= 4096:
+        raise MonitorError("use an owner key or passphrase between 16 and 4096 UTF-8 bytes")
+    return base64.b64encode(raw).decode()
+
+
 class OwnerClient:
     """Use the existing owner API. Owner credentials never enter the VM."""
     def __init__(self, url, key, timeout=30):
         self.url = urlsplit(url)
-        self.key = key.strip()
+        self.key = owner_token(key)
         self.timeout = timeout
         if self.url.username or self.url.password or self.url.query or self.url.fragment or not self.url.hostname:
             raise MonitorError("owner URL must be an HTTP(S) URL without credentials, query or fragment")
@@ -775,11 +802,6 @@ class OwnerClient:
             loopback = self.url.hostname == "localhost"
         if self.url.scheme != "https" and not (self.url.scheme == "http" and loopback):
             raise MonitorError("use HTTPS for a remote owner API, or HTTP on loopback through a trusted tunnel")
-        try:
-            if len(base64.b64decode(self.key, validate=True)) != 32:
-                raise ValueError()
-        except (ValueError, TypeError) as error:
-            raise MonitorError("owner key must be a base64-encoded 32-byte key") from error
 
     def request(self, method="GET", body=None, path="/"):
         cls = http.client.HTTPSConnection if self.url.scheme == "https" else http.client.HTTPConnection
@@ -866,9 +888,9 @@ def setup_launch(args):
         endpoint = setup_value(args.endpoint, "Monitor SSH endpoint as reached by this host", "127.0.0.1:2223")
         endpoint_address(endpoint)
         if args.owner_key_file:
-            key = private_read(Path(args.owner_key_file).expanduser()).strip()
+            key = private_read(Path(args.owner_key_file).expanduser())
         elif sys.stdin.isatty():
-            key = getpass.getpass("Monitor owner key (saved only on this host): ").strip()
+            key = getpass.getpass("Monitor owner key or passphrase (saved only on this host): ")
         else:
             raise MonitorError("pass --owner-key-file pointing to an owner-only file")
         owner = OwnerClient(owner_url, key)
@@ -898,7 +920,7 @@ def setup_launch(args):
         host_key = view["host_key"].strip()
         if "\n" in host_key or not host_key.startswith(("ssh-", "ecdsa-")):
             raise MonitorError("owner API returned an invalid SSH host key")
-        private_write(root / "owner.key", key + "\n")
+        private_write(root / "owner.key", key)
         private_write(root / "host_key", host_key + "\n")
         profile = {"version": 2, "id": uuid.uuid4().hex, "owner_url": owner_url, "endpoint": endpoint,
                    "root": str(root), "image": image, "cpus": args.cpus, "memory": args.memory,
@@ -1126,7 +1148,7 @@ def parser():
     commands = p.add_subparsers(dest="command", required=True)
     policy = commands.add_parser("policy", help="inspect policy and propose TOML edits")
     policy.add_argument("--owner-url", help="owner API URL for the full source, diff and apply")
-    policy.add_argument("--owner-key-file", help="owner key file; never needed for agent proposals")
+    policy.add_argument("--owner-key-file", help="owner key or passphrase file; never needed for agent proposals")
     policy_commands = policy.add_subparsers(dest="policy_action", required=True)
     show_policy = policy_commands.add_parser("show", help="show your policy settings as TOML")
     show_policy.add_argument("--json", action="store_true", help="show the response as JSON")
@@ -1139,7 +1161,7 @@ def parser():
             command.add_argument("--delete", action="append", default=[], help="JSON Pointer to remove; repeat for multiple deletions")
     setup = commands.add_parser("setup", help="configure one-command Linux VM launch")
     setup.add_argument("--owner-url", help="unlocked Monitor owner API URL")
-    setup.add_argument("--owner-key-file", help="owner-only file containing the owner key; otherwise prompt privately")
+    setup.add_argument("--owner-key-file", help="owner-only file containing a key or passphrase; otherwise prompt privately")
     setup.add_argument("--endpoint", help="Monitor SSH HOST:PORT as reached by this host")
     setup.add_argument("--image", default=str(Path.home() / ".local/share/monitor/images/default"), help="prepared VM image directory")
     setup.add_argument("--cpus", type=int, default=2, help="VM CPU count (default: 2)")

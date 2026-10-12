@@ -484,3 +484,11 @@ test('clicks map to screenshot pixels, and input is sent in order aimed at the f
   assert.equal(a.requests.length, 3, 'input queued behind a stale one is dropped');
   assert.ok(a.notices.includes('the page changed'));
 });
+
+
+test('owner panel rejects multiline paste before a password input strips it', () => {
+  const a = app();
+  a.run(`pasteOwnerKey({clipboardData: {getData: () => "line one\\nline two passphrase"}, preventDefault() { notices.push("prevented"); }})`);
+  assert.equal(a.notices[0], 'prevented');
+  assert.match(a.notices[1], /line breaks/);
+});
