@@ -33,7 +33,7 @@ attested-keys:
 
 containers:
   - name: monitor
-    image: "ghcr.io/tinfoilsh/confidential-agent-monitor@sha256:33943dad72b269408e0a24385ea015ad8649c631d1ff4455c2e8180c59d2b1d5"
+    image: "ghcr.io/tinfoilsh/confidential-agent-monitor@sha256:8cd8c614c7cd4e1beba04148fa0bcbd045b70e5c19257d3ca8b98e9afb701add" # v0.1.0-private.4
     user: "65532:65532"
     keys: [host-ssh]
     ports: ["22:2223"]
