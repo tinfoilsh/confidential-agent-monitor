@@ -61,6 +61,7 @@ export function ownerClient({ endpoint, key, generation, fetch = (...args) => gl
 // With a known generation, an older view is a rollback, and a locked monitor unlocks at that minimum.
 export function ownerApi(request, generation, base = "") {
   let minimum = generation;
+  let catalog;
   const checked = (view) => {
     if (minimum !== undefined && view) {
       if (view.generation < minimum) throw new OwnerError("The monitor state is older than the last state you saw. Restore the latest monitor state before continuing.", 409);
@@ -70,25 +71,35 @@ export function ownerApi(request, generation, base = "") {
   };
   const get = (path, signal) => request("GET", path, undefined, signal);
   const post = (path, body, signal) => request("POST", path, body, signal);
-  const unlock = (at = minimum ?? 0, signal) => post("/unlock", { generation: at }, signal).then(checked);
+  const snapshot = async (method, path, body, signal) => {
+    const known = catalog;
+    const view = await request(method, known ? `${path}?catalog=${encodeURIComponent(known.id)}` : path, body, signal);
+    if (view?.catalog_id) {
+      if (view.presets) catalog = { id: view.catalog_id, presets: view.presets };
+      else if (known?.id === view.catalog_id) view.presets = known.presets;
+      else throw new OwnerError("Monitor returned an unknown preset catalog. Reload the page.", 409);
+    }
+    return checked(view);
+  };
+  const unlock = (at = minimum ?? 0, signal) => snapshot("POST", "/unlock", { generation: at }, signal);
   return {
     async read(signal) {
-      const [view, requests] = await Promise.all([get("/", signal), get("/requests", signal)]).catch(async (err) => {
+      const [view, requests] = await Promise.all([snapshot("GET", "/", undefined, signal), get("/requests", signal)]).catch(async (err) => {
         if (err.status !== 423 || minimum === undefined) throw err;
         return [await unlock(minimum, signal), await get("/requests", signal)];
       });
       return { view: checked(view), requests: requests ?? [] };
     },
     unlock,
-    edit: (changes, signal) => post("/policy/edits", { changes }, signal).then(checked),
+    edit: (changes, signal) => snapshot("POST", "/policy/edits", { changes }, signal),
     decide: (id, decision, signal) => post(`/requests/${encodeURIComponent(id)}`, { decision }, signal),
-    label: (name, label, signal) => post(`/labels/${encodeURIComponent(name)}`, label, signal).then(checked),
+    label: (name, label, signal) => snapshot("POST", `/labels/${encodeURIComponent(name)}`, label, signal),
     preset: (name, signal) => get(`/presets/${encodeURIComponent(name)}`, signal),
     policy: (effective, signal) => get(effective ? "/policy?effective" : "/policy", signal),
     previewPolicy: (source, signal) => post("/policy/preview", { source }, signal),
-    applyPolicy: (source, signal) => post("/policy", { source }, signal).then(checked),
+    applyPolicy: (source, signal) => snapshot("POST", "/policy", { source }, signal),
     signIn: (account, path, redirect, credential, signal) => post(`/accounts/${encodeURIComponent(account)}/sign-in`, { path, redirect, credential }, signal),
-    finishSignIn: (state, code, signal) => post(`/sign-in/${encodeURIComponent(state)}`, { code }, signal).then(checked),
+    finishSignIn: (state, code, signal) => snapshot("POST", `/sign-in/${encodeURIComponent(state)}`, { code }, signal),
     browser: (name, body, signal) => request(body ? "POST" : "GET", `/connections/${encodeURIComponent(name)}/browser`, body, signal),
     icons: async (signal) => {
       const manifest = await get(ICON_MANIFEST, signal);
@@ -577,7 +588,7 @@ export function integrationGuide(view, page, href) {
 export function localOwnerClient({ token, generation, fetch = (...args) => globalThis.fetch(...args) }) {
   return ownerApi(async (method, path, body, signal) => {
     if (!token) throw new OwnerError("Open this panel with tinfoil monitor open NAME.", 401);
-    if (path === "/unlock") throw new OwnerError("Run tinfoil monitor open NAME again to unlock over attested SSH.", 423);
+    if (path.split("?")[0] === "/unlock") throw new OwnerError("Run tinfoil monitor open NAME again to unlock over attested SSH.", 423);
     const asset = path.startsWith("/app/");
     const res = await fetch(asset ? path : "/api" + path, { method, signal, cache: "no-store", credentials: "omit", redirect: "error",
       headers: { ...(!asset && { "X-Tinfoil-Session": token }), ...(body !== undefined && { "Content-Type": "application/json" }) },

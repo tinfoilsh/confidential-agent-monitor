@@ -96,7 +96,8 @@ func (m *monitor) ownerPanel(options ownerChannelOptions, acknowledge func() err
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("X-Frame-Options", "DENY")
 		w.Header().Set("Content-Security-Policy", "default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; font-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'")
-		navigation := r.Method == http.MethodGet && r.URL.Path == "/app/" && r.Header.Get("Sec-Fetch-Mode") == "navigate" && r.Header.Get("Sec-Fetch-Dest") == "document"
+		panelPage := r.URL.Path == "/app/" || r.URL.Path == "/app/index.html" || r.URL.Path == "/app/fun_ui.html"
+		navigation := r.Method == http.MethodGet && panelPage && r.Header.Get("Sec-Fetch-Mode") == "navigate" && r.Header.Get("Sec-Fetch-Dest") == "document"
 		if r.Host != options.Host || (r.Header.Get("Origin") != "" && r.Header.Get("Origin") != "http://"+options.Host) || (r.Header.Get("Sec-Fetch-Site") == "cross-site" && !navigation) {
 			http.Error(w, "foreign browser origin refused", http.StatusForbidden)
 			return

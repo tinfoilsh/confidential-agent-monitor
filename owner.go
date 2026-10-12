@@ -3,6 +3,7 @@ package main
 import (
 	"cmp"
 	"context"
+	"crypto/sha256"
 	"crypto/subtle"
 	"embed"
 	"encoding/base64"
@@ -12,13 +13,13 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"slices"
 	"strings"
 
 	"github.com/pmezard/go-difflib/difflib"
 	"github.com/tinfoilsh/monitor/connector/browser"
 	"github.com/tinfoilsh/monitor/connector/credential"
-	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/facts"
 	"golang.org/x/crypto/ssh"
 )
@@ -47,15 +48,60 @@ type ownerView struct {
 	Fields     map[string][]fieldMetadata   `json:"fields"`
 	Status     map[string]connectionStatus  `json:"status"`
 	Labels     map[string]facts.Label       `json:"labels"`
-	Presets    map[string]catalogEntry      `json:"presets"`
+	CatalogID  string                       `json:"catalog_id"`
+	Presets    map[string]catalogEntry      `json:"presets,omitempty"`
 	Vocabulary map[string]facts.Obligations `json:"vocabulary"`
 }
 
 // A catalogEntry exposes a preset's setup metadata and operations.
 type catalogEntry struct {
 	*presetCatalog
-	Title      string                    `json:"title"`
-	Operations *map[string]web.Operation `json:"operations,omitempty"`
+	Title      string                       `json:"title"`
+	Operations *map[string]catalogOperation `json:"operations,omitempty"`
+}
+
+type catalogOperation struct {
+	Action  string   `json:"action"`
+	Effects []string `json:"effects,omitempty"`
+}
+
+type ownerCatalog struct {
+	state   *state
+	id      string
+	entries map[string]catalogEntry
+}
+
+// The catalog changes with policy, not with every poll. Only configured accounts
+// need action metadata; operation definitions remain at /presets/{name}.
+func (m *monitor) catalogView(s *state) (*ownerCatalog, error) {
+	if m.catalog != nil && m.catalog.state == s {
+		return m.catalog, nil
+	}
+	used := map[string]bool{}
+	for _, a := range s.cfg.Accounts {
+		used[a.Preset] = true
+	}
+	entries := map[string]catalogEntry{}
+	for name, p := range s.cfg.resolved {
+		metadata := *p.Catalog
+		entry := catalogEntry{presetCatalog: &metadata, Title: p.Title}
+		if !used[name] {
+			metadata.Actions = nil
+		} else if p.HTTP != nil {
+			operations := map[string]catalogOperation{}
+			for id, op := range p.HTTP.Operations {
+				operations[id] = catalogOperation{Action: op.Action, Effects: op.Effects}
+			}
+			entry.Operations = &operations
+		}
+		entries[name] = entry
+	}
+	raw, err := json.Marshal(entries)
+	if err != nil {
+		return nil, err
+	}
+	m.catalog = &ownerCatalog{state: s, id: fmt.Sprintf("%x", sha256.Sum256(raw)), entries: entries}
+	return m.catalog, nil
 }
 
 func (m *monitor) view(err error) (any, error) {
@@ -63,8 +109,13 @@ func (m *monitor) view(err error) (any, error) {
 		return nil, err
 	}
 	s := m.live.Load()
+	catalog, err := m.catalogView(s)
+	if err != nil {
+		return nil, err
+	}
 	v := ownerView{Generation: m.doc.Generation, HostKey: string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), CA: m.doc.Keys.CACert,
-		Fields: map[string][]fieldMetadata{}, Status: map[string]connectionStatus{}, Labels: map[string]facts.Label{}, Presets: map[string]catalogEntry{}, Vocabulary: facts.Effects}
+		Fields: map[string][]fieldMetadata{}, Status: map[string]connectionStatus{}, Labels: map[string]facts.Label{},
+		CatalogID: catalog.id, Presets: catalog.entries, Vocabulary: facts.Effects}
 	if v.Config, err = json.Marshal(s.cfg); err != nil {
 		return nil, err
 	}
@@ -77,13 +128,6 @@ func (m *monitor) view(err error) (any, error) {
 	}
 	for _, p := range s.principals {
 		v.Labels[p.Name] = m.currentLabel(p.Key)
-	}
-	for name, p := range s.cfg.resolved {
-		entry := catalogEntry{presetCatalog: p.Catalog, Title: p.Title}
-		if p.HTTP != nil {
-			entry.Operations = &p.HTTP.Operations
-		}
-		v.Presets[name] = entry
 	}
 	return v, nil
 }
@@ -215,10 +259,28 @@ func (m *monitor) ownerHandler(overSSH bool) http.Handler {
 		}
 		return m.view(m.editPolicy(r.Context(), input.Changes))
 	}))
+	mux.Handle("GET /app/auth.json", jsonHandler(0, func(_ *http.Request, _ struct{}) (any, error) {
+		mode := "bearer"
+		if overSSH {
+			mode = "ssh"
+		}
+		return map[string]string{"mode": mode}, nil
+	}))
 	files := http.FileServerFS(app)
+	localFiles := false
+	if m.dev && !overSSH {
+		if dir, err := os.Stat("app"); err == nil && dir.IsDir() {
+			files = http.StripPrefix("/app/", http.FileServer(http.Dir("app")))
+			localFiles = true
+		}
+	}
 	mux.HandleFunc("GET /app/", func(w http.ResponseWriter, r *http.Request) {
-		// Assets travel over the same attested SSH connection as owner requests.
+		// Owner SSH always serves the embedded assets. Local development can reload files.
 		w.Header().Set("Cache-Control", "no-store")
+		if localFiles {
+			r.Header.Del("If-Modified-Since")
+			r.Header.Del("If-None-Match")
+		}
 		files.ServeHTTP(w, r)
 	})
 	return mux
@@ -422,6 +484,10 @@ func jsonHandler[T any](limit int64, fn func(*http.Request, T) (any, error)) htt
 		if err != nil {
 			responseError(w, err)
 			return
+		}
+		if view, ok := value.(ownerView); ok && r.URL.Query().Get("catalog") == view.CatalogID {
+			view.Presets = nil
+			value = view
 		}
 		response, err := json.Marshal(value)
 		if err != nil {

@@ -4,8 +4,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as ownerModule from './app/owner.js';
 
-const source = readFileSync(new URL('./app/index.html', import.meta.url), 'utf8')
-  .match(/<script type="module">([\s\S]*)<\/script>/)[1].replace(/^import .*$/m, '').split('window.addEventListener')[0];
+const source = readFileSync(new URL('./app/monitor.js', import.meta.url), 'utf8')
+  .replace(/^import .*$/gm, '').split('window.addEventListener')[0];
 
 function app() {
   const requests = [];

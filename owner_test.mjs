@@ -34,6 +34,64 @@ test('an older view than the known generation is a rollback, and the same-origin
   await assert.rejects(local.read(), (err) => err.status === 423);
 });
 
+test('catalog versions avoid retransfers on polls and edits and refresh when metadata changes', async () => {
+  const calls = [], presets = { web: { title: 'Web' } };
+  let response = { generation: 1, catalog_id: 'first', presets };
+  const api = owner.ownerApi(async (method, path) => {
+    calls.push([method, path]);
+    return path === '/requests' ? [] : structuredClone(response);
+  });
+  assert.deepEqual((await api.read()).view.presets, presets);
+  response = { generation: 2, catalog_id: 'first' };
+  assert.deepEqual((await api.read()).view.presets, presets);
+  assert.deepEqual(await api.edit([]), { ...response, presets });
+  assert.ok(calls.some(([method, path]) => method === 'GET' && path === '/?catalog=first'));
+  assert.ok(calls.some(([method, path]) => method === 'POST' && path === '/policy/edits?catalog=first'));
+  response = { generation: 3, catalog_id: 'second', presets: { web: { title: 'Browsing' } } };
+  assert.deepEqual((await api.read()).view.presets, response.presets);
+  response = { generation: 3, catalog_id: 'second' };
+  assert.equal((await api.read()).view.presets.web.title, 'Browsing');
+  assert.ok(calls.some(([, path]) => path === '/?catalog=second'));
+  response = { generation: 4, catalog_id: 'missing' };
+  await assert.rejects(api.read(), err => err.status === 409);
+});
+
+test('concurrent responses use the catalog version each request advertised', async () => {
+  const pending = [];
+  const api = owner.ownerApi(async (method, path) => {
+    if (path === '/unlock') return { generation: 1, catalog_id: 'first', presets: { web: { title: 'Web' } } };
+    return new Promise(resolve => pending.push({ path, resolve }));
+  });
+  await api.unlock();
+  const first = api.edit([]), second = api.edit([]);
+  assert.ok(pending.every(p => p.path === '/policy/edits?catalog=first'));
+  pending[1].resolve({ generation: 2, catalog_id: 'second', presets: { web: { title: 'Browsing' } } });
+  assert.equal((await second).presets.web.title, 'Browsing');
+  pending[0].resolve({ generation: 1, catalog_id: 'first' });
+  assert.equal((await first).presets.web.title, 'Web');
+  const next = api.edit([]);
+  assert.equal(pending[2].path, '/policy/edits?catalog=second');
+  pending[2].resolve({ generation: 2, catalog_id: 'second' });
+  assert.equal((await next).presets.web.title, 'Browsing');
+});
+
+test('SSH panels cache the catalog and still refuse browser unlock after it is cached', async () => {
+  const calls = [];
+  let response = { generation: 1, catalog_id: 'first', presets: { web: { title: 'Web' } } };
+  const api = owner.localOwnerClient({ token: 'test-session', fetch: async (path, options) => {
+    calls.push({ path, options });
+    return respond(path === '/api/requests' ? [] : response);
+  } });
+  await api.read();
+  response = { generation: 1, catalog_id: 'first' };
+  assert.equal((await api.read()).view.presets.web.title, 'Web');
+  assert.ok(calls.some(call => call.path === '/api/?catalog=first'));
+  assert.ok(calls.every(call => call.options.headers['X-Tinfoil-Session'] === 'test-session' && !call.options.headers.Authorization));
+  const count = calls.length;
+  await assert.rejects(api.unlock(), err => err.status === 423);
+  assert.equal(calls.length, count);
+});
+
 const view = () => ({
   generation: 1, host_key: '', ca: '', labels: {}, status: { 'gh-mcp': { state: 'ready', details: { blocked: 2, changes: ['+ a', '~ b'], pin: { tools: [] } } } },
   vocabulary: { read: {}, write: { change: true }, send: { change: true, ask: true } },
@@ -114,9 +172,28 @@ test('a real Monitor accepts the shared edits and enforces origins', async (t) =
     try { if ((await fetch(base + '/healthz')).ok) break; } catch (err) { if (i > 100) throw err; }
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-  const key = randomBytes(32).toString('base64'), client = owner.ownerClient({ endpoint: base, key, generation: 0 });
+  const snapshots = [];
+  const key = randomBytes(32).toString('base64'), client = owner.ownerClient({ endpoint: base, key, generation: 0,
+    fetch: async (url, options) => {
+      const response = await fetch(url, options);
+      if (response.ok && ['/', '/unlock', '/policy/edits', '/policy'].includes(new URL(url).pathname)) {
+        const body = await response.clone().text(), value = JSON.parse(body);
+        if (value.catalog_id) snapshots.push({ bytes: Buffer.byteLength(body), value });
+      }
+      return response;
+    } });
   let { view: v } = await client.read();
   assert.equal(v.generation, 1);
+  assert.ok(snapshots.at(-1).bytes < 256 * 1024, `initial snapshot: ${snapshots.at(-1).bytes} bytes`);
+  assert.equal(v.presets.github.operations, undefined);
+  assert.equal(v.presets.github.actions, undefined);
+  assert.ok(v.presets.github.fields.length);
+  const initialCatalog = v.catalog_id;
+  const polled = await client.read();
+  assert.equal(polled.view.catalog_id, initialCatalog);
+  assert.deepEqual(polled.view.presets, v.presets);
+  assert.equal(snapshots.at(-1).value.presets, undefined);
+  assert.ok(snapshots.at(-1).bytes < 16 * 1024, `poll snapshot: ${snapshots.at(-1).bytes} bytes`);
 
   const icon = await client.icons();
   assert.equal(icon('aws_bedrock').src, `${base}/app/icons/aws.svg`);
@@ -134,6 +211,12 @@ test('a real Monitor accepts the shared edits and enforces origins', async (t) =
 
   const answers = { contents: 'me', strangers: true, sends: 'me' };
   v = await client.edit(edits.addAccount(v, 'anthropic', { name: 'model', values: { token: 'test-only-token' }, answers }));
+  assert.notEqual(v.catalog_id, initialCatalog);
+  assert.ok(Object.keys(v.presets.anthropic.actions).length);
+  assert.ok(Object.keys(v.presets.anthropic.operations).length);
+  for (const operation of Object.values(v.presets.anthropic.operations)) {
+    assert.ok(Object.keys(operation).every(key => ['action', 'effects'].includes(key)));
+  }
   assert.deepEqual(v.fields.model.map((f) => f.kind), ['static']);
   assert.ok(!JSON.stringify(v).includes('test-only-token'));
   v = await client.edit(edits.addCustomApi(v, { name: 'my-api', api: { url: 'https://api.example.test/v1', auth: 'bearer' }, token: 'test-only-api-token', answers }));
@@ -143,6 +226,7 @@ test('a real Monitor accepts the shared edits and enforces origins', async (t) =
   const blob = Buffer.concat([Buffer.from([0, 0, 0, 11]), Buffer.from('ssh-ed25519'), Buffer.from([0, 0, 0, 32]), Buffer.from(jwk.x, 'base64url')]);
   v = await client.edit(edits.pairAgent('bot', `ssh-ed25519 ${blob.toString('base64')} bot`));
   v = await client.edit([...edits.setAccess('bot', 'model', { level: 'ask' }), ...edits.setAccess('bot', 'model', { actions: { agents: 'allow' } }), ...edits.setRoutes('bot', true)]);
+  assert.equal(snapshots.at(-1).value.presets, undefined);
   assert.equal(owner.agentAccess(v, 'bot').find((a) => a.account === 'model').actions.find((n) => n.key === 'agents').own, 'allow');
   v = await client.label('bot', { trust: 'untrusted', audience: 'team' });
   assert.equal(owner.labelStatus(v, v.labels.bot), 'Has seen private data from the owner');
@@ -157,10 +241,14 @@ test('a real Monitor accepts the shared edits and enforces origins', async (t) =
   assert.equal(v.fields.model[0].kind, 'unset');
 
   const shipped = await client.preset('web');
+  const beforePresetEdit = v.catalog_id;
   v = await client.edit(edits.savePreset('web', JSON.stringify({ ...shipped, title: 'Browsing' }), shipped));
   assert.equal(v.presets.web.title, 'Browsing');
+  assert.notEqual(v.catalog_id, beforePresetEdit);
+  assert.equal(snapshots.at(-1).value.presets.web.title, 'Browsing');
   v = await client.edit(edits.removePreset('web'));
   assert.equal(v.presets.web.title, 'Web');
+  assert.equal(v.catalog_id, beforePresetEdit);
 
   const { source } = await client.policy();
   const preview = await client.previewPolicy(source + '\n# reviewed\n');

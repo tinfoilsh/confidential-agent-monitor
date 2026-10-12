@@ -39,6 +39,11 @@ host key. Check access with `monitor connections`. Use `monitor run --help`,
 
 ## Owner web apps
 
+Monitor is one app with two interfaces: `/app/` is the dashboard-style
+management UI, and `/app/fun_ui.html` keeps the original UI. Both use the same
+session and `app/monitor.js` runtime. See [Monitor interfaces](UI.md) for layout
+sources and local development.
+
 The web app at `/app/` and embedding dashboards share `app/owner.js`. This
 module holds the owner API client, the policy edits for each owner action, and
 the account, permission, and request views. It also resolves connector icons
@@ -48,7 +53,18 @@ from `app/icons/manifest.json`. Monitor serves the icon files at `/app/icons/`.
 Add owner behavior to `owner.js`, not to a client app. The server still
 validates every edit and decides every request.
 
-New deployments bind `MONITOR_OWNER_PUBLIC_KEY` in the measured config. The CLI
+Owner snapshots include a `catalog_id`. The shared client sends its cached ID
+as `?catalog=...` on later snapshot requests, and restores the `presets` field
+locally when the server omits an unchanged catalog. Catalog entries contain
+setup metadata and action/effect summaries for configured accounts. Full preset
+definitions load through `/presets/{name}` when the editor needs them.
+
+For local development, run `dev/setup`, open `http://127.0.0.1:8080/app/`, and
+enter the owner key from `.dev/owner.key`. Both interfaces support direct sign-in
+with an owner key or passphrase. The browser keeps it in tab session storage.
+Local development serves app files from this checkout so UI edits appear on reload.
+
+CVM deployments bind `MONITOR_OWNER_PUBLIC_KEY` in the measured config. The CLI
 keeps independent SSH and storage keys and sends `/unlock` over owner SSH.
 Run `tinfoil monitor open NAME` for the local UI, served with its owner API over
 attested SSH. Keep UI assets embedded in the measured binary. Private keys stay
@@ -58,11 +74,11 @@ defaults in the measured config; no bare runtime environment names are declared.
 
 Public-key deployments expose only health over public HTTP. Owner SSH works
 while locked; agents and devices must wait for unlock.
-Existing SHA256 and passphrase deployments retain their bearer API and storage
-format; the standalone Python owner client supports those deployments.
+SHA256 and passphrase deployments use the bearer API and browser sign-in;
+the standalone Python owner client also supports those deployments.
 
 ```sh
-node --test app_test.mjs approval_ui_test.mjs owner_test.mjs
+node --test app_test.mjs approval_ui_test.mjs dashboard_test.mjs owner_test.mjs
 ```
 
 `owner_test.mjs` builds Monitor and runs a throwaway server on

@@ -62,6 +62,7 @@ export type ConnectionStatus = {
 }
 export type View = {
   generation: number
+  catalog_id?: string
   host_key: string
   ca: string
   config: {

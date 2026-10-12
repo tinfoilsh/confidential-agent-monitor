@@ -4,8 +4,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as ownerModule from './app/owner.js';
 
-const source = readFileSync(new URL('./app/index.html', import.meta.url), 'utf8')
-  .match(/<script type="module">([\s\S]*)<\/script>/)[1].replace(/^import .*$/m, '').split('window.addEventListener')[0];
+const source = readFileSync(new URL('./app/monitor.js', import.meta.url), 'utf8')
+  .replace(/^import .*$/gm, '').split('window.addEventListener')[0];
 const fixture = () => ({ generation: 1, config: {
   accounts: { work: { preset: 'custom' } },
   identities: { bot: { accounts: { work: { level: 'ask' } }, rules: {} }, other: { accounts: {} } },
@@ -24,8 +24,8 @@ function app() {
     fetch(path, options = {}) {
       path = path.replace(/^\/api/, "");
       if (path === 'icons/manifest.json') return Promise.resolve({ ok: true, json: async () => ({}) });
-      return new Promise(resolve => requests.push({ path, method: options.method, body: options.body && JSON.parse(options.body),
-        respond(body, status = 200) { resolve({ ok: status >= 200 && status < 300, status, text: async () => typeof body === 'string' ? body : JSON.stringify(body) }); },
+      return new Promise(resolve => requests.push({ path, method: options.method, headers: options.headers, body: options.body && JSON.parse(options.body),
+        respond(body, status = 200) { resolve({ ok: status >= 200 && status < 300, status, json: async () => body, text: async () => typeof body === 'string' ? body : JSON.stringify(body) }); },
       }));
     }, fixture: fixture(), notices,
   });
@@ -48,6 +48,103 @@ function editedValues(request) {
 }
 const tick = () => new Promise(resolve => setImmediate(resolve));
 const level = a => a.state().view.config.identities.bot.accounts.work.level;
+
+test('polls and edits share one owner client until the login changes', () => {
+  const a = app();
+  a.run('const firstClient = client();');
+  assert.equal(a.run('client() === firstClient'), true);
+  a.run('ownerSession = "replacement-session"; const secondClient = client();');
+  assert.equal(a.run('secondClient === firstClient'), false);
+  assert.equal(a.run('client() === secondClient'), true);
+  a.run('ownerMode = "bearer"; sessionStorage.setItem(KEY, "local-key"); const bearerClient = client();');
+  assert.equal(a.run('bearerClient === secondClient'), false);
+  assert.equal(a.run('client() === bearerClient'), true);
+  a.run('sessionStorage.setItem(KEY, "replacement-key");');
+  assert.equal(a.run('client() === bearerClient'), false);
+});
+
+test('the server selects browser sign-in or CLI sessions and clears credentials from the other mode', async () => {
+  for (const mode of ['bearer', 'ssh']) {
+    const a = app();
+    a.run('sessionStorage.setItem(KEY, "saved-owner-key"); sessionStorage.setItem("monitor-local-session", ownerSession);');
+    const loading = a.run('loadOwnerMode()');
+    assert.equal(a.requests[0].path, 'auth.json');
+    assert.equal(a.requests[0].headers, undefined);
+    a.requests[0].respond({ mode });
+    await loading;
+    const page = a.run('keyPage()');
+    if (mode === 'bearer') {
+      assert.match(page, /Owner key or passphrase/);
+      assert.doesNotMatch(page, /tinfoil monitor open/);
+      assert.match(a.run('lockedPage()'), /onclick="unlock\(\)"/);
+      assert.equal(a.run('ownerSession'), null);
+      assert.equal(a.run('sessionStorage.getItem("monitor-local-session")'), null);
+      assert.equal(a.run('sessionStorage.getItem(KEY)'), 'saved-owner-key');
+    } else {
+      assert.match(page, /tinfoil monitor open/);
+      assert.doesNotMatch(page, /<input/);
+      assert.doesNotMatch(a.run('lockedPage()'), /onclick="unlock\(\)"/);
+      assert.equal(a.run('sessionStorage.getItem(KEY)'), null);
+      assert.equal(a.run('ownerSession'), 'test-local-session');
+      await a.run('setKey(); unlock();');
+      assert.equal(a.requests.length, 1);
+    }
+  }
+});
+
+test('a failed sign-in mode lookup never enables bearer authentication', async () => {
+  for (const [body, status] of [[{}, 404], [{ mode: 'unknown' }, 200]]) {
+    const a = app();
+    const loading = a.run('loadOwnerMode()');
+    a.requests[0].respond(body, status);
+    await assert.rejects(loading);
+    assert.equal(a.run('ownerMode'), null);
+  }
+});
+
+test('browser sign-in uses the bearer API, retains its key across reloads, and clears a rejected key', async () => {
+  for (const status of [200, 401]) {
+    const a = app();
+    a.run('ownerMode = "bearer"; $("key").value = "local monitor test passphrase";');
+    const signingIn = a.run('setKey()');
+    assert.deepEqual(a.requests.map(r => r.path), ['/', '/requests']);
+    for (const r of a.requests) {
+      assert.equal(r.headers.Authorization, 'Bearer ' + ownerModule.encodeOwnerKey('local monitor test passphrase'));
+      assert.equal(r.headers['X-Tinfoil-Session'], undefined);
+      r.respond(status === 401 ? 'owner key refused' : r.path === '/' ? fixture() : [], status);
+    }
+    await signingIn;
+    assert.equal(a.run('$("key").value'), '');
+    assert.equal(a.run('authenticated()'), status === 200);
+    assert.equal(a.run('localStorage.getItem(KEY)'), null);
+    assert.equal(a.run('sessionStorage.getItem(KEY)'), status === 200 ? ownerModule.encodeOwnerKey('local monitor test passphrase') : null);
+    if (status === 401) assert.deepEqual(a.notices, ['owner key refused']);
+    else {
+      a.run('live.name = "work";');
+      assert.equal(a.run('liveActive()'), true);
+    }
+  }
+});
+
+test('browser sign-in can unlock a restarted monitor at the saved generation', async () => {
+  const a = app();
+  a.run('ownerMode = "bearer"; localStorage.setItem(GENERATION, 7); $("key").value = "local monitor test passphrase";');
+  const signingIn = a.run('setKey()');
+  a.requests.forEach(r => r.respond('locked', 423));
+  await signingIn;
+  assert.equal(a.run('locked'), true);
+  assert.equal(a.run('authenticated()'), true);
+  const unlocking = a.run('unlock()');
+  assert.equal(a.requests[2].path, '/unlock');
+  assert.deepEqual(a.requests[2].body, { generation: 7 });
+  a.requests[2].respond({ ...fixture(), generation: 8 });
+  await tick();
+  a.requests[3].respond({ ...fixture(), generation: 8 });
+  a.requests[4].respond([]);
+  await unlocking;
+  assert.equal(a.run('locked'), false);
+  assert.equal(a.run('localStorage.getItem(GENERATION)'), '8');
+});
 
 test('opening a new bridge session in an existing tab reloads the session bootstrap', () => {
   const a = app();

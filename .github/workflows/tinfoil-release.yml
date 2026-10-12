@@ -54,7 +54,7 @@ jobs:
         with:
           node-version: '24'
       - name: Test owner panel
-        run: node --test app_test.mjs approval_ui_test.mjs owner_test.mjs
+        run: node --test app_test.mjs approval_ui_test.mjs dashboard_test.mjs owner_test.mjs
       - name: Test Python owner credentials
         run: python3 client_owner_test.py
       - name: Log in to GHCR

@@ -11,6 +11,7 @@
 !owner_test.mjs
 !app_test.mjs
 !approval_ui_test.mjs
+!dashboard_test.mjs
 !owner_secret_test.go
 !owner_public_test.go
 !owner_ssh_test.go

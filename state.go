@@ -68,6 +68,7 @@ type monitor struct {
 	storageHeader []byte
 	store         *blob.Bucket
 	running       map[string]*connection
+	catalog       *ownerCatalog // Cached owner metadata, guarded by mu.
 
 	// A measured public digest prevents another caller claiming an empty store.
 	ownerCommitment *ownerCommitment
