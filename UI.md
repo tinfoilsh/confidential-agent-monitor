@@ -33,6 +33,19 @@ The CSS and assets follow the adjacent `websites-monorepo` checkout:
 - `apps/dashboard/src/app/fonts/` and `public/brand-assets/`: bundled fonts and
   Tinfoil logo.
 
+Dashboard icons in `app/dashboard-icons.js` are rendered verbatim from the
+monorepo's `lucide-react` 0.473.0 components, with their original paths, view boxes,
+and default strokes. `dev/sync-dashboard-icons.mjs` records the component mapping.
+Do not draw or edit these SVGs by hand. To sync from an installed monorepo checkout:
+
+```sh
+node dev/sync-dashboard-icons.mjs ../websites-monorepo
+node dev/sync-dashboard-icons.mjs ../websites-monorepo --check
+```
+
+The generated module is bundled with Monitor; React and Lucide are needed only
+when syncing. The upstream license is in `app/icons/LUCIDE-LICENSE`.
+
 The management UI supports system, light, and dark themes. Its theme preference
 is local to the browser. The original UI still follows the system color scheme.
 

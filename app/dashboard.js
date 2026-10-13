@@ -1,24 +1,10 @@
 // Layout for the dashboard view. Owner actions and policy semantics stay in owner.js.
 import * as owner from './owner.js';
+import { icons } from './dashboard-icons.js';
 
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 const q = (v) => esc(JSON.stringify(v));
-const paths = {
-  activity: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
-  agents: '<rect x="4" y="7" width="16" height="14" rx="2"/><path d="M12 3v4M2 12h2m16 0h2M9 16h6"/><path d="M9 11h.01M15 11h.01"/>',
-  accounts: '<path d="m12 6 3-3a4.2 4.2 0 0 1 6 6l-3 3M12 18l-3 3a4.2 4.2 0 0 1-6-6l3-3m2 4 8-8"/>',
-  presets: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
-  rules: '<path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/>',
-  policy: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M8 13h8M8 17h5"/>',
-  integrations: '<path d="m8 8-4 4 4 4m8-8 4 4-4 4m-3-11-2 22"/>',
-  settings: '<path d="M4 21v-7m0-4V3m8 18v-9m0-4V3m8 18v-5m0-4V3M1 14h6m2-6h6m2 8h6"/>',
-  search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
-  refresh: '<path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 7a7 7 0 0 1 12-2l2 2M4 17l2 2a7 7 0 0 0 12-2"/>',
-  plus: '<path d="M12 5v14M5 12h14"/>',
-  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-  arrow: '<path d="m9 5 7 7-7 7"/>',
-};
-export const icon = (name) => `<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] ?? paths.accounts}</svg>`;
+export const icon = (name) => Object.hasOwn(icons, name) ? icons[name] : icons.accounts;
 export const sections = {
   activity: ['Activity', 'Review requests and follow what your agents are doing.'],
   agents: ['Agents', 'Manage agent identities and the actions they can take.'],

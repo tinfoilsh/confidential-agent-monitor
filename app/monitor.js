@@ -1043,6 +1043,7 @@ function applyTheme() {
   document.documentElement.dataset.theme = preference === "system" ? (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light") : preference;
   $("theme-toggle").title = `Theme: ${preference}. Click to change.`;
   $("theme-toggle").setAttribute("aria-label", `Theme: ${preference}. Change color theme`);
+  $("theme-toggle").innerHTML = dashboard.icon(document.documentElement.dataset.theme === "dark" ? "sun" : "moon");
   document.querySelectorAll('.connector-icon source').forEach(source => {
     source.media = document.documentElement.dataset.theme === "dark" ? "all" : "not all";
   });
@@ -1074,6 +1075,7 @@ function hashChanged() {
 }
 window.addEventListener("hashchange", hashChanged);
 if (isDashboard) {
+  $("fun-ui-link").innerHTML = 'Fun UI ' + dashboard.icon("external");
   applyTheme();
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
   $("workspace").addEventListener("scroll", () => $("page-header").classList.toggle("pinned", $("workspace").scrollTop > 0), { passive: true });
