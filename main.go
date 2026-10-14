@@ -23,6 +23,7 @@ import (
 	"github.com/tinfoilsh/monitor/connector/redis"
 	"github.com/tinfoilsh/monitor/connector/session"
 	"github.com/tinfoilsh/monitor/connector/signer"
+	"github.com/tinfoilsh/monitor/connector/tcp"
 	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/internal/worker"
 	"gocloud.dev/blob"
@@ -38,6 +39,7 @@ const (
 
 // The kind is also the protocol policies see.
 var connectorKinds = map[string]connector.Definition{
+	"tcp":       tcp.Definition,
 	"http":      web.Definition,
 	"mcp":       mcp.Definition,
 	"ssh":       session.SSHDefinition,

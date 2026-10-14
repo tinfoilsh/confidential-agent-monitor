@@ -13,6 +13,7 @@ const STATE_CLASS = { allowed: "", approved: "", refused: "bad", denied: "bad", 
 
 // Keep the activity filter and return route while a request is open.
 let view = null, records = [], locked = false, scope = null, requestSource = "activity";
+let onboardingPreset = "known_only", onboardingSaving = false;
 let serverState = { view: null, records: [] }, sending = false, editVersion = 0, pollVersion = 0;
 const pendingEdits = [];
 let connectorIcons = {};
@@ -203,7 +204,8 @@ function render() {
   const gate = !ownerMode ? `<p class="empty">Loading…</p>`
     : !authenticated() ? keyPage()
     : locked ? lockedPage()
-    : !view ? `<p class="empty">Loading…</p>` : "";
+    : !view ? `<p class="empty">Loading…</p>`
+    : !owner.onboarded(view) ? onboardingPage() : "";
   $("gate").hidden = !gate;
   $("app").hidden = !!gate;
   sync($("gate"), gate ? [["gate", gate]] : []);
@@ -234,6 +236,33 @@ function render() {
   if (kind === "policy" && policyEditor && $("policy-source")?.value !== policyEditor.draft) $("policy-source").value = policyEditor.draft;
   liveSync();
 }
+
+function onboardingPage() {
+  return `<form class="onboarding" onsubmit="event.preventDefault(); finishOnboarding()" aria-labelledby="onboarding-title">
+    <h1 id="onboarding-title">Set up your monitor</h1>
+    <p class="muted">Choose how agents can connect to the outside world.</p>
+    <fieldset ${onboardingSaving ? "disabled" : ""}><legend>Network policy</legend>
+      ${Object.entries(owner.POLICY_PRESETS).map(([value, { title, description }]) => `<label class="policy-choice">
+        <input type="radio" name="network-policy" value="${value}" ${value === onboardingPreset ? "checked" : ""} onchange="chooseOnboardingPreset(this.value)">
+        <span><strong>${title}</strong><small>${description}</small></span></label>`).join("")}
+    </fieldset>
+    <p class="muted">Saved for this monitor across browsers. You can change it later in Settings.</p>
+    <button class="primary" type="submit" ${onboardingSaving ? "disabled" : ""}>${onboardingSaving ? "Saving…" : "Use this policy"}</button>
+  </form>`;
+}
+
+const applyPolicyPreset = run(() => commit(edits.applyPolicyPreset(view, $("policy-preset").value)));
+const chooseOnboardingPreset = (preset) => { onboardingPreset = preset; };
+const finishOnboarding = run(async () => {
+  if (onboardingSaving) return;
+  onboardingSaving = true;
+  try {
+    await edit(() => {}, () => client().onboard(serverState.view, onboardingPreset), { message: "Policy saved" });
+  } finally {
+    onboardingSaving = false;
+    render();
+  }
+});
 
 const head = (title, sub = "", back = "activity") => isDashboard
   ? `<div class="detail-bar"><a href="#${esc(dashboardBack(back))}">${dashboard.icon("arrow")}Back to ${esc(dashboardBackLabel(back))}</a>${sub ? `<span class="muted">${sub}</span>` : ""}</div>`
@@ -967,7 +996,12 @@ function policyPage() {
     p.preview ? `<section><h2>Source changes</h2><pre>${esc(p.preview.source_diff || "No source changes.")}</pre><h2>Effective changes</h2><pre>${esc(p.preview.effective_diff || "No effective changes.")}</pre></section>` : "",
     `<section><details><summary>Effective policy, including preset definitions</summary><pre>${esc(p.effective)}</pre></details></section>`];
 }
-const settings = () => [head("Settings"), `<section><h2>Lattices</h2>
+const settings = () => [head("Settings"), `<section><h2>Policy preset</h2>
+  <label for="policy-preset">Choose a starting policy for this monitor</label>
+  <select id="policy-preset">${Object.entries(owner.POLICY_PRESETS).map(([value, policy]) => opt(value, policy.title, view.config.data?.onboarding?.preset ?? "known_only")).join("")}</select>
+  <p class="muted">You can edit individual permissions after applying a preset.</p>
+  <div class="row"><span></span><button onclick="applyPolicyPreset()">Apply preset</button></div>
+  </section>`, `<section><h2>Lattices</h2>
   <p class="muted">Applies to all agents and connector requests.</p>
   <label><input type="checkbox" ${lattices().confidentiality ? "checked" : ""} onchange="commit(edits.setLattice('confidentiality', this.checked))"> Confidentiality lattice</label>
   <p class="muted">Restrict where agents can send private data. On by default.</p>
@@ -1093,7 +1127,7 @@ document.addEventListener("click", (e) => { const id = e.target.closest?.("[data
 Object.assign(globalThis, { $, addAccount, addCustomAPI, answer, apiAuthChanged, applyPolicySource, approve, changePolicy, commit, copyAPIPlaceholder, copySettings,
   cycleTheme, filterDashboard, refreshDashboard, toggleCatalogGroup, toggleNavigation,
   credentialMode, dismiss, downloadActivePolicy, downloadPreset, edits, liveAct, liveClick, liveKey, liveNavigate, liveOwn, liveType, liveWheel, loadPolicy,
-  pairAgent, pasteOwnerKey, patchAccess, previewPolicy, removeAccount, removeAgent, removeRule, saveAccount, savePreset, setKey, setLabel, setupToken, signIn, toggle, toggleSecret, unlock });
+  applyPolicyPreset, chooseOnboardingPreset, finishOnboarding, pairAgent, pasteOwnerKey, patchAccess, previewPolicy, removeAccount, removeAgent, removeRule, saveAccount, savePreset, setKey, setLabel, setupToken, signIn, toggle, toggleSecret, unlock });
 setInterval(run(async () => {
   if (!ownerMode || !authenticated() || locked) return;
   await refresh();

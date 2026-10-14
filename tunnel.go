@@ -172,7 +172,7 @@ func (st *state) route(p principal, host string, port uint32) (*connection, bool
 	best, tied := -1, false
 	var selected *connection
 	for _, c := range st.connections {
-		r, ok := c.connector.(*web.HTTP)
+		r, ok := c.connector.(interface{ Claim(string, uint32) int })
 		if !ok || !p.reaches(c.account) {
 			continue
 		}

@@ -8,6 +8,11 @@ export const AUDIENCES = { me: "Only me", team: "My team", anyone: "Anyone" };
 export const TRUSTS = { trusted: "Trusted", untrusted: "Untrusted" };
 export const CATALOG_GROUPS = { api: "API", mcp: "MCP", protocol: "Protocol" };
 export const CREDENTIAL_STATUS = { "oauth-required": "Sign-in required", unset: "Not configured" };
+export const POLICY_PRESETS = {
+  open: { title: "Open", description: "Allow unrestricted TCP network access." },
+  known_only: { title: "Known only", description: "Allow only connections and operations covered by your policy. Block everything else." },
+  offline: { title: "Offline", description: "Block agent connections to all services and sandbox routes." },
+};
 // A new preset starts as one bearer-token API; the owner sets its origin, slots and operations.
 export const NEW_PRESET = { catalog: { group: "api", fields: [{ key: "token", label: "API token", secret: true, path: ["connections", "", "http", "secrets", "token"] }],
   connections: { "": { http: { slots: [{ value: "token", origin: "https://api.example.com", path: "/", header: "Authorization", prefix: "Bearer " }] } } },
@@ -91,6 +96,8 @@ export function ownerApi(request, generation, base = "") {
       return { view: checked(view), requests: requests ?? [] };
     },
     unlock,
+    onboard: (view, preset, signal) => onboarded(view) ? Promise.resolve(view)
+      : snapshot("POST", "/policy/edits", { changes: edits.applyPolicyPreset(view, preset), generation: view.generation }, signal),
     edit: (changes, signal) => snapshot("POST", "/policy/edits", { changes }, signal),
     decide: (id, decision, signal) => post(`/requests/${encodeURIComponent(id)}`, { decision }, signal),
     label: (name, label, signal) => snapshot("POST", `/labels/${encodeURIComponent(name)}`, label, signal),
@@ -160,6 +167,7 @@ export function previewChanges(view, changes, shipped = {}) {
 }
 
 const identities = (view) => view.config.identities ?? {};
+export const onboarded = (view) => view.config.data?.onboarding?.completed === true;
 const accounts = (view) => view.config.accounts ?? {};
 export const lattices = (view) => ({ confidentiality: view.config.lattices?.confidentiality ?? true, integrity: view.config.lattices?.integrity ?? false });
 export const presetOf = (view, account) => view.presets[accounts(view)[account]?.preset] ?? view.presets.custom;
@@ -281,7 +289,7 @@ export const levelsOf = (account) => Object.entries(LEVELS).filter(([l]) => acco
 export function agentAccess(view, name) {
   const id = identities(view)[name] ?? {};
   return Object.entries(accounts(view)).map(([account, acc]) => {
-    const access = id.accounts?.[account] ?? { level: "off" };
+    const access = id.accounts?.[account] ?? view.config.default_access?.[account] ?? { level: "off" };
     const describe = (node) => ({ ...node, own: access.actions?.[node.key] ?? null,
       inherited: mode({ ...access, actions: { ...access.actions, [node.key]: null } }, view.vocabulary, node.effects, node.key),
       overrides: Object.keys(access.actions ?? {}).filter((action) => action.startsWith(node.key + ".") && access.actions[action]).length,
@@ -462,12 +470,50 @@ export const edits = {
   removeRule: (name, id) => [{ path: ["identities", name, "rules", id], delete: true }],
   setLattice: (lattice, on) => [{ path: ["lattices", lattice], value: on }],
   setNetworks: (text) => [{ path: ["allow_networks"], value: text.split(/\s+/).filter(Boolean) }],
+  applyPolicyPreset(view, preset) {
+    if (!Object.hasOwn(POLICY_PRESETS, preset)) throw new Error("Choose a policy preset.");
+    const previous = view.config.data?.onboarding?.account;
+    let policy = view.config.data?.onboarding?.policy;
+    if (!policy) {
+      policy = "network-default";
+      for (let i = 2; Object.hasOwn(view.config.policies ?? {}, policy); i++) policy = `network-default-${i}`;
+    }
+    let account = previous;
+    if (preset === "open" && !account) {
+      const connections = new Set(Object.entries(accounts(view)).flatMap(([name, acc]) => Object.keys(acc.connections ?? {}).map(key => connectionName(name, key))));
+      account = "network";
+      for (let i = 2; Object.hasOwn(accounts(view), account) || connections.has(account); i++) account = `network-${i}`;
+    }
+    const changes = sourceChanges({
+      data: { onboarding: { completed: true, preset, policy, account: preset === "open" ? account : null } },
+      lattices: { confidentiality: preset !== "open", integrity: false },
+      allow_networks: preset === "open" ? ["0.0.0.0/0", "::/0"] : [],
+      policies: { [policy]: preset === "open" ? null : preset === "offline"
+        ? 'package sentinel\n\ndeny contains "Network access is disabled."\n'
+        : 'package sentinel\n\ndeny contains "This request has no recognized policy operation." if input.facts.operation == null\n' },
+    });
+    if (preset === "open") {
+      changes.push(...sourceChanges({ accounts: { [account]: { preset: "custom", contents: "anyone", strangers: true, sends: "anyone",
+        connections: { "": { tcp: { hosts: ["*"] } } } } }, default_access: { [account]: { level: "allow" } } }));
+    } else if (previous && Object.hasOwn(accounts(view), previous)) {
+      changes.push(...edits.removeAccount(view, previous));
+    }
+    for (const [name, id] of Object.entries(identities(view))) {
+      changes.push({ path: ["identities", name, "profile"], value: false });
+      if (preset === "offline") changes.push(...sourceChanges({ identities: { [name]: { routes: false,
+        accounts: Object.fromEntries(Object.keys(id.accounts ?? {}).filter(a => a !== previous).map(a => [a, { level: "off" }])) } } }));
+    }
+    if (preset === "offline") changes.push({ path: ["default_access"], value: {} });
+    return changes;
+  },
   setAccountPolicy: (account, source) => sourceChanges({ policies: { [account]: source.trim() || null } }),
   approveTools: (view, account, key) => sourceChanges({ accounts: { [account]: { connections: { [key]: { mcp: { pin: view.status[connectionName(account, key)].details.pin } } } } } }),
   // Identities may not name a missing account, so removing one also clears it from every agent.
   removeAccount: (view, account) => sourceChanges({
     accounts: { [account]: null },
     policies: { [account]: null },
+    default_access: { [account]: null },
+    ...(view.config.data?.onboarding?.account === account && { data: { onboarding: { account: null } } }),
     identities: Object.fromEntries(Object.keys(identities(view)).map((n) => [n, { accounts: { [account]: null } }])),
   }),
   // values holds every setup field read with readField; oauth names the fields that sign in instead of taking a token.

@@ -150,6 +150,28 @@ func (s *Stream) Interrupt(c io.Closer) func() {
 	return func() { stop(); c.Close() }
 }
 
+// Relay preserves half-close so a caller can finish sending while still
+// receiving a reply. Cancellation and I/O errors close both directions.
+func Relay(ctx context.Context, a, b net.Conn) {
+	closeBoth := func() { a.Close(); b.Close() }
+	stop := context.AfterFunc(ctx, closeBoth)
+	defer stop()
+	defer closeBoth()
+	done := make(chan struct{})
+	copyTo := func(dst, src net.Conn) {
+		_, err := io.Copy(dst, src)
+		if writer, ok := dst.(interface{ CloseWrite() error }); err == nil && ok {
+			if writer.CloseWrite() == nil {
+				return
+			}
+		}
+		closeBoth()
+	}
+	go func() { defer close(done); copyTo(a, b) }()
+	copyTo(b, a)
+	<-done
+}
+
 // ParseURL validates a destination whose password is supplied separately.
 func ParseURL(raw string) (*url.URL, error) {
 	u, err := url.Parse(raw)

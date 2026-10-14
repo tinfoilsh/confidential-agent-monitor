@@ -71,6 +71,15 @@
     #pane .row { flex-wrap: wrap; }
   }
   #gate { max-width: 24rem; margin: 20vh auto; }
+  .onboarding h1 { font-size: 22px; line-height: 1.3; }
+  .onboarding fieldset { display: grid; gap: 8px; margin: 16px 0; padding: 0; border: 0; }
+  .onboarding legend { margin-bottom: 8px; font-weight: 600; }
+  .onboarding .policy-choice { display: flex; align-items: flex-start; gap: 10px; padding: 12px; margin: 0; border: 1px solid var(--edge); border-radius: 4px; cursor: pointer; }
+  .policy-choice:has(input:checked) { background: var(--selected); }
+  .policy-choice input[type=radio] { flex-shrink: 0; width: 16px; height: 16px; margin: 4px 0 0; padding: 0; }
+  .policy-choice strong, .policy-choice small { display: block; }
+  .policy-choice small { color: var(--muted); }
+  .onboarding > button { width: 100%; }
   a, .new { color: var(--link); text-decoration: none; }
   .connector-icon { display: inline-block; width: 14px; height: 14px; margin-right: 4px; vertical-align: -2px; flex-shrink: 0; }
   .connector-icon img { display: block; width: 100%; height: 100%; object-fit: contain; }

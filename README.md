@@ -2,6 +2,29 @@
 
 Policy is stored as editable TOML.
 
+On first opening the owner UI, choose a starting network policy. Completion and
+the policy are saved together in encrypted state, across browsers and restarts.
+Settings can apply the same presets later:
+
+- **Open** adds a TCP connection for all hosts and ports, grants it to paired
+  agents through `default_access`, permits all IP ranges, and disables lattices.
+- **Known only** denies requests without a recognized operation. Configured
+  account permissions and owner rules still apply.
+- **Offline** denies connector requests, clears default access, and revokes
+  existing agents' account and sandbox route permissions.
+
+These presets edit ordinary policy source. They disable development profiling;
+leaving Open removes its generated TCP account. Other accounts, credentials,
+and owner rules remain configured. Changing policy rules closes active streams.
+
+`default_access` supplies account permissions to existing and future agents.
+An agent's explicit account entry overrides the default, including `level = "off"`.
+
+The `tcp` connector accepts `hosts` patterns and routes matching destinations on
+all TCP ports. It authorizes a `connect` operation with read and send effects
+before relaying bytes through the same guarded dialer as other connectors. It
+cannot inspect stream contents or relay UDP; it requires a real destination host.
+
 ## Install or update the CLI
 
 From this checkout on Linux or macOS, with Python 3.11 or newer and OpenSSH:

@@ -68,6 +68,7 @@ type latticeOptions struct {
 }
 
 type config struct {
+	DefaultAccess map[string]access   `json:"default_access,omitempty"`
 	Lattices      latticeOptions      `json:"lattices"`
 	AllowNetworks []netip.Prefix      `json:"allow_networks"`
 	Accounts      map[string]account  `json:"accounts"`
@@ -322,17 +323,33 @@ func compileSource(policy string, secrets secretStore) (*config, map[string]*con
 			}
 		}
 	}
-	for name, id := range cfg.Identities {
-		for acct, a := range id.Accounts {
+	validateAccess := func(name string, accounts map[string]access) error {
+		for acct, a := range accounts {
 			if _, ok := cfg.Accounts[acct]; !ok || !slices.Contains(levels, a.Level) {
-				return nil, nil, fmt.Errorf("identity %s: account %s must exist and have a level in %v", name, acct, levels)
+				return fmt.Errorf("%s: account %s must exist and have a level in %v", name, acct, levels)
 			}
 			for action, level := range a.Actions {
 				if level == "read" || !slices.Contains(levels, level) {
-					return nil, nil, fmt.Errorf("identity %s: action %s must be off, ask or allow", name, action)
+					return fmt.Errorf("%s: action %s must be off, ask or allow", name, action)
 				}
 			}
 		}
+		return nil
+	}
+	if err := validateAccess("default access", cfg.DefaultAccess); err != nil {
+		return nil, nil, err
+	}
+	for name, id := range cfg.Identities {
+		accounts := maps.Clone(cfg.DefaultAccess)
+		if accounts == nil {
+			accounts = map[string]access{}
+		}
+		maps.Copy(accounts, id.Accounts)
+		id.Accounts = accounts
+		if err := validateAccess("identity "+name, accounts); err != nil {
+			return nil, nil, err
+		}
+		cfg.Identities[name] = id
 	}
 	for id, secret := range secrets.all() {
 		c := connections[connectionName(id[0], id[1])]

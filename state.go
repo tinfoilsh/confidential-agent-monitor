@@ -218,7 +218,7 @@ func (m *monitor) activate(ctx context.Context, next sealed, s *state) error {
 		sameAccess := maps.EqualFunc(old.principals[key].Accounts, p.Accounts, func(a, b access) bool {
 			return a.Level == b.Level && maps.Equal(a.Actions, b.Actions)
 		})
-		if !exists || old.principals[key].Routes != p.Routes || !sameAccess || s.cfg.Lattices != old.cfg.Lattices {
+		if !exists || old.principals[key].Routes != p.Routes || old.principals[key].Profile != p.Profile || !sameAccess || s.cfg.Lattices != old.cfg.Lattices || s.program != old.program {
 			stream.Close()
 		}
 	}

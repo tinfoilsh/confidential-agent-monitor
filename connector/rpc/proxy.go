@@ -152,7 +152,7 @@ func (p *Proxy) Serve(s *connector.Stream, _ *connector.Env) {
 	if err != nil {
 		return
 	}
-	Relay(s.Context, s.Conn, upstream)
+	connector.Relay(s.Context, s.Conn, upstream)
 }
 
 func (p *Proxy) Details() json.RawMessage { return p.details }
@@ -292,6 +292,6 @@ func broker(ctx context.Context, dialer connector.Dialer) http.Handler {
 		if err := rw.Flush(); err != nil {
 			return
 		}
-		Relay(ctx, &bufferedConn{Conn: client, reader: rw.Reader}, up)
+		connector.Relay(ctx, &bufferedConn{Conn: client, reader: rw.Reader}, up)
 	})
 }

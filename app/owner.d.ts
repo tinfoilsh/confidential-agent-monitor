@@ -1,6 +1,7 @@
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json }
 export type Level = 'off' | 'read' | 'ask' | 'allow'
 export type Mode = 'off' | 'ask' | 'allow'
+export type PolicyPreset = 'open' | 'known_only' | 'offline'
 export type Audience = 'me' | 'team' | 'anyone'
 export type Trust = 'trusted' | 'untrusted'
 export type Decision = 'once' | 'save' | 'deny'
@@ -66,6 +67,8 @@ export type View = {
   host_key: string
   ca: string
   config: {
+    default_access?: Record<string, Access>
+    data?: { [key: string]: Json }
     identities?: Record<string, Identity> | null
     accounts?: Record<string, Account> | null
     policies?: Record<string, string> | null
@@ -125,6 +128,7 @@ export type Request = (method: 'GET' | 'POST', path: string, body?: unknown, sig
 export type OwnerApi = {
   read(signal?: AbortSignal): Promise<Snapshot>
   unlock(generation?: number, signal?: AbortSignal): Promise<View>
+  onboard(view: View, preset: PolicyPreset, signal?: AbortSignal): Promise<View>
   edit(changes: Change[], signal?: AbortSignal): Promise<View>
   decide(id: string, decision: Decision, signal?: AbortSignal): Promise<null>
   label(name: string, label: { trust: Trust; audience: Audience }, signal?: AbortSignal): Promise<View>
@@ -156,6 +160,8 @@ export const AUDIENCES: { [A in Audience]: string }
 export const TRUSTS: { [T in Trust]: string }
 export const CATALOG_GROUPS: { [group: string]: string }
 export const CREDENTIAL_STATUS: { [kind: string]: string }
+export const POLICY_PRESETS: Record<PolicyPreset, { title: string; description: string }>
+export function onboarded(view: View): boolean
 export const NEW_PRESET: PresetFile
 export const INTEGRATION_PAGES: { start: string; wrapped: string; shell: string; mcp: string }
 
@@ -240,6 +246,7 @@ export const edits: {
   removeRule(name: string, id: string): Change[]
   setLattice(lattice: 'confidentiality' | 'integrity', on: boolean): Change[]
   setNetworks(text: string): Change[]
+  applyPolicyPreset(view: View, preset: PolicyPreset): Change[]
   setAccountPolicy(account: string, source: string): Change[]
   approveTools(view: View, account: string, key: string): Change[]
   removeAccount(view: View, account: string): Change[]
