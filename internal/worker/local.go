@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"sync"
 	"time"
 
@@ -130,7 +131,13 @@ func (m *Local) Start(ctx context.Context, config []byte, host http.Handler) (rp
 	childCtx, cancel := context.WithCancel(ctx)
 	server := &http.Server{Handler: host, ReadHeaderTimeout: 10 * time.Second, MaxHeaderBytes: 8 << 10, BaseContext: func(net.Listener) context.Context { return childCtx }}
 	go server.Serve(bl)
-	args := []string{"--unshare-all", "--unshare-user", "--die-with-parent", "--new-session", "--disable-userns", "--cap-drop", "ALL", "--clearenv",
+	userns := "--disable-userns"
+	if value, err := os.ReadFile("/proc/sys/kernel/unprivileged_userns_clone"); err == nil && strings.TrimSpace(string(value)) == "0" {
+		// The CVM already forbids nested user namespaces. Verify that restriction;
+		// --disable-userns would try to create a forbidden second namespace.
+		userns = "--assert-userns-disabled"
+	}
+	args := []string{"--unshare-all", "--unshare-user", "--die-with-parent", "--new-session", userns, "--cap-drop", "ALL", "--clearenv",
 		"--ro-bind", root, "/", "--ro-bind", executable, "/worker",
 		"--ro-bind", brokerPath, "/broker.sock", "--proc", "/proc", "--dev", "/dev",
 		"--size", "67108864", "--tmpfs", "/tmp", "--chdir", "/tmp",

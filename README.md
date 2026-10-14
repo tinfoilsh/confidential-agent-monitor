@@ -6,7 +6,7 @@ On first opening the owner UI, choose a starting network policy. Completion and
 the policy are saved together in encrypted state, across browsers and restarts.
 Settings can apply the same presets later:
 
-- **Open** adds a TCP connection for all hosts and ports, grants it to paired
+- **Open** adds a TCP network account for all hosts and ports, grants it to paired
   agents through `default_access`, permits all IP ranges, and disables lattices.
 - **Known only** denies requests without a recognized operation. Configured
   account permissions and owner rules still apply.
@@ -20,9 +20,11 @@ and owner rules remain configured. Changing policy rules closes active streams.
 `default_access` supplies account permissions to existing and future agents.
 An agent's explicit account entry overrides the default, including `level = "off"`.
 
-The `tcp` connector accepts `hosts` patterns and routes matching destinations on
-all TCP ports. It authorizes a `connect` operation with read and send effects
-before relaying bytes through the same guarded dialer as other connectors. It
+The **TCP network** preset appears under **Protocol** in Presets and Add account.
+Its host patterns can be edited in account settings; `*` matches every host.
+The `tcp` connector routes matching destinations on all TCP ports. It authorizes
+a `connect` operation with read and send effects before relaying bytes through
+the same guarded dialer as other connectors. It
 cannot inspect stream contents or relay UDP; it requires a real destination host.
 
 ## Install or update the CLI

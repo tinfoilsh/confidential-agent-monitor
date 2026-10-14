@@ -314,10 +314,8 @@ export function labelStatus(view, l) {
 export const accountUsers = (view, account) => Object.entries(identities(view)).filter(([, id]) => (id.accounts?.[account]?.level ?? "off") !== "off")
   .map(([name, id]) => ({ name, level: id.accounts[account].level, profile: !!id.profile, overrides: Object.values(id.accounts[account].actions ?? {}).filter(Boolean).length }));
 
-const mcpKeys = (view, account) => Object.entries(accounts(view)[account]?.connections ?? {}).filter(([, kinds]) => kinds.mcp).map(([key]) => key);
-
-// reviews reports each MCP connection's progress and the tool changes awaiting the owner.
-export const reviews = (view, account) => mcpKeys(view, account).map((key) => {
+// Report every connection's progress and errors, plus MCP tool changes awaiting the owner.
+export const reviews = (view, account) => Object.keys(accounts(view)[account]?.connections ?? {}).map((key) => {
   const name = connectionName(account, key), status = view.status[name] ?? {}, s = status.details ?? {};
   const count = (sign) => (s.changes ?? []).filter((x) => x.startsWith(sign)).length;
   return { key, name, state: status.state, error: status.error, blocked: s.blocked ?? 0, added: count("+"), changed: count("~"), removed: count("-"), changes: s.changes ?? [] };
@@ -493,7 +491,7 @@ export const edits = {
         : 'package sentinel\n\ndeny contains "This request has no recognized policy operation." if input.facts.operation == null\n' },
     });
     if (preset === "open") {
-      changes.push(...sourceChanges({ accounts: { [account]: { preset: "custom", contents: "anyone", strangers: true, sends: "anyone",
+      changes.push(...sourceChanges({ accounts: { [account]: { preset: "tcp", contents: "anyone", strangers: true, sends: "anyone",
         connections: { "": { tcp: { hosts: ["*"] } } } } }, default_access: { [account]: { level: "allow" } } }));
     } else if (previous && Object.hasOwn(accounts(view), previous)) {
       changes.push(...edits.removeAccount(view, previous));
