@@ -13,6 +13,8 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
+var Definition = connector.Definition{NewConfig: func() connector.Server { return new(Redis) }, Requests: []connector.Request{new(Request)}}
+
 const (
 	redisPort = "6379"
 )

@@ -2,6 +2,7 @@ package session
 
 import (
 	"cmp"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -17,6 +18,8 @@ import (
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/syntax"
 )
+
+var SSHDefinition = connector.Definition{HostKey: true, NewConfig: func() connector.Server { return new(SSH) }, Requests: []connector.Request{new(SSHRequest)}}
 
 const (
 	channelSession = "session"
@@ -224,6 +227,9 @@ func literal(parts []syntax.WordPart) bool {
 
 // NoClientAuth is safe because the tunnel already checked the client's key.
 func innerSSH(s *connector.Stream, hostKey ssh.Signer) (*ssh.ServerConn, <-chan ssh.NewChannel, <-chan *ssh.Request, error) {
+	if hostKey == nil {
+		return nil, nil, nil, errors.New("SSH host identity is unavailable")
+	}
 	cfg := &ssh.ServerConfig{NoClientAuth: true}
 	cfg.AddHostKey(hostKey)
 	return ssh.NewServerConn(s, cfg)

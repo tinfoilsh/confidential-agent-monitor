@@ -6,7 +6,6 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"io"
 	"net"
@@ -20,12 +19,14 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
+var Definition = connector.Definition{NewConfig: func() connector.Server { return new(MQTT) }, Requests: []connector.Request{new(Request)}}
+
 const maxPacket = 1 << 20
 
 type MQTT struct{ connector.Endpoint }
 
 func (m *MQTT) UnmarshalJSON(raw []byte) error {
-	if err := json.Unmarshal(raw, &m.Endpoint); err != nil {
+	if err := m.Endpoint.UnmarshalJSON(raw); err != nil {
 		return err
 	}
 	u := &m.URL

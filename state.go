@@ -30,7 +30,7 @@ import (
 	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
-	"github.com/tinfoilsh/monitor/connector/mcp"
+	"github.com/tinfoilsh/monitor/connector/rpc"
 	"github.com/tinfoilsh/monitor/facts"
 	"gocloud.dev/blob"
 	"gocloud.dev/gcerrors"
@@ -61,6 +61,7 @@ type state struct {
 }
 
 type monitor struct {
+	workers       rpc.Launcher
 	live          atomic.Pointer[state]
 	mu            sync.Mutex
 	doc           sealed
@@ -412,8 +413,23 @@ type connection struct {
 	ctx                          context.Context
 	cancel                       context.CancelFunc
 	ready, done                  chan struct{}
-	incoming                     chan *connector.Stream
-	err                          error // Published by closing done.
+	incoming                     chan func(connector.Server, *connector.Env)
+	details                      json.RawMessage // Published by closing ready.
+	err                          error           // Published by closing done.
+}
+
+func (c *connection) dispatch(ctx context.Context, run func(connector.Server, *connector.Env)) error {
+	finished := make(chan struct{})
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-c.ctx.Done():
+		return errors.New("connector stopped")
+	case c.incoming <- func(server connector.Server, env *connector.Env) { defer close(finished); run(server, env) }:
+	}
+	// Once admitted, the caller must wait until the operation releases its resources.
+	<-finished
+	return nil
 }
 
 // reconcile never waits for upstreams. Replacements wait for their predecessors,
@@ -435,7 +451,7 @@ func (m *monitor) reconcile(s *state) {
 			continue
 		}
 		c.ctx, c.cancel = context.WithCancel(context.Background())
-		c.ready, c.done, c.incoming = make(chan struct{}), make(chan struct{}), make(chan *connector.Stream)
+		c.ready, c.done, c.incoming = make(chan struct{}), make(chan struct{}), make(chan func(connector.Server, *connector.Env))
 		m.running[name] = c
 		go func() {
 			defer close(c.done)
@@ -446,25 +462,39 @@ func (m *monitor) reconcile(s *state) {
 			if c.ctx.Err() != nil {
 				return
 			}
-			serve := func() {
-				var streams sync.WaitGroup
-				defer streams.Wait()
+			server := c.connector
+			def, env := connectorKinds[c.protocol], s.Env
+			if !def.HostKey {
+				env.HostKey = nil
+			}
+			if m.workers != nil {
+				server = &rpc.Proxy{Definition: def, Kind: c.protocol, Config: c.config, Secrets: c.Secrets, Launcher: m.workers}
+			}
+			serve := func(ctx context.Context) {
+				var active sync.WaitGroup
+				defer active.Wait()
+				defer c.cancel()
+				if d, ok := server.(connector.Detailer); ok {
+					c.details = d.Details()
+				}
 				close(c.ready)
 				for {
 					select {
-					case stream := <-c.incoming:
-						streams.Go(func() { defer stream.Close(); c.connector.Serve(stream, &s.Env) })
-					case <-c.ctx.Done():
+					case run := <-c.incoming:
+						active.Go(func() { run(server, &env) })
+					case <-ctx.Done():
 						return
 					}
 				}
 			}
-			if runner, ok := c.connector.(connector.Runner); ok {
-				c.err = runner.Run(c.ctx, &s.Env, serve)
+			if runner, ok := server.(connector.Runner); ok {
+				if err := runner.Run(c.ctx, &env, serve); err != nil {
+					c.err = err
+				}
 			} else {
-				serve()
+				serve(c.ctx)
 			}
-			if c.err != nil && c.ctx.Err() == nil {
+			if c.err != nil && !errors.Is(c.err, context.Canceled) {
 				log.Printf("connector %s: %v", c.name, c.err)
 			}
 		}()
@@ -472,9 +502,9 @@ func (m *monitor) reconcile(s *state) {
 }
 
 type connectionStatus struct {
-	State   string `json:"state"`
-	Error   string `json:"error,omitempty"`
-	Details any    `json:"details,omitempty"`
+	State   string          `json:"state"`
+	Error   string          `json:"error,omitempty"`
+	Details json.RawMessage `json:"details,omitempty"`
 }
 
 func (c *connection) status() connectionStatus {
@@ -488,11 +518,7 @@ func (c *connection) status() connectionStatus {
 	}
 	select {
 	case <-c.ready:
-		result := connectionStatus{State: "ready"}
-		if reporter, ok := c.connector.(*mcp.Server); ok {
-			result.Details = reporter.Status()
-		}
-		return result
+		return connectionStatus{State: "ready", Details: c.details}
 	default:
 		return connectionStatus{State: "connecting"}
 	}

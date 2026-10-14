@@ -18,13 +18,15 @@ networks:
 attested-keys:
   - id: host-ssh
     key: ed25519
-    uid: 65532
-    gid: 65532
+    uid: 0
+    gid: 0
 
 containers:
   - name: monitor
     image: "ghcr.io/tinfoilsh/confidential-agent-monitor@sha256:33943dad72b269408e0a24385ea015ad8649c631d1ff4455c2e8180c59d2b1d5"
-    user: "65532:65532"
+    # The Monitor holds keys and tokens; root/cvm_admin also lets it launch namespaces.
+    cvm_admin: true
+    user: "0:0"
     keys: [host-ssh]
     ports: ["22:2223"]
     networks: [upstream]
@@ -36,6 +38,7 @@ containers:
       - AWS_CONTAINER_AUTHORIZATION_TOKEN
     command:
       - -production
+      - -connector-workers
       - -ssh-host-key
       - /run/tinfoil/keys/host-ssh/private_key.pem
       - -api

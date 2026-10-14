@@ -16,6 +16,8 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+var SFTPDefinition = connector.Definition{HostKey: true, NewConfig: func() connector.Server { return new(SFTP) }, Requests: []connector.Request{new(SSHRequest), new(SFTPRequest)}}
+
 // SFTP terminates the SSH subsystem and mediates SFTP v3 requests. Root is
 // presented as / to clients. Use a server-side chroot when other writers can
 // replace upstream directories concurrently with path resolution.
@@ -69,7 +71,7 @@ func (t *SFTP) Serve(s *connector.Stream, e *connector.Env) {
 				r.Reply(true, nil)
 			}
 			go ssh.DiscardRequests(requests)
-			p := sftpProxy{up: reader, out: writer, gate: s.Gate, handles: map[string]*sftpHandle{}}
+			p := sftpProxy{up: reader, out: writer, gate: func(r connector.Request) error { return s.Gate(r) }, handles: map[string]*sftpHandle{}}
 			p.serve(ch, cmp.Or(t.Root, "/"))
 			return
 		}

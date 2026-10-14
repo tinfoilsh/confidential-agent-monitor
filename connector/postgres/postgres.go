@@ -17,6 +17,8 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
+var Definition = connector.Definition{NewConfig: func() connector.Server { return new(Postgres) }, Requests: []connector.Request{new(Request)}}
+
 const (
 	sslAccepted = 'S'
 	gssRefused  = 'N'
@@ -86,6 +88,8 @@ func (r *Postgres) connect(s *connector.Stream, e *connector.Env, startup *pgpro
 		return nil, err
 	}
 	config.DialFunc = e.Dialer.DialContext
+	// The dialer resolves hostnames so workers do not need direct DNS access.
+	config.LookupFunc = func(_ context.Context, host string) ([]string, error) { return []string{host}, nil }
 	for name, value := range startup.Parameters {
 		if name != "user" && name != "database" {
 			config.RuntimeParams[name] = value

@@ -14,12 +14,9 @@ import (
 	"strings"
 	"time"
 
-	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/connector/mcp"
 	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/facts"
-	sentinel "github.com/tinfoilsh/monitor/internal/sentinel"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -114,18 +111,14 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 	ctx := context.Background()
 	var serve func(*connector.Stream)
 	switch target.Host {
-	case agentHost, mcpHost:
+	case agentHost:
 		// The SSH identity supplies authorization; the owner API is never exposed here.
 		if target.Port != agentPort {
 			nc.Reject(ssh.Prohibited, fmt.Sprintf("%s uses HTTP on port %d inside the SSH tunnel", target.Host, agentPort))
 			return
 		}
 		serve = func(s *connector.Stream) {
-			handler := m.agentHandler(key)
-			if target.Host == mcpHost {
-				handler = sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server { return m.mcpServer(key, s) }, &sdk.StreamableHTTPOptions{Stateless: true})
-			}
-			connector.ServeHTTP(s, s, handler)
+			connector.ServeHTTP(s, s, m.agentHandler(key))
 		}
 	default:
 		c, selected := st.route(p, target.Host, target.Port)
@@ -148,10 +141,7 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 				return m.gate(s.Context, input{stream: s, Key: key, Connection: c.name, Request: request})
 			}
 			log.Printf("%s: forwarding %s:%d", p.Name, target.Host, target.Port)
-			select {
-			case c.incoming <- s:
-			case <-s.Context.Done():
-			}
+			c.dispatch(s.Context, func(server connector.Server, env *connector.Env) { server.Serve(s, env) })
 		}
 	}
 	ch, reqs, err := nc.Accept()
@@ -159,6 +149,7 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 		return
 	}
 	s := connector.NewStream(ctx, channelConn{ch})
+	defer s.Close()
 	go func() { ssh.DiscardRequests(reqs); s.Close() }()
 	// agent.monitor authorizes each request against live state, and an approved proposal must answer on its stream.
 	if target.Host != agentHost && !m.trackStream(key, s, st) {
@@ -316,37 +307,9 @@ func (m *monitor) agentHandler(key string) http.Handler {
 }
 
 const (
-	mcpHost       = "mcp.monitor"
 	agentPort     = 80
-	mcpSeparator  = "__"
 	maxAgentBytes = 96 << 10
 )
-
-// mcpServer is built for each request from the live state, so upstreams change without restarting the gateway.
-func (m *monitor) mcpServer(key string, s *connector.Stream) *sdk.Server {
-	st := m.live.Load()
-	p := st.principals[key]
-	var upstreams []*connection
-	var instructions []string
-	for _, name := range slices.Sorted(maps.Keys(st.connections)) {
-		c := st.connections[name]
-		if _, isMCP := c.connector.(*mcp.Server); !isMCP || !p.reaches(c.account) || c.status().State != "ready" ||
-			m.gate(s.Context, input{Key: key, Connection: c.name, Request: &admissionRequest{Host: mcpHost, Port: agentPort}}) != nil {
-			continue
-		}
-		upstreams = append(upstreams, c)
-		if text := c.connector.(*mcp.Server).Instructions(); text != "" {
-			instructions = append(instructions, "## "+c.name+"\n\n"+text)
-		}
-	}
-	server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: sentinel.Version}, &sdk.ServerOptions{Instructions: strings.Join(instructions, "\n\n")})
-	for _, c := range upstreams {
-		c.connector.(*mcp.Server).Register(server, c.name+mcpSeparator, func(request connector.Request) error {
-			return m.gate(s.Context, input{stream: s, Key: key, Connection: c.name, Request: request})
-		})
-	}
-	return server
-}
 
 func agentJSON[T any](m *monitor, key string, fn func(*http.Request, T, principal) (any, error)) http.HandlerFunc {
 	return jsonHandler(maxAgentBytes, func(r *http.Request, input T) (any, error) {

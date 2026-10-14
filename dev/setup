@@ -13,7 +13,7 @@ mkdir -p "$dev/firefox" "$dev/store"
 [[ -f $dev/id ]] || ssh-keygen -q -t ed25519 -N '' -C monitor-dev -f "$dev/id"
 [[ -f $dev/owner.key ]] || head -c32 /dev/urandom | base64 > "$dev/owner.key"
 if ! curl -s "$api" > /dev/null; then
-  go build -o "$dev/monitor" .
+  CGO_ENABLED=0 go build -o "$dev/monitor" .
   "$dev/monitor" -listen "$listen" -api "${api#http://}" -bucket "file://$dev/store?no_tmp_dir=true" \
     -drafts presets/drafts -extension "$(realpath "${MONITOR_EXTENSION:-../english-only}")" > "$dev/monitor.log" 2>&1 &
 fi

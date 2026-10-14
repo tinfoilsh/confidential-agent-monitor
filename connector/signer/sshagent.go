@@ -9,6 +9,8 @@ import (
 	"golang.org/x/crypto/ssh/agent"
 )
 
+var SSHAgentDefinition = connector.Definition{NewConfig: func() connector.Server { return new(SSHAgent) }, Requests: []connector.Request{new(Request)}}
+
 const (
 	msgUserAuthRequest = 50
 )

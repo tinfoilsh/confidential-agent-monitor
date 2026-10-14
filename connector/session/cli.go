@@ -17,6 +17,8 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+var CLIDefinition = connector.Definition{HostKey: true, NewConfig: func() connector.Server { return new(CLI) }, Requests: []connector.Request{new(SSHRequest)}}
+
 const (
 	maxStdinBytes = 1 << 20
 	exitRefused   = 126

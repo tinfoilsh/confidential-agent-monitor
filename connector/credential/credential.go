@@ -27,6 +27,17 @@ type Value struct {
 	gate    chan struct{}
 	Save    func(context.Context, json.RawMessage, json.RawMessage) error
 	Client  *http.Client
+	resolve func(context.Context) (string, error)
+}
+
+// Remote resolves a connection-scoped handle without moving its stored OAuth
+// grant or refresh token into the connector's process.
+func Remote(configured bool, resolve func(context.Context) (string, error)) *Value {
+	v := &Value{resolve: resolve}
+	if configured {
+		v.raw = json.RawMessage(`""`)
+	}
+	return v
 }
 
 func (v *Value) UnmarshalJSON(raw []byte) error {
@@ -78,6 +89,9 @@ func (v *Value) Value(ctx context.Context) (string, error) {
 	}
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
+	if v.resolve != nil {
+		return v.resolve(ctx)
+	}
 	if err := v.lock(ctx); err != nil {
 		return "", err
 	}

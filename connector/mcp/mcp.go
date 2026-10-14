@@ -17,12 +17,26 @@ import (
 	sentinel "github.com/tinfoilsh/monitor/internal/sentinel"
 )
 
+var Definition = connector.Definition{NewConfig: func() connector.Server { return new(Server) }, Requests: []connector.Request{new(Request)}}
+
 type Server struct {
 	connector.SecretConfig
 	URL      string             `json:"url"`
 	Pin      *sentinel.Snapshot `json:"pin"`
 	upstream *sentinel.Upstream
 	current  *sentinel.Snapshot
+}
+
+func (c *Server) UnmarshalJSON(raw []byte) error {
+	type plain Server
+	if err := facts.DecodeNumbers(raw, (*plain)(c)); err != nil {
+		return err
+	}
+	u, err := connector.ParseURL(c.URL)
+	if err != nil || u.Scheme != "http" && u.Scheme != "https" {
+		return errors.New("MCP requires an http:// or https:// server URL")
+	}
+	return nil
 }
 
 // bearer asks the credential on every request, so a refreshed token replaces an expired one.
@@ -49,24 +63,27 @@ func (b bearer) RoundTrip(r *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
-func (m *Server) Run(ctx context.Context, e *connector.Env, serve func()) error {
+func (m *Server) Run(ctx context.Context, e *connector.Env, serve func(context.Context)) error {
 	client := e.Client()
 	defer client.CloseIdleConnections()
 	if err := m.connect(ctx, client); err != nil {
 		return err
 	}
 	defer m.upstream.Close()
-	serve()
+	serve(ctx)
 	return nil
 }
 
 // Serve builds a server per request, so each call is screened by the stream's gate.
+// SSH admission authenticates these streams; worker transport addresses are internal.
 func (m *Server) Serve(s *connector.Stream, _ *connector.Env) {
 	connector.ServeHTTP(s, s, sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server {
-		server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: sentinel.Version}, nil)
-		m.Register(server, "", s.Gate)
+		server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: sentinel.Version}, &sdk.ServerOptions{Instructions: m.upstream.Instructions})
+		m.upstream.Register(server, "", func(ctx context.Context, t *sdk.Tool, args json.RawMessage) error {
+			return s.Gate(&Request{Tool: t.Name, Arguments: args, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint})
+		})
 		return server
-	}, &sdk.StreamableHTTPOptions{Stateless: true}))
+	}, &sdk.StreamableHTTPOptions{Stateless: true, PropagateRequestCancellation: true, DisableLocalhostProtection: true}))
 }
 
 func (m *Server) connect(ctx context.Context, client *http.Client) error {
@@ -93,22 +110,14 @@ func (m *Server) connect(ctx context.Context, client *http.Client) error {
 	return nil
 }
 
-func (m *Server) Status() any {
+func (m *Server) Details() json.RawMessage {
 	status := map[string]any{"blocked": m.upstream.Blocked}
 	if m.upstream.Blocked > 0 {
 		status["changes"], status["pin"] = m.Pin.Diff(m.current), m.current
 	}
-	return status
+	raw, _ := json.Marshal(status)
+	return raw
 }
-
-// Register adds the pinned tools under prefix; the gate sees each tool's own name.
-func (m *Server) Register(server *sdk.Server, prefix string, gate func(connector.Request) error) {
-	m.upstream.Register(server, prefix, func(_ context.Context, t *sdk.Tool, args json.RawMessage) error {
-		return gate(&Request{Tool: t.Name, Arguments: args, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint})
-	})
-}
-
-func (m *Server) Instructions() string { return m.upstream.Instructions }
 
 type Request struct {
 	Tool      string          `json:"tool"`

@@ -17,6 +17,8 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
+var SMTPDefinition = connector.Definition{NewConfig: func() connector.Server { return new(SMTP) }, Requests: []connector.Request{new(SMTPRequest)}}
+
 const (
 	smtpTLSScheme = "smtps"
 

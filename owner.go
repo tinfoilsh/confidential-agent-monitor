@@ -18,7 +18,7 @@ import (
 	"strings"
 
 	"github.com/pmezard/go-difflib/difflib"
-	"github.com/tinfoilsh/monitor/connector/browser"
+	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/facts"
 	"golang.org/x/crypto/ssh"
@@ -104,6 +104,7 @@ func (m *monitor) catalogView(s *state) (*ownerCatalog, error) {
 	return m.catalog, nil
 }
 
+// view snapshots owner state while the caller holds mu. It never calls a connector.
 func (m *monitor) view(err error) (any, error) {
 	if err != nil {
 		return nil, err
@@ -249,8 +250,7 @@ func (m *monitor) ownerHandler(overSSH bool) http.Handler {
 	}))
 	mux.Handle("POST /accounts/{account}/sign-in", m.authenticated(jsonHandler(maxDocumentBytes, m.startSignIn)))
 	mux.Handle("POST /sign-in/{state}", m.authenticated(jsonHandler(maxDocumentBytes, m.finishSignIn)))
-	mux.Handle("GET /connections/{name}/browser", m.authenticated(m.browserControl))
-	mux.Handle("POST /connections/{name}/browser", m.authenticated(m.browserControl))
+	mux.Handle("/connections/{name}/{control...}", m.authenticated(m.connectionControl))
 	mux.Handle("GET /requests", owned(m, func(_ *http.Request, _ struct{}) (any, error) {
 		newest := append([]*record{}, m.records...)
 		slices.Reverse(newest)
@@ -359,24 +359,26 @@ func (m *monitor) finishSignIn(r *http.Request, req finishSignInInput) (any, err
 	return m.view(err)
 }
 
-// browserControl runs outside the monitor's lock, since a browser call can be slow.
-func (m *monitor) browserControl(w http.ResponseWriter, r *http.Request) {
-	s := m.live.Load()
-	c := s.connections[r.PathValue("name")]
-	b, ok := (*browser.Browser)(nil), false
-	if c != nil {
-		b, ok = c.connector.(*browser.Browser)
-	}
-	if !ok {
-		http.Error(w, "no browser connection "+r.PathValue("name"), http.StatusNotFound)
+func (m *monitor) connectionControl(w http.ResponseWriter, r *http.Request) {
+	c := m.live.Load().connections[r.PathValue("name")]
+	if c == nil {
+		http.NotFound(w, r)
 		return
 	}
 	if status := c.status(); status.State != "ready" {
-		http.Error(w, "the browser is "+status.State, http.StatusConflict)
+		http.Error(w, "the connector is "+status.State, http.StatusConflict)
 		return
 	}
+	ctx, cancel := context.WithCancel(r.Context())
+	defer cancel()
+	stop := context.AfterFunc(c.ctx, cancel)
+	defer stop()
 	r.Body = http.MaxBytesReader(w, r.Body, maxDocumentBytes)
-	b.ServeOwner(w, r)
+	if err := c.dispatch(ctx, func(service connector.Server, _ *connector.Env) {
+		http.StripPrefix("/connections/"+c.name, connector.Control(service)).ServeHTTP(w, r.WithContext(ctx))
+	}); err != nil {
+		http.Error(w, err.Error(), http.StatusServiceUnavailable)
+	}
 }
 
 // ownerOrigins parses a comma-separated list of exact browser origins, such as https://dash.tinfoil.sh.

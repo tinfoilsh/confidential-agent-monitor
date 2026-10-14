@@ -6,6 +6,7 @@ import base64
 import contextlib
 import fcntl
 import fnmatch
+import functools
 import getpass
 import hashlib
 import http.client
@@ -245,9 +246,13 @@ class ProxyHandler(BaseHTTPRequestHandler):
 
 
 class ForwardHandler(socketserver.BaseRequestHandler):
+    def __init__(self, *args, host):
+        self.host = host
+        super().__init__(*args)
+
     def handle(self):
         try:
-            with self.server.session.stream("mcp.monitor", 80, route=False) as upstream:
+            with self.server.session.stream(self.host, 80, route=False) as upstream:
                 relay(self.request, upstream)
         except (OSError, MonitorError):
             pass  # EOF tells the MCP client that its request did not complete.
@@ -691,6 +696,31 @@ def mcp_probe(host, port, timeout):
         seen.add(cursor)
 
 
+def mcp_servers(session, address=("127.0.0.1", 0)):
+    connections = [c for c in session.client.connections() if c["kind"] == "mcp"]
+    if not connections:
+        raise MonitorError("no reachable MCP connections; an HTTP API account alone does not provide MCP tools")
+    servers, tools = {}, 0
+    for connection in connections:
+        name = connection["name"]
+        if connection["state"] != "ready":
+            print(f"monitor: MCP connection {name} is {connection['state']}", file=sys.stderr)
+            continue
+        port = address[1] + len(servers) if address[1] else 0
+        if port > 65535:
+            raise MonitorError("not enough consecutive ports; use --listen with port 0")
+        port = session.listen((address[0], port), functools.partial(ForwardHandler, host=f"{name}.monitor"))
+        count = mcp_probe(address[0], port, session.client.timeout)
+        host = f"[{address[0]}]" if ":" in address[0] else address[0]
+        url = f"http://{host}:{port}/"
+        servers[name] = {"type": "http", "url": url}
+        tools += count
+        print(f"monitor: MCP {name} ready at {url} ({count} tools)", file=sys.stderr, flush=True)
+    if not servers:
+        raise MonitorError("no MCP connections are ready")
+    return servers, tools
+
+
 def managed_command(client, args):
     if args.command == "run":
         command = args.argv[1:] if args.argv[:1] == ["--"] else args.argv
@@ -700,18 +730,7 @@ def managed_command(client, args):
         address = loopback_address(args.listen)
     with Session(client) as session:
         if args.command == "mcp":
-            connections = [c for c in client.connections() if c["kind"] == "mcp"]
-            if not connections:
-                raise MonitorError("no reachable MCP connections; an HTTP API account alone does not provide MCP tools")
-            for connection in connections:
-                if connection["state"] != "ready":
-                    print(f"monitor: MCP connection {connection['name']} is {connection['state']}", file=sys.stderr)
-            if not any(c["state"] == "ready" for c in connections):
-                raise MonitorError("no MCP connections are ready")
-            port = session.listen(address, ForwardHandler)
-            count = mcp_probe(address[0], port, client.timeout)
-            host = f"[{address[0]}]" if ":" in address[0] else address[0]
-            print(f"monitor: MCP ready at http://{host}:{port}/ ({count} tools)", file=sys.stderr, flush=True)
+            _, count = mcp_servers(session, address)
             if not count:
                 print("monitor: no tools are visible; check account access and tool review in the web app", file=sys.stderr)
             while True:
@@ -1061,12 +1080,12 @@ def guest_agent(client, args):
         arguments = args.argv[1:] if args.argv[:1] == ["--"] else args.argv
         command = ["claude", "--dangerously-skip-permissions"]
         if args.mcp:
-            port = session.listen(("127.0.0.1", 0), ForwardHandler)
-            if not mcp_probe("127.0.0.1", port, client.timeout):
+            servers, count = mcp_servers(session)
+            if not count:
                 raise MonitorError("no MCP tools are available; review account access and tools in Monitor")
             mcp_config = session.directory / "mcp.json"
-            mcp_config.write_text(json.dumps({"mcpServers": {"monitor": {"type": "http", "url": f"http://127.0.0.1:{port}/"}}}))
-            # This endpoint lives in the guest. Sending it through the HTTP
+            mcp_config.write_text(json.dumps({"mcpServers": servers}))
+            # These endpoints live in the guest. Sending them through the HTTP
             # proxy would ask the Monitor server to connect to its own loopback.
             env["NO_PROXY"] = env["no_proxy"] = "127.0.0.1,localhost,::1"
             command += ["--mcp-config", str(mcp_config)]
@@ -1170,7 +1189,7 @@ def parser():
     setup.add_argument("--memory", type=int, default=4096, help="VM memory in MiB (default: 4096)")
     setup.add_argument("--connection", help="Anthropic HTTP connection name")
     setup.add_argument("--account", action="append", help="initial account access NAME=read|ask|allow; repeat for several")
-    setup.add_argument("--mcp", action="store_true", help="also connect Claude to Monitor's MCP gateway")
+    setup.add_argument("--mcp", action="store_true", help="also connect Claude to Monitor's MCP connections")
     launch = commands.add_parser("launch", help="launch an agent in a Monitor-connected Linux VM")
     launch.add_argument("--workspace", default=".", help="project directory (default: current directory)")
     launch.add_argument("agent", choices=["claude"])
@@ -1204,8 +1223,8 @@ def parser():
     shell.add_argument("--connection", action="append", default=[], metavar="NAME", help="HTTP connection to use; repeat for several")
     shell.add_argument("--shell", default=os.environ.get("SHELL", "/bin/bash"), help="bash or zsh executable; startup files are skipped")
     mcp = commands.add_parser("mcp", help="connect MCP clients to Monitor")
-    serve = mcp.add_subparsers(dest="action", required=True).add_parser("serve", help="serve the MCP gateway on loopback")
-    serve.add_argument("--listen", default="127.0.0.1:8400", help="loopback IP:port; port 0 selects a free port")
+    serve = mcp.add_subparsers(dest="action", required=True).add_parser("serve", help="serve each ready MCP connection on loopback")
+    serve.add_argument("--listen", default="127.0.0.1:8400", help="loopback IP:first port; uses consecutive ports, or free ports with port 0")
     connections = commands.add_parser("connections", help="list reachable connections and their current status")
     connections.add_argument("--json", action="store_true", help="include account, host and access settings as JSON")
     browser = commands.add_parser(

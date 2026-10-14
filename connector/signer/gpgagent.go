@@ -11,6 +11,8 @@ import (
 	"github.com/tinfoilsh/monitor/connector"
 )
 
+var GPGAgentDefinition = connector.Definition{NewConfig: func() connector.Server { return new(GPGAgent) }, Requests: []connector.Request{new(Request)}}
+
 const (
 	agentGPG           = "gpg"
 	assuanNotSupported = 536870981

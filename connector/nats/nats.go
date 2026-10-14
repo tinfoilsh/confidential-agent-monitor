@@ -23,6 +23,8 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
+var Definition = connector.Definition{NewConfig: func() connector.Server { return new(NATS) }, Requests: []connector.Request{new(Request)}}
+
 const (
 	maxPayload = 1 << 20
 	maxLine    = 8192
@@ -58,7 +60,7 @@ func (n *NATS) UnmarshalJSON(raw []byte) error {
 
 type dialer struct {
 	ctx    context.Context
-	dialer *net.Dialer
+	dialer connector.Dialer
 }
 
 func (d dialer) Dial(network, address string) (net.Conn, error) {
@@ -119,6 +121,7 @@ func (n *NATS) Serve(s *connector.Stream, e *connector.Env) {
 	}
 	opts := []nats.Option{
 		nats.SetCustomDialer(dialer{s.Context, e.Dialer}), nats.NoReconnect(), nats.Timeout(connector.DialTimeout),
+		nats.SkipHostLookup(),
 		nats.Name("monitor"), nats.ClosedHandler(func(*nats.Conn) { s.Close() }),
 		// Error text can contain provider details or subjects; expose a fixed error.
 		nats.ErrorHandler(func(*nats.Conn, *nats.Subscription, error) { s.Close() }),

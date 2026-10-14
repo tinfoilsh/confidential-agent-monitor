@@ -32,6 +32,12 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
+func Definition(extension string, sandboxed bool) connector.Definition {
+	return connector.Definition{Settings: &extension, NewConfig: func() connector.Server {
+		return &Browser{Extension: extension, NoSandbox: sandboxed}
+	}, Requests: []connector.Request{new(Request)}}
+}
+
 const (
 	loopback     = "127.0.0.1:0"
 	extensionURL = "chrome-extension://"
@@ -63,6 +69,7 @@ var (
 type Browser struct {
 	web.Credentials
 	Extension string          `json:"-"`
+	NoSandbox bool            `json:"-"`
 	root      context.Context // The first tab, which owns the browser.
 	worker    context.Context
 	// op serializes commands on the browser. mu guards the fields below and is never held across a browser call.
@@ -114,13 +121,17 @@ func (b *Browser) UnmarshalJSON(raw []byte) error {
 	return b.Validate(true)
 }
 
-func (b *Browser) Run(ctx context.Context, e *connector.Env, serve func()) error {
+func (b *Browser) Run(ctx context.Context, e *connector.Env, serve func(context.Context)) error {
 	proxy, err := b.proxy(e)
 	if err != nil {
 		return err
 	}
 	defer proxy.Close()
-	alloc, cancel := chromedp.NewExecAllocator(ctx, append(chromedp.DefaultExecAllocatorOptions[:],
+	options := append([]chromedp.ExecAllocatorOption{}, chromedp.DefaultExecAllocatorOptions[:]...)
+	if b.NoSandbox {
+		options = append(options, chromedp.NoSandbox)
+	}
+	alloc, cancel := chromedp.NewExecAllocator(ctx, append(options,
 		chromedp.ProxyServer("http://"+proxy.Addr().String()),
 		chromedp.Flag("proxy-bypass-list", "<-loopback>"),
 		chromedp.Flag("force-webrtc-ip-handling-policy", "disable_non_proxied_udp"),
@@ -171,7 +182,7 @@ func (b *Browser) Run(ctx context.Context, e *connector.Env, serve func()) error
 			b.mu.Unlock()
 		}
 	}()
-	serve()
+	serve(tab)
 	return nil
 }
 

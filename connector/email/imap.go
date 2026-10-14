@@ -15,6 +15,8 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
+var IMAPDefinition = connector.Definition{NewConfig: func() connector.Server { return new(IMAP) }, Requests: []connector.Request{new(IMAPRequest)}}
+
 const (
 	loginTag = "m0"
 )

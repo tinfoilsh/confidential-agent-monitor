@@ -1,5 +1,5 @@
 /* Dashboard tokens and dimensions from websites-monorepo/packages/{ui,tailwind-preset}.
-   See UI.md for the source components. Assets are served by Monitor, without a build step. */
+   Assets are served by Monitor, without a build step. */
 @font-face { font-family: "Aeonik Fono"; src: url("fonts/aeonik-fono-regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
 @font-face { font-family: "Aeonik Fono"; src: url("fonts/aeonik-fono-medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
 @font-face { font-family: "Aeonik Fono"; src: url("fonts/aeonik-fono-bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }

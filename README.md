@@ -1,7 +1,6 @@
 # Monitor
 
-Policy is stored as editable TOML. See [Policy source](POLICY.md) for the web
-editor, deep overrides, CLI commands, and agent proposals.
+Policy is stored as editable TOML.
 
 ## Install or update the CLI
 
@@ -37,12 +36,14 @@ alias in `~/.ssh/config` with the server address, SSH port, private key, and pin
 host key. Check access with `monitor connections`. Use `monitor run --help`,
 `monitor shell --help`, or `monitor mcp serve --help` for command options.
 
+One Go binary includes Monitor and all connector implementations. Connectors run
+in-process by default; `-connector-workers` enables Linux isolation for all connections.
+
 ## Owner web apps
 
 Monitor is one app with two interfaces: `/app/` is the dashboard-style
 management UI, and `/app/fun_ui.html` keeps the original UI. Both use the same
-session and `app/monitor.js` runtime. See [Monitor interfaces](UI.md) for layout
-sources and local development.
+session and `app/monitor.js` runtime.
 
 The web app at `/app/` and embedding dashboards share `app/owner.js`. This
 module holds the owner API client, the policy edits for each owner action, and
@@ -155,8 +156,10 @@ Bubblewrap gives Firecracker separate namespaces and access only to its
 kernel, disks, runtime sockets, and `/dev/kvm`. Firecracker's default seccomp
 filters remain enabled. The host never mounts a disk written by the guest.
 
-Use `--mcp` during setup to connect Claude to Monitor's MCP gateway too. The
-identity needs access to accounts with MCP connections and reviewed tools.
+Use `--mcp` during setup to add each ready MCP connection to Claude as a separate
+server, keyed by connection name. The identity needs access to those accounts
+and reviewed tools. Monitor preserves upstream tool names; update allowlists
+that use the old `connection__tool` names.
 An HTTP account alone does not provide MCP tools. Setup defaults to two CPUs
 and 4096 MiB of memory; use `--cpus` and `--memory` to change these.
 

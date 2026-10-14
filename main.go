@@ -24,6 +24,7 @@ import (
 	"github.com/tinfoilsh/monitor/connector/session"
 	"github.com/tinfoilsh/monitor/connector/signer"
 	"github.com/tinfoilsh/monitor/connector/web"
+	"github.com/tinfoilsh/monitor/internal/worker"
 	"gocloud.dev/blob"
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/s3blob"
@@ -36,20 +37,20 @@ const (
 )
 
 // The kind is also the protocol policies see.
-var connectorKinds = map[string]func() connector.Server{
-	"http":      func() connector.Server { return new(web.HTTP) },
-	"mcp":       func() connector.Server { return new(mcp.Server) },
-	"ssh":       func() connector.Server { return new(session.SSH) },
-	"sftp":      func() connector.Server { return new(session.SFTP) },
-	"mqtt":      func() connector.Server { return new(mqtt.MQTT) },
-	"nats":      func() connector.Server { return new(nats.NATS) },
-	"cli":       func() connector.Server { return new(session.CLI) },
-	"ssh-agent": func() connector.Server { return new(signer.SSHAgent) },
-	"gpg-agent": func() connector.Server { return new(signer.GPGAgent) },
-	"imap":      func() connector.Server { return new(email.IMAP) },
-	"smtp":      func() connector.Server { return new(email.SMTP) },
-	"redis":     func() connector.Server { return new(redis.Redis) },
-	"postgres":  func() connector.Server { return new(postgres.Postgres) },
+var connectorKinds = map[string]connector.Definition{
+	"http":      web.Definition,
+	"mcp":       mcp.Definition,
+	"ssh":       session.SSHDefinition,
+	"sftp":      session.SFTPDefinition,
+	"cli":       session.CLIDefinition,
+	"mqtt":      mqtt.Definition,
+	"nats":      nats.Definition,
+	"imap":      email.IMAPDefinition,
+	"smtp":      email.SMTPDefinition,
+	"redis":     redis.Definition,
+	"postgres":  postgres.Definition,
+	"ssh-agent": signer.SSHAgentDefinition,
+	"gpg-agent": signer.GPGAgentDefinition,
 }
 
 func main() {
@@ -63,9 +64,22 @@ func main() {
 	hostKey := flag.String("ssh-host-key", "", "runtime attested SSH private key")
 	healthcheck := flag.Bool("healthcheck", false, "check the local owner API and exit, including while locked")
 	originList := flag.String("owner-origins", "", "comma-separated browser origins allowed to call the owner API, such as https://dash.tinfoil.sh")
+	workers := flag.Bool("connector-workers", false, "run all connectors in isolated worker processes")
+	workerRoot := flag.String("worker-root", "/opt/monitor/worker", "prepared read-only filesystem for connector workers")
+	sandbox := flag.String("worker-sandbox", "bwrap", "connector sandbox launcher")
+	workerMode := flag.Bool("connector-worker", false, "serve one connector on inherited descriptors")
 	flag.Parse()
 	if flag.NArg() != 0 {
 		log.Fatal("unexpected server arguments; use the separately installed monitor client")
+	}
+	if *extension != "" || *workerMode {
+		connectorKinds["browser"] = browser.Definition(*extension, *workerMode)
+	}
+	if *workerMode {
+		if err := worker.ServeInherited(connectorKinds); err != nil {
+			log.Fatal(err)
+		}
+		return
 	}
 	if *healthcheck {
 		client := &http.Client{Timeout: 5 * time.Second}
@@ -112,9 +126,6 @@ func main() {
 		}
 		draftFiles = os.DirFS(*drafts)
 	}
-	if *extension != "" {
-		connectorKinds["browser"] = func() connector.Server { return &browser.Browser{Extension: *extension} }
-	}
 	if !dev {
 		delete(connectorKinds, "cli")
 		delete(connectorKinds, "gpg-agent")
@@ -128,6 +139,9 @@ func main() {
 		log.Fatal(err)
 	}
 	m := &monitor{store: bucket, dev: dev, ownerPublicKey: public, sshHostKey: hostSigner}
+	if *workers {
+		m.workers = &worker.Local{Root: *workerRoot, Sandbox: *sandbox}
+	}
 	go m.serveSSH(ln)
 	log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.handler()), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
 }

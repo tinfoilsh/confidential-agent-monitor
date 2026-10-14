@@ -4,25 +4,11 @@
 /.env
 /docs/
 
-# Tests and fixtures
-*_test.*
-!template_test.go
-!storage_test.go
-!owner_test.mjs
-!app_test.mjs
-!approval_ui_test.mjs
-!dashboard_test.mjs
-!main_test.go
-!state_encryption_test.go
-!owner_public_test.go
-!owner_ssh_test.go
-!client_owner_test.py
-test_*.py
 *.test
-*.test.*
-testdata/
+*test\.*
 __pycache__/
-POLICY.md
+*.md
+!README.md
 
 # Local test workflow
 /.github/workflows/routes.yml

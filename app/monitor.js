@@ -423,7 +423,7 @@ function agentSettings(name) {
   if (!ids()[name]) return [head(esc(name)), `<p class="empty">No agent ${esc(name)}.</p>`];
   const others = Object.keys(ids()).filter((n) => n !== name);
   return [head(esc(name), "Settings", (isDashboard ? "agents/" : "agent/") + encodeURIComponent(name)),
-    `<section><a href="#integrations">Connect your tools</a><p class="muted">Setup guides for wrapped commands, Monitor shell, and the MCP gateway.</p></section>`,
+    `<section><a href="#integrations">Connect your tools</a><p class="muted">Setup guides for wrapped commands, Monitor shell, and MCP connections.</p></section>`,
     `<section>${disclosure("setup", "Setup", `<label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre>`)}</section>`,
     `<section>${disclosure("replace-key", "Replace key", `<p class="muted">Use this after recreating the sandbox. The agent starts clean.</p><textarea id="pubkey" aria-label="Replacement public key" rows="2"></textarea>
       <div class="row"><span></span><button onclick="commit(edits.replaceKey(${q(name)}, $('pubkey').value))">Replace key</button></div>`)}</section>`,

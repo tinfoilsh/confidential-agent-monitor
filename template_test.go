@@ -26,6 +26,7 @@ func TestReleaseTemplateKeepsOwnerBindingAndState(t *testing.T) {
 		} `yaml:"cvm-network"`
 		Containers []struct {
 			Name, User              string
+			CVMAdmin                bool `yaml:"cvm_admin"`
 			Command, Ports, Secrets []string
 			Env                     []map[string]string
 			Mounts                  []string `yaml:"persistent_volumes"`
@@ -38,8 +39,8 @@ func TestReleaseTemplateKeepsOwnerBindingAndState(t *testing.T) {
 		t.Fatal("Monitor needs one container with object storage and no attached disk")
 	}
 	c := config.Containers[0]
-	wantCommand := []string{"-production", "-ssh-host-key", "/run/tinfoil/keys/host-ssh/private_key.pem", "-api", "0.0.0.0:8080", "-listen", "0.0.0.0:2223"}
-	if len(c.Mounts) != 0 || c.User != "65532:65532" || !reflect.DeepEqual(c.Command, wantCommand) ||
+	wantCommand := []string{"-production", "-connector-workers", "-ssh-host-key", "/run/tinfoil/keys/host-ssh/private_key.pem", "-api", "0.0.0.0:8080", "-listen", "0.0.0.0:2223"}
+	if len(c.Mounts) != 0 || c.User != "0:0" || !c.CVMAdmin || !reflect.DeepEqual(c.Command, wantCommand) ||
 		!reflect.DeepEqual(c.Env, []map[string]string{{"MONITOR_OWNER_PUBLIC_KEY": ""}, {"TINFOIL_STORAGE_BUCKET": ""}, {"AWS_CONTAINER_CREDENTIALS_FULL_URI": ""}}) ||
 		!reflect.DeepEqual(c.Secrets, []string{"AWS_CONTAINER_AUTHORIZATION_TOKEN"}) {
 		t.Fatal("Monitor must bind its owner and storage in measured env and obtain credentials through runtime secrets")

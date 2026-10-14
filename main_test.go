@@ -24,6 +24,7 @@ func TestOwnerStartup(t *testing.T) {
 		args               []string
 	}{
 		{name: "production requires public key", args: []string{"-production"}, want: "MONITOR_OWNER_PUBLIC_KEY must be"},
+		{name: "worker uses server flag parser before owner startup", args: []string{"-production", "--connector-worker", "-extension", "/extension"}, want: "file file+net connector-listener:"},
 		{name: "production file storage requires public key", args: []string{"-production", "-bucket", "file://" + t.TempDir()}, want: "MONITOR_OWNER_PUBLIC_KEY must be"},
 		{name: "remote storage requires public key", args: []string{"-bucket", "s3://state"}, want: "MONITOR_OWNER_PUBLIC_KEY must be"},
 		{name: "SHA256 flag removed", args: []string{"-owner-key-sha256", "removed"}, want: "flag provided but not defined: -owner-key-sha256"},

@@ -118,6 +118,13 @@ func (b *Browser) ServeOwner(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(b.view(r))
 }
 
+func (b *Browser) Control() http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /browser", b.ServeOwner)
+	mux.HandleFunc("POST /browser", b.ServeOwner)
+	return mux
+}
+
 // pause takes control at once: it ends the agent's command in progress and returns when that command has let go of the browser.
 // A page load the agent started stops with it.
 func (b *Browser) pause(r *http.Request) {

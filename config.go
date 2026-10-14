@@ -23,10 +23,7 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-const (
-	mcpNameChars   = "abcdefghijklmnopqrstuvwxyz0123456789-"
-	maxPolicyBytes = 2 << 20
-)
+const maxPolicyBytes = 2 << 20
 
 var levels = []string{"off", "read", "ask", "allow"}
 
@@ -274,7 +271,7 @@ func compileSource(policy string, secrets secretStore) (*config, map[string]*con
 		}
 		for key, kinds := range a.Connections {
 			name := connectionName(acct, key)
-			if name+".monitor" == agentHost || name+".monitor" == mcpHost {
+			if name+".monitor" == agentHost {
 				return nil, nil, fmt.Errorf("connection name %s is reserved for the monitor", name)
 			}
 			if connections[name] != nil {
@@ -284,16 +281,12 @@ func compileSource(policy string, secrets secretStore) (*config, map[string]*con
 				return nil, nil, fmt.Errorf("connection %s must have one kind", name)
 			}
 			for kind, spec := range kinds {
-				// The gateway names tools name__tool, so the first separator must end the connection name.
-				if kind == "mcp" && strings.Trim(strings.ToLower(name), mcpNameChars) != "" {
-					return nil, nil, fmt.Errorf("MCP connection name %s may use only letters, digits and -", name)
-				}
 				newConnector, ok := connectorKinds[kind]
 				if !ok {
 					return nil, nil, fmt.Errorf("connection %s has unknown kind %s", name, kind)
 				}
 				raw, _ := json.Marshal(spec)
-				instance := newConnector()
+				instance := newConnector.NewConfig()
 				if err := facts.DecodeNumbers(raw, instance); err != nil {
 					return nil, nil, fmt.Errorf("connection %s: %w", name, err)
 				}

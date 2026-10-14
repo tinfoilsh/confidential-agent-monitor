@@ -3,6 +3,7 @@ package connector
 import (
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"errors"
 	"io"
 	"net"
@@ -18,16 +19,42 @@ import (
 
 const DialTimeout = 30 * time.Second
 
-// Server handles one stream. A Runner also holds what its streams share: it calls serve once ready, which returns after the last stream.
+// Server handles one stream. A Runner calls serve inline once ready.
+// serve stops accepting work when its context ends and returns after the last operation.
 type Server interface{ Serve(*Stream, *Env) }
 type Runner interface {
-	Run(ctx context.Context, e *Env, serve func()) error
+	Run(ctx context.Context, e *Env, serve func(context.Context)) error
+}
+
+// Definition registers a connector and the request types it can submit.
+type Definition struct {
+	HostKey   bool
+	NewConfig func() Server
+	Requests  []Request
+	Settings  any // Optional pointer to deployment settings, filled before NewConfig in a worker.
+}
+
+// Control handles private host HTTP after owner authentication.
+func Control(s Server) http.Handler {
+	if c, ok := s.(interface{ Control() http.Handler }); ok {
+		return c.Control()
+	}
+	return http.NotFoundHandler()
+}
+
+// Detailer reports fixed startup details after the connector becomes ready.
+type Detailer interface {
+	Details() json.RawMessage
 }
 
 type Env struct {
 	TLS     *tls.Config
 	HostKey ssh.Signer
-	Dialer  *net.Dialer
+	Dialer  Dialer
+}
+
+type Dialer interface {
+	DialContext(context.Context, string, string) (net.Conn, error)
 }
 
 func (e *Env) Transport() *http.Transport {
@@ -47,7 +74,11 @@ func (e *Env) Client() *http.Client {
 
 // ServeHTTP serves the requests on c, the stream itself or TLS over it, until the stream ends.
 func ServeHTTP(s *Stream, c net.Conn, handler http.Handler) {
-	server := &http.Server{Handler: handler, BaseContext: func(net.Listener) context.Context { return s.Context }}
+	server := &http.Server{Handler: handler, BaseContext: func(net.Listener) context.Context { return s.Context }, ConnState: func(_ net.Conn, state http.ConnState) {
+		if state == http.StateClosed {
+			s.Close()
+		}
+	}}
 	defer server.Shutdown(context.Background())
 	server.Serve(Listen(s, c))
 }
@@ -85,9 +116,11 @@ func NewDialer(allowed []netip.Prefix) *net.Dialer {
 	return &net.Dialer{Timeout: DialTimeout, Control: guard.Safe}
 }
 
+// Stream carries caller authority and a protocol connection.
 type Stream struct {
 	Context context.Context
 	cancel  context.CancelFunc
+	stop    func() bool
 	net.Conn
 	Name string
 	Host string
@@ -99,12 +132,15 @@ type Stream struct {
 // NewStream carries c until ctx ends or the stream closes.
 func NewStream(ctx context.Context, c net.Conn) *Stream {
 	ctx, cancel := context.WithCancel(ctx)
-	context.AfterFunc(ctx, func() { c.Close() })
-	return &Stream{Context: ctx, cancel: cancel, Conn: c}
+	stop := context.AfterFunc(ctx, func() { c.Close() })
+	return &Stream{Context: ctx, cancel: cancel, Conn: c, stop: stop, Gate: func(Request) error {
+		return errors.New("policy gate missing")
+	}}
 }
 
 func (s *Stream) Close() error {
 	s.cancel()
+	s.stop()
 	return s.Conn.Close()
 }
 
@@ -139,12 +175,20 @@ func address(u *url.URL, secure, port, securePort string) string {
 	return net.JoinHostPort(u.Hostname(), port)
 }
 
-func DialURL(ctx context.Context, d *net.Dialer, u *url.URL, secure, port, securePort string) (net.Conn, error) {
-	target := address(u, secure, port, securePort)
-	if u.Scheme == secure {
-		return (&tls.Dialer{NetDialer: d, Config: &tls.Config{ServerName: u.Hostname()}}).DialContext(ctx, "tcp", target)
+func DialURL(ctx context.Context, d Dialer, u *url.URL, secure, port, securePort string) (net.Conn, error) {
+	c, err := d.DialContext(ctx, "tcp", address(u, secure, port, securePort))
+	if err != nil {
+		return nil, err
 	}
-	return d.DialContext(ctx, "tcp", target)
+	if u.Scheme == secure {
+		t := tls.Client(c, &tls.Config{ServerName: u.Hostname()})
+		if err := t.HandshakeContext(ctx); err != nil {
+			c.Close()
+			return nil, err
+		}
+		return t, nil
+	}
+	return c, nil
 }
 
 // PumpReplies runs a protocol reply loop until the stream ends, then joins it.

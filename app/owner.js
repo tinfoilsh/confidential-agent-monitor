@@ -536,7 +536,7 @@ export const edits = {
 
 // Setup guides for connecting tools. href maps a route such as ["pair"] or ["agent-settings", name] to a link, which
 // also carries the route as data-route; code blocks carry data-copy with the id of the text to copy.
-export const INTEGRATION_PAGES = { start: "Start here", wrapped: "Wrap commands", shell: "Monitor shell", mcp: "MCP gateway" };
+export const INTEGRATION_PAGES = { start: "Start here", wrapped: "Wrap commands", shell: "Monitor shell", mcp: "MCP connections" };
 export function integrationGuide(view, page, href) {
   const link = (route, text) => `<a href="${esc(href(route))}" data-route="${esc(route.join("/"))}">${text}</a>`;
   const code = (id, title, text) => `<div class="integration-code"><div class="row"><span>${esc(title)}</span><button type="button" data-copy="${esc(id)}" aria-label="Copy ${esc(title)}">Copy</button></div><pre id="${esc(id)}">${esc(text)}</pre></div>`;
@@ -568,17 +568,17 @@ export function integrationGuide(view, page, href) {
       <h2>When to use it</h2><p>Use a shell for a sequence of commands that share an identity. Choose <code>monitor run</code> for automation that needs a single command and a predictable exit status.</p>
       <h2>What it covers</h2><p>This session configures cooperating tools and their children. Other terminals and desktop apps have their own environments. A managed workspace with network restrictions is a separate option when every connection must pass through Monitor.</p>
       <h2>Select a shell</h2><p>Use <code>monitor shell --shell /bin/bash</code> or <code>monitor shell --shell /bin/zsh</code>. The shell includes all connections by default. Use the connection-specific credential variables when names overlap. The Linux integration suite exercises both shells; macOS validation remains open.</p>`,
-    mcp: `<h1>Connect an MCP client</h1><p><span class="badge">Available</span> The gateway combines configured MCP connections into one Streamable HTTP server. Your SSH identity determines which accounts it can reach; tool calls still follow Monitor policy.</p>
-      <h2>1. Prepare the connection</h2><p>Complete the ${link(["integrations", "start"], "identity setup")}. Add an account with an MCP connection, grant the paired identity access, and review tools awaiting approval on the account page. An HTTP API connection alone does not add tools to this gateway.</p>
+    mcp: `<h1>Connect an MCP client</h1><p><span class="badge">Available</span> Each ready MCP connection gets its own Streamable HTTP server on a local port. Your SSH identity determines which accounts it can reach; tool calls still follow Monitor policy.</p>
+      <h2>1. Prepare the connection</h2><p>Complete the ${link(["integrations", "start"], "identity setup")}. Add an account with an MCP connection, grant the paired identity access, and review tools awaiting approval on the account page. An HTTP API connection alone does not provide MCP tools.</p>
       <p>The commands below assume an SSH alias named <code>monitor</code> with the correct identity and a verified host key. You need an MCP client that supports Streamable HTTP.</p>
-      <h2>2. Keep the gateway running</h2>
-      ${code("integration-mcp-serve", "Serve the gateway", "monitor mcp serve --listen 127.0.0.1:8400")}
-      <p>The client checks MCP initialization and tool discovery before reporting readiness. Put <code>--ssh-config /path/to/ssh_config</code> before <code>mcp</code> to use a separate configuration. Use port 0 to choose a free port.</p>
-      <h2>3. Add a server in your MCP client</h2><ul><li>Name: <code>monitor</code></li><li>Transport: <b>Streamable HTTP</b></li><li>URL:</li></ul>
+      <h2>2. Keep the tunnel running</h2>
+      ${code("integration-mcp-serve", "Serve MCP connections", "monitor mcp serve --listen 127.0.0.1:8400")}
+      <p>The client checks MCP initialization and tool discovery before reporting readiness. Put <code>--ssh-config /path/to/ssh_config</code> before <code>mcp</code> to use a separate configuration. Connections use consecutive ports starting at the selected port. Use port 0 to choose a free port for each connection.</p>
+      <h2>3. Add each server in your MCP client</h2><p>Use the connection names and URLs printed by the command. For the first connection:</p><ul><li>Name: the Monitor connection name</li><li>Transport: <b>Streamable HTTP</b></li><li>URL:</li></ul>
       ${code("integration-endpoint", "MCP server URL", "http://127.0.0.1:8400/")}
       <p>No provider token or owner key goes in the client configuration. The SSH tunnel authenticates to Monitor. Programs on this computer can use the local endpoint as that identity; close the tunnel with Ctrl-C when finished.</p>
-      <h2>4. Check the connection</h2><p>Refresh the client's tool list. Tool names start with their Monitor connection name and <code>__</code>, such as <code>work-mcp__list_issues</code>. Call a read tool and check ${link(["activity"], "Activity")} for the expected agent and account. Pending requests appear first. Open one to allow or deny it.</p>
-      <h2>If it does not connect</h2><ul><li><b>SSH fails:</b> check the server address, paired public key, private key, and host key.</li><li><b>No tools:</b> check account access, the MCP connection's status, and tool review. An identity with no reachable MCP connections cannot open the gateway.</li><li><b>Client cannot reach the URL:</b> keep the tunnel running on the same computer as the client. A client in a container has its own localhost.</li><li><b>A tool fails or times out:</b> inspect Activity and the provider state before retrying a change.</li></ul>
+      <h2>4. Check the connection</h2><p>Refresh the client's tool list. Monitor preserves upstream tool names. Your MCP client separates servers' tools. Update allowlists that use the old <code>connection__tool</code> names. Call a read tool and check ${link(["activity"], "Activity")} for the expected agent and account. Pending requests appear first. Open one to allow or deny it.</p>
+      <h2>If it does not connect</h2><ul><li><b>SSH fails:</b> check the server address, paired public key, private key, and host key.</li><li><b>No tools:</b> check account access, the MCP connection's status, and tool review. An identity with no reachable MCP connections has no MCP servers to add.</li><li><b>Client cannot reach the URL:</b> keep the tunnel running on the same computer as the client. A client in a container has its own localhost.</li><li><b>A tool fails or times out:</b> inspect Activity and the provider state before retrying a change.</li></ul>
       <p>Clients that only support stdio still need a separate adapter. <code>monitor mcp stdio</code> is not implemented.</p>`,
   }[page] ?? "";
 }
