@@ -417,7 +417,7 @@ class Session:
     def environment(self, selected, profile):
         try:
             setup = json.loads(self.client.request("agent.monitor", "GET", "/connections"))
-            connections = [c for c in setup["connections"] if c["kind"] == "http"]
+            connections = [c for c in setup["connections"] if c["placeholders"] is not None]
             ca = setup["ca"]
             if not isinstance(ca, str) or not ca:
                 raise ValueError()

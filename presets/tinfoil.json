@@ -1,0 +1,180 @@
+{
+  "title": "Tinfoil",
+  "catalog": {
+    "group": "api",
+    "actions": {
+      "inference": {
+        "title": "Inference"
+      },
+      "inference.generate": {
+        "title": "Generate responses"
+      },
+      "inference.count_tokens": {
+        "title": "Count input tokens"
+      },
+      "models.read": {
+        "title": "List models"
+      }
+    },
+    "connections": {
+      "": {
+        "tinfoil": {
+          "enclave": "inference.tinfoil.sh",
+          "repo": "tinfoilsh/confidential-model-router"
+        }
+      }
+    },
+    "defaults": {
+      "contents": "me",
+      "sends": "me",
+      "strangers": true
+    },
+    "fields": [
+      {
+        "key": "TINFOIL_API_KEY",
+        "label": "Tinfoil API key",
+        "path": [
+          "connections",
+          "",
+          "tinfoil",
+          "secrets",
+          "TINFOIL_API_KEY"
+        ],
+        "secret": true
+      }
+    ]
+  },
+  "http": {
+    "slots": true,
+    "operations": {
+      "chat": {
+        "action": "inference.generate",
+        "effects": [
+          "generate",
+          "pay",
+          "send"
+        ],
+        "method": "POST",
+        "origin": "https://inference.tinfoil.sh",
+        "path": "/v1/chat/completions",
+        "body": "json",
+        "params": [
+          "beta"
+        ],
+        "scope": {
+          "model": {
+            "from": "body",
+            "at": "/model"
+          },
+          "request": {
+            "from": "body",
+            "at": "",
+            "type": "object"
+          }
+        },
+        "grant": [
+          "model"
+        ],
+        "sends": "account"
+      },
+      "responses": {
+        "action": "inference.generate",
+        "effects": [
+          "generate",
+          "pay",
+          "send"
+        ],
+        "method": "POST",
+        "origin": "https://inference.tinfoil.sh",
+        "path": "/v1/responses",
+        "body": "json",
+        "params": [
+          "beta"
+        ],
+        "scope": {
+          "model": {
+            "from": "body",
+            "at": "/model"
+          },
+          "request": {
+            "from": "body",
+            "at": "",
+            "type": "object"
+          }
+        },
+        "grant": [
+          "model"
+        ],
+        "sends": "account"
+      },
+      "messages": {
+        "action": "inference.generate",
+        "effects": [
+          "generate",
+          "pay",
+          "send"
+        ],
+        "method": "POST",
+        "origin": "https://inference.tinfoil.sh",
+        "path": "/v1/messages",
+        "body": "json",
+        "params": [
+          "beta"
+        ],
+        "scope": {
+          "model": {
+            "from": "body",
+            "at": "/model"
+          },
+          "request": {
+            "from": "body",
+            "at": "",
+            "type": "object"
+          }
+        },
+        "grant": [
+          "model"
+        ],
+        "sends": "account"
+      },
+      "messages.count_tokens": {
+        "action": "inference.count_tokens",
+        "effects": [
+          "send"
+        ],
+        "method": "POST",
+        "origin": "https://inference.tinfoil.sh",
+        "path": "/v1/messages/count_tokens",
+        "body": "json",
+        "params": [
+          "beta"
+        ],
+        "scope": {
+          "model": {
+            "from": "body",
+            "at": "/model"
+          },
+          "request": {
+            "from": "body",
+            "at": "",
+            "type": "object"
+          }
+        },
+        "grant": [
+          "model"
+        ],
+        "sends": "account"
+      },
+      "models.list": {
+        "action": "models.read",
+        "effects": [
+          "read"
+        ],
+        "method": "GET",
+        "origin": "https://inference.tinfoil.sh",
+        "path": "/v1/models",
+        "scope": {}
+      }
+    }
+  }
+}

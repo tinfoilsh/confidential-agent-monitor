@@ -274,7 +274,8 @@ func (m *monitor) agentHandler(key string) http.Handler {
 			}
 			ac := agentConnection{Name: name, Account: c.account, Kind: c.protocol, Host: name + ".monitor",
 				State: c.status().State, Access: p.Accounts[c.account]}
-			if h, ok := c.connector.(*web.HTTP); ok {
+			if provider, ok := c.connector.(interface{ HTTPConfig() *web.HTTP }); ok {
+				h := provider.HTTPConfig()
 				ac.Hosts, ac.Slots, ac.Placeholders = h.Hosts, h.Slots, map[string]string{}
 				for secret := range h.Names() {
 					ac.Placeholders[secret] = web.Placeholder(name, secret)

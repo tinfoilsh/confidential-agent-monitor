@@ -454,7 +454,10 @@ func (node *routeNode) candidates(path []string, out []*compiledOperation) []*co
 func (p *Preset) Match(r *Request, c connector.Context, f facts.Facts) (facts.Facts, error) {
 	h := r.HTTP
 	f.Title = fmt.Sprintf("%s: %s %s", c.Title, h.Method, h.Path)
-	config, _ := c.Config.(*HTTP)
+	var config *HTTP
+	if provider, ok := c.Config.(interface{ HTTPConfig() *HTTP }); ok {
+		config = provider.HTTPConfig()
+	}
 	if p.Slots && (config == nil || !slices.ContainsFunc(config.Slots, func(slot Slot) bool {
 		return h.Origin == slot.Origin && under(h.Path, slot.Path)
 	})) {

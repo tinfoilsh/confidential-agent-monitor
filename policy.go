@@ -20,6 +20,8 @@ import (
 	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/open-policy-agent/opa/v1/storage/inmem"
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/mcp"
+	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/facts"
 )
 
@@ -119,10 +121,10 @@ func (m *monitor) evaluate(ctx context.Context, in input) (*decision, principal,
 	a := st.cfg.Accounts[c.account]
 	record := st.cfg.resolved[a.Preset]
 	cc := connector.Context{Title: record.Title, Connection: c.name, Config: c.connector, Options: a.PolicyOptions}
-	switch c.protocol {
-	case "http":
+	switch in.Request.(type) {
+	case *web.Request:
 		cc.Spec = record.HTTP
-	case "mcp":
+	case *mcp.Request:
 		cc.Spec = record.MCP
 	}
 	f, describeErr := in.Request.Describe(cc)

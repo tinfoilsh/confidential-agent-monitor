@@ -24,6 +24,7 @@ import (
 	"github.com/tinfoilsh/monitor/connector/session"
 	"github.com/tinfoilsh/monitor/connector/signer"
 	"github.com/tinfoilsh/monitor/connector/tcp"
+	"github.com/tinfoilsh/monitor/connector/tinfoil"
 	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/internal/worker"
 	"gocloud.dev/blob"
@@ -41,6 +42,7 @@ const (
 var connectorKinds = map[string]connector.Definition{
 	"tcp":       tcp.Definition,
 	"http":      web.Definition,
+	"tinfoil":   tinfoil.Definition,
 	"mcp":       mcp.Definition,
 	"ssh":       session.SSHDefinition,
 	"sftp":      session.SFTPDefinition,

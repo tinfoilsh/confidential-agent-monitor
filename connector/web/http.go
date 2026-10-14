@@ -31,7 +31,7 @@ var Definition = connector.Definition{NewConfig: func() connector.Server { retur
 const (
 	httpsPort    = 443
 	httpPort     = 80
-	maxBodyBytes = 1 << 20
+	maxBodyBytes = 8 << 20
 
 	placeholderPrefix = "tfm_"
 	authorization     = "Authorization"
@@ -50,6 +50,8 @@ type HTTP struct {
 	Hosts []string `json:"hosts"`
 }
 
+func (h *HTTP) HTTPConfig() *HTTP { return h }
+
 func (h *HTTP) UnmarshalJSON(raw []byte) error {
 	type plain HTTP
 	if err := facts.DecodeNumbers(raw, (*plain)(h)); err != nil {
@@ -62,6 +64,12 @@ func (h *HTTP) UnmarshalJSON(raw []byte) error {
 func (h *HTTP) Serve(s *connector.Stream, e *connector.Env) {
 	transport := e.Transport()
 	defer transport.CloseIdleConnections()
+	h.ServeWithTransport(s, e, transport)
+}
+
+// ServeWithTransport shares HTTP screening and credential placement with connectors
+// that own their upstream transport.
+func (h *HTTP) ServeWithTransport(s *connector.Stream, e *connector.Env, transport http.RoundTripper) {
 	proxy := h.proxy(transport)
 	var c net.Conn = s
 	if s.Port != httpPort {
@@ -242,6 +250,9 @@ func inspect(r *http.Request, layer *facts.HTTP) error {
 		return err
 	}
 	r.Body = io.NopCloser(io.MultiReader(bytes.NewReader(body), r.Body))
+	if len(body) <= maxBodyBytes {
+		r.GetBody = func() (io.ReadCloser, error) { return io.NopCloser(bytes.NewReader(body)), nil }
+	}
 	layer.BodyKind = "opaque"
 	types := r.Header.Values("Content-Type")
 	switch {
