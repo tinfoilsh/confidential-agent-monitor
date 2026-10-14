@@ -70,14 +70,6 @@ for the local UI over attested SSH. Owner SSH works while locked; public HTTP
 serves health only. Bearer sign-in is limited to `file://` development without
 `-production`.
 
-```sh
-node --test app_test.mjs approval_ui_test.mjs dashboard_test.mjs owner_test.mjs
-```
-
-`owner_test.mjs` builds Monitor and runs a throwaway server on
-`127.0.0.1:28080` and `127.0.0.1:22223`. Set `OWNER_TEST_API` and
-`OWNER_TEST_SSH` to use other addresses.
-
 ## Sandbox routes
 
 Sandboxes publish SSH and attestation over reverse SSH. Devices need `routes = true`;
@@ -211,18 +203,3 @@ the CLI rejects projects containing its enrollment credentials. Setup preserves
 existing profiles and refuses to overwrite a launch profile. Use a new profile
 for another server, image, or initial account selection. For additional guest
 tools, edit `client/vm/Dockerfile` and build into a new image directory.
-
-## VM tests
-
-```sh
-python3 -m unittest discover -s client -p 'test_*.py'
-go test -run 'TestVMLaunchEnrollment|TestAgentClientSetup|TestLaptopClient' .
-MONITOR_VM_IMAGE=/path/to/image python3 -m unittest discover -s client -p test_vm.py -v
-MONITOR_VM_IMAGE=/path/to/image go test -run TestVMNativeLaunch -count=1 -v .
-```
-
-The native tests boot real microVMs. They check management SSH, the fixed
-Monitor bridge, absence of a network interface, disk reuse, shutdown, and
-workspace export. The Go test launches Claude with `--version` through the
-public CLI against Monitor's real owner and SSH handlers, without paid model
-calls.

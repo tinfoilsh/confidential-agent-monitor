@@ -6,6 +6,8 @@
 
 *.test
 *test\.*
+test_*.py
+testdata/
 __pycache__/
 *.md
 !README.md
