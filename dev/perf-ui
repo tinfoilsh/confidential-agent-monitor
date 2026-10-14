@@ -1,0 +1,244 @@
+#!/usr/bin/env python3
+"""Exercise the real Monitor UI with slow, synthetic owner API responses."""
+import argparse
+import datetime
+import hashlib
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import json
+import mimetypes
+import os
+from pathlib import Path
+import subprocess
+import threading
+import time
+from urllib.parse import unquote, urlsplit
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def git(*args):
+    return subprocess.check_output(["git", *args], cwd=ROOT)
+
+
+class Fixture:
+    def __init__(self, ref):
+        self.ref = ref
+        self.condition = threading.Condition()
+        self.delay = 0
+        self.state = None
+        self.fail_reads = False
+        self.calls = []
+        self.active = self.peak = 0
+        self.decided = None
+        self.created = datetime.datetime.now(datetime.timezone.utc)
+        self.assets = {}
+        self.view = dict(generation=1, config=dict(
+            data=dict(onboarding=dict(completed=True)),
+            identities={"sandbox-sb2": {"accounts": {"anthropic": {"level": "allow"}}}},
+            accounts={"anthropic": {"preset": "anthropic"}},
+            lattices={"confidentiality": False, "integrity": False}),
+            labels={}, status={}, presets={name: dict(title=name.title(), fields=[], actions={}, operations={})
+                                           for name in ("anthropic", "custom")})
+
+    def asset(self, path):
+        relative = Path(unquote(path).lstrip("/"))
+        if not relative.parts or relative.parts[0] != "app" or ".." in relative.parts:
+            raise FileNotFoundError(path)
+        if str(relative) == "app":
+            relative /= "index.html"
+        name = relative.as_posix()
+        if name not in self.assets:
+            self.assets[name] = git("show", f"{self.ref}:{name}") if self.ref else (ROOT / relative).read_bytes()
+        return self.assets[name], mimetypes.guess_type(name)[0] or "application/octet-stream"
+
+    def read(self, path, summary=False):
+        with self.condition:
+            self.active += 1
+            self.peak = max(self.peak, self.active)
+            call = dict(path=path, started=time.monotonic(), state=self.state)
+            self.calls.append(call)
+            delay, failed = self.delay, self.fail_reads
+            call["status"] = 503 if failed else 200
+            now = self.created
+            record = dict(id="synthetic-approval", state=self.state, time=now.isoformat(),
+                          expires=(now + datetime.timedelta(seconds=120)).isoformat(),
+                          facts=dict(principal=dict(name="sandbox-sb2"), account="anthropic",
+                                     title="GET api.anthropic.com/api/hello",
+                                     parameters=dict(message="Synthetic request payload", body="x" * 262144),
+                                     details=dict(http=dict(method="GET", host="api.anthropic.com", path="/api/hello"))),
+                          requirements=[dict(id="ask", message="This request has no recognized operation on anthropic.")])
+            if summary:
+                record = {key: record[key] for key in ("id", "state", "time", "expires")} | {
+                    "summary": True, "facts": {key: record["facts"][key] for key in ("principal", "account", "title")}}
+            # Capture at request start so an approval can make this response stale.
+            value = self.view if path == "/api/" else record if path.startswith("/api/requests/") else [record] if self.state else []
+            body = json.dumps(value).encode()
+            self.condition.notify_all()
+        time.sleep(delay)
+        return call, (503 if failed else 200), (b"Synthetic read failure" if failed else body)
+
+    def until(self, predicate, timeout):
+        with self.condition:
+            if not self.condition.wait_for(predicate, timeout):
+                raise TimeoutError("Fixture did not reach the expected API state")
+
+    def handler(self):
+        fixture = self
+
+        class Handler(BaseHTTPRequestHandler):
+            def log_message(self, *_):
+                pass
+
+            def respond(self, body, content_type="application/json", status=200, tag=None):
+                self.send_response(status)
+                self.send_header("Content-Type", content_type)
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("Cache-Control", "no-store")
+                if tag:
+                    self.send_header("ETag", tag)
+                self.end_headers()
+                self.wfile.write(body)
+
+            def do_GET(self):
+                path = urlsplit(self.path).path
+                if path == "/app/auth.json":
+                    return self.respond(b'{"mode":"ssh"}')
+                if path in ("/api/", "/api/requests", "/api/requests/synthetic-approval"):
+                    call, status, body = fixture.read(path, summary=urlsplit(self.path).query == "summary")
+                    tag = 'W/"' + hashlib.sha256(body).hexdigest() + '"' if status == 200 else None
+                    if tag and self.headers.get("If-None-Match") == tag:
+                        status, body = 304, b""
+                    call["status"], call["bytes"] = status, len(body)
+                    try:
+                        self.respond(body, status=status, tag=tag)
+                    except (BrokenPipeError, ConnectionResetError):
+                        pass
+                    finally:
+                        with fixture.condition:
+                            call["finished"] = time.monotonic()
+                            fixture.active -= 1
+                            fixture.condition.notify_all()
+                    return
+                try:
+                    body, content_type = fixture.asset(path)
+                except (FileNotFoundError, subprocess.CalledProcessError):
+                    return self.respond(b"Not found", status=404)
+                self.respond(body, content_type)
+
+            def do_POST(self):
+                body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))))
+                if self.path != "/api/requests/synthetic-approval" or body != {"decision": "once"}:
+                    return self.respond(b"Unexpected fixture write", status=400)
+                with fixture.condition:
+                    fixture.state = "approved"
+                    fixture.decided = time.monotonic()
+                    fixture.condition.notify_all()
+                self.respond(b"null")
+
+        return Handler
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--ref", help="serve app assets from this Git ref instead of the working tree")
+    parser.add_argument("--delay", type=float, default=6.5, help="owner response latency in seconds")
+    parser.add_argument("--output", type=Path, required=True, help="new JSON result file")
+    args = parser.parse_args()
+    if not 0.5 <= args.delay <= 12:
+        parser.error("--delay must be between 0.5 and 12 seconds")
+    if args.output.exists():
+        parser.error("output file already exists")
+    ref = git("rev-parse", "--verify", args.ref + "^{commit}").decode().strip() if args.ref else None
+    fixture = Fixture(ref)
+    results = dict(schema=1, source=ref or "working-tree", head=git("rev-parse", "HEAD").decode().strip(),
+                   timestamp=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                   harness_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+                   delay_seconds=args.delay, checks={}, complete=False)
+    session = json.loads(subprocess.check_output(["pinchtab", "session", "create", "--agent-id", "monitor-perf", "--json"]))
+    env = dict(os.environ, PINCHTAB_SESSION=session["sessionToken"])
+
+    def browser(*command, check=True):
+        if command[0] == "wait":
+            command = (*command, "--json")
+        response = subprocess.run(["pinchtab", *command], env=env, capture_output=True, text=True, timeout=40)
+        # PinchTab reports a timed-out wait as JSON with exit status zero.
+        if command[0] == "wait" and not response.returncode:
+            response.returncode = 0 if json.loads(response.stdout).get("waited") is True else 1
+        if check and response.returncode:
+            raise RuntimeError(f"pinchtab {command[0]} failed: {response.stderr.strip() or response.stdout.strip()}")
+        return response
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), fixture.handler())
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    tab = None
+    try:
+        address = f"http://127.0.0.1:{server.server_port}/app/#session=perf-fixture"
+        tab = browser("nav", address, "--snap").stdout.splitlines()[0].strip()
+        browser("wait", "--text", "No requests yet")
+        with fixture.condition:
+            fixture.delay, fixture.state = args.delay, "pending"
+            started = time.monotonic()
+        fixture.until(lambda: any(c["state"] == "pending" for c in fixture.calls), 8)
+        # The timer and multiple clicks must share the outstanding read.
+        for _ in range(3):
+            browser("click", "button[onclick='refreshDashboard()']", "--snap-diff")
+        visible = browser("wait", ".pending-notice", "--timeout", "20000", check=False).returncode == 0
+        results["pending_visible_ms"] = round((time.monotonic() - started) * 1000, 1) if visible else None
+        results["observed_ms"] = round((time.monotonic() - started) * 1000, 1)
+        results["peak_api_gets"] = fixture.peak
+        results["pending_responses_completed"] = sum(c["state"] == "pending" and "finished" in c for c in fixture.calls)
+        results["checks"].update(approval_visible=visible, no_overlapping_reads=fixture.peak <= 2)
+        if visible:
+            marker = time.monotonic()
+            browser("click", "button[onclick='refreshDashboard()']", "--snap-diff")
+            fixture.until(lambda: any(c["started"] >= marker and c["path"] == "/api/requests" for c in fixture.calls), 8)
+            stale = next(c for c in fixture.calls if c["started"] >= marker and c["path"] == "/api/requests")
+            browser("click", ".request-row button.primary", "--snap-diff")
+            fixture.until(lambda: fixture.decided is not None, 5)
+            fixture.until(lambda: any(c["started"] > fixture.decided and c["path"] == "/api/requests" for c in fixture.calls), args.delay + 8)
+            # The pre-decision snapshot has completed; it must not restore Allow once.
+            results["checks"]["stale_read_preserves_decision"] = "finished" in stale and browser("count", ".request-row .status-approved").stdout.strip() == "1"
+            fixture.until(lambda: any(c["started"] > fixture.decided and c["path"] == "/api/requests" and "finished" in c for c in fixture.calls), args.delay + 8)
+            browser("wait", ".request-row .status-approved")
+            results["checks"]["decision_reconciled"] = True
+            # A failed read must release the shared promise so a retry can succeed.
+            fixture.until(lambda: fixture.active == 0, args.delay + 8)
+            with fixture.condition:
+                fixture.delay, fixture.fail_reads, fixture.state = 0, True, "pending"
+            browser("click", "button[onclick='refreshDashboard()']", "--snap-diff")
+            browser("wait", "--text", "Synthetic read failure")
+            with fixture.condition:
+                fixture.fail_reads = False
+            browser("click", "button[onclick='refreshDashboard()']", "--snap-diff")
+            browser("wait", ".pending-notice")
+            results["checks"]["retry_after_failure"] = True
+            # Activity has only summaries; opening a request must load its full facts.
+            browser("click", "a[href='#request/synthetic-approval']", "--snap-diff")
+            browser("wait", "details[data-disclosure='request']")
+            browser("click", "details[data-disclosure='request'] > summary", "--snap-diff")
+            browser("wait", "--text", "Synthetic request payload")
+            results["checks"]["full_request_on_demand"] = any(c["path"] == "/api/requests/synthetic-approval" for c in fixture.calls)
+            results["checks"]["unchanged_responses_empty"] = any(c["status"] == 304 and c["bytes"] == 0 for c in fixture.calls)
+        results["complete"] = True
+    finally:
+        results["app_sha256"] = {name: hashlib.sha256(body).hexdigest() for name, body in fixture.assets.items() if name.endswith(".js")}
+        first = fixture.calls[0]["started"] if fixture.calls else 0
+        results["api_reads"] = [dict(path=c["path"], state=c["state"], status=c["status"],
+                                     response_bytes=c.get("bytes"),
+                                     started_ms=round((c["started"] - first) * 1000, 1),
+                                     finished_ms=round((c["finished"] - first) * 1000, 1) if "finished" in c else None)
+                                for c in fixture.calls]
+        if tab:
+            browser("tab", "close", tab, check=False)
+        subprocess.run(["pinchtab", "session", "revoke", session["id"]], capture_output=True, check=False)
+        server.shutdown()
+        server.server_close()
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(json.dumps(results, indent=2) + "\n")
+        print(json.dumps({k: v for k, v in results.items() if k not in ("app_sha256", "api_reads")}, indent=2))
+    return 0 if all(results["checks"].values()) else 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

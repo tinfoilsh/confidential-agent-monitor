@@ -14,7 +14,7 @@ const STATE_CLASS = { allowed: "", approved: "", refused: "bad", denied: "bad", 
 // Keep the activity filter and return route while a request is open.
 let view = null, records = [], locked = false, scope = null, requestSource = "activity";
 let onboardingPreset = "known_only", onboardingSaving = false;
-let serverState = { view: null, records: [] }, sending = false, editVersion = 0, pollVersion = 0;
+let serverState = { view: null, records: [] }, sending = false, editVersion = 0, refreshing = null;
 const pendingEdits = [];
 let connectorIcons = {};
 const iconsReady = fetch("icons/manifest.json").then((res) => res.ok ? res.json() : {}).then((icons) => { connectorIcons = icons; }).catch(() => {});
@@ -95,7 +95,7 @@ function remember(v) {
 
 // Reapply pending edits over the last confirmed snapshot, including after a failed save.
 function project() {
-  const next = structuredClone(serverState);
+  const next = pendingEdits.length ? structuredClone(serverState) : serverState;
   for (const edit of pendingEdits) edit.update(next);
   view = next.view;
   records = next.records;
@@ -104,14 +104,24 @@ function project() {
   document.title = count ? `(${count}) Monitor` : "Monitor";
 }
 
-async function refresh() {
-  if (pendingEdits.length || sending) return;
-  const version = editVersion, poll = ++pollVersion;
-  const { view: next, requests: log } = await client().read();
-  // A poll started before a click must never undo that click or a newer response.
-  if (version !== editVersion || poll !== pollVersion || pendingEdits.length) return;
-  serverState.records = log;
-  remember(next);
+function refresh() {
+  if (pendingEdits.length || sending) return Promise.resolve();
+  // Timer ticks and manual refreshes share one read, even when it takes longer
+  // than the polling interval. Starting another poll must not discard its result.
+  if (!refreshing) refreshing = (async () => {
+    while (!pendingEdits.length && !sending) {
+      const version = editVersion, source = client();
+      const { view: next, requests: log } = await source.read(undefined, { summary: true });
+      // A click or a changed credential invalidates this snapshot. Read again
+      // after completed edits so their callers also wait for current state.
+      if (version !== editVersion || source !== client()) continue;
+      if (serverState.view === next && serverState.records === log) return false;
+      serverState.records = log;
+      remember(next);
+      return true;
+    }
+  })().finally(() => { refreshing = null; });
+  return refreshing;
 }
 
 function edit(update, send, { then, message = "Saved" } = {}) {
@@ -359,8 +369,35 @@ function list(selected) {
   ];
 }
 
+// Keep only the selected request's full payload. Activity polls contain summaries.
+let selectedRequest = null;
+const requestRecord = (id) => {
+  const record = records.find((r) => r.id === id);
+  return record?.summary && selectedRequest?.id === id && selectedRequest.source === client() && selectedRequest.record
+    ? { ...selectedRequest.record, state: record.state, savingDecision: record.savingDecision } : record;
+};
+function loadRequest(id, retry = false) {
+  if (pendingEdits.length || sending) return;
+  const source = client(), state = records.find((r) => r.id === id)?.state;
+  if (!retry && selectedRequest?.id === id && selectedRequest.source === source && selectedRequest.state === state) return;
+  const load = selectedRequest = { id, source, state, loading: true };
+  source.request(id).then((record) => { load.record = record; }).catch((err) => { load.error = err.message; }).finally(() => {
+    load.loading = false;
+    if (selectedRequest === load && source === client()) render();
+  });
+}
 function requestPane(id) {
-  const r = records.find((r) => r.id === id);
+  const listed = records.find((r) => r.id === id);
+  if (listed?.summary) {
+    loadRequest(id);
+    if (selectedRequest?.id !== id || selectedRequest.loading || !selectedRequest.record) {
+      const error = selectedRequest?.id === id && selectedRequest.error;
+      return [head("Request", "", requestSource), error
+        ? `<section><p class="bad">${esc(error)}</p><button onclick="loadRequest(${q(id)}, true)">Retry</button></section>`
+        : `<p class="empty">Loading request…</p>`];
+    }
+  }
+  const r = requestRecord(id);
   if (!r) return [head("Request", "", requestSource), `<p class="empty">No request ${esc(id)}.</p>`];
   const buttons = decide(r, saveText(r));
   return [head(esc(r.facts?.title || summary(r.facts?.details) || r.facts.account), `${esc(r.facts.principal.name)} · ${accountIcon(r.facts.account)}${esc(r.facts.account)}${r.state === "pending" ? ` · ${left(r)} left` : ""}`, requestSource),
@@ -374,7 +411,7 @@ function requestPane(id) {
 }
 
 const answer = run((id, decision) => {
-  const request = records.find((r) => r.id === id);
+  const request = requestRecord(id);
   if (!request || request.savingDecision) return;
   return edit((state) => {
     state.records = state.records.map((r) => r.id === id ? { ...r, savingDecision: true,
@@ -520,7 +557,8 @@ function presetPage(name, from) {
     loadShipped(name);
     return [head("Preset " + esc(name)), `<p class="empty">Loading…</p>`];
   }
-  const file = owner.withDraft(presetFile(name), records.find((r) => r.id === from));
+  if (records.find((r) => r.id === from)?.summary && requestRecord(from)?.summary) return requestPane(from);
+  const file = owner.withDraft(presetFile(name), requestRecord(from));
   const users = Object.entries(accounts()).filter(([, acc]) => acc.preset === name).map(([a]) => a);
   return [head("Preset " + esc(name)), `<section><p class="muted">Changes apply to every account using it: ${esc(users.join(", ") || "none yet")}.</p>
     <textarea id="preset" aria-label="Preset definition" rows="40">${esc(owner.presetText(file))}</textarea>
@@ -1126,12 +1164,12 @@ document.addEventListener("click", (e) => { const id = e.target.closest?.("[data
 // Inline handlers in the rendered markup run in global scope.
 Object.assign(globalThis, { $, addAccount, addCustomAPI, answer, apiAuthChanged, applyPolicySource, approve, changePolicy, commit, copyAPIPlaceholder, copySettings,
   cycleTheme, filterDashboard, refreshDashboard, toggleCatalogGroup, toggleNavigation,
-  credentialMode, dismiss, downloadActivePolicy, downloadPreset, edits, liveAct, liveClick, liveKey, liveNavigate, liveOwn, liveType, liveWheel, loadPolicy,
+  credentialMode, dismiss, downloadActivePolicy, downloadPreset, edits, liveAct, liveClick, liveKey, liveNavigate, liveOwn, liveType, liveWheel, loadPolicy, loadRequest,
   applyPolicyPreset, chooseOnboardingPreset, finishOnboarding, pairAgent, pasteOwnerKey, patchAccess, previewPolicy, removeAccount, removeAgent, removeRule, saveAccount, savePreset, setKey, setLabel, setupToken, signIn, toggle, toggleSecret, unlock });
 setInterval(run(async () => {
   if (!ownerMode || !authenticated() || locked) return;
-  await refresh();
-  render();
+  const changed = await refresh();
+  if (changed || pendingSoonest().length) render();
 }), REQUEST_POLL_MS);
 // The provider redirects back here with the sign-in's state and either a code or an error.
 const back = new URLSearchParams(location.search);

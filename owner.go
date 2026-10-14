@@ -2,6 +2,7 @@ package main
 
 import (
 	"cmp"
+	"compress/gzip"
 	"context"
 	"crypto/sha256"
 	"crypto/subtle"
@@ -15,7 +16,9 @@ import (
 	"net/url"
 	"os"
 	"slices"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/pmezard/go-difflib/difflib"
 	"github.com/tinfoilsh/monitor/connector"
@@ -33,6 +36,31 @@ const (
 var app embed.FS
 
 var errPolicyConflict = errors.New("policy changed; reload it and review a new diff before applying")
+var errRequestGone = errors.New("this request is no longer in the activity log")
+
+// Activity never needs request bodies, policy parameters or saved-rule grants.
+// Keep those in the existing audit record and load one through /requests/{id}.
+type requestSummary struct {
+	ID      string    `json:"id"`
+	State   string    `json:"state"`
+	Time    time.Time `json:"time"`
+	Expires time.Time `json:"expires,omitzero"`
+	Summary bool      `json:"summary"`
+	Facts   struct {
+		Principal facts.Principal  `json:"principal"`
+		Account   string           `json:"account"`
+		Operation *facts.Operation `json:"operation"`
+		Title     string           `json:"title"`
+	} `json:"facts"`
+}
+
+// The state and decision pointer can change while the response is encoded.
+// Facts and grant values are already immutable authorization snapshots.
+func copyRecord(r *record) record {
+	v, d := *r, *r.decision
+	v.decision = &d
+	return v
+}
 
 type fieldMetadata struct {
 	Path []string `json:"path"`
@@ -126,6 +154,9 @@ func (m *monitor) view(err error) (any, error) {
 			path := []string{"connections", c.key, c.protocol, "secrets", name}
 			v.Fields[c.account] = append(v.Fields[c.account], fieldMetadata{path, credential.Describe(m.doc.Secrets.get(secretID{c.account, c.key, name}))})
 		}
+	}
+	for _, fields := range v.Fields {
+		slices.SortFunc(fields, func(a, b fieldMetadata) int { return slices.Compare(a.Path, b.Path) })
 	}
 	for _, p := range s.principals {
 		v.Labels[p.Name] = m.currentLabel(p.Key)
@@ -251,10 +282,34 @@ func (m *monitor) ownerHandler(overSSH bool) http.Handler {
 	mux.Handle("POST /accounts/{account}/sign-in", m.authenticated(jsonHandler(maxDocumentBytes, m.startSignIn)))
 	mux.Handle("POST /sign-in/{state}", m.authenticated(jsonHandler(maxDocumentBytes, m.finishSignIn)))
 	mux.Handle("/connections/{name}/{control...}", m.authenticated(m.connectionControl))
-	mux.Handle("GET /requests", owned(m, func(_ *http.Request, _ struct{}) (any, error) {
-		newest := append([]*record{}, m.records...)
-		slices.Reverse(newest)
+	mux.Handle("GET /requests", owned(m, func(r *http.Request, _ struct{}) (any, error) {
+		if r.URL.Query().Has("summary") {
+			newest := make([]requestSummary, 0, len(m.records))
+			for _, r := range slices.Backward(m.records) {
+				v := requestSummary{ID: r.ID, State: r.State, Time: r.Time, Expires: r.Expires, Summary: true}
+				v.Facts.Principal, v.Facts.Account, v.Facts.Operation = r.Facts.Principal, r.Facts.Account, r.Facts.Operation
+				v.Facts.Title = r.Facts.Title
+				// SQL and other protocol titles can contain the entire request.
+				if len(v.Facts.Title) > 512 {
+					v.Facts.Title = strings.ToValidUTF8(v.Facts.Title[:512], "") + "…"
+				}
+				newest = append(newest, v)
+			}
+			return newest, nil
+		}
+		newest := make([]record, 0, len(m.records))
+		for _, r := range slices.Backward(m.records) {
+			newest = append(newest, copyRecord(r))
+		}
 		return newest, nil
+	}))
+	mux.Handle("GET /requests/{id}", owned(m, func(r *http.Request, _ struct{}) (any, error) {
+		for _, record := range m.records {
+			if record.ID == r.PathValue("id") {
+				return copyRecord(record), nil
+			}
+		}
+		return nil, errRequestGone
 	}))
 	mux.Handle("POST /requests/{id}", owned(m, func(r *http.Request, req decisionInput) (any, error) {
 		return nil, m.answer(r.Context(), r.PathValue("id"), req.Decision)
@@ -411,9 +466,10 @@ func allowOrigins(origins []string, next http.Handler) http.Handler {
 			return
 		}
 		w.Header().Set("Access-Control-Allow-Origin", origin)
+		w.Header().Set("Access-Control-Expose-Headers", "ETag")
 		if r.Method == http.MethodOptions && r.Header.Get("Access-Control-Request-Method") != "" {
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
-			w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
+			w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, If-None-Match")
 			w.Header().Set("Access-Control-Max-Age", preflightMaxAge)
 			w.WriteHeader(http.StatusNoContent)
 			return
@@ -447,6 +503,8 @@ func responseError(w http.ResponseWriter, err error) {
 		status = http.StatusLocked
 	case errors.Is(err, errPolicyConflict):
 		status = http.StatusConflict
+	case errors.Is(err, errRequestGone):
+		status = http.StatusNotFound
 	}
 	http.Error(w, err.Error(), status)
 }
@@ -530,9 +588,53 @@ func jsonHandler[T any](limit int64, fn func(*http.Request, T) (any, error)) htt
 				return
 			}
 		}
+		// Validate only after authentication and the SSH generation acknowledgement.
+		// A weak validator covers both identity and gzip representations of this JSON.
+		w.Header().Add("Vary", "Accept-Encoding")
+		// The legacy full-history export can be hundreds of MB; the UI validates
+		// its compact summaries instead of hashing all request bodies every poll.
+		if r.Method == http.MethodGet && !(r.URL.Path == "/requests" && !r.URL.Query().Has("summary")) {
+			tag := fmt.Sprintf(`W/"%x"`, sha256.Sum256(response))
+			w.Header().Set("ETag", tag)
+			for _, known := range strings.Split(r.Header.Get("If-None-Match"), ",") {
+				known = strings.TrimSpace(known)
+				if known == "*" || strings.TrimPrefix(known, "W/") == strings.TrimPrefix(tag, "W/") {
+					w.WriteHeader(http.StatusNotModified)
+					return
+				}
+			}
+		}
 		w.Header().Set("Content-Type", "application/json")
+		if len(response) >= 1024 && acceptsGzip(r.Header.Get("Accept-Encoding")) {
+			w.Header().Set("Content-Encoding", "gzip")
+			compressed := gzip.NewWriter(w)
+			defer compressed.Close()
+			compressed.Write(response)
+			return
+		}
 		w.Write(response)
 	}
+}
+
+func acceptsGzip(accept string) bool {
+	for _, coding := range strings.Split(accept, ",") {
+		parts := strings.Split(coding, ";")
+		if !strings.EqualFold(strings.TrimSpace(parts[0]), "gzip") {
+			continue
+		}
+		quality := 1.0
+		for _, parameter := range parts[1:] {
+			if key, value, ok := strings.Cut(strings.TrimSpace(parameter), "="); ok && strings.EqualFold(key, "q") {
+				var err error
+				quality, err = strconv.ParseFloat(value, 64)
+				if err != nil {
+					return false
+				}
+			}
+		}
+		return quality > 0 && quality <= 1
+	}
+	return false
 }
 
 // effectiveSource renders an already compiled state; reading it cannot compile

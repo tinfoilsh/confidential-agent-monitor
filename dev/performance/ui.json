@@ -1,0 +1,116 @@
+{
+  "schema": 1,
+  "deployed_monitor": "m2",
+  "deployed_ui_matches_commit": "82d2482b5a831d46c86934d0223bd9e319ed304e",
+  "deployed_ui_sha256": "40583c70f3a594974d0223b861df879b2d0e1b380793e6c6f2675b4951f4d2ef",
+  "owner_parallel_reads": [
+    {
+      "sample": 1,
+      "cached_catalog": false,
+      "read_ms": 2728.5,
+      "snapshot_bytes": 957521,
+      "history_bytes": 442963,
+      "snapshot_ms": 1668.9,
+      "history_ms": 2720.2
+    },
+    {
+      "sample": 2,
+      "cached_catalog": true,
+      "read_ms": 7182.7,
+      "snapshot_bytes": 592933,
+      "history_bytes": 442963,
+      "snapshot_ms": 4526.9,
+      "history_ms": 7168.2
+    },
+    {
+      "sample": 3,
+      "cached_catalog": true,
+      "read_ms": 6298.3,
+      "snapshot_bytes": 592933,
+      "history_bytes": 442963,
+      "snapshot_ms": 3957.1,
+      "history_ms": 6286.5
+    }
+  ],
+  "before": {
+    "schema": 1,
+    "source": "82d2482b5a831d46c86934d0223bd9e319ed304e",
+    "head": "82d2482b5a831d46c86934d0223bd9e319ed304e",
+    "timestamp": "2026-10-14T17:42:02.656248+00:00",
+    "harness_sha256": "e1aa4ce09d7dcc1091c4a0a18c30ee80506cd9a4f6cc4bb7363e333df2d8682e",
+    "delay_seconds": 6.5,
+    "checks": {
+      "approval_visible": false,
+      "no_overlapping_reads": false
+    },
+    "complete": true,
+    "pending_visible_ms": null,
+    "observed_ms": 26065.7,
+    "peak_api_gets": 6,
+    "pending_responses_completed": 14,
+    "app_sha256": {
+      "app/monitor.js": "40583c70f3a594974d0223b861df879b2d0e1b380793e6c6f2675b4951f4d2ef",
+      "app/owner.js": "2b6c43e60ae5176b94752b5672b0760a1784c55b6d95b197847607c7ab9b14da",
+      "app/dashboard.js": "3b93f7d09576c8a0dc6407f6a63394674cd6297681bbae768af8e057bc3008c1",
+      "app/dashboard-icons.js": "5c8bd03c4ee60ac5c27bccad7556f6ee98e1b3b952b4f3fd6cffe4303bfa8886"
+    }
+  },
+  "after": {
+    "schema": 1,
+    "source": "working-tree",
+    "head": "82d2482b5a831d46c86934d0223bd9e319ed304e",
+    "timestamp": "2026-10-14T17:41:48.038582+00:00",
+    "harness_sha256": "e1aa4ce09d7dcc1091c4a0a18c30ee80506cd9a4f6cc4bb7363e333df2d8682e",
+    "delay_seconds": 6.5,
+    "checks": {
+      "approval_visible": true,
+      "no_overlapping_reads": true,
+      "stale_read_preserves_decision": true,
+      "decision_reconciled": true,
+      "retry_after_failure": true
+    },
+    "complete": true,
+    "pending_visible_ms": 11054.2,
+    "observed_ms": 11054.2,
+    "peak_api_gets": 2,
+    "pending_responses_completed": 2,
+    "app_sha256": {
+      "app/monitor.js": "a06bdf366b02ed254a90ac6faeb15de30456776ddfbc8fb414f1c16c76434b8c",
+      "app/dashboard.js": "3b93f7d09576c8a0dc6407f6a63394674cd6297681bbae768af8e057bc3008c1",
+      "app/owner.js": "2b6c43e60ae5176b94752b5672b0760a1784c55b6d95b197847607c7ab9b14da",
+      "app/dashboard-icons.js": "5c8bd03c4ee60ac5c27bccad7556f6ee98e1b3b952b4f3fd6cffe4303bfa8886"
+    }
+  },
+  "after_slower": {
+    "schema": 1,
+    "source": "working-tree",
+    "head": "82d2482b5a831d46c86934d0223bd9e319ed304e",
+    "timestamp": "2026-10-14T17:42:02.653948+00:00",
+    "harness_sha256": "e1aa4ce09d7dcc1091c4a0a18c30ee80506cd9a4f6cc4bb7363e333df2d8682e",
+    "delay_seconds": 12.0,
+    "checks": {
+      "approval_visible": true,
+      "no_overlapping_reads": true,
+      "stale_read_preserves_decision": true,
+      "decision_reconciled": true,
+      "retry_after_failure": true
+    },
+    "complete": true,
+    "pending_visible_ms": 16639.2,
+    "observed_ms": 16639.2,
+    "peak_api_gets": 2,
+    "pending_responses_completed": 2,
+    "app_sha256": {
+      "app/monitor.js": "a06bdf366b02ed254a90ac6faeb15de30456776ddfbc8fb414f1c16c76434b8c",
+      "app/dashboard.js": "3b93f7d09576c8a0dc6407f6a63394674cd6297681bbae768af8e057bc3008c1",
+      "app/owner.js": "2b6c43e60ae5176b94752b5672b0760a1784c55b6d95b197847607c7ab9b14da",
+      "app/dashboard-icons.js": "5c8bd03c4ee60ac5c27bccad7556f6ee98e1b3b952b4f3fd6cffe4303bfa8886"
+    }
+  },
+  "notes": [
+    "Browser fixtures contain only synthetic data.",
+    "Visibility time includes waiting for the next five-second poll.",
+    "API concurrency and completed-response counts cover both snapshot and history endpoints during the initial visibility check.",
+    "The UI change has not been deployed. Earlier user browser state was not captured."
+  ]
+}

@@ -41,6 +41,32 @@ export class OwnerError extends Error {
   }
 }
 
+// Keep validators and parsed responses in this authenticated client's memory,
+// never in browser storage. Bound the cache when navigating through audit details.
+function ownerJSON(fetch) {
+  const cache = new Map();
+  return async (url, options) => {
+    const read = options.method === "GET", known = read && cache.get(url);
+    if (!read) cache.clear();
+    const res = await fetch(url, { ...options, headers: { ...options.headers,
+      ...(known && { "If-None-Match": known.tag }) } });
+    if (res.status === 304 && known) {
+      cache.delete(url);
+      cache.set(url, known);
+      return known.value;
+    }
+    const text = await res.text();
+    if (!res.ok) throw new OwnerError(text.trim() || `Request failed (${res.status})`, res.status);
+    const value = text ? JSON.parse(text) : null, tag = res.headers.get("ETag");
+    cache.delete(url);
+    if (read && tag) {
+      cache.set(url, { tag, value });
+      if (cache.size > 4) cache.delete(cache.keys().next().value);
+    }
+    return value;
+  };
+}
+
 // Without an endpoint, requests go to the page's own origin; any given endpoint, even an empty one, must be a valid URL.
 // A remote owner API needs HTTPS. The key is never sent on a redirect.
 export function ownerClient({ endpoint, key, generation, fetch = (...args) => globalThis.fetch(...args) }) {
@@ -53,13 +79,11 @@ export function ownerClient({ endpoint, key, generation, fetch = (...args) => gl
     if (url.username || url.password || url.search || url.hash) throw new Error("Invalid monitor endpoint.");
     base = url.href.replace(/\/$/, "");
   }
-  return ownerApi(async (method, path, body, signal) => {
-    const res = await fetch(base + path, { method, signal, cache: "no-store", credentials: "omit", redirect: "error",
+  const json = ownerJSON(fetch);
+  return ownerApi((method, path, body, signal) => {
+    return json(base + path, { method, signal, cache: "no-store", credentials: "omit", redirect: "error",
       headers: { Authorization: "Bearer " + key, ...(body !== undefined && { "Content-Type": "application/json" }) },
       body: body === undefined ? undefined : JSON.stringify(body) });
-    const text = await res.text();
-    if (!res.ok) throw new OwnerError(text.trim() || `Request failed (${res.status})`, res.status);
-    return text ? JSON.parse(text) : null;
   }, generation, base);
 }
 
@@ -88,13 +112,15 @@ export function ownerApi(request, generation, base = "") {
   };
   const unlock = (at = minimum ?? 0, signal) => snapshot("POST", "/unlock", { generation: at }, signal);
   return {
-    async read(signal) {
-      const [view, requests] = await Promise.all([snapshot("GET", "/", undefined, signal), get("/requests", signal)]).catch(async (err) => {
+    async read(signal, { summary = false } = {}) {
+      const path = summary ? "/requests?summary" : "/requests";
+      const [view, requests] = await Promise.all([snapshot("GET", "/", undefined, signal), get(path, signal)]).catch(async (err) => {
         if (err.status !== 423 || minimum === undefined) throw err;
-        return [await unlock(minimum, signal), await get("/requests", signal)];
+        return [await unlock(minimum, signal), await get(path, signal)];
       });
       return { view: checked(view), requests: requests ?? [] };
     },
+    request: (id, signal) => get(`/requests/${encodeURIComponent(id)}`, signal),
     unlock,
     onboard: (view, preset, signal) => onboarded(view) ? Promise.resolve(view)
       : snapshot("POST", "/policy/edits", { changes: edits.applyPolicyPreset(view, preset), generation: view.generation }, signal),
@@ -630,15 +656,13 @@ export function integrationGuide(view, page, href) {
 // CAM serves this UI through the CLI's attested SSH tunnel. Its session token
 // authorizes browser requests; private owner and storage keys never enter JS.
 export function localOwnerClient({ token, generation, fetch = (...args) => globalThis.fetch(...args) }) {
+  const json = ownerJSON(fetch);
   return ownerApi(async (method, path, body, signal) => {
     if (!token) throw new OwnerError("Open this panel with tinfoil monitor open NAME.", 401);
     if (path.split("?")[0] === "/unlock") throw new OwnerError("Run tinfoil monitor open NAME again to unlock over attested SSH.", 423);
     const asset = path.startsWith("/app/");
-    const res = await fetch(asset ? path : "/api" + path, { method, signal, cache: "no-store", credentials: "omit", redirect: "error",
+    return json(asset ? path : "/api" + path, { method, signal, cache: "no-store", credentials: "omit", redirect: "error",
       headers: { ...(!asset && { "X-Tinfoil-Session": token }), ...(body !== undefined && { "Content-Type": "application/json" }) },
       body: body === undefined ? undefined : JSON.stringify(body) });
-    const text = await res.text();
-    if (!res.ok) throw new OwnerError(text.trim() || `Request failed (${res.status})`, res.status);
-    return text ? JSON.parse(text) : null;
   }, generation);
 }

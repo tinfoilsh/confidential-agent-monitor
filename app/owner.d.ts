@@ -92,6 +92,7 @@ export type RequestDetails = {
   policy?: { source_diff: string; effective_diff: string }
 }
 export type RequestRecord = {
+  summary?: boolean
   id: string
   state: RequestState
   time: string
@@ -126,7 +127,8 @@ export type PresetFile = { title?: string; catalog?: Json; http?: { operations?:
 
 export type Request = (method: 'GET' | 'POST', path: string, body?: unknown, signal?: AbortSignal) => Promise<unknown>
 export type OwnerApi = {
-  read(signal?: AbortSignal): Promise<Snapshot>
+  read(signal?: AbortSignal, options?: { summary?: boolean }): Promise<Snapshot>
+  request(id: string, signal?: AbortSignal): Promise<RequestRecord>
   unlock(generation?: number, signal?: AbortSignal): Promise<View>
   onboard(view: View, preset: PolicyPreset, signal?: AbortSignal): Promise<View>
   edit(changes: Change[], signal?: AbortSignal): Promise<View>

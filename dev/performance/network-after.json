@@ -1,0 +1,877 @@
+{
+  "schema": 1,
+  "go": "go1.27.1",
+  "gomaxprocs": 2,
+  "config": {
+    "Output": "",
+    "WorkerExecutable": "",
+    "WorkerRoot": "",
+    "Modes": [
+      "direct",
+      "inprocess",
+      "worker"
+    ],
+    "Sizes": [
+      0,
+      4096,
+      65536,
+      524288
+    ],
+    "Histories": [
+      0,
+      25,
+      100,
+      500,
+      1000
+    ],
+    "Samples": 15,
+    "HistoryBodyBytes": 262144
+  },
+  "results": [
+    {
+      "name": "recognition/HEAD/api/hello",
+      "samples": 1,
+      "p50_ms": 0.562675,
+      "p95_ms": 0.562675,
+      "max_ms": 0.562675,
+      "alloc_bytes_per_op": 79296,
+      "heap_bytes": 75127264
+    },
+    {
+      "name": "recognition/GET/api/hello",
+      "samples": 1,
+      "p50_ms": 0.8241,
+      "p95_ms": 0.8241,
+      "max_ms": 0.8241,
+      "alloc_bytes_per_op": 86216,
+      "heap_bytes": 75143216
+    },
+    {
+      "name": "recognition/GET/v1/models",
+      "samples": 1,
+      "p50_ms": 0.536436,
+      "p95_ms": 0.536436,
+      "max_ms": 0.536436,
+      "alloc_bytes_per_op": 86096,
+      "heap_bytes": 75146320
+    },
+    {
+      "name": "policy/body=0",
+      "samples": 15,
+      "p50_ms": 0.328499,
+      "p95_ms": 0.620485,
+      "max_ms": 0.620485,
+      "alloc_bytes_per_op": 72354,
+      "heap_bytes": 75220344
+    },
+    {
+      "name": "policy/body=4096",
+      "samples": 15,
+      "p50_ms": 0.290705,
+      "p95_ms": 0.634091,
+      "max_ms": 0.634091,
+      "alloc_bytes_per_op": 120386,
+      "heap_bytes": 75487768
+    },
+    {
+      "name": "policy/body=65536",
+      "samples": 15,
+      "p50_ms": 0.623575,
+      "p95_ms": 0.831994,
+      "max_ms": 0.831994,
+      "alloc_bytes_per_op": 690076,
+      "heap_bytes": 79544904
+    },
+    {
+      "name": "policy/body=524288",
+      "samples": 15,
+      "p50_ms": 3.213611,
+      "p95_ms": 6.136944,
+      "max_ms": 6.136944,
+      "alloc_bytes_per_op": 5026293,
+      "heap_bytes": 110220368
+    },
+    {
+      "name": "owner/details=0/cached=false",
+      "samples": 15,
+      "p50_ms": 1.138094,
+      "p95_ms": 2.663118,
+      "max_ms": 2.663118,
+      "alloc_bytes_per_op": 289649,
+      "heap_bytes": 75382584,
+      "response_bytes": 144929
+    },
+    {
+      "name": "owner/details=0/cached=true",
+      "samples": 15,
+      "p50_ms": 0.11954,
+      "p95_ms": 0.292105,
+      "max_ms": 0.292105,
+      "alloc_bytes_per_op": 34499,
+      "heap_bytes": 75203464,
+      "response_bytes": 2347
+    },
+    {
+      "name": "owner/details=0/gzip",
+      "samples": 15,
+      "p50_ms": 0.26923,
+      "p95_ms": 0.315011,
+      "max_ms": 0.315011,
+      "alloc_bytes_per_op": 1109167,
+      "heap_bytes": 75205992,
+      "response_bytes": 1158
+    },
+    {
+      "name": "owner/details=0/unchanged",
+      "samples": 15,
+      "p50_ms": 0.077829,
+      "p95_ms": 0.170447,
+      "max_ms": 0.170447,
+      "alloc_bytes_per_op": 34451,
+      "heap_bytes": 75204968
+    },
+    {
+      "name": "owner/details=600000/cached=false",
+      "samples": 15,
+      "p50_ms": 3.066901,
+      "p95_ms": 3.560626,
+      "max_ms": 3.560626,
+      "alloc_bytes_per_op": 912123,
+      "heap_bytes": 76578568,
+      "response_bytes": 744929
+    },
+    {
+      "name": "owner/details=600000/cached=true",
+      "samples": 15,
+      "p50_ms": 1.974567,
+      "p95_ms": 3.397884,
+      "max_ms": 3.397884,
+      "alloc_bytes_per_op": 637406,
+      "heap_bytes": 76569664,
+      "response_bytes": 602347
+    },
+    {
+      "name": "owner/details=600000/gzip",
+      "samples": 15,
+      "p50_ms": 3.29942,
+      "p95_ms": 4.607392,
+      "max_ms": 4.607392,
+      "alloc_bytes_per_op": 1712687,
+      "heap_bytes": 76570448,
+      "response_bytes": 2443
+    },
+    {
+      "name": "owner/details=600000/unchanged",
+      "samples": 15,
+      "p50_ms": 1.94521,
+      "p95_ms": 3.869869,
+      "max_ms": 3.869869,
+      "alloc_bytes_per_op": 637358,
+      "heap_bytes": 76570584
+    },
+    {
+      "name": "history/records=0/body=262144",
+      "samples": 5,
+      "p50_ms": 0.00397,
+      "p95_ms": 0.039268,
+      "max_ms": 0.039268,
+      "alloc_bytes_per_op": 6724,
+      "heap_bytes": 75400160,
+      "response_bytes": 2
+    },
+    {
+      "name": "history_summary/records=0/body=262144",
+      "samples": 5,
+      "p50_ms": 0.009523,
+      "p95_ms": 0.040667,
+      "max_ms": 0.040667,
+      "alloc_bytes_per_op": 7688,
+      "heap_bytes": 75402072,
+      "response_bytes": 2
+    },
+    {
+      "name": "history_unchanged/records=0/body=262144",
+      "samples": 5,
+      "p50_ms": 0.006614,
+      "p95_ms": 0.039737,
+      "max_ms": 0.039737,
+      "alloc_bytes_per_op": 7512,
+      "heap_bytes": 75402152
+    },
+    {
+      "name": "history_with_admission/records=0/body=262144",
+      "samples": 1,
+      "p50_ms": 1.554867,
+      "p95_ms": 1.554867,
+      "max_ms": 1.554867,
+      "alloc_bytes_per_op": 356864,
+      "heap_bytes": 75485864,
+      "response_bytes": 2,
+      "phases_mean_ms": {
+        "admission_max": 0.546987,
+        "admission_p95": 0.546987
+      }
+    },
+    {
+      "name": "admission/records=0/body=262144",
+      "samples": 15,
+      "p50_ms": 0.209306,
+      "p95_ms": 0.531877,
+      "max_ms": 0.531877,
+      "alloc_bytes_per_op": 63793,
+      "heap_bytes": 75456024
+    },
+    {
+      "name": "history/records=25/body=262144",
+      "samples": 5,
+      "p50_ms": 12.825702,
+      "p95_ms": 23.598289,
+      "max_ms": 23.598289,
+      "alloc_bytes_per_op": 27790494,
+      "heap_bytes": 117522816,
+      "response_bytes": 13137572
+    },
+    {
+      "name": "history_summary/records=25/body=262144",
+      "samples": 5,
+      "p50_ms": 0.06698,
+      "p95_ms": 0.254859,
+      "max_ms": 0.254859,
+      "alloc_bytes_per_op": 32617,
+      "heap_bytes": 101959608,
+      "response_bytes": 10372
+    },
+    {
+      "name": "history_unchanged/records=25/body=262144",
+      "samples": 5,
+      "p50_ms": 0.059565,
+      "p95_ms": 0.122046,
+      "max_ms": 0.122046,
+      "alloc_bytes_per_op": 32569,
+      "heap_bytes": 101959704
+    },
+    {
+      "name": "history_with_admission/records=25/body=262144",
+      "samples": 1,
+      "p50_ms": 78.549716,
+      "p95_ms": 78.549716,
+      "max_ms": 78.549716,
+      "alloc_bytes_per_op": 90451504,
+      "heap_bytes": 117577848,
+      "response_bytes": 13137572,
+      "phases_mean_ms": {
+        "admission_max": 44.40279,
+        "admission_p95": 1.604316
+      }
+    },
+    {
+      "name": "admission/records=25/body=262144",
+      "samples": 15,
+      "p50_ms": 0.227121,
+      "p95_ms": 0.525746,
+      "max_ms": 0.525746,
+      "alloc_bytes_per_op": 63636,
+      "heap_bytes": 101995856
+    },
+    {
+      "name": "history/records=100/body=262144",
+      "samples": 5,
+      "p50_ms": 51.014393,
+      "p95_ms": 103.587702,
+      "max_ms": 103.587702,
+      "alloc_bytes_per_op": 111105305,
+      "heap_bytes": 240979880,
+      "response_bytes": 52550292
+    },
+    {
+      "name": "history_summary/records=100/body=262144",
+      "samples": 5,
+      "p50_ms": 0.233169,
+      "p95_ms": 0.511861,
+      "max_ms": 0.511861,
+      "alloc_bytes_per_op": 118011,
+      "heap_bytes": 181548488,
+      "response_bytes": 41492
+    },
+    {
+      "name": "history_unchanged/records=100/body=262144",
+      "samples": 5,
+      "p50_ms": 0.252821,
+      "p95_ms": 0.356109,
+      "max_ms": 0.356109,
+      "alloc_bytes_per_op": 117953,
+      "heap_bytes": 181548584
+    },
+    {
+      "name": "history_with_admission/records=100/body=262144",
+      "samples": 1,
+      "p50_ms": 96.887022,
+      "p95_ms": 96.887022,
+      "max_ms": 96.887022,
+      "alloc_bytes_per_op": 365565488,
+      "heap_bytes": 241078960,
+      "response_bytes": 52550292,
+      "phases_mean_ms": {
+        "admission_max": 5.194797,
+        "admission_p95": 0.563825
+      }
+    },
+    {
+      "name": "admission/records=100/body=262144",
+      "samples": 15,
+      "p50_ms": 0.237763,
+      "p95_ms": 0.484211,
+      "max_ms": 0.484211,
+      "alloc_bytes_per_op": 63529,
+      "heap_bytes": 181577400
+    },
+    {
+      "name": "history/records=500/body=262144",
+      "samples": 5,
+      "p50_ms": 235.162168,
+      "p95_ms": 737.765573,
+      "max_ms": 737.765573,
+      "alloc_bytes_per_op": 545646913,
+      "heap_bytes": 889489776,
+      "response_bytes": 262751451
+    },
+    {
+      "name": "history_summary/records=500/body=262144",
+      "samples": 5,
+      "p50_ms": 1.364267,
+      "p95_ms": 1.956097,
+      "max_ms": 1.956097,
+      "alloc_bytes_per_op": 366881,
+      "heap_bytes": 606007352,
+      "response_bytes": 207451
+    },
+    {
+      "name": "history_unchanged/records=500/body=262144",
+      "samples": 5,
+      "p50_ms": 1.415553,
+      "p95_ms": 1.601716,
+      "max_ms": 1.601716,
+      "alloc_bytes_per_op": 496193,
+      "heap_bytes": 605966328
+    },
+    {
+      "name": "history_with_admission/records=500/body=262144",
+      "samples": 1,
+      "p50_ms": 601.054264,
+      "p95_ms": 601.054264,
+      "max_ms": 601.054264,
+      "alloc_bytes_per_op": 1744772136,
+      "heap_bytes": 889572304,
+      "response_bytes": 262751451,
+      "phases_mean_ms": {
+        "admission_max": 109.547621,
+        "admission_p95": 0.54559
+      }
+    },
+    {
+      "name": "admission/records=500/body=262144",
+      "samples": 15,
+      "p50_ms": 0.33248,
+      "p95_ms": 0.892666,
+      "max_ms": 0.892666,
+      "alloc_bytes_per_op": 63595,
+      "heap_bytes": 605825880
+    },
+    {
+      "name": "history/records=1000/body=262144",
+      "samples": 5,
+      "p50_ms": 934.66959,
+      "p95_ms": 1855.936146,
+      "max_ms": 1855.936146,
+      "alloc_bytes_per_op": 1632348001,
+      "heap_bytes": 1136041104,
+      "response_bytes": 525502879
+    },
+    {
+      "name": "history_summary/records=1000/body=262144",
+      "samples": 5,
+      "p50_ms": 2.932954,
+      "p95_ms": 3.372171,
+      "max_ms": 3.372171,
+      "alloc_bytes_per_op": 613172,
+      "heap_bytes": 1136485888,
+      "response_bytes": 414879
+    },
+    {
+      "name": "history_unchanged/records=1000/body=262144",
+      "samples": 5,
+      "p50_ms": 2.871269,
+      "p95_ms": 2.943204,
+      "max_ms": 2.943204,
+      "alloc_bytes_per_op": 613134,
+      "heap_bytes": 1136486040
+    },
+    {
+      "name": "history_with_admission/records=1000/body=262144",
+      "samples": 1,
+      "p50_ms": 1884.20403,
+      "p95_ms": 1884.20403,
+      "max_ms": 1884.20403,
+      "alloc_bytes_per_op": 3405392272,
+      "heap_bytes": 1136090384,
+      "response_bytes": 525502879,
+      "phases_mean_ms": {
+        "admission_max": 216.802762,
+        "admission_p95": 0.637958
+      }
+    },
+    {
+      "name": "admission/records=1000/body=262144",
+      "samples": 15,
+      "p50_ms": 0.347408,
+      "p95_ms": 0.78331,
+      "max_ms": 0.78331,
+      "alloc_bytes_per_op": 63614,
+      "heap_bytes": 1136093808
+    },
+    {
+      "name": "http/direct/body=0/cold=true",
+      "samples": 15,
+      "p50_ms": 1.079968,
+      "p95_ms": 1.3484,
+      "max_ms": 1.3484,
+      "alloc_bytes_per_op": 156128,
+      "heap_bytes": 74934216,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.9501873333333332,
+        "first_byte": 1.0593014,
+        "request_written": 0.9633318000000001,
+        "tls_done": 0.945282,
+        "tls_start": 0.073537
+      }
+    },
+    {
+      "name": "http/direct/body=0/cold=false",
+      "samples": 15,
+      "p50_ms": 0.061061,
+      "p95_ms": 0.208483,
+      "max_ms": 0.208483,
+      "alloc_bytes_per_op": 13852,
+      "heap_bytes": 74944032,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.010522799999999999,
+        "first_byte": 0.06754033333333334,
+        "request_written": 0.017985
+      }
+    },
+    {
+      "name": "http/direct/body=4096/cold=true",
+      "samples": 15,
+      "p50_ms": 1.086234,
+      "p95_ms": 1.327977,
+      "max_ms": 1.327977,
+      "alloc_bytes_per_op": 160288,
+      "heap_bytes": 74943152,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.9393602666666668,
+        "first_byte": 1.0680490666666667,
+        "request_written": 0.9895403333333332,
+        "tls_done": 0.9347444666666667,
+        "tls_start": 0.07593386666666666
+      }
+    },
+    {
+      "name": "http/direct/body=4096/cold=false",
+      "samples": 15,
+      "p50_ms": 0.094825,
+      "p95_ms": 0.323395,
+      "max_ms": 0.323395,
+      "alloc_bytes_per_op": 14413,
+      "heap_bytes": 74974384,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.011982200000000002,
+        "first_byte": 0.10555153333333332,
+        "request_written": 0.0525286
+      }
+    },
+    {
+      "name": "http/direct/body=65536/cold=true",
+      "samples": 15,
+      "p50_ms": 1.413117,
+      "p95_ms": 2.194599,
+      "max_ms": 2.194599,
+      "alloc_bytes_per_op": 259121,
+      "heap_bytes": 75032264,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 1.1498594000000002,
+        "first_byte": 1.4175619333333334,
+        "request_written": 1.2983061999999999,
+        "tls_done": 1.1442460666666665,
+        "tls_start": 0.09084706666666667
+      }
+    },
+    {
+      "name": "http/direct/body=65536/cold=false",
+      "samples": 15,
+      "p50_ms": 0.142115,
+      "p95_ms": 0.25587,
+      "max_ms": 0.25587,
+      "alloc_bytes_per_op": 53912,
+      "heap_bytes": 75109152,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.012846333333333333,
+        "first_byte": 0.13985493333333332,
+        "request_written": 0.09213726666666668
+      }
+    },
+    {
+      "name": "http/direct/body=524288/cold=true",
+      "samples": 15,
+      "p50_ms": 1.56547,
+      "p95_ms": 1.947583,
+      "max_ms": 1.947583,
+      "alloc_bytes_per_op": 300150,
+      "heap_bytes": 75510064,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.9819796,
+        "first_byte": 1.5523063333333333,
+        "request_written": 1.3628592666666668,
+        "tls_done": 0.9775163333333334,
+        "tls_start": 0.07309493333333333
+      }
+    },
+    {
+      "name": "http/direct/body=524288/cold=false",
+      "samples": 15,
+      "p50_ms": 0.567339,
+      "p95_ms": 1.7106,
+      "max_ms": 1.7106,
+      "alloc_bytes_per_op": 47836,
+      "heap_bytes": 75568528,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.013686400000000001,
+        "first_byte": 0.6366093333333332,
+        "request_written": 0.41659460000000004
+      }
+    },
+    {
+      "name": "startup/inprocess",
+      "samples": 1,
+      "p50_ms": 8.628987,
+      "p95_ms": 8.628987,
+      "max_ms": 8.628987,
+      "alloc_bytes_per_op": 3795040,
+      "heap_bytes": 75308792
+    },
+    {
+      "name": "http/inprocess/body=0/cold=true",
+      "samples": 15,
+      "p50_ms": 3.172984,
+      "p95_ms": 3.701987,
+      "max_ms": 3.701987,
+      "alloc_bytes_per_op": 556860,
+      "heap_bytes": 75748400,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 1.6019754,
+        "first_byte": 3.1888438666666667,
+        "request_written": 1.6203620000000003,
+        "tls_done": 1.5977108666666666,
+        "tls_start": 0.5657527333333333
+      }
+    },
+    {
+      "name": "http/inprocess/body=0/cold=false",
+      "samples": 15,
+      "p50_ms": 0.547409,
+      "p95_ms": 1.0956,
+      "max_ms": 1.0956,
+      "alloc_bytes_per_op": 165644,
+      "heap_bytes": 75807080,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.015028733333333334,
+        "first_byte": 0.5805678666666667,
+        "request_written": 0.024663133333333333
+      }
+    },
+    {
+      "name": "http/inprocess/body=4096/cold=true",
+      "samples": 15,
+      "p50_ms": 3.422193,
+      "p95_ms": 5.893709,
+      "max_ms": 5.893709,
+      "alloc_bytes_per_op": 660101,
+      "heap_bytes": 76044104,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 1.7676722666666667,
+        "first_byte": 3.6290405999999997,
+        "request_written": 1.8340963333333333,
+        "tls_done": 1.7618691999999998,
+        "tls_start": 0.6356827333333335
+      }
+    },
+    {
+      "name": "http/inprocess/body=4096/cold=false",
+      "samples": 15,
+      "p50_ms": 0.538783,
+      "p95_ms": 0.909733,
+      "max_ms": 0.909733,
+      "alloc_bytes_per_op": 257542,
+      "heap_bytes": 76377032,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.010297933333333335,
+        "first_byte": 0.5697851333333332,
+        "request_written": 0.04876426666666666
+      }
+    },
+    {
+      "name": "http/inprocess/body=65536/cold=true",
+      "samples": 15,
+      "p50_ms": 3.81564,
+      "p95_ms": 4.842136,
+      "max_ms": 4.842136,
+      "alloc_bytes_per_op": 2038421,
+      "heap_bytes": 80231480,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 1.5843595333333333,
+        "first_byte": 3.7952394,
+        "request_written": 1.7476672666666668,
+        "tls_done": 1.5803040000000002,
+        "tls_start": 0.5514246666666667
+      }
+    },
+    {
+      "name": "http/inprocess/body=65536/cold=false",
+      "samples": 15,
+      "p50_ms": 1.126226,
+      "p95_ms": 2.666134,
+      "max_ms": 2.666134,
+      "alloc_bytes_per_op": 1491526,
+      "heap_bytes": 84955936,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.013352533333333331,
+        "first_byte": 1.2634526666666666,
+        "request_written": 0.15024746666666666
+      }
+    },
+    {
+      "name": "http/inprocess/body=524288/cold=true",
+      "samples": 15,
+      "p50_ms": 8.902279,
+      "p95_ms": 26.764473,
+      "max_ms": 26.764473,
+      "alloc_bytes_per_op": 10752058,
+      "heap_bytes": 110085408,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 1.7624404,
+        "first_byte": 10.487202933333334,
+        "request_written": 2.4857962666666666,
+        "tls_done": 1.7574669333333335,
+        "tls_start": 0.6624312666666666
+      }
+    },
+    {
+      "name": "http/inprocess/body=524288/cold=false",
+      "samples": 15,
+      "p50_ms": 5.695025,
+      "p95_ms": 14.889271,
+      "max_ms": 14.889271,
+      "alloc_bytes_per_op": 10031536,
+      "heap_bytes": 146452448,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.015026466666666667,
+        "first_byte": 6.697595533333332,
+        "request_written": 0.6889115333333332
+      }
+    },
+    {
+      "name": "startup/worker",
+      "samples": 1,
+      "p50_ms": 16.763883,
+      "p95_ms": 16.763883,
+      "max_ms": 16.763883,
+      "alloc_bytes_per_op": 3899840,
+      "heap_bytes": 75380552
+    },
+    {
+      "name": "http/worker/body=0/cold=true",
+      "samples": 15,
+      "p50_ms": 3.879417,
+      "p95_ms": 4.998981,
+      "max_ms": 4.998981,
+      "alloc_bytes_per_op": 511186,
+      "heap_bytes": 75731160,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 1.9336796666666665,
+        "first_byte": 3.980256733333333,
+        "request_written": 1.9528022666666667,
+        "tls_done": 1.9288759333333332,
+        "tls_start": 0.6023949999999999
+      }
+    },
+    {
+      "name": "http/worker/body=0/cold=false",
+      "samples": 15,
+      "p50_ms": 1.073752,
+      "p95_ms": 2.220765,
+      "max_ms": 2.220765,
+      "alloc_bytes_per_op": 98984,
+      "heap_bytes": 75955784,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.014355399999999999,
+        "first_byte": 1.1854552,
+        "request_written": 0.026224400000000002
+      }
+    },
+    {
+      "name": "http/worker/body=4096/cold=true",
+      "samples": 15,
+      "p50_ms": 4.232984,
+      "p95_ms": 7.161716,
+      "max_ms": 7.161716,
+      "alloc_bytes_per_op": 590331,
+      "heap_bytes": 76030592,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 2.2116656666666668,
+        "first_byte": 4.661072399999999,
+        "request_written": 2.2757265333333336,
+        "tls_done": 2.205953266666666,
+        "tls_start": 0.6847376666666668
+      }
+    },
+    {
+      "name": "http/worker/body=4096/cold=false",
+      "samples": 15,
+      "p50_ms": 0.94393,
+      "p95_ms": 1.9526,
+      "max_ms": 1.9526,
+      "alloc_bytes_per_op": 173138,
+      "heap_bytes": 76518688,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.0119138,
+        "first_byte": 1.0766224,
+        "request_written": 0.0563802
+      }
+    },
+    {
+      "name": "http/worker/body=65536/cold=true",
+      "samples": 15,
+      "p50_ms": 6.711829,
+      "p95_ms": 11.586299,
+      "max_ms": 11.586299,
+      "alloc_bytes_per_op": 1694717,
+      "heap_bytes": 80003008,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 2.664617866666667,
+        "first_byte": 7.178760866666667,
+        "request_written": 2.896289533333333,
+        "tls_done": 2.658453533333333,
+        "tls_start": 0.7121982666666667
+      }
+    },
+    {
+      "name": "http/worker/body=65536/cold=false",
+      "samples": 15,
+      "p50_ms": 2.320024,
+      "p95_ms": 3.422147,
+      "max_ms": 3.422147,
+      "alloc_bytes_per_op": 1129822,
+      "heap_bytes": 84925248,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.015781,
+        "first_byte": 2.3698338,
+        "request_written": 0.1886005333333333
+      }
+    },
+    {
+      "name": "http/worker/body=524288/cold=true",
+      "samples": 15,
+      "p50_ms": 15.380257,
+      "p95_ms": 38.687751,
+      "max_ms": 38.687751,
+      "alloc_bytes_per_op": 8501708,
+      "heap_bytes": 110274008,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 2.6101204,
+        "first_byte": 17.568719133333335,
+        "request_written": 3.6214572,
+        "tls_done": 2.6020046666666663,
+        "tls_start": 0.8683322
+      }
+    },
+    {
+      "name": "http/worker/body=524288/cold=false",
+      "samples": 15,
+      "p50_ms": 10.190151,
+      "p95_ms": 20.927709,
+      "max_ms": 20.927709,
+      "alloc_bytes_per_op": 7863093,
+      "heap_bytes": 145576744,
+      "response_bytes": 11,
+      "phases_mean_ms": {
+        "connection_ready": 0.0196322,
+        "first_byte": 11.529894133333332,
+        "request_written": 0.7781287333333334
+      }
+    }
+  ],
+  "recognition": [
+    {
+      "method": "HEAD",
+      "path": "/api/hello",
+      "operation": "hello",
+      "requirements": null,
+      "evaluation_ms": 0.596395,
+      "approval_deadline_ms": 0
+    },
+    {
+      "method": "GET",
+      "path": "/api/hello",
+      "operation": "hello.get",
+      "requirements": null,
+      "evaluation_ms": 0.543962,
+      "approval_deadline_ms": 0
+    },
+    {
+      "method": "GET",
+      "path": "/v1/models",
+      "operation": "models.list",
+      "requirements": null,
+      "evaluation_ms": 0.818131,
+      "approval_deadline_ms": 0
+    }
+  ],
+  "complete": true,
+  "metadata": {
+    "timestamp": "2026-10-14T18:01:21.506497+00:00",
+    "head": "82d2482b5a831d46c86934d0223bd9e319ed304e",
+    "upstream": "82d2482b5a831d46c86934d0223bd9e319ed304e",
+    "diff_sha256": "19f19146ac59bd3ecfa31c4448e01c8d98d1b415ca56a12cc27dbe8c351fcb31",
+    "harness_sha256": "7afd99b48f4a92798bb65f040f67ee52298cf0ddf50c5327508592f706317be6",
+    "platform": "Linux-7.2.9-arch1-1-x86_64-with-glibc2.42",
+    "cpu_count": 16,
+    "memory_limit": "1536MiB",
+    "affinity": [
+      0,
+      1
+    ],
+    "bubblewrap": "bubblewrap 0.13.0"
+  }
+}

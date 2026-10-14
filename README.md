@@ -64,6 +64,14 @@ host key. Check access with `monitor connections`. Use `monitor run --help`,
 One Go binary includes Monitor and all connector implementations. Connectors run
 in-process by default; `-connector-workers` enables Linux isolation for all connections.
 
+For repeatable latency, worker, policy, and request-history measurements, run
+`dev/perf --output .dev/perf/baseline`. Use `dev/perf-probe --ssh NAME --output
+.dev/perf/live.json` to time an existing sandbox's intercepted Anthropic path.
+`dev/perf-ui --output .dev/perf/ui.json` checks approval visibility and decisions
+in the real browser UI while owner API responses are deliberately slow.
+See the [performance investigation and harness](dev/performance/README.md) for
+baseline results, profiles, deployment findings, and comparison commands.
+
 ## Owner web apps
 
 Monitor is one app with two interfaces: `/app/` is the dashboard-style
@@ -84,6 +92,13 @@ as `?catalog=...` on later snapshot requests, and restores the `presets` field
 locally when the server omits an unchanged catalog. Catalog entries contain
 setup metadata and action/effect summaries for configured accounts. Full preset
 definitions load through `/presets/{name}` when the editor needs them.
+
+The UI reads compact activity records with `client.read(signal, { summary: true })`
+and fetches full facts through `client.request(id)` when a request is opened.
+`GET /requests` and the default `read()` retain the full audit format. Owner
+snapshots and compact records use ETags to avoid transferring unchanged JSON;
+large responses support gzip. The client caches parsed responses in memory,
+clears them on writes, and scopes them to the authenticated client.
 
 For local development, run `dev/setup`, open `http://127.0.0.1:8080/app/`, and
 enter the owner key from `.dev/owner.key`. Both interfaces support direct sign-in
