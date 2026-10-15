@@ -45,7 +45,7 @@ func (keys *SSHAgent) Serve(s *connector.Stream, _ *connector.Env) {
 }
 
 func (a gatedAgent) SignWithFlags(key ssh.PublicKey, data []byte, flags agent.SignatureFlags) (*ssh.Signature, error) {
-	if err := a.s.Gate(signEvent(key, data)); err != nil {
+	if err := a.s.Check(signEvent(key, data)); err != nil {
 		return nil, err
 	}
 	return a.ExtendedAgent.SignWithFlags(key, data, flags)

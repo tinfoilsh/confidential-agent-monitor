@@ -66,7 +66,7 @@ func (t *CLI) session(s *connector.Stream, ch ssh.Channel, reqs <-chan *ssh.Requ
 			e.Payload = gitObject(stdin)
 		}
 		status := exitRefused
-		if err := s.Gate(e); err != nil {
+		if err := s.Check(e); err != nil {
 			fmt.Fprintf(ch.Stderr(), "monitor: %v\n", err)
 		} else {
 			status = t.execute(s.Context, e.Command.Argv, io.MultiReader(bytes.NewReader(stdin), ch), ch)

@@ -349,10 +349,10 @@ const unlock = run(async () => {
 });
 
 const summary = owner.summary, saveText = owner.saveText;
-const saveButton = (r, text, primary) => `<button class="${primary ? "primary" : ""}" title="${esc(saveText(r))}" onclick="answer('${r.id}', 'save')">${esc(text)}</button>`;
-function decide(r, saveLabel) {
+function decide(r) {
   const d = owner.decisions(r);
-  return `${d.once ? `<button onclick="answer('${r.id}', 'once')">Allow once</button>` : ""}${d.save ? saveButton(r, saveLabel, d.once) : ""}`
+  return `${d.once ? `<button onclick="answer('${r.id}', 'once')">Allow once</button>` : ""}`
+    + `${d.save ? `<button title="${esc(saveText(r))}" onclick="answer('${r.id}', 'save')">Save rule and retry</button>` : ""}`
     + `${d.deny ? `<button class="danger" onclick="answer('${r.id}', 'deny')">Deny</button>` : ""}${d.dismiss ? `<button onclick="dismiss('${r.id}')">Dismiss</button>` : ""}`;
 }
 
@@ -399,7 +399,7 @@ function requestPane(id) {
   }
   const r = requestRecord(id);
   if (!r) return [head("Request", "", requestSource), `<p class="empty">No request ${esc(id)}.</p>`];
-  const buttons = decide(r, saveText(r));
+  const buttons = decide(r);
   return [head(esc(r.facts?.title || summary(r.facts?.details) || r.facts.account), `${esc(r.facts.principal.name)} · ${accountIcon(r.facts.account)}${esc(r.facts.account)}${r.state === "pending" ? ` · ${left(r)} left` : ""}`, requestSource),
     `<section><div class="row"><span class="${STATE_CLASS[r.state]}">${r.state}</span><span class="muted">${new Date(r.time).toLocaleTimeString()}</span></div>
       <ul>${[...(r.deny ?? []), ...reasons(r)].map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
@@ -407,7 +407,7 @@ function requestPane(id) {
       ${r.facts?.details?.policy ? `<h2>Source changes</h2><pre>${esc(r.facts.details.policy.source_diff)}</pre><h2>Effective changes</h2><pre>${esc(r.facts.details.policy.effective_diff || "No effective changes.")}</pre>` : ""}
       ${r.facts?.operation?.id ? disclosure("grant", `<span class="muted">${esc(r.facts?.operation?.id)} grant</span>`, `<pre>${esc(JSON.stringify(r.grant))}</pre>`) : ""}
       ${disclosure("request", "Policy facts", `<pre>${esc(JSON.stringify(r.facts, null, 2))}</pre>`)}
-      ${draftLink(r) ? `<div class="row">${draftLink(r)}</div>` : ""}${buttons ? `<div class="decisions">${buttons}</div>` : ""}</section>`];
+      ${requestLinks(r)}${buttons ? `<div class="decisions">${buttons}</div>` : ""}</section>`];
 }
 
 const answer = run((id, decision) => {
@@ -415,14 +415,15 @@ const answer = run((id, decision) => {
   if (!request || request.savingDecision) return;
   return edit((state) => {
     state.records = state.records.map((r) => r.id === id ? { ...r, savingDecision: true,
-      state: r.state === "pending" ? decision === "deny" ? "denied" : "approved" : r.state } : r);
+      state: decision === "save" ? "refused" : decision === "deny" ? "denied" : "approved",
+      ...(decision === "save" ? { deny: ["Approval rule saved; retry the request."] } : {}) } : r);
     const identity = state.view.config.identities?.[request.facts.principal.name];
     if (decision === "save" && identity) identity.rules = { ...(identity.rules ?? {}), [request.id]: {
       account: request.facts.account, action: request.facts.operation.action, operation: request.facts.operation.id,
       definition: request.definition,
       scope: request.grant ?? {}, requirements: request.requirements ?? [],
     }};
-  }, () => client().decide(id, decision), { message: decision === "save" ? "Rule saved" : decision === "deny" ? "Denied" : "Approved" });
+  }, () => client().decide(id, decision), { message: decision === "save" ? "Rule saved. Retry the request from your agent." : decision === "deny" ? "Denied" : "Approved" });
 });
 
 function dismiss(id) {
@@ -549,7 +550,12 @@ function downloadPreset(name) {
   Object.assign(document.createElement("a"), { href: URL.createObjectURL(blob), download: name + ".json" }).click();
 }
 
-const draftLink = (r) => owner.draftable(view, r) ? `<a href="#preset/${encodeURIComponent(owner.draftable(view, r))}/${r.id}">Add operation</a>` : "";
+function requestLinks(r) {
+  const account = accounts()[r.facts.account];
+  if (!account) return "";
+  return `<div class="row"><a href="#account/${encodeURIComponent(r.facts.account)}">Account settings</a>
+    <a href="#preset/${encodeURIComponent(account.preset)}/${encodeURIComponent(r.id)}">${owner.draftable(view, r) ? "Add operation" : "Edit preset"}</a></div>`;
+}
 
 function presetPage(name, from) {
   if (!name) return [head("New preset"), `<section><label for="preset-name">Name</label><div class="row"><input id="preset-name"><button onclick="location.hash = 'preset/' + encodeURIComponent($('preset-name').value.trim())">Create</button></div></section>`];
@@ -558,9 +564,12 @@ function presetPage(name, from) {
     return [head("Preset " + esc(name)), `<p class="empty">Loading…</p>`];
   }
   if (records.find((r) => r.id === from)?.summary && requestRecord(from)?.summary) return requestPane(from);
-  const file = owner.withDraft(presetFile(name), requestRecord(from));
+  const request = requestRecord(from), file = owner.withDraft(presetFile(name), request);
   const users = Object.entries(accounts()).filter(([, acc]) => acc.preset === name).map(([a]) => a);
   return [head("Preset " + esc(name)), `<section><p class="muted">Changes apply to every account using it: ${esc(users.join(", ") || "none yet")}.</p>
+    ${request ? `<h2>${esc(owner.requestTitle(request))}</h2><ul>${(request.deny ?? []).map((reason) => `<li>${esc(reason)}</li>`).join("")}</ul>
+      <p>Review the request and its settings using the reason above. After making any corrections, retry from your agent.</p>
+      <p><a href="#request/${encodeURIComponent(request.id)}">Back to request</a> · <a href="#account/${encodeURIComponent(request.facts.account)}">Account settings</a></p>` : ""}
     <textarea id="preset" aria-label="Preset definition" rows="40">${esc(owner.presetText(file))}</textarea>
     <div class="row">${view.config.presets?.[name] ? `<button class="danger" onclick="commit(edits.removePreset(${q(name)}))">Remove your version</button>` : "<span></span>"}
       <span><button onclick="downloadPreset(${q(name)})">Download file</button> <button class="primary" onclick="savePreset(${q(name)})">Save</button></span></div></section>`];

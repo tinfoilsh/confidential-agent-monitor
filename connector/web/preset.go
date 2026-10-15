@@ -15,17 +15,21 @@ import (
 type Request struct {
 	HTTP    *facts.HTTP    `json:"http"`
 	GraphQL *facts.GraphQL `json:"graphql,omitempty"`
+	Invalid string         `json:"invalid,omitempty"`
+	slots   []*Slot        // Bound by parsing; only the serving connector uses these.
 }
 
 func (r *Request) Describe(c connector.Context) (facts.Facts, error) {
-	details := facts.Details{HTTP: r.HTTP}
-	if r.GraphQL != nil {
-		details.GraphQL = r.GraphQL
+	if r.HTTP == nil {
+		return facts.Facts{}, errors.New("missing HTTP request")
 	}
-	f := facts.Facts{Details: details}
+	f := facts.Facts{Details: facts.Details{HTTP: r.HTTP, GraphQL: r.GraphQL}}
 	h := r.HTTP
-	p, _ := c.Spec.(*Preset)
-	if p != nil {
+	f.Title = h.Method + " " + h.Host + h.Path
+	if r.Invalid != "" {
+		return f, errors.New(r.Invalid)
+	}
+	if p, ok := c.Spec.(*Preset); ok && p != nil {
 		return p.Match(r, c, f)
 	}
 	action := "browse"
@@ -33,7 +37,6 @@ func (r *Request) Describe(c connector.Context) (facts.Facts, error) {
 		action = "submit"
 	}
 	f.Operation = &facts.Operation{Action: action}
-	f.Title = h.Method + " " + h.Host + h.Path
 	f.Parameters = map[string]any{"host": h.Host}
 	return f, nil
 }
@@ -461,7 +464,7 @@ func (p *Preset) Match(r *Request, c connector.Context, f facts.Facts) (facts.Fa
 	if p.Slots && (config == nil || !slices.ContainsFunc(config.Slots, func(slot Slot) bool {
 		return h.Origin == slot.Origin && under(h.Path, slot.Path)
 	})) {
-		return f, fmt.Errorf("the request is outside this API's address")
+		return f, errors.New("the request is outside this API's address")
 	}
 	parts := strings.Split(h.Path, "/")
 	origins, methods := []string{h.Origin, "*"}, []string{h.Method, "*"}

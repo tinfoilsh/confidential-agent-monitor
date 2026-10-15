@@ -54,7 +54,7 @@ func (socket *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
 			sign.Hash = rest
 		case command == "PKSIGN" || command == "PKDECRYPT":
 			sign.Op = strings.ToLower(command)
-			if err := s.Gate(&sign); err != nil {
+			if err := s.Check(&sign); err != nil {
 				fmt.Fprintf(s, "ERR %d %v <Monitor>\n", assuanNotSupported, err)
 				continue
 			}

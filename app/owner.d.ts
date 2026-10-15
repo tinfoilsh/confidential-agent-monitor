@@ -92,6 +92,7 @@ export type RequestDetails = {
   policy?: { source_diff: string; effective_diff: string }
 }
 export type RequestRecord = {
+  invalid?: boolean
   summary?: boolean
   id: string
   state: RequestState

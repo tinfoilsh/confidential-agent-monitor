@@ -116,7 +116,7 @@ func NewDialer(allowed []netip.Prefix) *net.Dialer {
 	return &net.Dialer{Timeout: DialTimeout, Control: guard.Safe}
 }
 
-// Stream carries caller authority and a protocol connection.
+// Stream carries an authenticated connection and its request checker.
 type Stream struct {
 	Context context.Context
 	cancel  context.CancelFunc
@@ -125,16 +125,16 @@ type Stream struct {
 	Name string
 	Host string
 	Port uint32
-	// The error joins the message of every rule that denied the event.
-	Gate func(Request) error
+	// Check describes and authorizes parsed input before it executes.
+	Check func(Request) error
 }
 
 // NewStream carries c until ctx ends or the stream closes.
 func NewStream(ctx context.Context, c net.Conn) *Stream {
 	ctx, cancel := context.WithCancel(ctx)
 	stop := context.AfterFunc(ctx, func() { c.Close() })
-	return &Stream{Context: ctx, cancel: cancel, Conn: c, stop: stop, Gate: func(Request) error {
-		return errors.New("policy gate missing")
+	return &Stream{Context: ctx, cancel: cancel, Conn: c, stop: stop, Check: func(Request) error {
+		return errors.New("request checker missing")
 	}}
 }
 
@@ -220,8 +220,8 @@ func PumpReplies(s *Stream, pump func()) func() {
 	return func() { s.Close(); <-done }
 }
 
-// Request retains parsed input while an approval is pending. Describe must be
-// pure: the monitor calls it again with current settings before execution.
+// Request carries parsed input to the monitor. Describe interprets it once
+// against the current settings, without executing it or mutating the input.
 type Request interface {
 	Describe(Context) (facts.Facts, error)
 }

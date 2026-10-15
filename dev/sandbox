@@ -1,70 +1,53 @@
 #!/usr/bin/env bash
-# Boots the confidential-agent-sandbox image under podman and opens a shell in it whose only
-# way out is the monitor: sing-box routes every TCP connection, by name, into its SOCKS tunnel.
+# Boots the sandbox's local mode under Podman, using its normal Monitor network service.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 dev=$PWD/.dev
-src=${SANDBOX_SRC:-../confidential-agent-sandbox}
+src=$(realpath "${SANDBOX_SRC:-../confidential-agent-sandbox}")
 name=${SANDBOX_NAME:-sandbox-dev}
 listen=${MONITOR_LISTEN:-127.0.0.1:2223}
 toolchain=$(realpath "${SANDBOX_TOOLCHAIN:?set to a nix-closure pack.sh STAGE directory}")
-socks=127.0.0.1:1080 tun=172.19.0.1/30 resolver=172.19.0.2
-singbox=$(nix build --no-link --print-out-paths nixpkgs#sing-box)
+[[ -f $src/Dockerfile && -d $toolchain/nix/store ]] || { echo 'Check SANDBOX_SRC and SANDBOX_TOOLCHAIN' >&2; exit 1; }
 
-podman rm -f "$name" > /dev/null
+podman build -q -t "$name" "$src" > /dev/null
+podman rm -f --ignore "$name" > /dev/null
 pkill -f "^$dev/monitor " && pidwait -f "^$dev/monitor " || true
 dev/setup > /dev/null
-podman build -q -t "$name" "$src" > /dev/null
-# Every name resolves to a fake address, which sing-box maps back so the monitor sees the name.
-cat > "$dev/sing-box.json" <<JSON
-{
-  "dns": {
-    "servers": [{"type": "local", "tag": "local"}, {"type": "fakeip", "tag": "fakeip", "inet4_range": "198.18.0.0/15"}],
-    "rules": [{"query_type": ["A"], "server": "fakeip"}, {"action": "predefined", "rcode": "NOERROR"}]
-  },
-  "inbounds": [{"type": "tun", "interface_name": "tun0", "address": ["$tun"], "auto_route": true}],
-  "outbounds": [{"type": "socks", "tag": "monitor", "server": "${socks%:*}", "server_port": ${socks##*:}}],
-  "route": {
-    "rules": [{"action": "sniff"}, {"protocol": "dns", "action": "hijack-dns"}, {"network": "udp", "action": "reject"}],
-    "final": "monitor"
-  }
-}
-JSON
-# keep-id makes .dev's files the sandbox user's, at the paths .dev/env names.
+# Mount only the agent identity and public configuration, never the owner's key/store.
+sed -e 's|IdentityFile .*|IdentityFile /run/monitor/id|' \
+    -e 's|UserKnownHostsFile .*|UserKnownHostsFile /run/monitor/known_hosts|' \
+    "$dev/ssh_config" > "$dev/sandbox-ssh.conf"
 podman run -d --name "$name" --hostname workspace --privileged --systemd=always \
-  --userns=keep-id --user root --network "pasta:-T,${listen##*:}" --dns "$resolver" \
+  --userns=keep-id --user root --network "pasta:-T,${listen##*:}" --dns 100.127.255.2 \
   -v "$name:/mnt/disk" -v "$name:/nix" -v "$toolchain:/tinfoil/models/nix:ro" \
-  -v "$dev:/srv/monitor:ro" \
-  -v "$dev/ssh_config:/etc/ssh/ssh_config.d/monitor.conf:ro" \
+  -v "$dev/id:/run/monitor/id:ro" -v "$dev/id.pub:/run/monitor/id.pub:ro" \
+  -v "$dev/known_hosts:/run/monitor/known_hosts:ro" \
+  -v "$dev/sandbox-ssh.conf:/etc/ssh/ssh_config.d/monitor.conf:ro" \
   --entrypoint bash "$name" -c '
     set -euo pipefail
-    # Stand in for the CVM key and enrollment; dev/sandbox configures routing after boot.
-    install -d -m 0700 /run/tinfoil/keys/host-ssh
-    ssh-keygen -q -t ed25519 -N "" -f /run/tinfoil/keys/host-ssh/private_key.pem
-    ssh-keygen -y -f /run/tinfoil/keys/host-ssh/private_key.pem > /mnt/disk/.enrollment
-    touch /mnt/disk/.authorized_keys
-    printf "null\n" > /mnt/disk/.monitor.json
-    # Local podman has no CVM enrollment endpoint or encrypted-volume control socket.
-    mount --bind /dev/null /etc/systemd/system/workspace-enroll.service
+    # The CVM mounts the writable toolchain overlay and enforces egress outside the guest.
     mkdir -p /nix/store /nix/store.upper /nix/store.work
     mount -t overlay overlay -o lowerdir=/tinfoil/models/nix/nix/store,upperdir=/nix/store.upper,workdir=/nix/store.work /nix/store
-    exec /entrypoint' > /dev/null
-until [[ $(podman exec "$name" systemctl is-system-running --wait 2> /dev/null) =~ running|degraded ]]; do
-  [[ $(podman inspect -f '{{.State.Running}}' "$name") == true ]] || { podman logs "$name"; exit 1; }
-done
-# Use the same client implementation as laptop sessions.
-podman cp client/monitor "$name:/usr/local/bin/monitor"
-# The entrypoint binds the disk's /home over the path .dev/env names, so .dev joins after boot.
-podman exec "$name" sh -c "mkdir -p '$dev' && mount --bind /srv/monitor '$dev'"
-podman exec "$name" sh -c "grep -v _PROXY= '$dev/env' > /etc/profile.d/monitor.sh &&
-  cp '$dev/ca.pem' /usr/local/share/ca-certificates/monitor.crt && update-ca-certificates > /dev/null"
-nix-store --export $(nix-store -qR "$singbox") | podman exec -i "$name" bash -lc 'nix-store --import' > /dev/null
-podman exec -i "$name" nft -f - <<NFT
+    nft -f - <<NFT
 table inet egress {
-  chain output { type filter hook output priority 0; oifname != { "lo", "tun0" } drop; }
+  chain output { type filter hook output priority 0; oifname != { "lo", "monitor0" } drop; }
   chain forward { type filter hook forward priority 0; drop; }
 }
 NFT
-podman exec -d -u sandbox "$name" ssh -N -D "$socks" monitor
-podman exec -d "$name" "$singbox/bin/sing-box" run -c "$dev/sing-box.json"
-exec podman exec -it -u sandbox -w /workspace "$name" bash -l
+    exec /entrypoint --local' > /dev/null
+# Wait for routing, not merely systemd: the shell must have a working Monitor connection.
+deadline=$((SECONDS + 60))
+while ((SECONDS < deadline)); do
+  if podman exec "$name" ip link show monitor0 > /dev/null 2>&1; then
+    [[ $# != 0 ]] || set -- bash -l
+    terminal=()
+    [[ ! -t 0 || ! -t 1 ]] || terminal=(-t)
+    exec podman exec -i "${terminal[@]}" -u sandbox -w /workspace "$name" "$@"
+  fi
+  [[ $(podman inspect -f '{{.State.Running}}' "$name") == true ]] || { podman logs "$name"; exit 1; }
+  sleep 0.5
+done
+podman logs --tail 30 "$name"
+podman exec "$name" journalctl -b -u monitor-network --no-pager -n 30
+echo 'Sandbox Monitor network did not become ready within 60 seconds' >&2
+exit 1

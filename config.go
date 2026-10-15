@@ -32,7 +32,7 @@ type identity struct {
 	Key      string            `json:"key"`
 	Accounts map[string]access `json:"accounts"`
 	Rules    map[string]rule   `json:"rules,omitempty"`
-	// Profile admits every request unchanged and unlabeled, recording it, to learn what a client sends.
+	// Profile records valid requests without enforcing policy or changing labels.
 	Profile bool `json:"profile,omitempty"`
 }
 

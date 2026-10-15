@@ -2,7 +2,6 @@ package web
 
 import (
 	"bytes"
-	"context"
 	"crypto/tls"
 	"encoding/json"
 	"encoding/json/jsontext"
@@ -67,29 +66,28 @@ func (h *HTTP) Serve(s *connector.Stream, e *connector.Env) {
 	h.ServeWithTransport(s, e, transport)
 }
 
-// ServeWithTransport shares HTTP screening and credential placement with connectors
+// ServeWithTransport shares HTTP parsing, gating and credential placement with connectors
 // that own their upstream transport.
 func (h *HTTP) ServeWithTransport(s *connector.Stream, e *connector.Env, transport http.RoundTripper) {
-	proxy := h.proxy(transport)
 	var c net.Conn = s
 	if s.Port != httpPort {
 		c = tls.Server(s, e.TLS)
 	}
 	connector.ServeHTTP(s, c, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		r, err := h.screen(r, s)
-		if err != nil {
+		request := h.parseRequest(r, s)
+		if err := s.Check(request); err != nil {
 			log.Printf("refused %s %s%s: %v", r.Method, r.Host, r.URL.Path, err)
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
 		}
-		proxy.ServeHTTP(w, r)
+		proxy(substitution{transport, h.Secrets, request.slots}).ServeHTTP(w, r)
 	}))
 }
 
-// The screened request already names its upstream; substitution is the last change before it is sent.
-func (h *HTTP) proxy(base http.RoundTripper) *httputil.ReverseProxy {
+// The parsed request already names its upstream; substitution is the last change before it is sent.
+func proxy(transport http.RoundTripper) *httputil.ReverseProxy {
 	return &httputil.ReverseProxy{
-		Transport: substitution{base, h.Secrets},
+		Transport: transport,
 		Rewrite:   func(*httputil.ProxyRequest) {},
 		// The error may quote the request with its credentials in place.
 		ErrorHandler: func(w http.ResponseWriter, r *http.Request, _ error) {
@@ -99,54 +97,70 @@ func (h *HTTP) proxy(base http.RoundTripper) *httputil.ReverseProxy {
 	}
 }
 
-// screen gates the canonical request with its placeholders; a selected connection, unlike a routed one, has no host to match.
-func (h *HTTP) screen(r *http.Request, s *connector.Stream) (*http.Request, error) {
+// Parsing retains errors as part of the connector request so the monitor records
+// them through Describe. Unvalidated input is never interpreted as an operation.
+func (h *HTTP) parseRequest(r *http.Request, s *connector.Stream) *Request {
+	request := &Request{HTTP: &facts.HTTP{
+		Method: strings.ToValidUTF8(r.Method, "�"), Host: strings.ToValidUTF8(r.Host, "�"),
+		Path: strings.ToValidUTF8(r.URL.EscapedPath(), "�"),
+	}}
+	if err := request.parse(h, r, s); err != nil {
+		request.Invalid = strings.ToValidUTF8(err.Error(), "�")
+	}
+	return request
+}
+
+// parse fills facts only as their validation succeeds. A selected connection,
+// unlike a routed one, has no channel host to match.
+func (request *Request) parse(h *HTTP, r *http.Request, s *connector.Stream) error {
 	scheme, host, port, err := authority(r)
 	if err != nil {
-		return r, err
+		return err
 	}
 	switch {
 	case s.Host != "" && (host != strings.ToLower(s.Host) || port != s.Port):
-		return r, fmt.Errorf("a channel to %s:%d cannot carry a request for %s:%d", s.Host, s.Port, host, port)
+		return fmt.Errorf("a channel to %s:%d cannot carry a request for %s:%d", s.Host, s.Port, host, port)
 	case h.Claim(host, port) < 0:
-		return r, fmt.Errorf("this connection does not serve %s:%d", host, port)
+		return fmt.Errorf("this connection does not serve %s:%d", host, port)
 	case !slices.Contains(Methods, r.Method):
-		return r, fmt.Errorf("method %s is refused", r.Method)
+		return fmt.Errorf("method %s is refused", r.Method)
 	case len(r.Trailer) > 0:
-		return r, errors.New("trailers are refused")
+		return errors.New("trailers are refused")
 	case r.Header["Upgrade"] != nil:
-		return r, errors.New("protocol upgrades are refused")
+		return errors.New("protocol upgrades are refused")
 	}
 	// The proxy drops headers that Connection names, after the gate would have seen them.
 	for _, token := range strings.FieldsFunc(strings.Join(r.Header.Values("Connection"), ","), func(c rune) bool { return c == ',' || c == ' ' }) {
 		if !strings.EqualFold(token, "keep-alive") && !strings.EqualFold(token, "close") {
-			return r, fmt.Errorf("Connection: %s is refused", token)
+			return fmt.Errorf("Connection: %s is refused", token)
 		}
 	}
 	for _, name := range methodOverrides {
 		if r.Header[name] != nil {
-			return r, fmt.Errorf("%s is refused", name)
+			return fmt.Errorf("%s is refused", name)
 		}
 	}
 	if err := canonicalPath(r.URL); err != nil {
-		return r, err
+		return err
 	}
 	query, err := url.ParseQuery(r.URL.RawQuery)
 	if err != nil || !validText(query) || !validText(r.Header) {
-		return r, errors.New("the query or headers are not valid UTF-8 text")
+		return errors.New("the query or headers are not valid UTF-8 text")
 	}
 	origin := origin(scheme, host, port)
 	r.URL.Scheme, r.URL.Host, r.URL.RawPath, r.URL.RawQuery = scheme, strings.TrimPrefix(origin, scheme+"://"), "", encodeQuery(query)
 	r.Host = r.URL.Host
 	layer := &facts.HTTP{Method: r.Method, Origin: origin, Host: host, Path: r.URL.Path, Query: query, Headers: r.Header.Clone()}
+	request.HTTP = layer
 	if err := inspect(r, layer); err != nil {
-		return r, err
+		return err
 	}
-	used, err := h.bind(r, s.Name, origin)
+	// Binding uses the stream's immutable settings. Replacing them cancels the stream.
+	request.slots, err = h.bind(r, s.Name, origin)
 	if err != nil {
-		return r, err
+		return err
 	}
-	for _, slot := range used {
+	for _, slot := range request.slots {
 		layer.Secrets = append(layer.Secrets, slot.Value)
 	}
 	for name, values := range r.Header {
@@ -159,10 +173,8 @@ func (h *HTTP) screen(r *http.Request, s *connector.Stream) (*http.Request, erro
 			}
 		}
 	}
-	if err := s.Gate(&Request{HTTP: layer, GraphQL: graphql(layer.Body, query)}); err != nil {
-		return r, err
-	}
-	return r.WithContext(context.WithValue(r.Context(), slotsKey{}, used)), nil
+	request.GraphQL = graphql(layer.Body, query)
+	return nil
 }
 
 // authority returns the request's scheme, host and effective port, refusing any other spelling of them.

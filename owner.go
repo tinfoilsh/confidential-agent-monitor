@@ -43,6 +43,7 @@ var errRequestGone = errors.New("this request is no longer in the activity log")
 type requestSummary struct {
 	ID      string    `json:"id"`
 	State   string    `json:"state"`
+	Invalid bool      `json:"invalid,omitempty"`
 	Time    time.Time `json:"time"`
 	Expires time.Time `json:"expires,omitzero"`
 	Summary bool      `json:"summary"`
@@ -52,14 +53,6 @@ type requestSummary struct {
 		Operation *facts.Operation `json:"operation"`
 		Title     string           `json:"title"`
 	} `json:"facts"`
-}
-
-// The state and decision pointer can change while the response is encoded.
-// Facts and grant values are already immutable authorization snapshots.
-func copyRecord(r *record) record {
-	v, d := *r, *r.decision
-	v.decision = &d
-	return v
 }
 
 type fieldMetadata struct {
@@ -286,7 +279,7 @@ func (m *monitor) ownerHandler(overSSH bool) http.Handler {
 		if r.URL.Query().Has("summary") {
 			newest := make([]requestSummary, 0, len(m.records))
 			for _, r := range slices.Backward(m.records) {
-				v := requestSummary{ID: r.ID, State: r.State, Time: r.Time, Expires: r.Expires, Summary: true}
+				v := requestSummary{ID: r.ID, State: r.State, Invalid: r.Invalid, Time: r.Time, Expires: r.Expires, Summary: true}
 				v.Facts.Principal, v.Facts.Account, v.Facts.Operation = r.Facts.Principal, r.Facts.Account, r.Facts.Operation
 				v.Facts.Title = r.Facts.Title
 				// SQL and other protocol titles can contain the entire request.
@@ -299,14 +292,14 @@ func (m *monitor) ownerHandler(overSSH bool) http.Handler {
 		}
 		newest := make([]record, 0, len(m.records))
 		for _, r := range slices.Backward(m.records) {
-			newest = append(newest, copyRecord(r))
+			newest = append(newest, *r)
 		}
 		return newest, nil
 	}))
 	mux.Handle("GET /requests/{id}", owned(m, func(r *http.Request, _ struct{}) (any, error) {
 		for _, record := range m.records {
 			if record.ID == r.PathValue("id") {
-				return copyRecord(record), nil
+				return *record, nil
 			}
 		}
 		return nil, errRequestGone

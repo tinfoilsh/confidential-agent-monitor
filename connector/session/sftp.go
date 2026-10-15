@@ -71,7 +71,7 @@ func (t *SFTP) Serve(s *connector.Stream, e *connector.Env) {
 				r.Reply(true, nil)
 			}
 			go ssh.DiscardRequests(requests)
-			p := sftpProxy{up: reader, out: writer, gate: func(r connector.Request) error { return s.Gate(r) }, handles: map[string]*sftpHandle{}}
+			p := sftpProxy{up: reader, out: writer, check: s.Check, handles: map[string]*sftpHandle{}}
 			p.serve(ch, cmp.Or(t.Root, "/"))
 			return
 		}
@@ -87,7 +87,7 @@ type sftpHandle struct {
 type sftpProxy struct {
 	up      io.Reader
 	out     io.Writer
-	gate    func(connector.Request) error
+	check   func(connector.Request) error
 	root    string
 	handles map[string]*sftpHandle
 	next    uint64
@@ -355,8 +355,6 @@ func (p *sftpProxy) virtual(name string) string {
 	return "/" + strings.TrimPrefix(strings.TrimPrefix(name, p.root), "/")
 }
 
-func (p *sftpProxy) check(e SFTPRequest) error { return p.gate(&e) }
-
 func (p *sftpProxy) request(b []byte) ([]byte, error) {
 	id := binary.BigEndian.Uint32(b[1:5])
 	d := sftpDecoder{b: b[5:]}
@@ -432,7 +430,7 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 		if target != "" {
 			e.Target = path.Clean("/" + target)
 		}
-		if err := p.check(e); err != nil {
+		if err := p.check(&e); err != nil {
 			return nil, err
 		}
 		var err error
@@ -452,7 +450,7 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 		e.Target = p.virtual(target)
 	}
 	if e.Command != "close" {
-		if err := p.check(e); err != nil {
+		if err := p.check(&e); err != nil {
 			return nil, err
 		}
 	}

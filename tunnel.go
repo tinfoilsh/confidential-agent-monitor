@@ -127,7 +127,7 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 			nc.Reject(ssh.Prohibited, "the monitor does not forward this target")
 			return
 		}
-		if err := m.gate(c.ctx, input{Key: key, Connection: c.name, Request: &admissionRequest{Host: target.Host, Port: target.Port}}); err != nil {
+		if err := m.check(c.ctx, input{Key: key, Connection: c.name, Request: &admissionRequest{Host: target.Host, Port: target.Port}}); err != nil {
 			nc.Reject(ssh.Prohibited, err.Error())
 			return
 		}
@@ -137,8 +137,8 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 			if selected {
 				s.Host = ""
 			}
-			s.Gate = func(request connector.Request) error {
-				return m.gate(s.Context, input{stream: s, Key: key, Connection: c.name, Request: request})
+			s.Check = func(request connector.Request) error {
+				return m.check(s.Context, input{stream: s, Key: key, Connection: c.name, Request: request})
 			}
 			log.Printf("%s: forwarding %s:%d", p.Name, target.Host, target.Port)
 			c.dispatch(s.Context, func(server connector.Server, env *connector.Env) { server.Serve(s, env) })
@@ -423,7 +423,7 @@ func (m *monitor) proposePolicy(ctx context.Context, p principal, input proposal
 	if err != nil {
 		return err
 	}
-	r := m.addRecord(&decision{Facts: &facts.Facts{Version: facts.Version, Principal: facts.Principal{Key: p.Key, Name: p.Name},
+	r := m.addRecord(&record{Facts: &facts.Facts{Version: facts.Version, Principal: facts.Principal{Key: p.Key, Name: p.Name},
 		Title: "Change policy", Parameters: map[string]any{}, Details: facts.Details{Policy: diff}},
 		Requirements: []requirement{{ID: "policy", Message: input.Reason}}})
 	defer func() { r.settle(err) }()

@@ -241,8 +241,8 @@ export function grantText(operation, grant, scope) {
   return `Allow ${operation} ${fields.length ? "for the same " + fields.join(", ") : "for any request"}`
     + (fields.length && broad.length ? `, with any ${broad.join(", ")}` : "");
 }
-export const saveText = (r) => grantText(r.facts?.operation?.id, r.grant, r.facts?.parameters);
-// Expired requests can still save a rule, but cannot resume the original call.
+export const saveText = (r) => `${grantText(r.facts?.operation?.id, r.grant, r.facts?.parameters)} on future attempts. Retry this request after saving.`;
+// Saving a rule never resumes the original call; it also works after a timeout.
 export function decisions(r, now) {
   const state = now === undefined ? r.state : stateAt(r, now);
   const save = r.facts?.operation?.action != null && !!r.facts?.operation?.id;
@@ -448,8 +448,9 @@ export function apiSetup(view, account) {
     query: slot.query, value: slot.query ? placeholder : (slot.prefix ?? "") + placeholder };
 }
 
-// An unmatched request on a preset's account can become one of its operations.
-export const draftable = (view, r) => r.facts?.operation == null && r.facts?.details?.http && accounts(view)[r.facts.account] && presetOf(view, r.facts.account).operations
+// Only valid, unmatched HTTP input can become a new operation, including policy refusals.
+const unmatchedHTTP = (r) => r?.facts?.details?.http && !r.invalid && r.facts.operation == null;
+export const draftable = (view, r) => unmatchedHTTP(r) && accounts(view)[r.facts.account] && presetOf(view, r.facts.account).operations
   ? accounts(view)[r.facts.account].preset : null;
 
 // The draft matches only this exact path; the owner turns segments into {parameters} and sets its effects and scope.
@@ -462,7 +463,7 @@ export function draftOperation(e) {
 
 export function withDraft(file, r) {
   file = structuredClone(file);
-  if (r?.facts?.details?.http) {
+  if (unmatchedHTTP(r)) {
     const { id, ...operation } = draftOperation(r.facts.details);
     file.http = { ...file.http, operations: { ...(file.http?.operations ?? {}), [id]: operation } };
   }

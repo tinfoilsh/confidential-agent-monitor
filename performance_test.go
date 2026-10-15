@@ -200,7 +200,19 @@ func perfRequest(size int) (*web.Request, []byte) {
 func (f *perfFixture) gate(ctx context.Context, request connector.Request) error {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
-	return f.m.gate(ctx, input{Key: f.key, Connection: "anthropic", Request: request})
+	return f.m.check(ctx, input{Key: f.key, Connection: "anthropic", Request: request})
+}
+
+// Recognition probes use the public check path and inspect its audit decision.
+func (f *perfFixture) describe(ctx context.Context, request connector.Request) (*record, error) {
+	ctx, cancel := context.WithTimeout(ctx, 25*time.Millisecond)
+	defer cancel()
+	if err := f.gate(ctx, request); err != nil && ctx.Err() == nil {
+		return nil, err
+	}
+	f.m.mu.Lock()
+	defer f.m.mu.Unlock()
+	return f.m.records[len(f.m.records)-1], nil
 }
 
 // A counting response writer exercises real owner JSON encoding without keeping
@@ -238,7 +250,7 @@ func TestPerformance(t *testing.T) {
 		for _, probe := range []struct{ method, path string }{{"HEAD", "/api/hello"}, {"GET", "/api/hello"}, {"GET", "/v1/models"}} {
 			req := &web.Request{HTTP: &facts.HTTP{Method: probe.method, Path: probe.path, Origin: "https://api.anthropic.com", Host: "api.anthropic.com", BodyKind: "none", Headers: http.Header{"Anthropic-Version": {"2023-06-01"}}}}
 			start := time.Now()
-			d, _, err := f.m.evaluate(t.Context(), input{Key: f.key, Connection: "anthropic", Request: req})
+			d, err := f.describe(t.Context(), req)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -348,9 +360,7 @@ func TestPerformance(t *testing.T) {
 				var waits []float64
 				for {
 					started := time.Now()
-					f.m.mu.Lock()
-					_, _, err := f.m.evaluate(t.Context(), input{Key: f.key, Connection: "anthropic", Request: &admissionRequest{Host: "api.anthropic.com", Port: 443}})
-					f.m.mu.Unlock()
+					err := f.gate(t.Context(), &admissionRequest{Host: "api.anthropic.com", Port: 443})
 					if err != nil {
 						<-done
 						return 0, nil, err
@@ -365,10 +375,8 @@ func TestPerformance(t *testing.T) {
 				}
 			})
 			perfMeasure(t, report, fmt.Sprintf("admission/records=%d/body=%d", target, cfg.HistoryBodyBytes), cfg.Samples, func() (int, map[string]float64, error) {
-				// Evaluation alone avoids changing the history being measured.
-				f.m.mu.Lock()
-				defer f.m.mu.Unlock()
-				_, _, err := f.m.evaluate(t.Context(), input{Key: f.key, Connection: "anthropic", Request: &admissionRequest{Host: "api.anthropic.com", Port: 443}})
+				// Measure the complete admission check.
+				err := f.gate(t.Context(), &admissionRequest{Host: "api.anthropic.com", Port: 443})
 				return 0, nil, err
 			})
 		}
@@ -651,7 +659,7 @@ func TestHelloRecognition(t *testing.T) {
 	f := perfMonitor(t, nil, nil)
 	for _, method := range []string{"GET", "HEAD", "POST"} {
 		r := &web.Request{HTTP: &facts.HTTP{Method: method, Path: "/api/hello", Origin: "https://api.anthropic.com", Host: "api.anthropic.com", BodyKind: "none", Headers: http.Header{}}}
-		d, _, err := f.m.evaluate(t.Context(), input{Key: f.key, Connection: "anthropic", Request: r})
+		d, err := f.describe(t.Context(), r)
 		if err != nil {
 			t.Fatal(err)
 		}

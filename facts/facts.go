@@ -10,7 +10,7 @@ import (
 // Version identifies the facts schema and approval semantics. Bump it when
 // parsing, description, normalization, label, or approval semantics change.
 // This invalidates saved approvals; display-only edits do not need a bump.
-const Version = 7
+const Version = 8
 
 // Label levels are ordered from most restrictive to least restrictive.
 // Policy derives its rank tables from these same lists.

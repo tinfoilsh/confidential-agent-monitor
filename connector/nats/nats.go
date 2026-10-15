@@ -105,7 +105,7 @@ func (n *NATS) Serve(s *connector.Stream, e *connector.Env) {
 		c.fail("invalid CONNECT")
 		return
 	}
-	if err := c.gate(Request{Command: "connect"}); err != nil {
+	if err := c.s.Check(&Request{Command: "connect"}); err != nil {
 		c.fail("connection refused")
 		return
 	}
@@ -180,7 +180,6 @@ func (c *client) ok() error {
 	}
 	return nil
 }
-func (c *client) gate(e Request) error { return c.s.Gate(&e) }
 
 func (c *client) command(line string, r *bufio.Reader) error {
 	args := strings.Fields(line)
@@ -196,7 +195,7 @@ func (c *client) command(line string, r *bufio.Reader) error {
 		if m.Header != nil && !c.options.Headers {
 			return errors.New("headers were not negotiated")
 		}
-		if err := c.gate(Request{Command: "publish", Subject: m.Subject, Reply: m.Reply, Headers: m.Header, Payload: m.Data}); err != nil {
+		if err := c.s.Check(&Request{Command: "publish", Subject: m.Subject, Reply: m.Reply, Headers: m.Header, Payload: m.Data}); err != nil {
 			return err
 		}
 		if err := c.up.PublishMsg(m); err != nil {
@@ -224,7 +223,7 @@ func (c *client) command(line string, r *bufio.Reader) error {
 				return errors.New("invalid queue")
 			}
 		}
-		if err := c.gate(Request{Command: "subscribe", Subject: subject, Queue: queue}); err != nil {
+		if err := c.s.Check(&Request{Command: "subscribe", Subject: subject, Queue: queue}); err != nil {
 			return err
 		}
 		callback := func(m *nats.Msg) { c.deliver(sid, queue, m) }
@@ -293,7 +292,7 @@ func (c *client) deliver(sid, queue string, m *nats.Msg) {
 		c.s.Close()
 		return
 	}
-	if err := c.gate(Request{Command: "receive", Subject: m.Subject, Reply: m.Reply, Queue: queue, Headers: m.Header, Payload: m.Data}); err != nil {
+	if err := c.s.Check(&Request{Command: "receive", Subject: m.Subject, Reply: m.Reply, Queue: queue, Headers: m.Header, Payload: m.Data}); err != nil {
 		c.s.Close()
 		return
 	}

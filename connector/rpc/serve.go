@@ -151,12 +151,12 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 			stream := connector.NewStream(context.WithValue(ctx, sessionKey{}, info.ID), conn)
 			defer stream.Close()
 			stream.Name, stream.Host, stream.Port = info.Name, info.Host, info.Port
-			stream.Gate = func(request connector.Request) error {
+			stream.Check = func(request connector.Request) error {
 				event, err := encode(def, request)
 				if err != nil {
 					return err
 				}
-				return call(stream.Context, callbacks, "/gate/"+info.ID, event, nil)
+				return call(stream.Context, callbacks, "/check/"+info.ID, event, nil)
 			}
 			instance.Serve(stream, &env)
 		})}

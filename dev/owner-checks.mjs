@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Owner HTTP contract: both transports, validators, mutations and older servers.
 import assert from 'node:assert/strict';
-import { ownerClient, localOwnerClient } from '../app/owner.js';
+import { ownerClient, localOwnerClient, decisions, draftable, withDraft, saveText } from '../app/owner.js';
 
 for (const local of [false, true]) {
   const calls = [];
@@ -49,3 +49,24 @@ for (const local of [false, true]) {
   assert.equal((await client.read()).view.generation, 2);
 }
 console.log('Owner client checks passed for bearer and SSH transports.');
+
+const view = { config: { accounts: { api: { preset: 'custom' } } }, presets: { custom: { operations: {} } } };
+const file = { http: { operations: {} } };
+const unknown = { state: 'refused', facts: { account: 'api', operation: null, details: { http: {
+  method: 'GET', origin: 'https://example.com', path: '/item', body_kind: 'none', query: {}
+} } } };
+// A policy refusal can still be recognized by adding an operation; validation failures cannot.
+assert.equal(draftable(view, unknown), 'custom');
+assert.ok(withDraft(file, unknown).http.operations['GET /item']);
+assert.deepEqual(file.http.operations, {});
+const invalid = { ...unknown, invalid: true };
+assert.equal(draftable(view, invalid), null);
+assert.deepEqual(withDraft(file, invalid), file);
+const known = { ...unknown, state: 'pending', facts: { ...unknown.facts, operation: { id: 'item.read', action: 'read' } } };
+assert.equal(draftable(view, known), null);
+assert.deepEqual(withDraft(file, known), file);
+assert.deepEqual(decisions(known), { once: true, save: true, deny: true });
+assert.deepEqual(decisions({ ...known, state: 'expired' }), { save: true, dismiss: true });
+assert.deepEqual(decisions({ ...known, state: 'refused' }), {});
+assert.match(saveText(known), /future attempts.*Retry/);
+console.log('Approval retry and operation-draft checks passed.');

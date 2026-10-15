@@ -126,8 +126,6 @@ func ValidOrigin(origin string) bool {
 		u.Host == strings.ToLower(u.Host) && u.Port() != "443" && !strings.HasSuffix(origin, ":")
 }
 
-type slotsKey struct{}
-
 // bind returns the slots this request fills and refuses a placeholder anywhere else.
 func (h *HTTP) bind(r *http.Request, name, origin string) ([]*Slot, error) {
 	header := r.Header.Clone()
@@ -179,7 +177,7 @@ func (h *HTTP) bind(r *http.Request, name, origin string) ([]*Slot, error) {
 	}
 	for _, text := range texts {
 		if strings.Contains(text, placeholderPrefix) {
-			return nil, errors.New("a secret placeholder is outside this connection's declared slots")
+			return nil, errors.New("a secret placeholder is outside this connection's declared slots; check its origin, path and placement in the preset or account settings, then retry")
 		}
 	}
 	return used, nil
@@ -194,11 +192,11 @@ func under(path, prefix string) bool {
 type substitution struct {
 	base   http.RoundTripper
 	values map[string]*credential.Value
+	slots  []*Slot
 }
 
 func (t substitution) RoundTrip(r *http.Request) (*http.Response, error) {
-	used, _ := r.Context().Value(slotsKey{}).([]*Slot)
-	if len(used) == 0 {
+	if len(t.slots) == 0 {
 		return t.base.RoundTrip(r)
 	}
 	r = r.Clone(r.Context())
@@ -207,7 +205,7 @@ func (t substitution) RoundTrip(r *http.Request) (*http.Response, error) {
 	user, pass, _ := r.BasicAuth()
 	var signer *Slot
 	var keys aws.Credentials
-	for _, s := range used {
+	for _, s := range t.slots {
 		secret, err := t.resolve(r, s.Value)
 		if err != nil {
 			return nil, err
