@@ -10,7 +10,7 @@ import (
 // Version identifies the facts schema and approval semantics. Bump it when
 // parsing, description, normalization, label, or approval semantics change.
 // This invalidates saved approvals; display-only edits do not need a bump.
-const Version = 8
+const Version = 9
 
 // Label levels are ordered from most restrictive to least restrictive.
 // Policy derives its rank tables from these same lists.
@@ -98,16 +98,17 @@ type Details struct {
 }
 
 type HTTP struct {
-	Method   string      `json:"method"`
-	Origin   string      `json:"origin"`
-	Host     string      `json:"host"`
-	Path     string      `json:"path"`
-	Query    url.Values  `json:"query"`
-	Headers  http.Header `json:"headers"`
-	Secrets  []string    `json:"secrets"`
-	BodyKind string      `json:"body_kind"`
-	Body     any         `json:"body,omitempty"`
-	Form     url.Values  `json:"form,omitempty"`
+	WebSocket bool        `json:"websocket,omitempty"`
+	Method    string      `json:"method"`
+	Origin    string      `json:"origin"`
+	Host      string      `json:"host"`
+	Path      string      `json:"path"`
+	Query     url.Values  `json:"query"`
+	Headers   http.Header `json:"headers"`
+	Secrets   []string    `json:"secrets"`
+	BodyKind  string      `json:"body_kind"`
+	Body      any         `json:"body,omitempty"`
+	Form      url.Values  `json:"form,omitempty"`
 	// HeaderJSON holds single header values that are JSON objects, as Dropbox-API-Arg is.
 	HeaderJSON map[string]any `json:"header_json,omitempty"`
 }

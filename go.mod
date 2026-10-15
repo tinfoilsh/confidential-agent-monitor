@@ -8,6 +8,7 @@ require (
 	github.com/aws/smithy-go v1.26.0
 	github.com/chromedp/cdproto v0.157.8
 	github.com/chromedp/chromedp v0.20.1
+	github.com/coder/websocket v1.8.14
 	github.com/eclipse/paho.mqtt.golang v1.5.1
 	github.com/elazarl/goproxy v1.9.2
 	github.com/emersion/go-sasl v0.0.0-20241020182733-b788ff22d5a6

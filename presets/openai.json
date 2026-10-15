@@ -931,6 +931,10 @@
       "responses": {
         "title": "Responses"
       },
+      "responses.connect": {
+        "title": "Connect",
+        "effects": ["session"]
+      },
       "responses.compact": {
         "title": "Compact"
       },
@@ -1392,6 +1396,8 @@
       "createMessage": {"action":"threads.messages.send","body":"json","effects":["send"],"method":"POST","origin":"https://api.openai.com","path":"/v1/threads/{thread_id}/messages","scope":{"request":{"at":"","from":"body","type":"object"},"thread_id":{"at":"thread_id","from":"path"}}},
       "createModeration": {"action":"moderations.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.openai.com","path":"/v1/moderations","scope":{"request":{"at":"","from":"body","type":"object"}}},
       "createResponse": {"action":"responses.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.openai.com","path":"/v1/responses","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "connectResponsesWebSocket": {"action":"responses.connect","effects":["session"],"method":"GET","origin":"https://api.openai.com","path":"/v1/responses","websocket":true,"scope":{}},
+      "createResponseWebSocket": {"action":"responses.generate","body":"json","effects":["generate","pay","send"],"method":"GET","origin":"https://api.openai.com","path":"/v1/responses","websocket":true,"fields":{"/type":"response.create"},"scope":{"request":{"at":"","from":"body","type":"object"}}},
       "createRun": {"action":"threads.runs.execute","body":"json","effects":["execute"],"method":"POST","origin":"https://api.openai.com","params":["include[]"],"path":"/v1/threads/{thread_id}/runs","scope":{"assistant_id":{"at":"/assistant_id","from":"body"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"thread_id":{"at":"thread_id","from":"path"}}},
       "createSpeech": {"action":"audio.speech.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://api.openai.com","path":"/v1/audio/speech","scope":{"request":{"at":"","from":"body","type":"object"}}},
       "createThread": {"action":"threads.generate","effects":["generate","pay","send"],"method":"POST","origin":"https://api.openai.com","path":"/v1/threads","scope":{}},

@@ -30,7 +30,14 @@ func (r *Request) Describe(c connector.Context) (facts.Facts, error) {
 		return f, errors.New(r.Invalid)
 	}
 	if p, ok := c.Spec.(*Preset); ok && p != nil {
-		return p.Match(r, c, f)
+		matched, err := p.Match(r, c, f)
+		if err == nil && h.WebSocket && matched.Operation == nil {
+			err = errors.New("WebSocket requests require a reviewed operation")
+		}
+		return matched, err
+	}
+	if h.WebSocket {
+		return f, errors.New("WebSocket requests require a reviewed operation")
 	}
 	action := "browse"
 	if !slices.Contains([]string{"GET", "HEAD", "OPTIONS"}, h.Method) {
@@ -68,6 +75,9 @@ func (p *Preset) validate() error {
 		if o.Method == "" || o.Origin == "" || o.Path == "" || o.Scope == nil {
 			return fmt.Errorf("operation %s needs method, origin, path and scope", id)
 		}
+		if o.WebSocket && (o.Method != "GET" || !slices.Contains([]string{"", "none", "json"}, o.Body)) {
+			return fmt.Errorf("WebSocket operation %s needs GET and a none or json body", id)
+		}
 		for _, name := range o.Grant {
 			if _, ok := o.Scope[name]; !ok {
 				return fmt.Errorf("grant names missing scope %s", name)
@@ -89,6 +99,7 @@ func (p *Preset) validate() error {
 }
 
 type Operation struct {
+	WebSocket  bool                `json:"websocket,omitempty"`
 	Enabled    *bool               `json:"enabled,omitempty"`
 	ID         string              `json:"-"`
 	Action     string              `json:"action"`
@@ -131,6 +142,9 @@ type compiledSelector struct {
 
 func (compiled *compiledOperation) matches(r *Request, headers map[string][]string) (bool, error) {
 	o, h := compiled.operation, r.HTTP
+	if o.WebSocket != h.WebSocket {
+		return false, nil
+	}
 	for k, v := range o.Query {
 		if !condition(h.Query, k, v) {
 			return false, nil

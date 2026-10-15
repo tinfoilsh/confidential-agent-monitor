@@ -80,7 +80,12 @@ func (h *HTTP) ServeWithTransport(s *connector.Stream, e *connector.Env, transpo
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
 		}
-		proxy(substitution{transport, h.Secrets, request.slots}).ServeHTTP(w, r)
+		upstream := substitution{transport, h.Secrets, request.slots}
+		if request.HTTP.WebSocket {
+			serveWebSocket(w, r, request, s, upstream)
+			return
+		}
+		proxy(upstream).ServeHTTP(w, r)
 	}))
 }
 
@@ -126,12 +131,14 @@ func (request *Request) parse(h *HTTP, r *http.Request, s *connector.Stream) err
 		return fmt.Errorf("method %s is refused", r.Method)
 	case len(r.Trailer) > 0:
 		return errors.New("trailers are refused")
-	case r.Header["Upgrade"] != nil:
-		return errors.New("protocol upgrades are refused")
+	}
+	upgrade, err := websocketUpgrade(r)
+	if err != nil {
+		return err
 	}
 	// The proxy drops headers that Connection names, after the gate would have seen them.
 	for _, token := range strings.FieldsFunc(strings.Join(r.Header.Values("Connection"), ","), func(c rune) bool { return c == ',' || c == ' ' }) {
-		if !strings.EqualFold(token, "keep-alive") && !strings.EqualFold(token, "close") {
+		if !strings.EqualFold(token, "keep-alive") && !strings.EqualFold(token, "close") && !(upgrade && strings.EqualFold(token, "upgrade")) {
 			return fmt.Errorf("Connection: %s is refused", token)
 		}
 	}
@@ -150,10 +157,13 @@ func (request *Request) parse(h *HTTP, r *http.Request, s *connector.Stream) err
 	origin := origin(scheme, host, port)
 	r.URL.Scheme, r.URL.Host, r.URL.RawPath, r.URL.RawQuery = scheme, strings.TrimPrefix(origin, scheme+"://"), "", encodeQuery(query)
 	r.Host = r.URL.Host
-	layer := &facts.HTTP{Method: r.Method, Origin: origin, Host: host, Path: r.URL.Path, Query: query, Headers: r.Header.Clone()}
+	layer := &facts.HTTP{WebSocket: upgrade, Method: r.Method, Origin: origin, Host: host, Path: r.URL.Path, Query: query, Headers: r.Header.Clone()}
 	request.HTTP = layer
 	if err := inspect(r, layer); err != nil {
 		return err
+	}
+	if upgrade && layer.BodyKind != "none" {
+		return errors.New("WebSocket handshakes cannot carry a body")
 	}
 	// Binding uses the stream's immutable settings. Replacing them cancels the stream.
 	request.slots, err = h.bind(r, origin)
@@ -161,6 +171,9 @@ func (request *Request) parse(h *HTTP, r *http.Request, s *connector.Stream) err
 		return err
 	}
 	for _, slot := range request.slots {
+		if upgrade && strings.HasPrefix(strings.ToLower(slot.Header), "sec-websocket-") {
+			return errors.New("WebSocket negotiation headers cannot carry credentials")
+		}
 		layer.Secrets = append(layer.Secrets, slot.Value)
 	}
 	for name, values := range r.Header {
