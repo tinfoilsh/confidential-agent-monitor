@@ -7,7 +7,8 @@ export type Trust = 'trusted' | 'untrusted'
 export type Decision = 'once' | 'save' | 'deny'
 export type RequestState = 'pending' | 'allowed' | 'approved' | 'refused' | 'denied' | 'expired'
 
-export type Access = { level: Level; actions?: Record<string, Mode> }
+export type Access = { level: Level; actions?: Record<string, Mode>; effects?: Record<string, Mode> }
+export type EffectScope = { agent?: string; account?: string }
 export type Requirement = { id?: string; message: string }
 export type Rule = {
   account: string
@@ -19,6 +20,7 @@ export type Rule = {
 }
 export type Identity = {
   key: string
+  effects?: Record<string, Mode>
   routes?: boolean
   profile?: boolean
   accounts?: Record<string, Access>
@@ -26,6 +28,7 @@ export type Identity = {
 }
 export type Account = {
   preset: string
+  effects?: Record<string, Mode>
   contents: Audience
   sends: Audience
   strangers?: boolean
@@ -67,6 +70,7 @@ export type View = {
   host_key: string
   ca: string
   config: {
+    effects?: Record<string, Mode>
     default_access?: Record<string, Access>
     data?: { [key: string]: Json }
     identities?: Record<string, Identity> | null
@@ -191,7 +195,8 @@ export type ActionNode = { key: string; title: string; action: boolean; effects:
 export type AccessNode = Omit<ActionNode, 'children'> & { own: Mode | null; inherited: Mode; overrides: number; children: AccessNode[] }
 export function actionsOf(view: View, account: string): { [action: string]: PresetAction }
 export function effectsOf(view: View, account: string, action: string): string[]
-export function mode(access: Access, vocabulary: View['vocabulary'], effects: string[], action: string): Mode
+export function effectSettings(view: View, scope?: EffectScope): { effect: string; own: Mode | null; inherited: Mode; mode: Mode; source: string }[]
+export function mode(access: Access, vocabulary: View['vocabulary'], effects: string[], action: string, settings?: Record<string, Mode>): Mode
 export function actionTree(view: View, account: string): ActionNode[]
 export function levelsOf(account?: Account): [Level, string][]
 export function agentAccess(view: View, name: string): {
@@ -244,7 +249,8 @@ export const edits: {
   removeAgent(name: string): Change[]
   replaceKey(name: string, key: string): Change[]
   setRoutes(name: string, routes: boolean): Change[]
-  setAccess(name: string, account: string, access: { level?: Level; actions?: { [action: string]: Mode | null } }): Change[]
+  setAccess(name: string, account: string, access: { level?: Level; actions?: { [action: string]: Mode | null }; effects?: { [effect: string]: Mode | null } }): Change[]
+  setEffect(scope: EffectScope | undefined, effect: string, mode: Mode | null): Change[]
   copySettings(view: View, from: string, name: string): Change[]
   removeRule(name: string, id: string): Change[]
   setLattice(lattice: 'confidentiality' | 'integrity', on: boolean): Change[]

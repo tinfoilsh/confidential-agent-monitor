@@ -216,8 +216,11 @@ func (m *monitor) activate(ctx context.Context, next sealed, s *state) error {
 	for stream, key := range m.streams {
 		p, exists := s.principals[key]
 		sameAccess := maps.EqualFunc(old.principals[key].Accounts, p.Accounts, func(a, b access) bool {
-			return a.Level == b.Level && maps.Equal(a.Actions, b.Actions)
+			return a.Level == b.Level && maps.Equal(a.Actions, b.Actions) && maps.Equal(a.Effects, b.Effects)
 		})
+		for acct := range p.Accounts {
+			sameAccess = sameAccess && maps.Equal(old.cfg.effectModes(old.principals[key].Name, acct), s.cfg.effectModes(p.Name, acct))
+		}
 		if !exists || old.principals[key].Routes != p.Routes || old.principals[key].Profile != p.Profile || !sameAccess || s.cfg.Lattices != old.cfg.Lattices || s.program != old.program {
 			stream.Close()
 		}

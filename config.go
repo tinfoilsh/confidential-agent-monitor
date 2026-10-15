@@ -30,6 +30,7 @@ var levels = []string{"off", "read", "ask", "allow"}
 type identity struct {
 	Routes   bool              `json:"routes,omitempty"`
 	Key      string            `json:"key"`
+	Effects  map[string]string `json:"effects,omitempty"`
 	Accounts map[string]access `json:"accounts"`
 	Rules    map[string]rule   `json:"rules,omitempty"`
 	// Profile records valid requests without enforcing policy or changing labels.
@@ -39,6 +40,7 @@ type identity struct {
 type access struct {
 	Level   string            `json:"level"`
 	Actions map[string]string `json:"actions,omitempty"`
+	Effects map[string]string `json:"effects,omitempty"`
 }
 
 // A rule waives requirements for one operation under the definition the owner approved.
@@ -54,6 +56,7 @@ type rule struct {
 
 type account struct {
 	Preset        string                    `json:"preset"`
+	Effects       map[string]string         `json:"effects,omitempty"`
 	PolicyOptions connector.PolicyOptions   `json:"policy_options"`
 	Contents      string                    `json:"contents"`
 	Strangers     bool                      `json:"strangers"`
@@ -68,6 +71,7 @@ type latticeOptions struct {
 }
 
 type config struct {
+	Effects       map[string]string   `json:"effects,omitempty"`
 	DefaultAccess map[string]access   `json:"default_access,omitempty"`
 	Lattices      latticeOptions      `json:"lattices"`
 	AllowNetworks []netip.Prefix      `json:"allow_networks"`
@@ -79,6 +83,42 @@ type config struct {
 	// Presets contains the source overrides; resolved holds the compiled definitions.
 	Presets  map[string]map[string]any `json:"presets,omitempty"`
 	resolved map[string]*presetRecord
+}
+
+// More specific effect settings override broader ones. Access levels and action
+// permissions remain independent restrictions on the request.
+func (c *config) effectModes(agent, acct string) map[string]string {
+	modes := make(map[string]string, len(facts.Effects))
+	for effect, obligations := range facts.Effects {
+		modes[effect] = "allow"
+		if obligations.Ask {
+			modes[effect] = "ask"
+		}
+	}
+	id := c.Identities[agent]
+	for _, overrides := range []map[string]string{c.Effects, c.Accounts[acct].Effects, id.Effects, id.Accounts[acct].Effects} {
+		maps.Copy(modes, overrides)
+	}
+	return modes
+}
+
+func validateEffects(name string, effects map[string]string) error {
+	for effect, mode := range effects {
+		if _, ok := facts.Effects[effect]; !ok {
+			return fmt.Errorf("%s: unknown effect %q", name, effect)
+		}
+		if !slices.Contains([]string{"off", "ask", "allow"}, mode) {
+			return fmt.Errorf("%s: effect %s must be off, ask or allow", name, effect)
+		}
+	}
+	return nil
+}
+
+func inheritModes(defaults, overrides map[string]string) map[string]string {
+	merged := make(map[string]string, len(defaults)+len(overrides))
+	maps.Copy(merged, defaults)
+	maps.Copy(merged, overrides)
+	return merged
 }
 
 func readSource(source string) (map[string]any, error) {
@@ -230,6 +270,9 @@ func compileSource(policy string, secrets secretStore) (*config, map[string]*con
 	if err != nil {
 		return nil, nil, err
 	}
+	if err := validateEffects("global settings", cfg.Effects); err != nil {
+		return nil, nil, err
+	}
 	shipped, err := presets()
 	if err != nil {
 		return nil, nil, err
@@ -267,6 +310,9 @@ func compileSource(policy string, secrets secretStore) (*config, map[string]*con
 			return nil, nil, fmt.Errorf("account %s: %w", acct, err)
 		}
 		cfg.Accounts[acct] = a
+		if err := validateEffects("account "+acct, a.Effects); err != nil {
+			return nil, nil, err
+		}
 		if !slices.Contains(facts.Audiences, a.Contents) || !slices.Contains(facts.Audiences, a.Sends) {
 			return nil, nil, fmt.Errorf("account %s: contents and sends must be one of %v", acct, facts.Audiences)
 		}
@@ -328,6 +374,9 @@ func compileSource(policy string, secrets secretStore) (*config, map[string]*con
 			if _, ok := cfg.Accounts[acct]; !ok || !slices.Contains(levels, a.Level) {
 				return fmt.Errorf("%s: account %s must exist and have a level in %v", name, acct, levels)
 			}
+			if err := validateEffects(name+" on "+acct, a.Effects); err != nil {
+				return err
+			}
 			for action, level := range a.Actions {
 				if level == "read" || !slices.Contains(levels, level) {
 					return fmt.Errorf("%s: action %s must be off, ask or allow", name, action)
@@ -340,11 +389,23 @@ func compileSource(policy string, secrets secretStore) (*config, map[string]*con
 		return nil, nil, err
 	}
 	for name, id := range cfg.Identities {
+		if err := validateEffects("agent "+name, id.Effects); err != nil {
+			return nil, nil, err
+		}
 		accounts := maps.Clone(cfg.DefaultAccess)
 		if accounts == nil {
 			accounts = map[string]access{}
 		}
 		maps.Copy(accounts, id.Accounts)
+		for acct, a := range accounts {
+			if a.Level == "" {
+				inherited := cfg.DefaultAccess[acct]
+				a.Level = inherited.Level
+				a.Actions = inheritModes(inherited.Actions, a.Actions)
+				a.Effects = inheritModes(inherited.Effects, a.Effects)
+				accounts[acct] = a
+			}
+		}
 		id.Accounts = accounts
 		if err := validateAccess("identity "+name, accounts); err != nil {
 			return nil, nil, err

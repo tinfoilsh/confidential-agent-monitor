@@ -4,10 +4,15 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 dev=$PWD/.dev
 src=$(realpath "${SANDBOX_SRC:-../confidential-agent-sandbox}")
+[[ -f $src/Dockerfile ]] || { printf 'SANDBOX_SRC must contain a Dockerfile: %s\n' "$src" >&2; exit 1; }
 name=${SANDBOX_NAME:-sandbox-dev}
 listen=${MONITOR_LISTEN:-127.0.0.1:2223}
-toolchain=$(realpath "${SANDBOX_TOOLCHAIN:?set to a nix-closure pack.sh STAGE directory}")
-[[ -f $src/Dockerfile && -d $toolchain/nix/store ]] || { echo 'Check SANDBOX_SRC and SANDBOX_TOOLCHAIN' >&2; exit 1; }
+toolchain=$(realpath "${SANDBOX_TOOLCHAIN:?set to a nix-closure pack.sh STAGE or STAGE/nix directory}")
+# Mount the full stage, including its Nix database and default profile.
+if [[ ${toolchain##*/} == nix && -d $toolchain/store ]]; then
+  toolchain=$(dirname "$toolchain")
+fi
+[[ -d $toolchain/nix/store ]] || { printf 'SANDBOX_TOOLCHAIN must point to STAGE or STAGE/nix; missing %s/nix/store\n' "$toolchain" >&2; exit 1; }
 
 podman build -q -t "$name" "$src" > /dev/null
 podman rm -f --ignore "$name" > /dev/null

@@ -154,7 +154,8 @@ func (m *monitor) check(ctx context.Context, in input) (err error) {
 	}
 	// Approval definitions bind semantics and configuration, independently of facts
 	// shown to users. Display edits and current labels do not invalidate a grant.
-	raw, _ := json.Marshal([]any{st.program, st.cfg.Lattices, f.Kind, a.Preset, c.name, c.config, a.PolicyOptions,
+	effects := st.cfg.effectModes(p.Name, c.account)
+	raw, _ := json.Marshal([]any{st.program, st.cfg.Lattices, effects, f.Kind, a.Preset, c.name, c.config, a.PolicyOptions,
 		a.Contents, a.Strangers, a.Sends, preset.PublicScope, f.Definition, f.Operation, f.Context.Sends, f.Context.Observes})
 	sum := sha256.Sum256(raw)
 	definition := hex.EncodeToString(sum[:])
@@ -170,7 +171,7 @@ func (m *monitor) check(ctx context.Context, in input) (err error) {
 	access, _ := facts.JSON[map[string]any](p.Accounts[c.account])
 	// Each evaluation owns its lazy objects: OPA caches fields as it reads them.
 	parsed := ast.LazyObject(map[string]any{"facts": policyFacts,
-		"authorization": map[string]any{"access": access, "rules": p.Rules, "definition": definition, "grant": grant},
+		"authorization": map[string]any{"access": access, "effects": effects, "rules": p.Rules, "definition": definition, "grant": grant},
 		"account":       map[string]any{"contents": a.Contents, "strangers": a.Strangers, "sends": a.Sends, "private": a.PolicyOptions.Private, "public_scope": preset.PublicScope}})
 	results, err := st.query.Eval(ctx, rego.EvalParsedInput(parsed))
 	if err != nil {

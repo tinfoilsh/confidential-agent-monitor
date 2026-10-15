@@ -280,13 +280,34 @@ export const effectsOf = (view, account, k) => {
   return [...new Set([...(actions[inherited]?.effects ?? []), ...(groups.get(k) ?? [])])];
 };
 
-// mode mirrors lib.rego: the most specific override wins, effects that ask still ask at allow,
-// effects without change are allowed and the rest follow the level.
-export function mode(access, vocabulary, effects, k) {
+// Effect settings use the same precedence as config.effectModes. Keeping the
+// inherited value lets editors remove an override without copying a default.
+export function effectSettings(view, { agent, account } = {}) {
+  const id = identities(view)[agent] ?? {};
+  const pair = id.accounts?.[account] ?? view.config.default_access?.[account];
+  const layers = [["Global settings", view.config.effects]];
+  if (account) layers.push([`Account ${account}`, accounts(view)[account]?.effects]);
+  if (agent) layers.push([`Agent ${agent}`, id.effects]);
+  if (agent && account) layers.push([`Agent ${agent} on ${account}`, pair?.effects]);
+  return Object.entries(view.vocabulary).sort(([a], [b]) => a.localeCompare(b)).map(([effect, metadata]) => {
+    let mode = metadata.ask ? "ask" : "allow", source = "Monitor defaults";
+    for (const [name, values] of layers.slice(0, -1)) {
+      if (values?.[effect]) { mode = values[effect]; source = name; }
+    }
+    const own = layers.at(-1)[1]?.[effect] ?? null;
+    return { effect, own, inherited: mode, mode: own ?? mode, source: own ? layers.at(-1)[0] : source };
+  });
+}
+
+// Action access and effect settings are independent restrictions; the strictest wins.
+export function mode(access, vocabulary, effects, k, settings = {}) {
+  if (!access.level || access.level === "off") return "off";
   const lineage = k.split(".").map((_, i, p) => p.slice(0, p.length - i).join("."));
   const has = (name) => effects.some((e) => vocabulary[e]?.[name]);
-  return lineage.map((a) => access.actions?.[a]).find(Boolean)
-    ?? (access.level === "allow" && has("ask") ? "ask" : has("change") ? (access.level === "read" ? "off" : access.level) : "allow");
+  const action = lineage.map((a) => access.actions?.[a]).find(Boolean)
+    ?? (has("change") ? (access.level === "read" ? "off" : access.level) : "allow");
+  const modes = [action, ...effects.map((e) => settings[e] ?? (vocabulary[e]?.ask ? "ask" : "allow"))];
+  return modes.includes("off") ? "off" : modes.includes("ask") ? "ask" : "allow";
 }
 
 // actionTree nests dotted actions under titled groups, each with its effects and number of descendant actions.
@@ -316,8 +337,9 @@ export function agentAccess(view, name) {
   const id = identities(view)[name] ?? {};
   return Object.entries(accounts(view)).map(([account, acc]) => {
     const access = id.accounts?.[account] ?? view.config.default_access?.[account] ?? { level: "off" };
+    const settings = Object.fromEntries(effectSettings(view, { agent: name, account }).map(({ effect, mode }) => [effect, mode]));
     const describe = (node) => ({ ...node, own: access.actions?.[node.key] ?? null,
-      inherited: mode({ ...access, actions: { ...access.actions, [node.key]: null } }, view.vocabulary, node.effects, node.key),
+      inherited: mode({ ...access, actions: { ...access.actions, [node.key]: null } }, view.vocabulary, node.effects, node.key, settings),
       overrides: Object.keys(access.actions ?? {}).filter((action) => action.startsWith(node.key + ".") && access.actions[action]).length,
       children: node.children.map(describe) });
     return { account, preset: acc.preset, level: access.level, levels: levelsOf(acc), overrides: Object.values(access.actions ?? {}).filter(Boolean).length,
@@ -491,7 +513,11 @@ export const edits = {
   setRoutes: (name, routes) => [{ path: ["identities", name, "routes"], value: routes }],
   // An action set to null inherits again.
   setAccess: (name, account, access) => sourceChanges({ identities: { [name]: { accounts: { [account]: access } } } }),
-  copySettings: (view, from, name) => ["accounts", "rules"].map((key) => ({ path: ["identities", name, key], value: structuredClone(identities(view)[from]?.[key] ?? {}) })),
+  setEffect: ({ agent, account } = {}, effect, mode) => [{
+    path: [...(agent ? ["identities", agent, ...(account ? ["accounts", account] : [])] : account ? ["accounts", account] : []), "effects", effect],
+    ...(mode ? { value: mode } : { delete: true }),
+  }],
+  copySettings: (view, from, name) => ["accounts", "rules", "effects"].map((key) => ({ path: ["identities", name, key], value: structuredClone(identities(view)[from]?.[key] ?? {}) })),
   removeRule: (name, id) => [{ path: ["identities", name, "rules", id], delete: true }],
   setLattice: (lattice, on) => [{ path: ["lattices", lattice], value: on }],
   setNetworks: (text) => [{ path: ["allow_networks"], value: text.split(/\s+/).filter(Boolean) }],

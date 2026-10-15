@@ -1,5 +1,41 @@
 # Monitor
 
+## Effect permissions
+
+In **Settings → Effects**, choose Allow, Ask, or Deny for each effect. Payments
+include paid model inference; payments and publishing default to Ask. All other
+effects default to Allow. Approval requests identify the effect that requires approval.
+
+Override these defaults in an account's **Effects** section, an agent's
+**Settings → Effects**, or **Effect overrides** beneath the agent's account access.
+Precedence is global → account → agent → agent on an account. Click a selected
+permission again to unset it and inherit. Payments, publishing, and overrides stay
+visible; expand **Other effects** for the rest. When a request has several effects,
+Deny takes precedence over Ask, which takes precedence over Allow.
+
+Effect permissions apply alongside account access, action permissions, data-flow
+restrictions, and custom policy. Allowing payments removes the payment approval
+requirement; other restrictions still apply. Saved approvals cannot override Deny.
+Changes also close affected open connector streams.
+
+The same settings are editable in policy TOML (`off` means Deny):
+
+```toml
+[effects]
+pay = "ask"
+
+[accounts.anthropic.effects]
+pay = "allow"
+
+[identities.agent.effects]
+publish = "off"
+
+[identities.agent.accounts.anthropic.effects]
+pay = "ask"
+```
+
+The account and agent must already exist, and the agent needs access to the account.
+
 ## Install or update the CLI
 
 From this checkout on Linux or macOS, with Python 3.11 or newer and OpenSSH:

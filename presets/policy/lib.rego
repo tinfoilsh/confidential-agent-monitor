@@ -27,11 +27,6 @@ else := m if m := [v | some name in op.lineage; v := a.access.actions[name]][0]
 
 else := "allow" if f.kind == "admission"
 
-else := "ask" if {
-	a.access.level == "allow"
-	obligation("ask")
-}
-
 else := "allow" if not obligation("change")
 
 else := "off" if a.access.level == "read"
@@ -107,6 +102,11 @@ deny contains msg if some msg in owner_deny
 
 deny contains "this agent may not do this on the account" if mode == "off"
 
+deny contains sprintf("The %s effect is set to Deny.", [effect]) if {
+	some effect in op.effects
+	a.effects[effect] == "off"
+}
+
 needs_trust if op == null
 needs_trust if obligation("trust")
 
@@ -169,6 +169,13 @@ builtin_messages := {
 }
 
 reasons contains {"id": id, "message": builtin_messages[id]} if some id in base_gaps
+
+reasons contains {"id": id, "message": sprintf("The %s effect requires approval (Ask).", [effect])} if {
+	some effect in op.effects
+	a.effects[effect] == "ask"
+	id := concat("", ["effect.", effect])
+	not id in waived
+}
 
 reasons contains r if {
 	valid_owner_approvals

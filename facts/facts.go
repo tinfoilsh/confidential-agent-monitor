@@ -248,7 +248,7 @@ type MCP struct {
 type Obligations struct {
 	Change    bool `json:"change"`
 	Trust     bool `json:"trust"`
-	Ask       bool `json:"ask"`
+	Ask       bool `json:"ask"` // Default effect setting; owners may override it.
 	Discloses bool `json:"discloses"`
 }
 

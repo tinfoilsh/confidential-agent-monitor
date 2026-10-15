@@ -185,6 +185,7 @@ summary + * { margin-top: 12px; }
 .access-toggle > b { font-weight: 500; overflow-wrap: anywhere; }
 .access-toggle > i { font-size: 10px; font-style: normal; color: var(--muted); }
 .access-actions { display: grid; gap: 10px; padding: 16px 0 0 28px; }
+.access-actions.effect-permissions { padding: 0; gap: 12px; }
 .access-action { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px; }
 .access-action-group > summary { list-style: none; }
 .access-children { display: grid; gap: 10px; margin: 12px 0 0 4px; padding-left: 14px; border-left: 1px solid var(--line); }

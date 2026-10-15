@@ -436,12 +436,16 @@ const pair = () => [head("Pair an agent"), `<section><label for="name">Name</lab
 
 const pairAgent = () => commit(edits.pairAgent($("name").value, $("pubkey").value), (isDashboard ? "agents/" : "agent/") + encodeURIComponent($("name").value.trim()));
 
+function permissionButtons(label, own, inherited, change) {
+  return `<span class="seg" role="group" aria-label="${esc(label)} permission">${Object.entries(MODES).map(([m, t]) =>
+    `<button class="${m === own ? "primary" : !own && m === inherited ? "inherited" : ""}" aria-label="${esc(t + " " + label)}" aria-pressed="${m === own}" title="${esc(m === own ? "Click to unset" : !own && m === inherited ? "Inherited setting" : t)}" onclick="event.preventDefault(); event.stopPropagation(); ${change(m === own ? null : m)}">${t}</button>`).join("")}</span>`;
+}
+
 function accessActions(name, a, nodes) {
   const renderAction = (node) => {
     const { key: k, effects, children, inherited, own, overrides } = node;
     const label = `${esc(node.title)}${overrides ? ` <small class="muted" title="${overrides} overrides">${overrides}</small>` : ""}`;
-    const buttons = `<span class="seg" role="group" aria-label="${esc(k)} permission">${Object.entries(MODES).map(([m, t]) =>
-      `<button class="${m === own ? "primary" : !own && m === inherited ? "inherited" : ""}" aria-label="${esc(t + " " + k)}" aria-pressed="${m === own}" onclick="event.preventDefault(); event.stopPropagation(); patchAccess(${q(name)}, ${q(a)}, { actions: { [${q(k)}]: ${q(m === own ? null : m)} } })">${t}</button>`).join("")}</span>`;
+    const buttons = permissionButtons(k, own, inherited, (m) => `patchAccess(${q(name)}, ${q(a)}, { actions: { [${q(k)}]: ${q(m)} } })`);
     const title = `title="${esc(effects.join(", "))}"`;
     return children.length
       ? `<details class="access-action-group" data-disclosure="${esc(name + "/" + a + "/" + k)}"><summary class="access-action" role="button" aria-label="${esc(node.title)}"><span class="access-group-title" ${title}>${label}</span>${buttons}</summary><div class="access-children">${children.map(renderAction).join("")}</div></details>`
@@ -450,17 +454,33 @@ function accessActions(name, a, nodes) {
   return nodes.map(renderAction);
 }
 
+function effectControls(scope = {}) {
+  const settings = owner.effectSettings(view, scope);
+  const prominent = ({ effect, own, inherited }) => ["pay", "publish"].includes(effect) || own !== null || inherited !== "allow";
+  const row = ({ effect, own, inherited, source }) => {
+    const title = ({ pay: "Payments", publish: "Publishing" })[effect] ?? effect.charAt(0).toUpperCase() + effect.slice(1);
+    const hint = `${MODES[own ?? inherited]} · ${source}${effect === "pay" ? ". Includes paid model inference." : ""}`;
+    return `<div class="access-action"><span title="${esc(hint)}">${esc(title)}</span>${permissionButtons(title, own, inherited,
+      (m) => `commit(edits.setEffect(${q(scope)}, ${q(effect)}, ${q(m)}))`)}</div>`;
+  };
+  const others = settings.filter((setting) => !prominent(setting));
+  return `<p class="muted">Click a selected permission to unset it.</p><div class="access-actions effect-permissions">
+    ${settings.filter(prominent).map(row).join("")}
+    ${others.length ? `<details class="access-action-group" data-disclosure="${esc(["effects", scope.agent ?? "", scope.account ?? "", "other"].join("/"))}"><summary><span class="access-group-title">Other effects</span></summary><div class="access-children">${others.map(row).join("")}</div></details>` : ""}
+  </div>`;
+}
+
 function agent(name, inline = false) {
   const id = ids()[name];
   if (!id) return [head(esc(name)), `<p class="empty">No agent ${esc(name)}.</p>`];
   const levels = owner.agentAccess(view, name).map(({ account: a, level, levels, overrides, actions: nodes }) => {
-    const key = `access/${encodeURIComponent(name)}/${encodeURIComponent(a)}`, open = nodes.length > 0 && expanded.has(key);
+    const key = `access/${encodeURIComponent(name)}/${encodeURIComponent(a)}`, open = level !== "off" && expanded.has(key);
     const actions = open ? accessActions(name, a, nodes) : [];
-    return `<div class="acct"><div class="row"><button class="access-toggle" aria-label="Actions for ${esc(a)}" aria-expanded="${open}" aria-controls="${esc(key)}" ${nodes.length ? "" : "disabled"} onclick="toggle(${q(key)})">
-      <i>${nodes.length ? open ? "▾" : "▸" : ""}</i>${accountIcon(a)}<b>${esc(a)}</b>${overrides && level !== "off" ? `<small class="muted" title="${overrides} action overrides" aria-label="${overrides} action overrides">${overrides}</small>` : ""}</button>
+    return `<div class="acct"><div class="row"><button class="access-toggle" aria-label="Actions for ${esc(a)}" aria-expanded="${open}" aria-controls="${esc(key)}" ${level !== "off" ? "" : "disabled"} onclick="toggle(${q(key)})">
+      <i>${level !== "off" ? open ? "▾" : "▸" : ""}</i>${accountIcon(a)}<b>${esc(a)}</b>${overrides && level !== "off" ? `<small class="muted" title="${overrides} action overrides" aria-label="${overrides} action overrides">${overrides}</small>` : ""}</button>
       <span class="seg" role="group" aria-label="Default access for ${esc(a)}">${levels.map(([l, t]) =>
         `<button class="${l === level ? "primary" : ""}" aria-pressed="${l === level}" onclick="patchAccess(${q(name)}, ${q(a)}, { level: ${q(l)} })">${t}</button>`).join("")}</span></div>
-      <div class="access-actions" id="${esc(key)}" ${open ? "" : "hidden"}>${actions.join("")}</div></div>`;
+      <div class="access-actions" id="${esc(key)}" ${open ? "" : "hidden"}>${actions.join("")}${open ? `<details data-disclosure="${esc(key + "/effects")}"><summary>Effect overrides</summary>${effectControls({ agent: name, account: a })}</details>` : ""}</div></div>`;
   });
   const hint = owner.browsingHint(view, name) ? `<p class="muted">Browsing needs approval after reading private data.</p>` : "";
   const l = view.labels[name] ?? {};
@@ -490,6 +510,7 @@ function agentSettings(name) {
   if (!ids()[name]) return [head(esc(name)), `<p class="empty">No agent ${esc(name)}.</p>`];
   const others = Object.keys(ids()).filter((n) => n !== name);
   return [head(esc(name), "Settings", (isDashboard ? "agents/" : "agent/") + encodeURIComponent(name)),
+    `<section><h2>Effects</h2>${effectControls({ agent: name })}</section>`,
     `<section><a href="#integrations">Connect your tools</a><p class="muted">Setup guides for wrapped commands, Monitor shell, and MCP connections.</p></section>`,
     `<section>${disclosure("setup", "Setup", `<label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre>`)}</section>`,
     `<section>${disclosure("replace-key", "Replace key", `<p class="muted">Use this after recreating the sandbox. The agent starts clean.</p><textarea id="pubkey" aria-label="Replacement public key" rows="2"></textarea>
@@ -781,6 +802,7 @@ function account(a) {
   return [isDashboard ? head(esc(a), accountStatus(a), "accounts") : `<header class="account-header">${accountIcon(a)}<h1>${esc(a)}</h1><span class="muted">${esc(c.title)} ${accountStatus(a)}</span><a class="x" href="#activity" aria-label="Close account">✕</a></header>`,
     liveCard(a),
     acc.preset === "custom_api" ? apiAgentSetup(a) : "",
+    `<section><h2>Effects</h2>${effectControls({ account: a })}</section>`,
     `<div class="account-overview"><section class="account-card"><div class="section-heading"><h2>Actions <span class="count">${Object.keys(owner.actionsOf(view, a)).length}</span></h2><a href="#preset/${encodeURIComponent(acc.preset)}">Edit preset</a></div>
       <div class="action-list">${accountActions(a)}</div></section>${accountUsers(a)}</div>`,
     `<section class="account-card account-settings"><div class="section-heading"><h2>Account settings</h2></div><div class="settings-fields"><div>${questions(acc)}</div>
@@ -1048,7 +1070,7 @@ const settings = () => [head("Settings"), `<section><h2>Policy preset</h2>
   <select id="policy-preset">${Object.entries(owner.POLICY_PRESETS).map(([value, policy]) => opt(value, policy.title, view.config.data?.onboarding?.preset ?? "known_only")).join("")}</select>
   <p class="muted">You can edit individual permissions after applying a preset.</p>
   <div class="row"><span></span><button onclick="applyPolicyPreset()">Apply preset</button></div>
-  </section>`, `<section><h2>Lattices</h2>
+  </section>`, `<section><h2>Effects</h2>${effectControls()}</section>`, `<section><h2>Lattices</h2>
   <p class="muted">Applies to all agents and connector requests.</p>
   <label><input type="checkbox" ${lattices().confidentiality ? "checked" : ""} onchange="commit(edits.setLattice('confidentiality', this.checked))"> Confidentiality lattice</label>
   <p class="muted">Restrict where agents can send private data. On by default.</p>
