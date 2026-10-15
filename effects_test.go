@@ -224,6 +224,7 @@ func TestEffectApprovalAndRevocation(t *testing.T) {
 	client, peer := net.Pipe()
 	defer peer.Close()
 	stream := connector.NewStream(t.Context(), client)
+	stream.Name = "api"
 	defer stream.Close()
 	m.mu.Lock()
 	m.streams[stream] = key

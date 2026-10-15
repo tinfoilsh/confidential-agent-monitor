@@ -193,6 +193,7 @@ func (m *monitor) forwardRoute(key string, p principal, st *state, target forwar
 	ownerClosed := make(chan struct{})
 	go func() { ssh.DiscardRequests(requests); close(ownerClosed) }()
 	stream := connector.NewStream(context.Background(), channelConn{channel})
+	stream.Host, stream.Port = target.Host, target.Port
 	defer stream.Close()
 	defer stream.Interrupt(upstream)()
 	if !m.trackStream(key, stream, st) {

@@ -218,14 +218,7 @@ func (m *monitor) activate(ctx context.Context, next sealed, s *state) error {
 		return err
 	}
 	for stream, key := range m.streams {
-		p, exists := s.principals[key]
-		sameAccess := maps.EqualFunc(old.principals[key].Accounts, p.Accounts, func(a, b access) bool {
-			return a.Level == b.Level && maps.Equal(a.Actions, b.Actions) && maps.Equal(a.Effects, b.Effects)
-		})
-		for acct := range p.Accounts {
-			sameAccess = sameAccess && maps.Equal(old.cfg.effectModes(old.principals[key].Name, acct), s.cfg.effectModes(p.Name, acct))
-		}
-		if !exists || old.principals[key].Routes != p.Routes || old.principals[key].Profile != p.Profile || !sameAccess || s.cfg.Lattices != old.cfg.Lattices || s.program != old.program {
+		if !s.sameStreamAuthority(old, key, stream) {
 			stream.Close()
 		}
 	}
@@ -403,9 +396,10 @@ func (m *monitor) observe(ctx context.Context, fingerprint string, l facts.Label
 	if err := m.commit(ctx, next); err != nil {
 		return err
 	}
-	// Closing the client side prevents further input under an old label, including on raw SSH and CLI streams.
+	// Connector streams cannot continue under an old label, including raw SSH and
+	// CLI sessions. Sandbox routes carry end-to-end traffic under Routes alone.
 	for s, key := range m.streams {
-		if key == fingerprint && s != source {
+		if key == fingerprint && s != source && !reservedRoute(s.Host) {
 			s.Close()
 		}
 	}

@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"crypto/ed25519"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -109,6 +111,8 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 		return
 	}
 	ctx := context.Background()
+	var name string
+	host := target.Host
 	var serve func(*connector.Stream)
 	switch target.Host {
 	case agentHost:
@@ -132,11 +136,11 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 			return
 		}
 		ctx = c.ctx
+		name = c.name
+		if selected {
+			host = ""
+		}
 		serve = func(s *connector.Stream) {
-			s.Name, s.Host, s.Port = c.name, target.Host, target.Port
-			if selected {
-				s.Host = ""
-			}
 			s.Check = func(request connector.Request) error {
 				return m.check(s.Context, input{stream: s, Key: key, Connection: c.name, Request: request})
 			}
@@ -149,6 +153,7 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 		return
 	}
 	s := connector.NewStream(ctx, channelConn{ch})
+	s.Name, s.Host, s.Port = name, host, target.Port
 	defer s.Close()
 	go func() { ssh.DiscardRequests(reqs); s.Close() }()
 	// agent.monitor authorizes each request against live state, and an approved proposal must answer on its stream.
@@ -217,12 +222,59 @@ func (m *monitor) authorized(_ ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permis
 	}}, nil
 }
 
-// trackStream registers a stream before it carries data, so later changes to its identity's
-// authority close it. A policy published since st may have changed the stream's admission.
+// sameStreamAuthority compares only the authority used by this stream. Sandbox
+// routes do not use connector policy; connector streams use their own account.
+func (st *state) sameStreamAuthority(old *state, key string, s *connector.Stream) bool {
+	p, exists := st.principals[key]
+	if !exists {
+		return false
+	}
+	if reservedRoute(s.Host) {
+		return p.Routes
+	}
+	previous := old.principals[key]
+	c := old.connections[s.Name]
+	if c == nil || st.connections[s.Name] != c || !p.reaches(c.account) {
+		return false
+	}
+	if st == old {
+		return true
+	}
+	if previous.Name != p.Name ||
+		previous.Profile != p.Profile || st.cfg.Lattices != old.cfg.Lattices || st.program != old.program {
+		return false
+	}
+	a, b := previous.Accounts[c.account], p.Accounts[c.account]
+	if a.Level != b.Level || !maps.Equal(a.Actions, b.Actions) ||
+		!maps.Equal(old.cfg.effectModes(previous.Name, c.account), st.cfg.effectModes(p.Name, c.account)) {
+		return false
+	}
+	for _, pair := range [][2]map[string]rule{{previous.Rules, p.Rules}, {p.Rules, previous.Rules}} {
+		for name, rule := range pair[0] {
+			if rule.Account == c.account && !reflect.DeepEqual(rule, pair[1][name]) {
+				return false
+			}
+		}
+	}
+	before, after := old.cfg.Accounts[c.account], st.cfg.Accounts[c.account]
+	if before.Preset != after.Preset || before.Contents != after.Contents || before.Sends != after.Sends || before.Strangers != after.Strangers {
+		return false
+	}
+	ap, bp := old.cfg.resolved[before.Preset], st.cfg.resolved[after.Preset]
+	// Compare protocol definitions without their compiled caches or setup/display metadata.
+	left, _ := json.Marshal([]any{before.PolicyOptions, ap.PublicScope, ap.HTTP, ap.MCP})
+	right, _ := json.Marshal([]any{after.PolicyOptions, bp.PublicScope, bp.HTTP, bp.MCP})
+	return bytes.Equal(left, right) && maps.EqualFunc(ap.Catalog.Actions, bp.Catalog.Actions, func(a, b presetAction) bool {
+		return slices.Equal(a.Effects, b.Effects)
+	})
+}
+
+// trackStream registers a stream before it carries data. A policy published since
+// st only invalidates admission if it changed this stream's authority.
 func (m *monitor) trackStream(fingerprint string, s *connector.Stream, st *state) bool {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if m.live.Load() != st {
+	if !m.live.Load().sameStreamAuthority(st, fingerprint, s) {
 		return false
 	}
 	m.streams[s] = fingerprint
