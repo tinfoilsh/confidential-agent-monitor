@@ -195,6 +195,7 @@ summary + * { margin-top: 12px; }
 .connector-icon img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .account-overview { display: grid; align-items: start; gap: 16px; margin-bottom: 16px; }
 .account-card { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; background: var(--card); box-shadow: 0 1px 2px #0000000d; }
+.account-card > .empty { padding-inline: 20px; }
 #pane > .account-card { padding: 0; }
 .section-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--line); background: var(--subtle); }
 .section-heading h2 { margin: 0; }
@@ -203,6 +204,17 @@ summary + * { margin-top: 12px; }
 .settings-fields > div { min-width: 0; }
 .settings-fields details { margin-top: 12px; }
 .settings-fields label:not(:first-child) { margin-top: 16px; }
+.account-effects { padding: 20px; border-top: 1px solid var(--line); }
+.account-effects h3 { margin: 0; }
+.agent-setup-body { display: grid; gap: 20px; padding: 20px; }
+.agent-setup-body > p { margin: 0; max-width: 65ch; }
+.agent-setup-item { min-width: 0; }
+.agent-setup-item + .agent-setup-item { padding-top: 20px; border-top: 1px solid var(--line); }
+.agent-setup-item h3 { margin: 0 0 12px; }
+.agent-setup-item button { white-space: nowrap; }
+.agent-setup-details { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 8px 16px; margin: 16px 0 0; }
+.agent-setup-details dt { color: var(--muted); }
+.agent-setup-details dd { margin: 0; overflow-wrap: anywhere; }
 .card-footer { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--line); }
 .capability { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 10px 16px; list-style: none; }
 .capability::-webkit-details-marker { display: none; }
@@ -230,6 +242,9 @@ summary.capability:hover { background: var(--hover); }
 .secret-input button { flex-shrink: 0; }
 .field-help { margin: 6px 0; font-size: 12px; }
 .credential { margin-top: 16px; }
+.credential:first-child { margin-top: 0; }
+.credential > .credential-actions { padding: 8px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--subtle); }
+.credential-status { margin-right: auto; }
 .decisions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 .decisions > button { white-space: normal; text-align: left; }
 .live { margin-bottom: 16px; }
@@ -308,7 +323,11 @@ th, td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: to
   .access-action { grid-template-columns: minmax(0, 1fr); gap: 6px; }
   .access-action .seg { justify-self: start; }
   .section-heading { flex-wrap: wrap; padding: 16px; }
+  .account-card > .empty { padding-inline: 16px; }
   .settings-fields { padding: 16px; }
+  .account-effects, .agent-setup-body { padding: 16px; }
+  .agent-setup-details { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .agent-setup-details dd + dt { margin-top: 8px; }
   .card-footer { flex-wrap: wrap; padding: 12px 16px; }
   .capability { grid-template-columns: 10px minmax(0, 1fr); }
   .capability .effects { grid-column: 2; justify-content: flex-start; max-width: none; }

@@ -119,6 +119,9 @@
   .field-help { margin: 3px 0; font-size: 11px; }
   .credential { margin-top: 8px; }
   .credential-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .credential:first-child { margin-top: 0; }
+  .credential > .credential-actions { padding: 4px 6px; border: 1px solid var(--edge); border-radius: 4px; background: var(--control); }
+  .credential-status { margin-right: auto; }
   .seg { display: inline-flex; flex-shrink: 0; }
   .seg > button { border-radius: 0; }
   .seg > button:first-child { border-radius: 4px 0 0 4px; }
@@ -209,6 +212,17 @@
   .settings-fields { display: grid; gap: 8px 16px; padding: 0 8px 8px; }
   .settings-fields > div { min-width: 0; }
   .settings-fields details { margin-top: 6px; }
+  .account-effects { padding: 8px; border-top: 1px solid var(--line); }
+  .account-effects h3 { margin: 0; font-size: 12px; }
+  .agent-setup-body { display: grid; gap: 12px; padding: 8px; }
+  .agent-setup-body > p { margin: 0; max-width: 65ch; }
+  .agent-setup-item { min-width: 0; }
+  .agent-setup-item + .agent-setup-item { padding-top: 12px; border-top: 1px solid var(--line); }
+  .agent-setup-item h3 { margin: 0 0 6px; font-size: 12px; }
+  .agent-setup-item button { white-space: nowrap; }
+  .agent-setup-details { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 12px; margin: 8px 0 0; }
+  .agent-setup-details dt { color: var(--muted); }
+  .agent-setup-details dd { margin: 0; overflow-wrap: anywhere; }
   .card-footer { display: flex; justify-content: flex-end; padding: 4px 6px; border-top: 1px solid var(--line); background: var(--control); }
   .live { margin-bottom: 8px; }
   .live fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }

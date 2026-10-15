@@ -234,14 +234,16 @@ function render() {
   const parts = (html) => html.map((content, i) => [`${location.hash}/${i}`, content]).filter(([, content]) => content);
   if (isDashboard) {
     renderDashboard(kind, args, panes, parts);
-    return;
+  } else {
+    $("app").classList.toggle("with-pane", !!panes[kind]);
+    $("list").setAttribute("role", panes[kind] ? "complementary" : "main");
+    $("pane").hidden = !panes[kind];
+    sync($("tree"), sidebar(kind, args[0]));
+    sync($("list"), list(kind === "request" && args[0]));
+    sync($("pane"), panes[kind] ? parts(panes[kind](...args)) : []);
   }
-  $("app").classList.toggle("with-pane", !!panes[kind]);
-  $("list").setAttribute("role", panes[kind] ? "complementary" : "main");
-  $("pane").hidden = !panes[kind];
-  sync($("tree"), sidebar(kind, args[0]));
-  sync($("list"), list(kind === "request" && args[0]));
-  sync($("pane"), panes[kind] ? parts(panes[kind](...args)) : []);
+  // Effects save immediately; update them without replacing unsaved account fields.
+  if (kind === "account" && $("account-effects")) sync($("account-effects"), [["effects", `<div><h3>Effects</h3>${effectControls({ account: args[0] })}</div>`]]);
   // Restore a draft when returning to the page without replacing the textarea on each keystroke.
   if (kind === "policy" && policyEditor && $("policy-source")?.value !== policyEditor.draft) $("policy-source").value = policyEditor.draft;
   liveSync();
@@ -455,7 +457,14 @@ function accessActions(name, a, nodes) {
 }
 
 function effectControls(scope = {}) {
-  const settings = owner.effectSettings(view, scope);
+  const relevant = scope.account ? [scope.account] : Object.keys(accounts()).filter((a) => {
+    if (!scope.agent) return true;
+    const access = ids()[scope.agent]?.accounts?.[a] ?? view.config.default_access?.[a];
+    return access?.level && access.level !== "off";
+  });
+  const used = new Set(relevant.flatMap((a) => Object.keys(owner.actionsOf(view, a)).flatMap((action) => owner.effectsOf(view, a, action))));
+  const settings = owner.effectSettings(view, scope).filter(({ effect }) => used.has(effect));
+  if (!settings.length) return `<p class="muted">No effects used by these actions.</p>`;
   const prominent = ({ effect, own, inherited }) => ["pay", "publish"].includes(effect) || own !== null || inherited !== "allow";
   const row = ({ effect, own, inherited, source }) => {
     const title = ({ pay: "Payments", publish: "Publishing" })[effect] ?? effect.charAt(0).toUpperCase() + effect.slice(1);
@@ -464,7 +473,7 @@ function effectControls(scope = {}) {
       (m) => `commit(edits.setEffect(${q(scope)}, ${q(effect)}, ${q(m)}))`)}</div>`;
   };
   const others = settings.filter((setting) => !prominent(setting));
-  return `<p class="muted">Click a selected permission to unset it.</p><div class="access-actions effect-permissions">
+  return `<p class="muted">Changes save immediately. Click a selected permission to unset it.</p><div class="access-actions effect-permissions">
     ${settings.filter(prominent).map(row).join("")}
     ${others.length ? `<details class="access-action-group" data-disclosure="${esc(["effects", scope.agent ?? "", scope.account ?? "", "other"].join("/"))}"><summary><span class="access-group-title">Other effects</span></summary><div class="access-children">${others.map(row).join("")}</div></details>` : ""}
   </div>`;
@@ -731,14 +740,16 @@ function apiAgentSetup(a) {
   const setups = Object.entries(accounts()[a].connections ?? {}).flatMap(([key, kinds]) =>
     (Object.values(kinds)[0]?.slots ?? []).map((_, index) => owner.apiSetup(view, a, key, index)).filter(Boolean));
   if (!setups.length) return "";
-  return `<section class="account-card account-settings"><div class="section-heading"><h2>Connect your agent</h2></div>
-    <div class="settings-fields"><div><p>Use these fake tokens in your agent. Monitor substitutes the saved credentials only at the locations shown. Requests must go through Monitor.</p></div></div>
-    <div class="settings-fields">${setups.map((setup, index) => {
+  return `<section class="account-card agent-setup"><div class="section-heading"><h2>Connect your agent</h2></div>
+    <div class="agent-setup-body"><p class="muted">Use these placeholders in your agent and send requests through Monitor. Monitor substitutes your saved credentials at the locations below.</p>
+    ${setups.map((setup, index) => {
       const id = `api-placeholder-${index}`;
-      return `<div><p><strong>${esc(setup.connection)}</strong> · ${esc(setup.credential)}</p>
-        <label for="${id}">Substitution value</label><div class="row"><input id="${id}" class="mono" readonly value="${esc(setup.placeholder)}" onclick="this.select()"><button onclick="copyAPIPlaceholder(${q(id)})" aria-label="Copy substitution value for ${esc(setup.connection)} ${esc(setup.credential)}">Copy</button></div>
-        <p>Address: <span class="mono">${esc(setup.address)}</span></p>
-        <p class="mono">${esc(setup.placement)}</p></div>`;
+      const [location, placement] = setup.header ? ["Header", `${setup.header}: ${setup.value}`]
+        : setup.query ? ["Query parameter", `${setup.query}=${setup.value}`] : ["Authentication", setup.placement];
+      return `<div class="agent-setup-item">${setups.length > 1 ? `<h3>${esc(setup.connection)} · ${esc(setup.credential)}</h3>` : ""}
+        <label for="${id}">Agent placeholder</label><div class="secret-input"><input id="${id}" class="mono" readonly value="${esc(setup.placeholder)}" onclick="this.select()"><button onclick="copyAPIPlaceholder(${q(id)})" aria-label="Copy placeholder for ${esc(setup.connection)} ${esc(setup.credential)}">Copy</button></div>
+        <dl class="agent-setup-details"><dt>Address</dt><dd><code>${esc(setup.address)}</code></dd>
+        <dt>${location}</dt><dd><code>${esc(placement)}</code></dd></dl></div>`;
     }).join("")}</div></section>`;
 }
 
@@ -756,9 +767,10 @@ const copyAPIPlaceholder = run(async (id) => {
 const credentialFields = (a) => owner.credentialFields(view, a);
 
 function credentialEditor(a, f) {
-  return `<div class="credential"><div>${esc(f.label)} · <span class="muted">${esc(f.status)}</span></div>
+  return `<div class="credential"><label for="f-${esc(f.key)}">${esc(f.label)}</label>
     <input type="hidden" id="mode-${esc(f.key)}" value="keep">
     <div id="credential-actions-${esc(f.key)}" class="credential-actions">
+      <span class="credential-status muted">${esc(f.status)}</span>
       ${f.signIn ? `<button class="primary" onclick="signIn(${q(a)}, ${q(f.key)})">${esc(signInLabel(accounts()[a].preset))}</button>` : ""}
       <button id="replace-${esc(f.key)}" onclick="credentialMode(${q(a)}, ${q(f.key)}, 'replace')">${f.kind === "unset" ? "Set value" : "Replace"}</button>
       ${f.kind !== "unset" ? `<button class="danger" onclick="credentialMode(${q(a)}, ${q(f.key)}, 'clear')">Remove</button>` : ""}</div>
@@ -773,7 +785,7 @@ function credentialMode(a, key, mode) {
   const editor = $("credential-edit-" + key);
   editor.hidden = mode !== "replace";
   const f = credentialFields(a).find((f) => f.key === key);
-  editor.innerHTML = mode === "replace" ? `<label for="f-${esc(key)}">${f.kind === "unset" ? "Value" : "New value"}</label>${input(f)}
+  editor.innerHTML = mode === "replace" ? `${input(f)}
     <p class="muted field-help">${f.kind === "unset" ? "Enter a value, then save." : "Your current credential stays in use until you save."}</p>` : "";
   $("credential-remove-" + key).hidden = mode !== "clear";
   $("credential-cancel-" + key).hidden = mode === "keep";
@@ -809,11 +821,11 @@ function account(a) {
   return [isDashboard ? head(esc(a), accountStatus(a), "accounts") : `<header class="account-header">${accountIcon(a)}<h1>${esc(a)}</h1><span class="muted">${esc(c.title)} ${accountStatus(a)}</span><a class="x" href="#activity" aria-label="Close account">✕</a></header>`,
     liveCard(a),
     apiAgentSetup(a),
-    `<section><h2>Effects</h2>${effectControls({ account: a })}</section>`,
     `<div class="account-overview"><section class="account-card"><div class="section-heading"><h2>Actions <span class="count">${Object.keys(owner.actionsOf(view, a)).length}</span></h2><a href="#preset/${encodeURIComponent(acc.preset)}">Edit preset</a></div>
       <div class="action-list">${accountActions(a)}</div></section>${accountUsers(a)}</div>`,
     `<section class="account-card account-settings"><div class="section-heading"><h2>Account settings</h2></div><div class="settings-fields"><div>${questions(acc)}</div>
       ${fields.length || credentials.length || acc.preset === "custom_api" ? `<div>${acc.preset === "custom_api" ? apiConnectionFields(a) : ""}${fields.map((f) => `<label for="f-${esc(f.key)}">${esc(f.label)}</label>${input(f, f.value)}`).join("")}${credentials.map((f) => credentialEditor(a, f)).join("")}</div>` : ""}</div>
+      <div id="account-effects" class="account-effects"></div>
       <div class="card-footer"><button class="primary" onclick="saveAccount(${q(a)})">Save</button></div></section>`,
     ...owner.reviews(view, a).map((s) => review(a, s, c)),
     `<section><details data-disclosure="custom-rules"><summary class="hd">Custom rules</summary><textarea id="policy" aria-label="Custom rules" rows="12">${esc(view.config.policies?.[a])}</textarea>
@@ -1134,9 +1146,7 @@ function renderDashboard(kind, args, panes, parts) {
   if (kind === "rules" && content.length === 1) content.push(dashboard.empty("No saved rules", "Save an approval rule from a request to allow matching requests in the future.", '<a class="button" href="#activity">View activity</a>', "rules"));
   if (!activity && !content.length) content = [dashboard.empty("Page not found", "Choose a section from the sidebar.", '<a class="button" href="#activity">View activity</a>')];
   sync($("pane"), parts(content));
-  if (kind === "policy" && policyEditor && $("policy-source")?.value !== policyEditor.draft) $("policy-source").value = policyEditor.draft;
   $("fun-ui-link").href = "fun_ui.html" + (collection ? "#activity" : location.hash);
-  liveSync();
 }
 function filterDashboard(field, value) {
   if (field === "clear" || field === "pending") dashboardFilters = { query: "", state: field === "pending" ? "pending" : "", agent: "", account: "", page: 0 };
