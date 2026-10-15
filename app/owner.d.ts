@@ -82,7 +82,7 @@ export type View = {
   }
   labels: Record<string, Label>
   status: Record<string, ConnectionStatus>
-  fields: Record<string, { path: string[]; kind: string }[]>
+  fields: Record<string, { path: string[]; kind: string; placeholder?: string }[]>
   presets: Record<string, Preset>
   vocabulary: Record<string, { change?: boolean; ask?: boolean }>
 }
@@ -235,7 +235,7 @@ export function catalog(view: View): { group: string; title: string; presets: { 
 export type ApiSettings = { url: string; auth: 'bearer' | 'header' | 'query'; header: string; prefix: string; query: string }
 export function apiSettings(view: View, account?: string): ApiSettings
 export function apiSlot(settings: Partial<ApiSettings>, value?: string): { [key: string]: string }
-export function apiSetup(view: View, account: string): { placeholder: string; address: string; header?: string; query?: string; value: string } | null
+export function apiSetup(view: View, account: string, connection?: string, slot?: number): { connection: string; credential: string; placeholder: string; address: string; header?: string; query?: string; value: string; placement: string } | null
 
 export function draftable(view: View, record: RequestRecord): string | null
 export function draftOperation(details: RequestDetails): { id: string } & { [key: string]: Json }

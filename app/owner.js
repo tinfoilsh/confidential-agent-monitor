@@ -462,12 +462,22 @@ export function apiSlot({ url: raw = "", auth, header = "", prefix = "", query =
 }
 
 // The agent sends this placeholder; Monitor substitutes the real key at the slot's address.
-export function apiSetup(view, account) {
-  const slot = accounts(view)[account]?.connections?.[""]?.http?.slots?.[0];
+export function apiSetup(view, account, key = "", index = 0) {
+  const [kind, config] = Object.entries(accounts(view)[account]?.connections?.[key] ?? {})[0] ?? [];
+  const slot = config?.slots?.[index];
   if (!slot) return null;
-  const placeholder = `tfm_${account}_${slot.value}`;
-  return { placeholder, address: slot.origin + (slot.path === "/" ? "" : slot.path ?? ""), header: slot.query ? undefined : slot.header,
-    query: slot.query, value: slot.query ? placeholder : (slot.prefix ?? "") + placeholder };
+  const path = ["connections", key, kind, "secrets", slot.value];
+  const placeholder = view.fields?.[account]?.find(f => same(f.path, path))?.placeholder;
+  if (!placeholder) return null;
+  const value = (slot.prefix ?? "") + placeholder;
+  const placement = slot.header ? `Header: ${slot.header}: ${value}`
+    : slot.query ? `Query parameter: ${slot.query}=${value}`
+    : slot.basic ? `HTTP Basic ${slot.basic === "user" ? "username" : "password"}: ${value}`
+    : slot.segment ? `Path segment ${slot.segment}: ${value}`
+    : slot.form ? `${slot.form === "otp" ? "One-time code" : slot.form === "password" ? "Password" : "Username"} field: ${value}`
+    : slot.sigv4 ? `AWS SigV4 access key: ${value}` : "";
+  return { connection: connectionName(account, key), credential: slot.value, placeholder,
+    address: slot.origin + (slot.path === "/" ? "" : slot.path ?? ""), header: slot.header, query: slot.query, value, placement };
 }
 
 // Only valid, unmatched HTTP input can become a new operation, including policy refusals.
@@ -647,7 +657,7 @@ export function integrationGuide(view, page, href) {
         <li>Configure an SSH alias named <code>monitor</code> for the Monitor server, using that private key and the host key shown in the agent's settings. The SSH address and port come from your deployment, not the web app URL.</li>
       </ol><p>The private SSH key stays on your computer. Tool integrations use that identity; they do not need the web app's owner key.</p>
       <h2>Your agent setup</h2>${setupLinks ? `<ul>${setupLinks}</ul>` : `<p>No agents are paired yet. ${link(["pair"], "Pair an agent")} to get started.</p>`}
-      <p>Agent settings include the host key, CA certificate, and credential placeholders. If the existing Monitor client is installed, <code>monitor connections --json</code> checks which connections its SSH identity can reach.</p>
+      <p>Agent settings include the host key and CA certificate. Open an account's <b>Connect your agent</b> section to copy its substitution values and see where to send them. If the existing Monitor client is installed, <code>monitor connections --json</code> checks which connections its SSH identity can reach.</p>
       <h2>Install the client</h2><p>Use Python 3.11 or newer and OpenSSH. From the Monitor repository:</p>
       ${code("integration-install", "Install on your laptop", 'mkdir -p "$HOME/.local/bin"\ninstall -m 755 client/monitor "$HOME/.local/bin/monitor"\nexport PATH="$HOME/.local/bin:$PATH"\nmonitor connections --json')}
       <p>The Go binary embeds the same client. The commands below use your paired SSH alias and verify its host key. See <code>docs/laptop-client.md</code> in the repository for complete SSH setup and local profile examples.</p>`,

@@ -56,8 +56,9 @@ type requestSummary struct {
 }
 
 type fieldMetadata struct {
-	Path []string `json:"path"`
-	Kind string   `json:"kind"`
+	Path        []string `json:"path"`
+	Kind        string   `json:"kind"`
+	Placeholder string   `json:"placeholder,omitempty"`
 }
 
 // ownerView exposes credential status without credential values.
@@ -143,9 +144,9 @@ func (m *monitor) view(err error) (any, error) {
 	}
 	for _, c := range s.connections {
 		v.Status[c.name] = c.status()
-		for name := range c.Secrets {
+		for name, value := range c.Secrets {
 			path := []string{"connections", c.key, c.protocol, "secrets", name}
-			v.Fields[c.account] = append(v.Fields[c.account], fieldMetadata{path, credential.Describe(m.doc.Secrets.get(secretID{c.account, c.key, name}))})
+			v.Fields[c.account] = append(v.Fields[c.account], fieldMetadata{path, credential.Describe(m.doc.Secrets.get(secretID{c.account, c.key, name})), value.Placeholder})
 		}
 	}
 	for _, fields := range v.Fields {

@@ -278,7 +278,7 @@ func (m *monitor) agentHandler(key string) http.Handler {
 				h := provider.HTTPConfig()
 				ac.Hosts, ac.Slots, ac.Placeholders = h.Hosts, h.Slots, map[string]string{}
 				for secret := range h.Names() {
-					ac.Placeholders[secret] = web.Placeholder(name, secret)
+					ac.Placeholders[secret] = h.Placeholder(secret)
 				}
 			}
 			result.Connections = append(result.Connections, ac)

@@ -156,7 +156,7 @@ func (request *Request) parse(h *HTTP, r *http.Request, s *connector.Stream) err
 		return err
 	}
 	// Binding uses the stream's immutable settings. Replacing them cancels the stream.
-	request.slots, err = h.bind(r, s.Name, origin)
+	request.slots, err = h.bind(r, origin)
 	if err != nil {
 		return err
 	}
@@ -345,10 +345,6 @@ func unique(dec *json.Decoder) bool {
 	}
 	_, err = dec.Token()
 	return err == nil
-}
-
-func Placeholder(connection, secret string) string {
-	return placeholderPrefix + connection + "_" + secret
 }
 
 // Claim ranks exact slot origins by their length and host patterns, which serve only default ports, by theirs.

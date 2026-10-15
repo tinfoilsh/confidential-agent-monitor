@@ -70,9 +70,11 @@ func (p *Proxy) Run(ctx context.Context, host *connector.Env, serve func(context
 	if err != nil {
 		return err
 	}
-	boot := bootstrap{Version: protocolVersion, Kind: p.Kind, Config: p.Config, Settings: settings, Secrets: map[string]bool{}}
+	boot := bootstrap{Version: protocolVersion, Kind: p.Kind, Config: p.Config, Settings: settings, Secrets: map[string]secretHandle{}}
 	for name, v := range p.Secrets {
-		boot.Secrets[name] = v != nil && len(v.Raw()) > 0
+		if v != nil {
+			boot.Secrets[name] = secretHandle{len(v.Raw()) > 0, v.Placeholder}
+		}
 	}
 	if p.Definition.HostKey && host.HostKey != nil {
 		boot.HostKey = host.HostKey.PublicKey().Marshal()

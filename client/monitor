@@ -516,7 +516,8 @@ def credential_environment(connections):
     for connection in sorted(connections, key=lambda c: c["name"]):
         for variable, value in sorted(connection["placeholders"].items()):
             name = connection["name"]
-            if value != f"tfm_{name}_{variable}":
+            # Discovery owns the value; accept opaque references and those from older monitors.
+            if not isinstance(value, str) or not re.fullmatch(r"tfm_[A-Za-z0-9_-]+", value):
                 raise MonitorError(f"invalid placeholder for {name}.{variable}")
             qualified = "MONITOR_CREDENTIAL_" + re.sub(r"[^A-Z0-9_]", "_", f"{name}_{variable}".upper())
             entry = (name, variable, value, qualified)

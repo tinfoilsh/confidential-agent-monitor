@@ -8,11 +8,14 @@ import (
 	"crypto/ecdsa"
 	"crypto/ed25519"
 	"crypto/elliptic"
+	"crypto/hmac"
 	"crypto/rand"
+	"crypto/sha256"
 	"crypto/subtle"
 	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/base32"
 	"encoding/json"
 	"encoding/pem"
 	"errors"
@@ -23,6 +26,7 @@ import (
 	"maps"
 	"net"
 	"slices"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -281,6 +285,7 @@ func (m *monitor) build(ctx context.Context, sl sealed, env connector.Env, old *
 		}
 		for name, value := range definition.Secrets {
 			id := secretID{definition.account, definition.key, name}
+			value.Placeholder = sl.Keys.placeholder(id)
 			value.Client = client
 			value.Save = func(ctx context.Context, before, after json.RawMessage) error {
 				return m.replaceValue(ctx, definition, id, before, after)
@@ -537,6 +542,17 @@ type keyMaterial struct {
 	HostKey string `json:"host_key"`
 	CACert  string `json:"ca_cert"`
 	CAKey   string `json:"ca_key"`
+}
+
+// Derive references from the existing persisted private key so restarts and
+// credential refreshes keep them stable, without storing another set of tokens.
+func (k keyMaterial) placeholder(id secretID) string {
+	mac := hmac.New(sha256.New, []byte(k.CAKey))
+	mac.Write([]byte("monitor credential placeholder v1\x00"))
+	raw, _ := json.Marshal(id)
+	mac.Write(raw)
+	suffix := strings.ToLower(base32.StdEncoding.EncodeToString(mac.Sum(nil))[:9])
+	return "tfm_" + connectionName(id[0], id[1]) + "_" + suffix
 }
 
 func loadCA(k *keyMaterial) (*tls.Config, error) {

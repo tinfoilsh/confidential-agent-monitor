@@ -34,16 +34,21 @@ const (
 	idleRPCTimeout        = 30 * time.Second
 )
 
-const protocolVersion = 4
+const protocolVersion = 5
 const readyPath = "/_monitor/ready"
 
 type bootstrap struct {
-	Version  int             `json:"version"`
-	Kind     string          `json:"kind"`
-	Config   json.RawMessage `json:"config"`
-	Settings json.RawMessage `json:"settings,omitempty"`
-	Secrets  map[string]bool `json:"secrets,omitempty"`
-	HostKey  []byte          `json:"host_key,omitempty"`
+	Version  int                     `json:"version"`
+	Kind     string                  `json:"kind"`
+	Config   json.RawMessage         `json:"config"`
+	Settings json.RawMessage         `json:"settings,omitempty"`
+	Secrets  map[string]secretHandle `json:"secrets,omitempty"`
+	HostKey  []byte                  `json:"host_key,omitempty"`
+}
+
+type secretHandle struct {
+	Configured  bool   `json:"configured"`
+	Placeholder string `json:"placeholder"`
 }
 
 const sessionHeader = "X-Monitor-Session"

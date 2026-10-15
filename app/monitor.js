@@ -728,22 +728,29 @@ const addCustomAPI = run(async () => {
 });
 
 function apiAgentSetup(a) {
-  const setup = owner.apiSetup(view, a);
-  if (!setup) return "";
-  return `<section class="account-card account-settings"><div class="section-heading"><h2>Connect your agent</h2></div><div class="settings-fields"><div>
-    <label for="api-placeholder">Agent API key</label><div class="row"><input id="api-placeholder" readonly value="${esc(setup.placeholder)}" onclick="this.select()"><button onclick="copyAPIPlaceholder()">Copy</button></div>
-    <p class="muted">Give your agent this placeholder as its API key. Requests must go through Monitor.</p>
-    <p>API address: <span class="mono">${esc(setup.address)}</span></p>
-    <p>${setup.query ? `Query parameter: <span class="mono">${esc(setup.query)}=${esc(setup.value)}</span>` : `Header: <span class="mono">${esc(setup.header)}: ${esc(setup.value)}</span>`}</p>
-    <p class="muted">Access covers all operations at this address, including changes and deletions.</p>
-  </div></div></section>`;
+  const setups = Object.entries(accounts()[a].connections ?? {}).flatMap(([key, kinds]) =>
+    (Object.values(kinds)[0]?.slots ?? []).map((_, index) => owner.apiSetup(view, a, key, index)).filter(Boolean));
+  if (!setups.length) return "";
+  return `<section class="account-card account-settings"><div class="section-heading"><h2>Connect your agent</h2></div>
+    <div class="settings-fields"><div><p>Use these fake tokens in your agent. Monitor substitutes the saved credentials only at the locations shown. Requests must go through Monitor.</p></div></div>
+    <div class="settings-fields">${setups.map((setup, index) => {
+      const id = `api-placeholder-${index}`;
+      return `<div><p><strong>${esc(setup.connection)}</strong> · ${esc(setup.credential)}</p>
+        <label for="${id}">Substitution value</label><div class="row"><input id="${id}" class="mono" readonly value="${esc(setup.placeholder)}" onclick="this.select()"><button onclick="copyAPIPlaceholder(${q(id)})" aria-label="Copy substitution value for ${esc(setup.connection)} ${esc(setup.credential)}">Copy</button></div>
+        <p>Address: <span class="mono">${esc(setup.address)}</span></p>
+        <p class="mono">${esc(setup.placement)}</p></div>`;
+    }).join("")}</div></section>`;
 }
 
-const copyAPIPlaceholder = run(async () => {
-  $("api-placeholder").select();
+const copyAPIPlaceholder = run(async (id) => {
+  $(id).select();
   if (!navigator.clipboard) { toast("Copy the selected placeholder."); return; }
-  await navigator.clipboard.writeText($("api-placeholder").value);
-  toast("Placeholder copied");
+  try {
+    await navigator.clipboard.writeText($(id).value);
+    toast("Placeholder copied");
+  } catch {
+    toast("Copy the selected placeholder.");
+  }
 });
 
 const credentialFields = (a) => owner.credentialFields(view, a);
@@ -801,7 +808,7 @@ function account(a) {
   const fields = owner.plainFields(view, a), credentials = credentialFields(a);
   return [isDashboard ? head(esc(a), accountStatus(a), "accounts") : `<header class="account-header">${accountIcon(a)}<h1>${esc(a)}</h1><span class="muted">${esc(c.title)} ${accountStatus(a)}</span><a class="x" href="#activity" aria-label="Close account">✕</a></header>`,
     liveCard(a),
-    acc.preset === "custom_api" ? apiAgentSetup(a) : "",
+    apiAgentSetup(a),
     `<section><h2>Effects</h2>${effectControls({ account: a })}</section>`,
     `<div class="account-overview"><section class="account-card"><div class="section-heading"><h2>Actions <span class="count">${Object.keys(owner.actionsOf(view, a)).length}</span></h2><a href="#preset/${encodeURIComponent(acc.preset)}">Edit preset</a></div>
       <div class="action-list">${accountActions(a)}</div></section>${accountUsers(a)}</div>`,

@@ -28,6 +28,9 @@ type Value struct {
 	Save    func(context.Context, json.RawMessage, json.RawMessage) error
 	Client  *http.Client
 	resolve func(context.Context) (string, error)
+
+	// Placeholder is a stable reference supplied by Monitor, never the credential itself.
+	Placeholder string `json:"-"`
 }
 
 // Remote resolves a connection-scoped handle without moving its stored OAuth

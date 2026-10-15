@@ -35,6 +35,13 @@ type Credentials struct {
 
 func (c *Credentials) Names() iter.Seq[string] { return maps.Keys(c.Secrets) }
 
+func (c *Credentials) Placeholder(value string) string {
+	if secret := c.Secrets[value]; secret != nil {
+		return secret.Placeholder
+	}
+	return ""
+}
+
 // Validate checks every slot; a browser places values only in form fields, and HTTP never does.
 func (c *Credentials) Validate(form bool) error {
 	for i := range c.Slots {
@@ -49,12 +56,12 @@ func (c *Credentials) Validate(form bool) error {
 }
 
 // Form returns the form slot whose placeholder is the whole text, for a field on origin; text without a placeholder needs none.
-func (c *Credentials) Form(connection, origin, text string) (*Slot, error) {
+func (c *Credentials) Form(origin, text string) (*Slot, error) {
 	if !strings.Contains(text, placeholderPrefix) {
 		return nil, nil
 	}
 	for i := range c.Slots {
-		if s := &c.Slots[i]; s.Form != "" && s.Origin == origin && text == Placeholder(connection, s.Value) {
+		if s := &c.Slots[i]; s.Form != "" && s.Origin == origin && text == c.Placeholder(s.Value) {
 			return s, nil
 		}
 	}
@@ -127,7 +134,7 @@ func ValidOrigin(origin string) bool {
 }
 
 // bind returns the slots this request fills and refuses a placeholder anywhere else.
-func (h *HTTP) bind(r *http.Request, name, origin string) ([]*Slot, error) {
+func (h *HTTP) bind(r *http.Request, origin string) ([]*Slot, error) {
 	header := r.Header.Clone()
 	query := r.URL.Query()
 	segments := strings.Split(r.URL.Path, "/")
@@ -143,7 +150,11 @@ func (h *HTTP) bind(r *http.Request, name, origin string) ([]*Slot, error) {
 			continue
 		}
 		signed = signed || s.SigV4 != nil
-		want := s.Prefix + Placeholder(name, s.Value)
+		placeholder := h.Placeholder(s.Value)
+		if placeholder == "" {
+			continue
+		}
+		want := s.Prefix + placeholder
 		switch {
 		case s.Header != "" && slices.Equal(header.Values(s.Header), []string{want}):
 			header.Del(s.Header)

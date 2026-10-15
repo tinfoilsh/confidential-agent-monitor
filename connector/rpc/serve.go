@@ -58,12 +58,13 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 	}); ok {
 		values := secrets.SecretValues()
 		clear(values)
-		for name, configured := range boot.Secrets {
-			values[name] = credential.Remote(configured, func(ctx context.Context) (string, error) {
+		for name, handle := range boot.Secrets {
+			values[name] = credential.Remote(handle.Configured, func(ctx context.Context) (string, error) {
 				var value string
 				err := call(ctx, callbacks, "/credential/"+url.PathEscape(name), nil, &value)
 				return value, err
 			})
+			values[name].Placeholder = handle.Placeholder
 		}
 	}
 	if len(boot.HostKey) != 0 {

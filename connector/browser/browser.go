@@ -106,10 +106,9 @@ type request struct {
 	URL  string `json:"url"`
 	Ref  string `json:"ref"`
 	Text string `json:"text"`
-	// connection names the placeholders; slot is the form slot a fill's placeholder names.
+	// slot is the form slot a fill's placeholder names.
 	node       cdp.BackendNodeID
 	generation int
-	connection string
 	slot       *web.Slot
 }
 
@@ -239,7 +238,6 @@ func (b *Browser) handle(stream *connector.Stream, command string, do func(conte
 				return
 			}
 		}
-		req.connection = stream.Name
 		var page string
 		if err == nil {
 			err = b.within(r, epoch, command, req, func(ctx context.Context, at string, _ document) error {
@@ -529,7 +527,7 @@ func fail(w http.ResponseWriter, err error) {
 func (b *Browser) secret(ctx context.Context, command string, req request) (*web.Slot, error) {
 	if command != "fill" {
 		for _, text := range []string{req.URL, req.Text} {
-			if _, err := b.Form(req.connection, "", text); err != nil {
+			if _, err := b.Form("", text); err != nil {
 				return nil, err
 			}
 		}
@@ -540,7 +538,7 @@ func (b *Browser) secret(ctx context.Context, command string, req request) (*web
 	if err != nil {
 		return nil, err
 	}
-	slot, err := b.Form(req.connection, origin, req.Text)
+	slot, err := b.Form(origin, req.Text)
 	if slot == nil || err != nil {
 		return nil, err
 	}
