@@ -132,7 +132,7 @@ export function ownerApi(request, generation, base = "") {
     previewPolicy: (source, signal) => post("/policy/preview", { source }, signal),
     applyPolicy: (source, signal) => snapshot("POST", "/policy", { source }, signal),
     signIn: (account, path, redirect, credential, signal) => post(`/accounts/${encodeURIComponent(account)}/sign-in`, { path, redirect, credential }, signal),
-    finishSignIn: (state, code, signal) => snapshot("POST", `/sign-in/${encodeURIComponent(state)}`, { code }, signal),
+    finishSignIn: (state, result, signal) => snapshot("POST", `/sign-in/${encodeURIComponent(state)}`, typeof result === "string" ? { code: result } : result, signal),
     browser: (name, body, signal) => request(body ? "POST" : "GET", `/connections/${encodeURIComponent(name)}/browser`, body, signal),
     icons: async (signal) => {
       const manifest = await get(ICON_MANIFEST, signal);
@@ -145,6 +145,7 @@ export function ownerApi(request, generation, base = "") {
 // a preset without one shows the custom icon.
 const ICON_MANIFEST = "/app/icons/manifest.json";
 export function connectorIcon(manifest, preset, base = "") {
+  if (preset === "codex") preset = "openai";
   const icon = manifest?.[preset]?.src ? manifest[preset] : manifest?.custom ?? { src: "custom.svg" };
   const url = (file) => `${base}/app/icons/${encodeURIComponent(file)}`;
   return { src: url(icon.src), ...(icon.dark && { dark: url(icon.dark) }) };
@@ -400,7 +401,7 @@ export function readField(f, raw) {
 // A grant template fills from the account's plain settings; one that needs a setup-only value, such as an OAuth client, cannot.
 export function grantTemplate(view, account, f) {
   const values = Object.fromEntries(plainFields(view, account).map((p) => [p.key, p.value]));
-  const grant = f?.oauth && filled(f.oauth, values);
+  const grant = f?.oauth && filled(f.oauth, { ...values, monitor_host_id: view.host_id });
   return grant && !/\{\w+\}/.test(JSON.stringify(grant)) ? grant : undefined;
 }
 
@@ -415,7 +416,8 @@ export function credentialFields(view, account) {
   }).sort((a, b) => a.key.localeCompare(b.key));
 }
 
-export const signInLabel = (view, preset) => preset === "mcp" || !view.presets[preset] ? "Sign in" : "Sign in with " + view.presets[preset].title;
+export const signInLabel = (view, preset) => preset === "codex" ? "Continue with ChatGPT"
+  : preset === "mcp" || !view.presets[preset] ? "Sign in" : "Sign in with " + view.presets[preset].title;
 
 export function catalog(view) {
   const custom = ["custom_api", "mcp"].filter((name) => view.presets[name]);
@@ -478,6 +480,22 @@ export function apiSetup(view, account, key = "", index = 0) {
     : slot.sigv4 ? `AWS SigV4 access key: ${value}` : "";
   return { connection: connectionName(account, key), credential: slot.value, placeholder,
     address: slot.origin + (slot.path === "/" ? "" : slot.path ?? ""), header: slot.header, query: slot.query, value, placement };
+}
+
+export function codexSetup(view, account) {
+  if (accounts(view)[account]?.preset !== "codex") return null;
+  const setup = apiSetup(view, account);
+  if (!setup) return null;
+  return `model = "gpt-6.1-sol"
+model_provider = "monitor_chatgpt"
+
+[model_providers.monitor_chatgpt]
+name = "ChatGPT through Monitor"
+base_url = "https://api.openai.com/v1"
+experimental_bearer_token = ${JSON.stringify(setup.placeholder)}
+wire_api = "responses"
+requires_openai_auth = false
+supports_websockets = false`;
 }
 
 // Only valid, unmatched HTTP input can become a new operation, including policy refusals.
@@ -589,7 +607,7 @@ export const edits = {
     const connections = c.connections ? filled(c.connections, plainValues) : values.connections;
     const acc = { preset, ...answers, ...JSON.stringify(connections) !== JSON.stringify(c.connections) && { connections } };
     for (const f of fields) {
-      const value = f.oauth && oauth.includes(f.key) ? { oauth: filled(f.oauth, values) }
+      const value = f.oauth && oauth.includes(f.key) ? { oauth: filled(f.oauth, { ...values, monitor_host_id: view.host_id }) }
         : f.secret && values[f.key] === "" ? null : values[f.key];
       for (const path of paths(f)) putPath(acc, path, value);
     }

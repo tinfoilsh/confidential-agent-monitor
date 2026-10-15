@@ -109,14 +109,19 @@ func (v *Value) Value(ctx context.Context) (string, error) {
 			return "", ErrNotConfigured
 		}
 		var err error
-		config := grant.config("")
-		if t, err = config.TokenSource(context.WithValue(ctx, oauth2.HTTPClient, v.Client), t).Token(); err != nil {
+		t, err = grant.refresh(ctx, v.Client, t)
+		if err != nil {
 			return "", scrub(ctx, "refresh", err)
+		}
+		if err := grant.acceptToken(t, true); err != nil {
+			return "", err
 		}
 		v.token = t
 	}
-	if grant.RefreshToken != t.RefreshToken {
-		grant.RefreshToken = t.RefreshToken
+	if v.grant.RefreshToken != t.RefreshToken || v.grant.AccessToken != t.AccessToken || !v.grant.Expiry.Equal(t.Expiry) || v.grant.Scope != grant.Scope {
+		if err := grant.acceptToken(t, true); err != nil {
+			return "", err
+		}
 		raw := encodeGrant(grant)
 		if err := v.Save(ctx, v.raw, raw); err != nil {
 			return "", err
@@ -157,6 +162,15 @@ func Describe(raw json.RawMessage) string {
 		return "oauth"
 	}
 	return "oauth-required"
+}
+
+// AccountLabel identifies the verified OIDC account without exposing tokens.
+func AccountLabel(raw json.RawMessage) string {
+	var v Value
+	if json.Unmarshal(raw, &v) == nil && v.grant != nil && v.grant.OIDC != nil {
+		return v.grant.OIDC.Email
+	}
+	return ""
 }
 
 // scrub keeps provider responses and request URLs out of errors, since either may hold a secret.

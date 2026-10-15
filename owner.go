@@ -4,11 +4,14 @@ import (
 	"cmp"
 	"compress/gzip"
 	"context"
+	"crypto"
 	"crypto/sha256"
 	"crypto/subtle"
+	"crypto/x509"
 	"embed"
 	"encoding/base64"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"io"
@@ -20,6 +23,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/pmezard/go-difflib/difflib"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
@@ -59,6 +63,7 @@ type fieldMetadata struct {
 	Path        []string `json:"path"`
 	Kind        string   `json:"kind"`
 	Placeholder string   `json:"placeholder,omitempty"`
+	Account     string   `json:"account,omitempty"`
 }
 
 // ownerView exposes credential status without credential values.
@@ -66,6 +71,7 @@ type ownerView struct {
 	Generation uint64                       `json:"generation"`
 	Config     json.RawMessage              `json:"config"`
 	HostKey    string                       `json:"host_key"`
+	HostID     string                       `json:"host_id"`
 	CA         string                       `json:"ca"`
 	Fields     map[string][]fieldMetadata   `json:"fields"`
 	Status     map[string]connectionStatus  `json:"status"`
@@ -136,7 +142,25 @@ func (m *monitor) view(err error) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	// The persisted CA identifies the host across restarts and SSH key rotation.
+	block, _ := pem.Decode([]byte(m.doc.Keys.CACert))
+	if block == nil {
+		return nil, errors.New("Monitor has no host certificate")
+	}
+	certificate, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+	key, err := jwk.Import(certificate.PublicKey)
+	if err != nil {
+		return nil, err
+	}
+	thumbprint, err := key.Thumbprint(crypto.SHA256)
+	if err != nil {
+		return nil, err
+	}
 	v := ownerView{Generation: m.doc.Generation, HostKey: string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), CA: m.doc.Keys.CACert,
+		HostID: "urn:ietf:params:oauth:jwk-thumbprint:sha-256:" + base64.RawURLEncoding.EncodeToString(thumbprint),
 		Fields: map[string][]fieldMetadata{}, Status: map[string]connectionStatus{}, Labels: map[string]facts.Label{},
 		CatalogID: catalog.id, Presets: catalog.entries, Vocabulary: facts.Effects}
 	if v.Config, err = json.Marshal(s.cfg); err != nil {
@@ -146,7 +170,8 @@ func (m *monitor) view(err error) (any, error) {
 		v.Status[c.name] = c.status()
 		for name, value := range c.Secrets {
 			path := []string{"connections", c.key, c.protocol, "secrets", name}
-			v.Fields[c.account] = append(v.Fields[c.account], fieldMetadata{path, credential.Describe(m.doc.Secrets.get(secretID{c.account, c.key, name})), value.Placeholder})
+			raw := m.doc.Secrets.get(secretID{c.account, c.key, name})
+			v.Fields[c.account] = append(v.Fields[c.account], fieldMetadata{Path: path, Kind: credential.Describe(raw), Placeholder: value.Placeholder, Account: credential.AccountLabel(raw)})
 		}
 	}
 	for _, fields := range v.Fields {
@@ -169,7 +194,15 @@ type signInInput struct {
 	Credential json.RawMessage `json:"credential"`
 }
 type finishSignInInput struct {
-	Code string `json:"code"`
+	Code     string  `json:"code"`
+	ClientID string  `json:"client_id,omitempty"`
+	Error    *string `json:"error,omitempty"`
+}
+
+type pendingSignIn struct {
+	finish  func(context.Context, finishSignInInput) error
+	session string
+	expires time.Time
 }
 type decisionInput struct {
 	Decision string `json:"decision"`
@@ -382,27 +415,47 @@ func (m *monitor) startSignIn(r *http.Request, req signInInput) (any, error) {
 	if req.Credential != nil {
 		record = req.Credential
 	}
-	sign, err := credential.NewSignIn(r.Context(), m.live.Load().Client(), record, req.Redirect)
+	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
+	defer cancel()
+	owner, _ := r.Context().Value(ownerSSHContextKey{}).(ownerSSHContext)
+	pending := &pendingSignIn{session: owner.session, expires: time.Now().Add(10 * time.Minute)}
+	sign, err := credential.NewSignIn(ctx, m.live.Load().Client(), record, req.Redirect)
 	if err != nil {
 		return nil, err
 	}
 	value := c.Secrets[path[6]]
-	m.signIns.Store(sign.State, func(ctx context.Context, code string) error {
-		secret, err := sign.Exchange(ctx, code)
+	pending.finish = func(ctx context.Context, result finishSignInInput) error {
+		if result.Error != nil {
+			return errors.New("sign-in was not completed; try again")
+		}
+		secret, err := sign.Exchange(ctx, result.Code, result.ClientID)
 		if err != nil {
 			return err
 		}
 		return value.Replace(ctx, previous, secret)
-	})
+	}
+	m.signIns.Store(sign.State, pending)
+	time.AfterFunc(time.Until(pending.expires), func() { m.signIns.CompareAndDelete(sign.State, pending) })
 	return map[string]string{"url": sign.URL}, nil
 }
 
 func (m *monitor) finishSignIn(r *http.Request, req finishSignInInput) (any, error) {
-	finish, ok := m.signIns.LoadAndDelete(r.PathValue("state"))
+	state := r.PathValue("state")
+	value, ok := m.signIns.Load(state)
 	if !ok {
-		return nil, errors.New("no sign-in is waiting for this state")
+		return nil, errors.New("sign-in expired or already completed; start again")
 	}
-	err := finish.(func(context.Context, string) error)(r.Context(), req.Code)
+	pending := value.(*pendingSignIn)
+	owner, _ := r.Context().Value(ownerSSHContextKey{}).(ownerSSHContext)
+	if pending.session != owner.session {
+		return nil, errors.New("sign-in belongs to a different Monitor session")
+	}
+	if !m.signIns.CompareAndDelete(state, pending) || time.Now().After(pending.expires) {
+		return nil, errors.New("sign-in expired or already completed; start again")
+	}
+	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
+	defer cancel()
+	err := pending.finish(ctx, req)
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	return m.view(err)

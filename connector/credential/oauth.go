@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"slices"
@@ -27,20 +28,53 @@ var (
 // A grant without an AuthURL is signed in at the authorization server its Resource names (RFC 9728).
 // A grant without a refresh token keeps its access token until Expiry, then needs a new sign-in.
 type oauth struct {
-	AuthURL      string    `json:"auth_url"`
-	TokenURL     string    `json:"token_url"`
-	ClientID     string    `json:"client_id"`
-	ClientSecret string    `json:"client_secret"`
-	RefreshToken string    `json:"refresh_token"`
-	Scope        string    `json:"scope"`
-	Resource     string    `json:"resource"`
-	Prompt       string    `json:"prompt,omitempty"`
-	AuthStyle    string    `json:"auth_style,omitempty"`
-	AccessToken  string    `json:"access_token,omitempty"`
-	Expiry       time.Time `json:"expiry,omitzero"`
+	AuthorizeParams map[string]string     `json:"authorize_params,omitempty"`
+	Registration    *callbackRegistration `json:"callback_registration,omitempty"`
+	OIDC            *oidc                 `json:"oidc,omitempty"`
+	RequiredScopes  []string              `json:"required_scopes,omitempty"`
+	AuthURL         string                `json:"auth_url"`
+	TokenURL        string                `json:"token_url"`
+	ClientID        string                `json:"client_id"`
+	ClientSecret    string                `json:"client_secret"`
+	RefreshToken    string                `json:"refresh_token"`
+	Scope           string                `json:"scope"`
+	Resource        string                `json:"resource"`
+	Prompt          string                `json:"prompt,omitempty"`
+	AuthStyle       string                `json:"auth_style,omitempty"`
+	AccessToken     string                `json:"access_token,omitempty"`
+	Expiry          time.Time             `json:"expiry,omitzero"`
+}
+
+// These parameters apply until the authorization callback issues a client ID.
+// OIDC verification binds the issued ID to its authenticated account.
+type callbackRegistration struct {
+	ClientID        string            `json:"client_id"`
+	AuthorizeParams map[string]string `json:"authorize_params,omitempty"`
 }
 
 func (o *oauth) validate() error {
+	params := []map[string]string{o.AuthorizeParams}
+	if o.Registration != nil {
+		if o.Registration.ClientID == "" || o.OIDC == nil || o.ClientSecret != "" || o.AuthURL == "" || o.TokenURL == "" {
+			return errors.New("callback registration requires a public client and OIDC verification")
+		}
+		params = append(params, o.Registration.AuthorizeParams)
+	}
+	for _, fields := range params {
+		for key := range fields {
+			if slices.Contains([]string{"client_id", "client_secret", "redirect_uri", "response_type", "state", "nonce", "code_challenge", "code_challenge_method", "scope", "resource", "id_token_hint"}, key) {
+				return errors.New("authorization parameters cannot override OAuth security fields")
+			}
+		}
+	}
+	if o.OIDC != nil {
+		if o.OIDC.Issuer == "" || o.OIDC.JWKSURL == "" || !slices.Contains(strings.Fields(o.Scope), "openid") {
+			return errors.New("OIDC requires issuer, jwks_url, and the openid scope")
+		}
+		if err := secure(o.OIDC.Issuer, o.OIDC.JWKSURL); err != nil {
+			return err
+		}
+	}
 	if _, ok := authStyles[o.AuthStyle]; !ok || !slices.Contains(prompts, o.Prompt) {
 		return errors.New("oauth prompt or auth_style is not supported")
 	}
@@ -78,6 +112,7 @@ type SignIn struct {
 	client     *http.Client
 	verifier   string
 	opts       []oauth2.AuthCodeOption
+	nonce      string
 }
 
 // NewSignIn starts the flow for an oauth secret, registering a client first when the secret names only its resource.
@@ -99,12 +134,42 @@ func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage,
 		s.opts = append(s.opts, oauth2.SetAuthURLParam("resource", s.grant.Resource))
 	}
 	config := s.grant.config(redirect)
+	registering := s.grant.Registration != nil && s.grant.ClientID == ""
+	if registering {
+		config.ClientID = s.grant.Registration.ClientID
+	}
 	s.config = &config
 	opts := append(slices.Clone(s.opts), oauth2.S256ChallengeOption(s.verifier), oauth2.AccessTypeOffline)
 	if s.grant.Prompt != "" {
 		opts = append(opts, oauth2.SetAuthURLParam("prompt", s.grant.Prompt))
 	}
-	s.URL = s.config.AuthCodeURL(s.State, opts...)
+	if s.grant.OIDC != nil {
+		s.nonce = rand.Text()
+		opts = append(opts, oauth2.SetAuthURLParam("nonce", s.nonce))
+		if s.grant.OIDC.IDToken != "" {
+			opts = append(opts, oauth2.SetAuthURLParam("id_token_hint", s.grant.OIDC.IDToken))
+		}
+	}
+	u, err := url.Parse(s.config.AuthCodeURL(s.State, opts...))
+	if err != nil {
+		return nil, scrub(ctx, "authorization", err)
+	}
+	query := u.Query()
+	params := []map[string]string{s.grant.AuthorizeParams}
+	if registering {
+		params = append(params, s.grant.Registration.AuthorizeParams)
+	}
+	for _, fields := range params {
+		for key, value := range fields {
+			if value == "" {
+				query.Del(key)
+			} else {
+				query.Set(key, value)
+			}
+		}
+	}
+	u.RawQuery = query.Encode()
+	s.URL = u.String()
 	return s, nil
 }
 
@@ -171,14 +236,97 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 }
 
 // Exchange returns the replacement record for the authorized scope.
-func (s *SignIn) Exchange(ctx context.Context, code string) (json.RawMessage, error) {
-	t, err := s.config.Exchange(context.WithValue(ctx, oauth2.HTTPClient, s.client), code, append(s.opts, oauth2.VerifierOption(s.verifier))...)
+func (s *SignIn) Exchange(ctx context.Context, code, clientID string) (json.RawMessage, error) {
+	if code == "" {
+		return nil, errors.New("the sign-in callback has no authorization code")
+	}
+	grant, config := s.grant, *s.config
+	if grant.Registration != nil && grant.ClientID == "" {
+		if clientID == "" || clientID == grant.Registration.ClientID || len(clientID) > 512 || strings.ContainsAny(clientID, " \r\n\t") {
+			return nil, errors.New("authorization did not return an issued client ID; start sign-in again")
+		}
+		grant.ClientID, config.ClientID = clientID, clientID
+	} else if clientID != "" && clientID != grant.ClientID {
+		return nil, errors.New("authorization returned a different client registration")
+	}
+	t, err := config.Exchange(context.WithValue(ctx, oauth2.HTTPClient, s.client), code, append(slices.Clone(s.opts), oauth2.VerifierOption(s.verifier))...)
 	if err != nil {
 		return nil, scrub(ctx, "exchange", err)
 	}
-	s.grant.RefreshToken, s.grant.AccessToken, s.grant.Expiry = t.RefreshToken, "", time.Time{}
-	if t.RefreshToken == "" {
-		s.grant.AccessToken, s.grant.Expiry = t.AccessToken, t.Expiry
+	if err := grant.acceptToken(t, false); err != nil {
+		return nil, err
 	}
-	return encodeGrant(s.grant), nil
+	if grant.OIDC != nil {
+		identity := *grant.OIDC
+		if err := identity.verify(ctx, s.client, t, grant.ClientID, s.nonce); err != nil {
+			return nil, err
+		}
+		grant.OIDC = &identity
+	}
+	return encodeGrant(grant), nil
+}
+
+func (o *oauth) acceptToken(t *oauth2.Token, refresh bool) error {
+	if t.AccessToken == "" || !strings.EqualFold(t.Type(), "Bearer") {
+		return errors.New("oauth returned an invalid bearer token")
+	}
+	scope, _ := t.Extra("scope").(string)
+	if scope == "" && refresh {
+		scope = o.Scope
+	}
+	for _, required := range o.RequiredScopes {
+		if !slices.Contains(strings.Fields(scope), required) {
+			return errors.New("required OAuth permissions were not granted; sign in again")
+		}
+	}
+	if scope != "" {
+		o.Scope = scope
+	}
+	o.AccessToken, o.RefreshToken, o.Expiry = t.AccessToken, t.RefreshToken, t.Expiry
+	return nil
+}
+
+// oauth2.TokenSource handles token formats, client authentication, and rotation,
+// but does not send RFC 8707 resource indicators on refresh requests.
+type resourceTransport struct {
+	http.RoundTripper
+	endpoint, resource string
+}
+
+func (t resourceTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	if r.Method == http.MethodPost && r.URL.String() == t.endpoint {
+		body, err := io.ReadAll(r.Body)
+		r.Body.Close()
+		if err != nil {
+			return nil, err
+		}
+		form, err := url.ParseQuery(string(body))
+		if err != nil {
+			return nil, err
+		}
+		form.Set("resource", t.resource)
+		r = r.Clone(r.Context())
+		encoded := form.Encode()
+		r.GetBody = func() (io.ReadCloser, error) { return io.NopCloser(strings.NewReader(encoded)), nil }
+		r.Body, _ = r.GetBody()
+		r.ContentLength = int64(len(encoded))
+	}
+	return t.RoundTripper.RoundTrip(r)
+}
+
+func (o *oauth) refresh(ctx context.Context, client *http.Client, token *oauth2.Token) (*oauth2.Token, error) {
+	if o.Resource != "" {
+		if client == nil {
+			client = http.DefaultClient
+		}
+		copy := *client
+		transport := copy.Transport
+		if transport == nil {
+			transport = http.DefaultTransport
+		}
+		copy.Transport = resourceTransport{transport, o.TokenURL, o.Resource}
+		client = &copy
+	}
+	config := o.config("")
+	return config.TokenSource(context.WithValue(ctx, oauth2.HTTPClient, client), token).Token()
 }

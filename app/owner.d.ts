@@ -68,6 +68,7 @@ export type View = {
   generation: number
   catalog_id?: string
   host_key: string
+  host_id: string
   ca: string
   config: {
     effects?: Record<string, Mode>
@@ -82,7 +83,7 @@ export type View = {
   }
   labels: Record<string, Label>
   status: Record<string, ConnectionStatus>
-  fields: Record<string, { path: string[]; kind: string; placeholder?: string }[]>
+  fields: Record<string, { path: string[]; kind: string; placeholder?: string; account?: string }[]>
   presets: Record<string, Preset>
   vocabulary: Record<string, { change?: boolean; ask?: boolean }>
 }
@@ -144,7 +145,7 @@ export type OwnerApi = {
   previewPolicy(source: string, signal?: AbortSignal): Promise<PolicyDiff>
   applyPolicy(source: string, signal?: AbortSignal): Promise<View>
   signIn(account: string, path: string[], redirect: string, credential?: Json, signal?: AbortSignal): Promise<{ url: string }>
-  finishSignIn(state: string, code: string, signal?: AbortSignal): Promise<View>
+  finishSignIn(state: string, result: string | { code?: string; client_id?: string; error?: string }, signal?: AbortSignal): Promise<View>
   browser(name: string, body?: { [key: string]: Json | undefined }, signal?: AbortSignal): Promise<BrowserFrame>
   icons(signal?: AbortSignal): Promise<(preset: string) => ConnectorIcon>
 }
@@ -224,6 +225,7 @@ export function grantTemplate(view: View, account: string, field: PresetField): 
 export type CredentialField = PresetField & {
   path: string[]
   kind: string
+  account?: string
   status: string
   signIn: boolean
   credential?: { oauth: Json }
@@ -236,6 +238,7 @@ export type ApiSettings = { url: string; auth: 'bearer' | 'header' | 'query'; he
 export function apiSettings(view: View, account?: string): ApiSettings
 export function apiSlot(settings: Partial<ApiSettings>, value?: string): { [key: string]: string }
 export function apiSetup(view: View, account: string, connection?: string, slot?: number): { connection: string; credential: string; placeholder: string; address: string; header?: string; query?: string; value: string; placement: string } | null
+export function codexSetup(view: View, account: string): string | null
 
 export function draftable(view: View, record: RequestRecord): string | null
 export function draftOperation(details: RequestDetails): { id: string } & { [key: string]: Json }

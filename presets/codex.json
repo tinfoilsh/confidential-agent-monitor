@@ -1,0 +1,29 @@
+{
+  "title": "Codex (ChatGPT)",
+  "catalog": {
+    "group": "api",
+    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.openai.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "defaults": {"contents": "team", "sends": "anyone", "strangers": true},
+    "fields": [
+      {"key": "token", "label": "ChatGPT account", "path": ["connections", "", "http", "secrets", "token"], "secret": true,
+        "oauth": {
+          "auth_url": "https://auth.openai.com/api/accounts/authorize",
+          "token_url": "https://auth.openai.com/api/accounts/oauth/token",
+          "auth_style": "params",
+          "resource": "https://api.openai.com/v1",
+          "scope": "openid profile email offline_access resource.invoke chatgpt.tokens.use.direct",
+          "required_scopes": ["resource.invoke", "chatgpt.tokens.use.direct"],
+          "authorize_params": {"ext_agent_host_id": "{monitor_host_id}", "access_type": ""},
+          "callback_registration": {"client_id": "dynamic_agent_client", "authorize_params": {"agent_name_hint": "Tinfoil Monitor"}},
+          "oidc": {"issuer": "https://auth.openai.com", "jwks_url": "https://auth.openai.com/.well-known/jwks.json"}
+        }}
+    ],
+    "actions": {"models.read": {"title": "List models"}, "responses.generate": {"title": "Generate responses"}}
+  },
+  "http": {
+    "operations": {
+      "listModels": {"action": "models.read", "effects": ["read"], "method": "GET", "origin": "https://api.openai.com", "path": "/v1/models", "scope": {}},
+      "createResponse": {"action": "responses.generate", "effects": ["generate", "pay", "send"], "method": "POST", "origin": "https://api.openai.com", "path": "/v1/responses", "body": "json", "scope": {"model": {"from": "body", "at": "/model"}, "request": {"from": "body", "at": "", "type": "object"}}, "grant": ["model"]}
+    }
+  }
+}

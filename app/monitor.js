@@ -740,8 +740,12 @@ function apiAgentSetup(a) {
   const setups = Object.entries(accounts()[a].connections ?? {}).flatMap(([key, kinds]) =>
     (Object.values(kinds)[0]?.slots ?? []).map((_, index) => owner.apiSetup(view, a, key, index)).filter(Boolean));
   if (!setups.length) return "";
+  const codex = owner.codexSetup(view, a);
   return `<section class="account-card agent-setup"><div class="section-heading"><h2>Connect your agent</h2></div>
     <div class="agent-setup-body"><p class="muted">Use these placeholders in your agent and send requests through Monitor. Monitor substitutes your saved credentials at the locations below.</p>
+    ${codex ? `<p>Save this in <code>~/.codex/config.toml</code>, then run Codex in your Monitor-connected sandbox or with <code>monitor run -- codex</code>. Choose a model available to your ChatGPT account. Grant your agent access to this account and review any pending requests in Activity.</p>
+      <div class="integration-code"><div class="row"><span>Codex configuration</span><button data-copy="codex-config">Copy</button></div><pre id="codex-config">${esc(codex)}</pre></div>
+      <p><a href="https://chatgpt.com/#settings/Usage" target="_blank" rel="noopener noreferrer">Manage ChatGPT usage</a></p>` : ""}
     ${setups.map((setup, index) => {
       const id = `api-placeholder-${index}`;
       const [location, placement] = setup.header ? ["Header", `${setup.header}: ${setup.value}`]
@@ -770,7 +774,7 @@ function credentialEditor(a, f) {
   return `<div class="credential"><label for="f-${esc(f.key)}">${esc(f.label)}</label>
     <input type="hidden" id="mode-${esc(f.key)}" value="keep">
     <div id="credential-actions-${esc(f.key)}" class="credential-actions">
-      <span class="credential-status muted">${esc(f.status)}</span>
+      <span class="credential-status muted">${esc(f.status)}${f.account ? ` · ${esc(f.account)}` : ""}</span>
       ${f.signIn ? `<button class="primary" onclick="signIn(${q(a)}, ${q(f.key)})">${esc(signInLabel(accounts()[a].preset))}</button>` : ""}
       <button id="replace-${esc(f.key)}" onclick="credentialMode(${q(a)}, ${q(f.key)}, 'replace')">${f.kind === "unset" ? "Set value" : "Replace"}</button>
       ${f.kind !== "unset" ? `<button class="danger" onclick="credentialMode(${q(a)}, ${q(f.key)}, 'clear')">Remove</button>` : ""}</div>
@@ -1219,18 +1223,22 @@ setInterval(run(async () => {
   const changed = await refresh();
   if (changed || pendingSoonest().length) render();
 }), REQUEST_POLL_MS);
-// The provider redirects back here with the sign-in's state and either a code or an error.
+// Every provider returns here; the authenticated owner API exchanges the code.
 const back = new URLSearchParams(location.search);
-if (back.has("state")) history.replaceState(null, "", location.pathname + (sessionStorage.getItem(RETURN) ?? ""));
+if (back.has("state") || back.has("code") || back.has("error")) {
+  history.replaceState(null, "", location.pathname + (sessionStorage.getItem(RETURN) ?? ""));
+  sessionStorage.removeItem(RETURN);
+}
 run(async () => {
   await loadOwnerMode();
   await iconsReady;
   if (!authenticated()) return;
   await refresh();
-  if (back.has("error")) throw new Error(back.get("error_description") ?? back.get("error"));
-  if (!back.has("code")) return;
+  if (!back.has("code") && !back.has("error")) return;
+  if (!back.get("state") || ["state", "code", "client_id", "error"].some((key) => back.getAll(key).length > 1)) throw new Error("Invalid sign-in callback. Start sign-in again.");
   render();
   toast("Finishing sign-in…");
-  remember(await client().finishSignIn(back.get("state"), back.get("code")));
+  const result = Object.fromEntries(["code", "client_id", "error"].filter((key) => back.has(key)).map((key) => [key, back.get(key)]));
+  remember(await client().finishSignIn(back.get("state"), result));
   toast("Signed in");
 })().then(render);

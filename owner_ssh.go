@@ -23,6 +23,7 @@ type ownerSSHContextKey struct{}
 type ownerSSHContext struct {
 	minimum     uint64
 	acknowledge func() error
+	session     string
 }
 
 // This metadata is supplied by the authenticated owner CLI, never the browser.
@@ -120,7 +121,7 @@ func (m *monitor) ownerPanel(options ownerChannelOptions, acknowledge func() err
 			http.NotFound(w, r)
 			return
 		}
-		r = r.Clone(context.WithValue(r.Context(), ownerSSHContextKey{}, ownerSSHContext{options.Generation, acknowledge}))
+		r = r.Clone(context.WithValue(r.Context(), ownerSSHContextKey{}, ownerSSHContext{minimum: options.Generation, acknowledge: acknowledge, session: options.Token}))
 		r.URL.Path = path
 		r.URL.RawPath = ""
 		api.ServeHTTP(w, r)
