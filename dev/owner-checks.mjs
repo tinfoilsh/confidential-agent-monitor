@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Owner HTTP contract: both transports, validators, mutations and older servers.
 import assert from 'node:assert/strict';
-import { ownerClient, localOwnerClient, decisions, draftable, withDraft, saveText, effectSettings, mode, edits, previewChanges, agentAccess } from '../app/owner.js';
+import { readdirSync, readFileSync } from 'node:fs';
+import { ownerApi, ownerClient, localOwnerClient, decisions, draftable, withDraft, saveText, effectSettings, mode, edits, previewChanges, agentAccess, accountUsers, setupFields, fieldPaths } from '../app/owner.js';
 
 for (const local of [false, true]) {
   const calls = [];
@@ -58,76 +59,78 @@ for (const local of [false, true]) {
       const saved = structuredClone(onboarding);
       previewChanges(saved, body.changes);
       assert.equal(saved.config.allow_paid_inference, allowPaidInference ?? true);
-      assert.equal(saved.config.data.onboarding.completed, true);
-      assert.equal(saved.config.data.onboarding.preset, preset);
-      const network = saved.config.data.onboarding.account;
+      assert.deepEqual(saved.config.data.onboarding, { completed: true });
+      const network = 'network';
       assert.equal(saved.config.accounts[network].preset, 'tcp');
       assert.deepEqual(saved.config.accounts[network].connections, { '': { tcp: { hosts: ['*'] } } });
       assert.deepEqual(saved.config.default_access[network], { level: preset === 'open' ? 'allow' : 'off' });
       assert.equal(saved.config.effects?.pay, undefined); // unrelated payments keep their default
       const count = calls.length;
-      assert.equal(await client.onboard(saved, preset), saved);
-      assert.equal(calls.length, count); // reopening an onboarded monitor does not reset the choice
-      previewChanges(saved, edits.applyPolicyPreset(saved, 'known_only'));
-      assert.equal(saved.config.allow_paid_inference, allowPaidInference ?? true);
-      assert.equal(saved.config.data.onboarding.account, network);
-      assert.equal(saved.config.accounts[network].preset, 'tcp');
-      assert.deepEqual(saved.config.default_access[network], { level: 'off' });
+      assert.equal(await client.onboard(saved, preset === 'open' ? 'known_only' : 'open'), saved);
+      assert.equal(calls.length, count); // reopening never reapplies an onboarding choice
     }
   }
+  // Already configured monitors, including their stored metadata, stay intact.
+  const configured = { generation: 2, config: {
+    data: { onboarding: { completed: true, preset: 'open', account: 'network', policy: 'network-default' } },
+    accounts: { network: { preset: 'custom' } },
+  } };
+  const count = calls.length;
+  assert.equal(await client.onboard(configured, 'known_only'), configured);
+  assert.equal(calls.length, count);
 }
 console.log('Owner client checks passed for bearer and SSH transports.');
 
-for (const initial of ['open', 'known_only', 'offline']) {
-  for (const next of ['open', 'known_only', 'offline']) {
-    const policy = { config: { accounts: { api: { preset: 'custom' } },
-      default_access: { api: { level: 'ask' } }, identities: { agent: { profile: true, routes: true, accounts: { api: { level: 'allow' } } } } } };
-    previewChanges(policy, edits.applyPolicyPreset(policy, initial));
-    const account = policy.config.data.onboarding.account;
-    // Applying a preset must replace old defaults and explicit per-agent access.
-    policy.config.default_access[account] = { level: 'ask', actions: { connect: 'off' } };
-    policy.config.identities.agent.accounts[account] = { level: next === 'open' ? 'off' : 'allow', actions: { connect: 'allow' } };
-    const apiAccess = structuredClone(policy.config.identities.agent.accounts.api);
-    previewChanges(policy, edits.applyPolicyPreset(policy, next));
-    assert.equal(policy.config.data.onboarding.account, account);
-    assert.deepEqual(Object.keys(policy.config.accounts).sort(), ['api', account].sort());
-    assert.equal(policy.config.accounts[account].preset, 'tcp');
-    assert.deepEqual(policy.config.default_access[account], { level: next === 'open' ? 'allow' : 'off' });
-    assert.equal(policy.config.identities.agent.accounts[account], undefined);
-    assert.equal(policy.config.identities.agent.profile, false);
-    if (next === 'offline') {
-      assert.deepEqual(policy.config.default_access, { [account]: { level: 'off' } });
-      assert.equal(policy.config.identities.agent.accounts.api.level, 'off');
-      assert.equal(policy.config.identities.agent.routes, false);
-    } else assert.deepEqual(policy.config.identities.agent.accounts.api, apiAccess);
-    assert.deepEqual(policy.config.allow_networks, next === 'open' ? ['0.0.0.0/0', '::/0'] : []);
+function onboard(view, preset) {
+  return ownerApi(async (method, path, body) => {
+    assert.equal(method, 'POST');
+    assert.equal(path, '/policy/edits');
+    assert.equal(body.generation, view.generation);
+    return previewChanges(structuredClone(view), body.changes);
+  }).onboard(view, preset);
+}
+
+for (const preset of ['open', 'known_only', 'offline']) {
+  const policy = await onboard({ generation: 4, config: { accounts: { api: { preset: 'custom' } },
+    default_access: { api: { level: 'ask' } }, identities: { agent: { profile: true, routes: true, accounts: { api: { level: 'allow' } } } } } }, preset);
+  assert.deepEqual(policy.config.data.onboarding, { completed: true });
+  assert.deepEqual(Object.keys(policy.config.accounts).sort(), ['api', 'network']);
+  assert.equal(policy.config.accounts.network.preset, 'tcp');
+  assert.deepEqual(policy.config.default_access.network, { level: preset === 'open' ? 'allow' : 'off' });
+  assert.equal(policy.config.identities.agent.accounts.network, undefined);
+  assert.equal(policy.config.identities.agent.profile, false);
+  if (preset === 'offline') {
+    assert.deepEqual(policy.config.default_access, { network: { level: 'off' } });
+    assert.equal(policy.config.identities.agent.accounts.api.level, 'off');
+    assert.equal(policy.config.identities.agent.routes, false);
+    assert.match(policy.config.policies['network-default'], /Network access is disabled/);
+  } else {
+    assert.deepEqual(policy.config.default_access.api, { level: 'ask' });
+    assert.deepEqual(policy.config.identities.agent.accounts.api, { level: 'allow' });
+    assert.equal(policy.config.identities.agent.routes, true);
+    if (preset === 'known_only') assert.match(policy.config.policies['network-default'], /input.facts.operation == null/);
+    else assert.equal(policy.config.policies, undefined);
   }
+  assert.deepEqual(policy.config.allow_networks, preset === 'open' ? ['0.0.0.0/0', '::/0'] : []);
+  assert.deepEqual(policy.config.lattices, { confidentiality: preset !== 'open', integrity: false });
 }
 
 // Leave user accounts, connection names and policy modules alone when naming the default.
-const collision = { config: {
+const existing = { generation: 7, config: {
   accounts: { network: { preset: 'custom', connections: { '2': { tcp: { hosts: ['example.com'] } } } } },
   policies: { 'network-default': 'package sentinel\n' },
+  data: { team: 'example' },
 } };
-const existingAccount = structuredClone(collision.config.accounts.network);
-previewChanges(collision, edits.applyPolicyPreset(collision, 'known_only'));
-assert.equal(collision.config.data.onboarding.account, 'network-3');
-assert.equal(collision.config.data.onboarding.policy, 'network-default-2');
-assert.deepEqual(collision.config.accounts.network, existingAccount);
+const collision = await onboard(existing, 'known_only');
+assert.deepEqual(collision.config.accounts.network, existing.config.accounts.network);
+assert.equal(collision.config.accounts['network-3'].preset, 'tcp');
 assert.equal(collision.config.policies['network-default'], 'package sentinel\n');
-const networkAccount = collision.config.data.onboarding.account;
-previewChanges(collision, edits.applyPolicyPreset(collision, 'open'));
-assert.equal(collision.config.data.onboarding.account, networkAccount);
-previewChanges(collision, edits.removeAccount(collision, networkAccount));
-assert.equal(collision.config.data.onboarding.account, undefined);
-previewChanges(collision, edits.applyPolicyPreset(collision, 'offline'));
-assert.equal(collision.config.accounts[collision.config.data.onboarding.account].preset, 'tcp');
-// A saved onboarding name must not turn an account repurposed by its owner back into TCP.
-collision.config.accounts[collision.config.data.onboarding.account].preset = 'custom';
-previewChanges(collision, edits.applyPolicyPreset(collision, 'open'));
-assert.equal(collision.config.accounts[networkAccount].preset, 'custom');
-assert.notEqual(collision.config.data.onboarding.account, networkAccount);
-console.log('Default TCP onboarding, policy transitions, and name collision checks passed.');
+assert.match(collision.config.policies['network-default-2'], /input.facts.operation == null/);
+assert.deepEqual(collision.config.data, { team: 'example', onboarding: { completed: true } });
+previewChanges(collision, edits.removeAccount(collision, 'network-3'));
+assert.equal(collision.config.accounts['network-3'], undefined);
+assert.deepEqual(collision.config.data.onboarding, { completed: true });
+console.log('Onboarding-only policy choices, default TCP access, and name collision checks passed.');
 
 const view = { config: { accounts: { api: { preset: 'custom' } } }, presets: { custom: { operations: {} } } };
 const file = { http: { operations: {} } };
@@ -179,6 +182,20 @@ assert.equal(mode({ level: 'off', actions: { generate: 'allow' } }, vocabulary, 
 assert.deepEqual(edits.setEffect(scope, 'pay', 'allow'), [{ path: ['identities', 'agent', 'accounts', 'api', 'effects', 'pay'], value: 'allow' }]);
 console.log('Effect precedence, inheritance, and access checks passed.');
 
+const usage = { config: { accounts: { api: {} }, default_access: { api: { level: 'read' } }, identities: {
+  inherited: {},
+  blocked: { accounts: { api: { level: 'off', actions: { write: 'off' }, effects: { pay: 'off' } }, other: { level: 'allow' } } },
+  explicit: { accounts: { api: { level: 'allow' } } },
+} } };
+assert.deepEqual(accountUsers(usage, 'api').map(({ name, level }) => [name, level]), [['inherited', 'read'], ['explicit', 'allow']]);
+assert.deepEqual(accountUsers(usage, 'unknown'), []);
+previewChanges(usage, edits.setAccess('blocked', 'api', { level: 'ask' }));
+assert.equal(accountUsers(usage, 'api').find(({ name }) => name === 'blocked').level, 'ask');
+assert.deepEqual(usage.config.identities.blocked.accounts, {
+  api: { level: 'ask', actions: { write: 'off' }, effects: { pay: 'off' } }, other: { level: 'allow' },
+});
+console.log('Account usage includes inherited access; adding access preserves existing restrictions.');
+
 permissions.config.allow_paid_inference = true;
 const inference = ['generate', 'pay', 'send'];
 assert.equal(effectSettings(permissions, scope, inference).find(e => e.effect === 'pay').mode, 'allow');
@@ -201,3 +218,42 @@ previewChanges(permissions, edits.setPaidInference(false));
 group = agentAccess(permissions, 'agent')[0].actions[0];
 assert.equal(group.children[0].inherited, 'ask');
 console.log('Paid-inference onboarding, opt-out, and permission checks passed.');
+
+let presetsChecked = 0, arrayPresetsChecked = 0;
+for (const directory of ['../presets/', '../presets/drafts/']) {
+  const root = new URL(directory, import.meta.url);
+  for (const file of readdirSync(root).filter(name => name.endsWith('.json'))) {
+    const preset = file.slice(0, -5), source = JSON.parse(readFileSync(new URL(file, root), 'utf8'));
+    const catalog = { title: source.title, ...source.catalog };
+    const view = { config: { accounts: {} }, presets: { [preset]: catalog } };
+    const fields = setupFields(view, preset);
+    const values = Object.fromEntries(fields.map(f => [f.key, f.json ? f.default ?? {} : f.list ? ['audit.example.com']
+      : f.secret ? 'synthetic-credential' : f.key.includes('origin') || f.key.includes('url') ? 'https://audit.example.com' : `audit-${f.key}`]));
+    const changes = edits.addAccount(view, preset, { name: 'audit', values, answers: catalog.defaults ?? {} });
+    previewChanges(view, JSON.parse(JSON.stringify(changes)));
+    presetsChecked++;
+    const arrays = fields.flatMap(f => fieldPaths(f).filter(path => path.some(key => typeof key === 'number'))
+      .map(path => path.slice(0, path.findIndex(key => typeof key === 'number'))));
+    if (arrays.length) arrayPresetsChecked++;
+    for (const path of arrays) {
+      const actual = path.reduce((value, key) => value?.[key], view.config.accounts.audit);
+      const inherited = path.reduce((value, key) => value?.[key], { connections: catalog.connections });
+      assert.ok(Array.isArray(actual), `${preset}: ${path.join('/')} must remain an array`);
+      if (inherited) assert.equal(actual.length, inherited.length, `${preset}: preserve all inherited entries`);
+    }
+    if (preset === 'pinecone') {
+      const slots = view.config.accounts.audit.connections[''].http.slots;
+      assert.deepEqual(slots, [
+        { value: 'api_key', origin: 'https://api.pinecone.io', path: '/', header: 'Api-Key' },
+        { value: 'api_key', origin: values.origin, path: '/', header: 'Api-Key' },
+      ]);
+      assert.deepEqual(catalog.connections[''].http.slots[1].origin, 'https://example.com');
+      const saved = edits.saveAccount(view, 'audit', { answers: {}, values: { origin: 'https://changed.example.com' } });
+      assert.ok(saved.some(change => Array.isArray(change.value) && change.path.at(-1) === 'slots'));
+      previewChanges(view, saved);
+      assert.equal(view.config.accounts.audit.connections[''].http.slots[0].origin, 'https://api.pinecone.io');
+      assert.equal(view.config.accounts.audit.connections[''].http.slots[1].origin, 'https://changed.example.com');
+    }
+  }
+}
+console.log(`Account setup checked for ${presetsChecked} presets; ${arrayPresetsChecked} preserve inherited arrays.`);

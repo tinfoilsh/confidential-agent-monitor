@@ -169,7 +169,7 @@ export const AUDIENCES: { [A in Audience]: string }
 export const TRUSTS: { [T in Trust]: string }
 export const CATALOG_GROUPS: { [group: string]: string }
 export const CREDENTIAL_STATUS: { [kind: string]: string }
-export const POLICY_PRESETS: Record<PolicyPreset, { title: string; description: string }>
+export const POLICY_PRESETS: Record<PolicyPreset, { title: string; description: string; recommended?: boolean }>
 export function onboarded(view: View): boolean
 export const NEW_PRESET: PresetFile
 export const INTEGRATION_PAGES: { start: string; wrapped: string; shell: string; mcp: string }
@@ -260,7 +260,6 @@ export const edits: {
   setLattice(lattice: 'confidentiality' | 'integrity', on: boolean): Change[]
   setNetworks(text: string): Change[]
   setPaidInference(allow: boolean): Change[]
-  applyPolicyPreset(view: View, preset: PolicyPreset): Change[]
   setAccountPolicy(account: string, source: string): Change[]
   approveTools(view: View, account: string, key: string): Change[]
   removeAccount(view: View, account: string): Change[]

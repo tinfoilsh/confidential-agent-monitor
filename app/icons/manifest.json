@@ -513,6 +513,10 @@
   "the_hive_project": {
     "src": "the_hive_project.svg"
   },
+  "tinfoil": {
+    "dark": "tinfoil.dark.svg",
+    "src": "tinfoil.svg"
+  },
   "todoist": {
     "src": "todoist.svg"
   },

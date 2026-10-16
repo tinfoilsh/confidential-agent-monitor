@@ -2,6 +2,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Monitor</title>
+<link rel="icon" href="icons/monitor.svg" type="image/svg+xml">
 <style>
   :root {
     --bg: #fff; --side: #edf0f3; --hover: #e1f5fa; --line: #d0dce2; --edge: #a3b5c1; --text: #263c4b; --muted: #526a7b; --dim: #445f72;
@@ -72,12 +73,17 @@
   }
   #gate { max-width: 24rem; margin: 20vh auto; }
   .onboarding h1 { font-size: 22px; line-height: 1.3; }
+  .onboarding-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; font-size: 14px; }
+  .onboarding-brand img { display: block; width: 112px; height: 29px; filter: invert(1); }
+  .onboarding-brand > span { border-left: 1px solid var(--edge); padding-left: 12px; }
+  @media (prefers-color-scheme: dark) { .onboarding-brand img { filter: none; } }
   .onboarding fieldset { display: grid; gap: 8px; margin: 16px 0; padding: 0; border: 0; }
   .onboarding legend { margin-bottom: 8px; font-weight: 600; }
   .onboarding .policy-choice { display: flex; align-items: flex-start; gap: 10px; padding: 12px; margin: 0; border: 1px solid var(--edge); border-radius: 4px; cursor: pointer; }
   .policy-choice:has(input:checked) { background: var(--selected); }
   .policy-choice input { flex-shrink: 0; width: 16px; height: 16px; margin: 4px 0 0; padding: 0; }
   .policy-choice strong, .policy-choice small { display: block; }
+  .policy-choice .recommended { display: inline-block; margin-left: 6px; padding: 0 5px; border: 1px solid var(--edge); border-radius: 4px; color: var(--link); font-size: 11px; font-weight: 500; }
   .policy-choice small { color: var(--muted); }
   .onboarding > button { width: 100%; }
   a, .new { color: var(--link); text-decoration: none; }
@@ -112,15 +118,13 @@
   button.inherited { border-color: var(--text); }
   button.danger { color: var(--bad); }
   button.link { padding: 0; border: 0; background: none; box-shadow: none; color: var(--link); }
+  button.link.danger { color: var(--bad); }
   button.link:hover:not(:disabled) { box-shadow: none; text-decoration: underline; }
   .secret-input { display: flex; gap: 6px; align-items: center; }
   .secret-input input { min-width: 0; }
   .secret-input button { flex-shrink: 0; }
   .field-help { margin: 3px 0; font-size: 11px; }
-  .credential { margin-top: 8px; }
   .credential-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-  .credential:first-child { margin-top: 0; }
-  .credential > .credential-actions { padding: 4px 6px; border: 1px solid var(--edge); border-radius: 4px; background: var(--control); }
   .credential-status { margin-right: auto; }
   .seg { display: inline-flex; flex-shrink: 0; }
   .seg > button { border-radius: 0; }
@@ -134,6 +138,10 @@
   summary { cursor: pointer; }
   input, select, textarea { font: inherit; padding: 1px 6px; border: 1px solid var(--edge); border-radius: 2px; background: var(--bg); color: var(--text); width: 100%; box-shadow: inset 0 1px 2px var(--shadow); }
   input[type=checkbox] { width: auto; accent-color: var(--link); }
+  input[type=checkbox][role=switch] { appearance: none; position: relative; flex-shrink: 0; width: 36px; height: 20px; padding: 0; border: 1px solid var(--edge); border-radius: 12px; background: var(--edge); cursor: pointer; vertical-align: -4px; }
+  input[type=checkbox][role=switch]::before { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; }
+  input[type=checkbox][role=switch]:checked { border-color: var(--link); background: var(--link); }
+  input[type=checkbox][role=switch]:checked::before { transform: translateX(16px); }
   label { display: block; font-size: 11px; color: var(--dim); margin: 6px 0 1px; }
   .acct { padding: 4px 0; border-bottom: 1px solid var(--line); }
   .access-toggle { display: flex; align-items: center; gap: 4px; min-width: 0; padding: 0; border: 0; background: none; box-shadow: none; font: inherit; text-align: left; }
@@ -147,6 +155,17 @@
   .row > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   .access-actions { display: grid; gap: 4px; padding: 4px 0 0 32px; }
   .access-actions.effect-permissions { padding: 0; gap: 12px; }
+  .settings-note, .settings-help { font-size: 11px; color: var(--muted); }
+  .setting-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 5px 0; }
+  .setting-row label { margin: 0; font-size: inherit; color: var(--text); }
+  .setting-row > select { width: auto; flex-shrink: 0; }
+  .setting-row p { margin: 2px 0; font-size: 11px; color: var(--muted); }
+  .setting-row input[type=checkbox] { flex-shrink: 0; }
+  .settings-network-summary, .settings-edit { display: inline-flex; align-items: center; gap: 8px; }
+  .settings-network-summary { font-size: 11px; color: var(--muted); }
+  .settings-edit, .settings-link { color: var(--link); }
+  .settings-network-editor { margin-bottom: 8px; }
+  .settings-help { margin-top: 6px; }
   .access-actions .access-action { display: grid; grid-template-columns: minmax(0, 1fr) auto; margin: 0; }
   .access-children { display: grid; gap: 4px; padding: 4px 0 4px 14px; border-left: 1px solid var(--line); margin-left: 4px; }
   .access-action-group > summary { cursor: pointer; list-style: none; }
@@ -189,34 +208,46 @@
   .effect-send { color: #69568c; background: #f4f1fa; border-color: #ded5ed; }
   .effect-delete, .effect-admin { color: #963e3e; background: #fff2ef; border-color: #ebcec8; }
   .level-allow { color: #43733d; background: #eff7e9; border-color: #cdddbe; }
-  .usage-columns { display: flex; justify-content: space-between; padding: 0 4px; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--line); }
+  .usage-columns { display: flex; justify-content: space-between; padding: 4px 16px 4px 0; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--line); }
   .agent-list { padding: 0; margin: 0; list-style: none; }
   .agent-list li + li { border-top: 1px solid var(--line); }
-  .agent-link { display: flex; gap: 6px; align-items: center; justify-content: space-between; padding: 2px 4px; }
+  .agent-link { display: flex; gap: 6px; align-items: center; justify-content: space-between; padding: 6px 0; color: var(--text); }
   .agent-link:hover { background: var(--hover); }
-  .agent-info { min-width: 0; overflow-wrap: anywhere; }
+  .agent-info { flex: 1; min-width: 0; overflow-wrap: anywhere; }
   .agent-info strong { font-weight: 500; }
-  .agent-info small { margin-left: 5px; font-size: 11px; color: var(--muted); }
-  .agent-link > .badge { flex-shrink: 0; }
+  .agent-info small { display: block; font-size: 11px; line-height: 14px; color: var(--muted); }
+  .agent-access-level { max-width: 40%; text-align: right; }
+  .agent-access-arrow { color: var(--muted); }
   .account-header { padding: 8px 0; align-items: center; }
   .account-header h1 { margin: 0; font-size: 20px; line-height: 28px; font-weight: 600; overflow-wrap: anywhere; }
   .account-header .connector-icon { width: 26px; height: 26px; margin-right: 0; padding: 3px; background: var(--bg); border: 1px solid var(--line); border-radius: 4px; box-shadow: inset 0 1px var(--shine), 0 1px 2px var(--shadow); }
-  .account-overview { display: grid; gap: 8px; align-items: start; margin-bottom: 8px; }
+  .settings-sheet { background: var(--bg); padding: 0 8px; }
+  .connection-notices:empty { display: none; }
+  .connection-section:last-child { border-bottom: 0; }
+  .connection-section-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .connection-fields { display: grid; gap: 8px; }
+  .connection-fields > p { margin: 0; }
+  .connection-disclosure > summary { padding: 6px 0; }
+  .connection-actions { margin-bottom: 8px; }
+  .connection-actions h3 { margin: 0; }
+  .connection-save { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .connection-save > span { font-size: 11px; }
+  .connection-save > button { margin-left: auto; }
+  .connection-remove { margin-top: 8px; }
   .account-card { min-width: 0; padding: 0; border: 1px solid var(--edge); border-radius: 4px; overflow: hidden; background: var(--card); box-shadow: inset 0 1px var(--shine), 0 3px 9px var(--shadow); }
   .account-card .section-heading { padding: 4px 6px; margin: 0; background: var(--bar); border-bottom: 1px solid var(--edge); box-shadow: inset 0 1px var(--shine); }
   .account-card .section-heading h2 { font-size: 12px; text-transform: none; letter-spacing: 0; }
-  .account-card .capability { padding: 3px 6px; }
-  .account-card .usage-columns { padding: 1px 6px; }
-  .account-card .agent-link { justify-content: flex-start; padding: 4px 6px; }
-  .account-card .agent-info { flex: 1; }
-  .account-card .agent-info small { display: block; margin: 0; line-height: 14px; }
-  .account-settings { margin-bottom: 8px; }
-  .settings-fields { display: grid; gap: 8px 16px; padding: 0 8px 8px; }
-  .settings-fields > div { min-width: 0; }
-  .settings-fields details { margin-top: 6px; }
-  .account-effects { padding: 8px; border-top: 1px solid var(--line); }
+  .account-agent-intro { margin: 0 0 8px; }
+  .account-agent-form { padding-bottom: 4px; }
+  .account-agent-fields { display: flex; align-items: flex-end; flex-wrap: wrap; gap: 8px; }
+  .account-agent-fields > div { min-width: 0; flex: 1 1 140px; }
+  .account-agent-fields > div:first-child { flex-basis: 200px; }
+  .account-agent-fields label { margin: 0 0 4px; }
+  .account-agent-fields > .account-agent-actions { display: flex; flex: 0 0 auto; gap: 6px; }
+  .account-agent-pair { display: inline-block; margin-top: 8px; }
+  .account-effects { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line); }
   .account-effects h3 { margin: 0; font-size: 12px; }
-  .agent-setup-body { display: grid; gap: 12px; padding: 8px; }
+  .agent-setup-body { display: grid; gap: 12px; padding: 8px 0; }
   .agent-setup-body > p { margin: 0; max-width: 65ch; }
   .agent-setup-item { min-width: 0; }
   .agent-setup-item + .agent-setup-item { padding-top: 12px; border-top: 1px solid var(--line); }
@@ -245,17 +276,16 @@
   .integration-guide { max-width: 58rem; overflow-wrap: anywhere; }
   .integration-guide h1 { font-size: 18px; line-height: 26px; margin: 8px 0; }
   .integration-guide h2 { font-size: 13px; line-height: 22px; text-transform: none; letter-spacing: 0; color: var(--text); margin-top: 14px; }
-  .integration-guide p { margin: 6px 0 10px; }
+  .integration-guide p { margin: 8px 0; }
   .integration-guide li { margin: 4px 0; }
   .integration-guide ol { padding-left: 20px; }
   .integration-guide pre { padding: 8px; word-break: normal; overflow-wrap: anywhere; }
   .integration-code { margin: 12px 0; }
   .integration-code .row { gap: 12px; }
   .integration-code pre { margin-top: 4px; }
-  @container details (min-width: 620px) {
-    .account-overview { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
-    .settings-fields { grid-template-columns: 1fr 1fr; }
-  }
+  .integration-guide .integration-code { display: flex; align-items: center; gap: 8px; margin: 8px 0; padding: 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); }
+  .integration-guide .integration-code pre { flex: 1; min-width: 0; margin: 0; padding: 0; border: 0; background: none; }
+  .integration-guide .integration-code > button { flex-shrink: 0; }
   @media (prefers-color-scheme: dark) {
     .effect-read, .level-read { color: #b0d4e9; background: #26353f; border-color: #405665; }
     .effect-write, .level-ask { color: #e3c69b; background: #393329; border-color: #61533d; }

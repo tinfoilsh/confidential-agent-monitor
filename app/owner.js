@@ -10,8 +10,8 @@ export const CATALOG_GROUPS = { api: "API", mcp: "MCP", protocol: "Protocol" };
 export const CREDENTIAL_STATUS = { "oauth-required": "Sign-in required", unset: "Not configured" };
 export const POLICY_PRESETS = {
   open: { title: "Open", description: "Allow unrestricted TCP network access." },
-  known_only: { title: "Known only", description: "Allow only connections and operations covered by your policy. Block everything else." },
-  offline: { title: "Offline", description: "Block agent connections to all services and sandbox routes." },
+  known_only: { title: "Known Only", description: "Allow only connections and operations covered by your policy. Block everything else.", recommended: true },
+  offline: { title: "Offline", description: "Block agent connections to all services and sandboxes." },
 };
 // A new preset starts as one bearer-token API; the owner sets its origin, slots and operations.
 export const NEW_PRESET = { catalog: { group: "api", fields: [{ key: "token", label: "API token", secret: true, path: ["connections", "", "http", "secrets", "token"] }],
@@ -123,7 +123,7 @@ export function ownerApi(request, generation, base = "") {
     request: (id, signal) => get(`/requests/${encodeURIComponent(id)}`, signal),
     unlock,
     onboard: (view, preset, signal, { allowPaidInference = true } = {}) => onboarded(view) ? Promise.resolve(view)
-      : snapshot("POST", "/policy/edits", { changes: [...edits.applyPolicyPreset(view, preset), ...edits.setPaidInference(allowPaidInference)], generation: view.generation }, signal),
+      : snapshot("POST", "/policy/edits", { changes: [...onboardingChanges(view, preset), ...edits.setPaidInference(allowPaidInference)], generation: view.generation }, signal),
     edit: (changes, signal) => snapshot("POST", "/policy/edits", { changes }, signal),
     decide: (id, decision, signal) => post(`/requests/${encodeURIComponent(id)}`, { decision }, signal),
     label: (name, label, signal) => snapshot("POST", `/labels/${encodeURIComponent(name)}`, label, signal),
@@ -206,9 +206,13 @@ const atPath = (object, path) => path.reduce((value, key) => value?.[key], objec
 // JSON values are equal regardless of key order, which differs between server responses and edited copies.
 const same = (a, b) => a === b || !!a && !!b && typeof a === "object" && typeof b === "object" && Array.isArray(a) === Array.isArray(b)
   && Object.keys(a).length === Object.keys(b).length && Object.keys(a).every((k) => Object.hasOwn(b, k) && same(a[k], b[k]));
-function putPath(object, path, value) {
-  for (const key of path.slice(0, -1)) {
-    if (!Object.hasOwn(object, key)) Object.defineProperty(object, key, { value: {}, enumerable: true });
+function putPath(object, path, value, defaults) {
+  for (const [index, key] of path.slice(0, -1).entries()) {
+    defaults = defaults?.[key];
+    // Arrays replace inherited values as a whole, so retain every preset entry when editing one element.
+    if (!Object.hasOwn(object, key)) Object.defineProperty(object, key, {
+      value: Array.isArray(defaults) ? structuredClone(defaults) : typeof path[index + 1] === "number" ? [] : {}, enumerable: true,
+    });
     object = object[key];
   }
   Object.defineProperty(object, path.at(-1), { value, enumerable: true, configurable: true, writable: true });
@@ -375,8 +379,10 @@ export function labelStatus(view, l) {
   return lines.filter(Boolean).join(" · ") || "Clean";
 }
 
-export const accountUsers = (view, account) => Object.entries(identities(view)).filter(([, id]) => (id.accounts?.[account]?.level ?? "off") !== "off")
-  .map(([name, id]) => ({ name, level: id.accounts[account].level, profile: !!id.profile, overrides: Object.values(id.accounts[account].actions ?? {}).filter(Boolean).length }));
+export const accountUsers = (view, account) => Object.entries(identities(view)).flatMap(([name, id]) => {
+  const access = id.accounts?.[account] ?? view.config.default_access?.[account];
+  return (access?.level ?? "off") === "off" ? [] : [{ name, level: access.level, profile: !!id.profile, overrides: Object.values(access.actions ?? {}).filter(Boolean).length }];
+});
 
 // Report every connection's progress and errors, plus MCP tool changes awaiting the owner.
 export const reviews = (view, account) => Object.keys(accounts(view)[account]?.connections ?? {}).map((key) => {
@@ -548,6 +554,38 @@ export function presetText(v, path = "", indent = "") {
   return items.length ? `${open}\n${indent}  ${items.join(`,\n${indent}  `)}\n${indent}${close}` : open + close;
 }
 
+// The starting choice only produces the initial policy. Persist completion and
+// the effective configuration, without retaining a preset to reapply later.
+function onboardingChanges(view, preset) {
+  if (!Object.hasOwn(POLICY_PRESETS, preset)) throw new Error("Choose a policy preset.");
+  const connections = new Set(Object.entries(accounts(view)).flatMap(([name, acc]) => Object.keys(acc.connections ?? {}).map(key => connectionName(name, key))));
+  let account = "network";
+  for (let i = 2; Object.hasOwn(accounts(view), account) || connections.has(account); i++) account = `network-${i}`;
+  const changes = sourceChanges({
+    data: { onboarding: { completed: true } },
+    lattices: { confidentiality: preset !== "open", integrity: false },
+    allow_networks: preset === "open" ? ["0.0.0.0/0", "::/0"] : [],
+    accounts: { [account]: { preset: "tcp", contents: "anyone", strangers: true, sends: "anyone",
+      connections: { "": { tcp: { hosts: ["*"] } } } } },
+  });
+  if (preset !== "open") {
+    let policy = "network-default";
+    for (let i = 2; Object.hasOwn(view.config.policies ?? {}, policy); i++) policy = `network-default-${i}`;
+    changes.push(...sourceChanges({ policies: { [policy]: preset === "offline"
+      ? 'package sentinel\n\ndeny contains "Network access is disabled."\n'
+      : 'package sentinel\n\ndeny contains "This request has no recognized policy operation." if input.facts.operation == null\n' } }));
+  }
+  const access = { level: preset === "open" ? "allow" : "off" };
+  changes.push(preset === "offline" ? { path: ["default_access"], value: { [account]: access } }
+    : { path: ["default_access", account], value: access });
+  for (const [name, id] of Object.entries(identities(view))) {
+    changes.push({ path: ["identities", name, "profile"], value: false });
+    if (preset === "offline") changes.push(...sourceChanges({ identities: { [name]: { routes: false,
+      accounts: Object.fromEntries(Object.keys(id.accounts ?? {}).map(a => [a, { level: "off" }])) } } }));
+  }
+  return changes;
+}
+
 // Each edit returns the source changes for POST /policy/edits.
 export const edits = {
   pairAgent: (name, key) => sourceChanges({ identities: { [name.trim()]: { key: key.trim(), accounts: {} } } }),
@@ -565,43 +603,6 @@ export const edits = {
   setLattice: (lattice, on) => [{ path: ["lattices", lattice], value: on }],
   setNetworks: (text) => [{ path: ["allow_networks"], value: text.split(/\s+/).filter(Boolean) }],
   setPaidInference: (allow) => [{ path: ["allow_paid_inference"], value: allow }],
-  applyPolicyPreset(view, preset) {
-    if (!Object.hasOwn(POLICY_PRESETS, preset)) throw new Error("Choose a policy preset.");
-    const previous = view.config.data?.onboarding?.account;
-    let policy = view.config.data?.onboarding?.policy;
-    if (!policy) {
-      policy = "network-default";
-      for (let i = 2; Object.hasOwn(view.config.policies ?? {}, policy); i++) policy = `network-default-${i}`;
-    }
-    let account = previous && accounts(view)[previous]?.preset === "tcp" ? previous : null;
-    if (!account) {
-      const connections = new Set(Object.entries(accounts(view)).flatMap(([name, acc]) => Object.keys(acc.connections ?? {}).map(key => connectionName(name, key))));
-      account = "network";
-      for (let i = 2; Object.hasOwn(accounts(view), account) || connections.has(account); i++) account = `network-${i}`;
-    }
-    const changes = sourceChanges({
-      data: { onboarding: { completed: true, preset, policy, account } },
-      lattices: { confidentiality: preset !== "open", integrity: false },
-      allow_networks: preset === "open" ? ["0.0.0.0/0", "::/0"] : [],
-      policies: { [policy]: preset === "open" ? null : preset === "offline"
-        ? 'package sentinel\n\ndeny contains "Network access is disabled."\n'
-        : 'package sentinel\n\ndeny contains "This request has no recognized policy operation." if input.facts.operation == null\n' },
-    });
-    changes.push(...sourceChanges({ accounts: { [account]: { preset: "tcp", contents: "anyone", strangers: true, sends: "anyone",
-      connections: { "": { tcp: { hosts: ["*"] } } } } } }));
-    const access = { level: preset === "open" ? "allow" : "off" };
-    changes.push(preset === "offline" ? { path: ["default_access"], value: { [account]: access } }
-      : { path: ["default_access", account], value: access });
-    for (const [name, id] of Object.entries(identities(view))) {
-      changes.push({ path: ["identities", name, "profile"], value: false });
-      // Reapplying the network preset resets this connection for existing
-      // agents too; new agents inherit the same default automatically.
-      changes.push({ path: ["identities", name, "accounts", account], delete: true });
-      if (preset === "offline") changes.push(...sourceChanges({ identities: { [name]: { routes: false,
-        accounts: Object.fromEntries(Object.keys(id.accounts ?? {}).filter(a => a !== account).map(a => [a, { level: "off" }])) } } }));
-    }
-    return changes;
-  },
   setAccountPolicy: (account, source) => sourceChanges({ policies: { [account]: source.trim() || null } }),
   approveTools: (view, account, key) => sourceChanges({ accounts: { [account]: { connections: { [key]: { mcp: { pin: view.status[connectionName(account, key)].details.pin } } } } } }),
   // Identities may not name a missing account, so removing one also clears it from every agent.
@@ -609,7 +610,6 @@ export const edits = {
     accounts: { [account]: null },
     policies: { [account]: null },
     default_access: { [account]: null },
-    ...(view.config.data?.onboarding?.account === account && { data: { onboarding: { account: null } } }),
     identities: Object.fromEntries(Object.keys(identities(view)).map((n) => [n, { accounts: { [account]: null } }])),
   }),
   // values holds every setup field read with readField; oauth names the fields that sign in instead of taking a token.
@@ -626,7 +626,7 @@ export const edits = {
     for (const f of fields) {
       const value = f.oauth && oauth.includes(f.key) ? { oauth: filled(f.oauth, { ...values, monitor_host_id: view.host_id }) }
         : f.secret && values[f.key] === "" ? null : values[f.key];
-      for (const path of paths(f)) putPath(acc, path, value);
+      for (const path of paths(f)) putPath(acc, path, value, { connections });
     }
     return sourceChanges({ accounts: { [name]: acc } });
   },
@@ -681,47 +681,25 @@ export const edits = {
 export const INTEGRATION_PAGES = { start: "Start here", wrapped: "Wrap commands", shell: "Monitor shell", mcp: "MCP connections" };
 export function integrationGuide(view, page, href) {
   const link = (route, text) => `<a href="${esc(href(route))}" data-route="${esc(route.join("/"))}">${text}</a>`;
-  const code = (id, title, text) => `<div class="integration-code"><div class="row"><span>${esc(title)}</span><button type="button" data-copy="${esc(id)}" aria-label="Copy ${esc(title)}">Copy</button></div><pre id="${esc(id)}">${esc(text)}</pre></div>`;
-  const setupLinks = Object.keys(identities(view)).map((name) => `<li>${link(["agent-settings", name], `${esc(name)} setup`)}</li>`).join("");
+  const code = (id, title, text) => `<div class="integration-code"><pre id="${esc(id)}">${esc(text)}</pre><button type="button" data-copy="${esc(id)}" aria-label="Copy ${esc(title)}">Copy</button></div>`;
   return {
-    start: `<h1>Use Monitor from your tools</h1><p>Keep API keys and service sign-ins in Monitor, such as a GitHub token or an Anthropic API key. Connect a command, a terminal session, or an agent through an identity with the access you choose.</p>
-      <h2>Set up an identity first</h2><ol>
-        <li>Choose a service in <b>Add account</b>, then paste its API key or sign in when prompted.</li>
-        <li>Create a dedicated SSH key on the computer running your tools. ${link(["pair"], "Pair its public key")} as an agent, even when you will use it from your own terminal.</li>
-        <li>Open that agent and grant access to the accounts it needs. Use separate identities for your laptop and automated workers when they need different permissions.</li>
-        <li>Configure an SSH alias named <code>monitor</code> for the Monitor server, using that private key and the host key shown in the agent's settings. The SSH address and port come from your deployment, not the web app URL.</li>
-      </ol><p>The private SSH key stays on your computer. Tool integrations use that identity; they do not need the web app's owner key.</p>
-      <h2>Your agent setup</h2>${setupLinks ? `<ul>${setupLinks}</ul>` : `<p>No agents are paired yet. ${link(["pair"], "Pair an agent")} to get started.</p>`}
-      <p>Agent settings include the host key and CA certificate. Open an account's <b>Connect your agent</b> section to copy its substitution values and see where to send them. If the existing Monitor client is installed, <code>monitor connections --json</code> checks which connections its SSH identity can reach.</p>
-      <h2>Install the client</h2><p>Use Python 3.11 or newer and OpenSSH. From the Monitor repository:</p>
-      ${code("integration-install", "Install on your laptop", 'mkdir -p "$HOME/.local/bin"\ninstall -m 755 client/monitor "$HOME/.local/bin/monitor"\nexport PATH="$HOME/.local/bin:$PATH"\nmonitor connections --json')}
-      <p>The Go binary embeds the same client. The commands below use your paired SSH alias and verify its host key. See <code>docs/laptop-client.md</code> in the repository for complete SSH setup and local profile examples.</p>`,
-    wrapped: `<h1>Wrap an existing command</h1><p><span class="badge">Available</span> Run a CLI or script locally, with its service requests routed through Monitor. Keep the command's arguments, working directory, output, and exit status.</p>
-      ${code("integration-run", "Run a command", "monitor run -- gh api user\nmonitor run -- ./release.sh")}
-      <h2>How it works</h2><ol><li>Use your paired SSH alias, or select a configured local profile.</li><li>The client opens a tunnel and prepares proxy settings, certificate trust, and the selected accounts' credential placeholders.</li><li>It starts the command and passes those settings to its children. Monitor checks requests and substitutes the real credentials before sending them upstream.</li><li>When the command exits, the client closes its tunnel and temporary files.</li></ol>
-      <h2>When to use it</h2><p>Start here for an existing GitHub workflow, a one-off command, or a script. With a configured profile, use <code>monitor --profile work run -- gh pr list</code>.</p>
-      <h2>Compatibility</h2><p>Programs must support the configured proxy and certificate settings. This mode does not force every network request through Monitor. Git HTTPS receives proxy, trust, and placeholder credential settings. SSH remotes need a separate Monitor SSH connection. Account policy and preset coverage still apply to each request.</p>
-      <p>The wrapper stops if setup fails and ends the child session if its tunnel is lost. It never retries writes automatically. Your parent terminal keeps its original environment.</p>
-      <h2>Use your accounts</h2><p>All connections are available by default. Shared credential names get separate variables per connection, such as <code>MONITOR_CREDENTIAL_ANTHROPIC_TOKEN</code>. For a tool that needs one account default, use <code>monitor run --connection work -- gh api user</code>. Connection names come from <code>monitor connections</code>.</p>`,
-    shell: `<h1>Start a Monitor shell</h1><p><span class="badge">Available</span> Open a local terminal session with the same connection setup as a wrapped command.</p>
-      ${code("integration-shell", "Open a shell", "monitor shell\ngh api user\nexit")}
-      <h2>How it works</h2><p>The shell uses the wrapper's profiles, tunnel, credential placeholders, and certificate handling. Its prompt shows the active SSH alias or profile. Commands run in your local working directory.</p>
-      <p>Type <code>exit</code> to return to the original terminal environment. User startup files are skipped to preserve routing and account selection. Each nested Monitor session owns its own tunnel.</p>
-      <h2>When to use it</h2><p>Use a shell for a sequence of commands that share an identity. Choose <code>monitor run</code> for automation that needs a single command and a predictable exit status.</p>
-      <h2>What it covers</h2><p>This session configures cooperating tools and their children. Other terminals and desktop apps have their own environments. A managed workspace with network restrictions is a separate option when every connection must pass through Monitor.</p>
-      <h2>Select a shell</h2><p>Use <code>monitor shell --shell /bin/bash</code> or <code>monitor shell --shell /bin/zsh</code>. The shell includes all connections by default. Use the connection-specific credential variables when names overlap. The Linux integration suite exercises both shells; macOS validation remains open.</p>`,
-    mcp: `<h1>Connect an MCP client</h1><p><span class="badge">Available</span> Each ready MCP connection gets its own Streamable HTTP server on a local port. Your SSH identity determines which accounts it can reach; tool calls still follow Monitor policy.</p>
-      <h2>1. Prepare the connection</h2><p>Complete the ${link(["integrations", "start"], "identity setup")}. Add an account with an MCP connection, grant the paired identity access, and review tools awaiting approval on the account page. An HTTP API connection alone does not provide MCP tools.</p>
-      <p>The commands below assume an SSH alias named <code>monitor</code> with the correct identity and a verified host key. You need an MCP client that supports Streamable HTTP.</p>
-      <h2>2. Keep the tunnel running</h2>
-      ${code("integration-mcp-serve", "Serve MCP connections", "monitor mcp serve --listen 127.0.0.1:8400")}
-      <p>The client checks MCP initialization and tool discovery before reporting readiness. Put <code>--ssh-config /path/to/ssh_config</code> before <code>mcp</code> to use a separate configuration. Connections use consecutive ports starting at the selected port. Use port 0 to choose a free port for each connection.</p>
-      <h2>3. Add each server in your MCP client</h2><p>Use the connection names and URLs printed by the command. For the first connection:</p><ul><li>Name: the Monitor connection name</li><li>Transport: <b>Streamable HTTP</b></li><li>URL:</li></ul>
-      ${code("integration-endpoint", "MCP server URL", "http://127.0.0.1:8400/")}
-      <p>No provider token or owner key goes in the client configuration. The SSH tunnel authenticates to Monitor. Programs on this computer can use the local endpoint as that identity; close the tunnel with Ctrl-C when finished.</p>
-      <h2>4. Check the connection</h2><p>Refresh the client's tool list. Monitor preserves upstream tool names. Your MCP client separates servers' tools. Update allowlists that use the old <code>connection__tool</code> names. Call a read tool and check ${link(["activity"], "Activity")} for the expected agent and account. Pending requests appear first. Open one to allow or deny it.</p>
-      <h2>If it does not connect</h2><ul><li><b>SSH fails:</b> check the server address, paired public key, private key, and host key.</li><li><b>No tools:</b> check account access, the MCP connection's status, and tool review. An identity with no reachable MCP connections has no MCP servers to add.</li><li><b>Client cannot reach the URL:</b> keep the tunnel running on the same computer as the client. A client in a container has its own localhost.</li><li><b>A tool fails or times out:</b> inspect Activity and the provider state before retrying a change.</li></ul>
-      <p>Clients that only support stdio still need a separate adapter. <code>monitor mcp stdio</code> is not implemented.</p>`,
+    start: `<h1>Get connected</h1><ol>
+        <li>Add your apps in ${link(["accounts"], "Connections")}.</li>
+        <li>${link(["pair"], "Pair your device's SSH key")}, then grant access in ${link(["agents"], "Agents")}.</li>
+        <li>Set up the SSH alias <code>monitor</code> with your server address, private key, and the host key in agent <b>Settings</b>.</li>
+      </ol>
+      ${code("integration-check", "Check your connections", "monitor connections")}
+      <details><summary>Install the client</summary><p>From the Monitor repository, with Python 3.11+ and OpenSSH installed:</p>
+        ${code("integration-install", "Install Monitor", './install.sh\nexport PATH="$HOME/.local/bin:$PATH"')}</details>`,
+    wrapped: `<h1>Wrap commands</h1><p>Run a local command through Monitor.</p>
+      ${code("integration-run", "Run a command", "monitor run -- gh api user")}
+      <p>Replace <code>gh api user</code> with your command. Requires proxy-compatible tools. ${link(["integrations", "start"], "Setup")}</p>`,
+    shell: `<h1>Monitor shell</h1><p>Use your connections in a local terminal session.</p>
+      ${code("integration-shell", "Open a shell", "monitor shell")}
+      <p>Run commands as usual. Type <code>exit</code> to leave. ${link(["integrations", "start"], "Setup")}</p>`,
+    mcp: `<h1>MCP connections</h1><p>Grant your agent access to a ready ${link(["accounts"], "MCP connection")}, then run:</p>
+      ${code("integration-mcp-serve", "Start MCP", "monitor mcp serve")}
+      <p>Add the printed URLs to your MCP client using <b>Streamable HTTP</b>. Keep the command running. ${link(["integrations", "start"], "Setup")}</p>`,
   }[page] ?? "";
 }
 

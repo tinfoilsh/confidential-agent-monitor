@@ -198,7 +198,7 @@ function sync(el, parts) {
       const fresh = t.content.firstElementChild;
       fresh.dataset.key = key;
       const disclosures = new Map([...(node?.querySelectorAll("details[data-disclosure]") ?? [])].map((d) => [d.dataset.disclosure, d.open]));
-      fresh.querySelectorAll("details[data-disclosure]").forEach((d) => { d.open = disclosures.get(d.dataset.disclosure) ?? false; });
+      fresh.querySelectorAll("details[data-disclosure]").forEach((d) => { d.open = disclosures.get(d.dataset.disclosure) ?? d.open; });
       drawn.set(fresh, html);
       node?.replaceWith(fresh);
       if (node === at) at = fresh;
@@ -242,8 +242,11 @@ function render() {
     sync($("list"), list(kind === "request" && args[0]));
     sync($("pane"), panes[kind] ? parts(panes[kind](...args)) : []);
   }
-  // Effects save immediately; update them without replacing unsaved account fields.
-  if (kind === "account" && $("account-effects")) sync($("account-effects"), [["effects", `<div><h3>Effects</h3>${effectControls({ account: args[0] })}</div>`]]);
+  // Keep connection drafts intact when agent access or immediate permissions change.
+  if (kind === "account" && $("connection-settings")) {
+    sync($("connection-settings"), parts(accountSettings(args[0])));
+    sync($("account-effects"), [["effects", `<div><h3>Effect permissions</h3>${effectControls({ account: args[0] })}</div>`]]);
+  }
   // Restore a draft when returning to the page without replacing the textarea on each keystroke.
   if (kind === "policy" && policyEditor && $("policy-source")?.value !== policyEditor.draft) $("policy-source").value = policyEditor.draft;
   liveSync();
@@ -251,25 +254,25 @@ function render() {
 
 function onboardingPage() {
   return `<form class="onboarding" onsubmit="event.preventDefault(); finishOnboarding()" aria-labelledby="onboarding-title">
+    <div class="onboarding-brand"><img src="icons/tinfoil-white.svg" alt="Tinfoil"><span>Monitor</span></div>
     <h1 id="onboarding-title">Set up your monitor</h1>
     <p class="muted">Choose how agents can connect to the outside world.</p>
     <fieldset ${onboardingSaving ? "disabled" : ""}><legend>Network policy</legend>
-      ${Object.entries(owner.POLICY_PRESETS).map(([value, { title, description }]) => `<label class="policy-choice">
+      ${Object.entries(owner.POLICY_PRESETS).map(([value, { title, description, recommended }]) => `<label class="policy-choice">
         <input type="radio" name="network-policy" value="${value}" ${value === onboardingPreset ? "checked" : ""} onchange="chooseOnboardingPreset(this.value)">
-        <span><strong>${title}</strong><small>${description}</small></span></label>`).join("")}
+        <span><strong>${title}${recommended ? ' <span class="recommended">Recommended</span>' : ""}</strong><small>${description}</small></span></label>`).join("")}
     </fieldset>
     <fieldset ${onboardingSaving ? "disabled" : ""}><legend>AI inference</legend>
       <label class="policy-choice">
-        <input type="checkbox" name="paid-inference" ${onboardingPaidInference ? "checked" : ""} onchange="chooseOnboardingPaidInference(this.checked)">
-        <span><strong>Allow paid AI inference</strong><small>Let agents use models from Anthropic, OpenAI, and other providers without payment approval. Provider charges apply. Other payments still require approval.</small></span>
+        <input type="checkbox" role="switch" name="paid-inference" ${onboardingPaidInference ? "checked" : ""} onchange="chooseOnboardingPaidInference(this.checked)">
+        <span><strong>Allow paid AI inference</strong><small>Let agents use models from Tinfoil, Anthropic, OpenAI, and other providers without payment approval. Provider charges apply. Other payments still require approval.</small></span>
       </label>
     </fieldset>
-    <p class="muted">Saved for this monitor across browsers. You can change it later in Settings.</p>
+    <p class="muted">You can change permissions later in Settings.</p>
     <button class="primary" type="submit" ${onboardingSaving ? "disabled" : ""}>${onboardingSaving ? "Saving…" : "Use this policy"}</button>
   </form>`;
 }
 
-const applyPolicyPreset = run(() => commit(edits.applyPolicyPreset(view, $("policy-preset").value)));
 const chooseOnboardingPreset = (preset) => { onboardingPreset = preset; };
 const chooseOnboardingPaidInference = (allow) => { onboardingPaidInference = allow; };
 const finishOnboarding = run(async () => {
@@ -283,7 +286,7 @@ const finishOnboarding = run(async () => {
   }
 });
 
-const head = (title, sub = "", back = "activity") => isDashboard
+const head = (title, sub = "", back = "activity") => isDashboard && ["rules", "settings", "integrations"].includes(route()[0]) ? "" : isDashboard
   ? `<div class="detail-bar"><a href="#${esc(dashboardBack(back))}">${dashboard.icon("arrow")}Back to ${esc(dashboardBackLabel(back))}</a>${sub ? `<span class="muted">${sub}</span>` : ""}</div>`
   : `<header><b>${title}</b><span class="muted">${sub}</span><a class="x" href="#${esc(back)}" aria-label="Close">✕</a></header>`;
 const disclosure = (key, title, content, cls = "") => `<details data-disclosure="${esc(key)}" class="${cls}"><summary>${title}</summary>${content}</details>`;
@@ -316,9 +319,8 @@ function sidebar(kind, arg) {
       ...(expanded.has("add-group/" + group) ? presets.map((p) => link(["add", p.name], connectorIcon(p.name) + esc(p.title), 2, at("add", p.name), p.accounts || "")) : []),
     ]), link(["preset"], `<span class="new">New preset…</span>`, 1, kind === "preset" && !arg)] : []),
     link(["rules"], "Rules", 0, kind === "rules", saved || ""),
-    link(["policy"], "Policy", 0, kind === "policy"),
     link(["integrations"], "Integrations", 0, kind === "integrations"),
-    link(["settings"], "Settings", 0, kind === "settings"),
+    link(["settings"], "Settings", 0, ["settings", "policy", "preset"].includes(kind)),
   ];
 }
 
@@ -463,7 +465,7 @@ function accessActions(name, a, nodes) {
   return nodes.map(renderAction);
 }
 
-function effectControls(scope = {}) {
+function effectControls(scope = {}, { showHelp = true } = {}) {
   const relevant = scope.account ? [scope.account] : Object.keys(accounts()).filter((a) => {
     if (!scope.agent) return true;
     const access = ids()[scope.agent]?.accounts?.[a] ?? view.config.default_access?.[a];
@@ -480,7 +482,7 @@ function effectControls(scope = {}) {
       (m) => `commit(edits.setEffect(${q(scope)}, ${q(effect)}, ${q(m)}))`)}</div>`;
   };
   const others = settings.filter((setting) => !prominent(setting));
-  return `<p class="muted">Changes save immediately. Click a selected permission to unset it.</p><div class="access-actions effect-permissions">
+  return `${showHelp ? '<p class="muted">Changes save immediately. Click a selected permission to unset it.</p>' : ''}<div class="access-actions effect-permissions">
     ${settings.filter(prominent).map(row).join("")}
     ${others.length ? `<details class="access-action-group" data-disclosure="${esc(["effects", scope.agent ?? "", scope.account ?? "", "other"].join("/"))}"><summary><span class="access-group-title">Other effects</span></summary><div class="access-children">${others.map(row).join("")}</div></details>` : ""}
   </div>`;
@@ -531,7 +533,7 @@ function agentSettings(name) {
     `<section>${disclosure("setup", "Setup", `<label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre>`)}</section>`,
     `<section>${disclosure("replace-key", "Replace key", `<p class="muted">Use this after recreating the sandbox. The agent starts clean.</p><textarea id="pubkey" aria-label="Replacement public key" rows="2"></textarea>
       <div class="row"><span></span><button onclick="commit(edits.replaceKey(${q(name)}, $('pubkey').value))">Replace key</button></div>`)}</section>`,
-    `<section><label><input type="checkbox" ${ids()[name].routes ? "checked" : ""} onchange="commit(edits.setRoutes(${q(name)}, this.checked))"> Open sandbox routes</label><p class="muted">Allows sandbox connections. Turning this off closes existing sessions.</p></section>`,
+    `<section><label><input type="checkbox" role="switch" ${ids()[name].routes ? "checked" : ""} onchange="commit(edits.setRoutes(${q(name)}, this.checked))"> Sandbox connectivity</label><p class="muted">Allows connections to sandboxes. Turning this off closes existing sessions.</p></section>`,
     others.length ? `<section>${disclosure("copy-settings", "Copy settings", `<div class="row"><select id="from">${others.map((n) => opt(n, n)).join("")}</select><button onclick="copySettings(${q(name)})">Copy</button></div>`)}</section>` : "",
     `<section><button class="danger" onclick="removeAgent(${q(name)})">Remove agent</button></section>`];
 }
@@ -542,7 +544,12 @@ function rulesSection(name) {
   return `<section><h2>${esc(name)}</h2>${list.join("")}</section>`;
 }
 
-const rules = () => [head("Rules"), ...Object.keys(ids()).filter((n) => Object.keys(ids()[n].rules ?? {}).length).map(rulesSection)];
+const rules = () => {
+  const saved = Object.keys(ids()).filter((n) => Object.keys(ids()[n].rules ?? {}).length);
+  return [head("Saved rules"), ...saved.map(rulesSection), ...(!saved.length ? [isDashboard
+    ? `<div class="resource-list"><div class="resource-heading"><h2>Saved rules <span class="count">0</span></h2></div>${dashboard.empty("No saved rules yet", "Save an approval rule from a request to allow matching requests in the future.", '<a class="button" href="#activity">View activity</a>', "rules")}</div>`
+    : '<section><p class="empty">No saved rules. Save an approval rule from a request to allow matching requests in the future.</p></section>'] : [])];
+};
 
 const removeAgent = (name) => commit(edits.removeAgent(name), "activity");
 
@@ -619,9 +626,9 @@ const savePreset = run(async (name) => {
 
 function questions(a) {
   const pick = (id, value) => `<select id="${id}">${Object.entries(WHO).map(([x, title]) => opt(x, title, value)).join("")}</select>`;
-  return `<label for="contents">Who should see what's in here?</label>${pick("contents", a.contents)}
-    <label><input type="checkbox" id="strangers" ${a.strangers ? "checked" : ""}> Strangers can put content here</label>
-    <label for="sends">Who sees what the agent sends here?</label>${pick("sends", a.sends)}`;
+  return `<div class="setting-row"><label for="contents">Confidentiality</label>${pick("contents", a.contents)}</div>
+    <div class="setting-row"><label for="strangers">Untrusted data source</label><input type="checkbox" role="switch" id="strangers" ${a.strangers ? "checked" : ""}></div>
+    <div class="setting-row"><label for="sends">Visibility</label>${pick("sends", a.sends)}</div>`;
 }
 
 const answers = () => ({ contents: $("contents").value, strangers: $("strangers").checked, sends: $("sends").value });
@@ -743,12 +750,12 @@ const addCustomAPI = run(async () => {
   } finally { if ($("api-add")) $("api-add").disabled = false; }
 });
 
-function apiAgentSetup(a) {
+function apiAgentSetup(a, needsSetup) {
   const setups = Object.entries(accounts()[a].connections ?? {}).flatMap(([key, kinds]) =>
     (Object.values(kinds)[0]?.slots ?? []).map((_, index) => owner.apiSetup(view, a, key, index)).filter(Boolean));
   if (!setups.length) return "";
   const codex = owner.codexSetup(view, a);
-  return `<section class="account-card agent-setup"><div class="section-heading"><h2>Connect your agent</h2></div>
+  return `<details class="connection-disclosure" data-disclosure="agent-setup" ${needsSetup ? "open" : ""}><summary>Connect your agent</summary>
     <div class="agent-setup-body"><p class="muted">Use these placeholders in your agent and send requests through Monitor. Monitor substitutes your saved credentials at the locations below.</p>
     ${codex ? `<p>Save this in <code>~/.codex/config.toml</code>, then run Codex in your Monitor-connected sandbox or with <code>monitor run -- codex</code>. Choose a model available to your ChatGPT account. Grant your agent access to this account and review any pending requests in Activity.</p>
       <div class="integration-code"><div class="row"><span>Codex configuration</span><button data-copy="codex-config">Copy</button></div><pre id="codex-config">${esc(codex)}</pre></div>
@@ -761,7 +768,7 @@ function apiAgentSetup(a) {
         <label for="${id}">Agent placeholder</label><div class="secret-input"><input id="${id}" class="mono" readonly value="${esc(setup.placeholder)}" onclick="this.select()"><button onclick="copyAPIPlaceholder(${q(id)})" aria-label="Copy placeholder for ${esc(setup.connection)} ${esc(setup.credential)}">Copy</button></div>
         <dl class="agent-setup-details"><dt>Address</dt><dd><code>${esc(setup.address)}</code></dd>
         <dt>${location}</dt><dd><code>${esc(placement)}</code></dd></dl></div>`;
-    }).join("")}</div></section>`;
+    }).join("")}</div></details>`;
 }
 
 const copyAPIPlaceholder = run(async (id) => {
@@ -818,30 +825,74 @@ function accountActions(a) {
 
 function accountUsers(a) {
   const users = owner.accountUsers(view, a);
-  return `<section class="account-card"><div class="section-heading"><h2>Used by <span class="count">${users.length}</span></h2></div>
+  const available = Object.keys(ids()).filter((name) => !users.some((user) => user.name === name)).sort();
+  const key = "account-users/" + encodeURIComponent(a), open = !users.length || expanded.has(key);
+  const selected = available.length === 1 ? available[0] : "";
+  return `<section class="connection-section"><div class="connection-section-heading"><h2>Agent access${users.length ? ` <span class="count">${users.length}</span>` : ""}</h2>
+    ${users.length && available.length && !open ? `<button id="account-agent-toggle" type="button" aria-expanded="false" aria-controls="account-agent-form" onclick="toggle(${q(key)}); $('account-agent').focus()">Add agent</button>` : ""}
+    ${users.length && !available.length ? `<a class="button" href="#pair">Pair agent</a>` : ""}</div>
+    ${!users.length ? `<p class="account-agent-intro muted">${available.length ? "Choose an agent and its default access to this connection." : "Pair an agent to give it access to this connection."}</p>` : ""}
+    ${available.length ? `<form id="account-agent-form" class="account-agent-form" ${open ? "" : "hidden"} onsubmit="event.preventDefault(); addAccountAgent(${q(a)}, this)">
+      <div class="account-agent-fields"><div><label for="account-agent">Agent</label><select id="account-agent" name="agent" required>${selected ? "" : opt("", "Select an agent…", "")}${available.map((name) => opt(name, name, selected)).join("")}</select></div>
+        <div><label for="account-agent-level">Default access</label><select id="account-agent-level" name="level">${owner.levelsOf(accounts()[a]).filter(([level]) => level !== "off").map(([level, title]) => opt(level, level === "ask" ? "Ask for approval" : title, "ask")).join("")}</select></div>
+        <div class="account-agent-actions">${users.length ? `<button type="button" onclick="toggle(${q(key)}); $('account-agent-toggle').focus()">Cancel</button>` : ""}<button type="submit" class="primary">Add agent</button></div></div>
+      <a class="account-agent-pair" href="#pair">Pair a new agent</a>
+    </form>` : !users.length ? `<a class="button primary" href="#pair">Pair an agent</a>` : ""}
     ${users.length ? `<div class="usage-columns"><span>Agent</span><span>Default access</span></div><ul class="agent-list">${users.map(({ name, level, profile, overrides }) =>
-      `<li><a class="agent-link" href="#agent/${encodeURIComponent(name)}"><span class="agent-info"><strong>${esc(name)}</strong>${profile ? ` <small>Profiling on</small>` : ""} <small>${overrides ? `${overrides} action override${overrides === 1 ? "" : "s"}` : "No action overrides"}</small></span>
-        <span class="badge ${["read", "ask", "allow"].includes(level) ? "level-" + level : ""}">${esc(LEVELS[level] ?? level)}</span></a></li>`).join("")}</ul>` : `<p class="empty">No agents have access to this account.</p>`}</section>`;
+      `<li><a id="account-user-${esc(name)}" class="agent-link" href="#agent/${encodeURIComponent(name)}">${isDashboard ? dashboard.icon("agents") : ""}<span class="agent-info"><strong>${esc(name)}</strong>${profile ? ` <small>Profiling on</small>` : ""} <small>${overrides ? `${overrides} action override${overrides === 1 ? "" : "s"}` : "No action overrides"}</small></span>
+        <span class="agent-access-level">${esc(LEVELS[level] ?? level)}</span><span class="agent-access-arrow" aria-hidden="true">${isDashboard ? dashboard.icon("arrow") : "›"}</span></a></li>`).join("")}</ul>` : ""}</section>`;
 }
+
+const addAccountAgent = run(async (a, form) => {
+  const name = form.elements.agent.value, level = form.elements.level.value;
+  const key = "account-users/" + encodeURIComponent(a), from = location.hash;
+  expanded.delete(key);
+  try {
+    await changeSettings(edits.setAccess(name, a, { level }), { message: "Agent added" });
+    if (location.hash === from) $("account-user-" + name)?.focus();
+  } catch (err) {
+    expanded.add(key);
+    render();
+    if (location.hash === from && $("account-agent-form")) {
+      $("account-agent").value = name;
+      $("account-agent-level").value = level;
+      $("account-agent").focus();
+    }
+    throw err;
+  }
+});
 
 function account(a) {
   const acc = accounts()[a];
   if (!acc) return [head(esc(a)), `<p class="empty">No account ${esc(a)}.</p>`];
   const c = entry(a);
-  const fields = owner.plainFields(view, a), credentials = credentialFields(a);
   return [isDashboard ? head(esc(a), accountStatus(a), "accounts") : `<header class="account-header">${accountIcon(a)}<h1>${esc(a)}</h1><span class="muted">${esc(c.title)} ${accountStatus(a)}</span><a class="x" href="#activity" aria-label="Close account">✕</a></header>`,
+    `<div class="connection-notices">${owner.reviews(view, a).map((s) => review(a, s, c)).join("")}</div>`,
     liveCard(a),
-    apiAgentSetup(a),
-    `<div class="account-overview"><section class="account-card"><div class="section-heading"><h2>Actions <span class="count">${Object.keys(owner.actionsOf(view, a)).length}</span></h2><a href="#preset/${encodeURIComponent(acc.preset)}">Edit preset</a></div>
-      <div class="action-list">${accountActions(a)}</div></section>${accountUsers(a)}</div>`,
-    `<section class="account-card account-settings"><div class="section-heading"><h2>Account settings</h2></div><div class="settings-fields"><div>${questions(acc)}</div>
-      ${fields.length || credentials.length || acc.preset === "custom_api" ? `<div>${acc.preset === "custom_api" ? apiConnectionFields(a) : ""}${fields.map((f) => `<label for="f-${esc(f.key)}">${esc(f.label)}</label>${input(f, f.value)}`).join("")}${credentials.map((f) => credentialEditor(a, f)).join("")}</div>` : ""}</div>
+    '<div id="connection-settings" class="settings-sheet"></div>'];
+}
+
+function accountSettings(a) {
+  const acc = accounts()[a], fields = owner.plainFields(view, a), credentials = credentialFields(a);
+  const needsSetup = credentials.some((f) => f.kind === "unset");
+  return [`<section class="connection-section"><h2>Connection</h2>
+      <div class="connection-fields">${acc.preset === "custom_api" ? `<div>${apiConnectionFields(a)}</div>` : ""}
+        ${fields.map((f) => `<div><label for="f-${esc(f.key)}">${esc(f.label)}</label>${input(f, f.value)}</div>`).join("")}
+        ${credentials.map((f) => credentialEditor(a, f)).join("")}
+        ${!fields.length && !credentials.length && acc.preset !== "custom_api" ? '<p class="muted">This connection does not require additional configuration.</p>' : ""}</div>
+      ${apiAgentSetup(a, needsSetup)}</section>`,
+    accountUsers(a),
+    `<section class="connection-section"><h2>Permissions &amp; data</h2>${questions(acc)}
+      <div class="connection-save"><span class="muted">Save connection and data changes together.</span><button class="primary" onclick="saveAccount(${q(a)})">Save changes</button></div>
       <div id="account-effects" class="account-effects"></div>
-      <div class="card-footer"><button class="primary" onclick="saveAccount(${q(a)})">Save</button></div></section>`,
-    ...owner.reviews(view, a).map((s) => review(a, s, c)),
-    `<section><details data-disclosure="custom-rules"><summary class="hd">Custom rules</summary><textarea id="policy" aria-label="Custom rules" rows="12">${esc(view.config.policies?.[a])}</textarea>
-      <div class="row"><span></span><button onclick="commit(edits.setAccountPolicy(${q(a)}, $('policy').value))">Save rules</button></div></details></section>`,
-    `<section><button class="danger" onclick="removeAccount(${q(a)})">Remove account</button></section>`];
+    </section>`,
+    `<section class="connection-section"><h2>Advanced</h2>
+      <div class="connection-actions"><h3>Available actions <span class="count">${Object.keys(owner.actionsOf(view, a)).length}</span></h3><div class="action-list">${accountActions(a)}</div></div>
+      <details class="connection-disclosure" data-disclosure="custom-rules"><summary>Custom rules</summary><textarea id="policy" aria-label="Custom rules" rows="12">${esc(view.config.policies?.[a])}</textarea>
+        <div class="row"><span></span><button onclick="commit(edits.setAccountPolicy(${q(a)}, $('policy').value))">Save rules</button></div></details>
+      <a class="setting-row settings-link" href="#preset/${encodeURIComponent(acc.preset)}"><span>Connection preset editor</span><span aria-hidden="true">›</span></a>
+      <div class="connection-remove"><button class="link danger" onclick="removeAccount(${q(a)})">Remove connection</button></div>
+    </section>`];
 }
 
 function review(a, s, c) {
@@ -1081,12 +1132,12 @@ const downloadActivePolicy = run(async () => {
 });
 function policyPage() {
   if (!policyEditor) {
-    if (policyLoadError) return [head("Policy"), `<section><p class="bad">${esc(policyLoadError)}</p><button onclick="loadPolicy()">Retry</button></section>`];
+    if (policyLoadError) return [head("Policy", "", "settings"), `<section><p class="bad">${esc(policyLoadError)}</p><button onclick="loadPolicy()">Retry</button></section>`];
     if (!policyLoading) loadPolicy();
-    return [head("Policy"), `<p class="empty">Loading policy…</p>`];
+    return [head("Policy", "", "settings"), `<p class="empty">Loading policy…</p>`];
   }
   const p = policyEditor;
-  return [head("Policy"),
+  return [head("Policy", "", "settings"),
     `<section><p>This file is the source of truth for saved permissions. Changes made elsewhere in Monitor update it too.</p>
       <p class="muted">Credentials are stored separately.</p>
       <div class="row"><button onclick="loadPolicy()">Reload active file</button><button onclick="downloadActivePolicy()">Download active policy.toml</button></div></section>`,
@@ -1095,25 +1146,36 @@ function policyPage() {
     p.preview ? `<section><h2>Source changes</h2><pre>${esc(p.preview.source_diff || "No source changes.")}</pre><h2>Effective changes</h2><pre>${esc(p.preview.effective_diff || "No effective changes.")}</pre></section>` : "",
     `<section><details><summary>Effective policy, including preset definitions</summary><pre>${esc(p.effective)}</pre></details></section>`];
 }
-const settings = () => [head("Settings"), `<section><h2>Policy preset</h2>
-  <label for="policy-preset">Choose a starting policy for this monitor</label>
-  <select id="policy-preset">${Object.entries(owner.POLICY_PRESETS).map(([value, policy]) => opt(value, policy.title, view.config.data?.onboarding?.preset ?? "known_only")).join("")}</select>
-  <p class="muted">You can edit individual permissions after applying a preset.</p>
-  <div class="row"><span></span><button onclick="applyPolicyPreset()">Apply preset</button></div>
-  </section>`, `<section><h2>Effects</h2>
-  <label><input type="checkbox" ${view.config.allow_paid_inference ? "checked" : ""} onchange="commit(edits.setPaidInference(this.checked))"> Allow paid AI inference</label>
-  <p class="muted">Allow model generation without payment approval by default. Provider charges apply. Explicit payment settings and other restrictions still apply.</p>
-  ${effectControls()}</section>`, `<section><h2>Lattices</h2>
-  <p class="muted">Applies to all agents and connector requests.</p>
-  <label><input type="checkbox" ${lattices().confidentiality ? "checked" : ""} onchange="commit(edits.setLattice('confidentiality', this.checked))"> Confidentiality lattice</label>
-  <p class="muted">Restrict where agents can send private data. On by default.</p>
-  <label><input type="checkbox" ${lattices().integrity ? "checked" : ""} onchange="commit(edits.setLattice('integrity', this.checked))"> Integrity lattice</label>
-  <p class="muted">Restrict sensitive actions after agents read untrusted content. Off by default.</p>
-  <p class="muted">Labels keep their history while enforcement is off. Access permissions, explicit approvals and custom rules still apply.</p>
-  </section>`, `<section><h2>Networks</h2><label for="networks">Private networks the monitor may reach, one per line</label>
-  <textarea id="networks" rows="4">${esc((view.config.allow_networks ?? []).join("\n"))}</textarea>
-  <div class="row"><span></span><button onclick="commit(edits.setNetworks($('networks').value))">Save</button></div></section>`,
-  `<section><details data-disclosure="advanced-settings"><summary>Advanced</summary><p class="muted">Define the operations and setup fields available for connections.</p><a href="#${isDashboard ? "presets" : "preset"}">Connection preset editor</a></details></section>`];
+const settings = () => [head("Settings"), `<p class="settings-note muted">Permissions and guardrails save automatically.</p>`,
+  `<section class="settings-section"><h2>Default permissions</h2>
+    <div class="setting-row"><div><label for="paid-inference">Allow paid AI inference</label>
+      <p id="paid-inference-help">Use paid AI models without payment approval. Provider charges and explicit payment settings still apply.</p></div>
+      <input id="paid-inference" type="checkbox" role="switch" aria-describedby="paid-inference-help" ${view.config.allow_paid_inference ? "checked" : ""} onchange="commit(edits.setPaidInference(this.checked))"></div>
+    ${effectControls({}, { showHelp: false })}
+    <details class="settings-help" data-disclosure="permission-defaults"><summary>How defaults work</summary>
+      <p>These defaults apply to all agents. Connections and agents can override them. Select an active permission again to use the monitor default.</p>
+      <p>Explicit payment settings also apply to paid AI inference. Access permissions, guardrails, and custom rules still apply.</p></details>
+  </section>`,
+  `<section class="settings-section"><h2>Guardrails</h2>
+    <div class="setting-row"><div><label for="confidentiality">Confidentiality</label><p id="confidentiality-help">Restrict where agents can send private data.</p></div>
+      <input id="confidentiality" type="checkbox" role="switch" aria-describedby="confidentiality-help" ${lattices().confidentiality ? "checked" : ""} onchange="commit(edits.setLattice('confidentiality', this.checked))"></div>
+    <div class="setting-row"><div><label for="integrity">Integrity</label><p id="integrity-help">Restrict sensitive actions after agents read untrusted content.</p></div>
+      <input id="integrity" type="checkbox" role="switch" aria-describedby="integrity-help" ${lattices().integrity ? "checked" : ""} onchange="commit(edits.setLattice('integrity', this.checked))"></div>
+    <details class="settings-help" data-disclosure="guardrail-details"><summary>About guardrails</summary>
+      <p>Applies to all agents and connector requests. Confidentiality is on by default; integrity is off by default.</p>
+      <p>Labels keep their history while enforcement is off. Access permissions, explicit approvals, and custom rules still apply.</p></details>
+  </section>`,
+  `<section class="settings-section"><h2>Advanced</h2>
+    <details class="settings-networks" data-disclosure="private-networks"><summary class="setting-row"><span>Private networks</span>
+      <span class="settings-network-summary">${view.config.allow_networks?.length ? `${view.config.allow_networks.length} allowed` : "None allowed"}<span class="settings-edit">Edit <span class="settings-chevron" aria-hidden="true">›</span></span></span></summary>
+      <div class="settings-network-editor"><label for="networks">Private networks the monitor may reach, one per line</label>
+        <textarea id="networks" rows="4">${esc((view.config.allow_networks ?? []).join("\n"))}</textarea>
+        <div class="row"><span class="muted">Network changes require saving.</span><button onclick="commit(edits.setNetworks($('networks').value))">Save networks</button></div></div></details>
+    <a class="setting-row settings-link" href="#policy"><span>Policy editor</span><span aria-hidden="true">›</span></a>
+    <a class="setting-row settings-link" href="#${isDashboard ? "presets" : "preset"}"><span>Connection preset editor</span><span aria-hidden="true">›</span></a>
+  </section>`,
+  `<section class="settings-section"><h2>Appearance</h2><div class="setting-row"><span>Interface</span>
+    <a class="settings-interface" href="${isDashboard ? "fun_ui.html" : "./"}#settings">${isDashboard ? "Open Fun UI " + dashboard.icon("external") : "Open Management UI"}</a></div></section>`];
 
 // Both entry points use this runtime and the same owner session. The dashboard
 // supplies list/navigation markup; detailed controls call the same owner actions.
@@ -1158,10 +1220,8 @@ function renderDashboard(kind, args, panes, parts) {
   if ($("dashboard-search")) $("dashboard-search").value = dashboardFilters.query;
   sync($("list"), activity ? dashboard.activity(view, records, dashboardFilters, JSON.parse(localStorage.getItem(DISMISSED) ?? "[]"), accountIcon) : []);
   let content = collection ? dashboard.collection(kind, view, dashboardFilters.query, connectorIcon, collapsedCatalogGroups, inlineAgent) : panes[kind]?.(...args) ?? [];
-  if (kind === "rules" && content.length === 1) content.push(dashboard.empty("No saved rules", "Save an approval rule from a request to allow matching requests in the future.", '<a class="button" href="#activity">View activity</a>', "rules"));
   if (!activity && !content.length) content = [dashboard.empty("Page not found", "Choose a section from the sidebar.", '<a class="button" href="#activity">View activity</a>')];
   sync($("pane"), parts(content));
-  $("fun-ui-link").href = "fun_ui.html" + (collection ? "#activity" : location.hash);
 }
 function filterDashboard(field, value) {
   if (field === "clear" || field === "pending") dashboardFilters = { query: "", state: field === "pending" ? "pending" : "", agent: "", account: "", page: 0 };
@@ -1210,25 +1270,17 @@ function hashChanged() {
 }
 window.addEventListener("hashchange", hashChanged);
 if (isDashboard) {
-  $("fun-ui-link").innerHTML = 'Fun UI ' + dashboard.icon("external");
   applyTheme();
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
   $("workspace").addEventListener("scroll", () => $("page-header").classList.toggle("pinned", $("workspace").scrollTop > 0), { passive: true });
-} else {
-  const switcher = document.createElement("a");
-  switcher.href = "./" + location.hash;
-  switcher.textContent = "Management UI";
-  switcher.style.cssText = "position:fixed;bottom:8px;left:8px;font-size:11px;z-index:10";
-  switcher.addEventListener("click", () => { switcher.href = "./" + location.hash; });
-  document.body.append(switcher);
 }
 document.addEventListener("visibilitychange", liveSync);
 document.addEventListener("click", (e) => { const id = e.target.closest?.("[data-copy]")?.dataset.copy; if (id) copyIntegration(id); });
 // Inline handlers in the rendered markup run in global scope.
-Object.assign(globalThis, { $, addAccount, addCustomAPI, answer, apiAuthChanged, applyPolicySource, approve, changePolicy, commit, copyAPIPlaceholder, copySettings,
+Object.assign(globalThis, { $, addAccount, addAccountAgent, addCustomAPI, answer, apiAuthChanged, applyPolicySource, approve, changePolicy, commit, copyAPIPlaceholder, copySettings,
   cycleTheme, filterDashboard, refreshDashboard, toggleCatalogGroup, toggleNavigation,
   credentialMode, dismiss, downloadActivePolicy, downloadPreset, edits, liveAct, liveClick, liveKey, liveNavigate, liveOwn, liveType, liveWheel, loadPolicy, loadRequest,
-  applyPolicyPreset, chooseOnboardingPreset, chooseOnboardingPaidInference, finishOnboarding, pairAgent, pasteOwnerKey, patchAccess, previewPolicy, removeAccount, removeAgent, removeRule, saveAccount, savePreset, setKey, setLabel, setupToken, signIn, toggle, toggleSecret, unlock });
+  chooseOnboardingPreset, chooseOnboardingPaidInference, finishOnboarding, pairAgent, pasteOwnerKey, patchAccess, previewPolicy, removeAccount, removeAgent, removeRule, saveAccount, savePreset, setKey, setLabel, setupToken, signIn, toggle, toggleSecret, unlock });
 setInterval(run(async () => {
   if (!ownerMode || !authenticated() || locked) return;
   const changed = await refresh();

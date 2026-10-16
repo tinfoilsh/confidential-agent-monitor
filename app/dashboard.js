@@ -7,27 +7,27 @@ const q = (v) => esc(JSON.stringify(v));
 export const icon = (name) => Object.hasOwn(icons, name) ? icons[name] : icons.accounts;
 export const sections = {
   activity: ['Activity', 'Review requests and follow what your agents are doing.'],
-  agents: ['Agents', 'Manage agent identities and the actions they can take.'],
+  agents: ['Agents', 'Manage sandboxes, devices, and the actions they can take.'],
   accounts: ['Connections', 'Connect services and control how agents use their data.'],
   catalog: ['Add connection', 'Choose a service to connect to your monitor.'],
   presets: ['Connection preset editor', 'Edit the operations, actions, and setup fields of connection presets.'],
   rules: ['Saved rules', 'Review the permissions you have saved from request approvals.'],
   policy: ['Policy', 'Edit, validate, and review the policy that controls your monitor.'],
   integrations: ['Integrations', 'Connect commands, shells, and MCP clients through Monitor.'],
-  settings: ['Settings', 'Manage data protections and network access.'],
+  settings: ['Settings', 'Manage guardrails, policy, and monitor preferences.'],
 };
 export function sectionFor(kind) {
-  return ({agent: 'agents', 'agent-settings': 'agents', pair: 'agents', account: 'accounts', add: 'accounts', catalog: 'accounts', preset: 'settings', presets: 'settings', request: 'activity'})[kind] ?? kind;
+  return ({agent: 'agents', 'agent-settings': 'agents', pair: 'agents', account: 'accounts', add: 'accounts', catalog: 'accounts', preset: 'settings', presets: 'settings', policy: 'settings', request: 'activity'})[kind] ?? kind;
 }
 const buttonLink = (href, title, glyph = 'plus') => `<a class="button primary" href="#${href}">${icon(glyph)}${title}</a>`;
 export function navigation(kind, view, records) {
   const counts = { activity: records.filter(r => owner.stateAt(r, Date.now()) === 'pending').length, agents: Object.keys(view.config.identities ?? {}).length, accounts: Object.keys(view.config.accounts ?? {}).length };
-  return Object.entries(sections).filter(([key]) => !['catalog', 'presets'].includes(key)).map(([key, [title]]) => [key,
+  return Object.entries(sections).filter(([key]) => !['catalog', 'presets', 'policy'].includes(key)).map(([key, [title]]) => [key,
     `<a class="nav-item ${sectionFor(kind) === key ? 'on' : ''}" href="#${key}" ${sectionFor(kind) === key ? 'aria-current="page"' : ''}>${icon(key)}<span>${title}</span>${counts[key] ? `<small class="nav-count">${counts[key]}</small>` : ''}</a>`]);
 }
 export function pageHeader(kind, args, view, records) {
   let [title, description] = sections[kind] ?? ['', ''];
-  if (kind === 'agent' || kind === 'agent-settings') [title, description] = [args[0], kind === 'agent' ? 'Set account permissions and review data labels for this agent.' : 'Manage agent keys, routes, and settings.'];
+  if (kind === 'agent' || kind === 'agent-settings') [title, description] = [args[0], kind === 'agent' ? 'Set account permissions and review data labels for this agent.' : 'Manage keys, sandbox connectivity, and settings.'];
   if (kind === 'account') [title, description] = [args[0], view.presets[view.config.accounts?.[args[0]]?.preset]?.title ?? 'Connection settings'];
   if (kind === 'pair') [title, description] = ['Pair an agent', 'Give an agent access using its SSH public key.'];
   if (kind === 'add') [title, description] = ['Add ' + (view.presets[args[0]]?.title ?? 'connection'), 'Configure credentials and data access for this connection.'];
@@ -84,7 +84,11 @@ export function activity(view, records, filters, dismissed, accountIcon) {
 export function collection(kind, view, query, connectorIcon, collapsed = new Set(), agentDetails = () => ({ open: false, html: '' })) {
   const identities = view.config.identities ?? {}, accounts = view.config.accounts ?? {};
   let rows;
-  if (kind === 'agents') rows = Object.entries(identities).map(([name, id]) => ({ name, title: name, route: 'agent/' + encodeURIComponent(name), glyph: icon('agents'), description: `${Object.values(id.accounts ?? {}).filter(a => a.level !== 'off').length} connections · ${id.routes ? 'Sandbox routes enabled' : 'Sandbox routes disabled'}`, meta: id.profile ? '<span class="badge status-pending">Profiling</span>' : `<span class="muted">${esc(owner.labelStatus(view, view.labels[name] ?? {}))}</span>` }));
+  if (kind === 'agents') rows = Object.entries(identities).map(([name, id]) => {
+    // The CLI enrolls computers as device-<key hash> and workloads as sandbox-<name>.
+    const type = /^device-[0-9a-f]{16}$/.test(name) ? 'devices' : name.startsWith('sandbox-') ? 'sandboxes' : 'agents';
+    return { name, title: name, type, route: 'agent/' + encodeURIComponent(name), glyph: icon(type), description: `${Object.values(id.accounts ?? {}).filter(a => a.level !== 'off').length} connections · Sandbox connectivity ${id.routes ? 'enabled' : 'disabled'}`, meta: id.profile ? '<span class="badge status-pending">Profiling</span>' : `<span class="muted">${esc(owner.labelStatus(view, view.labels[name] ?? {}))}</span>` };
+  });
   else if (kind === 'accounts') rows = Object.entries(accounts).map(([name, a]) => {
     const status = owner.accountStatus(view, name);
     return { name, title: name, route: 'account/' + encodeURIComponent(name), glyph: connectorIcon(a.preset), description: view.presets[a.preset]?.title ?? a.preset, meta: status.blocked ? `<span class="badge status-pending">${status.blocked} tools await review</span>` : status.state === 'error' ? '<span class="badge status-denied">Connection error</span>' : status.state === 'connecting' ? '<span class="badge">Connecting…</span>' : '<span class="badge status-approved">Configured</span>' };
@@ -106,6 +110,10 @@ export function collection(kind, view, query, connectorIcon, collapsed = new Set
       ? `<details class="resource-list collection-list" data-group="${esc(kind + '/' + group)}" ${query || !collapsed.has(kind + '/' + group) ? 'open' : ''} ontoggle="toggleCatalogGroup(this)"><summary class="resource-heading">${icon('arrow')}${heading}</summary>${content}</details>`
       : `<div class="resource-list collection-list"><div class="resource-heading">${heading}</div>${content}</div>`;
   };
+  if (kind === 'agents' && rows.length) return [['sandboxes', 'Sandboxes'], ['devices', 'Devices'], ['agents', 'Other agents']].flatMap(([type, title]) => {
+    const matches = rows.filter(row => row.type === type);
+    return matches.length ? [list(title, matches)] : [];
+  });
   if (['catalog', 'presets'].includes(kind) && rows.length) return owner.catalog(view).flatMap(group => {
     const matches = rows.filter(row => row.group === group.group);
     return matches.length ? [list(group.title, matches, group.group)] : [];

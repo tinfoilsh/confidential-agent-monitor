@@ -18,6 +18,8 @@ const lucide = await import(pathToFileURL(resolve(lucideRoot, 'dist/esm/lucide-r
 const components = {
   activity: 'Activity',
   agents: 'Bot',
+  devices: 'Laptop',
+  sandboxes: 'Box',
   accounts: 'Plug',
   presets: 'LayoutGrid',
   rules: 'ShieldCheck',
