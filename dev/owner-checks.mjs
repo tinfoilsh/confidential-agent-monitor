@@ -60,16 +60,74 @@ for (const local of [false, true]) {
       assert.equal(saved.config.allow_paid_inference, allowPaidInference ?? true);
       assert.equal(saved.config.data.onboarding.completed, true);
       assert.equal(saved.config.data.onboarding.preset, preset);
+      const network = saved.config.data.onboarding.account;
+      assert.equal(saved.config.accounts[network].preset, 'tcp');
+      assert.deepEqual(saved.config.accounts[network].connections, { '': { tcp: { hosts: ['*'] } } });
+      assert.deepEqual(saved.config.default_access[network], { level: preset === 'open' ? 'allow' : 'off' });
       assert.equal(saved.config.effects?.pay, undefined); // unrelated payments keep their default
       const count = calls.length;
       assert.equal(await client.onboard(saved, preset), saved);
       assert.equal(calls.length, count); // reopening an onboarded monitor does not reset the choice
       previewChanges(saved, edits.applyPolicyPreset(saved, 'known_only'));
       assert.equal(saved.config.allow_paid_inference, allowPaidInference ?? true);
+      assert.equal(saved.config.data.onboarding.account, network);
+      assert.equal(saved.config.accounts[network].preset, 'tcp');
+      assert.deepEqual(saved.config.default_access[network], { level: 'off' });
     }
   }
 }
 console.log('Owner client checks passed for bearer and SSH transports.');
+
+for (const initial of ['open', 'known_only', 'offline']) {
+  for (const next of ['open', 'known_only', 'offline']) {
+    const policy = { config: { accounts: { api: { preset: 'custom' } },
+      default_access: { api: { level: 'ask' } }, identities: { agent: { profile: true, routes: true, accounts: { api: { level: 'allow' } } } } } };
+    previewChanges(policy, edits.applyPolicyPreset(policy, initial));
+    const account = policy.config.data.onboarding.account;
+    // Applying a preset must replace old defaults and explicit per-agent access.
+    policy.config.default_access[account] = { level: 'ask', actions: { connect: 'off' } };
+    policy.config.identities.agent.accounts[account] = { level: next === 'open' ? 'off' : 'allow', actions: { connect: 'allow' } };
+    const apiAccess = structuredClone(policy.config.identities.agent.accounts.api);
+    previewChanges(policy, edits.applyPolicyPreset(policy, next));
+    assert.equal(policy.config.data.onboarding.account, account);
+    assert.deepEqual(Object.keys(policy.config.accounts).sort(), ['api', account].sort());
+    assert.equal(policy.config.accounts[account].preset, 'tcp');
+    assert.deepEqual(policy.config.default_access[account], { level: next === 'open' ? 'allow' : 'off' });
+    assert.equal(policy.config.identities.agent.accounts[account], undefined);
+    assert.equal(policy.config.identities.agent.profile, false);
+    if (next === 'offline') {
+      assert.deepEqual(policy.config.default_access, { [account]: { level: 'off' } });
+      assert.equal(policy.config.identities.agent.accounts.api.level, 'off');
+      assert.equal(policy.config.identities.agent.routes, false);
+    } else assert.deepEqual(policy.config.identities.agent.accounts.api, apiAccess);
+    assert.deepEqual(policy.config.allow_networks, next === 'open' ? ['0.0.0.0/0', '::/0'] : []);
+  }
+}
+
+// Leave user accounts, connection names and policy modules alone when naming the default.
+const collision = { config: {
+  accounts: { network: { preset: 'custom', connections: { '2': { tcp: { hosts: ['example.com'] } } } } },
+  policies: { 'network-default': 'package sentinel\n' },
+} };
+const existingAccount = structuredClone(collision.config.accounts.network);
+previewChanges(collision, edits.applyPolicyPreset(collision, 'known_only'));
+assert.equal(collision.config.data.onboarding.account, 'network-3');
+assert.equal(collision.config.data.onboarding.policy, 'network-default-2');
+assert.deepEqual(collision.config.accounts.network, existingAccount);
+assert.equal(collision.config.policies['network-default'], 'package sentinel\n');
+const networkAccount = collision.config.data.onboarding.account;
+previewChanges(collision, edits.applyPolicyPreset(collision, 'open'));
+assert.equal(collision.config.data.onboarding.account, networkAccount);
+previewChanges(collision, edits.removeAccount(collision, networkAccount));
+assert.equal(collision.config.data.onboarding.account, undefined);
+previewChanges(collision, edits.applyPolicyPreset(collision, 'offline'));
+assert.equal(collision.config.accounts[collision.config.data.onboarding.account].preset, 'tcp');
+// A saved onboarding name must not turn an account repurposed by its owner back into TCP.
+collision.config.accounts[collision.config.data.onboarding.account].preset = 'custom';
+previewChanges(collision, edits.applyPolicyPreset(collision, 'open'));
+assert.equal(collision.config.accounts[networkAccount].preset, 'custom');
+assert.notEqual(collision.config.data.onboarding.account, networkAccount);
+console.log('Default TCP onboarding, policy transitions, and name collision checks passed.');
 
 const view = { config: { accounts: { api: { preset: 'custom' } } }, presets: { custom: { operations: {} } } };
 const file = { http: { operations: {} } };

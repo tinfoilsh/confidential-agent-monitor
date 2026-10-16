@@ -573,32 +573,33 @@ export const edits = {
       policy = "network-default";
       for (let i = 2; Object.hasOwn(view.config.policies ?? {}, policy); i++) policy = `network-default-${i}`;
     }
-    let account = previous;
-    if (preset === "open" && !account) {
+    let account = previous && accounts(view)[previous]?.preset === "tcp" ? previous : null;
+    if (!account) {
       const connections = new Set(Object.entries(accounts(view)).flatMap(([name, acc]) => Object.keys(acc.connections ?? {}).map(key => connectionName(name, key))));
       account = "network";
       for (let i = 2; Object.hasOwn(accounts(view), account) || connections.has(account); i++) account = `network-${i}`;
     }
     const changes = sourceChanges({
-      data: { onboarding: { completed: true, preset, policy, account: preset === "open" ? account : null } },
+      data: { onboarding: { completed: true, preset, policy, account } },
       lattices: { confidentiality: preset !== "open", integrity: false },
       allow_networks: preset === "open" ? ["0.0.0.0/0", "::/0"] : [],
       policies: { [policy]: preset === "open" ? null : preset === "offline"
         ? 'package sentinel\n\ndeny contains "Network access is disabled."\n'
         : 'package sentinel\n\ndeny contains "This request has no recognized policy operation." if input.facts.operation == null\n' },
     });
-    if (preset === "open") {
-      changes.push(...sourceChanges({ accounts: { [account]: { preset: "tcp", contents: "anyone", strangers: true, sends: "anyone",
-        connections: { "": { tcp: { hosts: ["*"] } } } } }, default_access: { [account]: { level: "allow" } } }));
-    } else if (previous && Object.hasOwn(accounts(view), previous)) {
-      changes.push(...edits.removeAccount(view, previous));
-    }
+    changes.push(...sourceChanges({ accounts: { [account]: { preset: "tcp", contents: "anyone", strangers: true, sends: "anyone",
+      connections: { "": { tcp: { hosts: ["*"] } } } } } }));
+    const access = { level: preset === "open" ? "allow" : "off" };
+    changes.push(preset === "offline" ? { path: ["default_access"], value: { [account]: access } }
+      : { path: ["default_access", account], value: access });
     for (const [name, id] of Object.entries(identities(view))) {
       changes.push({ path: ["identities", name, "profile"], value: false });
+      // Reapplying the network preset resets this connection for existing
+      // agents too; new agents inherit the same default automatically.
+      changes.push({ path: ["identities", name, "accounts", account], delete: true });
       if (preset === "offline") changes.push(...sourceChanges({ identities: { [name]: { routes: false,
-        accounts: Object.fromEntries(Object.keys(id.accounts ?? {}).filter(a => a !== previous).map(a => [a, { level: "off" }])) } } }));
+        accounts: Object.fromEntries(Object.keys(id.accounts ?? {}).filter(a => a !== account).map(a => [a, { level: "off" }])) } } }));
     }
-    if (preset === "offline") changes.push({ path: ["default_access"], value: {} });
     return changes;
   },
   setAccountPolicy: (account, source) => sourceChanges({ policies: { [account]: source.trim() || null } }),
