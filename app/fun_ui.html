@@ -126,7 +126,9 @@
   .seg > button { border-radius: 0; }
   .seg > button:first-child { border-radius: 4px 0 0 4px; }
   .seg > button:last-child { border-radius: 0 4px 4px 0; }
-  .seg > button + button { border-left: 0; }
+  .seg > button + button { margin-left: -1px; }
+  .seg > button.inherited { z-index: 1; }
+  .seg > button:focus-visible { z-index: 2; }
   .decisions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
   .decisions > button { max-width: 100%; text-align: left; }
   summary { cursor: pointer; }

@@ -174,7 +174,9 @@ summary + * { margin-top: 12px; }
 .row > span:first-child { min-width: 0; overflow-wrap: anywhere; }
 .seg { display: inline-flex; flex-shrink: 0; }
 .seg > button { padding: 5px 12px; min-height: 32px; border-radius: 0; font-size: 12px; }
-.seg > button + button { border-left: 0; }
+.seg > button + button { margin-left: -1px; }
+.seg > button.inherited { z-index: 1; }
+.seg > button:focus-visible { z-index: 2; }
 .seg > button:first-child { border-radius: 4px 0 0 4px; }
 .seg > button:last-child { border-radius: 0 4px 4px 0; }
 .acct { padding: 12px 0; border-bottom: 1px solid var(--line); }

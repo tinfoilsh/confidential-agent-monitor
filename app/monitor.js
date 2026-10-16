@@ -223,7 +223,7 @@ function render() {
   // Keep old approval bookmarks pointing at the shared activity view.
   if (route()[0] === "needs") history.replaceState(null, "", "#activity");
   if (isDashboard && route()[0] === "agent") history.replaceState(null, "", "#agents/" + encodeURIComponent(route()[1] ?? ""));
-  const [path, ...args] = route(), kind = path || (isDashboard ? "catalog" : "activity");
+  const [path, ...args] = route(), kind = path || (isDashboard ? "accounts" : "activity");
   if (kind === "agent" || kind === "account") scope = [kind, args[0]];
   if (kind === "agent-settings") scope = ["agent", args[0]];
   if (kind === "activity") {
@@ -527,7 +527,7 @@ function agentSettings(name) {
   const others = Object.keys(ids()).filter((n) => n !== name);
   return [head(esc(name), "Settings", (isDashboard ? "agents/" : "agent/") + encodeURIComponent(name)),
     `<section><h2>Effects</h2>${effectControls({ agent: name })}</section>`,
-    `<section><a href="#integrations">Connect your tools</a><p class="muted">Setup guides for wrapped commands, Monitor shell, and MCP connections.</p></section>`,
+    `<section><a href="${isDashboard ? "" : "./"}#accounts">Connect your apps</a><p class="muted">Connect services and manage your existing connections.</p></section>`,
     `<section>${disclosure("setup", "Setup", `<label>Host key</label><pre>${esc(view.host_key)}</pre><label>CA</label><pre>${esc(view.ca)}</pre>`)}</section>`,
     `<section>${disclosure("replace-key", "Replace key", `<p class="muted">Use this after recreating the sandbox. The agent starts clean.</p><textarea id="pubkey" aria-label="Replacement public key" rows="2"></textarea>
       <div class="row"><span></span><button onclick="commit(edits.replaceKey(${q(name)}, $('pubkey').value))">Replace key</button></div>`)}</section>`,
@@ -1136,7 +1136,7 @@ function toggleCatalogGroup(element) {
 }
 
 function renderDashboard(kind, args, panes, parts) {
-  const routeKey = location.hash || "#catalog";
+  const routeKey = location.hash || "#accounts";
   if (dashboardRoute !== routeKey) {
     if (dashboardRoute !== null) dashboardFilterCache.set(dashboardRoute, dashboardFilters);
     dashboardRoute = routeKey;
