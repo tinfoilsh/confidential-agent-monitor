@@ -71,14 +71,15 @@ type latticeOptions struct {
 }
 
 type config struct {
-	Effects       map[string]string   `json:"effects,omitempty"`
-	DefaultAccess map[string]access   `json:"default_access,omitempty"`
-	Lattices      latticeOptions      `json:"lattices"`
-	AllowNetworks []netip.Prefix      `json:"allow_networks"`
-	Accounts      map[string]account  `json:"accounts"`
-	Identities    map[string]identity `json:"identities"`
-	Policies      map[string]string   `json:"policies"`
-	Data          map[string]any      `json:"data"`
+	AllowPaidInference bool                `json:"allow_paid_inference,omitempty"`
+	Effects            map[string]string   `json:"effects,omitempty"`
+	DefaultAccess      map[string]access   `json:"default_access,omitempty"`
+	Lattices           latticeOptions      `json:"lattices"`
+	AllowNetworks      []netip.Prefix      `json:"allow_networks"`
+	Accounts           map[string]account  `json:"accounts"`
+	Identities         map[string]identity `json:"identities"`
+	Policies           map[string]string   `json:"policies"`
+	Data               map[string]any      `json:"data"`
 
 	// Presets contains the source overrides; resolved holds the compiled definitions.
 	Presets  map[string]map[string]any `json:"presets,omitempty"`
@@ -87,13 +88,18 @@ type config struct {
 
 // More specific effect settings override broader ones. Access levels and action
 // permissions remain independent restrictions on the request.
-func (c *config) effectModes(agent, acct string) map[string]string {
+func (c *config) effectModes(agent, acct string, effects ...string) map[string]string {
 	modes := make(map[string]string, len(facts.Effects))
 	for effect, obligations := range facts.Effects {
 		modes[effect] = "allow"
 		if obligations.Ask {
 			modes[effect] = "ask"
 		}
+	}
+	// Paid model operations already carry both generate and pay. Change only the
+	// default; explicit payment restrictions at any scope still take precedence.
+	if c.AllowPaidInference && slices.Contains(effects, "generate") && slices.Contains(effects, "pay") {
+		modes["pay"] = "allow"
 	}
 	id := c.Identities[agent]
 	for _, overrides := range []map[string]string{c.Effects, c.Accounts[acct].Effects, id.Effects, id.Accounts[acct].Effects} {

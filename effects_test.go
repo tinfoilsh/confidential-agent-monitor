@@ -134,10 +134,19 @@ func TestEffectDecisions(t *testing.T) {
 		name, level, action, pay, publish string
 		kind                              facts.Kind
 		effects                           []string
-		unknown, deny                     bool
+		unknown, deny, inference          bool
 		want                              []string
 	}{
 		{name: "payment default", want: []string{"effect.pay"}},
+		{name: "inference allowed", inference: true},
+		{name: "other payments still ask", inference: true, effects: []string{"pay"}, want: []string{"effect.pay"}},
+		{name: "inference payment ask override", inference: true, pay: "ask", want: []string{"effect.pay"}},
+		{name: "inference payment deny override", inference: true, pay: "off", deny: true},
+		{name: "inference publishing still asks", inference: true, effects: []string{"generate", "pay", "publish"}, want: []string{"effect.publish"}},
+		{name: "inference account ask remains", inference: true, level: "ask", want: []string{"ask"}},
+		{name: "inference read only remains", inference: true, level: "read", deny: true, want: []string{"ask"}},
+		{name: "inference action denial remains", inference: true, action: "off", deny: true, want: []string{"ask"}},
+		{name: "inference unknown still asks", inference: true, unknown: true, want: []string{"ask"}},
 		{name: "payment allowed", pay: "allow"},
 		{name: "payment denied", pay: "off", deny: true},
 		{name: "action allow still asks", action: "allow", want: []string{"effect.pay"}},
@@ -156,7 +165,8 @@ func TestEffectDecisions(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			m, key := effectMonitor(t)
-			changes := []sourceChange{{Path: []string{"identities", "agent", "profile"}, Value: true}}
+			changes := []sourceChange{{Path: []string{"identities", "agent", "profile"}, Value: true},
+				{Path: []string{"allow_paid_inference"}, Value: tc.inference}}
 			for _, setting := range []struct {
 				path []string
 				mode string
@@ -265,12 +275,70 @@ func TestEffectInference(t *testing.T) {
 		t.Fatalf("inference did not require payment approval: %+v", r)
 	}
 	effectEdit(t, m, sourceChange{Path: []string{"identities", "agent", "profile"}, Value: false},
-		sourceChange{Path: []string{"accounts", "api", "effects", "pay"}, Value: "allow"})
+		sourceChange{Path: []string{"allow_paid_inference"}, Value: true})
 	if err := m.check(t.Context(), in); err != nil {
-		t.Fatalf("inference remained blocked after allowing payments: %v", err)
+		t.Fatalf("inference remained blocked after allowing paid inference: %v", err)
 	}
+	reloaded, _, err := compileSource(m.doc.Policy, m.doc.Secrets.clone())
+	if err != nil || !reloaded.AllowPaidInference || reloaded.effectModes("agent", "api", "generate", "pay")["pay"] != "allow" || reloaded.effectModes("agent", "api", "pay")["pay"] != "ask" {
+		t.Fatalf("paid inference setting did not persist: %v", err)
+	}
+	for _, path := range [][]string{{"effects", "pay"}, {"accounts", "api", "effects", "pay"},
+		{"identities", "agent", "effects", "pay"}, {"identities", "agent", "accounts", "api", "effects", "pay"}} {
+		effectEdit(t, m, sourceChange{Path: path, Value: "off"})
+		if err := m.check(t.Context(), in); err == nil || !strings.Contains(err.Error(), "pay effect is set to Deny") {
+			t.Fatalf("inference bypassed explicit payment restriction at %v: %v", path, err)
+		}
+		effectEdit(t, m, sourceChange{Path: path, Delete: true})
+	}
+	client, peer := net.Pipe()
+	defer peer.Close()
+	stream := connector.NewStream(t.Context(), client)
+	stream.Name = "api"
+	defer stream.Close()
+	m.mu.Lock()
+	m.streams[stream] = key
+	m.mu.Unlock()
+	effectEdit(t, m, sourceChange{Path: []string{"allow_paid_inference"}, Value: false})
+	if stream.Context.Err() == nil {
+		t.Fatal("disabling paid inference left an affected stream open")
+	}
+	effectEdit(t, m, sourceChange{Path: []string{"identities", "agent", "profile"}, Value: true})
+	if err := m.check(t.Context(), in); err != nil {
+		t.Fatal(err)
+	}
+	r = m.records[len(m.records)-1]
+	if len(r.Requirements) != 1 || r.Requirements[0].ID != "effect.pay" {
+		t.Fatalf("disabling paid inference did not restore payment approval: %+v", r)
+	}
+	effectEdit(t, m, sourceChange{Path: []string{"allow_paid_inference"}, Value: true},
+		sourceChange{Path: []string{"identities", "agent", "profile"}, Value: false})
 	effectEdit(t, m, sourceChange{Path: []string{"policies", "owner"}, Value: "package sentinel\ndeny contains \"custom denial\""})
 	if err := m.check(t.Context(), in); err == nil || !strings.Contains(err.Error(), "custom denial") {
-		t.Fatalf("allowing payments bypassed custom policy: %v", err)
+		t.Fatalf("allowing paid inference bypassed custom policy: %v", err)
+	}
+}
+
+func TestPaidInferenceNewProviders(t *testing.T) {
+	m, key := effectMonitor(t)
+	effectEdit(t, m, sourceChange{Path: []string{"allow_paid_inference"}, Value: true})
+	for _, provider := range []string{"openai", "codex"} {
+		t.Run(provider, func(t *testing.T) {
+			// The setting also covers providers connected after onboarding.
+			effectEdit(t, m, sourceChange{Path: []string{"accounts", provider}, Value: map[string]any{
+				"preset": provider, "contents": "anyone", "sends": "anyone", "strangers": false}},
+				sourceChange{Path: []string{"identities", "agent", "accounts", provider}, Value: map[string]any{"level": "allow"}})
+			request := &web.Request{HTTP: &facts.HTTP{Method: "POST", Origin: "https://api.openai.com", Host: "api.openai.com",
+				Path: "/v1/responses", BodyKind: "json", Body: map[string]any{"model": "test-model", "input": "hello"}}}
+			ctx, cancel := context.WithTimeout(t.Context(), time.Second)
+			defer cancel()
+			if err := m.check(ctx, input{Key: key, Connection: provider, Request: request}); err != nil {
+				t.Fatalf("paid inference was blocked: %v", err)
+			}
+			r := m.records[len(m.records)-1]
+			if r.Facts.Operation == nil || r.Facts.Operation.ID != "createResponse" || len(r.Requirements) != 0 {
+				t.Fatalf("unexpected inference decision: %+v", r)
+			}
+		})
 	}
 }

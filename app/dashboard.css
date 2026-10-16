@@ -279,7 +279,7 @@ th, td { padding: 12px; border-bottom: 1px solid var(--line); vertical-align: to
 .onboarding legend { margin-bottom: 10px; font-weight: 500; }
 .onboarding .policy-choice { display: flex; align-items: flex-start; gap: 12px; padding: 14px; margin: 0; border: 1px solid var(--edge); border-radius: 6px; cursor: pointer; }
 .policy-choice:has(input:checked) { border-color: var(--link); background: var(--subtle); }
-.policy-choice input[type=radio] { flex-shrink: 0; width: 16px; height: 16px; margin: 3px 0 0; padding: 0; accent-color: var(--primary); }
+.policy-choice input { flex-shrink: 0; width: 16px; height: 16px; margin: 3px 0 0; padding: 0; accent-color: var(--primary); }
 .policy-choice strong, .policy-choice small { display: block; }
 .policy-choice small { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .onboarding > button { width: 100%; }

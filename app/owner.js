@@ -122,8 +122,8 @@ export function ownerApi(request, generation, base = "") {
     },
     request: (id, signal) => get(`/requests/${encodeURIComponent(id)}`, signal),
     unlock,
-    onboard: (view, preset, signal) => onboarded(view) ? Promise.resolve(view)
-      : snapshot("POST", "/policy/edits", { changes: edits.applyPolicyPreset(view, preset), generation: view.generation }, signal),
+    onboard: (view, preset, signal, { allowPaidInference = true } = {}) => onboarded(view) ? Promise.resolve(view)
+      : snapshot("POST", "/policy/edits", { changes: [...edits.applyPolicyPreset(view, preset), ...edits.setPaidInference(allowPaidInference)], generation: view.generation }, signal),
     edit: (changes, signal) => snapshot("POST", "/policy/edits", { changes }, signal),
     decide: (id, decision, signal) => post(`/requests/${encodeURIComponent(id)}`, { decision }, signal),
     label: (name, label, signal) => snapshot("POST", `/labels/${encodeURIComponent(name)}`, label, signal),
@@ -262,28 +262,34 @@ const operationsOf = (view, account) => Object.values(presetOf(view, account).op
 const groupsOf = (view, account) => Object.fromEntries(operationsOf(view, account).map((o) => [o.action, { title: o.action }]));
 // effectsOf unions the effects of every operation under an action, so a group shows its strictest obligations.
 const effectGroups = new WeakMap();
-export const effectsOf = (view, account, k) => {
+const effectGroupsOf = (view, account) => {
   const preset = presetOf(view, account), actions = preset.actions ?? {};
   let groups = effectGroups.get(preset);
   if (!groups) {
     groups = new Map();
     const add = (action, effects) => action.split(".").forEach((_, i, parts) => {
       const key = parts.slice(0, i + 1).join(".");
-      if (!groups.has(key)) groups.set(key, new Set());
-      for (const effect of effects) groups.get(key).add(effect);
+      if (!groups.has(key)) groups.set(key, { effects: new Set(), otherPayments: false });
+      const group = groups.get(key);
+      for (const effect of effects) group.effects.add(effect);
+      if (effects.includes("pay") && !effects.includes("generate")) group.otherPayments = true;
     });
     for (const [action, meta] of Object.entries(actions)) add(action, meta.effects ?? []);
     for (const op of Object.values(preset.operations ?? {})) add(op.action, op.effects ?? []);
     effectGroups.set(preset, groups);
   }
+  return groups;
+};
+export const effectsOf = (view, account, k) => {
+  const actions = presetOf(view, account).actions ?? {}, groups = effectGroupsOf(view, account);
   const lineage = k.split(".").map((_, i, parts) => parts.slice(0, i + 1).join(".")).reverse();
   const inherited = lineage.find((a) => actions[a]?.effects);
-  return [...new Set([...(actions[inherited]?.effects ?? []), ...(groups.get(k) ?? [])])];
+  return [...new Set([...(actions[inherited]?.effects ?? []), ...(groups.get(k)?.effects ?? [])])];
 };
 
 // Effect settings use the same precedence as config.effectModes. Keeping the
 // inherited value lets editors remove an override without copying a default.
-export function effectSettings(view, { agent, account } = {}) {
+export function effectSettings(view, { agent, account } = {}, effects = []) {
   const id = identities(view)[agent] ?? {};
   const pair = id.accounts?.[account] ?? view.config.default_access?.[account];
   const layers = [["Global settings", view.config.effects]];
@@ -292,6 +298,10 @@ export function effectSettings(view, { agent, account } = {}) {
   if (agent && account) layers.push([`Agent ${agent} on ${account}`, pair?.effects]);
   return Object.entries(view.vocabulary).sort(([a], [b]) => a.localeCompare(b)).map(([effect, metadata]) => {
     let mode = metadata.ask ? "ask" : "allow", source = "Monitor defaults";
+    if (effect === "pay" && view.config.allow_paid_inference && effects.includes("generate") && effects.includes("pay")) {
+      mode = "allow";
+      source = "Paid AI inference";
+    }
     for (const [name, values] of layers.slice(0, -1)) {
       if (values?.[effect]) { mode = values[effect]; source = name; }
     }
@@ -338,11 +348,15 @@ export function agentAccess(view, name) {
   const id = identities(view)[name] ?? {};
   return Object.entries(accounts(view)).map(([account, acc]) => {
     const access = id.accounts?.[account] ?? view.config.default_access?.[account] ?? { level: "off" };
-    const settings = Object.fromEntries(effectSettings(view, { agent: name, account }).map(({ effect, mode }) => [effect, mode]));
-    const describe = (node) => ({ ...node, own: access.actions?.[node.key] ?? null,
-      inherited: mode({ ...access, actions: { ...access.actions, [node.key]: null } }, view.vocabulary, node.effects, node.key, settings),
-      overrides: Object.keys(access.actions ?? {}).filter((action) => action.startsWith(node.key + ".") && access.actions[action]).length,
-      children: node.children.map(describe) });
+    const describe = (node) => {
+      // A group containing other payments must still show their approval requirement.
+      const effects = effectGroupsOf(view, account).get(node.key)?.otherPayments ? node.effects.filter(e => e !== "generate") : node.effects;
+      const settings = Object.fromEntries(effectSettings(view, { agent: name, account }, effects).map(({ effect, mode }) => [effect, mode]));
+      return { ...node, own: access.actions?.[node.key] ?? null,
+        inherited: mode({ ...access, actions: { ...access.actions, [node.key]: null } }, view.vocabulary, node.effects, node.key, settings),
+        overrides: Object.keys(access.actions ?? {}).filter((action) => action.startsWith(node.key + ".") && access.actions[action]).length,
+        children: node.children.map(describe) };
+    };
     return { account, preset: acc.preset, level: access.level, levels: levelsOf(acc), overrides: Object.values(access.actions ?? {}).filter(Boolean).length,
       actions: access.level === "off" ? [] : actionTree(view, account).map(describe) };
   });
@@ -549,6 +563,7 @@ export const edits = {
   removeRule: (name, id) => [{ path: ["identities", name, "rules", id], delete: true }],
   setLattice: (lattice, on) => [{ path: ["lattices", lattice], value: on }],
   setNetworks: (text) => [{ path: ["allow_networks"], value: text.split(/\s+/).filter(Boolean) }],
+  setPaidInference: (allow) => [{ path: ["allow_paid_inference"], value: allow }],
   applyPolicyPreset(view, preset) {
     if (!Object.hasOwn(POLICY_PRESETS, preset)) throw new Error("Choose a policy preset.");
     const previous = view.config.data?.onboarding?.account;

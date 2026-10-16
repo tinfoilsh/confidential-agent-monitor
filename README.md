@@ -3,13 +3,20 @@
 ## Effect permissions
 
 In **Settings → Effects**, choose Allow, Ask, or Deny for each effect. Payments
-include paid model inference; payments and publishing default to Ask. All other
-effects default to Allow. Approval requests identify the effect that requires approval.
+include paid model inference; payments and publishing default to Ask. Onboarding
+checks **Allow paid AI inference** by default, allowing model operations marked
+with both `generate` and `pay` without payment approval. Other payments still
+default to Ask. Uncheck it during onboarding or in **Settings → Effects** to
+keep payment approval for inference, too. The choice applies to existing and
+future provider accounts. Existing monitors keep their settings until changed.
+All other effects default to Allow. Approval requests identify the effect that
+requires approval.
 
 Override these defaults in an account's **Effects** section, an agent's
 **Settings → Effects**, or **Effect overrides** beneath the agent's account access.
 Precedence is global → account → agent → agent on an account. Click a selected
-permission again to unset it and inherit. Payments, publishing, and overrides stay
+permission again to unset it and inherit. Explicit payment settings override
+the paid-inference default at every scope. Payments, publishing, and overrides stay
 visible; expand **Other effects** for the rest. When a request has several effects,
 Deny takes precedence over Ask, which takes precedence over Allow.
 

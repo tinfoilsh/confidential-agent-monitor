@@ -47,6 +47,27 @@ for (const local of [false, true]) {
   generation = 2;
   validators = false; // older deployed Monitor does not implement conditional reads
   assert.equal((await client.read()).view.generation, 2);
+  const onboarding = { generation: 2, config: {} }, signal = new AbortController().signal;
+  for (const preset of ['known_only', 'open', 'offline']) {
+    for (const allowPaidInference of [undefined, false, true]) {
+      await client.onboard(onboarding, preset, signal, { allowPaidInference });
+      const call = calls.at(-1), body = JSON.parse(call.body);
+      assert.equal(call.path.split('?')[0], '/policy/edits');
+      assert.equal(call.signal, signal);
+      assert.equal(body.generation, onboarding.generation);
+      const saved = structuredClone(onboarding);
+      previewChanges(saved, body.changes);
+      assert.equal(saved.config.allow_paid_inference, allowPaidInference ?? true);
+      assert.equal(saved.config.data.onboarding.completed, true);
+      assert.equal(saved.config.data.onboarding.preset, preset);
+      assert.equal(saved.config.effects?.pay, undefined); // unrelated payments keep their default
+      const count = calls.length;
+      assert.equal(await client.onboard(saved, preset), saved);
+      assert.equal(calls.length, count); // reopening an onboarded monitor does not reset the choice
+      previewChanges(saved, edits.applyPolicyPreset(saved, 'known_only'));
+      assert.equal(saved.config.allow_paid_inference, allowPaidInference ?? true);
+    }
+  }
 }
 console.log('Owner client checks passed for bearer and SSH transports.');
 
@@ -99,3 +120,26 @@ assert.equal(mode({ level: 'ask' }, vocabulary, ['pay'], 'generate', { pay: 'all
 assert.equal(mode({ level: 'off', actions: { generate: 'allow' } }, vocabulary, ['pay'], 'generate', { pay: 'allow' }), 'off');
 assert.deepEqual(edits.setEffect(scope, 'pay', 'allow'), [{ path: ['identities', 'agent', 'accounts', 'api', 'effects', 'pay'], value: 'allow' }]);
 console.log('Effect precedence, inheritance, and access checks passed.');
+
+permissions.config.allow_paid_inference = true;
+const inference = ['generate', 'pay', 'send'];
+assert.equal(effectSettings(permissions, scope, inference).find(e => e.effect === 'pay').mode, 'allow');
+assert.equal(payment(scope).mode, 'ask');
+for (const layer of [{}, { account: 'api' }, { agent: 'agent' }, scope]) {
+  for (const setting of ['ask', 'off']) {
+    previewChanges(permissions, edits.setEffect(layer, 'pay', setting));
+    assert.equal(effectSettings(permissions, scope, inference).find(e => e.effect === 'pay').mode, setting);
+  }
+  previewChanges(permissions, edits.setEffect(layer, 'pay', null));
+}
+permissions.presets.custom = { actions: {
+  'use.model': { effects: inference },
+  'use.payment': { effects: ['pay'] },
+} };
+let group = agentAccess(permissions, 'agent')[0].actions[0];
+assert.equal(group.inherited, 'ask');
+assert.deepEqual(group.children.map(c => [c.key, c.inherited]), [['use.model', 'allow'], ['use.payment', 'ask']]);
+previewChanges(permissions, edits.setPaidInference(false));
+group = agentAccess(permissions, 'agent')[0].actions[0];
+assert.equal(group.children[0].inherited, 'ask');
+console.log('Paid-inference onboarding, opt-out, and permission checks passed.');

@@ -71,6 +71,7 @@ export type View = {
   host_id: string
   ca: string
   config: {
+    allow_paid_inference?: boolean
     effects?: Record<string, Mode>
     default_access?: Record<string, Access>
     data?: { [key: string]: Json }
@@ -136,7 +137,7 @@ export type OwnerApi = {
   read(signal?: AbortSignal, options?: { summary?: boolean }): Promise<Snapshot>
   request(id: string, signal?: AbortSignal): Promise<RequestRecord>
   unlock(generation?: number, signal?: AbortSignal): Promise<View>
-  onboard(view: View, preset: PolicyPreset, signal?: AbortSignal): Promise<View>
+  onboard(view: View, preset: PolicyPreset, signal?: AbortSignal, options?: { allowPaidInference?: boolean }): Promise<View>
   edit(changes: Change[], signal?: AbortSignal): Promise<View>
   decide(id: string, decision: Decision, signal?: AbortSignal): Promise<null>
   label(name: string, label: { trust: Trust; audience: Audience }, signal?: AbortSignal): Promise<View>
@@ -196,7 +197,7 @@ export type ActionNode = { key: string; title: string; action: boolean; effects:
 export type AccessNode = Omit<ActionNode, 'children'> & { own: Mode | null; inherited: Mode; overrides: number; children: AccessNode[] }
 export function actionsOf(view: View, account: string): { [action: string]: PresetAction }
 export function effectsOf(view: View, account: string, action: string): string[]
-export function effectSettings(view: View, scope?: EffectScope): { effect: string; own: Mode | null; inherited: Mode; mode: Mode; source: string }[]
+export function effectSettings(view: View, scope?: EffectScope, effects?: string[]): { effect: string; own: Mode | null; inherited: Mode; mode: Mode; source: string }[]
 export function mode(access: Access, vocabulary: View['vocabulary'], effects: string[], action: string, settings?: Record<string, Mode>): Mode
 export function actionTree(view: View, account: string): ActionNode[]
 export function levelsOf(account?: Account): [Level, string][]
@@ -258,6 +259,7 @@ export const edits: {
   removeRule(name: string, id: string): Change[]
   setLattice(lattice: 'confidentiality' | 'integrity', on: boolean): Change[]
   setNetworks(text: string): Change[]
+  setPaidInference(allow: boolean): Change[]
   applyPolicyPreset(view: View, preset: PolicyPreset): Change[]
   setAccountPolicy(account: string, source: string): Change[]
   approveTools(view: View, account: string, key: string): Change[]

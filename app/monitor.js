@@ -13,7 +13,7 @@ const STATE_CLASS = { allowed: "", approved: "", refused: "bad", denied: "bad", 
 
 // Keep the activity filter and return route while a request is open.
 let view = null, records = [], locked = false, scope = null, requestSource = "activity";
-let onboardingPreset = "known_only", onboardingSaving = false;
+let onboardingPreset = "known_only", onboardingPaidInference = true, onboardingSaving = false;
 let serverState = { view: null, records: [] }, sending = false, editVersion = 0, refreshing = null;
 const pendingEdits = [];
 let connectorIcons = {};
@@ -258,6 +258,12 @@ function onboardingPage() {
         <input type="radio" name="network-policy" value="${value}" ${value === onboardingPreset ? "checked" : ""} onchange="chooseOnboardingPreset(this.value)">
         <span><strong>${title}</strong><small>${description}</small></span></label>`).join("")}
     </fieldset>
+    <fieldset ${onboardingSaving ? "disabled" : ""}><legend>AI inference</legend>
+      <label class="policy-choice">
+        <input type="checkbox" name="paid-inference" ${onboardingPaidInference ? "checked" : ""} onchange="chooseOnboardingPaidInference(this.checked)">
+        <span><strong>Allow paid AI inference</strong><small>Let agents use models from Anthropic, OpenAI, and other providers without payment approval. Provider charges apply. Other payments still require approval.</small></span>
+      </label>
+    </fieldset>
     <p class="muted">Saved for this monitor across browsers. You can change it later in Settings.</p>
     <button class="primary" type="submit" ${onboardingSaving ? "disabled" : ""}>${onboardingSaving ? "Saving…" : "Use this policy"}</button>
   </form>`;
@@ -265,11 +271,12 @@ function onboardingPage() {
 
 const applyPolicyPreset = run(() => commit(edits.applyPolicyPreset(view, $("policy-preset").value)));
 const chooseOnboardingPreset = (preset) => { onboardingPreset = preset; };
+const chooseOnboardingPaidInference = (allow) => { onboardingPaidInference = allow; };
 const finishOnboarding = run(async () => {
   if (onboardingSaving) return;
   onboardingSaving = true;
   try {
-    await edit(() => {}, () => client().onboard(serverState.view, onboardingPreset), { message: "Policy saved" });
+    await edit(() => {}, () => client().onboard(serverState.view, onboardingPreset, undefined, { allowPaidInference: onboardingPaidInference }), { message: "Policy saved" });
   } finally {
     onboardingSaving = false;
     render();
@@ -468,7 +475,7 @@ function effectControls(scope = {}) {
   const prominent = ({ effect, own, inherited }) => ["pay", "publish"].includes(effect) || own !== null || inherited !== "allow";
   const row = ({ effect, own, inherited, source }) => {
     const title = ({ pay: "Payments", publish: "Publishing" })[effect] ?? effect.charAt(0).toUpperCase() + effect.slice(1);
-    const hint = `${MODES[own ?? inherited]} · ${source}${effect === "pay" ? ". Includes paid model inference." : ""}`;
+    const hint = `${MODES[own ?? inherited]} · ${source}${effect === "pay" ? ". Explicit payment settings also apply to paid AI inference." : ""}`;
     return `<div class="access-action"><span title="${esc(hint)}">${esc(title)}</span>${permissionButtons(title, own, inherited,
       (m) => `commit(edits.setEffect(${q(scope)}, ${q(effect)}, ${q(m)}))`)}</div>`;
   };
@@ -1093,7 +1100,10 @@ const settings = () => [head("Settings"), `<section><h2>Policy preset</h2>
   <select id="policy-preset">${Object.entries(owner.POLICY_PRESETS).map(([value, policy]) => opt(value, policy.title, view.config.data?.onboarding?.preset ?? "known_only")).join("")}</select>
   <p class="muted">You can edit individual permissions after applying a preset.</p>
   <div class="row"><span></span><button onclick="applyPolicyPreset()">Apply preset</button></div>
-  </section>`, `<section><h2>Effects</h2>${effectControls()}</section>`, `<section><h2>Lattices</h2>
+  </section>`, `<section><h2>Effects</h2>
+  <label><input type="checkbox" ${view.config.allow_paid_inference ? "checked" : ""} onchange="commit(edits.setPaidInference(this.checked))"> Allow paid AI inference</label>
+  <p class="muted">Allow model generation without payment approval by default. Provider charges apply. Explicit payment settings and other restrictions still apply.</p>
+  ${effectControls()}</section>`, `<section><h2>Lattices</h2>
   <p class="muted">Applies to all agents and connector requests.</p>
   <label><input type="checkbox" ${lattices().confidentiality ? "checked" : ""} onchange="commit(edits.setLattice('confidentiality', this.checked))"> Confidentiality lattice</label>
   <p class="muted">Restrict where agents can send private data. On by default.</p>
@@ -1217,7 +1227,7 @@ document.addEventListener("click", (e) => { const id = e.target.closest?.("[data
 Object.assign(globalThis, { $, addAccount, addCustomAPI, answer, apiAuthChanged, applyPolicySource, approve, changePolicy, commit, copyAPIPlaceholder, copySettings,
   cycleTheme, filterDashboard, refreshDashboard, toggleCatalogGroup, toggleNavigation,
   credentialMode, dismiss, downloadActivePolicy, downloadPreset, edits, liveAct, liveClick, liveKey, liveNavigate, liveOwn, liveType, liveWheel, loadPolicy, loadRequest,
-  applyPolicyPreset, chooseOnboardingPreset, finishOnboarding, pairAgent, pasteOwnerKey, patchAccess, previewPolicy, removeAccount, removeAgent, removeRule, saveAccount, savePreset, setKey, setLabel, setupToken, signIn, toggle, toggleSecret, unlock });
+  applyPolicyPreset, chooseOnboardingPreset, chooseOnboardingPaidInference, finishOnboarding, pairAgent, pasteOwnerKey, patchAccess, previewPolicy, removeAccount, removeAgent, removeRule, saveAccount, savePreset, setKey, setLabel, setupToken, signIn, toggle, toggleSecret, unlock });
 setInterval(run(async () => {
   if (!ownerMode || !authenticated() || locked) return;
   const changed = await refresh();

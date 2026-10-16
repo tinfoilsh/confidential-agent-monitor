@@ -154,7 +154,11 @@ func (m *monitor) check(ctx context.Context, in input) (err error) {
 	}
 	// Approval definitions bind semantics and configuration, independently of facts
 	// shown to users. Display edits and current labels do not invalidate a grant.
-	effects := st.cfg.effectModes(p.Name, c.account)
+	var operationEffects []string
+	if f.Operation != nil {
+		operationEffects = f.Operation.Effects
+	}
+	effects := st.cfg.effectModes(p.Name, c.account, operationEffects...)
 	raw, _ := json.Marshal([]any{st.program, st.cfg.Lattices, effects, f.Kind, a.Preset, c.name, c.config, a.PolicyOptions,
 		a.Contents, a.Strangers, a.Sends, preset.PublicScope, f.Definition, f.Operation, f.Context.Sends, f.Context.Observes})
 	sum := sha256.Sum256(raw)

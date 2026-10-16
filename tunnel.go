@@ -241,7 +241,8 @@ func (st *state) sameStreamAuthority(old *state, key string, s *connector.Stream
 		return true
 	}
 	if previous.Name != p.Name ||
-		previous.Profile != p.Profile || st.cfg.Lattices != old.cfg.Lattices || st.program != old.program {
+		previous.Profile != p.Profile || st.cfg.Lattices != old.cfg.Lattices || st.program != old.program ||
+		st.cfg.AllowPaidInference != old.cfg.AllowPaidInference {
 		return false
 	}
 	a, b := previous.Accounts[c.account], p.Accounts[c.account]
