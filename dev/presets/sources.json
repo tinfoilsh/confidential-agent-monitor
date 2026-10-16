@@ -2372,7 +2372,8 @@
     "origin": "https://openrouter.ai"
    }
   ],
-  "note": "paths under /api/v1"
+  "note": "Official OpenAPI, including /api/v1 and /api/alpha/decisions. Multipart file uploads and transcriptions remain unsupported. Some endpoints require a management key or programme access.",
+  "preset": "open_router"
  },
  "open_weather_map": {
   "specs": [],

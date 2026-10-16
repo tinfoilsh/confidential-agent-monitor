@@ -10,19 +10,19 @@ export const sections = {
   agents: ['Agents', 'Manage agent identities and the actions they can take.'],
   accounts: ['Connections', 'Connect services and control how agents use their data.'],
   catalog: ['Add connection', 'Choose a service to connect to your monitor.'],
-  presets: ['Presets', 'Edit the operations, actions, and setup fields of connection presets.'],
+  presets: ['Connection preset editor', 'Edit the operations, actions, and setup fields of connection presets.'],
   rules: ['Saved rules', 'Review the permissions you have saved from request approvals.'],
   policy: ['Policy', 'Edit, validate, and review the policy that controls your monitor.'],
   integrations: ['Integrations', 'Connect commands, shells, and MCP clients through Monitor.'],
   settings: ['Settings', 'Manage data protections and network access.'],
 };
 export function sectionFor(kind) {
-  return ({agent: 'agents', 'agent-settings': 'agents', pair: 'agents', account: 'accounts', add: 'accounts', catalog: 'accounts', preset: 'presets', request: 'activity'})[kind] ?? kind;
+  return ({agent: 'agents', 'agent-settings': 'agents', pair: 'agents', account: 'accounts', add: 'accounts', catalog: 'accounts', preset: 'settings', presets: 'settings', request: 'activity'})[kind] ?? kind;
 }
 const buttonLink = (href, title, glyph = 'plus') => `<a class="button primary" href="#${href}">${icon(glyph)}${title}</a>`;
 export function navigation(kind, view, records) {
   const counts = { activity: records.filter(r => owner.stateAt(r, Date.now()) === 'pending').length, agents: Object.keys(view.config.identities ?? {}).length, accounts: Object.keys(view.config.accounts ?? {}).length };
-  return Object.entries(sections).filter(([key]) => key !== 'catalog').map(([key, [title]]) => [key,
+  return Object.entries(sections).filter(([key]) => !['catalog', 'presets'].includes(key)).map(([key, [title]]) => [key,
     `<a class="nav-item ${sectionFor(kind) === key ? 'on' : ''}" href="#${key}" ${sectionFor(kind) === key ? 'aria-current="page"' : ''}>${icon(key)}<span>${title}</span>${counts[key] ? `<small class="nav-count">${counts[key]}</small>` : ''}</a>`]);
 }
 export function pageHeader(kind, args, view, records) {

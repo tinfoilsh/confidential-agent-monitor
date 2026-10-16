@@ -103,6 +103,26 @@ Anthropic's pinned SDK mock specification includes beta and administration opera
 
 Before promoting a provider, review every proposed action and effect combination, destinations and account boundaries, selectors, and the authority granted by saved approvals. Resolve overlaps with explicit request conditions. Verify request encodings, optional selectors, batches, version variants, and changes to approval scope through the actual policy matcher. Keep intentional restrictions documented. Generic name-based inference is only a proposal.
 
+OpenRouter's API preset (`open_router`) comes from its official
+[`openapi.json`](https://openrouter.ai/openapi.json). Refresh it with
+`GOWORK=off go run . update open_router`, then run `generate open_router` and
+`check open_router` using the workflow above. The separate `openrouter` preset
+is its MCP connection.
+
+OpenRouter normalization records paid inference's generate/pay/send effects,
+distinguishes saving presets from running inference, and classifies credential,
+access, routing, and budget changes as administration. Intern runs additionally
+execute tools; provisioning remains a payment even when paid inference is
+allowed. Generated approvals bind the complete request body and query, together
+with path selectors. Video model listings and job status share one read
+descriptor with the requested path segment bound, avoiding overlapping routes.
+The API key slot covers `/api`, including the documented alpha Decisions route;
+management and programme-gated endpoints still need the corresponding upstream
+access. The current inventory has 152 request variants and 149 descriptors.
+Multipart file upload and multipart audio transcription are reported as
+unsupported; JSON audio transcription is supported. Consequently,
+`check --reviewed open_router` still reports those two encoding gaps.
+
 ```sh
 # Importer and accounting regressions, from this directory.
 GOWORK=off go test ./...

@@ -223,7 +223,7 @@ function render() {
   // Keep old approval bookmarks pointing at the shared activity view.
   if (route()[0] === "needs") history.replaceState(null, "", "#activity");
   if (isDashboard && route()[0] === "agent") history.replaceState(null, "", "#agents/" + encodeURIComponent(route()[1] ?? ""));
-  const [path, ...args] = route(), kind = path || "activity";
+  const [path, ...args] = route(), kind = path || (isDashboard ? "catalog" : "activity");
   if (kind === "agent" || kind === "account") scope = [kind, args[0]];
   if (kind === "agent-settings") scope = ["agent", args[0]];
   if (kind === "activity") {
@@ -323,8 +323,8 @@ function sidebar(kind, arg) {
 }
 
 function keyPage() {
-  if (ownerMode === "bearer") return `<section><h2>Open Monitor</h2><form onsubmit="event.preventDefault(); setKey()">
-    <label for="key">Owner key or passphrase</label><input id="key" type="password" autocomplete="current-password" required onpaste="pasteOwnerKey(event)">
+  if (ownerMode === "bearer") return `<section><h2>Open Monitor</h2><form autocomplete="off" onsubmit="event.preventDefault(); setKey()">
+    <label for="key">Owner key or passphrase</label><input id="key" type="text" class="secret-value" data-concealed="true" autocomplete="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true" required onpaste="pasteOwnerKey(event)">
     <div class="row"><span></span><button class="primary" type="submit">Continue</button></div></form></section>`;
   return `<section><h2>Open Monitor from your CLI</h2><p>Run <code>tinfoil monitor open NAME</code> to open a local panel with an attested connection. Keep private credentials in the CLI.</p></section>`;
 }
@@ -630,14 +630,14 @@ function input(f, value, disabled = false) {
   const state = disabled ? "disabled" : "";
   value = owner.fieldText(f, value);
   if (f.json || f.multiline) return `<textarea id="f-${esc(f.key)}" ${state} rows="6">${esc(value)}</textarea>`;
-  if (f.secret) return `<div class="secret-input"><input id="f-${esc(f.key)}" ${state} type="password" autocomplete="new-password" spellcheck="false" placeholder="${esc(f.hint || "Paste your secret here")}" value="${esc(value)}">
+  if (f.secret) return `<div class="secret-input"><input id="f-${esc(f.key)}" ${state} type="text" class="secret-value" data-concealed="true" autocomplete="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true" placeholder="${esc(f.hint || "Paste your secret here")}" value="${esc(value)}">
     <button type="button" aria-controls="f-${esc(f.key)}" aria-pressed="false" aria-label="Show ${esc(f.label)}" onclick="toggleSecret(${q(f.key)}, this)">Show</button></div>`;
   return `<input id="f-${esc(f.key)}" ${state} type="text" placeholder="${esc(f.hint)}" value="${esc(value)}">`;
 }
 
 function toggleSecret(key, button) {
-  const field = $("f-" + key), show = field.type === "password";
-  field.type = show ? "text" : "password";
+  const field = $("f-" + key), show = field.dataset.concealed === "true";
+  field.dataset.concealed = String(!show);
   button.textContent = show ? "Hide" : "Show";
   button.setAttribute("aria-pressed", String(show));
   button.setAttribute("aria-label", button.getAttribute("aria-label").replace(/^(Show|Hide)/, button.textContent));
@@ -677,7 +677,7 @@ function add(preset) {
     ${questions(c.defaults)}<div class="row"><span></span><div class="credential-actions">
       <button id="account-add" class="${oauth.length ? "" : "primary"}" onclick="addAccount(${q(preset)})">${oauth.length ? "Add without signing in" : "Add"}</button>
       ${oauth.map((f) => `<button id="signin-${esc(f.key)}" class="primary" onclick="addAccount(${q(preset)}, ${q(f.key)})">${esc(signInLabel(preset))}</button>`).join("")}</div></div></section>`,
-    `<section><a href="#preset/${encodeURIComponent(preset)}">Edit preset</a></section>`];
+    `<section><details><summary>Advanced</summary><a href="#preset/${encodeURIComponent(preset)}">Edit connection preset</a></details></section>`];
 }
 
 const addAccount = run(async (preset, signInKey) => {
@@ -722,7 +722,7 @@ function customAPIPage(c) {
     <p>Connect an app using its API key. The agent gets a placeholder; Monitor keeps the real key.</p>
     <label for="account-name">Name</label><input id="account-name" required pattern="[a-zA-Z0-9][a-zA-Z0-9\\-]*" placeholder="my-app" title="Use letters, numbers, and hyphens.">
     ${apiConnectionFields()}
-    <label for="api-token">API key or token</label><input id="api-token" type="password" required autocomplete="new-password">
+    <label for="api-token">API key or token</label><input id="api-token" type="text" class="secret-value" data-concealed="true" required autocomplete="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true">
     ${agents.length ? `<label for="api-agent">Agent</label><select id="api-agent">${opt("", "Set up access later", selected)}${agents.map((name) => opt(name, name, selected)).join("")}</select>
       <label for="api-access">Access</label><select id="api-access">${opt("ask", "Ask before each request", "ask")}${opt("allow", "Allow all API requests", "ask")}</select>` : `<p class="muted">After adding this account, pair an agent to give it access.</p>`}
     <p class="muted">Access covers all operations at this address, including changes and deletions.</p>
@@ -1112,7 +1112,8 @@ const settings = () => [head("Settings"), `<section><h2>Policy preset</h2>
   <p class="muted">Labels keep their history while enforcement is off. Access permissions, explicit approvals and custom rules still apply.</p>
   </section>`, `<section><h2>Networks</h2><label for="networks">Private networks the monitor may reach, one per line</label>
   <textarea id="networks" rows="4">${esc((view.config.allow_networks ?? []).join("\n"))}</textarea>
-  <div class="row"><span></span><button onclick="commit(edits.setNetworks($('networks').value))">Save</button></div></section>`];
+  <div class="row"><span></span><button onclick="commit(edits.setNetworks($('networks').value))">Save</button></div></section>`,
+  `<section><details data-disclosure="advanced-settings"><summary>Advanced</summary><p class="muted">Define the operations and setup fields available for connections.</p><a href="#${isDashboard ? "presets" : "preset"}">Connection preset editor</a></details></section>`];
 
 // Both entry points use this runtime and the same owner session. The dashboard
 // supplies list/navigation markup; detailed controls call the same owner actions.
@@ -1135,7 +1136,7 @@ function toggleCatalogGroup(element) {
 }
 
 function renderDashboard(kind, args, panes, parts) {
-  const routeKey = location.hash || "#activity";
+  const routeKey = location.hash || "#catalog";
   if (dashboardRoute !== routeKey) {
     if (dashboardRoute !== null) dashboardFilterCache.set(dashboardRoute, dashboardFilters);
     dashboardRoute = routeKey;

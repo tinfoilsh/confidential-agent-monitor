@@ -6,7 +6,6 @@
 
 *.test
 *test\.*
-!/effects_test.go
 test_*.py
 testdata/
 __pycache__/

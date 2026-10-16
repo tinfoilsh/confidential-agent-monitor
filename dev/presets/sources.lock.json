@@ -1349,8 +1349,9 @@
     {
       "source": "https://openrouter.ai/openapi.json",
       "url": "https://openrouter.ai/openapi.json",
-      "sha256": "590a4ab70a459e529ce8a0266c57286327c25804fc1fe8ecfb6d6cd5c5001f1e",
-      "bytes": 2572064
+      "sha256": "8287890b719d375d64b5651ca4fa2bc34be3af84b24e8fceb8ab13ae9894fe12",
+      "bytes": 2690928,
+      "checked_at": "2026-10-16T07:53:18Z"
     }
   ],
   "orbit": [

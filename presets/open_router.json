@@ -1,0 +1,806 @@
+{
+  "catalog": {
+    "actions": {
+      "activity": {
+        "title": "Activity"
+      },
+      "activity.read": {
+        "title": "Read"
+      },
+      "alpha": {
+        "title": "Alpha"
+      },
+      "alpha.decisions": {
+        "title": "Decisions"
+      },
+      "alpha.decisions.generate": {
+        "title": "Generate"
+      },
+      "analytics": {
+        "title": "Analytics"
+      },
+      "analytics.meta": {
+        "title": "Meta"
+      },
+      "analytics.meta.read": {
+        "title": "Read"
+      },
+      "analytics.read": {
+        "title": "Read"
+      },
+      "audio": {
+        "title": "Audio"
+      },
+      "audio.speech": {
+        "title": "Speech"
+      },
+      "audio.speech.generate": {
+        "title": "Generate"
+      },
+      "audio.transcriptions": {
+        "title": "Transcriptions"
+      },
+      "audio.transcriptions.generate": {
+        "title": "Generate"
+      },
+      "auth": {
+        "title": "Auth"
+      },
+      "auth.keys": {
+        "title": "Keys"
+      },
+      "auth.keys.admin": {
+        "title": "Manage"
+      },
+      "auth.keys.code": {
+        "title": "Code"
+      },
+      "auth.keys.code.admin": {
+        "title": "Manage"
+      },
+      "batches": {
+        "title": "Batches"
+      },
+      "batches.delete": {
+        "title": "Delete"
+      },
+      "batches.generate": {
+        "title": "Generate"
+      },
+      "batches.read": {
+        "title": "Read"
+      },
+      "benchmarks": {
+        "title": "Benchmarks"
+      },
+      "benchmarks.read": {
+        "title": "Read"
+      },
+      "byok": {
+        "title": "Byok"
+      },
+      "byok.admin": {
+        "title": "Manage"
+      },
+      "byok.read": {
+        "title": "Read"
+      },
+      "chat": {
+        "title": "Chat"
+      },
+      "chat.completions": {
+        "title": "Completions"
+      },
+      "chat.completions.generate": {
+        "title": "Generate"
+      },
+      "classifications": {
+        "title": "Classifications"
+      },
+      "classifications.task": {
+        "title": "Task"
+      },
+      "classifications.task.read": {
+        "title": "Read"
+      },
+      "containers": {
+        "title": "Containers"
+      },
+      "containers.files": {
+        "title": "Files"
+      },
+      "containers.files.content": {
+        "title": "Content"
+      },
+      "containers.files.content.read": {
+        "title": "Read"
+      },
+      "containers.files.promote": {
+        "title": "Promote"
+      },
+      "containers.files.promote.write": {
+        "title": "Create and edit"
+      },
+      "containers.files.read": {
+        "title": "Read"
+      },
+      "credits": {
+        "title": "Credits"
+      },
+      "credits.coinbase": {
+        "title": "Coinbase"
+      },
+      "credits.coinbase.pay": {
+        "title": "Make payments"
+      },
+      "credits.read": {
+        "title": "Read"
+      },
+      "datasets": {
+        "title": "Datasets"
+      },
+      "datasets.app_rankings": {
+        "title": "App rankings"
+      },
+      "datasets.app_rankings.read": {
+        "title": "Read"
+      },
+      "datasets.rankings_daily": {
+        "title": "Rankings daily"
+      },
+      "datasets.rankings_daily.read": {
+        "title": "Read"
+      },
+      "datasets.session_cost": {
+        "title": "Session cost"
+      },
+      "datasets.session_cost.read": {
+        "title": "Read"
+      },
+      "embeddings": {
+        "title": "Embeddings"
+      },
+      "embeddings.generate": {
+        "title": "Generate"
+      },
+      "embeddings.models": {
+        "title": "Models"
+      },
+      "embeddings.models.read": {
+        "title": "Read"
+      },
+      "end_users": {
+        "title": "End users"
+      },
+      "end_users.delete": {
+        "title": "Delete"
+      },
+      "end_users.read": {
+        "title": "Read"
+      },
+      "end_users.write": {
+        "title": "Create and edit"
+      },
+      "endpoints": {
+        "title": "Endpoints"
+      },
+      "endpoints.zdr": {
+        "title": "Zdr"
+      },
+      "endpoints.zdr.read": {
+        "title": "Read"
+      },
+      "files": {
+        "title": "Files"
+      },
+      "files.content": {
+        "title": "Content"
+      },
+      "files.content.read": {
+        "title": "Read"
+      },
+      "files.delete": {
+        "title": "Delete"
+      },
+      "files.read": {
+        "title": "Read"
+      },
+      "generation": {
+        "title": "Generation"
+      },
+      "generation.content": {
+        "title": "Content"
+      },
+      "generation.content.read": {
+        "title": "Read"
+      },
+      "generation.feedback": {
+        "title": "Feedback"
+      },
+      "generation.feedback.write": {
+        "title": "Create and edit"
+      },
+      "generation.read": {
+        "title": "Read"
+      },
+      "guardrails": {
+        "title": "Guardrails"
+      },
+      "guardrails.admin": {
+        "title": "Manage"
+      },
+      "guardrails.assignments": {
+        "title": "Assignments"
+      },
+      "guardrails.assignments.keys": {
+        "title": "Keys"
+      },
+      "guardrails.assignments.keys.admin": {
+        "title": "Manage"
+      },
+      "guardrails.assignments.keys.read": {
+        "title": "Read"
+      },
+      "guardrails.assignments.members": {
+        "title": "Members"
+      },
+      "guardrails.assignments.members.admin": {
+        "title": "Manage"
+      },
+      "guardrails.assignments.members.read": {
+        "title": "Read"
+      },
+      "guardrails.read": {
+        "title": "Read"
+      },
+      "images": {
+        "title": "Images"
+      },
+      "images.generate": {
+        "title": "Generate"
+      },
+      "images.models": {
+        "title": "Models"
+      },
+      "images.models.endpoints": {
+        "title": "Endpoints"
+      },
+      "images.models.endpoints.read": {
+        "title": "Read"
+      },
+      "images.models.read": {
+        "title": "Read"
+      },
+      "interns": {
+        "title": "Interns"
+      },
+      "interns.admin": {
+        "title": "Manage"
+      },
+      "interns.chat": {
+        "title": "Chat"
+      },
+      "interns.chat.completions": {
+        "title": "Completions"
+      },
+      "interns.chat.completions.execute": {
+        "title": "Run"
+      },
+      "interns.daemon": {
+        "title": "Daemon"
+      },
+      "interns.daemon.read": {
+        "title": "Read"
+      },
+      "interns.daemon.sign": {
+        "title": "Sign"
+      },
+      "interns.daemon.sign.admin": {
+        "title": "Manage"
+      },
+      "interns.daemon_access": {
+        "title": "Daemon access"
+      },
+      "interns.daemon_access.read": {
+        "title": "Read"
+      },
+      "interns.daemon_access.sign": {
+        "title": "Sign"
+      },
+      "interns.daemon_access.sign.admin": {
+        "title": "Manage"
+      },
+      "interns.execute": {
+        "title": "Run"
+      },
+      "interns.provision": {
+        "title": "Provision"
+      },
+      "interns.provision.admin": {
+        "title": "Manage"
+      },
+      "interns.read": {
+        "title": "Read"
+      },
+      "interns.suspend": {
+        "title": "Suspend"
+      },
+      "interns.suspend.admin": {
+        "title": "Manage"
+      },
+      "key": {
+        "title": "Key"
+      },
+      "key.read": {
+        "title": "Read"
+      },
+      "keys": {
+        "title": "Keys"
+      },
+      "keys.admin": {
+        "title": "Manage"
+      },
+      "keys.read": {
+        "title": "Read"
+      },
+      "messages": {
+        "title": "Messages"
+      },
+      "messages.generate": {
+        "title": "Generate"
+      },
+      "model": {
+        "title": "Model"
+      },
+      "model.read": {
+        "title": "Read"
+      },
+      "models": {
+        "title": "Models"
+      },
+      "models.count": {
+        "title": "Count"
+      },
+      "models.count.read": {
+        "title": "Read"
+      },
+      "models.endpoints": {
+        "title": "Endpoints"
+      },
+      "models.endpoints.read": {
+        "title": "Read"
+      },
+      "models.read": {
+        "title": "Read"
+      },
+      "models.user": {
+        "title": "Account"
+      },
+      "models.user.read": {
+        "title": "Read"
+      },
+      "oauth": {
+        "title": "Oauth"
+      },
+      "oauth.jwks": {
+        "title": "Jwks"
+      },
+      "oauth.jwks.read": {
+        "title": "Read"
+      },
+      "oauth.token": {
+        "title": "Token"
+      },
+      "oauth.token.admin": {
+        "title": "Manage"
+      },
+      "observability": {
+        "title": "Observability"
+      },
+      "observability.destinations": {
+        "title": "Destinations"
+      },
+      "observability.destinations.admin": {
+        "title": "Manage"
+      },
+      "observability.destinations.read": {
+        "title": "Read"
+      },
+      "organization": {
+        "title": "Organization"
+      },
+      "organization.members": {
+        "title": "Members"
+      },
+      "organization.members.read": {
+        "title": "Read"
+      },
+      "organization.settings": {
+        "title": "Settings"
+      },
+      "organization.settings.admin": {
+        "title": "Manage"
+      },
+      "organization.settings.read": {
+        "title": "Read"
+      },
+      "presets": {
+        "title": "Presets"
+      },
+      "presets.chat": {
+        "title": "Chat"
+      },
+      "presets.chat.completions": {
+        "title": "Completions"
+      },
+      "presets.chat.completions.write": {
+        "title": "Create and edit"
+      },
+      "presets.messages": {
+        "title": "Messages"
+      },
+      "presets.messages.write": {
+        "title": "Create and edit"
+      },
+      "presets.read": {
+        "title": "Read"
+      },
+      "presets.responses": {
+        "title": "Responses"
+      },
+      "presets.responses.write": {
+        "title": "Create and edit"
+      },
+      "presets.versions": {
+        "title": "Versions"
+      },
+      "presets.versions.read": {
+        "title": "Read"
+      },
+      "private_endpoints": {
+        "title": "Private endpoints"
+      },
+      "private_endpoints.activate": {
+        "title": "Activate"
+      },
+      "private_endpoints.activate.admin": {
+        "title": "Manage"
+      },
+      "private_endpoints.admin": {
+        "title": "Manage"
+      },
+      "private_endpoints.pricing": {
+        "title": "Pricing"
+      },
+      "private_endpoints.pricing.admin": {
+        "title": "Manage"
+      },
+      "private_endpoints.read": {
+        "title": "Read"
+      },
+      "providers": {
+        "title": "Providers"
+      },
+      "providers.read": {
+        "title": "Read"
+      },
+      "rerank": {
+        "title": "Rerank"
+      },
+      "rerank.generate": {
+        "title": "Generate"
+      },
+      "responses": {
+        "title": "Responses"
+      },
+      "responses.generate": {
+        "title": "Generate"
+      },
+      "scim": {
+        "title": "Scim"
+      },
+      "scim.group_mappings": {
+        "title": "Group mappings"
+      },
+      "scim.group_mappings.admin": {
+        "title": "Manage"
+      },
+      "scim.group_mappings.read": {
+        "title": "Read"
+      },
+      "scim.groups": {
+        "title": "Groups"
+      },
+      "scim.groups.read": {
+        "title": "Read"
+      },
+      "scim.jobs": {
+        "title": "Jobs"
+      },
+      "scim.jobs.admin": {
+        "title": "Manage"
+      },
+      "scim.sync_jobs": {
+        "title": "Sync jobs"
+      },
+      "scim.sync_jobs.read": {
+        "title": "Read"
+      },
+      "systemone": {
+        "title": "Systemone"
+      },
+      "systemone.generate": {
+        "title": "Generate"
+      },
+      "tools": {
+        "title": "Tools"
+      },
+      "tools.read": {
+        "title": "Read"
+      },
+      "vault": {
+        "title": "Vault"
+      },
+      "vault.interns": {
+        "title": "Interns"
+      },
+      "vault.interns.effective_secrets": {
+        "title": "Effective secrets"
+      },
+      "vault.interns.effective_secrets.read": {
+        "title": "Read"
+      },
+      "vault.interns.secrets": {
+        "title": "Secrets"
+      },
+      "vault.interns.secrets.admin": {
+        "title": "Manage"
+      },
+      "vault.interns.secrets.read": {
+        "title": "Read"
+      },
+      "vault.secrets": {
+        "title": "Secrets"
+      },
+      "vault.secrets.admin": {
+        "title": "Manage"
+      },
+      "vault.secrets.read": {
+        "title": "Read"
+      },
+      "videos": {
+        "title": "Videos"
+      },
+      "videos.content": {
+        "title": "Content"
+      },
+      "videos.content.read": {
+        "title": "Read"
+      },
+      "videos.generate": {
+        "title": "Generate"
+      },
+      "videos.read": {
+        "title": "Read"
+      },
+      "workspaces": {
+        "title": "Workspaces"
+      },
+      "workspaces.admin": {
+        "title": "Manage"
+      },
+      "workspaces.budgets": {
+        "title": "Budgets"
+      },
+      "workspaces.budgets.admin": {
+        "title": "Manage"
+      },
+      "workspaces.budgets.read": {
+        "title": "Read"
+      },
+      "workspaces.members": {
+        "title": "Members"
+      },
+      "workspaces.members.admin": {
+        "title": "Manage"
+      },
+      "workspaces.members.read": {
+        "title": "Read"
+      },
+      "workspaces.read": {
+        "title": "Read"
+      }
+    },
+    "connections": {
+      "": {
+        "http": {
+          "slots": [
+            {
+              "header": "Authorization",
+              "origin": "https://openrouter.ai",
+              "path": "/api",
+              "prefix": "Bearer ",
+              "value": "token"
+            }
+          ]
+        }
+      }
+    },
+    "defaults": {
+      "contents": "team",
+      "sends": "anyone",
+      "strangers": true
+    },
+    "fields": [
+      {
+        "hint": "Paste your OpenRouter API key",
+        "key": "token",
+        "label": "OpenRouter API key",
+        "path": [
+          "connections",
+          "",
+          "http",
+          "secrets",
+          "token"
+        ],
+        "secret": true
+      }
+    ],
+    "group": "api"
+  },
+  "title": "OpenRouter (API)",
+  "http": {
+    "slots": true,
+    "operations": {
+      "activatePrivateEndpoint": {"action":"private_endpoints.activate.admin","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints/{id}/activate","scope":{"id":{"at":"id","from":"path"}}},
+      "bulkAddWorkspaceMembers": {"action":"workspaces.members.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{id}/members/add","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_ids":{"at":"/user_ids","from":"body","type":"array"}}},
+      "bulkAssignKeysToGuardrail": {"action":"guardrails.assignments.keys.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/guardrails/{id}/assignments/keys","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "bulkAssignMembersToGuardrail": {"action":"guardrails.assignments.members.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/guardrails/{id}/assignments/members","scope":{"id":{"at":"id","from":"path"},"member_user_ids":{"at":"/member_user_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "bulkRemoveWorkspaceMembers": {"action":"workspaces.members.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{id}/members/remove","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"user_ids":{"at":"/user_ids","from":"body","type":"array"}}},
+      "bulkUnassignKeysFromGuardrail": {"action":"guardrails.assignments.keys.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/guardrails/{id}/assignments/keys/remove","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "bulkUnassignMembersFromGuardrail": {"action":"guardrails.assignments.members.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/guardrails/{id}/assignments/members/remove","scope":{"id":{"at":"id","from":"path"},"member_user_ids":{"at":"/member_user_ids","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "copyVaultSecretsToIntern": {"action":"vault.interns.secrets.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/vault/interns/{internId}/secrets/copy","scope":{"internId":{"at":"internId","from":"path"},"names":{"at":"/names","from":"body","type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "createApiAlphaDecisions": {"action":"alpha.decisions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/alpha/decisions","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createAudioSpeech": {"action":"audio.speech.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/audio/speech","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createAudioTranscriptions": {"action":"audio.transcriptions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/audio/transcriptions","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createAuthKeysCode": {"action":"auth.keys.code.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/auth/keys/code","scope":{"callback_url":{"at":"/callback_url","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createBYOKKey": {"action":"byok.admin","body":"json","effects":["admin","send","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/byok","scope":{"key":{"at":"/key","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createBatches": {"action":"batches.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/batches","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createCoinbaseCharge": {"action":"credits.coinbase.pay","effects":["pay"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/credits/coinbase","scope":{}},
+      "createEmbeddings": {"action":"embeddings.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/embeddings","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createEndUser": {"action":"end_users.write","body":"json","effects":["write"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/end-users","scope":{"request":{"at":"","from":"body","type":"object"},"user":{"at":"/user","from":"body"}}},
+      "createGuardrail": {"action":"guardrails.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/guardrails","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createImages": {"action":"images.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/images","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createIntern": {"action":"interns.admin","body":"json","effects":["admin","execute","pay"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/interns","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"vault_id":{"at":"/vault_id","from":"body","optional":true},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createInternChatCompletion": {"action":"interns.chat.completions.execute","body":"json","effects":["execute","generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/chat/completions","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true}}},
+      "createKeys": {"action":"keys.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/keys","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createMessages": {"action":"messages.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/messages","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createOauthToken": {"action":"oauth.token.admin","body":"form","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/oauth/token","scope":{"federation_policy_id":{"at":"federation_policy_id","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
+      "createObservabilityDestination": {"action":"observability.destinations.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/observability/destinations","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "createPresetsChatCompletions": {"action":"presets.chat.completions.write","body":"json","effects":["write"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/presets/{slug}/chat/completions","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"slug":{"at":"slug","from":"path"},"user":{"at":"/user","from":"body","optional":true}}},
+      "createPresetsMessages": {"action":"presets.messages.write","body":"json","effects":["write"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/presets/{slug}/messages","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"slug":{"at":"slug","from":"path"},"user":{"at":"/user","from":"body","optional":true}}},
+      "createPresetsResponses": {"action":"presets.responses.write","body":"json","effects":["write"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/presets/{slug}/responses","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"slug":{"at":"slug","from":"path"},"user":{"at":"/user","from":"body","optional":true}}},
+      "createPrivateEndpoint": {"action":"private_endpoints.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints","scope":{"base_url":{"at":"/base_url","from":"body","optional":true},"provider_slug":{"at":"/provider_slug","from":"body"},"request":{"at":"","from":"body","type":"object"},"upstream_model_id":{"at":"/upstream_model_id","from":"body"}}},
+      "createRerank": {"action":"rerank.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/rerank","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createResponses": {"action":"responses.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/responses","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createScimGroupMapping": {"action":"scim.group_mappings.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/scim/group-mappings","scope":{"request":{"at":"","from":"body","type":"object"},"scim_group_id":{"at":"/scim_group_id","from":"body"},"workspace_id":{"at":"/workspace_id","from":"body"}}},
+      "createScimSyncJob": {"action":"scim.jobs.admin","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/scim/sync-jobs","scope":{}},
+      "createSystemone": {"action":"systemone.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/systemone","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createVideos": {"action":"videos.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/videos","scope":{"callback_url":{"at":"/callback_url","from":"body","optional":true},"previous_job_id":{"at":"/previous_job_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "createWorkspace": {"action":"workspaces.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/workspaces","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"},"slug":{"at":"/slug","from":"body"}}},
+      "deleteBYOKKey": {"action":"byok.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/byok/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteBatch": {"action":"batches.delete","effects":["delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/batches/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteEndUser": {"action":"end_users.delete","effects":["delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/end-users/{user}","scope":{"user":{"at":"user","from":"path"}}},
+      "deleteFile": {"action":"files.delete","effects":["delete"],"method":"DELETE","origin":"https://openrouter.ai","params":["workspace_id","provider"],"path":"/api/v1/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "deleteGuardrail": {"action":"guardrails.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/guardrails/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deleteIntern": {"action":"interns.admin","body":"json","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "deleteInternVaultSecret": {"action":"vault.interns.secrets.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/vault/interns/{internId}/secrets/{name}","scope":{"internId":{"at":"internId","from":"path"},"name":{"at":"name","from":"path"}}},
+      "deleteKeys": {"action":"keys.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/keys/{hash}","scope":{"hash":{"at":"hash","from":"path"}}},
+      "deleteObservabilityDestination": {"action":"observability.destinations.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/observability/destinations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "deletePrivateEndpoint": {"action":"private_endpoints.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","params":["draft_only"],"path":"/api/v1/private-endpoints/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteScimGroupMapping": {"action":"scim.group_mappings.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","params":["keep_members"],"path":"/api/v1/scim/group-mappings/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteVaultSecret": {"action":"vault.secrets.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/vault/secrets/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "deleteWorkspace": {"action":"workspaces.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","params":["confirm_default_workspace_deletion"],"path":"/api/v1/workspaces/{id}","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteWorkspaceBudget": {"action":"workspaces.budgets.admin","effects":["admin","delete"],"method":"DELETE","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{workspace_ref}/budgets/{interval}","scope":{"interval":{"at":"interval","from":"path"},"workspace_ref":{"at":"workspace_ref","from":"path"}}},
+      "disablePrivateEndpoint": {"action":"private_endpoints.admin","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints/{id}/disable","scope":{"id":{"at":"id","from":"path"}}},
+      "downloadContainerFileContent": {"action":"containers.files.content.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/containers/{container_id}/files/{file_id}/content","scope":{"container_id":{"at":"container_id","from":"path"},"file_id":{"at":"file_id","from":"path"}}},
+      "downloadFileContent": {"action":"files.content.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["workspace_id","provider"],"path":"/api/v1/files/{file_id}/content","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "enablePrivateEndpoint": {"action":"private_endpoints.admin","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints/{id}/enable","scope":{"id":{"at":"id","from":"path"}}},
+      "exchangeAuthCodeForAPIKey": {"action":"auth.keys.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/auth/keys","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "getAnalyticsMeta": {"action":"analytics.meta.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/analytics/meta","scope":{}},
+      "getAppRankings": {"action":"datasets.app_rankings.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["category","subcategory","sort","start_date","end_date","limit","offset"],"path":"/api/v1/datasets/app-rankings","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getBYOKKey": {"action":"byok.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/byok/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getBatches": {"action":"batches.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/batches/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getBenchmarks": {"action":"benchmarks.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["source","task_type","benchmark_type","include_run_config","search_engine","search_surface","arena","category","max_results"],"path":"/api/v1/benchmarks","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getContainerFile": {"action":"containers.files.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/containers/{container_id}/files/{file_id}","scope":{"container_id":{"at":"container_id","from":"path"},"file_id":{"at":"file_id","from":"path"}}},
+      "getCredits": {"action":"credits.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/credits","scope":{}},
+      "getCurrentKey": {"action":"key.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/key","scope":{}},
+      "getEndUser": {"action":"end_users.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/end-users/{user}","scope":{"user":{"at":"user","from":"path"}}},
+      "getFileMetadata": {"action":"files.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["workspace_id","provider"],"path":"/api/v1/files/{file_id}","scope":{"file_id":{"at":"file_id","from":"path"},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "getGeneration": {"action":"generation.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["id"],"path":"/api/v1/generation","scope":{"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "getGuardrail": {"action":"guardrails.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/guardrails/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getIntern": {"action":"interns.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}","scope":{"internId":{"at":"internId","from":"path"}}},
+      "getInternDaemon": {"action":"interns.daemon.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/daemon","scope":{"internId":{"at":"internId","from":"path"}}},
+      "getInternDaemonAccess": {"action":"interns.daemon_access.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/daemon-access","scope":{"internId":{"at":"internId","from":"path"}}},
+      "getKey": {"action":"keys.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/keys/{hash}","scope":{"hash":{"at":"hash","from":"path"}}},
+      "getModel": {"action":"model.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/model/{author}/{slug}","scope":{"author":{"at":"author","from":"path"},"slug":{"at":"slug","from":"path"}}},
+      "getModels": {"action":"models.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","category","supported_parameters","output_modalities","sort","q","input_modalities","context","min_price","max_price","arch","model_authors","providers","distillable","zdr","region","min_output_price","max_output_price","min_age_days","max_age_days","min_intelligence_index","max_intelligence_index","min_coding_index","max_coding_index","min_agentic_index","max_agentic_index","min_tool_success_rate","max_tool_success_rate"],"path":"/api/v1/models","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getObservabilityDestination": {"action":"observability.destinations.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/observability/destinations/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getOrganizationSettings": {"action":"organization.settings.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/organization/settings","scope":{}},
+      "getPreset": {"action":"presets.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/presets/{slug}","scope":{"slug":{"at":"slug","from":"path"}}},
+      "getPresetVersion": {"action":"presets.versions.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/presets/{slug}/versions/{version}","scope":{"slug":{"at":"slug","from":"path"},"version":{"at":"version","from":"path"}}},
+      "getPrivateEndpoint": {"action":"private_endpoints.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getRankingsDaily": {"action":"datasets.rankings_daily.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["start_date","end_date","period","modality","context_bucket","category","language_type"],"path":"/api/v1/datasets/rankings-daily","scope":{"context_bucket":{"at":"context_bucket","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getScimGroupMapping": {"action":"scim.group_mappings.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/scim/group-mappings/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getScimSyncJob": {"action":"scim.sync_jobs.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/scim/sync-jobs/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getSessionCost": {"action":"datasets.session_cost.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["app_slug","model","turn_range","limit","offset"],"path":"/api/v1/datasets/session-cost","scope":{"app_slug":{"at":"app_slug","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getTaskClassifications": {"action":"classifications.task.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["window"],"path":"/api/v1/classifications/task","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getTool": {"action":"tools.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/tools/{name}","scope":{"name":{"at":"name","from":"path"}}},
+      "getUserActivity": {"action":"activity.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["date","api_key_hash","user_id","group_by","workspace_id"],"path":"/api/v1/activity","scope":{"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"query","optional":true},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "getVideos": {"action":"videos.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/videos/{jobId}","scope":{"jobId":{"at":"jobId","from":"path"}}},
+      "getWorkspace": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{id}","scope":{"id":{"at":"id","from":"path"}}},
+      "getWorkspaceBudget": {"action":"workspaces.budgets.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{workspace_ref}/budgets/{interval}","scope":{"interval":{"at":"interval","from":"path"},"workspace_ref":{"at":"workspace_ref","from":"path"}}},
+      "invokeIntern": {"action":"interns.execute","body":"json","effects":["execute","generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/invoke","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true}}},
+      "list": {"action":"keys.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["include_disabled","include_expired","offset","workspace_id"],"path":"/api/v1/keys","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listBYOKKeys": {"action":"byok.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","workspace_id","provider"],"path":"/api/v1/byok","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listBatches": {"action":"batches.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["limit","after","status","created_after","created_before"],"path":"/api/v1/batches","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listContainerFiles": {"action":"containers.files.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["limit","after"],"path":"/api/v1/containers/{container_id}/files","scope":{"container_id":{"at":"container_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listEmbeddingsModels": {"action":"embeddings.models.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/embeddings/models","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listEndUsers": {"action":"end_users.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","user","include_inactive"],"path":"/api/v1/end-users","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query","optional":true}}},
+      "listEndpoints": {"action":"models.endpoints.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/models/{author}/{slug}/endpoints","scope":{"author":{"at":"author","from":"path"},"slug":{"at":"slug","from":"path"}}},
+      "listEndpointsZdr": {"action":"endpoints.zdr.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/endpoints/zdr","scope":{}},
+      "listFiles": {"action":"files.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["limit","cursor","workspace_id","provider","after","after_id","before_id","order"],"path":"/api/v1/files","scope":{"after_id":{"at":"after_id","from":"query","optional":true},"before_id":{"at":"before_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listGenerationContent": {"action":"generation.content.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["id"],"path":"/api/v1/generation/content","scope":{"id":{"at":"id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "listGuardrailKeyAssignments": {"action":"guardrails.assignments.keys.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/guardrails/{id}/assignments/keys","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listGuardrailMemberAssignments": {"action":"guardrails.assignments.members.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/guardrails/{id}/assignments/members","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listGuardrails": {"action":"guardrails.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","workspace_id"],"path":"/api/v1/guardrails","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listImageModelEndpoints": {"action":"images.models.endpoints.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/images/models/{author}/{slug}/endpoints","scope":{"author":{"at":"author","from":"path"},"slug":{"at":"slug","from":"path"}}},
+      "listImageModels": {"action":"images.models.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/images/models","scope":{}},
+      "listInternEffectiveVaultSecrets": {"action":"vault.interns.effective_secrets.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["limit","offset"],"path":"/api/v1/vault/interns/{internId}/effective-secrets","scope":{"internId":{"at":"internId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listInternVaultSecrets": {"action":"vault.interns.secrets.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["limit","offset"],"path":"/api/v1/vault/interns/{internId}/secrets","scope":{"internId":{"at":"internId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listInterns": {"action":"interns.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["limit","status","starting_after","workspace_id"],"path":"/api/v1/interns","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listKeyAssignments": {"action":"guardrails.assignments.keys.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/guardrails/assignments/keys","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listMemberAssignments": {"action":"guardrails.assignments.members.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/guardrails/assignments/members","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listModelsCount": {"action":"models.count.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["output_modalities"],"path":"/api/v1/models/count","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listModelsUser": {"action":"models.user.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","output_modalities","sort"],"path":"/api/v1/models/user","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listOauthJwks": {"action":"oauth.jwks.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/oauth/jwks","scope":{}},
+      "listObservabilityDestinations": {"action":"observability.destinations.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","workspace_id"],"path":"/api/v1/observability/destinations","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_id":{"at":"workspace_id","from":"query","optional":true}}},
+      "listOrganizationMembers": {"action":"organization.members.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/organization/members","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listPresetVersions": {"action":"presets.versions.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/presets/{slug}/versions","scope":{"query":{"at":"","from":"query","type":"object"},"slug":{"at":"slug","from":"path"}}},
+      "listPresets": {"action":"presets.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/presets","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listPrivateEndpoints": {"action":"private_endpoints.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints","scope":{}},
+      "listProviders": {"action":"providers.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/providers","scope":{}},
+      "listScimGroupMappings": {"action":"scim.group_mappings.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/scim/group-mappings","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listScimGroups": {"action":"scim.groups.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","display_name","external_id"],"path":"/api/v1/scim/groups","scope":{"display_name":{"at":"display_name","from":"query","optional":true},"external_id":{"at":"external_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "listTools": {"action":"tools.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit","api_format"],"path":"/api/v1/tools","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listVaultSecrets": {"action":"vault.secrets.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["limit","offset"],"path":"/api/v1/vault/secrets","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "listVideosContent": {"action":"videos.content.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["index"],"path":"/api/v1/videos/{jobId}/content","scope":{"jobId":{"at":"jobId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listWorkspaceBudgets": {"action":"workspaces.budgets.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{workspace_ref}/budgets","scope":{"workspace_ref":{"at":"workspace_ref","from":"path"}}},
+      "listWorkspaceMembers": {"action":"workspaces.members.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/workspaces/{id}/members","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listWorkspaces": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"https://openrouter.ai","params":["offset","limit"],"path":"/api/v1/workspaces","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "promoteContainerFile": {"action":"containers.files.promote.write","effects":["write"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/containers/{container_id}/files/{file_id}/promote","scope":{"container_id":{"at":"container_id","from":"path"},"file_id":{"at":"file_id","from":"path"}}},
+      "provisionIntern": {"action":"interns.provision.admin","effects":["admin","execute","pay"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/provision","scope":{"internId":{"at":"internId","from":"path"}}},
+      "queryAnalytics": {"action":"analytics.read","body":"json","effects":["read"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/analytics/query","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "sendChatCompletionRequest": {"action":"chat.completions.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/chat/completions","scope":{"request":{"at":"","from":"body","type":"object"},"session_id":{"at":"/session_id","from":"body","optional":true},"user":{"at":"/user","from":"body","optional":true}}},
+      "signInternDaemonAccessRequest": {"action":"interns.daemon_access.sign.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/daemon-access/sign","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "signInternDaemonRequest": {"action":"interns.daemon.sign.admin","body":"json","effects":["admin","share"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/daemon/sign","scope":{"internId":{"at":"internId","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "storeInternVaultSecret": {"action":"vault.interns.secrets.admin","body":"json","effects":["admin","send","share"],"method":"PUT","origin":"https://openrouter.ai","path":"/api/v1/vault/interns/{internId}/secrets/{name}","scope":{"internId":{"at":"internId","from":"path"},"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "storeVaultSecret": {"action":"vault.secrets.admin","body":"json","effects":["admin","send","share"],"method":"PUT","origin":"https://openrouter.ai","path":"/api/v1/vault/secrets/{name}","scope":{"name":{"at":"name","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "submitGenerationFeedback": {"action":"generation.feedback.write","body":"json","effects":["write"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/generation/feedback","scope":{"generation_id":{"at":"/generation_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "suspendIntern": {"action":"interns.suspend.admin","effects":["admin"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}/suspend","scope":{"internId":{"at":"internId","from":"path"}}},
+      "updateBYOKKey": {"action":"byok.admin","body":"json","effects":["admin","send","share"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/byok/{id}","scope":{"id":{"at":"id","from":"path"},"key":{"at":"/key","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateEndUser": {"action":"end_users.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/end-users/{user}","scope":{"request":{"at":"","from":"body","type":"object"},"user":{"at":"user","from":"path"}}},
+      "updateGuardrail": {"action":"guardrails.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/guardrails/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateIntern": {"action":"interns.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/interns/{internId}","scope":{"internId":{"at":"internId","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateKeys": {"action":"keys.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/keys/{hash}","scope":{"hash":{"at":"hash","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body","optional":true}}},
+      "updateObservabilityDestination": {"action":"observability.destinations.admin","body":"json","effects":["admin","share"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/observability/destinations/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateOrganizationSettings": {"action":"organization.settings.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/organization/settings","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "updatePrivateEndpoint": {"action":"private_endpoints.admin","body":"json","effects":["admin"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints/{id}","scope":{"base_url":{"at":"/base_url","from":"body","optional":true},"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"upstream_model_id":{"at":"/upstream_model_id","from":"body"}}},
+      "updatePrivateEndpointPricing": {"action":"private_endpoints.pricing.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints/{id}/pricing","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateScimGroupMapping": {"action":"scim.group_mappings.admin","body":"json","effects":["admin","share"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/scim/group-mappings/{id}","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateWorkspace": {"action":"workspaces.admin","body":"json","effects":["admin","share"],"method":"PATCH","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{id}","scope":{"id":{"at":"id","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"slug":{"at":"/slug","from":"body","optional":true}}},
+      "upsertWorkspaceBudget": {"action":"workspaces.budgets.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://openrouter.ai","path":"/api/v1/workspaces/{workspace_ref}/budgets/{interval}","scope":{"interval":{"at":"interval","from":"path"},"request":{"at":"","from":"body","type":"object"},"workspace_ref":{"at":"workspace_ref","from":"path"}}},
+      "validatePrivateEndpoint": {"action":"private_endpoints.admin","body":"json","effects":["admin","generate","pay","send"],"method":"POST","origin":"https://openrouter.ai","path":"/api/v1/private-endpoints/{id}/validate","scope":{"id":{"at":"id","from":"path"},"request":{"at":"","from":"body","type":"object"},"workspace_id":{"at":"/workspace_id","from":"body"}}}
+    }
+  }
+}

@@ -234,6 +234,52 @@ func normalizeProvider(name string, o specOp) specOp {
 			o.Effects = []string{"send"}
 		}
 	}
+	if name == "open_router" {
+		// The model catalog and job status routes are both reads. Use one
+		// descriptor for their union, binding the requested segment in scope,
+		// so /videos/models cannot also match /videos/{jobId}.
+		if o.ID == "listVideosModels" {
+			o.ID, o.Path = "getVideos", "/api/v1/videos/{jobId}"
+		}
+		if o.Method != "GET" {
+			// These resources control credentials, access, routing or budgets.
+			for _, prefix := range []string{"auth/", "oauth/", "keys", "byok", "guardrails", "observability/", "organization/", "private-endpoints", "scim/", "vault/", "workspaces"} {
+				if strings.HasPrefix(o.Path, "/api/v1/"+prefix) {
+					o.Effects = []string{"admin"}
+					if o.Method == "DELETE" {
+						o.Effects = append(o.Effects, "delete")
+					}
+					break
+				}
+			}
+		}
+		switch o.ID {
+		case "sendChatCompletionRequest", "createResponses", "createMessages", "createEmbeddings", "createRerank",
+			"createImages", "createVideos", "createAudioSpeech", "createAudioTranscriptions", "createBatches",
+			"createSystemone", "createApiAlphaDecisions":
+			o.Effects = []string{"generate", "pay", "send"}
+		case "createPresetsChatCompletions", "createPresetsMessages", "createPresetsResponses":
+			// These save inference configuration; they do not run inference.
+			o.Effects = []string{"write"}
+		case "createInternChatCompletion", "invokeIntern":
+			o.Effects = []string{"execute", "generate", "pay", "send"}
+		case "createIntern", "provisionIntern":
+			o.Effects = []string{"admin", "execute", "pay"}
+		case "updateIntern", "suspendIntern":
+			o.Effects = []string{"admin"}
+		case "deleteIntern":
+			o.Effects = []string{"admin", "delete"}
+		case "signInternDaemonRequest", "signInternDaemonAccessRequest", "copyVaultSecretsToIntern",
+			"bulkAddWorkspaceMembers", "createScimGroupMapping", "updateScimGroupMapping", "createScimSyncJob",
+			"createObservabilityDestination", "updateObservabilityDestination", "createWorkspace", "updateWorkspace":
+			o.Effects = []string{"admin", "share"}
+		case "storeVaultSecret", "storeInternVaultSecret", "createBYOKKey", "updateBYOKKey":
+			o.Effects = []string{"admin", "send", "share"}
+		case "validatePrivateEndpoint":
+			// Validation sends a live inference request using the workspace key.
+			o.Effects = []string{"admin", "generate", "pay", "send"}
+		}
+	}
 	return o
 }
 

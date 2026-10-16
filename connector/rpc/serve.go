@@ -91,7 +91,9 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 		return &tls.Certificate{Certificate: cert.Chain, PrivateKey: key}, nil
 	}}
 	var serveErr error
+	started := false
 	serve := func(ctx context.Context) {
+		started = true
 		var active sync.WaitGroup
 		var mu sync.Mutex
 		stopping := false
@@ -167,6 +169,23 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 	}
 	if runner, ok := instance.(connector.Runner); ok {
 		if err := runner.Run(ctx, &env, serve); err != nil {
+			if !started && ctx.Err() == nil {
+				// The host is already waiting on readiness. Return the connector's
+				// error over that channel before the worker exits, instead of
+				// closing its socket with an unread readiness request.
+				failed := &http.Server{ReadHeaderTimeout: 10 * time.Second, Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					if r.Method == http.MethodPost && r.URL.Path == readyPath {
+						reply(w, nil, err)
+					} else {
+						http.NotFound(w, r)
+					}
+				})}
+				failureCtx, stop := context.WithTimeout(ctx, time.Minute)
+				defer stop()
+				closeServer := context.AfterFunc(failureCtx, func() { failed.Close() })
+				defer closeServer()
+				failed.Serve(ln) // The host closes the worker after reading the error.
+			}
 			return err
 		}
 	} else {

@@ -218,13 +218,29 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 	if err := secure(asm.AuthorizationEndpoint, asm.TokenEndpoint, asm.RegistrationEndpoint); err != nil {
 		return err
 	}
-	reg, err := oauthex.RegisterClient(ctx, asm.RegistrationEndpoint, &oauthex.ClientRegistrationMetadata{
-		RedirectURIs: []string{redirect}, ClientName: "Monitor", GrantTypes: []string{"authorization_code", "refresh_token"},
-	}, s.client)
+	registration := &oauthex.ClientRegistrationMetadata{
+		RedirectURIs: []string{redirect}, ClientName: "Monitor", GrantTypes: []string{"authorization_code"},
+		ResponseTypes: []string{"code"},
+	}
+	if slices.Contains(asm.GrantTypesSupported, "refresh_token") {
+		registration.GrantTypes = append(registration.GrantTypes, "refresh_token")
+	}
+	// Monitor is a public PKCE client. Some MCP providers support only "none";
+	// omitting it would request the RFC 7591 default, client_secret_basic.
+	if slices.Contains(asm.TokenEndpointAuthMethodsSupported, "none") {
+		registration.TokenEndpointAuthMethod = "none"
+	}
+	reg, err := oauthex.RegisterClient(ctx, asm.RegistrationEndpoint, registration, s.client)
 	if err != nil {
 		return err
 	}
 	s.grant.AuthURL, s.grant.TokenURL, s.grant.ClientID, s.grant.ClientSecret = asm.AuthorizationEndpoint, asm.TokenEndpoint, reg.ClientID, reg.ClientSecret
+	switch reg.TokenEndpointAuthMethod {
+	case "none", "client_secret_post":
+		s.grant.AuthStyle = "params"
+	case "client_secret_basic":
+		s.grant.AuthStyle = "header"
+	}
 	if s.grant.Scope == "" {
 		scopes := prm.ScopesSupported
 		if slices.Contains(asm.ScopesSupported, offlineAccess) && !slices.Contains(scopes, offlineAccess) {

@@ -146,6 +146,7 @@ export function ownerApi(request, generation, base = "") {
 const ICON_MANIFEST = "/app/icons/manifest.json";
 export function connectorIcon(manifest, preset, base = "") {
   if (preset === "codex") preset = "openai";
+  if (preset === "openrouter") preset = "open_router";
   const icon = manifest?.[preset]?.src ? manifest[preset] : manifest?.custom ?? { src: "custom.svg" };
   const url = (file) => `${base}/app/icons/${encodeURIComponent(file)}`;
   return { src: url(icon.src), ...(icon.dark && { dark: url(icon.dark) }) };
