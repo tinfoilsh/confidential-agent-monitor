@@ -29,6 +29,8 @@ const components = {
   search: 'Search',
   refresh: 'RefreshCw',
   plus: 'Plus',
+  help: 'CircleHelp',
+  close: 'X',
   clock: 'Clock3',
   arrow: 'ChevronRight',
   external: 'ExternalLink',

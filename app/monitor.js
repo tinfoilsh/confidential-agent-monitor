@@ -219,7 +219,10 @@ function render() {
   $("gate").hidden = !gate;
   $("app").hidden = !!gate;
   sync($("gate"), gate ? [["gate", gate]] : []);
-  if (gate) return;
+  if (gate) {
+    if (isDashboard) hideCreationDialog();
+    return;
+  }
   // Keep old approval bookmarks pointing at the shared activity view.
   if (route()[0] === "needs") history.replaceState(null, "", "#activity");
   if (isDashboard && route()[0] === "agent") history.replaceState(null, "", "#agents/" + encodeURIComponent(route()[1] ?? ""));
@@ -231,7 +234,7 @@ function render() {
   }
   if (kind !== "request") requestSource = location.hash.slice(1) || "activity";
   const panes = { request: requestPane, agent, "agent-settings": agentSettings, pair, account, add, preset: presetPage, rules, settings, integrations, policy: policyPage };
-  const parts = (html) => html.map((content, i) => [`${location.hash}/${i}`, content]).filter(([, content]) => content);
+  const parts = (html, key = location.hash) => html.map((content, i) => [`${key}/${i}`, content]).filter(([, content]) => content);
   if (isDashboard) {
     renderDashboard(kind, args, panes, parts);
   } else {
@@ -286,7 +289,7 @@ const finishOnboarding = run(async () => {
   }
 });
 
-const head = (title, sub = "", back = "activity") => isDashboard && ["rules", "settings", "integrations"].includes(route()[0]) ? "" : isDashboard
+const head = (title, sub = "", back = "activity") => isDashboard && ["rules", "settings", "integrations", "pair"].includes(route()[0]) ? "" : isDashboard
   ? `<div class="detail-bar"><a href="#${esc(dashboardBack(back))}">${dashboard.icon("arrow")}Back to ${esc(dashboardBackLabel(back))}</a>${sub ? `<span class="muted">${sub}</span>` : ""}</div>`
   : `<header><b>${title}</b><span class="muted">${sub}</span><a class="x" href="#${esc(back)}" aria-label="Close">✕</a></header>`;
 const disclosure = (key, title, content, cls = "") => `<details data-disclosure="${esc(key)}" class="${cls}"><summary>${title}</summary>${content}</details>`;
@@ -319,7 +322,7 @@ function sidebar(kind, arg) {
       ...(expanded.has("add-group/" + group) ? presets.map((p) => link(["add", p.name], connectorIcon(p.name) + esc(p.title), 2, at("add", p.name), p.accounts || "")) : []),
     ]), link(["preset"], `<span class="new">New preset…</span>`, 1, kind === "preset" && !arg)] : []),
     link(["rules"], "Rules", 0, kind === "rules", saved || ""),
-    link(["integrations"], "Integrations", 0, kind === "integrations"),
+    ...(dashboard.showIntegrations ? [link(["integrations"], "Integrations", 0, kind === "integrations")] : []),
     link(["settings"], "Settings", 0, ["settings", "policy", "preset"].includes(kind)),
   ];
 }
@@ -442,10 +445,19 @@ function dismiss(id) {
   render();
 }
 
-const pair = () => [head("Pair an agent"), `<section><label for="name">Name</label><input id="name"><label for="pubkey">Public key</label><textarea id="pubkey" rows="3"></textarea>
-  <div class="row"><span></span><button class="primary" onclick="pairAgent()">Pair</button></div></section>`];
+const pair = () => [head("Pair an agent"), `<section><form onsubmit="event.preventDefault(); pairAgent()"><label for="name">Name</label><input id="name" required><label for="pubkey">Public key</label><textarea id="pubkey" rows="3" required></textarea>
+  <div class="row"><span></span><button id="agent-pair" type="submit" class="primary">Pair</button></div></form></section>`];
 
-const pairAgent = () => commit(edits.pairAgent($("name").value, $("pubkey").value), (isDashboard ? "agents/" : "agent/") + encodeURIComponent($("name").value.trim()));
+const pairAgent = run(async () => {
+  const button = $("agent-pair");
+  if (button.disabled) return;
+  const name = $("name").value.trim(), from = location.hash;
+  button.disabled = true;
+  try {
+    await changeSettings(edits.pairAgent(name, $("pubkey").value));
+    if (location.hash === from) location.hash = (isDashboard ? "agents/" : "agent/") + encodeURIComponent(name);
+  } finally { button.disabled = false; }
+});
 
 function permissionButtons(label, own, inherited, change) {
   return `<span class="seg" role="group" aria-label="${esc(label)} permission">${Object.entries(MODES).map(([m, t]) =>
@@ -1199,7 +1211,8 @@ function toggleCatalogGroup(element) {
 
 function renderDashboard(kind, args, panes, parts) {
   const routeKey = location.hash || "#accounts";
-  if (dashboardRoute !== routeKey) {
+  const routeChanged = dashboardRoute !== routeKey;
+  if (routeChanged) {
     if (dashboardRoute !== null) dashboardFilterCache.set(dashboardRoute, dashboardFilters);
     dashboardRoute = routeKey;
     dashboardFilters = dashboardFilterCache.get(routeKey) ?? { query: "", state: "", agent: "", account: "", page: 0 };
@@ -1208,20 +1221,51 @@ function renderDashboard(kind, args, panes, parts) {
     sync($("toolbar"), []);
     $("workspace").scrollTop = 0;
   }
-  const collection = ["agents", "accounts", "catalog", "presets"].includes(kind);
+  const creating = ["pair", "catalog", "add"].includes(kind);
+  const pageKind = creating ? dashboard.sectionFor(kind) : kind;
+  const collection = ["agents", "accounts", "presets"].includes(pageKind);
   const activity = kind === "activity";
   $("pane").hidden = activity;
   $("list").hidden = !activity;
   sync($("tree"), dashboard.navigation(kind, view, records));
-  sync($("page-header"), dashboard.pageHeader(kind, args, view, records));
+  sync($("page-header"), dashboard.pageHeader(pageKind, creating ? [] : args, view, records));
   sync($("overview"), activity ? dashboard.stats(view, records) : []);
-  sync($("toolbar"), dashboard.toolbar(kind, view, records));
+  sync($("toolbar"), creating ? [] : dashboard.toolbar(kind, view, records));
   for (const field of ["state", "agent", "account"]) if ($("filter-" + field)) $("filter-" + field).value = dashboardFilters[field];
-  if ($("dashboard-search")) $("dashboard-search").value = dashboardFilters.query;
   sync($("list"), activity ? dashboard.activity(view, records, dashboardFilters, JSON.parse(localStorage.getItem(DISMISSED) ?? "[]"), accountIcon) : []);
-  let content = collection ? dashboard.collection(kind, view, dashboardFilters.query, connectorIcon, collapsedCatalogGroups, inlineAgent) : panes[kind]?.(...args) ?? [];
+  const query = creating ? dashboardFilterCache.get("#" + pageKind)?.query ?? "" : dashboardFilters.query;
+  let content = collection ? dashboard.collection(pageKind, view, query, connectorIcon, collapsedCatalogGroups, inlineAgent) : panes[kind]?.(...args) ?? [];
   if (!activity && !content.length) content = [dashboard.empty("Page not found", "Choose a section from the sidebar.", '<a class="button" href="#activity">View activity</a>')];
-  sync($("pane"), parts(content));
+  sync($("pane"), parts(content, creating ? "#" + pageKind : location.hash));
+
+  const dialog = $("creation-dialog");
+  if (creating) {
+    const [title, description] = dashboard.pageTitle(kind, args, view, records);
+    sync($("creation-heading"), [["title", `<h2 id="creation-title" tabindex="-1">${esc(title)}</h2>`], ["description", `<p id="creation-description">${esc(description)}</p>`]]);
+    sync($("dialog-toolbar"), dashboard.toolbar(kind, view, records));
+    sync($("dialog-content"), parts(kind === "catalog" ? dashboard.collection(kind, view, dashboardFilters.query, connectorIcon, collapsedCatalogGroups) : panes[kind](...args)));
+    dialog.append($("toast"), $("saving"));
+    if (!dialog.open) dialog.showModal();
+    if (routeChanged) {
+      dialog.querySelector(".dialog-body").scrollTop = 0;
+      (dialog.querySelector('input:not([type="hidden"]), textarea, select') ?? $("creation-title")).focus();
+    }
+  } else {
+    const wasOpen = dialog.open;
+    hideCreationDialog();
+    if (wasOpen) (document.querySelector("#page-header .primary") ?? $("workspace")).focus();
+  }
+  if ($("dashboard-search")) $("dashboard-search").value = dashboardFilters.query;
+}
+function hideCreationDialog() {
+  const dialog = $("creation-dialog");
+  if (dialog.open) dialog.close();
+  document.body.append($("toast"), $("saving"));
+  sync($("dialog-toolbar"), []);
+  sync($("dialog-content"), []);
+}
+function closeCreationDialog() {
+  location.hash = dashboard.sectionFor(route()[0]);
 }
 function filterDashboard(field, value) {
   if (field === "clear" || field === "pending") dashboardFilters = { query: "", state: field === "pending" ? "pending" : "", agent: "", account: "", page: 0 };
@@ -1271,6 +1315,14 @@ function hashChanged() {
 window.addEventListener("hashchange", hashChanged);
 if (isDashboard) {
   applyTheme();
+  const dialog = $("creation-dialog");
+  dialog.querySelector(".dialog-close").innerHTML = dashboard.icon("close");
+  dialog.addEventListener("cancel", (event) => { event.preventDefault(); closeCreationDialog(); });
+  dialog.addEventListener("click", (event) => {
+    if (event.target !== dialog) return;
+    const box = dialog.getBoundingClientRect();
+    if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) closeCreationDialog();
+  });
   matchMedia("(prefers-color-scheme: dark)").addEventListener("change", applyTheme);
   $("workspace").addEventListener("scroll", () => $("page-header").classList.toggle("pinned", $("workspace").scrollTop > 0), { passive: true });
 }
@@ -1278,7 +1330,7 @@ document.addEventListener("visibilitychange", liveSync);
 document.addEventListener("click", (e) => { const id = e.target.closest?.("[data-copy]")?.dataset.copy; if (id) copyIntegration(id); });
 // Inline handlers in the rendered markup run in global scope.
 Object.assign(globalThis, { $, addAccount, addAccountAgent, addCustomAPI, answer, apiAuthChanged, applyPolicySource, approve, changePolicy, commit, copyAPIPlaceholder, copySettings,
-  cycleTheme, filterDashboard, refreshDashboard, toggleCatalogGroup, toggleNavigation,
+  closeCreationDialog, cycleTheme, filterDashboard, refreshDashboard, toggleCatalogGroup, toggleNavigation,
   credentialMode, dismiss, downloadActivePolicy, downloadPreset, edits, liveAct, liveClick, liveKey, liveNavigate, liveOwn, liveType, liveWheel, loadPolicy, loadRequest,
   chooseOnboardingPreset, chooseOnboardingPaidInference, finishOnboarding, pairAgent, pasteOwnerKey, patchAccess, previewPolicy, removeAccount, removeAgent, removeRule, saveAccount, savePreset, setKey, setLabel, setupToken, signIn, toggle, toggleSecret, unlock });
 setInterval(run(async () => {

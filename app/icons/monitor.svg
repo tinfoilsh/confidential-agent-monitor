@@ -1,18 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 -24 1008 1008">
-  <style>
-    :root { color: #004444; }
-    @media (prefers-color-scheme: dark) { :root { color: #68c7ac; } }
-  </style>
-  <defs>
-    <mask id="eye-badge" maskUnits="userSpaceOnUse" x="-24" y="-24" width="1008" height="1008">
-      <rect x="-24" y="-24" width="1008" height="1008" fill="white"/>
-      <ellipse cx="708" cy="788" rx="310" ry="220" fill="black"/>
-    </mask>
-  </defs>
-  <path fill="currentColor" mask="url(#eye-badge)" d="M955.4 718.23 280.71 924 6.34 708.97 268.9 35.01 955.4 718.23ZM164.94 665.52 307.99 777.63 705.96 656.26 318.7 270.85 164.94 665.52Z"/>
-  <!-- Eye: Lucide 0.473.0 with a filled pupil (ISC), see LUCIDE-LICENSE. -->
-  <g transform="translate(420 500) scale(24)" color="#c2410c" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
-    <circle cx="12" cy="12" r="3" fill="currentColor"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960">
+  <path fill="#3474e5" d="M955.4,718.23l-674.69,205.77L6.34,708.97,268.9,35.01l686.5,683.22ZM164.94,665.52l143.05,112.11,397.97-121.37-387.26-385.41-153.76,394.66Z"/>
 </svg>

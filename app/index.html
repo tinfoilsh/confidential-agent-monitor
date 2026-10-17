@@ -30,6 +30,16 @@
       </div>
     </main>
   </div>
+  <dialog id="creation-dialog" aria-labelledby="creation-title" aria-describedby="creation-description">
+    <header class="dialog-header">
+      <div id="creation-heading"></div>
+      <button type="button" class="dialog-close" aria-label="Close dialog" onclick="closeCreationDialog()"></button>
+    </header>
+    <div class="dialog-body">
+      <div id="dialog-toolbar"></div>
+      <div id="dialog-content"></div>
+    </div>
+  </dialog>
   <div id="toast" role="status" hidden></div>
   <div id="saving" role="status" hidden>Saving…</div>
   <script type="module" src="./monitor.js"></script>

@@ -5,6 +5,7 @@ import { icons } from './dashboard-icons.js';
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 const q = (v) => esc(JSON.stringify(v));
 export const icon = (name) => Object.hasOwn(icons, name) ? icons[name] : icons.accounts;
+export const showIntegrations = false;
 export const sections = {
   activity: ['Activity', 'Review requests and follow what your agents are doing.'],
   agents: ['Agents', 'Manage sandboxes, devices, and the actions they can take.'],
@@ -22,10 +23,10 @@ export function sectionFor(kind) {
 const buttonLink = (href, title, glyph = 'plus') => `<a class="button primary" href="#${href}">${icon(glyph)}${title}</a>`;
 export function navigation(kind, view, records) {
   const counts = { activity: records.filter(r => owner.stateAt(r, Date.now()) === 'pending').length, agents: Object.keys(view.config.identities ?? {}).length, accounts: Object.keys(view.config.accounts ?? {}).length };
-  return Object.entries(sections).filter(([key]) => !['catalog', 'presets', 'policy'].includes(key)).map(([key, [title]]) => [key,
+  return Object.entries(sections).filter(([key]) => !['catalog', 'presets', 'policy'].includes(key) && (key !== 'integrations' || showIntegrations)).map(([key, [title]]) => [key,
     `<a class="nav-item ${sectionFor(kind) === key ? 'on' : ''}" href="#${key}" ${sectionFor(kind) === key ? 'aria-current="page"' : ''}>${icon(key)}<span>${title}</span>${counts[key] ? `<small class="nav-count">${counts[key]}</small>` : ''}</a>`]);
 }
-export function pageHeader(kind, args, view, records) {
+export function pageTitle(kind, args, view, records) {
   let [title, description] = sections[kind] ?? ['', ''];
   if (kind === 'agent' || kind === 'agent-settings') [title, description] = [args[0], kind === 'agent' ? 'Set account permissions and review data labels for this agent.' : 'Manage keys, sandbox connectivity, and settings.'];
   if (kind === 'account') [title, description] = [args[0], view.presets[view.config.accounts?.[args[0]]?.preset]?.title ?? 'Connection settings'];
@@ -36,13 +37,17 @@ export function pageHeader(kind, args, view, records) {
     const request = records.find(r => r.id === args[0]);
     [title, description] = [request ? owner.requestTitle(request) : 'Request', 'Review the request, policy facts, and approval scope.'];
   }
+  return [title || 'Monitor', description];
+}
+export function pageHeader(kind, args, view, records) {
+  const [title, description] = pageTitle(kind, args, view, records);
   let actions = kind === 'agents' ? buttonLink('pair', 'Pair agent') : kind === 'accounts' ? buttonLink('catalog', 'Add connection')
     : kind === 'presets' ? buttonLink('preset', 'New preset') : '';
   actions += `<button onclick="refreshDashboard()" aria-label="Refresh monitor">${icon('refresh')}Refresh</button>`;
   return [['heading', `<div class="page-heading"><div><h1>${esc(title || 'Monitor')}</h1><p>${esc(description)}</p></div><div class="header-actions">${actions}</div></div>`]];
 }
 export function empty(title, description, action = '', glyph = 'activity', help = '') {
-  const tooltip = help ? ` <button type="button" class="empty-help" title="${esc(help)}" aria-label="${esc(help)}">?</button>` : '';
+  const tooltip = help ? ` <button type="button" class="empty-help" title="${esc(help)}" aria-label="${esc(help)}">${icon('help')}</button>` : '';
   return `<div class="empty-state"><div class="empty-icon">${icon(glyph)}</div><h2>${esc(title)}${tooltip}</h2><p>${esc(description)}</p>${action}</div>`;
 }
 export function stats(view, records) {
