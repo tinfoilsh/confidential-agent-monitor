@@ -187,6 +187,7 @@ type unlockInput struct {
 	Initialize bool   `json:"initialize,omitempty"`
 	Generation uint64 `json:"generation"`
 	StorageKey []byte `json:"storage_key,omitempty"`
+	DeviceKey  string `json:"device_key,omitempty"`
 }
 type signInInput struct {
 	Redirect   string          `json:"redirect"`
@@ -246,6 +247,9 @@ func (m *monitor) ownerHandler(overSSH bool) http.Handler {
 		err := m.unlockState(r.Context(), key, req.Generation, req.Initialize || m.ownerPublicKey == nil)
 		m.mu.Lock()
 		defer m.mu.Unlock()
+		if err == nil && req.DeviceKey != "" {
+			err = m.restoreDevice(r.Context(), req.DeviceKey)
+		}
 		return m.view(err)
 	}))
 	mux.Handle("GET /{$}", owned(m, func(_ *http.Request, _ struct{}) (any, error) { return m.view(nil) }))
@@ -554,6 +558,29 @@ func responseError(w http.ResponseWriter, err error) {
 		status = http.StatusNotFound
 	}
 	http.Error(w, err.Error(), status)
+}
+
+// Owner unlock may restore its device; ordinary enrollment still honors revocation.
+// The caller holds mu after authenticating and unlocking the state.
+func (m *monitor) restoreDevice(ctx context.Context, public string) error {
+	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(public))
+	if err != nil {
+		return fmt.Errorf("device public key: %w", err)
+	}
+	st := m.live.Load()
+	if existing, ok := st.principals[ssh.FingerprintSHA256(key)]; ok {
+		if existing.Routes {
+			return nil
+		}
+		return m.editPolicy(ctx, []sourceChange{{Path: []string{"identities", existing.Name, "routes"}, Value: true}})
+	}
+	public = strings.TrimSpace(string(ssh.MarshalAuthorizedKey(key)))
+	digest := sha256.Sum256([]byte(public))
+	name := fmt.Sprintf("device-%x", digest[:8])
+	if _, exists := st.cfg.Identities[name]; exists {
+		return errors.New("device identity name belongs to another key")
+	}
+	return m.editPolicy(ctx, []sourceChange{{Path: []string{"identities", name}, Value: map[string]any{"key": public, "routes": true}}})
 }
 
 // owned runs each owner request as one transaction; reading the body and writing the response stay outside it.
