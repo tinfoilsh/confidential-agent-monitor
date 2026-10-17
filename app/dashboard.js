@@ -41,8 +41,9 @@ export function pageHeader(kind, args, view, records) {
   actions += `<button onclick="refreshDashboard()" aria-label="Refresh monitor">${icon('refresh')}Refresh</button>`;
   return [['heading', `<div class="page-heading"><div><h1>${esc(title || 'Monitor')}</h1><p>${esc(description)}</p></div><div class="header-actions">${actions}</div></div>`]];
 }
-export function empty(title, description, action = '', glyph = 'activity') {
-  return `<div class="empty-state"><div class="empty-icon">${icon(glyph)}</div><h2>${esc(title)}</h2><p>${esc(description)}</p>${action}</div>`;
+export function empty(title, description, action = '', glyph = 'activity', help = '') {
+  const tooltip = help ? ` <button type="button" class="empty-help" title="${esc(help)}" aria-label="${esc(help)}">?</button>` : '';
+  return `<div class="empty-state"><div class="empty-icon">${icon(glyph)}</div><h2>${esc(title)}${tooltip}</h2><p>${esc(description)}</p>${action}</div>`;
 }
 export function stats(view, records) {
   const pending = records.filter(r => owner.stateAt(r, Date.now()) === 'pending').length;
@@ -105,7 +106,7 @@ export function collection(kind, view, query, connectorIcon, collapsed = new Set
   };
   const list = (title, rows, group) => {
     const heading = `<h2>${esc(title)} <span class="count">${rows.length}</span></h2>`;
-    const content = `<div class="collection-rows">${rows.map(renderRow).join('') || empty(query ? 'No matches' : `No ${title.toLowerCase()} yet`, query ? 'Try a different search.' : kind === 'agents' ? 'Pair an agent with its SSH public key to configure access.' : 'Add a connection to give your agents access to a service.', query ? '' : buttonLink(kind === 'agents' ? 'pair' : 'catalog', kind === 'agents' ? 'Pair agent' : 'Add connection'), kind)}</div>`;
+    const content = `<div class="collection-rows">${rows.map(renderRow).join('') || empty(query ? 'No matches' : `No ${title.toLowerCase()} yet`, query ? 'Try a different search.' : kind === 'agents' ? 'Pair an agent with its SSH public key to configure access.' : 'Add a connection to give your agents access to a service.', query ? '' : buttonLink(kind === 'agents' ? 'pair' : 'catalog', kind === 'agents' ? 'Pair agent' : 'Add connection'), kind, kind === 'agents' && !query ? "If you don't see your sandbox, run tinfoil attest-ssh <sandbox-name>." : '')}</div>`;
     return group
       ? `<details class="resource-list collection-list" data-group="${esc(kind + '/' + group)}" ${query || !collapsed.has(kind + '/' + group) ? 'open' : ''} ontoggle="toggleCatalogGroup(this)"><summary class="resource-heading">${icon('arrow')}${heading}</summary>${content}</details>`
       : `<div class="resource-list collection-list"><div class="resource-heading">${heading}</div>${content}</div>`;

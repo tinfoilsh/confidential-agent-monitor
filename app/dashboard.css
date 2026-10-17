@@ -146,6 +146,7 @@ summary + * { margin-top: 12px; }
 .empty-state { display: flex; align-items: center; flex-direction: column; padding: 64px var(--card-inset); text-align: center; }
 .empty-icon { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 16px; border: 1px solid var(--edge); border-radius: 4px; color: var(--muted); }
 .empty-state h2 { margin: 0; }
+.empty-help { width: 18px; min-height: 18px; margin-left: 4px; padding: 0; border-radius: 50%; color: var(--muted); font-size: 12px; line-height: 16px; vertical-align: middle; cursor: help; box-shadow: none; }
 .empty-state p { max-width: 440px; margin: 8px 0 20px; color: var(--muted); }
 .badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border: 1px solid var(--edge); border-radius: 4px; background: var(--subtle); font-size: var(--font-detail); line-height: 18px; font-weight: 500; white-space: nowrap; }
 .badge .ui-icon { width: 12px; height: 12px; }
