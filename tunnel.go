@@ -26,6 +26,8 @@ import (
 const (
 	channelDirect        = "direct-tcpip"
 	fingerprintExtension = "fingerprint"
+	sandboxUserPrefix    = "device+sandbox:"
+	sandboxEnrollment    = "sandbox-enrollment-v1"
 )
 
 type forwardedAddress struct {
@@ -61,7 +63,7 @@ func (m *monitor) serveSSH(ln net.Listener) {
 			continue
 		}
 		go func() {
-			front := &ssh.ServerConfig{PublicKeyCallback: m.authorized, MaxAuthTries: 3}
+			front := &ssh.ServerConfig{PublicKeyCallback: m.authorized, MaxAuthTries: 3, ServerVersion: "SSH-2.0-Go " + sandboxEnrollment}
 			front.AddHostKey(hostKey)
 			nc.SetDeadline(time.Now().Add(sshHandshakeTimeout))
 			conn, chans, reqs, err := ssh.NewServerConn(nc, front)
@@ -238,16 +240,23 @@ func (c channelConn) SetReadDeadline(t time.Time) error {
 }
 func (channelConn) SetWriteDeadline(time.Time) error { return nil }
 
-// Any key authenticates so that it can publish its route. Key probes run this without a
-// signature, so it only labels the session; opening channels still needs a live identity.
-func (m *monitor) authorized(_ ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
+// Route publishers need no identity; device setup can require an enrolled sandbox.
+// Key probes run without a signature, so this never changes policy. Opening channels
+// still needs a live identity.
+func (m *monitor) authorized(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
 	if raw, ok := key.(ssh.CryptoPublicKey); ok && m.ownerPublicKey != nil {
 		if public, ok := raw.CryptoPublicKey().(ed25519.PublicKey); ok && m.ownerPublicKey.Equal(public) {
 			return &ssh.Permissions{Extensions: map[string]string{ownerSSHExtension: "true"}}, nil
 		}
 	}
-	if m.live.Load() == nil {
+	st := m.live.Load()
+	if st == nil {
 		return nil, errLocked
+	}
+	if fingerprint, required := strings.CutPrefix(conn.User(), sandboxUserPrefix); required {
+		if _, enrolled := st.principals[fingerprint]; !enrolled {
+			return nil, errors.New("sandbox is not enrolled")
+		}
 	}
 	return &ssh.Permissions{Extensions: map[string]string{
 		fingerprintExtension: ssh.FingerprintSHA256(key), routeExtension: routeName(key),
