@@ -18,6 +18,7 @@ podman build -q -t "$name" "$src" > /dev/null
 podman rm -f --ignore "$name" > /dev/null
 pkill -f "^$dev/monitor " && pidwait -f "^$dev/monitor " || true
 dev/setup > /dev/null
+printf 'Monitor UI with hot reload: %s/app/\n' "${MONITOR_API:-http://127.0.0.1:8080}"
 # Mount only the agent identity and public configuration, never the owner's key/store.
 sed -e 's|IdentityFile .*|IdentityFile /run/monitor/id|' \
     -e 's|UserKnownHostsFile .*|UserKnownHostsFile /run/monitor/known_hosts|' \

@@ -96,7 +96,7 @@ func (r *IMAP) Serve(s *connector.Stream, e *connector.Env) {
 			mailbox = strings.Trim(args, `"`)
 		}
 		dst := io.Writer(up)
-		if err := s.Check(&IMAPRequest{Command: command, Args: args, Mailbox: mailbox}); err != nil {
+		if err := s.Gate(s.Context, &IMAPRequest{Command: command, Args: args, Mailbox: mailbox}); err != nil {
 			fmt.Fprintf(s, "%s NO %v\r\n", tag, err)
 			dst = io.Discard
 		}

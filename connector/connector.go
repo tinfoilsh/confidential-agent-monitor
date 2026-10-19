@@ -28,10 +28,14 @@ type Runner interface {
 
 // Definition registers a connector and the request types it can submit.
 type Definition struct {
-	HostKey   bool
-	NewConfig func() Server
-	Requests  []Request
-	Settings  any // Optional pointer to deployment settings, filled before NewConfig in a worker.
+	// PerMessage promises that each operation is gated against captured input.
+	// Such streams can stay open across label changes and gate the next operation.
+	// Opaque sessions keep the default: close when another operation changes the label.
+	PerMessage bool
+	HostKey    bool
+	NewConfig  func() Server
+	Requests   []Request
+	Settings   any // Optional pointer to deployment settings, filled before NewConfig in a worker.
 }
 
 // Control handles private host HTTP after owner authentication.
@@ -116,7 +120,7 @@ func NewDialer(allowed []netip.Prefix) *net.Dialer {
 	return &net.Dialer{Timeout: DialTimeout, Control: guard.Safe}
 }
 
-// Stream carries an authenticated connection and its request checker.
+// Stream carries an authenticated connection and its blocking authorization gate.
 type Stream struct {
 	Context context.Context
 	cancel  context.CancelFunc
@@ -125,16 +129,20 @@ type Stream struct {
 	Name string
 	Host string
 	Port uint32
-	// Check describes and authorizes parsed input before it executes.
-	Check func(Request) error
+	// Gate waits for authorization, including any owner approval, and persists
+	// observations before returning. A successful call admits exactly this
+	// captured operation; subsequent operations must pass the gate again.
+	// Calls from either direction may run concurrently. Input must remain
+	// unchanged until Gate returns, and forwarding must use the admitted input.
+	Gate func(context.Context, Request) error
 }
 
 // NewStream carries c until ctx ends or the stream closes.
 func NewStream(ctx context.Context, c net.Conn) *Stream {
 	ctx, cancel := context.WithCancel(ctx)
 	stop := context.AfterFunc(ctx, func() { c.Close() })
-	return &Stream{Context: ctx, cancel: cancel, Conn: c, stop: stop, Check: func(Request) error {
-		return errors.New("request checker missing")
+	return &Stream{Context: ctx, cancel: cancel, Conn: c, stop: stop, Gate: func(context.Context, Request) error {
+		return errors.New("authorization gate missing")
 	}}
 }
 

@@ -441,6 +441,7 @@
   }
  },
  "bitly": {
+  "preset": "bitly_api",
   "specs": [
    {
     "format": "openapi",
@@ -621,6 +622,7 @@
   "note": "Spec has no servers; paths are relative to /api; reports API uses reports.api.clockify.me"
  },
  "cloudflare": {
+  "preset": "cloudflare_api",
   "specs": [
    {
     "format": "openapi",
@@ -960,6 +962,7 @@
   "note": "Meta publishes no Graph API spec."
  },
  "figma": {
+  "preset": "figma_api",
   "specs": [
    {
     "format": "openapi",
@@ -1538,6 +1541,7 @@
   "note": "No public spec."
  },
  "hunter": {
+  "preset": "hunter_api",
   "specs": [
    {
     "format": "openapi",
@@ -1750,6 +1754,7 @@
   "note": "No public spec."
  },
  "mailchimp": {
+  "preset": "mailchimp_api",
   "specs": [
    {
     "format": "swagger",
@@ -3220,6 +3225,7 @@
   "note": "n8n also calls api.twitter.com and upload.twitter.com (v1.1 media upload), not in v2 spec."
  },
  "typeform": {
+  "preset": "typeform_api",
   "specs": [
    {
     "format": "postman",
@@ -3442,6 +3448,7 @@
   "note": "n8n uses legacy Xata serverless DB API (xata.sh); current xataio/xata specs are for the new Postgres platform."
  },
  "xero": {
+  "preset": "xero_api",
   "specs": [
    {
     "format": "openapi",
@@ -3540,6 +3547,7 @@
   "note": "Specs are v8 (n8n uses /crm/v2); host varies by data center (.eu, .in, ...)."
  },
  "zoom": {
+  "preset": "zoom_api",
   "specs": [
    {
     "format": "openapi",

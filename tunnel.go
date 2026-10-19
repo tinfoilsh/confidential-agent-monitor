@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
 	"maps"
 	"net"
@@ -131,7 +132,7 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 			nc.Reject(ssh.Prohibited, "the monitor does not forward this target")
 			return
 		}
-		if err := m.check(c.ctx, input{Key: key, Connection: c.name, Request: &admissionRequest{Host: target.Host, Port: target.Port}}); err != nil {
+		if err := m.gate(c.ctx, input{Key: key, Connection: c.name, Request: &admissionRequest{Host: target.Host, Port: target.Port}}); err != nil {
 			nc.Reject(ssh.Prohibited, err.Error())
 			return
 		}
@@ -141,8 +142,8 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 			host = ""
 		}
 		serve = func(s *connector.Stream) {
-			s.Check = func(request connector.Request) error {
-				return m.check(s.Context, input{stream: s, Key: key, Connection: c.name, Request: request})
+			s.Gate = func(ctx context.Context, request connector.Request) error {
+				return m.gate(ctx, input{stream: s, Key: key, Connection: c.name, Request: request})
 			}
 			log.Printf("%s: forwarding %s:%d", p.Name, target.Host, target.Port)
 			c.dispatch(s.Context, func(server connector.Server, env *connector.Env) { server.Serve(s, env) })
@@ -152,7 +153,7 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 	if err != nil {
 		return
 	}
-	s := connector.NewStream(ctx, channelConn{ch})
+	s := connector.NewStream(ctx, newChannelConn(ch))
 	s.Name, s.Host, s.Port = name, host, target.Port
 	defer s.Close()
 	go func() { ssh.DiscardRequests(reqs); s.Close() }()
@@ -198,12 +199,43 @@ func (st *state) route(p principal, host string, port uint32) (*connection, bool
 	return selected, false
 }
 
-type channelConn struct{ ssh.Channel }
+type channelConn struct {
+	ssh.Channel
+	reader net.Conn
+}
 
-func (channelConn) LocalAddr() net.Addr              { return &net.TCPAddr{} }
-func (channelConn) RemoteAddr() net.Addr             { return &net.TCPAddr{} }
-func (channelConn) SetDeadline(time.Time) error      { return nil }
-func (channelConn) SetReadDeadline(time.Time) error  { return nil }
+// HTTP hijacking interrupts a pending read using a deadline. SSH channels have
+// no deadlines, so give stream consumers an interruptible, bounded read pipe.
+// Writes and half-close continue to use the SSH channel directly.
+func newChannelConn(ch ssh.Channel) channelConn {
+	r, w := net.Pipe()
+	go func() { defer w.Close(); io.Copy(w, ch) }()
+	return channelConn{Channel: ch, reader: r}
+}
+
+func (c channelConn) Read(p []byte) (int, error) {
+	if c.reader != nil {
+		return c.reader.Read(p)
+	}
+	return c.Channel.Read(p)
+}
+
+func (c channelConn) Close() error {
+	if c.reader != nil {
+		c.reader.Close()
+	}
+	return c.Channel.Close()
+}
+
+func (channelConn) LocalAddr() net.Addr             { return &net.TCPAddr{} }
+func (channelConn) RemoteAddr() net.Addr            { return &net.TCPAddr{} }
+func (c channelConn) SetDeadline(t time.Time) error { return c.SetReadDeadline(t) }
+func (c channelConn) SetReadDeadline(t time.Time) error {
+	if c.reader != nil {
+		return c.reader.SetReadDeadline(t)
+	}
+	return nil
+}
 func (channelConn) SetWriteDeadline(time.Time) error { return nil }
 
 // Any key authenticates so that it can publish its route. Key probes run this without a
@@ -241,7 +273,7 @@ func (st *state) sameStreamAuthority(old *state, key string, s *connector.Stream
 		return true
 	}
 	if previous.Name != p.Name ||
-		previous.Profile != p.Profile || st.cfg.Lattices != old.cfg.Lattices || st.program != old.program ||
+		st.cfg.Lattices != old.cfg.Lattices || st.program != old.program ||
 		st.cfg.AllowPaidInference != old.cfg.AllowPaidInference {
 		return false
 	}
@@ -319,7 +351,7 @@ func (m *monitor) agentHandler(key string) http.Handler {
 			Identity    string            `json:"identity"`
 			CA          string            `json:"ca"`
 			Connections []agentConnection `json:"connections"`
-		}{p.Name, m.doc.Keys.CACert, []agentConnection{}}
+		}{p.Name, m.store.doc.Keys.CACert, []agentConnection{}}
 		for _, name := range slices.Sorted(maps.Keys(st.connections)) {
 			c := st.connections[name]
 			if !p.reaches(c.account) {
@@ -449,7 +481,7 @@ func (m *monitor) proposePolicy(ctx context.Context, p principal, input proposal
 	for _, path := range input.Delete {
 		changes = append(changes, sourceChange{Path: path, Delete: true})
 	}
-	base := m.doc.Policy
+	base := m.store.doc.Policy
 	source, err := editSource(base, changes)
 	if err != nil {
 		return err
@@ -483,7 +515,7 @@ func (m *monitor) proposePolicy(ctx context.Context, p principal, input proposal
 	if err = m.await(ctx, r); err != nil {
 		return err
 	}
-	if m.doc.Policy != base {
+	if m.store.doc.Policy != base {
 		return errPolicyConflict
 	}
 	if next, st, err = m.prepareCandidate(ctx, next.Policy, nil); err != nil {

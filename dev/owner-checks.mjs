@@ -2,7 +2,7 @@
 // Owner HTTP contract: both transports, validators, mutations and older servers.
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
-import { ownerApi, ownerClient, localOwnerClient, decisions, draftable, withDraft, saveText, effectSettings, mode, edits, previewChanges, agentAccess, accountUsers, setupFields, fieldPaths } from '../app/owner.js';
+import { requestTitle, summary, ownerApi, ownerClient, localOwnerClient, decisions, draftable, withDraft, saveText, effectSettings, mode, edits, previewChanges, agentAccess, accountUsers, setupFields, fieldPaths } from '../ui/src/owner.js';
 
 for (const local of [false, true]) {
   const calls = [];
@@ -92,13 +92,13 @@ function onboard(view, preset) {
 
 for (const preset of ['open', 'known_only', 'offline']) {
   const policy = await onboard({ generation: 4, config: { accounts: { api: { preset: 'custom' } },
-    default_access: { api: { level: 'ask' } }, identities: { agent: { profile: true, routes: true, accounts: { api: { level: 'allow' } } } } } }, preset);
+    default_access: { api: { level: 'ask' } }, identities: { agent: { routes: true, accounts: { api: { level: 'allow' } } } } } }, preset);
   assert.deepEqual(policy.config.data.onboarding, { completed: true });
   assert.deepEqual(Object.keys(policy.config.accounts).sort(), ['api', 'network']);
   assert.equal(policy.config.accounts.network.preset, 'tcp');
   assert.deepEqual(policy.config.default_access.network, { level: preset === 'open' ? 'allow' : 'off' });
   assert.equal(policy.config.identities.agent.accounts.network, undefined);
-  assert.equal(policy.config.identities.agent.profile, false);
+  assert.equal(Object.hasOwn(policy.config.identities.agent, 'profile'), false);
   if (preset === 'offline') {
     assert.deepEqual(policy.config.default_access, { network: { level: 'off' } });
     assert.equal(policy.config.identities.agent.accounts.api.level, 'off');
@@ -220,40 +220,76 @@ assert.equal(group.children[0].inherited, 'ask');
 console.log('Paid-inference onboarding, opt-out, and permission checks passed.');
 
 let presetsChecked = 0, arrayPresetsChecked = 0;
-for (const directory of ['../presets/', '../presets/drafts/']) {
-  const root = new URL(directory, import.meta.url);
-  for (const file of readdirSync(root).filter(name => name.endsWith('.json'))) {
-    const preset = file.slice(0, -5), source = JSON.parse(readFileSync(new URL(file, root), 'utf8'));
-    const catalog = { title: source.title, ...source.catalog };
-    const view = { config: { accounts: {} }, presets: { [preset]: catalog } };
-    const fields = setupFields(view, preset);
-    const values = Object.fromEntries(fields.map(f => [f.key, f.json ? f.default ?? {} : f.list ? ['audit.example.com']
-      : f.secret ? 'synthetic-credential' : f.key.includes('origin') || f.key.includes('url') ? 'https://audit.example.com' : `audit-${f.key}`]));
-    const changes = edits.addAccount(view, preset, { name: 'audit', values, answers: catalog.defaults ?? {} });
-    previewChanges(view, JSON.parse(JSON.stringify(changes)));
-    presetsChecked++;
-    const arrays = fields.flatMap(f => fieldPaths(f).filter(path => path.some(key => typeof key === 'number'))
-      .map(path => path.slice(0, path.findIndex(key => typeof key === 'number'))));
-    if (arrays.length) arrayPresetsChecked++;
-    for (const path of arrays) {
-      const actual = path.reduce((value, key) => value?.[key], view.config.accounts.audit);
-      const inherited = path.reduce((value, key) => value?.[key], { connections: catalog.connections });
-      assert.ok(Array.isArray(actual), `${preset}: ${path.join('/')} must remain an array`);
-      if (inherited) assert.equal(actual.length, inherited.length, `${preset}: preserve all inherited entries`);
-    }
-    if (preset === 'pinecone') {
-      const slots = view.config.accounts.audit.connections[''].http.slots;
-      assert.deepEqual(slots, [
-        { value: 'api_key', origin: 'https://api.pinecone.io', path: '/', header: 'Api-Key' },
-        { value: 'api_key', origin: values.origin, path: '/', header: 'Api-Key' },
-      ]);
-      assert.deepEqual(catalog.connections[''].http.slots[1].origin, 'https://example.com');
-      const saved = edits.saveAccount(view, 'audit', { answers: {}, values: { origin: 'https://changed.example.com' } });
-      assert.ok(saved.some(change => Array.isArray(change.value) && change.path.at(-1) === 'slots'));
-      previewChanges(view, saved);
-      assert.equal(view.config.accounts.audit.connections[''].http.slots[0].origin, 'https://api.pinecone.io');
-      assert.equal(view.config.accounts.audit.connections[''].http.slots[1].origin, 'https://changed.example.com');
-    }
+const presetRoot = new URL('../presets/', import.meta.url);
+for (const file of readdirSync(presetRoot).filter(name => name.endsWith('.json'))) {
+  const preset = file.slice(0, -5), source = JSON.parse(readFileSync(new URL(file, presetRoot), 'utf8'));
+  const catalog = { title: source.title, ...source.catalog };
+  const view = { config: { accounts: {} }, presets: { [preset]: catalog } };
+  const fields = setupFields(view, preset);
+  const values = Object.fromEntries(fields.map(f => [f.key, f.json ? f.default ?? {} : f.list ? ['audit.example.com']
+    : f.secret ? 'synthetic-credential' : f.key.includes('origin') || f.key.includes('url') ? 'https://audit.example.com' : `audit-${f.key}`]));
+  const changes = edits.addAccount(view, preset, { name: 'audit', values, answers: catalog.defaults ?? {} });
+  previewChanges(view, JSON.parse(JSON.stringify(changes)));
+  presetsChecked++;
+  const arrays = fields.flatMap(f => fieldPaths(f).filter(path => path.some(key => typeof key === 'number'))
+    .map(path => path.slice(0, path.findIndex(key => typeof key === 'number'))));
+  if (arrays.length) arrayPresetsChecked++;
+  for (const path of arrays) {
+    const actual = path.reduce((value, key) => value?.[key], view.config.accounts.audit);
+    const inherited = path.reduce((value, key) => value?.[key], { connections: catalog.connections });
+    assert.ok(Array.isArray(actual), `${preset}: ${path.join('/')} must remain an array`);
+    if (inherited) assert.equal(actual.length, inherited.length, `${preset}: preserve all inherited entries`);
+  }
+  if (preset === 'pinecone') {
+    const slots = view.config.accounts.audit.connections[''].http.slots;
+    assert.deepEqual(slots, [
+      { value: 'api_key', origin: 'https://api.pinecone.io', path: '/', header: 'Api-Key' },
+      { value: 'api_key', origin: values.origin, path: '/', header: 'Api-Key' },
+    ]);
+    assert.deepEqual(catalog.connections[''].http.slots[1].origin, 'https://example.com');
+    const saved = edits.saveAccount(view, 'audit', { answers: {}, values: { origin: 'https://changed.example.com' } });
+    assert.ok(saved.some(change => Array.isArray(change.value) && change.path.at(-1) === 'slots'));
+    previewChanges(view, saved);
+    assert.equal(view.config.accounts.audit.connections[''].http.slots[0].origin, 'https://api.pinecone.io');
+    assert.equal(view.config.accounts.audit.connections[''].http.slots[1].origin, 'https://changed.example.com');
   }
 }
 console.log(`Account setup checked for ${presetsChecked} presets; ${arrayPresetsChecked} preserve inherited arrays.`);
+
+// Optimistic projections must share untouched data without mutating confirmed state.
+const confirmed = {
+  config: { accounts: { api: { preset: 'custom', connections: { '': { http: { slots: [{ value: 'token' }] } } } } },
+    identities: { agent: { accounts: { api: { level: 'allow', actions: { 'items.read': 'ask' } } } } } },
+  presets: { custom: { actions: { 'items.read': { effects: ['read'] } } } }, vocabulary: { read: {} },
+};
+const original = structuredClone(confirmed), projected = { ...confirmed };
+previewChanges(projected, [
+  ...edits.setAccess('agent', 'api', { actions: { 'items.write': 'off' } }),
+  ...edits.setEffect({ agent: 'agent', account: 'api' }, 'read', 'ask'),
+]);
+assert.deepEqual(confirmed, original);
+assert.equal(projected.config.accounts, confirmed.config.accounts);
+assert.equal(projected.presets, confirmed.presets);
+assert.equal(projected.config.identities.agent.accounts.api.actions['items.read'], 'ask');
+assert.equal(projected.config.identities.agent.accounts.api.actions['items.write'], 'off');
+const arrays = { ...confirmed };
+previewChanges(arrays, [{ path: ['accounts', 'api', 'connections', '', 'http', 'slots', '0', 'value'], value: 'changed' }]);
+assert.equal(arrays.config.accounts.api.connections[''].http.slots[0].value, 'changed');
+assert.deepEqual(confirmed, original);
+const hostile = { ...confirmed };
+previewChanges(hostile, [{ path: ['__proto__', 'monitorProjection'], value: true }]);
+assert.equal(Object.prototype.monitorProjection, undefined);
+assert.equal(Object.hasOwn(hostile.config, '__proto__'), true);
+const summaryOnly = { ...confirmed, presets: new Proxy({}, { get() { throw new Error('Summary derived an action tree'); } }) };
+assert.equal(agentAccess(summaryOnly, 'agent')[0].level, 'allow');
+Object.defineProperty(summaryOnly.config.accounts, 'unselected', { enumerable: true, configurable: true, get() { throw new Error('Read an unrelated account'); } });
+assert.equal(agentAccess(summaryOnly, 'agent', 'api')[0].account, 'api');
+assert.deepEqual(agentAccess(summaryOnly, 'agent', 'missing'), []);
+delete summaryOnly.config.accounts.unselected;
+console.log('Optimistic projection isolation, structural sharing, lazy summaries, and selected-account checks passed.');
+
+assert.equal(requestTitle({ facts: { title: 'POST google.com/' } }), 'POST google.com/');
+assert.equal(requestTitle({ facts: { title: 'GET https://example.com/items?q=1' } }), 'GET https://example.com/items?q=1');
+assert.equal(requestTitle({ facts: { title: 'List files' } }), 'List files');
+assert.equal(summary({ http: { method: 'POST', host: 'google.com', path: '/' } }), 'POST google.com/');
+console.log('Activity titles and technical request facts remain available to API consumers.');

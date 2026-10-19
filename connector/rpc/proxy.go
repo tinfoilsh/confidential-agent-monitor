@@ -219,7 +219,7 @@ func (r *Proxy) dispatch(request *http.Request) (any, error) {
 		return nil, s.Context.Err()
 	}
 	switch op {
-	case "check":
+	case "gate":
 		var input event
 		if err := readJSON(request.Body, &input); err != nil {
 			return nil, err
@@ -228,7 +228,7 @@ func (r *Proxy) dispatch(request *http.Request) (any, error) {
 		if err != nil {
 			return nil, err
 		}
-		return nil, s.Check(e)
+		return nil, s.Gate(ctx, e)
 	case "certificate":
 		var name string
 		if err := readJSON(request.Body, &name); err != nil {

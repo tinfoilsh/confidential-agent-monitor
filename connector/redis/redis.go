@@ -72,7 +72,7 @@ func (r *Redis) Serve(s *connector.Stream, e *connector.Env) {
 		for i, arg := range cmd.Args {
 			args[i] = string(arg)
 		}
-		if err := s.Check(&Request{Command: commandName(args), Argv: args}); err != nil {
+		if err := s.Gate(s.Context, &Request{Command: commandName(args), Argv: args}); err != nil {
 			if _, err := s.Write(redcon.AppendError(nil, "ERR "+err.Error())); err != nil {
 				return
 			}

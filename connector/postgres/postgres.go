@@ -136,7 +136,7 @@ func relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.Hij
 			sql = msg.Query
 		}
 		if sql != "" {
-			if err := s.Check(&Request{SQL: sql}); err != nil {
+			if err := s.Gate(s.Context, &Request{SQL: sql}); err != nil {
 				backend.Send(&pgproto3.ErrorResponse{Severity: "ERROR", Code: "42501", Message: err.Error()})
 				if _, simple := msg.(*pgproto3.Query); simple {
 					backend.Send(&pgproto3.ReadyForQuery{TxStatus: byte(status.Load())})

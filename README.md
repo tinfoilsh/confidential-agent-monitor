@@ -1,146 +1,131 @@
 # Monitor
 
-## Effect permissions
+Monitor controls how AI agents use your accounts to read repositories, send
+email, query databases, and call models. You set permissions and approve
+requests through a web UI or TOML policy.
 
-In **Settings → Effects**, choose Allow, Ask, or Deny for each effect. Payments
-include paid model inference; payments and publishing default to Ask. Onboarding
-checks **Allow paid AI inference** by default, allowing model operations marked
-with both `generate` and `pay` without payment approval. Other payments still
-default to Ask. Uncheck it during onboarding or in **Settings → Effects** to
-keep payment approval for inference, too. The choice applies to existing and
-future provider accounts. Existing monitors keep their settings until changed.
-All other effects default to Allow. Approval requests identify the effect that
-requires approval.
+Credentials stay in Monitor. Agents receive placeholders. Monitor supplies the
+real credentials after checking each request. Stored state is encrypted with
+your owner secret.
 
-Override these defaults in an account's **Effects** section, an agent's
-**Settings → Effects**, or **Effect overrides** beneath the agent's account access.
-Precedence is global → account → agent → agent on an account. Click a selected
-permission again to unset it and inherit. Explicit payment settings override
-the paid-inference default at every scope. Payments, publishing, and overrides stay
-visible; expand **Other effects** for the rest. When a request has several effects,
-Deny takes precedence over Ask, which takes precedence over Allow.
+## How it works
 
-Effect permissions apply alongside account access, action permissions, data-flow
-restrictions, and custom policy. Allowing payments removes the payment approval
-requirement; other restrictions still apply. Saved approvals cannot override Deny.
-Changes also close affected open connector streams.
+Agents connect over SSH using their own keys. Monitor interprets requests,
+checks permissions, then forwards, denies, or holds them for approval. Service
+presets describe operations and effects such as reading, deleting, or publishing.
 
-The same settings are editable in policy TOML (`off` means Deny):
+Monitor also tracks private and untrusted data an agent has read. Data-flow
+rules can require approval before it shares that data or acts on untrusted input.
 
-```toml
-[effects]
-pay = "ask"
+These controls apply to traffic routed through Monitor. Sandboxes provide
+process isolation and network restrictions. The local CLI only configures
+routing for compatible clients.
 
-[accounts.anthropic.effects]
-pay = "allow"
+## Get started
 
-[identities.agent.effects]
-publish = "off"
+### Tinfoil Sandboxes
 
-[identities.agent.accounts.anthropic.effects]
-pay = "ask"
+Create a Monitor and sandbox in the [Tinfoil dashboard](https://dash.tinfoil.sh/),
+with Monitor enabled. Using the
+[Tinfoil CLI](https://github.com/tinfoilsh/tinfoil-cli/releases), connect to your
+sandbox, named `work` in this example.
+
+```sh
+tinfoil attest-ssh work --install
+ssh work
 ```
 
-The account and agent must already exist, and the agent needs access to the account.
+In Monitor, add services under **Connections** and grant the sandbox access under
+**Agents**. Run `monitor connections` inside the sandbox to see what's available.
+Repeat attestation after either VM reboots.
 
-## Install or update the CLI
+### Local commands
 
-From this checkout on Linux or macOS, with Python 3.11 or newer and OpenSSH:
+Install the CLI from this checkout. It requires Python 3.11+ and OpenSSH on Linux
+or macOS.
 
 ```sh
 ./install.sh
 export PATH="$HOME/.local/bin:$PATH"
-monitor --help
 ```
 
-## Launch Claude in a VM
-
-The VM runner uses Firecracker directly. It supports x86_64 Linux with
-read/write access to `/dev/kvm`, bubblewrap, unprivileged user namespaces,
-OpenSSH, GNU tar, and `mke2fs` from e2fsprogs. Podman or Docker is needed to
-build an image. Launch runs as your user and requires no sudo or host network
-configuration. The existing local client commands also work on macOS.
-
-From this checkout, install the client and prepare an image once:
+Pair your public key under **Agents → Pair agent** and grant it access. Configure
+an SSH alias named `monitor` with that identity and Monitor's verified host key,
+or select a configuration with `--ssh-host` and `--ssh-config`.
 
 ```sh
-./install.sh
+monitor connections
+monitor run -- your-command
+monitor shell
+```
+
+Use `monitor mcp serve` to connect local MCP clients.
+
+### Local VM
+
+The CLI can launch Claude in a Firecracker VM connected to an existing Monitor.
+
+```sh
 monitor image build
 monitor setup
-```
-
-Image building downloads the Firecracker binary and guest kernel using the
-SHA-256 pins in `client/vm/assets.json`. It builds an Ubuntu guest containing
-Claude, Python, Git, and the Monitor transport. The default disk size is
-8 GiB. The default Claude channel is `stable`; use `--claude-version VERSION`
-to select an exact release. Images are stored in
-`~/.local/share/monitor/images/default/`.
-
-To use already downloaded assets:
-
-```sh
-monitor image build --output /path/to/image \
-  --firecracker /path/to/static/firecracker \
-  --kernel /path/to/vmlinux \
-  --claude-binary /path/to/native/linux/claude
-monitor setup --image /path/to/image
-```
-
-From a project directory, launch with one command:
-
-```sh
 monitor launch claude
-monitor launch claude -- -p 'Run the tests and explain any failures'
 ```
 
-Claude runs with permission prompts disabled inside the VM. Monitor still
-applies its configured policy to external requests.
+This requires x86_64 Linux, writable `/dev/kvm`, bubblewrap, unprivileged user
+namespaces, OpenSSH, GNU tar, and `mke2fs`. Image builds need Podman or Docker.
+Setup asks for your Monitor endpoint, owner credentials, and account permissions.
+See `monitor --help` for stopping, exporting, and deleting VMs.
 
-Exiting the agent shuts down its VM and bridge while retaining its disk and
-identity. To stop an active session from another terminal:
+### Run Monitor locally
+
+Start Monitor using the Go version in [go.mod](go.mod).
 
 ```sh
-monitor stop
+mkdir -p .dev/store
+go run . -bucket "file://$(pwd)/.dev/store?no_tmp_dir=true"
 ```
 
-To save guest work after the session ends:
+Open [the UI](http://127.0.0.1:8080/app/) and initialize an owner key or passphrase.
+SSH listens on `127.0.0.1:2223`. See [Dockerfile](Dockerfile) and
+[tinfoil-config.yml](tinfoil-config.yml) for deployment configuration.
 
-```sh
-monitor export --output /path/to/workspace.tar
+## Access control
+
+In **Agents**, set each agent's access to each account.
+
+| Access | Default behavior |
+| --- | --- |
+| No access | Deny access. |
+| Read only | Allow recognized reads and deny changes. |
+| Ask | Allow reads and ask before changes. |
+| Allow | Allow recognized operations. |
+
+Expand an account to override individual actions. Set effect permissions—such
+as payments, publishing, or deletion—in **Settings**, with overrides per account
+or agent. Other policy checks still apply. Review pending requests in
+**Activity**. Approvals cannot override an explicit denial.
+
+Payments and publishing default to Ask. Onboarding enables **Allow paid AI
+inference**, which skips payment approval for model generation unless an explicit
+payment setting requires it.
+
+### TOML
+
+**Settings → Policy editor** edits the same policy as the UI. Validate changes,
+review the diff, then apply. Credentials are stored separately.
+
+For an existing agent and GitHub account, merge these settings into your policy
+using their names. They allow reads, ask before changes, and deny deletion.
+
+```toml
+[identities.agent.accounts.github]
+level = "ask"
+
+[identities.agent.accounts.github.effects]
+delete = "off"
 ```
 
-Export boots the VM, writes its workspace archive, and shuts it down again.
-It works without owner API access, including after identity revocation. Guest
-archive paths are never extracted on the host. Choose a new output file;
-existing files are not overwritten.
-
-To revoke the identity and delete its disk:
-
-```sh
-monitor destroy
-```
-
-Stop an active session first. Revocation happens before disk deletion. If
-cleanup fails, retry `monitor destroy`. All project commands accept
-`--workspace PATH`; for launch, place it before `claude`. Export and destroy
-also work after the original project directory is removed.
-
-For noninteractive setup, put the owner key in a file with mode `0600`:
-
-```sh
-monitor --profile work setup \
-  --image /path/to/image \
-  --owner-url https://monitor.example.com \
-  --owner-key-file /private/path/owner.key \
-  --endpoint monitor.example.com:2223 \
-  --connection anthropic \
-  --account anthropic=allow --account github=ask
-monitor --profile work launch claude
-```
-
-Launch profiles share `~/.config/monitor/client.json` with local client
-profiles. `--client-config` selects another file. Keep it outside the project;
-the CLI rejects projects containing its enrollment credentials. Setup preserves
-existing profiles and refuses to overwrite a launch profile. Use a new profile
-for another server, image, or initial account selection. For additional guest
-tools, edit `client/vm/Dockerfile` and build into a new image directory.
+Account levels are `off`, `read`, `ask`, and `allow`. Action and effect overrides
+use `off`, `ask`, and `allow`. The value `off` means Deny. Agents can inspect their settings
+with `monitor policy show` and submit changes with `monitor policy propose` for
+owner approval.

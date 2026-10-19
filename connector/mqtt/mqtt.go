@@ -19,7 +19,7 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var Definition = connector.Definition{NewConfig: func() connector.Server { return new(MQTT) }, Requests: []connector.Request{new(Request)}}
+var Definition = connector.Definition{PerMessage: true, NewConfig: func() connector.Server { return new(MQTT) }, Requests: []connector.Request{new(Request)}}
 
 const maxPacket = 1 << 20
 
@@ -65,7 +65,7 @@ func (m *MQTT) Serve(s *connector.Stream, e *connector.Env) {
 		refuse(5)
 		return
 	}
-	if err := s.Check(&Request{Command: "connect"}); err != nil {
+	if err := s.Gate(s.Context, &Request{Command: "connect"}); err != nil {
 		refuse(5)
 		return
 	}
@@ -131,7 +131,7 @@ type proxy struct {
 }
 
 func (p *proxy) publish(command string, v *packets.PublishPacket) error {
-	return p.s.Check(&Request{Command: command, Topic: v.TopicName, QoS: v.Qos, Retain: v.Retain, Payload: v.Payload})
+	return p.s.Gate(p.s.Context, &Request{Command: command, Topic: v.TopicName, QoS: v.Qos, Retain: v.Retain, Payload: v.Payload})
 }
 
 func (p *proxy) request(packet packets.ControlPacket) error {
@@ -166,7 +166,7 @@ func (p *proxy) request(packet packets.ControlPacket) error {
 		return p.publish("publish", publish)
 	case *packets.SubscribePacket:
 		for i, topic := range v.Topics {
-			if err := p.s.Check(&Request{Command: "subscribe", Topic: topic, QoS: v.Qoss[i]}); err != nil {
+			if err := p.s.Gate(p.s.Context, &Request{Command: "subscribe", Topic: topic, QoS: v.Qoss[i]}); err != nil {
 				return err
 			}
 		}

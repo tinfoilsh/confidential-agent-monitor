@@ -80,7 +80,7 @@ func (m *Server) Serve(s *connector.Stream, _ *connector.Env) {
 	connector.ServeHTTP(s, s, sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server {
 		server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: sentinel.Version}, &sdk.ServerOptions{Instructions: m.upstream.Instructions})
 		m.upstream.Register(server, "", func(ctx context.Context, t *sdk.Tool, args json.RawMessage) error {
-			return s.Check(&Request{Tool: t.Name, Arguments: args, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint})
+			return s.Gate(ctx, &Request{Tool: t.Name, Arguments: args, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint})
 		})
 		return server
 	}, &sdk.StreamableHTTPOptions{Stateless: true, PropagateRequestCancellation: true, DisableLocalhostProtection: true}))

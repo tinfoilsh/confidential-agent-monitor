@@ -62,7 +62,7 @@ func (s *smtpSession) Data(r io.Reader) error {
 	if err != nil {
 		return err
 	}
-	if err := s.stream.Check(&SMTPRequest{SMTP: &facts.SMTP{From: s.from, To: s.to}, Mail: mailHeaders(message)}); err != nil {
+	if err := s.stream.Gate(s.stream.Context, &SMTPRequest{SMTP: &facts.SMTP{From: s.from, To: s.to}, Mail: mailHeaders(message)}); err != nil {
 		return &smtp.SMTPError{Code: smtpRefused, EnhancedCode: smtp.EnhancedCode{5, 7, 1}, Message: err.Error()}
 	}
 	return s.relay.submit(s.stream, s.env, s.from, s.to, message)

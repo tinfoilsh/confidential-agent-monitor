@@ -9,6 +9,8 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -33,10 +35,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-const (
-	readHeaderTimeout = 30 * time.Second
-	stateObject       = "monitor.enc"
-)
+const readHeaderTimeout = 30 * time.Second
 
 // The kind is also the protocol policies see.
 var connectorKinds = map[string]connector.Definition{
@@ -61,9 +60,9 @@ func main() {
 	listen := flag.String("listen", "127.0.0.1:2223", "SSH address; it refuses agents until unlock")
 	api := flag.String("api", "127.0.0.1:8080", "owner API address")
 	bucketURL := flag.String("bucket", os.Getenv("TINFOIL_STORAGE_BUCKET"), "blob URL holding the encrypted state")
-	drafts := flag.String("drafts", "", "with a file:// bucket, also load the draft presets in this directory")
 	extension := flag.String("extension", "", "the english-only extension directory; browser connections need it")
-	production := flag.Bool("production", false, "disable development connectors and profiling, including with a file:// bucket")
+	production := flag.Bool("production", false, "disable development connectors and local UI files, including with a file:// bucket")
+	uiDevURL := flag.String("ui-dev-url", "", "proxy local UI development to a loopback Vite server (bun dev/run.ts)")
 	ownerPublic := flag.String("owner-public-key", os.Getenv("MONITOR_OWNER_PUBLIC_KEY"), "Ed25519 owner public key")
 	hostKey := flag.String("ssh-host-key", "", "runtime attested SSH private key")
 	healthcheck := flag.Bool("healthcheck", false, "check the local owner API and exit, including while locked")
@@ -98,6 +97,18 @@ func main() {
 		return
 	}
 	dev := !*production && strings.HasPrefix(*bucketURL, "file://")
+	var files http.Handler
+	if *uiDevURL != "" {
+		var err error
+		files, err = uiDevProxy(*uiDevURL, dev)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else if dev {
+		if dir, err := os.Stat("ui/dist"); err == nil && dir.IsDir() {
+			files = http.StripPrefix("/app/", http.FileServer(http.Dir("ui/dist")))
+		}
+	}
 	var public ed25519.PublicKey
 	if *ownerPublic != "" || !dev {
 		var err error
@@ -124,12 +135,6 @@ func main() {
 	if (*production || public != nil) && hostSigner == nil {
 		log.Fatal("production and owner SSH require -ssh-host-key")
 	}
-	if *drafts != "" {
-		if !dev {
-			log.Fatal("-drafts needs a development file:// bucket without -production")
-		}
-		draftFiles = os.DirFS(*drafts)
-	}
 	if !dev {
 		delete(connectorKinds, "cli")
 		delete(connectorKinds, "gpg-agent")
@@ -142,12 +147,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	m := &monitor{store: bucket, dev: dev, ownerPublicKey: public, sshHostKey: hostSigner}
+	m := &monitor{store: stateStore{bucket: bucket}, ownerPublicKey: public, sshHostKey: hostSigner}
 	if *workers {
 		m.workers = &worker.Local{Root: *workerRoot, Sandbox: *sandbox}
 	}
 	go m.serveSSH(ln)
-	log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.handler()), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
+	log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.ownerHandler(false, files)), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
 }
 
 func parseOwnerPublicKey(value string) (ed25519.PublicKey, error) {
@@ -157,4 +162,22 @@ func parseOwnerPublicKey(value string) (ed25519.PublicKey, error) {
 		return nil, errors.New("MONITOR_OWNER_PUBLIC_KEY must be ed25519: followed by a base64 public key")
 	}
 	return ed25519.PublicKey(key), nil
+}
+
+func uiDevProxy(address string, development bool) (http.Handler, error) {
+	if !development {
+		return nil, errors.New("-ui-dev-url requires a development file:// bucket without -production")
+	}
+	target, err := url.Parse(address)
+	if err != nil || target.Scheme != "http" || target.Host == "" || target.User != nil ||
+		(target.Path != "" && target.Path != "/") || target.RawQuery != "" || target.Fragment != "" ||
+		(target.Hostname() != "localhost" && !net.ParseIP(target.Hostname()).IsLoopback()) {
+		return nil, errors.New("-ui-dev-url must be a loopback HTTP origin, such as http://127.0.0.1:5173")
+	}
+	target.Path = ""
+	proxy := httputil.NewSingleHostReverseProxy(target)
+	proxy.ErrorHandler = func(w http.ResponseWriter, _ *http.Request, _ error) {
+		http.Error(w, "UI development server unavailable; start it with bun dev/run.ts", http.StatusBadGateway)
+	}
+	return proxy, nil
 }

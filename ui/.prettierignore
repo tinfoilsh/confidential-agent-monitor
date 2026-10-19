@@ -1,0 +1,4 @@
+dist/
+public/
+src/dashboard-icons.js
+bun.lock

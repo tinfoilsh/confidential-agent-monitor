@@ -261,7 +261,7 @@ func (b *Browser) handle(stream *connector.Stream, command string, do func(conte
 		if req.slot != nil {
 			layer.Secrets = []string{req.slot.Value}
 		}
-		if err := stream.Check(layer); err != nil {
+		if err := stream.Gate(r.Context(), layer); err != nil {
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
 		}

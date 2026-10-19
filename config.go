@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"context"
 	"embed"
 	"encoding/json"
 	"errors"
@@ -33,8 +35,6 @@ type identity struct {
 	Effects  map[string]string `json:"effects,omitempty"`
 	Accounts map[string]access `json:"accounts"`
 	Rules    map[string]rule   `json:"rules,omitempty"`
-	// Profile records valid requests without enforcing policy or changing labels.
-	Profile bool `json:"profile,omitempty"`
 }
 
 type access struct {
@@ -268,6 +268,14 @@ func compileSource(policy string, secrets secretStore) (*config, map[string]*con
 	if err != nil {
 		return nil, nil, err
 	}
+	// Earlier onboarding and dev/setup wrote profile, including false. Accept
+	// their stored policies without retaining the retired enforcement bypass.
+	object, _ := decoded.(map[string]any)
+	identities, _ := object["identities"].(map[string]any)
+	for _, value := range identities {
+		id, _ := value.(map[string]any)
+		delete(id, "profile")
+	}
 	cfg := &config{Lattices: latticeOptions{Confidentiality: true}}
 	raw, err := json.Marshal(decoded)
 	if err == nil {
@@ -486,30 +494,84 @@ func actionLineage(action string) []string {
 //go:embed presets/*.json
 var presetFiles embed.FS
 
-// draftFiles holds unreviewed presets a dev monitor loads from disk with -drafts; they are never embedded and never replace a shipped preset.
-var draftFiles fs.FS
-
 var presets = sync.OnceValues(func() (map[string]*presetRecord, error) {
 	shipped, _ := fs.Sub(presetFiles, "presets")
 	out := map[string]*presetRecord{}
-	for _, fsys := range []fs.FS{shipped, draftFiles} {
-		if fsys == nil {
-			continue
+	files, _ := fs.Glob(shipped, "*.json")
+	for _, file := range files {
+		name := strings.TrimSuffix(file, ".json")
+		src, err := fs.ReadFile(shipped, file)
+		if err == nil {
+			out[name], err = decodePreset(src)
 		}
-		files, _ := fs.Glob(fsys, "*.json")
-		for _, file := range files {
-			name := strings.TrimSuffix(file, ".json")
-			if out[name] != nil {
-				continue
-			}
-			src, err := fs.ReadFile(fsys, file)
-			if err == nil {
-				out[name], err = decodePreset(src)
-			}
-			if err != nil {
-				return nil, fmt.Errorf("preset %s: %w", file, err)
-			}
+		if err != nil {
+			return nil, fmt.Errorf("preset %s: %w", file, err)
 		}
 	}
 	return out, nil
 })
+
+// prepareCandidate validates source without publishing anything.
+func (m *monitor) prepareCandidate(ctx context.Context, source string, secrets secretStore) (sealed, *state, error) {
+	next := m.store.doc
+	next.Policy = source
+	next.Secrets = secrets
+	if secrets == nil {
+		next.Secrets = m.store.doc.Secrets.clone()
+	}
+	st, err := m.build(ctx, next, m.live.Load().Env, m.live.Load())
+	return next, st, err
+}
+
+func (m *monitor) editPolicy(ctx context.Context, changes []sourceChange) error {
+	if len(changes) == 0 {
+		return nil
+	}
+	secrets := m.store.doc.Secrets.clone()
+	var edits []sourceChange
+	for _, change := range changes {
+		if len(change.Path) == 0 {
+			return errors.New("an edit requires a source path")
+		}
+		if change.Delete && change.Value != nil {
+			return errors.New("a deletion cannot have a value")
+		}
+		// Credentials live in the sealed store; removing a connection drops its own.
+		if isCredentialPath(change.Path) {
+			var raw json.RawMessage
+			if change.Value != nil {
+				raw, _ = json.Marshal(change.Value)
+			}
+			secrets.set(credentialID(change.Path), raw)
+			continue
+		}
+		if !change.Delete {
+			var err error
+			if change.Value, err = tomlValue(change.Value); err != nil {
+				return err
+			}
+		}
+		// Replacing a table key by key gives it [header] sections instead of one inline line.
+		if table, ok := change.Value.(map[string]any); ok && len(table) > 0 && table["$json"] == nil {
+			edits = append(edits, sourceChange{Path: change.Path, Delete: true})
+			edits = append(edits, fragmentChanges(table, change.Path)...)
+			continue
+		}
+		edits = append(edits, change)
+	}
+	source, err := editSource(m.store.doc.Policy, edits)
+	if err != nil {
+		return err
+	}
+	// Compilation drops credentials without a connection, so compare against what this edit wrote.
+	next, st, err := m.prepareCandidate(ctx, source, secrets.clone())
+	if err != nil {
+		return err
+	}
+	for id, raw := range secrets.all() {
+		if next.Secrets.get(id) == nil && !bytes.Equal(raw, m.store.doc.Secrets.get(id)) {
+			return fmt.Errorf("credential %v has no connection", id)
+		}
+	}
+	return m.activate(ctx, next, st)
+}

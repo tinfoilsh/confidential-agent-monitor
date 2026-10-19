@@ -1,6 +1,13 @@
 # syntax=docker/dockerfile:1
 FROM docker.io/library/golang:1.27.2-alpine@sha256:3b15ba438c60ab8fabe5fee3b11025c0049e358b31feff384648f11fc8e335f8 AS toolchain
 
+FROM docker.io/oven/bun:1.3.13@sha256:87416c977a612a204eb54ab9f3927023c2a3c971f4f345a01da08ea6262ae30e AS ui-build
+WORKDIR /src/ui
+COPY ui/package.json ui/bun.lock ./
+RUN bun install --frozen-lockfile
+COPY ui/ ./
+RUN bun run build
+
 # A static, unprivileged launcher keeps the final image shell-free. No daemon,
 # image pull or package manager is needed when a connection starts a worker.
 FROM toolchain AS sandbox-build
@@ -19,6 +26,7 @@ WORKDIR /src/monitor
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
+COPY --from=ui-build /src/ui/dist ./ui/dist
 RUN go build -mod=readonly -trimpath -buildvcs=false -ldflags='-s -w -buildid=' -o /monitor .
 # The worker gets one prepared filesystem, with no mounts derived from accounts.
 # Static connectors need only trust roots; custom images can install programs here.

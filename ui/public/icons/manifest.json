@@ -86,6 +86,9 @@
   "bitly": {
     "src": "bitly.svg"
   },
+  "bitly_api": {
+    "src": "bitly.svg"
+  },
   "box": {
     "src": "box.png"
   },
@@ -120,6 +123,9 @@
     "src": "clockify.svg"
   },
   "cloudflare": {
+    "src": "cloudflare.svg"
+  },
+  "cloudflare_api": {
     "src": "cloudflare.svg"
   },
   "coda": {
@@ -174,6 +180,9 @@
     "src": "email.svg"
   },
   "figma": {
+    "src": "figma.svg"
+  },
+  "figma_api": {
     "src": "figma.svg"
   },
   "form_io": {
@@ -286,6 +295,9 @@
   "hunter": {
     "src": "hunter.png"
   },
+  "hunter_api": {
+    "src": "hunter.png"
+  },
   "intercom": {
     "src": "intercom.svg"
   },
@@ -311,6 +323,9 @@
     "src": "linear.svg"
   },
   "mailchimp": {
+    "src": "mailchimp.svg"
+  },
+  "mailchimp_api": {
     "src": "mailchimp.svg"
   },
   "mailgun": {
@@ -393,6 +408,9 @@
     "src": "ollama.svg"
   },
   "open_router": {
+    "src": "open_router.svg"
+  },
+  "open_router_api": {
     "src": "open_router.svg"
   },
   "openai": {
@@ -536,6 +554,9 @@
   "typeform": {
     "src": "typeform.svg"
   },
+  "typeform_api": {
+    "src": "typeform.svg"
+  },
   "uptime_robot": {
     "src": "uptime_robot.svg"
   },
@@ -577,6 +598,9 @@
   "xero": {
     "src": "xero.svg"
   },
+  "xero_api": {
+    "src": "xero.svg"
+  },
   "you_tube": {
     "src": "you_tube.png"
   },
@@ -590,6 +614,9 @@
     "src": "zoho_crm.svg"
   },
   "zoom": {
+    "src": "zoom.svg"
+  },
+  "zoom_api": {
     "src": "zoom.svg"
   },
   "zulip": {

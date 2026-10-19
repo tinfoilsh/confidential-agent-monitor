@@ -64,7 +64,7 @@ func (r *TCPRequest) Describe(connector.Context) (facts.Facts, error) {
 
 func (c *TCP) Serve(s *connector.Stream, e *connector.Env) {
 	host, port := s.Host, s.Port
-	if c.Claim(host, port) < 0 || s.Check(&TCPRequest{Host: host, Port: port}) != nil {
+	if c.Claim(host, port) < 0 || s.Gate(s.Context, &TCPRequest{Host: host, Port: port}) != nil {
 		return
 	}
 	upstream, err := e.Dialer.DialContext(s.Context, "tcp", net.JoinHostPort(host, strconv.Itoa(int(port))))

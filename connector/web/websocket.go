@@ -9,6 +9,7 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/facts"
 )
 
 // Only RFC 6455 upgrades are supported. The preset must separately recognize
@@ -84,6 +85,13 @@ func serveWebSocket(w http.ResponseWriter, r *http.Request, handshake *Request, 
 			if err != nil {
 				return
 			}
+			// Classify the whole delivery using the account's contents and trust.
+			// Its payload is opaque to policy and can stream after admission,
+			// including large images, without an unbounded allocation.
+			if err := s.Gate(s.Context, &WebSocketReceive{Origin: handshake.HTTP.Origin, Host: handshake.HTTP.Host, Path: handshake.HTTP.Path}); err != nil {
+				client.Close(websocket.StatusPolicyViolation, "delivery refused by monitor; see activity")
+				return
+			}
 			writer, err := client.Writer(s.Context, kind)
 			if err != nil {
 				return
@@ -102,7 +110,7 @@ func serveWebSocket(w http.ResponseWriter, r *http.Request, handshake *Request, 
 			return
 		}
 		request := websocketMessage(handshake, kind, body)
-		if err := s.Check(request); err != nil {
+		if err := s.Gate(s.Context, request); err != nil {
 			client.Close(websocket.StatusPolicyViolation, "request refused by monitor; see activity")
 			return
 		}
@@ -110,6 +118,25 @@ func serveWebSocket(w http.ResponseWriter, r *http.Request, handshake *Request, 
 			return
 		}
 	}
+}
+
+// WebSocketReceive admits one upstream message. Receiving does not repeat the
+// request's effects (such as paying for inference) or send data to the upstream.
+// The account supplies a conservative label for the entire opaque payload.
+type WebSocketReceive struct {
+	Origin string `json:"origin"`
+	Host   string `json:"host"`
+	Path   string `json:"path"`
+}
+
+func (r *WebSocketReceive) Describe(connector.Context) (facts.Facts, error) {
+	return facts.Facts{
+		Operation:  &facts.Operation{ID: "websocket.receive", Action: "receive", Effects: []string{"read"}},
+		Title:      "Receive WebSocket message from " + r.Host + r.Path,
+		Parameters: map[string]any{"origin": r.Origin, "path": r.Path},
+		Details:    facts.Details{HTTP: &facts.HTTP{WebSocket: true, Origin: r.Origin, Host: r.Host, Path: r.Path, BodyKind: "opaque"}},
+		Context:    facts.Context{Sends: "me"},
+	}, nil
 }
 
 func websocketHeaders(header http.Header) http.Header {

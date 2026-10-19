@@ -1,0 +1,605 @@
+import { For, Show, createMemo, createResource, onCleanup } from "solid-js";
+import * as owner from "./owner.js";
+import {
+  ConnectorIcon,
+  Empty,
+  Icon,
+  LazyDetails,
+  ResourceDisclosure,
+  Search,
+  href,
+} from "./components";
+import { useMonitor } from "./monitor";
+
+export function Badge(props: { state: string }) {
+  return (
+    <span class={`badge status-${props.state}`}>
+      <Show when={props.state === "pending"}>
+        <Icon name="clock" />
+      </Show>
+      {props.state === "pending"
+        ? "Needs approval"
+        : props.state[0].toUpperCase() + props.state.slice(1)}
+    </span>
+  );
+}
+export function Activity(props: { scope?: string; name?: string }) {
+  const m = useMonitor();
+  if (props.scope === "agent" || props.scope === "account")
+    m.setFilters(props.scope, props.name ?? "");
+  const query = () => m.filters.query,
+    setQuery = (value: string) => m.setFilters("query", value),
+    state = () => m.filters.state,
+    setState = (value: string) => m.setFilters("state", value),
+    agent = () => m.filters.agent,
+    setAgent = (value: string) => m.setFilters("agent", value),
+    account = () => m.filters.account,
+    setAccount = (value: string) => m.setFilters("account", value),
+    page = () => m.filters.page,
+    setPage = (value: number) => m.setFilters("page", value);
+  const pending = () =>
+    m.records().filter((r) => owner.stateAt(r, m.now()) === "pending").length;
+  const filtered = createMemo(() =>
+    owner
+      .ordered(
+        m.records().map((r) => ({ ...r, state: owner.stateAt(r, m.now()) })),
+        m.dismissed(),
+      )
+      .filter(
+        (r) =>
+          (!state() || r.state === state()) &&
+          (!agent() || r.facts.principal.name === agent()) &&
+          (!account() || r.facts.account === account()) &&
+          `${owner.requestTitle(r)} ${r.facts.principal.name} ${r.facts.account}`
+            .toLowerCase()
+            .includes(query().toLowerCase()),
+      ),
+  );
+  const pages = () => Math.max(1, Math.ceil(filtered().length / 50)),
+    current = () => Math.min(page(), pages() - 1);
+  const change = (set: (value: string) => void, value: string) => {
+    set(value);
+    setPage(0);
+  };
+  return (
+    <>
+      <div id="overview">
+        <div class="stats">
+          <div class="stat">
+            <div>
+              Awaiting approval <Icon name="clock" />
+            </div>
+            <strong>{pending()}</strong>
+            <small>
+              {pending()
+                ? "Review before requests expire"
+                : "No requests waiting"}
+            </small>
+          </div>
+          <div class="stat">
+            <div>
+              Agents <Icon name="rules" />
+            </div>
+            <strong>
+              {Object.keys(m.view()!.config.identities ?? {}).length}
+            </strong>
+            <small>Identities managed by this monitor</small>
+          </div>
+          <div class="stat">
+            <div>
+              Recorded requests <Icon name="activity" />
+            </div>
+            <strong>{m.records().length}</strong>
+            <small>In the current activity log</small>
+          </div>
+        </div>
+        <Show when={pending()}>
+          <div class="pending-notice">
+            <Icon name="clock" />
+            <span>
+              <strong>
+                {pending()}{" "}
+                {pending() === 1 ? "request needs" : "requests need"} your
+                approval.
+              </strong>{" "}
+              Agents are waiting to continue.
+            </span>
+            <button
+              onClick={() =>
+                m.setFilters({
+                  query: "",
+                  state: "pending",
+                  agent: "",
+                  account: "",
+                  page: 0,
+                })
+              }
+            >
+              Review requests
+            </button>
+          </div>
+        </Show>
+      </div>
+      <div id="toolbar">
+        <Search
+          label="Search activity"
+          value={query()}
+          onInput={(value) => change(setQuery, value)}
+        />
+        <select
+          aria-label="All statuses"
+          value={state()}
+          onChange={(e) => change(setState, e.currentTarget.value)}
+        >
+          <option value="">All statuses</option>
+          <For
+            each={[
+              "pending",
+              "allowed",
+              "approved",
+              "denied",
+              "refused",
+              "expired",
+            ]}
+          >
+            {(s) => (
+              <option value={s}>
+                {s === "pending"
+                  ? "Needs approval"
+                  : s.charAt(0).toUpperCase() + s.slice(1)}
+              </option>
+            )}
+          </For>
+        </select>
+        <select
+          aria-label="All agents"
+          value={agent()}
+          onChange={(e) => change(setAgent, e.currentTarget.value)}
+        >
+          <option value="">All agents</option>
+          <For
+            each={[
+              ...new Set([
+                ...Object.keys(m.view()!.config.identities ?? {}),
+                ...m.records().map((r) => r.facts.principal.name),
+              ]),
+            ].sort()}
+          >
+            {(name) => <option>{name}</option>}
+          </For>
+        </select>
+        <select
+          aria-label="All connections"
+          value={account()}
+          onChange={(e) => change(setAccount, e.currentTarget.value)}
+        >
+          <option value="">All connections</option>
+          <For
+            each={[
+              ...new Set([
+                ...Object.keys(m.view()!.config.accounts ?? {}),
+                ...m.records().map((r) => r.facts.account),
+              ]),
+            ]
+              .filter(Boolean)
+              .sort()}
+          >
+            {(name) => <option>{name}</option>}
+          </For>
+        </select>
+        <Show when={query() || state() || agent() || account()}>
+          <button
+            onClick={() =>
+              m.setFilters({
+                query: "",
+                state: "",
+                agent: "",
+                account: "",
+                page: 0,
+              })
+            }
+          >
+            Clear filters
+          </button>
+        </Show>
+      </div>
+      <div id="list" class="resource-list">
+        <div class="resource-heading">
+          <h2>
+            Requests <span class="count">{filtered().length}</span>
+          </h2>
+          <span>Updates every 5 seconds</span>
+        </div>
+        <For
+          each={filtered()
+            .slice(current() * 50, (current() + 1) * 50)
+            .map((r) => r.id)}
+          fallback={
+            <Empty
+              title={
+                m.records().length ? "No matching requests" : "No requests yet"
+              }
+              action={
+                <Show when={!m.records().length}>
+                  <a class="button primary" href="#catalog">
+                    <Icon name="plus" />
+                    Add connection
+                  </a>
+                </Show>
+              }
+            >
+              <Show
+                when={m.records().length}
+                fallback="Requests appear here when an agent uses a connection."
+              >
+                Try another search or clear the filters.
+              </Show>
+            </Empty>
+          }
+        >
+          {(id) => {
+            const record = () => filtered().find((r) => r.id === id)!;
+            return (
+              <ResourceDisclosure
+                class="request-item"
+                summaryClass="request-row"
+                summary={
+                  <>
+                    <span class="resource-link">
+                      <ConnectorIcon
+                        preset={
+                          m.view()!.config.accounts?.[record().facts.account]
+                            ?.preset ?? "custom"
+                        }
+                      />
+                      <span>
+                        <strong>{owner.requestTitle(record())}</strong>
+                        <small>
+                          {record().facts.principal.name} ·{" "}
+                          {record().facts.account || "Policy"}
+                        </small>
+                      </span>
+                    </span>
+                    <div class="resource-meta">
+                      <Badge state={record().state} />
+                      <Show when={record().state === "pending"}>
+                        <span class="muted">
+                          {owner.timeLeft(record(), m.now())} left
+                        </span>
+                      </Show>
+                      <time title={new Date(record().time).toLocaleString()}>
+                        {new Date(record().time).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </time>
+                    </div>
+                    <div class="row-actions">
+                      <Show when={owner.decisions(record(), m.now()).once}>
+                        <button
+                          class="danger"
+                          onClick={() => void m.decide(record(), "deny")}
+                        >
+                          Deny request
+                        </button>
+                        <button
+                          class="primary"
+                          onClick={() => void m.decide(record(), "once")}
+                        >
+                          Allow once
+                        </button>
+                      </Show>
+                    </div>
+                    <span class="collection-chevron">
+                      <Icon name="arrow" />
+                    </span>
+                  </>
+                }
+              >
+                {(active) => <RequestDetail id={id} inline active={active()} />}
+              </ResourceDisclosure>
+            );
+          }}
+        </For>
+        <Show when={pages() > 1}>
+          <div class="pagination">
+            <span>
+              {filtered().length ? current() * 50 + 1 : 0} to{" "}
+              {Math.min((current() + 1) * 50, filtered().length)} of{" "}
+              {filtered().length} requests
+            </span>
+            <div>
+              <button
+                disabled={current() === 0}
+                onClick={() => setPage(current() - 1)}
+              >
+                Previous
+              </button>
+              <span>
+                {current() + 1} of {pages()}
+              </span>
+              <button
+                disabled={current() + 1 === pages()}
+                onClick={() => setPage(current() + 1)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </Show>
+      </div>
+    </>
+  );
+}
+export function RequestDetail(props: {
+  id: string;
+  inline?: boolean;
+  active?: boolean;
+}) {
+  const m = useMonitor();
+  const listed = () => m.records().find((r) => r.id === props.id);
+  const source = createMemo(
+    () => ({ api: m.api()!, id: props.id, state: listed()?.state }),
+    undefined,
+    {
+      equals: (a, b) =>
+        !!a && a.api === b.api && a.id === b.id && a.state === b.state,
+    },
+  );
+  // Closing a disclosure pauses updates while retaining the loaded request.
+  // Reopening unchanged details should not fetch the same large body again.
+  const selected = createMemo(
+    (previous: ReturnType<typeof source> | undefined) =>
+      props.active === false ? previous : source(),
+  );
+  const lifetime = new AbortController();
+  onCleanup(() => lifetime.abort());
+  const [full, { refetch }] = createResource(selected, (s) =>
+    s.api.request(s.id, lifetime.signal),
+  );
+  const record = createMemo(() => {
+    if (full.error) return;
+    const current = full() ?? listed();
+    return (
+      current && {
+        ...current,
+        state: listed()?.state ?? current.state,
+        savingDecision: listed()?.savingDecision,
+      }
+    );
+  });
+  return (
+    <div
+      id={props.inline ? undefined : "pane"}
+      classList={{ "request-inline": props.inline }}
+    >
+      <Show when={!props.inline}>
+        <a href="#activity">Back to activity</a>
+      </Show>
+      <Show when={full.error}>
+        <p role="alert">{String(full.error)}</p>
+        <button onClick={() => void refetch()}>Retry</button>
+      </Show>
+      <Show
+        when={!full.error && record()}
+        fallback={!full.error && <p>Loading request…</p>}
+      >
+        {(r) => {
+          const state = createMemo(() => owner.stateAt(r(), m.now()));
+          const reasons = createMemo(() =>
+            [...new Set([...(r().deny ?? []), ...owner.reasons(r())])].map(
+              (reason) =>
+                reason === "this agent may not do this on the account"
+                  ? "This agent does not have permission for this action."
+                  : reason,
+            ),
+          );
+          const destination = createMemo(() => {
+            const http = r().facts.details?.http;
+            return http
+              ? `${http.host}${http.path === "/" ? "" : http.path}`
+              : r()
+                  .facts.title?.match(
+                    /^(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|CONNECT|TRACE) (.+)$/,
+                  )?.[1]
+                  .replace(/\/$/, "");
+          });
+          return (
+            <section class="request-detail">
+              <Show when={!props.inline}>
+                <header class="request-detail-heading">
+                  <h2>{owner.requestTitle(r())}</h2>
+                  <Badge state={state()} />
+                </header>
+              </Show>
+              <dl class="request-context">
+                <div>
+                  <dt>Agent</dt>
+                  <dd>
+                    <a
+                      class="request-context-link"
+                      href={href("agents", r().facts.principal.name)}
+                    >
+                      {r().facts.principal.name}
+                      <Icon name="arrow" />
+                    </a>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Connection</dt>
+                  <dd>
+                    <Show
+                      when={m.view()!.config.accounts?.[r().facts.account]}
+                      fallback={r().facts.account || "Policy"}
+                    >
+                      {(account) => (
+                        <a
+                          class="request-context-link"
+                          href={href("account", r().facts.account)}
+                        >
+                          <ConnectorIcon preset={account().preset} />
+                          {r().facts.account}
+                          <Icon name="arrow" />
+                        </a>
+                      )}
+                    </Show>
+                  </dd>
+                </div>
+                <Show when={destination()}>
+                  <div>
+                    <dt>Destination</dt>
+                    <dd>{destination()}</dd>
+                  </div>
+                </Show>
+                <div>
+                  <dt>Requested</dt>
+                  <dd>
+                    <time dateTime={r().time}>
+                      {new Date(r().time).toLocaleString()}
+                    </time>
+                  </dd>
+                </div>
+              </dl>
+              <Show when={state() === "pending"}>
+                <p class="muted request-time-left">
+                  {owner.timeLeft(r(), m.now())} left to respond
+                </p>
+              </Show>
+              <Show when={reasons().length}>
+                <div class="request-reasons">
+                  <h3>
+                    {state() === "refused" || state() === "denied"
+                      ? "Why it was blocked"
+                      : state() === "pending"
+                        ? "Approval needed"
+                        : "Policy review"}
+                  </h3>
+                  <ul>
+                    <For each={reasons()}>{(reason) => <li>{reason}</li>}</For>
+                  </ul>
+                </div>
+              </Show>
+              <Show
+                when={
+                  (state() === "refused" || state() === "denied") &&
+                  m.view()!.config.accounts?.[r().facts.account] &&
+                  m.view()!.config.identities?.[r().facts.principal.name]
+                }
+              >
+                <div class="request-access">
+                  <a class="button" href={href("account", r().facts.account)}>
+                    Change access
+                    <Icon name="arrow" />
+                  </a>
+                  <p class="muted">
+                    Update this agent’s connection access, then retry the
+                    request from your agent.
+                  </p>
+                </div>
+              </Show>
+              <Show when={full.loading}>
+                <p class="muted">Loading request details…</p>
+              </Show>
+              <Show when={r().facts.details?.policy}>
+                {(policy) => (
+                  <>
+                    <h3>Source changes</h3>
+                    <pre>{policy().source_diff}</pre>
+                    <h3>Effective changes</h3>
+                    <pre>
+                      {policy().effective_diff || "No effective changes."}
+                    </pre>
+                  </>
+                )}
+              </Show>
+              <div class="decisions">
+                <Show when={owner.decisions(r(), m.now()).dismiss}>
+                  <button
+                    onClick={() => {
+                      m.dismiss(r().id);
+                      location.hash = "#activity";
+                    }}
+                  >
+                    Dismiss
+                  </button>
+                </Show>
+                <Show when={owner.decisions(r(), m.now()).once}>
+                  <button
+                    class="primary"
+                    onClick={() => void m.decide(r(), "once")}
+                  >
+                    Allow once
+                  </button>
+                </Show>
+                <Show when={owner.decisions(r(), m.now()).save}>
+                  <button
+                    title={owner.saveText(r())}
+                    onClick={() => void m.decide(r(), "save")}
+                  >
+                    Save rule and retry
+                  </button>
+                </Show>
+                <Show when={owner.decisions(r(), m.now()).deny}>
+                  <button
+                    class="danger"
+                    onClick={() => void m.decide(r(), "deny")}
+                  >
+                    Deny
+                  </button>
+                </Show>
+                <Show when={owner.draftable(m.view()!, r())}>
+                  {(preset) => (
+                    <a href={href("preset", preset(), r().id)}>
+                      Draft operation in preset
+                    </a>
+                  )}
+                </Show>
+              </div>
+              <LazyDetails
+                class="request-technical"
+                data-disclosure="request"
+                summaryClass="request-technical-toggle"
+                summary={
+                  <>
+                    <span>View details</span>
+                    <Icon name="arrow" />
+                  </>
+                }
+              >
+                {() => (
+                  <div class="request-technical-body">
+                    <Show when={r().facts.details?.http}>
+                      {(http) => (
+                        <p class="mono">
+                          {http().method} {http().host}
+                          {http().path}
+                        </p>
+                      )}
+                    </Show>
+                    <h3>Policy facts</h3>
+                    <pre>{JSON.stringify(r().facts, null, 2)}</pre>
+                    <Show when={r().grant}>
+                      <h3>Approval scope</h3>
+                      <pre>{JSON.stringify(r().grant, null, 2)}</pre>
+                    </Show>
+                    <Show when={m.view()!.config.accounts?.[r().facts.account]}>
+                      {(account) => (
+                        <a
+                          class="request-preset-link"
+                          href={href("preset", account().preset, r().id)}
+                        >
+                          Edit preset
+                          <Icon name="arrow" />
+                        </a>
+                      )}
+                    </Show>
+                  </div>
+                )}
+              </LazyDetails>
+            </section>
+          );
+        }}
+      </Show>
+    </div>
+  );
+}

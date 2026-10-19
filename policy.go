@@ -89,8 +89,20 @@ func preparePolicy(ctx context.Context, cfg *config) (q rego.PreparedEvalQuery, 
 	return q, hex.EncodeToString(h.Sum(nil)), err
 }
 
-// check describes an input once under the authorization lock. Only valid facts reach policy.
-func (m *monitor) check(ctx context.Context, in input) (err error) {
+// gate describes captured input under the authorization lock. Approval waits
+// release the lock, so other streams and the opposite direction can progress.
+// Once admitted, this operation may finish under its decision.
+func (m *monitor) gate(ctx context.Context, in input) (err error) {
+	if in.stream != nil {
+		if err := in.stream.Context.Err(); err != nil {
+			return err
+		}
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithCancel(ctx)
+		defer cancel()
+		stop := context.AfterFunc(in.stream.Context, cancel)
+		defer stop()
+	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if err := ctx.Err(); err != nil {
@@ -191,9 +203,6 @@ func (m *monitor) check(ctx context.Context, in input) (err error) {
 	d.Facts, d.Grant, d.Definition = &f, grant, definition
 	r := m.addRecord(&d)
 	defer func() { r.settle(err) }()
-	if p.Profile {
-		return ctx.Err()
-	}
 	if len(d.Deny) != 0 {
 		return errors.New(strings.Join(d.Deny, "; "))
 	}
@@ -343,4 +352,51 @@ func (m *monitor) saveRule(ctx context.Context, r *record) error {
 		return err
 	}
 	return m.editPolicy(ctx, []sourceChange{{Path: []string{"identities", p.Name, "rules", r.ID}, Value: value}})
+}
+
+var cleanLabel = facts.Label{Trust: "trusted", Audience: "anyone"}
+
+type principal struct {
+	Key  string
+	Name string
+	identity
+}
+
+func (p principal) reaches(account string) bool {
+	level := p.Accounts[account].Level
+	return level != "" && level != "off"
+}
+
+func (m *monitor) currentLabel(fingerprint string) facts.Label {
+	if l, ok := m.store.doc.Labels[fingerprint]; ok {
+		return l
+	}
+	return cleanLabel
+}
+
+// observe persists a changed label before the operation runs. Message-gated
+// streams use the shared label on their next operation; opaque sessions close.
+func (m *monitor) observe(ctx context.Context, fingerprint string, l facts.Label, source *connector.Stream) error {
+	if old := m.currentLabel(fingerprint); old.Trust == l.Trust && old.Audience == l.Audience {
+		return nil
+	}
+	next := m.store.doc
+	next.Labels = maps.Clone(m.store.doc.Labels)
+	next.Labels[fingerprint] = l
+	if err := m.store.commit(ctx, next); err != nil {
+		return err
+	}
+	// An opaque source may finish the session it just admitted. Other opaque
+	// sessions cannot recheck their bytes, so revoke them. Sandbox routes carry
+	// end-to-end traffic under Routes alone. An owner reset (source == nil)
+	// closes all connector streams so old deliveries cannot recontaminate it.
+	for s, key := range m.streams {
+		if key == fingerprint && s != source && !reservedRoute(s.Host) {
+			c := m.live.Load().connections[s.Name]
+			if source == nil || c == nil || !connectorKinds[c.protocol].PerMessage {
+				s.Close()
+			}
+		}
+	}
+	return nil
 }

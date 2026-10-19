@@ -7,8 +7,8 @@
 !connector/**
 !facts/
 !facts/**
-!app/
-!app/**
+!ui/
+!ui/**
 !presets/
 !presets/*.json
 !presets/policy/
@@ -19,3 +19,5 @@
 **/testdata/**
 **/.git/**
 **/__pycache__/**
+**/node_modules/**
+ui/dist/**

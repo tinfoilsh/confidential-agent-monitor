@@ -34,7 +34,7 @@ const (
 	idleRPCTimeout        = 30 * time.Second
 )
 
-const protocolVersion = 5
+const protocolVersion = 6
 const readyPath = "/_monitor/ready"
 
 type bootstrap struct {

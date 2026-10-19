@@ -71,7 +71,7 @@ func (t *SFTP) Serve(s *connector.Stream, e *connector.Env) {
 				r.Reply(true, nil)
 			}
 			go ssh.DiscardRequests(requests)
-			p := sftpProxy{up: reader, out: writer, check: s.Check, handles: map[string]*sftpHandle{}}
+			p := sftpProxy{up: reader, out: writer, check: func(r connector.Request) error { return s.Gate(s.Context, r) }, handles: map[string]*sftpHandle{}}
 			p.serve(ch, cmp.Or(t.Root, "/"))
 			return
 		}

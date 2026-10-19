@@ -13,9 +13,8 @@ mkdir -p "$dev/firefox" "$dev/store"
 [[ -f $dev/id ]] || ssh-keygen -q -t ed25519 -N '' -C monitor-dev -f "$dev/id"
 [[ -f $dev/owner.key ]] || head -c32 /dev/urandom | base64 > "$dev/owner.key"
 if ! curl --max-time 1 -fs "$api/healthz" > /dev/null; then
-  CGO_ENABLED=0 go build -o "$dev/monitor" .
-  "$dev/monitor" -listen "$listen" -api "${api#http://}" -bucket "file://$dev/store?no_tmp_dir=true" \
-    -drafts presets/drafts -extension "$(realpath "${MONITOR_EXTENSION:-../english-only}")" > "$dev/monitor.log" 2>&1 &
+  CGO_ENABLED=0 setsid bun dev/run.ts -listen "$listen" -api "${api#http://}" -bucket "file://$dev/store?no_tmp_dir=true" \
+    -extension "$(realpath "${MONITOR_EXTENSION:-../english-only}")" > "$dev/monitor.log" 2>&1 < /dev/null &
   monitor_pid=$!
   deadline=$((SECONDS + 30))
   until curl --max-time 1 -fs "$api/healthz" > /dev/null; do
@@ -45,10 +44,9 @@ if jq -e '.generation == 1 and ((.config.accounts // {}) | length == 0) and ((.c
   fi
   jq '{changes: [to_entries[] | {path: [.key], value: .value}]}' "$dev/seed.json" | owner /policy/edits -d @- > "$dev/state.json"
 fi
-# MONITOR_PROFILE=1 lets the dev agent's requests all through, recorded in the owner's request log.
-jq --arg key "$(<"$dev/id.pub")" --arg profile "${MONITOR_PROFILE:-}" \
+jq --arg key "$(<"$dev/id.pub")" \
   '.config as $config | ($config.identities.dev // {}) as $dev |
-   {identities: {dev: ($dev + {key: $key, profile: ($profile != ""),
+   {identities: {dev: ($dev + {key: $key,
      accounts: (($config.accounts // {}) | with_entries(.value = ($dev.accounts[.key] // {level: "allow"})))})}}' "$dev/state.json" |
   jq '{changes: [{path: ["identities", "dev"], value: .identities.dev}]}' | owner /policy/edits -d @- > "$dev/state.next.json"
 mv "$dev/state.next.json" "$dev/state.json"

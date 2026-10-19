@@ -75,7 +75,7 @@ func (t *SSH) dial(s *connector.Stream, e *connector.Env) (*ssh.Client, error) {
 
 func (t *SSH) Serve(s *connector.Stream, e *connector.Env) {
 	t.serve(s, e, func(up *ssh.Client, nc ssh.NewChannel) {
-		relayChannel(up, nc, func(r *ssh.Request) error { return s.Check(eventForSSH(r)) })
+		relayChannel(up, nc, func(r *ssh.Request) error { return s.Gate(s.Context, eventForSSH(r)) })
 	})
 }
 

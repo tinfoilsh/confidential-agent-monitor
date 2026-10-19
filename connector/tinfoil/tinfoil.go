@@ -14,7 +14,7 @@ import (
 	"github.com/tinfoilsh/tinfoil-go/verifier"
 )
 
-var Definition = connector.Definition{NewConfig: func() connector.Server { return new(Server) }, Requests: []connector.Request{new(web.Request)}}
+var Definition = connector.Definition{PerMessage: true, NewConfig: func() connector.Server { return new(Server) }, Requests: []connector.Request{new(web.Request), new(web.WebSocketReceive)}}
 
 type Server struct {
 	connector.SecretConfig
