@@ -23,22 +23,29 @@ export function Agents(props: { expanded?: string }) {
       : name.startsWith("sandbox-")
         ? "sandboxes"
         : "agents";
-  const description = (name: string) => {
-    const identity = m.view()!.config.identities![name];
-    const count = owner
-      .agentAccess(m.view()!, name)
-      .filter((access) => access.level !== "off").length;
-    return `${count} connections · Sandbox connectivity ${identity.routes ? "enabled" : "disabled"}`;
-  };
-  const names = createMemo(() =>
-    Object.keys(m.view()!.config.identities ?? {})
-      .sort()
-      .filter((name) =>
-        `${name} ${description(name)}`
-          .toLowerCase()
-          .includes(query().toLowerCase()),
-      ),
-  );
+  const summaries = createMemo(() => {
+    const view = m.view()!;
+    return new Map(
+      Object.keys(view.config.identities ?? {})
+        .sort()
+        .map((name) => {
+          const count = owner
+            .agentAccess(view, name)
+            .filter((access) => access.level !== "off").length;
+          const description = `${count} connections · Sandbox connectivity ${view.config.identities![name].routes ? "enabled" : "disabled"}`;
+          return [
+            name,
+            { description, search: `${name} ${description}`.toLowerCase() },
+          ];
+        }),
+    );
+  });
+  const names = createMemo(() => {
+    const search = query().toLowerCase();
+    return [...summaries()]
+      .filter(([, summary]) => summary.search.includes(search))
+      .map(([name]) => name);
+  });
   return (
     <>
       <div id="toolbar">
@@ -51,52 +58,57 @@ export function Agents(props: { expanded?: string }) {
           ["agents", "Other agents"],
         ]}
       >
-        {([kind, title]) => (
-          <Show when={names().some((name) => type(name) === kind)}>
-            <div class="resource-list collection-list">
-              <div class="resource-heading">
-                <h2>
-                  {title}{" "}
-                  <span class="count">
-                    {names().filter((name) => type(name) === kind).length}
-                  </span>
-                </h2>
+        {([kind, title]) => {
+          const members = createMemo(() =>
+            names().filter((name) => type(name) === kind),
+          );
+          return (
+            <Show when={members().length}>
+              <div class="resource-list collection-list">
+                <div class="resource-heading">
+                  <h2>
+                    {title} <span class="count">{members().length}</span>
+                  </h2>
+                </div>
+                <For each={members()}>
+                  {(name) => (
+                    <ResourceDisclosure
+                      class="agent-item"
+                      open={props.expanded === name}
+                      summary={
+                        <>
+                          <Icon name={kind} />
+                          <strong class="collection-name" title={name}>
+                            {name}
+                          </strong>
+                          <span class="collection-description">
+                            {summaries().get(name)!.description}
+                          </span>
+                          <span class="resource-meta">
+                            {owner.labelStatus(
+                              m.view()!,
+                              m.view()!.labels[name],
+                            )}
+                          </span>
+                          <span class="collection-chevron">
+                            <Icon name="arrow" />
+                          </span>
+                        </>
+                      }
+                    >
+                      {() => (
+                        <div class="agent-inline">
+                          <AgentAccess name={name} />
+                          <AgentSettings name={name} />
+                        </div>
+                      )}
+                    </ResourceDisclosure>
+                  )}
+                </For>
               </div>
-              <For each={names().filter((name) => type(name) === kind)}>
-                {(name) => (
-                  <ResourceDisclosure
-                    class="agent-item"
-                    open={props.expanded === name}
-                    summary={
-                      <>
-                        <Icon name={kind} />
-                        <strong class="collection-name" title={name}>
-                          {name}
-                        </strong>
-                        <span class="collection-description">
-                          {description(name)}
-                        </span>
-                        <span class="resource-meta">
-                          {owner.labelStatus(m.view()!, m.view()!.labels[name])}
-                        </span>
-                        <span class="collection-chevron">
-                          <Icon name="arrow" />
-                        </span>
-                      </>
-                    }
-                  >
-                    {() => (
-                      <div class="agent-inline">
-                        <AgentAccess name={name} />
-                        <AgentSettings name={name} />
-                      </div>
-                    )}
-                  </ResourceDisclosure>
-                )}
-              </For>
-            </div>
-          </Show>
-        )}
+            </Show>
+          );
+        }}
       </For>
       <Show when={!names().length}>
         <div class="resource-list">

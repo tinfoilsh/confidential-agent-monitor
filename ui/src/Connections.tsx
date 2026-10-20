@@ -1,4 +1,12 @@
-import { For, Show, createMemo, createSignal, createUniqueId } from "solid-js";
+import {
+  For,
+  Show,
+  Suspense,
+  createMemo,
+  createSignal,
+  createUniqueId,
+  lazy,
+} from "solid-js";
 import { createStore } from "solid-js/store";
 import * as owner from "./owner.js";
 import {
@@ -15,22 +23,31 @@ import {
   href,
 } from "./components";
 import { useMonitor } from "./monitor";
-import { Browser } from "./Browser";
 import { AgentConnectionAccess } from "./Agents";
+
+const Browser = lazy(() =>
+  import("./Browser").then((m) => ({ default: m.Browser })),
+);
 
 export function Connections(props: { expanded?: string }) {
   const m = useMonitor(),
     [query, setQuery] = m.search("accounts");
   if (props.expanded) setQuery("");
-  const names = createMemo(() =>
+  const searchable = createMemo(() =>
     Object.keys(m.view()!.config.accounts ?? {})
       .sort()
-      .filter((name) =>
-        `${name} ${owner.presetOf(m.view()!, name).title}`
-          .toLowerCase()
-          .includes(query().toLowerCase()),
-      ),
+      .map((name) => ({
+        name,
+        search:
+          `${name} ${owner.presetOf(m.view()!, name).title}`.toLowerCase(),
+      })),
   );
+  const names = createMemo(() => {
+    const search = query().toLowerCase();
+    return searchable()
+      .filter((entry) => entry.search.includes(search))
+      .map((entry) => entry.name);
+  });
   return (
     <>
       <div id="toolbar">
@@ -708,7 +725,9 @@ function Connection(props: { name: string; active: boolean }) {
         </section>
         <Show when={owner.liveConnection(m.view()!, props.name)}>
           {(connection) => (
-            <Browser name={connection()} active={props.active} />
+            <Suspense fallback={<p role="status">Loading browser…</p>}>
+              <Browser name={connection()} active={props.active} />
+            </Suspense>
           )}
         </Show>
         <Show when={setups().length}>

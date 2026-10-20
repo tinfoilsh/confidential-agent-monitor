@@ -14,6 +14,7 @@ import {
 } from "solid-js";
 import { createStore } from "solid-js/store";
 import * as owner from "./owner.js";
+import { createRequestLog } from "./requests";
 
 const KEY = "monitor-owner-key",
   SESSION = "monitor-local-session",
@@ -130,7 +131,12 @@ function createMonitor() {
     return next;
   });
   const view = createMemo(() => projected()?.view);
-  const records = createMemo(() => projected()?.requests ?? []);
+  const requests = createMemo(() => projected()?.requests ?? []);
+  const {
+    records,
+    byId: recordsById,
+    pendingCount,
+  } = createRequestLog(requests, now);
   const remember = (
     next: owner.View,
     requests = snapshot()?.requests ?? [],
@@ -326,9 +332,7 @@ function createMonitor() {
     }),
   );
   createEffect(() => {
-    const count = records().filter(
-      (r) => owner.stateAt(r, now()) === "pending",
-    ).length;
+    const count = pendingCount();
     document.title = count ? `(${count}) Monitor` : "Monitor";
   });
   onMount(async () => {
@@ -391,11 +395,16 @@ function createMonitor() {
       .then(setIcons)
       .catch(() => {});
     const visible = () => {
-      if (!locked() && !document.hidden) void refresh();
+      if (!document.hidden) {
+        setNow(Date.now());
+        if (!locked()) void refresh();
+      }
     };
     document.addEventListener("visibilitychange", visible);
     const poll = setInterval(visible, 5000);
-    const clock = setInterval(() => setNow(Date.now()), 1000);
+    const clock = setInterval(() => {
+      if (!document.hidden) setNow(Date.now());
+    }, 1000);
     onCleanup(() => {
       document.removeEventListener("visibilitychange", visible);
       clearInterval(poll);
@@ -412,6 +421,8 @@ function createMonitor() {
     credential,
     view,
     records,
+    recordsById,
+    pendingCount,
     locked,
     busy,
     loading,

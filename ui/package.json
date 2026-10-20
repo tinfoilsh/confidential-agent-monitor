@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "bun --bun vite",
     "build": "bun --bun tsc --noEmit && bun --bun vite build",
-    "check": "bun --bun tsc --noEmit && bun ../dev/owner-checks.mjs",
+    "check": "bun --bun tsc --noEmit && bun ../dev/owner-checks.mjs && bun --conditions=browser test test/requests.spec.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

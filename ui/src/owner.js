@@ -492,10 +492,11 @@ export const pendingSoonest = (records) =>
     .filter((r) => r.state === "pending")
     .sort((a, b) => new Date(a.expires) - new Date(b.expires));
 export function ordered(records, dismissed = []) {
+  const hidden = new Set(dismissed);
   const priority = (r) =>
     r.state === "pending"
       ? 0
-      : r.state === "expired" && !dismissed.includes(r.id)
+      : r.state === "expired" && !hidden.has(r.id)
         ? 1
         : 2;
   return [...records].sort(

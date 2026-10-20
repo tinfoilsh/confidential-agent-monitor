@@ -7,6 +7,7 @@ import {
   createEffect,
   createMemo,
   createSignal,
+  lazy,
   onCleanup,
   onMount,
 } from "solid-js";
@@ -15,14 +16,23 @@ import { MonitorProvider, useMonitor } from "./monitor";
 import { Activity, RequestDetail } from "./Activity";
 import { Agents, AddAgent } from "./Agents";
 import { AddConnection, Catalog, Connections } from "./Connections";
-import {
-  Integrations,
-  Policy,
-  PresetEditor,
-  Rules,
-  Settings,
-} from "./Settings";
 import { ConnectorIcon, Empty, Icon, href } from "./components";
+
+const Settings = lazy(() =>
+  import("./Settings").then((m) => ({ default: m.Settings })),
+);
+const Integrations = lazy(() =>
+  import("./Settings").then((m) => ({ default: m.Integrations })),
+);
+const Policy = lazy(() =>
+  import("./Settings").then((m) => ({ default: m.Policy })),
+);
+const PresetEditor = lazy(() =>
+  import("./Settings").then((m) => ({ default: m.PresetEditor })),
+);
+const Rules = lazy(() =>
+  import("./Settings").then((m) => ({ default: m.Rules })),
+);
 
 const sections: Record<string, [string, string]> = {
   activity: [
@@ -121,8 +131,7 @@ function Shell() {
         : args()[0] || "Monitor");
   const count = (section: string) =>
     section === "activity"
-      ? m.records().filter((r) => owner.stateAt(r, m.now()) === "pending")
-          .length
+      ? m.pendingCount()
       : Object.keys(
           (section === "agents"
             ? m.view()?.config.identities

@@ -1,4 +1,11 @@
-import { For, Show, createMemo, createResource, onCleanup } from "solid-js";
+import {
+  For,
+  Show,
+  batch,
+  createMemo,
+  createResource,
+  onCleanup,
+} from "solid-js";
 import * as owner from "./owner.js";
 import {
   ConnectorIcon,
@@ -10,6 +17,19 @@ import {
   href,
 } from "./components";
 import { useMonitor } from "./monitor";
+
+const requestTime = new Intl.DateTimeFormat(undefined, {
+  hour: "2-digit",
+  minute: "2-digit",
+});
+const requestDate = new Intl.DateTimeFormat(undefined, {
+  year: "numeric",
+  month: "numeric",
+  day: "numeric",
+  hour: "numeric",
+  minute: "numeric",
+  second: "numeric",
+});
 
 export function Badge(props: { state: string }) {
   return (
@@ -37,29 +57,44 @@ export function Activity(props: { scope?: string; name?: string }) {
     setAccount = (value: string) => m.setFilters("account", value),
     page = () => m.filters.page,
     setPage = (value: number) => m.setFilters("page", value);
-  const pending = () =>
-    m.records().filter((r) => owner.stateAt(r, m.now()) === "pending").length;
-  const filtered = createMemo(() =>
-    owner
-      .ordered(
-        m.records().map((r) => ({ ...r, state: owner.stateAt(r, m.now()) })),
-        m.dismissed(),
-      )
-      .filter(
-        (r) =>
-          (!state() || r.state === state()) &&
-          (!agent() || r.facts.principal.name === agent()) &&
-          (!account() || r.facts.account === account()) &&
-          `${owner.requestTitle(r)} ${r.facts.principal.name} ${r.facts.account}`
-            .toLowerCase()
-            .includes(query().toLowerCase()),
+  const pending = m.pendingCount;
+  const ordered = createMemo(() => owner.ordered(m.records(), m.dismissed()));
+  const searchText = createMemo(
+    () =>
+      new Map(
+        m
+          .records()
+          .map((r) => [
+            r.id,
+            `${owner.requestTitle(r)} ${r.facts.principal.name} ${r.facts.account}`.toLowerCase(),
+          ]),
       ),
   );
+  const filtered = createMemo(() => {
+    const search = query().toLowerCase(),
+      status = state(),
+      principal = agent(),
+      connection = account();
+    return ordered().filter(
+      (r) =>
+        (!status || r.state === status) &&
+        (!principal || r.facts.principal.name === principal) &&
+        (!connection || r.facts.account === connection) &&
+        (!search || searchText().get(r.id)!.includes(search)),
+    );
+  });
   const pages = () => Math.max(1, Math.ceil(filtered().length / 50)),
     current = () => Math.min(page(), pages() - 1);
+  const visible = createMemo(() =>
+    filtered()
+      .slice(current() * 50, (current() + 1) * 50)
+      .map((r) => r.id),
+  );
   const change = (set: (value: string) => void, value: string) => {
-    set(value);
-    setPage(0);
+    batch(() => {
+      set(value);
+      setPage(0);
+    });
   };
   return (
     <>
@@ -211,9 +246,7 @@ export function Activity(props: { scope?: string; name?: string }) {
           <span>Updates every 5 seconds</span>
         </div>
         <For
-          each={filtered()
-            .slice(current() * 50, (current() + 1) * 50)
-            .map((r) => r.id)}
+          each={visible()}
           fallback={
             <Empty
               title={
@@ -238,7 +271,9 @@ export function Activity(props: { scope?: string; name?: string }) {
           }
         >
           {(id) => {
-            const record = () => filtered().find((r) => r.id === id)!;
+            const record = createMemo(() => m.recordsById().get(id)!);
+            const timestamp = createMemo(() => record().time);
+            const time = createMemo(() => new Date(timestamp()));
             return (
               <ResourceDisclosure
                 class="request-item"
@@ -267,15 +302,12 @@ export function Activity(props: { scope?: string; name?: string }) {
                           {owner.timeLeft(record(), m.now())} left
                         </span>
                       </Show>
-                      <time title={new Date(record().time).toLocaleString()}>
-                        {new Date(record().time).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                      <time title={requestDate.format(time())}>
+                        {requestTime.format(time())}
                       </time>
                     </div>
                     <div class="row-actions">
-                      <Show when={owner.decisions(record(), m.now()).once}>
+                      <Show when={owner.decisions(record()).once}>
                         <button
                           class="danger"
                           onClick={() => void m.decide(record(), "deny")}
@@ -337,7 +369,7 @@ export function RequestDetail(props: {
   active?: boolean;
 }) {
   const m = useMonitor();
-  const listed = () => m.records().find((r) => r.id === props.id);
+  const listed = createMemo(() => m.recordsById().get(props.id));
   const source = createMemo(
     () => ({ api: m.api()!, id: props.id, state: listed()?.state }),
     undefined,
@@ -455,7 +487,7 @@ export function RequestDetail(props: {
                   <dt>Requested</dt>
                   <dd>
                     <time dateTime={r().time}>
-                      {new Date(r().time).toLocaleString()}
+                      {requestDate.format(new Date(r().time))}
                     </time>
                   </dd>
                 </div>

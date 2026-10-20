@@ -22,9 +22,10 @@ def git(*args):
 
 
 class Fixture:
-    def __init__(self, ref, dev_url=None):
+    def __init__(self, ref, dev_url=None, assets_dir=None):
         self.ref = ref
         self.dev_url = dev_url
+        self.assets_dir = assets_dir or ROOT / "ui/dist"
         self.content_types = {}
         self.condition = threading.Condition()
         self.delay = 0
@@ -60,7 +61,7 @@ class Fixture:
                     self.assets[name] = response.read()
                     self.content_types[name] = response.headers.get("Content-Type", "application/octet-stream")
             else:
-                self.assets[name] = git("show", f"{self.ref}:{name}") if self.ref else (ROOT / "ui/dist" / relative.relative_to("app")).read_bytes()
+                self.assets[name] = git("show", f"{self.ref}:{name}") if self.ref else (self.assets_dir / relative.relative_to("app")).read_bytes()
             if not self.ref and name.endswith(".html"):
                 # Observe actual intermediate heights, not just CSS declarations.
                 self.assets[name] = self.assets[name].replace(b"</body>", b'''<script>
@@ -231,6 +232,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--ref", help="serve app assets from this Git ref instead of the working tree")
     parser.add_argument("--dev-url", help="read app assets from the running development server")
+    parser.add_argument("--assets", type=Path, help="serve an alternate production dist directory")
     parser.add_argument("--delay", type=float, default=6.5, help="owner response latency in seconds")
     parser.add_argument("--output", type=Path, required=True, help="new JSON result file")
     args = parser.parse_args()
@@ -239,7 +241,7 @@ def main():
     if args.output.exists():
         parser.error("output file already exists")
     ref = git("rev-parse", "--verify", args.ref + "^{commit}").decode().strip() if args.ref else None
-    fixture = Fixture(ref, args.dev_url)
+    fixture = Fixture(ref, args.dev_url, args.assets)
     if not ref:
         fixture.view["config"]["lattices"] = dict(confidentiality=True, integrity=True)
         fixture.view["presets"]["anthropic"]["actions"] = {
