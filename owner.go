@@ -360,8 +360,9 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 	}))
 	mux.Handle("GET /{$}", owned(m, func(_ *http.Request, _ struct{}) (any, error) { return m.view(nil) }))
 	mux.Handle("POST /enroll", owned(m, func(r *http.Request, input map[string]struct {
-		Key    string `json:"key"`
-		Routes bool   `json:"routes"`
+		Key     string `json:"key"`
+		Routes  bool   `json:"routes"`
+		Restore bool   `json:"restore"`
 	}) (any, error) {
 		var changes []sourceChange
 		for name, id := range input {
@@ -372,11 +373,14 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 			fingerprint := ssh.FingerprintSHA256(key)
 			if existing, ok := m.live.Load().principals[fingerprint]; ok {
 				if id.Routes && !existing.Routes {
-					return nil, errors.New("device route access was revoked")
+					if !id.Restore {
+						return nil, errors.New("device route access was revoked")
+					}
+					changes = append(changes, sourceChange{Path: []string{"identities", existing.Name, "routes"}, Value: true})
 				}
 				continue
 			}
-			if m.store.doc.Enrolled[fingerprint] {
+			if m.store.doc.Enrolled[fingerprint] && !id.Restore {
 				return nil, errors.New("identity was revoked; restore access explicitly in Monitor")
 			}
 			if _, exists := m.live.Load().cfg.Identities[name]; exists {

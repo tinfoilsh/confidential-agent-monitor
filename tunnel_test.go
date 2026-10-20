@@ -56,9 +56,15 @@ func TestSSHSetupRequiresEnrolledSandboxWithoutChangingPolicy(t *testing.T) {
 	check(sandboxUserPrefix, false)
 	check(sandboxUserPrefix+fingerprint, false)
 
-	editPolicyForTest(t, m, sourceChange{Path: []string{"identities", "sandbox-work"}, Value: map[string]any{"key": string(ssh.MarshalAuthorizedKey(agent))}})
+	editEnrollmentPolicy(t, m, sourceChange{Path: []string{"identities", "sandbox-work"}, Value: map[string]any{"key": string(ssh.MarshalAuthorizedKey(agent))}})
+	check(sandboxUserPrefix+fingerprint, false)
+	editEnrollmentPolicy(t, m, sourceChange{Path: []string{"identities", "device"}, Value: map[string]any{"key": string(ssh.MarshalAuthorizedKey(device)), "routes": true}})
 	check(sandboxUserPrefix+fingerprint, true)
-	editPolicyForTest(t, m, sourceChange{Path: []string{"identities", "sandbox-work"}, Delete: true})
+	editEnrollmentPolicy(t, m, sourceChange{Path: []string{"identities", "device", "routes"}, Value: false})
+	check(sandboxUserPrefix+fingerprint, false)
+	editEnrollmentPolicy(t, m, sourceChange{Path: []string{"identities", "device", "routes"}, Value: true})
+	check(sandboxUserPrefix+fingerprint, true)
+	editEnrollmentPolicy(t, m, sourceChange{Path: []string{"identities", "sandbox-work"}, Delete: true})
 	if !m.store.doc.Enrolled[fingerprint] {
 		t.Fatal("revoked key was not remembered")
 	}

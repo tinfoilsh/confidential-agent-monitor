@@ -254,6 +254,9 @@ func (m *monitor) authorized(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Per
 		return nil, errLocked
 	}
 	if fingerprint, required := strings.CutPrefix(conn.User(), sandboxUserPrefix); required {
+		if !st.principals[ssh.FingerprintSHA256(key)].Routes {
+			return nil, errors.New("device has no sandbox route access")
+		}
 		if _, enrolled := st.principals[fingerprint]; !enrolled {
 			return nil, errors.New("sandbox is not enrolled")
 		}
