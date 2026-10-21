@@ -10,7 +10,10 @@ import {
 } from "./components";
 import { useMonitor } from "./monitor";
 
-export function Settings() {
+export function Settings(props: {
+  theme: string;
+  onThemeChange: (theme: string) => void;
+}) {
   const m = useMonitor(),
     [networks, setNetworks] = createSignal(
       (m.view()!.config.allow_networks ?? []).join("\n"),
@@ -18,6 +21,20 @@ export function Settings() {
   return (
     <div id="pane">
       <p>Permissions and guardrails save automatically.</p>
+      <section class="settings-section">
+        <h2>Appearance</h2>
+        <label class="setting-row">
+          <span>Color theme</span>
+          <select
+            value={props.theme}
+            onChange={(e) => props.onThemeChange(e.currentTarget.value)}
+          >
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </label>
+      </section>
       <section class="settings-section">
         <h2>Default permissions</h2>
         <label class="setting-row">

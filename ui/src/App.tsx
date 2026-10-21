@@ -213,41 +213,6 @@ function Shell() {
                 )}
               </For>
             </nav>
-            <div class="navigation-footer">
-              <div>
-                <span class="owner-avatar" aria-hidden="true">
-                  M
-                </span>
-                <span>
-                  Monitor owner
-                  <small>
-                    {m.mode() === "ssh"
-                      ? "Local SSH connection"
-                      : "Local development"}
-                  </small>
-                </span>
-                <button
-                  id="theme-toggle"
-                  class="icon-button"
-                  aria-label={`Theme: ${theme()}. Change color theme`}
-                  onClick={() =>
-                    setTheme(
-                      ["system", "light", "dark"][
-                        (["system", "light", "dark"].indexOf(theme()) + 1) % 3
-                      ],
-                    )
-                  }
-                >
-                  <Icon
-                    name={
-                      (theme() === "system" ? dark() : theme() === "dark")
-                        ? "sun"
-                        : "moon"
-                    }
-                  />
-                </button>
-              </div>
-            </div>
           </aside>
           <main id="workspace" tabIndex={-1}>
             <header id="page-header">
@@ -298,7 +263,9 @@ function Shell() {
             </header>
             <div id="page-content">
               <Show when={page()} keyed>
-                {(path) => <Page path={path} />}
+                {(path) => (
+                  <Page path={path} theme={theme()} onThemeChange={setTheme} />
+                )}
               </Show>
             </div>
           </main>
@@ -321,7 +288,11 @@ function Shell() {
     </>
   );
 }
-function Page(props: { path: string }) {
+function Page(props: {
+  path: string;
+  theme: string;
+  onThemeChange: (theme: string) => void;
+}) {
   const [kind, name = "", request] = parse(props.path);
   return (
     <Switch
@@ -351,7 +322,7 @@ function Page(props: { path: string }) {
         <RequestDetail id={name} />
       </Match>
       <Match when={kind === "settings"}>
-        <Settings />
+        <Settings theme={props.theme} onThemeChange={props.onThemeChange} />
       </Match>
       <Match when={kind === "integrations"}>
         <Integrations page={name} />
