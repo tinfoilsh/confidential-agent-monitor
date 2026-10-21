@@ -427,7 +427,6 @@ function AgentSettings(props: { name: string }) {
               id={reviewId}
               type="checkbox"
               role="switch"
-              aria-describedby={`${reviewId}-description`}
               checked={!!identity()?.reviewer}
               onChange={(e) => {
                 if (
@@ -446,9 +445,6 @@ function AgentSettings(props: { name: string }) {
                   );
               }}
             />
-            <p id={`${reviewId}-description`}>
-              Tinfoil approves, denies, or asks you about requests set to Ask.
-            </p>
           </div>
           <Show when={!!identity()?.reviewer && m.view()!.config.reviewer}>
             {(reviewer) => (
@@ -464,7 +460,7 @@ function AgentSettings(props: { name: string }) {
                 }}
               >
                 <label>
-                  Instructions for Tinfoil (shared by all agents)
+                  Instructions
                   <textarea
                     required
                     rows={4}
@@ -476,7 +472,7 @@ function AgentSettings(props: { name: string }) {
                   class="primary"
                   disabled={m.busy() || !instructions()?.trim()}
                 >
-                  Save instructions
+                  Save
                 </button>
               </form>
             )}

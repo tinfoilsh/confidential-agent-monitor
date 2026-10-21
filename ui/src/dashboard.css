@@ -1075,6 +1075,9 @@ details[open] > summary > .collection-chevron {
   padding: 0;
   row-gap: 4px;
 }
+.agent-connectivity + form {
+  margin-top: 16px;
+}
 .agent-connectivity > label {
   min-height: var(--compact-height);
   display: flex;
