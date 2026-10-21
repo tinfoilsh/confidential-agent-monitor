@@ -174,6 +174,7 @@ function createMonitor() {
       ),
     );
     setSnapshot({ view: next, requests });
+    if (older() === "" && !loadingOlder()) void loadOlder();
   };
 
   // Polling and manual refresh share one read. An edit invalidates any older read.
