@@ -12,7 +12,9 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector"
@@ -151,8 +153,13 @@ func main() {
 	if *workers {
 		m.workers = &worker.Local{Root: *workerRoot, Sandbox: *sandbox}
 	}
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 	go m.serveSSH(ln)
-	log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.ownerHandler(false, files)), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
+	go func() {
+		log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.ownerHandler(false, files)), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
+	}()
+	m.writeAudit(ctx)
 }
 
 func parseOwnerPublicKey(value string) (ed25519.PublicKey, error) {

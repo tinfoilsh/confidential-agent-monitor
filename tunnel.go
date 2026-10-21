@@ -523,7 +523,7 @@ func (m *monitor) proposePolicy(ctx context.Context, p principal, input proposal
 	r := m.addRecord(&record{Facts: &facts.Facts{Version: facts.Version, Principal: facts.Principal{Key: p.Key, Name: p.Name},
 		Title: "Change policy", Parameters: map[string]any{}, Details: facts.Details{Policy: diff}},
 		Requirements: []requirement{{ID: "policy", Message: input.Reason}}})
-	defer func() { r.settle(err) }()
+	defer func() { m.settle(r, err) }()
 	if err = m.await(ctx, r); err != nil {
 		return err
 	}

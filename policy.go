@@ -111,6 +111,9 @@ func (m *monitor) gate(ctx context.Context, in input) (err error) {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
+	if len(m.audit) >= maxAuditBacklog {
+		return errAuditBacklog
+	}
 	st := m.live.Load()
 	p, ok := st.principals[in.Key]
 	if !ok {
@@ -164,7 +167,7 @@ func (m *monitor) gate(ctx context.Context, in input) (err error) {
 		}
 		r := m.addRecord(&record{Facts: &f})
 		r.Invalid = true
-		r.settle(describeErr)
+		m.settle(r, describeErr)
 		return describeErr
 	}
 	// Approval definitions bind semantics and configuration, independently of facts
@@ -205,7 +208,7 @@ func (m *monitor) gate(ctx context.Context, in input) (err error) {
 	}
 	d.Facts, d.Grant, d.Definition = &f, grant, definition
 	r := m.addRecord(&d)
-	defer func() { r.settle(err) }()
+	defer func() { m.settle(r, err) }()
 	if len(d.Deny) != 0 {
 		return errors.New(strings.Join(d.Deny, "; "))
 	}
@@ -381,14 +384,16 @@ func (m *monitor) review(wait context.Context, r *record) {
 	}()
 }
 
-// settle marks a record refused when its request fails for a reason other than the owner's answer.
-func (r *record) settle(err error) {
+// settle marks a record refused when its request fails for a reason other than the owner's answer,
+// then queues its final outcome for the audit log.
+func (m *monitor) settle(r *record, err error) {
 	if err != nil && r.State != stateDenied && r.State != stateExpired {
 		r.State = stateRefused
 		if len(r.Deny) == 0 {
 			r.Deny = []string{err.Error()}
 		}
 	}
+	m.queueAudit(r)
 }
 
 // Saving a rule applies to future attempts. Only an unexpired allow-once answer resumes a call.
