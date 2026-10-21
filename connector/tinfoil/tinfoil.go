@@ -12,7 +12,6 @@ import (
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/facts"
-	"github.com/tinfoilsh/tinfoil-go/verifier"
 )
 
 var Definition = connector.Definition{PerMessage: true, NewConfig: func() connector.Server { return new(Server) }, Requests: []connector.Request{new(web.Request), new(web.WebSocketReceive)}}
@@ -30,11 +29,7 @@ func (s *Server) UnmarshalJSON(raw []byte) error {
 	if err := facts.DecodeNumbers(raw, (*plain)(s)); err != nil {
 		return err
 	}
-	u, err := url.Parse("https://" + s.Enclave)
-	if err != nil || !web.ValidOrigin("https://"+s.Enclave) || u.Port() != "" || strings.Trim(s.Enclave, "abcdefghijklmnopqrstuvwxyz0123456789.-") != "" {
-		return errors.New("Tinfoil enclave must be a lowercase HTTPS hostname without a port")
-	}
-	if _, _, _, err := verifier.ParseReference(s.Repo); err != nil {
+	if err := validateEnclave(s.Enclave, s.Repo); err != nil {
 		return err
 	}
 	s.http = &web.HTTP{Credentials: web.Credentials{
@@ -55,28 +50,44 @@ func (s *Server) Run(ctx context.Context, e *connector.Env, serve func(context.C
 	}
 	base := e.Transport()
 	defer base.CloseIdleConnections()
-	t, err := newAttestedTransport(s, base)
+	t, err := newAttestedTransport(ctx, s.Enclave, s.Repo, base)
 	if err != nil {
 		return err
 	}
 	defer t.CloseIdleConnections()
-	if _, err := t.current(ctx, nil); err != nil {
-		return err
-	}
-	s.transport = apiTransport{t}
+	s.transport = t
 	serve(ctx)
 	return nil
 }
 
 func (s *Server) Serve(stream *connector.Stream, e *connector.Env) {
-	s.http.ServeWithTransport(stream, e, s.transport)
+	if stream.Host != "" || stream.Port != 80 {
+		s.http.ServeWithTransport(stream, e, apiTransport{RoundTripper: s.transport})
+		return
+	}
+	// The existing .monitor route has already authenticated and selected this
+	// connection. Parse the private HTTP request, then gate its upstream meaning.
+	local := *stream
+	local.Gate = func(ctx context.Context, request connector.Request) error {
+		if r, ok := request.(*web.Request); ok && r.Invalid == "" {
+			if r.HTTP.Path != "/v1" && !strings.HasPrefix(r.HTTP.Path, "/v1/") {
+				r.Invalid = "Tinfoil API requests must use a /v1 path"
+			} else {
+				r.HTTP.Origin, r.HTTP.Host = "https://"+s.Enclave, s.Enclave
+				r.HTTP.Secrets = []string{"TINFOIL_API_KEY"}
+			}
+		}
+		return stream.Gate(ctx, request)
+	}
+	h := &web.HTTP{Hosts: []string{stream.Name + ".monitor"}}
+	h.ServeWithTransport(&local, e, apiTransport{RoundTripper: s.transport, enclave: s.Enclave, key: s.Secrets["TINFOIL_API_KEY"]})
 }
 
 // Control uses the same attested transport and credential handle for Monitor's
 // own inference. Private controls also work through an isolated connector worker.
 func (s *Server) Control() http.Handler {
 	mux := http.NewServeMux()
-	mux.Handle("POST /chat/completions", &httputil.ReverseProxy{Transport: s.transport, Rewrite: func(r *httputil.ProxyRequest) {
+	mux.Handle("POST /chat/completions", &httputil.ReverseProxy{Transport: apiTransport{RoundTripper: s.transport}, Rewrite: func(r *httputil.ProxyRequest) {
 		key, _ := s.Secrets["TINFOIL_API_KEY"].Value(r.In.Context())
 		r.Out.URL, r.Out.Host = &url.URL{Scheme: "https", Host: s.Enclave, Path: "/v1/chat/completions"}, ""
 		r.Out.Header = http.Header{"Authorization": {"Bearer " + key}, "Content-Type": {"application/json"}}

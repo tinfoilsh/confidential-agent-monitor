@@ -41,21 +41,22 @@ const readHeaderTimeout = 30 * time.Second
 
 // The kind is also the protocol policies see.
 var connectorKinds = map[string]connector.Definition{
-	"tcp":       tcp.Definition,
-	"http":      web.Definition,
-	"tinfoil":   tinfoil.Definition,
-	"mcp":       mcp.Definition,
-	"ssh":       session.SSHDefinition,
-	"sftp":      session.SFTPDefinition,
-	"cli":       session.CLIDefinition,
-	"mqtt":      mqtt.Definition,
-	"nats":      nats.Definition,
-	"imap":      email.IMAPDefinition,
-	"smtp":      email.SMTPDefinition,
-	"redis":     redis.Definition,
-	"postgres":  postgres.Definition,
-	"ssh-agent": signer.SSHAgentDefinition,
-	"gpg-agent": signer.GPGAgentDefinition,
+	"tcp":         tcp.Definition,
+	"http":        web.Definition,
+	"tinfoil":     tinfoil.Definition,
+	"tinfoil-mcp": tinfoil.MCPDefinition,
+	"mcp":         mcp.Definition,
+	"ssh":         session.SSHDefinition,
+	"sftp":        session.SFTPDefinition,
+	"cli":         session.CLIDefinition,
+	"mqtt":        mqtt.Definition,
+	"nats":        nats.Definition,
+	"imap":        email.IMAPDefinition,
+	"smtp":        email.SMTPDefinition,
+	"redis":       redis.Definition,
+	"postgres":    postgres.Definition,
+	"ssh-agent":   signer.SSHAgentDefinition,
+	"gpg-agent":   signer.GPGAgentDefinition,
 }
 
 func main() {

@@ -180,6 +180,38 @@ func (h *HTTP) bind(r *http.Request, origin string) ([]*Slot, error) {
 	if signed && (header.Get(authorization) != "" || presigned(query)) {
 		return nil, errors.New("this SigV4 origin accepts only the monitor's signature")
 	}
+	// Diagnose only values left after every allowed placement has been tried.
+	// In particular, an alternate prefix for the same header may have matched.
+	for _, s := range h.Slots {
+		if s.Origin != origin || !under(r.URL.Path, s.Path) {
+			continue
+		}
+		var values []string
+		var location string
+		switch {
+		case s.Header != "":
+			values, location = header.Values(s.Header), s.Header+" header"
+		case s.Query != "":
+			values, location = query[s.Query], "query parameter "+s.Query
+		case basic && s.Basic == "user":
+			values, location = []string{user}, "Basic authentication username"
+		case basic && s.Basic == "password":
+			values, location = []string{pass}, "Basic authentication password"
+		case s.Segment > 0 && s.Segment < len(segments):
+			values, location = []string{segments[s.Segment]}, fmt.Sprintf("path segment %d", s.Segment)
+		}
+		placeholder := h.Placeholder(s.Value)
+		for _, value := range values {
+			if placeholder == "" || !strings.Contains(value, placeholderPrefix) {
+				continue
+			}
+			if strings.Contains(value, placeholder) {
+				return nil, fmt.Errorf("%s has an incorrectly formatted or repeated credential placeholder. Send exactly one value: %q", location, s.Prefix+placeholder)
+			}
+			// Placeholder is a public reference. Never quote the supplied value or resolve the secret here.
+			return nil, fmt.Errorf("%s contains an unrecognized credential placeholder. Expected %q. Update the client's %s credential placeholder to %q, then restart the client", location, s.Prefix+placeholder, s.Value, placeholder)
+		}
+	}
 	texts := append(segments, user, pass)
 	for _, values := range []map[string][]string{query, header} {
 		for key, entries := range values {
@@ -188,7 +220,7 @@ func (h *HTTP) bind(r *http.Request, origin string) ([]*Slot, error) {
 	}
 	for _, text := range texts {
 		if strings.Contains(text, placeholderPrefix) {
-			return nil, errors.New("a secret placeholder is outside this connection's declared slots; check its origin, path and placement in the preset or account settings, then retry")
+			return nil, errors.New("a credential placeholder is in a field or destination this connection does not allow. Run monitor connections --json to see the allowed URLs and credential placements, then correct the request")
 		}
 	}
 	return used, nil

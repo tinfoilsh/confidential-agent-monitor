@@ -9,8 +9,11 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 
+	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/tinfoil-go/verifier"
 	"github.com/tinfoilsh/tinfoil-go/verifier/document"
 )
@@ -21,7 +24,8 @@ var errTinfoilKey = errors.New("Tinfoil TLS key differs from its attestation")
 // both must use Env's guarded dialer (the host broker in an isolated worker).
 // No SDK global HTTP client or direct network path is used.
 type attestedTransport struct {
-	config  Server
+	enclave string
+	repo    string
 	base    *http.Transport
 	verify  func([]byte, []byte, string) (*verifier.Verification, error)
 	gate    chan struct{}
@@ -29,12 +33,32 @@ type attestedTransport struct {
 	expires time.Time
 }
 
-func newAttestedTransport(c *Server, base *http.Transport) (*attestedTransport, error) {
+// validateEnclave checks the origin and release reference before configuring a connection.
+func validateEnclave(enclave, repo string) error {
+	u, err := url.Parse("https://" + enclave)
+	if err != nil || !web.ValidOrigin("https://"+enclave) || u.Host != enclave || u.Port() != "" || strings.Trim(enclave, "abcdefghijklmnopqrstuvwxyz0123456789.-") != "" {
+		return errors.New("Tinfoil enclave must be a lowercase HTTPS hostname without a port")
+	}
+	_, _, _, err = verifier.ParseReference(repo)
+	return err
+}
+
+// newAttestedTransport verifies the enclave before callers can send credentials or MCP discovery.
+// Inference and MCP share the same attestation, renewal, and TLS key binding.
+func newAttestedTransport(ctx context.Context, enclave, repo string, base *http.Transport) (*attestedTransport, error) {
+	if err := validateEnclave(enclave, repo); err != nil {
+		return nil, err
+	}
 	v, err := verifier.New()
 	if err != nil {
 		return nil, err
 	}
-	return &attestedTransport{config: Server{Enclave: c.Enclave, Repo: c.Repo}, base: base, verify: v.VerifyV3, gate: make(chan struct{}, 1)}, nil
+	t := &attestedTransport{enclave: enclave, repo: repo, base: base, verify: v.VerifyV3, gate: make(chan struct{}, 1)}
+	if _, err := t.current(ctx, nil); err != nil {
+		t.CloseIdleConnections()
+		return nil, err
+	}
+	return t, nil
 }
 
 func (t *attestedTransport) current(ctx context.Context, rejected *http.Transport) (*http.Transport, error) {
@@ -58,7 +82,7 @@ func (t *attestedTransport) current(ctx context.Context, rejected *http.Transpor
 	if err != nil {
 		return nil, err
 	}
-	u := "https://" + t.config.Enclave + "/.well-known/tinfoil-attestation?nonce=" + hex.EncodeToString(nonce)
+	u := "https://" + t.enclave + "/.well-known/tinfoil-attestation?nonce=" + hex.EncodeToString(nonce)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
 		return nil, err
@@ -80,7 +104,7 @@ func (t *attestedTransport) current(ctx context.Context, rejected *http.Transpor
 	if len(raw) > maxAttestationBytes {
 		return nil, errors.New("Tinfoil attestation is too large")
 	}
-	verified, err := t.verify(raw, nonce, t.config.Repo)
+	verified, err := t.verify(raw, nonce, t.repo)
 	if err != nil {
 		return nil, fmt.Errorf("verify Tinfoil attestation: %w", err)
 	}
@@ -123,7 +147,7 @@ func (t *attestedTransport) current(ctx context.Context, rejected *http.Transpor
 }
 
 func (t *attestedTransport) RoundTrip(r *http.Request) (*http.Response, error) {
-	if r.URL.Scheme != "https" || r.URL.Host != t.config.Enclave {
+	if r.URL.Scheme != "https" || r.URL.Host != t.enclave {
 		if r.Body != nil {
 			r.Body.Close()
 		}

@@ -470,6 +470,14 @@ export function apiSetup(
   placement: string;
 } | null;
 export function codexSetup(view: View, account: string): string | null;
+export function tinfoilSetup(
+  view: View,
+  account: string,
+): {
+  connection: string;
+  mcp: boolean;
+  url: string;
+}[];
 
 export function draftable(view: View, record: RequestRecord): string | null;
 export function draftOperation(

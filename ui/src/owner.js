@@ -605,7 +605,7 @@ export const actionsOf = (view, account) => ({
   ...presetOf(view, account).actions,
   ...Object.fromEntries(
     Object.values(accounts(view)[account]?.connections ?? {})
-      .flatMap((c) => c.mcp?.pin?.tools ?? [])
+      .flatMap((c) => (c.mcp ?? c["tinfoil-mcp"])?.pin?.tools ?? [])
       .map((t) => [
         `${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`,
         { title: t.title || t.name },
@@ -1192,6 +1192,23 @@ requires_openai_auth = false
 supports_websockets = false`;
 }
 
+export function tinfoilSetup(view, account) {
+  return Object.entries(accounts(view)[account]?.connections ?? {}).flatMap(
+    ([key, config]) => {
+      const mcp = !!config["tinfoil-mcp"];
+      if (!mcp && !config.tinfoil) return [];
+      const connection = connectionName(account, key);
+      return [
+        {
+          connection,
+          mcp,
+          url: `http://${connection}.monitor/${mcp ? "mcp" : "v1"}`,
+        },
+      ];
+    },
+  );
+}
+
 // Only valid, unmatched HTTP input can become a new operation, including policy refusals.
 const unmatchedHTTP = (r) =>
   r?.facts?.details?.http && !r.invalid && r.facts.operation == null;
@@ -1427,7 +1444,7 @@ export const edits = {
         [account]: {
           connections: {
             [key]: {
-              mcp: {
+              [Object.keys(accounts(view)[account].connections[key])[0]]: {
                 pin: view.status[connectionName(account, key)].details.pin,
               },
             },

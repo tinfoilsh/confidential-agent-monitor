@@ -6,13 +6,31 @@ import (
 	"errors"
 	"io"
 	"net/http"
+
+	"github.com/tinfoilsh/monitor/connector/credential"
 )
 
 // apiTransport adapts the deployed coding clients after the original request
 // passes policy. Every upstream request still uses the attested transport.
-type apiTransport struct{ http.RoundTripper }
+type apiTransport struct {
+	http.RoundTripper
+	enclave string
+	key     *credential.Value
+}
 
 func (t apiTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	if t.enclave != "" {
+		// Private .monitor requests need no client credential. Resolve the owner's
+		// key only after the request has passed the normal per-operation gate.
+		key, err := t.key.Value(r.Context())
+		if err != nil {
+			return nil, err
+		}
+		r = r.Clone(r.Context())
+		r.URL.Scheme, r.URL.Host, r.Host = "https", t.enclave, ""
+		r.Header.Del("X-Api-Key")
+		r.Header.Set("Authorization", "Bearer "+key)
+	}
 	if r.Method == http.MethodPost {
 		switch r.URL.Path {
 		case "/v1/messages", "/v1/messages/count_tokens":

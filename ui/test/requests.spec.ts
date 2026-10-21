@@ -7,6 +7,7 @@ import {
   ordered,
   previewChanges,
   reviewStatus,
+  tinfoilSetup,
   type RequestRecord,
   type View,
 } from "../src/owner.js";
@@ -21,6 +22,73 @@ const record = (
   time: new Date(0).toISOString(),
   expires: expires === undefined ? undefined : new Date(expires).toISOString(),
   facts: { principal: { name: "agent" }, account: "api" },
+});
+
+test("Tinfoil setup uses connection names for private inference and MCP URLs", () => {
+  const view = {
+    config: {
+      accounts: {
+        bob: {
+          connections: {
+            "": { tinfoil: {} },
+            websearch: { "tinfoil-mcp": {} },
+            other: { mcp: {} },
+          },
+        },
+        team: { connections: { inference: { tinfoil: {} } } },
+      },
+    },
+  } as unknown as View;
+  expect(tinfoilSetup(view, "bob")).toEqual([
+    { connection: "bob", mcp: false, url: "http://bob.monitor/v1" },
+    {
+      connection: "bob-websearch",
+      mcp: true,
+      url: "http://bob-websearch.monitor/mcp",
+    },
+  ]);
+  expect(tinfoilSetup(view, "team")).toEqual([
+    {
+      connection: "team-inference",
+      mcp: false,
+      url: "http://team-inference.monitor/v1",
+    },
+  ]);
+  expect(tinfoilSetup(view, "missing")).toEqual([]);
+});
+
+test("reviewing attested MCP tools saves the pin under its connector kind", () => {
+  const pin = {
+    instructions: "Search public pages",
+    tools: [{ name: "search", inputSchema: { type: "object" } }],
+  };
+  const view = {
+    config: {
+      accounts: {
+        bob: {
+          connections: {
+            "": { tinfoil: { enclave: "inference.tinfoil.sh" } },
+            websearch: {
+              "tinfoil-mcp": { url: "https://websearch.tinfoil.sh/mcp" },
+            },
+          },
+        },
+      },
+    },
+    status: { "bob-websearch": { details: { pin } } },
+  } as unknown as View;
+  const before = structuredClone(view);
+  const approved = previewChanges(
+    { ...view },
+    edits.approveTools(view, "bob", "websearch"),
+  );
+  expect(approved.config.accounts?.bob.connections?.websearch).toEqual({
+    "tinfoil-mcp": { url: "https://websearch.tinfoil.sh/mcp", pin },
+  });
+  expect(approved.config.accounts?.bob.connections?.[""]).toEqual(
+    before.config.accounts?.bob.connections?.[""],
+  );
+  expect(view).toEqual(before);
 });
 
 test("clock ticks preserve the log and index until a deadline changes state", () => {

@@ -14,6 +14,14 @@
       },
       "models.read": {
         "title": "List models"
+      },
+      "use.search": {
+        "title": "Search the web",
+        "effects": ["read", "pay", "send"]
+      },
+      "use.fetch": {
+        "title": "Fetch web pages",
+        "effects": ["read", "pay", "send"]
       }
     },
     "connections": {
@@ -21,6 +29,12 @@
         "tinfoil": {
           "enclave": "inference.tinfoil.sh",
           "repo": "tinfoilsh/confidential-model-router"
+        }
+      },
+      "websearch": {
+        "tinfoil-mcp": {
+          "url": "https://websearch.tinfoil.sh/mcp",
+          "repo": "tinfoilsh/confidential-websearch"
         }
       }
     },
@@ -33,16 +47,21 @@
       {
         "key": "TINFOIL_API_KEY",
         "label": "Tinfoil API key",
-        "path": [
-          "connections",
-          "",
-          "tinfoil",
-          "secrets",
-          "TINFOIL_API_KEY"
+        "paths": [
+          ["connections", "", "tinfoil", "secrets", "TINFOIL_API_KEY"],
+          ["connections", "websearch", "tinfoil-mcp", "secrets", "token"]
         ],
         "secret": true
       }
     ]
+  },
+  "mcp": {
+    "sends": "anyone",
+    "observes": {"audience": "anyone", "trust": "untrusted"},
+    "scope": {
+      "query": {"at": "/query", "optional": true},
+      "urls": {"at": "/urls", "type": "array", "optional": true}
+    }
   },
   "http": {
     "slots": true,

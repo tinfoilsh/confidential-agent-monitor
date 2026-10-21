@@ -366,7 +366,7 @@ function AgentAccess(props: { name: string }) {
             each={
               [
                 ["trust", "Trust", owner.TRUSTS, "integrity"],
-                ["audience", "Audience", owner.AUDIENCES, "confidentiality"],
+                // ["audience", "Audience", owner.AUDIENCES, "confidentiality"],
               ] as const
             }
           >
@@ -379,7 +379,7 @@ function AgentAccess(props: { name: string }) {
                     value={label()[key]}
                     onChange={(e) => {
                       void m.label(props.name, {
-                        [key]: e.currentTarget.value,
+                        [key]: e.currentTarget.value as owner.Label[typeof key],
                       });
                     }}
                   >
@@ -518,18 +518,23 @@ function AgentSettings(props: { name: string }) {
           </Show>
         </section>
         <ResourceDisclosure
-          class="agent-maintenance"
+          class="connection-advanced agent-maintenance"
           summary={
-            <>
-              <strong class="collection-name">Setup &amp; maintenance</strong>
-              <span class="collection-chevron">
-                <Icon name="arrow" />
+            <span class="connection-advanced-text">
+              <span class="connection-advanced-heading">
+                <strong class="connection-advanced-title">
+                  Setup &amp; maintenance
+                </strong>
+                <span class="collection-chevron">
+                  <Icon name="arrow" />
+                </span>
               </span>
-            </>
+              <small>Sandbox access and SSH keys</small>
+            </span>
           }
         >
           {() => (
-            <div class="agent-maintenance-content">
+            <div class="connection-advanced-content">
               <section>
                 <SandboxAccess name={props.name} />
               </section>

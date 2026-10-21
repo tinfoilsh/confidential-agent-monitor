@@ -579,11 +579,13 @@ export function RequestDetail(props: {
               <Show when={reasons().length}>
                 <div class="request-reasons">
                   <h3>
-                    {state() === "refused" || state() === "denied"
-                      ? "Why it was blocked"
-                      : state() === "pending"
-                        ? "Approval needed"
-                        : "Policy review"}
+                    {r().invalid
+                      ? "Why the request was rejected"
+                      : state() === "refused" || state() === "denied"
+                        ? "Why it was blocked"
+                        : state() === "pending"
+                          ? "Approval needed"
+                          : "Policy review"}
                   </h3>
                   <ul>
                     <For each={reasons()}>{(reason) => <li>{reason}</li>}</For>
@@ -593,19 +595,21 @@ export function RequestDetail(props: {
               <Show
                 when={
                   (state() === "refused" || state() === "denied") &&
-                  !owner.isDevice(r().facts.principal.name) &&
                   m.view()!.config.accounts?.[r().facts.account] &&
-                  m.view()!.config.identities?.[r().facts.principal.name]
+                  (r().invalid ||
+                    (!owner.isDevice(r().facts.principal.name) &&
+                      m.view()!.config.identities?.[r().facts.principal.name]))
                 }
               >
                 <div class="request-access">
                   <a class="button" href={href("account", r().facts.account)}>
-                    Change access
+                    {r().invalid ? "View connection setup" : "Change access"}
                     <Icon name="arrow" />
                   </a>
                   <p class="muted">
-                    Update this actor’s connection access, then retry the
-                    request from your actor.
+                    {r().invalid
+                      ? "Fix the request or client configuration using the error above, then retry."
+                      : "Update this actor’s connection access, then retry the request from your actor."}
                   </p>
                 </div>
               </Show>

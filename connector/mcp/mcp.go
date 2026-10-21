@@ -32,6 +32,10 @@ func (c *Server) UnmarshalJSON(raw []byte) error {
 	if err := facts.DecodeNumbers(raw, (*plain)(c)); err != nil {
 		return err
 	}
+	return c.Validate()
+}
+
+func (c *Server) Validate() error {
 	u, err := connector.ParseURL(c.URL)
 	if err != nil || u.Scheme != "http" && u.Scheme != "https" {
 		return errors.New("MCP requires an http:// or https:// server URL")
@@ -65,7 +69,13 @@ func (b bearer) RoundTrip(r *http.Request) (*http.Response, error) {
 
 func (m *Server) Run(ctx context.Context, e *connector.Env, serve func(context.Context)) error {
 	client := e.Client()
-	defer client.CloseIdleConnections()
+	defer client.Transport.(*http.Transport).CloseIdleConnections()
+	return m.RunWithClient(ctx, client, serve)
+}
+
+// RunWithClient uses a caller-owned transport. Tools must match the owner's pin,
+// and each call still passes the policy gate.
+func (m *Server) RunWithClient(ctx context.Context, client *http.Client, serve func(context.Context)) error {
 	if err := m.connect(ctx, client); err != nil {
 		return err
 	}
@@ -142,6 +152,10 @@ func (r *Request) Describe(c connector.Context) (facts.Facts, error) {
 		scope, err := p.scope.Select(args)
 		maps.Copy(f.Parameters, scope)
 		f.Definition = p.definition
+		f.Context.Sends = p.Sends
+		if p.Observes != nil {
+			f.Context.Observes = *p.Observes
+		}
 		return f, err
 	}
 	return f, nil
@@ -150,6 +164,8 @@ func (r *Request) Describe(c connector.Context) (facts.Facts, error) {
 // Preset selects service resource identifiers from tool arguments.
 type Preset struct {
 	Scope      map[string]Selector `json:"scope,omitempty"`
+	Sends      string              `json:"sends,omitempty"`
+	Observes   *facts.Label        `json:"observes,omitempty"`
 	scope      selectors
 	definition json.RawMessage
 }
@@ -157,6 +173,9 @@ type Preset struct {
 func (p *Preset) UnmarshalJSON(raw []byte) error {
 	type plain Preset
 	err := facts.DecodeNumbers(raw, (*plain)(p))
+	if err == nil && (!slices.Contains([]string{"", "me", "team", "anyone", "account"}, p.Sends) || p.Observes != nil && !p.Observes.Valid()) {
+		return errors.New("invalid MCP data-flow settings")
+	}
 	if err == nil {
 		p.scope, err = compileSelectors(p.Scope)
 	}

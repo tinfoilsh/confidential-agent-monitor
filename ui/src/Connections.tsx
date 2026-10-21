@@ -764,6 +764,7 @@ function Connection(props: { name: string; active: boolean }) {
     return [...groups.values()];
   });
   const codex = () => owner.codexSetup(m.view()!, props.name);
+  const tinfoil = createMemo(() => owner.tinfoilSetup(m.view()!, props.name));
   return (
     <div class="connection-detail">
       <Show when={account()} fallback={<Empty title="Connection not found" />}>
@@ -808,34 +809,50 @@ function Connection(props: { name: string; active: boolean }) {
             </section>
           )}
         </For>
-        <section>
-          <div class="connection-section-heading">
-            <h2>
-              Actor access{" "}
-              <span class="count">
-                {
-                  owner
-                    .accountUsers(m.view()!, props.name)
-                    .filter(({ name }) => !owner.isDevice(name)).length
-                }
+        <ResourceDisclosure
+          class="connection-advanced"
+          summary={
+            <>
+              <span class="connection-advanced-text">
+                <span class="connection-advanced-heading">
+                  <strong class="connection-advanced-title">
+                    Actor access
+                  </strong>
+                  <span class="count">
+                    {
+                      owner
+                        .accountUsers(m.view()!, props.name)
+                        .filter(({ name }) => !owner.isDevice(name)).length
+                    }
+                  </span>
+                  <span class="collection-chevron">
+                    <Icon name="arrow" />
+                  </span>
+                </span>
+                <small>Who can use this connection</small>
               </span>
-            </h2>
-            <Show when={actors().length}>
-              <a class="button" href="#pair">
-                Add actor
-              </a>
-            </Show>
-          </div>
-          <For each={actors()} fallback={<a href="#pair">Add an actor</a>}>
-            {(name) => (
-              <AgentConnectionAccess
-                name={name}
-                account={props.name}
-                title={name}
-              />
-            )}
-          </For>
-        </section>
+              <Show when={actors().length}>
+                <a class="button" href="#pair">
+                  Add actor
+                </a>
+              </Show>
+            </>
+          }
+        >
+          {() => (
+            <div class="connection-advanced-content">
+              <For each={actors()} fallback={<a href="#pair">Add an actor</a>}>
+                {(name) => (
+                  <AgentConnectionAccess
+                    name={name}
+                    account={props.name}
+                    title={name}
+                  />
+                )}
+              </For>
+            </div>
+          )}
+        </ResourceDisclosure>
         <Show when={owner.liveConnection(m.view()!, props.name)}>
           {(connection) => (
             <Suspense fallback={<p role="status">Loading browser…</p>}>
@@ -843,23 +860,77 @@ function Connection(props: { name: string; active: boolean }) {
             </Suspense>
           )}
         </Show>
-        <section class="connection-setup">
-          <h2>Connection setup</h2>
-          <ConnectionForm name={props.name} />
-          <Show when={setups().length}>
-            <ResourceDisclosure
-              class="connection-disclosure"
-              summary={
-                <>
-                  <span class="collection-chevron">
-                    <Icon name="arrow" />
-                  </span>
-                  <span>Actor setup</span>
-                  <small class="muted">Placeholder and usage</small>
-                </>
-              }
-            >
-              {() => (
+        <ResourceDisclosure
+          class="connection-advanced connection-setup"
+          summary={
+            <span class="connection-advanced-text">
+              <span class="connection-advanced-heading">
+                <strong class="connection-advanced-title">
+                  Connection setup
+                </strong>
+                <span class="collection-chevron">
+                  <Icon name="arrow" />
+                </span>
+              </span>
+              <small>Credentials and actor setup</small>
+            </span>
+          }
+        >
+          {() => (
+            <div class="connection-advanced-content">
+              <ConnectionForm name={props.name} />
+              <Show when={tinfoil().length}>
+                <div class="agent-setup-body">
+                  <h3>Use Tinfoil from your sandbox</h3>
+                  <p>
+                    These private addresses use your sandbox’s encrypted SSH
+                    connection to Monitor. Monitor checks the actor’s access,
+                    verifies Tinfoil’s enclave attestation, and supplies the
+                    saved Tinfoil API key when forwarding allowed requests.
+                  </p>
+                  <p>
+                    Each hostname uses the connection’s name. Renaming the
+                    connection changes its address; copy the URL shown below.
+                  </p>
+                  <p>
+                    Your client does not need the Tinfoil API key, a
+                    substitution placeholder, or a Monitor TLS certificate for
+                    these URLs.
+                  </p>
+                  <For each={tinfoil()}>
+                    {(setup) => (
+                      <div class="agent-setup-item">
+                        <h4>
+                          {setup.mcp ? "Web search (MCP)" : "Inference API"}
+                        </h4>
+                        <div class="secret-input">
+                          <input
+                            class="mono"
+                            aria-label={
+                              setup.mcp
+                                ? "Web-search MCP URL"
+                                : "Tinfoil API base URL"
+                            }
+                            readonly
+                            value={setup.url}
+                            onClick={(e) => e.currentTarget.select()}
+                          />
+                          <Copy
+                            text={setup.url}
+                            label={`Copy ${setup.connection} URL`}
+                          />
+                        </div>
+                        <p>
+                          {setup.mcp
+                            ? "Review and approve the tool definitions above, then add this URL to your client's MCP servers using Streamable HTTP. New or changed definitions require review when Monitor discovers them."
+                            : "Set your client's API base URL to this address. If it requires an API-key value, enter monitor. For Anthropic-compatible clients, use the same address without /v1."}
+                        </p>
+                      </div>
+                    )}
+                  </For>
+                </div>
+              </Show>
+              <Show when={setups().length}>
                 <div class="agent-setup-body">
                   <For each={setups()}>
                     {(group) => {
@@ -929,65 +1000,84 @@ function Connection(props: { name: string; active: boolean }) {
                     }}
                   </For>
                 </div>
-              )}
-            </ResourceDisclosure>
-          </Show>
-          <Show when={codex()}>
-            {(text) => {
-              let code!: HTMLPreElement;
-              return (
-                <ResourceDisclosure
-                  class="connection-disclosure"
-                  summary={
-                    <>
-                      <span class="collection-chevron">
-                        <Icon name="arrow" />
-                      </span>
-                      <span>Codex setup</span>
-                    </>
-                  }
-                >
-                  {() => (
-                    <div class="agent-setup-body">
-                      <p>
-                        Save this in <code>~/.codex/config.toml</code>, then run
-                        Codex in your Monitor-connected sandbox or with{" "}
-                        <code>monitor run -- codex</code>. Choose a model
-                        available to your ChatGPT account. Grant your actor
-                        access to this connection and review pending requests in
-                        Activity.
-                      </p>
-                      <pre ref={code}>{text()}</pre>
-                      <Copy text={text()} target={() => code} />
-                      <p>
-                        <a
-                          href="https://chatgpt.com/#settings/Usage"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Manage ChatGPT usage
-                        </a>
-                      </p>
-                    </div>
-                  )}
-                </ResourceDisclosure>
-              );
-            }}
-          </Show>
-        </section>
-        <section>
-          <h2>
-            API{" "}
-            <span class="count">
-              {Object.keys(owner.actionsOf(m.view()!, props.name)).length}
+              </Show>
+              <Show when={codex()}>
+                {(text) => {
+                  let code!: HTMLPreElement;
+                  return (
+                    <ResourceDisclosure
+                      class="connection-disclosure"
+                      summary={
+                        <>
+                          <span class="collection-chevron">
+                            <Icon name="arrow" />
+                          </span>
+                          <span>Codex setup</span>
+                        </>
+                      }
+                    >
+                      {() => (
+                        <div class="agent-setup-body">
+                          <p>
+                            Save this in <code>~/.codex/config.toml</code>, then
+                            run Codex in your Monitor-connected sandbox or with{" "}
+                            <code>monitor run -- codex</code>. Choose a model
+                            available to your ChatGPT account. Grant your actor
+                            access to this connection and review pending
+                            requests in Activity.
+                          </p>
+                          <pre ref={code}>{text()}</pre>
+                          <Copy text={text()} target={() => code} />
+                          <p>
+                            <a
+                              href="https://chatgpt.com/#settings/Usage"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Manage ChatGPT usage
+                            </a>
+                          </p>
+                        </div>
+                      )}
+                    </ResourceDisclosure>
+                  );
+                }}
+              </Show>
+            </div>
+          )}
+        </ResourceDisclosure>
+        <ResourceDisclosure
+          class="connection-advanced"
+          summary={
+            <span class="connection-advanced-text">
+              <span class="connection-advanced-heading">
+                <strong class="connection-advanced-title">API</strong>
+                <span class="count">
+                  {Object.keys(owner.actionsOf(m.view()!, props.name)).length}
+                </span>
+                <span class="collection-chevron">
+                  <Icon name="arrow" />
+                </span>
+              </span>
+              <small>Operations and effects</small>
             </span>
-          </h2>
-          <div class="action-list" role="region" aria-label="API" tabIndex={0}>
-            <ConnectionActions
-              nodes={owner.actionTree(m.view()!, props.name)}
-            />
-          </div>
-        </section>
+          }
+        >
+          {() => (
+            <div class="connection-advanced-content">
+              <div
+                class="action-list"
+                role="region"
+                aria-label="API"
+                tabIndex={0}
+              >
+                <ConnectionActions
+                  nodes={owner.actionTree(m.view()!, props.name)}
+                />
+              </div>
+            </div>
+          )}
+        </ResourceDisclosure>
         <ResourceDisclosure
           class="connection-advanced"
           summary={
@@ -1103,7 +1193,7 @@ function ConnectionActions(props: { nodes: owner.ActionNode[] }) {
             <span class="capability-name">
               {node().title}{" "}
               <Show when={node().total}>
-                <small>{node().total}</small>
+                <small class="count">{node().total}</small>
               </Show>
             </span>
             <Show when={!node().children.length}>
