@@ -2543,14 +2543,17 @@ td {
       height: auto;
     }
   }
-  #creation-dialog::backdrop {
+  #creation-dialog::backdrop,
+  #device-sign-in-dialog::backdrop {
     transition: background-color 0.12s ease-out;
   }
-  #creation-dialog[data-closing]::backdrop {
+  #creation-dialog[data-closing]::backdrop,
+  #device-sign-in-dialog[data-closing]::backdrop {
     background: #06182000;
   }
   @starting-style {
-    #creation-dialog[open]::backdrop {
+    #creation-dialog[open]::backdrop,
+    #device-sign-in-dialog[open]::backdrop {
       background: #06182000;
     }
   }

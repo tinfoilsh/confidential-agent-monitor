@@ -21,7 +21,13 @@ import {
   Connections,
   DeviceSignInDialog,
 } from "./Connections";
-import { ConnectorIcon, Empty, Icon, href } from "./components";
+import {
+  ConnectorIcon,
+  Empty,
+  Icon,
+  createDialogMotion,
+  href,
+} from "./components";
 
 const Settings = lazy(() =>
   import("./Settings").then((m) => ({ default: m.Settings })),
@@ -271,9 +277,7 @@ function Shell() {
           </main>
         </div>
         <CreationDialog path={dialogRoute()} close={close} />
-        <Show when={m.deviceSignIn()} keyed>
-          {(attempt) => <DeviceSignInDialog attempt={attempt} />}
-        </Show>
+        <DeviceSignInDialog attempt={m.deviceSignIn()} />
       </Show>
       <Show when={m.message() && !dialogRoute()}>
         <div id="toast" role="status">
@@ -345,56 +349,14 @@ function Page(props: {
 function CreationDialog(props: { path: string; close: () => void }) {
   const m = useMonitor();
   let dialog!: HTMLDialogElement;
-  let motion: Animation | undefined;
   // Keep the contents mounted through the native dialog's exit transition.
   const path = createMemo((previous: string) => props.path || previous, "");
   const kind = () => parse(path())[0],
     preset = () => parse(path())[1] ?? "";
-  createEffect(() => {
-    const opening = !!props.path;
-    if (opening && dialog.open && !dialog.hasAttribute("data-closing")) return;
-    if (!opening && !dialog.open) return;
-    const style = dialog.open ? getComputedStyle(dialog) : undefined;
-    const from = {
-      opacity: style?.opacity ?? "0",
-      transform: style?.transform ?? "scale(.98)",
-    };
-    motion?.cancel();
-    motion = undefined;
-    if (opening && !dialog.open) dialog.showModal();
-    dialog.toggleAttribute("data-closing", !opening);
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      if (!opening) dialog.close();
-      dialog.removeAttribute("data-closing");
-      return;
-    }
-    const next = dialog.animate(
-      [
-        from,
-        {
-          opacity: opening ? "1" : "0",
-          transform: opening ? "none" : "scale(.98)",
-        },
-      ],
-      {
-        duration: 120,
-        easing: opening ? "ease-out" : "ease-in",
-        fill: "forwards",
-      },
-    );
-    motion = next;
-    next.onfinish = () => {
-      if (motion !== next) return;
-      if (!opening) dialog.close();
-      next.cancel();
-      motion = undefined;
-      dialog.removeAttribute("data-closing");
-    };
-  });
-  onCleanup(() => {
-    motion?.cancel();
-    dialog.close();
-  });
+  createDialogMotion(
+    () => dialog,
+    () => !!props.path,
+  );
   return (
     <dialog
       ref={dialog}

@@ -6,8 +6,6 @@ import {
   createSignal,
   createUniqueId,
   lazy,
-  onCleanup,
-  onMount,
 } from "solid-js";
 import { createStore } from "solid-js/store";
 import * as owner from "./owner.js";
@@ -22,6 +20,7 @@ import {
   LazyDetails,
   ResourceDisclosure,
   Search,
+  createDialogMotion,
   href,
 } from "./components";
 import { useMonitor } from "./monitor";
@@ -32,13 +31,18 @@ const Browser = lazy(() =>
 );
 
 export function DeviceSignInDialog(props: {
-  attempt: owner.DeviceSignIn & { title: string; preset: string };
+  attempt: (owner.DeviceSignIn & { title: string; preset: string }) | undefined;
 }) {
-  const m = useMonitor(),
-    attempt = props.attempt;
+  const m = useMonitor();
+  // Retain the code and provider while the dialog fades out.
+  const attempt = createMemo<typeof props.attempt>(
+    (previous) => props.attempt ?? previous,
+  );
   let dialog!: HTMLDialogElement, code!: HTMLElement;
-  onMount(() => dialog.showModal());
-  onCleanup(() => dialog.close());
+  createDialogMotion(
+    () => dialog,
+    () => !!props.attempt,
+  );
   return (
     <dialog
       ref={dialog}
@@ -50,42 +54,52 @@ export function DeviceSignInDialog(props: {
         m.cancelSignIn();
       }}
     >
-      <header class="device-sign-in-heading">
-        <ConnectorIcon preset={attempt.preset} />
-        <h1 id="device-sign-in-title">Sign in with {attempt.title}</h1>
-        <button
-          class="dialog-close icon-button"
-          aria-label="Cancel sign-in"
-          onClick={m.cancelSignIn}
-        >
-          <Icon name="close" />
-        </button>
-      </header>
-      <div class="dialog-body device-sign-in-body">
-        <p id="device-sign-in-description">
-          Enter this code on the sign-in page.
-        </p>
-        <div class="device-sign-in-code">
-          <code ref={code} id="device-sign-in-code" aria-label="One-time code">
-            {attempt.user_code}
-          </code>
-          <Copy
-            text={attempt.user_code}
-            label="Copy one-time code"
-            target={() => code}
-            icon
-          />
-        </div>
-        <a
-          class="button primary device-sign-in-continue"
-          href={attempt.url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Continue to {attempt.title}
-          <Icon name="external" />
-        </a>
-      </div>
+      <Show when={attempt()} keyed>
+        {(attempt) => (
+          <>
+            <header class="device-sign-in-heading">
+              <ConnectorIcon preset={attempt.preset} />
+              <h1 id="device-sign-in-title">Sign in with {attempt.title}</h1>
+              <button
+                class="dialog-close icon-button"
+                aria-label="Cancel sign-in"
+                onClick={m.cancelSignIn}
+              >
+                <Icon name="close" />
+              </button>
+            </header>
+            <div class="dialog-body device-sign-in-body">
+              <p id="device-sign-in-description">
+                Enter this code on the sign-in page.
+              </p>
+              <div class="device-sign-in-code">
+                <code
+                  ref={code}
+                  id="device-sign-in-code"
+                  aria-label="One-time code"
+                >
+                  {attempt.user_code}
+                </code>
+                <Copy
+                  text={attempt.user_code}
+                  label="Copy one-time code"
+                  target={() => code}
+                  icon
+                />
+              </div>
+              <a
+                class="button primary device-sign-in-continue"
+                href={attempt.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Continue to {attempt.title}
+                <Icon name="external" />
+              </a>
+            </div>
+          </>
+        )}
+      </Show>
     </dialog>
   );
 }

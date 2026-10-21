@@ -1,6 +1,7 @@
 import {
   For,
   Show,
+  createEffect,
   createMemo,
   createSignal,
   createUniqueId,
@@ -53,6 +54,61 @@ export function ConnectorIcon(props: { preset: string }) {
 }
 export const href = (kind: string, ...args: string[]) =>
   "#" + [kind, ...args].map(encodeURIComponent).join("/");
+
+// Keep the native modal open until its exit animation finishes.
+export function createDialogMotion(
+  element: Accessor<HTMLDialogElement>,
+  open: Accessor<boolean>,
+) {
+  let motion: Animation | undefined;
+  createEffect(() => {
+    const dialog = element(),
+      opening = open();
+    if (opening && dialog.open && !dialog.hasAttribute("data-closing")) return;
+    if (!opening && !dialog.open) return;
+    const style = dialog.open ? getComputedStyle(dialog) : undefined;
+    const from = {
+      opacity: style?.opacity ?? "0",
+      transform: style?.transform ?? "scale(.98)",
+    };
+    motion?.cancel();
+    motion = undefined;
+    if (opening && !dialog.open) dialog.showModal();
+    dialog.toggleAttribute("data-closing", !opening);
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      if (!opening) dialog.close();
+      dialog.removeAttribute("data-closing");
+      return;
+    }
+    const next = dialog.animate(
+      [
+        from,
+        {
+          opacity: opening ? "1" : "0",
+          transform: opening ? "none" : "scale(.98)",
+        },
+      ],
+      {
+        duration: 120,
+        easing: opening ? "ease-out" : "ease-in",
+        fill: "forwards",
+      },
+    );
+    motion = next;
+    next.onfinish = () => {
+      if (motion !== next) return;
+      if (!opening) dialog.close();
+      next.cancel();
+      motion = undefined;
+      dialog.removeAttribute("data-closing");
+    };
+  });
+  onCleanup(() => {
+    motion?.cancel();
+    element().close();
+  });
+}
+
 // Keep native keyboard disclosure behavior while animating the full row in
 // browsers that cannot interpolate details-content from zero to auto.
 export function ResourceDisclosure(props: {
