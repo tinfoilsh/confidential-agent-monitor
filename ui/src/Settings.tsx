@@ -4,6 +4,7 @@ import {
   ConnectorIcon,
   Effects,
   Empty,
+  Icon,
   LazyDetails,
   download,
   href,
@@ -23,17 +24,31 @@ export function Settings(props: {
       <p>Permissions and guardrails save automatically.</p>
       <section class="settings-section">
         <h2>Appearance</h2>
-        <label class="setting-row">
+        <div class="setting-row">
           <span>Color theme</span>
-          <select
-            value={props.theme}
-            onChange={(e) => props.onThemeChange(e.currentTarget.value)}
-          >
-            <option value="system">System</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
-        </label>
+          <span class="seg" role="group" aria-label="Color theme">
+            <For
+              each={[
+                ["system", "System", "devices"],
+                ["light", "Light", "sun"],
+                ["dark", "Dark", "moon"],
+              ]}
+            >
+              {([theme, title, icon]) => (
+                <button
+                  type="button"
+                  classList={{ primary: props.theme === theme }}
+                  aria-label={`${title} theme`}
+                  aria-pressed={props.theme === theme}
+                  title={`${title} theme`}
+                  onClick={() => props.onThemeChange(theme)}
+                >
+                  <Icon name={icon} />
+                </button>
+              )}
+            </For>
+          </span>
+        </div>
       </section>
       <section class="settings-section">
         <h2>Default permissions</h2>
