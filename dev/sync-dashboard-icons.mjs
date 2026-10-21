@@ -31,6 +31,7 @@ const components = {
   plus: 'Plus',
   help: 'CircleHelp',
   close: 'X',
+  copy: 'Copy',
   clock: 'Clock3',
   arrow: 'ChevronRight',
   external: 'ExternalLink',

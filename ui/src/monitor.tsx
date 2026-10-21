@@ -19,7 +19,8 @@ import { createRequestLog } from "./requests";
 const KEY = "monitor-owner-key",
   SESSION = "monitor-local-session",
   GENERATION = "monitor-generation",
-  RETURN = "monitor-sign-in-return";
+  RETURN = "monitor-sign-in-return",
+  DEVICE_POLL_MS = 2000;
 
 function createMonitor() {
   const lifetime = new AbortController();
@@ -50,6 +51,12 @@ function createMonitor() {
     path === undefined || notice()?.path === path ? (notice()?.text ?? "") : "";
   const [now, setNow] = createSignal(Date.now());
   const [icons, setIcons] = createSignal<owner.IconManifest>({});
+  const [deviceSignIn, setDeviceSignIn] = createSignal<
+    owner.DeviceSignIn & {
+      title: string;
+      source: owner.OwnerApi;
+    }
+  >();
   // Keep list filters when opening a request/settings page and returning.
   const [filters, setFilters] = createStore({
     query: "",
@@ -337,18 +344,76 @@ function createMonitor() {
     );
   const signIn = (account: string, field: owner.CredentialField) =>
     perform(async (client) => {
+      setDeviceSignIn(undefined);
       const result = await client.signIn(
         account,
         field.path,
         location.origin + location.pathname,
         field.credential,
       );
+      if ("user_code" in result) {
+        setDeviceSignIn({
+          ...result,
+          source: client,
+          title: owner.presetOf(view()!, account).title,
+        });
+        return;
+      }
       sessionStorage.setItem(RETURN, location.hash);
       location.assign(result.url);
-    }, "Opening sign-in…");
+    }, "");
+
+  createEffect(
+    on(deviceSignIn, (attempt) => {
+      if (!attempt) return;
+      const controller = new AbortController();
+      let completed = false;
+      let timer: ReturnType<typeof setTimeout>;
+      const poll = async () => {
+        try {
+          if (Date.now() >= Date.parse(attempt.expires))
+            throw new Error(
+              "Sign-in code expired. Sign in again to get a new code.",
+            );
+          const result = await attempt.source.finishSignIn(
+            attempt.state,
+            {},
+            controller.signal,
+          );
+          if (controller.signal.aborted) return;
+          if (result && "pending" in result) {
+            timer = setTimeout(poll, DEVICE_POLL_MS);
+            return;
+          }
+          completed = true;
+          version++;
+          setDeviceSignIn(undefined);
+          notify("Signed in");
+          // Fetch a fresh view; other owner edits may have completed while waiting.
+          await refreshing;
+          void refresh();
+        } catch (cause) {
+          if (!controller.signal.aborted) {
+            setDeviceSignIn(undefined);
+            report(cause);
+          }
+        }
+      };
+      timer = setTimeout(poll, DEVICE_POLL_MS);
+      onCleanup(() => {
+        clearTimeout(timer);
+        controller.abort();
+        if (!completed)
+          void attempt.source
+            .finishSignIn(attempt.state, { cancel: true })
+            .catch(() => {});
+      });
+    }),
+  );
 
   createEffect(
     on(api, () => {
+      setDeviceSignIn(undefined);
       version++;
       setSnapshot(undefined);
       void refresh();
@@ -395,18 +460,19 @@ function createMonitor() {
           )
         )
           throw new Error("Invalid sign-in callback. Start sign-in again.");
-        await perform(
-          (client) =>
-            client.finishSignIn(
-              back.get("state")!,
-              Object.fromEntries(
-                ["code", "client_id", "error"]
-                  .filter((key) => back.has(key))
-                  .map((key) => [key, back.get(key)!]),
-              ),
+        await perform(async (client) => {
+          const result = await client.finishSignIn(
+            back.get("state")!,
+            Object.fromEntries(
+              ["code", "client_id", "error"]
+                .filter((key) => back.has(key))
+                .map((key) => [key, back.get(key)!]),
             ),
-          "Signed in",
-        );
+          );
+          if (!result || "pending" in result)
+            throw new Error("Sign-in was not completed. Start again.");
+          return result;
+        }, "Signed in");
       }
     } catch (cause) {
       report(cause);
@@ -470,6 +536,8 @@ function createMonitor() {
     label,
     decide,
     signIn,
+    deviceSignIn,
+    cancelSignIn: () => setDeviceSignIn(undefined),
     unlock: () =>
       perform(
         (client) =>

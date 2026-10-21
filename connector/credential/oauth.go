@@ -12,13 +12,18 @@ import (
 	"slices"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/oauthex"
 	"golang.org/x/oauth2"
 )
 
-const offlineAccess = "offline_access"
+const (
+	offlineAccess     = "offline_access"
+	maxDeviceExpiry   = 24 * time.Hour
+	maxDeviceInterval = 3600
+)
 
 var (
 	prompts    = []string{"", "none", "login", "consent", "select_account"}
@@ -33,6 +38,7 @@ type oauth struct {
 	OIDC            *oidc                 `json:"oidc,omitempty"`
 	RequiredScopes  []string              `json:"required_scopes,omitempty"`
 	AuthURL         string                `json:"auth_url"`
+	DeviceAuthURL   string                `json:"device_auth_url,omitempty"`
 	TokenURL        string                `json:"token_url"`
 	ClientID        string                `json:"client_id"`
 	ClientSecret    string                `json:"client_secret"`
@@ -53,6 +59,9 @@ type callbackRegistration struct {
 }
 
 func (o *oauth) validate() error {
+	if o.DeviceAuthURL != "" && (o.ClientID == "" || o.TokenURL == "" || o.OIDC != nil || o.Registration != nil) {
+		return errors.New("device sign-in requires a client ID and token URL, without OIDC or callback registration")
+	}
 	params := []map[string]string{o.AuthorizeParams}
 	if o.Registration != nil {
 		if o.Registration.ClientID == "" || o.OIDC == nil || o.ClientSecret != "" || o.AuthURL == "" || o.TokenURL == "" {
@@ -78,7 +87,7 @@ func (o *oauth) validate() error {
 	if _, ok := authStyles[o.AuthStyle]; !ok || !slices.Contains(prompts, o.Prompt) {
 		return errors.New("oauth prompt or auth_style is not supported")
 	}
-	return secure(o.AuthURL, o.TokenURL, o.Resource)
+	return secure(o.AuthURL, o.DeviceAuthURL, o.TokenURL, o.Resource)
 }
 
 // secure requires https without user information or fragments, and never quotes an endpoint that may hold a password.
@@ -95,7 +104,7 @@ func secure(endpoints ...string) error {
 func (o *oauth) config(redirect string) oauth2.Config {
 	return oauth2.Config{
 		ClientID: o.ClientID, ClientSecret: o.ClientSecret, RedirectURL: redirect, Scopes: strings.Fields(o.Scope),
-		Endpoint: oauth2.Endpoint{AuthURL: o.AuthURL, TokenURL: o.TokenURL, AuthStyle: authStyles[o.AuthStyle]},
+		Endpoint: oauth2.Endpoint{AuthURL: o.AuthURL, DeviceAuthURL: o.DeviceAuthURL, TokenURL: o.TokenURL, AuthStyle: authStyles[o.AuthStyle]},
 	}
 }
 
@@ -104,9 +113,13 @@ func encodeGrant(grant oauth) json.RawMessage {
 	return raw
 }
 
-// A SignIn is an authorization code flow waiting for the provider to redirect back with a code.
+// A SignIn waits for an authorization callback or device approval. The device
+// code stays private; only URL, State, UserCode and Expires go to the owner UI.
 type SignIn struct {
 	URL, State string
+	UserCode   string
+	Expires    time.Time
+	device     *oauth2.DeviceAuthResponse
 	grant      oauth
 	config     *oauth2.Config
 	client     *http.Client
@@ -115,7 +128,7 @@ type SignIn struct {
 	nonce      string
 }
 
-// NewSignIn starts the flow for an oauth secret, registering a client first when the secret names only its resource.
+// NewSignIn starts the configured OAuth flow, registering a client first when the secret names only its resource.
 func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage, redirect string) (*SignIn, error) {
 	var v Value
 	if err := json.Unmarshal(secret, &v); err != nil {
@@ -125,6 +138,11 @@ func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage,
 		return nil, errors.New("the secret is not an oauth grant")
 	}
 	s := &SignIn{State: rand.Text(), grant: *v.grant, client: client, verifier: oauth2.GenerateVerifier()}
+	if s.grant.DeviceAuthURL != "" {
+		config := s.grant.config("")
+		s.config = &config
+		return s, s.startDevice(ctx)
+	}
 	if s.grant.AuthURL == "" {
 		if err := s.register(ctx, redirect); err != nil {
 			return nil, scrub(ctx, "discovery", err)
@@ -171,6 +189,65 @@ func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage,
 	u.RawQuery = query.Encode()
 	s.URL = u.String()
 	return s, nil
+}
+
+func (s *SignIn) startDevice(ctx context.Context) error {
+	form := url.Values{"client_id": {s.grant.ClientID}, "scope": {s.grant.Scope}}
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, s.grant.DeviceAuthURL, strings.NewReader(form.Encode()))
+	if err != nil {
+		return scrub(ctx, "device authorization", err)
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Accept", "application/json")
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return scrub(ctx, "device authorization", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("oauth device authorization failed with status %d", resp.StatusCode)
+	}
+	var device oauth2.DeviceAuthResponse
+	if err := json.NewDecoder(io.LimitReader(resp.Body, 1<<20)).Decode(&device); err != nil {
+		return errors.New("oauth returned an invalid device authorization")
+	}
+	if device.DeviceCode == "" || device.UserCode == "" || device.VerificationURI == "" ||
+		!device.Expiry.After(time.Now()) || time.Until(device.Expiry) > maxDeviceExpiry || device.Interval < 0 || device.Interval > maxDeviceInterval {
+		return errors.New("oauth returned an invalid device authorization")
+	}
+	if err := secure(device.VerificationURI); err != nil {
+		return err
+	}
+	s.device, s.URL, s.UserCode, s.Expires = &device, device.VerificationURI, device.UserCode, device.Expiry
+	return nil
+}
+
+// WaitDevice respects the provider's polling interval and slow_down responses.
+func (s *SignIn) WaitDevice(ctx context.Context) (json.RawMessage, error) {
+	t, err := s.config.DeviceAccessToken(context.WithValue(ctx, oauth2.HTTPClient, s.client), s.device)
+	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			return nil, context.Canceled
+		}
+		if errors.Is(err, context.DeadlineExceeded) {
+			return nil, errors.New("sign-in code expired; start again")
+		}
+		var provider *oauth2.RetrieveError
+		if errors.As(err, &provider) {
+			switch provider.ErrorCode {
+			case "access_denied":
+				return nil, errors.New("sign-in was declined; start again to retry")
+			case "expired_token":
+				return nil, errors.New("sign-in code expired; start again")
+			}
+		}
+		return nil, scrub(ctx, "device sign-in", err)
+	}
+	grant := s.grant
+	if err := grant.acceptToken(t, false); err != nil {
+		return nil, err
+	}
+	return encodeGrant(grant), nil
 }
 
 // register discovers the resource's authorization server (RFC 9728, RFC 8414) and registers with it (RFC 7591).
@@ -287,6 +364,8 @@ func (o *oauth) acceptToken(t *oauth2.Token, refresh bool) error {
 		return errors.New("oauth returned an invalid bearer token")
 	}
 	scope, _ := t.Extra("scope").(string)
+	// GitHub returns comma-separated scopes; other providers use spaces.
+	scope = strings.Join(strings.FieldsFunc(scope, func(r rune) bool { return r == ',' || unicode.IsSpace(r) }), " ")
 	if scope == "" && refresh {
 		scope = o.Scope
 	}

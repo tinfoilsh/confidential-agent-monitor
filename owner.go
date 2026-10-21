@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"cmp"
 	"compress/gzip"
 	"context"
@@ -209,12 +210,15 @@ type finishSignInInput struct {
 	Code     string  `json:"code"`
 	ClientID string  `json:"client_id,omitempty"`
 	Error    *string `json:"error,omitempty"`
+	Cancel   bool    `json:"cancel,omitempty"`
 }
 
 type pendingSignIn struct {
 	finish  func(context.Context, finishSignInInput) error
 	session string
 	expires time.Time
+	done    <-chan struct{}
+	cancel  context.CancelFunc
 }
 type sourceInput struct {
 	Source string `json:"source"`
@@ -520,21 +524,70 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 	return mux
 }
 
-func (m *monitor) startSignIn(r *http.Request, req signInInput) (any, error) {
-	if len(req.Path) < 4 || req.Path[0] != "connections" {
-		return nil, errors.New("invalid credential path")
-	}
-	c := m.live.Load().connections[connectionName(r.PathValue("account"), req.Path[1])]
-	if c == nil || c.protocol != req.Path[2] {
-		return nil, errors.New("connection does not exist")
-	}
-	path := append([]string{"accounts", c.account}, req.Path...)
-	if !isCredentialPath(path) || c.Secrets[path[6]] == nil {
-		return nil, errors.New("invalid credential path")
+// One catalog field can feed several connections. Capture all destinations so
+// a completed sign-in updates them together, without overwriting a newer edit.
+func (m *monitor) signInCredential(account string, path []string) (json.RawMessage, func(context.Context, json.RawMessage) error, error) {
+	full := append([]string{"accounts", account}, path...)
+	if !isCredentialPath(full) {
+		return nil, nil, errors.New("invalid credential path")
 	}
 	m.mu.Lock()
-	previous := m.store.doc.Secrets.get(credentialID(path))
-	m.mu.Unlock()
+	defer m.mu.Unlock()
+	s := m.live.Load()
+	c := s.connections[connectionName(account, path[1])]
+	if c == nil || c.account != account || c.protocol != path[2] || c.Secrets[path[4]] == nil {
+		return nil, nil, errors.New("connection does not exist")
+	}
+	paths := [][]string{path}
+	for _, raw := range s.cfg.resolved[s.cfg.Accounts[account].Preset].Catalog.Fields {
+		var field struct {
+			Paths [][]string `json:"paths"`
+		}
+		if json.Unmarshal(raw, &field) == nil && slices.ContainsFunc(field.Paths, func(p []string) bool { return slices.Equal(p, path) }) {
+			paths = field.Paths
+			break
+		}
+	}
+	type destination struct {
+		connection *connection
+		path       []string
+		before     json.RawMessage
+	}
+	var destinations []destination
+	for _, p := range paths {
+		p = append([]string{"accounts", account}, p...)
+		if !isCredentialPath(p) {
+			return nil, nil, errors.New("invalid credential path in preset")
+		}
+		target := s.connections[connectionName(account, p[3])]
+		// An account may disable one of the preset's connections.
+		if target == nil {
+			continue
+		}
+		if target.account != account || target.protocol != p[4] || target.Secrets[p[6]] == nil {
+			return nil, nil, errors.New("credential connection does not exist")
+		}
+		destinations = append(destinations, destination{target, p, bytes.Clone(m.store.doc.Secrets.get(credentialID(p)))})
+	}
+	return bytes.Clone(m.store.doc.Secrets.get(credentialID(full))), func(ctx context.Context, raw json.RawMessage) error {
+		m.mu.Lock()
+		defer m.mu.Unlock()
+		var changes []sourceChange
+		for _, d := range destinations {
+			if m.live.Load().connections[d.connection.name] != d.connection || !bytes.Equal(m.store.doc.Secrets.get(credentialID(d.path)), d.before) {
+				return errors.New("credential changed; start again")
+			}
+			changes = append(changes, sourceChange{Path: d.path, Value: raw})
+		}
+		return m.editPolicy(ctx, changes)
+	}, nil
+}
+
+func (m *monitor) startSignIn(r *http.Request, req signInInput) (any, error) {
+	previous, save, err := m.signInCredential(r.PathValue("account"), req.Path)
+	if err != nil {
+		return nil, err
+	}
 	record := previous
 	if req.Credential != nil {
 		record = req.Credential
@@ -547,20 +600,43 @@ func (m *monitor) startSignIn(r *http.Request, req signInInput) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	value := c.Secrets[path[6]]
-	pending.finish = func(ctx context.Context, result finishSignInInput) error {
-		if result.Error != nil {
-			return errors.New("sign-in was not completed; try again")
+	var response any = map[string]string{"url": sign.URL}
+	if sign.UserCode == "" {
+		pending.finish = func(ctx context.Context, result finishSignInInput) error {
+			if result.Error != nil {
+				return errors.New("sign-in was not completed; try again")
+			}
+			secret, err := sign.Exchange(ctx, result.Code, result.ClientID)
+			if err != nil {
+				return err
+			}
+			return save(ctx, secret)
 		}
-		secret, err := sign.Exchange(ctx, result.Code, result.ClientID)
-		if err != nil {
-			return err
+	} else {
+		poll, stop := context.WithDeadline(context.Background(), sign.Expires)
+		done := make(chan struct{})
+		var secret json.RawMessage
+		var failure error
+		go func() {
+			defer close(done)
+			defer stop()
+			secret, failure = sign.WaitDevice(poll)
+		}()
+		pending.expires, pending.done, pending.cancel = sign.Expires, done, stop
+		pending.finish = func(ctx context.Context, result finishSignInInput) error {
+			if result.Error != nil {
+				return errors.New("sign-in was not completed; try again")
+			}
+			if failure != nil {
+				return failure
+			}
+			return save(ctx, secret)
 		}
-		return value.Replace(ctx, previous, secret)
+		response = map[string]any{"url": sign.URL, "state": sign.State, "user_code": sign.UserCode, "expires": sign.Expires}
 	}
 	m.signIns.Store(sign.State, pending)
 	time.AfterFunc(time.Until(pending.expires), func() { m.signIns.CompareAndDelete(sign.State, pending) })
-	return map[string]string{"url": sign.URL}, nil
+	return response, nil
 }
 
 func (m *monitor) finishSignIn(r *http.Request, req finishSignInInput) (any, error) {
@@ -574,8 +650,24 @@ func (m *monitor) finishSignIn(r *http.Request, req finishSignInInput) (any, err
 	if pending.session != owner.session {
 		return nil, errors.New("sign-in belongs to a different Monitor session")
 	}
-	if !m.signIns.CompareAndDelete(state, pending) || time.Now().After(pending.expires) {
+	if !req.Cancel && req.Error == nil && pending.done != nil && time.Now().Before(pending.expires) {
+		select {
+		case <-pending.done:
+		default:
+			return map[string]bool{"pending": true}, nil
+		}
+	}
+	if !m.signIns.CompareAndDelete(state, pending) {
 		return nil, errors.New("sign-in expired or already completed; start again")
+	}
+	if pending.cancel != nil {
+		defer pending.cancel()
+	}
+	if !time.Now().Before(pending.expires) {
+		return nil, errors.New("sign-in expired or already completed; start again")
+	}
+	if req.Cancel {
+		return nil, nil
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
 	defer cancel()

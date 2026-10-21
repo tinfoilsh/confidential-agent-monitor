@@ -69,6 +69,7 @@ export type PresetAction = { title: string; effects?: string[] };
 export type Preset = {
   title: string;
   group?: string;
+  replaced_by?: string;
   defaults?: { contents?: Audience; sends?: Audience; strangers?: boolean };
   fields?: PresetField[];
   connections?: Json;
@@ -177,6 +178,12 @@ export type Request = (
   body?: unknown,
   signal?: AbortSignal,
 ) => Promise<unknown>;
+export type DeviceSignIn = {
+  url: string;
+  state: string;
+  user_code: string;
+  expires: string;
+};
 export type OwnerApi = {
   read(
     signal?: AbortSignal,
@@ -219,12 +226,14 @@ export type OwnerApi = {
     redirect: string,
     credential?: Json,
     signal?: AbortSignal,
-  ): Promise<{ url: string }>;
+  ): Promise<{ url: string } | DeviceSignIn>;
   finishSignIn(
     state: string,
-    result: string | { code?: string; client_id?: string; error?: string },
+    result:
+      | string
+      | { code?: string; client_id?: string; error?: string; cancel?: boolean },
     signal?: AbortSignal,
-  ): Promise<View>;
+  ): Promise<View | { pending: true } | null>;
   browser(
     name: string,
     body?: { [key: string]: Json | undefined },
@@ -528,7 +537,7 @@ export const edits: {
     view: View,
     account: string,
     form: {
-      answers: AccountAnswers;
+      answers?: Partial<AccountAnswers>;
       api?: Partial<ApiSettings>;
       values?: { [key: string]: Json };
       credentials?: {

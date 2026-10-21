@@ -5133,7 +5133,16 @@
     "fields": [
       {
         "key": "token",
-        "label": "Personal access token",
+        "label": "GitHub account",
+        "hint": "GitHub will ask you to authorize GitHub CLI.",
+        "oauth": {
+          "device_auth_url": "https://github.com/login/device/code",
+          "token_url": "https://github.com/login/oauth/access_token",
+          "client_id": "178c6fc778ccc68e1d6a",
+          "auth_style": "params",
+          "scope": "repo read:org gist",
+          "required_scopes": ["repo", "read:org", "gist"]
+        },
         "paths": [
           [
             "connections",

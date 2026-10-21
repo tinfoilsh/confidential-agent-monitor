@@ -436,13 +436,16 @@ export function DataPermissions(props: {
 export function Copy(props: {
   text: string;
   label?: string;
-  target?: () => HTMLInputElement | HTMLPreElement;
+  target?: () => HTMLElement;
+  icon?: boolean;
 }) {
   const m = useMonitor();
   return (
     <button
       type="button"
-      aria-label={props.label}
+      classList={{ "icon-button": props.icon }}
+      aria-label={props.label ?? "Copy"}
+      title={props.icon ? (props.label ?? "Copy") : undefined}
       onClick={async () => {
         try {
           await navigator.clipboard.writeText(props.text);
@@ -467,7 +470,9 @@ export function Copy(props: {
         }
       }}
     >
-      Copy
+      <Show when={props.icon} fallback="Copy">
+        <Icon name="copy" />
+      </Show>
     </button>
   );
 }

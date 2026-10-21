@@ -2,7 +2,7 @@
 // Owner HTTP contract: both transports, validators, mutations and older servers.
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
-import { requestTitle, summary, ownerApi, ownerClient, localOwnerClient, decisions, draftable, withDraft, saveText, effectSettings, mode, edits, previewChanges, agentAccess, accountUsers, setupFields, fieldPaths } from '../ui/src/owner.js';
+import { requestTitle, summary, ownerApi, ownerClient, localOwnerClient, decisions, draftable, withDraft, saveText, effectSettings, mode, edits, previewChanges, agentAccess, accountUsers, setupFields, fieldPaths, apiSettings, credentialFields, catalog } from '../ui/src/owner.js';
 
 for (const local of [false, true]) {
   const calls = [];
@@ -15,6 +15,10 @@ for (const local of [false, true]) {
     assert.equal(options.cache, 'no-store');
     assert.equal(options.headers[local ? 'X-Tinfoil-Session' : 'Authorization'], local ? 'synthetic-token' : 'Bearer synthetic-key');
     if (reject) return new Response('Unauthorized', { status: 401 });
+    if (path.startsWith('/sign-in/')) {
+      const body = JSON.parse(options.body);
+      return Response.json(body.cancel ? null : { pending: true });
+    }
     if (options.method === 'POST') { pending = false; return new Response('null'); }
     const tag = `W/"${generation}-${pending}-${path}"`;
     if (validators && options.headers['If-None-Match'] === tag) return new Response(null, { status: 304 });
@@ -40,6 +44,11 @@ for (const local of [false, true]) {
   assert.equal(calls.at(-1).path, '/requests/r%2Fencoded');
   await client.read();
   assert.equal(calls.at(-1).path, '/requests'); // published full-history API remains supported
+  const signInSignal = new AbortController().signal;
+  assert.deepEqual(await client.finishSignIn('device/state', {}, signInSignal), { pending: true });
+  assert.equal(calls.at(-1).path.split('?')[0], '/sign-in/device%2Fstate');
+  assert.equal(calls.at(-1).signal, signInSignal);
+  assert.equal(await client.finishSignIn('device/state', { cancel: true }), null);
   reject = true;
   await assert.rejects(client.read(undefined, { summary: true }), e => e.status === 401);
   reject = false;
@@ -80,6 +89,96 @@ for (const local of [false, true]) {
   assert.equal(calls.length, count);
 }
 console.log('Owner client checks passed for bearer and SSH transports.');
+
+const github = JSON.parse(readFileSync(new URL('../presets/github.json', import.meta.url), 'utf8'));
+const githubView = { config: { accounts: {} }, presets: { github: { ...github.catalog, title: github.title } } };
+const githubToken = github.catalog.fields.find(field => field.key === 'token');
+for (const useOAuth of [false, true]) {
+  const added = previewChanges(structuredClone(githubView), edits.addAccount(githubView, 'github', {
+    name: 'github', values: { token: 'test-personal-access-token', private: [] }, answers: github.catalog.defaults,
+    oauth: useOAuth ? ['token'] : [],
+  }));
+  for (const path of fieldPaths(githubToken)) {
+    const value = path.reduce((obj, key) => obj[key], added.config.accounts.github);
+    assert.deepEqual(value, useOAuth ? { oauth: githubToken.oauth } : 'test-personal-access-token');
+  }
+  // Blurring an empty replacement must not materialize untouched optional settings.
+  delete added.config.accounts.github.policy_options;
+  added.fields = { github: fieldPaths(githubToken).map(path => ({ path, kind: useOAuth ? 'oauth' : 'static' })) };
+  const credentials = Object.fromEntries(credentialFields(added, 'github').map(f => [f.key, { mode: 'keep' }]));
+  assert.deepEqual(edits.saveAccount(added, 'github', { values: { private: [] }, credentials }), []);
+  const field = credentialFields(added, 'github')[0];
+  assert.equal(credentialFields(added, 'github').length, 1);
+  assert.equal(field.label, 'GitHub account');
+  assert.deepEqual(fieldPaths(field), fieldPaths(githubToken));
+  assert.deepEqual(edits.saveAccount(added, 'github', {
+    values: { private: [] }, credentials: { [field.key]: { mode: 'replace', value: 'replacement-token' } },
+  }), fieldPaths(githubToken).map(path => ({ path: ['accounts', 'github', ...path], value: 'replacement-token' })));
+  assert.deepEqual(edits.saveAccount(added, 'github', {
+    credentials: { [field.key]: { mode: 'clear' } },
+  }), fieldPaths(githubToken).map(path => ({ path: ['accounts', 'github', ...path], delete: true })));
+  added.fields.github[0].kind = 'static';
+  added.fields.github[1].kind = 'oauth';
+  const mixed = credentialFields(added, 'github')[0];
+  assert.deepEqual(mixed.path, fieldPaths(githubToken)[1]);
+  assert.equal(mixed.key, field.key);
+  assert.equal(mixed.credential, undefined); // Sign in through the existing grant, preserving its stored endpoints/client.
+  added.fields.github[0].kind = 'unset';
+  assert.equal(credentialFields(added, 'github')[0].status, 'Partially configured');
+  added.fields.github = added.fields.github.slice(0, 1);
+  assert.deepEqual(edits.saveAccount(added, 'github', {
+    credentials: { [field.key]: { mode: 'replace', value: 'http-only-token' } },
+  }), [{ path: ['accounts', 'github', ...fieldPaths(githubToken)[0]], value: 'http-only-token' }]);
+  previewChanges(added, edits.saveAccount(added, 'github', { values: { private: ['example/*'] } }));
+  assert.deepEqual(edits.saveAccount(added, 'github', { values: { private: [] } }), [
+    { path: ['accounts', 'github', 'policy_options', 'private'], value: [] },
+  ]);
+}
+assert.equal(githubToken.oauth.device_auth_url, 'https://github.com/login/device/code');
+assert.equal(githubToken.oauth.client_secret, undefined);
+console.log('GitHub device sign-in and personal-token setup cover both HTTP and MCP credentials.');
+
+const customApi = {
+  config: { accounts: { api: { preset: 'custom_api', connections: { '': { http: {
+    slots: [{ origin: 'https://api.example.test', header: 'X-API-Key', value: 'token' }],
+  } } } } } },
+  presets: { custom_api: { fields: [] } },
+  fields: { api: [{ path: ['connections', '', 'http', 'secrets', 'token'], kind: 'static' }] },
+};
+assert.deepEqual(edits.saveAccount(customApi, 'api', { api: apiSettings(customApi, 'api') }), []);
+const customCredential = credentialFields(customApi, 'api')[0];
+assert.deepEqual(edits.saveAccount(customApi, 'api', {
+  credentials: { [customCredential.key]: { mode: 'replace', value: 'replacement-key' } },
+}), [{ path: ['accounts', 'api', ...customCredential.path], value: 'replacement-key' }]);
+const changedApi = edits.saveAccount(customApi, 'api', {
+  api: { ...apiSettings(customApi, 'api'), url: 'https://api.example.test/v2' },
+});
+assert.equal(changedApi.length, 1);
+assert.equal(changedApi[0].value[0].path, '/v2');
+console.log('Empty credential replacements leave optional settings and custom API slots unchanged.');
+
+const openRouter = Object.fromEntries(['open_router', 'open_router_api', 'openrouter'].map(name => [
+  name, JSON.parse(readFileSync(new URL(`../presets/${name}.json`, import.meta.url), 'utf8')),
+]));
+const openRouterView = {
+  config: { accounts: { legacy: { preset: 'open_router_api' }, current: { preset: 'open_router' } } },
+  presets: Object.fromEntries(Object.entries(openRouter).map(([name, p]) => [name, { ...p.catalog, title: p.title }])),
+};
+const openRouterCatalog = catalog(openRouterView).flatMap(group => group.presets);
+assert.deepEqual(openRouterCatalog.map(p => p.name).sort(), ['open_router', 'openrouter']);
+assert.equal(openRouterCatalog.find(p => p.name === 'open_router').accounts, 2);
+assert.equal(openRouterView.config.accounts.legacy.preset, 'open_router_api');
+const legacyKey = setupFields(openRouterView, 'open_router_api').find(f => f.secret);
+assert.deepEqual(legacyKey.path, ['connections', '', 'http', 'secrets', 'api_key']);
+openRouterView.fields = { legacy: [{ path: legacyKey.path, kind: 'static' }] };
+const legacyCredential = credentialFields(openRouterView, 'legacy')[0];
+assert.deepEqual(edits.saveAccount(openRouterView, 'legacy', {
+  credentials: { [legacyCredential.key]: { mode: 'replace', value: 'replacement-openrouter-key' } },
+}), [{ path: ['accounts', 'legacy', ...legacyKey.path], value: 'replacement-openrouter-key' }]);
+assert.equal(openRouter.open_router_api.http.operations.sendChatCompletionRequest.action, 'send.completions');
+for (const id of ['sendChatCompletionRequest', 'createEmbeddings', 'createResponses'])
+  assert.deepEqual(openRouter.open_router.http.operations[id].effects, ['generate', 'pay', 'send']);
+console.log('OpenRouter has one API catalog entry; existing credential paths and permissions remain supported.');
 
 function onboard(view, preset) {
   return ownerApi(async (method, path, body) => {

@@ -473,6 +473,7 @@ type presetRecord struct {
 }
 type presetCatalog struct {
 	Group       string                     `json:"group,omitempty"`
+	ReplacedBy  string                     `json:"replaced_by,omitempty"`
 	Actions     map[string]presetAction    `json:"actions,omitempty"`
 	Connections map[string]json.RawMessage `json:"connections,omitempty"`
 	Defaults    json.RawMessage            `json:"defaults,omitempty"`

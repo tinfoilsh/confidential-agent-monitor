@@ -249,7 +249,10 @@ def main():
             "messages.delete": {"title": "Delete messages", "effects": ["delete"]}}
         fixture.view["vocabulary"] = {"read": {}, "delete": {"change": True}, "admin": {}}
         fixture.view["config"]["accounts"]["anthropic"]["connections"] = {
-            "": {"http": {"slots": [dict(value="token", origin="https://api.example.test", header="Authorization", prefix="Bearer ")] }},
+            "": {"http": {"slots": [
+                dict(value="token", origin="https://api.example.test", header="Authorization", prefix="Bearer "),
+                dict(value="token", origin="https://api.example.test", header="Authorization", prefix="token "),
+                dict(value="token", origin="https://example.test", basic="password")] }},
             "secondary": {"http": {"slots": [dict(value="key", origin="https://secondary.example.test", query="api_key")]}}}
         fixture.view["fields"]["anthropic"] = [
             dict(path=["connections", "", "http", "secrets", "token"], kind="unset", placeholder="monitor_test_token"),
@@ -403,6 +406,9 @@ def main():
                 browser("count", ".agent-setup-item").stdout.strip() == "2"
                 and browser("value", ".agent-setup-item:first-of-type input").stdout.strip() == "monitor_test_token"
                 and browser("value", ".agent-setup-item:last-of-type input").stdout.strip() == "monitor_test_secondary")
+            results["checks"]["credential_formats_collapsed_initially"] = browser("count", ".agent-setup-usage[open]").stdout.strip() == "0"
+            browser("click", ".agent-setup-item:first-of-type .agent-setup-usage > summary")
+            browser("click", ".agent-setup-item:last-of-type .agent-setup-usage > summary")
             browser("click", ".connection-advanced > summary")
             setup_text = browser("text", ".connection-detail").stdout
             results["checks"]["connection_sharing_and_effects_under_advanced"] = setup_text.index("Agent setup") < setup_text.index("Connection settings") < setup_text.index("Advanced") < setup_text.index("Data sharing") < setup_text.index("Effects") < setup_text.index("Custom policy")
@@ -416,6 +422,8 @@ def main():
                 and "Save connection" not in browser("text", ".connection-detail").stdout)
             results["checks"]["credential_placement_instructions"] = (
                 "Authorization: Bearer monitor_test_token" in setup_text
+                and "Authorization: token monitor_test_token" in setup_text
+                and "HTTP Basic password: monitor_test_token" in setup_text
                 and "api_key=monitor_test_secondary" in setup_text
                 and "Header: Authorization: Bearer monitor_test_token: Bearer" not in setup_text)
             browser("click", "[aria-label='Access for sandbox-sb2'] button:nth-child(3)")

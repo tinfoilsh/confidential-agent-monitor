@@ -221,7 +221,7 @@ export function ownerApi(request, generation, base = "") {
           409,
         );
     }
-    return checked(view);
+    return view?.pending === true ? view : checked(view);
   };
   const unlock = (at = minimum ?? 0, signal) =>
     snapshot("POST", "/unlock", { generation: at }, signal);
@@ -970,8 +970,8 @@ export function grantTemplate(view, account, f) {
   return grant && !/\{\w+\}/.test(JSON.stringify(grant)) ? grant : undefined;
 }
 
-// Each stored credential with its status. A stored grant keeps its client and endpoints for sign-in;
-// only an unset or static value starts from the preset's template.
+// One control per preset field, including all of its active credential destinations.
+// A stored grant keeps its client and endpoints for sign-in; unset or static values use the template.
 export function credentialFields(view, account) {
   const byPath = new Map();
   for (const field of fieldsOf(presetOf(view, account)))
@@ -979,23 +979,40 @@ export function credentialFields(view, account) {
       const key = JSON.stringify(path);
       if (!byPath.has(key)) byPath.set(key, field);
     }
-  return (view.fields?.[account] ?? [])
-    .map((meta) => {
-      const f = byPath.get(JSON.stringify(meta.path));
+  const groups = new Map();
+  for (const meta of view.fields?.[account] ?? []) {
+    const field = byPath.get(JSON.stringify(meta.path));
+    const key = field ?? meta;
+    if (!groups.has(key)) groups.set(key, { field, members: [] });
+    groups.get(key).members.push(meta);
+  }
+  return [...groups.values()]
+    .map(({ field: f, members }) => {
+      const meta =
+        members.find((m) => m.kind.startsWith("oauth")) ?? members[0];
       const field = {
         ...f,
         ...meta,
-        key: meta.path.map(encodeURIComponent).join("/"),
-        label: `${meta.path[1] ? meta.path[1] + ": " : ""}${f?.label ?? meta.path.at(-1)}`,
+        key: members[0].path.map(encodeURIComponent).join("/"),
+        paths: members.map((m) => m.path),
+        label:
+          f?.label ??
+          `${meta.path[1] ? meta.path[1] + ": " : ""}${meta.path.at(-1)}`,
         secret: true,
         multiline: f ? !!f.multiline : true,
       };
+      const configured = members.filter((m) => !CREDENTIAL_STATUS[m.kind]);
       const grant = meta.kind.startsWith("oauth")
         ? undefined
         : grantTemplate(view, account, field);
       return {
         ...field,
-        status: CREDENTIAL_STATUS[meta.kind] ?? "Configured",
+        status:
+          configured.length === members.length
+            ? "Configured"
+            : configured.length
+              ? "Partially configured"
+              : (CREDENTIAL_STATUS[meta.kind] ?? "Not configured"),
         signIn: meta.kind.startsWith("oauth") || !!grant,
         credential: grant && { oauth: grant },
       };
@@ -1004,21 +1021,25 @@ export function credentialFields(view, account) {
 }
 
 export const signInLabel = (view, preset) =>
-  preset === "codex"
-    ? "Continue with ChatGPT"
-    : preset === "mcp" || !view.presets[preset]
-      ? "Sign in"
-      : "Sign in with " + view.presets[preset].title;
+  view.presets[preset]?.title
+    ? "Sign in with " + view.presets[preset].title
+    : "Sign in";
 
 export function catalog(view) {
   const custom = ["custom_api", "mcp"].filter((name) => view.presets[name]);
   const counts = new Map();
-  for (const acc of Object.values(accounts(view)))
-    counts.set(acc.preset, (counts.get(acc.preset) ?? 0) + 1);
+  for (const acc of Object.values(accounts(view))) {
+    const replacement = view.presets[acc.preset]?.replaced_by;
+    const preset =
+      replacement && view.presets[replacement] ? replacement : acc.preset;
+    counts.set(preset, (counts.get(preset) ?? 0) + 1);
+  }
   const groups = new Map(Object.keys(CATALOG_GROUPS).map((g) => [g, []]));
   for (const [name, preset] of Object.entries(view.presets).sort(
     ([, a], [, b]) => a.title.localeCompare(b.title),
   )) {
+    // Retired definitions still serve stored credentials and permission names.
+    if (preset.replaced_by && view.presets[preset.replaced_by]) continue;
     const group = preset.group ?? "api";
     if (!groups.has(group)) groups.set(group, []);
     groups
@@ -1501,7 +1522,11 @@ export const edits = {
     return sourceChanges(body);
   },
   // credentials maps a credential field key to keep, replace with a value, or clear; unchanged settings send nothing.
-  saveAccount(view, account, { answers, api, values = {}, credentials = {} }) {
+  saveAccount(
+    view,
+    account,
+    { answers = {}, api, values = {}, credentials = {} },
+  ) {
     const acc = accounts(view)[account],
       updated = structuredClone(acc),
       changed = new Set(),
@@ -1516,13 +1541,17 @@ export const edits = {
       changed.add(JSON.stringify(n < 0 ? path : path.slice(0, n)));
     };
     for (const [key, value] of Object.entries(answers)) set([key], value);
-    if (acc.preset === "custom_api")
+    if (
+      acc.preset === "custom_api" &&
+      api &&
+      !same(api, apiSettings(view, account))
+    )
       set(
         ["connections", "", "http", "slots"],
         [apiSlot(api, acc.connections?.[""]?.http?.slots?.[0]?.value)],
       );
     for (const f of plainFields(view, account))
-      if (Object.hasOwn(values, f.key))
+      if (Object.hasOwn(values, f.key) && !same(f.value, values[f.key]))
         for (const path of paths(f)) set(path, values[f.key]);
     for (const f of credentialFields(view, account)) {
       const { mode, value } = credentials[f.key] ?? {};
@@ -1531,10 +1560,11 @@ export const edits = {
           throw new Error(
             `Enter a value for ${f.label}, or cancel the replacement.`,
           );
-        set(f.path, value);
+        for (const path of paths(f)) set(path, value);
       }
       if (mode === "clear")
-        removals.push({ path: ["accounts", account, ...f.path], delete: true });
+        for (const path of paths(f))
+          removals.push({ path: ["accounts", account, ...path], delete: true });
     }
     return [
       ...[...changed].map((key) => {

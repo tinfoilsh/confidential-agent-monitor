@@ -6,6 +6,8 @@ import {
   createSignal,
   createUniqueId,
   lazy,
+  onCleanup,
+  onMount,
 } from "solid-js";
 import { createStore } from "solid-js/store";
 import * as owner from "./owner.js";
@@ -28,6 +30,65 @@ import { AgentConnectionAccess } from "./Agents";
 const Browser = lazy(() =>
   import("./Browser").then((m) => ({ default: m.Browser })),
 );
+
+export function DeviceSignInDialog(props: {
+  attempt: owner.DeviceSignIn & { title: string };
+}) {
+  const m = useMonitor(),
+    attempt = props.attempt;
+  let dialog!: HTMLDialogElement, code!: HTMLElement;
+  onMount(() => dialog.showModal());
+  onCleanup(() => dialog.close());
+  return (
+    <dialog
+      ref={dialog}
+      id="device-sign-in-dialog"
+      aria-labelledby="device-sign-in-title"
+      onCancel={(event) => {
+        event.preventDefault();
+        m.cancelSignIn();
+      }}
+    >
+      <header class="dialog-header">
+        <h1 id="device-sign-in-title">Sign in with {attempt.title}</h1>
+        <button
+          class="icon-button"
+          aria-label="Cancel sign-in"
+          onClick={m.cancelSignIn}
+        >
+          <Icon name="close" />
+        </button>
+      </header>
+      <div class="dialog-body device-sign-in-body">
+        <p>Enter this code on the sign-in page.</p>
+        <div class="device-sign-in-code">
+          <code ref={code} id="device-sign-in-code" aria-label="One-time code">
+            {attempt.user_code}
+          </code>
+          <Copy
+            text={attempt.user_code}
+            label="Copy one-time code"
+            target={() => code}
+            icon
+          />
+        </div>
+        <div class="device-sign-in-actions">
+          <p class="muted" role="status">
+            Waiting for sign-in…
+          </p>
+          <a
+            class="button primary"
+            href={attempt.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Open sign-in page
+          </a>
+        </div>
+      </div>
+    </dialog>
+  );
+}
 
 export function Connections(props: { expanded?: string }) {
   const m = useMonitor(),
@@ -452,10 +513,29 @@ export function AddConnection(props: { preset: string }) {
             </select>
           </label>
         </Show>
-        <fieldset class="data-permissions">
-          <legend>Data sharing</legend>
-          <DataPermissions value={sharing()} onChange={setSharing} />
-        </fieldset>
+        <ResourceDisclosure
+          class="connection-advanced"
+          summary={
+            <span class="connection-advanced-text">
+              <span class="connection-advanced-heading">
+                <strong class="connection-advanced-title">Advanced</strong>
+                <span class="collection-chevron">
+                  <Icon name="arrow" />
+                </span>
+              </span>
+              <small>Data sharing</small>
+            </span>
+          }
+        >
+          {() => (
+            <div class="connection-advanced-content">
+              <fieldset class="data-permissions">
+                <legend>Data sharing</legend>
+                <DataPermissions value={sharing()} onChange={setSharing} />
+              </fieldset>
+            </div>
+          )}
+        </ResourceDisclosure>
         <div class="credential-actions">
           <button
             classList={{ primary: !signIns().length }}
@@ -505,7 +585,6 @@ function ConnectionForm(props: { name: string }) {
     const entered = { ...drafts };
     try {
       const changes = owner.edits.saveAccount(m.view()!, props.name, {
-        answers: answers(m.view()!.config.accounts![props.name]),
         api: initial.preset === "custom_api" ? api() : undefined,
         values: Object.fromEntries(
           fields.map((f) => [f.key, owner.readField(f, values[f.key])]),
@@ -566,9 +645,8 @@ function ConnectionForm(props: { name: string }) {
         {(key) => {
           const field = () => credentials().get(key)!;
           const collapsed = () =>
-            field().kind !== "unset" &&
-            field().kind !== "oauth-required" &&
-            drafts[key] === undefined;
+            drafts[key] === undefined &&
+            (field().signIn || field().kind !== "unset");
           const status = () =>
             field().status + (field().account ? ` · ${field().account}` : "");
           const signIn = () => (
@@ -595,7 +673,10 @@ function ConnectionForm(props: { name: string }) {
                     <div class="credential-actions">
                       {signIn()}
                       <button type="button" onClick={() => setDrafts(key, "")}>
-                        Replace
+                        {field().kind === "unset" ||
+                        field().kind === "oauth-required"
+                          ? "Enter credential"
+                          : "Replace"}
                       </button>
                     </div>
                   </div>
@@ -642,17 +723,25 @@ function Connection(props: { name: string; active: boolean }) {
   const [policy, setPolicy] = createSignal(
     m.view()!.config.policies?.[props.name] ?? "",
   );
-  const setups = createMemo(() =>
-    Object.entries(account()?.connections ?? {}).flatMap(([key, kinds]) => {
+  const setups = createMemo(() => {
+    const groups = new Map<
+      string,
+      NonNullable<ReturnType<typeof owner.apiSetup>>[]
+    >();
+    for (const [key, kinds] of Object.entries(account()?.connections ?? {})) {
       const slots = Object.values(kinds)[0]?.slots;
-      return Array.isArray(slots)
-        ? slots.flatMap((_, index) => {
-            const setup = owner.apiSetup(m.view()!, props.name, key, index);
-            return setup ? [setup] : [];
-          })
-        : [];
-    }),
-  );
+      if (!Array.isArray(slots)) continue;
+      for (let index = 0; index < slots.length; index++) {
+        const setup = owner.apiSetup(m.view()!, props.name, key, index);
+        if (!setup) continue;
+        const id = JSON.stringify([setup.connection, setup.credential]);
+        const group = groups.get(id);
+        if (group) group.push(setup);
+        else groups.set(id, [setup]);
+      }
+    }
+    return [...groups.values()];
+  });
   const codex = () => owner.codexSetup(m.view()!, props.name);
   return (
     <div class="connection-detail">
@@ -735,13 +824,9 @@ function Connection(props: { name: string; active: boolean }) {
         <Show when={setups().length}>
           <section>
             <h2>Agent setup</h2>
-            <p>
-              Use these placeholders in your agent and send requests through
-              Monitor. Monitor substitutes your saved credentials at the
-              locations below.
-            </p>
             <For each={setups()}>
-              {(setup) => {
+              {(group) => {
+                const setup = group[0];
                 let input!: HTMLInputElement;
                 const id = createUniqueId();
                 return (
@@ -767,28 +852,41 @@ function Connection(props: { name: string; active: boolean }) {
                         target={() => input}
                       />
                     </div>
-                    <dl class="agent-setup-details">
-                      <dt>Address</dt>
-                      <dd>
-                        <code>{setup.address}</code>
-                      </dd>
-                      <dt>
-                        {setup.header
-                          ? "Header"
-                          : setup.query
-                            ? "Query parameter"
-                            : "Authentication"}
-                      </dt>
-                      <dd>
-                        <code>
-                          {setup.header
-                            ? `${setup.header}: ${setup.value}`
-                            : setup.query
-                              ? `${setup.query}=${setup.value}`
-                              : setup.placement}
-                        </code>
-                      </dd>
-                    </dl>
+                    <details class="agent-setup-usage">
+                      <summary>Where this placeholder is used</summary>
+                      <Show when={group.length > 1}>
+                        <p>
+                          The same placeholder works in each of these formats.
+                          Use the format your tool expects.
+                        </p>
+                      </Show>
+                      <For each={group}>
+                        {(use) => (
+                          <dl class="agent-setup-details">
+                            <dt>Address</dt>
+                            <dd>
+                              <code>{use.address}</code>
+                            </dd>
+                            <dt>
+                              {use.header
+                                ? "Header"
+                                : use.query
+                                  ? "Query parameter"
+                                  : "Authentication"}
+                            </dt>
+                            <dd>
+                              <code>
+                                {use.header
+                                  ? `${use.header}: ${use.value}`
+                                  : use.query
+                                    ? `${use.query}=${use.value}`
+                                    : use.placement}
+                              </code>
+                            </dd>
+                          </dl>
+                        )}
+                      </For>
+                    </details>
                   </div>
                 );
               }}

@@ -15,7 +15,12 @@ import * as owner from "./owner.js";
 import { MonitorProvider, useMonitor } from "./monitor";
 import { Activity, RequestDetail } from "./Activity";
 import { Agents, AddAgent } from "./Agents";
-import { AddConnection, Catalog, Connections } from "./Connections";
+import {
+  AddConnection,
+  Catalog,
+  Connections,
+  DeviceSignInDialog,
+} from "./Connections";
 import { ConnectorIcon, Empty, Icon, href } from "./components";
 
 const Settings = lazy(() =>
@@ -299,6 +304,9 @@ function Shell() {
           </main>
         </div>
         <CreationDialog path={dialogRoute()} close={close} />
+        <Show when={m.deviceSignIn()} keyed>
+          {(attempt) => <DeviceSignInDialog attempt={attempt} />}
+        </Show>
       </Show>
       <Show when={m.message() && !dialogRoute()}>
         <div id="toast" role="status">

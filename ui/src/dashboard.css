@@ -1725,6 +1725,9 @@ details[open] > summary > .collection-chevron {
 .agent-setup-item button {
   white-space: nowrap;
 }
+.agent-setup-usage {
+  margin: 16px 0;
+}
 .agent-setup-details {
   display: grid;
   grid-template-columns: max-content minmax(0, 1fr);
@@ -2200,7 +2203,8 @@ td {
     opacity: 1;
   }
 }
-#creation-dialog {
+#creation-dialog,
+#device-sign-in-dialog {
   width: min(680px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
   padding: 0;
@@ -2211,12 +2215,53 @@ td {
   color: var(--text);
   box-shadow: 0 24px 80px #0004;
 }
-#creation-dialog[open] {
+#creation-dialog[open],
+#device-sign-in-dialog[open] {
   display: flex;
   flex-direction: column;
 }
-#creation-dialog::backdrop {
+#creation-dialog::backdrop,
+#device-sign-in-dialog::backdrop {
   background: #06182099;
+}
+#device-sign-in-dialog {
+  width: min(420px, calc(100vw - 32px));
+}
+.device-sign-in-body {
+  display: grid;
+  gap: 20px;
+}
+.device-sign-in-body p {
+  margin: 0;
+}
+.device-sign-in-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.device-sign-in-code {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  background: var(--subtle);
+}
+#device-sign-in-code {
+  flex: 1;
+  min-width: 0;
+  font-size: clamp(1.25rem, 5vw, 2rem);
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  text-align: center;
+  user-select: all;
 }
 .dialog-header {
   display: flex;

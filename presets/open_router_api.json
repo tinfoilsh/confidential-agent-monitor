@@ -1,6 +1,7 @@
 {
-  "title": "OpenRouter Chat Model",
+  "title": "OpenRouter (API)",
   "catalog": {
+    "replaced_by": "open_router",
     "group": "api",
     "fields": [
       {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "secrets", "api_key"]}
