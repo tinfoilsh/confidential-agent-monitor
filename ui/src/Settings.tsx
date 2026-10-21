@@ -1,6 +1,13 @@
 import { For, Show, createResource, createSignal, onCleanup } from "solid-js";
 import * as owner from "./owner.js";
-import { Effects, Empty, LazyDetails, download, href } from "./components";
+import {
+  ConnectorIcon,
+  Effects,
+  Empty,
+  LazyDetails,
+  download,
+  href,
+} from "./components";
 import { useMonitor } from "./monitor";
 
 export function Settings() {
@@ -121,29 +128,20 @@ export function Settings() {
 }
 export function Rules() {
   const m = useMonitor(),
-    names = () =>
-      Object.keys(m.view()!.config.identities ?? {}).filter(
-        (name) =>
-          Object.keys(m.view()!.config.identities![name].rules ?? {}).length,
+    rules = () =>
+      Object.entries(m.view()!.config.identities ?? {}).flatMap(
+        ([name, identity]) =>
+          Object.keys(identity.rules ?? {}).map((id) => [name, id] as const),
       );
   return (
     <div class="resource-list">
       <div class="resource-heading">
         <h2>
-          Saved rules{" "}
-          <span class="count">
-            {names().reduce(
-              (count, name) =>
-                count +
-                Object.keys(m.view()!.config.identities![name].rules ?? {})
-                  .length,
-              0,
-            )}
-          </span>
+          Saved rules <span class="count">{rules().length}</span>
         </h2>
       </div>
       <For
-        each={names()}
+        each={rules()}
         fallback={
           <Empty title="No saved rules yet" icon="rules">
             Save an approval rule from a request to allow matching requests in
@@ -151,40 +149,49 @@ export function Rules() {
           </Empty>
         }
       >
-        {(name) => (
-          <section class="rules-agent">
-            <h2>{name}</h2>
-            <For
-              each={Object.keys(m.view()!.config.identities![name].rules ?? {})}
-            >
-              {(id) => {
-                const rule = () =>
-                  m.view()!.config.identities![name].rules![id];
-                return (
-                  <div class="row">
-                    <span>
-                      {owner.ruleSentence(rule())}
-                      <Show when={rule().scope}>
-                        <details>
-                          <summary>Approval scope</summary>
-                          <pre>{JSON.stringify(rule().scope, null, 2)}</pre>
-                        </details>
-                      </Show>
-                    </span>
-                    <button
-                      disabled={m.busy()}
-                      onClick={() =>
-                        void m.edit(owner.edits.removeRule(name, id))
-                      }
+        {([name, id]) => {
+          const rule = () => m.view()!.config.identities![name].rules![id];
+          return (
+            <div class="resource-row">
+              <a class="resource-link" href={href("account", rule().account)}>
+                <ConnectorIcon
+                  preset={
+                    m.view()!.config.accounts?.[rule().account]?.preset ??
+                    "custom"
+                  }
+                />
+                <span>
+                  <strong>{owner.ruleTitle(m.view()!, rule())}</strong>
+                  <small>
+                    {name} · {rule().account}
+                  </small>
+                  <small class="rule-scope">
+                    <For
+                      each={Object.entries(rule().scope ?? {})}
+                      fallback="Any request"
                     >
-                      Remove
-                    </button>
-                  </div>
-                );
-              }}
-            </For>
-          </section>
-        )}
+                      {([key, value]) => {
+                        const text = `${key}: ${typeof value === "string" ? value : JSON.stringify(value)}`;
+                        return <code title={text}>{text}</code>;
+                      }}
+                    </For>
+                  </small>
+                  <small>
+                    {rule().operation
+                      ? `Skips ${owner.ruleWaives(rule()).join(", ")}`
+                      : "Inactive: saved before approvals named an operation"}
+                  </small>
+                </span>
+              </a>
+              <button
+                disabled={m.busy()}
+                onClick={() => void m.edit(owner.edits.removeRule(name, id))}
+              >
+                Remove
+              </button>
+            </div>
+          );
+        }}
       </For>
     </div>
   );

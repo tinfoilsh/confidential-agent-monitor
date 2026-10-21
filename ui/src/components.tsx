@@ -250,37 +250,13 @@ export function Permission(props: {
     </span>
   );
 }
-export function EffectOptions(props: {
-  scope: owner.EffectScope;
-  class?: string;
-}) {
-  return (
-    <LazyDetails
-      class={`effect-options ${props.class ?? ""}`}
-      summaryClass="effect-options-toggle"
-      summary={
-        <>
-          <Icon name="arrow" />
-          <span>Effect overrides</span>
-        </>
-      }
-    >
-      {() => <Effects scope={props.scope} />}
-    </LazyDetails>
-  );
-}
 export function Effects(props: { scope?: owner.EffectScope }) {
   const m = useMonitor();
   const settings = createMemo(() => {
     const view = m.view()!;
     const accounts = props.scope?.account
       ? [props.scope.account]
-      : props.scope?.agent
-        ? owner
-            .agentAccess(view, props.scope.agent)
-            .filter((access) => access.level !== "off")
-            .map((access) => access.account)
-        : Object.keys(view.config.accounts ?? {});
+      : Object.keys(view.config.accounts ?? {});
     // A root's effects already include all of its descendants.
     const used = new Set(
       accounts.flatMap((account) =>

@@ -1,5 +1,5 @@
 import { createMemo, untrack, type Accessor } from "solid-js";
-import { stateAt, type RequestRecord } from "./owner.js";
+import { needsOwner, stateAt, type RequestRecord } from "./owner.js";
 
 // Share request state between the list, navigation and title. The existing clock
 // only invalidates the log when it crosses a deadline, not on every countdown.
@@ -41,6 +41,6 @@ export function createRequestLog(
   const byId = createMemo(
     () => new Map(records().map((record) => [record.id, record])),
   );
-  const pendingCount = createMemo(() => pending().length - expired());
+  const pendingCount = createMemo(() => records().filter(needsOwner).length);
   return { records, byId, pendingCount };
 }

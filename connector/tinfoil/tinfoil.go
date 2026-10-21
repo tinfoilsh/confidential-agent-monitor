@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"strings"
 
@@ -69,4 +70,16 @@ func (s *Server) Run(ctx context.Context, e *connector.Env, serve func(context.C
 
 func (s *Server) Serve(stream *connector.Stream, e *connector.Env) {
 	s.http.ServeWithTransport(stream, e, s.transport)
+}
+
+// Control uses the same attested transport and credential handle for Monitor's
+// own inference. Private controls also work through an isolated connector worker.
+func (s *Server) Control() http.Handler {
+	mux := http.NewServeMux()
+	mux.Handle("POST /chat/completions", &httputil.ReverseProxy{Transport: s.transport, Rewrite: func(r *httputil.ProxyRequest) {
+		key, _ := s.Secrets["TINFOIL_API_KEY"].Value(r.In.Context())
+		r.Out.URL, r.Out.Host = &url.URL{Scheme: "https", Host: s.Enclave, Path: "/v1/chat/completions"}, ""
+		r.Out.Header = http.Header{"Authorization": {"Bearer " + key}, "Content-Type": {"application/json"}}
+	}})
+	return mux
 }

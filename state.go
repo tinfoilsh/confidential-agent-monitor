@@ -124,6 +124,13 @@ func (m *monitor) activate(ctx context.Context, next sealed, s *state) error {
 	}
 	m.reconcile(s)
 	m.live.Store(s)
+	// Pending decisions belong to the configuration that requested them.
+	for _, r := range m.records {
+		if r.State == statePending {
+			r.settle(errChanged)
+			close(r.answered)
+		}
+	}
 	return nil
 }
 

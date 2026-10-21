@@ -488,7 +488,9 @@ function ConnectionForm(props: { name: string }) {
   const [values, setValues] = createStore<Record<string, string>>(
     Object.fromEntries(fields.map((f) => [f.key, owner.fieldText(f, f.value)])),
   );
-  const [drafts, setDrafts] = createStore<Record<string, string>>({});
+  const [drafts, setDrafts] = createStore<Record<string, string | undefined>>(
+    {},
+  );
   const credentials = createMemo(
     () =>
       new Map(
@@ -514,7 +516,7 @@ function ConnectionForm(props: { name: string }) {
             {
               mode: entered[field.key] ? "replace" : "keep",
               value: entered[field.key]
-                ? owner.readField(field, entered[field.key])
+                ? owner.readField(field, entered[field.key]!)
                 : undefined,
             },
           ]),
@@ -523,7 +525,7 @@ function ConnectionForm(props: { name: string }) {
       if (!changes.length || !(await m.edit(changes))) return;
       // A completed save must not clear a newer credential draft.
       for (const [key, text] of Object.entries(entered))
-        if (drafts[key] === text) setDrafts(key, "");
+        if (drafts[key] === text) setDrafts(key, undefined);
     } catch (cause) {
       m.report(cause);
     }
@@ -563,58 +565,58 @@ function ConnectionForm(props: { name: string }) {
       <For each={[...credentials().keys()]}>
         {(key) => {
           const field = () => credentials().get(key)!;
+          const collapsed = () =>
+            field().kind !== "unset" &&
+            field().kind !== "oauth-required" &&
+            drafts[key] === undefined;
+          const status = () =>
+            field().status + (field().account ? ` · ${field().account}` : "");
+          const signIn = () => (
+            <Show when={field().signIn}>
+              <button
+                type="button"
+                disabled={m.busy()}
+                onClick={() => void m.signIn(props.name, field())}
+              >
+                {owner.signInLabel(m.view()!, initial.preset)}
+              </button>
+            </Show>
+          );
           return (
             <div class="credential">
-              <Field
-                field={{
-                  ...field(),
-                  hint:
-                    field().kind === "unset"
-                      ? field().hint
-                      : "Leave blank to keep the current credential",
-                }}
-                value={drafts[key] ?? ""}
-                onInput={(text) => setDrafts(key, text)}
-              />
-              <div class="credential-header">
-                <p class="muted field-help">
-                  {field().status}
-                  {field().account ? ` · ${field().account}` : ""}
-                </p>
-                <div class="credential-actions">
-                  <Show when={field().signIn}>
-                    <button
-                      type="button"
-                      disabled={m.busy()}
-                      onClick={() => void m.signIn(props.name, field())}
-                    >
-                      {owner.signInLabel(m.view()!, initial.preset)}
-                    </button>
-                  </Show>
-                  <Show
-                    when={
-                      field().kind !== "unset" &&
-                      field().kind !== "oauth-required"
-                    }
-                  >
-                    <button
-                      type="button"
-                      class="link danger"
-                      disabled={m.busy()}
-                      onClick={() =>
-                        void m.edit([
-                          {
-                            path: ["accounts", props.name, ...field().path],
-                            delete: true,
-                          },
-                        ])
-                      }
-                    >
-                      Remove credential
-                    </button>
-                  </Show>
+              <Show
+                when={!collapsed()}
+                fallback={
+                  <div class="setting-row">
+                    <div>
+                      <span>{field().label}</span>
+                      <p>{status()}</p>
+                    </div>
+                    <div class="credential-actions">
+                      {signIn()}
+                      <button type="button" onClick={() => setDrafts(key, "")}>
+                        Replace
+                      </button>
+                    </div>
+                  </div>
+                }
+              >
+                <Field
+                  field={{
+                    ...field(),
+                    hint:
+                      field().kind === "unset"
+                        ? field().hint
+                        : "Leave blank to keep the current credential",
+                  }}
+                  value={drafts[key] ?? ""}
+                  onInput={(text) => setDrafts(key, text)}
+                />
+                <div class="credential-header">
+                  <p class="muted field-help">{status()}</p>
+                  <div class="credential-actions">{signIn()}</div>
                 </div>
-              </div>
+              </Show>
             </div>
           );
         }}
@@ -825,27 +827,6 @@ function Connection(props: { name: string; active: boolean }) {
           <h2>Connection settings</h2>
           <ConnectionForm name={props.name} />
         </section>
-        <section class="data-permissions">
-          <h2>Data sharing</h2>
-          <DataPermissions
-            value={answers(account())}
-            onChange={(value) => {
-              const changes = owner
-                .sourceChanges({ accounts: { [props.name]: value } })
-                .filter(
-                  (change) =>
-                    account()?.[
-                      change.path[2] as keyof owner.AccountAnswers
-                    ] !== change.value,
-                );
-              if (changes.length) void m.edit(changes);
-            }}
-          />
-        </section>
-        <section>
-          <h2>Effects</h2>
-          <Effects scope={{ account: props.name }} />
-        </section>
         <section>
           <h2>
             Available actions{" "}
@@ -859,44 +840,97 @@ function Connection(props: { name: string; active: boolean }) {
             />
           </div>
         </section>
+        <ResourceDisclosure
+          class="connection-advanced"
+          summary={
+            <span class="connection-advanced-text">
+              <span class="connection-advanced-heading">
+                <strong class="connection-advanced-title">Advanced</strong>
+                <span class="collection-chevron">
+                  <Icon name="arrow" />
+                </span>
+              </span>
+              <small>Sharing, effects, and policy</small>
+            </span>
+          }
+        >
+          {() => (
+            <div class="connection-advanced-content">
+              <section>
+                <h3>Data sharing</h3>
+                <DataPermissions
+                  value={answers(account())}
+                  onChange={(value) => {
+                    const changes = owner
+                      .sourceChanges({ accounts: { [props.name]: value } })
+                      .filter(
+                        (change) =>
+                          account()?.[
+                            change.path[2] as keyof owner.AccountAnswers
+                          ] !== change.value,
+                      );
+                    if (changes.length) void m.edit(changes);
+                  }}
+                />
+              </section>
+              <section>
+                <h3>Effects</h3>
+                <Effects scope={{ account: props.name }} />
+              </section>
+              <section>
+                <h3>Custom policy</h3>
+                <form
+                  class="connection-fields"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    void m.edit(
+                      owner.edits.setAccountPolicy(props.name, policy()),
+                    );
+                  }}
+                >
+                  <textarea
+                    aria-label="Custom policy"
+                    rows={6}
+                    placeholder={`package sentinel
+
+deny contains "reason shown in Activity" if {
+  "pay" in input.facts.operation.effects
+}`}
+                    value={policy()}
+                    onInput={(e) => setPolicy(e.currentTarget.value)}
+                  />
+                  <p class="muted field-help">
+                    Define <code>deny</code> to block requests or{" "}
+                    <code>approvals</code> to require review, in package{" "}
+                    <code>sentinel</code>.
+                  </p>
+                  <button disabled={m.busy()}>Save policy</button>
+                </form>
+              </section>
+            </div>
+          )}
+        </ResourceDisclosure>
         <section>
-          <details>
-            <summary>Advanced</summary>
-            <a href={href("preset", account()!.preset)}>
+          <div class="connection-footer">
+            <a class="button" href={href("preset", account()!.preset)}>
               Edit connection preset
             </a>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                void m.edit(owner.edits.setAccountPolicy(props.name, policy()));
+            <button
+              class="danger"
+              disabled={m.busy()}
+              onClick={async () => {
+                if (
+                  confirm(`Remove connection ${props.name}?`) &&
+                  (await m.edit(
+                    owner.edits.removeAccount(m.view()!, props.name),
+                  ))
+                )
+                  location.hash = "#accounts";
               }}
             >
-              <label>
-                Custom policy
-                <textarea
-                  rows={8}
-                  value={policy()}
-                  onInput={(e) => setPolicy(e.currentTarget.value)}
-                />
-              </label>
-              <button disabled={m.busy()}>Save policy</button>
-            </form>
-          </details>
-        </section>
-        <section>
-          <button
-            class="danger"
-            disabled={m.busy()}
-            onClick={async () => {
-              if (
-                confirm(`Remove connection ${props.name}?`) &&
-                (await m.edit(owner.edits.removeAccount(m.view()!, props.name)))
-              )
-                location.hash = "#accounts";
-            }}
-          >
-            Remove connection
-          </button>
+              Remove connection
+            </button>
+          </div>
         </section>
       </Show>
     </div>

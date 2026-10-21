@@ -51,13 +51,15 @@ var errRequestGone = errors.New("this request is no longer in the activity log")
 // Activity never needs request bodies, policy parameters or saved-rule grants.
 // Keep those in the existing audit record and load one through /requests/{id}.
 type requestSummary struct {
-	ID      string    `json:"id"`
-	State   string    `json:"state"`
-	Invalid bool      `json:"invalid,omitempty"`
-	Time    time.Time `json:"time"`
-	Expires time.Time `json:"expires,omitzero"`
-	Summary bool      `json:"summary"`
-	Facts   struct {
+	ID       string           `json:"id"`
+	State    string           `json:"state"`
+	Invalid  bool             `json:"invalid,omitempty"`
+	Time     time.Time        `json:"time"`
+	Expires  time.Time        `json:"expires,omitzero"`
+	Summary  bool             `json:"summary"`
+	Reviewer string           `json:"reviewer,omitempty"`
+	Reviews  []approvalAnswer `json:"reviews,omitempty"`
+	Facts    struct {
 		Principal facts.Principal  `json:"principal"`
 		Account   string           `json:"account"`
 		Operation *facts.Operation `json:"operation"`
@@ -197,9 +199,6 @@ type pendingSignIn struct {
 	finish  func(context.Context, finishSignInInput) error
 	session string
 	expires time.Time
-}
-type decisionInput struct {
-	Decision string `json:"decision"`
 }
 type sourceInput struct {
 	Source string `json:"source"`
@@ -427,7 +426,11 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 		if r.URL.Query().Has("summary") {
 			newest := make([]requestSummary, 0, len(m.records))
 			for _, r := range slices.Backward(m.records) {
-				v := requestSummary{ID: r.ID, State: r.State, Invalid: r.Invalid, Time: r.Time, Expires: r.Expires, Summary: true}
+				v := requestSummary{ID: r.ID, State: r.State, Invalid: r.Invalid, Time: r.Time, Expires: r.Expires, Summary: true, Reviewer: r.Reviewer}
+				for _, answer := range r.Reviews {
+					answer.Reason = ""
+					v.Reviews = append(v.Reviews, answer)
+				}
 				v.Facts.Principal, v.Facts.Account, v.Facts.Operation = r.Facts.Principal, r.Facts.Account, r.Facts.Operation
 				v.Facts.Title = r.Facts.Title
 				// SQL and other protocol titles can contain the entire request.
@@ -453,7 +456,7 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 		return nil, errRequestGone
 	}))
 	mux.Handle("POST /requests/{id}", owned(m, func(r *http.Request, req decisionInput) (any, error) {
-		return nil, m.answer(r.Context(), r.PathValue("id"), req.Decision)
+		return nil, m.answer(r.Context(), "owner", r.PathValue("id"), req)
 	}))
 	mux.Handle("GET /policy", owned(m, func(r *http.Request, _ struct{}) (any, error) {
 		result := map[string]any{"source": m.store.doc.Policy}

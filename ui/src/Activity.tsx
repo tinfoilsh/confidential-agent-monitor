@@ -31,15 +31,20 @@ const requestDate = new Intl.DateTimeFormat(undefined, {
   second: "numeric",
 });
 
-export function Badge(props: { state: string }) {
+export function Badge(props: { state: string; record?: owner.RequestRecord }) {
   return (
     <span class={`badge status-${props.state}`}>
       <Show when={props.state === "pending"}>
         <Icon name="clock" />
       </Show>
-      {props.state === "pending"
-        ? "Needs approval"
-        : props.state[0].toUpperCase() + props.state.slice(1)}
+      {props.record
+        ? owner.reviewStatus({
+            ...props.record,
+            state: props.state as owner.RequestState,
+          })
+        : props.state === "pending"
+          ? "Needs your approval"
+          : props.state[0].toUpperCase() + props.state.slice(1)}
     </span>
   );
 }
@@ -77,7 +82,12 @@ export function Activity(props: { scope?: string; name?: string }) {
       connection = account();
     return ordered().filter(
       (r) =>
-        (!status || r.state === status) &&
+        (!status ||
+          (status === "pending"
+            ? owner.needsOwner(r)
+            : status === "reviewing"
+              ? r.state === "pending" && !!r.reviewer
+              : r.state === status)) &&
         (!principal || r.facts.principal.name === principal) &&
         (!connection || r.facts.account === connection) &&
         (!search || searchText().get(r.id)!.includes(search)),
@@ -102,7 +112,7 @@ export function Activity(props: { scope?: string; name?: string }) {
         <div class="stats">
           <div class="stat">
             <div>
-              Awaiting approval <Icon name="clock" />
+              Needs your approval <Icon name="clock" />
             </div>
             <strong>{pending()}</strong>
             <small>
@@ -170,6 +180,7 @@ export function Activity(props: { scope?: string; name?: string }) {
           <For
             each={[
               "pending",
+              "reviewing",
               "allowed",
               "approved",
               "denied",
@@ -180,8 +191,10 @@ export function Activity(props: { scope?: string; name?: string }) {
             {(s) => (
               <option value={s}>
                 {s === "pending"
-                  ? "Needs approval"
-                  : s.charAt(0).toUpperCase() + s.slice(1)}
+                  ? "Needs your approval"
+                  : s === "reviewing"
+                    ? "Tinfoil is reviewing"
+                    : s.charAt(0).toUpperCase() + s.slice(1)}
               </option>
             )}
           </For>
@@ -296,7 +309,7 @@ export function Activity(props: { scope?: string; name?: string }) {
                       </span>
                     </span>
                     <div class="resource-meta">
-                      <Badge state={record().state} />
+                      <Badge state={record().state} record={record()} />
                       <Show when={record().state === "pending"}>
                         <span class="muted">
                           {owner.timeLeft(record(), m.now())} left
@@ -371,18 +384,29 @@ export function RequestDetail(props: {
   const m = useMonitor();
   const listed = createMemo(() => m.recordsById().get(props.id));
   const source = createMemo(
-    () => ({ api: m.api()!, id: props.id, state: listed()?.state }),
+    () => ({
+      api: m.api()!,
+      id: props.id,
+      state: listed()?.state,
+      reviews: listed()?.reviews?.length ?? 0,
+      saving: !!listed()?.savingDecision,
+    }),
     undefined,
     {
       equals: (a, b) =>
-        !!a && a.api === b.api && a.id === b.id && a.state === b.state,
+        !!a &&
+        a.api === b.api &&
+        a.id === b.id &&
+        a.state === b.state &&
+        a.reviews === b.reviews &&
+        a.saving === b.saving,
     },
   );
   // Closing a disclosure pauses updates while retaining the loaded request.
   // Reopening unchanged details should not fetch the same large body again.
   const selected = createMemo(
     (previous: ReturnType<typeof source> | undefined) =>
-      props.active === false ? previous : source(),
+      props.active === false || listed()?.savingDecision ? previous : source(),
   );
   const lifetime = new AbortController();
   onCleanup(() => lifetime.abort());
@@ -396,6 +420,7 @@ export function RequestDetail(props: {
       current && {
         ...current,
         state: listed()?.state ?? current.state,
+        reviewer: listed() ? listed()!.reviewer : current.reviewer,
         savingDecision: listed()?.savingDecision,
       }
     );
@@ -441,7 +466,7 @@ export function RequestDetail(props: {
               <Show when={!props.inline}>
                 <header class="request-detail-heading">
                   <h2>{owner.requestTitle(r())}</h2>
-                  <Badge state={state()} />
+                  <Badge state={state()} record={r()} />
                 </header>
               </Show>
               <dl class="request-context">
@@ -496,6 +521,28 @@ export function RequestDetail(props: {
                 <p class="muted request-time-left">
                   {owner.timeLeft(r(), m.now())} left to respond
                 </p>
+              </Show>
+              <Show when={r().reviews?.length}>
+                <div class="request-reasons">
+                  <h3>Review</h3>
+                  <For each={r().reviews}>
+                    {(answer) => (
+                      <p>
+                        <strong>
+                          {answer.by === "tinfoil" ? "Tinfoil" : "You"}
+                        </strong>
+                        {answer.decision === "escalate"
+                          ? " asked for your decision"
+                          : answer.decision === "once"
+                            ? " approved"
+                            : answer.decision === "deny"
+                              ? " denied"
+                              : " saved a rule"}
+                        <Show when={answer.reason}>: {answer.reason}</Show>
+                      </p>
+                    )}
+                  </For>
+                </div>
               </Show>
               <Show when={reasons().length}>
                 <div class="request-reasons">

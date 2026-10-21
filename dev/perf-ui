@@ -403,9 +403,13 @@ def main():
                 browser("count", ".agent-setup-item").stdout.strip() == "2"
                 and browser("value", ".agent-setup-item:first-of-type input").stdout.strip() == "monitor_test_token"
                 and browser("value", ".agent-setup-item:last-of-type input").stdout.strip() == "monitor_test_secondary")
+            browser("click", ".connection-advanced > summary")
             setup_text = browser("text", ".connection-detail").stdout
-            results["checks"]["connection_sharing_and_effects_follow_setup"] = setup_text.index("Agent setup") < setup_text.index("Connection settings") < setup_text.index("Data sharing") < setup_text.index("Effects")
-            browser("click", ".connection-detail .data-permissions [aria-label='Confidentiality'] button:nth-child(2)")
+            results["checks"]["connection_sharing_and_effects_under_advanced"] = setup_text.index("Agent setup") < setup_text.index("Connection settings") < setup_text.index("Advanced") < setup_text.index("Data sharing") < setup_text.index("Effects") < setup_text.index("Custom policy")
+            results["checks"]["edit_preset_next_to_remove"] = (
+                browser("count", ".connection-footer a[href^='#preset']").stdout.strip() == "1"
+                and browser("count", ".connection-footer button.danger").stdout.strip() == "1")
+            browser("click", ".connection-advanced [aria-label='Confidentiality'] button:nth-child(2)")
             browser("wait", "#saving", "--state", "hidden")
             results["checks"]["moved_data_sharing_autosaves"] = (
                 fixture.view["config"]["accounts"]["anthropic"]["contents"] == "team"

@@ -521,7 +521,7 @@ summary + * {
   background: #fffbeb;
   color: #92400e;
 }
-.pending-notice > span {
+.pending-notice > span:not(.icon) {
   flex: 1;
 }
 .pending-notice strong {
@@ -918,6 +918,59 @@ details[open] > summary > .collection-chevron {
   padding-top: 20px;
   border-top: 1px solid var(--line);
 }
+.connection-advanced {
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.connection-advanced > summary {
+  padding: var(--card-row-inset) 0;
+  border-bottom: 0;
+}
+.connection-advanced-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.connection-advanced-heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.connection-advanced > summary[aria-expanded="true"] .collection-chevron {
+  transform: rotate(90deg);
+}
+.connection-advanced-title {
+  font-size: var(--font-section);
+  line-height: 24px;
+  font-weight: 500;
+}
+.connection-advanced-text small {
+  color: var(--muted);
+  font-size: var(--font-detail);
+  line-height: 18px;
+  font-weight: 400;
+}
+.connection-advanced-content {
+  padding-bottom: 20px;
+}
+.connection-advanced-content > section + section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.connection-advanced h3 {
+  margin: 0 0 8px;
+}
+.connection-detail > .connection-advanced + section {
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.connection-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 .collection-list .agent-toggle {
   width: 100%;
   justify-content: flex-start;
@@ -1131,11 +1184,16 @@ details[open] > summary > .collection-chevron {
 .empty-action:empty {
   display: none;
 }
-.rules-agent {
-  padding: var(--card-inset);
+.rule-scope code {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
 }
-.rules-agent + .rules-agent {
-  border-top: 1px solid var(--line);
+.rule-scope code + code {
+  margin-left: 8px;
 }
 .badge {
   display: inline-flex;
@@ -1357,26 +1415,6 @@ details[open] > summary > .collection-chevron {
 .access-actions.effect-permissions {
   padding: 0;
   gap: 12px;
-}
-.access-effects {
-  margin-top: 4px;
-  padding-top: 8px;
-  border-top: 1px solid var(--line);
-}
-.effect-options-toggle {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-height: var(--control-height);
-  padding: 4px 0;
-  color: var(--muted);
-  list-style: none;
-}
-.effect-options-toggle::-webkit-details-marker {
-  display: none;
-}
-.effect-options[open] > .effect-options-toggle > .icon {
-  transform: rotate(90deg);
 }
 .access-disclosure {
   display: grid;

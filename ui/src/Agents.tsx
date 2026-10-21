@@ -2,7 +2,6 @@ import { For, Show, createMemo, createSignal, createUniqueId } from "solid-js";
 import * as owner from "./owner.js";
 import {
   ConnectorIcon,
-  EffectOptions,
   Empty,
   Icon,
   LazyDetails,
@@ -32,7 +31,7 @@ export function Agents(props: { expanded?: string }) {
           const count = owner
             .agentAccess(view, name)
             .filter((access) => access.level !== "off").length;
-          const description = `${count} connections · Sandbox connectivity ${view.config.identities![name].routes ? "enabled" : "disabled"}`;
+          const description = `${count} connections`;
           return [
             name,
             { description, search: `${name} ${description}`.toLowerCase() },
@@ -342,10 +341,6 @@ export function AgentConnectionAccess(props: {
                 account={props.account}
                 nodes={entry().actions}
               />
-              <EffectOptions
-                class="access-effects"
-                scope={{ agent: props.name, account: props.account }}
-              />
             </div>
           </Show>
         </div>
@@ -373,15 +368,7 @@ function AgentAccess(props: { name: string }) {
             }
           >
             {([key, title, values, lattice]) => (
-              <Show
-                when={owner.lattices(m.view()!)[lattice]}
-                fallback={
-                  <a class="muted" href="#settings">
-                    {lattice === "integrity" ? "Integrity" : "Confidentiality"}{" "}
-                    off
-                  </a>
-                }
-              >
+              <Show when={owner.lattices(m.view()!)[lattice]}>
                 <label>
                   <span>{title}</span>
                   <select
@@ -425,35 +412,75 @@ function AgentAccess(props: { name: string }) {
 function AgentSettings(props: { name: string }) {
   const m = useMonitor(),
     [key, setKey] = createSignal(""),
-    [copyFrom, setCopyFrom] = createSignal("");
-  const connectivityId = createUniqueId();
+    [copyFrom, setCopyFrom] = createSignal(""),
+    [instructions, setInstructions] = createSignal<string>();
+  const connectivityId = createUniqueId(),
+    reviewId = createUniqueId();
   const identity = () => m.view()!.config.identities?.[props.name];
   return (
     <div class="agent-settings">
       <Show when={identity()}>
         <section>
-          <EffectOptions scope={{ agent: props.name }} />
-        </section>
-        <section>
           <div class="setting-row agent-connectivity">
-            <label for={connectivityId}>Sandbox connectivity</label>
+            <label for={reviewId}>Auto review requests with Tinfoil</label>
             <input
-              id={connectivityId}
+              id={reviewId}
               type="checkbox"
               role="switch"
-              aria-describedby={`${connectivityId}-description`}
-              checked={identity()?.routes}
-              onChange={(e) =>
-                void m.edit(
-                  owner.edits.setRoutes(props.name, e.currentTarget.checked),
-                )
-              }
+              aria-describedby={`${reviewId}-description`}
+              checked={!!identity()?.reviewer}
+              onChange={(e) => {
+                if (
+                  e.currentTarget.checked &&
+                  !owner.tinfoilConnection(m.view()!)
+                ) {
+                  e.currentTarget.checked = false;
+                  location.hash = "#add/tinfoil";
+                } else
+                  void m.edit(
+                    owner.edits.setReviewer(
+                      m.view()!,
+                      props.name,
+                      e.currentTarget.checked,
+                    ),
+                  );
+              }}
             />
-            <p id={`${connectivityId}-description`}>
-              Allows connections to sandboxes. Turning this off closes existing
-              sessions.
+            <p id={`${reviewId}-description`}>
+              Tinfoil approves, denies, or asks you about requests set to Ask.
             </p>
           </div>
+          <Show when={!!identity()?.reviewer && m.view()!.config.reviewer}>
+            {(reviewer) => (
+              <form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  if (
+                    await m.edit(
+                      owner.edits.setReviewerInstructions(instructions()!),
+                    )
+                  )
+                    setInstructions();
+                }}
+              >
+                <label>
+                  Instructions for Tinfoil (shared by all agents)
+                  <textarea
+                    required
+                    rows={4}
+                    value={instructions() ?? reviewer().instructions}
+                    onInput={(e) => setInstructions(e.currentTarget.value)}
+                  />
+                </label>
+                <button
+                  class="primary"
+                  disabled={m.busy() || !instructions()?.trim()}
+                >
+                  Save instructions
+                </button>
+              </form>
+            )}
+          </Show>
         </section>
         <ResourceDisclosure
           class="agent-maintenance"
@@ -468,6 +495,30 @@ function AgentSettings(props: { name: string }) {
         >
           {() => (
             <div class="agent-maintenance-content">
+              <section>
+                <div class="setting-row agent-connectivity">
+                  <label for={connectivityId}>Sandbox connectivity</label>
+                  <input
+                    id={connectivityId}
+                    type="checkbox"
+                    role="switch"
+                    aria-describedby={`${connectivityId}-description`}
+                    checked={identity()?.routes}
+                    onChange={(e) =>
+                      void m.edit(
+                        owner.edits.setRoutes(
+                          props.name,
+                          e.currentTarget.checked,
+                        ),
+                      )
+                    }
+                  />
+                  <p id={`${connectivityId}-description`}>
+                    Allows connections to sandboxes. Turning this off closes
+                    existing sessions.
+                  </p>
+                </div>
+              </section>
               <section>
                 <h3>Host key</h3>
                 <pre>{m.view()!.host_key}</pre>

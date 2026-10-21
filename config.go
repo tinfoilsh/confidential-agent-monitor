@@ -32,6 +32,7 @@ var levels = []string{"off", "read", "ask", "allow"}
 type identity struct {
 	Routes   bool              `json:"routes,omitempty"`
 	Key      string            `json:"key"`
+	Reviewer string            `json:"reviewer,omitempty"`
 	Effects  map[string]string `json:"effects,omitempty"`
 	Accounts map[string]access `json:"accounts"`
 	Rules    map[string]rule   `json:"rules,omitempty"`
@@ -70,7 +71,14 @@ type latticeOptions struct {
 	Integrity       bool `json:"integrity"`
 }
 
+type reviewerConfig struct {
+	Connection   string `json:"connection"`
+	Model        string `json:"model"`
+	Instructions string `json:"instructions"`
+}
+
 type config struct {
+	Reviewer           *reviewerConfig     `json:"reviewer,omitempty"`
 	AllowPaidInference bool                `json:"allow_paid_inference,omitempty"`
 	Effects            map[string]string   `json:"effects,omitempty"`
 	DefaultAccess      map[string]access   `json:"default_access,omitempty"`
@@ -403,6 +411,9 @@ func compileSource(policy string, secrets secretStore) (*config, map[string]*con
 		return nil, nil, err
 	}
 	for name, id := range cfg.Identities {
+		if id.Reviewer != "" && (id.Reviewer != "tinfoil" || cfg.Reviewer == nil) {
+			return nil, nil, fmt.Errorf("identity %s: configure Tinfoil review before assigning it", name)
+		}
 		if err := validateEffects("agent "+name, id.Effects); err != nil {
 			return nil, nil, err
 		}
@@ -425,6 +436,16 @@ func compileSource(policy string, secrets secretStore) (*config, map[string]*con
 			return nil, nil, err
 		}
 		cfg.Identities[name] = id
+	}
+	if cfg.Reviewer != nil {
+		r := cfg.Reviewer
+		c := connections[r.Connection]
+		if c == nil || c.protocol != "tinfoil" {
+			return nil, nil, errors.New("reviewer requires a Tinfoil connection")
+		}
+		if strings.TrimSpace(r.Model) == "" || len(r.Model) > 200 || strings.TrimSpace(r.Instructions) == "" || len(r.Instructions) > 8192 {
+			return nil, nil, errors.New("reviewer requires a model and instructions of 1-8192 bytes")
+		}
 	}
 	for id, secret := range secrets.all() {
 		c := connections[connectionName(id[0], id[1])]

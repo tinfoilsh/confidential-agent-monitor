@@ -1,7 +1,15 @@
 import { expect, test } from "bun:test";
 import { createComputed, createRoot, createSignal } from "solid-js";
 import { createRequestLog } from "../src/requests";
-import { ordered, type RequestRecord } from "../src/owner.js";
+import {
+  decisions,
+  edits,
+  ordered,
+  previewChanges,
+  reviewStatus,
+  type RequestRecord,
+  type View,
+} from "../src/owner.js";
 
 const record = (
   id: string,
@@ -132,4 +140,77 @@ test("ordering preserves history order within priorities and honors dismissed re
     "approved",
   ]);
   expect(history[0].id).toBe("allowed");
+});
+
+test("Tinfoil review stays in activity and enters the owner's inbox only on handoff", () => {
+  createRoot((dispose) => {
+    try {
+      const reviewing: RequestRecord = {
+        ...record("review", "pending", 5000),
+        reviewer: "tinfoil",
+      };
+      const human = record("human", "pending", 4000);
+      const [source, setSource] = createSignal([reviewing, human]);
+      const [now, setNow] = createSignal(0);
+      const log = createRequestLog(source, now);
+      expect(log.pendingCount()).toBe(1);
+      expect(log.records()).toHaveLength(2);
+      expect(decisions(reviewing).once).toBe(true);
+      expect(reviewStatus(reviewing)).toBe("Tinfoil is reviewing");
+      expect(ordered(log.records())[0].id).toBe("human");
+      const handedBack: RequestRecord = {
+        ...reviewing,
+        reviewer: "",
+        reviews: [
+          {
+            by: "tinfoil",
+            decision: "escalate",
+            reason: "Need context",
+            time: new Date(0).toISOString(),
+          },
+        ],
+      };
+      setSource([handedBack, human]);
+      expect(log.pendingCount()).toBe(2);
+      expect(decisions(handedBack).once).toBe(true);
+      expect(reviewStatus(handedBack)).toBe("Tinfoil needs your decision");
+      expect(
+        reviewStatus({
+          ...handedBack,
+          state: "approved",
+          savingDecision: true,
+        }),
+      ).toBe("Approved by you");
+      setNow(5000);
+      expect(log.pendingCount()).toBe(0);
+      expect(log.byId().get("review")?.state).toBe("expired");
+      expect(
+        reviewStatus({
+          ...reviewing,
+          state: "approved",
+          reviews: [{ by: "tinfoil", decision: "once", time: "" }],
+        }),
+      ).toBe("Approved by Tinfoil");
+    } finally {
+      dispose();
+    }
+  });
+});
+
+test("removing the review connection returns delegated agents to the owner", () => {
+  const view = {
+    config: {
+      reviewer: {
+        connection: "inference",
+        model: "test",
+        instructions: "Review",
+      },
+      accounts: { inference: { connections: { "": { tinfoil: {} } } } },
+      identities: { worker: { reviewer: "tinfoil" }, other: {} },
+    },
+  } as unknown as View;
+  previewChanges(view, edits.removeAccount(view, "inference"));
+  expect(view.config.reviewer).toBeUndefined();
+  expect(view.config.identities?.worker.reviewer).toBeUndefined();
+  expect(view.config.identities?.other.reviewer).toBeUndefined();
 });

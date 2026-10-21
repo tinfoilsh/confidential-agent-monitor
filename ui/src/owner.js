@@ -16,6 +16,11 @@ export const CREDENTIAL_STATUS = {
   "oauth-required": "Sign-in required",
   unset: "Not configured",
 };
+const DEFAULT_REVIEWER = {
+  model: "gpt-oss-120b",
+  instructions:
+    "Approve routine, reversible actions. Ask me before payments, deletion, publishing, sharing private data, or changes to access. Deny requests that clearly violate these instructions. Ask me when context is missing.",
+};
 export const POLICY_PRESETS = {
   open: {
     title: "Open",
@@ -424,6 +429,12 @@ export const presetOf = (view, account) =>
   view.presets[accounts(view)[account]?.preset] ?? view.presets.custom;
 export const connectionName = (account, key) =>
   key ? `${account}-${key}` : account;
+export const tinfoilConnection = (view) =>
+  Object.entries(accounts(view)).flatMap(([account, config]) =>
+    Object.entries(config.connections ?? {})
+      .filter(([, kinds]) => kinds.tinfoil)
+      .map(([key]) => connectionName(account, key)),
+  )[0];
 const fill = (text, scope) =>
   text.replace(/\{(\w+)\}/g, (m, k) => scope?.[k] ?? m);
 const filled = (c, values) =>
@@ -487,6 +498,22 @@ export const stateAt = (r, now) =>
   r.state === "pending" && r.expires && Date.parse(r.expires) <= now
     ? "expired"
     : r.state;
+export const needsOwner = (r) => r.state === "pending" && !r.reviewer;
+export function reviewStatus(r) {
+  const last = r.reviews?.at(-1);
+  if (r.state === "pending")
+    return r.reviewer === "tinfoil"
+      ? "Tinfoil is reviewing"
+      : last?.decision === "escalate"
+        ? "Tinfoil needs your decision"
+        : "Needs your approval";
+  if (
+    (last || r.savingDecision) &&
+    (r.state === "approved" || r.state === "denied")
+  )
+    return `${r.state === "approved" ? "Approved" : "Denied"} by ${!r.savingDecision && last?.by === "tinfoil" ? "Tinfoil" : "you"}`;
+  return r.state.charAt(0).toUpperCase() + r.state.slice(1);
+}
 export const pendingSoonest = (records) =>
   records
     .filter((r) => r.state === "pending")
@@ -494,11 +521,13 @@ export const pendingSoonest = (records) =>
 export function ordered(records, dismissed = []) {
   const hidden = new Set(dismissed);
   const priority = (r) =>
-    r.state === "pending"
+    needsOwner(r)
       ? 0
-      : r.state === "expired" && !hidden.has(r.id)
+      : r.state === "pending"
         ? 1
-        : 2;
+        : r.state === "expired" && !hidden.has(r.id)
+          ? 2
+          : 3;
   return [...records].sort(
     (a, b) =>
       priority(a) - priority(b) ||
@@ -536,11 +565,30 @@ export function decisions(r, now) {
         ? { save, dismiss: true }
         : {};
 }
-export function ruleSentence(r) {
-  if (!r.operation)
-    return `Inactive: ${r.action} on ${r.account} was saved before approvals named an operation`;
-  return `${grantText(r.operation, r.scope, r.scope)} on ${r.account}. Approval covers: ${reasons(r).join(" ")}`;
+const WAIVED = {
+  ask: "Ask",
+  audience: "Confidentiality guardrail",
+  trust: "Integrity guardrail",
+};
+const EFFECT_REQUIREMENT = "effect.";
+export function ruleTitle(view, r) {
+  const actions = actionsOf(view, r.account);
+  return (
+    r.action
+      .split(".")
+      .map((_, i, parts) => actions[parts.slice(0, i + 1).join(".")]?.title)
+      .filter(Boolean)
+      .join(" › ") || r.action
+  );
 }
+export const ruleWaives = (r) =>
+  (r.requirements ?? []).map(
+    ({ id, message }) =>
+      WAIVED[id] ??
+      (id?.startsWith(EFFECT_REQUIREMENT)
+        ? `Ask on ${id.slice(EFFECT_REQUIREMENT.length)}`
+        : message),
+  );
 
 // Each pinned MCP tool is an action under read or use, by the hint the owner approved with the pin.
 export const actionsOf = (view, account) => ({
@@ -1288,6 +1336,23 @@ export const edits = {
   setRoutes: (name, routes) => [
     { path: ["identities", name, "routes"], value: routes },
   ],
+  setReviewer: (view, name, on) => [
+    ...(on && !view.config.reviewer
+      ? [
+          {
+            path: ["reviewer"],
+            value: { ...DEFAULT_REVIEWER, connection: tinfoilConnection(view) },
+          },
+        ]
+      : []),
+    {
+      path: ["identities", name, "reviewer"],
+      ...(on ? { value: "tinfoil" } : { delete: true }),
+    },
+  ],
+  setReviewerInstructions: (text) => [
+    { path: ["reviewer", "instructions"], value: text.trim() },
+  ],
   // An action set to null inherits again.
   setAccess: (name, account, access) =>
     sourceChanges({
@@ -1308,9 +1373,11 @@ export const edits = {
     },
   ],
   copySettings: (view, from, name) =>
-    ["accounts", "rules", "effects"].map((key) => ({
+    ["accounts", "rules", "effects", "reviewer"].map((key) => ({
       path: ["identities", name, key],
-      value: structuredClone(identities(view)[from]?.[key] ?? {}),
+      value: structuredClone(
+        identities(view)[from]?.[key] ?? (key === "reviewer" ? "" : {}),
+      ),
     })),
   removeRule: (name, id) => [
     { path: ["identities", name, "rules", id], delete: true },
@@ -1339,18 +1406,29 @@ export const edits = {
       },
     }),
   // Identities may not name a missing account, so removing one also clears it from every agent.
-  removeAccount: (view, account) =>
-    sourceChanges({
+  removeAccount: (view, account) => {
+    const reviewer = Object.keys(
+      accounts(view)[account]?.connections ?? {},
+    ).some(
+      (key) =>
+        connectionName(account, key) === view.config.reviewer?.connection,
+    );
+    return sourceChanges({
+      ...(reviewer ? { reviewer: null } : {}),
       accounts: { [account]: null },
       policies: { [account]: null },
       default_access: { [account]: null },
       identities: Object.fromEntries(
         Object.keys(identities(view)).map((n) => [
           n,
-          { accounts: { [account]: null } },
+          {
+            accounts: { [account]: null },
+            ...(reviewer ? { reviewer: null } : {}),
+          },
         ]),
       ),
-    }),
+    });
+  },
   // values holds every setup field read with readField; oauth names the fields that sign in instead of taking a token.
   addAccount(view, preset, { name, values, answers, oauth = [] }) {
     const c = view.presets[preset];

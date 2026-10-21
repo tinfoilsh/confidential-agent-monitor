@@ -6,6 +6,17 @@ export type PolicyPreset = "open" | "known_only" | "offline";
 export type Audience = "me" | "team" | "anyone";
 export type Trust = "trusted" | "untrusted";
 export type Decision = "once" | "save" | "deny";
+export type ReviewerConfig = {
+  connection: string;
+  model: string;
+  instructions: string;
+};
+export type ApprovalAnswer = {
+  by: "owner" | "tinfoil";
+  decision: Decision | "escalate";
+  reason?: string;
+  time: string;
+};
 export type RequestState =
   "pending" | "allowed" | "approved" | "refused" | "denied" | "expired";
 
@@ -26,6 +37,7 @@ export type Rule = {
 };
 export type Identity = {
   key: string;
+  reviewer?: "" | "tinfoil";
   effects?: Record<string, Mode>;
   routes?: boolean;
   accounts?: Record<string, Access>;
@@ -80,6 +92,7 @@ export type View = {
   host_id: string;
   ca: string;
   config: {
+    reviewer?: ReviewerConfig;
     allow_paid_inference?: boolean;
     effects?: Record<string, Mode>;
     default_access?: Record<string, Access>;
@@ -128,6 +141,8 @@ export type RequestRecord = {
   grant?: { [key: string]: Json };
   definition?: string;
   savingDecision?: boolean;
+  reviewer?: "" | "tinfoil";
+  reviews?: ApprovalAnswer[];
   facts: {
     title?: string;
     principal: { name: string };
@@ -269,10 +284,13 @@ export function lattices(view: View): {
 };
 export function presetOf(view: View, account: string): Preset;
 export function connectionName(account: string, key: string): string;
+export function tinfoilConnection(view: View): string | undefined;
 export function summary(details?: RequestDetails): string;
 export function requestTitle(record: RequestRecord): string;
 export function reasons(record: { requirements?: Requirement[] }): string[];
 export function stateAt(record: RequestRecord, now: number): RequestState;
+export function needsOwner(record: RequestRecord): boolean;
+export function reviewStatus(record: RequestRecord): string;
 export function pendingSoonest(records: RequestRecord[]): RequestRecord[];
 export function ordered(
   records: RequestRecord[],
@@ -289,7 +307,8 @@ export function decisions(
   record: RequestRecord,
   now?: number,
 ): { once?: boolean; save?: boolean; deny?: boolean; dismiss?: boolean };
-export function ruleSentence(rule: Rule): string;
+export function ruleTitle(view: View, rule: Rule): string;
+export function ruleWaives(rule: Rule): string[];
 
 export type ActionNode = {
   key: string;
@@ -450,6 +469,8 @@ export const edits: {
   removeAgent(name: string): Change[];
   replaceKey(name: string, key: string): Change[];
   setRoutes(name: string, routes: boolean): Change[];
+  setReviewer(view: View, name: string, on: boolean): Change[];
+  setReviewerInstructions(text: string): Change[];
   setAccess(
     name: string,
     account: string,
