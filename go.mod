@@ -1,6 +1,6 @@
 module github.com/tinfoilsh/monitor
 
-go 1.27.2
+go 1.27.3
 
 require (
 	code.dny.dev/ssrf v0.3.0
