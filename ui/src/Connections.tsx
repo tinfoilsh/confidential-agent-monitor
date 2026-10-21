@@ -843,118 +843,146 @@ function Connection(props: { name: string; active: boolean }) {
             </Suspense>
           )}
         </Show>
-        <Show when={setups().length}>
-          <section>
-            <h2>Actor setup</h2>
-            <For each={setups()}>
-              {(group) => {
-                const setup = group[0];
-                let input!: HTMLInputElement;
-                const id = createUniqueId();
-                return (
-                  <div class="agent-setup-item">
-                    <Show when={setups().length > 1}>
-                      <h3>
-                        {setup.connection} · {setup.credential}
-                      </h3>
-                    </Show>
-                    <label for={id}>Actor placeholder</label>
-                    <div class="secret-input">
-                      <input
-                        ref={input}
-                        id={id}
-                        class="mono"
-                        readonly
-                        value={setup.placeholder}
-                        onClick={(e) => e.currentTarget.select()}
-                      />
-                      <Copy
-                        text={setup.placeholder}
-                        label={`Copy placeholder for ${setup.connection} ${setup.credential}`}
-                        target={() => input}
-                      />
-                    </div>
-                    <details class="agent-setup-usage">
-                      <summary>Where this placeholder is used</summary>
-                      <Show when={group.length > 1}>
-                        <p>
-                          The same placeholder works in each of these formats.
-                          Use the format your tool expects.
-                        </p>
-                      </Show>
-                      <For each={group}>
-                        {(use) => (
-                          <dl class="agent-setup-details">
-                            <dt>Address</dt>
-                            <dd>
-                              <code>{use.address}</code>
-                            </dd>
-                            <dt>
-                              {use.header
-                                ? "Header"
-                                : use.query
-                                  ? "Query parameter"
-                                  : "Authentication"}
-                            </dt>
-                            <dd>
-                              <code>
-                                {use.header
-                                  ? `${use.header}: ${use.value}`
-                                  : use.query
-                                    ? `${use.query}=${use.value}`
-                                    : use.placement}
-                              </code>
-                            </dd>
-                          </dl>
-                        )}
-                      </For>
-                    </details>
-                  </div>
-                );
-              }}
-            </For>
-          </section>
-        </Show>
-        <Show when={codex()}>
-          {(text) => {
-            let code!: HTMLPreElement;
-            return (
-              <section>
-                <h2>Codex setup</h2>
-                <p>
-                  Save this in <code>~/.codex/config.toml</code>, then run Codex
-                  in your Monitor-connected sandbox or with{" "}
-                  <code>monitor run -- codex</code>. Choose a model available to
-                  your ChatGPT account. Grant your actor access to this
-                  connection and review pending requests in Activity.
-                </p>
-                <pre ref={code}>{text()}</pre>
-                <Copy text={text()} target={() => code} />
-                <p>
-                  <a
-                    href="https://chatgpt.com/#settings/Usage"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Manage ChatGPT usage
-                  </a>
-                </p>
-              </section>
-            );
-          }}
-        </Show>
-        <section>
-          <h2>Connection settings</h2>
+        <section class="connection-setup">
+          <h2>Connection setup</h2>
           <ConnectionForm name={props.name} />
+          <Show when={setups().length}>
+            <ResourceDisclosure
+              class="connection-disclosure"
+              summary={
+                <>
+                  <span class="collection-chevron">
+                    <Icon name="arrow" />
+                  </span>
+                  <span>Actor setup</span>
+                  <small class="muted">Placeholder and usage</small>
+                </>
+              }
+            >
+              {() => (
+                <div class="agent-setup-body">
+                  <For each={setups()}>
+                    {(group) => {
+                      const setup = group[0];
+                      let input!: HTMLInputElement;
+                      const id = createUniqueId();
+                      return (
+                        <div class="agent-setup-item">
+                          <Show when={setups().length > 1}>
+                            <h3>
+                              {setup.connection} · {setup.credential}
+                            </h3>
+                          </Show>
+                          <label for={id}>Actor placeholder</label>
+                          <div class="secret-input">
+                            <input
+                              ref={input}
+                              id={id}
+                              class="mono"
+                              readonly
+                              value={setup.placeholder}
+                              onClick={(e) => e.currentTarget.select()}
+                            />
+                            <Copy
+                              text={setup.placeholder}
+                              label={`Copy placeholder for ${setup.connection} ${setup.credential}`}
+                              target={() => input}
+                            />
+                          </div>
+                          <details class="agent-setup-usage">
+                            <summary>Where this placeholder is used</summary>
+                            <Show when={group.length > 1}>
+                              <p>
+                                The same placeholder works in each of these
+                                formats. Use the format your tool expects.
+                              </p>
+                            </Show>
+                            <For each={group}>
+                              {(use) => (
+                                <dl class="agent-setup-details">
+                                  <dt>Address</dt>
+                                  <dd>
+                                    <code>{use.address}</code>
+                                  </dd>
+                                  <dt>
+                                    {use.header
+                                      ? "Header"
+                                      : use.query
+                                        ? "Query parameter"
+                                        : "Authentication"}
+                                  </dt>
+                                  <dd>
+                                    <code>
+                                      {use.header
+                                        ? `${use.header}: ${use.value}`
+                                        : use.query
+                                          ? `${use.query}=${use.value}`
+                                          : use.placement}
+                                    </code>
+                                  </dd>
+                                </dl>
+                              )}
+                            </For>
+                          </details>
+                        </div>
+                      );
+                    }}
+                  </For>
+                </div>
+              )}
+            </ResourceDisclosure>
+          </Show>
+          <Show when={codex()}>
+            {(text) => {
+              let code!: HTMLPreElement;
+              return (
+                <ResourceDisclosure
+                  class="connection-disclosure"
+                  summary={
+                    <>
+                      <span class="collection-chevron">
+                        <Icon name="arrow" />
+                      </span>
+                      <span>Codex setup</span>
+                    </>
+                  }
+                >
+                  {() => (
+                    <div class="agent-setup-body">
+                      <p>
+                        Save this in <code>~/.codex/config.toml</code>, then run
+                        Codex in your Monitor-connected sandbox or with{" "}
+                        <code>monitor run -- codex</code>. Choose a model
+                        available to your ChatGPT account. Grant your actor
+                        access to this connection and review pending requests in
+                        Activity.
+                      </p>
+                      <pre ref={code}>{text()}</pre>
+                      <Copy text={text()} target={() => code} />
+                      <p>
+                        <a
+                          href="https://chatgpt.com/#settings/Usage"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Manage ChatGPT usage
+                        </a>
+                      </p>
+                    </div>
+                  )}
+                </ResourceDisclosure>
+              );
+            }}
+          </Show>
         </section>
         <section>
           <h2>
-            Available actions{" "}
+            API{" "}
             <span class="count">
               {Object.keys(owner.actionsOf(m.view()!, props.name)).length}
             </span>
           </h2>
-          <div class="action-list">
+          <div class="action-list" role="region" aria-label="API" tabIndex={0}>
             <ConnectionActions
               nodes={owner.actionTree(m.view()!, props.name)}
             />
@@ -1078,18 +1106,20 @@ function ConnectionActions(props: { nodes: owner.ActionNode[] }) {
                 <small>{node().total}</small>
               </Show>
             </span>
-            <span class="effects" aria-label="Effects">
-              <For
-                each={node().effects}
-                fallback={<span class="muted">No effects</span>}
-              >
-                {(effect) => (
-                  <span class={`badge effect-${effect}`}>
-                    {effect.charAt(0).toUpperCase() + effect.slice(1)}
-                  </span>
-                )}
-              </For>
-            </span>
+            <Show when={!node().children.length}>
+              <span class="effects" aria-label="Effects">
+                <For
+                  each={node().effects}
+                  fallback={<span class="muted">No effects</span>}
+                >
+                  {(effect) => (
+                    <span class={`badge effect-${effect}`}>
+                      {effect.charAt(0).toUpperCase() + effect.slice(1)}
+                    </span>
+                  )}
+                </For>
+              </span>
+            </Show>
           </>
         );
         return (
