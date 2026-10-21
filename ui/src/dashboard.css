@@ -2187,38 +2187,80 @@ td {
   background: #06182099;
 }
 #device-sign-in-dialog {
-  width: min(420px, calc(100vw - 32px));
+  width: min(400px, calc(100vw - 32px));
+  border-radius: 16px;
+  box-shadow:
+    0 16px 48px #0003,
+    0 2px 8px #0001;
 }
-.device-sign-in-body {
+.device-sign-in-heading {
+  position: relative;
   display: grid;
-  gap: 20px;
+  justify-items: center;
+  gap: 16px;
+  padding: 32px 28px 0;
+  text-align: center;
+}
+.device-sign-in-heading > .connector-icon {
+  width: 40px;
+  height: 40px;
+  margin: 0;
+}
+.device-sign-in-heading h1 {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+}
+.device-sign-in-heading > .dialog-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+.dialog-body.device-sign-in-body {
+  display: grid;
+  gap: 24px;
+  padding: 8px 28px 28px;
+  scrollbar-gutter: auto;
 }
 .device-sign-in-body p {
   margin: 0;
+  color: var(--muted);
+  text-align: center;
 }
-.device-sign-in-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 12px;
+#device-sign-in-dialog .device-sign-in-continue {
+  min-height: 44px;
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: none;
+}
+#device-sign-in-dialog .device-sign-in-continue:hover {
+  opacity: 0.85;
 }
 .device-sign-in-code {
-  display: flex;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) 32px;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
+  gap: 8px;
+  padding: 14px 12px;
   border: 1px solid var(--edge);
   border-radius: 8px;
   background: var(--subtle);
 }
+.device-sign-in-code > button {
+  grid-column: 3;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  box-shadow: none;
+}
 #device-sign-in-code {
-  flex: 1;
+  grid-column: 2;
   min-width: 0;
-  font-size: clamp(1.25rem, 5vw, 2rem);
-  font-weight: 600;
+  font-size: clamp(1.125rem, 5vw, 1.625rem);
+  font-weight: 500;
   line-height: 1.5;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
   white-space: pre-wrap;

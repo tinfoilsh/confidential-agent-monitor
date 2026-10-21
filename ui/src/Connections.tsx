@@ -32,7 +32,7 @@ const Browser = lazy(() =>
 );
 
 export function DeviceSignInDialog(props: {
-  attempt: owner.DeviceSignIn & { title: string };
+  attempt: owner.DeviceSignIn & { title: string; preset: string };
 }) {
   const m = useMonitor(),
     attempt = props.attempt;
@@ -44,15 +44,17 @@ export function DeviceSignInDialog(props: {
       ref={dialog}
       id="device-sign-in-dialog"
       aria-labelledby="device-sign-in-title"
+      aria-describedby="device-sign-in-description"
       onCancel={(event) => {
         event.preventDefault();
         m.cancelSignIn();
       }}
     >
-      <header class="dialog-header">
+      <header class="device-sign-in-heading">
+        <ConnectorIcon preset={attempt.preset} />
         <h1 id="device-sign-in-title">Sign in with {attempt.title}</h1>
         <button
-          class="icon-button"
+          class="dialog-close icon-button"
           aria-label="Cancel sign-in"
           onClick={m.cancelSignIn}
         >
@@ -60,7 +62,9 @@ export function DeviceSignInDialog(props: {
         </button>
       </header>
       <div class="dialog-body device-sign-in-body">
-        <p>Enter this code on the sign-in page.</p>
+        <p id="device-sign-in-description">
+          Enter this code on the sign-in page.
+        </p>
         <div class="device-sign-in-code">
           <code ref={code} id="device-sign-in-code" aria-label="One-time code">
             {attempt.user_code}
@@ -72,16 +76,15 @@ export function DeviceSignInDialog(props: {
             icon
           />
         </div>
-        <div class="device-sign-in-actions">
-          <a
-            class="button primary"
-            href={attempt.url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Open sign-in page
-          </a>
-        </div>
+        <a
+          class="button primary device-sign-in-continue"
+          href={attempt.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Continue to {attempt.title}
+          <Icon name="external" />
+        </a>
       </div>
     </dialog>
   );

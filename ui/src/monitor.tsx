@@ -54,6 +54,7 @@ function createMonitor() {
   const [deviceSignIn, setDeviceSignIn] = createSignal<
     owner.DeviceSignIn & {
       title: string;
+      preset: string;
       source: owner.OwnerApi;
     }
   >();
@@ -356,6 +357,7 @@ function createMonitor() {
           ...result,
           source: client,
           title: owner.presetOf(view()!, account).title,
+          preset: view()!.config.accounts![account].preset,
         });
         return;
       }
