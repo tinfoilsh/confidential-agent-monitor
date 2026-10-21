@@ -59,12 +59,28 @@ type requestSummary struct {
 	Summary  bool             `json:"summary"`
 	Reviewer string           `json:"reviewer,omitempty"`
 	Reviews  []approvalAnswer `json:"reviews,omitempty"`
+	Segment  string           `json:"segment,omitempty"`
 	Facts    struct {
 		Principal facts.Principal  `json:"principal"`
 		Account   string           `json:"account"`
 		Operation *facts.Operation `json:"operation"`
 		Title     string           `json:"title"`
 	} `json:"facts"`
+}
+
+func summarize(r *record) requestSummary {
+	v := requestSummary{ID: r.ID, State: r.State, Invalid: r.Invalid, Time: r.Time, Expires: r.Expires, Summary: true, Reviewer: r.Reviewer}
+	for _, answer := range r.Reviews {
+		answer.Reason = ""
+		v.Reviews = append(v.Reviews, answer)
+	}
+	v.Facts.Principal, v.Facts.Account, v.Facts.Operation = r.Facts.Principal, r.Facts.Account, r.Facts.Operation
+	v.Facts.Title = r.Facts.Title
+	// SQL and other protocol titles can contain the entire request.
+	if len(v.Facts.Title) > 512 {
+		v.Facts.Title = strings.ToValidUTF8(v.Facts.Title[:512], "") + "…"
+	}
+	return v
 }
 
 type fieldMetadata struct {
@@ -426,18 +442,7 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 		if r.URL.Query().Has("summary") {
 			newest := make([]requestSummary, 0, len(m.records))
 			for _, r := range slices.Backward(m.records) {
-				v := requestSummary{ID: r.ID, State: r.State, Invalid: r.Invalid, Time: r.Time, Expires: r.Expires, Summary: true, Reviewer: r.Reviewer}
-				for _, answer := range r.Reviews {
-					answer.Reason = ""
-					v.Reviews = append(v.Reviews, answer)
-				}
-				v.Facts.Principal, v.Facts.Account, v.Facts.Operation = r.Facts.Principal, r.Facts.Account, r.Facts.Operation
-				v.Facts.Title = r.Facts.Title
-				// SQL and other protocol titles can contain the entire request.
-				if len(v.Facts.Title) > 512 {
-					v.Facts.Title = strings.ToValidUTF8(v.Facts.Title[:512], "") + "…"
-				}
-				newest = append(newest, v)
+				newest = append(newest, summarize(r))
 			}
 			return newest, nil
 		}
@@ -447,8 +452,8 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 		}
 		return newest, nil
 	}))
-	mux.Handle("GET /audit", m.authenticated(jsonHandler(0, m.auditSegments)))
-	mux.Handle("GET /audit/{segment}", m.authenticated(m.auditSegment))
+	mux.Handle("GET /audit", m.authenticated(jsonHandler(0, m.auditPage)))
+	mux.Handle("GET /audit/{segment}/{id}", m.authenticated(jsonHandler(0, m.auditRecord)))
 	mux.Handle("GET /requests/{id}", owned(m, func(r *http.Request, _ struct{}) (any, error) {
 		for _, record := range m.records {
 			if record.ID == r.PathValue("id") {

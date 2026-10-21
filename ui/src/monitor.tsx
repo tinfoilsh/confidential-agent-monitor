@@ -57,6 +57,7 @@ function createMonitor() {
     agent: "",
     account: "",
     page: 0,
+    anchor: 0,
   });
   const [searches, setSearches] = createStore<Record<string, string>>({});
   const search = (section: string) =>
@@ -131,7 +132,28 @@ function createMonitor() {
     return next;
   });
   const view = createMemo(() => projected()?.view);
-  const requests = createMemo(() => projected()?.requests ?? []);
+  // Archived records continue past the live log, which the monitor caps and clears on restart.
+  const [archived, setArchived] = createSignal<owner.RequestRecord[]>([]);
+  const [older, setOlder] = createSignal<string | null>("");
+  const [loadingOlder, setLoadingOlder] = createSignal(false);
+  const loadOlder = async () => {
+    setLoadingOlder(true);
+    try {
+      const page = await api()!.archive(older()!, lifetime.signal);
+      batch(() => {
+        setArchived([...archived(), ...page.records]);
+        setOlder(page.next ?? null);
+      });
+    } catch (cause) {
+      report(cause);
+    } finally {
+      setLoadingOlder(false);
+    }
+  };
+  const requests = createMemo(() => [
+    ...(projected()?.requests ?? []),
+    ...archived(),
+  ]);
   const {
     records,
     byId: recordsById,
@@ -423,6 +445,9 @@ function createMonitor() {
     records,
     recordsById,
     pendingCount,
+    older,
+    loadingOlder,
+    loadOlder,
     locked,
     busy,
     loading,

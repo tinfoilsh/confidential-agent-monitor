@@ -18,6 +18,7 @@ import {
 } from "./components";
 import { useMonitor } from "./monitor";
 
+const PAGE = 50;
 const requestTime = new Intl.DateTimeFormat(undefined, {
   hour: "2-digit",
   minute: "2-digit",
@@ -61,7 +62,8 @@ export function Activity(props: { scope?: string; name?: string }) {
     account = () => m.filters.account,
     setAccount = (value: string) => m.setFilters("account", value),
     page = () => m.filters.page,
-    setPage = (value: number) => m.setFilters("page", value);
+    setPage = (value: number) => m.setFilters("page", value),
+    anchor = () => m.filters.anchor;
   const pending = m.pendingCount;
   const ordered = createMemo(() => owner.ordered(m.records(), m.dismissed()));
   const searchText = createMemo(
@@ -93,17 +95,35 @@ export function Activity(props: { scope?: string; name?: string }) {
         (!search || searchText().get(r.id)!.includes(search)),
     );
   });
-  const pages = () => Math.max(1, Math.ceil(filtered().length / 50)),
+  // Paging back holds the list at its newest request, so arrivals do not shift the rows being read.
+  const held = createMemo(() =>
+    anchor()
+      ? filtered().filter((r) => Date.parse(r.time) <= anchor())
+      : filtered(),
+  );
+  const pages = () => Math.max(1, Math.ceil(held().length / PAGE)),
     current = () => Math.min(page(), pages() - 1);
   const visible = createMemo(() =>
-    filtered()
-      .slice(current() * 50, (current() + 1) * 50)
+    held()
+      .slice(current() * PAGE, (current() + 1) * PAGE)
       .map((r) => r.id),
   );
+  const latest = () => m.setFilters({ page: 0, anchor: 0 });
+  const next = async () => {
+    if (!anchor())
+      m.setFilters(
+        "anchor",
+        Date.parse(m.records()[0]?.time ?? "") || Date.now(),
+      );
+    const end = (current() + 1) * PAGE,
+      full = held().length >= end;
+    if (held().length <= end) await m.loadOlder();
+    if (full) setPage(current() + 1);
+  };
   const change = (set: (value: string) => void, value: string) => {
     batch(() => {
       set(value);
-      setPage(0);
+      latest();
     });
   };
   return (
@@ -157,6 +177,7 @@ export function Activity(props: { scope?: string; name?: string }) {
                   agent: "",
                   account: "",
                   page: 0,
+                  anchor: 0,
                 })
               }
             >
@@ -244,6 +265,7 @@ export function Activity(props: { scope?: string; name?: string }) {
                 agent: "",
                 account: "",
                 page: 0,
+                anchor: 0,
               })
             }
           >
@@ -256,7 +278,9 @@ export function Activity(props: { scope?: string; name?: string }) {
           <h2>
             Requests <span class="count">{filtered().length}</span>
           </h2>
-          <span>Updates every 5 seconds</span>
+          <Show when={anchor()} fallback={<span>Updates every 5 seconds</span>}>
+            <button onClick={latest}>Back to latest</button>
+          </Show>
         </div>
         <For
           each={visible()}
@@ -346,12 +370,13 @@ export function Activity(props: { scope?: string; name?: string }) {
             );
           }}
         </For>
-        <Show when={pages() > 1}>
+        <Show when={pages() > 1 || m.older() !== null}>
           <div class="pagination">
             <span>
-              {filtered().length ? current() * 50 + 1 : 0} to{" "}
-              {Math.min((current() + 1) * 50, filtered().length)} of{" "}
-              {filtered().length} requests
+              {held().length ? current() * PAGE + 1 : 0} to{" "}
+              {Math.min((current() + 1) * PAGE, held().length)} of{" "}
+              {held().length}
+              {m.older() !== null && "+"} requests
             </span>
             <div>
               <button
@@ -362,10 +387,14 @@ export function Activity(props: { scope?: string; name?: string }) {
               </button>
               <span>
                 {current() + 1} of {pages()}
+                {m.older() !== null && "+"}
               </span>
               <button
-                disabled={current() + 1 === pages()}
-                onClick={() => setPage(current() + 1)}
+                disabled={
+                  m.loadingOlder() ||
+                  (current() + 1 === pages() && m.older() === null)
+                }
+                onClick={next}
               >
                 Next
               </button>
@@ -387,6 +416,7 @@ export function RequestDetail(props: {
     () => ({
       api: m.api()!,
       id: props.id,
+      segment: listed()?.segment,
       state: listed()?.state,
       reviews: listed()?.reviews?.length ?? 0,
       saving: !!listed()?.savingDecision,
@@ -411,7 +441,9 @@ export function RequestDetail(props: {
   const lifetime = new AbortController();
   onCleanup(() => lifetime.abort());
   const [full, { refetch }] = createResource(selected, (s) =>
-    s.api.request(s.id, lifetime.signal),
+    s.segment
+      ? s.api.archived(s.segment, s.id, lifetime.signal)
+      : s.api.request(s.id, lifetime.signal),
   );
   const record = createMemo(() => {
     if (full.error) return;

@@ -10,6 +10,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"slices"
 	"strings"
 	"time"
 
@@ -26,6 +27,7 @@ const (
 	auditWriteTimeout  = 30 * time.Second
 	auditSegmentBytes  = 8 << 20
 	maxAuditBacklog    = 64 << 20
+	auditPageRecords   = 200
 )
 
 var errAuditBacklog = errors.New("the monitor cannot write its audit log; requests are refused until storage recovers")
@@ -84,40 +86,110 @@ func (m *monitor) writeAudit(ctx context.Context) {
 	}
 }
 
-// auditSegments lists the segments whose names start with a UTC time prefix, such as 20261020T15.
-func (m *monitor) auditSegments(r *http.Request, _ struct{}) (any, error) {
-	names := []string{}
-	items := m.store.bucket.List(&blob.ListOptions{Prefix: auditPrefix + r.URL.Query().Get("prefix")})
+// auditPage returns settled records older than the segment named by before, newest first.
+// Records still in the live log are skipped, so the page continues where the live log ends.
+func (m *monitor) auditPage(r *http.Request, _ struct{}) (any, error) {
+	ctx, before := r.Context(), auditPrefix+r.URL.Query().Get("before")
+	m.mu.Lock()
+	store, live := m.store, make(map[string]bool, len(m.records))
+	for _, record := range m.records {
+		live[record.ID] = true
+	}
+	m.mu.Unlock()
+	// Segment names start with their UTC day, so "T" groups them by day.
+	days, err := listAudit(ctx, store, auditPrefix, "T")
+	if err != nil {
+		return nil, err
+	}
+	page := struct {
+		Records []requestSummary `json:"records"`
+		Next    string           `json:"next,omitempty"`
+	}{Records: []requestSummary{}}
+	for _, day := range slices.Backward(days) {
+		if before != auditPrefix && day > before {
+			continue
+		}
+		segments, err := listAudit(ctx, store, day, "")
+		if err != nil {
+			return nil, err
+		}
+		for _, key := range slices.Backward(segments) {
+			if len(page.Records) >= auditPageRecords {
+				return page, nil
+			}
+			if before != auditPrefix && key >= before {
+				continue
+			}
+			records, err := readAudit(ctx, store, key)
+			if err != nil {
+				return nil, err
+			}
+			page.Next = strings.TrimPrefix(key, auditPrefix)
+			for _, record := range slices.Backward(records) {
+				if !live[record.ID] {
+					summary := summarize(&record)
+					summary.Segment = page.Next
+					page.Records = append(page.Records, summary)
+				}
+			}
+		}
+	}
+	page.Next = ""
+	return page, nil
+}
+
+// auditRecord serves one record from a segment.
+func (m *monitor) auditRecord(r *http.Request, _ struct{}) (any, error) {
+	m.mu.Lock()
+	store := m.store
+	m.mu.Unlock()
+	records, err := readAudit(r.Context(), store, auditPrefix+r.PathValue("segment"))
+	if err != nil {
+		return nil, err
+	}
+	for _, record := range records {
+		if record.ID == r.PathValue("id") {
+			return record, nil
+		}
+	}
+	return nil, errRequestGone
+}
+
+func listAudit(ctx context.Context, store stateStore, prefix, delimiter string) ([]string, error) {
+	keys := []string{}
+	items := store.bucket.List(&blob.ListOptions{Prefix: prefix, Delimiter: delimiter})
 	for {
-		item, err := items.Next(r.Context())
+		item, err := items.Next(ctx)
 		if errors.Is(err, io.EOF) {
-			return names, nil
+			return keys, nil
 		}
 		if err != nil {
 			return nil, err
 		}
-		names = append(names, strings.TrimPrefix(item.Key, auditPrefix))
+		keys = append(keys, item.Key)
 	}
 }
 
-// auditSegment serves one segment's records as JSON lines.
-func (m *monitor) auditSegment(w http.ResponseWriter, r *http.Request) {
-	key := auditPrefix + r.PathValue("segment")
-	raw, err := m.store.bucket.ReadAll(r.Context(), key)
+func readAudit(ctx context.Context, store stateStore, key string) ([]record, error) {
+	raw, err := store.bucket.ReadAll(ctx, key)
 	if err == nil {
-		raw, err = m.store.aead.Open(nil, nil, raw, []byte(key))
+		raw, err = store.aead.Open(nil, nil, raw, []byte(key))
 	}
-	var records *gzip.Reader
+	var lines *gzip.Reader
 	if err == nil {
-		records, err = gzip.NewReader(bytes.NewReader(raw))
+		lines, err = gzip.NewReader(bytes.NewReader(raw))
 	}
 	if err != nil {
-		responseError(w, err)
-		return
+		return nil, err
 	}
-	w.Header().Set("Content-Type", "application/x-ndjson")
-	w.Header().Set("Cache-Control", "no-store")
-	if _, err := io.Copy(w, records); err != nil {
-		panic(http.ErrAbortHandler)
+	var records []record
+	for decoder := json.NewDecoder(lines); ; {
+		var r record
+		if err := decoder.Decode(&r); errors.Is(err, io.EOF) {
+			return records, nil
+		} else if err != nil {
+			return nil, err
+		}
+		records = append(records, r)
 	}
 }

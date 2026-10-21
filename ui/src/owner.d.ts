@@ -143,6 +143,7 @@ export type RequestRecord = {
   savingDecision?: boolean;
   reviewer?: "" | "tinfoil";
   reviews?: ApprovalAnswer[];
+  segment?: string;
   facts: {
     title?: string;
     principal: { name: string };
@@ -182,6 +183,15 @@ export type OwnerApi = {
     options?: { summary?: boolean },
   ): Promise<Snapshot>;
   request(id: string, signal?: AbortSignal): Promise<RequestRecord>;
+  archive(
+    before: string,
+    signal?: AbortSignal,
+  ): Promise<{ records: RequestRecord[]; next?: string }>;
+  archived(
+    segment: string,
+    id: string,
+    signal?: AbortSignal,
+  ): Promise<RequestRecord>;
   unlock(generation?: number, signal?: AbortSignal): Promise<View>;
   onboard(
     view: View,

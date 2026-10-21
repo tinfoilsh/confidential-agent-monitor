@@ -238,6 +238,13 @@ export function ownerApi(request, generation, base = "") {
       return { view: checked(view), requests: requests ?? [] };
     },
     request: (id, signal) => get(`/requests/${encodeURIComponent(id)}`, signal),
+    archive: (before, signal) =>
+      get(`/audit?before=${encodeURIComponent(before)}`, signal),
+    archived: (segment, id, signal) =>
+      get(
+        `/audit/${encodeURIComponent(segment)}/${encodeURIComponent(id)}`,
+        signal,
+      ),
     unlock,
     onboard: (view, preset, signal, { allowPaidInference = true } = {}) =>
       onboarded(view)
@@ -525,7 +532,7 @@ export function ordered(records, dismissed = []) {
       ? 0
       : r.state === "pending"
         ? 1
-        : r.state === "expired" && !hidden.has(r.id)
+        : r.state === "expired" && !hidden.has(r.id) && !r.segment
           ? 2
           : 3;
   return [...records].sort(
