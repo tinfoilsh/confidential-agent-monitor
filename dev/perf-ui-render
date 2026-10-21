@@ -156,7 +156,7 @@ def main():
         browser("click", "#tree a[href='#agents']")
         wait(".agent-item")
         for query in ("001", "sandbox", "no match", "") * 3:
-            browser("fill", "input[aria-label='Search agents']", query)
+            browser("fill", "input[aria-label='Search actors']", query)
         checks["agent_search_restores_list"] = browser("count", ".agent-item") == "101"
         time.sleep(2.2)
         browser("click", "#tree a[href='#accounts']")

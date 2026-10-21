@@ -17,7 +17,7 @@ export function Agents(props: { expanded?: string }) {
     [query, setQuery] = m.search("agents");
   if (props.expanded) setQuery("");
   const type = (name: string) =>
-    /^device-[0-9a-f]{16}$/.test(name)
+    owner.isDevice(name)
       ? "devices"
       : name.startsWith("sandbox-")
         ? "sandboxes"
@@ -28,10 +28,9 @@ export function Agents(props: { expanded?: string }) {
       Object.keys(view.config.identities ?? {})
         .sort()
         .map((name) => {
-          const count = owner
-            .agentAccess(view, name)
-            .filter((access) => access.level !== "off").length;
-          const description = `${count} connections`;
+          const description = owner.isDevice(name)
+            ? `Sandbox access ${view.config.identities![name].routes ? "enabled" : "disabled"}`
+            : `${owner.agentAccess(view, name).filter((access) => access.level !== "off").length} connections`;
           return [
             name,
             { description, search: `${name} ${description}`.toLowerCase() },
@@ -48,13 +47,13 @@ export function Agents(props: { expanded?: string }) {
   return (
     <>
       <div id="toolbar">
-        <Search label="Search agents" value={query()} onInput={setQuery} />
+        <Search label="Search actors" value={query()} onInput={setQuery} />
       </div>
       <For
         each={[
           ["sandboxes", "Sandboxes"],
           ["devices", "Devices"],
-          ["agents", "Other agents"],
+          ["agents", "Other actors"],
         ]}
       >
         {([kind, title]) => {
@@ -83,12 +82,14 @@ export function Agents(props: { expanded?: string }) {
                           <span class="collection-description">
                             {summaries().get(name)!.description}
                           </span>
-                          <span class="resource-meta">
-                            {owner.labelStatus(
-                              m.view()!,
-                              m.view()!.labels[name],
-                            )}
-                          </span>
+                          <Show when={kind !== "devices"}>
+                            <span class="resource-meta">
+                              {owner.labelStatus(
+                                m.view()!,
+                                m.view()!.labels[name],
+                              )}
+                            </span>
+                          </Show>
                           <span class="collection-chevron">
                             <Icon name="arrow" />
                           </span>
@@ -97,7 +98,9 @@ export function Agents(props: { expanded?: string }) {
                     >
                       {() => (
                         <div class="agent-inline">
-                          <AgentAccess name={name} />
+                          <Show when={kind !== "devices"}>
+                            <AgentAccess name={name} />
+                          </Show>
                           <AgentSettings name={name} />
                         </div>
                       )}
@@ -112,17 +115,17 @@ export function Agents(props: { expanded?: string }) {
       <Show when={!names().length}>
         <div class="resource-list">
           <Empty
-            title={query() ? "No matching agents" : "No agents yet"}
+            title={query() ? "No matching actors" : "No actors yet"}
             action={
               <Show when={!query()}>
                 <a class="button primary" href="#pair">
                   <Icon name="plus" />
-                  Add agent
+                  Add actor
                 </a>
               </Show>
             }
           >
-            Add an agent with its SSH public key to configure access.
+            Add an actor with its SSH public key to configure access.
             <Show when={!query()}>
               <br />
               If your sandbox is missing, run{" "}
@@ -141,9 +144,9 @@ export function AddAgent() {
   const submit = async (event: SubmitEvent) => {
     event.preventDefault();
     try {
-      if (!name().trim()) throw new Error("Enter an agent name.");
+      if (!name().trim()) throw new Error("Enter an actor name.");
       if (m.view()!.config.identities?.[name().trim()])
-        throw new Error("An agent already uses this name.");
+        throw new Error("An actor already uses this name.");
       await m.edit(
         owner.edits.pairAgent(name().trim(), key()),
         href("agents", name().trim()),
@@ -155,7 +158,7 @@ export function AddAgent() {
   return (
     <form onSubmit={submit} class="connection-fields">
       <label>
-        Agent name
+        Actor name
         <input
           required
           value={name()}
@@ -174,7 +177,7 @@ export function AddAgent() {
         />
       </label>
       <button class="primary" disabled={m.busy()}>
-        Add agent
+        Add actor
       </button>
     </form>
   );
@@ -409,14 +412,50 @@ function AgentAccess(props: { name: string }) {
     </div>
   );
 }
+function SandboxAccess(props: { name: string }) {
+  const m = useMonitor(),
+    id = createUniqueId();
+  return (
+    <div class="setting-row agent-connectivity">
+      <label for={id}>Sandbox access</label>
+      <input
+        id={id}
+        type="checkbox"
+        role="switch"
+        aria-describedby={`${id}-description`}
+        checked={m.view()!.config.identities?.[props.name]?.routes}
+        onChange={(e) =>
+          void m.edit(
+            owner.edits.setRoutes(props.name, e.currentTarget.checked),
+          )
+        }
+      />
+      <p id={`${id}-description`}>
+        Allows connections to sandboxes. Turning this off closes existing
+        sessions.
+      </p>
+    </div>
+  );
+}
 function AgentSettings(props: { name: string }) {
+  if (owner.isDevice(props.name))
+    return (
+      <div class="agent-settings">
+        <section>
+          <SandboxAccess name={props.name} />
+        </section>
+      </div>
+    );
   const m = useMonitor(),
     [key, setKey] = createSignal(""),
     [copyFrom, setCopyFrom] = createSignal(""),
     [instructions, setInstructions] = createSignal<string>();
-  const connectivityId = createUniqueId(),
-    reviewId = createUniqueId();
+  const reviewId = createUniqueId();
   const identity = () => m.view()!.config.identities?.[props.name];
+  const copySources = () =>
+    Object.keys(m.view()!.config.identities ?? {}).filter(
+      (name) => name !== props.name && !owner.isDevice(name),
+    );
   return (
     <div class="agent-settings">
       <Show when={identity()}>
@@ -492,28 +531,7 @@ function AgentSettings(props: { name: string }) {
           {() => (
             <div class="agent-maintenance-content">
               <section>
-                <div class="setting-row agent-connectivity">
-                  <label for={connectivityId}>Sandbox connectivity</label>
-                  <input
-                    id={connectivityId}
-                    type="checkbox"
-                    role="switch"
-                    aria-describedby={`${connectivityId}-description`}
-                    checked={identity()?.routes}
-                    onChange={(e) =>
-                      void m.edit(
-                        owner.edits.setRoutes(
-                          props.name,
-                          e.currentTarget.checked,
-                        ),
-                      )
-                    }
-                  />
-                  <p id={`${connectivityId}-description`}>
-                    Allows connections to sandboxes. Turning this off closes
-                    existing sessions.
-                  </p>
-                </div>
+                <SandboxAccess name={props.name} />
               </section>
               <section>
                 <h3>Host key</h3>
@@ -524,7 +542,7 @@ function AgentSettings(props: { name: string }) {
               <section>
                 <h2>Replace SSH key</h2>
                 <p>
-                  Use this after recreating the sandbox. The agent starts clean.
+                  Use this after recreating the sandbox. The actor starts clean.
                 </p>
                 <form
                   onSubmit={async (e) => {
@@ -555,23 +573,17 @@ function AgentSettings(props: { name: string }) {
                   </button>
                 </form>
               </section>
-              <Show
-                when={Object.keys(m.view()!.config.identities ?? {}).length > 1}
-              >
+              <Show when={copySources().length}>
                 <section>
-                  <h2>Copy settings from another agent</h2>
+                  <h2>Copy settings from another actor</h2>
                   <div class="agent-copy-settings">
                     <select
                       aria-label="Copy settings from"
                       value={copyFrom()}
                       onChange={(e) => setCopyFrom(e.currentTarget.value)}
                     >
-                      <option value="">Choose agent</option>
-                      <For
-                        each={Object.keys(
-                          m.view()!.config.identities ?? {},
-                        ).filter((n) => n !== props.name)}
-                      >
+                      <option value="">Choose actor</option>
+                      <For each={copySources()}>
                         {(name) => <option>{name}</option>}
                       </For>
                     </select>
@@ -594,21 +606,21 @@ function AgentSettings(props: { name: string }) {
               </Show>
               <section class="agent-remove">
                 <div>
-                  <h2>Remove agent</h2>
-                  <p>Revokes this agent’s access to the monitor.</p>
+                  <h2>Remove actor</h2>
+                  <p>Revokes this actor’s access to the monitor.</p>
                 </div>
                 <button
                   class="danger"
                   disabled={m.busy()}
                   onClick={async () => {
                     if (
-                      confirm(`Remove agent ${props.name}?`) &&
+                      confirm(`Remove actor ${props.name}?`) &&
                       (await m.edit(owner.edits.removeAgent(props.name)))
                     )
                       location.hash = "#agents";
                   }}
                 >
-                  Remove agent
+                  Remove actor
                 </button>
               </section>
             </div>

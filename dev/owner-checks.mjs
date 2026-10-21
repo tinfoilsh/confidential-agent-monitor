@@ -260,12 +260,12 @@ const permissions = {
 };
 const scope = { agent: 'agent', account: 'api' };
 const payment = (scope) => effectSettings(permissions, scope).find(e => e.effect === 'pay');
-assert.deepEqual(payment(scope), { effect: 'pay', own: 'allow', inherited: 'ask', mode: 'allow', source: 'Agent agent on api' });
+assert.deepEqual(payment(scope), { effect: 'pay', own: 'allow', inherited: 'ask', mode: 'allow', source: 'Actor agent on api' });
 assert.equal(payment({}).mode, 'allow');
 assert.equal(payment({ account: 'api' }).mode, 'off');
 assert.equal(payment({ agent: 'agent' }).mode, 'ask');
 assert.equal(agentAccess(permissions, 'agent')[0].actions[0].inherited, 'allow');
-for (const [current, expected, source] of [[scope, 'ask', 'Agent agent'], [{ agent: 'agent' }, 'off', 'Account api'], [{ account: 'api' }, 'allow', 'Global settings'], [{}, 'ask', 'Monitor defaults']]) {
+for (const [current, expected, source] of [[scope, 'ask', 'Actor agent'], [{ agent: 'agent' }, 'off', 'Account api'], [{ account: 'api' }, 'allow', 'Global settings'], [{}, 'ask', 'Monitor defaults']]) {
   previewChanges(permissions, edits.setEffect(current, 'pay', null));
   assert.equal(payment(scope).mode, expected);
   assert.equal(payment(scope).source, source);

@@ -73,9 +73,6 @@ export function DeviceSignInDialog(props: {
           />
         </div>
         <div class="device-sign-in-actions">
-          <p class="muted" role="status">
-            Waiting for sign-in…
-          </p>
           <a
             class="button primary"
             href={attempt.url}
@@ -134,7 +131,7 @@ export function Connections(props: { expanded?: string }) {
                 </Show>
               }
             >
-              Add a connection to give your agents access to a service.
+              Add a connection to give your actors access to a service.
             </Empty>
           }
         >
@@ -365,7 +362,10 @@ export function AddConnection(props: { preset: string }) {
   const [sharing, setSharing] = createSignal(answers(preset?.defaults));
   const [api, setApi] = createSignal(owner.apiSettings(m.view()!)),
     [token, setToken] = createSignal("");
-  const names = () => Object.keys(m.view()!.config.identities ?? {});
+  const names = () =>
+    Object.keys(m.view()!.config.identities ?? {}).filter(
+      (name) => !owner.isDevice(name),
+    );
   const [agent, setAgent] = createSignal(
       names().length === 1 ? names()[0] : "",
     ),
@@ -493,7 +493,7 @@ export function AddConnection(props: { preset: string }) {
           />
           <p class="muted field-help">Leave blank to configure later.</p>
           <label>
-            Agent
+            Actor
             <select
               value={agent()}
               onChange={(e) => setAgent(e.currentTarget.value)}
@@ -720,6 +720,10 @@ function ConnectionForm(props: { name: string }) {
 function Connection(props: { name: string; active: boolean }) {
   const m = useMonitor(),
     account = () => m.view()!.config.accounts?.[props.name];
+  const actors = () =>
+    Object.keys(m.view()!.config.identities ?? {}).filter(
+      (name) => !owner.isDevice(name),
+    );
   const [policy, setPolicy] = createSignal(
     m.view()!.config.policies?.[props.name] ?? "",
   );
@@ -790,21 +794,22 @@ function Connection(props: { name: string; active: boolean }) {
         <section>
           <div class="connection-section-heading">
             <h2>
-              Agent access{" "}
+              Actor access{" "}
               <span class="count">
-                {owner.accountUsers(m.view()!, props.name).length}
+                {
+                  owner
+                    .accountUsers(m.view()!, props.name)
+                    .filter(({ name }) => !owner.isDevice(name)).length
+                }
               </span>
             </h2>
-            <Show when={Object.keys(m.view()!.config.identities ?? {}).length}>
+            <Show when={actors().length}>
               <a class="button" href="#pair">
-                Add agent
+                Add actor
               </a>
             </Show>
           </div>
-          <For
-            each={Object.keys(m.view()!.config.identities ?? {})}
-            fallback={<a href="#pair">Add an agent</a>}
-          >
+          <For each={actors()} fallback={<a href="#pair">Add an actor</a>}>
             {(name) => (
               <AgentConnectionAccess
                 name={name}
@@ -823,7 +828,7 @@ function Connection(props: { name: string; active: boolean }) {
         </Show>
         <Show when={setups().length}>
           <section>
-            <h2>Agent setup</h2>
+            <h2>Actor setup</h2>
             <For each={setups()}>
               {(group) => {
                 const setup = group[0];
@@ -836,7 +841,7 @@ function Connection(props: { name: string; active: boolean }) {
                         {setup.connection} · {setup.credential}
                       </h3>
                     </Show>
-                    <label for={id}>Agent placeholder</label>
+                    <label for={id}>Actor placeholder</label>
                     <div class="secret-input">
                       <input
                         ref={input}
@@ -903,7 +908,7 @@ function Connection(props: { name: string; active: boolean }) {
                   Save this in <code>~/.codex/config.toml</code>, then run Codex
                   in your Monitor-connected sandbox or with{" "}
                   <code>monitor run -- codex</code>. Choose a model available to
-                  your ChatGPT account. Grant your agent access to this
+                  your ChatGPT account. Grant your actor access to this
                   connection and review pending requests in Activity.
                 </p>
                 <pre ref={code}>{text()}</pre>

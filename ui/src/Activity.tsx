@@ -143,7 +143,7 @@ export function Activity(props: { scope?: string; name?: string }) {
           </div>
           <div class="stat">
             <div>
-              Agents <Icon name="rules" />
+              Actors <Icon name="rules" />
             </div>
             <strong>
               {Object.keys(m.view()!.config.identities ?? {}).length}
@@ -167,7 +167,7 @@ export function Activity(props: { scope?: string; name?: string }) {
                 {pending() === 1 ? "request needs" : "requests need"} your
                 approval.
               </strong>{" "}
-              Agents are waiting to continue.
+              Actors are waiting to continue.
             </span>
             <button
               onClick={() =>
@@ -221,11 +221,11 @@ export function Activity(props: { scope?: string; name?: string }) {
           </For>
         </select>
         <select
-          aria-label="All agents"
+          aria-label="All actors"
           value={agent()}
           onChange={(e) => change(setAgent, e.currentTarget.value)}
         >
-          <option value="">All agents</option>
+          <option value="">All actors</option>
           <For
             each={[
               ...new Set([
@@ -300,7 +300,7 @@ export function Activity(props: { scope?: string; name?: string }) {
             >
               <Show
                 when={m.records().length}
-                fallback="Requests appear here when an agent uses a connection."
+                fallback="Requests appear here when an actor uses a connection."
               >
                 Try another search or clear the filters.
               </Show>
@@ -479,7 +479,7 @@ export function RequestDetail(props: {
             [...new Set([...(r().deny ?? []), ...owner.reasons(r())])].map(
               (reason) =>
                 reason === "this agent may not do this on the account"
-                  ? "This agent does not have permission for this action."
+                  ? "This actor does not have permission for this action."
                   : reason,
             ),
           );
@@ -503,7 +503,7 @@ export function RequestDetail(props: {
               </Show>
               <dl class="request-context">
                 <div>
-                  <dt>Agent</dt>
+                  <dt>Actor</dt>
                   <dd>
                     <a
                       class="request-context-link"
@@ -593,6 +593,7 @@ export function RequestDetail(props: {
               <Show
                 when={
                   (state() === "refused" || state() === "denied") &&
+                  !owner.isDevice(r().facts.principal.name) &&
                   m.view()!.config.accounts?.[r().facts.account] &&
                   m.view()!.config.identities?.[r().facts.principal.name]
                 }
@@ -603,8 +604,8 @@ export function RequestDetail(props: {
                     <Icon name="arrow" />
                   </a>
                   <p class="muted">
-                    Update this agent’s connection access, then retry the
-                    request from your agent.
+                    Update this actor’s connection access, then retry the
+                    request from your actor.
                   </p>
                 </div>
               </Show>

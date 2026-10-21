@@ -373,6 +373,7 @@ export function mode(
 ): Mode;
 export function actionTree(view: View, account: string): ActionNode[];
 export function levelsOf(account?: Account): [Level, string][];
+export function isDevice(name: string): boolean;
 export function agentAccess(
   view: View,
   name: string,

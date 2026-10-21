@@ -34,7 +34,7 @@ export const POLICY_PRESETS = {
   },
   offline: {
     title: "Offline",
-    description: "Block agent connections to all services and sandboxes.",
+    description: "Block actor connections to all services and sandboxes.",
   },
 };
 // A new preset starts as one bearer-token API; the owner sets its origin, slots and operations.
@@ -425,6 +425,8 @@ export function previewChanges(view, changes, shipped = {}) {
 }
 
 const identities = (view) => view.config.identities ?? {};
+// Matches the device names assigned by owner enrollment.
+export const isDevice = (name) => /^device-[0-9a-f]{16}$/.test(name);
 export const onboarded = (view) =>
   view.config.data?.onboarding?.completed === true;
 const accounts = (view) => view.config.accounts ?? {};
@@ -667,9 +669,9 @@ export function effectSettings(view, { agent, account } = {}, effects = []) {
   const layers = [["Global settings", view.config.effects]];
   if (account)
     layers.push([`Account ${account}`, accounts(view)[account]?.effects]);
-  if (agent) layers.push([`Agent ${agent}`, id.effects]);
+  if (agent) layers.push([`Actor ${agent}`, id.effects]);
   if (agent && account)
-    layers.push([`Agent ${agent} on ${account}`, pair?.effects]);
+    layers.push([`Actor ${agent} on ${account}`, pair?.effects]);
   return Object.entries(view.vocabulary)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([effect, metadata]) => {
@@ -1606,8 +1608,8 @@ export function integrationGuide(view, page, href) {
     {
       start: `<h1>Get connected</h1><ol>
         <li>Add your apps in ${link(["accounts"], "Connections")}.</li>
-        <li>${link(["pair"], "Add your device's SSH key")}, then grant access in ${link(["agents"], "Agents")}.</li>
-        <li>Set up the SSH alias <code>monitor</code> with your server address, private key, and the host key in agent <b>Settings</b>.</li>
+        <li>${link(["pair"], "Add your device's SSH key")}, then grant access in ${link(["agents"], "Actors")}.</li>
+        <li>Set up the SSH alias <code>monitor</code> with your server address, private key, and the host key in actor <b>Settings</b>.</li>
       </ol>
       ${code("integration-check", "Check your connections", "monitor connections")}
       <details><summary>Install the client</summary><p>From the Monitor repository, with Python 3.11+ and OpenSSH installed:</p>
@@ -1618,7 +1620,7 @@ export function integrationGuide(view, page, href) {
       shell: `<h1>Monitor shell</h1><p>Use your connections in a local terminal session.</p>
       ${code("integration-shell", "Open a shell", "monitor shell")}
       <p>Run commands as usual. Type <code>exit</code> to leave. ${link(["integrations", "start"], "Setup")}</p>`,
-      mcp: `<h1>MCP connections</h1><p>Grant your agent access to a ready ${link(["accounts"], "MCP connection")}, then run:</p>
+      mcp: `<h1>MCP connections</h1><p>Grant your actor access to a ready ${link(["accounts"], "MCP connection")}, then run:</p>
       ${code("integration-mcp-serve", "Start MCP", "monitor mcp serve")}
       <p>Add the printed URLs to your MCP client using <b>Streamable HTTP</b>. Keep the command running. ${link(["integrations", "start"], "Setup")}</p>`,
     }[page] ?? ""

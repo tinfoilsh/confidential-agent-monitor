@@ -288,7 +288,7 @@ def main():
         browser("wait", "#tree a[href='#activity']")
         if not ref:
             browser("click", "#tree a[href='#agents']")
-            browser("fill", "input[aria-label='Search agents']", "sandbox")
+            browser("fill", "input[aria-label='Search actors']", "sandbox")
             browser("click", "summary.resource-row")
             browser("wait", ".agent-item[data-open-motion]")
             results["checks"]["agent_expansion_animates_height"] = browser("count", ".agent-item[data-open-motion='true']").stdout.strip() == "1"
@@ -376,8 +376,8 @@ def main():
             browser("wait", "#saving", "--state", "hidden")
             results["checks"]["page_save_notice_stays_out_of_dialog"] = browser("count", ".dialog-notice").stdout.strip() == "0"
             results["checks"]["pair_keeps_page_search"] = (
-                browser("count", "input[aria-label='Search agents']").stdout.strip() == "1"
-                and browser("value", "input[aria-label='Search agents']").stdout.strip() == "sandbox")
+                browser("count", "input[aria-label='Search actors']").stdout.strip() == "1"
+                and browser("value", "input[aria-label='Search actors']").stdout.strip() == "sandbox")
             deadline = time.monotonic() + 2
             while time.monotonic() < deadline and abs(box("dialog button.primary")["height"] - header_height) > .01:
                 time.sleep(.02)
@@ -387,7 +387,7 @@ def main():
             browser("wait", "dialog[data-exit-motion]")
             results["checks"]["dialog_fades_out"] = browser("attr", "dialog", "data-exit-motion").stdout.strip() == "true"
             results["checks"]["dialog_backdrop_fades_out"] = browser("attr", "dialog", "data-backdrop-motion").stdout.strip() == "true"
-            results["checks"]["pair_restores_search"] = browser("value", "input[aria-label='Search agents']").stdout.strip() == "sandbox"
+            results["checks"]["pair_restores_search"] = browser("value", "input[aria-label='Search actors']").stdout.strip() == "sandbox"
             browser("click", "a[href='#pair']")
             browser("press", "Escape")
             browser("wait", "dialog[open]", "--state", "hidden")
@@ -411,7 +411,7 @@ def main():
             browser("click", ".agent-setup-item:last-of-type .agent-setup-usage > summary")
             browser("click", ".connection-advanced > summary")
             setup_text = browser("text", ".connection-detail").stdout
-            results["checks"]["connection_sharing_and_effects_under_advanced"] = setup_text.index("Agent setup") < setup_text.index("Connection settings") < setup_text.index("Advanced") < setup_text.index("Data sharing") < setup_text.index("Effects") < setup_text.index("Custom policy")
+            results["checks"]["connection_sharing_and_effects_under_advanced"] = setup_text.index("Actor setup") < setup_text.index("Connection settings") < setup_text.index("Advanced") < setup_text.index("Data sharing") < setup_text.index("Effects") < setup_text.index("Custom policy")
             results["checks"]["edit_preset_next_to_remove"] = (
                 browser("count", ".connection-footer a[href^='#preset']").stdout.strip() == "1"
                 and browser("count", ".connection-footer button.danger").stdout.strip() == "1")
@@ -489,12 +489,12 @@ def main():
             browser("wait", "dialog[open]", "--state", "hidden")
             results["checks"]["independent_dialog_search"] = browser("value", "input[aria-label='Search connections']").stdout.strip() == "anth"
             browser("click", "#tree a[href='#agents']")
-            browser("fill", "input[aria-label='Search agents']", "no matching agent")
+            browser("fill", "input[aria-label='Search actors']", "no matching agent")
             browser("nav", f"http://127.0.0.1:{server.server_port}/app/#agent-settings/sandbox-sb2")
             browser("wait", ".agent-item[open] .agent-settings")
             results["checks"]["agent_settings_links_open_in_list"] = (
-                browser("text", "#page-header h1").stdout.strip() == "Agents"
-                and browser("value", "input[aria-label='Search agents']").stdout.strip() == ""
+                browser("text", "#page-header h1").stdout.strip() == "Actors"
+                and browser("value", "input[aria-label='Search actors']").stdout.strip() == ""
                 and browser("count", "textarea[aria-label='Replacement public key']").stdout.strip() == "0")
             browser("nav", f"http://127.0.0.1:{server.server_port}/app/#session=renewed-fixture")
             browser("wait", "#tree a[href='#activity']")
