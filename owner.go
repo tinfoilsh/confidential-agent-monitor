@@ -447,6 +447,8 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 		}
 		return newest, nil
 	}))
+	mux.Handle("GET /audit", m.authenticated(jsonHandler(0, m.auditSegments)))
+	mux.Handle("GET /audit/{segment}", m.authenticated(m.auditSegment))
 	mux.Handle("GET /requests/{id}", owned(m, func(r *http.Request, _ struct{}) (any, error) {
 		for _, record := range m.records {
 			if record.ID == r.PathValue("id") {

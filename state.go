@@ -52,6 +52,9 @@ type monitor struct {
 	// mu owns authorization transactions, including documents, records and streams.
 	streams map[*connector.Stream]string
 	records []*record
+	audit   []byte // Settled records awaiting upload, as JSON lines.
+	// auditMu serializes uploads, which run without mu; it is taken before mu.
+	auditMu sync.Mutex
 	// signIns holds the finish of each started sign-in, keyed by its state.
 	signIns sync.Map
 }
@@ -127,7 +130,7 @@ func (m *monitor) activate(ctx context.Context, next sealed, s *state) error {
 	// Pending decisions belong to the configuration that requested them.
 	for _, r := range m.records {
 		if r.State == statePending {
-			r.settle(errChanged)
+			r.State, r.Deny = stateRefused, []string{errChanged.Error()}
 			close(r.answered)
 		}
 	}
