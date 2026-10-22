@@ -1412,7 +1412,7 @@ details[open] > summary > .collection-chevron {
   flex-wrap: wrap;
 }
 .acct .access-level {
-  margin-left: auto;
+  margin-left: 0;
 }
 .access-toggle {
   flex: 1 1 auto;
@@ -2811,32 +2811,130 @@ form > .credential-actions {
   color: #f87171;
 }
 
-.access-exceptions {
-  margin-top: 12px;
+.access-block {
+  margin: 12px 0 0 20px;
   padding-top: 12px;
   border-top: 1px solid var(--edge);
 }
-.access-exceptions h4 {
+.access-block .access-actions,
+.access-block .access-rule {
+  margin-left: 16px;
+}
+.access-rules-link {
+  margin-left: 8px;
+  font-size: var(--font-detail);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.access-block h4 {
+  margin: 0 0 2px;
+  font-size: var(--font-body);
+  font-weight: 600;
+}
+.access-block > p.muted {
   margin: 0 0 8px;
   font-size: var(--font-detail);
-  font-weight: 500;
-  color: var(--muted);
 }
-.access-exception {
+.access-level-label {
+  margin-left: auto;
+  margin-right: 0;
+  font-size: var(--font-detail);
+  white-space: nowrap;
+}
+.access-rule {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
-  padding: 6px 0;
+  padding: 6px 8px;
+  border-radius: 4px;
+  color: var(--text);
 }
-.access-exception > span {
+.access-rule:hover {
+  background: var(--subtle);
+}
+.access-rule > span:first-child {
+  flex: 1;
+}
+.access-rule > .icon:last-child {
+  width: 12px;
+  height: 12px;
+  color: var(--muted);
+}
+.access-rule > span {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
 }
-.access-exception small {
+.access-rule small {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+}
+
+.agent-connections {
+  margin-top: 16px;
+}
+.agent-connections h4 {
+  margin: 0 0 6px;
+  font-size: var(--font-detail);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.agent-connection-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  color: var(--text);
+}
+.agent-connection-row + .agent-connection-row {
+  margin-top: 6px;
+}
+.agent-connection-row:hover {
+  background: var(--subtle);
+}
+.agent-connection-row > small {
+  margin-left: auto;
+  white-space: nowrap;
+}
+.agent-connection-row > .icon:last-child {
+  width: 12px;
+  height: 12px;
+  color: var(--muted);
+}
+
+.connection-explainer {
+  margin: 0 0 12px;
+}
+.connection-explainer h3 {
+  margin: 0 0 4px;
+  font-size: var(--font-body);
+  font-weight: 600;
+}
+.connection-explainer > p.muted {
+  margin: 0 0 12px;
+  font-size: var(--font-detail);
+}
+
+.rules-group + .rules-group {
+  margin-top: 20px;
+}
+.rules-group-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  font-size: var(--font-detail);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.rules-group-title a {
+  color: inherit;
 }

@@ -62,7 +62,7 @@ const sections: Record<string, [string, string]> = {
     "Connections",
     "Connect services and control how identities use their data.",
   ],
-  rules: ["Saved rules", "Review permissions saved from request approvals."],
+  rules: ["Rules", "Narrow actions you approved and saved, by connection."],
   settings: ["Settings", "Manage guardrails, policy, and monitor preferences."],
   integrations: [
     "Integrations",
@@ -251,6 +251,7 @@ function Shell() {
                 </div>
                 <NavItem key="activity" />
                 <NavItem key="accounts" />
+                <NavItem key="rules" />
               </div>
               <NavItem key="settings" />
             </nav>
@@ -367,7 +368,7 @@ function Page(props: {
         <Integrations page={name} />
       </Match>
       <Match when={kind === "rules"}>
-        <Rules />
+        <Rules account={name || undefined} agent={request || undefined} />
       </Match>
       <Match when={kind === "policy"}>
         <Policy />

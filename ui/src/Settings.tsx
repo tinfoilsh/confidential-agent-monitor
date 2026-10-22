@@ -184,72 +184,93 @@ export function Settings(props: {
     </div>
   );
 }
-export function Rules() {
+export function Rules(props: { account?: string; agent?: string }) {
   const m = useMonitor(),
     rules = () =>
       Object.entries(m.view()!.config.identities ?? {}).flatMap(
         ([name, identity]) =>
-          Object.keys(identity.rules ?? {}).map((id) => [name, id] as const),
-      );
+          Object.entries(identity.rules ?? {})
+            .filter(
+              ([, rule]) =>
+                (!props.account || rule.account === props.account) &&
+                (!props.agent || name === props.agent),
+            )
+            .map(([id, rule]) => ({ name, id, rule })),
+      ),
+    byConnection = () => {
+      const groups = new Map<string, ReturnType<typeof rules>>();
+      for (const entry of rules()) {
+        const list = groups.get(entry.rule.account) ?? [];
+        list.push(entry);
+        groups.set(entry.rule.account, list);
+      }
+      return [...groups.entries()].sort(([a], [b]) => a.localeCompare(b));
+    };
   return (
     <div class="resource-list">
       <div class="resource-heading">
         <h2>
-          Saved rules <span class="count">{rules().length}</span>
+          Rules <span class="count">{rules().length}</span>
         </h2>
+        <Show when={props.account || props.agent}>
+          <a href="#rules">Show all</a>
+        </Show>
       </div>
       <For
-        each={rules()}
+        each={byConnection()}
         fallback={
-          <Empty title="No saved rules yet" icon="rules">
-            Save an approval rule from a request to allow matching requests in
+          <Empty title="No rules yet" icon="rules">
+            Save an approval from a request to allow that exact action in
             the future.
           </Empty>
         }
       >
-        {([name, id]) => {
-          const rule = () => m.view()!.config.identities![name].rules![id];
-          return (
-            <div class="resource-row">
-              <a class="resource-link" href={href("account", rule().account)}>
-                <ConnectorIcon
-                  preset={
-                    m.view()!.config.accounts?.[rule().account]?.preset ??
-                    "custom"
-                  }
-                />
-                <span>
-                  <strong>{owner.ruleTitle(m.view()!, rule())}</strong>
-                  <small>
-                    {name} · {rule().account}
-                  </small>
-                  <small class="rule-scope">
-                    <For
-                      each={Object.entries(rule().scope ?? {})}
-                      fallback="Any request"
+        {([account, entries]) => (
+          <section class="rules-group">
+            <h3 class="rules-group-title">
+              <ConnectorIcon
+                preset={m.view()!.config.accounts?.[account]?.preset ?? "custom"}
+              />
+              <a href={href("account", account)}>{account}</a>
+            </h3>
+            <For each={entries}>
+              {({ name, id, rule }) => (
+                <div class="resource-row">
+                  <span class="resource-link">
+                    <span>
+                      <strong>{owner.ruleTitle(m.view()!, rule)}</strong>
+                      <small>{name}</small>
+                      <small class="rule-scope">
+                        <For
+                          each={Object.entries(rule.scope ?? {})}
+                          fallback="Any request"
+                        >
+                          {([key, value]) => {
+                            const text = `${key}: ${typeof value === "string" ? value : JSON.stringify(value)}`;
+                            return <code title={text}>{text}</code>;
+                          }}
+                        </For>
+                      </small>
+                    </span>
+                  </span>
+                  <div class="row-actions">
+                    <Show when={m.recordsById().get(id)}>
+                      <a class="button" href={href("request", id)}>
+                        View request
+                      </a>
+                    </Show>
+                    <button
+                      disabled={m.busy()}
+                      onClick={() => void m.edit(owner.edits.removeRule(name, id))}
                     >
-                      {([key, value]) => {
-                        const text = `${key}: ${typeof value === "string" ? value : JSON.stringify(value)}`;
-                        return <code title={text}>{text}</code>;
-                      }}
-                    </For>
-                  </small>
-                  <small>
-                    {rule().operation
-                      ? `Skips ${owner.ruleWaives(rule()).join(", ")}`
-                      : "Inactive: saved before approvals named an operation"}
-                  </small>
-                </span>
-              </a>
-              <button
-                disabled={m.busy()}
-                onClick={() => void m.edit(owner.edits.removeRule(name, id))}
-              >
-                Remove
-              </button>
-            </div>
-          );
-        }}
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              )}
+            </For>
+          </section>
+        )}
       </For>
     </div>
   );

@@ -166,10 +166,14 @@ export function Connections(props: { expanded?: string }) {
                       preset={m.view()!.config.accounts![name].preset}
                     />
                     <strong class="collection-name" title={name}>
-                      {name}
+                      {m.view()!.config.accounts![name].preset === "tcp"
+                        ? owner.presetOf(m.view()!, name).title
+                        : name}
                     </strong>
                     <span class="collection-description">
-                      {owner.presetOf(m.view()!, name).title}
+                      {m.view()!.config.accounts![name].preset === "tcp"
+                        ? name
+                        : owner.presetOf(m.view()!, name).title}
                     </span>
                     <span class="resource-meta">
                       <span
@@ -809,75 +813,22 @@ function Connection(props: { name: string; active: boolean }) {
             </section>
           )}
         </For>
-        <ResourceDisclosure
-          class="connection-advanced"
-          summary={
-            <>
-              <span class="connection-advanced-text">
-                <span class="connection-advanced-heading">
-                  <strong class="connection-advanced-title">
-                    Identity access
-                  </strong>
-                  <span class="count">
-                    {
-                      owner
-                        .accountUsers(m.view()!, props.name)
-                        .filter(({ name }) => !owner.isDevice(name)).length
-                    }
-                  </span>
-                  <span class="collection-chevron">
-                    <Icon name="arrow" />
-                  </span>
-                </span>
-                <small>Who can use this connection</small>
-              </span>
-              <Show when={actors().length}>
-                <a class="button" href="#pair">
-                  Add identity
-                </a>
-              </Show>
-            </>
-          }
-        >
-          {() => (
-            <div class="connection-advanced-content">
-              <For each={actors()} fallback={<a href="#pair">Add an identity</a>}>
-                {(name) => (
-                  <AgentConnectionAccess
-                    name={name}
-                    account={props.name}
-                    title={name}
-                  />
-                )}
-              </For>
-            </div>
-          )}
-        </ResourceDisclosure>
-        <Show when={owner.liveConnection(m.view()!, props.name)}>
-          {(connection) => (
-            <Suspense fallback={<p role="status">Loading browser…</p>}>
-              <Browser name={connection()} active={props.active} />
-            </Suspense>
-          )}
+        <Show when={account()!.preset === "tcp"}>
+          <section class="connection-explainer">
+            <p class="muted">
+              The catch-all. Anything an identity tries to reach that isn't
+              one of your other connections lands here.
+            </p>
+          </section>
         </Show>
-        <ResourceDisclosure
-          class="connection-advanced connection-setup"
-          summary={
-            <span class="connection-advanced-text">
-              <span class="connection-advanced-heading">
-                <strong class="connection-advanced-title">
-                  Connection setup
-                </strong>
-                <span class="collection-chevron">
-                  <Icon name="arrow" />
-                </span>
-              </span>
-              <small>Credentials and identity setup</small>
-            </span>
-          }
-        >
-          {() => (
-            <div class="connection-advanced-content">
+        <Show when={account()!.preset !== "tcp"}>
+          <section class="connection-explainer">
+            <h3>Using this connection</h3>
+            <p class="muted">
+              What to paste into a tool on the identity's side. The real
+              credential never leaves the Monitor.
+            </p>
+
               <ConnectionForm name={props.name} />
               <Show when={tinfoil().length}>
                 <div class="agent-setup-body">
@@ -909,6 +860,54 @@ function Connection(props: { name: string; active: boolean }) {
                   </For>
                 </div>
               </Show>
+          </section>
+        </Show>
+        <ResourceDisclosure
+          class="connection-advanced"
+          summary={
+            <>
+              <span class="connection-advanced-text">
+                <span class="connection-advanced-heading">
+                  <strong class="connection-advanced-title">
+                    Identity access
+                  </strong>
+                  <span class="count">
+                    {
+                      owner
+                        .accountUsers(m.view()!, props.name)
+                        .filter(({ name }) => !owner.isDevice(name)).length
+                    }
+                  </span>
+                  <span class="collection-chevron">
+                    <Icon name="arrow" />
+                  </span>
+                </span>
+                <small>Who can use this connection</small>
+              </span>
+            </>
+          }
+        >
+          {() => (
+            <div class="connection-advanced-content">
+              <For each={actors()} fallback={<a href="#pair">Add an identity</a>}>
+                {(name) => (
+                  <AgentConnectionAccess
+                    name={name}
+                    account={props.name}
+                    title={name}
+                  />
+                )}
+              </For>
+            </div>
+          )}
+        </ResourceDisclosure>
+        <Show when={owner.liveConnection(m.view()!, props.name)}>
+          {(connection) => (
+            <Suspense fallback={<p role="status">Loading browser…</p>}>
+              <Browser name={connection()} active={props.active} />
+            </Suspense>
+          )}
+        </Show>
               <Show when={setups().length}>
                 <div class="agent-setup-body">
                   <For each={setups()}>
@@ -1022,41 +1021,6 @@ function Connection(props: { name: string; active: boolean }) {
                   );
                 }}
               </Show>
-            </div>
-          )}
-        </ResourceDisclosure>
-        <ResourceDisclosure
-          class="connection-advanced"
-          summary={
-            <span class="connection-advanced-text">
-              <span class="connection-advanced-heading">
-                <strong class="connection-advanced-title">API</strong>
-                <span class="count">
-                  {Object.keys(owner.actionsOf(m.view()!, props.name)).length}
-                </span>
-                <span class="collection-chevron">
-                  <Icon name="arrow" />
-                </span>
-              </span>
-              <small>Operations and effects</small>
-            </span>
-          }
-        >
-          {() => (
-            <div class="connection-advanced-content">
-              <div
-                class="action-list"
-                role="region"
-                aria-label="API"
-                tabIndex={0}
-              >
-                <ConnectionActions
-                  nodes={owner.actionTree(m.view()!, props.name)}
-                />
-              </div>
-            </div>
-          )}
-        </ResourceDisclosure>
         <ResourceDisclosure
           class="connection-advanced"
           summary={

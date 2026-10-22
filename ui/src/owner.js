@@ -942,11 +942,15 @@ const fieldValue = (acc, f) =>
   atPath(acc, f.path ?? paths(f)[0]) ?? (f.list ? [] : f.json ? {} : "");
 export const setupFields = (view, preset) =>
   fieldsOf(view.presets[preset]).filter((f) => !f.edit_only);
+// Raw TCP is always "every host": its host-patterns field is not offered
+// (the document keeps onboarding's `*`). daniel_suggestions.md #3.
 export const plainFields = (view, account) =>
-  plain(presetOf(view, account)).map((f) => ({
-    ...f,
-    value: fieldValue(accounts(view)[account], f),
-  }));
+  plain(presetOf(view, account))
+    .filter((f) => !(accounts(view)[account]?.preset === "tcp" && f.key === "hosts"))
+    .map((f) => ({
+      ...f,
+      value: fieldValue(accounts(view)[account], f),
+    }));
 export const fieldText = (f, value) =>
   f.json
     ? value === undefined

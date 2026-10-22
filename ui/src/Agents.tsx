@@ -262,9 +262,9 @@ export function AgentConnectionAccess(props: {
   const [expanded, setExpanded] = createSignal(false);
   const open = () => expanded() && entry().level !== "off";
   const id = createUniqueId();
-  // Exceptions: saved approvals for THIS identity on THIS connection — a
-  // narrow "yes" carved out of the access level above.
-  const exceptions = createMemo(() =>
+  // Rules: saved approvals for THIS identity on THIS connection — an
+  // action plus specific parameters, narrower than the actions below.
+  const rules = createMemo(() =>
     Object.entries(
       m.view()!.config.identities?.[props.name]?.rules ?? {},
     ).filter(([, rule]) => rule.account === props.account),
@@ -298,15 +298,18 @@ export function AgentConnectionAccess(props: {
             {props.title ?? props.account}
           </b>
           <Show when={entry().level !== "off" && entry().overrides}>
-            <small class="muted">{entry().overrides} overrides</small>
-          </Show>
-          <Show when={exceptions().length}>
             <small class="muted">
-              {exceptions().length}{" "}
-              {exceptions().length === 1 ? "exception" : "exceptions"}
+              {entry().overrides}{" "}
+              {entry().overrides === 1 ? "action set" : "actions set"}
             </small>
           </Show>
         </button>
+        <Show when={rules().length}>
+          <small class="muted">
+            {rules().length} {rules().length === 1 ? "rule" : "rules"}
+          </small>
+        </Show>
+        <span class="access-level-label muted">Connection access</span>
         <span
           class="seg access-level"
           role="group"
@@ -351,19 +354,32 @@ export function AgentConnectionAccess(props: {
       >
         <div>
           <Show when={open()}>
-            <div class="access-actions">
-              <Actions
-                name={props.name}
-                account={props.account}
-                nodes={entry().actions}
-              />
+            <div class="access-block">
+              <h4>Actions</h4>
+              <p class="muted">
+                What this identity may do on the connection. Each can be
+                set on its own.
+              </p>
+              <div class="access-actions">
+                <Actions
+                  name={props.name}
+                  account={props.account}
+                  nodes={entry().actions}
+                />
+              </div>
             </div>
-            <Show when={exceptions().length}>
-              <div class="access-exceptions">
-                <h4>Exceptions</h4>
-                <For each={exceptions()}>
+            <Show when={rules().length}>
+              <div class="access-block access-rules">
+                <h4>Rules</h4>
+                <p class="muted">
+                  Narrow, least-scoped actions you approved and saved.
+                </p>
+                <For each={rules()}>
                   {([id, rule]) => (
-                    <div class="access-exception">
+                    <a
+                      class="access-rule"
+                      href={href("rules", props.account, props.name)}
+                    >
                       <span>
                         <strong>{owner.ruleTitle(m.view()!, rule)}</strong>
                         <small>
@@ -380,13 +396,15 @@ export function AgentConnectionAccess(props: {
                       </span>
                       <button
                         disabled={m.busy()}
-                        onClick={() =>
-                          void m.edit(owner.edits.removeRule(props.name, id))
-                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          void m.edit(owner.edits.removeRule(props.name, id));
+                        }}
                       >
                         Remove
                       </button>
-                    </div>
+                      <Icon name="arrow" />
+                    </a>
                   )}
                 </For>
               </div>
@@ -443,18 +461,49 @@ function AgentAccess(props: { name: string }) {
           </For>
         </div>
       </div>
-      <For
-        each={Object.keys(m.view()!.config.accounts ?? {})}
-        fallback={
-          <p>
-            No connections yet. <a href="#catalog">Add connection</a>
-          </p>
-        }
-      >
-        {(account) => (
-          <AgentConnectionAccess name={props.name} account={account} />
-        )}
-      </For>
+      <div class="agent-connections">
+        <h4>Connections</h4>
+        <For
+          each={Object.keys(m.view()!.config.accounts ?? {})}
+          fallback={
+            <p>
+              No connections yet. <a href="#catalog">Add connection</a>
+            </p>
+          }
+        >
+          {(account) => {
+            const entry = () =>
+              owner.agentAccess(m.view()!, props.name, account)[0];
+            const rules = () =>
+              Object.values(
+                m.view()!.config.identities?.[props.name]?.rules ?? {},
+              ).filter((rule) => rule.account === account).length;
+            return (
+              <a
+                class="agent-connection-row"
+                href={href("account", account)}
+                title={`Open ${account}`}
+              >
+                <ConnectorIcon preset={entry().preset} />
+                <b>{account}</b>
+                <small class="muted">
+                  {owner.LEVELS[entry().level]}
+                  <Show when={entry().level !== "off" && entry().overrides}>
+                    {" · "}
+                    {entry().overrides}{" "}
+                    {entry().overrides === 1 ? "action set" : "actions set"}
+                  </Show>
+                  <Show when={rules()}>
+                    {" · "}
+                    {rules()} {rules() === 1 ? "rule" : "rules"}
+                  </Show>
+                </small>
+                <Icon name="arrow" />
+              </a>
+            );
+          }}
+        </For>
+      </div>
     </div>
   );
 }
