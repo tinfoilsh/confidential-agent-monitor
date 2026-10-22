@@ -445,8 +445,16 @@ function Gate() {
     // Local dev (bun run dev) only: a prefilled passphrase so the dev
     // server unlocks with one click. Stripped from production builds.
     [key, setKey] = createSignal(import.meta.env.DEV ? "testtesttesttest" : ""),
-    [preset, setPreset] = createSignal<owner.PolicyPreset>("known_only"),
-    [paid, setPaid] = createSignal(true);
+    // Onboarding writes the chosen posture; the paid-inference default is
+    // unchanged (on) and no longer asked about here.
+    start = (preset: owner.PolicyPreset) =>
+      m.perform(
+        (client) =>
+          client.onboard(m.view()!, preset, undefined, {
+            allowPaidInference: true,
+          }),
+        "Policy saved",
+      );
   return (
     <div id="gate">
       <Switch
@@ -504,60 +512,35 @@ function Gate() {
           </Show>
         </Match>
         <Match when={m.view() && !owner.onboarded(m.view()!)}>
-          <form
-            class="onboarding"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void m.perform(
-                (client) =>
-                  client.onboard(m.view()!, preset(), undefined, {
-                    allowPaidInference: paid(),
-                  }),
-                "Policy saved",
-              );
-            }}
-          >
-            <h1>Set up your monitor</h1>
-            <p>Choose how identities can connect to the outside world.</p>
-            <fieldset disabled={m.busy()}>
-              <legend>Network policy</legend>
-              <For each={Object.entries(owner.POLICY_PRESETS)}>
-                {([value, option]) => (
-                  <label class="policy-choice">
-                    <input
-                      type="radio"
-                      name="network-policy"
-                      value={value}
-                      checked={preset() === value}
-                      onChange={() => setPreset(value as owner.PolicyPreset)}
-                    />
-                    <span>
-                      <strong>{option.title}</strong>
-                      <small>{option.description}</small>
-                    </span>
-                  </label>
-                )}
-              </For>
-            </fieldset>
-            <label class="policy-choice">
-              <input
-                type="checkbox"
-                role="switch"
-                checked={paid()}
-                onChange={(e) => setPaid(e.currentTarget.checked)}
-              />
-              <span>
-                <strong>Allow paid AI inference</strong>
-                <small>
-                  Use paid AI models without payment approval. Provider charges
-                  apply.
-                </small>
-              </span>
-            </label>
-            <button class="primary" disabled={m.busy()}>
-              Use this policy
+          <div class="onboarding">
+            {/* TODO: "Welcome to <name>" once the snapshot carries the
+                Monitor's name (daniel1 lives in the CLI today). */}
+            <h1>Welcome to your Monitor</h1>
+            <section class="onboarding-section">
+              <h2>Networking</h2>
+              <p>
+                All networking is blocked, except for <code>connections</code>{" "}
+                you add and manage.
+              </p>
+              <p class="onboarding-alt">
+                <button
+                  type="button"
+                  class="link"
+                  disabled={m.busy()}
+                  onClick={() => start("offline")}
+                >
+                  Turn off all networking instead
+                </button>
+              </p>
+            </section>
+            <button
+              class="primary onboarding-start"
+              disabled={m.busy()}
+              onClick={() => start("known_only")}
+            >
+              Start
             </button>
-          </form>
+          </div>
         </Match>
       </Switch>
     </div>

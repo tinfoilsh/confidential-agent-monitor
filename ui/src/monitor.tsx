@@ -543,7 +543,14 @@ function createMonitor() {
     unlock: () =>
       perform(
         (client) =>
-          client.unlock(Number(localStorage.getItem(GENERATION)) || 0),
+          // Rollback floor: never unlock a state older than the newest
+          // generation this browser has seen. Local dev wipes its store,
+          // which looks identical to a rollback, so the floor is off there.
+          client.unlock(
+            import.meta.env.DEV
+              ? 0
+              : Number(localStorage.getItem(GENERATION)) || 0,
+          ),
         "Unlocked",
       ),
     login: (value: string) => {
