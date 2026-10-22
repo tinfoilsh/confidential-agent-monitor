@@ -6,9 +6,6 @@
       "connect": {"title": "Connect and exchange data", "effects": ["read", "send"]}
     },
     "connections": {"": {"tcp": {"hosts": ["*"]}}},
-    "defaults": {"contents": "anyone", "sends": "anyone", "strangers": true},
-    "fields": [
-      {"key": "hosts", "label": "Host patterns (all TCP ports)", "list": true, "default": ["*"], "hint": "example.com, *.example.com, or * for all hosts", "path": ["connections", "", "tcp", "hosts"]}
-    ]
+    "defaults": {"contents": "anyone", "sends": "anyone", "strangers": true}
   }
 }
