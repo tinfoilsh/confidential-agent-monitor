@@ -155,6 +155,32 @@ export function Settings(props: {
           Connection preset editor <span>›</span>
         </a>
       </section>
+      <section class="settings-section settings-danger">
+        <h2>Dangerous</h2>
+        <label class="setting-row">
+          <span>
+            Allow absolutely everything
+            <small>
+              Every identity may reach any host, with no approval. Nothing is
+              checked. The sidebar toggle cannot turn this on.
+            </small>
+          </span>
+          <input
+            type="checkbox"
+            role="switch"
+            checked={owner.networkingOpen(m.view()!)}
+            disabled={m.busy()}
+            onChange={(e) =>
+              void m.edit(
+                owner.edits.setNetworkingOpen(
+                  m.view()!,
+                  e.currentTarget.checked,
+                ),
+              )
+            }
+          />
+        </label>
+      </section>
     </div>
   );
 }

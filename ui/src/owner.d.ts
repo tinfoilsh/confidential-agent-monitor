@@ -493,8 +493,10 @@ export type AccountAnswers = {
   sends: Audience;
 };
 export function networkingOff(view: View): boolean;
+export function networkingOpen(view: View): boolean;
 export const edits: {
   setNetworking(view: View, on: boolean): Change[];
+  setNetworkingOpen(view: View, open: boolean): Change[];
   pairAgent(name: string, key: string): Change[];
   removeAgent(name: string): Change[];
   replaceKey(name: string, key: string): Change[];

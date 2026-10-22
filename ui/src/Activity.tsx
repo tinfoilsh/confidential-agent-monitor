@@ -174,7 +174,13 @@ export function Activity(props: { scope?: string; name?: string }) {
                   ? "Needs your approval"
                   : s === "reviewing"
                     ? "Tinfoil is reviewing"
-                    : s.charAt(0).toUpperCase() + s.slice(1)}
+                    : s === "refused"
+                      ? "Blocked"
+                      : s === "approved"
+                        ? "Approved by you"
+                        : s === "denied"
+                          ? "Denied by you"
+                          : s.charAt(0).toUpperCase() + s.slice(1)}
               </option>
             )}
           </For>
@@ -447,13 +453,26 @@ export function RequestDetail(props: {
       >
         {(r) => {
           const state = createMemo(() => owner.stateAt(r(), m.now()));
+          // Data-flow (confidentiality/integrity) explanations are policy
+          // internals; they live under Advanced details, not here.
+          const dataFlow = (reason: string) =>
+            /this agent has seen|this request can disclose|untrusted/i.test(
+              reason,
+            );
+          const allReasons = createMemo(() => [
+            ...new Set([...(r().deny ?? []), ...owner.reasons(r())]),
+          ]);
+          const dataFlowReasons = createMemo(() =>
+            allReasons().filter(dataFlow),
+          );
           const reasons = createMemo(() =>
-            [...new Set([...(r().deny ?? []), ...owner.reasons(r())])].map(
-              (reason) =>
+            allReasons()
+              .filter((reason) => !dataFlow(reason))
+              .map((reason) =>
                 reason === "this agent may not do this on the account"
                   ? "This identity does not have permission for this action."
                   : reason,
-            ),
+              ),
           );
           const destination = createMemo(() => {
             const http = r().facts.details?.http;
@@ -506,12 +525,6 @@ export function RequestDetail(props: {
                     </Show>
                   </dd>
                 </div>
-                <Show when={destination()}>
-                  <div>
-                    <dt>Destination</dt>
-                    <dd>{destination()}</dd>
-                  </div>
-                </Show>
                 <div>
                   <dt>Requested</dt>
                   <dd>
@@ -574,14 +587,21 @@ export function RequestDetail(props: {
                 }
               >
                 <div class="request-access">
-                  <a class="button" href={href("account", r().facts.account)}>
+                  <a
+                    class="button"
+                    href={
+                      r().invalid
+                        ? href("account", r().facts.account)
+                        : href("agents", r().facts.principal.name)
+                    }
+                  >
                     {r().invalid ? "View connection setup" : "Change access"}
                     <Icon name="arrow" />
                   </a>
                   <p class="muted">
                     {r().invalid
                       ? "Fix the request or client configuration using the error above, then retry."
-                      : "Update this identity’s connection access, then retry the request from your identity."}
+                      : "Change what this identity may do on the connection, then retry."}
                   </p>
                 </div>
               </Show>
@@ -649,7 +669,7 @@ export function RequestDetail(props: {
                 summaryClass="request-technical-toggle"
                 summary={
                   <>
-                    <span>View details</span>
+                    <span>Advanced details</span>
                     <Icon name="arrow" />
                   </>
                 }
@@ -663,6 +683,14 @@ export function RequestDetail(props: {
                           {http().path}
                         </p>
                       )}
+                    </Show>
+                    <Show when={dataFlowReasons().length}>
+                      <h3>Data flow</h3>
+                      <ul>
+                        <For each={dataFlowReasons()}>
+                          {(reason) => <li>{reason}</li>}
+                        </For>
+                      </ul>
                     </Show>
                     <h3>Policy facts</h3>
                     <pre>{JSON.stringify(r().facts, null, 2)}</pre>

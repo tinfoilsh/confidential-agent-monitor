@@ -262,6 +262,13 @@ export function AgentConnectionAccess(props: {
   const [expanded, setExpanded] = createSignal(false);
   const open = () => expanded() && entry().level !== "off";
   const id = createUniqueId();
+  // Exceptions: saved approvals for THIS identity on THIS connection — a
+  // narrow "yes" carved out of the access level above.
+  const exceptions = createMemo(() =>
+    Object.entries(
+      m.view()!.config.identities?.[props.name]?.rules ?? {},
+    ).filter(([, rule]) => rule.account === props.account),
+  );
   return (
     <div class="acct">
       <div class="row">
@@ -292,6 +299,12 @@ export function AgentConnectionAccess(props: {
           </b>
           <Show when={entry().level !== "off" && entry().overrides}>
             <small class="muted">{entry().overrides} overrides</small>
+          </Show>
+          <Show when={exceptions().length}>
+            <small class="muted">
+              {exceptions().length}{" "}
+              {exceptions().length === 1 ? "exception" : "exceptions"}
+            </small>
           </Show>
         </button>
         <span
@@ -345,6 +358,39 @@ export function AgentConnectionAccess(props: {
                 nodes={entry().actions}
               />
             </div>
+            <Show when={exceptions().length}>
+              <div class="access-exceptions">
+                <h4>Exceptions</h4>
+                <For each={exceptions()}>
+                  {([id, rule]) => (
+                    <div class="access-exception">
+                      <span>
+                        <strong>{owner.ruleTitle(m.view()!, rule)}</strong>
+                        <small>
+                          <For
+                            each={Object.entries(rule.scope ?? {})}
+                            fallback="Any request"
+                          >
+                            {([key, value]) => {
+                              const text = `${key}: ${typeof value === "string" ? value : JSON.stringify(value)}`;
+                              return <code title={text}>{text}</code>;
+                            }}
+                          </For>
+                        </small>
+                      </span>
+                      <button
+                        disabled={m.busy()}
+                        onClick={() =>
+                          void m.edit(owner.edits.removeRule(props.name, id))
+                        }
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                </For>
+              </div>
+            </Show>
           </Show>
         </div>
       </div>

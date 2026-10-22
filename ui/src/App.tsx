@@ -251,7 +251,6 @@ function Shell() {
                 </div>
                 <NavItem key="activity" />
                 <NavItem key="accounts" />
-                <NavItem key="rules" />
               </div>
               <NavItem key="settings" />
             </nav>

@@ -817,7 +817,7 @@ details[open] > summary > .collection-chevron {
 }
 .request-context {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px 32px;
   margin: 0;
 }
@@ -2800,4 +2800,43 @@ form > .credential-actions {
 }
 :root[data-theme="dark"] .connector-icon .dark-icon {
   display: block;
+}
+
+.settings-danger {
+  border: 1px solid #f8717166;
+  border-radius: 8px;
+  padding: 16px;
+}
+.settings-danger h2 {
+  color: #f87171;
+}
+
+.access-exceptions {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--edge);
+}
+.access-exceptions h4 {
+  margin: 0 0 8px;
+  font-size: var(--font-detail);
+  font-weight: 500;
+  color: var(--muted);
+}
+.access-exception {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+}
+.access-exception > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.access-exception small {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }

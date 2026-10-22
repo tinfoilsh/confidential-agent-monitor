@@ -521,28 +521,28 @@ export function reviewStatus(r) {
     (r.state === "approved" || r.state === "denied")
   )
     return `${r.state === "approved" ? "Approved" : "Denied"} by ${!r.savingDecision && last?.by === "tinfoil" ? "Tinfoil" : "you"}`;
-  return r.state.charAt(0).toUpperCase() + r.state.slice(1);
+  // Automatic outcomes read as such; "Approved/Denied by you" above are the
+  // human ones.
+  return (
+    { allowed: "Allowed", refused: "Blocked", approved: "Approved", denied: "Denied" }[r.state] ??
+    r.state.charAt(0).toUpperCase() + r.state.slice(1)
+  );
 }
 export const pendingSoonest = (records) =>
   records
     .filter((r) => r.state === "pending")
     .sort((a, b) => new Date(a.expires) - new Date(b.expires));
+// Pending first (soonest to expire on top), then everything else newest
+// first. Expired requests no longer float: they sit where they happened.
 export function ordered(records, dismissed = []) {
-  const hidden = new Set(dismissed);
-  const priority = (r) =>
-    needsOwner(r)
-      ? 0
-      : r.state === "pending"
-        ? 1
-        : r.state === "expired" && !hidden.has(r.id) && !r.segment
-          ? 2
-          : 3;
+  void dismissed;
+  const priority = (r) => (needsOwner(r) ? 0 : r.state === "pending" ? 1 : 2);
   return [...records].sort(
     (a, b) =>
       priority(a) - priority(b) ||
       (a.state === "pending" && b.state === "pending"
         ? new Date(a.expires) - new Date(b.expires)
-        : 0),
+        : new Date(b.time) - new Date(a.time)),
   );
 }
 export function timeLeft(r, now = Date.now()) {
@@ -1377,6 +1377,13 @@ const OFFLINE_RULE =
   'package sentinel\n\ndeny contains "Network access is disabled."\n';
 const KNOWN_ONLY_RULE =
   'package sentinel\n\ndeny contains "This request has no recognized policy operation." if input.facts.operation == null\n';
+// "Open" = onboarding's open posture: every raw-TCP catch-all account at
+// allow for everyone, no deny rule, and the whole internet in allow_networks.
+export const networkingOpen = (view) =>
+  (view.config.allow_networks ?? []).includes("0.0.0.0/0") &&
+  !Object.values(view.config.policies ?? {}).some((p) =>
+    p.includes("package sentinel\n\ndeny contains"),
+  );
 export const networkingOff = (view) =>
   Object.values(view.config.policies ?? {}).some((p) =>
     p.includes('deny contains "Network access is disabled."'),
@@ -1384,6 +1391,31 @@ export const networkingOff = (view) =>
 
 // Each edit returns the source changes for POST /policy/edits.
 export const edits = {
+  setNetworkingOpen: (view, open) => {
+    const policies = view.config.policies ?? {};
+    const rule =
+      Object.keys(policies).find((k) =>
+        /deny contains "(Network access is disabled|This request has no recognized policy operation)/.test(
+          policies[k],
+        ),
+      ) ?? "network-default";
+    const tcpAccounts = Object.entries(accounts(view))
+      .filter(([, a]) => a.preset === "tcp")
+      .map(([name]) => name);
+    return [
+      {
+        path: ["allow_networks"],
+        value: open ? ["0.0.0.0/0", "::/0"] : [],
+      },
+      open
+        ? { path: ["policies", rule], delete: true }
+        : { path: ["policies", rule], value: KNOWN_ONLY_RULE },
+      ...tcpAccounts.map((name) => ({
+        path: ["default_access", name],
+        value: { level: open ? "allow" : "off" },
+      })),
+    ];
+  },
   setNetworking: (view, on) => {
     const policies = view.config.policies ?? {};
     const name =
