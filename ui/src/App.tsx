@@ -45,6 +45,10 @@ const Rules = lazy(() =>
   import("./Settings").then((m) => ({ default: m.Rules })),
 );
 
+// Local dev only: keep showing the welcome page even after onboarding, while
+// it is being designed. Stripped from production builds.
+const DEV_FORCE_ONBOARDING = import.meta.env.DEV && false;
+
 const sections: Record<string, [string, string]> = {
   activity: [
     "Activity",
@@ -181,7 +185,12 @@ function Shell() {
   return (
     <>
       <Show
-        when={m.view() && !m.locked() && owner.onboarded(m.view()!)}
+        when={
+          m.view() &&
+          !m.locked() &&
+          !DEV_FORCE_ONBOARDING &&
+          owner.onboarded(m.view()!)
+        }
         fallback={<Gate />}
       >
         <div id="app" classList={{ "navigation-open": mobile() }}>
@@ -445,14 +454,19 @@ function Gate() {
     // Local dev (bun run dev) only: a prefilled passphrase so the dev
     // server unlocks with one click. Stripped from production builds.
     [key, setKey] = createSignal(import.meta.env.DEV ? "testtesttesttest" : ""),
-    // Onboarding writes the chosen posture; the paid-inference default is
-    // unchanged (on) and no longer asked about here.
-    start = (preset: owner.PolicyPreset) =>
+    // Onboarding: networking is on (known connections only) unless the
+    // owner switches it off here; Start commits the choice. The
+    // paid-inference default is unchanged (on) and no longer asked about.
+    [networkingOff, setNetworkingOff] = createSignal(false),
+    start = () =>
       m.perform(
         (client) =>
-          client.onboard(m.view()!, preset, undefined, {
-            allowPaidInference: true,
-          }),
+          client.onboard(
+            m.view()!,
+            networkingOff() ? "offline" : "known_only",
+            undefined,
+            { allowPaidInference: true },
+          ),
         "Policy saved",
       );
   return (
@@ -511,32 +525,68 @@ function Gate() {
             <p role="alert">{m.error()}</p>
           </Show>
         </Match>
-        <Match when={m.view() && !owner.onboarded(m.view()!)}>
+        <Match
+          when={
+            m.view() && (DEV_FORCE_ONBOARDING || !owner.onboarded(m.view()!))
+          }
+        >
           <div class="onboarding">
             {/* TODO: "Welcome to <name>" once the snapshot carries the
                 Monitor's name (daniel1 lives in the CLI today). */}
-            <h1>Welcome to your Monitor</h1>
-            <section class="onboarding-section">
-              <h2>Networking</h2>
+            <h1>Welcome to your Tinfoil Monitor</h1>
+            <section
+              class="onboarding-section"
+              classList={{ "is-off": networkingOff() }}
+            >
+              <h2>
+                Networking
+                <Show when={networkingOff()}>
+                  <span class="onboarding-off">
+                    <Icon name="close" /> off
+                  </span>
+                </Show>
+              </h2>
               <p>
-                All networking is blocked, except for <code>connections</code>{" "}
-                you add and manage.
+                <Show
+                  when={networkingOff()}
+                  fallback={
+                    <>
+                      All networking through the monitor is blocked, except for{" "}
+                      <code>connections</code> you add and manage.
+                    </>
+                  }
+                >
+                  All networking is blocked. Nothing gets out.
+                </Show>
               </p>
               <p class="onboarding-alt">
                 <button
                   type="button"
                   class="link"
                   disabled={m.busy()}
-                  onClick={() => start("offline")}
+                  onClick={() => setNetworkingOff(!networkingOff())}
                 >
-                  Turn off all networking instead
+                  {networkingOff()
+                    ? "Allow connections instead"
+                    : "Turn off all networking instead"}
                 </button>
               </p>
+            </section>
+            <section class="onboarding-section">
+              <h2>Identities</h2>
+              <p>
+                The things you connect the Monitor to: this computer, a sandbox,
+                or something else.
+              </p>
+            </section>
+            <section class="onboarding-section">
+              <h2>Activity</h2>
+              <p>Everything the Monitor sees shows up here, surfaced to you.</p>
             </section>
             <button
               class="primary onboarding-start"
               disabled={m.busy()}
-              onClick={() => start("known_only")}
+              onClick={start}
             >
               Start
             </button>

@@ -2114,9 +2114,23 @@ td {
   margin: 28px 0 32px;
 }
 .onboarding-section h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin: 0 0 10px;
   font-size: 17px;
   font-weight: 600;
+}
+.onboarding-off {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--danger, #c0392b);
+}
+.onboarding-section.is-off p:first-of-type {
+  color: var(--muted);
 }
 .onboarding-section p {
   margin: 0;
