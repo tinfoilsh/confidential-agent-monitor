@@ -61,15 +61,16 @@ func (s *Server) Run(ctx context.Context, e *connector.Env, serve func(context.C
 }
 
 func (s *Server) Serve(stream *connector.Stream, e *connector.Env) {
-	if stream.Host != "" || stream.Port != 80 {
+	if stream.Host != "" {
 		s.http.ServeWithTransport(stream, e, apiTransport{RoundTripper: s.transport})
 		return
 	}
 	// The existing .monitor route has already authenticated and selected this
-	// connection. Parse the private HTTP request, then gate its upstream meaning.
+	// connection. Parse the private HTTP(S) request, then gate its upstream meaning.
+	privateHost := stream.Name + ".monitor"
 	local := *stream
 	local.Gate = func(ctx context.Context, request connector.Request) error {
-		if r, ok := request.(*web.Request); ok && r.Invalid == "" {
+		if r, ok := request.(*web.Request); ok && r.Invalid == "" && r.HTTP.Host == privateHost {
 			if r.HTTP.Path != "/v1" && !strings.HasPrefix(r.HTTP.Path, "/v1/") {
 				r.Invalid = "Tinfoil API requests must use a /v1 path"
 			} else {
@@ -79,8 +80,9 @@ func (s *Server) Serve(stream *connector.Stream, e *connector.Env) {
 		}
 		return stream.Gate(ctx, request)
 	}
-	h := &web.HTTP{Hosts: []string{stream.Name + ".monitor"}}
-	h.ServeWithTransport(&local, e, apiTransport{RoundTripper: s.transport, enclave: s.Enclave, key: s.Secrets["TINFOIL_API_KEY"]})
+	h := *s.http
+	h.Hosts = []string{privateHost}
+	h.ServeWithTransport(&local, e, apiTransport{RoundTripper: s.transport, privateHost: privateHost, enclave: s.Enclave, key: s.Secrets["TINFOIL_API_KEY"]})
 }
 
 // Control uses the same attested transport and credential handle for Monitor's

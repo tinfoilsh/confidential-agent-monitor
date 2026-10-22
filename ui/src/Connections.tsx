@@ -881,22 +881,6 @@ function Connection(props: { name: string; active: boolean }) {
               <ConnectionForm name={props.name} />
               <Show when={tinfoil().length}>
                 <div class="agent-setup-body">
-                  <h3>Use Tinfoil from your sandbox</h3>
-                  <p>
-                    These private addresses use your sandbox’s encrypted SSH
-                    connection to Monitor. Monitor checks the actor’s access,
-                    verifies Tinfoil’s enclave attestation, and supplies the
-                    saved Tinfoil API key when forwarding allowed requests.
-                  </p>
-                  <p>
-                    Each hostname uses the connection’s name. Renaming the
-                    connection changes its address; copy the URL shown below.
-                  </p>
-                  <p>
-                    Your client does not need the Tinfoil API key, a
-                    substitution placeholder, or a Monitor TLS certificate for
-                    these URLs.
-                  </p>
                   <For each={tinfoil()}>
                     {(setup) => (
                       <div class="agent-setup-item">
@@ -920,11 +904,6 @@ function Connection(props: { name: string; active: boolean }) {
                             label={`Copy ${setup.connection} URL`}
                           />
                         </div>
-                        <p>
-                          {setup.mcp
-                            ? "Review and approve the tool definitions above, then add this URL to your client's MCP servers using Streamable HTTP. New or changed definitions require review when Monitor discovers them."
-                            : "Set your client's API base URL to this address. If it requires an API-key value, enter monitor. For Anthropic-compatible clients, use the same address without /v1."}
-                        </p>
                       </div>
                     )}
                   </For>

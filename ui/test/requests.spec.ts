@@ -40,18 +40,18 @@ test("Tinfoil setup uses connection names for private inference and MCP URLs", (
     },
   } as unknown as View;
   expect(tinfoilSetup(view, "bob")).toEqual([
-    { connection: "bob", mcp: false, url: "http://bob.monitor/v1" },
+    { connection: "bob", mcp: false, url: "https://bob.monitor/v1" },
     {
       connection: "bob-websearch",
       mcp: true,
-      url: "http://bob-websearch.monitor/mcp",
+      url: "https://bob-websearch.monitor/mcp",
     },
   ]);
   expect(tinfoilSetup(view, "team")).toEqual([
     {
       connection: "team-inference",
       mcp: false,
-      url: "http://team-inference.monitor/v1",
+      url: "https://team-inference.monitor/v1",
     },
   ]);
   expect(tinfoilSetup(view, "missing")).toEqual([]);

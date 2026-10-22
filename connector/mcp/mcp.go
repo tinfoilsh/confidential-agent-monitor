@@ -2,10 +2,12 @@ package mcp
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"maps"
+	"net"
 	"net/http"
 	"net/url"
 	"slices"
@@ -86,8 +88,12 @@ func (m *Server) RunWithClient(ctx context.Context, client *http.Client, serve f
 
 // Serve builds a server per request, so each call is screened by the stream's gate.
 // SSH admission authenticates these streams; worker transport addresses are internal.
-func (m *Server) Serve(s *connector.Stream, _ *connector.Env) {
-	connector.ServeHTTP(s, s, sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server {
+func (m *Server) Serve(s *connector.Stream, e *connector.Env) {
+	var c net.Conn = s
+	if s.Port == 443 {
+		c = tls.Server(s, e.TLS)
+	}
+	connector.ServeHTTP(s, c, sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server {
 		server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: sentinel.Version}, &sdk.ServerOptions{Instructions: m.upstream.Instructions})
 		m.upstream.Register(server, "", func(ctx context.Context, t *sdk.Tool, args json.RawMessage) error {
 			return s.Gate(ctx, &Request{Tool: t.Name, Arguments: args, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint})

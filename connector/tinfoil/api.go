@@ -14,12 +14,13 @@ import (
 // passes policy. Every upstream request still uses the attested transport.
 type apiTransport struct {
 	http.RoundTripper
-	enclave string
-	key     *credential.Value
+	privateHost string
+	enclave     string
+	key         *credential.Value
 }
 
 func (t apiTransport) RoundTrip(r *http.Request) (*http.Response, error) {
-	if t.enclave != "" {
+	if t.privateHost != "" && r.URL.Host == t.privateHost {
 		// Private .monitor requests need no client credential. Resolve the owner's
 		// key only after the request has passed the normal per-operation gate.
 		key, err := t.key.Value(r.Context())

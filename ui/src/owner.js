@@ -1202,7 +1202,7 @@ export function tinfoilSetup(view, account) {
         {
           connection,
           mcp,
-          url: `http://${connection}.monitor/${mcp ? "mcp" : "v1"}`,
+          url: `https://${connection}.monitor/${mcp ? "mcp" : "v1"}`,
         },
       ];
     },
