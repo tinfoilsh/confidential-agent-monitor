@@ -204,7 +204,7 @@ export type OwnerApi = {
     view: View,
     preset: PolicyPreset,
     signal?: AbortSignal,
-    options?: { allowPaidInference?: boolean },
+    options?: { allowPaidInference?: boolean; tinfoilApiKey?: string },
   ): Promise<View>;
   edit(changes: Change[], signal?: AbortSignal): Promise<View>;
   decide(id: string, decision: Decision, signal?: AbortSignal): Promise<null>;

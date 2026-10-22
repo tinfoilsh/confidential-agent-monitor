@@ -47,13 +47,13 @@ export function Agents(props: { expanded?: string }) {
   return (
     <>
       <div id="toolbar">
-        <Search label="Search actors" value={query()} onInput={setQuery} />
+        <Search label="Search agents" value={query()} onInput={setQuery} />
       </div>
       <For
         each={[
           ["sandboxes", "Sandboxes"],
           ["devices", "Devices"],
-          ["agents", "Other actors"],
+          ["agents", "Other agents"],
         ]}
       >
         {([kind, title]) => {
@@ -115,17 +115,17 @@ export function Agents(props: { expanded?: string }) {
       <Show when={!names().length}>
         <div class="resource-list">
           <Empty
-            title={query() ? "No matching actors" : "No actors yet"}
+            title={query() ? "No matching agents" : "No agents yet"}
             action={
               <Show when={!query()}>
                 <a class="button primary" href="#pair">
                   <Icon name="plus" />
-                  Add actor
+                  Add agent
                 </a>
               </Show>
             }
           >
-            Add an actor with its SSH public key to configure access.
+            Add an agent with its SSH public key to configure access.
             <Show when={!query()}>
               <br />
               If your sandbox is missing, run{" "}
@@ -144,9 +144,9 @@ export function AddAgent() {
   const submit = async (event: SubmitEvent) => {
     event.preventDefault();
     try {
-      if (!name().trim()) throw new Error("Enter an actor name.");
+      if (!name().trim()) throw new Error("Enter an agent name.");
       if (m.view()!.config.identities?.[name().trim()])
-        throw new Error("An actor already uses this name.");
+        throw new Error("An agent already uses this name.");
       await m.edit(
         owner.edits.pairAgent(name().trim(), key()),
         href("agents", name().trim()),
@@ -158,7 +158,7 @@ export function AddAgent() {
   return (
     <form onSubmit={submit} class="connection-fields">
       <label>
-        Actor name
+        Agent name
         <input
           required
           value={name()}
@@ -177,7 +177,7 @@ export function AddAgent() {
         />
       </label>
       <button class="primary" disabled={m.busy()}>
-        Add actor
+        Add agent
       </button>
     </form>
   );
@@ -547,7 +547,7 @@ function AgentSettings(props: { name: string }) {
               <section>
                 <h2>Replace SSH key</h2>
                 <p>
-                  Use this after recreating the sandbox. The actor starts clean.
+                  Use this after recreating the sandbox. The agent starts clean.
                 </p>
                 <form
                   onSubmit={async (e) => {
@@ -580,14 +580,14 @@ function AgentSettings(props: { name: string }) {
               </section>
               <Show when={copySources().length}>
                 <section>
-                  <h2>Copy settings from another actor</h2>
+                  <h2>Copy settings from another agent</h2>
                   <div class="agent-copy-settings">
                     <select
                       aria-label="Copy settings from"
                       value={copyFrom()}
                       onChange={(e) => setCopyFrom(e.currentTarget.value)}
                     >
-                      <option value="">Choose actor</option>
+                      <option value="">Choose agent</option>
                       <For each={copySources()}>
                         {(name) => <option>{name}</option>}
                       </For>
@@ -611,21 +611,21 @@ function AgentSettings(props: { name: string }) {
               </Show>
               <section class="agent-remove">
                 <div>
-                  <h2>Remove actor</h2>
-                  <p>Revokes this actor’s access to the monitor.</p>
+                  <h2>Remove agent</h2>
+                  <p>Revokes this agent’s access to the monitor.</p>
                 </div>
                 <button
                   class="danger"
                   disabled={m.busy()}
                   onClick={async () => {
                     if (
-                      confirm(`Remove actor ${props.name}?`) &&
+                      confirm(`Remove agent ${props.name}?`) &&
                       (await m.edit(owner.edits.removeAgent(props.name)))
                     )
                       location.hash = "#agents";
                   }}
                 >
-                  Remove actor
+                  Remove agent
                 </button>
               </section>
             </div>

@@ -2085,30 +2085,26 @@ td {
   margin-bottom: 0;
 }
 .onboarding h1 {
-  margin: 0 0 12px;
-  font-size: 24px;
+  margin: 16px 0 8px;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.04em;
   line-height: 1.3;
+  outline: none;
 }
-.onboarding-brand {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 28px;
-  color: var(--text);
-  font-size: var(--font-body);
+.onboarding-heading {
+  margin: 0 0 28px;
+  text-align: center;
 }
-.onboarding-brand img {
-  display: block;
-  width: 112px;
-  height: 29px;
-  filter: invert(1);
+.onboarding-heading > .connector-icon {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto;
 }
-.onboarding-brand > span {
-  border-left: 1px solid var(--edge);
-  padding-left: 14px;
-}
-:root[data-theme="dark"] .onboarding-brand img {
-  filter: none;
+.onboarding-heading p {
+  max-width: 36ch;
+  margin: 0 auto;
+  color: var(--muted);
 }
 .onboarding fieldset {
   display: grid;
@@ -2120,6 +2116,67 @@ td {
 .onboarding legend {
   margin-bottom: 10px;
   font-weight: 500;
+}
+.onboarding .onboarding-key {
+  gap: 10px;
+  margin: 28px 0 24px;
+}
+.onboarding-key-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.onboarding-key-label label {
+  margin: 0;
+}
+.onboarding-key-label a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-detail);
+}
+.onboarding-key input {
+  min-height: 48px;
+  border-radius: 8px;
+}
+.onboarding-key input::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+.onboarding-key-help {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--font-detail);
+}
+.onboarding-key-help .icon {
+  margin-top: 2px;
+}
+.onboarding-key .icon {
+  width: 14px;
+  height: 14px;
+}
+.onboarding-note {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: var(--font-detail);
+}
+.onboarding > .primary {
+  margin-top: 0;
+}
+.onboarding .policy-choice + .primary {
+  margin-top: 20px;
+}
+.onboarding-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.onboarding-back .icon {
+  transform: rotate(180deg);
 }
 .onboarding .policy-choice {
   display: flex;

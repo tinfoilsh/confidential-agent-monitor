@@ -34,7 +34,7 @@ export const POLICY_PRESETS = {
   },
   offline: {
     title: "Offline",
-    description: "Block actor connections to all services and sandboxes.",
+    description: "Block agent connections to all services and sandboxes.",
   },
 };
 // A new preset starts as one bearer-token API; the owner sets its origin, slots and operations.
@@ -246,7 +246,12 @@ export function ownerApi(request, generation, base = "") {
         signal,
       ),
     unlock,
-    onboard: (view, preset, signal, { allowPaidInference = true } = {}) =>
+    onboard: (
+      view,
+      preset,
+      signal,
+      { allowPaidInference = true, tinfoilApiKey } = {},
+    ) =>
       onboarded(view)
         ? Promise.resolve(view)
         : snapshot(
@@ -254,7 +259,7 @@ export function ownerApi(request, generation, base = "") {
             "/policy/edits",
             {
               changes: [
-                ...onboardingChanges(view, preset),
+                ...onboardingChanges(view, preset, tinfoilApiKey),
                 ...edits.setPaidInference(allowPaidInference),
               ],
               generation: view.generation,
@@ -669,9 +674,9 @@ export function effectSettings(view, { agent, account } = {}, effects = []) {
   const layers = [["Global settings", view.config.effects]];
   if (account)
     layers.push([`Account ${account}`, accounts(view)[account]?.effects]);
-  if (agent) layers.push([`Actor ${agent}`, id.effects]);
+  if (agent) layers.push([`Agent ${agent}`, id.effects]);
   if (agent && account)
-    layers.push([`Actor ${agent} on ${account}`, pair?.effects]);
+    layers.push([`Agent ${agent} on ${account}`, pair?.effects]);
   return Object.entries(view.vocabulary)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([effect, metadata]) => {
@@ -1297,7 +1302,7 @@ export function presetText(v, path = "", indent = "") {
 
 // The starting choice only produces the initial policy. Persist completion and
 // the effective configuration, without retaining a preset to reapply later.
-function onboardingChanges(view, preset) {
+function onboardingChanges(view, preset, tinfoilApiKey) {
   if (!Object.hasOwn(POLICY_PRESETS, preset))
     throw new Error("Choose a policy preset.");
   const connections = new Set(
@@ -1367,6 +1372,32 @@ function onboardingChanges(view, preset) {
         }),
       );
     }
+  if (tinfoilApiKey !== undefined) {
+    const key = tinfoilApiKey.trim();
+    if (!key) throw new Error("Enter your Tinfoil API key, or skip this step.");
+    const catalog = view.presets.tinfoil;
+    let name = "tinfoil";
+    for (
+      let i = 2;
+      Object.hasOwn(accounts(view), name) ||
+      Object.keys(catalog.connections).some((key) =>
+        connections.has(connectionName(name, key)),
+      );
+      i++
+    )
+      name = `tinfoil-${i}`;
+    changes.push(
+      ...edits.addAccount(view, "tinfoil", {
+        name,
+        values: { TINFOIL_API_KEY: key },
+        answers: catalog.defaults,
+      }),
+      {
+        path: ["default_access", name],
+        value: { level: preset === "offline" ? "off" : "allow" },
+      },
+    );
+  }
   return changes;
 }
 
@@ -1625,8 +1656,8 @@ export function integrationGuide(view, page, href) {
     {
       start: `<h1>Get connected</h1><ol>
         <li>Add your apps in ${link(["accounts"], "Connections")}.</li>
-        <li>${link(["pair"], "Add your device's SSH key")}, then grant access in ${link(["agents"], "Actors")}.</li>
-        <li>Set up the SSH alias <code>monitor</code> with your server address, private key, and the host key in actor <b>Settings</b>.</li>
+        <li>${link(["pair"], "Add your device's SSH key")}, then grant access in ${link(["agents"], "Agents")}.</li>
+        <li>Set up the SSH alias <code>monitor</code> with your server address, private key, and the host key in agent <b>Settings</b>.</li>
       </ol>
       ${code("integration-check", "Check your connections", "monitor connections")}
       <details><summary>Install the client</summary><p>From the Monitor repository, with Python 3.11+ and OpenSSH installed:</p>
@@ -1637,7 +1668,7 @@ export function integrationGuide(view, page, href) {
       shell: `<h1>Monitor shell</h1><p>Use your connections in a local terminal session.</p>
       ${code("integration-shell", "Open a shell", "monitor shell")}
       <p>Run commands as usual. Type <code>exit</code> to leave. ${link(["integrations", "start"], "Setup")}</p>`,
-      mcp: `<h1>MCP connections</h1><p>Grant your actor access to a ready ${link(["accounts"], "MCP connection")}, then run:</p>
+      mcp: `<h1>MCP connections</h1><p>Grant your agent access to a ready ${link(["accounts"], "MCP connection")}, then run:</p>
       ${code("integration-mcp-serve", "Start MCP", "monitor mcp serve")}
       <p>Add the printed URLs to your MCP client using <b>Streamable HTTP</b>. Keep the command running. ${link(["integrations", "start"], "Setup")}</p>`,
     }[page] ?? ""

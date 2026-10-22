@@ -148,7 +148,7 @@ export function Connections(props: { expanded?: string }) {
                 </Show>
               }
             >
-              Add a connection to give your actors access to a service.
+              Add a connection to give your agents access to a service.
             </Empty>
           }
         >
@@ -172,17 +172,17 @@ export function Connections(props: { expanded?: string }) {
                       {owner.presetOf(m.view()!, name).title}
                     </span>
                     <span class="resource-meta">
-                      <span
-                        class={`badge${status().state === "connecting" ? "" : ` status-${status().state === "error" ? "denied" : status().blocked ? "pending" : "approved"}`}`}
-                      >
-                        {status().blocked
-                          ? `${status().blocked} tools await review`
-                          : status().state === "error"
-                            ? "Connection error"
-                            : status().state === "connecting"
-                              ? "Connecting…"
-                              : "Configured"}
-                      </span>
+                      <Show when={status().state}>
+                        <span
+                          class={`badge${status().state === "connecting" ? "" : ` status-${status().state === "error" ? "denied" : "pending"}`}`}
+                        >
+                          {status().blocked
+                            ? `${status().blocked} tools await review`
+                            : status().state === "error"
+                              ? "Connection error"
+                              : "Connecting…"}
+                        </span>
+                      </Show>
                     </span>
                     <span class="collection-chevron">
                       <Icon name="arrow" />
@@ -510,7 +510,7 @@ export function AddConnection(props: { preset: string }) {
           />
           <p class="muted field-help">Leave blank to configure later.</p>
           <label>
-            Actor
+            Agent
             <select
               value={agent()}
               onChange={(e) => setAgent(e.currentTarget.value)}
@@ -737,7 +737,7 @@ function ConnectionForm(props: { name: string }) {
 function Connection(props: { name: string; active: boolean }) {
   const m = useMonitor(),
     account = () => m.view()!.config.accounts?.[props.name];
-  const actors = () =>
+  const agents = () =>
     Object.keys(m.view()!.config.identities ?? {}).filter(
       (name) => !owner.isDevice(name),
     );
@@ -816,7 +816,7 @@ function Connection(props: { name: string; active: boolean }) {
               <span class="connection-advanced-text">
                 <span class="connection-advanced-heading">
                   <strong class="connection-advanced-title">
-                    Actor access
+                    Agent access
                   </strong>
                   <span class="count">
                     {
@@ -831,9 +831,9 @@ function Connection(props: { name: string; active: boolean }) {
                 </span>
                 <small>Who can use this connection</small>
               </span>
-              <Show when={actors().length}>
+              <Show when={agents().length}>
                 <a class="button" href="#pair">
-                  Add actor
+                  Add agent
                 </a>
               </Show>
             </>
@@ -841,7 +841,7 @@ function Connection(props: { name: string; active: boolean }) {
         >
           {() => (
             <div class="connection-advanced-content">
-              <For each={actors()} fallback={<a href="#pair">Add an actor</a>}>
+              <For each={agents()} fallback={<a href="#pair">Add an agent</a>}>
                 {(name) => (
                   <AgentConnectionAccess
                     name={name}
@@ -872,7 +872,7 @@ function Connection(props: { name: string; active: boolean }) {
                   <Icon name="arrow" />
                 </span>
               </span>
-              <small>Credentials and actor setup</small>
+              <small>Credentials and agent setup</small>
             </span>
           }
         >
@@ -923,7 +923,7 @@ function Connection(props: { name: string; active: boolean }) {
                               {setup.connection} · {setup.credential}
                             </h3>
                           </Show>
-                          <label for={id}>Actor placeholder</label>
+                          <label for={id}>Agent placeholder</label>
                           <div class="secret-input">
                             <input
                               ref={input}
@@ -1001,7 +1001,7 @@ function Connection(props: { name: string; active: boolean }) {
                             Save this in <code>~/.codex/config.toml</code>, then
                             run Codex in your Monitor-connected sandbox or with{" "}
                             <code>monitor run -- codex</code>. Choose a model
-                            available to your ChatGPT account. Grant your actor
+                            available to your ChatGPT account. Grant your agent
                             access to this connection and review pending
                             requests in Activity.
                           </p>

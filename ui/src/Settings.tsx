@@ -73,7 +73,7 @@ export function Settings(props: {
         <details class="settings-help">
           <summary>How defaults work</summary>
           <p>
-            These defaults apply to all actors. Connections and actors can
+            These defaults apply to all agents. Connections and agents can
             override them. Select an active permission again to use the
             inherited setting.
           </p>
@@ -94,8 +94,8 @@ export function Settings(props: {
                   : "Integrity"}
                 <small>
                   {lattice === "confidentiality"
-                    ? "Restrict where actors can send private data."
-                    : "Restrict sensitive actions after actors read untrusted content."}
+                    ? "Restrict where agents can send private data."
+                    : "Restrict sensitive actions after agents read untrusted content."}
                 </small>
               </span>
               <input
@@ -114,7 +114,7 @@ export function Settings(props: {
         <details class="settings-help">
           <summary>About guardrails</summary>
           <p>
-            Applies to all actors and connector requests. Confidentiality is on
+            Applies to all agents and connector requests. Confidentiality is on
             by default; integrity is off by default.
           </p>
           <p>
@@ -452,7 +452,7 @@ export function PresetEditor(props: { name: string; request?: string }) {
                     </ul>
                     <p>
                       Review the request and its settings, then retry from your
-                      actor after saving corrections.
+                      agent after saving corrections.
                     </p>
                     <p>
                       <a href={href("request", record().id)}>Back to request</a>{" "}

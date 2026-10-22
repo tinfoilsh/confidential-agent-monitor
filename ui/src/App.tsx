@@ -48,15 +48,15 @@ const Rules = lazy(() =>
 const sections: Record<string, [string, string]> = {
   activity: [
     "Activity",
-    "Review requests and follow what your actors are doing.",
+    "Review requests and follow what your agents are doing.",
   ],
   agents: [
-    "Actors",
+    "Agents",
     "Manage sandboxes, devices, and the actions they can take.",
   ],
   accounts: [
     "Connections",
-    "Connect services and control how actors use their data.",
+    "Connect services and control how agents use their data.",
   ],
   rules: ["Saved rules", "Review permissions saved from request approvals."],
   settings: ["Settings", "Manage guardrails, policy, and monitor preferences."],
@@ -241,7 +241,7 @@ function Shell() {
                   <Show when={section() === "agents"}>
                     <a class="button primary" href="#pair">
                       <Icon name="plus" />
-                      Add actor
+                      Add agent
                     </a>
                   </Show>
                   <Show when={kind() === "accounts" || kind() === "account"}>
@@ -400,14 +400,14 @@ function CreationDialog(props: { path: string; close: () => void }) {
               <ConnectorIcon preset={preset()} />
             </Show>
             {kind() === "pair"
-              ? "Add an actor"
+              ? "Add an agent"
               : kind() === "catalog"
                 ? "Add connection"
                 : "Add " + (m.view()!.presets[preset()]?.title ?? "connection")}
           </h1>
           <Show when={kind() === "pair"}>
             <p id="creation-description">
-              Give an actor access using its SSH public key.
+              Give an agent access using its SSH public key.
             </p>
           </Show>
         </div>
@@ -444,7 +444,28 @@ function Gate() {
   const m = useMonitor(),
     [key, setKey] = createSignal(""),
     [preset, setPreset] = createSignal<owner.PolicyPreset>("known_only"),
-    [paid, setPaid] = createSignal(true);
+    [paid, setPaid] = createSignal(true),
+    [step, setStep] = createSignal<"policy" | "tinfoil">("policy"),
+    [tinfoilKey, setTinfoilKey] = createSignal("");
+  let heading!: HTMLHeadingElement, tinfoilInput!: HTMLInputElement;
+  const goToStep = (next: "policy" | "tinfoil") => {
+    setStep(next);
+    (next === "tinfoil" ? tinfoilInput : heading).focus();
+  };
+  const finish = async (tinfoilApiKey?: string) => {
+    if (m.busy()) return;
+    if (
+      await m.perform(
+        (client) =>
+          client.onboard(m.view()!, preset(), undefined, {
+            allowPaidInference: paid(),
+            tinfoilApiKey,
+          }),
+        "Monitor set up",
+      )
+    )
+      setTinfoilKey("");
+  };
   return (
     <div id="gate">
       <Switch
@@ -506,55 +527,131 @@ function Gate() {
             class="onboarding"
             onSubmit={(e) => {
               e.preventDefault();
-              void m.perform(
-                (client) =>
-                  client.onboard(m.view()!, preset(), undefined, {
-                    allowPaidInference: paid(),
-                  }),
-                "Policy saved",
-              );
+              if (step() === "policy") goToStep("tinfoil");
+              else void finish(tinfoilKey());
             }}
           >
-            <h1>Set up your monitor</h1>
-            <p>Choose how actors can connect to the outside world.</p>
-            <fieldset disabled={m.busy()}>
-              <legend>Network policy</legend>
-              <For each={Object.entries(owner.POLICY_PRESETS)}>
-                {([value, option]) => (
-                  <label class="policy-choice">
-                    <input
-                      type="radio"
-                      name="network-policy"
-                      value={value}
-                      checked={preset() === value}
-                      onChange={() => setPreset(value as owner.PolicyPreset)}
-                    />
-                    <span>
-                      <strong>{option.title}</strong>
-                      <small>{option.description}</small>
-                    </span>
-                  </label>
-                )}
-              </For>
-            </fieldset>
-            <label class="policy-choice">
-              <input
-                type="checkbox"
-                role="switch"
-                checked={paid()}
-                onChange={(e) => setPaid(e.currentTarget.checked)}
-              />
-              <span>
-                <strong>Allow paid AI inference</strong>
-                <small>
-                  Use paid AI models without payment approval. Provider charges
-                  apply.
-                </small>
-              </span>
-            </label>
-            <button class="primary" disabled={m.busy()}>
-              Use this policy
-            </button>
+            <header class="onboarding-heading">
+              <ConnectorIcon preset="tinfoil" />
+              <h1 ref={heading} tabIndex={-1}>
+                {step() === "policy"
+                  ? "Set up your monitor"
+                  : "Connect Tinfoil"}
+              </h1>
+              <p>
+                {step() === "policy"
+                  ? "Choose how your agents connect to the outside world."
+                  : "Use Tinfoil for private AI inference and web search."}
+              </p>
+            </header>
+            <Switch>
+              <Match when={step() === "policy"}>
+                <fieldset disabled={m.busy()}>
+                  <legend>Network policy</legend>
+                  <For each={Object.entries(owner.POLICY_PRESETS)}>
+                    {([value, option]) => (
+                      <label class="policy-choice">
+                        <input
+                          type="radio"
+                          name="network-policy"
+                          value={value}
+                          checked={preset() === value}
+                          onChange={() =>
+                            setPreset(value as owner.PolicyPreset)
+                          }
+                        />
+                        <span>
+                          <strong>{option.title}</strong>
+                          <small>{option.description}</small>
+                        </span>
+                      </label>
+                    )}
+                  </For>
+                </fieldset>
+                <label class="policy-choice">
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    checked={paid()}
+                    disabled={m.busy()}
+                    onChange={(e) => setPaid(e.currentTarget.checked)}
+                  />
+                  <span>
+                    <strong>Allow paid AI inference</strong>
+                    <small>
+                      Use paid AI models without payment approval. Provider
+                      charges apply.
+                    </small>
+                  </span>
+                </label>
+                <button class="primary" disabled={m.busy()}>
+                  Continue
+                  <Icon name="arrow" />
+                </button>
+              </Match>
+              <Match when={step() === "tinfoil"}>
+                <fieldset class="onboarding-key" disabled={m.busy()}>
+                  <div class="onboarding-key-label">
+                    <label for="tinfoil-api-key">API key</label>
+                    <a
+                      href="https://dash.tinfoil.sh/?tab=api-keys"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Get an API key
+                      <Icon name="external" />
+                    </a>
+                  </div>
+                  <input
+                    ref={tinfoilInput}
+                    id="tinfoil-api-key"
+                    type="password"
+                    required
+                    autofocus
+                    pattern={".*\\S.*"}
+                    title="Enter your Tinfoil API key"
+                    placeholder="Paste your Tinfoil API key"
+                    autocomplete="off"
+                    spellcheck={false}
+                    aria-describedby="tinfoil-key-help"
+                    value={tinfoilKey()}
+                    onInput={(e) => setTinfoilKey(e.currentTarget.value)}
+                  />
+                  <p id="tinfoil-key-help" class="onboarding-key-help">
+                    <Icon name="rules" />
+                    Your key stays in Monitor, hidden from your agents.
+                  </p>
+                </fieldset>
+                <Show when={preset() === "offline"}>
+                  <p class="onboarding-note">
+                    Your Offline policy keeps this connection disabled.
+                  </p>
+                </Show>
+                <button class="primary" disabled={m.busy()}>
+                  {m.busy() ? "Saving…" : "Connect Tinfoil"}
+                  <Icon name="arrow" />
+                </button>
+                <div class="onboarding-actions">
+                  <button
+                    type="button"
+                    class="link onboarding-back"
+                    disabled={m.busy()}
+                    onClick={() => goToStep("policy")}
+                  >
+                    <Icon name="arrow" />
+                    Back
+                  </button>
+                  <button
+                    type="button"
+                    class="link"
+                    disabled={m.busy()}
+                    onClick={() => void finish()}
+                  >
+                    Skip for now
+                  </button>
+                </div>
+              </Match>
+            </Switch>
           </form>
         </Match>
       </Switch>
