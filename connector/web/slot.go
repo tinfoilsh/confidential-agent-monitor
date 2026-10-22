@@ -212,16 +212,26 @@ func (h *HTTP) bind(r *http.Request, origin string) ([]*Slot, error) {
 			return nil, fmt.Errorf("%s contains an unrecognized credential placeholder. Expected %q. Update the client's %s credential placeholder to %q, then restart the client", location, s.Prefix+placeholder, s.Value, placeholder)
 		}
 	}
-	texts := append(segments, user, pass)
-	for _, values := range []map[string][]string{query, header} {
-		for key, entries := range values {
-			texts = append(append(texts, strings.ToLower(key)), entries...)
-		}
+	fields := map[string]string{"Basic authentication username": user, "Basic authentication password": pass}
+	for i, segment := range segments {
+		fields[fmt.Sprintf("path segment %d", i)] = segment
 	}
-	for _, text := range texts {
-		if strings.Contains(text, placeholderPrefix) {
-			return nil, errors.New("a credential placeholder is in a field or destination this connection does not allow. Run monitor connections --json to see the allowed URLs and credential placements, then correct the request")
+	for key, entries := range query {
+		fields["query parameter "+key] = strings.Join(append(entries, key), " ")
+	}
+	for key, entries := range header {
+		fields[key+" header"] = strings.Join(append(entries, strings.ToLower(key)), " ")
+	}
+	for _, field := range slices.Sorted(maps.Keys(fields)) {
+		if !strings.Contains(fields[field], placeholderPrefix) {
+			continue
 		}
+		for name := range h.Names() {
+			if p := h.Placeholder(name); p != "" && strings.Contains(fields[field], p) {
+				return nil, fmt.Errorf("%s: credential %s is not allowed for %s%s", field, name, origin, r.URL.Path)
+			}
+		}
+		return nil, fmt.Errorf("%s: this identity has no credential with this placeholder for %s", field, origin)
 	}
 	return used, nil
 }
