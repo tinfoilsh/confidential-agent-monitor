@@ -151,8 +151,8 @@ export function Settings(props: {
         <a class="setting-row settings-link" href="#policy">
           Policy editor <span>›</span>
         </a>
-        <a class="setting-row settings-link" href="#presets">
-          Connection preset editor <span>›</span>
+        <a class="setting-row settings-link" href="#preset">
+          New custom preset <span>›</span>
         </a>
       </section>
       <section class="settings-section settings-danger">

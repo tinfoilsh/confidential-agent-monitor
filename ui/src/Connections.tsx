@@ -104,10 +104,17 @@ export function DeviceSignInDialog(props: {
   );
 }
 
-export function Connections(props: { expanded?: string }) {
+export function Connections(props: { expanded?: string; catalog?: boolean }) {
   const m = useMonitor(),
     [query, setQuery] = m.search("accounts");
   if (props.expanded) setQuery("");
+  if (props.catalog)
+    return (
+      <>
+        <ConnectionsTabs catalog />
+        <Catalog />
+      </>
+    );
   const searchable = createMemo(() =>
     Object.keys(m.view()!.config.accounts ?? {})
       .sort()
@@ -125,6 +132,7 @@ export function Connections(props: { expanded?: string }) {
   });
   return (
     <>
+      <ConnectionsTabs />
       <div id="toolbar">
         <Search label="Search connections" value={query()} onInput={setQuery} />
       </div>
@@ -207,6 +215,28 @@ export function Connections(props: { expanded?: string }) {
     </>
   );
 }
+function ConnectionsTabs(props: { catalog?: boolean }) {
+  return (
+    <div class="connections-tabs" role="tablist">
+      <a
+        role="tab"
+        classList={{ on: !props.catalog }}
+        aria-selected={!props.catalog}
+        href="#accounts"
+      >
+        Mine
+      </a>
+      <a
+        role="tab"
+        classList={{ on: !!props.catalog }}
+        aria-selected={!!props.catalog}
+        href="#catalog"
+      >
+        Catalog
+      </a>
+    </div>
+  );
+}
 export function Catalog(props: { edit?: boolean }) {
   let catalog!: HTMLDivElement;
   const m = useMonitor(),
@@ -251,7 +281,10 @@ export function Catalog(props: { edit?: boolean }) {
           );
           return (
             <Show when={group().presets.length}>
-              <details open class="resource-list collection-list">
+              <details
+                open={id === "recommended" || !!query()}
+                class="resource-list collection-list"
+              >
                 <summary class="resource-heading">
                   <span class="collection-chevron">
                     <Icon name="arrow" />
@@ -264,10 +297,7 @@ export function Catalog(props: { edit?: boolean }) {
                 <div class="collection-rows">
                   <For each={[...presets().keys()]}>
                     {(name) => (
-                      <a
-                        class="resource-row collection-row"
-                        href={href(props.edit ? "preset" : "add", name)}
-                      >
+                      <div class="resource-row collection-row catalog-row">
                         <ConnectorIcon preset={name} />
                         <strong
                           class="collection-name"
@@ -279,14 +309,22 @@ export function Catalog(props: { edit?: boolean }) {
                           <Show when={presets().get(name)?.accounts}>
                             {(count) => (
                               <span class="muted">
-                                {count()}{" "}
-                                {count() === 1 ? "connection" : "connections"}
+                                Added
+                                <Show when={count() > 1}> ×{count()}</Show>
                               </span>
                             )}
                           </Show>
                         </span>
-                        <Icon name="arrow" />
-                      </a>
+                        <span class="row-actions">
+                          <a class="muted" href={href("preset", name)}>
+                            Edit preset
+                          </a>
+                          <a class="button primary" href={href("add", name)}>
+                            <Icon name="plus" />
+                            Add
+                          </a>
+                        </span>
+                      </div>
                     )}
                   </For>
                 </div>

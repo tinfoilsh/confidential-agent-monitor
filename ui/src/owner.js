@@ -1057,13 +1057,26 @@ export function catalog(view) {
       (a, b) =>
         Number(custom.includes(b.name)) - Number(custom.includes(a.name)),
     );
-  return [...groups]
-    .filter(([, entries]) => entries.length)
-    .map(([group, presets]) => ({
-      group,
-      title: CATALOG_GROUPS[group] ?? group,
-      presets,
-    }));
+  // Tinfoil leads as "Recommended"; blank "custom" presets live under
+  // Settings → Advanced, not in the browse list.
+  const recommended = [];
+  for (const entries of groups.values())
+    for (let i = entries.length - 1; i >= 0; i--) {
+      if (entries[i].name === "tinfoil") recommended.push(...entries.splice(i, 1));
+      else if (custom.includes(entries[i].name)) entries.splice(i, 1);
+    }
+  return [
+    ...(recommended.length
+      ? [{ group: "recommended", title: "Recommended", presets: recommended }]
+      : []),
+    ...[...groups]
+      .filter(([, entries]) => entries.length)
+      .map(([group, presets]) => ({
+        group,
+        title: CATALOG_GROUPS[group] ?? group,
+        presets,
+      })),
+  ];
 }
 
 // apiSettings describes a custom API account's slot as form settings; without an account, the defaults for a new one.
@@ -1318,6 +1331,14 @@ function onboardingChanges(view, preset) {
     i++
   )
     account = `network-${i}`;
+  // Tinfoil is seeded alongside the catch-all, keyless: it shows in
+  // Connections as "API key not configured" until the owner pastes one.
+  // daniel_suggestions.md #5.
+  const tinfoilPreset = view.presets?.tinfoil;
+  const seedTinfoil =
+    tinfoilPreset &&
+    !Object.hasOwn(accounts(view), "tinfoil") &&
+    !connections.has("tinfoil");
   const changes = sourceChanges({
     data: { onboarding: { completed: true } },
     lattices: { confidentiality: preset !== "open", integrity: false },
@@ -1330,6 +1351,15 @@ function onboardingChanges(view, preset) {
         sends: "anyone",
         connections: { "": { tcp: { hosts: ["*"] } } },
       },
+      ...(seedTinfoil
+        ? {
+            tinfoil: {
+              preset: "tinfoil",
+              ...tinfoilPreset.defaults,
+              connections: tinfoilPreset.connections,
+            },
+          }
+        : {}),
     },
   });
   if (preset !== "open") {

@@ -82,7 +82,7 @@ const parse = (path: string) => {
   }
 };
 const isDialog = (path: string) =>
-  ["pair", "catalog", "add"].includes(parse(path)[0]);
+  ["pair", "add"].includes(parse(path)[0]);
 
 export default function App() {
   return (
@@ -128,14 +128,15 @@ function Shell() {
       account: "accounts",
       request: "activity",
       policy: "settings",
-      presets: "settings",
-      preset: "settings",
+      presets: "accounts",
+      catalog: "accounts",
+      preset: "accounts",
     })[kind()] ?? kind();
   const title = () =>
     sections[
       ["agent", "agent-settings"].includes(kind())
         ? "agents"
-        : kind() === "account"
+        : ["account", "catalog", "presets"].includes(kind())
           ? "accounts"
           : kind()
     ]?.[0] ??
@@ -266,7 +267,7 @@ function Shell() {
                       sections[
                         ["agent", "agent-settings"].includes(kind())
                           ? "agents"
-                          : kind() === "account"
+                          : ["account", "catalog", "presets"].includes(kind())
                             ? "accounts"
                             : kind()
                       ]?.[1]
@@ -284,12 +285,6 @@ function Shell() {
                     <a class="button primary" href="#catalog">
                       <Icon name="plus" />
                       Add connection
-                    </a>
-                  </Show>
-                  <Show when={kind() === "presets"}>
-                    <a class="button primary" href="#preset">
-                      <Icon name="plus" />
-                      New preset
                     </a>
                   </Show>
                   <button
@@ -373,8 +368,8 @@ function Page(props: {
       <Match when={kind === "policy"}>
         <Policy />
       </Match>
-      <Match when={kind === "presets"}>
-        <Catalog edit />
+      <Match when={kind === "presets" || kind === "catalog"}>
+        <Connections catalog />
       </Match>
       <Match when={kind === "preset"}>
         <PresetEditor name={name} request={request} />
@@ -437,9 +432,7 @@ function CreationDialog(props: { path: string; close: () => void }) {
             </Show>
             {kind() === "pair"
               ? "Add an identity"
-              : kind() === "catalog"
-                ? "Add connection"
-                : "Add " + (m.view()!.presets[preset()]?.title ?? "connection")}
+              : "Add " + (m.view()!.presets[preset()]?.title ?? "connection")}
           </h1>
           <Show when={kind() === "pair"}>
             <p id="creation-description">
@@ -460,8 +453,6 @@ function CreationDialog(props: { path: string; close: () => void }) {
           {(path) =>
             parse(path)[0] === "pair" ? (
               <AddAgent />
-            ) : parse(path)[0] === "catalog" ? (
-              <Catalog />
             ) : (
               <AddConnection preset={parse(path)[1]} />
             )

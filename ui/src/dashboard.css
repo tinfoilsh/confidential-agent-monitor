@@ -2938,3 +2938,39 @@ form > .credential-actions {
 .rules-group-title a {
   color: inherit;
 }
+
+.connections-tabs {
+  display: inline-flex;
+  margin-bottom: 12px;
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.connections-tabs a {
+  padding: 6px 16px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.connections-tabs a + a {
+  border-left: 1px solid var(--edge);
+}
+.connections-tabs a.on {
+  color: var(--text);
+  background: var(--subtle);
+}
+.catalog-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.catalog-row .resource-meta {
+  margin-left: auto;
+}
+.catalog-row .row-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.catalog-row .row-actions > a.muted {
+  font-size: var(--font-detail);
+}
