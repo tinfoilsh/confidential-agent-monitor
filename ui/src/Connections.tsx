@@ -15,6 +15,8 @@ import {
   DataPermissions,
   Effects,
   Empty,
+  DisclosureHeading,
+  SectionHeading,
   Field,
   Icon,
   LazyDetails,
@@ -252,6 +254,7 @@ export function Catalog(props: { edit?: boolean }) {
       <div class="catalog-toolbar">
         <Search
           label={props.edit ? "Search presets" : "Search services"}
+          autofocus={!props.edit}
           value={query()}
           onInput={setQuery}
           onEnter={() =>
@@ -335,19 +338,17 @@ function ApiFields(props: {
     <>
       <div class="field">
         <label for={urlId}>API URL</label>
-        <div>
-          <input
-            id={urlId}
-            type="url"
-            required
-            placeholder="https://api.example.com"
-            value={props.value.url}
-            onInput={(e) => field("url", e.currentTarget.value)}
-          />
-          <p class="muted field-help">
-            The credential is used only at this address and its paths.
-          </p>
-        </div>
+        <input
+          id={urlId}
+          type="url"
+          required
+          placeholder="https://api.example.com"
+          value={props.value.url}
+          onInput={(e) => field("url", e.currentTarget.value)}
+        />
+        <p class="muted field-help">
+          The credential is used only at this address and its paths.
+        </p>
       </div>
       <label>
         Authentication
@@ -457,7 +458,7 @@ export function AddConnection(props: { preset: string }) {
   return (
     <Show when={preset} fallback={<Empty title="Preset not found" />}>
       <form
-        class="connection-fields"
+        class="form-fields"
         onSubmit={(e) => {
           e.preventDefault();
           void add();
@@ -493,12 +494,12 @@ export function AddConnection(props: { preset: string }) {
                         }
                         value={values[field.key]}
                         onInput={(value) => setValues(field.key, value)}
+                        help={
+                          field.secret
+                            ? "Leave blank to configure later."
+                            : undefined
+                        }
                       />
-                      <Show when={field.secret}>
-                        <p class="muted field-help">
-                          Leave blank to configure later.
-                        </p>
-                      </Show>
                     </div>
                     <Show when={field.oauth}>
                       <button
@@ -533,8 +534,8 @@ export function AddConnection(props: { preset: string }) {
             field={{ key: "token", label: "API key or token", secret: true }}
             value={token()}
             onInput={setToken}
+            help="Leave blank to configure later."
           />
-          <p class="muted field-help">Leave blank to configure later.</p>
           <label>
             Agent
             <select
@@ -557,29 +558,25 @@ export function AddConnection(props: { preset: string }) {
           </label>
         </Show>
         <ResourceDisclosure
-          class="connection-advanced"
+          class="section-disclosure"
           summary={
-            <span class="connection-advanced-text">
-              <span class="connection-advanced-heading">
-                <strong class="connection-advanced-title">Advanced</strong>
-                <span class="collection-chevron">
-                  <Icon name="arrow" />
-                </span>
-              </span>
-              <small>Data sharing</small>
-            </span>
+            <DisclosureHeading
+              title="Advanced"
+              description="Data sharing"
+              small
+            />
           }
         >
           {() => (
-            <div class="connection-advanced-content">
-              <fieldset class="data-permissions">
-                <legend>Data sharing</legend>
+            <div class="section-content">
+              <section class="settings-group" aria-label="Data sharing">
+                <SectionHeading title="Data sharing" small />
                 <DataPermissions value={sharing()} onChange={setSharing} />
-              </fieldset>
+              </section>
             </div>
           )}
         </ResourceDisclosure>
-        <div class="credential-actions">
+        <div class="form-actions">
           <button
             classList={{ primary: !signIns().length }}
             disabled={m.busy()}
@@ -653,110 +650,112 @@ function ConnectionForm(props: { name: string }) {
     }
   };
   return (
-    <form
-      ref={form}
-      class="connection-fields"
-      onSubmit={(event) => {
-        event.preventDefault();
-        void save();
-      }}
-      onFocusOut={(event) => {
-        if (
-          event.target instanceof HTMLInputElement ||
-          event.target instanceof HTMLTextAreaElement ||
-          event.target instanceof HTMLSelectElement
-        )
-          void save();
-      }}
-      onChange={(event) => {
-        if (event.target instanceof HTMLSelectElement) void save();
-      }}
+    <Show
+      when={
+        fields.length || credentials().size || initial.preset === "custom_api"
+      }
     >
-      <Show when={initial.preset === "custom_api"}>
-        <ApiFields value={api()} onChange={setApi} />
-      </Show>
-      <For each={fields}>
-        {(field) => (
-          <Field
-            field={field}
-            value={values[field.key]}
-            onInput={(value) => setValues(field.key, value)}
-          />
-        )}
-      </For>
-      <For each={[...credentials().keys()]}>
-        {(key) => {
-          const field = () => credentials().get(key)!;
-          const collapsed = () =>
-            drafts[key] === undefined &&
-            (field().signIn || field().kind !== "unset");
-          const status = () =>
-            field().status + (field().account ? ` · ${field().account}` : "");
-          const signIn = () => (
-            <Show when={field().signIn}>
-              <button
-                type="button"
-                disabled={m.busy()}
-                onClick={() => void m.signIn(props.name, field())}
-              >
-                {owner.signInLabel(m.view()!, initial.preset)}
-              </button>
-            </Show>
-          );
-          return (
-            <div class="credential">
-              <Show
-                when={!collapsed()}
-                fallback={
-                  <div class="setting-row">
-                    <div>
-                      <span>{field().label}</span>
-                      <p>{status()}</p>
+      <section class="connection-section connection-config">
+        <SectionHeading title="Configuration" />
+        <form
+          ref={form}
+          class="form-fields"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void save();
+          }}
+          onFocusOut={(event) => {
+            if (
+              event.target instanceof HTMLInputElement ||
+              event.target instanceof HTMLTextAreaElement ||
+              event.target instanceof HTMLSelectElement
+            )
+              void save();
+          }}
+          onChange={(event) => {
+            if (event.target instanceof HTMLSelectElement) void save();
+          }}
+        >
+          <Show when={initial.preset === "custom_api"}>
+            <ApiFields value={api()} onChange={setApi} />
+          </Show>
+          <For each={fields}>
+            {(field) => (
+              <Field
+                field={field}
+                value={values[field.key]}
+                onInput={(value) => setValues(field.key, value)}
+              />
+            )}
+          </For>
+          <For each={[...credentials().keys()]}>
+            {(key) => {
+              const field = () => credentials().get(key)!;
+              const collapsed = () =>
+                drafts[key] === undefined &&
+                (field().signIn || field().kind !== "unset");
+              const status = () =>
+                field().status +
+                (field().account ? ` · ${field().account}` : "");
+              const signIn = () => (
+                <Show when={field().signIn}>
+                  <button
+                    type="button"
+                    disabled={m.busy()}
+                    onClick={() => void m.signIn(props.name, field())}
+                  >
+                    {owner.signInLabel(m.view()!, initial.preset)}
+                  </button>
+                </Show>
+              );
+              return (
+                <div class="credential">
+                  <Show
+                    when={!collapsed()}
+                    fallback={
+                      <div class="setting-row">
+                        <div>
+                          <span>{field().label}</span>
+                          <p>{status()}</p>
+                        </div>
+                        <div class="form-actions">
+                          {signIn()}
+                          <button
+                            type="button"
+                            onClick={() => setDrafts(key, "")}
+                          >
+                            {field().kind === "unset" ||
+                            field().kind === "oauth-required"
+                              ? "Enter credential"
+                              : "Replace"}
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  >
+                    <Field
+                      field={{
+                        ...field(),
+                        hint:
+                          field().kind === "unset"
+                            ? field().hint
+                            : "Leave blank to keep the current credential",
+                      }}
+                      value={drafts[key] ?? ""}
+                      onInput={(text) => setDrafts(key, text)}
+                    />
+                    <div class="credential-header">
+                      <p class="muted field-help">{status()}</p>
+                      <div class="form-actions">{signIn()}</div>
                     </div>
-                    <div class="credential-actions">
-                      {signIn()}
-                      <button type="button" onClick={() => setDrafts(key, "")}>
-                        {field().kind === "unset" ||
-                        field().kind === "oauth-required"
-                          ? "Enter credential"
-                          : "Replace"}
-                      </button>
-                    </div>
-                  </div>
-                }
-              >
-                <Field
-                  field={{
-                    ...field(),
-                    hint:
-                      field().kind === "unset"
-                        ? field().hint
-                        : "Leave blank to keep the current credential",
-                  }}
-                  value={drafts[key] ?? ""}
-                  onInput={(text) => setDrafts(key, text)}
-                />
-                <div class="credential-header">
-                  <p class="muted field-help">{status()}</p>
-                  <div class="credential-actions">{signIn()}</div>
+                  </Show>
                 </div>
-              </Show>
-            </div>
-          );
-        }}
-      </For>
-      <Show
-        when={
-          !fields.length &&
-          !credentials().size &&
-          initial.preset !== "custom_api"
-        }
-      >
-        <p class="muted">
-          This connection does not require additional configuration.
-        </p>
-      </Show>
-    </form>
+              );
+            }}
+          </For>
+        </form>
+      </section>
+    </Show>
   );
 }
 
@@ -791,50 +790,92 @@ function Connection(props: { name: string; active: boolean }) {
   });
   const codex = () => owner.codexSetup(m.view()!, props.name);
   const tinfoil = createMemo(() => owner.tinfoilSetup(m.view()!, props.name));
+  const reviews = createMemo(() =>
+    owner
+      .reviews(m.view()!, props.name)
+      .filter(
+        (review) =>
+          review.error || review.blocked || review.state === "connecting",
+      ),
+  );
   return (
     <div class="connection-detail">
       <Show when={account()} fallback={<Empty title="Connection not found" />}>
-        <For
-          each={owner
-            .reviews(m.view()!, props.name)
-            .filter(
-              (review) =>
-                review.error || review.blocked || review.state === "connecting",
-            )}
-        >
-          {(review) => (
-            <section>
-              <h2>{review.name}</h2>
-              <p role={review.error ? "alert" : undefined}>
-                {review.error
-                  ? `Can't connect: ${review.error}`
-                  : review.state === "connecting"
-                    ? "Connecting…"
-                    : `${owner.presetOf(m.view()!, props.name).title} changed its tools: ${review.added} new, ${review.changed} changed, ${review.removed} removed.`}
-              </p>
-              <Show when={review.blocked}>
-                <details>
-                  <summary>{review.blocked} tools await review</summary>
-                  <pre>{review.changes.join("\n\n")}</pre>
-                </details>
-                <button
-                  disabled={m.busy()}
-                  onClick={() =>
-                    void m.edit(
-                      owner.edits.approveTools(
-                        m.view()!,
-                        props.name,
-                        review.key,
-                      ),
-                    )
-                  }
-                >
-                  Approve tools
-                </button>
-              </Show>
-            </section>
-          )}
-        </For>
+        <Show when={reviews().length}>
+          <section class="connection-section" aria-label="Connection status">
+            <For each={reviews()}>
+              {(review) => (
+                <div class="settings-group">
+                  <Show
+                    when={review.blocked}
+                    fallback={
+                      <div class="setting-row" role="status">
+                        <span>{review.name}</span>
+                        <span
+                          class="badge"
+                          classList={{ "status-denied": !!review.error }}
+                        >
+                          {review.error ? "Connection error" : "Connecting…"}
+                        </span>
+                      </div>
+                    }
+                  >
+                    <SectionHeading
+                      title="Review tool changes"
+                      description={`${review.blocked} ${review.blocked === 1 ? "tool on" : "tools on"} ${review.name} ${review.blocked === 1 ? "is" : "are"} blocked until you approve these changes.`}
+                    />
+                  </Show>
+                  <Show when={review.error}>
+                    <p class="muted" role="alert">
+                      Can't connect: {review.error}
+                    </p>
+                  </Show>
+                  <Show when={review.blocked}>
+                    <ResourceDisclosure
+                      class="section-disclosure"
+                      summary={
+                        <DisclosureHeading
+                          title="View changes"
+                          description={[
+                            review.added && `${review.added} new`,
+                            review.changed && `${review.changed} changed`,
+                            review.removed && `${review.removed} removed`,
+                          ]
+                            .filter(Boolean)
+                            .join(", ")}
+                          small
+                        />
+                      }
+                    >
+                      {() => (
+                        <div class="section-content">
+                          <pre>{review.changes.join("\n\n")}</pre>
+                        </div>
+                      )}
+                    </ResourceDisclosure>
+                    <div class="form-actions">
+                      <button
+                        class="primary"
+                        disabled={m.busy()}
+                        onClick={() =>
+                          void m.edit(
+                            owner.edits.approveTools(
+                              m.view()!,
+                              props.name,
+                              review.key,
+                            ),
+                          )
+                        }
+                      >
+                        Approve changes
+                      </button>
+                    </div>
+                  </Show>
+                </div>
+              )}
+            </For>
+          </section>
+        </Show>
         <Show when={owner.liveConnection(m.view()!, props.name)}>
           {(connection) => (
             <Suspense fallback={<p role="status">Loading browser…</p>}>
@@ -843,10 +884,10 @@ function Connection(props: { name: string; active: boolean }) {
           )}
         </Show>
         <section class="connection-section">
-          <header class="connection-section-heading">
-            <h3>Agent access</h3>
-            <p>Who can use this connection</p>
-          </header>
+          <SectionHeading
+            title="Agent access"
+            description="Who can use this connection"
+          />
           <div class="connection-access">
             <For
               each={agents()}
@@ -868,10 +909,10 @@ function Connection(props: { name: string; active: boolean }) {
         </section>
         <Show when={tinfoil().length || setups().length || codex()}>
           <section class="connection-section connection-setup">
-            <header class="connection-section-heading">
-              <h3>Details</h3>
-              <p>URLs, agent placeholders, and setup instructions</p>
-            </header>
+            <SectionHeading
+              title="Details"
+              description="URLs, agent placeholders, and setup instructions"
+            />
             <Show when={tinfoil().length}>
               <div class="agent-setup-body">
                 <For each={tinfoil()}>
@@ -978,15 +1019,8 @@ function Connection(props: { name: string; active: boolean }) {
                 let code!: HTMLPreElement;
                 return (
                   <ResourceDisclosure
-                    class="connection-disclosure"
-                    summary={
-                      <>
-                        <span class="collection-chevron">
-                          <Icon name="arrow" />
-                        </span>
-                        <span>Codex setup</span>
-                      </>
-                    }
+                    class="section-disclosure setup-disclosure"
+                    summary={<DisclosureHeading title="Codex setup" small />}
                   >
                     {() => (
                       <div class="agent-setup-body">
@@ -1017,33 +1051,19 @@ function Connection(props: { name: string; active: boolean }) {
             </Show>
           </section>
         </Show>
-        <section class="connection-section connection-config">
-          <header class="connection-section-heading">
-            <h3>Configuration</h3>
-          </header>
-          <ConnectionForm name={props.name} />
-        </section>
+        <ConnectionForm name={props.name} />
         <ResourceDisclosure
-          class="connection-advanced"
+          class="section-disclosure"
           summary={
-            <>
-              <span class="connection-advanced-text">
-                <span class="connection-advanced-heading">
-                  <strong class="connection-advanced-title">Operations</strong>
-                  <span class="count">
-                    {Object.keys(owner.actionsOf(m.view()!, props.name)).length}
-                  </span>
-                </span>
-                <small>Supported requests and their effects</small>
-              </span>
-              <span class="collection-chevron">
-                <Icon name="arrow" />
-              </span>
-            </>
+            <DisclosureHeading
+              title="Operations"
+              description="Supported requests and their effects"
+              count={Object.keys(owner.actionsOf(m.view()!, props.name)).length}
+            />
           }
         >
           {() => (
-            <div class="connection-advanced-content">
+            <div class="section-content">
               <div
                 class="action-list"
                 role="region"
@@ -1058,28 +1078,18 @@ function Connection(props: { name: string; active: boolean }) {
           )}
         </ResourceDisclosure>
         <ResourceDisclosure
-          class="connection-advanced connection-options"
+          class="section-disclosure"
           summary={
-            <>
-              <span class="connection-advanced-text">
-                <span class="connection-advanced-heading">
-                  <strong class="connection-advanced-title">Advanced</strong>
-                </span>
-                <small>Sharing, effects, and policy</small>
-              </span>
-              <span class="collection-chevron">
-                <Icon name="arrow" />
-              </span>
-            </>
+            <DisclosureHeading
+              title="Advanced"
+              description="Sharing, effects, and policy"
+            />
           }
         >
           {() => (
-            <div class="connection-advanced-content">
-              <section
-                class="connection-option-group"
-                aria-label="Data sharing"
-              >
-                <h4>Data sharing</h4>
+            <div class="section-content">
+              <section class="settings-group" aria-label="Data sharing">
+                <SectionHeading title="Data sharing" small />
                 <DataPermissions
                   value={answers(account())}
                   onChange={(value) => {
@@ -1095,17 +1105,14 @@ function Connection(props: { name: string; active: boolean }) {
                   }}
                 />
               </section>
-              <section class="connection-option-group" aria-label="Effects">
-                <h4>Effects</h4>
+              <section class="settings-group" aria-label="Effects">
+                <SectionHeading title="Effects" small />
                 <Effects scope={{ account: props.name }} />
               </section>
-              <section
-                class="connection-option-group"
-                aria-label="Custom policy"
-              >
-                <h4>Custom policy</h4>
+              <section class="settings-group" aria-label="Custom policy">
+                <SectionHeading title="Custom policy" small />
                 <form
-                  class="connection-fields"
+                  class="form-fields"
                   onSubmit={(e) => {
                     e.preventDefault();
                     void m.edit(

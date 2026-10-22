@@ -479,6 +479,7 @@ function Gate() {
             when={m.mode() === "ssh"}
             fallback={
               <form
+                class="form-fields"
                 onSubmit={(e) => {
                   e.preventDefault();
                   m.login(key());

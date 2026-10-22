@@ -24,16 +24,16 @@ const DEFAULT_REVIEWER = {
 export const POLICY_PRESETS = {
   open: {
     title: "Open",
-    description: "Allow unrestricted network requests.",
+    description: "Allow all traffic to go through without approval.",
   },
   known_only: {
     title: "Known Only",
-    description: "Restrict network requests to only known connectors.",
+    description: "Only allow requests to connectors you configured.",
     recommended: true,
   },
   offline: {
     title: "Offline",
-    description: "Block all network requests.",
+    description: "Block all requests. Your agent can't talk to anything.",
   },
 };
 // A new preset starts as one bearer-token API; the owner sets its origin, slots and operations.

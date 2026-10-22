@@ -223,7 +223,7 @@ label {
   display: block;
   margin: 16px 0 6px;
   color: var(--text);
-  font-weight: 500;
+  font-weight: 400;
 }
 label:first-child {
   margin-top: 0;
@@ -426,8 +426,7 @@ summary + * {
 #page-content {
   padding: 0 24px 80px;
 }
-#toolbar:empty,
-#dialog-toolbar:empty {
+#toolbar:empty {
   display: none;
 }
 .page-tabs {
@@ -457,7 +456,6 @@ summary + * {
   margin: 0 0 16px;
 }
 #toolbar,
-#dialog-toolbar,
 .catalog-toolbar {
   padding-top: 8px;
   display: flex;
@@ -470,9 +468,10 @@ summary + * {
   flex: 1;
   min-width: 200px;
 }
-.search-field .ui-icon {
+.search-field > .icon {
   position: absolute;
-  top: calc((var(--control-height) - 16px) / 2);
+  top: 50%;
+  transform: translateY(-50%);
   left: 12px;
   color: var(--muted);
 }
@@ -857,9 +856,6 @@ details[open] > summary > .collection-chevron {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.connection-detail h2 {
-  font-weight: 600;
-}
 .connection-access > .acct {
   padding: 8px 0;
 }
@@ -878,103 +874,82 @@ details[open] > summary > .collection-chevron {
 .connection-detail > * + * {
   border-top: 1px solid var(--line);
 }
-.connection-detail > .connection-advanced > summary {
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 0;
-}
-.connection-detail > .connection-advanced .connection-advanced-content {
-  padding: 0 0 16px;
-}
-.connection-advanced-text {
+.heading-text {
   display: grid;
   gap: 2px;
   min-width: 0;
+  margin: 0;
 }
-.connection-advanced-heading {
+.heading-row {
   display: flex;
   align-items: baseline;
   gap: 8px;
 }
-.connection-advanced-title {
-  font-size: var(--font-body);
-  line-height: 20px;
+.section-title {
+  margin: 0;
+  font-size: var(--font-section);
+  line-height: 24px;
   font-weight: 500;
 }
-.connection-advanced-text small {
+.heading-small .section-title {
+  font-size: var(--font-body);
+  line-height: 20px;
+}
+.section-description {
+  margin: 0;
   color: var(--muted);
   font-size: var(--font-detail);
   line-height: 18px;
   font-weight: 400;
 }
-.connection-advanced-content {
-  padding: 0 var(--card-inset) var(--card-inset);
+.section-disclosure > summary {
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 0;
+  list-style: none;
 }
-.connection-advanced-content > section + section {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
+.section-disclosure > summary::-webkit-details-marker {
+  display: none;
 }
-.connection-advanced h3 {
-  margin: 0 0 6px;
+.section-content {
+  padding: 0 0 16px;
 }
-.connection-detail .connection-fields {
-  gap: 10px;
-}
-.connection-section-heading h3,
-.connection-detail .connection-advanced-title,
-.agent-maintenance .connection-advanced-title {
-  font-size: var(--font-section);
-  line-height: 24px;
-  font-weight: 500;
-}
-.connection-config .connection-fields {
-  gap: 16px;
-}
-.connection-config .field > label,
-.connection-config .connection-fields > label {
-  margin: 0 0 6px;
-  font-weight: 400;
-}
-.connection-config .setting-row > div:first-child > span,
-.connection-options .data-permission > span:first-child,
-.connection-options .access-action > span,
-.connection-options label.setting-row {
-  font-weight: 400;
-}
-.connection-config .field > div,
-.connection-config .credential {
-  min-width: 0;
-}
-.connection-config .setting-row {
-  padding: 0;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-}
-.connection-config .setting-row p {
-  margin: 4px 0 0;
-}
-.connection-config .setting-row .credential-actions {
-  justify-self: end;
-}
-.connection-option-group {
-  display: grid;
-  gap: 10px;
-}
-.connection-options .connection-option-group + .connection-option-group {
+.section-content > section + section {
   margin-top: 16px;
   padding-top: 16px;
+  border-top: 1px solid var(--line);
 }
-.connection-option-group h4 {
-  margin: 0 0 2px;
-  color: var(--text);
-  font-size: var(--font-body);
-  line-height: 20px;
-  font-weight: 500;
+.settings-group,
+.form-fields {
+  display: grid;
+  gap: 12px;
 }
-.connection-option-group .setting-row {
+.settings-group > pre,
+.settings-group > p,
+.form-fields > p {
   margin: 0;
+}
+.settings-group > .setting-row,
+.form-fields .setting-row {
   padding: 0;
+}
+.field,
+.form-fields > label {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+}
+.field > label {
+  margin: 0;
+}
+.form-fields > button {
+  justify-self: start;
+}
+.credential {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
 }
 .connection-footer {
   display: flex;
@@ -1039,57 +1014,6 @@ details[open] > summary > .collection-chevron {
   margin-top: 0;
   padding-block: var(--card-row-inset);
 }
-.agent-maintenance {
-  margin-top: 0;
-}
-.agent-maintenance > summary {
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 0;
-  list-style: none;
-}
-.agent-maintenance .connection-advanced-content {
-  padding: 0 0 16px;
-}
-.agent-maintenance h2,
-.agent-maintenance h3 {
-  font-size: var(--font-body);
-  line-height: 20px;
-  font-weight: 500;
-}
-.agent-maintenance label {
-  font-weight: 400;
-}
-.agent-maintenance > summary::-webkit-details-marker {
-  display: none;
-}
-.agent-key-replacement,
-.agent-key-replacement form {
-  display: grid;
-  gap: 12px;
-}
-.agent-key-replacement > header {
-  display: grid;
-  gap: 4px;
-}
-.agent-key-replacement h3,
-.agent-key-replacement p {
-  margin: 0;
-}
-.agent-key-replacement p {
-  color: var(--muted);
-  font-size: var(--font-detail);
-  line-height: 18px;
-}
-.agent-key-replacement label {
-  display: grid;
-  gap: 6px;
-  margin: 0;
-}
-.agent-key-replacement form > button {
-  justify-self: start;
-  margin: 0;
-}
 .agent-remove {
   display: flex;
   align-items: center;
@@ -1098,13 +1022,6 @@ details[open] > summary > .collection-chevron {
   gap: 16px;
   padding-top: 20px;
   border-top: 1px solid var(--line);
-}
-.agent-remove h2 {
-  margin: 0;
-}
-.agent-remove p {
-  margin: 4px 0 0;
-  color: var(--muted);
 }
 .agent-copy-settings {
   display: flex;
@@ -1324,8 +1241,7 @@ details[open] > summary > .collection-chevron {
   container: details / inline-size;
 }
 #pane > section,
-#pane > article,
-.connection-notices > section {
+#pane > article {
   margin: 0 0 16px;
   padding: var(--card-inset);
   border: 1px solid var(--line);
@@ -1600,47 +1516,10 @@ details[open] > summary > .collection-chevron {
   max-width: 68ch;
   margin: 8px 0 0;
 }
-.settings-networks > summary {
-  list-style: none;
-}
-.settings-networks > summary::-webkit-details-marker {
-  display: none;
-}
-.settings-network-summary,
-.settings-edit,
-.settings-interface {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.settings-network-summary {
-  gap: 16px;
-  color: var(--muted);
-  font-size: var(--font-detail);
-}
-.settings-edit {
-  color: var(--link);
-}
-.settings-chevron {
-  display: inline-block;
-  font-size: 18px;
-  line-height: 20px;
-}
-.settings-networks[open] .settings-chevron {
-  transform: rotate(90deg);
-}
+
 .settings-network-editor {
   margin: 0 0 12px;
   padding: 12px 0;
-}
-.settings-network-editor .row {
-  font-size: var(--font-detail);
-}
-.settings-network-editor .row {
-  flex-wrap: wrap;
-}
-.settings-network-editor button {
-  margin-left: auto;
 }
 .settings-link {
   color: var(--text);
@@ -1650,8 +1529,7 @@ details[open] > summary > .collection-chevron {
   font-size: 18px;
   line-height: 20px;
 }
-.settings-link:hover,
-.settings-networks > summary:hover .settings-edit {
+.settings-link:hover {
   color: var(--link);
 }
 .connector-icon {
@@ -1668,87 +1546,15 @@ details[open] > summary > .collection-chevron {
   height: 100%;
   object-fit: contain;
 }
-.settings-sheet {
-  overflow: hidden;
-  border-radius: var(--card-radius);
-  background: var(--card);
-}
-.connection-notices:empty {
-  display: none;
-}
+
 .connection-section {
+  display: grid;
+  gap: 12px;
   padding: 16px 0;
   overflow-wrap: anywhere;
 }
-.connection-section-heading {
-  display: grid;
-  gap: 2px;
-  margin-bottom: 12px;
-}
-.connection-section-heading h3,
-.connection-section-heading p {
-  margin: 0;
-}
-.connection-section-heading p {
-  color: var(--muted);
-  font-size: var(--font-detail);
-  line-height: 18px;
-}
-.connection-fields {
-  display: grid;
-  gap: 16px;
-}
-.data-permissions {
-  min-width: 0;
-  margin: 0;
-  padding: 16px 0 0;
-  border: 0;
+.setup-disclosure {
   border-top: 1px solid var(--line);
-}
-.data-permissions > legend {
-  padding: 0 8px 0 0;
-  font-weight: 500;
-}
-.data-permissions > .setting-row {
-  padding-block: 8px;
-}
-.connection-fields > p {
-  margin: 0;
-}
-.connection-disclosure {
-  margin-top: 16px;
-  border-top: 1px solid var(--line);
-}
-.connection-disclosure > summary {
-  padding: var(--card-row-inset) 0;
-  gap: 8px;
-  border-bottom: 0;
-}
-.connection-disclosure > div {
-  margin-top: 0;
-}
-.connection-actions {
-  margin-bottom: 12px;
-}
-.connection-actions h3 {
-  margin: 0;
-}
-.connection-save {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 12px;
-}
-.connection-save > span {
-  font-size: var(--font-detail);
-}
-.connection-save > button {
-  margin-left: auto;
-}
-.connection-remove {
-  margin-top: var(--card-inset);
 }
 .account-card {
   min-width: 0;
@@ -1764,14 +1570,7 @@ details[open] > summary > .collection-chevron {
 #pane > .account-card {
   padding: 0;
 }
-.account-effects {
-  margin-top: var(--card-inset);
-  padding-top: var(--card-inset);
-  border-top: 1px solid var(--line);
-}
-.account-effects h3 {
-  margin: 0;
-}
+
 .agent-setup-body {
   display: grid;
   gap: 16px;
@@ -1779,9 +1578,6 @@ details[open] > summary > .collection-chevron {
 }
 .connection-setup > .agent-setup-body {
   padding: 0;
-}
-.connection-setup > .agent-setup-body + .agent-setup-body {
-  margin-top: 16px;
 }
 .connection-setup .agent-setup-item + .agent-setup-item {
   padding-top: 0;
@@ -1828,14 +1624,7 @@ details[open] > summary > .collection-chevron {
   margin: 0;
   overflow-wrap: anywhere;
 }
-.card-footer {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 8px;
-  padding: var(--card-row-inset) var(--card-inset);
-  border-top: 1px solid var(--line);
-}
+
 .capability {
   display: grid;
   grid-template-columns: minmax(0, 1fr) fit-content(45%);
@@ -1892,136 +1681,33 @@ summary.capability:hover {
 .effects .badge {
   padding: 0 6px;
 }
-.usage-columns {
-  display: flex;
-  justify-content: space-between;
-  padding: var(--card-row-inset) 28px var(--card-row-inset) 32px;
-  border-bottom: 1px solid var(--line);
-  color: var(--muted);
-  font-size: var(--font-detail);
-}
-.account-agent-intro {
-  margin: 0 0 16px;
-}
-.account-agent-form {
-  padding: 0 0 4px;
-}
-.account-agent-fields {
-  display: flex;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.account-agent-fields > div {
-  min-width: 0;
-  flex: 0 1 200px;
-}
-.account-agent-fields > div:first-child {
-  flex: 1 1 280px;
-}
-.account-agent-fields label {
-  margin: 0 0 6px;
-}
-.account-agent-fields > .account-agent-actions {
-  display: flex;
-  flex: 0 0 auto;
-  gap: 8px;
-}
-.account-agent-pair {
-  display: inline-block;
-  margin-top: 12px;
-}
-.agent-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.agent-list li + li {
-  border-top: 1px solid var(--line);
-}
-.agent-link {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: var(--card-row-inset) 0;
-  color: var(--text);
-}
-.agent-link:hover {
-  background: var(--hover);
-}
-.agent-link:hover strong {
-  color: var(--link);
-}
-.agent-link > .ui-icon {
-  width: 20px;
-  height: 20px;
-  color: var(--muted);
-}
-.agent-info {
-  flex: 1;
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.agent-info strong {
-  font-weight: 500;
-}
-.agent-info small {
-  display: block;
-  color: var(--muted);
-  font-size: var(--font-detail);
-}
-.agent-access-level {
-  max-width: 40%;
-  text-align: right;
-}
-.agent-access-arrow {
-  display: flex;
-  color: var(--muted);
-}
+
 .secret-input,
-.credential-actions {
+.form-actions {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.credential-actions {
-  flex-wrap: wrap;
-}
-.credential-header,
-.credential-title {
-  display: flex;
-  align-items: center;
+.form-actions {
   flex-wrap: wrap;
 }
 .credential-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 12px 24px;
 }
-.credential-title {
-  gap: 4px 12px;
-  min-width: 0;
-}
-.credential-title h3,
-.credential-title p {
-  margin: 0;
-}
-.credential-title p {
-  font-size: var(--font-detail);
-}
-.credential-editor {
-  margin-top: 12px;
-}
+
 .secret-input button {
   flex-shrink: 0;
   align-self: stretch;
 }
 .field-help {
-  margin: 6px 0;
+  margin: 0;
   font-size: var(--font-detail);
+  line-height: 18px;
 }
-.credential-status {
-  margin-right: auto;
-  font-size: var(--font-detail);
-}
+
 .decisions {
   display: flex;
   flex-wrap: wrap;
@@ -2464,6 +2150,10 @@ td {
   align-items: center;
   gap: 8px;
   min-height: var(--control-height);
+  margin: 0;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
 }
 .dialog-header .connector-icon {
   margin: 0;
@@ -2476,12 +2166,6 @@ td {
 }
 .dialog-back .icon {
   transform: rotate(180deg);
-}
-.dialog-header h1 {
-  margin: 0;
-  font-size: 20px;
-  line-height: 28px;
-  font-weight: 600;
 }
 .dialog-header p {
   margin: 6px 0 0;
@@ -2508,16 +2192,7 @@ td {
   scrollbar-gutter: stable;
   overscroll-behavior: contain;
 }
-#dialog-content {
-  min-width: 0;
-  container: details / inline-size;
-  overflow-wrap: anywhere;
-}
-#dialog-content > section + section {
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
-}
+
 #creation-dialog > #toast {
   position: static;
   max-width: none;
@@ -2640,9 +2315,7 @@ td {
   .data-permission > .seg {
     justify-self: start;
   }
-  .settings-network-summary {
-    gap: 8px;
-  }
+
   .row {
     flex-wrap: wrap;
   }
@@ -2663,9 +2336,7 @@ td {
   .agent-setup-details dd + dt {
     margin-top: 8px;
   }
-  .card-footer {
-    flex-wrap: wrap;
-  }
+
   .capability {
     grid-template-columns: minmax(0, 1fr) auto;
   }
@@ -2793,16 +2464,6 @@ td {
 .collection-list > summary .collection-chevron {
   color: var(--muted);
 }
-.search-field > .icon {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 12px;
-  color: var(--muted);
-}
-.search-field .ui-icon {
-  position: static;
-}
 .dialog-notice {
   padding: 12px 24px;
   margin: 0;
@@ -2819,16 +2480,6 @@ td {
   margin-top: 4px;
   color: var(--muted);
   font-weight: 400;
-}
-.connection-fields label {
-  margin-top: 0;
-}
-.connection-fields > button {
-  justify-self: start;
-}
-form > button,
-form > .credential-actions {
-  margin-top: 16px;
 }
 .connector-icon .dark-icon {
   display: none;

@@ -126,7 +126,7 @@ export function Settings(props: {
       <section class="settings-section">
         <h2>Advanced</h2>
         <form
-          class="settings-network-editor"
+          class="settings-network-editor form-fields"
           onSubmit={(e) => {
             e.preventDefault();
             try {
@@ -285,7 +285,7 @@ function PolicyEditor(props: {
           This file controls saved permissions. Changes made elsewhere in
           Monitor update it too. Credentials are stored separately.
         </p>
-        <div class="credential-actions">
+        <div class="form-actions">
           <button
             onClick={() => {
               if (
@@ -314,7 +314,7 @@ function PolicyEditor(props: {
         </div>
       </section>
       <section>
-        <label>
+        <label class="field">
           policy.toml
           <textarea
             rows={30}
@@ -328,7 +328,7 @@ function PolicyEditor(props: {
         </label>
       </section>
       <section>
-        <div class="credential-actions">
+        <div class="form-actions">
           <button
             disabled={checking() || m.busy()}
             onClick={() => void review()}
@@ -465,6 +465,7 @@ export function PresetEditor(props: { name: string; request?: string }) {
                 )}
               </Show>
               <form
+                class="form-fields"
                 onSubmit={async (e) => {
                   e.preventDefault();
                   try {
@@ -497,7 +498,7 @@ export function PresetEditor(props: { name: string; request?: string }) {
                     onInput={(e) => setText(e.currentTarget.value)}
                   />
                 </label>
-                <div class="credential-actions">
+                <div class="form-actions">
                   <button class="primary" disabled={m.busy()}>
                     Save preset
                   </button>

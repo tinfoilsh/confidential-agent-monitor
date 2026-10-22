@@ -3,6 +3,8 @@ import * as owner from "./owner.js";
 import {
   ConnectorIcon,
   Empty,
+  DisclosureHeading,
+  SectionHeading,
   Icon,
   LazyDetails,
   Permission,
@@ -156,7 +158,7 @@ export function AddAgent() {
     }
   };
   return (
-    <form onSubmit={submit} class="connection-fields">
+    <form onSubmit={submit} class="form-fields">
       <label>
         Agent name
         <input
@@ -488,6 +490,7 @@ function AgentSettings(props: { name: string }) {
           <Show when={!!identity()?.reviewer && m.view()!.config.reviewer}>
             {(reviewer) => (
               <form
+                class="form-fields"
                 onSubmit={async (e) => {
                   e.preventDefault();
                   if (
@@ -518,43 +521,33 @@ function AgentSettings(props: { name: string }) {
           </Show>
         </section>
         <ResourceDisclosure
-          class="connection-advanced agent-maintenance"
+          class="section-disclosure agent-maintenance"
           summary={
-            <>
-              <span class="connection-advanced-text">
-                <span class="connection-advanced-heading">
-                  <strong class="connection-advanced-title">
-                    Setup &amp; maintenance
-                  </strong>
-                </span>
-                <small>Sandbox access and SSH keys</small>
-              </span>
-              <span class="collection-chevron">
-                <Icon name="arrow" />
-              </span>
-            </>
+            <DisclosureHeading
+              title="Setup & maintenance"
+              description="Sandbox access and SSH keys"
+            />
           }
         >
           {() => (
-            <div class="connection-advanced-content">
+            <div class="section-content">
               <section>
                 <SandboxAccess name={props.name} />
               </section>
-              <section>
-                <h3>Host key</h3>
+              <section class="settings-group">
+                <SectionHeading title="Host key" small />
                 <pre>{m.view()!.host_key}</pre>
-                <h3>CA</h3>
+                <SectionHeading title="CA" small />
                 <pre>{m.view()!.ca}</pre>
               </section>
-              <section class="agent-key-replacement">
-                <header>
-                  <h3>Replace SSH key</h3>
-                  <p>
-                    Use this after recreating the sandbox. The agent starts
-                    clean.
-                  </p>
-                </header>
+              <section class="settings-group">
+                <SectionHeading
+                  title="Replace SSH key"
+                  description="Use this after recreating the sandbox. The agent starts clean."
+                  small
+                />
                 <form
+                  class="form-fields"
                   onSubmit={async (e) => {
                     e.preventDefault();
                     try {
@@ -584,8 +577,11 @@ function AgentSettings(props: { name: string }) {
                 </form>
               </section>
               <Show when={copySources().length}>
-                <section>
-                  <h2>Copy settings from another agent</h2>
+                <section class="settings-group">
+                  <SectionHeading
+                    title="Copy settings from another agent"
+                    small
+                  />
                   <div class="agent-copy-settings">
                     <select
                       aria-label="Copy settings from"
@@ -615,10 +611,11 @@ function AgentSettings(props: { name: string }) {
                 </section>
               </Show>
               <section class="agent-remove">
-                <div>
-                  <h2>Remove agent</h2>
-                  <p>Revokes this agent’s access to the monitor.</p>
-                </div>
+                <SectionHeading
+                  title="Remove agent"
+                  description="Revokes this agent’s access to the monitor."
+                  small
+                />
                 <button
                   class="danger"
                   disabled={m.busy()}

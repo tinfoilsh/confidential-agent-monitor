@@ -55,6 +55,52 @@ export function ConnectorIcon(props: { preset: string }) {
 export const href = (kind: string, ...args: string[]) =>
   "#" + [kind, ...args].map(encodeURIComponent).join("/");
 
+export function SectionHeading(props: {
+  title: string;
+  description?: JSX.Element;
+  small?: boolean;
+}) {
+  return (
+    <header class="heading-text" classList={{ "heading-small": props.small }}>
+      <Show
+        when={props.small}
+        fallback={<h3 class="section-title">{props.title}</h3>}
+      >
+        <h4 class="section-title">{props.title}</h4>
+      </Show>
+      <Show when={props.description}>
+        <p class="section-description">{props.description}</p>
+      </Show>
+    </header>
+  );
+}
+
+export function DisclosureHeading(props: {
+  title: string;
+  description?: string;
+  count?: number;
+  small?: boolean;
+}) {
+  return (
+    <>
+      <span class="heading-text" classList={{ "heading-small": props.small }}>
+        <span class="heading-row">
+          <strong class="section-title">{props.title}</strong>
+          <Show when={props.count !== undefined}>
+            <span class="count">{props.count}</span>
+          </Show>
+        </span>
+        <Show when={props.description}>
+          <small class="section-description">{props.description}</small>
+        </Show>
+      </span>
+      <span class="collection-chevron">
+        <Icon name="arrow" />
+      </span>
+    </>
+  );
+}
+
 // Keep the native modal open until its exit animation finishes.
 export function createDialogMotion(
   element: Accessor<HTMLDialogElement>,
@@ -383,6 +429,7 @@ export function Field(props: {
   value: string;
   onInput: (value: string) => void;
   disabled?: boolean;
+  help?: JSX.Element;
 }) {
   const id = createUniqueId(),
     [shown, setShown] = createSignal(false);
@@ -395,6 +442,7 @@ export function Field(props: {
           <div class="secret-input">
             <input
               id={id}
+              aria-describedby={props.help ? `${id}-help` : undefined}
               type="text"
               classList={{ "secret-value": !!props.field.secret }}
               data-concealed={props.field.secret && !shown()}
@@ -427,11 +475,17 @@ export function Field(props: {
       >
         <textarea
           id={id}
+          aria-describedby={props.help ? `${id}-help` : undefined}
           rows={6}
           disabled={props.disabled}
           value={props.value}
           onInput={(e) => props.onInput(e.currentTarget.value)}
         />
+      </Show>
+      <Show when={props.help}>
+        <p id={`${id}-help`} class="muted field-help">
+          {props.help}
+        </p>
       </Show>
     </div>
   );

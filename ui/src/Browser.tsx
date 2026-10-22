@@ -253,10 +253,7 @@ export function Browser(props: { name: string; active: boolean }) {
             "Could not show the page. If it opened a dialog, accept or dismiss it."}
         </p>
       </Show>
-      <fieldset
-        class="credential-actions"
-        disabled={!frame()?.owner || changing()}
-      >
+      <fieldset class="form-actions" disabled={!frame()?.owner || changing()}>
         <legend>Page dialog</legend>
         <button onClick={() => act({ action: "dialog", accept: true })}>
           Accept
