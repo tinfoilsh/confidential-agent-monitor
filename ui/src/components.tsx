@@ -387,7 +387,7 @@ export function Field(props: {
   const id = createUniqueId(),
     [shown, setShown] = createSignal(false);
   return (
-    <div>
+    <div class="field">
       <label for={id}>{props.field.label}</label>
       <Show
         when={props.field.multiline || props.field.json}

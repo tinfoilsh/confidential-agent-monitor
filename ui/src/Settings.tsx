@@ -54,7 +54,7 @@ export function Settings(props: {
         <h2>Default permissions</h2>
         <label class="setting-row">
           <span>
-            Allow paid AI inference
+            Allow AI inference
             <small>
               Use paid AI models without payment approval. Provider charges and
               explicit payment settings still apply.

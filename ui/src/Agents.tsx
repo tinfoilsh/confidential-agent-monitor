@@ -274,13 +274,6 @@ export function AgentConnectionAccess(props: {
           disabled={entry().level === "off"}
           onClick={() => setExpanded(!expanded())}
         >
-          <span
-            class="access-caret"
-            aria-hidden="true"
-            classList={{ hidden: entry().level === "off", expanded: open() }}
-          >
-            <Icon name="arrow" />
-          </span>
           <Show
             when={props.title}
             fallback={<ConnectorIcon preset={entry().preset} />}
@@ -290,6 +283,13 @@ export function AgentConnectionAccess(props: {
           <b title={props.title ?? props.account}>
             {props.title ?? props.account}
           </b>
+          <span
+            class="access-caret"
+            aria-hidden="true"
+            classList={{ hidden: entry().level === "off", expanded: open() }}
+          >
+            <Icon name="arrow" />
+          </span>
           <Show when={entry().level !== "off" && entry().overrides}>
             <small class="muted">{entry().overrides} overrides</small>
           </Show>
@@ -401,7 +401,7 @@ function AgentAccess(props: { name: string }) {
         each={Object.keys(m.view()!.config.accounts ?? {})}
         fallback={
           <p>
-            No connections yet. <a href="#catalog">Add connection</a>
+            No connections yet. <a href="#accounts/catalog">Add connection</a>
           </p>
         }
       >
@@ -520,17 +520,19 @@ function AgentSettings(props: { name: string }) {
         <ResourceDisclosure
           class="connection-advanced agent-maintenance"
           summary={
-            <span class="connection-advanced-text">
-              <span class="connection-advanced-heading">
-                <strong class="connection-advanced-title">
-                  Setup &amp; maintenance
-                </strong>
-                <span class="collection-chevron">
-                  <Icon name="arrow" />
+            <>
+              <span class="connection-advanced-text">
+                <span class="connection-advanced-heading">
+                  <strong class="connection-advanced-title">
+                    Setup &amp; maintenance
+                  </strong>
                 </span>
+                <small>Sandbox access and SSH keys</small>
               </span>
-              <small>Sandbox access and SSH keys</small>
-            </span>
+              <span class="collection-chevron">
+                <Icon name="arrow" />
+              </span>
+            </>
           }
         >
           {() => (
@@ -544,11 +546,14 @@ function AgentSettings(props: { name: string }) {
                 <h3>CA</h3>
                 <pre>{m.view()!.ca}</pre>
               </section>
-              <section>
-                <h2>Replace SSH key</h2>
-                <p>
-                  Use this after recreating the sandbox. The agent starts clean.
-                </p>
+              <section class="agent-key-replacement">
+                <header>
+                  <h3>Replace SSH key</h3>
+                  <p>
+                    Use this after recreating the sandbox. The agent starts
+                    clean.
+                  </p>
+                </header>
                 <form
                   onSubmit={async (e) => {
                     e.preventDefault();

@@ -104,7 +104,30 @@ export function DeviceSignInDialog(props: {
   );
 }
 
-export function Connections(props: { expanded?: string }) {
+export function Connections(props: { catalog?: boolean; expanded?: string }) {
+  return (
+    <>
+      <nav class="page-tabs" aria-label="Connection views">
+        <a href="#accounts" aria-current={!props.catalog ? "page" : undefined}>
+          Mine
+        </a>
+        <a
+          href="#accounts/catalog"
+          aria-current={props.catalog ? "page" : undefined}
+        >
+          Catalog
+        </a>
+      </nav>
+      <Show
+        when={props.catalog}
+        fallback={<MyConnections expanded={props.expanded} />}
+      >
+        <Catalog />
+      </Show>
+    </>
+  );
+}
+function MyConnections(props: { expanded?: string }) {
   const m = useMonitor(),
     [query, setQuery] = m.search("accounts");
   if (props.expanded) setQuery("");
@@ -141,7 +164,7 @@ export function Connections(props: { expanded?: string }) {
               title={query() ? "No matching connections" : "No connections yet"}
               action={
                 <Show when={!query()}>
-                  <a class="button primary" href="#catalog">
+                  <a class="button primary" href="#accounts/catalog">
                     <Icon name="plus" />
                     Add connection
                   </a>
@@ -231,7 +254,6 @@ export function Catalog(props: { edit?: boolean }) {
           label={props.edit ? "Search presets" : "Search services"}
           value={query()}
           onInput={setQuery}
-          autofocus={!props.edit}
           onEnter={() =>
             catalog
               .querySelector<HTMLAnchorElement>("details[open] .collection-row")
@@ -306,23 +328,27 @@ function ApiFields(props: {
   value: owner.ApiSettings;
   onChange: (value: owner.ApiSettings) => void;
 }) {
+  const urlId = createUniqueId();
   const field = (key: keyof owner.ApiSettings, value: string) =>
     props.onChange({ ...props.value, [key]: value });
   return (
     <>
-      <label>
-        API URL
-        <input
-          type="url"
-          required
-          placeholder="https://api.example.com"
-          value={props.value.url}
-          onInput={(e) => field("url", e.currentTarget.value)}
-        />
-      </label>
-      <p class="muted">
-        The credential is used only at this address and its paths.
-      </p>
+      <div class="field">
+        <label for={urlId}>API URL</label>
+        <div>
+          <input
+            id={urlId}
+            type="url"
+            required
+            placeholder="https://api.example.com"
+            value={props.value.url}
+            onInput={(e) => field("url", e.currentTarget.value)}
+          />
+          <p class="muted field-help">
+            The credential is used only at this address and its paths.
+          </p>
+        </div>
+      </div>
       <label>
         Authentication
         <select
@@ -809,50 +835,6 @@ function Connection(props: { name: string; active: boolean }) {
             </section>
           )}
         </For>
-        <ResourceDisclosure
-          class="connection-advanced"
-          summary={
-            <>
-              <span class="connection-advanced-text">
-                <span class="connection-advanced-heading">
-                  <strong class="connection-advanced-title">
-                    Agent access
-                  </strong>
-                  <span class="count">
-                    {
-                      owner
-                        .accountUsers(m.view()!, props.name)
-                        .filter(({ name }) => !owner.isDevice(name)).length
-                    }
-                  </span>
-                  <span class="collection-chevron">
-                    <Icon name="arrow" />
-                  </span>
-                </span>
-                <small>Who can use this connection</small>
-              </span>
-              <Show when={agents().length}>
-                <a class="button" href="#pair">
-                  Add agent
-                </a>
-              </Show>
-            </>
-          }
-        >
-          {() => (
-            <div class="connection-advanced-content">
-              <For each={agents()} fallback={<a href="#pair">Add an agent</a>}>
-                {(name) => (
-                  <AgentConnectionAccess
-                    name={name}
-                    account={props.name}
-                    title={name}
-                  />
-                )}
-              </For>
-            </div>
-          )}
-        </ResourceDisclosure>
         <Show when={owner.liveConnection(m.view()!, props.name)}>
           {(connection) => (
             <Suspense fallback={<p role="status">Loading browser…</p>}>
@@ -860,186 +842,204 @@ function Connection(props: { name: string; active: boolean }) {
             </Suspense>
           )}
         </Show>
-        <ResourceDisclosure
-          class="connection-advanced connection-setup"
-          summary={
-            <span class="connection-advanced-text">
-              <span class="connection-advanced-heading">
-                <strong class="connection-advanced-title">
-                  Connection setup
-                </strong>
-                <span class="collection-chevron">
-                  <Icon name="arrow" />
-                </span>
-              </span>
-              <small>Credentials and agent setup</small>
-            </span>
-          }
-        >
-          {() => (
-            <div class="connection-advanced-content">
-              <ConnectionForm name={props.name} />
-              <Show when={tinfoil().length}>
-                <div class="agent-setup-body">
-                  <For each={tinfoil()}>
-                    {(setup) => (
+        <section class="connection-section">
+          <header class="connection-section-heading">
+            <h3>Agent access</h3>
+            <p>Who can use this connection</p>
+          </header>
+          <div class="connection-access">
+            <For
+              each={agents()}
+              fallback={
+                <p class="muted">
+                  <a href="#pair">Add an agent</a> to use this connection.
+                </p>
+              }
+            >
+              {(name) => (
+                <AgentConnectionAccess
+                  name={name}
+                  account={props.name}
+                  title={name}
+                />
+              )}
+            </For>
+          </div>
+        </section>
+        <Show when={tinfoil().length || setups().length || codex()}>
+          <section class="connection-section connection-setup">
+            <header class="connection-section-heading">
+              <h3>Details</h3>
+              <p>URLs, agent placeholders, and setup instructions</p>
+            </header>
+            <Show when={tinfoil().length}>
+              <div class="agent-setup-body">
+                <For each={tinfoil()}>
+                  {(setup) => (
+                    <div class="agent-setup-item">
+                      <h4>
+                        {setup.mcp ? "Web search (MCP)" : "Inference API"}
+                      </h4>
+                      <div class="secret-input">
+                        <input
+                          class="mono"
+                          aria-label={
+                            setup.mcp
+                              ? "Web-search MCP URL"
+                              : "Tinfoil API base URL"
+                          }
+                          readonly
+                          value={setup.url}
+                          onClick={(e) => e.currentTarget.select()}
+                        />
+                        <Copy
+                          text={setup.url}
+                          label={`Copy ${setup.connection} URL`}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </For>
+              </div>
+            </Show>
+            <Show when={setups().length}>
+              <div class="agent-setup-body">
+                <For each={setups()}>
+                  {(group) => {
+                    const setup = group[0];
+                    let input!: HTMLInputElement;
+                    const id = createUniqueId();
+                    return (
                       <div class="agent-setup-item">
-                        <h4>
-                          {setup.mcp ? "Web search (MCP)" : "Inference API"}
-                        </h4>
+                        <Show when={setups().length > 1}>
+                          <h3>
+                            {setup.connection} · {setup.credential}
+                          </h3>
+                        </Show>
+                        <label for={id}>Agent placeholder</label>
                         <div class="secret-input">
                           <input
+                            ref={input}
+                            id={id}
                             class="mono"
-                            aria-label={
-                              setup.mcp
-                                ? "Web-search MCP URL"
-                                : "Tinfoil API base URL"
-                            }
                             readonly
-                            value={setup.url}
+                            value={setup.placeholder}
                             onClick={(e) => e.currentTarget.select()}
                           />
                           <Copy
-                            text={setup.url}
-                            label={`Copy ${setup.connection} URL`}
+                            text={setup.placeholder}
+                            label={`Copy placeholder for ${setup.connection} ${setup.credential}`}
+                            target={() => input}
                           />
                         </div>
+                        <details class="agent-setup-usage">
+                          <summary>Where this placeholder is used</summary>
+                          <Show when={group.length > 1}>
+                            <p>
+                              The same placeholder works in each of these
+                              formats. Use the format your tool expects.
+                            </p>
+                          </Show>
+                          <For each={group}>
+                            {(use) => (
+                              <dl class="agent-setup-details">
+                                <dt>Address</dt>
+                                <dd>
+                                  <code>{use.address}</code>
+                                </dd>
+                                <dt>
+                                  {use.header
+                                    ? "Header"
+                                    : use.query
+                                      ? "Query parameter"
+                                      : "Authentication"}
+                                </dt>
+                                <dd>
+                                  <code>
+                                    {use.header
+                                      ? `${use.header}: ${use.value}`
+                                      : use.query
+                                        ? `${use.query}=${use.value}`
+                                        : use.placement}
+                                  </code>
+                                </dd>
+                              </dl>
+                            )}
+                          </For>
+                        </details>
+                      </div>
+                    );
+                  }}
+                </For>
+              </div>
+            </Show>
+            <Show when={codex()}>
+              {(text) => {
+                let code!: HTMLPreElement;
+                return (
+                  <ResourceDisclosure
+                    class="connection-disclosure"
+                    summary={
+                      <>
+                        <span class="collection-chevron">
+                          <Icon name="arrow" />
+                        </span>
+                        <span>Codex setup</span>
+                      </>
+                    }
+                  >
+                    {() => (
+                      <div class="agent-setup-body">
+                        <p>
+                          Save this in <code>~/.codex/config.toml</code>, then
+                          run Codex in your Monitor-connected sandbox or with{" "}
+                          <code>monitor run -- codex</code>. Choose a model
+                          available to your ChatGPT account. Grant your agent
+                          access to this connection and review pending requests
+                          in Activity.
+                        </p>
+                        <pre ref={code}>{text()}</pre>
+                        <Copy text={text()} target={() => code} />
+                        <p>
+                          <a
+                            href="https://chatgpt.com/#settings/Usage"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Manage ChatGPT usage
+                          </a>
+                        </p>
                       </div>
                     )}
-                  </For>
-                </div>
-              </Show>
-              <Show when={setups().length}>
-                <div class="agent-setup-body">
-                  <For each={setups()}>
-                    {(group) => {
-                      const setup = group[0];
-                      let input!: HTMLInputElement;
-                      const id = createUniqueId();
-                      return (
-                        <div class="agent-setup-item">
-                          <Show when={setups().length > 1}>
-                            <h3>
-                              {setup.connection} · {setup.credential}
-                            </h3>
-                          </Show>
-                          <label for={id}>Agent placeholder</label>
-                          <div class="secret-input">
-                            <input
-                              ref={input}
-                              id={id}
-                              class="mono"
-                              readonly
-                              value={setup.placeholder}
-                              onClick={(e) => e.currentTarget.select()}
-                            />
-                            <Copy
-                              text={setup.placeholder}
-                              label={`Copy placeholder for ${setup.connection} ${setup.credential}`}
-                              target={() => input}
-                            />
-                          </div>
-                          <details class="agent-setup-usage">
-                            <summary>Where this placeholder is used</summary>
-                            <Show when={group.length > 1}>
-                              <p>
-                                The same placeholder works in each of these
-                                formats. Use the format your tool expects.
-                              </p>
-                            </Show>
-                            <For each={group}>
-                              {(use) => (
-                                <dl class="agent-setup-details">
-                                  <dt>Address</dt>
-                                  <dd>
-                                    <code>{use.address}</code>
-                                  </dd>
-                                  <dt>
-                                    {use.header
-                                      ? "Header"
-                                      : use.query
-                                        ? "Query parameter"
-                                        : "Authentication"}
-                                  </dt>
-                                  <dd>
-                                    <code>
-                                      {use.header
-                                        ? `${use.header}: ${use.value}`
-                                        : use.query
-                                          ? `${use.query}=${use.value}`
-                                          : use.placement}
-                                    </code>
-                                  </dd>
-                                </dl>
-                              )}
-                            </For>
-                          </details>
-                        </div>
-                      );
-                    }}
-                  </For>
-                </div>
-              </Show>
-              <Show when={codex()}>
-                {(text) => {
-                  let code!: HTMLPreElement;
-                  return (
-                    <ResourceDisclosure
-                      class="connection-disclosure"
-                      summary={
-                        <>
-                          <span class="collection-chevron">
-                            <Icon name="arrow" />
-                          </span>
-                          <span>Codex setup</span>
-                        </>
-                      }
-                    >
-                      {() => (
-                        <div class="agent-setup-body">
-                          <p>
-                            Save this in <code>~/.codex/config.toml</code>, then
-                            run Codex in your Monitor-connected sandbox or with{" "}
-                            <code>monitor run -- codex</code>. Choose a model
-                            available to your ChatGPT account. Grant your agent
-                            access to this connection and review pending
-                            requests in Activity.
-                          </p>
-                          <pre ref={code}>{text()}</pre>
-                          <Copy text={text()} target={() => code} />
-                          <p>
-                            <a
-                              href="https://chatgpt.com/#settings/Usage"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Manage ChatGPT usage
-                            </a>
-                          </p>
-                        </div>
-                      )}
-                    </ResourceDisclosure>
-                  );
-                }}
-              </Show>
-            </div>
-          )}
-        </ResourceDisclosure>
+                  </ResourceDisclosure>
+                );
+              }}
+            </Show>
+          </section>
+        </Show>
+        <section class="connection-section connection-config">
+          <header class="connection-section-heading">
+            <h3>Configuration</h3>
+          </header>
+          <ConnectionForm name={props.name} />
+        </section>
         <ResourceDisclosure
           class="connection-advanced"
           summary={
-            <span class="connection-advanced-text">
-              <span class="connection-advanced-heading">
-                <strong class="connection-advanced-title">API</strong>
-                <span class="count">
-                  {Object.keys(owner.actionsOf(m.view()!, props.name)).length}
+            <>
+              <span class="connection-advanced-text">
+                <span class="connection-advanced-heading">
+                  <strong class="connection-advanced-title">Operations</strong>
+                  <span class="count">
+                    {Object.keys(owner.actionsOf(m.view()!, props.name)).length}
+                  </span>
                 </span>
-                <span class="collection-chevron">
-                  <Icon name="arrow" />
-                </span>
+                <small>Supported requests and their effects</small>
               </span>
-              <small>Operations and effects</small>
-            </span>
+              <span class="collection-chevron">
+                <Icon name="arrow" />
+              </span>
+            </>
           }
         >
           {() => (
@@ -1047,7 +1047,7 @@ function Connection(props: { name: string; active: boolean }) {
               <div
                 class="action-list"
                 role="region"
-                aria-label="API"
+                aria-label="Operations"
                 tabIndex={0}
               >
                 <ConnectionActions
@@ -1058,23 +1058,28 @@ function Connection(props: { name: string; active: boolean }) {
           )}
         </ResourceDisclosure>
         <ResourceDisclosure
-          class="connection-advanced"
+          class="connection-advanced connection-options"
           summary={
-            <span class="connection-advanced-text">
-              <span class="connection-advanced-heading">
-                <strong class="connection-advanced-title">Advanced</strong>
-                <span class="collection-chevron">
-                  <Icon name="arrow" />
+            <>
+              <span class="connection-advanced-text">
+                <span class="connection-advanced-heading">
+                  <strong class="connection-advanced-title">Advanced</strong>
                 </span>
+                <small>Sharing, effects, and policy</small>
               </span>
-              <small>Sharing, effects, and policy</small>
-            </span>
+              <span class="collection-chevron">
+                <Icon name="arrow" />
+              </span>
+            </>
           }
         >
           {() => (
             <div class="connection-advanced-content">
-              <section>
-                <h3>Data sharing</h3>
+              <section
+                class="connection-option-group"
+                aria-label="Data sharing"
+              >
+                <h4>Data sharing</h4>
                 <DataPermissions
                   value={answers(account())}
                   onChange={(value) => {
@@ -1090,12 +1095,15 @@ function Connection(props: { name: string; active: boolean }) {
                   }}
                 />
               </section>
-              <section>
-                <h3>Effects</h3>
+              <section class="connection-option-group" aria-label="Effects">
+                <h4>Effects</h4>
                 <Effects scope={{ account: props.name }} />
               </section>
-              <section>
-                <h3>Custom policy</h3>
+              <section
+                class="connection-option-group"
+                aria-label="Custom policy"
+              >
+                <h4>Custom policy</h4>
                 <form
                   class="connection-fields"
                   onSubmit={(e) => {
@@ -1127,28 +1135,24 @@ deny contains "reason shown in Activity" if {
             </div>
           )}
         </ResourceDisclosure>
-        <section>
-          <div class="connection-footer">
-            <a class="button" href={href("preset", account()!.preset)}>
-              Edit connection preset
-            </a>
-            <button
-              class="danger"
-              disabled={m.busy()}
-              onClick={async () => {
-                if (
-                  confirm(`Remove connection ${props.name}?`) &&
-                  (await m.edit(
-                    owner.edits.removeAccount(m.view()!, props.name),
-                  ))
-                )
-                  location.hash = "#accounts";
-              }}
-            >
-              Remove connection
-            </button>
-          </div>
-        </section>
+        <div class="connection-footer">
+          <a class="button" href={href("preset", account()!.preset)}>
+            Edit connection preset
+          </a>
+          <button
+            class="danger"
+            disabled={m.busy()}
+            onClick={async () => {
+              if (
+                confirm(`Remove connection ${props.name}?`) &&
+                (await m.edit(owner.edits.removeAccount(m.view()!, props.name)))
+              )
+                location.hash = "#accounts";
+            }}
+          >
+            Remove connection
+          </button>
+        </div>
       </Show>
     </div>
   );

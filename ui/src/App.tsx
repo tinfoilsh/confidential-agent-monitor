@@ -41,15 +41,9 @@ const Policy = lazy(() =>
 const PresetEditor = lazy(() =>
   import("./Settings").then((m) => ({ default: m.PresetEditor })),
 );
-const Rules = lazy(() =>
-  import("./Settings").then((m) => ({ default: m.Rules })),
-);
 
 const sections: Record<string, [string, string]> = {
-  activity: [
-    "Activity",
-    "Review requests and follow what your agents are doing.",
-  ],
+  activity: ["Activity", "Review requests and manage saved approval rules."],
   agents: [
     "Agents",
     "Manage sandboxes, devices, and the actions they can take.",
@@ -58,7 +52,6 @@ const sections: Record<string, [string, string]> = {
     "Connections",
     "Connect services and control how agents use their data.",
   ],
-  rules: ["Saved rules", "Review permissions saved from request approvals."],
   settings: ["Settings", "Manage guardrails, policy, and monitor preferences."],
   integrations: [
     "Integrations",
@@ -77,8 +70,7 @@ const parse = (path: string) => {
     return ["accounts"];
   }
 };
-const isDialog = (path: string) =>
-  ["pair", "catalog", "add"].includes(parse(path)[0]);
+const isDialog = (path: string) => ["pair", "add"].includes(parse(path)[0]);
 
 export default function App() {
   return (
@@ -105,7 +97,7 @@ function Shell() {
       isDialog(initial)
         ? initial === "pair"
           ? "agents"
-          : "accounts"
+          : "accounts/catalog"
         : initial,
     );
   const [mobile, setMobile] = createSignal(false),
@@ -122,7 +114,9 @@ function Shell() {
       agent: "agents",
       "agent-settings": "agents",
       account: "accounts",
+      catalog: "accounts",
       request: "activity",
+      rules: "activity",
       policy: "settings",
       presets: "settings",
       preset: "settings",
@@ -131,9 +125,11 @@ function Shell() {
     sections[
       ["agent", "agent-settings"].includes(kind())
         ? "agents"
-        : kind() === "account"
-          ? "accounts"
-          : kind()
+        : kind() === "rules"
+          ? "activity"
+          : kind() === "account" || kind() === "catalog"
+            ? "accounts"
+            : kind()
     ]?.[0] ??
     (kind() === "request"
       ? "Request"
@@ -200,9 +196,7 @@ function Shell() {
               Menu
             </button>
             <nav id="tree" aria-label="Management">
-              <For
-                each={["activity", "agents", "accounts", "rules", "settings"]}
-              >
+              <For each={["agents", "activity", "accounts", "settings"]}>
                 {(key) => (
                   <a
                     class="nav-item"
@@ -230,9 +224,11 @@ function Shell() {
                       sections[
                         ["agent", "agent-settings"].includes(kind())
                           ? "agents"
-                          : kind() === "account"
-                            ? "accounts"
-                            : kind()
+                          : kind() === "rules"
+                            ? "activity"
+                            : kind() === "account" || kind() === "catalog"
+                              ? "accounts"
+                              : kind()
                       ]?.[1]
                     }
                   </p>
@@ -242,12 +238,6 @@ function Shell() {
                     <a class="button primary" href="#pair">
                       <Icon name="plus" />
                       Add agent
-                    </a>
-                  </Show>
-                  <Show when={kind() === "accounts" || kind() === "account"}>
-                    <a class="button primary" href="#catalog">
-                      <Icon name="plus" />
-                      Add connection
                     </a>
                   </Show>
                   <Show when={kind() === "presets"}>
@@ -306,8 +296,8 @@ function Page(props: {
         </Empty>
       }
     >
-      <Match when={kind === "activity"}>
-        <Activity scope={name} name={request} />
+      <Match when={kind === "activity" || kind === "rules"}>
+        <Activity scope={kind === "rules" ? "rules" : name} name={request} />
       </Match>
       <Match
         when={
@@ -316,8 +306,8 @@ function Page(props: {
       >
         <Agents expanded={name} />
       </Match>
-      <Match when={kind === "accounts"}>
-        <Connections />
+      <Match when={kind === "accounts" || kind === "catalog"}>
+        <Connections catalog={kind === "catalog" || name === "catalog"} />
       </Match>
       <Match when={kind === "account"}>
         <Connections expanded={name} />
@@ -330,9 +320,6 @@ function Page(props: {
       </Match>
       <Match when={kind === "integrations"}>
         <Integrations page={name} />
-      </Match>
-      <Match when={kind === "rules"}>
-        <Rules />
       </Match>
       <Match when={kind === "policy"}>
         <Policy />
@@ -388,7 +375,7 @@ function CreationDialog(props: { path: string; close: () => void }) {
             aria-label="Choose another service"
             title="Choose another service"
             onClick={() => {
-              location.hash = "#catalog";
+              location.hash = "#accounts/catalog";
             }}
           >
             <Icon name="arrow" />
@@ -401,9 +388,7 @@ function CreationDialog(props: { path: string; close: () => void }) {
             </Show>
             {kind() === "pair"
               ? "Add an agent"
-              : kind() === "catalog"
-                ? "Add connection"
-                : "Add " + (m.view()!.presets[preset()]?.title ?? "connection")}
+              : "Add " + (m.view()!.presets[preset()]?.title ?? "connection")}
           </h1>
           <Show when={kind() === "pair"}>
             <p id="creation-description">
@@ -424,8 +409,6 @@ function CreationDialog(props: { path: string; close: () => void }) {
           {(path) =>
             parse(path)[0] === "pair" ? (
               <AddAgent />
-            ) : parse(path)[0] === "catalog" ? (
-              <Catalog />
             ) : (
               <AddConnection preset={parse(path)[1]} />
             )
@@ -577,7 +560,7 @@ function Gate() {
                     onChange={(e) => setPaid(e.currentTarget.checked)}
                   />
                   <span>
-                    <strong>Allow paid AI inference</strong>
+                    <strong>Allow AI inference</strong>
                     <small>
                       Use paid AI models without payment approval. Provider
                       charges apply.
@@ -622,11 +605,6 @@ function Gate() {
                     Your key stays in Monitor, hidden from your agents.
                   </p>
                 </fieldset>
-                <Show when={preset() === "offline"}>
-                  <p class="onboarding-note">
-                    Your Offline policy keeps this connection disabled.
-                  </p>
-                </Show>
                 <button class="primary" disabled={m.busy()}>
                   {m.busy() ? "Saving…" : "Connect Tinfoil"}
                   <Icon name="arrow" />

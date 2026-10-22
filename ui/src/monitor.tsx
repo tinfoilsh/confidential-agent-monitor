@@ -58,12 +58,9 @@ function createMonitor() {
       source: owner.OwnerApi;
     }
   >();
-  // Keep list filters when opening a request/settings page and returning.
-  const [filters, setFilters] = createStore({
-    query: "",
-    state: "",
-    agent: "",
-    account: "",
+  // Keep request pagination when opening a request or switching Activity tabs.
+  const [activity, setActivity] = createStore({
+    scope: "",
     page: 0,
     anchor: 0,
   });
@@ -524,8 +521,8 @@ function createMonitor() {
     message,
     now,
     icons,
-    filters,
-    setFilters,
+    activity,
+    setActivity,
     search,
     dismissed,
     dismiss,

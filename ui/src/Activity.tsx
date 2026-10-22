@@ -1,9 +1,9 @@
 import {
   For,
   Show,
-  batch,
   createMemo,
   createResource,
+  lazy,
   onCleanup,
 } from "solid-js";
 import * as owner from "./owner.js";
@@ -13,10 +13,13 @@ import {
   Icon,
   LazyDetails,
   ResourceDisclosure,
-  Search,
   href,
 } from "./components";
 import { useMonitor } from "./monitor";
+
+const Rules = lazy(() =>
+  import("./Settings").then((m) => ({ default: m.Rules })),
+);
 
 const PAGE = 50;
 const requestTime = new Intl.DateTimeFormat(undefined, {
@@ -50,51 +53,47 @@ export function Badge(props: { state: string; record?: owner.RequestRecord }) {
   );
 }
 export function Activity(props: { scope?: string; name?: string }) {
+  const rules = () => props.scope === "rules";
+  return (
+    <>
+      <nav class="page-tabs" aria-label="Activity views">
+        <a href="#activity" aria-current={!rules() ? "page" : undefined}>
+          Requests
+        </a>
+        <a href="#activity/rules" aria-current={rules() ? "page" : undefined}>
+          Saved Rules
+        </a>
+      </nav>
+      <Show
+        when={rules()}
+        fallback={<Requests scope={props.scope} name={props.name} />}
+      >
+        <Rules />
+      </Show>
+    </>
+  );
+}
+function Requests(props: { scope?: string; name?: string }) {
   const m = useMonitor();
-  if (props.scope === "agent" || props.scope === "account")
-    m.setFilters(props.scope, props.name ?? "");
-  const query = () => m.filters.query,
-    setQuery = (value: string) => m.setFilters("query", value),
-    state = () => m.filters.state,
-    setState = (value: string) => m.setFilters("state", value),
-    agent = () => m.filters.agent,
-    setAgent = (value: string) => m.setFilters("agent", value),
-    account = () => m.filters.account,
-    setAccount = (value: string) => m.setFilters("account", value),
-    page = () => m.filters.page,
-    setPage = (value: number) => m.setFilters("page", value),
-    anchor = () => m.filters.anchor;
-  const pending = m.pendingCount;
-  const ordered = createMemo(() => owner.ordered(m.records(), m.dismissed()));
-  const searchText = createMemo(
-    () =>
-      new Map(
-        m
-          .records()
-          .map((r) => [
-            r.id,
-            `${owner.requestTitle(r)} ${r.facts.principal.name} ${r.facts.account}`.toLowerCase(),
-          ]),
+  const scope = () =>
+    props.scope === "agent" || props.scope === "account" ? props.scope : "";
+  const key = scope() ? `${scope()}/${props.name ?? ""}` : "";
+  if (m.activity.scope !== key)
+    m.setActivity({ scope: key, page: 0, anchor: 0 });
+  const page = () => m.activity.page,
+    setPage = (value: number) => m.setActivity("page", value),
+    anchor = () => m.activity.anchor;
+  const filtered = createMemo(() =>
+    owner
+      .ordered(m.records(), m.dismissed())
+      .filter((r) =>
+        scope() === "agent"
+          ? r.facts.principal.name === props.name
+          : scope() === "account"
+            ? r.facts.account === props.name
+            : true,
       ),
   );
-  const filtered = createMemo(() => {
-    const search = query().toLowerCase(),
-      status = state(),
-      principal = agent(),
-      connection = account();
-    return ordered().filter(
-      (r) =>
-        (!status ||
-          (status === "pending"
-            ? owner.needsOwner(r)
-            : status === "reviewing"
-              ? r.state === "pending" && !!r.reviewer
-              : r.state === status)) &&
-        (!principal || r.facts.principal.name === principal) &&
-        (!connection || r.facts.account === connection) &&
-        (!search || searchText().get(r.id)!.includes(search)),
-    );
-  });
   // Paging back holds the list at its newest request, so arrivals do not shift the rows being read.
   const held = createMemo(() =>
     anchor()
@@ -108,10 +107,10 @@ export function Activity(props: { scope?: string; name?: string }) {
       .slice(current() * PAGE, (current() + 1) * PAGE)
       .map((r) => r.id),
   );
-  const latest = () => m.setFilters({ page: 0, anchor: 0 });
+  const latest = () => m.setActivity({ page: 0, anchor: 0 });
   const next = async () => {
     if (!anchor())
-      m.setFilters(
+      m.setActivity(
         "anchor",
         Date.parse(m.records()[0]?.time ?? "") || Date.now(),
       );
@@ -120,159 +119,14 @@ export function Activity(props: { scope?: string; name?: string }) {
     if (held().length <= end) await m.loadOlder();
     if (full) setPage(current() + 1);
   };
-  const change = (set: (value: string) => void, value: string) => {
-    batch(() => {
-      set(value);
-      latest();
-    });
-  };
   return (
     <>
-      <div id="overview">
-        <div class="stats">
-          <div class="stat">
-            <div>
-              Needs your approval <Icon name="clock" />
-            </div>
-            <strong>{pending()}</strong>
-            <small>
-              {pending()
-                ? "Review before requests expire"
-                : "No requests waiting"}
-            </small>
-          </div>
-          <div class="stat">
-            <div>
-              Agents <Icon name="rules" />
-            </div>
-            <strong>
-              {Object.keys(m.view()!.config.identities ?? {}).length}
-            </strong>
-            <small>Identities managed by this monitor</small>
-          </div>
-          <div class="stat">
-            <div>
-              Recorded requests <Icon name="activity" />
-            </div>
-            <strong>{m.records().length}</strong>
-            <small>In the current activity log</small>
-          </div>
-        </div>
-        <Show when={pending()}>
-          <div class="pending-notice">
-            <Icon name="clock" />
-            <span>
-              <strong>
-                {pending()}{" "}
-                {pending() === 1 ? "request needs" : "requests need"} your
-                approval.
-              </strong>{" "}
-              Agents are waiting to continue.
-            </span>
-            <button
-              onClick={() =>
-                m.setFilters({
-                  query: "",
-                  state: "pending",
-                  agent: "",
-                  account: "",
-                  page: 0,
-                  anchor: 0,
-                })
-              }
-            >
-              Review requests
-            </button>
-          </div>
-        </Show>
-      </div>
-      <div id="toolbar">
-        <Search
-          label="Search activity"
-          value={query()}
-          onInput={(value) => change(setQuery, value)}
-        />
-        <select
-          aria-label="All statuses"
-          value={state()}
-          onChange={(e) => change(setState, e.currentTarget.value)}
-        >
-          <option value="">All statuses</option>
-          <For
-            each={[
-              "pending",
-              "reviewing",
-              "allowed",
-              "approved",
-              "denied",
-              "refused",
-              "expired",
-            ]}
-          >
-            {(s) => (
-              <option value={s}>
-                {s === "pending"
-                  ? "Needs your approval"
-                  : s === "reviewing"
-                    ? "Tinfoil is reviewing"
-                    : s.charAt(0).toUpperCase() + s.slice(1)}
-              </option>
-            )}
-          </For>
-        </select>
-        <select
-          aria-label="All agents"
-          value={agent()}
-          onChange={(e) => change(setAgent, e.currentTarget.value)}
-        >
-          <option value="">All agents</option>
-          <For
-            each={[
-              ...new Set([
-                ...Object.keys(m.view()!.config.identities ?? {}),
-                ...m.records().map((r) => r.facts.principal.name),
-              ]),
-            ].sort()}
-          >
-            {(name) => <option>{name}</option>}
-          </For>
-        </select>
-        <select
-          aria-label="All connections"
-          value={account()}
-          onChange={(e) => change(setAccount, e.currentTarget.value)}
-        >
-          <option value="">All connections</option>
-          <For
-            each={[
-              ...new Set([
-                ...Object.keys(m.view()!.config.accounts ?? {}),
-                ...m.records().map((r) => r.facts.account),
-              ]),
-            ]
-              .filter(Boolean)
-              .sort()}
-          >
-            {(name) => <option>{name}</option>}
-          </For>
-        </select>
-        <Show when={query() || state() || agent() || account()}>
-          <button
-            onClick={() =>
-              m.setFilters({
-                query: "",
-                state: "",
-                agent: "",
-                account: "",
-                page: 0,
-                anchor: 0,
-              })
-            }
-          >
-            Clear filters
-          </button>
-        </Show>
-      </div>
+      <Show when={scope()}>
+        <p class="activity-context">
+          Requests for <strong>{props.name}</strong>{" "}
+          <a href="#activity">All requests</a>
+        </p>
+      </Show>
       <div id="list" class="resource-list">
         <div class="resource-heading">
           <h2>
@@ -291,7 +145,7 @@ export function Activity(props: { scope?: string; name?: string }) {
               }
               action={
                 <Show when={!m.records().length}>
-                  <a class="button primary" href="#catalog">
+                  <a class="button primary" href="#accounts/catalog">
                     <Icon name="plus" />
                     Add connection
                   </a>
@@ -302,7 +156,8 @@ export function Activity(props: { scope?: string; name?: string }) {
                 when={m.records().length}
                 fallback="Requests appear here when an agent uses a connection."
               >
-                Try another search or clear the filters.
+                No requests for this{" "}
+                {scope() === "agent" ? "agent" : "connection"} yet.
               </Show>
             </Empty>
           }
