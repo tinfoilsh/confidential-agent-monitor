@@ -371,6 +371,64 @@ summary + * {
   margin-left: auto;
   color: inherit;
 }
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+.nav-group-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 12px;
+}
+.nav-switch {
+  transform: scale(0.8);
+  margin: 0;
+}
+.nav-group-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+.nav-group-label:hover {
+  color: #fff;
+}
+.nav-group .nav-item {
+  padding-left: 20px;
+}
+.nav-group.off .nav-item {
+  opacity: 0.45;
+}
+.nav-group.off .nav-item:hover,
+.nav-group.off .nav-item.on {
+  opacity: 0.8;
+}
+.network-off-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--edge);
+  border-left: 3px solid #f87171;
+  border-radius: 6px;
+  background: var(--subtle);
+}
+.network-off-notice .icon {
+  flex: none;
+  color: #f87171;
+}
+.network-off-notice > span:not(.icon) {
+  flex: 1;
+}
 .mobile-toggle {
   display: none;
 }

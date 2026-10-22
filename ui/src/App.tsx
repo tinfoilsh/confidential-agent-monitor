@@ -154,6 +154,20 @@ function Shell() {
               ? m.view()?.config.accounts
               : {}) ?? {},
         ).length;
+  const NavItem = (props: { key: string }) => (
+    <a
+      class="nav-item"
+      classList={{ on: section() === props.key }}
+      aria-current={section() === props.key ? "page" : undefined}
+      href={href(props.key)}
+    >
+      <Icon name={props.key} />
+      <span>{sections[props.key][0]}</span>
+      <Show when={count(props.key)}>
+        <small class="nav-count">{count(props.key)}</small>
+      </Show>
+    </a>
+  );
   const close = () => {
     location.hash = page();
   };
@@ -209,24 +223,37 @@ function Shell() {
               Menu
             </button>
             <nav id="tree" aria-label="Management">
-              <For
-                each={["activity", "agents", "accounts", "rules", "settings"]}
+              <NavItem key="agents" />
+              <div
+                class="nav-group"
+                classList={{ off: owner.networkingOff(m.view()!) }}
               >
-                {(key) => (
-                  <a
-                    class="nav-item"
-                    classList={{ on: section() === key }}
-                    aria-current={section() === key ? "page" : undefined}
-                    href={href(key)}
-                  >
-                    <Icon name={key} />
-                    <span>{sections[key][0]}</span>
-                    <Show when={count(key)}>
-                      <small class="nav-count">{count(key)}</small>
-                    </Show>
+                <div class="nav-group-head">
+                  <a class="nav-group-label" href={href("activity")}>
+                    Networking
                   </a>
-                )}
-              </For>
+                  <input
+                    type="checkbox"
+                    role="switch"
+                    class="nav-switch"
+                    aria-label="Networking"
+                    checked={!owner.networkingOff(m.view()!)}
+                    disabled={m.busy()}
+                    onChange={(e) =>
+                      void m.edit(
+                        owner.edits.setNetworking(
+                          m.view()!,
+                          e.currentTarget.checked,
+                        ),
+                      )
+                    }
+                  />
+                </div>
+                <NavItem key="activity" />
+                <NavItem key="accounts" />
+                <NavItem key="rules" />
+              </div>
+              <NavItem key="settings" />
             </nav>
           </aside>
           <main id="workspace" tabIndex={-1}>

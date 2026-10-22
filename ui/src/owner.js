@@ -1370,8 +1370,30 @@ function onboardingChanges(view, preset) {
   return changes;
 }
 
+// Networking is "off" when a policy denies every request outright — the rule
+// onboarding's offline posture writes. Only egress: identities, routes and
+// connections are untouched either way (see daniel_suggestions.md #2).
+const OFFLINE_RULE =
+  'package sentinel\n\ndeny contains "Network access is disabled."\n';
+const KNOWN_ONLY_RULE =
+  'package sentinel\n\ndeny contains "This request has no recognized policy operation." if input.facts.operation == null\n';
+export const networkingOff = (view) =>
+  Object.values(view.config.policies ?? {}).some((p) =>
+    p.includes('deny contains "Network access is disabled."'),
+  );
+
 // Each edit returns the source changes for POST /policy/edits.
 export const edits = {
+  setNetworking: (view, on) => {
+    const policies = view.config.policies ?? {};
+    const name =
+      Object.keys(policies).find((k) =>
+        policies[k].includes('deny contains "Network access is disabled."'),
+      ) ?? "network-default";
+    return [
+      { path: ["policies", name], value: on ? KNOWN_ONLY_RULE : OFFLINE_RULE },
+    ];
+  },
   pairAgent: (name, key) =>
     sourceChanges({
       identities: { [name.trim()]: { key: key.trim(), accounts: {} } },

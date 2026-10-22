@@ -492,7 +492,9 @@ export type AccountAnswers = {
   strangers: boolean;
   sends: Audience;
 };
+export function networkingOff(view: View): boolean;
 export const edits: {
+  setNetworking(view: View, on: boolean): Change[];
   pairAgent(name: string, key: string): Change[];
   removeAgent(name: string): Change[];
   replaceKey(name: string, key: string): Change[];

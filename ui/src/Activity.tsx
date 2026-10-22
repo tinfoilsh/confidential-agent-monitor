@@ -64,7 +64,7 @@ export function Activity(props: { scope?: string; name?: string }) {
     page = () => m.filters.page,
     setPage = (value: number) => m.setFilters("page", value),
     anchor = () => m.filters.anchor;
-  const pending = m.pendingCount;
+  const networkingOff = () => owner.networkingOff(m.view()!);
   const ordered = createMemo(() => owner.ordered(m.records(), m.dismissed()));
   const searchText = createMemo(
     () =>
@@ -128,64 +128,23 @@ export function Activity(props: { scope?: string; name?: string }) {
   };
   return (
     <>
-      <div id="overview">
-        <div class="stats">
-          <div class="stat">
-            <div>
-              Needs your approval <Icon name="clock" />
-            </div>
-            <strong>{pending()}</strong>
-            <small>
-              {pending()
-                ? "Review before requests expire"
-                : "No requests waiting"}
-            </small>
-          </div>
-          <div class="stat">
-            <div>
-              Identities <Icon name="rules" />
-            </div>
-            <strong>
-              {Object.keys(m.view()!.config.identities ?? {}).length}
-            </strong>
-            <small>Identities managed by this monitor</small>
-          </div>
-          <div class="stat">
-            <div>
-              Recorded requests <Icon name="activity" />
-            </div>
-            <strong>{m.records().length}</strong>
-            <small>In the current activity log</small>
-          </div>
+      <Show when={networkingOff()}>
+        <div class="network-off-notice">
+          <Icon name="close" />
+          <span>
+            <strong>Networking is off.</strong> You can still see activity,
+            but nothing is allowed through.
+          </span>
+          <button
+            disabled={m.busy()}
+            onClick={() =>
+              m.edit(owner.edits.setNetworking(m.view()!, true))
+            }
+          >
+            Turn networking on
+          </button>
         </div>
-        <Show when={pending()}>
-          <div class="pending-notice">
-            <Icon name="clock" />
-            <span>
-              <strong>
-                {pending()}{" "}
-                {pending() === 1 ? "request needs" : "requests need"} your
-                approval.
-              </strong>{" "}
-              Identities are waiting to continue.
-            </span>
-            <button
-              onClick={() =>
-                m.setFilters({
-                  query: "",
-                  state: "pending",
-                  agent: "",
-                  account: "",
-                  page: 0,
-                  anchor: 0,
-                })
-              }
-            >
-              Review requests
-            </button>
-          </div>
-        </Show>
-      </div>
+      </Show>
       <div id="toolbar">
         <Search
           label="Search activity"
@@ -225,7 +184,10 @@ export function Activity(props: { scope?: string; name?: string }) {
           value={agent()}
           onChange={(e) => change(setAgent, e.currentTarget.value)}
         >
-          <option value="">All identities</option>
+          <option value="">
+            All identities (
+            {Object.keys(m.view()!.config.identities ?? {}).length})
+          </option>
           <For
             each={[
               ...new Set([
@@ -242,7 +204,10 @@ export function Activity(props: { scope?: string; name?: string }) {
           value={account()}
           onChange={(e) => change(setAccount, e.currentTarget.value)}
         >
-          <option value="">All connections</option>
+          <option value="">
+            All connections (
+            {Object.keys(m.view()!.config.accounts ?? {}).length})
+          </option>
           <For
             each={[
               ...new Set([
@@ -276,7 +241,14 @@ export function Activity(props: { scope?: string; name?: string }) {
       <div id="list" class="resource-list">
         <div class="resource-heading">
           <h2>
-            Requests <span class="count">{filtered().length}</span>
+            Requests{" "}
+            <span class="count">
+              {filtered().length}
+              <Show when={filtered().length !== m.records().length}>
+                {" "}
+                of {m.records().length}
+              </Show>
+            </span>
           </h2>
           <Show when={anchor()} fallback={<span>Updates every 5 seconds</span>}>
             <button onClick={latest}>Back to latest</button>
