@@ -29,6 +29,7 @@ const components = {
   search: 'Search',
   refresh: 'RefreshCw',
   plus: 'Plus',
+  edit: 'Pencil',
   help: 'CircleHelp',
   close: 'X',
   copy: 'Copy',

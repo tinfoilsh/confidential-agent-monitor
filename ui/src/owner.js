@@ -12,6 +12,17 @@ export const MODES = { allow: "Allow", ask: "Ask", off: "Deny" };
 export const AUDIENCES = { me: "Only me", team: "My team", anyone: "Anyone" };
 export const TRUSTS = { trusted: "Trusted", untrusted: "Untrusted" };
 export const CATALOG_GROUPS = { api: "API", mcp: "MCP", protocol: "Protocol" };
+export const COMMON_PRESETS = [
+  "tinfoil",
+  "anthropic",
+  "openai",
+  "github",
+  "gmail",
+  "email",
+  "web",
+  "custom",
+  "tcp",
+];
 export const CREDENTIAL_STATUS = {
   "oauth-required": "Sign-in required",
   unset: "Not configured",
@@ -33,7 +44,7 @@ export const POLICY_PRESETS = {
   },
   offline: {
     title: "Offline",
-    description: "Block all requests. Your agent can't talk to anything.",
+    description: "Block all requests. Nothing in a sandbox can talk to anything.",
   },
 };
 // A new preset starts as one bearer-token API; the owner sets its origin, slots and operations.
@@ -312,6 +323,11 @@ const ICON_MANIFEST = "/app/icons/manifest.json";
 export function connectorIcon(manifest, preset, base = "") {
   if (preset === "codex") preset = "openai";
   if (preset === "openrouter") preset = "open_router";
+  // A preset version (`<base>-<n>`) wears its base's icon.
+  if (!manifest?.[preset]?.src && preset.includes("-")) {
+    const root = preset.slice(0, preset.indexOf("-"));
+    if (manifest?.[root]?.src) preset = root;
+  }
   const icon = manifest?.[preset]?.src
     ? manifest[preset]
     : (manifest?.custom ?? { src: "custom.svg" });
@@ -504,8 +520,14 @@ export const requestTitle = (r) =>
   summary(r.facts?.details) ||
   r.facts?.operation?.id ||
   r.facts?.account;
+// Requirements worth showing. "ask" is what pending already means, and the
+// audience/trust label gates are a data-flow feature nobody set up on
+// purpose; what remains is effect overrides and unrecognised operations.
+const quietRequirements = new Set(["ask", "audience", "trust"]);
 export const reasons = (r) =>
-  (r.requirements ?? []).map((requirement) => requirement.message);
+  (r.requirements ?? [])
+    .filter((requirement) => !quietRequirements.has(requirement.id))
+    .map((requirement) => requirement.message);
 // A pending request past its deadline is expired, even before the next poll says so.
 export const stateAt = (r, now) =>
   r.state === "pending" && r.expires && Date.parse(r.expires) <= now
@@ -672,10 +694,10 @@ export function effectSettings(view, { agent, account } = {}, effects = []) {
   const pair = id.accounts?.[account] ?? view.config.default_access?.[account];
   const layers = [["Global settings", view.config.effects]];
   if (account)
-    layers.push([`Account ${account}`, accounts(view)[account]?.effects]);
-  if (agent) layers.push([`Agent ${agent}`, id.effects]);
+    layers.push([`Connection ${account}`, accounts(view)[account]?.effects]);
+  if (agent) layers.push([`Sandbox ${agent}`, id.effects]);
   if (agent && account)
-    layers.push([`Agent ${agent} on ${account}`, pair?.effects]);
+    layers.push([`Sandbox ${agent} on ${account}`, pair?.effects]);
   return Object.entries(view.vocabulary)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([effect, metadata]) => {
@@ -1031,13 +1053,32 @@ export const signInLabel = (view, preset) =>
     ? "Sign in with " + view.presets[preset].title
     : "Sign in";
 
+// Preset versioning (daniel_suggestions_2.md #4): a saved preset named
+// `<base>-<suffix>` is a VERSION of the built-in `<base>` — the built-in is
+// the untouched default, versions sit beside it, and Add picks one. No
+// built-in name contains "-", so the prefix is unambiguous.
+export const presetBase = (view, name) => {
+  const i = name.indexOf("-");
+  const base = i === -1 ? name : name.slice(0, i);
+  return base !== name && view.presets[base] && view.config.presets?.[name]
+    ? base
+    : undefined;
+};
+export const presetVersions = (view, base) =>
+  Object.keys(view.presets)
+    .filter((name) => presetBase(view, name) === base)
+    .sort();
+export const nextPresetVersion = (view, base) => {
+  for (let i = 1; ; i++) if (!view.presets[`${base}-${i}`]) return `${base}-${i}`;
+};
 export function catalog(view) {
   const custom = ["custom_api", "mcp"].filter((name) => view.presets[name]);
   const counts = new Map();
   for (const acc of Object.values(accounts(view))) {
     const replacement = view.presets[acc.preset]?.replaced_by;
-    const preset =
+    let preset =
       replacement && view.presets[replacement] ? replacement : acc.preset;
+    preset = presetBase(view, preset) ?? preset;
     counts.set(preset, (counts.get(preset) ?? 0) + 1);
   }
   const groups = new Map(Object.keys(CATALOG_GROUPS).map((g) => [g, []]));
@@ -1046,6 +1087,8 @@ export function catalog(view) {
   )) {
     // Retired definitions still serve stored credentials and permission names.
     if (preset.replaced_by && view.presets[preset.replaced_by]) continue;
+    // Versions are listed under their base row, not as rows of their own.
+    if (presetBase(view, name)) continue;
     const group = preset.group ?? "api";
     if (!groups.has(group)) groups.set(group, []);
     groups
@@ -1057,13 +1100,30 @@ export function catalog(view) {
       (a, b) =>
         Number(custom.includes(b.name)) - Number(custom.includes(a.name)),
     );
-  return [...groups]
-    .filter(([, entries]) => entries.length)
-    .map(([group, presets]) => ({
-      group,
-      title: CATALOG_GROUPS[group] ?? group,
-      presets,
-    }));
+  // The ones most people add first lead as "Common"; blank "custom"
+  // presets live under Settings → Advanced, not in the browse list.
+  const common = [];
+  for (const entries of groups.values())
+    for (let i = entries.length - 1; i >= 0; i--) {
+      if (COMMON_PRESETS.includes(entries[i].name))
+        common.push(...entries.splice(i, 1));
+      else if (custom.includes(entries[i].name)) entries.splice(i, 1);
+    }
+  common.sort(
+    (a, b) => COMMON_PRESETS.indexOf(a.name) - COMMON_PRESETS.indexOf(b.name),
+  );
+  return [
+    ...(common.length
+      ? [{ group: "common", title: "Common", presets: common }]
+      : []),
+    ...[...groups]
+      .filter(([, entries]) => entries.length)
+      .map(([group, presets]) => ({
+        group,
+        title: CATALOG_GROUPS[group] ?? group,
+        presets,
+      })),
+  ];
 }
 
 // apiSettings describes a custom API account's slot as form settings; without an account, the defaults for a new one.
@@ -1353,24 +1413,9 @@ function onboardingChanges(view, preset, tinfoilApiKey) {
       ? { path: ["default_access"], value: { [account]: access } }
       : { path: ["default_access", account], value: access },
   );
-  if (preset === "offline")
-    for (const [name, id] of Object.entries(identities(view))) {
-      changes.push(
-        ...sourceChanges({
-          identities: {
-            [name]: {
-              routes: false,
-              accounts: Object.fromEntries(
-                Object.keys(id.accounts ?? {}).map((a) => [
-                  a,
-                  { level: "off" },
-                ]),
-              ),
-            },
-          },
-        }),
-      );
-    }
+  // "Offline" means ONLY that sandboxes cannot send anything out (the deny
+  // rule above). Trusted devices keep their sandbox routes and identities
+  // keep their grants, so turning networking back on restores everything.
   if (tinfoilApiKey !== undefined) {
     const key = tinfoilApiKey.trim();
     if (!key) throw new Error("Enter your Tinfoil API key, or skip this step.");
@@ -1400,11 +1445,72 @@ function onboardingChanges(view, preset, tinfoilApiKey) {
   return changes;
 }
 
+// Networking is "off" when a policy denies every request outright — the rule
+// onboarding's offline posture writes. It is ONE switch with ONE meaning:
+// sandboxes cannot send anything out. Trusted devices, routes, grants and
+// connections are untouched either way.
+const OFFLINE_RULE =
+  'package sentinel\n\ndeny contains "Network access is disabled."\n';
+const KNOWN_ONLY_RULE =
+  'package sentinel\n\ndeny contains "This request has no recognized policy operation." if input.facts.operation == null\n';
+const networkRuleName = (view) =>
+  Object.keys(view.config.policies ?? {}).find((k) =>
+    /deny contains "(Network access is disabled|This request has no recognized policy operation)/.test(
+      view.config.policies[k],
+    ),
+  ) ?? "network-default";
+// Raw TCP: the Monitor only sees host and port, never what is sent.
+export const isRawNetwork = (view, account) =>
+  view.config.accounts?.[account]?.preset === "tcp";
+// "api.github.com:443" for a raw-network scope, else "key: value" pairs.
+export const scopeText = (view, account, scope = {}) =>
+  isRawNetwork(view, account) && scope.host
+    ? `${scope.host}${scope.port ? `:${scope.port}` : ""}`
+    : Object.entries(scope).map(
+        ([k, v]) => `${k}: ${typeof v === "string" ? v : JSON.stringify(v)}`,
+      );
+export const networkingOff = (view) =>
+  Object.values(view.config.policies ?? {}).some((p) =>
+    p.includes('deny contains "Network access is disabled."'),
+  );
+// "Open" = every raw-TCP catch-all at allow for everyone, no deny rule, the
+// whole internet in allow_networks. Settings → Dangerous only.
+export const networkingOpen = (view) =>
+  (view.config.allow_networks ?? []).includes("0.0.0.0/0") &&
+  !Object.values(view.config.policies ?? {}).some((p) =>
+    p.includes("package sentinel\n\ndeny contains"),
+  );
+
 // Each edit returns the source changes for POST /policy/edits.
 export const edits = {
+  setNetworking: (view, on) => [
+    {
+      path: ["policies", networkRuleName(view)],
+      value: on ? KNOWN_ONLY_RULE : OFFLINE_RULE,
+    },
+  ],
+  setNetworkingOpen: (view, open) => {
+    const tcpAccounts = Object.entries(accounts(view))
+      .filter(([, a]) => a.preset === "tcp")
+      .map(([name]) => name);
+    return [
+      { path: ["allow_networks"], value: open ? ["0.0.0.0/0", "::/0"] : [] },
+      open
+        ? { path: ["policies", networkRuleName(view)], delete: true }
+        : { path: ["policies", networkRuleName(view)], value: KNOWN_ONLY_RULE },
+      ...tcpAccounts.map((name) => ({
+        path: ["default_access", name],
+        value: { level: open ? "allow" : "off" },
+      })),
+    ];
+  },
   pairAgent: (name, key) =>
     sourceChanges({
       identities: { [name.trim()]: { key: key.trim(), accounts: {} } },
+    }),
+  pairDevice: (name, key) =>
+    sourceChanges({
+      identities: { [name]: { key: key.trim(), routes: true, accounts: {} } },
     }),
   removeAgent: (name) => [{ path: ["identities", name], delete: true }],
   replaceKey: (name, key) => [
@@ -1654,7 +1760,7 @@ export function integrationGuide(view, page, href) {
   return (
     {
       start: `<h1>Get connected</h1><ol>
-        <li>Add your apps in ${link(["accounts"], "Connections")}.</li>
+        <li>Add your apps in ${link(["connections"], "Connections")}.</li>
         <li>${link(["pair"], "Add your device's SSH key")}, then grant access in ${link(["agents"], "Agents")}.</li>
         <li>Set up the SSH alias <code>monitor</code> with your server address, private key, and the host key in agent <b>Settings</b>.</li>
       </ol>
@@ -1667,7 +1773,7 @@ export function integrationGuide(view, page, href) {
       shell: `<h1>Monitor shell</h1><p>Use your connections in a local terminal session.</p>
       ${code("integration-shell", "Open a shell", "monitor shell")}
       <p>Run commands as usual. Type <code>exit</code> to leave. ${link(["integrations", "start"], "Setup")}</p>`,
-      mcp: `<h1>MCP connections</h1><p>Grant your agent access to a ready ${link(["accounts"], "MCP connection")}, then run:</p>
+      mcp: `<h1>MCP connections</h1><p>Grant your agent access to a ready ${link(["connections"], "MCP connection")}, then run:</p>
       ${code("integration-mcp-serve", "Start MCP", "monitor mcp serve")}
       <p>Add the printed URLs to your MCP client using <b>Streamable HTTP</b>. Keep the command running. ${link(["integrations", "start"], "Setup")}</p>`,
     }[page] ?? ""

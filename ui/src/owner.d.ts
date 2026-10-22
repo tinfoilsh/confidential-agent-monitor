@@ -436,6 +436,9 @@ export function credentialFields(
   account: string,
 ): CredentialField[];
 export function signInLabel(view: View, preset: string): string;
+export function presetBase(view: View, name: string): string | undefined;
+export function presetVersions(view: View, base: string): string[];
+export function nextPresetVersion(view: View, base: string): string;
 export function catalog(view: View): {
   group: string;
   title: string;
@@ -492,8 +495,15 @@ export type AccountAnswers = {
   strangers: boolean;
   sends: Audience;
 };
+export function isRawNetwork(view: View, account: string): boolean;
+export function scopeText(view: View, account: string, scope?: Record<string, unknown>): string | string[];
+export function networkingOff(view: View): boolean;
+export function networkingOpen(view: View): boolean;
 export const edits: {
+  setNetworking(view: View, on: boolean): Change[];
+  setNetworkingOpen(view: View, open: boolean): Change[];
   pairAgent(name: string, key: string): Change[];
+  pairDevice(name: string, key: string): Change[];
   removeAgent(name: string): Change[];
   replaceKey(name: string, key: string): Change[];
   setRoutes(name: string, routes: boolean): Change[];

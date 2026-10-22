@@ -9,21 +9,17 @@ import {
   LazyDetails,
   Permission,
   ResourceDisclosure,
-  Search,
   href,
 } from "./components";
 import { useMonitor } from "./monitor";
 
 export function Agents(props: { expanded?: string }) {
-  const m = useMonitor(),
-    [query, setQuery] = m.search("agents");
-  if (props.expanded) setQuery("");
-  const type = (name: string) =>
-    owner.isDevice(name)
-      ? "devices"
-      : name.startsWith("sandbox-")
-        ? "sandboxes"
-        : "agents";
+  const m = useMonitor();
+  // Two kinds of row, nothing else: SANDBOXES are what the Monitor
+  // contains and what you configure; TRUSTED DEVICES are your own keys
+  // (enrolled by `tinfoil attest-ssh`) that may reach sandboxes through
+  // the Monitor. Anything that is neither is listed with the sandboxes.
+  const type = (name: string) => (owner.isDevice(name) ? "devices" : "sandboxes");
   const summaries = createMemo(() => {
     const view = m.view()!;
     return new Map(
@@ -31,34 +27,24 @@ export function Agents(props: { expanded?: string }) {
         .sort()
         .map((name) => {
           const description = owner.isDevice(name)
-            ? `Sandbox access ${view.config.identities![name].routes ? "enabled" : "disabled"}`
+            ? view.config.identities![name].routes
+              ? "Can reach sandboxes"
+              : "Sandbox access off"
             : `${owner.agentAccess(view, name).filter((access) => access.level !== "off").length} connections`;
-          return [
-            name,
-            { description, search: `${name} ${description}`.toLowerCase() },
-          ];
+          return [name, { description }];
         }),
     );
   });
-  const names = createMemo(() => {
-    const search = query().toLowerCase();
-    return [...summaries()]
-      .filter(([, summary]) => summary.search.includes(search))
-      .map(([name]) => name);
-  });
+  const names = createMemo(() => [...summaries().keys()]);
   return (
     <>
-      <div id="toolbar">
-        <Search label="Search agents" value={query()} onInput={setQuery} />
-      </div>
       <For
         each={[
-          ["sandboxes", "Sandboxes"],
-          ["devices", "Devices"],
-          ["agents", "Other agents"],
+          ["sandboxes", "Sandboxes", "What the Monitor contains. Set what each may reach."],
+          ["devices", "Trusted devices", "Your own keys. They can SSH into sandboxes through the Monitor; nothing else applies to them."],
         ]}
       >
-        {([kind, title]) => {
+        {([kind, title, blurb]) => {
           const members = createMemo(() =>
             names().filter((name) => type(name) === kind),
           );
@@ -69,6 +55,27 @@ export function Agents(props: { expanded?: string }) {
                   <h2>
                     {title} <span class="count">{members().length}</span>
                   </h2>
+                  <span class="muted">{blurb}</span>
+                  <Show
+                    when={kind === "devices"}
+                    fallback={
+                      <a
+                        class="button"
+                        href="https://dash.tinfoil.sh/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <Icon name="plus" />
+                        Add sandbox
+                        <Icon name="external" />
+                      </a>
+                    }
+                  >
+                    <a class="button" href="#pair">
+                      <Icon name="plus" />
+                      Add trusted device
+                    </a>
+                  </Show>
                 </div>
                 <For each={members()}>
                   {(name) => (
@@ -117,57 +124,59 @@ export function Agents(props: { expanded?: string }) {
       <Show when={!names().length}>
         <div class="resource-list">
           <Empty
-            title={query() ? "No matching agents" : "No agents yet"}
+            title="No sandboxes yet"
             action={
-              <Show when={!query()}>
-                <a class="button primary" href="#pair">
+              <>
+                <a
+                  class="button primary"
+                  href="https://dash.tinfoil.sh/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Icon name="plus" />
-                  Add agent
+                  Add sandbox
                 </a>
-              </Show>
+                <a class="button" href="#pair">
+                  <Icon name="plus" />
+                  Add trusted device
+                </a>
+              </>
             }
           >
-            Add an agent with its SSH public key to configure access.
-            <Show when={!query()}>
-              <br />
-              If your sandbox is missing, run{" "}
-              <code>tinfoil attest-ssh &lt;sandbox-name&gt;</code>.
-            </Show>
+            Sandboxes show up here once enrolled. If yours is missing, run{" "}
+            <code>tinfoil attest-ssh &lt;sandbox-name&gt;</code>.
           </Empty>
         </div>
       </Show>
     </>
   );
 }
+// Adds a TRUSTED DEVICE: your own key, allowed to reach sandboxes through
+// the Monitor. Named like the CLI names them (`device-<hash>`) so it sorts
+// with the others; no connection grid. Sandboxes come from the dashboard.
 export function AddAgent() {
   const m = useMonitor(),
-    [name, setName] = createSignal(""),
     [key, setKey] = createSignal("");
   const submit = async (event: SubmitEvent) => {
     event.preventDefault();
     try {
-      if (!name().trim()) throw new Error("Enter an agent name.");
-      if (m.view()!.config.identities?.[name().trim()])
-        throw new Error("An agent already uses this name.");
-      await m.edit(
-        owner.edits.pairAgent(name().trim(), key()),
-        href("agents", name().trim()),
+      const pub = key().trim();
+      if (!/^(ssh-|ecdsa-)/.test(pub)) throw new Error("Paste an SSH public key.");
+      const digest = new Uint8Array(
+        await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pub)),
       );
+      const name =
+        "device-" +
+        [...digest.slice(0, 8)].map((b) => b.toString(16).padStart(2, "0")).join("");
+      if (m.view()!.config.identities?.[name])
+        throw new Error("This key is already a trusted device.");
+      await m.edit(owner.edits.pairDevice(name, pub), href("agents", name));
     } catch (cause) {
       m.report(cause);
     }
   };
   return (
     <form onSubmit={submit} class="form-fields">
-      <label>
-        Agent name
-        <input
-          required
-          value={name()}
-          onInput={(e) => setName(e.currentTarget.value)}
-          autocomplete="off"
-        />
-      </label>
       <label>
         SSH public key
         <textarea
@@ -178,8 +187,11 @@ export function AddAgent() {
           placeholder="ssh-ed25519 …"
         />
       </label>
+      <p class="muted">
+        This key will be able to SSH into your sandboxes through the Monitor.
+      </p>
       <button class="primary" disabled={m.busy()}>
-        Add agent
+        Add trusted device
       </button>
     </form>
   );
@@ -264,6 +276,13 @@ export function AgentConnectionAccess(props: {
   const [expanded, setExpanded] = createSignal(false);
   const open = () => expanded() && entry().level !== "off";
   const id = createUniqueId();
+  // Rules: saved approvals for THIS agent on THIS connection — an action
+  // plus specific parameters, narrower than the per-action settings below.
+  const rules = createMemo(() =>
+    Object.entries(
+      m.view()!.config.identities?.[props.name]?.rules ?? {},
+    ).filter(([, rule]) => rule.account === props.account),
+  );
   return (
     <div class="acct">
       <div class="row">
@@ -293,9 +312,18 @@ export function AgentConnectionAccess(props: {
             <Icon name="arrow" />
           </span>
           <Show when={entry().level !== "off" && entry().overrides}>
-            <small class="muted">{entry().overrides} overrides</small>
+            <small class="muted">
+              {entry().overrides}{" "}
+              {entry().overrides === 1 ? "action set" : "actions set"}
+            </small>
+          </Show>
+          <Show when={rules().length}>
+            <small class="muted">
+              {rules().length} {rules().length === 1 ? "rule" : "rules"}
+            </small>
           </Show>
         </button>
+        <span class="access-level-label muted">Connection access</span>
         <span
           class="seg access-level"
           role="group"
@@ -340,13 +368,58 @@ export function AgentConnectionAccess(props: {
       >
         <div>
           <Show when={open()}>
-            <div class="access-actions">
-              <Actions
-                name={props.name}
-                account={props.account}
-                nodes={entry().actions}
-              />
+            <div class="access-block">
+              <h4>Actions</h4>
+              <p class="muted">
+                What this sandbox may do on the connection. Each can be set on
+                its own.
+              </p>
+              <div class="access-actions">
+                <Actions
+                  name={props.name}
+                  account={props.account}
+                  nodes={entry().actions}
+                />
+              </div>
             </div>
+            <Show when={rules().length}>
+              <div class="access-block access-rules">
+                <h4>Rules</h4>
+                <p class="muted">
+                  Narrow, least-scoped actions you approved and saved.
+                </p>
+                <For each={rules()}>
+                  {([id, rule]) => (
+                    <a class="access-rule" href="#activity/rules">
+                      <span>
+                        <strong>{owner.ruleTitle(m.view()!, rule)}</strong>
+                        <small>
+                          <For
+                            each={Object.entries(rule.scope ?? {})}
+                            fallback="Any request"
+                          >
+                            {([key, value]) => {
+                              const text = `${key}: ${typeof value === "string" ? value : JSON.stringify(value)}`;
+                              return <code title={text}>{text}</code>;
+                            }}
+                          </For>
+                        </small>
+                      </span>
+                      <button
+                        disabled={m.busy()}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          void m.edit(owner.edits.removeRule(props.name, id));
+                        }}
+                      >
+                        Remove
+                      </button>
+                      <Icon name="arrow" />
+                    </a>
+                  )}
+                </For>
+              </div>
+            </Show>
           </Show>
         </div>
       </div>
@@ -403,7 +476,7 @@ function AgentAccess(props: { name: string }) {
         each={Object.keys(m.view()!.config.accounts ?? {})}
         fallback={
           <p>
-            No connections yet. <a href="#accounts/catalog">Add connection</a>
+            No connections yet. <a href="#connections/catalog">Add connection</a>
           </p>
         }
       >
@@ -543,7 +616,7 @@ function AgentSettings(props: { name: string }) {
               <section class="settings-group">
                 <SectionHeading
                   title="Replace SSH key"
-                  description="Use this after recreating the sandbox. The agent starts clean."
+                  description="Use this after recreating the sandbox. It starts clean."
                   small
                 />
                 <form
@@ -579,7 +652,7 @@ function AgentSettings(props: { name: string }) {
               <Show when={copySources().length}>
                 <section class="settings-group">
                   <SectionHeading
-                    title="Copy settings from another agent"
+                    title="Copy settings from another sandbox"
                     small
                   />
                   <div class="agent-copy-settings">
@@ -588,7 +661,7 @@ function AgentSettings(props: { name: string }) {
                       value={copyFrom()}
                       onChange={(e) => setCopyFrom(e.currentTarget.value)}
                     >
-                      <option value="">Choose agent</option>
+                      <option value="">Choose sandbox</option>
                       <For each={copySources()}>
                         {(name) => <option>{name}</option>}
                       </For>
@@ -612,8 +685,8 @@ function AgentSettings(props: { name: string }) {
               </Show>
               <section class="agent-remove">
                 <SectionHeading
-                  title="Remove agent"
-                  description="Revokes this agent’s access to the monitor."
+                  title="Remove sandbox"
+                  description="Revokes this sandbox’s access to the Monitor."
                   small
                 />
                 <button
@@ -621,13 +694,13 @@ function AgentSettings(props: { name: string }) {
                   disabled={m.busy()}
                   onClick={async () => {
                     if (
-                      confirm(`Remove agent ${props.name}?`) &&
+                      confirm(`Remove sandbox ${props.name}?`) &&
                       (await m.edit(owner.edits.removeAgent(props.name)))
                     )
                       location.hash = "#agents";
                   }}
                 >
-                  Remove agent
+                  Remove sandbox
                 </button>
               </section>
             </div>

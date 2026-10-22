@@ -37,15 +37,16 @@ const PresetEditor = lazy(() =>
   import("./Settings").then((m) => ({ default: m.PresetEditor })),
 );
 
+// Local dev only: keep showing the welcome page even after onboarding, while
+// it is being designed. Stripped from production builds.
+const DEV_FORCE_ONBOARDING = import.meta.env.DEV && false;
+
 const sections: Record<string, [string, string]> = {
   activity: ["Activity", "Review requests and manage saved approval rules."],
-  agents: [
-    "Agents",
-    "Manage sandboxes, devices, and the actions they can take.",
-  ],
-  accounts: [
+  agents: ["Sandboxes", "Your sandboxes and the devices that may reach them."],
+  connections: [
     "Connections",
-    "Connect services and control how agents use their data.",
+    "Connect services and control how sandboxes use their data.",
   ],
   settings: ["Settings", "Manage guardrails, policy, and monitor preferences."],
   integrations: [
@@ -58,7 +59,7 @@ const parse = (path: string) => {
   try {
     return path.split("/").map(decodeURIComponent);
   } catch {
-    return ["accounts"];
+    return ["connections"];
   }
 };
 const isDialog = (path: string) => ["pair", "add"].includes(parse(path)[0]);
@@ -82,13 +83,13 @@ export default function App() {
 }
 function Shell() {
   const m = useMonitor();
-  const initial = location.hash.slice(1) || "accounts";
+  const initial = location.hash.slice(1) || "connections";
   const [route, setRoute] = createSignal(initial),
     [page, setPage] = createSignal(
       isDialog(initial)
         ? initial === "pair"
           ? "agents"
-          : "accounts/catalog"
+          : "connections/catalog"
         : initial,
     );
   const [mobile, setMobile] = createSignal(false),
@@ -104,13 +105,15 @@ function Shell() {
     ({
       agent: "agents",
       "agent-settings": "agents",
-      account: "accounts",
-      catalog: "accounts",
+      accounts: "connections",
+      account: "connections",
+      connection: "connections",
+      catalog: "connections",
       request: "activity",
       rules: "activity",
       policy: "settings",
-      presets: "accounts",
-      preset: "accounts",
+      presets: "connections",
+      preset: "connections",
     })[kind()] ?? kind();
   const title = () =>
     sections[
@@ -118,8 +121,14 @@ function Shell() {
         ? "agents"
         : kind() === "rules"
           ? "activity"
-          : ["account", "catalog", "presets"].includes(kind())
-            ? "accounts"
+          : [
+                "account",
+                "accounts",
+                "connection",
+                "catalog",
+                "presets",
+              ].includes(kind())
+            ? "connections"
             : kind()
     ]?.[0] ??
     (kind() === "request"
@@ -133,10 +142,24 @@ function Shell() {
       : Object.keys(
           (section === "agents"
             ? m.view()?.config.identities
-            : section === "accounts"
+            : section === "connections"
               ? m.view()?.config.accounts
               : {}) ?? {},
         ).length;
+  const NavItem = (props: { key: string }) => (
+    <a
+      class="nav-item"
+      classList={{ on: section() === props.key }}
+      aria-current={section() === props.key ? "page" : undefined}
+      href={href(props.key)}
+    >
+      <Icon name={props.key} />
+      <span>{sections[props.key][0]}</span>
+      <Show when={count(props.key)}>
+        <small class="nav-count">{count(props.key)}</small>
+      </Show>
+    </a>
+  );
   const close = () => {
     location.hash = page();
   };
@@ -147,7 +170,7 @@ function Shell() {
         location.reload();
         return;
       }
-      const next = location.hash.slice(1) || "accounts";
+      const next = location.hash.slice(1) || "connections";
       setRoute(next);
       if (!isDialog(next)) setPage(next);
       setMobile(false);
@@ -168,7 +191,12 @@ function Shell() {
   return (
     <>
       <Show
-        when={m.view() && !m.locked() && owner.onboarded(m.view()!)}
+        when={
+          m.view() &&
+          !m.locked() &&
+          !DEV_FORCE_ONBOARDING &&
+          owner.onboarded(m.view()!)
+        }
         fallback={<Gate />}
       >
         <div id="app" classList={{ "navigation-open": mobile() }}>
@@ -187,21 +215,8 @@ function Shell() {
               Menu
             </button>
             <nav id="tree" aria-label="Management">
-              <For each={["agents", "activity", "accounts", "settings"]}>
-                {(key) => (
-                  <a
-                    class="nav-item"
-                    classList={{ on: section() === key }}
-                    aria-current={section() === key ? "page" : undefined}
-                    href={href(key)}
-                  >
-                    <Icon name={key} />
-                    <span>{sections[key][0]}</span>
-                    <Show when={count(key)}>
-                      <small class="nav-count">{count(key)}</small>
-                    </Show>
-                  </a>
-                )}
+              <For each={["agents", "activity", "connections", "settings"]}>
+                {(key) => <NavItem key={key} />}
               </For>
             </nav>
           </aside>
@@ -217,20 +232,20 @@ function Shell() {
                           ? "agents"
                           : kind() === "rules"
                             ? "activity"
-                            : ["account", "catalog", "presets"].includes(kind())
-                              ? "accounts"
+                            : [
+                                  "account",
+                                  "accounts",
+                                  "connection",
+                                  "catalog",
+                                  "presets",
+                                ].includes(kind())
+                              ? "connections"
                               : kind()
                       ]?.[1]
                     }
                   </p>
                 </div>
                 <div class="header-actions">
-                  <Show when={section() === "agents"}>
-                    <a class="button primary" href="#pair">
-                      <Icon name="plus" />
-                      Add agent
-                    </a>
-                  </Show>
                   <button
                     aria-label="Refresh monitor"
                     aria-busy={m.loading()}
@@ -277,7 +292,7 @@ function Page(props: {
     <Switch
       fallback={
         <Empty title="Page not found">
-          <a href="#accounts">Open connections</a>
+          <a href="#connections">Open connections</a>
         </Empty>
       }
     >
@@ -291,10 +306,14 @@ function Page(props: {
       >
         <Agents expanded={name} />
       </Match>
-      <Match when={["accounts", "catalog", "presets"].includes(kind)}>
-        <Connections catalog={kind !== "accounts" || name === "catalog"} />
+      <Match
+        when={
+          kind === "connections" || kind === "accounts" || kind === "catalog"
+        }
+      >
+        <Connections catalog={kind === "catalog" || name === "catalog"} />
       </Match>
-      <Match when={kind === "account"}>
+      <Match when={kind === "connection" || kind === "account"}>
         <Connections expanded={name} />
       </Match>
       <Match when={kind === "request"}>
@@ -308,6 +327,9 @@ function Page(props: {
       </Match>
       <Match when={kind === "policy"}>
         <Policy />
+      </Match>
+      <Match when={kind === "presets"}>
+        <Connections catalog />
       </Match>
       <Match when={kind === "preset"}>
         <PresetEditor name={name} request={request} />
@@ -357,7 +379,7 @@ function CreationDialog(props: { path: string; close: () => void }) {
             aria-label="Choose another service"
             title="Choose another service"
             onClick={() => {
-              location.hash = "#accounts/catalog";
+              location.hash = "#connections/catalog";
             }}
           >
             <Icon name="arrow" />
@@ -369,12 +391,13 @@ function CreationDialog(props: { path: string; close: () => void }) {
               <ConnectorIcon preset={preset()} />
             </Show>
             {kind() === "pair"
-              ? "Add an agent"
+              ? "Add a trusted device"
               : "Add " + (m.view()!.presets[preset()]?.title ?? "connection")}
           </h1>
           <Show when={kind() === "pair"}>
             <p id="creation-description">
-              Give an agent access using its SSH public key.
+              Paste the SSH public key of a computer that may reach your
+              sandboxes.
             </p>
           </Show>
         </div>
@@ -407,9 +430,12 @@ function CreationDialog(props: { path: string; close: () => void }) {
 }
 function Gate() {
   const m = useMonitor(),
-    [key, setKey] = createSignal(""),
-    [preset, setPreset] = createSignal<owner.PolicyPreset>("known_only"),
-    [paid, setPaid] = createSignal(true),
+    // Local dev (bun run dev) only: a prefilled passphrase so the dev
+    // server unlocks with one click. Stripped from production builds.
+    [key, setKey] = createSignal(import.meta.env.DEV ? "testtesttesttest" : ""),
+    [preset] = createSignal<owner.PolicyPreset>("known_only"),
+    // Paid inference is on by default and not asked about (daniel_suggestions_2.md).
+    paid = () => true,
     [step, setStep] = createSignal<"policy" | "tinfoil">("policy"),
     [tinfoilKey, setTinfoilKey] = createSignal("");
   let heading!: HTMLHeadingElement, tinfoilInput!: HTMLInputElement;
@@ -488,7 +514,11 @@ function Gate() {
             <p role="alert">{m.error()}</p>
           </Show>
         </Match>
-        <Match when={m.view() && !owner.onboarded(m.view()!)}>
+        <Match
+          when={
+            m.view() && (DEV_FORCE_ONBOARDING || !owner.onboarded(m.view()!))
+          }
+        >
           <form
             class="onboarding"
             onSubmit={(e) => {
@@ -504,52 +534,19 @@ function Gate() {
                   ? "Set up your monitor"
                   : "Connect Tinfoil"}
               </h1>
-              <p>
-                {step() === "policy"
-                  ? "Choose how your agents connect to the outside world."
-                  : "Use Tinfoil for private AI inference and web search."}
-              </p>
+              <Show when={step() === "tinfoil"}>
+                <p>Use Tinfoil for private AI inference and web search.</p>
+              </Show>
             </header>
             <Switch>
               <Match when={step() === "policy"}>
-                <fieldset disabled={m.busy()}>
-                  <legend>Network policy</legend>
-                  <For each={Object.entries(owner.POLICY_PRESETS)}>
-                    {([value, option]) => (
-                      <label class="policy-choice">
-                        <input
-                          type="radio"
-                          name="network-policy"
-                          value={value}
-                          checked={preset() === value}
-                          onChange={() =>
-                            setPreset(value as owner.PolicyPreset)
-                          }
-                        />
-                        <span>
-                          <strong>{option.title}</strong>
-                          <small>{option.description}</small>
-                        </span>
-                      </label>
-                    )}
-                  </For>
-                </fieldset>
-                <label class="policy-choice">
-                  <input
-                    type="checkbox"
-                    role="switch"
-                    checked={paid()}
-                    disabled={m.busy()}
-                    onChange={(e) => setPaid(e.currentTarget.checked)}
-                  />
-                  <span>
-                    <strong>Allow AI inference</strong>
-                    <small>
-                      Use paid AI models without payment approval. Provider
-                      charges apply.
-                    </small>
-                  </span>
-                </label>
+                <section class="onboarding-section">
+                  <h2>Networking</h2>
+                  <p>
+                    Networking is off by default. Nothing in a sandbox can reach
+                    anything until you add a <code>connection</code>.
+                  </p>
+                </section>
                 <button class="primary" disabled={m.busy()}>
                   Continue
                   <Icon name="arrow" />
@@ -585,7 +582,7 @@ function Gate() {
                   />
                   <p id="tinfoil-key-help" class="onboarding-key-help">
                     <Icon name="rules" />
-                    Your key stays in Monitor, hidden from your agents.
+                    Your key stays in Monitor, hidden from your sandboxes.
                   </p>
                 </fieldset>
                 <button class="primary" disabled={m.busy()}>

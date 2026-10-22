@@ -11,7 +11,6 @@ import {
   ConnectorIcon,
   Empty,
   Icon,
-  LazyDetails,
   ResourceDisclosure,
   href,
 } from "./components";
@@ -145,7 +144,7 @@ function Requests(props: { scope?: string; name?: string }) {
               }
               action={
                 <Show when={!m.records().length}>
-                  <a class="button primary" href="#accounts/catalog">
+                  <a class="button primary" href="#connections/catalog">
                     <Icon name="plus" />
                     Add connection
                   </a>
@@ -154,7 +153,7 @@ function Requests(props: { scope?: string; name?: string }) {
             >
               <Show
                 when={m.records().length}
-                fallback="Requests appear here when an agent uses a connection."
+                fallback="Requests appear here when a sandbox uses a connection."
               >
                 No requests for this{" "}
                 {scope() === "agent" ? "agent" : "connection"} yet.
@@ -334,7 +333,7 @@ export function RequestDetail(props: {
             [...new Set([...(r().deny ?? []), ...owner.reasons(r())])].map(
               (reason) =>
                 reason === "this agent may not do this on the account"
-                  ? "This agent does not have permission for this action."
+                  ? "This sandbox does not have permission for this action."
                   : reason,
             ),
           );
@@ -358,7 +357,7 @@ export function RequestDetail(props: {
               </Show>
               <dl class="request-context">
                 <div>
-                  <dt>Agent</dt>
+                  <dt>Sandbox</dt>
                   <dd>
                     <a
                       class="request-context-link"
@@ -379,7 +378,7 @@ export function RequestDetail(props: {
                       {(account) => (
                         <a
                           class="request-context-link"
-                          href={href("account", r().facts.account)}
+                          href={href("connection", r().facts.account)}
                         >
                           <ConnectorIcon preset={account().preset} />
                           {r().facts.account}
@@ -387,14 +386,11 @@ export function RequestDetail(props: {
                         </a>
                       )}
                     </Show>
+                    <Show when={destination()}>
+                      <div class="request-destination">{destination()}</div>
+                    </Show>
                   </dd>
                 </div>
-                <Show when={destination()}>
-                  <div>
-                    <dt>Destination</dt>
-                    <dd>{destination()}</dd>
-                  </div>
-                </Show>
                 <div>
                   <dt>Requested</dt>
                   <dd>
@@ -409,9 +405,24 @@ export function RequestDetail(props: {
                   {owner.timeLeft(r(), m.now())} left to respond
                 </p>
               </Show>
-              <Show when={r().reviews?.length}>
-                <div class="request-reasons">
-                  <h3>Review</h3>
+              <div class="request-reasons">
+                <h3>Review</h3>
+                <Show
+                  when={r().reviews?.length}
+                  fallback={
+                    <p>
+                      {state() === "pending"
+                        ? "Waiting for you."
+                        : state() === "refused"
+                          ? "Blocked by policy. No one was asked."
+                          : state() === "expired"
+                            ? "Nobody answered in time."
+                            : state() === "approved"
+                              ? "Allowed by policy."
+                              : "Blocked."}
+                    </p>
+                  }
+                >
                   <For each={r().reviews}>
                     {(answer) => (
                       <p>
@@ -419,29 +430,21 @@ export function RequestDetail(props: {
                           {answer.by === "tinfoil" ? "Tinfoil" : "You"}
                         </strong>
                         {answer.decision === "escalate"
-                          ? " asked for your decision"
+                          ? " passed this to you"
                           : answer.decision === "once"
-                            ? " approved"
+                            ? " approved it once"
                             : answer.decision === "deny"
-                              ? " denied"
-                              : " saved a rule"}
+                              ? " denied it"
+                              : " approved it and saved a rule"}
                         <Show when={answer.reason}>: {answer.reason}</Show>
                       </p>
                     )}
                   </For>
-                </div>
-              </Show>
+                </Show>
+              </div>
               <Show when={reasons().length}>
                 <div class="request-reasons">
-                  <h3>
-                    {r().invalid
-                      ? "Why the request was rejected"
-                      : state() === "refused" || state() === "denied"
-                        ? "Why it was blocked"
-                        : state() === "pending"
-                          ? "Approval needed"
-                          : "Policy review"}
-                  </h3>
+                  <h3>Details</h3>
                   <ul>
                     <For each={reasons()}>{(reason) => <li>{reason}</li>}</For>
                   </ul>
@@ -457,14 +460,14 @@ export function RequestDetail(props: {
                 }
               >
                 <div class="request-access">
-                  <a class="button" href={href("account", r().facts.account)}>
+                  <a class="button" href={href("connection", r().facts.account)}>
                     {r().invalid ? "View connection setup" : "Change access"}
                     <Icon name="arrow" />
                   </a>
                   <p class="muted">
                     {r().invalid
                       ? "Fix the request or client configuration using the error above, then retry."
-                      : "Update this agent’s connection access, then retry the request from your agent."}
+                      : "Update this sandbox’s connection access, then retry the request from your sandbox."}
                   </p>
                 </div>
               </Show>
@@ -526,47 +529,6 @@ export function RequestDetail(props: {
                   )}
                 </Show>
               </div>
-              <LazyDetails
-                class="request-technical"
-                data-disclosure="request"
-                summaryClass="request-technical-toggle"
-                summary={
-                  <>
-                    <span>View details</span>
-                    <Icon name="arrow" />
-                  </>
-                }
-              >
-                {() => (
-                  <div class="request-technical-body">
-                    <Show when={r().facts.details?.http}>
-                      {(http) => (
-                        <p class="mono">
-                          {http().method} {http().host}
-                          {http().path}
-                        </p>
-                      )}
-                    </Show>
-                    <h3>Policy facts</h3>
-                    <pre>{JSON.stringify(r().facts, null, 2)}</pre>
-                    <Show when={r().grant}>
-                      <h3>Approval scope</h3>
-                      <pre>{JSON.stringify(r().grant, null, 2)}</pre>
-                    </Show>
-                    <Show when={m.view()!.config.accounts?.[r().facts.account]}>
-                      {(account) => (
-                        <a
-                          class="request-preset-link"
-                          href={href("preset", account().preset, r().id)}
-                        >
-                          Edit preset
-                          <Icon name="arrow" />
-                        </a>
-                      )}
-                    </Show>
-                  </div>
-                )}
-              </LazyDetails>
             </section>
           );
         }}
