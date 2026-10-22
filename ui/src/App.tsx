@@ -48,15 +48,15 @@ const Rules = lazy(() =>
 const sections: Record<string, [string, string]> = {
   activity: [
     "Activity",
-    "Review requests and follow what your actors are doing.",
+    "Review requests and follow what your identities are doing.",
   ],
   agents: [
-    "Actors",
+    "Identities",
     "Manage sandboxes, devices, and the actions they can take.",
   ],
   accounts: [
     "Connections",
-    "Connect services and control how actors use their data.",
+    "Connect services and control how identities use their data.",
   ],
   rules: ["Saved rules", "Review permissions saved from request approvals."],
   settings: ["Settings", "Manage guardrails, policy, and monitor preferences."],
@@ -241,7 +241,7 @@ function Shell() {
                   <Show when={section() === "agents"}>
                     <a class="button primary" href="#pair">
                       <Icon name="plus" />
-                      Add actor
+                      Add identity
                     </a>
                   </Show>
                   <Show when={kind() === "accounts" || kind() === "account"}>
@@ -400,14 +400,14 @@ function CreationDialog(props: { path: string; close: () => void }) {
               <ConnectorIcon preset={preset()} />
             </Show>
             {kind() === "pair"
-              ? "Add an actor"
+              ? "Add an identity"
               : kind() === "catalog"
                 ? "Add connection"
                 : "Add " + (m.view()!.presets[preset()]?.title ?? "connection")}
           </h1>
           <Show when={kind() === "pair"}>
             <p id="creation-description">
-              Give an actor access using its SSH public key.
+              Give an identity access using its SSH public key.
             </p>
           </Show>
         </div>
@@ -516,7 +516,7 @@ function Gate() {
             }}
           >
             <h1>Set up your monitor</h1>
-            <p>Choose how actors can connect to the outside world.</p>
+            <p>Choose how identities can connect to the outside world.</p>
             <fieldset disabled={m.busy()}>
               <legend>Network policy</legend>
               <For each={Object.entries(owner.POLICY_PRESETS)}>

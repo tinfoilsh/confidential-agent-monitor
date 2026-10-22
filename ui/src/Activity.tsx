@@ -143,7 +143,7 @@ export function Activity(props: { scope?: string; name?: string }) {
           </div>
           <div class="stat">
             <div>
-              Actors <Icon name="rules" />
+              Identities <Icon name="rules" />
             </div>
             <strong>
               {Object.keys(m.view()!.config.identities ?? {}).length}
@@ -167,7 +167,7 @@ export function Activity(props: { scope?: string; name?: string }) {
                 {pending() === 1 ? "request needs" : "requests need"} your
                 approval.
               </strong>{" "}
-              Actors are waiting to continue.
+              Identities are waiting to continue.
             </span>
             <button
               onClick={() =>
@@ -221,11 +221,11 @@ export function Activity(props: { scope?: string; name?: string }) {
           </For>
         </select>
         <select
-          aria-label="All actors"
+          aria-label="All identities"
           value={agent()}
           onChange={(e) => change(setAgent, e.currentTarget.value)}
         >
-          <option value="">All actors</option>
+          <option value="">All identities</option>
           <For
             each={[
               ...new Set([
@@ -300,7 +300,7 @@ export function Activity(props: { scope?: string; name?: string }) {
             >
               <Show
                 when={m.records().length}
-                fallback="Requests appear here when an actor uses a connection."
+                fallback="Requests appear here when an identity uses a connection."
               >
                 Try another search or clear the filters.
               </Show>
@@ -479,7 +479,7 @@ export function RequestDetail(props: {
             [...new Set([...(r().deny ?? []), ...owner.reasons(r())])].map(
               (reason) =>
                 reason === "this agent may not do this on the account"
-                  ? "This actor does not have permission for this action."
+                  ? "This identity does not have permission for this action."
                   : reason,
             ),
           );
@@ -503,7 +503,7 @@ export function RequestDetail(props: {
               </Show>
               <dl class="request-context">
                 <div>
-                  <dt>Actor</dt>
+                  <dt>Identity</dt>
                   <dd>
                     <a
                       class="request-context-link"
@@ -609,7 +609,7 @@ export function RequestDetail(props: {
                   <p class="muted">
                     {r().invalid
                       ? "Fix the request or client configuration using the error above, then retry."
-                      : "Update this actor’s connection access, then retry the request from your actor."}
+                      : "Update this identity’s connection access, then retry the request from your identity."}
                   </p>
                 </div>
               </Show>

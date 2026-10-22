@@ -322,7 +322,7 @@ function createMonitor() {
     perform(
       (client) => client.decide(record.id, decision),
       decision === "save"
-        ? "Rule saved. Retry the request from your actor."
+        ? "Rule saved. Retry the request from your identity."
         : "Decision saved",
       {
         update: (state) => {
