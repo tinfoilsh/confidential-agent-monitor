@@ -442,7 +442,9 @@ function CreationDialog(props: { path: string; close: () => void }) {
 }
 function Gate() {
   const m = useMonitor(),
-    [key, setKey] = createSignal(""),
+    // Local dev (bun run dev) only: a prefilled passphrase so the dev
+    // server unlocks with one click. Stripped from production builds.
+    [key, setKey] = createSignal(import.meta.env.DEV ? "testtesttesttest" : ""),
     [preset, setPreset] = createSignal<owner.PolicyPreset>("known_only"),
     [paid, setPaid] = createSignal(true);
   return (
