@@ -15,12 +15,7 @@ import * as owner from "./owner.js";
 import { MonitorProvider, useMonitor } from "./monitor";
 import { Activity, RequestDetail } from "./Activity";
 import { Agents, AddAgent } from "./Agents";
-import {
-  AddConnection,
-  Catalog,
-  Connections,
-  DeviceSignInDialog,
-} from "./Connections";
+import { AddConnection, Connections, DeviceSignInDialog } from "./Connections";
 import {
   ConnectorIcon,
   Empty,
@@ -56,10 +51,6 @@ const sections: Record<string, [string, string]> = {
   integrations: [
     "Integrations",
     "Connect commands, shells, and MCP clients through Monitor.",
-  ],
-  presets: [
-    "Connection preset editor",
-    "Edit connection operations, actions, and setup fields.",
   ],
   policy: ["Policy", "Validate and review changes to your monitor's policy."],
 };
@@ -118,8 +109,8 @@ function Shell() {
       request: "activity",
       rules: "activity",
       policy: "settings",
-      presets: "settings",
-      preset: "settings",
+      presets: "accounts",
+      preset: "accounts",
     })[kind()] ?? kind();
   const title = () =>
     sections[
@@ -127,7 +118,7 @@ function Shell() {
         ? "agents"
         : kind() === "rules"
           ? "activity"
-          : kind() === "account" || kind() === "catalog"
+          : ["account", "catalog", "presets"].includes(kind())
             ? "accounts"
             : kind()
     ]?.[0] ??
@@ -226,7 +217,7 @@ function Shell() {
                           ? "agents"
                           : kind() === "rules"
                             ? "activity"
-                            : kind() === "account" || kind() === "catalog"
+                            : ["account", "catalog", "presets"].includes(kind())
                               ? "accounts"
                               : kind()
                       ]?.[1]
@@ -238,12 +229,6 @@ function Shell() {
                     <a class="button primary" href="#pair">
                       <Icon name="plus" />
                       Add agent
-                    </a>
-                  </Show>
-                  <Show when={kind() === "presets"}>
-                    <a class="button primary" href="#preset">
-                      <Icon name="plus" />
-                      New preset
                     </a>
                   </Show>
                   <button
@@ -306,8 +291,8 @@ function Page(props: {
       >
         <Agents expanded={name} />
       </Match>
-      <Match when={kind === "accounts" || kind === "catalog"}>
-        <Connections catalog={kind === "catalog" || name === "catalog"} />
+      <Match when={["accounts", "catalog", "presets"].includes(kind)}>
+        <Connections catalog={kind !== "accounts" || name === "catalog"} />
       </Match>
       <Match when={kind === "account"}>
         <Connections expanded={name} />
@@ -323,9 +308,6 @@ function Page(props: {
       </Match>
       <Match when={kind === "policy"}>
         <Policy />
-      </Match>
-      <Match when={kind === "presets"}>
-        <Catalog edit />
       </Match>
       <Match when={kind === "preset"}>
         <PresetEditor name={name} request={request} />

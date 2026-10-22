@@ -32,6 +32,7 @@ const components = {
   help: 'CircleHelp',
   close: 'X',
   copy: 'Copy',
+  download: 'Download',
   clock: 'Clock3',
   arrow: 'ChevronRight',
   external: 'ExternalLink',

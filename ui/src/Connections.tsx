@@ -228,10 +228,10 @@ function MyConnections(props: { expanded?: string }) {
     </>
   );
 }
-export function Catalog(props: { edit?: boolean }) {
+function Catalog() {
   let catalog!: HTMLDivElement;
   const m = useMonitor(),
-    [query, setQuery] = m.search(props.edit ? "presets" : "catalog");
+    [query, setQuery] = m.search("catalog");
   const groups = createMemo(() => owner.catalog(m.view()!));
   const filtered = createMemo(() => {
     const search = query().toLowerCase();
@@ -253,8 +253,8 @@ export function Catalog(props: { edit?: boolean }) {
     <div ref={catalog}>
       <div class="catalog-toolbar">
         <Search
-          label={props.edit ? "Search presets" : "Search services"}
-          autofocus={!props.edit}
+          label="Search services"
+          autofocus
           value={query()}
           onInput={setQuery}
           onEnter={() =>
@@ -263,6 +263,10 @@ export function Catalog(props: { edit?: boolean }) {
               ?.click()
           }
         />
+        <a class="button" href="#preset">
+          <Icon name="plus" />
+          New preset
+        </a>
       </div>
       <For each={groups().map((g) => g.group)}>
         {(id) => {
@@ -285,29 +289,38 @@ export function Catalog(props: { edit?: boolean }) {
                 <div class="collection-rows">
                   <For each={[...presets().keys()]}>
                     {(name) => (
-                      <a
-                        class="resource-row collection-row"
-                        href={href(props.edit ? "preset" : "add", name)}
-                      >
-                        <ConnectorIcon preset={name} />
-                        <strong
-                          class="collection-name"
-                          title={m.view()!.presets[name].title}
+                      <div class="catalog-row">
+                        <a
+                          class="resource-row collection-row"
+                          href={href("add", name)}
+                          aria-label={`Add ${m.view()!.presets[name].title} connection`}
                         >
-                          {m.view()!.presets[name].title}
-                        </strong>
-                        <span class="resource-meta">
-                          <Show when={presets().get(name)?.accounts}>
-                            {(count) => (
-                              <span class="muted">
-                                {count()}{" "}
-                                {count() === 1 ? "connection" : "connections"}
-                              </span>
-                            )}
-                          </Show>
-                        </span>
-                        <Icon name="arrow" />
-                      </a>
+                          <ConnectorIcon preset={name} />
+                          <strong
+                            class="collection-name"
+                            title={m.view()!.presets[name].title}
+                          >
+                            {m.view()!.presets[name].title}
+                          </strong>
+                          <span class="resource-meta">
+                            <Show when={presets().get(name)?.accounts}>
+                              {(count) => (
+                                <span class="muted">
+                                  {count()}{" "}
+                                  {count() === 1 ? "connection" : "connections"}
+                                </span>
+                              )}
+                            </Show>
+                          </span>
+                        </a>
+                        <a
+                          class="catalog-edit"
+                          href={href("preset", name)}
+                          aria-label={`Edit Preset for ${m.view()!.presets[name].title}`}
+                        >
+                          Edit Preset
+                        </a>
+                      </div>
                     )}
                   </For>
                 </div>
@@ -884,10 +897,7 @@ function Connection(props: { name: string; active: boolean }) {
           )}
         </Show>
         <section class="connection-section">
-          <SectionHeading
-            title="Agent access"
-            description="Who can use this connection"
-          />
+          <SectionHeading title="Agent access" />
           <div class="connection-access">
             <For
               each={agents()}
@@ -909,35 +919,22 @@ function Connection(props: { name: string; active: boolean }) {
         </section>
         <Show when={tinfoil().length || setups().length || codex()}>
           <section class="connection-section connection-setup">
-            <SectionHeading
-              title="Details"
-              description="URLs, agent placeholders, and setup instructions"
-            />
+            <SectionHeading title="Agent setup" />
             <Show when={tinfoil().length}>
-              <div class="agent-setup-body">
+              <div class="settings-group">
                 <For each={tinfoil()}>
                   {(setup) => (
-                    <div class="agent-setup-item">
-                      <h4>
-                        {setup.mcp ? "Web search (MCP)" : "Inference API"}
-                      </h4>
-                      <div class="secret-input">
-                        <input
-                          class="mono"
-                          aria-label={
-                            setup.mcp
-                              ? "Web-search MCP URL"
-                              : "Tinfoil API base URL"
-                          }
-                          readonly
-                          value={setup.url}
-                          onClick={(e) => e.currentTarget.select()}
-                        />
-                        <Copy
-                          text={setup.url}
-                          label={`Copy ${setup.connection} URL`}
-                        />
+                    <div class="setting-row">
+                      <div>
+                        <span>
+                          {setup.mcp ? "Web search (MCP)" : "Inference API"}
+                        </span>
+                        <p class="mono">{setup.url}</p>
                       </div>
+                      <Copy
+                        text={setup.url}
+                        label={`Copy ${setup.connection} URL`}
+                      />
                     </div>
                   )}
                 </For>
@@ -1057,7 +1054,6 @@ function Connection(props: { name: string; active: boolean }) {
           summary={
             <DisclosureHeading
               title="Operations"
-              description="Supported requests and their effects"
               count={Object.keys(owner.actionsOf(m.view()!, props.name)).length}
             />
           }
@@ -1079,12 +1075,7 @@ function Connection(props: { name: string; active: boolean }) {
         </ResourceDisclosure>
         <ResourceDisclosure
           class="section-disclosure"
-          summary={
-            <DisclosureHeading
-              title="Advanced"
-              description="Sharing, effects, and policy"
-            />
-          }
+          summary={<DisclosureHeading title="Advanced" />}
         >
           {() => (
             <div class="section-content">

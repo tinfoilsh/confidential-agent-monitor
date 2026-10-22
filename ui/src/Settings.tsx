@@ -1,4 +1,11 @@
-import { For, Show, createResource, createSignal, onCleanup } from "solid-js";
+import {
+  For,
+  Show,
+  createMemo,
+  createResource,
+  createSignal,
+  onCleanup,
+} from "solid-js";
 import * as owner from "./owner.js";
 import {
   ConnectorIcon,
@@ -6,6 +13,7 @@ import {
   Empty,
   Icon,
   LazyDetails,
+  createDialogMotion,
   download,
   href,
 } from "./components";
@@ -151,9 +159,6 @@ export function Settings(props: {
         <a class="setting-row settings-link" href="#policy">
           Policy editor <span>›</span>
         </a>
-        <a class="setting-row settings-link" href="#presets">
-          Connection preset editor <span>›</span>
-        </a>
       </section>
     </div>
   );
@@ -237,7 +242,10 @@ export function Policy() {
   );
   return (
     <div id="pane">
-      <a href="#settings">Back to settings</a>
+      <a class="button back-button" href="#settings">
+        <Icon name="arrow" />
+        Back to settings
+      </a>
       <Show when={file.error}>
         <p role="alert">{String(file.error)}</p>
         <button onClick={() => void refetch()}>Retry</button>
@@ -265,115 +273,247 @@ function PolicyEditor(props: {
       diff: owner.PolicyDiff;
     }>();
   const [checking, setChecking] = createSignal(false);
+  const [error, setError] = createSignal("");
+  const dirty = () => source() !== props.saved.source;
+  const lifetime = new AbortController();
+  onCleanup(() => lifetime.abort());
+  let dialog!: HTMLDialogElement;
+  const reviewed = createMemo<ReturnType<typeof preview>>(
+    (previous) => preview() ?? previous,
+  );
+  createDialogMotion(
+    () => dialog,
+    () => !!preview(),
+  );
+  const closeReview = () => {
+    if (!m.busy()) setPreview(undefined);
+  };
   const review = async () => {
+    if (checking() || m.busy() || !dirty()) return;
     const draft = source();
     setChecking(true);
+    setError("");
     setPreview(undefined);
     try {
-      const diff = await m.api()!.previewPolicy(draft);
+      const diff = await m.api()!.previewPolicy(draft, lifetime.signal);
       if (source() === draft) setPreview({ source: draft, diff });
     } catch (cause) {
-      m.report(cause);
+      if (!lifetime.signal.aborted && source() === draft)
+        setError(cause instanceof Error ? cause.message : String(cause));
     } finally {
       setChecking(false);
     }
   };
+  const apply = async () => {
+    const change = preview();
+    if (!change || change.source !== source() || m.busy()) return;
+    setError("");
+    if (
+      await m.perform(
+        (client) => client.applyPolicy(change.source),
+        "Policy applied",
+      )
+    ) {
+      setPreview(undefined);
+      props.reload();
+    } else {
+      setError(m.error());
+    }
+  };
   return (
     <>
-      <section>
-        <p>
-          This file controls saved permissions. Changes made elsewhere in
-          Monitor update it too. Credentials are stored separately.
-        </p>
-        <div class="form-actions">
-          <button
-            onClick={() => {
-              if (
-                source() === props.saved.source ||
-                confirm("Discard this draft and reload the active policy?")
-              )
-                props.reload();
-            }}
-          >
-            Reload active file
-          </button>
-          <button
-            onClick={() =>
-              void m
-                .api()!
-                .policy()
-                .then(
-                  (file) =>
-                    download(file.source, "policy.toml", "application/toml"),
-                  m.report,
+      <section class="policy-editor" aria-labelledby="policy-source-label">
+        <header class="policy-editor-toolbar">
+          <div class="policy-editor-title">
+            <Icon name="policy" />
+            <label id="policy-source-label" for="policy-source">
+              policy.toml
+            </label>
+          </div>
+          <div class="form-actions">
+            <button
+              class="icon-button"
+              aria-label="Reload active policy"
+              title="Reload active policy"
+              disabled={checking() || m.busy()}
+              onClick={() => {
+                if (
+                  !dirty() ||
+                  confirm("Discard this draft and reload the active policy?")
                 )
-            }
-          >
-            Download active policy.toml
-          </button>
-        </div>
-      </section>
-      <section>
-        <label class="field">
-          policy.toml
-          <textarea
-            rows={30}
-            spellcheck={false}
-            value={source()}
-            onInput={(e) => {
-              setSource(e.currentTarget.value);
-              setPreview(undefined);
-            }}
-          />
-        </label>
-      </section>
-      <section>
-        <div class="form-actions">
-          <button
-            disabled={checking() || m.busy()}
-            onClick={() => void review()}
-          >
-            Validate and review diff
-          </button>
+                  props.reload();
+              }}
+            >
+              <Icon name="refresh" />
+            </button>
+            <button
+              class="icon-button"
+              aria-label="Download active policy.toml"
+              title="Download active policy.toml"
+              onClick={() =>
+                void m
+                  .api()!
+                  .policy()
+                  .then(
+                    (file) =>
+                      download(file.source, "policy.toml", "application/toml"),
+                    m.report,
+                  )
+              }
+            >
+              <Icon name="download" />
+            </button>
+          </div>
+        </header>
+        <p class="policy-editor-description" id="policy-source-description">
+          Manage your monitor’s permissions. Changes in Settings are reflected
+          here too.
+        </p>
+        <textarea
+          id="policy-source"
+          aria-describedby="policy-source-description"
+          aria-invalid={!!error() && !preview()}
+          aria-errormessage={error() && !preview() ? "policy-error" : undefined}
+          rows={22}
+          wrap="off"
+          spellcheck={false}
+          value={source()}
+          onInput={(e) => {
+            setSource(e.currentTarget.value);
+            setPreview(undefined);
+            setError("");
+          }}
+        />
+        <Show when={error() && !preview()}>
+          <p class="policy-error" id="policy-error" role="alert">
+            {error()}
+          </p>
+        </Show>
+        <footer class="policy-editor-footer">
+          <Show when={dirty()}>
+            <span class="policy-save-status" role="status">
+              Unsaved changes
+            </span>
+          </Show>
           <button
             class="primary"
-            disabled={!preview() || checking() || m.busy()}
-            onClick={async () => {
-              const reviewed = preview();
-              if (
-                reviewed &&
-                reviewed.source === source() &&
-                (await m.perform((client) =>
-                  client.applyPolicy(reviewed.source),
-                ))
-              ) {
-                setPreview(undefined);
-                props.reload();
-              }
-            }}
+            disabled={!dirty() || checking() || m.busy()}
+            aria-busy={checking()}
+            onClick={() => void review()}
           >
-            Apply reviewed change
+            <Icon name="rules" />
+            {checking() ? "Validating…" : "Review & apply"}
           </button>
-        </div>
+        </footer>
       </section>
-      <Show when={preview()}>
-        {(reviewed) => (
-          <section>
-            <h2>Source changes</h2>
-            <pre>{reviewed().diff.source_diff || "No source changes."}</pre>
-            <h2>Effective changes</h2>
-            <pre>
-              {reviewed().diff.effective_diff || "No effective changes."}
-            </pre>
-          </section>
-        )}
-      </Show>
-      <section>
-        <LazyDetails summary="Effective policy, including preset definitions">
+      <p class="policy-editor-note">
+        Changes are validated before you apply them. Credentials are stored
+        separately.
+      </p>
+      <section class="policy-effective">
+        <LazyDetails
+          summary={
+            <>
+              Effective policy
+              <span class="muted">Includes preset definitions</span>
+            </>
+          }
+        >
           {() => <EffectivePolicy />}
         </LazyDetails>
       </section>
+      <dialog
+        ref={dialog}
+        id="policy-review-dialog"
+        aria-labelledby="policy-review-title"
+        aria-describedby="policy-review-description"
+        onCancel={(event) => {
+          event.preventDefault();
+          closeReview();
+        }}
+      >
+        <header class="dialog-header">
+          <div>
+            <h1 id="policy-review-title">Review policy changes</h1>
+            <p id="policy-review-description">
+              Validation passed. Review your changes before applying them.
+            </p>
+          </div>
+          <button
+            class="dialog-close icon-button"
+            aria-label="Close review"
+            disabled={m.busy()}
+            onClick={closeReview}
+          >
+            <Icon name="close" />
+          </button>
+        </header>
+        <div class="dialog-body">
+          <Show when={reviewed()}>
+            {(change) => (
+              <>
+                <h2>Changes to policy.toml</h2>
+                <PolicyChanges
+                  diff={change().diff.source_diff}
+                  empty="No source changes."
+                />
+                <LazyDetails summary="Effective permission changes">
+                  {() => (
+                    <PolicyChanges
+                      diff={change().diff.effective_diff}
+                      empty="No effective permission changes."
+                    />
+                  )}
+                </LazyDetails>
+              </>
+            )}
+          </Show>
+          <Show when={error()}>
+            <p class="policy-error" role="alert">
+              {error()}
+            </p>
+          </Show>
+        </div>
+        <footer class="policy-editor-footer">
+          <button disabled={m.busy()} onClick={closeReview}>
+            Keep editing
+          </button>
+          <button
+            class="primary"
+            disabled={
+              m.busy() ||
+              !preview() ||
+              (!preview()!.diff.source_diff && !preview()!.diff.effective_diff)
+            }
+            aria-busy={m.busy()}
+            onClick={() => void apply()}
+          >
+            {m.busy() ? "Applying…" : "Apply changes"}
+          </button>
+        </footer>
+      </dialog>
     </>
+  );
+}
+function PolicyChanges(props: { diff: string; empty: string }) {
+  return (
+    <Show when={props.diff} fallback={<p class="muted">{props.empty}</p>}>
+      <pre class="policy-diff">
+        <For each={props.diff.split("\n")}>
+          {(line) => (
+            <span
+              classList={{
+                "diff-added": line.startsWith("+"),
+                "diff-removed": line.startsWith("-"),
+                "diff-heading": line.startsWith("@@"),
+              }}
+            >
+              {line || " "}
+            </span>
+          )}
+        </For>
+      </pre>
+    </Show>
   );
 }
 function EffectivePolicy() {
@@ -418,7 +558,10 @@ export function PresetEditor(props: { name: string; request?: string }) {
   });
   return (
     <div id="pane">
-      <a href="#presets">Back to presets</a>
+      <a class="button back-button" href="#accounts/catalog">
+        <Icon name="arrow" />
+        Back to catalog
+      </a>
       <Show when={file.error}>
         <p role="alert">{String(file.error)}</p>
         <button onClick={() => void refetch()}>Retry</button>
@@ -526,7 +669,7 @@ export function PresetEditor(props: { name: string; request?: string }) {
                           confirm(`Remove custom preset ${props.name}?`) &&
                           (await m.edit(owner.edits.removePreset(props.name)))
                         )
-                          location.hash = "#presets";
+                          location.hash = "#accounts/catalog";
                       }}
                     >
                       Remove custom preset
