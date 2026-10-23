@@ -1,5 +1,5 @@
 # Provisioning sets the measured owner public key.
-cvm-version: 0.15.1-rc.6@sha256:81c5bfc890d5016fdb979b047bdc65a403518cecb394aae04cd6f72e2f631a31
+cvm-version: 0.15.1-rc.14@sha256:6f38091ce8624c0d674f82645f45ba66fa38bea37039cdc817d046fc853cc84e
 cvm-network:
   inbound-ports: [443, 22]
 cpus: 2
