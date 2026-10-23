@@ -13,13 +13,11 @@ import {
   ConnectorIcon,
   Copy,
   DataPermissions,
-  Effects,
   Empty,
   DisclosureHeading,
   SectionHeading,
   Field,
   Icon,
-  LazyDetails,
   ResourceDisclosure,
   Search,
   createDialogMotion,
@@ -110,11 +108,14 @@ export function Connections(props: { catalog?: boolean; expanded?: string }) {
   return (
     <>
       <nav class="page-tabs" aria-label="Connection views">
-        <a href="#accounts" aria-current={!props.catalog ? "page" : undefined}>
+        <a
+          href="#connections"
+          aria-current={!props.catalog ? "page" : undefined}
+        >
           Mine
         </a>
         <a
-          href="#accounts/catalog"
+          href="#connections/catalog"
           aria-current={props.catalog ? "page" : undefined}
         >
           Catalog
@@ -166,14 +167,14 @@ function MyConnections(props: { expanded?: string }) {
               title={query() ? "No matching connections" : "No connections yet"}
               action={
                 <Show when={!query()}>
-                  <a class="button primary" href="#accounts/catalog">
+                  <a class="button primary" href="#connections/catalog">
                     <Icon name="plus" />
                     Add connection
                   </a>
                 </Show>
               }
             >
-              Add a connection to give your agents access to a service.
+              Add a connection to give your sandboxes access to a service.
             </Empty>
           }
         >
@@ -263,10 +264,6 @@ function Catalog() {
               ?.click()
           }
         />
-        <a class="button" href="#preset">
-          <Icon name="plus" />
-          New preset
-        </a>
       </div>
       <For each={groups().map((g) => g.group)}>
         {(id) => {
@@ -276,7 +273,10 @@ function Catalog() {
           );
           return (
             <Show when={group().presets.length}>
-              <details open class="resource-list collection-list">
+              <details
+                open={id === "common" || !!query()}
+                class="resource-list collection-list"
+              >
                 <summary class="resource-heading">
                   <span class="collection-chevron">
                     <Icon name="arrow" />
@@ -289,38 +289,42 @@ function Catalog() {
                 <div class="collection-rows">
                   <For each={[...presets().keys()]}>
                     {(name) => (
-                      <div class="catalog-row">
-                        <a
-                          class="resource-row collection-row"
-                          href={href("add", name)}
-                          aria-label={`Add ${m.view()!.presets[name].title} connection`}
-                        >
-                          <ConnectorIcon preset={name} />
-                          <strong
-                            class="collection-name"
-                            title={m.view()!.presets[name].title}
-                          >
-                            {m.view()!.presets[name].title}
-                          </strong>
-                          <span class="resource-meta">
-                            <Show when={presets().get(name)?.accounts}>
-                              {(count) => (
-                                <span class="muted">
-                                  {count()}{" "}
-                                  {count() === 1 ? "connection" : "connections"}
-                                </span>
-                              )}
-                            </Show>
-                          </span>
-                        </a>
-                        <a
-                          class="catalog-edit"
-                          href={href("preset", name)}
-                          aria-label={`Edit Preset for ${m.view()!.presets[name].title}`}
-                        >
-                          Edit Preset
-                        </a>
-                      </div>
+                      <ResourceDisclosure
+                        class="catalog-item"
+                        summaryClass="resource-row collection-row catalog-row"
+                        summary={
+                          <>
+                            <ConnectorIcon preset={name} />
+                            <strong
+                              class="collection-name"
+                              title={m.view()!.presets[name].title}
+                            >
+                              {m.view()!.presets[name].title}
+                            </strong>
+                            <span class="resource-meta">
+                              <Show when={presets().get(name)?.accounts}>
+                                {(count) => (
+                                  <span class="muted">added ({count()})</span>
+                                )}
+                              </Show>
+                            </span>
+                            <span class="collection-chevron">
+                              <Icon name="arrow" />
+                            </span>
+                          </>
+                        }
+                      >
+                        {(active) => (
+                          <Show when={active()}>
+                            <div class="catalog-entry">
+                              <h3 class="catalog-add-title">
+                                New {m.view()!.presets[name].title} connection
+                              </h3>
+                              <AddConnection preset={name} />
+                            </div>
+                          </Show>
+                        )}
+                      </ResourceDisclosure>
                     )}
                   </For>
                 </div>
@@ -450,7 +454,7 @@ export function AddConnection(props: { preset: string }) {
                 .filter((f) => f.oauth && !tokens[f.key])
                 .map((f) => f.key),
             });
-      if (!(await m.edit(changes, href("account", account)))) return;
+      if (!(await m.edit(changes, href("connection", account)))) return;
       if (signInKey) {
         const field = owner
           .credentialFields(m.view()!, account)
@@ -550,7 +554,7 @@ export function AddConnection(props: { preset: string }) {
             help="Leave blank to configure later."
           />
           <label>
-            Agent
+            Sandbox
             <select
               value={agent()}
               onChange={(e) => setAgent(e.currentTarget.value)}
@@ -779,9 +783,6 @@ function Connection(props: { name: string; active: boolean }) {
     Object.keys(m.view()!.config.identities ?? {}).filter(
       (name) => !owner.isDevice(name),
     );
-  const [policy, setPolicy] = createSignal(
-    m.view()!.config.policies?.[props.name] ?? "",
-  );
   const setups = createMemo(() => {
     const groups = new Map<
       string,
@@ -814,6 +815,15 @@ function Connection(props: { name: string; active: boolean }) {
   return (
     <div class="connection-detail">
       <Show when={account()} fallback={<Empty title="Connection not found" />}>
+        <Show when={owner.isRawNetwork(m.view()!, props.name)}>
+          <section class="connection-section">
+            <p class="raw-network-note">
+              General network access is a raw connection. The Monitor can see
+              where a sandbox connects (host and port) but not what it sends.
+              Prefer a named connection when one exists.
+            </p>
+          </section>
+        </Show>
         <Show when={reviews().length}>
           <section class="connection-section" aria-label="Connection status">
             <For each={reviews()}>
@@ -897,14 +907,15 @@ function Connection(props: { name: string; active: boolean }) {
           )}
         </Show>
         <section class="connection-section">
-          <SectionHeading title="Agent access" />
+          <SectionHeading
+            title="Sandbox access"
+            description="Who can use this connection"
+          />
           <div class="connection-access">
             <For
               each={agents()}
               fallback={
-                <p class="muted">
-                  <a href="#pair">Add an agent</a> to use this connection.
-                </p>
+                <p class="muted">Enrol a sandbox to use this connection.</p>
               }
             >
               {(name) => (
@@ -919,7 +930,10 @@ function Connection(props: { name: string; active: boolean }) {
         </section>
         <Show when={tinfoil().length || setups().length || codex()}>
           <section class="connection-section connection-setup">
-            <SectionHeading title="Agent setup" />
+            <SectionHeading
+              title="Details"
+              description="URLs, sandbox placeholders, and setup instructions"
+            />
             <Show when={tinfoil().length}>
               <div class="settings-group">
                 <For each={tinfoil()}>
@@ -954,7 +968,7 @@ function Connection(props: { name: string; active: boolean }) {
                             {setup.connection} · {setup.credential}
                           </h3>
                         </Show>
-                        <label for={id}>Agent placeholder</label>
+                        <label for={id}>Sandbox placeholder</label>
                         <div class="secret-input">
                           <input
                             ref={input}
@@ -1025,7 +1039,7 @@ function Connection(props: { name: string; active: boolean }) {
                           Save this in <code>~/.codex/config.toml</code>, then
                           run Codex in your Monitor-connected sandbox or with{" "}
                           <code>monitor run -- codex</code>. Choose a model
-                          available to your ChatGPT account. Grant your agent
+                          available to your ChatGPT account. Grant your sandbox
                           access to this connection and review pending requests
                           in Activity.
                         </p>
@@ -1049,94 +1063,7 @@ function Connection(props: { name: string; active: boolean }) {
           </section>
         </Show>
         <ConnectionForm name={props.name} />
-        <ResourceDisclosure
-          class="section-disclosure"
-          summary={
-            <DisclosureHeading
-              title="Operations"
-              count={Object.keys(owner.actionsOf(m.view()!, props.name)).length}
-            />
-          }
-        >
-          {() => (
-            <div class="section-content">
-              <div
-                class="action-list"
-                role="region"
-                aria-label="Operations"
-                tabIndex={0}
-              >
-                <ConnectionActions
-                  nodes={owner.actionTree(m.view()!, props.name)}
-                />
-              </div>
-            </div>
-          )}
-        </ResourceDisclosure>
-        <ResourceDisclosure
-          class="section-disclosure"
-          summary={<DisclosureHeading title="Advanced" />}
-        >
-          {() => (
-            <div class="section-content">
-              <section class="settings-group" aria-label="Data sharing">
-                <SectionHeading title="Data sharing" small />
-                <DataPermissions
-                  value={answers(account())}
-                  onChange={(value) => {
-                    const changes = owner
-                      .sourceChanges({ accounts: { [props.name]: value } })
-                      .filter(
-                        (change) =>
-                          account()?.[
-                            change.path[2] as keyof owner.AccountAnswers
-                          ] !== change.value,
-                      );
-                    if (changes.length) void m.edit(changes);
-                  }}
-                />
-              </section>
-              <section class="settings-group" aria-label="Effects">
-                <SectionHeading title="Effects" small />
-                <Effects scope={{ account: props.name }} />
-              </section>
-              <section class="settings-group" aria-label="Custom policy">
-                <SectionHeading title="Custom policy" small />
-                <form
-                  class="form-fields"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    void m.edit(
-                      owner.edits.setAccountPolicy(props.name, policy()),
-                    );
-                  }}
-                >
-                  <textarea
-                    aria-label="Custom policy"
-                    rows={6}
-                    placeholder={`package sentinel
-
-deny contains "reason shown in Activity" if {
-  "pay" in input.facts.operation.effects
-}`}
-                    value={policy()}
-                    onInput={(e) => setPolicy(e.currentTarget.value)}
-                  />
-                  <p class="muted field-help">
-                    Define <code>deny</code> to block requests or{" "}
-                    <code>approvals</code> to require review, in package{" "}
-                    <code>sentinel</code>.
-                  </p>
-                  <button disabled={m.busy()}>Save policy</button>
-                </form>
-              </section>
-            </div>
-          )}
-        </ResourceDisclosure>
         <div class="connection-footer">
-          <a class="button" href={href("preset", account()!.preset)}>
-            Edit connection preset
-          </a>
           <button
             class="danger"
             disabled={m.busy()}
@@ -1145,7 +1072,7 @@ deny contains "reason shown in Activity" if {
                 confirm(`Remove connection ${props.name}?`) &&
                 (await m.edit(owner.edits.removeAccount(m.view()!, props.name)))
               )
-                location.hash = "#accounts";
+                location.hash = "#connections";
             }}
           >
             Remove connection
@@ -1153,65 +1080,5 @@ deny contains "reason shown in Activity" if {
         </div>
       </Show>
     </div>
-  );
-}
-
-function ConnectionActions(props: { nodes: owner.ActionNode[] }) {
-  const nodes = createMemo(
-    () => new Map(props.nodes.map((node) => [node.key, node])),
-  );
-  return (
-    <For
-      each={[...nodes().keys()]}
-      fallback={
-        <p class="muted">This preset doesn't define any actions yet.</p>
-      }
-    >
-      {(key) => {
-        const node = () => nodes().get(key)!;
-        const row = () => (
-          <>
-            <span class="capability-name">
-              {node().title}{" "}
-              <Show when={node().total}>
-                <small class="count">{node().total}</small>
-              </Show>
-            </span>
-            <Show when={!node().children.length}>
-              <span class="effects" aria-label="Effects">
-                <For
-                  each={node().effects}
-                  fallback={<span class="muted">No effects</span>}
-                >
-                  {(effect) => (
-                    <span class={`badge effect-${effect}`}>
-                      {effect.charAt(0).toUpperCase() + effect.slice(1)}
-                    </span>
-                  )}
-                </For>
-              </span>
-            </Show>
-          </>
-        );
-        return (
-          <Show
-            when={node().children.length}
-            fallback={<div class="capability">{row()}</div>}
-          >
-            <LazyDetails
-              class="action-group"
-              summaryClass="capability"
-              summary={row()}
-            >
-              {() => (
-                <div class="action-children">
-                  <ConnectionActions nodes={node().children} />
-                </div>
-              )}
-            </LazyDetails>
-          </Show>
-        );
-      }}
-    </For>
   );
 }

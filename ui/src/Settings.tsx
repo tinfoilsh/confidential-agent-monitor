@@ -9,7 +9,6 @@ import {
 import * as owner from "./owner.js";
 import {
   ConnectorIcon,
-  Effects,
   Empty,
   Icon,
   LazyDetails,
@@ -59,13 +58,36 @@ export function Settings(props: {
         </div>
       </section>
       <section class="settings-section">
-        <h2>Default permissions</h2>
+        <h2>Payments</h2>
         <label class="setting-row">
           <span>
-            Allow AI inference
+            Ask before any payment
             <small>
-              Use paid AI models without payment approval. Provider charges and
-              explicit payment settings still apply.
+              A sandbox must get your approval for anything that spends
+              money.
+            </small>
+          </span>
+          <input
+            type="checkbox"
+            role="switch"
+            checked={(m.view()!.config.effects?.pay ?? "ask") !== "allow"}
+            onChange={(e) =>
+              void m.edit(
+                owner.edits.setEffect(
+                  {},
+                  "pay",
+                  e.currentTarget.checked ? "ask" : "allow",
+                ),
+              )
+            }
+          />
+        </label>
+        <label class="setting-row">
+          <span>
+            Allow AI inference without asking
+            <small>
+              Paid model calls (Tinfoil, OpenAI, …) go through without
+              approval. Other payments still ask.
             </small>
           </span>
           <input
@@ -77,59 +99,6 @@ export function Settings(props: {
             }
           />
         </label>
-        <Effects />
-        <details class="settings-help">
-          <summary>How defaults work</summary>
-          <p>
-            These defaults apply to all agents. Connections and agents can
-            override them. Select an active permission again to use the
-            inherited setting.
-          </p>
-          <p>
-            Explicit payment settings also apply to paid AI inference. Access
-            permissions, guardrails, and custom rules still apply.
-          </p>
-        </details>
-      </section>
-      <section class="settings-section">
-        <h2>Guardrails</h2>
-        <For each={["confidentiality", "integrity"] as const}>
-          {(lattice) => (
-            <label class="setting-row">
-              <span>
-                {lattice === "confidentiality"
-                  ? "Confidentiality"
-                  : "Integrity"}
-                <small>
-                  {lattice === "confidentiality"
-                    ? "Restrict where agents can send private data."
-                    : "Restrict sensitive actions after agents read untrusted content."}
-                </small>
-              </span>
-              <input
-                type="checkbox"
-                role="switch"
-                checked={owner.lattices(m.view()!)[lattice]}
-                onChange={(e) =>
-                  void m.edit(
-                    owner.edits.setLattice(lattice, e.currentTarget.checked),
-                  )
-                }
-              />
-            </label>
-          )}
-        </For>
-        <details class="settings-help">
-          <summary>About guardrails</summary>
-          <p>
-            Applies to all agents and connector requests. Confidentiality is on
-            by default; integrity is off by default.
-          </p>
-          <p>
-            Labels keep their history while enforcement is off. Access
-            permissions, explicit approvals, and custom rules still apply.
-          </p>
-        </details>
       </section>
       <section class="settings-section">
         <h2>Advanced</h2>
@@ -156,9 +125,36 @@ export function Settings(props: {
           </label>
           <button disabled={m.busy()}>Save networks</button>
         </form>
-        <a class="setting-row settings-link" href="#policy">
-          Policy editor <span>›</span>
-        </a>
+      </section>
+      <section class="settings-section settings-danger">
+        <h2>Dangerous</h2>
+        <label class="setting-row">
+          <span>
+            Allow everything
+            <small>
+              Ignore connections. Every sandbox can reach any host on any
+              port, and nothing asks.
+            </small>
+          </span>
+          <input
+            type="checkbox"
+            role="switch"
+            checked={owner.networkingOpen(m.view()!)}
+            onChange={(e) => {
+              const open = e.currentTarget.checked;
+              if (
+                open &&
+                !confirm(
+                  "Allow everything? Sandboxes will be able to reach any host without asking.",
+                )
+              ) {
+                e.currentTarget.checked = false;
+                return;
+              }
+              void m.edit(owner.edits.setNetworkingOpen(m.view()!, open));
+            }}
+          />
+        </label>
       </section>
     </div>
   );
@@ -190,7 +186,7 @@ export function Rules() {
           const rule = () => m.view()!.config.identities![name].rules![id];
           return (
             <div class="resource-row">
-              <a class="resource-link" href={href("account", rule().account)}>
+              <a class="resource-link" href={href("connection", rule().account)}>
                 <ConnectorIcon
                   preset={
                     m.view()!.config.accounts?.[rule().account]?.preset ??
@@ -199,25 +195,29 @@ export function Rules() {
                 />
                 <span>
                   <strong>{owner.ruleTitle(m.view()!, rule())}</strong>
+                  <small class="rule-scope">
+                    {(() => {
+                      const text = owner.scopeText(
+                        m.view()!,
+                        rule().account,
+                        rule().scope ?? {},
+                      );
+                      return typeof text === "string" ? (
+                        <code title={text}>{text}</code>
+                      ) : (
+                        <For each={text} fallback="Any request">
+                          {(t) => <code title={t}>{t}</code>}
+                        </For>
+                      );
+                    })()}
+                  </small>
                   <small>
                     {name} · {rule().account}
-                  </small>
-                  <small class="rule-scope">
-                    <For
-                      each={Object.entries(rule().scope ?? {})}
-                      fallback="Any request"
-                    >
-                      {([key, value]) => {
-                        const text = `${key}: ${typeof value === "string" ? value : JSON.stringify(value)}`;
-                        return <code title={text}>{text}</code>;
-                      }}
-                    </For>
-                  </small>
-                  <small>
                     {rule().operation
-                      ? `Skips ${owner.ruleWaives(rule()).join(", ")}`
-                      : "Inactive: saved before approvals named an operation"}
+                      ? ""
+                      : " · Inactive: saved before approvals named an operation"}
                   </small>
+
                 </span>
               </a>
               <button
@@ -558,7 +558,7 @@ export function PresetEditor(props: { name: string; request?: string }) {
   });
   return (
     <div id="pane">
-      <a class="button back-button" href="#accounts/catalog">
+      <a class="button back-button" href="#connections/catalog">
         <Icon name="arrow" />
         Back to catalog
       </a>
@@ -600,7 +600,7 @@ export function PresetEditor(props: { name: string; request?: string }) {
                     <p>
                       <a href={href("request", record().id)}>Back to request</a>{" "}
                       ·{" "}
-                      <a href={href("account", record().facts.account)}>
+                      <a href={href("connection", record().facts.account)}>
                         Connection settings
                       </a>
                     </p>
@@ -669,7 +669,7 @@ export function PresetEditor(props: { name: string; request?: string }) {
                           confirm(`Remove custom preset ${props.name}?`) &&
                           (await m.edit(owner.edits.removePreset(props.name)))
                         )
-                          location.hash = "#accounts/catalog";
+                          location.hash = "#connections/catalog";
                       }}
                     >
                       Remove custom preset
