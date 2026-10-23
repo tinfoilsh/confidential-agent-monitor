@@ -5,6 +5,7 @@ import {
   createResource,
   lazy,
   onCleanup,
+  onMount,
 } from "solid-js";
 import * as owner from "./owner.js";
 import {
@@ -21,6 +22,7 @@ const Rules = lazy(() =>
 );
 
 const PAGE = 50;
+const HOLD_SCROLL_PX = 100;
 const requestTime = new Intl.DateTimeFormat(undefined, {
   hour: "2-digit",
   minute: "2-digit",
@@ -106,13 +108,25 @@ function Requests(props: { scope?: string; name?: string }) {
       .slice(current() * PAGE, (current() + 1) * PAGE)
       .map((r) => r.id),
   );
-  const latest = () => m.setActivity({ page: 0, anchor: 0 });
+  const newer = () => filtered().length - held().length;
+  const latest = () => {
+    m.setActivity({ page: 0, anchor: 0 });
+    document.getElementById("workspace")!.scrollTop = 0;
+  };
+  const hold = () =>
+    anchor() ||
+    m.setActivity(
+      "anchor",
+      Date.parse(m.records()[0]?.time ?? "") || Date.now(),
+    );
+  onMount(() => {
+    const workspace = document.getElementById("workspace")!;
+    const scrolled = () => workspace.scrollTop > HOLD_SCROLL_PX && hold();
+    workspace.addEventListener("scroll", scrolled, { passive: true });
+    onCleanup(() => workspace.removeEventListener("scroll", scrolled));
+  });
   const next = async () => {
-    if (!anchor())
-      m.setActivity(
-        "anchor",
-        Date.parse(m.records()[0]?.time ?? "") || Date.now(),
-      );
+    hold();
     const end = (current() + 1) * PAGE,
       full = held().length >= end;
     if (held().length <= end) await m.loadOlder();
@@ -132,7 +146,9 @@ function Requests(props: { scope?: string; name?: string }) {
             Requests <span class="count">{filtered().length}</span>
           </h2>
           <Show when={anchor()} fallback={<span>Updates every 5 seconds</span>}>
-            <button onClick={latest}>Back to latest</button>
+            <button onClick={latest}>
+              {newer() ? `View ${newer()} new` : "Back to latest"}
+            </button>
           </Show>
         </div>
         <For
