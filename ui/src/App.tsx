@@ -37,10 +37,6 @@ const PresetEditor = lazy(() =>
   import("./Settings").then((m) => ({ default: m.PresetEditor })),
 );
 
-// Local dev only: keep showing the welcome page even after onboarding, while
-// it is being designed. Stripped from production builds.
-const DEV_FORCE_ONBOARDING = import.meta.env.DEV && false;
-
 const sections: Record<string, [string, string]> = {
   activity: ["Activity", "Review requests and manage saved approval rules."],
   agents: ["Sandboxes", "Your sandboxes and the devices that may reach them."],
@@ -191,12 +187,7 @@ function Shell() {
   return (
     <>
       <Show
-        when={
-          m.view() &&
-          !m.locked() &&
-          !DEV_FORCE_ONBOARDING &&
-          owner.onboarded(m.view()!)
-        }
+        when={m.view() && !m.locked() && owner.onboarded(m.view()!)}
         fallback={<Gate />}
       >
         <div id="app" classList={{ "navigation-open": mobile() }}>
@@ -433,9 +424,6 @@ function Gate() {
     // Local dev (bun run dev) only: a prefilled passphrase so the dev
     // server unlocks with one click. Stripped from production builds.
     [key, setKey] = createSignal(import.meta.env.DEV ? "testtesttesttest" : ""),
-    [preset] = createSignal<owner.PolicyPreset>("known_only"),
-    // Paid inference is on by default and not asked about (daniel_suggestions_2.md).
-    paid = () => true,
     [step, setStep] = createSignal<"policy" | "tinfoil">("policy"),
     [tinfoilKey, setTinfoilKey] = createSignal("");
   let heading!: HTMLHeadingElement, tinfoilInput!: HTMLInputElement;
@@ -448,8 +436,8 @@ function Gate() {
     if (
       await m.perform(
         (client) =>
-          client.onboard(m.view()!, preset(), undefined, {
-            allowPaidInference: paid(),
+          client.onboard(m.view()!, "known_only", undefined, {
+            allowPaidInference: true,
             tinfoilApiKey,
           }),
         "Monitor set up",
@@ -514,11 +502,7 @@ function Gate() {
             <p role="alert">{m.error()}</p>
           </Show>
         </Match>
-        <Match
-          when={
-            m.view() && (DEV_FORCE_ONBOARDING || !owner.onboarded(m.view()!))
-          }
-        >
+        <Match when={m.view() && !owner.onboarded(m.view()!)}>
           <form
             class="onboarding"
             onSubmit={(e) => {

@@ -40,7 +40,7 @@ export function Agents(props: { expanded?: string }) {
     <>
       <For
         each={[
-          ["sandboxes", "Sandboxes", "What the Monitor contains. Set what each may reach."],
+          ["sandboxes", "Sandboxes", ""],
           ["devices", "Trusted devices", "Your own keys. They can SSH into sandboxes through the Monitor; nothing else applies to them."],
         ]}
       >
@@ -55,7 +55,9 @@ export function Agents(props: { expanded?: string }) {
                   <h2>
                     {title} <span class="count">{members().length}</span>
                   </h2>
-                  <span class="muted">{blurb}</span>
+                  <Show when={blurb}>
+                    <span class="muted">{blurb}</span>
+                  </Show>
                   <Show
                     when={kind === "devices"}
                     fallback={
@@ -323,7 +325,6 @@ export function AgentConnectionAccess(props: {
             </small>
           </Show>
         </button>
-        <span class="access-level-label muted">Connection access</span>
         <span
           class="seg access-level"
           role="group"

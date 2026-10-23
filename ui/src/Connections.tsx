@@ -3,7 +3,6 @@ import {
   Show,
   Suspense,
   createMemo,
-  createResource,
   createSignal,
   createUniqueId,
   lazy,
@@ -109,7 +108,10 @@ export function Connections(props: { catalog?: boolean; expanded?: string }) {
   return (
     <>
       <nav class="page-tabs" aria-label="Connection views">
-        <a href="#connections" aria-current={!props.catalog ? "page" : undefined}>
+        <a
+          href="#connections"
+          aria-current={!props.catalog ? "page" : undefined}
+        >
           Mine
         </a>
         <a
@@ -262,10 +264,6 @@ function Catalog() {
               ?.click()
           }
         />
-        <a class="button" href="#preset">
-          <Icon name="plus" />
-          New preset
-        </a>
       </div>
       <For each={groups().map((g) => g.group)}>
         {(id) => {
@@ -318,7 +316,12 @@ function Catalog() {
                       >
                         {(active) => (
                           <Show when={active()}>
-                            <CatalogEntry base={name} />
+                            <div class="catalog-entry">
+                              <h3 class="catalog-add-title">
+                                New {m.view()!.presets[name].title} connection
+                              </h3>
+                              <AddConnection preset={name} />
+                            </div>
                           </Show>
                         )}
                       </ResourceDisclosure>
@@ -334,249 +337,6 @@ function Catalog() {
         <Empty title="No matching services">Try a different search.</Empty>
       </Show>
     </div>
-  );
-}
-// One expanded catalog row: a collapsible "configuration" panel (which
-// preset version Add uses — the built-in is the untouched default —, in-place
-// editing of versions, the connections already made) above a "new
-// connection" form. daniel_suggestions_2.md #4.
-// Hidden for now: the preset-versioning panel is built and works, but a
-// first release is "pick a service, paste the key". Flip to show it.
-// daniel_suggestions_2.md #10.
-const SHOW_CATALOG_CONFIGURATION = false;
-function CatalogEntry(props: { base: string }) {
-  const m = useMonitor();
-  const versions = () => [
-    props.base,
-    ...owner.presetVersions(m.view()!, props.base),
-  ];
-  const [selected, setSelected] = createSignal(props.base);
-  const [editing, setEditing] = createSignal<string | "new" | undefined>();
-  const [open, setOpen] = createSignal(false);
-  const connections = () =>
-    Object.entries(m.view()!.config.accounts ?? {}).filter(([, a]) =>
-      versions().includes(a.preset),
-    );
-  const usedBy = (preset: string) =>
-    connections()
-      .filter(([, a]) => a.preset === preset)
-      .map(([n]) => n);
-  const label = (name: string) =>
-    name === props.base ? "default" : m.view()!.presets[name].title;
-  return (
-    <div class="catalog-entry">
-      <Show when={SHOW_CATALOG_CONFIGURATION}>
-      <details
-        class="catalog-config"
-        open={open()}
-        onToggle={(e) => setOpen(e.currentTarget.open)}
-      >
-        <summary>
-          <span class="collection-chevron">
-            <Icon name="arrow" />
-          </span>
-          <span>Configuration</span>
-          <Show when={!open()}>
-            <small class="muted">
-              preset: {label(selected())} ·{" "}
-              {connections().length
-                ? `${connections().length} ${connections().length === 1 ? "connection" : "connections"}`
-                : "no connections"}
-            </small>
-          </Show>
-        </summary>
-        <div class="catalog-config-body">
-          <div class="catalog-config-list">
-            <div class="catalog-config-head">
-              <span>presets</span>
-              <button
-                type="button"
-                class="catalog-config-icon catalog-config-add"
-                aria-label="New version from default"
-                title="New version from default"
-                onClick={() => setEditing("new")}
-              >
-                <Icon name="plus" />
-              </button>
-            </div>
-            <For each={versions()}>
-              {(name) => (
-                <div
-                  class="catalog-config-row"
-                  classList={{ on: selected() === name }}
-                >
-                  <button
-                    type="button"
-                    class="catalog-config-pick"
-                    aria-pressed={selected() === name}
-                    onClick={() => setSelected(name)}
-                  >
-                    <span>{label(name)}</span>
-                    <Show when={name !== props.base && label(name) !== name}>
-                      <code class="muted">{name}</code>
-                    </Show>
-                  </button>
-                  <Show when={name !== props.base}>
-                    <span class="catalog-config-actions">
-                      <button
-                        type="button"
-                        class="catalog-config-icon"
-                        aria-label={`Edit ${label(name)}`}
-                        title="Edit"
-                        onClick={() => setEditing(name)}
-                      >
-                        <Icon name="edit" />
-                      </button>
-                      <button
-                        type="button"
-                        class="catalog-config-icon catalog-config-delete"
-                        aria-label={`Delete ${label(name)}`}
-                        disabled={m.busy() || usedBy(name).length > 0}
-                        title={
-                          usedBy(name).length
-                            ? `In use by ${usedBy(name).join(", ")}`
-                            : "Delete"
-                        }
-                        onClick={async () => {
-                          if (
-                            confirm(`Delete preset ${label(name)}?`) &&
-                            (await m.edit(owner.edits.removePreset(name)))
-                          )
-                            setSelected(props.base);
-                        }}
-                      >
-                        <Icon name="close" />
-                      </button>
-                    </span>
-                  </Show>
-                </div>
-              )}
-            </For>
-            <Show when={editing()}>
-              {(target) => (
-                <PresetVersionEditor
-                  name={target() === "new" ? undefined : target()}
-                  base={props.base}
-                  onCancel={() => setEditing(undefined)}
-                  onSaved={(name) => {
-                    setEditing(undefined);
-                    setSelected(name);
-                  }}
-                />
-              )}
-            </Show>
-          </div>
-          <div class="catalog-config-list">
-            <div class="catalog-config-head">
-              <span>connections</span>
-            </div>
-            <For
-              each={connections()}
-              fallback={<p class="muted">no connections yet</p>}
-            >
-              {([name, account]) => (
-                <a class="catalog-config-row" href={href("connection", name)}>
-                  <span>
-                    <ConnectorIcon preset={account.preset} />
-                    <span>{name}</span>
-                    <code class="muted">{label(account.preset)}</code>
-                  </span>
-                  <Icon name="arrow" />
-                </a>
-              )}
-            </For>
-          </div>
-        </div>
-      </details>
-      </Show>
-      <h3 class="catalog-add-title">New {label(selected()) === "default" ? m.view()!.presets[props.base].title : label(selected())} connection</h3>
-      <AddConnection preset={selected()} />
-    </div>
-  );
-}
-// Edit one version in place (name given) or create a new `<base>-<n>` from
-// the default (name undefined). Title is a plain field; the preset name is
-// fixed. Saving a version overwrites that version only — never the default.
-function PresetVersionEditor(props: {
-  name?: string;
-  base: string;
-  onCancel: () => void;
-  onSaved: (name: string) => void;
-}) {
-  const m = useMonitor();
-  const source = () => props.name ?? props.base;
-  const [file] = createResource(source, (name) => m.api()!.preset(name));
-  return (
-    <Show when={file()} keyed fallback={<p class="muted">Loading preset…</p>}>
-      {(previous) => {
-        const name = props.name ?? owner.nextPresetVersion(m.view()!, props.base);
-        const { title: previousTitle, ...rest } = previous as {
-          title: string;
-        } & Record<string, unknown>;
-        const [title, setTitle] = createSignal(props.name ? previousTitle : name);
-        const [text, setText] = createSignal(owner.presetText(rest));
-        const titleTaken = () =>
-          Object.entries(m.view()!.presets).some(
-            ([other, p]) =>
-              other !== name &&
-              p.title.trim().toLowerCase() === title().trim().toLowerCase(),
-          );
-        return (
-          <form
-            class="form-fields catalog-editor"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              try {
-                if (titleTaken())
-                  throw new Error("That title is already used by another preset.");
-                const value = { ...JSON.parse(text()), title: title().trim() };
-                if (
-                  await m.edit(
-                    owner.edits.savePreset(name, JSON.stringify(value), previous),
-                  )
-                )
-                  props.onSaved(name);
-              } catch (cause) {
-                m.report(cause);
-              }
-            }}
-          >
-            <label>
-              title
-              <input
-                required
-                value={title()}
-                onInput={(e) => setTitle(e.currentTarget.value)}
-                aria-invalid={titleTaken()}
-              />
-              <Show when={titleTaken()}>
-                <small class="muted">already used — pick another</small>
-              </Show>
-            </label>
-            <p class="muted">
-              preset name: <code>{name}</code>
-            </p>
-            <label>
-              preset JSON
-              <textarea
-                rows={16}
-                spellcheck={false}
-                value={text()}
-                onInput={(e) => setText(e.currentTarget.value)}
-              />
-            </label>
-            <div class="form-actions">
-              <button class="primary" disabled={m.busy() || titleTaken()}>
-                {props.name ? "Save" : "Create"}
-              </button>
-              <button type="button" onClick={props.onCancel}>
-                Cancel
-              </button>
-            </div>
-          </form>
-        );
-      }}
-    </Show>
   );
 }
 const answers = (a?: Partial<owner.AccountAnswers>): owner.AccountAnswers => ({
@@ -1155,9 +915,7 @@ function Connection(props: { name: string; active: boolean }) {
             <For
               each={agents()}
               fallback={
-                <p class="muted">
-                  Enrol a sandbox to use this connection.
-                </p>
+                <p class="muted">Enrol a sandbox to use this connection.</p>
               }
             >
               {(name) => (

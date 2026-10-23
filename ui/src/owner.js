@@ -20,7 +20,7 @@ export const COMMON_PRESETS = [
   "gmail",
   "email",
   "web",
-  "custom",
+  "ssh",
   "tcp",
 ];
 export const CREDENTIAL_STATUS = {
@@ -44,7 +44,8 @@ export const POLICY_PRESETS = {
   },
   offline: {
     title: "Offline",
-    description: "Block all requests. Nothing in a sandbox can talk to anything.",
+    description:
+      "Block all requests. Nothing in a sandbox can talk to anything.",
   },
 };
 // A new preset starts as one bearer-token API; the owner sets its origin, slots and operations.
@@ -323,11 +324,6 @@ const ICON_MANIFEST = "/app/icons/manifest.json";
 export function connectorIcon(manifest, preset, base = "") {
   if (preset === "codex") preset = "openai";
   if (preset === "openrouter") preset = "open_router";
-  // A preset version (`<base>-<n>`) wears its base's icon.
-  if (!manifest?.[preset]?.src && preset.includes("-")) {
-    const root = preset.slice(0, preset.indexOf("-"));
-    if (manifest?.[root]?.src) preset = root;
-  }
   const icon = manifest?.[preset]?.src
     ? manifest[preset]
     : (manifest?.custom ?? { src: "custom.svg" });
@@ -1053,32 +1049,13 @@ export const signInLabel = (view, preset) =>
     ? "Sign in with " + view.presets[preset].title
     : "Sign in";
 
-// Preset versioning (daniel_suggestions_2.md #4): a saved preset named
-// `<base>-<suffix>` is a VERSION of the built-in `<base>` — the built-in is
-// the untouched default, versions sit beside it, and Add picks one. No
-// built-in name contains "-", so the prefix is unambiguous.
-export const presetBase = (view, name) => {
-  const i = name.indexOf("-");
-  const base = i === -1 ? name : name.slice(0, i);
-  return base !== name && view.presets[base] && view.config.presets?.[name]
-    ? base
-    : undefined;
-};
-export const presetVersions = (view, base) =>
-  Object.keys(view.presets)
-    .filter((name) => presetBase(view, name) === base)
-    .sort();
-export const nextPresetVersion = (view, base) => {
-  for (let i = 1; ; i++) if (!view.presets[`${base}-${i}`]) return `${base}-${i}`;
-};
 export function catalog(view) {
   const custom = ["custom_api", "mcp"].filter((name) => view.presets[name]);
   const counts = new Map();
   for (const acc of Object.values(accounts(view))) {
     const replacement = view.presets[acc.preset]?.replaced_by;
-    let preset =
+    const preset =
       replacement && view.presets[replacement] ? replacement : acc.preset;
-    preset = presetBase(view, preset) ?? preset;
     counts.set(preset, (counts.get(preset) ?? 0) + 1);
   }
   const groups = new Map(Object.keys(CATALOG_GROUPS).map((g) => [g, []]));
@@ -1087,19 +1064,12 @@ export function catalog(view) {
   )) {
     // Retired definitions still serve stored credentials and permission names.
     if (preset.replaced_by && view.presets[preset.replaced_by]) continue;
-    // Versions are listed under their base row, not as rows of their own.
-    if (presetBase(view, name)) continue;
     const group = preset.group ?? "api";
     if (!groups.has(group)) groups.set(group, []);
     groups
       .get(group)
       .push({ name, title: preset.title, accounts: counts.get(name) ?? 0 });
   }
-  for (const entries of groups.values())
-    entries.sort(
-      (a, b) =>
-        Number(custom.includes(b.name)) - Number(custom.includes(a.name)),
-    );
   // The ones most people add first lead as "Common"; blank "custom"
   // presets live under Settings → Advanced, not in the browse list.
   const common = [];
@@ -1445,12 +1415,6 @@ function onboardingChanges(view, preset, tinfoilApiKey) {
   return changes;
 }
 
-// Networking is "off" when a policy denies every request outright — the rule
-// onboarding's offline posture writes. It is ONE switch with ONE meaning:
-// sandboxes cannot send anything out. Trusted devices, routes, grants and
-// connections are untouched either way.
-const OFFLINE_RULE =
-  'package sentinel\n\ndeny contains "Network access is disabled."\n';
 const KNOWN_ONLY_RULE =
   'package sentinel\n\ndeny contains "This request has no recognized policy operation." if input.facts.operation == null\n';
 const networkRuleName = (view) =>
@@ -1469,10 +1433,6 @@ export const scopeText = (view, account, scope = {}) =>
     : Object.entries(scope).map(
         ([k, v]) => `${k}: ${typeof v === "string" ? v : JSON.stringify(v)}`,
       );
-export const networkingOff = (view) =>
-  Object.values(view.config.policies ?? {}).some((p) =>
-    p.includes('deny contains "Network access is disabled."'),
-  );
 // "Open" = every raw-TCP catch-all at allow for everyone, no deny rule, the
 // whole internet in allow_networks. Settings → Dangerous only.
 export const networkingOpen = (view) =>
@@ -1483,12 +1443,6 @@ export const networkingOpen = (view) =>
 
 // Each edit returns the source changes for POST /policy/edits.
 export const edits = {
-  setNetworking: (view, on) => [
-    {
-      path: ["policies", networkRuleName(view)],
-      value: on ? KNOWN_ONLY_RULE : OFFLINE_RULE,
-    },
-  ],
   setNetworkingOpen: (view, open) => {
     const tcpAccounts = Object.entries(accounts(view))
       .filter(([, a]) => a.preset === "tcp")
