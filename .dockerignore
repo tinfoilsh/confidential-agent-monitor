@@ -3,6 +3,7 @@
 !go.mod
 !go.sum
 !*.go
+!presets/*.go
 !connector/
 !connector/**
 !facts/
@@ -11,8 +12,6 @@
 !ui/**
 !presets/
 !presets/*.json
-!presets/policy/
-!presets/policy/**
 !internal/
 !internal/**
 **/*_test.go

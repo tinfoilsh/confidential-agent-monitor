@@ -1,4 +1,4 @@
-// Package worker owns local process launch and sandbox setup.
+// Package worker launches isolated local connector processes and carries their private protocol.
 package worker
 
 import (
@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/connector/rpc"
 )
 
 const maxWorkers = 32
@@ -40,7 +39,7 @@ func (m *Local) acquire() (func(), error) {
 	return func() { m.mu.Lock(); m.active--; m.mu.Unlock() }, nil
 }
 
-func unixDial(socket string) rpc.DialFunc {
+func unixDial(socket string) DialFunc {
 	return func(ctx context.Context) (net.Conn, error) {
 		return (&net.Dialer{}).DialContext(ctx, "unix", socket)
 	}
@@ -54,29 +53,29 @@ func ServeInherited(definitions map[string]connector.Definition) error {
 	if err != nil {
 		return err
 	}
-	return rpc.Serve(context.Background(), definitions, os.Stdin, ln, unixDial("/broker.sock"))
+	return Serve(context.Background(), definitions, os.Stdin, ln, unixDial("/broker.sock"))
 }
 
 // Start runs the same binary in the prepared root. It never decodes config.
-func (m *Local) Start(ctx context.Context, config []byte, host http.Handler) (rpc.Endpoint, error) {
+func (m *Local) Start(ctx context.Context, config []byte, host http.Handler) (Endpoint, error) {
 	if m == nil || host == nil {
-		return rpc.Endpoint{}, errors.New("connector worker launcher is not configured")
+		return Endpoint{}, errors.New("connector worker launcher is not configured")
 	}
 	root, err := filepath.Abs(m.Root)
 	if err != nil || m.Root == "" || root == "/" {
-		return rpc.Endpoint{}, errors.New("worker root must be a prepared filesystem directory")
+		return Endpoint{}, errors.New("worker root must be a prepared filesystem directory")
 	}
 	root, err = filepath.EvalSymlinks(root)
 	if err != nil || root == "/" {
-		return rpc.Endpoint{}, errors.New("worker root must be a prepared filesystem directory")
+		return Endpoint{}, errors.New("worker root must be a prepared filesystem directory")
 	}
 	info, err := os.Stat(root)
 	if err != nil || !info.IsDir() {
-		return rpc.Endpoint{}, errors.New("worker root directory does not exist")
+		return Endpoint{}, errors.New("worker root directory does not exist")
 	}
 	release, err := m.acquire()
 	if err != nil {
-		return rpc.Endpoint{}, err
+		return Endpoint{}, err
 	}
 	ok := false
 	defer func() {
@@ -88,12 +87,12 @@ func (m *Local) Start(ctx context.Context, config []byte, host http.Handler) (rp
 	if executable == "" {
 		executable, err = os.Executable()
 		if err != nil {
-			return rpc.Endpoint{}, err
+			return Endpoint{}, err
 		}
 	}
 	executable, err = filepath.Abs(executable)
 	if err != nil {
-		return rpc.Endpoint{}, err
+		return Endpoint{}, err
 	}
 	sandbox := m.Sandbox
 	if sandbox == "" {
@@ -101,11 +100,11 @@ func (m *Local) Start(ctx context.Context, config []byte, host http.Handler) (rp
 	}
 	launcher, err := exec.LookPath(sandbox)
 	if err != nil {
-		return rpc.Endpoint{}, errors.New("bubblewrap is required for connector workers")
+		return Endpoint{}, errors.New("bubblewrap is required for connector workers")
 	}
 	directory, err := os.MkdirTemp("", "monitor-worker-")
 	if err != nil {
-		return rpc.Endpoint{}, err
+		return Endpoint{}, err
 	}
 	defer func() {
 		if !ok {
@@ -115,18 +114,18 @@ func (m *Local) Start(ctx context.Context, config []byte, host http.Handler) (rp
 	apiPath, brokerPath := filepath.Join(directory, "api.sock"), filepath.Join(directory, "broker.sock")
 	api, err := net.ListenUnix("unix", &net.UnixAddr{Name: apiPath, Net: "unix"})
 	if err != nil {
-		return rpc.Endpoint{}, err
+		return Endpoint{}, err
 	}
 	api.SetUnlinkOnClose(false)
 	defer api.Close()
 	file, err := api.File()
 	if err != nil {
-		return rpc.Endpoint{}, err
+		return Endpoint{}, err
 	}
 	defer file.Close()
 	bl, err := net.Listen("unix", brokerPath)
 	if err != nil {
-		return rpc.Endpoint{}, err
+		return Endpoint{}, err
 	}
 	childCtx, cancel := context.WithCancel(ctx)
 	server := &http.Server{Handler: host, ReadHeaderTimeout: 10 * time.Second, MaxHeaderBytes: 8 << 10, BaseContext: func(net.Listener) context.Context { return childCtx }}
@@ -151,10 +150,10 @@ func (m *Local) Start(ctx context.Context, config []byte, host http.Handler) (rp
 	if err := cmd.Start(); err != nil {
 		cancel()
 		server.Close()
-		return rpc.Endpoint{}, errors.New("could not start connector worker sandbox")
+		return Endpoint{}, errors.New("could not start connector worker sandbox")
 	}
 	done := make(chan struct{})
-	c := rpc.Endpoint{Dial: unixDial(apiPath), Done: done, Close: sync.OnceFunc(func() {
+	c := Endpoint{Dial: unixDial(apiPath), Done: done, Close: sync.OnceFunc(func() {
 		cancel()
 		// Killing bubblewrap also kills the worker's PID namespace.
 		cmd.Process.Kill()

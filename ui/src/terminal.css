@@ -1,0 +1,59 @@
+.sandbox-terminal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 320px;
+  overflow: hidden;
+  background: #121212;
+  color: #fafafa;
+}
+.sandbox-terminal.floating {
+  --width: min(720px, calc(100vw - 48px));
+  --height: min(440px, calc(100dvh - 48px));
+  position: fixed;
+  z-index: 50;
+  left: calc(100vw - var(--width) - 24px);
+  top: calc(100dvh - var(--height) - 24px);
+  width: var(--width);
+  height: var(--height);
+  min-width: 320px;
+  border: 1px solid #2c2c2e;
+  border-radius: var(--card-radius);
+  box-shadow: 0 12px 32px #0006;
+  resize: both;
+}
+.sandbox-terminal.floating > header {
+  cursor: move;
+  touch-action: none;
+}
+.sandbox-terminal > header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #2c2c2e;
+  font-size: var(--font-detail);
+}
+.sandbox-terminal > header strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sandbox-terminal > header [role="status"] {
+  flex: 1;
+  min-width: 0;
+  color: #b0b8c0;
+  overflow-wrap: anywhere;
+}
+.sandbox-terminal .dialog-close {
+  color: #b0b8c0;
+}
+.sandbox-terminal .dialog-close:hover:not(:disabled) {
+  background: transparent;
+  color: #fafafa;
+}
+.sandbox-terminal-screen {
+  flex: 1;
+  min-height: 0;
+  padding: 8px;
+}

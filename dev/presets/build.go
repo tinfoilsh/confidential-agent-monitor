@@ -306,7 +306,7 @@ func routeDiff(ref specRef, old, e lockEntry, before, after []byte) (added, remo
 		include := regexp.MustCompile(ref.Include)
 		for _, o := range p.Ops {
 			if include.MatchString(o.Path) {
-				out = append(out, routeShape(strings.ToUpper(o.Method), o.Path, nil)+graphqlField(o))
+				out = append(out, routeShape(strings.ToUpper(o.Method), o.Path)+graphqlField(o))
 			}
 		}
 		return out
@@ -627,9 +627,6 @@ func jsonStrings(values []string) []any {
 
 var paramSeg = regexp.MustCompile(`\{[^}]*\}`)
 
-func routeShape(method, path string, graphql any) string {
-	if g, ok := graphql.(map[string]any); ok {
-		return fmt.Sprintf("graphql %v %v", g["operation"], g["field"])
-	}
+func routeShape(method, path string) string {
 	return method + " " + paramSeg.ReplaceAllString(path, "{}")
 }

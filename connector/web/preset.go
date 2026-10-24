@@ -177,7 +177,7 @@ func (compiled *compiledOperation) matches(r *Request, headers map[string][]stri
 				if present {
 					return false, nil
 				}
-			} else if !present || !connector.EqualJSON(got, v) {
+			} else if !present || !facts.EqualJSON(got, v) {
 				return false, nil
 			}
 		default:
@@ -214,13 +214,13 @@ func condition(values map[string][]string, key string, want any) bool {
 
 func compileSelector(raw Selector) (compiledSelector, error) {
 	spec := compiledSelector{Selector: raw}
-	if !slices.Contains([]string{"path", "query", "form", "body", "header", "header_json", "argument", "http"}, spec.From) || !connector.ValidJSONType(spec.Type) {
+	if !slices.Contains([]string{"path", "query", "form", "body", "header", "header_json", "argument", "http"}, spec.From) || !facts.ValidJSONType(spec.Type) {
 		return spec, fmt.Errorf("invalid selector source %q or type %q", spec.From, spec.Type)
 	}
 	if slices.Contains([]string{"body", "header_json", "argument", "http"}, spec.From) {
 		at := spec.At
 		var err error
-		spec.pointer, err = connector.CompilePointer(at)
+		spec.pointer, err = facts.CompilePointer(at)
 		if err != nil {
 			return spec, err
 		}
@@ -405,7 +405,7 @@ func (p *Preset) compile() error {
 		}
 		if o.Body == "json" {
 			for at := range o.Fields {
-				op.fields[at], err = connector.CompilePointer(at)
+				op.fields[at], err = facts.CompilePointer(at)
 				if err != nil {
 					return err
 				}
@@ -526,7 +526,7 @@ func (p *Preset) Match(r *Request, c connector.Context, f facts.Facts) (facts.Fa
 			httpFields, _ = facts.JSON[map[string]any](h)
 		}
 		value, present := spec.value(r, captures, httpFields)
-		if err := connector.CheckSelection(spec.name, value, present, spec.Type, spec.Optional); err != nil {
+		if err := facts.CheckSelection(spec.name, value, present, spec.Type, spec.Optional); err != nil {
 			errs = append(errs, err)
 		} else if present {
 			parameters[spec.name] = value

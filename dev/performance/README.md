@@ -116,7 +116,7 @@ The local inference fixture explicitly allows
 at account level `allow`.
 
 Relevant sources: [Anthropic preset](../../presets/anthropic.json),
-[request matching](../../connector/web/preset.go), [gate/await](../../policy.go).
+[request matching](../../connector/web/preset.go), [gate](../../internal/monitor/monitor.go)/[await](../../internal/approval/approval.go).
 
 ### The original owner UI repeatedly transferred large unchanged payloads
 
@@ -143,7 +143,7 @@ uses compact summaries and loads full audit details on demand. The existing
 catalog negotiation remains in place.
 
 Relevant sources: [MCP details](../../connector/mcp/mcp.go),
-[owner snapshots/history](../../owner.go), [owner client](../../app/owner.js),
+[owner snapshots/history](../../internal/monitor/owner.go), [owner client](../../app/owner.js),
 [poll loop](../../app/monitor.js).
 
 ### Slow polls can hide approvals indefinitely
@@ -223,8 +223,8 @@ avoid duplicate retained body representations, and stop serializing the entire
 history every poll. Keep full facts available for authorization and approval
 rechecks; optimizing the audit display must not weaken policy inputs.
 
-Relevant sources: [record retention/evaluation](../../policy.go),
-[frozen facts](../../facts/json.go), [owner response encoding](../../owner.go).
+Relevant sources: [record retention/evaluation](../../internal/approval/approval.go),
+[frozen facts](../../facts/json.go), [owner response encoding](../../internal/monitor/owner.go).
 
 ### Worker overhead is measurable, but did not explain the 10 second wait
 
@@ -251,7 +251,7 @@ issues first. If transport reuse is subsequently changed, preserve connector
 lifetime, destination checks, cancellation, and policy revocation semantics.
 
 Relevant sources: [HTTP serving](../../connector/web/http.go),
-[worker RPC](../../connector/rpc/protocol.go), [worker launcher](../../internal/worker/local.go).
+[worker RPC](../../internal/worker/protocol.go), [worker launcher](../../internal/worker/local.go).
 
 ## Reproduce and compare
 
@@ -284,7 +284,7 @@ dev/perf --output .dev/perf/policy --modes inprocess --scenario 'TestPerformance
 dev/perf --output .dev/perf/network --samples 15 --histories 0,25,100,500,1000 --compare dev/performance/network-after.json
 
 # Verify owner reads and hello forwarding using that run's worker fixture.
-MONITOR_PERF_CONFIG="$PWD/.dev/perf/network/config.json" go test -race -tags performance -run 'Test(OwnerPolling|HelloRecognition|HelloForwarding)$' .
+MONITOR_PERF_CONFIG="$PWD/.dev/perf/network/config.json" go test -race -tags performance -run 'Test(OwnerPolling|HelloRecognition|HelloForwarding)$' ./internal/monitor
 node dev/owner-checks.mjs
 ```
 

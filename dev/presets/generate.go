@@ -170,7 +170,7 @@ func sameRoute(a, b specOp) bool {
 	if a.GraphQL != nil || b.GraphQL != nil {
 		return slices.Equal(a.GraphQL, b.GraphQL)
 	}
-	return routeShape(a.Method, a.Path, nil) == routeShape(b.Method, b.Path, nil)
+	return routeShape(a.Method, a.Path) == routeShape(b.Method, b.Path)
 }
 
 // Conditions conflict only if both records constrain a key differently.

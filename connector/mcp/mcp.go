@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"maps"
 	"net"
 	"net/http"
@@ -16,17 +17,20 @@ import (
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/facts"
-	sentinel "github.com/tinfoilsh/monitor/internal/sentinel"
 )
 
 var Definition = connector.Definition{NewConfig: func() connector.Server { return new(Server) }, Requests: []connector.Request{new(Request)}}
 
 type Server struct {
 	connector.SecretConfig
-	URL      string             `json:"url"`
-	Pin      *sentinel.Snapshot `json:"pin"`
-	upstream *sentinel.Upstream
-	current  *sentinel.Snapshot
+	URL     string    `json:"url"`
+	Pin     *Snapshot `json:"pin"`
+	current *Snapshot
+	session *sdk.ClientSession
+	// tools match the pin exactly; blocked counts the others, which await review.
+	tools        []*sdk.Tool
+	blocked      int
+	instructions string
 }
 
 func (c *Server) UnmarshalJSON(raw []byte) error {
@@ -81,7 +85,7 @@ func (m *Server) RunWithClient(ctx context.Context, client *http.Client, serve f
 	if err := m.connect(ctx, client); err != nil {
 		return err
 	}
-	defer m.upstream.Close()
+	defer m.session.Close()
 	serve(ctx)
 	return nil
 }
@@ -94,10 +98,16 @@ func (m *Server) Serve(s *connector.Stream, e *connector.Env) {
 		c = tls.Server(s, e.TLS)
 	}
 	connector.ServeHTTP(s, c, sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server {
-		server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: sentinel.Version}, &sdk.ServerOptions{Instructions: m.upstream.Instructions})
-		m.upstream.Register(server, "", func(ctx context.Context, t *sdk.Tool, args json.RawMessage) error {
-			return s.Gate(ctx, &Request{Tool: t.Name, Arguments: args, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint})
-		})
+		server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: Version}, &sdk.ServerOptions{Instructions: m.instructions})
+		for _, t := range m.tools {
+			server.AddTool(t, func(ctx context.Context, req *sdk.CallToolRequest) (*sdk.CallToolResult, error) {
+				if err := s.Gate(ctx, &Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}); err != nil {
+					log.Printf("%s: blocked %s: %v", m.URL, t.Name, err)
+					return &sdk.CallToolResult{IsError: true, Content: []sdk.Content{&sdk.TextContent{Text: "blocked by policy: " + err.Error()}}}, nil
+				}
+				return m.session.CallTool(ctx, &sdk.CallToolParams{Name: t.Name, Arguments: req.Params.Arguments})
+			})
+		}
 		return server
 	}, &sdk.StreamableHTTPOptions{Stateless: true, PropagateRequestCancellation: true, DisableLocalhostProtection: true}))
 }
@@ -111,24 +121,43 @@ func (m *Server) connect(ctx context.Context, client *http.Client) error {
 		}
 		client.Transport = bearer{token, client.Transport}
 	}
-	session, err := sdk.NewClient(&sdk.Implementation{Name: "monitor", Version: sentinel.Version}, nil).
+	session, err := sdk.NewClient(&sdk.Implementation{Name: "monitor", Version: Version}, nil).
 		Connect(ctx, &sdk.StreamableClientTransport{Endpoint: m.URL, HTTPClient: client}, nil)
 	if err != nil {
 		return err
 	}
-	cur, err := sentinel.Inspect(ctx, session)
+	cur, err := Inspect(ctx, session)
 	if err != nil {
 		session.Close()
 		return err
 	}
-	m.current = cur
-	m.upstream = sentinel.NewUpstream(m.URL, session, m.Pin, cur)
+	var blocked []string
+	m.current, m.session = cur, session
+	m.tools, blocked = m.Pin.approved(cur)
+	m.blocked = len(blocked)
+	if len(m.tools) > 0 {
+		m.instructions = cur.Instructions
+	}
+	for i, original := range m.tools {
+		t := *original
+		m.tools[i] = &t
+		schema, _ := t.InputSchema.(map[string]any)
+		if schema["type"] != "object" {
+			schema = maps.Clone(schema)
+			if schema == nil {
+				schema = map[string]any{}
+			}
+			schema["type"] = "object"
+			t.InputSchema = schema
+		}
+	}
+	log.Printf("%s: exposing %d of %d tools", m.URL, len(m.tools), len(cur.Tools))
 	return nil
 }
 
 func (m *Server) Details() json.RawMessage {
-	status := map[string]any{"blocked": m.upstream.Blocked}
-	if m.upstream.Blocked > 0 {
+	status := map[string]any{"blocked": m.blocked}
+	if m.blocked > 0 {
 		status["changes"], status["pin"] = m.Pin.Diff(m.current), m.current
 	}
 	raw, _ := json.Marshal(status)
@@ -211,10 +240,10 @@ func compileSelectors(specs map[string]Selector) (selectors, error) {
 	out := make(selectors, 0, len(specs))
 	for _, name := range slices.Sorted(maps.Keys(specs)) {
 		spec := specs[name]
-		if !connector.ValidJSONType(spec.Type) {
+		if !facts.ValidJSONType(spec.Type) {
 			return nil, fmt.Errorf("invalid selector type %q", spec.Type)
 		}
-		read, err := connector.CompilePointer(spec.At)
+		read, err := facts.CompilePointer(spec.At)
 		if err != nil {
 			return nil, err
 		}
@@ -228,7 +257,7 @@ func (scope selectors) Select(doc any) (map[string]any, error) {
 	var errs []error
 	for _, spec := range scope {
 		value, present := spec.read(doc)
-		if err := connector.CheckSelection(spec.name, value, present, spec.Type, spec.Optional); err != nil {
+		if err := facts.CheckSelection(spec.name, value, present, spec.Type, spec.Optional); err != nil {
 			errs = append(errs, err)
 		} else if present {
 			out[spec.name] = value
