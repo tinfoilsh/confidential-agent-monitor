@@ -5,7 +5,6 @@ import (
 	"context"
 	"crypto/hmac"
 	"crypto/sha256"
-	"crypto/tls"
 	"encoding/base32"
 	"encoding/json"
 	"errors"
@@ -14,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/internal/config"
 	"github.com/tinfoilsh/monitor/internal/store"
@@ -44,25 +42,6 @@ func (m *monitor) replaceValue(ctx context.Context, c *connection, id store.Secr
 	next.Secrets = next.Secrets.Clone()
 	next.Secrets[id] = bytes.Clone(after)
 	return m.store.Commit(ctx, next)
-}
-
-// connectionTLS supplies the admitted target when an in-process client omits SNI.
-// Worker certificate requests resolve and validate their target in the broker.
-func connectionTLS(keys *store.Keys) (*tls.Config, error) {
-	config, err := keys.TLS()
-	if err != nil {
-		return nil, err
-	}
-	issue := config.GetCertificate
-	config.GetCertificate = func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
-		if stream, ok := hello.Conn.(*connector.Stream); ok && hello.ServerName == "" {
-			copy := *hello
-			copy.ServerName = stream.Host
-			hello = &copy
-		}
-		return issue(hello)
-	}
-	return config, nil
 }
 
 // credentialID interprets an owner edit path; credential storage only sees its ID.

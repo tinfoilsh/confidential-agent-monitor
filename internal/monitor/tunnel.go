@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"net/http"
 	"strings"
 	"time"
 
@@ -28,7 +27,6 @@ const (
 	sshHandshakeTimeout  = 10 * time.Second
 	agentHost            = config.AgentConnection + ".monitor"
 	agentPort            = 80
-	maxAgentBytes        = 96 << 10
 )
 
 type forwardedAddress struct {
@@ -273,30 +271,4 @@ func (r *admissionRequest) Describe(c connector.Context) (facts.Facts, error) {
 	return facts.Facts{Kind: facts.KindAdmission, Operation: &facts.Operation{Action: "session.admit", Effects: []string{"session"}},
 		Title: "Open " + c.Connection, Parameters: map[string]any{"host": r.Host, "port": r.Port}, Details: facts.Details{TCP: (*facts.TCP)(r)},
 		Context: facts.Context{Observes: cleanLabel}}, nil
-}
-
-func (m *monitor) agentHandler(key string) http.Handler {
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /connections", agentLocked(m, key, func(_ *http.Request, _ struct{}, p config.Principal) (any, error) {
-		return m.listing(p), nil
-	}))
-	mux.HandleFunc("GET /policy", agentLocked(m, key, func(*http.Request, struct{}, config.Principal) (any, error) {
-		return m.agentPolicy(key, nil)
-	}))
-	mux.HandleFunc("POST /policy/proposals", agentLocked(m, key, func(r *http.Request, input proposalInput, p config.Principal) (any, error) {
-		return m.agentPolicy(key, m.proposePolicy(r.Context(), p, input))
-	}))
-	return mux
-}
-
-func agentLocked[T any](m *monitor, key string, fn func(*http.Request, T, config.Principal) (any, error)) http.HandlerFunc {
-	return jsonHandler(maxAgentBytes, func(r *http.Request, input T) (any, error) {
-		m.mu.Lock()
-		defer m.mu.Unlock()
-		p, ok := m.live.Load().Principals[key]
-		if !ok {
-			return nil, errNoAgent
-		}
-		return fn(r, input, p)
-	})
 }

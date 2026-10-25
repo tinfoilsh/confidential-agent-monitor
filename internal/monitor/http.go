@@ -2,27 +2,40 @@ package monitor
 
 import (
 	"cmp"
+	"crypto"
 	"crypto/sha256"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
+	"encoding/pem"
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"slices"
 	"strings"
 
 	"github.com/klauspost/compress/gzhttp"
+	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/credential"
+	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/facts"
 	"github.com/tinfoilsh/monitor/internal/config"
 	"github.com/tinfoilsh/monitor/internal/store"
+	"github.com/tinfoilsh/monitor/internal/supervisor"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/sandboxroute"
+	"github.com/tinfoilsh/monitor/presets"
+	"golang.org/x/crypto/ssh"
 )
 
-const maxDocumentBytes = 16 << 20
+const (
+	maxDocumentBytes = 16 << 20
+	maxAgentBytes    = 96 << 10
+)
 
 type unlockInput struct {
 	Initialize bool   `json:"initialize,omitempty"`
@@ -216,6 +229,47 @@ func (m *monitor) connectionControl(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+var errSandboxSSHDisabled = errors.New("browser terminals and sandbox setup are disabled; enable them in Monitor Settings")
+
+// sandboxHandler gates the entire SSH path, including request decoding and setup.
+func (m *monitor) sandboxHandler(next http.HandlerFunc) http.HandlerFunc {
+	return m.ownerOnly(func(w http.ResponseWriter, r *http.Request) {
+		if !m.live.Load().Config.AllowSandboxSSH {
+			responseError(w, errSandboxSSHDisabled)
+			return
+		}
+		next(w, r)
+	})
+}
+
+func (m *monitor) enrollSandbox(r *http.Request, in sandbox.EnrollInput) (any, error) {
+	if err := m.sandboxes.Enroll(r.Context(), r.PathValue("name"), in); err != nil {
+		return nil, err
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.view(nil)
+}
+
+func (m *monitor) shellSandbox(r *http.Request, in sandbox.ShellInput) (any, error) {
+	session, _ := ownerauth.FromContext(r.Context())
+	return m.sandboxes.Shell(r.Context(), session.ID, r.PathValue("name"), in)
+}
+
+func (m *monitor) agentHandler(key string) http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /connections", agentLocked(m, key, func(_ *http.Request, _ struct{}, p config.Principal) (any, error) {
+		return m.listing(p), nil
+	}))
+	mux.HandleFunc("GET /policy", agentLocked(m, key, func(*http.Request, struct{}, config.Principal) (any, error) {
+		return m.agentPolicy(key, nil)
+	}))
+	mux.HandleFunc("POST /policy/proposals", agentLocked(m, key, func(r *http.Request, input proposalInput, p config.Principal) (any, error) {
+		return m.agentPolicy(key, m.proposePolicy(r.Context(), p, input))
+	}))
+	return mux
+}
+
 // ownerLocked runs each owner request as one transaction; reading the body and writing the response stay outside it.
 func ownerLocked[T any](m *monitor, fn func(*http.Request, T) (any, error)) http.HandlerFunc {
 	return m.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input T) (any, error) {
@@ -269,6 +323,18 @@ func bearerKey(r *http.Request) ([]byte, error) {
 		return nil, store.ErrOwner
 	}
 	return key, nil
+}
+
+func agentLocked[T any](m *monitor, key string, fn func(*http.Request, T, config.Principal) (any, error)) http.HandlerFunc {
+	return jsonHandler(maxAgentBytes, func(r *http.Request, input T) (any, error) {
+		m.mu.Lock()
+		defer m.mu.Unlock()
+		p, ok := m.live.Load().Principals[key]
+		if !ok {
+			return nil, errNoAgent
+		}
+		return fn(r, input, p)
+	})
 }
 
 func jsonHandler[T any](limit int64, fn func(*http.Request, T) (any, error)) http.HandlerFunc {
@@ -345,4 +411,128 @@ func responseError(w http.ResponseWriter, err error) {
 		status = http.StatusNotFound
 	}
 	http.Error(w, err.Error(), status)
+}
+
+type fieldMetadata struct {
+	Path        []string `json:"path"`
+	Kind        string   `json:"kind"`
+	Placeholder string   `json:"placeholder,omitempty"`
+	Account     string   `json:"account,omitempty"`
+}
+
+// ownerView exposes credential status without credential values.
+type ownerView struct {
+	Generation uint64                         `json:"generation"`
+	Config     json.RawMessage                `json:"config"`
+	HostKey    string                         `json:"host_key"`
+	HostID     string                         `json:"host_id"`
+	CA         string                         `json:"ca"`
+	Fields     map[string][]fieldMetadata     `json:"fields"`
+	Status     map[string]supervisor.Status   `json:"status"`
+	Labels     map[string]facts.Label         `json:"labels"`
+	CatalogID  string                         `json:"catalog_id"`
+	Presets    map[string]config.CatalogEntry `json:"presets,omitempty"`
+	Vocabulary map[string]facts.Obligations   `json:"vocabulary"`
+}
+
+// view snapshots owner state while the caller holds mu. It never calls a connector.
+func (m *monitor) view(err error) (any, error) {
+	if err != nil {
+		return nil, err
+	}
+	s := m.live.Load()
+	// The persisted CA identifies the host across restarts and SSH key rotation.
+	block, _ := pem.Decode([]byte(m.store.Doc.Keys.CACert))
+	if block == nil {
+		return nil, errors.New("Monitor has no host certificate")
+	}
+	certificate, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return nil, err
+	}
+	key, err := jwk.Import(certificate.PublicKey)
+	if err != nil {
+		return nil, err
+	}
+	thumbprint, err := key.Thumbprint(crypto.SHA256)
+	if err != nil {
+		return nil, err
+	}
+	v := ownerView{Generation: m.store.Doc.Generation, HostKey: string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), CA: m.store.Doc.Keys.CACert,
+		HostID: "urn:ietf:params:oauth:jwk-thumbprint:sha-256:" + base64.RawURLEncoding.EncodeToString(thumbprint),
+		Fields: map[string][]fieldMetadata{}, Status: map[string]supervisor.Status{}, Labels: map[string]facts.Label{},
+		CatalogID: s.CatalogID, Presets: s.Catalog, Vocabulary: facts.Effects}
+	if v.Config, err = json.Marshal(s.Config); err != nil {
+		return nil, err
+	}
+	for _, c := range s.connections {
+		v.Status[c.Name] = c.Status()
+		for name, value := range c.Secrets {
+			path := presets.CredentialPath{Connection: c.Key, Protocol: c.Protocol, Secret: name}.Path()
+			kind, account := credential.Describe(m.store.Doc.Secrets[store.SecretID{Account: c.Account, Connection: c.Key, Name: name}])
+			v.Fields[c.Account] = append(v.Fields[c.Account], fieldMetadata{Path: path, Kind: kind, Placeholder: value.Placeholder, Account: account})
+		}
+	}
+	for _, fields := range v.Fields {
+		slices.SortFunc(fields, func(a, b fieldMetadata) int { return slices.Compare(a.Path, b.Path) })
+	}
+	for _, p := range s.Principals {
+		v.Labels[p.Name] = m.currentLabel(p.Key)
+	}
+	return v, nil
+}
+
+// Discovery describes reachable connections, not the owner's configuration or credentials.
+// HTTP connections add public routing and placeholder data, never credentials.
+type connectionListing struct {
+	Name         string            `json:"name"`
+	Account      string            `json:"account"`
+	Kind         string            `json:"kind"`
+	Host         string            `json:"host"`
+	State        string            `json:"state"`
+	Access       config.Access     `json:"access"`
+	Hosts        []string          `json:"hosts"`
+	Slots        []web.Slot        `json:"slots"`
+	Placeholders map[string]string `json:"placeholders"`
+}
+
+// listing snapshots the connections p reaches while the caller holds mu.
+func (m *monitor) listing(p config.Principal) any {
+	st := m.live.Load()
+	result := struct {
+		Identity    string              `json:"identity"`
+		CA          string              `json:"ca"`
+		Connections []connectionListing `json:"connections"`
+	}{p.Name, m.store.Doc.Keys.CACert, []connectionListing{}}
+	for _, name := range slices.Sorted(maps.Keys(st.connections)) {
+		c := st.connections[name]
+		if !p.Reaches(c.Account) {
+			continue
+		}
+		l := connectionListing{Name: name, Account: c.Account, Kind: c.Protocol, Host: name + ".monitor",
+			State: c.Status().State, Access: p.Accounts[c.Account]}
+		if provider, ok := c.Server.(web.HTTPProvider); ok {
+			h := provider.HTTPConfig()
+			l.Hosts, l.Slots, l.Placeholders = h.Hosts, h.Slots, map[string]string{}
+			for secret := range h.Names() {
+				l.Placeholders[secret] = h.Placeholder(secret)
+			}
+		}
+		result.Connections = append(result.Connections, l)
+	}
+	return result
+}
+
+func (m *monitor) agentPolicy(key string, err error) (any, error) {
+	if err != nil {
+		return nil, err
+	}
+	st := m.live.Load()
+	p := st.Principals[key]
+	visible, _, err := st.Config.AgentView(p)
+	if err != nil {
+		return nil, err
+	}
+	source, err := config.RenderTOML(visible)
+	return map[string]any{"identity": p.Name, "source": source}, err
 }
