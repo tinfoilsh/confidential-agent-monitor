@@ -1,4 +1,4 @@
-import { UnverifiedClient } from "tinfoil/unsafe";
+import { SecureClient } from "tinfoil";
 import { OwnerError, sealedOwnerClient, type OwnerApi } from "../owner.js";
 import {
   MONITOR_REPO,
@@ -43,23 +43,25 @@ export type AttestMonitor = (
   signal: AbortSignal,
 ) => Promise<{ fetch: typeof fetch; verified: boolean }>;
 
-// Temporary until tinfoil-js verifies registry-published configs: the HPKE key
-// comes from the Monitor unattested, so bodies stay sealed and owner-signed but
-// the Monitor's identity is unverified. Replace with verification of `source`.
-export const attestMonitor: AttestMonitor = async ({ url }, signal) => {
+// The SDK verifies the measured config and binds EHBP to its attested HPKE key.
+// It owns re-verification when evidence expires or the channel key is rejected.
+export const attestMonitor: AttestMonitor = async ({ url, source }, signal) => {
   signal.throwIfAborted();
-  const target = new URL(url);
-  if (target.protocol !== "https:")
-    throw new Error(`Refusing a monitor transport over ${target.protocol}.`);
-  const origin = target.origin;
-  const client = new UnverifiedClient({ baseURL: origin, keyOrigin: origin });
-  await client.ready();
+  const client = new SecureClient({
+    enclaveURL: url,
+    baseURL: url,
+    configRepo: source,
+    transport: "ehbp",
+  });
+  await client.ready({ signal });
   signal.throwIfAborted();
-  return { fetch: ownerRpcOnly(origin, client.fetch), verified: false };
+  return {
+    fetch: ownerRpcOnly(client.getEnclaveURL(), client.fetch),
+    verified: true,
+  };
 };
 
-// The unverified transport has no origin guard and sends bodyless requests in
-// plaintext, so only sealed owner RPC posts may pass.
+// Owner operations carry their signed envelope in an EHBP-sealed POST body.
 export const ownerRpcOnly =
   (origin: string, fetch: typeof globalThis.fetch): typeof globalThis.fetch =>
   (input, init) => {
@@ -142,8 +144,8 @@ export type MonitorSession = {
   close(): void;
 };
 
-// Prepares the sealed transport (verification is currently stubbed) before sending
-// any Monitor secret, then unlocks the owner API.
+// Attests the Monitor and prepares the sealed transport before sending any
+// Monitor secret, then unlocks the owner API.
 export async function openMonitor(options: {
   row: Container;
   root: Uint8Array;

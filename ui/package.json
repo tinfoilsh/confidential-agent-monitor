@@ -28,7 +28,7 @@
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "solid-js": "1.9.17",
-    "tinfoil": "1.3.0",
+    "tinfoil": "file:vendor/tinfoil-9352da5282fd5c5f99fb51a2c7dc69ae023e59b8.tgz",
     "yaml": "2.9.1"
   },
   "devDependencies": {
@@ -39,6 +39,9 @@
     "vite": "8.3.4",
     "vite-plugin-solid": "2.11.14",
     "vite-plugin-sri-gen": "1.7.5"
+  },
+  "overrides": {
+    "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-9352da5282fd5c5f99fb51a2c7dc69ae023e59b8.tgz"
   },
   "patchedDependencies": {
     "@tinfoilsh/passkey-kit@0.2.3": "patches/@tinfoilsh%2Fpasskey-kit@0.2.3.patch"

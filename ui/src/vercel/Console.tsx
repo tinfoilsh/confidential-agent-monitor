@@ -830,7 +830,7 @@ export default function Console(props: {
             <Show when={viewing() && session()?.verified === false}>
               <small
                 class="console-unverified"
-                title="This browser cannot attest monitors yet. Traffic is sealed and signed, but the monitor's identity is not checked."
+                title="Local development connection; attestation is disabled."
               >
                 Unverified
               </small>
