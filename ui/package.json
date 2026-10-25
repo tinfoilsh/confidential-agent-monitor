@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "bun --bun vite",
     "build": "bun --bun tsc --noEmit && bun --bun vite build",
-    "build:vercel": "bun --bun tsc --noEmit && bun --bun vite build --mode vercel",
+    "build:hosted": "bun --bun tsc --noEmit && bun --bun vite build --mode hosted",
     "build:static": "bun --bun tsc --noEmit && bun --bun vite build --mode static",
     "check": "bun --bun tsc --noEmit",
     "format": "prettier --write .",

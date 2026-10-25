@@ -4,7 +4,7 @@
 /.env
 /ui/node_modules/
 /ui/dist/
-/ui/dist-vercel/
+/ui/dist-hosted/
 /ui/dist-static/
 /ui/.env*.local
 /docs/

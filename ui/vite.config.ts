@@ -6,7 +6,7 @@ import local from "./dev/local";
 
 // Hosted and detached builds get their own outputs, so neither can replace the embedded ui/dist.
 const builds: Record<string, { base: string; outDir: string }> = {
-  vercel: { base: "/", outDir: "dist-vercel" },
+  hosted: { base: "/", outDir: "dist-hosted" },
   static: { base: "./", outDir: "dist-static" },
 };
 
@@ -21,7 +21,7 @@ export default defineConfig(({ command, mode }) => ({
   // links for every chunk, and one stylesheet carries all CSS.
   plugins: [
     solid(),
-    mode === "vercel" &&
+    mode === "hosted" &&
       sri({ importMapIntegrity: false, runtimePatchDynamicLinks: false }),
     command === "serve" && !!loadEnv(mode, ".").VITE_LOCAL_MONITORS && local(),
   ],
@@ -30,11 +30,11 @@ export default defineConfig(({ command, mode }) => ({
     host: "127.0.0.1",
     port: 5173,
     strictPort: true,
-    allowedHosts: mode === "vercel" ? [HOSTED_DEV_HOST] : [],
+    allowedHosts: mode === "hosted" ? [HOSTED_DEV_HOST] : [],
   },
   build: {
     outDir: builds[mode]?.outDir ?? "dist",
-    cssCodeSplit: mode !== "vercel",
+    cssCodeSplit: mode !== "hosted",
     rolldownOptions: {
       input: {
         main: fileURLToPath(new URL("index.html", import.meta.url)),

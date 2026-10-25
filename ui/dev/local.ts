@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import type { Plugin } from "vite";
 import { stringify } from "yaml";
-import type { Container } from "../src/vercel/controlplane";
+import type { Container } from "../src/hosted/controlplane";
 
 // Answers the console's controlplane calls on this dev server: Monitors run as local
 // processes and sandboxes boot under Podman through dev/cvm. State lives in .dev/console.

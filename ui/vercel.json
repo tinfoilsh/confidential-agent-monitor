@@ -2,8 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "installCommand": "bun install --frozen-lockfile",
-  "buildCommand": "bun run build:vercel",
-  "outputDirectory": "dist-vercel",
+  "buildCommand": "bun run build:hosted",
+  "outputDirectory": "dist-hosted",
   "headers": [
     {
       "source": "/(.*)",
