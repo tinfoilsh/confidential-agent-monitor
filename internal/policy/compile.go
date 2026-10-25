@@ -1,4 +1,4 @@
-package config
+package policy
 
 import (
 	"context"
@@ -11,7 +11,6 @@ import (
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/tinfoilsh/monitor/facts"
-	"github.com/tinfoilsh/monitor/internal/policy"
 	"github.com/tinfoilsh/monitor/presets"
 	"golang.org/x/crypto/ssh"
 )
@@ -48,7 +47,7 @@ func Compile(ctx context.Context, text string) (*Snapshot, map[string]Connection
 	if err != nil {
 		return nil, nil, err
 	}
-	cfg := &Config{Lattices: policy.Lattices{Confidentiality: true}}
+	cfg := &Config{Lattices: Lattices{Confidentiality: true}}
 	raw, err := json.Marshal(decoded)
 	if err == nil {
 		err = facts.DecodeNumbers(raw, cfg)
@@ -188,7 +187,7 @@ func Compile(ctx context.Context, text string) (*Snapshot, map[string]Connection
 		}
 		snapshot.Principals[fingerprint] = Principal{Key: fingerprint, Name: name, Identity: id}
 	}
-	if snapshot.Engine, err = policy.Prepare(ctx, cfg.Data, cfg.Policies, cfg.Lattices); err != nil {
+	if snapshot.Engine, err = prepare(ctx, cfg.Data, cfg.Policies, cfg.Lattices); err != nil {
 		return nil, nil, err
 	}
 	if snapshot.Catalog, snapshot.CatalogID, err = catalog(cfg); err != nil {

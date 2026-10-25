@@ -1,4 +1,4 @@
-// Package store keeps the Monitor's encrypted state document and seals the objects stored beside it.
+// Package store keeps the Monitor's encrypted state document and append-only audit log.
 package store
 
 import (

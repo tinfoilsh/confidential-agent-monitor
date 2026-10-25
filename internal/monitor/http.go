@@ -22,12 +22,11 @@ import (
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/facts"
-	"github.com/tinfoilsh/monitor/internal/config"
+	"github.com/tinfoilsh/monitor/internal/policy"
 	"github.com/tinfoilsh/monitor/internal/store"
 	"github.com/tinfoilsh/monitor/internal/supervisor"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
-	"github.com/tinfoilsh/monitor/internal/tinfoil/sandboxroute"
 	"github.com/tinfoilsh/monitor/presets"
 	"golang.org/x/crypto/ssh"
 )
@@ -50,7 +49,7 @@ type sourceInput struct {
 
 type editsInput struct {
 	Generation *uint64         `json:"generation,omitempty"`
-	Changes    []config.Change `json:"changes"`
+	Changes    []policy.Change `json:"changes"`
 }
 
 // Handler serves the owner API on the local listener; a nil file handler uses embedded assets.
@@ -258,13 +257,13 @@ func (m *monitor) shellSandbox(r *http.Request, in sandbox.ShellInput) (any, err
 
 func (m *monitor) agentHandler(key string) http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /connections", agentLocked(m, key, func(_ *http.Request, _ struct{}, p config.Principal) (any, error) {
+	mux.HandleFunc("GET /connections", agentLocked(m, key, func(_ *http.Request, _ struct{}, p policy.Principal) (any, error) {
 		return m.listing(p), nil
 	}))
-	mux.HandleFunc("GET /policy", agentLocked(m, key, func(*http.Request, struct{}, config.Principal) (any, error) {
+	mux.HandleFunc("GET /policy", agentLocked(m, key, func(*http.Request, struct{}, policy.Principal) (any, error) {
 		return m.agentPolicy(key, nil)
 	}))
-	mux.HandleFunc("POST /policy/proposals", agentLocked(m, key, func(r *http.Request, input proposalInput, p config.Principal) (any, error) {
+	mux.HandleFunc("POST /policy/proposals", agentLocked(m, key, func(r *http.Request, input proposalInput, p policy.Principal) (any, error) {
 		return m.agentPolicy(key, m.proposePolicy(r.Context(), p, input))
 	}))
 	return mux
@@ -325,7 +324,7 @@ func bearerKey(r *http.Request) ([]byte, error) {
 	return key, nil
 }
 
-func agentLocked[T any](m *monitor, key string, fn func(*http.Request, T, config.Principal) (any, error)) http.HandlerFunc {
+func agentLocked[T any](m *monitor, key string, fn func(*http.Request, T, policy.Principal) (any, error)) http.HandlerFunc {
 	return jsonHandler(maxAgentBytes, func(r *http.Request, input T) (any, error) {
 		m.mu.Lock()
 		defer m.mu.Unlock()
@@ -405,7 +404,7 @@ func responseError(w http.ResponseWriter, err error) {
 		status = http.StatusPreconditionRequired
 	case errors.Is(err, errPolicyConflict):
 		status = http.StatusConflict
-	case errors.Is(err, sandboxroute.ErrUnavailable):
+	case errors.Is(err, sandbox.ErrRouteUnavailable):
 		status = http.StatusServiceUnavailable
 	case errors.Is(err, errRecordGone), errors.Is(err, sandbox.ErrShellGone):
 		status = http.StatusNotFound
@@ -431,7 +430,7 @@ type ownerView struct {
 	Status     map[string]supervisor.Status   `json:"status"`
 	Labels     map[string]facts.Label         `json:"labels"`
 	CatalogID  string                         `json:"catalog_id"`
-	Presets    map[string]config.CatalogEntry `json:"presets,omitempty"`
+	Presets    map[string]policy.CatalogEntry `json:"presets,omitempty"`
 	Vocabulary map[string]facts.Obligations   `json:"vocabulary"`
 }
 
@@ -490,14 +489,14 @@ type connectionListing struct {
 	Kind         string            `json:"kind"`
 	Host         string            `json:"host"`
 	State        string            `json:"state"`
-	Access       config.Access     `json:"access"`
+	Access       policy.Access     `json:"access"`
 	Hosts        []string          `json:"hosts"`
 	Slots        []web.Slot        `json:"slots"`
 	Placeholders map[string]string `json:"placeholders"`
 }
 
 // listing snapshots the connections p reaches while the caller holds mu.
-func (m *monitor) listing(p config.Principal) any {
+func (m *monitor) listing(p policy.Principal) any {
 	st := m.live.Load()
 	result := struct {
 		Identity    string              `json:"identity"`
@@ -533,6 +532,6 @@ func (m *monitor) agentPolicy(key string, err error) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	source, err := config.RenderTOML(visible)
+	source, err := policy.RenderTOML(visible)
 	return map[string]any{"identity": p.Name, "source": source}, err
 }

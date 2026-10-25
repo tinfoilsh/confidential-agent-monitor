@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector/credential"
-	"github.com/tinfoilsh/monitor/internal/config"
+	"github.com/tinfoilsh/monitor/internal/policy"
 	"github.com/tinfoilsh/monitor/internal/store"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
 	"github.com/tinfoilsh/monitor/presets"
@@ -28,7 +28,7 @@ func placeholder(k store.Keys, id store.SecretID) string {
 	raw, _ := json.Marshal([]string{id.Account, id.Connection, id.Name})
 	mac.Write(raw)
 	suffix := strings.ToLower(base32.StdEncoding.EncodeToString(mac.Sum(nil))[:9])
-	return "tfm_" + config.ConnectionName(id.Account, id.Connection) + "_" + suffix
+	return "tfm_" + policy.ConnectionName(id.Account, id.Connection) + "_" + suffix
 }
 
 // Provider writes preserve the connector and publish only after persistence.
@@ -63,7 +63,7 @@ func (m *monitor) signInCredential(account string, path []string) (json.RawMessa
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	s := m.live.Load()
-	c := s.connections[config.ConnectionName(account, requested.Connection)]
+	c := s.connections[policy.ConnectionName(account, requested.Connection)]
 	if c == nil || c.Account != account || c.Protocol != requested.Protocol || c.Secrets[requested.Secret] == nil {
 		return nil, nil, errors.New("connection does not exist")
 	}
@@ -86,7 +86,7 @@ func (m *monitor) signInCredential(account string, path []string) (json.RawMessa
 	}
 	var destinations []destination
 	for _, p := range paths {
-		target := s.connections[config.ConnectionName(account, p.Connection)]
+		target := s.connections[policy.ConnectionName(account, p.Connection)]
 		// An account may disable one of the preset's connections.
 		if target == nil {
 			continue
@@ -101,12 +101,12 @@ func (m *monitor) signInCredential(account string, path []string) (json.RawMessa
 	return bytes.Clone(m.store.Doc.Secrets[store.SecretID{Account: account, Connection: requested.Connection, Name: requested.Secret}]), func(ctx context.Context, raw json.RawMessage) error {
 		m.mu.Lock()
 		defer m.mu.Unlock()
-		var changes []config.Change
+		var changes []policy.Change
 		for _, d := range destinations {
 			if m.live.Load().connections[d.connection.Name] != d.connection || !bytes.Equal(m.store.Doc.Secrets[d.id], d.before) {
 				return errors.New("credential changed; start again")
 			}
-			changes = append(changes, config.Change{Path: d.path, Value: raw})
+			changes = append(changes, policy.Change{Path: d.path, Value: raw})
 		}
 		return m.editPolicy(ctx, changes)
 	}, nil

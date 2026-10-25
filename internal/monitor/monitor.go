@@ -18,12 +18,10 @@ import (
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/facts"
-	"github.com/tinfoilsh/monitor/internal/audit"
-	"github.com/tinfoilsh/monitor/internal/config"
+	"github.com/tinfoilsh/monitor/internal/policy"
 	"github.com/tinfoilsh/monitor/internal/store"
 	"github.com/tinfoilsh/monitor/internal/supervisor"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
-	"github.com/tinfoilsh/monitor/internal/tinfoil/sandboxroute"
 	"github.com/tinfoilsh/monitor/internal/worker"
 	"gocloud.dev/blob"
 	"golang.org/x/crypto/ssh"
@@ -32,7 +30,7 @@ import (
 // state is the atomically published configuration and policy snapshot.
 // Connections own their runtime lifecycle; mutable device labels live in the committed document.
 type state struct {
-	*config.Snapshot
+	*policy.Snapshot
 	connections map[string]*connection
 	connector.Env
 }
@@ -40,7 +38,7 @@ type state struct {
 // A connection binds a compiled specification to credentials and runtime resources.
 // Reconciliation starts its server only after the candidate has been persisted.
 type connection struct {
-	config.ConnectionSpec
+	policy.ConnectionSpec
 	Secrets map[string]*credential.Value
 	Server  connector.Server
 	supervisor.Conn
@@ -63,7 +61,7 @@ type monitor struct {
 	mu      sync.Mutex
 	store   store.Store
 	running map[string]*supervisor.Conn
-	audit   audit.Log[*record]
+	audit   store.AuditLog[*record]
 
 	ownerPublicKey ed25519.PublicKey
 	sshHostKey     ssh.Signer
@@ -73,7 +71,7 @@ type monitor struct {
 	bucket    string
 	sandboxes *sandbox.Service
 
-	routes sandboxroute.Table
+	routes sandbox.RouteTable
 
 	// mu owns authorization transactions, including documents, records and streams.
 	streams map[*connector.Stream]string
@@ -86,7 +84,7 @@ func New(o Options) *monitor {
 	if o.EmbeddedFiles == nil {
 		o.EmbeddedFiles = http.NotFoundHandler()
 	}
-	m := &monitor{store: store.Store{Bucket: o.Bucket}, audit: audit.Log[*record]{Bucket: o.Bucket}, ownerPublicKey: o.OwnerPublicKey, sshHostKey: o.HostKey, bucket: o.BucketURL, kinds: o.Connectors, workers: o.Workers, embeddedFiles: o.EmbeddedFiles}
+	m := &monitor{store: store.Store{Bucket: o.Bucket}, audit: store.AuditLog[*record]{Bucket: o.Bucket}, ownerPublicKey: o.OwnerPublicKey, sshHostKey: o.HostKey, bucket: o.BucketURL, kinds: o.Connectors, workers: o.Workers, embeddedFiles: o.EmbeddedFiles}
 	m.sandboxes = sandbox.New(sandboxMonitor{m}, &m.routes, sandbox.Verify)
 	m.ownerAPI = m.ownerHandler(true, nil)
 	return m
@@ -156,7 +154,7 @@ func (m *monitor) candidate(ctx context.Context, source string, secrets store.Se
 
 // build validates without starting anything or mutating live credentials.
 func (m *monitor) build(ctx context.Context, document *store.Document, env connector.Env, old *state) (*state, error) {
-	snapshot, specs, err := config.Compile(ctx, document.Policy)
+	snapshot, specs, err := policy.Compile(ctx, document.Policy)
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +199,7 @@ func (m *monitor) build(ctx context.Context, document *store.Document, env conne
 		s.connections[name] = c
 	}
 	for id, raw := range secrets {
-		c := s.connections[config.ConnectionName(id.Account, id.Connection)]
+		c := s.connections[policy.ConnectionName(id.Account, id.Connection)]
 		if c == nil || c.Account != id.Account || c.Key != id.Connection || c.Secrets == nil {
 			delete(secrets, id)
 			continue

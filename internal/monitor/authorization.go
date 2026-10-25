@@ -21,9 +21,8 @@ import (
 	"github.com/tinfoilsh/monitor/connector/mcp"
 	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/facts"
-	"github.com/tinfoilsh/monitor/internal/config"
 	"github.com/tinfoilsh/monitor/internal/policy"
-	"github.com/tinfoilsh/monitor/internal/tinfoil/sandboxroute"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
 )
 
 const (
@@ -231,12 +230,12 @@ func (m *monitor) saveRule(ctx context.Context, r *record) error {
 	if !exists || p.Name != f.Principal.Name {
 		return errors.New("the requesting identity was revoked or replaced")
 	}
-	value, err := facts.JSON[map[string]any](config.Rule{Account: f.Account, Action: f.Operation.Action, Operation: f.Operation.ID,
+	value, err := facts.JSON[map[string]any](policy.Rule{Account: f.Account, Action: f.Operation.Action, Operation: f.Operation.ID,
 		Definition: r.Definition, Scope: r.Grant, Requirements: slices.Clone(r.Requirements)})
 	if err != nil {
 		return err
 	}
-	return m.editPolicy(ctx, []config.Change{{Path: []string{"identities", p.Name, "rules", r.ID}, Value: value}})
+	return m.editPolicy(ctx, []policy.Change{{Path: []string{"identities", p.Name, "rules", r.ID}, Value: value}})
 }
 
 var cleanLabel = facts.Label{Trust: "trusted", Audience: "anyone"}
@@ -265,7 +264,7 @@ func (m *monitor) observe(ctx context.Context, fingerprint string, l facts.Label
 	// end-to-end traffic under Routes alone. An owner reset (source == nil)
 	// closes all connector streams so old deliveries cannot recontaminate it.
 	for s, key := range m.streams {
-		if key == fingerprint && s != source && !sandboxroute.Reserved(s.Host) {
+		if key == fingerprint && s != source && !sandbox.ReservedRoute(s.Host) {
 			c := m.live.Load().connections[s.Name]
 			if source == nil || c == nil || !m.kinds[c.Protocol].PerMessage {
 				s.Close()

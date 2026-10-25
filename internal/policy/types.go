@@ -1,5 +1,6 @@
-// Package config resolves policy source into immutable settings, principals and connection specifications.
-package config
+// Package policy resolves the owner's source into immutable settings, principals,
+// connection specifications and Rego decisions.
+package policy
 
 import (
 	"encoding/json"
@@ -7,7 +8,6 @@ import (
 	"net/netip"
 
 	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/internal/policy"
 	"github.com/tinfoilsh/monitor/presets"
 	"github.com/tinfoilsh/tinfoil-go/verify"
 )
@@ -19,7 +19,7 @@ const AgentConnection = "agent"
 type Snapshot struct {
 	Config     *Config
 	Principals map[string]Principal
-	Engine     *policy.Engine
+	Engine     *Engine
 	Catalog    map[string]CatalogEntry
 	CatalogID  string
 }
@@ -78,13 +78,13 @@ type Access struct {
 
 // A rule waives requirements for one operation under the definition the owner approved.
 type Rule struct {
-	Enabled      *bool                `json:"enabled,omitempty"`
-	Account      string               `json:"account"`
-	Action       string               `json:"action"`
-	Operation    string               `json:"operation,omitempty"`
-	Definition   string               `json:"definition,omitempty"`
-	Scope        map[string]any       `json:"scope"`
-	Requirements []policy.Requirement `json:"requirements"`
+	Enabled      *bool          `json:"enabled,omitempty"`
+	Account      string         `json:"account"`
+	Action       string         `json:"action"`
+	Operation    string         `json:"operation,omitempty"`
+	Definition   string         `json:"definition,omitempty"`
+	Scope        map[string]any `json:"scope"`
+	Requirements []Requirement  `json:"requirements"`
 }
 
 type Account struct {
@@ -110,7 +110,7 @@ type Config struct {
 	AllowSandboxSSH    bool                `json:"allow_sandbox_ssh,omitempty"`
 	Effects            map[string]string   `json:"effects,omitempty"`
 	DefaultAccess      map[string]Access   `json:"default_access,omitempty"`
-	Lattices           policy.Lattices     `json:"lattices"`
+	Lattices           Lattices            `json:"lattices"`
 	AllowNetworks      []netip.Prefix      `json:"allow_networks"`
 	Accounts           map[string]Account  `json:"accounts"`
 	Identities         map[string]Identity `json:"identities"`

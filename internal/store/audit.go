@@ -1,5 +1,4 @@
-// Package audit keeps an append-only log of sealed records in immutable bucket segments.
-package audit
+package store
 
 import (
 	"bytes"
@@ -22,22 +21,17 @@ import (
 // storage credentials never need delete or overwrite access to the log and a
 // UTC time prefix selects segments without an index.
 const (
-	prefix        = "audit/"
-	timeFormat    = "20060102T150405.000000000Z"
-	flushInterval = time.Minute
-	writeTimeout  = 30 * time.Second
-	segmentBytes  = 8 << 20
-	maxBacklog    = 64 << 20
-	pageRecords   = 200
+	auditPrefix        = "audit/"
+	auditTimeFormat    = "20060102T150405.000000000Z"
+	auditFlushInterval = time.Minute
+	auditWriteTimeout  = 30 * time.Second
+	auditSegmentBytes  = 8 << 20
+	auditMaxBacklog    = 64 << 20
+	auditPageRecords   = 200
 )
 
-// Sealer encrypts a segment with its key as the associated data.
-type Sealer interface {
-	Seal(name string, plain []byte) []byte
-	Open(name string, sealed []byte) ([]byte, error)
-}
-
-type Log[T any] struct {
+// AuditLog keeps an append-only audit log of sealed records in immutable bucket segments.
+type AuditLog[T any] struct {
 	Bucket *blob.Bucket
 	// flushing serializes uploads and is acquired before mu.
 	flushing sync.Mutex
@@ -47,37 +41,37 @@ type Log[T any] struct {
 }
 
 // SealWith must be called before the first Append.
-func (l *Log[T]) SealWith(s Sealer) {
+func (l *AuditLog[T]) SealWith(s Sealer) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.sealer = s
 }
 
 // Append queues a settled record for the next segment.
-func (l *Log[T]) Append(record T) error {
+func (l *AuditLog[T]) Append(record T) error {
 	line, err := json.Marshal(record)
 	if err != nil {
 		return err
 	}
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	full := len(l.pending) >= segmentBytes
+	full := len(l.pending) >= auditSegmentBytes
 	l.pending = append(append(l.pending, line...), '\n')
-	if !full && len(l.pending) >= segmentBytes {
+	if !full && len(l.pending) >= auditSegmentBytes {
 		go l.Flush()
 	}
 	return nil
 }
 
 // Backlogged reports that settled records cannot be written, so new ones should be refused.
-func (l *Log[T]) Backlogged() bool {
+func (l *AuditLog[T]) Backlogged() bool {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	return len(l.pending) >= maxBacklog
+	return len(l.pending) >= auditMaxBacklog
 }
 
 // Flush writes queued records as one segment, keeping them queued if the write fails.
-func (l *Log[T]) Flush() {
+func (l *AuditLog[T]) Flush() {
 	l.flushing.Lock()
 	defer l.flushing.Unlock()
 	l.mu.Lock()
@@ -92,8 +86,8 @@ func (l *Log[T]) Flush() {
 	w.Write(plain)
 	w.Close()
 	// The key is the associated data, so a segment cannot be renamed or replayed as another object.
-	key := prefix + time.Now().UTC().Format(timeFormat) + "-" + rand.Text()
-	ctx, cancel := context.WithTimeout(context.Background(), writeTimeout)
+	key := auditPrefix + time.Now().UTC().Format(auditTimeFormat) + "-" + rand.Text()
+	ctx, cancel := context.WithTimeout(context.Background(), auditWriteTimeout)
 	defer cancel()
 	if err := l.Bucket.WriteAll(ctx, key, sealer.Seal(key, compressed.Bytes()), nil); err != nil {
 		log.Printf("audit: %v", err)
@@ -104,8 +98,8 @@ func (l *Log[T]) Flush() {
 }
 
 // Run flushes on an interval until ctx ends, then once more.
-func (l *Log[T]) Run(ctx context.Context) {
-	ticker := time.NewTicker(flushInterval)
+func (l *AuditLog[T]) Run(ctx context.Context) {
+	ticker := time.NewTicker(auditFlushInterval)
 	defer ticker.Stop()
 	for ctx.Err() == nil {
 		select {
@@ -118,16 +112,16 @@ func (l *Log[T]) Run(ctx context.Context) {
 
 // Page visits records older than the segment named by before, newest first, until visit
 // has kept a page of them. It returns the segment the next page starts before.
-func (l *Log[T]) Page(ctx context.Context, before string, visit func(segment string, record T) bool) (string, error) {
-	before = prefix + before
+func (l *AuditLog[T]) Page(ctx context.Context, before string, visit func(segment string, record T) bool) (string, error) {
+	before = auditPrefix + before
 	// Segment names start with their UTC day, so "T" groups them by day.
-	days, err := l.list(ctx, prefix, "T")
+	days, err := l.list(ctx, auditPrefix, "T")
 	if err != nil {
 		return "", err
 	}
 	next, kept := "", 0
 	for _, day := range slices.Backward(days) {
-		if before != prefix && day > before {
+		if before != auditPrefix && day > before {
 			continue
 		}
 		segments, err := l.list(ctx, day, "")
@@ -135,17 +129,17 @@ func (l *Log[T]) Page(ctx context.Context, before string, visit func(segment str
 			return "", err
 		}
 		for _, key := range slices.Backward(segments) {
-			if kept >= pageRecords {
+			if kept >= auditPageRecords {
 				return next, nil
 			}
-			if before != prefix && key >= before {
+			if before != auditPrefix && key >= before {
 				continue
 			}
 			records, err := l.read(ctx, key)
 			if err != nil {
 				return "", err
 			}
-			next = strings.TrimPrefix(key, prefix)
+			next = strings.TrimPrefix(key, auditPrefix)
 			for _, record := range slices.Backward(records) {
 				if visit(next, record) {
 					kept++
@@ -156,11 +150,11 @@ func (l *Log[T]) Page(ctx context.Context, before string, visit func(segment str
 	return "", nil
 }
 
-func (l *Log[T]) Read(ctx context.Context, segment string) ([]T, error) {
-	return l.read(ctx, prefix+segment)
+func (l *AuditLog[T]) Read(ctx context.Context, segment string) ([]T, error) {
+	return l.read(ctx, auditPrefix+segment)
 }
 
-func (l *Log[T]) list(ctx context.Context, dir, delimiter string) ([]string, error) {
+func (l *AuditLog[T]) list(ctx context.Context, dir, delimiter string) ([]string, error) {
 	keys := []string{}
 	items := l.Bucket.List(&blob.ListOptions{Prefix: dir, Delimiter: delimiter})
 	for {
@@ -175,7 +169,7 @@ func (l *Log[T]) list(ctx context.Context, dir, delimiter string) ([]string, err
 	}
 }
 
-func (l *Log[T]) read(ctx context.Context, key string) ([]T, error) {
+func (l *AuditLog[T]) read(ctx context.Context, key string) ([]T, error) {
 	l.mu.Lock()
 	sealer := l.sealer
 	l.mu.Unlock()

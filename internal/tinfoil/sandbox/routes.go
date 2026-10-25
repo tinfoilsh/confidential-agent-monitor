@@ -1,5 +1,4 @@
-// Package sandboxroute lets sandboxes publish SSH and HTTPS ports over the Monitor's SSH server.
-package sandboxroute
+package sandbox
 
 import (
 	"context"
@@ -17,17 +16,17 @@ import (
 )
 
 const (
-	// Extension carries a session's route name in its SSH permissions.
-	Extension = "route"
+	// RouteExtension carries a session's route name in its SSH permissions.
+	RouteExtension = "route"
 
 	routeSuffix          = ".sandbox.invalid"
 	routeBindAddress     = "127.0.0.1"
 	maxRouteOnlySessions = 128
-	openTimeout          = 10 * time.Second
-	drainTimeout         = 10 * time.Second
+	routeOpenTimeout     = 10 * time.Second
+	routeDrainTimeout    = 10 * time.Second
 )
 
-var ErrUnavailable = errors.New("route unavailable")
+var ErrRouteUnavailable = errors.New("route unavailable")
 
 type listenAddress struct {
 	Host string
@@ -40,27 +39,27 @@ type routeSession struct {
 	ssh, https bool
 }
 
-// Table keeps SSH admission and routing independent of mu's policy commits.
+// RouteTable keeps SSH admission and routing independent of the Monitor's policy commits.
 // sessions records whether each connection's key had an identity when admitted.
-type Table struct {
+type RouteTable struct {
 	mu       sync.Mutex
 	routes   map[string]*routeSession
 	sessions map[*ssh.ServerConn]bool
 }
 
-func Name(key ssh.PublicKey) string {
+func RouteName(key ssh.PublicKey) string {
 	digest := sha256.Sum256(key.Marshal())
 	return strings.ToLower(base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(digest[:])) + routeSuffix
 }
 
-// Bootstrap names locate an unverified publisher by its claimed owner public key. Only
+// bootstrapRoute names an unverified publisher by its claimed SSH user. Only
 // HTTPS is reachable this way; the caller must attest it before sending secrets.
-func Bootstrap(identity string) string {
+func bootstrapRoute(identity string) string {
 	digest := sha256.Sum256([]byte(identity))
 	return "bootstrap-" + strings.ToLower(base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(digest[:])) + routeSuffix
 }
 
-func Reserved(host string) bool {
+func ReservedRoute(host string) bool {
 	host = strings.TrimSuffix(strings.ToLower(host), ".")
 	return host == "sandbox.invalid" || strings.HasSuffix(host, routeSuffix)
 }
@@ -68,8 +67,8 @@ func Reserved(host string) bool {
 // Admit bounds sessions of keys without an identity, idle or publishing. A new
 // session closes its key's previous idle one, so a key holds at most its publisher and
 // one replacement, which is admitted at capacity only for a published route.
-func (t *Table) Admit(conn *ssh.ServerConn, known bool) bool {
-	name := conn.Permissions.Extensions[Extension]
+func (t *RouteTable) Admit(conn *ssh.ServerConn, known bool) bool {
+	name := conn.Permissions.Extensions[RouteExtension]
 	t.mu.Lock()
 	var idle []*ssh.ServerConn
 	unknown := 0
@@ -77,7 +76,7 @@ func (t *Table) Admit(conn *ssh.ServerConn, known bool) bool {
 		if isKnown {
 			continue
 		}
-		if !known && session.Permissions.Extensions[Extension] == name && (t.routes[name] == nil || t.routes[name].conn != session) {
+		if !known && session.Permissions.Extensions[RouteExtension] == name && (t.routes[name] == nil || t.routes[name].conn != session) {
 			delete(t.sessions, session)
 			idle = append(idle, session)
 			continue
@@ -98,17 +97,17 @@ func (t *Table) Admit(conn *ssh.ServerConn, known bool) bool {
 	return admitted
 }
 
-func (t *Table) Remove(conn *ssh.ServerConn) {
+func (t *RouteTable) Remove(conn *ssh.ServerConn) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	delete(t.sessions, conn)
-	name := conn.Permissions.Extensions[Extension]
+	name := conn.Permissions.Extensions[RouteExtension]
 	if r := t.routes[name]; r != nil && r.conn == conn {
 		delete(t.routes, name)
 	}
 }
 
-func (t *Table) Serve(conn *ssh.ServerConn, requests <-chan *ssh.Request) {
+func (t *RouteTable) Serve(conn *ssh.ServerConn, requests <-chan *ssh.Request) {
 	for req := range requests {
 		ok := req.Type == "keepalive@openssh.com"
 		var address listenAddress
@@ -121,13 +120,13 @@ func (t *Table) Serve(conn *ssh.ServerConn, requests <-chan *ssh.Request) {
 
 // register changes one virtual port. A registration from another session of the
 // same key replaces and closes the publisher; replaced sessions can no longer register.
-func (t *Table) register(conn *ssh.ServerConn, port uint32, cancel bool) bool {
+func (t *RouteTable) register(conn *ssh.ServerConn, port uint32, cancel bool) bool {
 	t.mu.Lock()
 	if _, admitted := t.sessions[conn]; !admitted {
 		t.mu.Unlock()
 		return false
 	}
-	name := conn.Permissions.Extensions[Extension]
+	name := conn.Permissions.Extensions[RouteExtension]
 	r := t.routes[name]
 	var replaced *ssh.ServerConn
 	if r == nil || r.conn != conn {
@@ -162,7 +161,7 @@ func (t *Table) register(conn *ssh.ServerConn, port uint32, cancel bool) bool {
 }
 
 // open opens a channel to a registered virtual port of the exact route name.
-func (t *Table) open(host string, port uint32) (ssh.Channel, <-chan *ssh.Request, error) {
+func (t *RouteTable) open(host string, port uint32) (ssh.Channel, <-chan *ssh.Request, error) {
 	t.mu.Lock()
 	r := t.routes[host]
 	var publisher *ssh.ServerConn
@@ -171,7 +170,7 @@ func (t *Table) open(host string, port uint32) (ssh.Channel, <-chan *ssh.Request
 	}
 	if port == 443 && strings.HasPrefix(host, "bootstrap-") {
 		for _, candidate := range t.routes {
-			if candidate.https && Bootstrap(candidate.conn.User()) == host {
+			if candidate.https && bootstrapRoute(candidate.conn.User()) == host {
 				if publisher != nil { // Ambiguous claims fail closed.
 					publisher = nil
 					break
@@ -182,10 +181,10 @@ func (t *Table) open(host string, port uint32) (ssh.Channel, <-chan *ssh.Request
 	}
 	t.mu.Unlock()
 	if publisher == nil {
-		return nil, nil, ErrUnavailable
+		return nil, nil, ErrRouteUnavailable
 	}
 	// OpenChannel cannot be canceled, so a publisher that stalls it is closed.
-	stalled := time.AfterFunc(openTimeout, func() { publisher.Close() })
+	stalled := time.AfterFunc(routeOpenTimeout, func() { publisher.Close() })
 	defer stalled.Stop()
 	channel, requests, err := publisher.OpenChannel("forwarded-tcpip", ssh.Marshal(struct {
 		Host       string
@@ -194,13 +193,13 @@ func (t *Table) open(host string, port uint32) (ssh.Channel, <-chan *ssh.Request
 		OriginPort uint32
 	}{routeBindAddress, port, routeBindAddress, port}))
 	if err != nil {
-		return nil, nil, ErrUnavailable
+		return nil, nil, ErrRouteUnavailable
 	}
 	return channel, requests, nil
 }
 
 // Dial connects the Monitor itself to a route.
-func (t *Table) Dial(host string, port uint32) (net.Conn, error) {
+func (t *RouteTable) Dial(host string, port uint32) (net.Conn, error) {
 	channel, requests, err := t.open(host, port)
 	if err != nil {
 		return nil, err
@@ -211,7 +210,7 @@ func (t *Table) Dial(host string, port uint32) (net.Conn, error) {
 
 // Forward relays a channel to a registered virtual port of the exact route name.
 // track registers the stream before it carries data, or refuses it.
-func (t *Table) Forward(host string, port uint32, incoming ssh.NewChannel, track func(*connector.Stream) bool) {
+func (t *RouteTable) Forward(host string, port uint32, incoming ssh.NewChannel, track func(*connector.Stream) bool) {
 	upstream, upstreamRequests, err := t.open(host, port)
 	if err != nil {
 		incoming.Reject(ssh.ConnectionFailed, "route unavailable")
@@ -255,7 +254,7 @@ func (t *Table) Forward(host string, port uint32, incoming ssh.NewChannel, track
 	case <-stream.Context.Done():
 	}
 	// A peer that stops reading cannot hold the closed side's data, or the stream, forever.
-	drain, cancel := context.WithTimeout(stream.Context, drainTimeout)
+	drain, cancel := context.WithTimeout(stream.Context, routeDrainTimeout)
 	defer cancel()
 	select {
 	case <-relayed:

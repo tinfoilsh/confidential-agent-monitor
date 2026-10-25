@@ -12,9 +12,9 @@ import (
 
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/facts"
-	"github.com/tinfoilsh/monitor/internal/config"
+	"github.com/tinfoilsh/monitor/internal/policy"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
-	"github.com/tinfoilsh/monitor/internal/tinfoil/sandboxroute"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -25,7 +25,7 @@ const (
 	sandboxEnrollment    = "sandbox-enrollment-v1"
 	maxSSHHandshakes     = 64
 	sshHandshakeTimeout  = 10 * time.Second
-	agentHost            = config.AgentConnection + ".monitor"
+	agentHost            = policy.AgentConnection + ".monitor"
 	agentPort            = 80
 )
 
@@ -109,7 +109,7 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 		nc.Reject(ssh.Prohibited, "key has no agent access")
 		return
 	}
-	if sandboxroute.Reserved(target.Host) {
+	if sandbox.ReservedRoute(target.Host) {
 		if !p.Routes {
 			nc.Reject(ssh.Prohibited, "identity cannot open sandbox routes")
 			return
@@ -173,7 +173,7 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 
 // Only connections the principal reaches are routed, so their claims never tie with another principal's.
 // A name.monitor target selects that connection; a claimer then checks each request's origin itself.
-func (st *state) route(p config.Principal, host string, port uint32) (*connection, bool) {
+func (st *state) route(p policy.Principal, host string, port uint32) (*connection, bool) {
 	if name, ok := strings.CutSuffix(host, ".monitor"); ok {
 		c := st.connections[name]
 		if c == nil || !p.Reaches(c.Account) {
@@ -227,7 +227,7 @@ func (m *monitor) authorized(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Per
 		}
 	}
 	return &ssh.Permissions{Extensions: map[string]string{
-		fingerprintExtension: ssh.FingerprintSHA256(key), sandboxroute.Extension: sandboxroute.Name(key),
+		fingerprintExtension: ssh.FingerprintSHA256(key), sandbox.RouteExtension: sandbox.RouteName(key),
 	}}, nil
 }
 
@@ -238,7 +238,7 @@ func (st *state) sameStreamAuthority(old *state, key string, s *connector.Stream
 	if !exists {
 		return false
 	}
-	if sandboxroute.Reserved(s.Host) {
+	if sandbox.ReservedRoute(s.Host) {
 		return p.Routes
 	}
 	c := old.connections[s.Name]

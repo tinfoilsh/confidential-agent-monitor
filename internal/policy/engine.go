@@ -1,4 +1,3 @@
-// Package policy compiles the owner's Rego policies with the shipped library and decides operations.
 package policy
 
 import (
@@ -46,7 +45,7 @@ type Engine struct {
 	query   rego.PreparedEvalQuery
 }
 
-func Prepare(ctx context.Context, data map[string]any, policies map[string]string, lattices Lattices) (*Engine, error) {
+func prepare(ctx context.Context, data map[string]any, policies map[string]string, lattices Lattices) (*Engine, error) {
 	reserved := []string{"monitor", "lattices", "levels"}
 	for _, name := range reserved {
 		if _, ok := data[name]; ok {

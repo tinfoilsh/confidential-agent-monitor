@@ -12,18 +12,17 @@ import (
 
 	"github.com/pmezard/go-difflib/difflib"
 	"github.com/tinfoilsh/monitor/facts"
-	"github.com/tinfoilsh/monitor/internal/config"
 	"github.com/tinfoilsh/monitor/internal/policy"
 	"github.com/tinfoilsh/monitor/internal/store"
 	"golang.org/x/crypto/ssh"
 )
 
-func (m *monitor) editPolicy(ctx context.Context, changes []config.Change) error {
+func (m *monitor) editPolicy(ctx context.Context, changes []policy.Change) error {
 	if len(changes) == 0 {
 		return nil
 	}
 	secrets := m.store.Doc.Secrets.Clone()
-	var edits []config.Change
+	var edits []policy.Change
 	for _, change := range changes {
 		if len(change.Path) == 0 {
 			return errors.New("an edit requires a source path")
@@ -41,19 +40,19 @@ func (m *monitor) editPolicy(ctx context.Context, changes []config.Change) error
 		}
 		if !change.Delete {
 			var err error
-			if change.Value, err = config.TOMLValue(change.Value); err != nil {
+			if change.Value, err = policy.TOMLValue(change.Value); err != nil {
 				return err
 			}
 		}
 		// Replacing a table key by key gives it [header] sections instead of one inline line.
 		if table, ok := change.Value.(map[string]any); ok && len(table) > 0 && table["$json"] == nil {
-			edits = append(edits, config.Change{Path: change.Path, Delete: true})
-			edits = append(edits, config.FragmentChanges(table, change.Path)...)
+			edits = append(edits, policy.Change{Path: change.Path, Delete: true})
+			edits = append(edits, policy.FragmentChanges(table, change.Path)...)
 			continue
 		}
 		edits = append(edits, change)
 	}
-	source, err := config.EditSource(m.store.Doc.Policy, edits)
+	source, err := policy.EditSource(m.store.Doc.Policy, edits)
 	if err != nil {
 		return err
 	}
@@ -104,20 +103,20 @@ type proposalInput struct {
 }
 
 // proposePolicy holds an agent's change as an approval card and applies it once the owner allows it.
-func (m *monitor) proposePolicy(ctx context.Context, p config.Principal, input proposalInput) (err error) {
+func (m *monitor) proposePolicy(ctx context.Context, p policy.Principal, input proposalInput) (err error) {
 	if len(input.Source) > maxProposalBytes || len(input.Reason) > maxProposalReason || strings.TrimSpace(input.Reason) == "" || len(input.Delete) > maxProposalDeletes {
 		return fmt.Errorf("proposal needs a reason of 1-%d bytes, at most %d bytes of TOML, and at most %d deletions", maxProposalReason, maxProposalBytes, maxProposalDeletes)
 	}
-	patch, err := config.ReadSource(input.Source)
+	patch, err := policy.ReadSource(input.Source)
 	if err != nil {
 		return err
 	}
-	changes := config.FragmentChanges(patch, nil)
+	changes := policy.FragmentChanges(patch, nil)
 	for _, path := range input.Delete {
-		changes = append(changes, config.Change{Path: path, Delete: true})
+		changes = append(changes, policy.Change{Path: path, Delete: true})
 	}
 	base := m.store.Doc.Policy
-	source, err := config.EditSource(base, changes)
+	source, err := policy.EditSource(base, changes)
 	if err != nil {
 		return err
 	}
@@ -164,13 +163,13 @@ type identityEnrollment struct {
 	Routes  bool   `json:"routes"`
 	Restore bool   `json:"restore"`
 	// Sandbox names the boots the Monitor may attest and log in to for shells.
-	Sandbox config.Boot `json:"sandbox,omitzero"`
+	Sandbox policy.Boot `json:"sandbox,omitzero"`
 }
 
 // enrollmentChanges adds new identities; a revoked key or route access returns only when restored.
 // The caller holds mu.
-func (m *monitor) enrollmentChanges(input map[string]identityEnrollment) ([]config.Change, error) {
-	var changes []config.Change
+func (m *monitor) enrollmentChanges(input map[string]identityEnrollment) ([]policy.Change, error) {
+	var changes []policy.Change
 	for name, id := range input {
 		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(id.Key))
 		if err != nil {
@@ -178,7 +177,7 @@ func (m *monitor) enrollmentChanges(input map[string]identityEnrollment) ([]conf
 		}
 		fingerprint := ssh.FingerprintSHA256(key)
 		var boot map[string]any
-		if id.Sandbox != (config.Boot{}) {
+		if id.Sandbox != (policy.Boot{}) {
 			if err := id.Sandbox.Validate(); err != nil {
 				return nil, err
 			}
@@ -189,10 +188,10 @@ func (m *monitor) enrollmentChanges(input map[string]identityEnrollment) ([]conf
 				if !id.Restore {
 					return nil, errors.New("device route access was revoked")
 				}
-				changes = append(changes, config.Change{Path: []string{"identities", existing.Name, "routes"}, Value: true})
+				changes = append(changes, policy.Change{Path: []string{"identities", existing.Name, "routes"}, Value: true})
 			}
 			if boot != nil && id.Sandbox != existing.Sandbox {
-				changes = append(changes, config.Change{Path: []string{"identities", existing.Name, "sandbox"}, Value: boot})
+				changes = append(changes, policy.Change{Path: []string{"identities", existing.Name, "sandbox"}, Value: boot})
 			}
 			continue
 		}
@@ -206,7 +205,7 @@ func (m *monitor) enrollmentChanges(input map[string]identityEnrollment) ([]conf
 		if boot != nil {
 			value["sandbox"] = boot
 		}
-		changes = append(changes, config.Change{Path: []string{"identities", name}, Value: value})
+		changes = append(changes, policy.Change{Path: []string{"identities", name}, Value: value})
 	}
 	return changes, nil
 }
@@ -223,7 +222,7 @@ func (m *monitor) restoreDevice(ctx context.Context, public string) error {
 		if existing.Routes {
 			return nil
 		}
-		return m.editPolicy(ctx, []config.Change{{Path: []string{"identities", existing.Name, "routes"}, Value: true}})
+		return m.editPolicy(ctx, []policy.Change{{Path: []string{"identities", existing.Name, "routes"}, Value: true}})
 	}
 	public = strings.TrimSpace(string(ssh.MarshalAuthorizedKey(key)))
 	digest := sha256.Sum256([]byte(public))
@@ -231,26 +230,26 @@ func (m *monitor) restoreDevice(ctx context.Context, public string) error {
 	if _, exists := st.Config.Identities[name]; exists {
 		return errors.New("device identity name belongs to another key")
 	}
-	return m.editPolicy(ctx, []config.Change{{Path: []string{"identities", name}, Value: map[string]any{"key": public, "routes": true}}})
+	return m.editPolicy(ctx, []policy.Change{{Path: []string{"identities", name}, Value: map[string]any{"key": public, "routes": true}}})
 }
 
 // sandboxMonitor is the Monitor as the sandbox package sees it.
 type sandboxMonitor struct{ m *monitor }
 
-func (s sandboxMonitor) Boot(name string) config.Boot {
+func (s sandboxMonitor) Boot(name string) policy.Boot {
 	return s.m.live.Load().Config.Identities[name].Sandbox
 }
 
 func (s sandboxMonitor) HostKey() ssh.Signer { return s.m.live.Load().HostKey }
 
-func (s sandboxMonitor) CheckIdentity(name, key string, boot config.Boot) error {
+func (s sandboxMonitor) CheckIdentity(name, key string, boot policy.Boot) error {
 	s.m.mu.Lock()
 	defer s.m.mu.Unlock()
 	_, err := s.m.enrollmentChanges(map[string]identityEnrollment{name: {Key: key, Sandbox: boot}})
 	return err
 }
 
-func (s sandboxMonitor) AddIdentity(ctx context.Context, name, key string, boot config.Boot) error {
+func (s sandboxMonitor) AddIdentity(ctx context.Context, name, key string, boot policy.Boot) error {
 	s.m.mu.Lock()
 	defer s.m.mu.Unlock()
 	changes, err := s.m.enrollmentChanges(map[string]identityEnrollment{name: {Key: key, Sandbox: boot}})
