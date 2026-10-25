@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/tinfoil-go/verify"
 	"github.com/tinfoilsh/tinfoil-go/verify/document"
@@ -45,7 +46,10 @@ func validateEnclave(enclave, repo string) error {
 
 // newAttestedTransport verifies the enclave before callers can send credentials or MCP discovery.
 // Inference and MCP share the same attestation, renewal, and TLS key binding.
-func newAttestedTransport(ctx context.Context, enclave, repo string, base *http.Transport) (*attestedTransport, error) {
+func newAttestedTransport(ctx context.Context, key *credential.Value, enclave, repo string, base *http.Transport) (*attestedTransport, error) {
+	if key == nil || key.Raw() == nil {
+		return nil, errors.New("Tinfoil API key is not configured")
+	}
 	if err := validateEnclave(enclave, repo); err != nil {
 		return nil, err
 	}

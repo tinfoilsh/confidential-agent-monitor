@@ -80,7 +80,6 @@ func main() {
 	originList := flag.String("owner-origins", "", "comma-separated browser origins allowed to call the owner API, such as https://dash.tinfoil.sh")
 	workers := flag.Bool("connector-workers", false, "run all connectors in isolated worker processes")
 	workerRoot := flag.String("worker-root", "/opt/monitor/worker", "prepared read-only filesystem for connector workers")
-	sandbox := flag.String("worker-sandbox", "bwrap", "connector sandbox launcher")
 	workerMode := flag.Bool("connector-worker", false, "serve one connector on inherited descriptors")
 	flag.Parse()
 	if flag.NArg() != 0 {
@@ -165,7 +164,7 @@ func main() {
 	}
 	options := monitor.Options{Bucket: bucket, BucketURL: *bucketURL, OwnerPublicKey: public, HostKey: hostSigner, Connectors: connectorKinds, EmbeddedFiles: embeddedFiles}
 	if *workers {
-		options.Workers = &worker.Local{Root: *workerRoot, Sandbox: *sandbox}
+		options.Workers = &worker.Local{Root: *workerRoot}
 	}
 	m := monitor.New(options)
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

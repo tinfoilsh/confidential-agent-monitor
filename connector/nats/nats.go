@@ -37,11 +37,7 @@ type NATS struct {
 	url     *url.URL
 }
 
-func (n *NATS) UnmarshalJSON(raw []byte) error {
-	type plain NATS
-	if err := facts.DecodeNumbers(raw, (*plain)(n)); err != nil {
-		return err
-	}
+func (n *NATS) Prepare() error {
 	u, err := connector.ParseURL(n.Address)
 	if err != nil {
 		return err

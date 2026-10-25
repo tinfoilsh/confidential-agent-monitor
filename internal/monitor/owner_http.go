@@ -2,20 +2,24 @@ package monitor
 
 import (
 	"cmp"
-	"context"
+	"crypto/sha256"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"slices"
 	"strings"
 
+	"github.com/klauspost/compress/gzhttp"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/facts"
 	"github.com/tinfoilsh/monitor/internal/config"
-	"github.com/tinfoilsh/monitor/internal/ownerauth"
-	"github.com/tinfoilsh/monitor/internal/sandbox"
 	"github.com/tinfoilsh/monitor/internal/store"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandboxroute"
 )
 
 const maxDocumentBytes = 16 << 20
@@ -49,7 +53,7 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 	}))
 	if m.ownerPublicKey != nil && !overSSH {
 		// Base64 inflates the signed request by a third.
-		mux.Handle("POST /owner/rpc", &ownerauth.Handler{Key: m.ownerPublicKey, Monitor: m.bucket, MaxBytes: 2 * maxDocumentBytes, API: m.ownerHandler(true, nil), Generation: m.generation})
+		mux.Handle("POST /owner/rpc", &ownerauth.Handler{Key: m.ownerPublicKey, Monitor: m.bucket, MaxBytes: 2 * maxDocumentBytes, API: m.ownerAPI, Generation: m.generation})
 		return mux
 	}
 	mux.Handle("POST /unlock", jsonHandler(maxDocumentBytes, func(r *http.Request, req unlockInput) (any, error) {
@@ -76,8 +80,8 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 		}
 		return m.view(err)
 	}))
-	mux.Handle("GET /{$}", owned(m, func(_ *http.Request, _ struct{}) (any, error) { return m.view(nil) }))
-	mux.Handle("POST /enroll", owned(m, func(r *http.Request, input map[string]identityEnrollment) (any, error) {
+	mux.Handle("GET /{$}", ownerLocked(m, func(_ *http.Request, _ struct{}) (any, error) { return m.view(nil) }))
+	mux.Handle("POST /enroll", ownerLocked(m, func(r *http.Request, input map[string]identityEnrollment) (any, error) {
 		changes, err := m.enrollmentChanges(input)
 		if err != nil {
 			return nil, err
@@ -86,14 +90,14 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 	}))
 	mux.Handle("POST /sandboxes/{name}/enroll", m.sandboxHandler(jsonHandler(sandbox.MaxRequestBytes, m.enrollSandbox)))
 	mux.Handle("POST /sandboxes/{name}/shell", m.sandboxHandler(jsonHandler(sandbox.MaxRequestBytes, m.shellSandbox)))
-	mux.Handle("GET /presets/{name}", owned(m, func(r *http.Request, _ struct{}) (any, error) {
+	mux.Handle("GET /presets/{name}", ownerLocked(m, func(r *http.Request, _ struct{}) (any, error) {
 		preset := m.live.Load().Config.Resolved[r.PathValue("name")]
 		if preset == nil {
 			return nil, errors.New("unknown preset")
 		}
 		return preset, nil
 	}))
-	mux.Handle("POST /labels/{identity}", owned(m, func(r *http.Request, l facts.Label) (any, error) {
+	mux.Handle("POST /labels/{identity}", ownerLocked(m, func(r *http.Request, l facts.Label) (any, error) {
 		var fingerprint string
 		for key, p := range m.live.Load().Principals {
 			if p.Name == r.PathValue("identity") {
@@ -116,40 +120,32 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 		}
 		return m.view(m.observe(r.Context(), fingerprint, l, nil))
 	}))
-	mux.Handle("POST /accounts/{account}/sign-in", m.authenticated(jsonHandler(maxDocumentBytes, m.startSignIn)))
-	mux.Handle("POST /sign-in/{state}", m.authenticated(jsonHandler(maxDocumentBytes, m.finishSignIn)))
-	mux.Handle("/connections/{name}/{control...}", m.authenticated(m.connectionControl))
-	mux.Handle("GET /requests", owned(m, func(r *http.Request, _ struct{}) (any, error) {
-		records := m.records
-		if r.URL.Query().Has("summary") {
-			newest := make([]recordSummary, 0, len(records))
-			for _, r := range slices.Backward(records) {
-				newest = append(newest, r.summary())
-			}
-			return newest, nil
-		}
-		newest := make([]record, 0, len(records))
-		for _, r := range slices.Backward(records) {
-			newest = append(newest, *r)
+	mux.Handle("POST /accounts/{account}/sign-in", m.ownerOnly(jsonHandler(maxDocumentBytes, m.startSignIn)))
+	mux.Handle("POST /sign-in/{state}", m.ownerOnly(jsonHandler(maxDocumentBytes, m.finishSignIn)))
+	mux.Handle("/connections/{name}/{control...}", m.ownerOnly(m.connectionControl))
+	mux.Handle("GET /requests", ownerLocked(m, func(*http.Request, struct{}) (any, error) {
+		newest := make([]recordSummary, 0, len(m.records))
+		for _, r := range slices.Backward(m.records) {
+			newest = append(newest, r.summary())
 		}
 		return newest, nil
 	}))
-	mux.Handle("GET /audit", m.authenticated(jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
+	mux.Handle("GET /audit", m.ownerOnly(jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
 		return m.readAuditPage(r.Context(), r.URL.Query().Get("before"))
 	})))
-	mux.Handle("GET /audit/{segment}/{id}", m.authenticated(jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
+	mux.Handle("GET /audit/{segment}/{id}", m.ownerOnly(jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
 		return m.readAuditRecord(r.Context(), r.PathValue("segment"), r.PathValue("id"))
 	})))
-	mux.Handle("GET /requests/{id}", owned(m, func(r *http.Request, _ struct{}) (any, error) {
+	mux.Handle("GET /requests/{id}", ownerLocked(m, func(r *http.Request, _ struct{}) (any, error) {
 		if record := m.findRecord(r.PathValue("id")); record != nil {
 			return *record, nil
 		}
 		return nil, errRecordGone
 	}))
-	mux.Handle("POST /requests/{id}", owned(m, func(r *http.Request, req approvalInput) (any, error) {
+	mux.Handle("POST /requests/{id}", ownerLocked(m, func(r *http.Request, req approvalInput) (any, error) {
 		return nil, m.answerRequest(r.Context(), "owner", r.PathValue("id"), req)
 	}))
-	mux.Handle("GET /policy", owned(m, func(r *http.Request, _ struct{}) (any, error) {
+	mux.Handle("GET /policy", ownerLocked(m, func(r *http.Request, _ struct{}) (any, error) {
 		result := map[string]any{"source": m.store.Doc.Policy}
 		var err error
 		if r.URL.Query().Has("effective") {
@@ -157,21 +153,21 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 		}
 		return result, err
 	}))
-	mux.Handle("POST /policy/preview", owned(m, func(r *http.Request, input sourceInput) (any, error) {
-		next, st, err := m.prepareCandidate(r.Context(), input.Source, nil)
+	mux.Handle("POST /policy/preview", ownerLocked(m, func(r *http.Request, input sourceInput) (any, error) {
+		next, st, err := m.candidate(r.Context(), input.Source, nil)
 		if err != nil {
 			return nil, err
 		}
 		return m.policyPreview(next, st)
 	}))
-	mux.Handle("POST /policy", owned(m, func(r *http.Request, input sourceInput) (any, error) {
-		next, st, err := m.prepareCandidate(r.Context(), input.Source, nil)
+	mux.Handle("POST /policy", ownerLocked(m, func(r *http.Request, input sourceInput) (any, error) {
+		next, st, err := m.candidate(r.Context(), input.Source, nil)
 		if err == nil {
 			err = m.activate(r.Context(), next, st)
 		}
 		return m.view(err)
 	}))
-	mux.Handle("POST /policy/edits", owned(m, func(r *http.Request, input editsInput) (any, error) {
+	mux.Handle("POST /policy/edits", ownerLocked(m, func(r *http.Request, input editsInput) (any, error) {
 		if input.Generation != nil && *input.Generation != m.store.Doc.Generation {
 			return nil, errPolicyConflict
 		}
@@ -206,33 +202,31 @@ func (m *monitor) connectionControl(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	if status := c.status(); status.State != "ready" {
+	if status := c.Status(); status.State != "ready" {
 		http.Error(w, "the connector is "+status.State, http.StatusConflict)
 		return
 	}
-	ctx, cancel := context.WithCancel(r.Context())
+	ctx, cancel := connector.Bind(r.Context(), c.Context())
 	defer cancel()
-	stop := context.AfterFunc(c.ctx, cancel)
-	defer stop()
 	r.Body = http.MaxBytesReader(w, r.Body, maxDocumentBytes)
-	if err := c.dispatch(ctx, func(service connector.Server, _ *connector.Env) {
+	if err := c.Dispatch(ctx, func(service connector.Server, _ *connector.Env) {
 		http.StripPrefix("/connections/"+c.Name, connector.Control(service)).ServeHTTP(w, r.WithContext(ctx))
 	}); err != nil {
 		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 	}
 }
 
-// owned runs each owner request as one transaction; reading the body and writing the response stay outside it.
-func owned[T any](m *monitor, fn func(*http.Request, T) (any, error)) http.HandlerFunc {
-	return m.authenticated(jsonHandler(maxDocumentBytes, func(r *http.Request, input T) (any, error) {
+// ownerLocked runs each owner request as one transaction; reading the body and writing the response stay outside it.
+func ownerLocked[T any](m *monitor, fn func(*http.Request, T) (any, error)) http.HandlerFunc {
+	return m.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input T) (any, error) {
 		m.mu.Lock()
 		defer m.mu.Unlock()
 		return fn(r, input)
 	}))
 }
 
-// authenticated serves the owner without the monitor's lock, for calls that wait on the network.
-func (m *monitor) authenticated(next http.HandlerFunc) http.HandlerFunc {
+// ownerOnly serves the owner without the monitor's lock, for calls that wait on the network.
+func (m *monitor) ownerOnly(next http.HandlerFunc) http.HandlerFunc {
 	if m.ownerPublicKey != nil {
 		return func(w http.ResponseWriter, r *http.Request) {
 			if _, ok := ownerauth.FromContext(r.Context()); !ok {
@@ -275,4 +269,80 @@ func bearerKey(r *http.Request) ([]byte, error) {
 		return nil, store.ErrOwner
 	}
 	return key, nil
+}
+
+func jsonHandler[T any](limit int64, fn func(*http.Request, T) (any, error)) http.HandlerFunc {
+	return gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
+		var err error
+		var req T
+		r.Body = http.MaxBytesReader(w, r.Body, limit)
+		if r.Method == http.MethodPost {
+			var raw []byte
+			raw, err = io.ReadAll(r.Body)
+			if err == nil {
+				err = facts.DecodeNumbers(raw, &req)
+			}
+		}
+		if err != nil {
+			responseError(w, err)
+			return
+		}
+		value, err := fn(r, req)
+		if err != nil {
+			responseError(w, err)
+			return
+		}
+		if view, ok := value.(ownerView); ok && r.URL.Query().Get("catalog") == view.CatalogID {
+			view.Presets = nil
+			value = view
+		}
+		response, err := json.Marshal(value)
+		if err != nil {
+			responseError(w, err)
+			return
+		}
+		if session, ok := ownerauth.FromContext(r.Context()); ok {
+			if err := session.Acknowledge(); err != nil {
+				responseError(w, err)
+				return
+			}
+		}
+		// Validate only after authentication and the SSH generation acknowledgement.
+		// A weak validator covers both identity and compressed representations of this JSON.
+		if r.Method == http.MethodGet {
+			tag := fmt.Sprintf(`W/"%x"`, sha256.Sum256(response))
+			w.Header().Set("ETag", tag)
+			for _, known := range strings.Split(r.Header.Get("If-None-Match"), ",") {
+				known = strings.TrimSpace(known)
+				if known == "*" || strings.TrimPrefix(known, "W/") == strings.TrimPrefix(tag, "W/") {
+					w.WriteHeader(http.StatusNotModified)
+					return
+				}
+			}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(response)
+	}))
+}
+
+func responseError(w http.ResponseWriter, err error) {
+	status := http.StatusBadRequest
+	switch {
+	case errors.Is(err, errNoAgent), errors.Is(err, errSandboxSSHDisabled):
+		status = http.StatusForbidden
+	case errors.Is(err, store.ErrOwner):
+		status = http.StatusUnauthorized
+	case errors.Is(err, errLocked):
+		status = http.StatusLocked
+	case errors.Is(err, store.ErrMissingState):
+		status = http.StatusPreconditionRequired
+	case errors.Is(err, errPolicyConflict):
+		status = http.StatusConflict
+	case errors.Is(err, sandboxroute.ErrUnavailable):
+		status = http.StatusServiceUnavailable
+	case errors.Is(err, errRecordGone), errors.Is(err, sandbox.ErrShellGone):
+		status = http.StatusNotFound
+	}
+	http.Error(w, err.Error(), status)
 }

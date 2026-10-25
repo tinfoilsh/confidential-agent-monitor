@@ -41,6 +41,8 @@ type Launcher interface {
 	Start(context.Context, []byte, http.Handler) (Endpoint, error)
 }
 
+var _ connector.Controller = (*Proxy)(nil)
+
 // Proxy runs one connector through a launcher and forwards streams and controls.
 type Proxy struct {
 	Kind       string
@@ -87,10 +89,8 @@ func (p *Proxy) Run(ctx context.Context, host *connector.Env, serve func(context
 	}
 	network := broker(p.ctx, host.Dialer)
 	callbacks := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx, cancel := context.WithCancel(r.Context())
+		ctx, cancel := connector.Bind(r.Context(), p.ctx)
 		defer cancel()
-		stop := context.AfterFunc(p.ctx, cancel)
-		defer stop()
 		r = r.WithContext(ctx)
 		if r.Method == http.MethodConnect {
 			network.ServeHTTP(w, r)
@@ -160,10 +160,8 @@ func (p *Proxy) Details() json.RawMessage { return p.details }
 
 func (p *Proxy) Control() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ctx, cancel := context.WithCancel(r.Context())
+		ctx, cancel := connector.Bind(r.Context(), p.ctx)
 		defer cancel()
-		stop := context.AfterFunc(p.ctx, cancel)
-		defer stop()
 		proxy := httputil.ReverseProxy{Transport: p.transport, Rewrite: func(r *httputil.ProxyRequest) {
 			r.Out.URL.Scheme, r.Out.URL.Host, r.Out.Host = "http", "connector", "connector"
 			r.Out.URL.Path = "/control" + r.Out.URL.Path

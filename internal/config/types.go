@@ -3,12 +3,13 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"net/netip"
 
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/internal/policy"
-	"github.com/tinfoilsh/monitor/internal/sandbox"
 	"github.com/tinfoilsh/monitor/presets"
+	"github.com/tinfoilsh/tinfoil-go/verify"
 )
 
 // AgentConnection is reserved for the Monitor's own agent API.
@@ -42,10 +43,27 @@ type Principal struct {
 	Identity
 }
 
+// Boot is what a sandbox boot must attest before the Monitor logs in to it. The
+// source pins the config digest, which also measures the sandbox's owner key.
+type Boot struct {
+	Source     string `json:"source"`
+	InstanceID string `json:"instance_id"`
+}
+
+func (b Boot) Validate() error {
+	if _, _, digest, err := verify.ParseReference(b.Source); err != nil || digest == "" {
+		return errors.New("source must be a digest-pinned release reference")
+	}
+	if b.InstanceID == "" {
+		return errors.New("instance_id is required")
+	}
+	return nil
+}
+
 type Identity struct {
 	Routes   bool              `json:"routes,omitempty"`
 	Key      string            `json:"key"`
-	Sandbox  sandbox.Boot      `json:"sandbox,omitzero"`
+	Sandbox  Boot              `json:"sandbox,omitzero"`
 	Reviewer string            `json:"reviewer,omitempty"`
 	Effects  map[string]string `json:"effects,omitempty"`
 	Accounts map[string]Access `json:"accounts"`

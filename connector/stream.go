@@ -81,6 +81,13 @@ func (s *Stream) Interrupt(c io.Closer) func() {
 	return func() { stop(); c.Close() }
 }
 
+// Bind derives a context from ctx that also ends when other does.
+func Bind(ctx, other context.Context) (context.Context, context.CancelFunc) {
+	ctx, cancel := context.WithCancel(ctx)
+	stop := context.AfterFunc(other, cancel)
+	return ctx, func() { stop(); cancel() }
+}
+
 // Relay preserves half-close so a caller can finish sending while still
 // receiving a reply. Cancellation and I/O errors close both directions.
 func Relay(ctx context.Context, a, b net.Conn) {

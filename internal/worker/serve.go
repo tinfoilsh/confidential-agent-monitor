@@ -45,7 +45,7 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 		}
 	}
 	instance := def.NewConfig()
-	if err := facts.DecodeNumbers(boot.Config, instance); err != nil {
+	if err := connector.Decode(boot.Config, instance); err != nil {
 		return err
 	}
 	ctx, cancel := context.WithCancel(ctx)
@@ -53,9 +53,7 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 	callbacks := host.Transport()
 	defer callbacks.CloseIdleConnections()
 	env := connector.Env{Dialer: BrokerDialer{Dial: host}}
-	if secrets, ok := instance.(interface {
-		SecretValues() map[string]*credential.Value
-	}); ok {
+	if secrets, ok := instance.(connector.SecretHolder); ok {
 		values := secrets.SecretValues()
 		clear(values)
 		for name, handle := range boot.Secrets {

@@ -188,10 +188,7 @@ export type DeviceSignIn = {
   expires: string;
 };
 export type OwnerApi = {
-  read(
-    signal?: AbortSignal,
-    options?: { summary?: boolean },
-  ): Promise<Snapshot>;
+  read(signal?: AbortSignal): Promise<Snapshot>;
   request(id: string, signal?: AbortSignal): Promise<RequestRecord>;
   archive(
     before: string,
@@ -604,8 +601,8 @@ export function ownerApi(
   const unlock = (at = minimum ?? 0, signal?: AbortSignal) =>
     snapshot("POST", "/unlock", { generation: at }, signal);
   return {
-    async read(signal, { summary = false } = {}) {
-      const path = summary ? "/requests?summary" : "/requests";
+    async read(signal) {
+      const path = "/requests";
       const [view, requests] = await Promise.all([
         snapshot("GET", "/", undefined, signal),
         get<RequestRecord[] | null>(path, signal),

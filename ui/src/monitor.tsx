@@ -225,7 +225,7 @@ function createMonitor(options: MonitorOptions) {
         while (!busy() && api() && !lifetime.signal.aborted) {
           const source = api()!,
             revision = version;
-          const next = await source.read(lifetime.signal, { summary: true });
+          const next = await source.read(lifetime.signal);
           if (source !== api()) continue;
           if (revision !== version || lifetime.signal.aborted) return;
           remember(next.view, next.requests);

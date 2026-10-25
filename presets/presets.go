@@ -2,10 +2,12 @@
 package presets
 
 import (
+	"cmp"
 	"embed"
 	"encoding/json"
 	"fmt"
 	"io/fs"
+	"slices"
 	"strings"
 	"sync"
 
@@ -60,7 +62,7 @@ func Decode(raw []byte) (*Preset, error) {
 	return &p, nil
 }
 
-func Lineage(action string) []string {
+func lineage(action string) []string {
 	var lineage []string
 	for action != "" {
 		lineage = append(lineage, action)
@@ -71,6 +73,21 @@ func Lineage(action string) []string {
 		action = action[:i]
 	}
 	return lineage
+}
+
+// Operation resolves op's effects from its nearest configured action.
+func (c *Catalog) Operation(op facts.Operation) *facts.Operation {
+	op.Lineage = lineage(op.Action)
+	effects := op.Effects
+	for i := 0; effects == nil && i < len(op.Lineage); i++ {
+		effects = c.Actions[op.Lineage[i]].Effects
+	}
+	// An action without configured semantics is unknown.
+	if op.Action == "" || effects == nil {
+		return nil
+	}
+	op.Effects, op.ID = slices.Compact(slices.Sorted(slices.Values(effects))), cmp.Or(op.ID, op.Action)
+	return &op
 }
 
 var Shipped = sync.OnceValues(func() (map[string]*Preset, error) {
@@ -99,6 +116,14 @@ type CredentialPath struct {
 
 func (p CredentialPath) Path() []string {
 	return []string{"connections", p.Connection, p.Protocol, "secrets", p.Secret}
+}
+
+// ParseCredentialPath is the inverse of Path.
+func ParseCredentialPath(path []string) (CredentialPath, bool) {
+	if len(path) != 5 || path[0] != "connections" || path[3] != "secrets" {
+		return CredentialPath{}, false
+	}
+	return CredentialPath{Connection: path[1], Protocol: path[2], Secret: path[4]}, true
 }
 
 // CredentialFields groups the credential destinations of each catalog field.

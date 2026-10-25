@@ -23,7 +23,6 @@ const maxWorkers = 32
 // is mounted separately, so a single Monitor build includes every connector.
 type Local struct {
 	Root       string
-	Sandbox    string
 	Executable string // Defaults to os.Executable.
 	mu         sync.Mutex
 	active     int
@@ -94,11 +93,7 @@ func (m *Local) Start(ctx context.Context, config []byte, host http.Handler) (En
 	if err != nil {
 		return Endpoint{}, err
 	}
-	sandbox := m.Sandbox
-	if sandbox == "" {
-		sandbox = "bwrap"
-	}
-	launcher, err := exec.LookPath(sandbox)
+	launcher, err := exec.LookPath("bwrap")
 	if err != nil {
 		return Endpoint{}, errors.New("bubblewrap is required for connector workers")
 	}

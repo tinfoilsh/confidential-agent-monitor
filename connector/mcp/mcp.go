@@ -16,6 +16,7 @@ import (
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
+	"github.com/tinfoilsh/monitor/connector/jsonsel"
 	"github.com/tinfoilsh/monitor/facts"
 )
 
@@ -33,15 +34,7 @@ type Server struct {
 	instructions string
 }
 
-func (c *Server) UnmarshalJSON(raw []byte) error {
-	type plain Server
-	if err := facts.DecodeNumbers(raw, (*plain)(c)); err != nil {
-		return err
-	}
-	return c.Validate()
-}
-
-func (c *Server) Validate() error {
+func (c *Server) Prepare() error {
 	u, err := connector.ParseURL(c.URL)
 	if err != nil || u.Scheme != "http" && u.Scheme != "https" {
 		return errors.New("MCP requires an http:// or https:// server URL")
@@ -198,9 +191,9 @@ func (r *Request) Describe(c connector.Context) (facts.Facts, error) {
 
 // Preset selects service resource identifiers from tool arguments.
 type Preset struct {
-	Scope      map[string]Selector `json:"scope,omitempty"`
-	Sends      string              `json:"sends,omitempty"`
-	Observes   *facts.Label        `json:"observes,omitempty"`
+	Scope      map[string]jsonsel.Selector `json:"scope,omitempty"`
+	Sends      string                      `json:"sends,omitempty"`
+	Observes   *facts.Label                `json:"observes,omitempty"`
 	scope      selectors
 	definition json.RawMessage
 }
@@ -208,7 +201,7 @@ type Preset struct {
 func (p *Preset) UnmarshalJSON(raw []byte) error {
 	type plain Preset
 	err := facts.DecodeNumbers(raw, (*plain)(p))
-	if err == nil && (!slices.Contains([]string{"", "me", "team", "anyone", "account"}, p.Sends) || p.Observes != nil && !p.Observes.Valid()) {
+	if err == nil && (!facts.ValidSends(p.Sends) || p.Observes != nil && !p.Observes.Valid()) {
 		return errors.New("invalid MCP data-flow settings")
 	}
 	if err == nil {
@@ -220,30 +213,23 @@ func (p *Preset) UnmarshalJSON(raw []byte) error {
 	return err
 }
 
-// Selector selects a typed value from a JSON document.
-type Selector struct {
-	At       string `json:"at"`
-	Type     string `json:"type,omitempty"`
-	Optional bool   `json:"optional,omitempty"`
-}
-
 type compiledSelector struct {
 	name string
-	Selector
+	jsonsel.Selector
 	read func(any) (any, bool)
 }
 
 // selectors keeps compiled MCP scope entries in name order.
 type selectors []compiledSelector
 
-func compileSelectors(specs map[string]Selector) (selectors, error) {
+func compileSelectors(specs map[string]jsonsel.Selector) (selectors, error) {
 	out := make(selectors, 0, len(specs))
 	for _, name := range slices.Sorted(maps.Keys(specs)) {
 		spec := specs[name]
-		if !facts.ValidJSONType(spec.Type) {
+		if !spec.Valid() {
 			return nil, fmt.Errorf("invalid selector type %q", spec.Type)
 		}
-		read, err := facts.CompilePointer(spec.At)
+		read, err := jsonsel.CompilePointer(spec.At)
 		if err != nil {
 			return nil, err
 		}
@@ -257,7 +243,7 @@ func (scope selectors) Select(doc any) (map[string]any, error) {
 	var errs []error
 	for _, spec := range scope {
 		value, present := spec.read(doc)
-		if err := facts.CheckSelection(spec.name, value, present, spec.Type, spec.Optional); err != nil {
+		if err := spec.Check(spec.name, value, present); err != nil {
 			errs = append(errs, err)
 		} else if present {
 			out[spec.name] = value

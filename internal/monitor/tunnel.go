@@ -7,14 +7,15 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"strings"
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/facts"
 	"github.com/tinfoilsh/monitor/internal/config"
-	"github.com/tinfoilsh/monitor/internal/ownerauth"
-	"github.com/tinfoilsh/monitor/internal/sandboxroute"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandboxroute"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -25,6 +26,9 @@ const (
 	sandboxEnrollment    = "sandbox-enrollment-v1"
 	maxSSHHandshakes     = 64
 	sshHandshakeTimeout  = 10 * time.Second
+	agentHost            = config.AgentConnection + ".monitor"
+	agentPort            = 80
+	maxAgentBytes        = 96 << 10
 )
 
 type forwardedAddress struct {
@@ -74,7 +78,7 @@ func (m *monitor) ServeSSH(ln net.Listener) {
 			if conn.Permissions.Extensions[ownerauth.Extension] == "true" {
 				go ssh.DiscardRequests(reqs)
 				for nc := range chans {
-					go ownerauth.ServeChannel(nc, m.ownerHandler(true, nil), m.generation)
+					go ownerauth.ServeChannel(nc, m.ownerAPI, m.generation)
 				}
 				return
 			}
@@ -136,11 +140,11 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 			nc.Reject(ssh.Prohibited, "the monitor does not forward this target")
 			return
 		}
-		if err := m.gate(c.ctx, input{Key: key, Connection: c.Name, Request: &admissionRequest{Host: target.Host, Port: target.Port}}); err != nil {
+		if err := m.gate(c.Context(), input{Key: key, Connection: c.Name, Request: &admissionRequest{Host: target.Host, Port: target.Port}}); err != nil {
 			nc.Reject(ssh.Prohibited, err.Error())
 			return
 		}
-		ctx = c.ctx
+		ctx = c.Context()
 		name = c.Name
 		if selected {
 			host = ""
@@ -150,7 +154,7 @@ func (m *monitor) forward(key string, nc ssh.NewChannel) {
 				return m.gate(ctx, input{stream: s, Key: key, Connection: c.Name, Request: request})
 			}
 			log.Printf("%s: forwarding %s:%d", p.Name, target.Host, target.Port)
-			c.dispatch(s.Context, func(server connector.Server, env *connector.Env) { server.Serve(s, env) })
+			c.Dispatch(s.Context, func(server connector.Server, env *connector.Env) { server.Serve(s, env) })
 		}
 	}
 	ch, reqs, err := nc.Accept()
@@ -182,7 +186,7 @@ func (st *state) route(p config.Principal, host string, port uint32) (*connectio
 	best, tied := -1, false
 	var selected *connection
 	for _, c := range st.connections {
-		r, ok := c.Server.(interface{ Claim(string, uint32) int })
+		r, ok := c.Server.(connector.Claimer)
 		if !ok || !p.Reaches(c.Account) {
 			continue
 		}
@@ -269,4 +273,30 @@ func (r *admissionRequest) Describe(c connector.Context) (facts.Facts, error) {
 	return facts.Facts{Kind: facts.KindAdmission, Operation: &facts.Operation{Action: "session.admit", Effects: []string{"session"}},
 		Title: "Open " + c.Connection, Parameters: map[string]any{"host": r.Host, "port": r.Port}, Details: facts.Details{TCP: (*facts.TCP)(r)},
 		Context: facts.Context{Observes: cleanLabel}}, nil
+}
+
+func (m *monitor) agentHandler(key string) http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /connections", agentLocked(m, key, func(_ *http.Request, _ struct{}, p config.Principal) (any, error) {
+		return m.listing(p), nil
+	}))
+	mux.HandleFunc("GET /policy", agentLocked(m, key, func(*http.Request, struct{}, config.Principal) (any, error) {
+		return m.agentPolicy(key, nil)
+	}))
+	mux.HandleFunc("POST /policy/proposals", agentLocked(m, key, func(r *http.Request, input proposalInput, p config.Principal) (any, error) {
+		return m.agentPolicy(key, m.proposePolicy(r.Context(), p, input))
+	}))
+	return mux
+}
+
+func agentLocked[T any](m *monitor, key string, fn func(*http.Request, T, config.Principal) (any, error)) http.HandlerFunc {
+	return jsonHandler(maxAgentBytes, func(r *http.Request, input T) (any, error) {
+		m.mu.Lock()
+		defer m.mu.Unlock()
+		p, ok := m.live.Load().Principals[key]
+		if !ok {
+			return nil, errNoAgent
+		}
+		return fn(r, input, p)
+	})
 }

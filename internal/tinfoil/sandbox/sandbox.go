@@ -18,7 +18,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tinfoilsh/tinfoil-go/verify"
+	"github.com/tinfoilsh/monitor/internal/config"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandboxroute"
 	"github.com/tinfoilsh/tinfoil-go/verify/document"
 	"golang.org/x/crypto/ssh"
 )
@@ -47,13 +48,11 @@ const (
 // Monitor is everything the sandbox package may use of the Monitor.
 type Monitor interface {
 	// Boot is the boot enrolled for an identity, or zero.
-	Boot(name string) Boot
+	Boot(name string) config.Boot
 	HostKey() ssh.Signer
-	DialSSH(hostKey ssh.PublicKey) (net.Conn, error)
-	DialBootstrap(user string) (net.Conn, error)
 	// CheckIdentity reports whether AddIdentity would accept the identity, without changing policy.
-	CheckIdentity(name, key string, boot Boot) error
-	AddIdentity(ctx context.Context, name, key string, boot Boot) error
+	CheckIdentity(name, key string, boot config.Boot) error
+	AddIdentity(ctx context.Context, name, key string, boot config.Boot) error
 }
 
 // Verifier proves what a boot's attestation document endorses.
@@ -62,27 +61,21 @@ type Verifier func(doc, nonce []byte, source string) (*Evidence, error)
 // Service holds the owner's open sandbox terminals by ID.
 type Service struct {
 	monitor Monitor
+	routes  *sandboxroute.Table
 	verify  Verifier
 
 	mu     sync.Mutex
 	shells map[string]*shellSession
 }
 
-func New(m Monitor, verify Verifier) *Service {
-	return &Service{monitor: m, verify: verify}
+func New(m Monitor, routes *sandboxroute.Table, verify Verifier) *Service {
+	return &Service{monitor: m, routes: routes, verify: verify}
 }
 
 // access selects one sandbox boot and holds the seed of its measured owner key.
 type access struct {
 	OwnerSeed []byte `json:"owner_seed"`
-	Boot
-}
-
-// Boot is what a boot must attest before the Monitor logs in to it. The source
-// pins the config digest, which also measures the sandbox's owner key.
-type Boot struct {
-	Source     string `json:"source"`
-	InstanceID string `json:"instance_id"`
+	config.Boot
 }
 
 // Evidence is what verified attestation proves about one sandbox boot.
@@ -101,16 +94,6 @@ func (a access) validate(name string) error {
 	return a.Boot.Validate()
 }
 
-func (b Boot) Validate() error {
-	if _, _, digest, err := verify.ParseReference(b.Source); err != nil || digest == "" {
-		return errors.New("source must be a digest-pinned release reference")
-	}
-	if b.InstanceID == "" {
-		return errors.New("instance_id is required")
-	}
-	return nil
-}
-
 // agentKey derives the sandbox's Monitor identity from its owner seed. The derivation is
 // specific to web enrollment, so repeating it keeps one identity and CLI keys never change.
 func (a access) agentKey() (ed25519.PrivateKey, ssh.PublicKey, error) {
@@ -126,7 +109,7 @@ func (a access) agentKey() (ed25519.PrivateKey, ssh.PublicKey, error) {
 
 // connect attests the boot through its bootstrap route, then logs in with signer
 // over the route of the endorsed SSH host key.
-func (svc *Service) connect(ctx context.Context, boot Boot, signer ssh.Signer) (*ssh.Client, error) {
+func (svc *Service) connect(ctx context.Context, boot config.Boot, signer ssh.Signer) (*ssh.Client, error) {
 	ctx, cancel := context.WithTimeout(ctx, sandboxConnectTimeout)
 	defer cancel()
 	evidence, err := svc.attest(ctx, boot)
@@ -143,7 +126,7 @@ func (svc *Service) connect(ctx context.Context, boot Boot, signer ssh.Signer) (
 
 // login logs in as the sandbox user over the route of its host key.
 func (svc *Service) login(ctx context.Context, hostKey ssh.PublicKey, signer ssh.Signer) (*ssh.Client, error) {
-	conn, err := svc.monitor.DialSSH(hostKey)
+	conn, err := svc.routes.Dial(sandboxroute.Name(hostKey), 22)
 	if err != nil {
 		return nil, fmt.Errorf("sandbox SSH: %w", err)
 	}
@@ -164,7 +147,7 @@ func (svc *Service) login(ctx context.Context, hostKey ssh.PublicKey, signer ssh
 
 // attest fetches fresh evidence through the unverified bootstrap route. Only a
 // public nonce and the attestation cross it before verification pins the host key.
-func (svc *Service) attest(ctx context.Context, a Boot) (*Evidence, error) {
+func (svc *Service) attest(ctx context.Context, a config.Boot) (*Evidence, error) {
 	if svc.verify == nil {
 		return nil, errors.New("sandbox attestation is unavailable")
 	}
@@ -173,7 +156,7 @@ func (svc *Service) attest(ctx context.Context, a Boot) (*Evidence, error) {
 		return nil, err
 	}
 	transport := &http.Transport{DisableKeepAlives: true, DialContext: func(context.Context, string, string) (net.Conn, error) {
-		return svc.monitor.DialBootstrap(BootstrapUser + a.InstanceID)
+		return svc.routes.Dial(sandboxroute.Bootstrap(BootstrapUser+a.InstanceID), 443)
 	}}
 	defer transport.CloseIdleConnections()
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, sandboxAttestationURL+"?nonce="+hex.EncodeToString(nonce), nil)

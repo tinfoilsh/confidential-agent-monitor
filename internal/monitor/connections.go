@@ -6,16 +6,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"maps"
 	"slices"
-	"sync"
 
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
-	"github.com/tinfoilsh/monitor/facts"
 	"github.com/tinfoilsh/monitor/internal/config"
 	"github.com/tinfoilsh/monitor/internal/store"
+	"github.com/tinfoilsh/monitor/internal/supervisor"
 	"github.com/tinfoilsh/monitor/internal/worker"
 )
 
@@ -34,13 +32,11 @@ func (m *monitor) build(ctx context.Context, document *store.Document, env conne
 			return nil, fmt.Errorf("connection %s has unknown kind %s", name, spec.Protocol)
 		}
 		server := definition.NewConfig()
-		if err := facts.DecodeNumbers(spec.Config, server); err != nil {
+		if err := connector.Decode(spec.Config, server); err != nil {
 			return nil, fmt.Errorf("connection %s: %w", name, err)
 		}
 		c := &connection{ConnectionSpec: spec, Server: server}
-		if owner, ok := server.(interface {
-			SecretValues() map[string]*credential.Value
-		}); ok {
+		if owner, ok := server.(connector.SecretHolder); ok {
 			c.Secrets = owner.SecretValues()
 			for _, value := range c.Secrets {
 				if value != nil && value.Raw() != nil {
@@ -67,30 +63,30 @@ func (m *monitor) build(ctx context.Context, document *store.Document, env conne
 		}
 		s.connections[name] = c
 	}
-	for id, raw := range secrets.All() {
-		c := s.connections[config.ConnectionName(id[0], id[1])]
-		if c == nil || c.Account != id[0] || c.Key != id[1] || c.Secrets == nil {
-			secrets.Set(id, nil)
+	for id, raw := range secrets {
+		c := s.connections[config.ConnectionName(id.Account, id.Connection)]
+		if c == nil || c.Account != id.Account || c.Key != id.Connection || c.Secrets == nil {
+			delete(secrets, id)
 			continue
 		}
 		value := new(credential.Value)
 		if err := value.UnmarshalJSON(raw); err != nil {
 			return nil, fmt.Errorf("credential %v: %w", id, err)
 		}
-		c.Secrets[id[2]] = value
+		c.Secrets[id.Name] = value
 	}
 	client := s.Client()
 	for name, c := range s.connections {
 		if old != nil && slices.Equal(old.Config.AllowNetworks, snapshot.Config.AllowNetworks) {
 			previous := old.connections[name]
 			if previous != nil && previous.Account == c.Account && previous.Protocol == c.Protocol && bytes.Equal(previous.Config, c.Config) &&
-				maps.EqualFunc(m.store.Doc.Secrets[c.Account][c.Key], secrets[c.Account][c.Key], slices.Equal[json.RawMessage]) {
+				maps.EqualFunc(m.store.Doc.Secrets.Connection(c.Account, c.Key), secrets.Connection(c.Account, c.Key), slices.Equal[json.RawMessage]) {
 				s.connections[name] = previous
 				continue
 			}
 		}
 		for name, value := range c.Secrets {
-			id := store.SecretID{c.Account, c.Key, name}
+			id := store.SecretID{Account: c.Account, Connection: c.Key, Name: name}
 			value.Placeholder = placeholder(document.Keys, id)
 			value.Client = client
 			value.Save = func(ctx context.Context, before, after json.RawMessage) error {
@@ -106,118 +102,25 @@ func (m *monitor) build(ctx context.Context, document *store.Document, env conne
 // Reconciliation starts its server only after the candidate has been persisted.
 type connection struct {
 	config.ConnectionSpec
-	Secrets     map[string]*credential.Value
-	Server      connector.Server
-	ctx         context.Context
-	cancel      context.CancelFunc
-	ready, done chan struct{}
-	incoming    chan func(connector.Server, *connector.Env)
-	details     json.RawMessage // Published by closing ready.
-	err         error           // Published by closing done.
+	Secrets map[string]*credential.Value
+	Server  connector.Server
+	supervisor.Conn
 }
 
-func (c *connection) dispatch(ctx context.Context, run func(connector.Server, *connector.Env)) error {
-	finished := make(chan struct{})
-	select {
-	case <-ctx.Done():
-		return ctx.Err()
-	case <-c.ctx.Done():
-		return errors.New("connector stopped")
-	case c.incoming <- func(server connector.Server, env *connector.Env) { defer close(finished); run(server, env) }:
-	}
-	// Once admitted, the caller must wait until the operation releases its resources.
-	<-finished
-	return nil
-}
-
-// reconcile never waits for upstreams. Replacements wait for their predecessors,
-// including when a connection is removed and immediately re-added.
 func (m *monitor) reconcile(s *state) {
-	for name, c := range m.running {
-		if s.connections[name] != c {
-			c.cancel()
-			select {
-			case <-c.done:
-				delete(m.running, name)
-			default:
-			}
-		}
-	}
+	next := make(map[string]*supervisor.Conn, len(s.connections))
 	for name, c := range s.connections {
-		previous := m.running[name]
-		if previous == c {
-			continue
+		next[name] = &c.Conn
+	}
+	supervisor.Reconcile(m.running, next, func(name string) (connector.Server, connector.Env) {
+		c := s.connections[name]
+		def, env := m.kinds[c.Protocol], s.Env
+		if !def.HostKey {
+			env.HostKey = nil
 		}
-		c.ctx, c.cancel = context.WithCancel(context.Background())
-		c.ready, c.done, c.incoming = make(chan struct{}), make(chan struct{}), make(chan func(connector.Server, *connector.Env))
-		m.running[name] = c
-		go func() {
-			defer close(c.done)
-			defer c.cancel()
-			if previous != nil {
-				<-previous.done
-			}
-			if c.ctx.Err() != nil {
-				return
-			}
-			server := c.Server
-			def, env := m.kinds[c.Protocol], s.Env
-			if !def.HostKey {
-				env.HostKey = nil
-			}
-			if m.workers != nil {
-				server = &worker.Proxy{Definition: def, Kind: c.Protocol, Config: c.Config, Secrets: c.Secrets, Launcher: m.workers}
-			}
-			serve := func(ctx context.Context) {
-				var active sync.WaitGroup
-				defer active.Wait()
-				defer c.cancel()
-				if d, ok := server.(connector.Detailer); ok {
-					c.details = d.Details()
-				}
-				close(c.ready)
-				for {
-					select {
-					case run := <-c.incoming:
-						active.Go(func() { run(server, &env) })
-					case <-ctx.Done():
-						return
-					}
-				}
-			}
-			if runner, ok := server.(connector.Runner); ok {
-				if err := runner.Run(c.ctx, &env, serve); err != nil {
-					c.err = err
-				}
-			} else {
-				serve(c.ctx)
-			}
-			if c.err != nil && !errors.Is(c.err, context.Canceled) {
-				log.Printf("connector %s: %v", c.Name, c.err)
-			}
-		}()
-	}
-}
-
-type connectionStatus struct {
-	State   string          `json:"state"`
-	Error   string          `json:"error,omitempty"`
-	Details json.RawMessage `json:"details,omitempty"`
-}
-
-func (c *connection) status() connectionStatus {
-	select {
-	case <-c.done:
-		if c.err != nil {
-			return connectionStatus{State: "error", Error: c.err.Error()}
+		if m.workers != nil {
+			return &worker.Proxy{Definition: def, Kind: c.Protocol, Config: c.Config, Secrets: c.Secrets, Launcher: m.workers}, env
 		}
-		return connectionStatus{State: "stopped"}
-	default:
-	}
-	select {
-	case <-c.ready:
-		return connectionStatus{State: "ready", Details: c.details}
-	default:
-		return connectionStatus{State: "connecting"}
-	}
+		return c.Server, env
+	})
 }

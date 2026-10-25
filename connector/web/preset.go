@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/jsonsel"
 	"github.com/tinfoilsh/monitor/facts"
 )
 
@@ -83,7 +84,7 @@ func (p *Preset) validate() error {
 				return fmt.Errorf("grant names missing scope %s", name)
 			}
 		}
-		if !slices.Contains([]string{"", "me", "team", "anyone", "account"}, o.Sends) || !slices.Contains([]string{"", "none", "json", "form", "any", "graphql"}, o.Body) {
+		if !facts.ValidSends(o.Sends) || !slices.Contains([]string{"", "none", "json", "form", "any", "graphql"}, o.Body) {
 			return fmt.Errorf("invalid audience or body kind for %s", id)
 		}
 		if g := o.GraphQL; g != nil {
@@ -129,9 +130,7 @@ type Selector struct {
 	From       string `json:"from,omitempty"`
 	Header     string `json:"header,omitempty"`
 	TrimSuffix string `json:"trim_suffix,omitempty"`
-	At         string `json:"at"`
-	Type       string `json:"type,omitempty"`
-	Optional   bool   `json:"optional,omitempty"`
+	jsonsel.Selector
 }
 
 type compiledSelector struct {
@@ -177,7 +176,7 @@ func (compiled *compiledOperation) matches(r *Request, headers map[string][]stri
 				if present {
 					return false, nil
 				}
-			} else if !present || !facts.EqualJSON(got, v) {
+			} else if !present || !jsonsel.Equal(got, v) {
 				return false, nil
 			}
 		default:
@@ -214,13 +213,13 @@ func condition(values map[string][]string, key string, want any) bool {
 
 func compileSelector(raw Selector) (compiledSelector, error) {
 	spec := compiledSelector{Selector: raw}
-	if !slices.Contains([]string{"path", "query", "form", "body", "header", "header_json", "argument", "http"}, spec.From) || !facts.ValidJSONType(spec.Type) {
+	if !slices.Contains([]string{"path", "query", "form", "body", "header", "header_json", "argument", "http"}, spec.From) || !spec.Valid() {
 		return spec, fmt.Errorf("invalid selector source %q or type %q", spec.From, spec.Type)
 	}
 	if slices.Contains([]string{"body", "header_json", "argument", "http"}, spec.From) {
 		at := spec.At
 		var err error
-		spec.pointer, err = facts.CompilePointer(at)
+		spec.pointer, err = jsonsel.CompilePointer(at)
 		if err != nil {
 			return spec, err
 		}
@@ -405,7 +404,7 @@ func (p *Preset) compile() error {
 		}
 		if o.Body == "json" {
 			for at := range o.Fields {
-				op.fields[at], err = facts.CompilePointer(at)
+				op.fields[at], err = jsonsel.CompilePointer(at)
 				if err != nil {
 					return err
 				}
@@ -472,7 +471,7 @@ func (p *Preset) Match(r *Request, c connector.Context, f facts.Facts) (facts.Fa
 	h := r.HTTP
 	f.Title = fmt.Sprintf("%s: %s %s", c.Title, h.Method, h.Path)
 	var config *HTTP
-	if provider, ok := c.Config.(interface{ HTTPConfig() *HTTP }); ok {
+	if provider, ok := c.Config.(HTTPProvider); ok {
 		config = provider.HTTPConfig()
 	}
 	if p.Slots && (config == nil || !slices.ContainsFunc(config.Slots, func(slot Slot) bool {
@@ -526,7 +525,7 @@ func (p *Preset) Match(r *Request, c connector.Context, f facts.Facts) (facts.Fa
 			httpFields, _ = facts.JSON[map[string]any](h)
 		}
 		value, present := spec.value(r, captures, httpFields)
-		if err := facts.CheckSelection(spec.name, value, present, spec.Type, spec.Optional); err != nil {
+		if err := spec.Check(spec.name, value, present); err != nil {
 			errs = append(errs, err)
 		} else if present {
 			parameters[spec.name] = value

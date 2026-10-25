@@ -351,7 +351,7 @@ export default function Console(props: {
             await cp.follow(api, row, "running", signal, update);
             setPending((p) => ({ ...p, [row.id]: "Setting up" }));
             const { client } = await connect(row.id);
-            const { view } = await client.read(signal, { summary: true });
+            const { view } = await client.read(signal);
             await client.onboard(view, "known_only", signal, {
               allowPaidInference: true,
               tinfoilApiKey,
@@ -405,7 +405,7 @@ export default function Console(props: {
       "Opening",
       async (signal) => {
         const { client } = await connect(row.id, initialize);
-        setSnapshot(await client.read(signal, { summary: true }));
+        setSnapshot(await client.read(signal));
         signal.throwIfAborted();
         sessionStorage.setItem(REOPEN, row.id);
         setSelected(row.id);

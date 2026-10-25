@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"slices"
@@ -171,7 +172,9 @@ func (m *monitor) settleRecord(r *record, err error) {
 			r.Deny = []string{err.Error()}
 		}
 	}
-	m.queueAudit(r)
+	if err := m.audit.Append(r); err != nil {
+		log.Printf("audit record %s: %v", r.ID, err)
+	}
 }
 
 // Saving a rule applies to future attempts. Only an unexpired allow-once answer resumes a call.
@@ -275,7 +278,7 @@ func (m *monitor) reviewApproval(wait context.Context, r *record) {
 		var answer approvalInput
 		req, _ := http.NewRequestWithContext(ctx, http.MethodPost, "http://connector/chat/completions", bytes.NewReader(body))
 		response := httptest.NewRecorder()
-		err := c.dispatch(ctx, func(server connector.Server, _ *connector.Env) {
+		err := c.Dispatch(ctx, func(server connector.Server, _ *connector.Env) {
 			connector.Control(server).ServeHTTP(response, req)
 		})
 		if err != nil || response.Code != http.StatusOK || json.Unmarshal(response.Body.Bytes(), &completion) != nil ||

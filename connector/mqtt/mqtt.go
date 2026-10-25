@@ -25,8 +25,8 @@ const maxPacket = 1 << 20
 
 type MQTT struct{ connector.Endpoint }
 
-func (m *MQTT) UnmarshalJSON(raw []byte) error {
-	if err := m.Endpoint.UnmarshalJSON(raw); err != nil {
+func (m *MQTT) Prepare() error {
+	if err := m.Endpoint.Prepare(); err != nil {
 		return err
 	}
 	u := &m.URL

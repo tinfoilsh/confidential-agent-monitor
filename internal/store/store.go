@@ -12,7 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"iter"
+	"maps"
 
 	"github.com/tinfoilsh/monitor/facts"
 	"gocloud.dev/blob"
@@ -62,9 +62,11 @@ type Store struct {
 	Bucket *blob.Bucket
 	Doc    Document
 	owner  []byte
-	aead   cipher.AEAD
+	Sealer
 	header []byte
 }
+
+type Sealer struct{ aead cipher.AEAD }
 
 // Load returns a candidate without changing the current store or initializing storage.
 func (s Store) Load(ctx context.Context, key []byte, minimum uint64, initialize bool) (Store, error) {
@@ -125,18 +127,18 @@ func (s Store) Load(ctx context.Context, key []byte, minimum uint64, initialize 
 	if sl.Generation < minimum {
 		return s, fmt.Errorf("stored generation %d is older than %d", sl.Generation, minimum)
 	}
-	s.Doc, s.owner, s.aead, s.header = sl, bytes.Clone(key), aead, header
+	s.Doc, s.owner, s.Sealer, s.header = sl, bytes.Clone(key), Sealer{aead}, header
 	return s, nil
 }
 
 func (s Store) IsOwner(key []byte) bool { return subtle.ConstantTimeCompare(key, s.owner) == 1 }
 
 // Seal encrypts an object stored beside the document; its name is the associated data.
-func (s Store) Seal(name string, plain []byte) []byte {
+func (s Sealer) Seal(name string, plain []byte) []byte {
 	return s.aead.Seal(nil, nil, plain, []byte(name))
 }
 
-func (s Store) Open(name string, sealed []byte) ([]byte, error) {
+func (s Sealer) Open(name string, sealed []byte) ([]byte, error) {
 	return s.aead.Open(nil, nil, sealed, []byte(name))
 }
 
@@ -155,43 +157,54 @@ func (s *Store) Commit(ctx context.Context, next Document) error {
 	return nil
 }
 
-type SecretID [3]string
+type SecretID struct{ Account, Connection, Name string }
 
-type Secrets map[string]map[string]map[string]json.RawMessage
+type Secrets map[SecretID]json.RawMessage
 
-func (s Secrets) Get(id SecretID) json.RawMessage { return s[id[0]][id[1]][id[2]] }
-func (s Secrets) Set(id SecretID, raw json.RawMessage) {
-	if raw == nil {
-		delete(s[id[0]][id[1]], id[2])
-		return
+// storedSecrets is the document layout: values by account, connection and name.
+type storedSecrets map[string]map[string]map[string]json.RawMessage
+
+func (s Secrets) MarshalJSON() ([]byte, error) {
+	stored := storedSecrets{}
+	for id, raw := range s {
+		if stored[id.Account] == nil {
+			stored[id.Account] = map[string]map[string]json.RawMessage{}
+		}
+		if stored[id.Account][id.Connection] == nil {
+			stored[id.Account][id.Connection] = map[string]json.RawMessage{}
+		}
+		stored[id.Account][id.Connection][id.Name] = raw
 	}
-	if s[id[0]] == nil {
-		s[id[0]] = map[string]map[string]json.RawMessage{}
-	}
-	if s[id[0]][id[1]] == nil {
-		s[id[0]][id[1]] = map[string]json.RawMessage{}
-	}
-	s[id[0]][id[1]][id[2]] = raw
+	return json.Marshal(stored)
 }
-func (s Secrets) All() iter.Seq2[SecretID, json.RawMessage] {
-	return func(yield func(SecretID, json.RawMessage) bool) {
-		for account, connections := range s {
-			for connection, values := range connections {
-				for name, raw := range values {
-					if !yield(SecretID{account, connection, name}, raw) {
-						return
-					}
-				}
+
+func (s *Secrets) UnmarshalJSON(raw []byte) error {
+	var stored storedSecrets
+	if err := json.Unmarshal(raw, &stored); err != nil {
+		return err
+	}
+	*s = Secrets{}
+	for account, connections := range stored {
+		for connection, values := range connections {
+			for name, value := range values {
+				(*s)[SecretID{account, connection, name}] = value
 			}
 		}
 	}
+	return nil
 }
-func (s Secrets) Clone() Secrets {
-	out := Secrets{}
-	for id, raw := range s.All() {
-		out.Set(id, raw)
+
+func (s Secrets) Clone() Secrets { return maps.Collect(maps.All(s)) }
+
+// Connection returns one connection's values by name.
+func (s Secrets) Connection(account, connection string) map[string]json.RawMessage {
+	values := map[string]json.RawMessage{}
+	for id, raw := range s {
+		if id.Account == account && id.Connection == connection {
+			values[id.Name] = raw
+		}
 	}
-	return out
+	return values
 }
 
 const (

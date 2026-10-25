@@ -28,6 +28,42 @@ type SFTP struct {
 
 const maxSFTPPacket = 1 << 20
 
+// SFTP v3 packet types and status codes, from draft-ietf-secsh-filexfer-02.
+const (
+	sftpVersion = 3
+
+	fxpInit     = 1
+	fxpVersion  = 2
+	fxpOpen     = 3
+	fxpClose    = 4
+	fxpRead     = 5
+	fxpWrite    = 6
+	fxpLstat    = 7
+	fxpFstat    = 8
+	fxpSetstat  = 9
+	fxpFsetstat = 10
+	fxpOpendir  = 11
+	fxpReaddir  = 12
+	fxpRemove   = 13
+	fxpMkdir    = 14
+	fxpRmdir    = 15
+	fxpRealpath = 16
+	fxpStat     = 17
+	fxpRename   = 18
+	fxpReadlink = 19
+	fxpStatus   = 101
+	fxpHandle   = 102
+	fxpName     = 104
+	fxpAttrs    = 105
+
+	fxOK               = 0
+	fxNoSuchFile       = 2
+	fxPermissionDenied = 3
+	fxFailure          = 4
+	fxBadMessage       = 5
+	fxOpUnsupported    = 8
+)
+
 func (t *SFTP) Serve(s *connector.Stream, e *connector.Env) {
 	t.serve(s, e, func(up *ssh.Client, nc ssh.NewChannel) {
 		if nc.ChannelType() != channelSession {
@@ -171,7 +207,7 @@ func (d *sftpDecoder) attrs() map[string]uint64 {
 }
 
 func sftpStatus(id uint32, code uint32, message string) []byte {
-	b := binary.BigEndian.AppendUint32([]byte{101}, id)
+	b := binary.BigEndian.AppendUint32([]byte{fxpStatus}, id)
 	b = binary.BigEndian.AppendUint32(b, code)
 	b = append(b, sftpString(message)...)
 	return append(b, sftpString("")...)
@@ -195,11 +231,11 @@ func (p *sftpProxy) rpc(b []byte) ([]byte, error) {
 }
 
 func (p *sftpProxy) realpath(name string) (string, error) {
-	r, err := p.rpc(append([]byte{16, 0, 0, 0, 0}, sftpString(name)...))
+	r, err := p.rpc(append([]byte{fxpRealpath, 0, 0, 0, 0}, sftpString(name)...))
 	if err != nil {
 		return "", err
 	}
-	if r[0] != 104 {
+	if r[0] != fxpName {
 		return "", errors.New("cannot resolve SFTP path")
 	}
 	d := sftpDecoder{b: r[5:]}
@@ -218,17 +254,17 @@ func (p *sftpProxy) serve(client io.ReadWriter, root string) error {
 	if err != nil {
 		return err
 	}
-	if len(init) != 5 || init[0] != 1 || binary.BigEndian.Uint32(init[1:]) < 3 {
+	if len(init) != 5 || init[0] != fxpInit || binary.BigEndian.Uint32(init[1:]) < sftpVersion {
 		return errors.New("SFTP v3 required")
 	}
-	if err := sftpWrite(p.out, []byte{1, 0, 0, 0, 3}); err != nil {
+	if err := sftpWrite(p.out, []byte{fxpInit, 0, 0, 0, sftpVersion}); err != nil {
 		return err
 	}
 	version, err := sftpRead(p.up)
 	if err != nil {
 		return err
 	}
-	if len(version) < 5 || version[0] != 2 || binary.BigEndian.Uint32(version[1:5]) != 3 {
+	if len(version) < 5 || version[0] != fxpVersion || binary.BigEndian.Uint32(version[1:5]) != sftpVersion {
 		return errors.New("upstream must support SFTP v3")
 	}
 	p.root, err = p.realpath(root)
@@ -240,7 +276,7 @@ func (p *sftpProxy) serve(client io.ReadWriter, root string) error {
 		return err
 	}
 	// Do not advertise upstream extensions that bypass the request checks.
-	if err := sftpWrite(client, []byte{2, 0, 0, 0, 3}); err != nil {
+	if err := sftpWrite(client, []byte{fxpVersion, 0, 0, 0, sftpVersion}); err != nil {
 		return err
 	}
 	for {
@@ -257,7 +293,7 @@ func (p *sftpProxy) serve(client io.ReadWriter, root string) error {
 			return errors.New("SFTP upstream disconnected")
 		}
 		if err != nil {
-			out = sftpStatus(id, 3, "SFTP operation refused")
+			out = sftpStatus(id, fxPermissionDenied, "SFTP operation refused")
 		}
 		if err := sftpWrite(client, out); err != nil {
 			return err
@@ -297,14 +333,14 @@ func (p *sftpProxy) canonical(name string, entry, create bool) (string, error) {
 			if last && entry {
 				return current, nil
 			}
-			r, err := p.rpc(append([]byte{7, 0, 0, 0, 0}, sftpString(current)...))
+			r, err := p.rpc(append([]byte{fxpLstat, 0, 0, 0, 0}, sftpString(current)...))
 			if err != nil {
 				return "", err
 			}
-			if r[0] == 101 && len(r) >= 9 && binary.BigEndian.Uint32(r[5:9]) == 2 && last && create {
+			if r[0] == fxpStatus && len(r) >= 9 && binary.BigEndian.Uint32(r[5:9]) == fxNoSuchFile && last && create {
 				return current, nil
 			}
-			if r[0] != 105 {
+			if r[0] != fxpAttrs {
 				return "", errors.New("cannot inspect SFTP path")
 			}
 			d := sftpDecoder{b: r[5:]}
@@ -322,11 +358,11 @@ func (p *sftpProxy) canonical(name string, entry, create bool) (string, error) {
 			if mode&0170000 != 0120000 {
 				continue
 			}
-			r, err = p.rpc(append([]byte{19, 0, 0, 0, 0}, sftpString(current)...))
+			r, err = p.rpc(append([]byte{fxpReadlink, 0, 0, 0, 0}, sftpString(current)...))
 			if err != nil {
 				return "", err
 			}
-			if r[0] != 104 {
+			if r[0] != fxpName {
 				return "", errors.New("cannot read SFTP symlink")
 			}
 			d = sftpDecoder{b: r[5:]}
@@ -364,7 +400,7 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 	var tail []byte
 	entry, create := false, false
 	switch b[0] {
-	case 3: // OPEN
+	case fxpOpen:
 		e.Command, name = "open", d.str()
 		tail = d.b
 		e.Flags = d.u32()
@@ -374,53 +410,53 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 			d.err = true
 		}
 		create = e.Flags&8 != 0
-	case 7, 9, 11, 13, 14, 15, 16, 17, 18:
-		e.Command = map[byte]string{7: "lstat", 9: "setstat", 11: "opendir", 13: "remove", 14: "mkdir", 15: "rmdir", 16: "realpath", 17: "stat", 18: "rename"}[b[0]]
+	case fxpLstat, fxpSetstat, fxpOpendir, fxpRemove, fxpMkdir, fxpRmdir, fxpRealpath, fxpStat, fxpRename:
+		e.Command = map[byte]string{fxpLstat: "lstat", fxpSetstat: "setstat", fxpOpendir: "opendir", fxpRemove: "remove", fxpMkdir: "mkdir", fxpRmdir: "rmdir", fxpRealpath: "realpath", fxpStat: "stat", fxpRename: "rename"}[b[0]]
 		name = d.str()
-		entry = b[0] == 7 || b[0] == 13 || b[0] == 14 || b[0] == 15 || b[0] == 18
-		if b[0] == 18 {
+		entry = b[0] == fxpLstat || b[0] == fxpRemove || b[0] == fxpMkdir || b[0] == fxpRmdir || b[0] == fxpRename
+		if b[0] == fxpRename {
 			target = d.str()
 		}
-		if b[0] == 9 || b[0] == 14 {
+		if b[0] == fxpSetstat || b[0] == fxpMkdir {
 			tail = d.b
 			e.Attributes = d.attrs()
 		}
-	case 4, 5, 6, 8, 10, 12:
-		e.Command = map[byte]string{4: "close", 5: "read", 6: "write", 8: "fstat", 10: "fsetstat", 12: "readdir"}[b[0]]
+	case fxpClose, fxpRead, fxpWrite, fxpFstat, fxpFsetstat, fxpReaddir:
+		e.Command = map[byte]string{fxpClose: "close", fxpRead: "read", fxpWrite: "write", fxpFstat: "fstat", fxpFsetstat: "fsetstat", fxpReaddir: "readdir"}[b[0]]
 		handle = d.str()
 		h = p.handles[handle]
 		if h == nil {
-			return sftpStatus(id, 4, "unknown file handle"), nil
+			return sftpStatus(id, fxFailure, "unknown file handle"), nil
 		}
 		tail = d.b
 		switch b[0] {
-		case 5:
+		case fxpRead:
 			e.Offset, e.Size = d.u64(), d.u32()
 			if !h.read || h.directory || e.Size > maxSFTPPacket-9 {
 				d.err = true
 			}
-		case 6:
+		case fxpWrite:
 			e.Offset = d.u64()
 			data := d.str()
 			e.Size = uint32(len(data))
 			if !h.write || h.directory {
 				d.err = true
 			}
-		case 10:
+		case fxpFsetstat:
 			e.Attributes = d.attrs()
-		case 12:
+		case fxpReaddir:
 			if !h.directory {
 				d.err = true
 			}
 		}
 	default:
-		return sftpStatus(id, 8, "unsupported SFTP operation"), nil
+		return sftpStatus(id, fxOpUnsupported, "unsupported SFTP operation"), nil
 	}
 	if d.err || len(d.b) != 0 {
-		return sftpStatus(id, 5, "malformed SFTP request"), nil
+		return sftpStatus(id, fxBadMessage, "malformed SFTP request"), nil
 	}
-	if (b[0] == 3 || b[0] == 11) && len(p.handles) >= 1024 {
-		return sftpStatus(id, 4, "too many open handles"), nil
+	if (b[0] == fxpOpen || b[0] == fxpOpendir) && len(p.handles) >= 1024 {
+		return sftpStatus(id, fxFailure, "too many open handles"), nil
 	}
 	if h != nil {
 		name = h.path
@@ -438,7 +474,7 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
-		if b[0] == 18 {
+		if b[0] == fxpRename {
 			target, err = p.resolve(target, true, true)
 			if err != nil {
 				return nil, err
@@ -454,8 +490,8 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 			return nil, err
 		}
 	}
-	if b[0] == 16 {
-		r := binary.BigEndian.AppendUint32([]byte{104}, id)
+	if b[0] == fxpRealpath {
+		r := binary.BigEndian.AppendUint32([]byte{fxpName}, id)
 		r = binary.BigEndian.AppendUint32(r, 1)
 		r = append(r, sftpString(e.Path)...)
 		r = append(r, sftpString(e.Path)...)
@@ -467,7 +503,7 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 	} else {
 		request = append(request, sftpString(name)...)
 	}
-	if b[0] == 18 {
+	if b[0] == fxpRename {
 		request = append(request, sftpString(target)...)
 	}
 	request = append(request, tail...)
@@ -475,7 +511,7 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	if r[0] == 102 && (b[0] == 3 || b[0] == 11) {
+	if r[0] == fxpHandle && (b[0] == fxpOpen || b[0] == fxpOpendir) {
 		d := sftpDecoder{b: r[5:]}
 		remote := d.str()
 		if d.err || len(d.b) != 0 {
@@ -483,14 +519,14 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 		}
 		p.next++
 		local := fmt.Sprint(p.next)
-		p.handles[local] = &sftpHandle{remote: remote, path: name, read: e.Read, write: e.Write, directory: b[0] == 11}
+		p.handles[local] = &sftpHandle{remote: remote, path: name, read: e.Read, write: e.Write, directory: b[0] == fxpOpendir}
 		return append(r[:5], sftpString(local)...), nil
 	}
-	if r[0] == 101 && len(r) >= 9 && binary.BigEndian.Uint32(r[5:9]) == 0 {
-		if b[0] == 4 {
+	if r[0] == fxpStatus && len(r) >= 9 && binary.BigEndian.Uint32(r[5:9]) == fxOK {
+		if b[0] == fxpClose {
 			delete(p.handles, handle)
 		}
-		if b[0] == 18 {
+		if b[0] == fxpRename {
 			for _, h := range p.handles {
 				if h.path == name || strings.HasPrefix(h.path, name+"/") {
 					h.path = target + strings.TrimPrefix(h.path, name)

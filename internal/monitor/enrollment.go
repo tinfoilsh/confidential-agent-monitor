@@ -5,10 +5,12 @@ import (
 	"crypto/sha256"
 	"errors"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/tinfoilsh/monitor/internal/config"
-	"github.com/tinfoilsh/monitor/internal/sandbox"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -17,7 +19,7 @@ type identityEnrollment struct {
 	Routes  bool   `json:"routes"`
 	Restore bool   `json:"restore"`
 	// Sandbox names the boots the Monitor may attest and log in to for shells.
-	Sandbox sandbox.Boot `json:"sandbox,omitzero"`
+	Sandbox config.Boot `json:"sandbox,omitzero"`
 }
 
 // enrollmentChanges adds new identities; a revoked key or route access returns only when restored.
@@ -31,7 +33,7 @@ func (m *monitor) enrollmentChanges(input map[string]identityEnrollment) ([]conf
 		}
 		fingerprint := ssh.FingerprintSHA256(key)
 		var boot map[string]any
-		if id.Sandbox != (sandbox.Boot{}) {
+		if id.Sandbox != (config.Boot{}) {
 			if err := id.Sandbox.Validate(); err != nil {
 				return nil, err
 			}
@@ -85,4 +87,57 @@ func (m *monitor) restoreDevice(ctx context.Context, public string) error {
 		return errors.New("device identity name belongs to another key")
 	}
 	return m.editPolicy(ctx, []config.Change{{Path: []string{"identities", name}, Value: map[string]any{"key": public, "routes": true}}})
+}
+
+var errSandboxSSHDisabled = errors.New("browser terminals and sandbox setup are disabled; enable them in Monitor Settings")
+
+// sandboxHandler gates the entire SSH path, including request decoding and setup.
+func (m *monitor) sandboxHandler(next http.HandlerFunc) http.HandlerFunc {
+	return m.ownerOnly(func(w http.ResponseWriter, r *http.Request) {
+		if !m.live.Load().Config.AllowSandboxSSH {
+			responseError(w, errSandboxSSHDisabled)
+			return
+		}
+		next(w, r)
+	})
+}
+
+func (m *monitor) enrollSandbox(r *http.Request, in sandbox.EnrollInput) (any, error) {
+	if err := m.sandboxes.Enroll(r.Context(), r.PathValue("name"), in); err != nil {
+		return nil, err
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.view(nil)
+}
+
+func (m *monitor) shellSandbox(r *http.Request, in sandbox.ShellInput) (any, error) {
+	session, _ := ownerauth.FromContext(r.Context())
+	return m.sandboxes.Shell(r.Context(), session.ID, r.PathValue("name"), in)
+}
+
+// sandboxMonitor is the Monitor as the sandbox package sees it.
+type sandboxMonitor struct{ m *monitor }
+
+func (s sandboxMonitor) Boot(name string) config.Boot {
+	return s.m.live.Load().Config.Identities[name].Sandbox
+}
+
+func (s sandboxMonitor) HostKey() ssh.Signer { return s.m.live.Load().HostKey }
+
+func (s sandboxMonitor) CheckIdentity(name, key string, boot config.Boot) error {
+	s.m.mu.Lock()
+	defer s.m.mu.Unlock()
+	_, err := s.m.enrollmentChanges(map[string]identityEnrollment{name: {Key: key, Sandbox: boot}})
+	return err
+}
+
+func (s sandboxMonitor) AddIdentity(ctx context.Context, name, key string, boot config.Boot) error {
+	s.m.mu.Lock()
+	defer s.m.mu.Unlock()
+	changes, err := s.m.enrollmentChanges(map[string]identityEnrollment{name: {Key: key, Sandbox: boot}})
+	if err != nil {
+		return err
+	}
+	return s.m.editPolicy(ctx, changes)
 }

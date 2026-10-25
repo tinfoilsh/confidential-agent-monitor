@@ -1,10 +1,8 @@
-package facts
+// Package jsonsel selects and compares typed values in decoded JSON documents.
+package jsonsel
 
 import (
 	"encoding/json"
-	"encoding/json/jsontext"
-	jsonv2 "encoding/json/v2"
-	"errors"
 	"fmt"
 	"math/big"
 	"reflect"
@@ -13,74 +11,36 @@ import (
 	"strings"
 )
 
-// JSON converts through the same encoding used for audit, preserving numbers.
-func JSON[T any](value any) (out T, err error) {
-	raw, err := json.Marshal(value)
-	if err == nil {
-		err = DecodeNumbers(raw, &out)
-	}
-	return
+// Selector selects a typed value from a JSON document.
+type Selector struct {
+	At       string `json:"at"`
+	Type     string `json:"type,omitempty"`
+	Optional bool   `json:"optional,omitempty"`
 }
 
-// DecodeNumbers keeps numbers as json.Number, so policy compares the values exactly as written.
-func DecodeNumbers(raw []byte, dst any) error {
-	return jsonv2.Unmarshal(raw, dst, jsonv2.RejectUnknownMembers(true), json.MergeWithLegacySemantics(true), jsonv2.WithUnmarshalers(jsonv2.UnmarshalFromFunc(func(dec *jsontext.Decoder, value *any) error {
-		if dec.PeekKind() != '0' {
-			return errors.ErrUnsupported
-		}
-		raw, err := dec.ReadValue()
-		if err == nil {
-			*value = json.Number(raw)
-		}
-		return err
-	})))
+func (s Selector) Valid() bool {
+	return slices.Contains([]string{"", "string", "number", "boolean", "object", "array", "null"}, s.Type)
 }
 
-// Snapshot freezes one encoding into independent audit and policy views.
-func (f Facts) Snapshot() (owned Facts, policy map[string]any, err error) {
-	raw, err := f.MarshalJSON()
-	if err == nil {
-		err = DecodeNumbers(raw, &owned)
-	}
-	if err == nil {
-		err = DecodeNumbers(raw, &policy)
-	}
-	owned.encoded = raw
-	return
-}
-
-// Frozen facts retain the original JSON, including null interface values whose
-// typed decoding would otherwise change omitempty behavior.
-func (f Facts) MarshalJSON() ([]byte, error) {
-	if f.encoded != nil {
-		return f.encoded, nil
-	}
-	type plain Facts
-	return json.Marshal(plain(f))
-}
-
-func ValidJSONType(typ string) bool {
-	return slices.Contains([]string{"", "string", "number", "boolean", "object", "array", "null"}, typ)
-}
-
-// CheckSelection validates an extracted value. Optional permits absence, never a wrong type.
-func CheckSelection(name string, value any, present bool, typ string, optional bool) error {
+// Check validates an extracted value. Optional permits absence, never a wrong type.
+func (s Selector) Check(name string, value any, present bool) error {
+	typ := s.Type
 	if typ == "" {
 		typ = "string"
 	}
-	if present && JSONType(value) == typ || !present && optional {
+	if present && jsonType(value) == typ || !present && s.Optional {
 		return nil
 	}
 	return fmt.Errorf("the request has no %s of the expected type", name)
 }
 
-// ValidJSONPointer checks the supported pointer syntax, which excludes escapes.
-func ValidJSONPointer(at string) bool {
+// validJSONPointer checks the supported pointer syntax, which excludes escapes.
+func validJSONPointer(at string) bool {
 	return at == "" || strings.HasPrefix(at, "/") && !strings.Contains(at, "~")
 }
 
 func CompilePointer(at string) (func(any) (any, bool), error) {
-	if !ValidJSONPointer(at) {
+	if !validJSONPointer(at) {
 		return nil, fmt.Errorf("invalid selector path %q", at)
 	}
 	var parts []string
@@ -112,7 +72,7 @@ func lookupJSON(doc any, parts []string) (any, bool) {
 	return doc, true
 }
 
-func JSONType(v any) string {
+func jsonType(v any) string {
 	switch v.(type) {
 	case nil:
 		return "null"
@@ -130,9 +90,9 @@ func JSONType(v any) string {
 	return ""
 }
 
-// EqualJSON compares values decoded with DecodeNumbers, including exact decimal
+// Equal compares values decoded with facts.DecodeNumbers, including exact decimal
 // equality across different spellings such as 1, 1.0 and 1e0.
-func EqualJSON(a, b any) bool {
+func Equal(a, b any) bool {
 	switch x := a.(type) {
 	case json.Number:
 		y, ok := b.(json.Number)
@@ -149,14 +109,14 @@ func EqualJSON(a, b any) bool {
 		}
 		for key, value := range x {
 			other, present := y[key]
-			if !present || !EqualJSON(value, other) {
+			if !present || !Equal(value, other) {
 				return false
 			}
 		}
 		return true
 	case []any:
 		y, ok := b.([]any)
-		return ok && slices.EqualFunc(x, y, EqualJSON)
+		return ok && slices.EqualFunc(x, y, Equal)
 	default:
 		return reflect.DeepEqual(a, b)
 	}

@@ -48,14 +48,6 @@ func Compile(ctx context.Context, text string) (*Snapshot, map[string]Connection
 	if err != nil {
 		return nil, nil, err
 	}
-	// Earlier onboarding and dev/setup wrote profile, including false. Accept
-	// their stored policies without retaining the retired enforcement bypass.
-	object, _ := decoded.(map[string]any)
-	identities, _ := object["identities"].(map[string]any)
-	for _, value := range identities {
-		id, _ := value.(map[string]any)
-		delete(id, "profile")
-	}
 	cfg := &Config{Lattices: policy.Lattices{Confidentiality: true}}
 	raw, err := json.Marshal(decoded)
 	if err == nil {

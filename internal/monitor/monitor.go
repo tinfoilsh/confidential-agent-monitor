@@ -13,10 +13,12 @@ import (
 
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/monitor/internal/audit"
 	"github.com/tinfoilsh/monitor/internal/config"
-	"github.com/tinfoilsh/monitor/internal/sandbox"
-	"github.com/tinfoilsh/monitor/internal/sandboxroute"
 	"github.com/tinfoilsh/monitor/internal/store"
+	"github.com/tinfoilsh/monitor/internal/supervisor"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandboxroute"
 	"github.com/tinfoilsh/monitor/internal/worker"
 	"gocloud.dev/blob"
 	"golang.org/x/crypto/ssh"
@@ -46,11 +48,13 @@ type monitor struct {
 	live    atomic.Pointer[state]
 	mu      sync.Mutex
 	store   store.Store
-	running map[string]*connection
+	running map[string]*supervisor.Conn
+	audit   audit.Log[*record]
 
 	ownerPublicKey ed25519.PublicKey
 	sshHostKey     ssh.Signer
 	embeddedFiles  http.Handler
+	ownerAPI       http.Handler
 	// bucket is the storage URL that binds owner RPC envelopes to this Monitor.
 	bucket    string
 	sandboxes *sandbox.Service
@@ -60,9 +64,6 @@ type monitor struct {
 	// mu owns authorization transactions, including documents, records and streams.
 	streams map[*connector.Stream]string
 	records []*record
-	audit   []byte // Settled records awaiting upload, as JSON lines.
-	// flushing serializes uploads outside mu and is acquired before mu.
-	flushing sync.Mutex
 	// signIns holds the finish of each started sign-in, keyed by its state.
 	signIns sync.Map
 }
@@ -71,8 +72,9 @@ func New(o Options) *monitor {
 	if o.EmbeddedFiles == nil {
 		o.EmbeddedFiles = http.NotFoundHandler()
 	}
-	m := &monitor{store: store.Store{Bucket: o.Bucket}, ownerPublicKey: o.OwnerPublicKey, sshHostKey: o.HostKey, bucket: o.BucketURL, kinds: o.Connectors, workers: o.Workers, embeddedFiles: o.EmbeddedFiles}
-	m.sandboxes = sandbox.New(sandboxMonitor{m}, sandbox.Verify)
+	m := &monitor{store: store.Store{Bucket: o.Bucket}, audit: audit.Log[*record]{Bucket: o.Bucket}, ownerPublicKey: o.OwnerPublicKey, sshHostKey: o.HostKey, bucket: o.BucketURL, kinds: o.Connectors, workers: o.Workers, embeddedFiles: o.EmbeddedFiles}
+	m.sandboxes = sandbox.New(sandboxMonitor{m}, &m.routes, sandbox.Verify)
+	m.ownerAPI = m.ownerHandler(true, nil)
 	return m
 }
 
@@ -118,6 +120,7 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64, initia
 	}
 	previous := m.store
 	m.store = next
+	m.audit.SealWith(next.Sealer)
 	if err := m.activate(ctx, next.Doc, s); err != nil {
 		m.store = previous
 		return err
@@ -144,7 +147,7 @@ func (m *monitor) activate(ctx context.Context, next store.Document, s *state) e
 		m.sandboxes.CloseShells()
 	}
 	if old == nil {
-		m.streams, m.running = map[*connector.Stream]string{}, map[string]*connection{}
+		m.streams, m.running = map[*connector.Stream]string{}, map[string]*supervisor.Conn{}
 	}
 	for stream, key := range m.streams {
 		if !s.sameStreamAuthority(old, key, stream) {

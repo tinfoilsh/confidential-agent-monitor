@@ -7,7 +7,9 @@ import (
 	"encoding/json"
 	"net"
 	"net/http"
+	"net/url"
 
+	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/facts"
 	"golang.org/x/crypto/ssh"
 )
@@ -18,6 +20,29 @@ type Server interface{ Serve(*Stream, *Env) }
 
 type Runner interface {
 	Run(ctx context.Context, e *Env, serve func(context.Context)) error
+}
+
+type Preparer interface{ Prepare() error }
+
+type Controller interface{ Control() http.Handler }
+
+type SecretHolder interface {
+	SecretValues() map[string]*credential.Value
+}
+
+// Claimer scores how well it serves a forwarded target; a negative score declines it.
+type Claimer interface {
+	Claim(host string, port uint32) int
+}
+
+func Decode(raw []byte, s Server) error {
+	if err := facts.DecodeNumbers(raw, s); err != nil {
+		return err
+	}
+	if p, ok := s.(Preparer); ok {
+		return p.Prepare()
+	}
+	return nil
 }
 
 // Definition registers a connector and the request types it can submit.
@@ -34,7 +59,7 @@ type Definition struct {
 
 // Control handles private host HTTP after owner authentication.
 func Control(s Server) http.Handler {
-	if c, ok := s.(interface{ Control() http.Handler }); ok {
+	if c, ok := s.(Controller); ok {
 		return c.Control()
 	}
 	return http.NotFoundHandler()
@@ -74,4 +99,43 @@ type Context struct {
 	Config            any
 	Options           PolicyOptions
 	Spec              any
+}
+
+type Endpoint struct {
+	SecretConfig
+	url.URL `json:"-"`
+	Address string `json:"url"`
+	User    string `json:"user"`
+}
+
+func (e *Endpoint) Prepare() error {
+	u, err := ParseURL(e.Address)
+	if err != nil {
+		return err
+	}
+	if e.User != "" {
+		u.User = url.User(e.User)
+	}
+	e.URL = *u
+	return nil
+}
+
+// SecretConfig owns the credential handles shared with the connection runtime.
+type SecretConfig struct {
+	Secrets map[string]*credential.Value `json:"secrets,omitempty"`
+}
+
+func (c *SecretConfig) SecretValues() map[string]*credential.Value {
+	if c.Secrets == nil {
+		c.Secrets = map[string]*credential.Value{}
+	}
+	return c.Secrets
+}
+
+// Secret returns an empty value for optional, unconfigured authentication.
+func (c *SecretConfig) Secret(ctx context.Context, name string) (string, error) {
+	if value := c.Secrets[name]; value != nil {
+		return value.Value(ctx)
+	}
+	return "", nil
 }

@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/tinfoilsh/monitor/internal/config"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -121,8 +122,11 @@ func (svc *Service) openShell(ctx context.Context, owner, name string, in ShellI
 		return ShellReply{}, fmt.Errorf("terminal size must be 1-%d columns and rows", maxTerminalSize)
 	}
 	boot := svc.monitor.Boot(name)
-	if boot == (Boot{}) {
+	if boot == (config.Boot{}) {
 		return ShellReply{}, errors.New("enroll this sandbox from the console to open its shell")
+	}
+	if err := boot.Validate(); err != nil {
+		return ShellReply{}, err
 	}
 	id := rand.Text()
 	svc.mu.Lock()
@@ -153,7 +157,7 @@ func (svc *Service) openShell(ctx context.Context, owner, name string, in ShellI
 	return ShellReply{ID: id, Data: []byte{}}, nil
 }
 
-func (svc *Service) startShell(ctx context.Context, owner, name string, boot Boot, in ShellInput) (*shellSession, io.Reader, error) {
+func (svc *Service) startShell(ctx context.Context, owner, name string, boot config.Boot, in ShellInput) (*shellSession, io.Reader, error) {
 	client, err := svc.connect(ctx, boot, svc.monitor.HostKey())
 	if err != nil {
 		return nil, nil, err

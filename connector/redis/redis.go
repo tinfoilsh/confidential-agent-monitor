@@ -26,8 +26,8 @@ var containerCommands = []string{
 
 type Redis struct{ connector.Endpoint }
 
-func (r *Redis) UnmarshalJSON(raw []byte) error {
-	if err := r.Endpoint.UnmarshalJSON(raw); err != nil {
+func (r *Redis) Prepare() error {
+	if err := r.Endpoint.Prepare(); err != nil {
 		return err
 	}
 	if r.URL.Scheme != "rediss" {

@@ -1,7 +1,6 @@
 package monitor
 
 import (
-	"cmp"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
@@ -17,8 +16,7 @@ import (
 	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/facts"
 	"github.com/tinfoilsh/monitor/internal/config"
-	"github.com/tinfoilsh/monitor/internal/sandboxroute"
-	"github.com/tinfoilsh/monitor/presets"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandboxroute"
 )
 
 var (
@@ -44,18 +42,16 @@ func (m *monitor) gate(ctx context.Context, in input) (err error) {
 			return err
 		}
 		var cancel context.CancelFunc
-		ctx, cancel = context.WithCancel(ctx)
+		ctx, cancel = connector.Bind(ctx, in.stream.Context)
 		defer cancel()
-		stop := context.AfterFunc(in.stream.Context, cancel)
-		defer stop()
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	if err := m.auditBacklog(); err != nil {
-		return err
+	if m.audit.Backlogged() {
+		return errAuditBacklog
 	}
 	st := m.live.Load()
 	p, ok := st.Principals[in.Key]
@@ -81,19 +77,7 @@ func (m *monitor) gate(ctx context.Context, in input) (err error) {
 		f.Kind = facts.KindOperation
 	}
 	if f.Operation != nil {
-		op := *f.Operation
-		op.Lineage = presets.Lineage(op.Action)
-		effects := op.Effects
-		for i := 0; effects == nil && i < len(op.Lineage); i++ {
-			effects = preset.Catalog.Actions[op.Lineage[i]].Effects
-		}
-		// An action without configured semantics is unknown.
-		if op.Action == "" || effects == nil {
-			f.Operation = nil
-		} else {
-			op.Effects, op.ID = slices.Compact(slices.Sorted(slices.Values(effects))), cmp.Or(op.ID, op.Action)
-			f.Operation = &op
-		}
+		f.Operation = preset.Catalog.Operation(*f.Operation)
 	}
 	if f.Parameters == nil {
 		f.Parameters = map[string]any{}
@@ -115,12 +99,8 @@ func (m *monitor) gate(ctx context.Context, in input) (err error) {
 	}
 	// Approval definitions bind semantics and configuration, independently of facts
 	// shown to users. Display edits and current labels do not invalidate a grant.
-	var operationEffects []string
-	if f.Operation != nil {
-		operationEffects = f.Operation.Effects
-	}
-	effects := st.Config.EffectModes(p.Name, c.Account, operationEffects...)
-	raw, _ := json.Marshal([]any{st.Engine.Program, st.Config.Lattices, effects, f.Kind, a.Preset, c.Name, c.Config, a.PolicyOptions,
+	modes := st.Config.EffectModes(p.Name, c.Account, f.Operation)
+	raw, _ := json.Marshal([]any{st.Engine.Program, st.Config.Lattices, modes, f.Kind, a.Preset, c.Name, c.Config, a.PolicyOptions,
 		a.Contents, a.Strangers, a.Sends, preset.PublicScope, f.Definition, f.Operation, f.Context.Sends, f.Context.Observes})
 	sum := sha256.Sum256(raw)
 	definition := hex.EncodeToString(sum[:])
@@ -135,7 +115,7 @@ func (m *monitor) gate(ctx context.Context, in input) (err error) {
 	}
 	access, _ := facts.JSON[map[string]any](p.Accounts[c.Account])
 	d, err := st.Engine.Decide(ctx, map[string]any{"facts": policyFacts,
-		"authorization": map[string]any{"access": access, "effects": effects, "rules": p.Rules, "definition": definition, "grant": grant},
+		"authorization": map[string]any{"access": access, "effects": modes, "rules": p.Rules, "definition": definition, "grant": grant},
 		"account":       map[string]any{"contents": a.Contents, "strangers": a.Strangers, "sends": a.Sends, "private": a.PolicyOptions.Private, "public_scope": preset.PublicScope}})
 	if err != nil {
 		return err

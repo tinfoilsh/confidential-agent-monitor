@@ -38,6 +38,8 @@ func Definition(extension string, sandboxed bool) connector.Definition {
 	}, Requests: []connector.Request{new(Request)}}
 }
 
+var _ connector.Controller = (*Browser)(nil)
+
 const (
 	loopback     = "127.0.0.1:0"
 	extensionURL = "chrome-extension://"
@@ -112,11 +114,7 @@ type request struct {
 	slot       *web.Slot
 }
 
-func (b *Browser) UnmarshalJSON(raw []byte) error {
-	type plain Browser
-	if err := facts.DecodeNumbers(raw, (*plain)(b)); err != nil {
-		return err
-	}
+func (b *Browser) Prepare() error {
 	return b.Validate(true)
 }
 
