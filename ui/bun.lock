@@ -9,7 +9,7 @@
         "@clerk/ui": "1.41.1",
         "@noble/curves": "2.4.0",
         "@noble/hashes": "2.4.0",
-        "@tinfoilsh/passkey-kit": "0.2.3",
+        "@tinfoilsh/passkey-kit": "0.2.4",
         "@xterm/addon-fit": "0.11.0",
         "@xterm/addon-webgl": "0.19.0",
         "@xterm/xterm": "6.0.0",
@@ -29,9 +29,6 @@
         "vite-plugin-sri-gen": "1.7.5",
       },
     },
-  },
-  "patchedDependencies": {
-    "@tinfoilsh/passkey-kit@0.2.3": "patches/@tinfoilsh%2Fpasskey-kit@0.2.3.patch",
   },
   "overrides": {
     "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-9352da5282fd5c5f99fb51a2c7dc69ae023e59b8.tgz",
@@ -203,7 +200,7 @@
 
     "@tanstack/query-core": ["@tanstack/query-core@5.104.5", "", {}, "sha512-Q94gI8Opd+CbdVNOdj8ZCyV8WqLYitrDq1t96Xc8WZT6lY0r5iRnJLXYDxMex7EEf2v+mXvn4FcjaBKSxXZQ9A=="],
 
-    "@tinfoilsh/passkey-kit": ["@tinfoilsh/passkey-kit@0.2.3", "", {}, "sha512-ZA7Mi8iFVbewBSJoHW12ZTeTVR0+iv3TRuXXLWaLBwnpsGP+mhRBdpGYlvBqO9UkvFexVWXyeF7HxjwxXkSKeA=="],
+    "@tinfoilsh/passkey-kit": ["@tinfoilsh/passkey-kit@0.2.4", "", {}, "sha512-tAhf4q7pKJPftOFoFsh7Qmk35Q3TvhZKM5wdcynqEpO8NQaYF3jtVmwTc+lOkKCzVFV8GRMFK31dkK0C13fS9g=="],
 
     "@tinfoilsh/tinfoil-icons": ["@tinfoilsh/tinfoil-icons@2.3.5", "", { "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0" } }, "sha512-+FHGonwTQMl1GrBtgbvbymt8T8Ouk0c0RI+6rot37ARamVnKkerdmfmOoqEi20I6ZcFNIM76QUqi5h9/2U28yw=="],
 

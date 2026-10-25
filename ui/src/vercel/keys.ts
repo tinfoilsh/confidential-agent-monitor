@@ -44,7 +44,7 @@ export function passkeys(userId: string): PasskeyKeyManager {
     profile: PROFILE,
     relyingPartyName: "Tinfoil Console",
     // The browser offers both built-in passkeys and security keys.
-    authenticatorAttachment: "any",
+    enrollmentAttachment: "any",
     storage: createInsecureBrowserLocalStoragePasskeyKeyStorage(
       `tinfoil-console/${userId}`,
     ),

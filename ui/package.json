@@ -21,7 +21,7 @@
     "@clerk/ui": "1.41.1",
     "@noble/curves": "2.4.0",
     "@noble/hashes": "2.4.0",
-    "@tinfoilsh/passkey-kit": "0.2.3",
+    "@tinfoilsh/passkey-kit": "0.2.4",
     "@xterm/addon-fit": "0.11.0",
     "@xterm/addon-webgl": "0.19.0",
     "@xterm/xterm": "6.0.0",
@@ -42,8 +42,5 @@
   },
   "overrides": {
     "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-9352da5282fd5c5f99fb51a2c7dc69ae023e59b8.tgz"
-  },
-  "patchedDependencies": {
-    "@tinfoilsh/passkey-kit@0.2.3": "patches/@tinfoilsh%2Fpasskey-kit@0.2.3.patch"
   }
 }
