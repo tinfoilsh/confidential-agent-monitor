@@ -10,6 +10,7 @@ import {
   onCleanup,
   onMount,
   useContext,
+  type JSX,
   type ParentProps,
 } from "solid-js";
 import { createStore } from "solid-js/store";
@@ -20,18 +21,41 @@ const KEY = "monitor-owner-key",
   SESSION = "monitor-local-session",
   GENERATION = "monitor-generation",
   RETURN = "monitor-sign-in-return",
-  DEVICE_POLL_MS = 2000;
+  DEVICE_POLL_MS = 2000,
+  // A page served apart from its Monitor reaches the bearer owner API there.
+  ENDPOINT: string | undefined =
+    import.meta.env.VITE_MONITOR_ENDPOINT || undefined;
 
-function createMonitor() {
+export type MonitorOptions = {
+  client?: owner.OwnerApi;
+  onLock?: () => void;
+  onAddSandbox?: () => void;
+  // Sandboxes the host knows of, which the Monitor may not have enrolled yet.
+  sandboxes?: () => string[];
+  sandboxStatus?: (name: string) => JSX.Element;
+  sandboxActions?: (name: string) => JSX.Element;
+  // A host app's sidebar entries; with them, setup and unlock render inside its layout.
+  brand?: string;
+  navigation?: () => JSX.Element;
+  context?: () => JSX.Element;
+  snapshot?: owner.Snapshot;
+};
+
+function createMonitor(options: MonitorOptions) {
   const lifetime = new AbortController();
   const fragment = new URLSearchParams(location.hash.slice(1));
   if (fragment.has("session")) {
     sessionStorage.setItem(SESSION, fragment.get("session")!);
     history.replaceState(null, "", location.pathname + location.search);
   }
-  const [mode, setMode] = createSignal<"bearer" | "ssh">();
-  const [credential, setCredential] = createSignal("");
-  const [snapshot, setSnapshot] = createSignal<owner.Snapshot>();
+  // Set before mount: writes inside onMount would let refresh join a read the api effect then discards.
+  const [mode, setMode] = createSignal<"bearer" | "ssh" | undefined>(
+    ENDPOINT && !options.client ? "bearer" : undefined,
+  );
+  const [credential, setCredential] = createSignal(
+    mode() ? (sessionStorage.getItem(KEY) ?? "") : "",
+  );
+  const [snapshot, setSnapshot] = createSignal(options.snapshot);
   const [locked, setLocked] = createSignal(false);
   type PendingEdit = {
     source: owner.OwnerApi;
@@ -51,6 +75,8 @@ function createMonitor() {
     path === undefined || notice()?.path === path ? (notice()?.text ?? "") : "";
   const [now, setNow] = createSignal(Date.now());
   const [icons, setIcons] = createSignal<owner.IconManifest>({});
+  // The sandbox whose shell is open beside the page.
+  const [shell, setShell] = createSignal<string>();
   const [deviceSignIn, setDeviceSignIn] = createSignal<
     owner.DeviceSignIn & {
       title: string;
@@ -100,6 +126,7 @@ function createMonitor() {
   };
   const report = (cause: unknown, path = location.hash) => {
     if (lifetime.signal.aborted) return;
+    if ((cause as owner.OwnerError)?.status === 423) setLocked(true);
     const text = cause instanceof Error ? cause.message : String(cause);
     setError(text);
     notify(text, path);
@@ -117,12 +144,18 @@ function createMonitor() {
     if (response.status === 423) setLocked(true);
     return response;
   };
-  const api = createMemo(() =>
-    !mode() || !credential()
-      ? undefined
-      : mode() === "ssh"
-        ? owner.localOwnerClient({ token: credential(), fetch: observe })
-        : owner.ownerClient({ key: credential(), fetch: observe }),
+  const api = createMemo(
+    () =>
+      options.client ??
+      (!mode() || !credential()
+        ? undefined
+        : mode() === "ssh"
+          ? owner.localOwnerClient({ token: credential(), fetch: observe })
+          : owner.ownerClient({
+              endpoint: ENDPOINT,
+              key: credential(),
+              fetch: observe,
+            })),
   );
   const copySnapshot = (state: owner.Snapshot): owner.Snapshot => ({
     ...state,
@@ -169,15 +202,16 @@ function createMonitor() {
     requests = snapshot()?.requests ?? [],
   ) => {
     setLocked(false);
-    localStorage.setItem(
-      GENERATION,
-      String(
-        Math.max(
-          next.generation,
-          Number(localStorage.getItem(GENERATION)) || 0,
+    if (!options.client)
+      localStorage.setItem(
+        GENERATION,
+        String(
+          Math.max(
+            next.generation,
+            Number(localStorage.getItem(GENERATION)) || 0,
+          ),
         ),
-      ),
-    );
+      );
     setSnapshot({ view: next, requests });
     if (older() === "" && !loadingOlder()) void loadOlder();
   };
@@ -191,9 +225,9 @@ function createMonitor() {
         while (!busy() && api() && !lifetime.signal.aborted) {
           const source = api()!,
             revision = version;
-          const next = await source.read(undefined, { summary: true });
+          const next = await source.read(lifetime.signal);
           if (source !== api()) continue;
-          if (revision !== version) return;
+          if (revision !== version || lifetime.signal.aborted) return;
           remember(next.view, next.requests);
           setError("");
           return;
@@ -411,12 +445,16 @@ function createMonitor() {
   );
 
   createEffect(
-    on(api, () => {
-      setDeviceSignIn(undefined);
-      version++;
-      setSnapshot(undefined);
-      void refresh();
-    }),
+    on(
+      api,
+      () => {
+        setDeviceSignIn(undefined);
+        version++;
+        setSnapshot(undefined);
+        void refresh();
+      },
+      { defer: true },
+    ),
   );
   createEffect(() => {
     const count = pendingCount();
@@ -424,24 +462,26 @@ function createMonitor() {
   });
   onMount(async () => {
     try {
-      const response = await fetch("/app/auth.json", {
-        cache: "no-store",
-        credentials: "omit",
-        redirect: "error",
-        signal: lifetime.signal,
-      });
-      if (!response.ok)
-        throw new Error(
-          "Could not load Monitor sign-in options. Reload to retry.",
+      if (!options.client && !ENDPOINT) {
+        const response = await fetch("/app/auth.json", {
+          cache: "no-store",
+          credentials: "omit",
+          redirect: "error",
+          signal: lifetime.signal,
+        });
+        if (!response.ok)
+          throw new Error(
+            "Could not load Monitor sign-in options. Reload to retry.",
+          );
+        const { mode } = await response.json();
+        if (mode !== "bearer" && mode !== "ssh")
+          throw new Error("Unknown Monitor sign-in method.");
+        sessionStorage.removeItem(mode === "ssh" ? KEY : SESSION);
+        setMode(mode);
+        setCredential(
+          sessionStorage.getItem(mode === "ssh" ? SESSION : KEY) ?? "",
         );
-      const { mode } = await response.json();
-      if (mode !== "bearer" && mode !== "ssh")
-        throw new Error("Unknown Monitor sign-in method.");
-      sessionStorage.removeItem(mode === "ssh" ? KEY : SESSION);
-      setMode(mode);
-      setCredential(
-        sessionStorage.getItem(mode === "ssh" ? SESSION : KEY) ?? "",
-      );
+      }
       await refresh();
       const back = new URLSearchParams(location.search);
       if (back.has("state") || back.has("code") || back.has("error")) {
@@ -478,7 +518,9 @@ function createMonitor() {
     }
   });
   onMount(() => {
-    void fetch("/app/icons/manifest.json", { signal: lifetime.signal })
+    void fetch(import.meta.env.BASE_URL + "icons/manifest.json", {
+      signal: lifetime.signal,
+    })
       .then((r) => r.json())
       .then(setIcons)
       .catch(() => {});
@@ -505,6 +547,7 @@ function createMonitor() {
   });
 
   return {
+    options,
     mode,
     credential,
     view,
@@ -536,6 +579,8 @@ function createMonitor() {
     decide,
     signIn,
     deviceSignIn,
+    shell,
+    setShell,
     cancelSignIn: () => setDeviceSignIn(undefined),
     unlock: () =>
       perform(
@@ -544,9 +589,11 @@ function createMonitor() {
           // generation this browser has seen. Local dev wipes its store,
           // which looks identical to a rollback, so the floor is off there.
           client.unlock(
-            import.meta.env.DEV
-              ? 0
-              : Number(localStorage.getItem(GENERATION)) || 0,
+            options.client
+              ? undefined
+              : import.meta.env.DEV
+                ? 0
+                : Number(localStorage.getItem(GENERATION)) || 0,
           ),
         "Unlocked",
       ),
@@ -563,9 +610,9 @@ function createMonitor() {
 }
 
 const MonitorContext = createContext<ReturnType<typeof createMonitor>>();
-export function MonitorProvider(props: ParentProps) {
+export function MonitorProvider(props: ParentProps<MonitorOptions>) {
   return (
-    <MonitorContext.Provider value={createMonitor()}>
+    <MonitorContext.Provider value={createMonitor(props)}>
       {props.children}
     </MonitorContext.Provider>
   );

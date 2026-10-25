@@ -5,8 +5,10 @@ import {
   createMemo,
   createSignal,
   createUniqueId,
+  lazy,
   onMount,
   onCleanup,
+  splitProps,
   type Accessor,
   type JSX,
 } from "solid-js";
@@ -26,7 +28,9 @@ export function Icon(props: { name: string }) {
 }
 export function ConnectorIcon(props: { preset: string }) {
   const m = useMonitor();
-  const icon = createMemo(() => owner.connectorIcon(m.icons(), props.preset));
+  const icon = createMemo(() =>
+    owner.connectorIcon(m.icons(), props.preset, "", import.meta.env.BASE_URL),
+  );
   return (
     <span class="connector-icon" aria-hidden="true">
       <Show when={icon().dark}>
@@ -153,6 +157,41 @@ export function createDialogMotion(
     motion?.cancel();
     element().close();
   });
+}
+
+export function Modal(
+  props: Omit<JSX.DialogHtmlAttributes<HTMLDialogElement>, "onClose"> & {
+    open: boolean;
+    onClose(): void;
+  },
+) {
+  const [own, rest] = splitProps(props, ["open", "onClose"]);
+  let dialog!: HTMLDialogElement;
+  createDialogMotion(
+    () => dialog,
+    () => own.open,
+  );
+  return (
+    <dialog
+      {...rest}
+      ref={dialog}
+      onCancel={(event) => {
+        event.preventDefault();
+        own.onClose();
+      }}
+      onClick={(event) => {
+        const r = dialog.getBoundingClientRect();
+        if (
+          event.target === dialog &&
+          (event.clientX < r.left ||
+            event.clientX > r.right ||
+            event.clientY < r.top ||
+            event.clientY > r.bottom)
+        )
+          own.onClose();
+      }}
+    />
+  );
 }
 
 // Keep native keyboard disclosure behavior while animating the full row in
@@ -593,4 +632,70 @@ export function download(text: string, name: string, type: string) {
   link.download = name;
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+const SandboxTerminal = lazy(() => import("./SandboxTerminal"));
+const SHELL_MIN_WIDTH = 320;
+export type ShellTarget = {
+  name: string;
+  message: string;
+  client?: owner.OwnerApi;
+};
+export function ShellSplit(props: {
+  shell?: ShellTarget;
+  onClose: () => void;
+  children: JSX.Element;
+}) {
+  const [width, setWidth] = createSignal("50%");
+  return (
+    <div class="shell-split">
+      {props.children}
+      <Show when={props.shell} keyed>
+        {(current) => (
+          <aside
+            class="shell-pane"
+            aria-label="Sandbox shell"
+            style={{ "--shell-width": width() }}
+          >
+            <div
+              class="shell-pane-resize"
+              onPointerDown={(event) =>
+                drag(event, (move) =>
+                  setWidth(
+                    `${Math.max(SHELL_MIN_WIDTH, Math.min(innerWidth - move.clientX, innerWidth - SHELL_MIN_WIDTH))}px`,
+                  ),
+                )
+              }
+            />
+            <Show
+              when={current.client}
+              fallback={
+                <div class="dialog-body">
+                  <h1>{current.name}</h1>
+                  <p>{current.message}</p>
+                  <button onClick={props.onClose}>Close</button>
+                </div>
+              }
+            >
+              <SandboxTerminal
+                client={current.client!}
+                name={current.name}
+                onClose={props.onClose}
+              />
+            </Show>
+          </aside>
+        )}
+      </Show>
+    </div>
+  );
+}
+export function drag(event: PointerEvent, move: (event: PointerEvent) => void) {
+  const target = event.currentTarget as HTMLElement;
+  event.preventDefault();
+  target.setPointerCapture(event.pointerId);
+  target.addEventListener("pointermove", move);
+  target.addEventListener(
+    "lostpointercapture",
+    () => target.removeEventListener("pointermove", move),
+    { once: true },
+  );
 }

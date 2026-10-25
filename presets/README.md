@@ -101,7 +101,7 @@ outside the facts snapshot. Decisions contain `facts`, `deny`, `requirements`, `
 account, and the current label from `facts`. Audit records add lifecycle fields
 without duplicating those facts.
 
-The Rego rules in `policy/` compute access restrictions, label-flow checks, and
+The Rego rules in `../internal/policy/` compute access restrictions, label-flow checks, and
 saved approval waivers. Every request evaluates the same prepared query,
 `data.monitor.decision`. Owner policies receive `input.facts` and
 `input.authorization`; they can also read `data.monitor.gaps` to inspect remaining
@@ -207,7 +207,7 @@ permission override wins. The account and agent views display the same hierarchy
 The [preset generator](../dev/presets/README.md) reads these files as its baseline
 and writes proposals under `dev/presets/`. Edit accepted definitions here.
 `drafts/` holds records loaded only with `-drafts`. Authorization rules live in
-`policy/`; owner Rego policies live in `config.policies`.
+`../internal/policy/`; owner Rego policies live in `config.policies`.
 
 The SFTP, MQTT, and NATS presets include setup forms and operation permissions.
 See [file and broker protocols](../docs/file-and-broker-protocols.md) for supported

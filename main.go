@@ -6,6 +6,8 @@ import (
 	"encoding/base64"
 	"errors"
 	"flag"
+	"fmt"
+	"io/fs"
 	"log"
 	"net"
 	"net/http"
@@ -13,6 +15,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"slices"
 	"strings"
 	"syscall"
 	"time"
@@ -30,14 +33,19 @@ import (
 	"github.com/tinfoilsh/monitor/connector/tcp"
 	"github.com/tinfoilsh/monitor/connector/tinfoil"
 	"github.com/tinfoilsh/monitor/connector/web"
+	"github.com/tinfoilsh/monitor/internal/monitor"
 	"github.com/tinfoilsh/monitor/internal/worker"
+	"github.com/tinfoilsh/monitor/ui"
 	"gocloud.dev/blob"
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/s3blob"
 	"golang.org/x/crypto/ssh"
 )
 
-const readHeaderTimeout = 30 * time.Second
+const (
+	readHeaderTimeout = 30 * time.Second
+	preflightMaxAge   = "600"
+)
 
 // The kind is also the protocol policies see.
 var connectorKinds = map[string]connector.Definition{
@@ -72,7 +80,6 @@ func main() {
 	originList := flag.String("owner-origins", "", "comma-separated browser origins allowed to call the owner API, such as https://dash.tinfoil.sh")
 	workers := flag.Bool("connector-workers", false, "run all connectors in isolated worker processes")
 	workerRoot := flag.String("worker-root", "/opt/monitor/worker", "prepared read-only filesystem for connector workers")
-	sandbox := flag.String("worker-sandbox", "bwrap", "connector sandbox launcher")
 	workerMode := flag.Bool("connector-worker", false, "serve one connector on inherited descriptors")
 	flag.Parse()
 	if flag.NArg() != 0 {
@@ -100,6 +107,11 @@ func main() {
 		return
 	}
 	dev := !*production && strings.HasPrefix(*bucketURL, "file://")
+	assets, err := fs.Sub(ui.Files, "dist")
+	if err != nil {
+		log.Fatal(err)
+	}
+	embeddedFiles := http.StripPrefix("/app/", http.FileServerFS(assets))
 	var files http.Handler
 	if *uiDevURL != "" {
 		var err error
@@ -150,17 +162,18 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	m := &monitor{store: stateStore{bucket: bucket}, ownerPublicKey: public, sshHostKey: hostSigner}
+	options := monitor.Options{Bucket: bucket, BucketURL: *bucketURL, OwnerPublicKey: public, HostKey: hostSigner, Connectors: connectorKinds, EmbeddedFiles: embeddedFiles}
 	if *workers {
-		m.workers = &worker.Local{Root: *workerRoot, Sandbox: *sandbox}
+		options.Workers = &worker.Local{Root: *workerRoot}
 	}
+	m := monitor.New(options)
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	go m.serveSSH(ln)
+	go m.ServeSSH(ln)
 	go func() {
-		log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.ownerHandler(false, files)), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
+		log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.Handler(files)), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
 	}()
-	m.writeAudit(ctx)
+	m.WriteAudit(ctx)
 }
 
 func parseOwnerPublicKey(value string) (ed25519.PublicKey, error) {
@@ -188,4 +201,46 @@ func uiDevProxy(address string, development bool) (http.Handler, error) {
 		http.Error(w, "UI development server unavailable; start it with bun dev/run.ts", http.StatusBadGateway)
 	}
 	return proxy, nil
+}
+
+// ownerOrigins parses a comma-separated list of exact browser origins, such as https://dash.tinfoil.sh.
+func ownerOrigins(list string) ([]string, error) {
+	var origins []string
+	for _, origin := range strings.Split(list, ",") {
+		if origin = strings.TrimSpace(origin); origin == "" {
+			continue
+		}
+		u, err := url.Parse(origin)
+		if err != nil || (u.Scheme != "https" && u.Scheme != "http") || u.Host == "" || u.Scheme+"://"+u.Host != origin {
+			return nil, fmt.Errorf("owner origin %q must be scheme://host[:port]", origin)
+		}
+		origins = append(origins, origin)
+	}
+	return origins, nil
+}
+
+// allowOrigins lets the listed origins call the owner API from a browser, such as a dashboard
+// holding the owner key in memory. Only the bearer key authenticates; credentials are never allowed.
+func allowOrigins(origins []string, next http.Handler) http.Handler {
+	if len(origins) == 0 {
+		return next
+	}
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Vary", "Origin")
+		origin := r.Header.Get("Origin")
+		if !slices.Contains(origins, origin) {
+			next.ServeHTTP(w, r)
+			return
+		}
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+		w.Header().Set("Access-Control-Expose-Headers", "ETag")
+		if r.Method == http.MethodOptions && r.Header.Get("Access-Control-Request-Method") != "" {
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST")
+			w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, If-None-Match")
+			w.Header().Set("Access-Control-Max-Age", preflightMaxAge)
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }

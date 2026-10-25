@@ -75,9 +75,9 @@ type tab struct {
 	Active bool      `json:"active"`
 }
 
-// ServeOwner serves the owner's live view and controls; the agent's listener does not route here.
+// serveOwner serves the owner's live view and controls; the agent's listener does not route here.
 // The monitor serves it behind the owner's secret.
-func (b *Browser) ServeOwner(w http.ResponseWriter, r *http.Request) {
+func (b *Browser) serveOwner(w http.ResponseWriter, r *http.Request) {
 	b.mu.Lock()
 	epoch := b.epoch
 	b.mu.Unlock()
@@ -120,8 +120,8 @@ func (b *Browser) ServeOwner(w http.ResponseWriter, r *http.Request) {
 
 func (b *Browser) Control() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /browser", b.ServeOwner)
-	mux.HandleFunc("POST /browser", b.ServeOwner)
+	mux.HandleFunc("GET /browser", b.serveOwner)
+	mux.HandleFunc("POST /browser", b.serveOwner)
 	return mux
 }
 

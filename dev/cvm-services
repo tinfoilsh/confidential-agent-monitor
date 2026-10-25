@@ -1,0 +1,58 @@
+#!/usr/bin/python3 -I
+"""Serve the CVM's attestation socket and workspace volume worker inside a dev/cvm sandbox."""
+
+import http.server
+import json
+import os
+from pathlib import Path
+import socket
+import socketserver
+import subprocess
+import threading
+
+HOST_KEY = Path("/run/tinfoil/keys/host-ssh/private_key.pem")
+ATTESTATION = "/tinfoil/attestation.sock"
+CONTROL = Path("/run/tinfoil/volumes/workspace/control.sock")
+MEASURED = ("SANDBOX_INSTANCE_ID", "SANDBOX_OWNER_PUBLIC_KEY")
+
+
+class Attestation(http.server.BaseHTTPRequestHandler):
+    document = b""
+
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-Length", str(len(self.document)))
+        self.end_headers()
+        self.wfile.write(self.document)
+
+    def log_message(self, *_):
+        pass
+
+
+class UnixServer(socketserver.ThreadingMixIn, socketserver.UnixStreamServer):
+    daemon_threads = True
+
+
+def unlock_once(control):
+    # Like the real worker, answer the first unlock and drop the socket so the boot continues.
+    connection, _ = control.accept()
+    with connection:
+        connection.recv(256)
+        connection.sendall(b"ok")
+    CONTROL.unlink()
+
+
+if __name__ == "__main__":
+    HOST_KEY.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(["openssl", "genpkey", "-algorithm", "EC", "-pkeyopt", "ec_paramgen_curve:P-256", "-out", HOST_KEY], check=True)
+    public = subprocess.run(["openssl", "pkey", "-in", HOST_KEY, "-pubout"], check=True, capture_output=True, text=True).stdout
+    Attestation.document = json.dumps({"host_key": public, "env": {name: os.environ[name] for name in MEASURED}}).encode()
+    server = UnixServer(ATTESTATION, Attestation)
+    CONTROL.parent.mkdir(parents=True, exist_ok=True)
+    control = socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET)
+    control.bind(str(CONTROL))
+    control.listen()
+    # Both sockets exist before the entrypoint looks for them; the services outlive this call.
+    if os.fork() == 0:
+        threading.Thread(target=unlock_once, args=(control,), daemon=True).start()
+        server.serve_forever()

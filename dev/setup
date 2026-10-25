@@ -46,11 +46,12 @@ if jq -e '.generation == 1 and ((.config.accounts // {}) | length == 0) and ((.c
 fi
 jq --arg key "$(<"$dev/id.pub")" \
   '.config as $config | ($config.identities.dev // {}) as $dev |
-   {identities: {dev: ($dev + {key: $key,
+   {identities: {dev: ($dev + {key: $key, host: $key,
      accounts: (($config.accounts // {}) | with_entries(.value = ($dev.accounts[.key] // {level: "allow"})))})}}' "$dev/state.json" |
   jq '{changes: [{path: ["identities", "dev"], value: .identities.dev}]}' | owner /policy/edits -d @- > "$dev/state.next.json"
 mv "$dev/state.next.json" "$dev/state.json"
 echo "monitor,*.monitor,[$host]:$port $(jq -r .host_key "$dev/state.json")" > "$dev/known_hosts"
+echo "restrict,pty $(jq -r .host_key "$dev/state.json")" > "$dev/monitor_authorized_keys"
 jq -r .ca "$dev/state.json" > "$dev/ca.pem"
 
 cat > "$dev/ssh_config" <<CONF

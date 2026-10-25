@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/tinfoilsh/monitor/connector/credential"
+	"github.com/tinfoilsh/monitor/facts"
 )
 
 // apiTransport adapts the deployed coding clients after the original request
@@ -69,13 +70,8 @@ func requestObject(r *http.Request) (object, error) {
 	if len(raw) > limit {
 		return nil, errors.New("inference request exceeds 8 MiB")
 	}
-	decoder := json.NewDecoder(bytes.NewReader(raw))
-	decoder.UseNumber()
 	var body object
-	if err := decoder.Decode(&body); err != nil {
-		return nil, errors.New("invalid inference JSON")
-	}
-	if decoder.Decode(new(any)) != io.EOF {
+	if facts.DecodeNumbers(raw, &body) != nil {
 		return nil, errors.New("invalid inference JSON")
 	}
 	return body, nil

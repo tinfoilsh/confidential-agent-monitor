@@ -10,9 +10,10 @@ import {
   lazy,
   onCleanup,
   onMount,
+  type JSX,
 } from "solid-js";
 import * as owner from "./owner.js";
-import { MonitorProvider, useMonitor } from "./monitor";
+import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
 import { Activity, RequestDetail } from "./Activity";
 import { Agents, AddAgent } from "./Agents";
 import { AddConnection, Connections, DeviceSignInDialog } from "./Connections";
@@ -20,7 +21,8 @@ import {
   ConnectorIcon,
   Empty,
   Icon,
-  createDialogMotion,
+  Modal,
+  ShellSplit,
   href,
 } from "./components";
 
@@ -60,7 +62,7 @@ const parse = (path: string) => {
 };
 const isDialog = (path: string) => ["pair", "add"].includes(parse(path)[0]);
 
-export default function App() {
+export default function App(props: MonitorOptions) {
   return (
     <ErrorBoundary
       fallback={(error) => (
@@ -71,7 +73,7 @@ export default function App() {
         </div>
       )}
     >
-      <MonitorProvider>
+      <MonitorProvider {...props}>
         <Shell />
       </MonitorProvider>
     </ErrorBoundary>
@@ -179,6 +181,7 @@ function Shell() {
       media.removeEventListener("change", changed);
     });
   });
+  const ready = () => m.view() && !m.locked() && owner.onboarded(m.view()!);
   createEffect(() => {
     document.documentElement.dataset.theme =
       theme() === "system" ? (dark() ? "dark" : "light") : theme();
@@ -186,79 +189,107 @@ function Shell() {
   });
   return (
     <>
-      <Show
-        when={m.view() && !m.locked() && owner.onboarded(m.view()!)}
-        fallback={<Gate />}
-      >
-        <div id="app" classList={{ "navigation-open": mobile() }}>
-          <aside id="navigation" aria-label="Monitor navigation">
-            <a class="brand" href="#activity">
-              <img src="/app/icons/tinfoil-white.svg" alt="Tinfoil" />
-              <span>Monitor</span>
-            </a>
-            <button
-              class="mobile-toggle"
-              aria-label="Toggle navigation"
-              aria-controls="tree"
-              aria-expanded={mobile()}
-              onClick={() => setMobile(!mobile())}
+      <Show when={ready() || m.options.navigation} fallback={<Gate />}>
+        <ShellSplit
+          shell={
+            m.shell()
+              ? { name: m.shell()!, message: "", client: m.api() }
+              : undefined
+          }
+          onClose={() => m.setShell()}
+        >
+          <div id="app" classList={{ "navigation-open": mobile() }}>
+            <aside id="navigation" aria-label="Monitor navigation">
+              <a class="brand" href="#activity">
+                <img
+                  src={import.meta.env.BASE_URL + "icons/tinfoil-white.svg"}
+                  alt="Tinfoil"
+                />
+                <span>{m.options.brand ?? "Monitor"}</span>
+              </a>
+              <button
+                class="mobile-toggle"
+                aria-label="Toggle navigation"
+                aria-controls="tree"
+                aria-expanded={mobile()}
+                onClick={() => setMobile(!mobile())}
+              >
+                Menu
+              </button>
+              <nav id="tree" aria-label="Management">
+                {m.options.navigation?.()}
+                <Show when={ready()}>
+                  <For each={["agents", "activity", "connections", "settings"]}>
+                    {(key) => <NavItem key={key} />}
+                  </For>
+                </Show>
+              </nav>
+            </aside>
+            <Show
+              when={ready()}
+              fallback={
+                <main id="workspace" tabIndex={-1}>
+                  <Gate />
+                </main>
+              }
             >
-              Menu
-            </button>
-            <nav id="tree" aria-label="Management">
-              <For each={["agents", "activity", "connections", "settings"]}>
-                {(key) => <NavItem key={key} />}
-              </For>
-            </nav>
-          </aside>
-          <main id="workspace" tabIndex={-1}>
-            <header id="page-header">
-              <div class="page-heading">
-                <div>
-                  <h1>{title()}</h1>
-                  <p>
-                    {
-                      sections[
-                        ["agent", "agent-settings"].includes(kind())
-                          ? "agents"
-                          : kind() === "rules"
-                            ? "activity"
-                            : [
-                                  "account",
-                                  "accounts",
-                                  "connection",
-                                  "catalog",
-                                  "presets",
-                                ].includes(kind())
-                              ? "connections"
-                              : kind()
-                      ]?.[1]
-                    }
-                  </p>
+              <main id="workspace" tabIndex={-1}>
+                <header id="page-header">
+                  <div class="page-heading">
+                    <div>
+                      <h1>{title()}</h1>
+                      <p>
+                        {
+                          sections[
+                            ["agent", "agent-settings"].includes(kind())
+                              ? "agents"
+                              : kind() === "rules"
+                                ? "activity"
+                                : [
+                                      "account",
+                                      "accounts",
+                                      "connection",
+                                      "catalog",
+                                      "presets",
+                                    ].includes(kind())
+                                  ? "connections"
+                                  : kind()
+                          ]?.[1]
+                        }
+                      </p>
+                    </div>
+                    <div class="header-actions">
+                      <button
+                        aria-label="Refresh monitor"
+                        aria-busy={m.loading()}
+                        onClick={() => void m.refresh()}
+                      >
+                        <Icon name="refresh" />
+                        Refresh
+                      </button>
+                    </div>
+                  </div>
+                </header>
+                <div id="page-content">
+                  <Show when={kind() === "agents"}>
+                    {m.options.context?.()}
+                  </Show>
+                  <Show when={page()} keyed>
+                    {(path) => (
+                      <Page
+                        path={path}
+                        theme={theme()}
+                        onThemeChange={setTheme}
+                      />
+                    )}
+                  </Show>
                 </div>
-                <div class="header-actions">
-                  <button
-                    aria-label="Refresh monitor"
-                    aria-busy={m.loading()}
-                    onClick={() => void m.refresh()}
-                  >
-                    <Icon name="refresh" />
-                    Refresh
-                  </button>
-                </div>
-              </div>
-            </header>
-            <div id="page-content">
-              <Show when={page()} keyed>
-                {(path) => (
-                  <Page path={path} theme={theme()} onThemeChange={setTheme} />
-                )}
-              </Show>
-            </div>
-          </main>
-        </div>
-        <CreationDialog path={dialogRoute()} close={close} />
-        <DeviceSignInDialog attempt={m.deviceSignIn()} />
+              </main>
+              <CreationDialog path={dialogRoute()} close={close} />
+              <DeviceSignInDialog attempt={m.deviceSignIn()} />
+            </Show>
+          </div>
+        </ShellSplit>
       </Show>
       <Show when={m.message() && !dialogRoute()}>
         <div id="toast" role="status">
@@ -330,37 +361,17 @@ function Page(props: {
 }
 function CreationDialog(props: { path: string; close: () => void }) {
   const m = useMonitor();
-  let dialog!: HTMLDialogElement;
   // Keep the contents mounted through the native dialog's exit transition.
   const path = createMemo((previous: string) => props.path || previous, "");
   const kind = () => parse(path())[0],
     preset = () => parse(path())[1] ?? "";
-  createDialogMotion(
-    () => dialog,
-    () => !!props.path,
-  );
   return (
-    <dialog
-      ref={dialog}
+    <Modal
       id="creation-dialog"
       aria-labelledby="creation-title"
       aria-describedby={kind() === "pair" ? "creation-description" : undefined}
-      onCancel={(e) => {
-        e.preventDefault();
-        props.close();
-      }}
-      onClick={(e) => {
-        if (e.target === dialog) {
-          const r = dialog.getBoundingClientRect();
-          if (
-            e.clientX < r.left ||
-            e.clientX > r.right ||
-            e.clientY < r.top ||
-            e.clientY > r.bottom
-          )
-            props.close();
-        }
-      }}
+      open={!!props.path}
+      onClose={props.close}
     >
       <header class="dialog-header">
         <Show when={kind() === "add"}>
@@ -416,35 +427,24 @@ function CreationDialog(props: { path: string; close: () => void }) {
           {m.message("#" + path())}
         </p>
       </Show>
-    </dialog>
+    </Modal>
   );
 }
 function Gate() {
   const m = useMonitor(),
     // Local dev (bun run dev) only: a prefilled passphrase so the dev
     // server unlocks with one click. Stripped from production builds.
-    [key, setKey] = createSignal(import.meta.env.DEV ? "testtesttesttest" : ""),
-    [step, setStep] = createSignal<"policy" | "tinfoil">("policy"),
-    [tinfoilKey, setTinfoilKey] = createSignal("");
-  let heading!: HTMLHeadingElement, tinfoilInput!: HTMLInputElement;
-  const goToStep = (next: "policy" | "tinfoil") => {
-    setStep(next);
-    (next === "tinfoil" ? tinfoilInput : heading).focus();
-  };
-  const finish = async (tinfoilApiKey?: string) => {
-    if (m.busy()) return;
-    if (
-      await m.perform(
-        (client) =>
-          client.onboard(m.view()!, "known_only", undefined, {
-            allowPaidInference: true,
-            tinfoilApiKey,
-          }),
-        "Monitor set up",
-      )
-    )
-      setTinfoilKey("");
-  };
+    [key, setKey] = createSignal(import.meta.env.DEV ? "testtesttesttest" : "");
+  const finish = (tinfoilApiKey?: string) =>
+    m.busy() ||
+    m.perform(
+      (client) =>
+        client.onboard(m.view()!, "known_only", undefined, {
+          allowPaidInference: true,
+          tinfoilApiKey,
+        }),
+      "Monitor set up",
+    );
   return (
     <div id="gate">
       <Switch
@@ -454,6 +454,9 @@ function Gate() {
             <Show when={m.error()}>
               <p role="alert">{m.error()}</p>
               <button onClick={() => location.reload()}>Reload</button>
+              <Show when={m.options.onLock}>
+                <button onClick={() => m.options.onLock!()}>Lock</button>
+              </Show>
             </Show>
           </>
         }
@@ -503,100 +506,123 @@ function Gate() {
           </Show>
         </Match>
         <Match when={m.view() && !owner.onboarded(m.view()!)}>
-          <form
-            class="onboarding"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (step() === "policy") goToStep("tinfoil");
-              else void finish(tinfoilKey());
-            }}
-          >
-            <header class="onboarding-heading">
-              <ConnectorIcon preset="tinfoil" />
-              <h1 ref={heading} tabIndex={-1}>
-                {step() === "policy"
-                  ? "Set up your monitor"
-                  : "Connect Tinfoil"}
-              </h1>
-              <Show when={step() === "tinfoil"}>
-                <p>Use Tinfoil for private AI inference and web search.</p>
-              </Show>
-            </header>
-            <Switch>
-              <Match when={step() === "policy"}>
-                <section class="onboarding-section">
-                  <h2>Networking</h2>
-                  <p>
-                    Networking is off by default. Nothing in a sandbox can reach
-                    anything until you add a <code>connection</code>.
-                  </p>
-                </section>
-                <button class="primary" disabled={m.busy()}>
-                  Continue
-                  <Icon name="arrow" />
-                </button>
-              </Match>
-              <Match when={step() === "tinfoil"}>
-                <fieldset class="onboarding-key" disabled={m.busy()}>
-                  <div class="onboarding-key-label">
-                    <label for="tinfoil-api-key">API key</label>
-                    <a
-                      href="https://dash.tinfoil.sh/?tab=api-keys"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Get an API key
-                      <Icon name="external" />
-                    </a>
-                  </div>
-                  <input
-                    ref={tinfoilInput}
-                    id="tinfoil-api-key"
-                    type="password"
-                    required
-                    autofocus
-                    pattern={".*\\S.*"}
-                    title="Enter your Tinfoil API key"
-                    placeholder="Paste your Tinfoil API key"
-                    autocomplete="off"
-                    spellcheck={false}
-                    aria-describedby="tinfoil-key-help"
-                    value={tinfoilKey()}
-                    onInput={(e) => setTinfoilKey(e.currentTarget.value)}
-                  />
-                  <p id="tinfoil-key-help" class="onboarding-key-help">
-                    <Icon name="rules" />
-                    Your key stays in Monitor, hidden from your sandboxes.
-                  </p>
-                </fieldset>
-                <button class="primary" disabled={m.busy()}>
-                  {m.busy() ? "Saving…" : "Connect Tinfoil"}
-                  <Icon name="arrow" />
-                </button>
-                <div class="onboarding-actions">
-                  <button
-                    type="button"
-                    class="link onboarding-back"
-                    disabled={m.busy()}
-                    onClick={() => goToStep("policy")}
-                  >
-                    <Icon name="arrow" />
-                    Back
-                  </button>
-                  <button
-                    type="button"
-                    class="link"
-                    disabled={m.busy()}
-                    onClick={() => void finish()}
-                  >
-                    Skip for now
-                  </button>
-                </div>
-              </Match>
-            </Switch>
-          </form>
+          <Onboarding busy={m.busy()} onFinish={finish} />
         </Match>
       </Switch>
     </div>
+  );
+}
+export function Onboarding(props: {
+  busy: boolean;
+  onFinish(tinfoilApiKey?: string): void;
+  children?: JSX.Element;
+}) {
+  const [step, setStep] = createSignal<"policy" | "tinfoil">("policy"),
+    [tinfoilKey, setTinfoilKey] = createSignal("");
+  let heading!: HTMLHeadingElement, tinfoilInput!: HTMLInputElement;
+  const goToStep = (next: "policy" | "tinfoil") => {
+    setStep(next);
+    (next === "tinfoil" ? tinfoilInput : heading).focus();
+  };
+  return (
+    <form
+      class="onboarding"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (step() === "policy") goToStep("tinfoil");
+        else props.onFinish(tinfoilKey());
+      }}
+    >
+      <header class="onboarding-heading">
+        <Show when={step() === "tinfoil"} fallback={<Icon name="eye" />}>
+          <span class="connector-icon" aria-hidden="true">
+            <img
+              class="dark-icon"
+              src={import.meta.env.BASE_URL + "icons/tinfoil.dark.svg"}
+              alt=""
+            />
+            <img
+              class="light-icon"
+              src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
+              alt=""
+            />
+          </span>
+        </Show>
+        <h1 ref={heading} tabIndex={-1}>
+          {step() === "policy" ? "Create monitor" : "Connect Tinfoil"}
+        </h1>
+        <p>
+          {step() === "policy"
+            ? "A monitor is how your sandbox communicates with the outside world. It can hold credentials and set policies on what a sandbox can do."
+            : "Use Tinfoil for private AI inference and web search."}
+        </p>
+      </header>
+      <Switch>
+        <Match when={step() === "policy"}>
+          {props.children}
+          <button class="primary" disabled={props.busy}>
+            Continue
+            <Icon name="arrow" />
+          </button>
+        </Match>
+        <Match when={step() === "tinfoil"}>
+          <fieldset class="onboarding-key" disabled={props.busy}>
+            <div class="onboarding-key-label">
+              <label for="tinfoil-api-key">API key</label>
+              <a
+                href="https://dash.tinfoil.sh/?tab=api-keys"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Get an API key
+                <Icon name="external" />
+              </a>
+            </div>
+            <input
+              ref={tinfoilInput}
+              id="tinfoil-api-key"
+              type="password"
+              required
+              autofocus
+              pattern={".*\\S.*"}
+              title="Enter your Tinfoil API key"
+              placeholder="Paste your Tinfoil API key"
+              autocomplete="off"
+              spellcheck={false}
+              aria-describedby="tinfoil-key-help"
+              value={tinfoilKey()}
+              onInput={(e) => setTinfoilKey(e.currentTarget.value)}
+            />
+            <p id="tinfoil-key-help" class="onboarding-key-help">
+              <Icon name="rules" />
+              Your key stays in Monitor, hidden from your sandboxes.
+            </p>
+          </fieldset>
+          <button class="primary" disabled={props.busy}>
+            {props.busy ? "Saving…" : "Connect Tinfoil"}
+            <Icon name="arrow" />
+          </button>
+          <div class="onboarding-actions">
+            <button
+              type="button"
+              class="link onboarding-back"
+              disabled={props.busy}
+              onClick={() => goToStep("policy")}
+            >
+              <Icon name="arrow" />
+              Back
+            </button>
+            <button
+              type="button"
+              class="link"
+              disabled={props.busy}
+              onClick={() => props.onFinish()}
+            >
+              Skip for now
+            </button>
+          </div>
+        </Match>
+      </Switch>
+    </form>
   );
 }

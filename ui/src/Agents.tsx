@@ -1,4 +1,5 @@
 import { For, Show, createMemo, createSignal, createUniqueId } from "solid-js";
+import type { JSX } from "solid-js";
 import * as owner from "./owner.js";
 import {
   ConnectorIcon,
@@ -35,7 +36,11 @@ export function Agents(props: { expanded?: string }) {
         }),
     );
   });
-  const names = createMemo(() => [...summaries().keys()]);
+  const names = createMemo(() =>
+    [
+      ...new Set([...summaries().keys(), ...(m.options.sandboxes?.() ?? [])]),
+    ].sort(),
+  );
   return (
     <>
       <For
@@ -61,16 +66,9 @@ export function Agents(props: { expanded?: string }) {
                   <Show
                     when={kind === "devices"}
                     fallback={
-                      <a
-                        class="button"
-                        href="https://dash.tinfoil.sh/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Icon name="plus" />
-                        Add sandbox
+                      <AddSandbox class="button">
                         <Icon name="external" />
-                      </a>
+                      </AddSandbox>
                     }
                   >
                     <a class="button" href="#pair">
@@ -91,13 +89,36 @@ export function Agents(props: { expanded?: string }) {
                             {name}
                           </strong>
                           <span class="collection-description">
-                            {summaries().get(name)!.description}
+                            {summaries().get(name)?.description ??
+                              "Not set up yet"}
                           </span>
                           <Show when={kind !== "devices"}>
                             <span class="resource-meta">
-                              {owner.labelStatus(
-                                m.view()!,
-                                m.view()!.labels[name],
+                              <Show when={summaries().has(name)}>
+                                {owner.labelStatus(
+                                  m.view()!,
+                                  m.view()!.labels[name],
+                                )}
+                              </Show>
+                              {m.options.sandboxStatus?.(name) ?? (
+                                <Show when={summaries().has(name)}>
+                                  <button
+                                    type="button"
+                                    class="icon-button open-shell"
+                                    aria-label="Open shell"
+                                    disabled={
+                                      !m.view()!.config.allow_sandbox_ssh
+                                    }
+                                    title={
+                                      m.view()!.config.allow_sandbox_ssh
+                                        ? "Open shell"
+                                        : "Enable browser terminals in Settings"
+                                    }
+                                    onClick={() => m.setShell(name)}
+                                  >
+                                    <Icon name="integrations" />
+                                  </button>
+                                </Show>
                               )}
                             </span>
                           </Show>
@@ -110,9 +131,14 @@ export function Agents(props: { expanded?: string }) {
                       {() => (
                         <div class="agent-inline">
                           <Show when={kind !== "devices"}>
-                            <AgentAccess name={name} />
+                            {m.options.sandboxActions?.(name)}
                           </Show>
-                          <AgentSettings name={name} />
+                          <Show when={summaries().has(name)}>
+                            <Show when={kind !== "devices"}>
+                              <AgentAccess name={name} />
+                            </Show>
+                            <AgentSettings name={name} />
+                          </Show>
                         </div>
                       )}
                     </ResourceDisclosure>
@@ -126,31 +152,50 @@ export function Agents(props: { expanded?: string }) {
       <Show when={!names().length}>
         <div class="resource-list">
           <Empty
-            title="No sandboxes yet"
-            action={
-              <>
-                <a
-                  class="button primary"
-                  href="https://dash.tinfoil.sh/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Icon name="plus" />
-                  Add sandbox
-                </a>
-                <a class="button" href="#pair">
-                  <Icon name="plus" />
-                  Add trusted device
-                </a>
-              </>
-            }
+            icon="sandboxes"
+            title="Create your first sandbox"
+            action={<AddSandbox class="button primary" />}
           >
-            Sandboxes show up here once enrolled. If yours is missing, run{" "}
-            <code>tinfoil attest-ssh &lt;sandbox-name&gt;</code>.
+            A sandbox runs your agent in an isolated environment. This monitor
+            guards what it can reach and holds its credentials.
+            <Show when={!m.options.onAddSandbox}>
+              {" "}
+              If yours is missing, run{" "}
+              <code>tinfoil attest-ssh &lt;sandbox-name&gt;</code>.
+            </Show>
           </Empty>
         </div>
       </Show>
     </>
+  );
+}
+function AddSandbox(props: { class: string; children?: JSX.Element }) {
+  const m = useMonitor();
+  return (
+    <Show
+      when={m.options.onAddSandbox}
+      fallback={
+        <a
+          class={props.class}
+          href="https://dash.tinfoil.sh/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icon name="plus" />
+          Create sandbox
+          {props.children}
+        </a>
+      }
+    >
+      <button
+        type="button"
+        class={props.class}
+        onClick={() => m.options.onAddSandbox!()}
+      >
+        <Icon name="plus" />
+        Create sandbox
+      </button>
+    </Show>
   );
 }
 // Adds a TRUSTED DEVICE: your own key, allowed to reach sandboxes through

@@ -131,46 +131,23 @@ func (v *Value) Value(ctx context.Context) (string, error) {
 	return t.AccessToken, nil
 }
 
-// Replace serializes owner changes with provider refresh. The persisted compare
-// prevents a completed sign-in from overwriting a newer credential.
-func (v *Value) Replace(ctx context.Context, before, after json.RawMessage) error {
-	var next Value
-	if err := json.Unmarshal(after, &next); err != nil {
-		return err
-	}
-	if err := v.lock(ctx); err != nil {
-		return err
-	}
-	defer func() { <-v.gate }()
-	if err := v.Save(ctx, before, after); err != nil {
-		return err
-	}
-	v.raw, v.text, v.grant, v.token = next.raw, next.text, next.grant, next.token
-	return nil
-}
-
-// Describe returns only the status needed by the owner editor.
-func Describe(raw json.RawMessage) string {
+// Describe returns only the status needed by the owner editor and the verified
+// OIDC account, without exposing tokens.
+func Describe(raw json.RawMessage) (kind, account string) {
 	var v Value
 	if json.Unmarshal(raw, &v) != nil || bytes.Equal(raw, []byte("null")) {
-		return "unset"
+		return "unset", ""
 	}
 	if v.grant == nil {
-		return "static"
+		return "static", ""
+	}
+	if v.grant.OIDC != nil {
+		account = v.grant.OIDC.Email
 	}
 	if v.grant.RefreshToken != "" || v.token.Valid() {
-		return "oauth"
+		return "oauth", account
 	}
-	return "oauth-required"
-}
-
-// AccountLabel identifies the verified OIDC account without exposing tokens.
-func AccountLabel(raw json.RawMessage) string {
-	var v Value
-	if json.Unmarshal(raw, &v) == nil && v.grant != nil && v.grant.OIDC != nil {
-		return v.grant.OIDC.Email
-	}
-	return ""
+	return "oauth-required", account
 }
 
 // scrub keeps provider responses and request URLs out of errors, since either may hold a secret.

@@ -100,14 +100,14 @@ def main():
                     upstream=capture("git", "rev-parse", "origin/main"),
                     status=capture("git", "status", "--porcelain=v1", "--untracked-files=all"),
                     diff_sha256=hashlib.sha256(subprocess.check_output(["git", "diff", "HEAD"], cwd=ROOT)).hexdigest(),
-                    harness_sha256=hashlib.sha256((ROOT / "performance_test.go").read_bytes()).hexdigest(),
+                    harness_sha256=hashlib.sha256((ROOT / "internal/monitor/performance_test.go").read_bytes()).hexdigest(),
                     platform=platform.platform(), cpu_count=os.cpu_count(), memory_limit=args.memory,
                     affinity=affinity,
                     bubblewrap=capture("bwrap", "--version") if "worker" in modes else None,
                     command=sys.argv)
     (out / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
     subprocess.run(["go", "build", "-mod=readonly", "-o", str(out / "monitor"), "."], cwd=ROOT, env=env, check=True)
-    subprocess.run(["go", "test", "-mod=readonly", "-c", "-tags", "performance", "-o", str(out / "harness"), "."],
+    subprocess.run(["go", "test", "-mod=readonly", "-c", "-tags", "performance", "-o", str(out / "harness"), "./internal/monitor"],
                    cwd=ROOT, env=env, check=True)
     cmd = [str(out / "harness"), "-test.v", "-test.run", args.scenario, "-test.timeout", "20m",
            "-test.cpuprofile", str(out / "cpu.pprof"), "-test.memprofile", str(out / "heap.pprof"),

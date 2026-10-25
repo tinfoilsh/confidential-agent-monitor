@@ -14,17 +14,15 @@ import (
 
 var Definition = connector.Definition{NewConfig: func() connector.Server { return new(TCP) }, Requests: []connector.Request{new(TCPRequest)}}
 
+var _ connector.Claimer = (*TCP)(nil)
+
 const maxPort = 65535
 
 type TCP struct {
 	Hosts []string `json:"hosts"`
 }
 
-func (c *TCP) UnmarshalJSON(raw []byte) error {
-	type plain TCP
-	if err := facts.DecodeNumbers(raw, (*plain)(c)); err != nil {
-		return err
-	}
+func (c *TCP) Prepare() error {
 	if len(c.Hosts) == 0 {
 		return errors.New("TCP needs at least one host pattern")
 	}

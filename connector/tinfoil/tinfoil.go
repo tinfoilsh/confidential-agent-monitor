@@ -3,7 +3,6 @@ package tinfoil
 
 import (
 	"context"
-	"errors"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -11,10 +10,15 @@ import (
 
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/web"
-	"github.com/tinfoilsh/monitor/facts"
 )
 
 var Definition = connector.Definition{PerMessage: true, NewConfig: func() connector.Server { return new(Server) }, Requests: []connector.Request{new(web.Request), new(web.WebSocketReceive)}}
+
+var _ interface {
+	connector.Claimer
+	connector.Controller
+	web.HTTPProvider
+} = (*Server)(nil)
 
 type Server struct {
 	connector.SecretConfig
@@ -24,11 +28,7 @@ type Server struct {
 	transport http.RoundTripper
 }
 
-func (s *Server) UnmarshalJSON(raw []byte) error {
-	type plain Server
-	if err := facts.DecodeNumbers(raw, (*plain)(s)); err != nil {
-		return err
-	}
+func (s *Server) Prepare() error {
 	if err := validateEnclave(s.Enclave, s.Repo); err != nil {
 		return err
 	}
@@ -44,13 +44,9 @@ func (s *Server) HTTPConfig() *web.HTTP              { return s.http }
 func (s *Server) Claim(host string, port uint32) int { return s.http.Claim(host, port) }
 
 func (s *Server) Run(ctx context.Context, e *connector.Env, serve func(context.Context)) error {
-	key := s.Secrets["TINFOIL_API_KEY"]
-	if key == nil || key.Raw() == nil {
-		return errors.New("Tinfoil API key is not configured")
-	}
 	base := e.Transport()
 	defer base.CloseIdleConnections()
-	t, err := newAttestedTransport(ctx, s.Enclave, s.Repo, base)
+	t, err := newAttestedTransport(ctx, s.Secrets["TINFOIL_API_KEY"], s.Enclave, s.Repo, base)
 	if err != nil {
 		return err
 	}

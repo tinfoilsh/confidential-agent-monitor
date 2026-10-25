@@ -4,12 +4,13 @@
 /.env
 /ui/node_modules/
 /ui/dist/
+/ui/dist-vercel/
+/ui/dist-static/
+/ui/.env*.local
 /docs/
 
 *.test
 *test\.*
-!connector/tinfoil/tinfoil_test.go
-!connector/tinfoil/mcp_test.go
 test_*.py
 testdata/
 __pycache__/

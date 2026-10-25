@@ -27,6 +27,10 @@ import (
 
 var Definition = connector.Definition{PerMessage: true, NewConfig: func() connector.Server { return new(HTTP) }, Requests: []connector.Request{new(Request), new(WebSocketReceive)}}
 
+var _ connector.Claimer = (*HTTP)(nil)
+
+type HTTPProvider interface{ HTTPConfig() *HTTP }
+
 const (
 	httpsPort    = 443
 	httpPort     = 80
@@ -51,11 +55,7 @@ type HTTP struct {
 
 func (h *HTTP) HTTPConfig() *HTTP { return h }
 
-func (h *HTTP) UnmarshalJSON(raw []byte) error {
-	type plain HTTP
-	if err := facts.DecodeNumbers(raw, (*plain)(h)); err != nil {
-		return err
-	}
+func (h *HTTP) Prepare() error {
 	return h.Validate(false)
 }
 

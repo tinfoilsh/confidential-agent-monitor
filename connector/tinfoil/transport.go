@@ -13,9 +13,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/connector/web"
-	"github.com/tinfoilsh/tinfoil-go/verifier"
-	"github.com/tinfoilsh/tinfoil-go/verifier/document"
+	"github.com/tinfoilsh/tinfoil-go/verify"
+	"github.com/tinfoilsh/tinfoil-go/verify/document"
 )
 
 var errTinfoilKey = errors.New("Tinfoil TLS key differs from its attestation")
@@ -27,7 +28,7 @@ type attestedTransport struct {
 	enclave string
 	repo    string
 	base    *http.Transport
-	verify  func([]byte, []byte, string) (*verifier.Verification, error)
+	verify  func([]byte, []byte, string) (*verify.Verification, error)
 	gate    chan struct{}
 	bound   *http.Transport
 	expires time.Time
@@ -39,17 +40,20 @@ func validateEnclave(enclave, repo string) error {
 	if err != nil || !web.ValidOrigin("https://"+enclave) || u.Host != enclave || u.Port() != "" || strings.Trim(enclave, "abcdefghijklmnopqrstuvwxyz0123456789.-") != "" {
 		return errors.New("Tinfoil enclave must be a lowercase HTTPS hostname without a port")
 	}
-	_, _, _, err = verifier.ParseReference(repo)
+	_, _, _, err = verify.ParseReference(repo)
 	return err
 }
 
 // newAttestedTransport verifies the enclave before callers can send credentials or MCP discovery.
 // Inference and MCP share the same attestation, renewal, and TLS key binding.
-func newAttestedTransport(ctx context.Context, enclave, repo string, base *http.Transport) (*attestedTransport, error) {
+func newAttestedTransport(ctx context.Context, key *credential.Value, enclave, repo string, base *http.Transport) (*attestedTransport, error) {
+	if key == nil || key.Raw() == nil {
+		return nil, errors.New("Tinfoil API key is not configured")
+	}
 	if err := validateEnclave(enclave, repo); err != nil {
 		return nil, err
 	}
-	v, err := verifier.New()
+	v, err := verify.NewVerifier()
 	if err != nil {
 		return nil, err
 	}
@@ -108,12 +112,9 @@ func (t *attestedTransport) current(ctx context.Context, rejected *http.Transpor
 	if err != nil {
 		return nil, fmt.Errorf("verify Tinfoil attestation: %w", err)
 	}
-	pin, err := verified.TLSPublicKeyFP()
-	if err != nil {
-		return nil, err
-	}
+	pin, ok := verified.TLSPublicKeyFP()
 	decoded, err := hex.DecodeString(pin)
-	if err != nil || len(decoded) != sha256.Size {
+	if !ok || err != nil || len(decoded) != sha256.Size {
 		return nil, errors.New("invalid attested Tinfoil TLS key")
 	}
 	if !time.Now().Before(verified.FreshnessExpiresAt) {

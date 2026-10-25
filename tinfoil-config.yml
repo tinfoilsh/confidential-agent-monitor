@@ -10,6 +10,10 @@ shim:
   authenticated: false
   paths:
     - /healthz
+    # Owner calls arrive EHBP-sealed and signed by the measured owner key.
+    - /owner/rpc
+  origins:
+    - https://console.tinfoil.sh
 
 networks:
   upstream:

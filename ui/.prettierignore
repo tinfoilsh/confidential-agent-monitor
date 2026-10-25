@@ -1,4 +1,6 @@
 dist/
+dist-vercel/
+dist-static/
 public/
 src/dashboard-icons.js
 bun.lock

@@ -25,8 +25,8 @@ var imapLiteral = regexp.MustCompile(`\{(\d+)(\+?)\}$`)
 
 type IMAP struct{ connector.Endpoint }
 
-func (r *IMAP) UnmarshalJSON(raw []byte) error {
-	if err := r.Endpoint.UnmarshalJSON(raw); err != nil {
+func (r *IMAP) Prepare() error {
+	if err := r.Endpoint.Prepare(); err != nil {
 		return err
 	}
 	if r.URL.Scheme != "imaps" {
