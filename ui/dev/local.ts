@@ -57,9 +57,7 @@ const subject = (req: IncomingMessage) =>
     ).toString() || "{}",
   ).sub as string | undefined;
 
-// With `fakeSandboxes`, sandbox rows only change status: nothing boots, so the
-// console can be laid out without Podman. Enrolling and shells fail on them.
-export default function local({ fakeSandboxes = false } = {}): Plugin {
+export default function local(): Plugin {
   const rows = new Map<string, Row>(
     existsSync(saved)
       ? (JSON.parse(readFileSync(saved, "utf8")) as Row[]).map((row) => [
@@ -134,7 +132,6 @@ export default function local({ fakeSandboxes = false } = {}): Plugin {
     const monitor = rows.get(row.network_policy?.egress[0]?.container_id ?? "");
     if (monitor?.status !== "running")
       throw new Error("Start its Monitor first.");
-    if (fakeSandboxes) return;
     await run(
       join(root, "dev/cvm"),
       [
@@ -162,8 +159,7 @@ export default function local({ fakeSandboxes = false } = {}): Plugin {
 
   const stop = async (row: Row) => {
     if (row.ports) monitors.get(row.id)?.kill();
-    else if (fakeSandboxes) {
-    } else await run("podman", ["rm", "-f", "--ignore", `console-${row.id}`]);
+    else await run("podman", ["rm", "-f", "--ignore", `console-${row.id}`]);
     row.status = "stopped";
   };
 

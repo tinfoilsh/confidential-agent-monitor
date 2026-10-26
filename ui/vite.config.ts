@@ -23,9 +23,7 @@ export default defineConfig(({ command, mode }) => ({
     solid(),
     mode === "hosted" &&
       sri({ importMapIntegrity: false, runtimePatchDynamicLinks: false }),
-    command === "serve" &&
-      !!loadEnv(mode, ".").VITE_LOCAL_MONITORS &&
-      local({ fakeSandboxes: !!loadEnv(mode, ".").VITE_DEV_ACCOUNT }),
+    command === "serve" && !!loadEnv(mode, ".").VITE_LOCAL_MONITORS && local(),
   ],
   // The hosted console routes on the path (/<monitor>), so unknown paths serve its page.
   appType: mode === "hosted" ? "spa" : "mpa",
