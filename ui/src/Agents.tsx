@@ -2,13 +2,12 @@ import { For, Show, createMemo, createSignal, createUniqueId } from "solid-js";
 import type { JSX } from "solid-js";
 import * as owner from "./owner.js";
 import {
+  Copy,
   ConnectorIcon,
   Empty,
   DisclosureHeading,
-  SectionHeading,
   Icon,
   LazyDetails,
-  Permission,
   ResourceDisclosure,
   href,
 } from "./components";
@@ -20,7 +19,8 @@ export function Agents(props: { expanded?: string }) {
   // contains and what you configure; TRUSTED DEVICES are your own keys
   // (enrolled by `tinfoil attest-ssh`) that may reach sandboxes through
   // the Monitor. Anything that is neither is listed with the sandboxes.
-  const type = (name: string) => (owner.isDevice(name) ? "devices" : "sandboxes");
+  const type = (name: string) =>
+    owner.isDevice(name) ? "devices" : "sandboxes";
   const summaries = createMemo(() => {
     const view = m.view()!;
     return new Map(
@@ -46,7 +46,7 @@ export function Agents(props: { expanded?: string }) {
       <For
         each={[
           ["sandboxes", "Sandboxes", ""],
-          ["devices", "Trusted devices", "Your own keys. They can SSH into sandboxes through the Monitor; nothing else applies to them."],
+          ["devices", "Trusted devices", ""],
         ]}
       >
         {([kind, title, blurb]) => {
@@ -94,12 +94,6 @@ export function Agents(props: { expanded?: string }) {
                           </span>
                           <Show when={kind !== "devices"}>
                             <span class="resource-meta">
-                              <Show when={summaries().has(name)}>
-                                {owner.labelStatus(
-                                  m.view()!,
-                                  m.view()!.labels[name],
-                                )}
-                              </Show>
                               {m.options.sandboxStatus?.(name) ?? (
                                 <Show
                                   when={
@@ -204,14 +198,20 @@ export function AddAgent() {
   const submit = async (event: SubmitEvent) => {
     event.preventDefault();
     try {
-      const pub = key().trim();
-      if (!/^(ssh-|ecdsa-)/.test(pub)) throw new Error("Paste an SSH public key.");
+      // Same name the CLI derives: SHA-256 of "<type> <base64>", comment
+      // dropped, so a key added here and one enrolled by attest-ssh agree.
+      const [type, blob] = key().trim().split(/\s+/);
+      if (!/^(ssh-|ecdsa-)/.test(type ?? "") || !blob)
+        throw new Error("Paste an SSH public key.");
+      const pub = `${type} ${blob}`;
       const digest = new Uint8Array(
         await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pub)),
       );
       const name =
         "device-" +
-        [...digest.slice(0, 8)].map((b) => b.toString(16).padStart(2, "0")).join("");
+        [...digest.slice(0, 8)]
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
       if (m.view()!.config.identities?.[name])
         throw new Error("This key is already a trusted device.");
       await m.edit(owner.edits.pairDevice(name, pub), href("agents", name));
@@ -240,67 +240,145 @@ export function AddAgent() {
     </form>
   );
 }
+// Action rows show the action setting and nothing else: the sandbox-level
+// access is the default for anything unset, and the Payments switches act
+// under the hood without appearing here. A group (Inference, Use…) sets all
+// of its children when clicked; a child sets only itself, and a group whose
+// children disagree shows no value.
 function Actions(props: {
   name: string;
   account: string;
   nodes: owner.AccessNode[];
+  level: string;
+  actions: Record<string, owner.Mode | undefined>;
+  readOnly?: boolean;
+  nested?: boolean;
 }) {
   const m = useMonitor();
-  const nodes = createMemo(
-    () => new Map(props.nodes.map((node) => [node.key, node])),
-  );
+  // Effective action mode, ignoring effects: own entry, nearest ancestor's
+  // entry, else what the sandbox-level access implies for actions.
+  const fromLevel = (): owner.Mode =>
+    props.level === "allow" || props.level === "read"
+      ? "allow"
+      : props.level === "ask"
+        ? "ask"
+        : "off";
+  const resolve = (key: string): owner.Mode => {
+    const parts = key.split(".");
+    for (let i = parts.length; i > 0; i--) {
+      const own = props.actions[parts.slice(0, i).join(".")];
+      if (own) return own;
+    }
+    return fromLevel();
+  };
+  const leaves = (node: owner.AccessNode): string[] =>
+    node.children.length ? node.children.flatMap(leaves) : [node.key];
+  // A group's value is its children's, when they agree.
+  const display = (node: owner.AccessNode): owner.Mode | null => {
+    if (!node.children.length) return resolve(node.key);
+    const values = new Set(leaves(node).map(resolve));
+    return values.size === 1 ? [...values][0] : null;
+  };
+  const descendants = (node: owner.AccessNode): string[] => [
+    node.key,
+    ...node.children.flatMap(descendants),
+  ];
+  const set = (node: owner.AccessNode, value: owner.Mode) => {
+    // Clear below, set here: children follow their group again.
+    const actions: Record<string, owner.Mode | null> = Object.fromEntries(
+      descendants(node).map((k) => [k, null]),
+    );
+    actions[node.key] = value;
+    void m.edit(
+      owner.edits.setAccess(props.name, props.account, { actions }),
+    );
+  };
+  // Keyed by action name: node objects are rebuilt on every view update,
+  // and keying by them would recreate (and close) the rows.
+  const byKey = createMemo(() => new Map(props.nodes.map((n) => [n.key, n])));
   return (
-    <For each={[...nodes().keys()]}>
+    <For each={[...byKey().keys()]}>
       {(key) => {
-        const node = () => nodes().get(key)!;
+        const node = () => byKey().get(key)!;
+        const value = () => display(node());
+        // A group with a single child is shown open, with the child's
+        // control only: there is nothing to set at the group.
+        const single = () => node().children.length === 1;
         const controls = () => (
           <>
             <span
               class="access-action-title"
               classList={{ "access-group-title": !!node().children.length }}
-              title={node().effects.join(", ")}
             >
               {node().title}
-              <Show when={node().overrides}>
-                {" "}
-                <small class="muted">{node().overrides} overrides</small>
-              </Show>
             </span>
-            <Permission
-              label={key}
-              value={node().own}
-              inherited={node().inherited}
-              onChange={(value) =>
-                void m.edit(
-                  owner.edits.setAccess(props.name, props.account, {
-                    actions: { [key]: value },
-                  }),
-                )
-              }
-            />
+            <Show when={!props.readOnly && !single()}>
+              <span
+                class="seg access-mode"
+                classList={{ small: !!props.nested, mixed: value() === null }}
+                role="group"
+                aria-label={`${node().title} permission`}
+              >
+                <For each={Object.keys(owner.MODES) as owner.Mode[]}>
+                  {(mode) => (
+                    <button
+                      type="button"
+                      classList={{ primary: value() === mode }}
+                      aria-pressed={value() === mode}
+                      title={
+                        value() === null && node().children.length
+                          ? "Children differ. Click to set them all."
+                          : owner.MODES[mode]
+                      }
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (value() !== mode) set(node(), mode);
+                      }}
+                    >
+                      {owner.MODES[mode]}
+                    </button>
+                  )}
+                </For>
+              </span>
+            </Show>
           </>
+        );
+        const children = () => (
+          <div class="access-children">
+            <Actions
+              name={props.name}
+              account={props.account}
+              nodes={node().children}
+              level={props.level}
+              actions={props.actions}
+              nested
+            />
+          </div>
         );
         return (
           <Show
             when={node().children.length}
             fallback={<div class="access-action">{controls()}</div>}
           >
-            <LazyDetails
-              class="access-action-group"
-              summaryClass="access-action"
-              label={node().title}
-              summary={controls()}
-            >
-              {() => (
-                <div class="access-children">
-                  <Actions
-                    name={props.name}
-                    account={props.account}
-                    nodes={node().children}
-                  />
+            <Show
+              when={!single()}
+              fallback={
+                <div class="access-action-group access-action-single">
+                  <div class="access-action">{controls()}</div>
+                  {children()}
                 </div>
-              )}
-            </LazyDetails>
+              }
+            >
+              <LazyDetails
+                class="access-action-group"
+                summaryClass="access-action"
+                label={node().title}
+                summary={controls()}
+              >
+                {children}
+              </LazyDetails>
+            </Show>
           </Show>
         );
       }}
@@ -318,7 +396,14 @@ export function AgentConnectionAccess(props: {
     () => owner.agentAccess(m.view()!, props.name, props.account)[0],
   );
   const [expanded, setExpanded] = createSignal(false);
-  const open = () => expanded() && entry().level !== "off";
+  // A single action is the same dial as the access level: it is named but
+  // not set separately.
+  const singleAction = () => {
+    const nodes = entry().actions;
+    return nodes.length === 1 && !nodes[0].children.length;
+  };
+  const expandable = () => entry().level !== "off";
+  const open = () => expanded() && expandable();
   const id = createUniqueId();
   // Rules: saved approvals for THIS agent on THIS connection — an action
   // plus specific parameters, narrower than the per-action settings below.
@@ -336,7 +421,7 @@ export function AgentConnectionAccess(props: {
           aria-label={`Actions for ${props.title ?? props.account}`}
           aria-expanded={open()}
           aria-controls={id}
-          disabled={entry().level === "off"}
+          disabled={!expandable()}
           onClick={() => setExpanded(!expanded())}
         >
           <Show
@@ -351,7 +436,7 @@ export function AgentConnectionAccess(props: {
           <span
             class="access-caret"
             aria-hidden="true"
-            classList={{ hidden: entry().level === "off", expanded: open() }}
+            classList={{ hidden: !expandable(), expanded: open() }}
           >
             <Icon name="arrow" />
           </span>
@@ -414,14 +499,25 @@ export function AgentConnectionAccess(props: {
             <div class="access-block">
               <h4>Actions</h4>
               <p class="muted">
-                What this sandbox may do on the connection. Each can be set on
-                its own.
+                <Show
+                  when={singleAction()}
+                  fallback="What can be done through the connection"
+                >
+                  What can be done through the connection
+                </Show>
               </p>
               <div class="access-actions">
                 <Actions
                   name={props.name}
                   account={props.account}
                   nodes={entry().actions}
+                  level={entry().level}
+                  actions={
+                    m.view()!.config.identities?.[props.name]?.accounts?.[
+                      props.account
+                    ]?.actions ?? {}
+                  }
+                  readOnly={singleAction()}
                 />
               </div>
             </div>
@@ -471,55 +567,14 @@ export function AgentConnectionAccess(props: {
 }
 function AgentAccess(props: { name: string }) {
   const m = useMonitor();
-  const label = () =>
-    m.view()!.labels[props.name] ?? {
-      trust: "trusted" as const,
-      audience: "anyone" as const,
-    };
   return (
     <div class="agent-access">
-      <div class="agent-controls">
-        <div class="labels">
-          <For
-            each={
-              [
-                ["trust", "Trust", owner.TRUSTS, "integrity"],
-                // ["audience", "Audience", owner.AUDIENCES, "confidentiality"],
-              ] as const
-            }
-          >
-            {([key, title, values, lattice]) => (
-              <Show when={owner.lattices(m.view()!)[lattice]}>
-                <label>
-                  <span>{title}</span>
-                  <select
-                    aria-label={title}
-                    value={label()[key]}
-                    onChange={(e) => {
-                      void m.label(props.name, {
-                        [key]: e.currentTarget.value as owner.Label[typeof key],
-                      });
-                    }}
-                  >
-                    <For each={Object.keys(values)}>
-                      {(value) => (
-                        <option value={value} selected={label()[key] === value}>
-                          {values[value as keyof typeof values]}
-                        </option>
-                      )}
-                    </For>
-                  </select>
-                </label>
-              </Show>
-            )}
-          </For>
-        </div>
-      </div>
       <For
         each={Object.keys(m.view()!.config.accounts ?? {})}
         fallback={
           <p>
-            No connections yet. <a href="#connections/catalog">Add connection</a>
+            No connections yet.{" "}
+            <a href="#connections/catalog">Add connection</a>
           </p>
         }
       >
@@ -549,8 +604,7 @@ function SandboxAccess(props: { name: string }) {
         }
       />
       <p id={`${id}-description`}>
-        Allows connections to sandboxes. Turning this off closes existing
-        sessions.
+        Turning this off closes existing SSH sessions.
       </p>
     </div>
   );
@@ -565,10 +619,7 @@ function AgentSettings(props: { name: string }) {
       </div>
     );
   const m = useMonitor(),
-    [key, setKey] = createSignal(""),
-    [copyFrom, setCopyFrom] = createSignal(""),
-    [instructions, setInstructions] = createSignal<string>();
-  const reviewId = createUniqueId();
+    [copyFrom, setCopyFrom] = createSignal("");
   const identity = () => m.view()!.config.identities?.[props.name];
   const copySources = () =>
     Object.keys(m.view()!.config.identities ?? {}).filter(
@@ -577,130 +628,54 @@ function AgentSettings(props: { name: string }) {
   return (
     <div class="agent-settings">
       <Show when={identity()}>
-        <section>
-          <div class="setting-row agent-connectivity">
-            <label for={reviewId}>Auto review requests with Tinfoil</label>
-            <input
-              id={reviewId}
-              type="checkbox"
-              role="switch"
-              checked={!!identity()?.reviewer}
-              onChange={(e) => {
-                if (
-                  e.currentTarget.checked &&
-                  !owner.tinfoilConnection(m.view()!)
-                ) {
-                  e.currentTarget.checked = false;
-                  location.hash = "#add/tinfoil";
-                } else
-                  void m.edit(
-                    owner.edits.setReviewer(
-                      m.view()!,
-                      props.name,
-                      e.currentTarget.checked,
-                    ),
-                  );
-              }}
-            />
-          </div>
-          <Show when={!!identity()?.reviewer && m.view()!.config.reviewer}>
-            {(reviewer) => (
-              <form
-                class="form-fields"
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  if (
-                    await m.edit(
-                      owner.edits.setReviewerInstructions(instructions()!),
-                    )
-                  )
-                    setInstructions();
-                }}
-              >
-                <label>
-                  Instructions
-                  <textarea
-                    required
-                    rows={4}
-                    value={instructions() ?? reviewer().instructions}
-                    onInput={(e) => setInstructions(e.currentTarget.value)}
-                  />
-                </label>
-                <button
-                  class="primary"
-                  disabled={m.busy() || !instructions()?.trim()}
-                >
-                  Save
-                </button>
-              </form>
-            )}
-          </Show>
-        </section>
         <ResourceDisclosure
           class="section-disclosure agent-maintenance"
           summary={
             <DisclosureHeading
-              title="Setup & maintenance"
-              description="Sandbox access and SSH keys"
+              title="Advanced"
+              description="Monitor keys, profile and removal"
+              small
             />
           }
         >
           {() => (
-            <div class="section-content">
-              <section>
-                <SandboxAccess name={props.name} />
-              </section>
-              <section class="settings-group">
-                <SectionHeading title="Host key" small />
-                <pre>{m.view()!.host_key}</pre>
-                <SectionHeading title="CA" small />
-                <pre>{m.view()!.ca}</pre>
-              </section>
-              <section class="settings-group">
-                <SectionHeading
-                  title="Replace SSH key"
-                  description="Use this after recreating the sandbox. It starts clean."
-                  small
-                />
-                <form
-                  class="form-fields"
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    try {
-                      if (
-                        await m.edit(owner.edits.replaceKey(props.name, key()))
-                      )
-                        setKey("");
-                    } catch (cause) {
-                      m.report(cause);
-                    }
-                  }}
-                >
-                  <label>
-                    New SSH public key
-                    <textarea
-                      aria-label="Replacement public key"
-                      placeholder="ssh-ed25519 …"
-                      required
-                      rows={3}
-                      value={key()}
-                      onInput={(e) => setKey(e.currentTarget.value)}
+            <div class="section-content agent-advanced">
+              <div class="setting-row">
+                <span>
+                  Monitor keys
+                  <small>Only needed if you set up SSH by hand.</small>
+                </span>
+                <span class="agent-advanced-actions">
+                  <span class="key-pill" title={m.view()!.host_key}>
+                    <span class="key-pill-label">Host key</span>
+                    <code>{m.view()!.host_key.trim().slice(0, 24)}…</code>
+                    <Copy
+                      icon
+                      text={m.view()!.host_key.trim()}
+                      label="Copy host key"
                     />
-                  </label>
-                  <button class="primary" disabled={m.busy() || !key().trim()}>
-                    Save replacement key
-                  </button>
-                </form>
-              </section>
+                  </span>
+                  <span class="key-pill">
+                    <span class="key-pill-label">CA certificate</span>
+                    <Copy
+                      icon
+                      text={m.view()!.ca}
+                      label="Copy CA certificate"
+                    />
+                  </span>
+                </span>
+              </div>
               <Show when={copySources().length}>
-                <section class="settings-group">
-                  <SectionHeading
-                    title="Copy settings from another sandbox"
-                    small
-                  />
-                  <div class="agent-copy-settings">
+                <div class="setting-row">
+                  <span>
+                    Copy sandbox profile
+                    <small>
+                      Takes its connection access, actions and rules.
+                    </small>
+                  </span>
+                  <span class="agent-advanced-actions">
                     <select
-                      aria-label="Copy settings from"
+                      aria-label="Copy profile from"
                       value={copyFrom()}
                       onChange={(e) => setCopyFrom(e.currentTarget.value)}
                     >
@@ -721,17 +696,19 @@ function AgentSettings(props: { name: string }) {
                         )
                       }
                     >
-                      Copy settings
+                      Override
                     </button>
-                  </div>
-                </section>
+                  </span>
+                </div>
               </Show>
-              <section class="agent-remove">
-                <SectionHeading
-                  title="Remove sandbox"
-                  description="Revokes this sandbox’s access to the Monitor."
-                  small
-                />
+              <div class="setting-row">
+                <span>
+                  Remove sandbox
+                  <small>
+                    Forget this sandbox from the Monitor, along with its
+                    connections and rules.
+                  </small>
+                </span>
                 <button
                   class="danger"
                   disabled={m.busy()}
@@ -745,7 +722,7 @@ function AgentSettings(props: { name: string }) {
                 >
                   Remove sandbox
                 </button>
-              </section>
+              </div>
             </div>
           )}
         </ResourceDisclosure>

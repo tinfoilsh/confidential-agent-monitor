@@ -194,7 +194,9 @@ func (m *monitor) gate(ctx context.Context, in input) (err error) {
 		return errors.New(strings.Join(d.Deny, "; "))
 	}
 	if len(d.Requirements) != 0 {
-		r.Reviewer = st.Identities[p.Name].Reviewer
+		if autoReviewEnabled {
+			r.Reviewer = st.Identities[p.Name].Reviewer
+		}
 		if err = m.awaitApproval(ctx, r); err != nil {
 			return err
 		}
@@ -239,6 +241,11 @@ func (m *monitor) currentLabel(fingerprint string) facts.Label {
 
 // observe persists a changed label before the operation runs. Message-gated
 // streams use the shared label on their next operation; opaque sessions close.
+// autoReviewEnabled lets an identity's `reviewer = "tinfoil"` hand its
+// pending requests to the Tinfoil reviewer. Off for this release: the field
+// is accepted and kept, but every request waits for the owner.
+const autoReviewEnabled = false
+
 func (m *monitor) observe(ctx context.Context, fingerprint string, l facts.Label, source *connector.Stream) error {
 	if old := m.currentLabel(fingerprint); old.Trust == l.Trust && old.Audience == l.Audience {
 		return nil
@@ -248,6 +255,12 @@ func (m *monitor) observe(ctx context.Context, fingerprint string, l facts.Label
 	next.Labels[fingerprint] = l
 	if err := m.store.Commit(ctx, next); err != nil {
 		return err
+	}
+	// With both lattices off a label is recorded but never enforced, so a
+	// change in it is no reason to cut anything.
+	lattices := m.live.Load().Config.Lattices
+	if source != nil && !lattices.Confidentiality && !lattices.Integrity {
+		return nil
 	}
 	// An opaque source may finish the session it just admitted. Other opaque
 	// sessions cannot recheck their bytes, so revoke them. Sandbox routes carry

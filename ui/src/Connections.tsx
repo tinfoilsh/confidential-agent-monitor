@@ -1,11 +1,9 @@
 import {
   For,
   Show,
-  Suspense,
   createMemo,
   createSignal,
   createUniqueId,
-  lazy,
 } from "solid-js";
 import { createStore } from "solid-js/store";
 import * as owner from "./owner.js";
@@ -26,9 +24,6 @@ import {
 import { useMonitor } from "./monitor";
 import { AgentConnectionAccess } from "./Agents";
 
-const Browser = lazy(() =>
-  import("./Browser").then((m) => ({ default: m.Browser })),
-);
 
 export function DeviceSignInDialog(props: {
   attempt: (owner.DeviceSignIn & { title: string; preset: string }) | undefined;
@@ -132,7 +127,8 @@ export function Connections(props: { catalog?: boolean; expanded?: string }) {
 }
 function MyConnections(props: { expanded?: string }) {
   const m = useMonitor(),
-    [query, setQuery] = m.search("accounts");
+    // Mine and Catalog share one search: switching tabs keeps the term.
+    [query, setQuery] = m.search("connections");
   if (props.expanded) setQuery("");
   const searchable = createMemo(() =>
     Object.keys(m.view()!.config.accounts ?? {})
@@ -149,10 +145,40 @@ function MyConnections(props: { expanded?: string }) {
       .filter((entry) => entry.search.includes(search))
       .map((entry) => entry.name);
   });
+  // The search also peeks into the catalog, so typing a service you do not
+  // have yet points at the Catalog tab instead of a dead end. Best matches
+  // first (title starts with the query), top three only; adding happens on
+  // the Catalog tab, which opens with the same search.
+  const CATALOG_MATCH_LIMIT = 3;
+  const catalogMatches = createMemo(() => {
+    const search = query().trim().toLowerCase();
+    if (!search) return { shown: [], total: 0 };
+    const all = owner
+      .catalog(m.view()!)
+      .flatMap((group) =>
+        group.presets.map((p) => ({ ...p, groupTitle: group.title })),
+      )
+      .filter((p) =>
+        `${p.name} ${p.title} ${p.groupTitle}`.toLowerCase().includes(search),
+      );
+    const rank = (p: (typeof all)[number]) =>
+      p.title.toLowerCase().startsWith(search)
+        ? 0
+        : p.title.toLowerCase().includes(search)
+          ? 1
+          : 2;
+    all.sort((a, b) => rank(a) - rank(b) || a.title.localeCompare(b.title));
+    return { shown: all.slice(0, CATALOG_MATCH_LIMIT), total: all.length };
+  });
   return (
     <>
       <div id="toolbar">
-        <Search label="Search connections" value={query()} onInput={setQuery} />
+        <Search
+          label="Search connections and services"
+          autofocus
+          value={query()}
+          onInput={setQuery}
+        />
       </div>
       <div class="resource-list collection-list">
         <div class="resource-heading">
@@ -164,7 +190,7 @@ function MyConnections(props: { expanded?: string }) {
           each={names()}
           fallback={
             <Empty
-              title={query() ? "No matching connections" : "No connections yet"}
+              title={query() ? "None match" : "No connections yet"}
               action={
                 <Show when={!query()}>
                   <a class="button primary" href="#connections/catalog">
@@ -174,7 +200,9 @@ function MyConnections(props: { expanded?: string }) {
                 </Show>
               }
             >
-              Add a connection to give your sandboxes access to a service.
+              <Show when={!query()}>
+                Add a connection to give your sandboxes access to a service.
+              </Show>
             </Empty>
           }
         >
@@ -226,13 +254,75 @@ function MyConnections(props: { expanded?: string }) {
           }}
         </For>
       </div>
+      <Show when={catalogMatches().shown.length}>
+        <div class="resource-list collection-list catalog-peek">
+          <div class="resource-heading">
+            <a href="#connections/catalog">
+              From the catalog{" "}
+              <span class="count">{catalogMatches().total}</span>
+              <Icon name="arrow" />
+            </a>
+          </div>
+          <For each={catalogMatches().shown}>
+            {(p) => (
+              <div class="catalog-peek-row">
+                <ConnectorIcon preset={p.name} />
+                <span class="collection-name">{p.title}</span>
+                <Show when={p.accounts}>
+                  {(count) => <span class="muted">added ({count()})</span>}
+                </Show>
+              </div>
+            )}
+          </For>
+        </div>
+      </Show>
     </>
+  );
+}
+// One catalog service: expands in place to its add form.
+function CatalogRow(props: { name: string; added?: number }) {
+  const m = useMonitor();
+  return (
+    <ResourceDisclosure
+      class="catalog-item"
+      summaryClass="resource-row collection-row catalog-row"
+      summary={
+        <>
+          <ConnectorIcon preset={props.name} />
+          <strong
+            class="collection-name"
+            title={m.view()!.presets[props.name].title}
+          >
+            {m.view()!.presets[props.name].title}
+          </strong>
+          <span class="resource-meta">
+            <Show when={props.added}>
+              {(count) => <span class="muted">added ({count()})</span>}
+            </Show>
+          </span>
+          <span class="collection-chevron">
+            <Icon name="arrow" />
+          </span>
+        </>
+      }
+    >
+      {(active) => (
+        <Show when={active()}>
+          <div class="catalog-entry">
+            <h3 class="catalog-add-title">
+              New {m.view()!.presets[props.name].title} connection
+            </h3>
+            <AddConnection preset={props.name} />
+          </div>
+        </Show>
+      )}
+    </ResourceDisclosure>
   );
 }
 function Catalog() {
   let catalog!: HTMLDivElement;
   const m = useMonitor(),
-    [query, setQuery] = m.search("catalog");
+    [query, setQuery] = m.search("connections");
   const groups = createMemo(() => owner.catalog(m.view()!));
   const filtered = createMemo(() => {
     const search = query().toLowerCase();
@@ -289,42 +379,10 @@ function Catalog() {
                 <div class="collection-rows">
                   <For each={[...presets().keys()]}>
                     {(name) => (
-                      <ResourceDisclosure
-                        class="catalog-item"
-                        summaryClass="resource-row collection-row catalog-row"
-                        summary={
-                          <>
-                            <ConnectorIcon preset={name} />
-                            <strong
-                              class="collection-name"
-                              title={m.view()!.presets[name].title}
-                            >
-                              {m.view()!.presets[name].title}
-                            </strong>
-                            <span class="resource-meta">
-                              <Show when={presets().get(name)?.accounts}>
-                                {(count) => (
-                                  <span class="muted">added ({count()})</span>
-                                )}
-                              </Show>
-                            </span>
-                            <span class="collection-chevron">
-                              <Icon name="arrow" />
-                            </span>
-                          </>
-                        }
-                      >
-                        {(active) => (
-                          <Show when={active()}>
-                            <div class="catalog-entry">
-                              <h3 class="catalog-add-title">
-                                New {m.view()!.presets[name].title} connection
-                              </h3>
-                              <AddConnection preset={name} />
-                            </div>
-                          </Show>
-                        )}
-                      </ResourceDisclosure>
+                      <CatalogRow
+                        name={name}
+                        added={presets().get(name)?.accounts}
+                      />
                     )}
                   </For>
                 </div>
@@ -898,13 +956,6 @@ function Connection(props: { name: string; active: boolean }) {
               )}
             </For>
           </section>
-        </Show>
-        <Show when={owner.liveConnection(m.view()!, props.name)}>
-          {(connection) => (
-            <Suspense fallback={<p role="status">Loading browser…</p>}>
-              <Browser name={connection()} active={props.active} />
-            </Suspense>
-          )}
         </Show>
         <section class="connection-section">
           <SectionHeading
