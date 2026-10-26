@@ -350,6 +350,19 @@ export function Search(props: {
           }
         }}
       />
+      <Show when={props.value}>
+        <button
+          type="button"
+          class="search-clear"
+          aria-label="Clear search"
+          onClick={() => {
+            props.onInput("");
+            input.focus();
+          }}
+        >
+          <Icon name="close" />
+        </button>
+      </Show>
     </div>
   );
 }

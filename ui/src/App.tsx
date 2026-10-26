@@ -29,24 +29,21 @@ import {
 const Settings = lazy(() =>
   import("./Settings").then((m) => ({ default: m.Settings })),
 );
-const Integrations = lazy(() =>
-  import("./Settings").then((m) => ({ default: m.Integrations })),
-);
-const Policy = lazy(() =>
-  import("./Settings").then((m) => ({ default: m.Policy })),
-);
 const PresetEditor = lazy(() =>
   import("./Settings").then((m) => ({ default: m.PresetEditor })),
 );
 
 const sections: Record<string, [string, string]> = {
   activity: ["Activity", "Review requests and manage saved approval rules."],
-  agents: ["Sandboxes", "Your sandboxes and the devices that may reach them."],
+  agents: [
+    "Sandboxes",
+    "Your sandboxes and the devices that may reach them. The monitor can always be accessed by you.",
+  ],
   connections: [
     "Connections",
     "Connect services and control how sandboxes use their data.",
   ],
-  settings: ["Settings", "Manage guardrails, policy, and monitor preferences."],
+  settings: ["Settings", "Manage policy and preferences."],
   integrations: [
     "Integrations",
     "Connect commands, shells, and MCP clients through Monitor.",
@@ -344,12 +341,8 @@ function Page(props: {
       <Match when={kind === "settings"}>
         <Settings theme={props.theme} onThemeChange={props.onThemeChange} />
       </Match>
-      <Match when={kind === "integrations"}>
-        <Integrations page={name} />
-      </Match>
-      <Match when={kind === "policy"}>
-        <Policy />
-      </Match>
+      {/* #integrations (Monitor client on your own machine) and #policy (raw
+          document editor) are not part of this release: no route, no link. */}
       <Match when={kind === "presets"}>
         <Connections catalog />
       </Match>
@@ -549,12 +542,12 @@ export function Onboarding(props: {
           </span>
         </Show>
         <h1 ref={heading} tabIndex={-1}>
-          {step() === "policy" ? "Create monitor" : "Connect Tinfoil"}
+          {step() === "policy" ? "Create monitor" : "Add the Tinfoil connection"}
         </h1>
         <p>
           {step() === "policy"
             ? "A monitor is how your sandbox communicates with the outside world. It can hold credentials and set policies on what a sandbox can do."
-            : "Use Tinfoil for private AI inference and web search."}
+            : "Use Tinfoil models from your sandbox for private AI & web search."}
         </p>
       </header>
       <Switch>
@@ -586,7 +579,7 @@ export function Onboarding(props: {
               autofocus
               pattern={".*\\S.*"}
               title="Enter your Tinfoil API key"
-              placeholder="Paste your Tinfoil API key"
+              placeholder="tk-…"
               autocomplete="off"
               spellcheck={false}
               aria-describedby="tinfoil-key-help"
@@ -599,7 +592,7 @@ export function Onboarding(props: {
             </p>
           </fieldset>
           <button class="primary" disabled={props.busy}>
-            {props.busy ? "Saving…" : "Connect Tinfoil"}
+            {props.busy ? "Saving…" : "Add the Tinfoil connection"}
             <Icon name="arrow" />
           </button>
           <div class="onboarding-actions">

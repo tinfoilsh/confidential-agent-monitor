@@ -22,13 +22,10 @@ export function Settings(props: {
   theme: string;
   onThemeChange: (theme: string) => void;
 }) {
-  const m = useMonitor(),
-    [networks, setNetworks] = createSignal(
-      (m.view()!.config.allow_networks ?? []).join("\n"),
-    );
+  const m = useMonitor();
   return (
     <div id="pane">
-      <p>Permissions and guardrails save automatically.</p>
+      <p>Permissions save automatically.</p>
       <section class="settings-section">
         <h2>Appearance</h2>
         <div class="setting-row">
@@ -99,32 +96,6 @@ export function Settings(props: {
             }
           />
         </label>
-      </section>
-      <section class="settings-section">
-        <h2>Advanced</h2>
-        <form
-          class="settings-network-editor form-fields"
-          onSubmit={(e) => {
-            e.preventDefault();
-            try {
-              void m.edit(owner.edits.setNetworks(networks()));
-            } catch (cause) {
-              m.report(cause);
-            }
-          }}
-        >
-          <label>
-            Private networks
-            <textarea
-              rows={4}
-              aria-label="Private networks"
-              placeholder="Networks the monitor may reach, one per line"
-              value={networks()}
-              onInput={(e) => setNetworks(e.currentTarget.value)}
-            />
-          </label>
-          <button disabled={m.busy()}>Save networks</button>
-        </form>
       </section>
       <section class="settings-section settings-danger">
         <h2>Dangerous</h2>

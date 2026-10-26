@@ -352,6 +352,9 @@ export const CATALOG_GROUPS: { [group: string]: string } = {
   mcp: "MCP",
   protocol: "Protocol",
 };
+// Not in this release: the Monitor-hosted browser (remote sign-in and
+// browsing sessions). The connector stays; the UI never offers or shows it.
+export const HIDDEN_PRESETS = ["browser"];
 export const COMMON_PRESETS = [
   "tinfoil",
   "anthropic",
@@ -1512,6 +1515,7 @@ export function catalog(view: View) {
   )) {
     // Retired definitions still serve stored credentials and permission names.
     if (preset.replaced_by && view.presets[preset.replaced_by]) continue;
+    if (HIDDEN_PRESETS.includes(name)) continue;
     const group = preset.group ?? "api";
     if (!groups.has(group)) groups.set(group, []);
     groups
@@ -1815,7 +1819,8 @@ function onboardingChanges(
     account = `network-${i}`;
   const changes = sourceChanges({
     data: { onboarding: { completed: true } },
-    lattices: { confidentiality: preset !== "open", integrity: false },
+    // Label guardrails are recorded but never enforced in this release.
+    lattices: { confidentiality: false, integrity: false },
     allow_networks: preset === "open" ? ["0.0.0.0/0", "::/0"] : [],
     accounts: {
       [account]: {
