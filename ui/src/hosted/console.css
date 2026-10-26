@@ -35,6 +35,16 @@
   padding-top: 16px;
   border-top: 1px solid #ffffff1a;
 }
+.console-account-monitor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 12px 0;
+  color: #fff;
+  font-size: var(--font-detail);
+  overflow-wrap: anywhere;
+}
 .console-account-name {
   margin: 0;
   padding: 8px 12px 4px;

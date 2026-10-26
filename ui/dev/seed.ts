@@ -7,6 +7,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DEV_KEY, devAttest as attest, devToken } from "./account";
+import { monitorRoot } from "../src/hosted/keys";
 import * as cp from "../src/hosted/controlplane";
 import {
   createMonitor,
@@ -17,6 +18,8 @@ import {
 } from "../src/hosted/monitors";
 import { onboarded, sourceChanges } from "../src/owner";
 
+// The console derives every Monitor key from this root, not the key itself.
+const ROOT = monitorRoot(DEV_KEY);
 const base = process.env.VITE_API_BASE_URL || "http://127.0.0.1:5173";
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const pub = (file: string) =>
@@ -61,7 +64,7 @@ if (!monitor) {
   log("creating Monitor");
   monitor = await createMonitor({
     api,
-    root: DEV_KEY,
+    root: ROOT,
     name: MONITOR,
     tag: "dev",
     intents,
@@ -77,7 +80,7 @@ for (const s of SANDBOXES) {
     log(`creating sandbox ${s.name}`);
     row = await createSandbox({
       api,
-      root: DEV_KEY,
+      root: ROOT,
       monitorId: monitor.id,
       tag: "dev",
       request: { name: s.name, instanceId: crypto.randomUUID() },
@@ -91,7 +94,7 @@ rows = await api.list();
 
 const session = await openMonitor({
   row: monitor,
-  root: DEV_KEY,
+  root: ROOT,
   attest,
   intents,
   initialize: true,

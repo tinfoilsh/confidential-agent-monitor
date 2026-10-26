@@ -5,17 +5,15 @@ import {
   Show,
   batch,
   createEffect,
-  createMemo,
   createSignal,
   onCleanup,
   onMount,
   type JSX,
 } from "solid-js";
-import App, { Onboarding } from "../App";
+import App from "../App";
 import {
   Empty,
   Icon,
-  Modal,
   ResourceDisclosure,
   Search,
   ShellSplit,
@@ -27,8 +25,6 @@ import * as keys from "./keys";
 import {
   MissingState,
   attestMonitor,
-  createMonitor,
-  createSandbox,
   enrollSandbox,
   initIntents,
   openMonitor,
@@ -37,20 +33,27 @@ import {
   sandboxMonitorSSH,
   type AttestMonitor,
   type MonitorSession,
-  type SandboxRequest,
 } from "./monitors";
 import "./console.css";
 
-// Connection sign-in returns to this page; reopen the Monitor that started it.
-const REOPEN = "tinfoil-monitor-reopen";
-const NAME = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-const BYTES_PER_GB = 1e9;
+// The path names the Monitor: terminal.tinfoil.sh/<monitor>. The hash stays the
+// Monitor's own page. Sign-in and connection sign-in return to the same path.
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+const routeName = () =>
+  decodeURIComponent(
+    location.pathname.slice(BASE.length).replace(/^\/+|\/+$/g, ""),
+  );
+const routeTo = (name: string | undefined, replace = false) => {
+  const url = `${BASE}/${name ? encodeURIComponent(name) : ""}${location.hash}`;
+  if (url === location.pathname + location.hash) return;
+  history[replace ? "replaceState" : "pushState"](null, "", url);
+};
+const DASHBOARD = "https://dash.tinfoil.sh";
 const MEMBERS_PAGE_SIZE = 100;
 
 type Account = { id: string; label: string; user: PasskeyUser };
 type Failure = { message: string; cause: unknown; recover?: () => void };
 type Kind = "monitor" | "sandbox";
-type Adding = { kind: "monitor" } | { kind: "sandbox"; monitor?: string };
 const STATES: Record<cp.Status, [label: string, tone: string]> = {
   created: ["Provisioning", "status-pending"],
   pending: ["Queued", "status-pending"],
@@ -108,13 +111,11 @@ export default function Console(props: {
   const [rows, setRows] = createSignal<cp.Container[]>([]);
   const [pending, setPending] = createSignal<Record<string, string>>({});
   const [failures, setFailures] = createSignal<Record<string, Failure>>({});
-  const [selected, setSelected] = createSignal(
-    sessionStorage.getItem(REOPEN) ?? undefined,
-  );
+  const [route, setRoute] = createSignal(routeName());
+  const onPop = () => setRoute(routeName());
+  addEventListener("popstate", onPop);
+  onCleanup(() => removeEventListener("popstate", onPop));
   const [viewing, setViewing] = createSignal(false);
-  const [adding, setAdding] = createSignal<Adding>();
-  // Keep the last form mounted through the dialog's exit transition.
-  const shown = createMemo<Adding | undefined>((last) => adding() ?? last);
   const [shell, setShell] = createSignal<ShellTarget>();
   const [query, setQuery] = createSignal("");
   const [members, setMembers] = createSignal<Record<string, string>>({});
@@ -129,7 +130,6 @@ export default function Console(props: {
     setSession(undefined);
     setSnapshot(undefined);
     setViewing(false);
-    sessionStorage.removeItem(REOPEN);
   };
   const closeShell = () => {
     preparing?.abort();
@@ -145,7 +145,6 @@ export default function Console(props: {
       root?.fill(0);
       accountKey = root = undefined;
       setUnlocked(false);
-      setAdding(undefined);
       setBusy("");
       setPending({});
       setFailures({});
@@ -256,8 +255,6 @@ export default function Console(props: {
     setRows((list) =>
       list.map((r) => (r.id === row.id ? { ...r, ...row } : r)),
     );
-  const add = (row: cp.Container) =>
-    setRows((list) => [...list.filter((r) => r.id !== row.id), row]);
   const act = async (
     id: string,
     label: string,
@@ -320,38 +317,6 @@ export default function Console(props: {
         update,
       );
     });
-  // Resolves with the new Monitor as soon as it exists; it keeps booting and onboarding in its row.
-  const create = (name: string, tinfoilApiKey?: string) =>
-    new Promise<cp.Container | undefined>((done) => {
-      void act(
-        `new:monitor:${name}`,
-        "Creating",
-        async (signal) => {
-          const row = await createMonitor({
-            api,
-            root: root!,
-            name,
-            tag: await api.latestTag(cp.MONITOR_REPO, signal),
-            intents: intents(),
-            signal,
-          });
-          signal.throwIfAborted();
-          add(row);
-          done(row);
-          void act(row.id, "Starting", async (signal) => {
-            await cp.follow(api, row, "running", signal, update);
-            setPending((p) => ({ ...p, [row.id]: "Setting up" }));
-            const { client } = await connect(row.id);
-            const { view } = await client.read(signal);
-            await client.onboard(view, "known_only", signal, {
-              allowPaidInference: true,
-              tinfoilApiKey,
-            });
-          });
-        },
-        () => void create(name, tinfoilApiKey),
-      ).finally(() => done(undefined));
-    });
   // One Monitor session at a time; shells and enrollment reuse it without opening its pages.
   const connect = (monitorId: string, initialize = false) => {
     const current = session();
@@ -398,8 +363,8 @@ export default function Console(props: {
         const { client } = await connect(row.id, initialize);
         setSnapshot(await client.read(signal));
         signal.throwIfAborted();
-        sessionStorage.setItem(REOPEN, row.id);
-        setSelected(row.id);
+        routeTo(row.name, true);
+        setRoute(row.name);
         setViewing(true);
       },
       () => void open(row, initialize),
@@ -427,30 +392,6 @@ export default function Console(props: {
         });
       },
       initialize ? undefined : () => void enroll(row, true),
-    );
-  // A retry reuses the request, so after a lost reply it targets the same sandbox.
-  const createBox = (
-    request: SandboxRequest,
-    monitorId: string,
-  ): Promise<void> =>
-    act(
-      `new:sandbox:${request.name}`,
-      "Creating",
-      async (signal) => {
-        const row = await createSandbox({
-          api,
-          root: root!,
-          monitorId,
-          tag: await api.latestTag(cp.SANDBOX_REPO, signal),
-          request,
-          intents: intents(),
-          signal,
-        });
-        signal.throwIfAborted();
-        add(row);
-        if (sandboxMonitorSSH(row)) void enroll(row);
-      },
-      () => void createBox(request, monitorId),
     );
   const openShell = async (row: cp.Container) => {
     preparing?.abort();
@@ -490,14 +431,21 @@ export default function Console(props: {
     monitors().find((r) => r.id === cp.attachedMonitor(row));
   const sandboxes = () =>
     rows().filter((r) => r.repo === cp.SANDBOX_REPO && monitorOf(r));
+  // The Monitor in the path; with none named and one usable, that one.
   const context = () =>
-    monitors().find((r) => r.id === selected()) ?? usable()[0] ?? monitors()[0];
-  const sandboxCount = (monitorId: string) => {
-    const n = sandboxes().filter(
-      (r) => cp.attachedMonitor(r) === monitorId,
-    ).length;
-    return `${n} ${n === 1 ? "sandbox" : "sandboxes"}`;
-  };
+    route()
+      ? monitors().find((r) => r.name === route())
+      : usable().length === 1
+        ? usable()[0]
+        : undefined;
+  // A single Monitor claims the bare path, so reloads and links stay on it.
+  createEffect(() => {
+    const row = context();
+    if (!route() && row) {
+      routeTo(row.name, true);
+      setRoute(row.name);
+    }
+  });
   const contextSandboxes = () =>
     sandboxes().filter((r) => cp.attachedMonitor(r) === context()?.id);
   // The selected Monitor opens by default; the page outside it covers Monitors this browser cannot open.
@@ -516,28 +464,10 @@ export default function Console(props: {
       void open(row);
   });
   const matches = (row: cp.Container) => row.name.includes(query());
-  const drafts = (kind: Kind) =>
-    [...Object.keys(pending()), ...Object.keys(failures())].filter((id) =>
-      id.startsWith(`new:${kind}:`),
-    );
-  const newSandbox = (monitor?: string) =>
-    setAdding(
-      usable().length ? { kind: "sandbox", monitor } : { kind: "monitor" },
-    );
-  const addMonitor = async (name: string, tinfoilApiKey?: string) => {
-    setAdding(undefined);
-    const row = await create(name, tinfoilApiKey);
-    if (row)
-      batch(() => {
-        setSelected(row.id);
-        home();
-      });
-  };
   const home = () =>
     batch(() => {
       setViewing(false);
       setMenu(false);
-      sessionStorage.removeItem(REOPEN);
       location.hash = "#agents";
     });
 
@@ -551,6 +481,22 @@ export default function Console(props: {
         </button>
       </Show>
       <div class="console-account">
+        <Show when={context()}>
+          {(row) => (
+            <p class="console-account-monitor" title={row().name}>
+              <Icon name="rules" />
+              {row().name}
+              <Show when={viewing() && session()?.verified === false}>
+                <small
+                  class="console-unverified"
+                  title="Local development connection; attestation is disabled."
+                >
+                  Unverified
+                </small>
+              </Show>
+            </p>
+          )}
+        </Show>
         <p class="console-account-name" title={account()!.label}>
           {account()!.label}
         </p>
@@ -631,20 +577,6 @@ export default function Console(props: {
     (["failed", "stopped"].includes(row.status)
       ? row.last_deploy_attempt_error || row.error_message
       : undefined);
-  const foreignKey = (row: cp.Container) => (
-    <Show when={mine(row) && !ours(row)}>
-      <dl class="request-context">
-        <div>
-          <dt>Owner key</dt>
-          <dd>
-            Created with a different owner key. Open it with{" "}
-            <code>tinfoil monitor open {row.name}</code>.
-          </dd>
-        </div>
-      </dl>
-    </Show>
-  );
-
   const Row = (props: {
     row: cp.Container;
     kind: Kind;
@@ -691,28 +623,6 @@ export default function Console(props: {
       </div>
     );
   };
-  const draftName = (id: string) => id.split(":")[2];
-  const draftBadge = (id: string) =>
-    failures()[id]
-      ? badge("Failed", "status-denied", false)
-      : badge(pending()[id], "status-pending", true);
-  const draftAlert = (id: string) => (
-    <Alert message={failures()[id]?.message}>
-      <button class="link" onClick={failures()[id].recover}>
-        Retry
-      </button>
-    </Alert>
-  );
-  const Draft = (props: { id: string; kind: Kind }) => (
-    <div class="console-row">
-      <div class="resource-row collection-row">
-        <Icon name={ICONS[props.kind]} />
-        <strong class="collection-name">{draftName(props.id)}</strong>
-        <span class="resource-meta">{draftBadge(props.id)}</span>
-      </div>
-      {draftAlert(props.id)}
-    </div>
-  );
   const ownedBox = (box: cp.Container) => {
     const monitor = monitorOf(box)!;
     return mine(box) && mine(monitor) && ours(monitor);
@@ -746,13 +656,8 @@ export default function Console(props: {
   // The opened Monitor's Sandboxes page lists these alongside what it has enrolled.
   const sandboxFor = (name: string) =>
     contextSandboxes().find((r) => sandboxIdentity(r.name) === name);
-  const draftFor = (name: string) =>
-    drafts("sandbox").find((id) => sandboxIdentity(draftName(id)) === name);
   const sandboxStatus = (name: string) => (
-    <Show
-      when={sandboxFor(name)}
-      fallback={<Show when={draftFor(name)}>{(id) => draftBadge(id())}</Show>}
-    >
+    <Show when={sandboxFor(name)}>
       {(box) => (
         <>
           {state(box())}
@@ -763,10 +668,7 @@ export default function Console(props: {
     </Show>
   );
   const sandboxActions = (name: string) => (
-    <Show
-      when={sandboxFor(name)}
-      fallback={<Show when={draftFor(name)}>{(id) => draftAlert(id())}</Show>}
-    >
+    <Show when={sandboxFor(name)}>
       {(box) => (
         <div class="console-sandbox-actions">
           {sandboxAccess(box())}
@@ -787,17 +689,23 @@ export default function Console(props: {
   );
   const sandboxList = () => (
     <Show
-      when={contextSandboxes().length || busy() || drafts("sandbox").length}
+      when={contextSandboxes().length || busy()}
       fallback={
         <div class="resource-list">
           <Empty
             icon="sandboxes"
             title="Create your first sandbox"
             action={
-              <button class="primary" onClick={() => newSandbox(context()!.id)}>
+              <a
+                class="button primary"
+                href={DASHBOARD}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Icon name="plus" />
                 Create sandbox
-              </button>
+                <Icon name="external" />
+              </a>
             }
           >
             A sandbox runs your agent in an isolated environment. This monitor
@@ -829,92 +737,9 @@ export default function Console(props: {
             );
           }}
         </For>
-        <For each={drafts("sandbox")}>
-          {(id) => <Draft id={id} kind="sandbox" />}
-        </For>
       </div>
     </Show>
   );
-  const monitorCard = (id: string) => {
-    const row = () => rows().find((r) => r.id === id)!;
-    const owned = () => mine(row()) && ours(row());
-    return (
-      <div class="resource-list collection-list console-context-card">
-        <Row
-          row={row()}
-          kind="monitor"
-          description={sandboxCount(id)}
-          owned={owned()}
-          action={
-            <Show when={viewing() && session()?.verified === false}>
-              <small
-                class="console-unverified"
-                title="Local development connection; attestation is disabled."
-              >
-                Unverified
-              </small>
-            </Show>
-          }
-          details={
-            <>
-              {foreignKey(row())}
-              <div class="console-monitors">
-                <For each={monitors().filter((r) => r.id !== id)}>
-                  {(other) => (
-                    <button
-                      class="resource-row collection-row"
-                      onClick={() => {
-                        setSelected(other.id);
-                        home();
-                      }}
-                    >
-                      <Icon name={ICONS.monitor} />
-                      <strong
-                        class="collection-name"
-                        classList={{ muted: !mine(other) }}
-                      >
-                        {other.name}
-                      </strong>
-                      <span class="collection-description">
-                        {mine(other)
-                          ? sandboxCount(other.id)
-                          : `Created by ${creator(other)}`}
-                      </span>
-                      <span class="resource-meta">{state(other)}</span>
-                    </button>
-                  )}
-                </For>
-                <button
-                  class="resource-row collection-row"
-                  onClick={() => setAdding({ kind: "monitor" })}
-                >
-                  <Icon name="plus" />
-                  New monitor
-                </button>
-              </div>
-            </>
-          }
-          recovery={
-            <Show
-              when={failures()[id]?.cause instanceof MissingState}
-              fallback={
-                <Show when={failures()[id]?.recover}>
-                  <button class="link" onClick={failures()[id].recover}>
-                    Retry
-                  </button>
-                </Show>
-              }
-            >
-              <button class="link" onClick={() => void open(row(), true)}>
-                Initialize its encrypted storage
-              </button>
-            </Show>
-          }
-        />
-      </div>
-    );
-  };
-
   const resources = () => (
     <div id="app" classList={{ "navigation-open": menu() }}>
       <aside id="navigation" aria-label="Console navigation">
@@ -943,10 +768,6 @@ export default function Console(props: {
           <div class="page-heading">
             <div>
               <h1>Sandboxes</h1>
-              <p>
-                Isolated environments for your agents, each guarded by a
-                monitor.
-              </p>
             </div>
             <div class="header-actions">
               <button
@@ -956,10 +777,16 @@ export default function Console(props: {
               >
                 <Icon name="refresh" />
               </button>
-              <button class="primary" onClick={() => newSandbox(context()?.id)}>
+              <a
+                class="button primary"
+                href={DASHBOARD}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Icon name="plus" />
                 Create sandbox
-              </button>
+                <Icon name="external" />
+              </a>
             </div>
           </div>
         </header>
@@ -974,42 +801,94 @@ export default function Console(props: {
             when={context()?.id}
             keyed
             fallback={
-              <Show when={!drafts("monitor").length}>
-                <div class="resource-list">
-                  <Empty
-                    icon="sandboxes"
-                    title="Create your first sandbox"
-                    action={
-                      <button
-                        class="primary"
-                        onClick={() => setAdding({ kind: "monitor" })}
-                      >
-                        <Icon name="plus" />
-                        Create sandbox
-                      </button>
-                    }
-                  >
-                    A sandbox is an isolated computer for your agent. You will
-                    set up its monitor first.
-                  </Empty>
-                </div>
-              </Show>
+              <div class="resource-list">
+                <Show
+                  when={!route() && monitors().length > 1}
+                  fallback={
+                    <Empty
+                      icon="sandboxes"
+                      title={
+                        route()
+                          ? `No Monitor named ${route()}`
+                          : "No sandboxes yet"
+                      }
+                      action={
+                        <a
+                          class="button primary"
+                          href={DASHBOARD}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Icon name="plus" />
+                          Create sandbox
+                          <Icon name="external" />
+                        </a>
+                      }
+                    >
+                      A sandbox is an isolated computer for your agent. Create
+                      one in the dashboard; your Monitor is set up with it.
+                    </Empty>
+                  }
+                >
+                  <div class="collection-list">
+                    <For each={monitors()}>
+                      {(row) => (
+                        <a
+                          class="resource-row collection-row"
+                          href={`${BASE}/${encodeURIComponent(row.name)}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            routeTo(row.name);
+                            setRoute(row.name);
+                          }}
+                        >
+                          <Icon name={ICONS.monitor} />
+                          <strong
+                            class="collection-name"
+                            classList={{ muted: !mine(row) }}
+                          >
+                            {row.name}
+                          </strong>
+                          <span class="collection-description">
+                            {mine(row) ? "" : `Created by ${creator(row)}`}
+                          </span>
+                          <span class="resource-meta">{state(row)}</span>
+                        </a>
+                      )}
+                    </For>
+                  </div>
+                </Show>
+              </div>
             }
           >
-            {(id) => (
-              <>
-                {monitorCard(id)}
-                {sandboxList()}
-              </>
-            )}
+            {(id) => {
+              const row = () => rows().find((r) => r.id === id)!;
+              return (
+                <>
+                  <Alert message={failure(row())}>
+                    <Show
+                      when={failures()[id]?.cause instanceof MissingState}
+                      fallback={
+                        <Show when={failures()[id]?.recover}>
+                          <button class="link" onClick={failures()[id].recover}>
+                            Retry
+                          </button>
+                        </Show>
+                      }
+                    >
+                      <button
+                        class="link"
+                        onClick={() => void open(row(), true)}
+                      >
+                        Initialize its encrypted storage
+                      </button>
+                    </Show>
+                  </Alert>
+                  {sandboxList()}
+                </>
+              );
+            }}
           </Show>
-          <For each={drafts("monitor")}>
-            {(id) => (
-              <div class="resource-list collection-list console-context-card">
-                <Draft id={id} kind="monitor" />
-              </div>
-            )}
-          </For>
         </div>
       </main>
     </div>
@@ -1056,53 +935,17 @@ export default function Console(props: {
                 client={s.client}
                 brand="Console"
                 navigation={navigation}
-                context={() => monitorCard(s.row.id)}
                 snapshot={snapshot()}
                 onLock={() => lock()}
-                onAddSandbox={() => newSandbox(s.row.id)}
-                sandboxes={() => [
-                  ...contextSandboxes().map((r) => sandboxIdentity(r.name)),
-                  ...drafts("sandbox").map((id) =>
-                    sandboxIdentity(draftName(id)),
-                  ),
-                ]}
+                sandboxes={() =>
+                  contextSandboxes().map((r) => sandboxIdentity(r.name))
+                }
                 sandboxStatus={sandboxStatus}
                 sandboxActions={sandboxActions}
               />
             )}
           </Show>
         </ShellSplit>
-        <Modal
-          class="console-dialog"
-          classList={{ "console-onboarding": shown()?.kind === "monitor" }}
-          open={!!adding()}
-          onClose={() => setAdding(undefined)}
-        >
-          <Show when={shown()} keyed>
-            {(current) =>
-              current.kind === "monitor" ? (
-                <NewMonitor
-                  onCreate={(name, key) => void addMonitor(name, key)}
-                  onClose={() => setAdding(undefined)}
-                />
-              ) : (
-                <NewSandbox
-                  api={api}
-                  monitors={usable()}
-                  monitor={current.monitor}
-                  onCreate={(request, monitorId) => {
-                    setAdding(undefined);
-                    setSelected(monitorId);
-                    home();
-                    void createBox(request, monitorId);
-                  }}
-                  onNewMonitor={() => setAdding({ kind: "monitor" })}
-                  onClose={() => setAdding(undefined)}
-                />
-              )
-            }
-          </Show>
-        </Modal>
       </Show>
     </Show>
   );
@@ -1119,214 +962,5 @@ function SignIn(props: { clerk: Clerk }) {
     <div class="console-sign-in">
       <div ref={target} />
     </div>
-  );
-}
-
-function NewMonitor(props: {
-  onCreate(name: string, tinfoilApiKey?: string): void;
-  onClose(): void;
-}) {
-  const [name, setName] = createSignal("");
-  return (
-    <>
-      <button
-        type="button"
-        class="dialog-close icon-button"
-        aria-label="Close dialog"
-        onClick={props.onClose}
-      >
-        <Icon name="close" />
-      </button>
-      <Onboarding busy={false} onFinish={(key) => props.onCreate(name(), key)}>
-        <fieldset class="onboarding-key">
-          <label for="monitor-name">Monitor name</label>
-          <input
-            id="monitor-name"
-            value={name()}
-            onInput={(event) => setName(event.currentTarget.value.trim())}
-            placeholder="my-monitor"
-            pattern={NAME.source}
-            required
-            autofocus
-          />
-        </fieldset>
-      </Onboarding>
-    </>
-  );
-}
-
-function NewSandbox(props: {
-  api: cp.Controlplane;
-  monitors: cp.Container[];
-  monitor?: string;
-  onCreate(request: SandboxRequest, monitorId: string): void;
-  onNewMonitor(): void;
-  onClose(): void;
-}) {
-  const [name, setName] = createSignal("");
-  const [monitor, setMonitor] = createSignal(
-    props.monitor ?? props.monitors[0]?.id ?? "",
-  );
-  const [workspace, setWorkspace] = createSignal("");
-  const [monitorSSH, setMonitorSSH] = createSignal(true);
-  const [publicKey, setPublicKey] = createSignal("");
-  const [volumes, setVolumes] = createSignal<cp.Volume[]>([]);
-  const [error, setError] = createSignal("");
-  const closed = new AbortController();
-  onCleanup(() => closed.abort());
-  onMount(() =>
-    props.api.volumes(closed.signal).then(
-      (all) => setVolumes(all.filter((v) => !v.container_id)),
-      (cause) => closed.signal.aborted || setError(text(cause)),
-    ),
-  );
-  return (
-    <>
-      <DialogHeader
-        icon="sandboxes"
-        title="Create sandbox"
-        onClose={props.onClose}
-      />
-      <form
-        class="dialog-body form-fields"
-        onSubmit={(event) => {
-          event.preventDefault();
-          setError("");
-          try {
-            if (!monitorSSH()) keys.measuredPublicKey(publicKey());
-          } catch (cause) {
-            setError(text(cause));
-            return;
-          }
-          props.onCreate(
-            {
-              name: name(),
-              workspace: workspace() || undefined,
-              instanceId: crypto.randomUUID(),
-              ...(!monitorSSH() && { ownerPublicKey: publicKey().trim() }),
-            },
-            monitor(),
-          );
-        }}
-      >
-        <label>
-          Sandbox name
-          <input
-            value={name()}
-            onInput={(event) => setName(event.currentTarget.value.trim())}
-            placeholder="my-sandbox"
-            pattern={NAME.source}
-            required
-            autofocus
-          />
-        </label>
-        <label>
-          Monitor
-          <select
-            value={monitor()}
-            onChange={(event) => setMonitor(event.currentTarget.value)}
-          >
-            <For each={props.monitors}>
-              {(row) => (
-                <option value={row.id}>
-                  {row.name}
-                  {row.status === "running" ? "" : ` (${row.status})`}
-                </option>
-              )}
-            </For>
-          </select>
-        </label>
-        <button type="button" class="link" onClick={props.onNewMonitor}>
-          Create a new monitor instead
-        </button>
-        <label class="setting-row">
-          <span classList={{ muted: !monitorSSH() }}>
-            Give Monitor SSH access
-            <small>
-              Allow accessing your sandbox from the browser. The monitor can
-              read and modify anything in it.
-            </small>
-          </span>
-          <input
-            type="checkbox"
-            role="switch"
-            checked={monitorSSH()}
-            onChange={(event) => setMonitorSSH(event.currentTarget.checked)}
-          />
-        </label>
-        <Show when={!monitorSSH()}>
-          <label>
-            Your SSH public key
-            <textarea
-              value={publicKey()}
-              onInput={(event) => setPublicKey(event.currentTarget.value)}
-              placeholder="ssh-ed25519 AAAA…"
-              required
-              rows={3}
-              spellcheck={false}
-            />
-          </label>
-        </Show>
-        <label>
-          Workspace
-          <select
-            value={workspace()}
-            onChange={(event) => setWorkspace(event.currentTarget.value)}
-          >
-            <option value="">New encrypted workspace</option>
-            <For each={volumes()}>
-              {(volume) => (
-                <option value={volume.id}>
-                  {volume.name} ({Math.round(volume.size_bytes / BYTES_PER_GB)}{" "}
-                  GB)
-                </option>
-              )}
-            </For>
-          </select>
-        </label>
-        <Show when={workspace()}>
-          <p class="muted">
-            {monitorSSH()
-              ? "A reused workspace opens only with the key this console derived for it."
-              : "Keep the workspace's original SSH key and encryption credentials to unlock it with the CLI."}
-          </p>
-        </Show>
-        <Show when={error()}>
-          <p role="alert">{error()}</p>
-        </Show>
-        <div class="console-actions">
-          <button class="primary" disabled={!NAME.test(name()) || !monitor()}>
-            Create sandbox
-          </button>
-        </div>
-      </form>
-    </>
-  );
-}
-
-function DialogHeader(props: {
-  icon: string;
-  title: string;
-  onClose(): void;
-  children?: JSX.Element;
-}) {
-  return (
-    <header class="dialog-header">
-      <Icon name={props.icon} />
-      <div>
-        <h1>{props.title}</h1>
-        <Show when={props.children}>
-          <p>{props.children}</p>
-        </Show>
-      </div>
-      <button
-        type="button"
-        class="dialog-close icon-button"
-        aria-label="Close dialog"
-        onClick={props.onClose}
-      >
-        <Icon name="close" />
-      </button>
-    </header>
   );
 }
