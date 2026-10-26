@@ -14,6 +14,26 @@ const attest: AttestMonitor | undefined =
 
 // Bundled clerk-js and UI, as in chat: nothing is loaded from Clerk's CDN.
 (async () => {
+  // Dev: a fixed signed-in account and a plaintext "passkey", with local Monitors.
+  const devAccount =
+    import.meta.env.DEV && import.meta.env.VITE_LOCAL_MONITORS
+      ? import.meta.env.VITE_DEV_ACCOUNT
+      : undefined;
+  if (devAccount) {
+    const dev = await import("../../dev/account");
+    dev.installDevKey();
+    render(
+      () => (
+        <Console
+          clerk={dev.devClerk(devAccount)}
+          attest={dev.devAttest}
+          passkeys={dev.devPasskeys}
+        />
+      ),
+      root,
+    );
+    return;
+  }
   if (!key)
     throw new Error(
       "This console was built without VITE_CLERK_PUBLISHABLE_KEY.",

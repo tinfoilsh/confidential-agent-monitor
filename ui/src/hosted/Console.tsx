@@ -245,21 +245,6 @@ export default function Console(props: {
       ),
     );
   };
-  const addPasskey = () =>
-    run("Waiting for your passkey…", () => {
-      const signal = work.signal;
-      return settle(
-        signal,
-        manager!,
-        keys.addPasskey({
-          store: keys.keyStore(account()!.id),
-          manager: manager!,
-          user: account()!.user,
-          key: accountKey!,
-          signal,
-        }),
-      );
-    });
   // Keys are cleared before Clerk is asked, so a failed sign-out cannot leave them unlocked.
   const signOut = () => {
     lock();
@@ -565,18 +550,25 @@ export default function Console(props: {
           <small class="nav-count">{contextSandboxes().length}</small>
         </button>
       </Show>
-      <details class="console-account">
-        <summary>{account()!.label}</summary>
-        <button class="nav-item" onClick={addPasskey} disabled={!!busy()}>
-          Add passkey
-        </button>
-        <button class="nav-item" onClick={() => lock()}>
+      <div class="console-account">
+        <p class="console-account-name" title={account()!.label}>
+          {account()!.label}
+        </p>
+        <button
+          class="nav-item"
+          title="Require your passkey again"
+          onClick={() => lock()}
+        >
           Lock
         </button>
-        <button class="nav-item" onClick={signOut}>
+        <button
+          class="nav-item"
+          title="Sign out of your Tinfoil account and require your passkey again"
+          onClick={signOut}
+        >
           Sign out
         </button>
-      </details>
+      </div>
     </>
   );
 

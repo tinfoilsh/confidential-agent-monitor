@@ -23,7 +23,9 @@ export default defineConfig(({ command, mode }) => ({
     solid(),
     mode === "hosted" &&
       sri({ importMapIntegrity: false, runtimePatchDynamicLinks: false }),
-    command === "serve" && !!loadEnv(mode, ".").VITE_LOCAL_MONITORS && local(),
+    command === "serve" &&
+      !!loadEnv(mode, ".").VITE_LOCAL_MONITORS &&
+      local({ fakeSandboxes: !!loadEnv(mode, ".").VITE_DEV_ACCOUNT }),
   ],
   appType: "mpa",
   server: {
