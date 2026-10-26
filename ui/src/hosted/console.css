@@ -35,19 +35,22 @@
   padding-top: 16px;
   border-top: 1px solid #ffffff1a;
 }
-.console-account > summary {
-  padding: 8px 36px 8px 12px;
-  border-radius: 8px;
+.console-account-monitor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 12px 0;
+  color: #fff;
+  font-size: var(--font-detail);
+  overflow-wrap: anywhere;
+}
+.console-account-name {
+  margin: 0;
+  padding: 8px 12px 4px;
   color: #9ca3af;
   font-size: var(--font-detail);
   overflow-wrap: anywhere;
-  list-style: none;
-  cursor: pointer;
-  background: var(--chevron) right 12px center / 16px no-repeat;
-}
-.console-account > summary:hover {
-  background-color: #ffffff0d;
-  color: #fff;
 }
 #navigation button.nav-item {
   justify-content: flex-start;

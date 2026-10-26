@@ -25,7 +25,8 @@ export default defineConfig(({ command, mode }) => ({
       sri({ importMapIntegrity: false, runtimePatchDynamicLinks: false }),
     command === "serve" && !!loadEnv(mode, ".").VITE_LOCAL_MONITORS && local(),
   ],
-  appType: "mpa",
+  // The hosted console routes on the path (/<monitor>), so unknown paths serve its page.
+  appType: mode === "hosted" ? "spa" : "mpa",
   server: {
     host: "127.0.0.1",
     port: 5173,
