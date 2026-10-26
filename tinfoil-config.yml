@@ -14,6 +14,7 @@ shim:
     - /owner/rpc
   origins:
     - https://console.tinfoil.sh
+    - https://terminal.tinfoil.sh
 
 networks:
   upstream:
