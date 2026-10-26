@@ -40,7 +40,6 @@ const components = {
   eye: 'TfEye',
   play: 'TfPlay',
   stop: 'TfStop',
-  netlock: 'TfGlobeX',
 };
 const icons = Object.fromEntries(Object.entries(components).map(([name, component]) => [
   name, renderToStaticMarkup(createElement(tinfoil[component], { className: 'ui-icon', 'aria-hidden': true })),
