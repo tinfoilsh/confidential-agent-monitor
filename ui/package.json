@@ -28,7 +28,7 @@
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "solid-js": "1.9.17",
-    "tinfoil": "file:vendor/tinfoil-9352da5282fd5c5f99fb51a2c7dc69ae023e59b8.tgz",
+    "tinfoil": "file:vendor/tinfoil-c7f0a57fa557a5b75834dea5f92f0fc5adf4b631.tgz",
     "yaml": "2.9.1"
   },
   "devDependencies": {
@@ -41,6 +41,6 @@
     "vite-plugin-sri-gen": "1.7.5"
   },
   "overrides": {
-    "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-9352da5282fd5c5f99fb51a2c7dc69ae023e59b8.tgz"
+    "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-c7f0a57fa557a5b75834dea5f92f0fc5adf4b631.tgz"
   }
 }
