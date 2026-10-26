@@ -54,7 +54,8 @@ type Handler struct {
 	API        http.Handler
 	Generation Generation
 
-	nonces nonceLog
+	mu     sync.Mutex
+	nonces map[string]time.Time
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -67,6 +68,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "malformed owner RPC envelope", http.StatusBadRequest)
 		return
 	}
+	// Verify original request bytes.
 	if !ed25519.Verify(h.Key, append([]byte(SignatureContext), envelope.Request...), envelope.Signature) {
 		http.Error(w, "invalid owner RPC signature", http.StatusUnauthorized)
 		return
@@ -93,7 +95,8 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "owner RPC needs GET or POST of an owner API path", http.StatusBadRequest)
 		return
 	}
-	if err := h.nonces.remember(call.Nonce, issued.Add(ownerRPCSkew)); err != nil {
+	// Consume nonces before dispatch.
+	if err := h.remember(call.Nonce, issued.Add(ownerRPCSkew)); err != nil {
 		status := http.StatusConflict
 		if !errors.Is(err, errReplayed) {
 			status = http.StatusServiceUnavailable
@@ -144,31 +147,25 @@ var (
 	errReplayBusy = errors.New("too many recent owner RPC calls; retry shortly")
 )
 
-// nonceLog holds each accepted nonce until its envelope expires.
-type nonceLog struct {
-	mu   sync.Mutex
-	seen map[string]time.Time
-}
-
 // remember admits each nonce once until its envelope expires. When full of
 // unexpired nonces it refuses new calls rather than forgetting one that could replay.
-func (n *nonceLog) remember(nonce []byte, expires time.Time) error {
-	n.mu.Lock()
-	defer n.mu.Unlock()
-	if _, seen := n.seen[string(nonce)]; seen {
+func (h *Handler) remember(nonce []byte, expires time.Time) error {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	if _, seen := h.nonces[string(nonce)]; seen {
 		return errReplayed
 	}
-	if len(n.seen) >= maxOwnerRPCNonces {
+	if len(h.nonces) >= maxOwnerRPCNonces {
 		now := time.Now()
-		maps.DeleteFunc(n.seen, func(_ string, expiry time.Time) bool { return !now.Before(expiry) })
+		maps.DeleteFunc(h.nonces, func(_ string, expiry time.Time) bool { return !now.Before(expiry) })
 	}
-	if len(n.seen) >= maxOwnerRPCNonces {
+	if len(h.nonces) >= maxOwnerRPCNonces {
 		return errReplayBusy
 	}
-	if n.seen == nil {
-		n.seen = map[string]time.Time{}
+	if h.nonces == nil {
+		h.nonces = map[string]time.Time{}
 	}
-	n.seen[string(nonce)] = expires
+	h.nonces[string(nonce)] = expires
 	return nil
 }
 

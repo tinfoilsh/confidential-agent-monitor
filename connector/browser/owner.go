@@ -77,7 +77,7 @@ type tab struct {
 
 // serveOwner serves the owner's live view and controls; the agent's listener does not route here.
 // The monitor serves it behind the owner's secret.
-func (b *Browser) serveOwner(w http.ResponseWriter, r *http.Request) {
+func (b *session) serveOwner(w http.ResponseWriter, r *http.Request) {
 	b.mu.Lock()
 	epoch := b.epoch
 	b.mu.Unlock()
@@ -118,7 +118,7 @@ func (b *Browser) serveOwner(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(b.view(r))
 }
 
-func (b *Browser) Control() http.Handler {
+func (b *session) control() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /browser", b.serveOwner)
 	mux.HandleFunc("POST /browser", b.serveOwner)
@@ -127,7 +127,7 @@ func (b *Browser) Control() http.Handler {
 
 // pause takes control at once: it ends the agent's command in progress and returns when that command has let go of the browser.
 // A page load the agent started stops with it.
-func (b *Browser) pause(r *http.Request) {
+func (b *session) pause(r *http.Request) {
 	b.mu.Lock()
 	running := b.stop != nil
 	if !b.held {
@@ -147,7 +147,7 @@ func (b *Browser) pause(r *http.Request) {
 }
 
 // act runs one input while the owner holds the browser, in the turn it arrived in and on the frame it was aimed at.
-func (b *Browser) act(r *http.Request, epoch int, c control) error {
+func (b *session) act(r *http.Request, epoch int, c control) error {
 	b.op.Lock()
 	defer b.op.Unlock()
 	b.mu.Lock()
@@ -218,7 +218,7 @@ func (b *Browser) act(r *http.Request, epoch int, c control) error {
 
 // view looks at the active tab without waiting for a command or changing which tab is active. Owner is read last,
 // so it is accurate even when the capture fails.
-func (b *Browser) view(r *http.Request) frame {
+func (b *session) view(r *http.Request) frame {
 	f, err := b.capture(r)
 	if err != nil {
 		f = frame{Tabs: f.Tabs, Error: err.Error()}
@@ -230,7 +230,7 @@ func (b *Browser) view(r *http.Request) frame {
 }
 
 // capture takes the screenshot, URL and frame token of one document, in one epoch: if either changes meanwhile, it fails.
-func (b *Browser) capture(r *http.Request) (frame, error) {
+func (b *session) capture(r *http.Request) (frame, error) {
 	var f frame
 	ctx, cancel := context.WithTimeout(b.root, captureTimeout)
 	defer cancel()

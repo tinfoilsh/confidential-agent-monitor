@@ -17,16 +17,38 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var Definition = connector.Definition{NewConfig: func() connector.Server { return new(Postgres) }, Requests: []connector.Request{new(Request)}}
+var Definition = connector.Definition{Parse: parsePostgres, New: func() connector.Server { return new(Postgres) }}
+
+func parsePostgres(source connector.Setup) (connector.Prepared, error) {
+	c := new(postgresSetup)
+	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+		return connector.Prepared{}, err
+	}
+	if err := c.Endpoint.Parse(); err != nil {
+		return connector.Prepared{}, err
+	}
+	names, err := c.Declarations("password")
+	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+}
+
+// Postgres keeps one immutable setup for each admitted stream.
+type Postgres struct{ connector.Slot[postgresSetup] }
 
 const (
 	sslAccepted = 'S'
 	gssRefused  = 'N'
 )
 
-type Postgres struct{ connector.Endpoint }
+type postgresSetup struct{ connector.Endpoint }
 
-func (r *Postgres) Serve(s *connector.Stream, e *connector.Env) {
+func (owner *Postgres) Serve(s *connector.Stream, e *connector.Env) {
+	captured := owner.Load()
+	if captured == nil {
+		return
+	}
+	r := captured.Value
+	r.Secrets = captured.Secrets
+
 	_, backend, startup, err := startup(s, e.TLS)
 	if err != nil {
 		log.Printf("postgres startup: %v", err)
@@ -49,7 +71,7 @@ func (r *Postgres) Serve(s *connector.Stream, e *connector.Env) {
 	if err := backend.Flush(); err != nil {
 		return
 	}
-	relayQueries(s, backend, up)
+	r.relayQueries(s, backend, up)
 }
 
 func startup(s *connector.Stream, config *tls.Config) (net.Conn, *pgproto3.Backend, *pgproto3.StartupMessage, error) {
@@ -78,7 +100,7 @@ func startup(s *connector.Stream, config *tls.Config) (net.Conn, *pgproto3.Backe
 	}
 }
 
-func (r *Postgres) connect(s *connector.Stream, e *connector.Env, startup *pgproto3.StartupMessage) (*pgconn.HijackedConn, error) {
+func (r *postgresSetup) connect(s *connector.Stream, e *connector.Env, startup *pgproto3.StartupMessage) (*pgconn.HijackedConn, error) {
 	config, err := pgconn.ParseConfig(r.URL.String())
 	if err != nil {
 		return nil, err
@@ -105,7 +127,7 @@ func (r *Postgres) connect(s *connector.Stream, e *connector.Env, startup *pgpro
 }
 
 // A refused statement is answered with an error in the client's place, so the session stays usable.
-func relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.HijackedConn) {
+func (r *postgresSetup) relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.HijackedConn) {
 	var status atomic.Uint32
 	status.Store(uint32(up.TxStatus))
 	defer connector.PumpReplies(s, func() {
@@ -136,7 +158,7 @@ func relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.Hij
 			sql = msg.Query
 		}
 		if sql != "" {
-			if err := s.Gate(s.Context, &Request{SQL: sql}); err != nil {
+			if err := s.Gate(s.Context, r.Event((&Request{SQL: sql}).Describe())); err != nil {
 				backend.Send(&pgproto3.ErrorResponse{Severity: "ERROR", Code: "42501", Message: err.Error()})
 				if _, simple := msg.(*pgproto3.Query); simple {
 					backend.Send(&pgproto3.ReadyForQuery{TxStatus: byte(status.Load())})
@@ -154,10 +176,10 @@ func relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.Hij
 	}
 }
 
-type Request facts.Postgres
+type Request PostgresFacts
 
-func (v *Request) Describe(c connector.Context) (facts.Facts, error) {
-	details := facts.Details{Postgres: (*facts.Postgres)(v)}
+func (v *Request) Describe() (facts.Facts, error) {
+	details := Details{Postgres: (*PostgresFacts)(v)}
 	action := "write"
 	if plainRead(v.SQL) {
 		action = "read"

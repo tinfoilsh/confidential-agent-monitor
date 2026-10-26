@@ -70,13 +70,13 @@ func (l *AuditLog[T]) Backlogged() bool {
 	return len(l.pending) >= auditMaxBacklog
 }
 
-// Flush writes queued records as one segment, keeping them queued if the write fails.
+// Flush keeps its immutable prefix queued until upload succeeds, so backlog
+// refusal also includes records waiting on storage. Appends may extend the queue.
 func (l *AuditLog[T]) Flush() {
 	l.flushing.Lock()
 	defer l.flushing.Unlock()
 	l.mu.Lock()
 	plain, sealer := l.pending, l.sealer
-	l.pending = nil
 	l.mu.Unlock()
 	if len(plain) == 0 {
 		return
@@ -91,10 +91,15 @@ func (l *AuditLog[T]) Flush() {
 	defer cancel()
 	if err := l.Bucket.WriteAll(ctx, key, sealer.Seal(key, compressed.Bytes()), nil); err != nil {
 		log.Printf("audit: %v", err)
-		l.mu.Lock()
-		l.pending = append(plain, l.pending...)
-		l.mu.Unlock()
+		return
 	}
+	l.mu.Lock()
+	// Preserve appends during upload.
+	l.pending = bytes.Clone(l.pending[len(plain):])
+	if len(l.pending) >= auditSegmentBytes {
+		go l.Flush()
+	}
+	l.mu.Unlock()
 }
 
 // Run flushes on an interval until ctx ends, then once more.
@@ -184,8 +189,11 @@ func (l *AuditLog[T]) read(ctx context.Context, key string) ([]T, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer lines.Close()
 	var records []T
-	for decoder := json.NewDecoder(lines); ; {
+	decoder := json.NewDecoder(lines)
+	decoder.UseNumber()
+	for {
 		var r T
 		if err := decoder.Decode(&r); errors.Is(err, io.EOF) {
 			return records, nil

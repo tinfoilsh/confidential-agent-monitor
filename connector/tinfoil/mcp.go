@@ -3,43 +3,57 @@ package tinfoil
 import (
 	"context"
 	"errors"
+	"maps"
 	"net/http"
 	"net/url"
 
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/connector/mcp"
 )
 
-var MCPDefinition = connector.Definition{NewConfig: func() connector.Server { return new(MCP) }, Requests: mcp.Definition.Requests}
+var MCPDefinition = connector.Definition{Parse: parseMCP, New: func() connector.Server { return new(MCP) }}
 
-// MCP owns attestation for a Tinfoil MCP endpoint. The protocol implementation
-// owns discovery, tool forwarding, pins, and per-call policy admission.
-type MCP struct {
-	mcp.Server
+type mcpSetup struct {
+	mcp.Setup
 	Repo string `json:"repo"`
 }
 
-func (m *MCP) Prepare() error {
-	if err := m.Server.Prepare(); err != nil {
-		return err
+func parseMCP(source connector.Setup) (connector.Prepared, error) {
+	setup := new(mcpSetup)
+	prepared, err := mcp.ParseSetup(source, setup, &setup.Setup)
+	if err != nil {
+		return connector.Prepared{}, err
 	}
-	u, _ := url.Parse(m.URL)
+	u, _ := url.Parse(setup.URL)
 	if u.Scheme != "https" || u.User != nil {
-		return errors.New("Tinfoil MCP requires an HTTPS URL without user information")
+		return connector.Prepared{}, errors.New("Tinfoil MCP requires an HTTPS URL without user information")
 	}
-	return validateEnclave(u.Host, m.Repo)
+	if err := validateEnclave(u.Host, setup.Repo); err != nil {
+		return connector.Prepared{}, err
+	}
+	prepared.Value = setup
+	return prepared, nil
 }
 
-func (m *MCP) Run(ctx context.Context, e *connector.Env, serve func(context.Context)) error {
-	client := e.Client()
+// MCP uses the SDK session owner for its attested transport pool too.
+type MCP struct{ mcp.Server }
+
+func (m *MCP) Update(ctx context.Context, prepared connector.Prepared, secrets map[string]*credential.Value, env *connector.Env) error {
+	m.Server.Close()
+	setup := *prepared.Value.(*mcpSetup)
+	setup.Secrets = maps.Clone(secrets)
+	client := env.Client()
 	base := client.Transport.(*http.Transport)
-	defer base.CloseIdleConnections()
-	u, _ := url.Parse(m.URL)
-	transport, err := newAttestedTransport(ctx, m.Secrets["token"], u.Host, m.Repo, base)
+	u, _ := url.Parse(setup.URL)
+	transport, err := newAttestedTransport(ctx, setup.Secrets["token"], u.Host, setup.Repo, base)
 	if err != nil {
+		base.CloseIdleConnections()
 		return err
 	}
-	defer transport.CloseIdleConnections()
 	client.Transport = transport
-	return m.Server.RunWithClient(ctx, client, serve)
+	return m.Server.UpdateWithClient(ctx, setup.Setup, client, func() {
+		transport.CloseIdleConnections()
+		base.CloseIdleConnections()
+	})
 }

@@ -101,28 +101,6 @@ export function Settings(props: {
         </label>
       </section>
       <section class="settings-section">
-        <h2>Sandbox access</h2>
-        <label class="setting-row">
-          <span>
-            Browser terminals and setup
-            <small>
-              Allow this monitor to connect to sandboxes for terminal sessions
-              and workspace setup. Turning this off closes browser terminals and
-              cancels setup in progress.
-            </small>
-          </span>
-          <input
-            type="checkbox"
-            role="switch"
-            checked={!!m.view()!.config.allow_sandbox_ssh}
-            disabled={m.busy()}
-            onChange={(e) =>
-              void m.edit(owner.edits.setSandboxSSH(e.currentTarget.checked))
-            }
-          />
-        </label>
-      </section>
-      <section class="settings-section">
         <h2>Advanced</h2>
         <form
           class="settings-network-editor form-fields"

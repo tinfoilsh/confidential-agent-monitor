@@ -3,9 +3,11 @@ package connector
 import (
 	"context"
 	"errors"
+	"github.com/tinfoilsh/monitor/facts"
 	"io"
 	"net"
 	"net/http"
+	"sync"
 	"time"
 
 	"golang.org/x/crypto/ssh"
@@ -13,13 +15,42 @@ import (
 
 // ServeHTTP serves the requests on c, the stream itself or TLS over it, until the stream ends.
 func ServeHTTP(s *Stream, c net.Conn, handler http.Handler) {
-	server := &http.Server{Handler: handler, BaseContext: func(net.Listener) context.Context { return s.Context }, ConnState: func(_ net.Conn, state http.ConnState) {
+	server := &http.Server{Handler: handler, ConnState: func(_ net.Conn, state http.ConnState) {
 		if state == http.StateClosed {
 			s.Close()
 		}
 	}}
-	defer server.Shutdown(context.Background())
-	server.Serve(Listen(s, c))
+	ServeListener(s.Context, Listen(s, c), server)
+}
+
+// ServeListener cancels and joins active handlers, including handlers that keep
+// upgraded streams inside their call. Such streams must observe request context.
+func ServeListener(ctx context.Context, ln net.Listener, server *http.Server) error {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	var active sync.RWMutex
+	handler := server.Handler
+	server.BaseContext = func(net.Listener) context.Context { return ctx }
+	server.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		active.RLock()
+		defer active.RUnlock()
+		if ctx.Err() != nil {
+			http.Error(w, "service stopped", http.StatusServiceUnavailable)
+			return
+		}
+		handler.ServeHTTP(w, r)
+	})
+	stop := context.AfterFunc(ctx, func() { server.Close() })
+	err := server.Serve(ln)
+	cancel()
+	server.Close()
+	stop()
+	active.Lock()
+	active.Unlock()
+	if errors.Is(err, http.ErrServerClosed) {
+		return nil
+	}
+	return err
 }
 
 // Listen yields c once and then waits for s to end, for servers that only accept listeners.
@@ -57,14 +88,14 @@ type Stream struct {
 	// captured operation; subsequent operations must pass the gate again.
 	// Calls from either direction may run concurrently. Input must remain
 	// unchanged until Gate returns, and forwarding must use the admitted input.
-	Gate func(context.Context, Request) error
+	Gate func(context.Context, facts.Event) error
 }
 
 // NewStream carries c until ctx ends or the stream closes.
 func NewStream(ctx context.Context, c net.Conn) *Stream {
 	ctx, cancel := context.WithCancel(ctx)
 	stop := context.AfterFunc(ctx, func() { c.Close() })
-	return &Stream{Context: ctx, cancel: cancel, Conn: c, stop: stop, Gate: func(context.Context, Request) error {
+	return &Stream{Context: ctx, cancel: cancel, Conn: c, stop: stop, Gate: func(context.Context, facts.Event) error {
 		return errors.New("authorization gate missing")
 	}}
 }
@@ -88,15 +119,20 @@ func Bind(ctx, other context.Context) (context.Context, context.CancelFunc) {
 	return ctx, func() { stop(); cancel() }
 }
 
+const relayDrainTimeout = 10 * time.Second
+
 // Relay preserves half-close so a caller can finish sending while still
-// receiving a reply. Cancellation and I/O errors close both directions.
+// receiving a reply. A fully closed SSH peer's buffered data drains before both
+// sides close, with a deadline for stalled readers. Cancellation and I/O errors
+// close both directions immediately.
 func Relay(ctx context.Context, a, b net.Conn) {
 	closeBoth := func() { a.Close(); b.Close() }
 	stop := context.AfterFunc(ctx, closeBoth)
 	defer stop()
-	defer closeBoth()
-	done := make(chan struct{})
-	copyTo := func(dst, src net.Conn) {
+	fromA, fromB := make(chan struct{}), make(chan struct{})
+	defer func() { closeBoth(); <-fromA; <-fromB }()
+	copyTo := func(dst, src net.Conn, done chan<- struct{}) {
+		defer close(done)
 		_, err := io.Copy(dst, src)
 		if writer, ok := dst.(interface{ CloseWrite() error }); err == nil && ok {
 			if writer.CloseWrite() == nil {
@@ -105,9 +141,34 @@ func Relay(ctx context.Context, a, b net.Conn) {
 		}
 		closeBoth()
 	}
-	go func() { defer close(done); copyTo(a, b) }()
-	copyTo(b, a)
-	<-done
+	go copyTo(b, a, fromA)
+	go copyTo(a, b, fromB)
+	done := make(chan struct{})
+	go func() { <-fromA; <-fromB; close(done) }()
+	var aClosed, bClosed, drained <-chan struct{}
+	if channel, ok := a.(ChannelConn); ok {
+		aClosed = channel.Closed()
+	}
+	if channel, ok := b.(ChannelConn); ok {
+		bClosed = channel.Closed()
+	}
+	select {
+	case <-done:
+		return
+	case <-ctx.Done():
+		return
+	case <-aClosed:
+		drained = fromA
+	case <-bClosed:
+		drained = fromB
+	}
+	timer := time.NewTimer(relayDrainTimeout)
+	defer timer.Stop()
+	select {
+	case <-drained:
+	case <-ctx.Done():
+	case <-timer.C:
+	}
 }
 
 // PumpReplies runs a protocol reply loop until the stream ends, then joins it.
@@ -125,16 +186,23 @@ func (close CloseFunc) Close() error { close(); return nil }
 type ChannelConn struct {
 	ssh.Channel
 	reader net.Conn
+	closed <-chan struct{}
 }
 
 // HTTP hijacking interrupts a pending read using a deadline. SSH channels have
 // no deadlines, so give stream consumers an interruptible, bounded read pipe.
-// Writes and half-close continue to use the SSH channel directly.
-func NewChannelConn(ch ssh.Channel) ChannelConn {
+// Writes and half-close continue to use the SSH channel directly. Channel
+// requests are rejected; their closure distinguishes full closure from EOF.
+func NewChannelConn(ch ssh.Channel, requests <-chan *ssh.Request) ChannelConn {
 	r, w := net.Pipe()
 	go func() { defer w.Close(); io.Copy(w, ch) }()
-	return ChannelConn{Channel: ch, reader: r}
+	closed := make(chan struct{})
+	go func() { ssh.DiscardRequests(requests); close(closed) }()
+	return ChannelConn{Channel: ch, reader: r, closed: closed}
 }
+
+// Closed reports full SSH channel closure; a peer's CloseWrite leaves it open.
+func (c ChannelConn) Closed() <-chan struct{} { return c.closed }
 
 func (c ChannelConn) Read(p []byte) (int, error) {
 	if c.reader != nil {

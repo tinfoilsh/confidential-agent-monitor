@@ -124,6 +124,7 @@ func (s Store) Load(ctx context.Context, key []byte, minimum uint64, initialize 
 			return s, err
 		}
 	}
+	// Reject stored state rollback.
 	if sl.Generation < minimum {
 		return s, fmt.Errorf("stored generation %d is older than %d", sl.Generation, minimum)
 	}
@@ -159,52 +160,46 @@ func (s *Store) Commit(ctx context.Context, next Document) error {
 
 type SecretID struct{ Account, Connection, Name string }
 
-type Secrets map[SecretID]json.RawMessage
+// Secrets uses the deployed document layout: account, connection and name.
+type Secrets map[string]map[string]map[string]json.RawMessage
 
-// storedSecrets is the document layout: values by account, connection and name.
-type storedSecrets map[string]map[string]map[string]json.RawMessage
+func (s Secrets) Get(id SecretID) json.RawMessage { return s[id.Account][id.Connection][id.Name] }
 
-func (s Secrets) MarshalJSON() ([]byte, error) {
-	stored := storedSecrets{}
-	for id, raw := range s {
-		if stored[id.Account] == nil {
-			stored[id.Account] = map[string]map[string]json.RawMessage{}
+// Set removes empty parents with the last value, preserving the stored layout.
+func (s Secrets) Set(id SecretID, raw json.RawMessage) {
+	if raw != nil {
+		if s[id.Account] == nil {
+			s[id.Account] = map[string]map[string]json.RawMessage{}
 		}
-		if stored[id.Account][id.Connection] == nil {
-			stored[id.Account][id.Connection] = map[string]json.RawMessage{}
+		if s[id.Account][id.Connection] == nil {
+			s[id.Account][id.Connection] = map[string]json.RawMessage{}
 		}
-		stored[id.Account][id.Connection][id.Name] = raw
+		s[id.Account][id.Connection][id.Name] = raw
+		return
 	}
-	return json.Marshal(stored)
+	delete(s[id.Account][id.Connection], id.Name)
+	if len(s[id.Account][id.Connection]) == 0 {
+		delete(s[id.Account], id.Connection)
+	}
+	if len(s[id.Account]) == 0 {
+		delete(s, id.Account)
+	}
 }
 
-func (s *Secrets) UnmarshalJSON(raw []byte) error {
-	var stored storedSecrets
-	if err := json.Unmarshal(raw, &stored); err != nil {
-		return err
-	}
-	*s = Secrets{}
-	for account, connections := range stored {
+// Clone isolates edits at every map level; credential records are immutable bytes.
+func (s Secrets) Clone() Secrets {
+	out := Secrets{}
+	for account, connections := range s {
+		out[account] = maps.Clone(connections)
 		for connection, values := range connections {
-			for name, value := range values {
-				(*s)[SecretID{account, connection, name}] = value
-			}
+			out[account][connection] = maps.Clone(values)
 		}
 	}
-	return nil
+	return out
 }
 
-func (s Secrets) Clone() Secrets { return maps.Collect(maps.All(s)) }
-
-// Connection returns one connection's values by name.
 func (s Secrets) Connection(account, connection string) map[string]json.RawMessage {
-	values := map[string]json.RawMessage{}
-	for id, raw := range s {
-		if id.Account == account && id.Connection == connection {
-			values[id.Name] = raw
-		}
-	}
-	return values
+	return s[account][connection]
 }
 
 const (

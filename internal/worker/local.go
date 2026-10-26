@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/tinfoilsh/monitor/connector"
 )
@@ -57,6 +56,9 @@ func ServeInherited(definitions map[string]connector.Definition) error {
 
 // Start runs the same binary in the prepared root. It never decodes config.
 func (m *Local) Start(ctx context.Context, config []byte, host http.Handler) (Endpoint, error) {
+	if err := ctx.Err(); err != nil {
+		return Endpoint{}, err
+	}
 	if m == nil || host == nil {
 		return Endpoint{}, errors.New("connector worker launcher is not configured")
 	}
@@ -122,9 +124,10 @@ func (m *Local) Start(ctx context.Context, config []byte, host http.Handler) (En
 	if err != nil {
 		return Endpoint{}, err
 	}
-	childCtx, cancel := context.WithCancel(ctx)
-	server := &http.Server{Handler: host, ReadHeaderTimeout: 10 * time.Second, MaxHeaderBytes: 8 << 10, BaseContext: func(net.Listener) context.Context { return childCtx }}
-	go server.Serve(bl)
+	// Workers outlive setup requests.
+	childCtx, cancel := context.WithCancel(context.WithoutCancel(ctx))
+	brokerDone := make(chan struct{})
+	go func() { defer close(brokerDone); serve(childCtx, bl, host) }()
 	userns := "--disable-userns"
 	if value, err := os.ReadFile("/proc/sys/kernel/unprivileged_userns_clone"); err == nil && strings.TrimSpace(string(value)) == "0" {
 		// The CVM already forbids nested user namespaces. Verify that restriction;
@@ -144,21 +147,21 @@ func (m *Local) Start(ctx context.Context, config []byte, host http.Handler) (En
 	cmd.ExtraFiles = []*os.File{file}
 	if err := cmd.Start(); err != nil {
 		cancel()
-		server.Close()
+		bl.Close()
+		<-brokerDone
 		return Endpoint{}, errors.New("could not start connector worker sandbox")
 	}
 	done := make(chan struct{})
-	c := Endpoint{Dial: unixDial(apiPath), Done: done, Close: sync.OnceFunc(func() {
+	c := Endpoint{Context: childCtx, Dial: unixDial(apiPath), Done: done, Close: sync.OnceFunc(func() {
 		cancel()
 		// Killing bubblewrap also kills the worker's PID namespace.
 		cmd.Process.Kill()
-		server.Close()
+		bl.Close()
 	})}
-	stop := context.AfterFunc(ctx, c.Close)
 	go func() {
 		cmd.Wait()
 		c.Close()
-		stop()
+		<-brokerDone
 		os.RemoveAll(directory)
 		release()
 		close(done)

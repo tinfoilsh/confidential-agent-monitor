@@ -9,10 +9,8 @@
 /ui/.env*.local
 /docs/
 
-*.test
-*test\.*
-test_*.py
-testdata/
+*.test.*
+*_test.go
 __pycache__/
 *.md
 !README.md

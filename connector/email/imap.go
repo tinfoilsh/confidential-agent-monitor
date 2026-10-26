@@ -15,7 +15,22 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var IMAPDefinition = connector.Definition{NewConfig: func() connector.Server { return new(IMAP) }, Requests: []connector.Request{new(IMAPRequest)}}
+var IMAPDefinition = connector.Definition{Parse: parseIMAP, New: func() connector.Server { return new(IMAP) }}
+
+func parseIMAP(source connector.Setup) (connector.Prepared, error) {
+	c := new(imapSetup)
+	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+		return connector.Prepared{}, err
+	}
+	if err := c.validate(); err != nil {
+		return connector.Prepared{}, err
+	}
+	names, err := c.Declarations("password")
+	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+}
+
+// IMAP keeps one immutable setup for each admitted stream.
+type IMAP struct{ connector.Slot[imapSetup] }
 
 const (
 	loginTag = "m0"
@@ -23,10 +38,10 @@ const (
 
 var imapLiteral = regexp.MustCompile(`\{(\d+)(\+?)\}$`)
 
-type IMAP struct{ connector.Endpoint }
+type imapSetup struct{ connector.Endpoint }
 
-func (r *IMAP) Prepare() error {
-	if err := r.Endpoint.Prepare(); err != nil {
+func (r *imapSetup) validate() error {
+	if err := r.Endpoint.Parse(); err != nil {
 		return err
 	}
 	if r.URL.Scheme != "imaps" {
@@ -35,7 +50,14 @@ func (r *IMAP) Prepare() error {
 	return nil
 }
 
-func (r *IMAP) Serve(s *connector.Stream, e *connector.Env) {
+func (owner *IMAP) Serve(s *connector.Stream, e *connector.Env) {
+	captured := owner.Load()
+	if captured == nil {
+		return
+	}
+	r := captured.Value
+	r.Secrets = captured.Secrets
+
 	u := &r.URL
 	up, err := connector.DialURL(s.Context, e.Dialer, u, "imaps", "143", "993")
 	if err != nil {
@@ -96,7 +118,7 @@ func (r *IMAP) Serve(s *connector.Stream, e *connector.Env) {
 			mailbox = strings.Trim(args, `"`)
 		}
 		dst := io.Writer(up)
-		if err := s.Gate(s.Context, &IMAPRequest{Command: command, Args: args, Mailbox: mailbox}); err != nil {
+		if err := s.Gate(s.Context, r.Event((&IMAPRequest{Command: command, Args: args, Mailbox: mailbox}).Describe())); err != nil {
 			fmt.Fprintf(s, "%s NO %v\r\n", tag, err)
 			dst = io.Discard
 		}
@@ -127,10 +149,10 @@ func forwardIMAP(dst io.Writer, src *bufio.Reader, line string) error {
 	}
 }
 
-type IMAPRequest facts.IMAP
+type IMAPRequest IMAPFacts
 
-func (v *IMAPRequest) Describe(c connector.Context) (facts.Facts, error) {
-	details := facts.Details{IMAP: (*facts.IMAP)(v)}
+func (v *IMAPRequest) Describe() (facts.Facts, error) {
+	details := Details{IMAP: (*IMAPFacts)(v)}
 	action := ""
 	if slices.Contains(strings.Fields("CAPABILITY CHECK ENABLE EXAMINE FETCH ID IDLE LIST LOGOUT LSUB NAMESPACE NOOP SEARCH SELECT STATUS UNSELECT"), v.Command) {
 		action = "read"

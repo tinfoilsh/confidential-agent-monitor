@@ -29,7 +29,8 @@ fi
 # The header file keeps the owner secret out of curl's arguments.
 owner() { curl -sS --fail-with-body --retry 10 --retry-connrefused -H @<(echo "Authorization: Bearer $(<"$dev/owner.key")") "$api$1" "${@:2}"; }
 owner /unlock -d '{"generation": 0}' > "$dev/state.next.json" || {
-  echo "Cannot unlock $api with $dev/owner.key; if another checkout owns that port, set MONITOR_API and MONITOR_LISTEN to unused ports." >&2
+  echo "Cannot unlock $api with $dev/owner.key:" >&2
+  cat "$dev/state.next.json" >&2
   exit 1
 }
 mv "$dev/state.next.json" "$dev/state.json"
@@ -46,7 +47,7 @@ if jq -e '.generation == 1 and ((.config.accounts // {}) | length == 0) and ((.c
 fi
 jq --arg key "$(<"$dev/id.pub")" \
   '.config as $config | ($config.identities.dev // {}) as $dev |
-   {identities: {dev: ($dev + {key: $key, host: $key,
+   {identities: {dev: ($dev + {key: $key,
      accounts: (($config.accounts // {}) | with_entries(.value = ($dev.accounts[.key] // {level: "allow"})))})}}' "$dev/state.json" |
   jq '{changes: [{path: ["identities", "dev"], value: .identities.dev}]}' | owner /policy/edits -d @- > "$dev/state.next.json"
 mv "$dev/state.next.json" "$dev/state.json"

@@ -40,6 +40,7 @@ export type Rule = {
 };
 export type Identity = {
   key: string;
+  sandbox?: { source: string; instance_id: string };
   reviewer?: "" | "tinfoil";
   effects?: Record<string, Mode>;
   routes?: boolean;
@@ -98,7 +99,6 @@ export type View = {
   config: {
     reviewer?: ReviewerConfig;
     allow_paid_inference?: boolean;
-    allow_sandbox_ssh?: boolean;
     effects?: Record<string, Mode>;
     default_access?: Record<string, Access>;
     data?: { [key: string]: Json };
@@ -682,21 +682,13 @@ export function ownerApi(
       const manifest = await get<IconManifest>(ICON_MANIFEST, signal);
       return (preset) => connectorIcon(manifest, preset, base);
     },
-    enrollSandbox: async (name, credentials, signal) => {
-      // Do not send sandbox credentials unless the owner has opted in.
-      const view = await snapshot("GET", "/", undefined, signal);
-      if (!view.config.allow_sandbox_ssh)
-        throw new OwnerError(
-          "Browser terminals and sandbox setup are disabled; enable them in Monitor Settings.",
-          403,
-        );
-      return snapshot(
+    enrollSandbox: (name, credentials, signal) =>
+      snapshot(
         "POST",
         `/sandboxes/${encodeURIComponent(name)}/enroll`,
         credentials,
         signal,
-      );
-    },
+      ),
     shell: (name, body, signal) =>
       post(`/sandboxes/${encodeURIComponent(name)}/shell`, body, signal),
   };
@@ -2023,9 +2015,6 @@ export const edits = {
   ],
   setPaidInference: (allow: boolean): Change[] => [
     { path: ["allow_paid_inference"], value: allow },
-  ],
-  setSandboxSSH: (allow: boolean): Change[] => [
-    { path: ["allow_sandbox_ssh"], value: allow },
   ],
   setAccountPolicy: (account: string, source: string) =>
     sourceChanges({ policies: { [account]: source.trim() || null } }),

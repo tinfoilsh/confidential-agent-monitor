@@ -8,30 +8,29 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/jsonsel"
 	"github.com/tinfoilsh/monitor/facts"
 )
 
 type Request struct {
-	HTTP    *facts.HTTP    `json:"http"`
-	GraphQL *facts.GraphQL `json:"graphql,omitempty"`
-	Invalid string         `json:"invalid,omitempty"`
-	slots   []*Slot        // Bound by parsing; only the serving connector uses these.
+	HTTP    *HTTPFacts    `json:"http"`
+	GraphQL *GraphQLFacts `json:"graphql,omitempty"`
+	Invalid string        `json:"invalid,omitempty"`
+	slots   []*Slot       // Bound by parsing; only the serving connector uses these.
 }
 
-func (r *Request) Describe(c connector.Context) (facts.Facts, error) {
+func (r *Request) Describe(config *Setup) (facts.Facts, error) {
 	if r.HTTP == nil {
 		return facts.Facts{}, errors.New("missing HTTP request")
 	}
-	f := facts.Facts{Details: facts.Details{HTTP: r.HTTP, GraphQL: r.GraphQL}}
+	f := facts.Facts{Details: Details{HTTP: r.HTTP, GraphQL: r.GraphQL}}
 	h := r.HTTP
 	f.Title = h.Method + " " + h.Host + h.Path
 	if r.Invalid != "" {
 		return f, errors.New(r.Invalid)
 	}
-	if p, ok := c.Spec.(*Preset); ok && p != nil {
-		matched, err := p.Match(r, c, f)
+	if p := config.Preset; p != nil {
+		matched, err := p.Match(r, config, f)
 		if err == nil && h.WebSocket && matched.Operation == nil {
 			err = errors.New("WebSocket requests require a reviewed operation")
 		}
@@ -197,7 +196,7 @@ func (compiled *compiledOperation) matches(r *Request, headers map[string][]stri
 		if spec.Field != "" {
 			return spec.Field == "*" || len(g.Fields) == 1 && g.Fields[0].Name == spec.Field, nil
 		}
-		return !slices.ContainsFunc(g.Fields, func(f facts.GraphQLField) bool { return !slices.Contains(spec.Fields, f.Name) }), nil
+		return !slices.ContainsFunc(g.Fields, func(f GraphQLFieldFacts) bool { return !slices.Contains(spec.Fields, f.Name) }), nil
 	}
 	return h.BodyKind == body, nil
 }
@@ -467,13 +466,9 @@ func (node *routeNode) candidates(path []string, out []*compiledOperation) []*co
 
 // Match selects exactly one reviewed operation. Unknown requests keep their
 // protocol details, but receive no operation or inferred effects.
-func (p *Preset) Match(r *Request, c connector.Context, f facts.Facts) (facts.Facts, error) {
+func (p *Preset) Match(r *Request, config *Setup, f facts.Facts) (facts.Facts, error) {
 	h := r.HTTP
-	f.Title = fmt.Sprintf("%s: %s %s", c.Title, h.Method, h.Path)
-	var config *HTTP
-	if provider, ok := c.Config.(HTTPProvider); ok {
-		config = provider.HTTPConfig()
-	}
+	f.Title = fmt.Sprintf("%s: %s %s", config.Title, h.Method, h.Path)
 	if p.Slots && (config == nil || !slices.ContainsFunc(config.Slots, func(slot Slot) bool {
 		return h.Origin == slot.Origin && under(h.Path, slot.Path)
 	})) {
@@ -481,7 +476,7 @@ func (p *Preset) Match(r *Request, c connector.Context, f facts.Facts) (facts.Fa
 	}
 	parts := strings.Split(h.Path, "/")
 	origins, methods := []string{h.Origin, "*"}, []string{h.Method, "*"}
-	if c.Options.Origin == h.Origin || c.Options.Origin == "*" {
+	if config.Origin == h.Origin || config.Origin == "*" {
 		origins = append(origins, "{origin}")
 	}
 	var candidates []*compiledOperation
@@ -533,7 +528,7 @@ func (p *Preset) Match(r *Request, c connector.Context, f facts.Facts) (facts.Fa
 	}
 	grant := project(parameters, o.Grant)
 	f.Operation = &facts.Operation{ID: o.ID, Action: o.Action, Effects: o.Effects}
-	f.Title = fmt.Sprintf("%s: %s", c.Title, o.ID)
+	f.Title = fmt.Sprintf("%s: %s", config.Title, o.ID)
 	f.Parameters = parameters
 	f.Context.Sends = o.Sends
 	f.Scope, f.Definition = grant, matched.definition

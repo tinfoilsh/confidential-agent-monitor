@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"net"
 	"net/http"
 	"net/url"
@@ -14,47 +15,37 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Server handles one stream. A Runner calls serve inline once ready.
-// serve stops accepting work when its context ends and returns after the last operation.
-type Server interface{ Serve(*Stream, *Env) }
-
-type Runner interface {
-	Run(ctx context.Context, e *Env, serve func(context.Context)) error
+// Server owns resources across setup changes. Update installs parsed data and
+// scoped handles; its context bounds installation, not the installed lifetime.
+// The host serializes Update and final Close. Update may overlap admitted uses;
+// final Close follows their cancellation and return.
+type Server interface {
+	Serve(*Stream, *Env)
+	Update(context.Context, Prepared, map[string]*credential.Value, *Env) error
 }
 
-type Preparer interface{ Prepare() error }
+// Prepared is a pure parser result. Source is sent to isolated execution; Value
+// belongs to the concrete protocol. A nil Secrets slice means no credential scope.
+type Prepared struct {
+	Source    Setup
+	Value     any
+	Claim     func(string, uint32) int
+	Discovery Discovery
+	Secrets   []string
+}
 
 type Controller interface{ Control() http.Handler }
 
-type SecretHolder interface {
-	SecretValues() map[string]*credential.Value
-}
-
-// Claimer scores how well it serves a forwarded target; a negative score declines it.
-type Claimer interface {
-	Claim(host string, port uint32) int
-}
-
-func Decode(raw []byte, s Server) error {
-	if err := facts.DecodeNumbers(raw, s); err != nil {
-		return err
-	}
-	if p, ok := s.(Preparer); ok {
-		return p.Prepare()
-	}
-	return nil
-}
-
-// Definition registers a connector and the request types it can submit.
+// Definition registers a concrete connector.
 type Definition struct {
 	// PerMessage promises that each operation is gated against captured input.
 	// Such streams can stay open across label changes and gate the next operation.
 	// Opaque sessions keep the default: close when another operation changes the label.
 	PerMessage bool
 	HostKey    bool
-	NewConfig  func() Server
-	Requests   []Request
-	Settings   any // Optional pointer to deployment settings, filled before NewConfig in a worker.
+	Parse      func(Setup) (Prepared, error)
+	New        func() Server
+	Settings   any // Optional pointer to deployment settings, filled before Parse in a worker.
 }
 
 // Control handles private host HTTP after owner authentication.
@@ -80,25 +71,14 @@ type Dialer interface {
 	DialContext(context.Context, string, string) (net.Conn, error)
 }
 
-// Request carries parsed input to the monitor. Describe interprets it once
-// against the current settings, without executing it or mutating the input.
-type Request interface {
-	Describe(Context) (facts.Facts, error)
+type Setup struct {
+	Config, Definition, Options json.RawMessage
 }
 
-// PolicyOptions contains settings used only by policy, never connection setup.
-type PolicyOptions struct {
-	Private []string `json:"private,omitempty"`
-	Address string   `json:"address,omitempty"`
-	Origin  string   `json:"origin,omitempty"`
-}
-
-// Context contains current settings and the preset for the connection protocol.
-type Context struct {
-	Title, Connection string
-	Config            any
-	Options           PolicyOptions
-	Spec              any
+type Discovery struct {
+	Hosts        []string
+	Slots        any
+	Placeholders map[string]string
 }
 
 type Endpoint struct {
@@ -108,7 +88,7 @@ type Endpoint struct {
 	User    string `json:"user"`
 }
 
-func (e *Endpoint) Prepare() error {
+func (e *Endpoint) Parse() error {
 	u, err := ParseURL(e.Address)
 	if err != nil {
 		return err
@@ -122,14 +102,57 @@ func (e *Endpoint) Prepare() error {
 
 // SecretConfig owns the credential handles shared with the connection runtime.
 type SecretConfig struct {
-	Secrets map[string]*credential.Value `json:"secrets,omitempty"`
+	Semantics `json:"-"`
+	Secrets   map[string]*credential.Value `json:"secrets,omitempty"`
 }
 
-func (c *SecretConfig) SecretValues() map[string]*credential.Value {
-	if c.Secrets == nil {
-		c.Secrets = map[string]*credential.Value{}
+// Semantics is the connector's immutable, connection-scoped preset projection.
+// It contains neither access rules nor mutable global configuration.
+type Semantics struct {
+	Title           string
+	Catalog         struct{ Actions map[string]facts.Action }
+	Address, Origin string
+}
+
+// ParseSetup decodes the protocol configuration, its selected preset fields and
+// local semantic options once each, without opening resources or reading secrets.
+func ParseSetup(setup Setup, config, preset any, semantics *Semantics) error {
+	if err := facts.DecodeNumbers(setup.Config, config); err != nil {
+		return err
 	}
-	return c.Secrets
+	if len(setup.Definition) != 0 {
+		if err := json.Unmarshal(setup.Definition, preset); err != nil {
+			return err
+		}
+	}
+	var options struct{ Address, Origin string }
+	if len(setup.Options) != 0 {
+		if err := json.Unmarshal(setup.Options, &options); err != nil {
+			return err
+		}
+	}
+	semantics.Address, semantics.Origin = options.Address, options.Origin
+	return nil
+}
+
+// Declarations accepts empty source slots, never source-embedded credential values.
+func (c *SecretConfig) Declarations(required ...string) ([]string, error) {
+	names := append(make([]string, 0, len(c.Secrets)+len(required)), required...)
+	for name, value := range c.Secrets {
+		if value != nil && value.Raw() != nil {
+			return nil, errors.New("set credentials through account settings")
+		}
+		names = append(names, name)
+	}
+	c.Secrets = nil
+	return names, nil
+}
+
+func (c *Semantics) Event(f facts.Facts, err error) facts.Event {
+	if f.Operation != nil {
+		f.Operation = f.Operation.Resolve(c.Catalog.Actions)
+	}
+	return facts.Capture(f, err)
 }
 
 // Secret returns an empty value for optional, unconfigured authentication.

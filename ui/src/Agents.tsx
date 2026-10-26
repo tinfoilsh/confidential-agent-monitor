@@ -101,19 +101,16 @@ export function Agents(props: { expanded?: string }) {
                                 )}
                               </Show>
                               {m.options.sandboxStatus?.(name) ?? (
-                                <Show when={summaries().has(name)}>
+                                <Show
+                                  when={
+                                    m.view()!.config.identities?.[name]?.sandbox
+                                  }
+                                >
                                   <button
                                     type="button"
                                     class="icon-button open-shell"
                                     aria-label="Open shell"
-                                    disabled={
-                                      !m.view()!.config.allow_sandbox_ssh
-                                    }
-                                    title={
-                                      m.view()!.config.allow_sandbox_ssh
-                                        ? "Open shell"
-                                        : "Enable browser terminals in Settings"
-                                    }
+                                    title="Open shell"
                                     onClick={() => m.setShell(name)}
                                   >
                                     <Icon name="integrations" />

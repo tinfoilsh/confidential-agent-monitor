@@ -12,6 +12,8 @@ import (
 	"net/http"
 	"net/url"
 	"slices"
+	"sync"
+	"sync/atomic"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/tinfoilsh/monitor/connector"
@@ -20,24 +22,97 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var Definition = connector.Definition{NewConfig: func() connector.Server { return new(Server) }, Requests: []connector.Request{new(Request)}}
+var Definition = connector.Definition{Parse: Parse, New: func() connector.Server { return new(Server) }}
 
-type Server struct {
+type Setup struct {
 	connector.SecretConfig
-	URL     string    `json:"url"`
-	Pin     *Snapshot `json:"pin"`
+	URL    string    `json:"url"`
+	Pin    *Snapshot `json:"pin"`
+	preset *Preset
+}
+
+type session struct {
+	Setup
 	current *Snapshot
 	session *sdk.ClientSession
 	// tools match the pin exactly; blocked counts the others, which await review.
-	tools        []*sdk.Tool
-	blocked      int
-	instructions string
+	tools          []*sdk.Tool
+	blocked        int
+	instructions   string
+	closeTransport func()
 }
 
-func (c *Server) Prepare() error {
-	u, err := connector.ParseURL(c.URL)
+// ParseSetup lets an attested connector add its own source fields without a
+// second decoding path for MCP matching, pins or credential declarations.
+func ParseSetup(source connector.Setup, config any, setup *Setup) (connector.Prepared, error) {
+	preset := struct {
+		*connector.Semantics
+		MCP *Preset `json:"mcp"`
+	}{Semantics: &setup.Semantics}
+	if err := connector.ParseSetup(source, config, &preset, &setup.Semantics); err != nil {
+		return connector.Prepared{}, err
+	}
+	u, err := connector.ParseURL(setup.URL)
 	if err != nil || u.Scheme != "http" && u.Scheme != "https" {
-		return errors.New("MCP requires an http:// or https:// server URL")
+		return connector.Prepared{}, errors.New("MCP requires an http:// or https:// server URL")
+	}
+	setup.preset = preset.MCP
+	names, err := setup.Declarations("token")
+	return connector.Prepared{Source: source, Value: setup, Secrets: names}, err
+}
+
+func Parse(source connector.Setup) (connector.Prepared, error) {
+	setup := new(Setup)
+	return ParseSetup(source, setup, setup)
+}
+
+// Server owns the SDK session; each request closes over its setup and exact pin.
+type Server struct {
+	mu      sync.Mutex
+	current atomic.Pointer[session]
+}
+
+func (s *Server) Update(ctx context.Context, prepared connector.Prepared, secrets map[string]*credential.Value, env *connector.Env) error {
+	setup := *prepared.Value.(*Setup)
+	setup.Secrets = maps.Clone(secrets)
+	client := env.Client()
+	return s.UpdateWithClient(ctx, setup, client, client.Transport.(*http.Transport).CloseIdleConnections)
+}
+
+// UpdateWithClient owns cleanup after a failed install or after the SDK session closes.
+func (s *Server) UpdateWithClient(ctx context.Context, setup Setup, client *http.Client, cleanup func()) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if old := s.current.Swap(nil); old != nil {
+		old.Close()
+	}
+	next := &session{Setup: setup, closeTransport: cleanup}
+	if err := next.connect(ctx, client); err != nil {
+		next.Close()
+		return err
+	}
+	s.current.Store(next)
+	return nil
+}
+
+func (s *Server) Close() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if old := s.current.Swap(nil); old != nil {
+		return old.Close()
+	}
+	return nil
+}
+
+func (s *Server) Serve(stream *connector.Stream, env *connector.Env) {
+	if current := s.current.Load(); current != nil {
+		current.serve(stream, env)
+	}
+}
+
+func (s *Server) Details() json.RawMessage {
+	if current := s.current.Load(); current != nil {
+		return current.details()
 	}
 	return nil
 }
@@ -66,26 +141,19 @@ func (b bearer) RoundTrip(r *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
-func (m *Server) Run(ctx context.Context, e *connector.Env, serve func(context.Context)) error {
-	client := e.Client()
-	defer client.Transport.(*http.Transport).CloseIdleConnections()
-	return m.RunWithClient(ctx, client, serve)
-}
-
-// RunWithClient uses a caller-owned transport. Tools must match the owner's pin,
-// and each call still passes the policy gate.
-func (m *Server) RunWithClient(ctx context.Context, client *http.Client, serve func(context.Context)) error {
-	if err := m.connect(ctx, client); err != nil {
-		return err
+func (m *session) Close() error {
+	if m.session != nil {
+		m.session.Close()
 	}
-	defer m.session.Close()
-	serve(ctx)
+	if m.closeTransport != nil {
+		m.closeTransport()
+	}
 	return nil
 }
 
 // Serve builds a server per request, so each call is screened by the stream's gate.
 // SSH admission authenticates these streams; worker transport addresses are internal.
-func (m *Server) Serve(s *connector.Stream, e *connector.Env) {
+func (m *session) serve(s *connector.Stream, e *connector.Env) {
 	var c net.Conn = s
 	if s.Port == 443 {
 		c = tls.Server(s, e.TLS)
@@ -94,7 +162,7 @@ func (m *Server) Serve(s *connector.Stream, e *connector.Env) {
 		server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: Version}, &sdk.ServerOptions{Instructions: m.instructions})
 		for _, t := range m.tools {
 			server.AddTool(t, func(ctx context.Context, req *sdk.CallToolRequest) (*sdk.CallToolResult, error) {
-				if err := s.Gate(ctx, &Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}); err != nil {
+				if err := s.Gate(ctx, m.Event((&Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}).Describe(m.preset))); err != nil {
 					log.Printf("%s: blocked %s: %v", m.URL, t.Name, err)
 					return &sdk.CallToolResult{IsError: true, Content: []sdk.Content{&sdk.TextContent{Text: "blocked by policy: " + err.Error()}}}, nil
 				}
@@ -105,7 +173,7 @@ func (m *Server) Serve(s *connector.Stream, e *connector.Env) {
 	}, &sdk.StreamableHTTPOptions{Stateless: true, PropagateRequestCancellation: true, DisableLocalhostProtection: true}))
 }
 
-func (m *Server) connect(ctx context.Context, client *http.Client) error {
+func (m *session) connect(ctx context.Context, client *http.Client) error {
 	ctx, cancel := context.WithTimeout(ctx, connector.DialTimeout)
 	defer cancel()
 	if token := m.Secrets["token"]; token != nil && len(token.Raw()) > 0 {
@@ -148,7 +216,7 @@ func (m *Server) connect(ctx context.Context, client *http.Client) error {
 	return nil
 }
 
-func (m *Server) Details() json.RawMessage {
+func (m *session) details() json.RawMessage {
 	status := map[string]any{"blocked": m.blocked}
 	if m.blocked > 0 {
 		status["changes"], status["pin"] = m.Pin.Diff(m.current), m.current
@@ -163,8 +231,8 @@ type Request struct {
 	ReadOnly  bool            `json:"read_only"`
 }
 
-func (r *Request) Describe(c connector.Context) (facts.Facts, error) {
-	f := facts.Facts{Details: facts.Details{MCP: &facts.MCP{Tool: r.Tool, Arguments: r.Arguments, ReadOnly: r.ReadOnly}}, Title: "Use " + r.Tool}
+func (r *Request) Describe(p *Preset) (facts.Facts, error) {
+	f := facts.Facts{Details: Details{MCP: &MCPFacts{Tool: r.Tool, Arguments: r.Arguments, ReadOnly: r.ReadOnly}}, Title: "Use " + r.Tool}
 	action := "use." + r.Tool
 	if r.ReadOnly {
 		action = "read." + r.Tool
@@ -174,9 +242,9 @@ func (r *Request) Describe(c connector.Context) (facts.Facts, error) {
 		return f, err
 	}
 	f.Parameters = map[string]any{"arguments": args}
-	f.Details.MCP.Arguments = args
+	f.Details.(Details).MCP.Arguments = args
 	f.Operation = &facts.Operation{Action: action}
-	if p, _ := c.Spec.(*Preset); p != nil {
+	if p != nil {
 		scope, err := p.scope.Select(args)
 		maps.Copy(f.Parameters, scope)
 		f.Definition = p.definition

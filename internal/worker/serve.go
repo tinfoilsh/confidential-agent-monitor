@@ -12,7 +12,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector"
@@ -36,7 +35,7 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 		return errors.New("unsupported worker protocol")
 	}
 	def := definitions[boot.Kind]
-	if def.NewConfig == nil {
+	if def.New == nil || def.Parse == nil {
 		return errors.New("unknown connector")
 	}
 	if def.Settings != nil {
@@ -44,8 +43,8 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 			return err
 		}
 	}
-	instance := def.NewConfig()
-	if err := connector.Decode(boot.Config, instance); err != nil {
+	prepared, err := def.Parse(boot.Setup)
+	if err != nil {
 		return err
 	}
 	ctx, cancel := context.WithCancel(ctx)
@@ -53,17 +52,14 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 	callbacks := host.Transport()
 	defer callbacks.CloseIdleConnections()
 	env := connector.Env{Dialer: BrokerDialer{Dial: host}}
-	if secrets, ok := instance.(connector.SecretHolder); ok {
-		values := secrets.SecretValues()
-		clear(values)
-		for name, handle := range boot.Secrets {
-			values[name] = credential.Remote(handle.Configured, func(ctx context.Context) (string, error) {
-				var value string
-				err := call(ctx, callbacks, "/credential/"+url.PathEscape(name), nil, &value)
-				return value, err
-			})
-			values[name].Placeholder = handle.Placeholder
-		}
+	secrets := map[string]*credential.Value{}
+	for name, handle := range boot.Secrets {
+		secrets[name] = credential.Remote(handle.Configured, func(ctx context.Context) (string, error) {
+			var value string
+			err := call(ctx, callbacks, "/credential/"+url.PathEscape(name), nil, &value)
+			return value, err
+		})
+		secrets[name].Placeholder = handle.Placeholder
 	}
 	if len(boot.HostKey) != 0 {
 		key, err := ssh.ParsePublicKey(boot.HostKey)
@@ -88,111 +84,54 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 		}
 		return &tls.Certificate{Certificate: cert.Chain, PrivateKey: key}, nil
 	}}
-	var serveErr error
-	started := false
-	serve := func(ctx context.Context) {
-		started = true
-		var active sync.WaitGroup
-		var mu sync.Mutex
-		stopping := false
-		defer func() {
-			mu.Lock()
-			stopping = true
-			mu.Unlock()
-			cancel()
-			active.Wait()
-		}()
-
-		var details json.RawMessage
-		if d, ok := instance.(connector.Detailer); ok {
-			details = d.Details()
+	instance := def.New()
+	if closer, ok := instance.(io.Closer); ok {
+		defer closer.Close()
+	}
+	startErr := instance.Update(ctx, prepared, secrets, &env)
+	var details json.RawMessage
+	if d, ok := instance.(connector.Detailer); ok {
+		details = d.Details()
+	}
+	return serve(ctx, ln, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == readyPath {
+			reply(w, details, startErr)
+			return
 		}
-		var streams sync.Map
-		httpServer := &http.Server{BaseContext: func(net.Listener) context.Context { return ctx }, ReadHeaderTimeout: 10 * time.Second, IdleTimeout: time.Minute, MaxHeaderBytes: 16 << 10, Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Path == readyPath {
-				reply(w, details, nil)
-				return
-			}
-			mu.Lock()
-			if stopping {
-				mu.Unlock()
-				http.Error(w, "worker stopped", 503)
-				return
-			}
-			active.Add(1)
-			mu.Unlock()
-			defer active.Done()
-			control := strings.HasPrefix(r.URL.Path, "/control/")
-			if !control && (r.Method != "GET" || r.URL.Path != "/stream") {
-				http.NotFound(w, r)
-				return
-			}
-			if control {
-				r.URL.Path = strings.TrimPrefix(r.URL.Path, "/control")
-				r.URL.RawPath = ""
-				connector.Control(instance).ServeHTTP(w, r)
-				return
-			}
-			raw, err := base64.RawStdEncoding.DecodeString(r.Header.Get(sessionHeader))
-			var info sessionInfo
-			if err != nil || len(raw) > 8192 || facts.DecodeNumbers(raw, &info) != nil || info.ID == "" {
-				http.Error(w, "invalid session", 400)
-				return
-			}
-			if _, exists := streams.LoadOrStore(info.ID, true); exists {
-				http.Error(w, "duplicate session", 409)
-				return
-			}
-			defer streams.Delete(info.ID)
-			conn, err := Accept(w, r)
-			if err != nil {
-				return
-			}
-			// Upgraded streams outlive the HTTP request that opened them.
-			stream := connector.NewStream(context.WithValue(ctx, sessionKey{}, info.ID), conn)
-			defer stream.Close()
-			stream.Name, stream.Host, stream.Port = info.Name, info.Host, info.Port
-			stream.Gate = func(ctx context.Context, request connector.Request) error {
-				event, err := encode(def, request)
-				if err != nil {
-					return err
-				}
-				return call(ctx, callbacks, "/gate/"+info.ID, event, nil)
-			}
-			instance.Serve(stream, &env)
-		})}
-		stop := context.AfterFunc(ctx, func() { httpServer.Close() })
-		defer stop()
-		serveErr = httpServer.Serve(ln)
-	}
-	if runner, ok := instance.(connector.Runner); ok {
-		if err := runner.Run(ctx, &env, serve); err != nil {
-			if !started && ctx.Err() == nil {
-				// The host is already waiting on readiness. Return the connector's
-				// error over that channel before the worker exits, instead of
-				// closing its socket with an unread readiness request.
-				failed := &http.Server{ReadHeaderTimeout: 10 * time.Second, Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					if r.Method == http.MethodPost && r.URL.Path == readyPath {
-						reply(w, nil, err)
-					} else {
-						http.NotFound(w, r)
-					}
-				})}
-				failureCtx, stop := context.WithTimeout(ctx, time.Minute)
-				defer stop()
-				closeServer := context.AfterFunc(failureCtx, func() { failed.Close() })
-				defer closeServer()
-				failed.Serve(ln) // The host closes the worker after reading the error.
-			}
-			return err
+		if startErr != nil {
+			http.Error(w, "worker stopped", 503)
+			return
 		}
-	} else {
-		serve(ctx)
-	}
-	if errors.Is(serveErr, http.ErrServerClosed) {
-		return nil
-	}
-	return serveErr
+		control := strings.HasPrefix(r.URL.Path, "/control/")
+		if !control && (r.Method != "GET" || r.URL.Path != "/stream") {
+			http.NotFound(w, r)
+			return
+		}
+		if control {
+			r.URL.Path = strings.TrimPrefix(r.URL.Path, "/control")
+			r.URL.RawPath = ""
+			connector.Control(instance).ServeHTTP(w, r)
+			return
+		}
+		raw, err := base64.RawStdEncoding.DecodeString(r.Header.Get(sessionHeader))
+		var info sessionInfo
+		if err != nil || len(raw) > 8192 || facts.DecodeNumbers(raw, &info) != nil || info.ID == "" {
+			http.Error(w, "invalid session", 400)
+			return
+		}
+		conn, err := Accept(w, r)
+		if err != nil {
+			return
+		}
+		// Keep upgraded work in this handler so shutdown joins its actual return.
+		stream := connector.NewStream(context.WithValue(r.Context(), sessionKey{}, info.ID), conn)
+		defer stream.Close()
+		stream.Name, stream.Host, stream.Port = info.Name, info.Host, info.Port
+		stream.Gate = func(ctx context.Context, event facts.Event) error {
+			return call(ctx, callbacks, "/gate/"+info.ID, json.RawMessage(event), nil)
+		}
+		instance.Serve(stream, &env)
+	}))
 }
 
 type remoteSigner struct {

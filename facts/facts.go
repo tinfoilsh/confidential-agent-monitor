@@ -2,13 +2,13 @@
 package facts
 
 import (
+	"cmp"
 	"encoding/json"
 	"encoding/json/jsontext"
 	jsonv2 "encoding/json/v2"
 	"errors"
-	"net/http"
-	"net/url"
 	"slices"
+	"strings"
 )
 
 // Version identifies the facts schema and approval semantics. Bump it when
@@ -56,6 +56,38 @@ type Operation struct {
 	Lineage []string `json:"lineage"`
 }
 
+type Action struct {
+	Title   string   `json:"title"`
+	Effects []string `json:"effects,omitempty"`
+}
+
+type Requirement struct {
+	ID      string `json:"id"`
+	Message string `json:"message"`
+}
+
+// Resolve binds an operation to its nearest configured action semantics.
+func (op Operation) Resolve(actions map[string]Action) *Operation {
+	op.Lineage = nil
+	for action := op.Action; action != ""; {
+		op.Lineage = append(op.Lineage, action)
+		i := strings.LastIndexByte(action, '.')
+		if i < 0 {
+			break
+		}
+		action = action[:i]
+	}
+	effects := op.Effects
+	for i := 0; effects == nil && i < len(op.Lineage); i++ {
+		effects = actions[op.Lineage[i]].Effects
+	}
+	if op.Action == "" || effects == nil {
+		return nil
+	}
+	op.Effects, op.ID = slices.Compact(slices.Sorted(slices.Values(effects))), cmp.Or(op.ID, op.Action)
+	return &op
+}
+
 // Sends and Observes are connector hints; policy resolves them with account settings.
 type Context struct {
 	Label    Label  `json:"label"`
@@ -68,7 +100,6 @@ type Context struct {
 type Facts struct {
 	Scope      map[string]any `json:"-"`
 	Definition any            `json:"-"`
-	encoded    []byte         // The immutable audit encoding after Snapshot.
 	Version    int            `json:"version"`
 	Kind       Kind           `json:"kind"`
 	Principal  Principal      `json:"principal"`
@@ -79,178 +110,13 @@ type Facts struct {
 	Parameters map[string]any `json:"parameters"`
 	Context    Context        `json:"context"`
 	Title      string         `json:"title"`
-	Details    Details        `json:"details"`
+	Details    any            `json:"details"`
 }
 
-// Details holds parsed protocol data. The Go fields and JSON names are shared
-// by connectors, authorization, and audit.
-type Details struct {
-	HTTP     *HTTP     `json:"http,omitempty"`
-	GraphQL  *GraphQL  `json:"graphql,omitempty"`
-	MCP      *MCP      `json:"mcp,omitempty"`
-	SSH      *SSH      `json:"ssh,omitempty"`
-	Command  *Command  `json:"command,omitempty"`
-	Payload  *Git      `json:"payload,omitempty"`
-	SFTP     *SFTP     `json:"sftp,omitempty"`
-	SMTP     *SMTP     `json:"smtp,omitempty"`
-	Mail     *Mail     `json:"mail,omitempty"`
-	IMAP     *IMAP     `json:"imap,omitempty"`
-	Browser  *Browser  `json:"browser,omitempty"`
-	NATS     *NATS     `json:"nats,omitempty"`
-	MQTT     *MQTT     `json:"mqtt,omitempty"`
-	Redis    *Redis    `json:"redis,omitempty"`
-	Postgres *Postgres `json:"postgres,omitempty"`
-	Sign     *Sign     `json:"sign,omitempty"`
-	TCP      *TCP      `json:"tcp,omitempty"`
-	Policy   *Policy   `json:"policy,omitempty"`
-}
-
-type HTTP struct {
-	WebSocket bool        `json:"websocket,omitempty"`
-	Method    string      `json:"method"`
-	Origin    string      `json:"origin"`
-	Host      string      `json:"host"`
-	Path      string      `json:"path"`
-	Query     url.Values  `json:"query"`
-	Headers   http.Header `json:"headers"`
-	Secrets   []string    `json:"secrets"`
-	BodyKind  string      `json:"body_kind"`
-	Body      any         `json:"body,omitempty"`
-	Form      url.Values  `json:"form,omitempty"`
-	// HeaderJSON holds single header values that are JSON objects, as Dropbox-API-Arg is.
-	HeaderJSON map[string]any `json:"header_json,omitempty"`
-}
-
-type GraphQL struct {
-	Kind   string         `json:"kind"`
-	Fields []GraphQLField `json:"fields"`
-}
-
-type GraphQLField struct {
-	Name      string         `json:"name"`
-	Arguments map[string]any `json:"arguments"`
-}
-
-type SSH struct {
-	Request   string  `json:"request"`
-	Command   string  `json:"command,omitempty"`
-	Subsystem string  `json:"subsystem,omitempty"`
-	Term      string  `json:"term,omitempty"`
-	Env       *SSHEnv `json:"env,omitempty"`
-}
-
-type SSHEnv struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
-}
-
-type Command struct {
-	Argv []string `json:"argv"`
-}
-
-type Git struct {
-	Type       string   `json:"type"`
-	Tree       string   `json:"tree,omitempty"`
-	Object     string   `json:"object,omitempty"`
-	ObjectType string   `json:"object_type,omitempty"`
-	Tag        string   `json:"tag,omitempty"`
-	Parents    []string `json:"parents"`
-	Author     string   `json:"author,omitempty"`
-	Committer  string   `json:"committer,omitempty"`
-	Tagger     string   `json:"tagger,omitempty"`
-	Message    string   `json:"message"`
-}
-
-type SMTP struct {
-	From string   `json:"from"`
-	To   []string `json:"to"`
-}
-
-type Mail struct {
-	From        []string `json:"from"`
-	To          []string `json:"to"`
-	Cc          []string `json:"cc"`
-	Subject     string   `json:"subject"`
-	Attachments []string `json:"attachments"`
-}
-
-type IMAP struct {
-	Command string `json:"command"`
-	Args    string `json:"args"`
-	Mailbox string `json:"mailbox,omitempty"`
-}
-
-type SFTP struct {
-	Command    string            `json:"command"`
-	Path       string            `json:"path"`
-	Target     string            `json:"target,omitempty"`
-	Read       bool              `json:"read,omitempty"`
-	Write      bool              `json:"write,omitempty"`
-	Flags      uint32            `json:"flags,omitempty"`
-	Offset     uint64            `json:"offset,omitempty"`
-	Size       uint32            `json:"size,omitempty"`
-	Attributes map[string]uint64 `json:"attributes,omitempty"`
-}
-
-type Browser struct {
-	Command string   `json:"command"`
-	URL     string   `json:"url"`
-	Host    string   `json:"host"`
-	Text    string   `json:"text,omitempty"`
-	Secrets []string `json:"secrets,omitempty"`
-}
-
-type NATS struct {
-	Command string              `json:"command"`
-	Subject string              `json:"subject"`
-	Reply   string              `json:"reply,omitempty"`
-	Queue   string              `json:"queue,omitempty"`
-	Headers map[string][]string `json:"headers,omitempty"`
-	Payload []byte              `json:"payload,omitempty"`
-}
-
-type MQTT struct {
-	Command string `json:"command"`
-	Topic   string `json:"topic"`
-	QoS     byte   `json:"qos"`
-	Retain  bool   `json:"retain"`
-	Payload []byte `json:"payload,omitempty"`
-}
-
-type Redis struct {
-	Command string   `json:"command"`
-	Argv    []string `json:"argv"`
-}
-
-type Postgres struct {
-	SQL string `json:"sql"`
-}
-
-type Sign struct {
-	Agent     string `json:"agent"`
-	Key       string `json:"key,omitempty"`
-	Purpose   string `json:"purpose,omitempty"`
-	Namespace string `json:"namespace,omitempty"`
-	User      string `json:"user,omitempty"`
-	Hash      string `json:"hash,omitempty"`
-	Op        string `json:"op,omitempty"`
-}
-
-type TCP struct {
-	Host string `json:"host"`
-	Port uint32 `json:"port"`
-}
-
-// Policy is an agent's proposed change to the owner's policy source.
+// Policy is an agent proposal to change the owner source.
 type Policy struct {
 	SourceDiff    string `json:"source_diff"`
 	EffectiveDiff string `json:"effective_diff"`
-}
-
-type MCP struct {
-	Tool      string `json:"tool"`
-	Arguments any    `json:"arguments"`
-	ReadOnly  bool   `json:"read_only"`
 }
 
 // Obligations describes the requirements carried by an effect.
@@ -311,25 +177,12 @@ func DecodeNumbers(raw []byte, dst any) error {
 	})))
 }
 
-// Snapshot freezes one encoding into independent audit and policy views.
-func (f Facts) Snapshot() (owned Facts, policy map[string]any, err error) {
-	raw, err := f.MarshalJSON()
-	if err == nil {
-		err = DecodeNumbers(raw, &owned)
-	}
+// Encode freezes host-enriched facts for audit and produces the same values for
+// policy. The record keeps the bytes; it does not need another typed copy.
+func Encode(f Facts) (raw json.RawMessage, policy map[string]any, err error) {
+	raw, err = json.Marshal(f)
 	if err == nil {
 		err = DecodeNumbers(raw, &policy)
 	}
-	owned.encoded = raw
 	return
-}
-
-// Frozen facts retain the original JSON, including null interface values whose
-// typed decoding would otherwise change omitempty behavior.
-func (f Facts) MarshalJSON() ([]byte, error) {
-	if f.encoded != nil {
-		return f.encoded, nil
-	}
-	type plain Facts
-	return json.Marshal(plain(f))
 }

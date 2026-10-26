@@ -25,11 +25,7 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var Definition = connector.Definition{PerMessage: true, NewConfig: func() connector.Server { return new(HTTP) }, Requests: []connector.Request{new(Request), new(WebSocketReceive)}}
-
-var _ connector.Claimer = (*HTTP)(nil)
-
-type HTTPProvider interface{ HTTPConfig() *HTTP }
+var Definition = connector.Definition{PerMessage: true, Parse: Parse, New: func() connector.Server { return new(Server) }}
 
 const (
 	httpsPort    = 443
@@ -48,41 +44,32 @@ var (
 )
 
 // HTTP forwards unauthenticated requests for Hosts on ports 80 and 443, and authenticated ones for slot origins.
-type HTTP struct {
+type Setup struct {
+	Preset *Preset `json:"-"`
 	Credentials
 	Hosts []string `json:"hosts"`
 }
 
-func (h *HTTP) HTTPConfig() *HTTP { return h }
-
-func (h *HTTP) Prepare() error {
-	return h.Validate(false)
-}
-
-// HTTP and HTTPS arrive on the same tunnel; only port 80 is plain.
-func (h *HTTP) Serve(s *connector.Stream, e *connector.Env) {
-	transport := e.Transport()
-	defer transport.CloseIdleConnections()
-	h.ServeWithTransport(s, e, transport)
-}
-
 // ServeWithTransport shares HTTP parsing, gating and credential placement with connectors
 // that own their upstream transport.
-func (h *HTTP) ServeWithTransport(s *connector.Stream, e *connector.Env, transport http.RoundTripper) {
+func (h *Setup) ServeWithTransport(s *connector.Stream, e *connector.Env, transport http.RoundTripper, capture func(*Request)) {
 	var c net.Conn = s
 	if s.Port != httpPort {
 		c = tls.Server(s, e.TLS)
 	}
 	connector.ServeHTTP(s, c, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		request := h.parseRequest(r, s)
-		if err := s.Gate(r.Context(), request); err != nil {
+		if capture != nil {
+			capture(request)
+		}
+		if err := s.Gate(r.Context(), h.Event((request).Describe(h))); err != nil {
 			log.Printf("refused %s %s%s: %v", r.Method, r.Host, r.URL.Path, err)
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
 		}
 		upstream := substitution{transport, h.Secrets, request.slots}
 		if request.HTTP.WebSocket {
-			serveWebSocket(w, r, request, s, upstream)
+			h.serveWebSocket(w, r, request, s, upstream)
 			return
 		}
 		proxy(upstream).ServeHTTP(w, r)
@@ -104,8 +91,8 @@ func proxy(transport http.RoundTripper) *httputil.ReverseProxy {
 
 // Parsing retains errors as part of the connector request so the monitor records
 // them through Describe. Unvalidated input is never interpreted as an operation.
-func (h *HTTP) parseRequest(r *http.Request, s *connector.Stream) *Request {
-	request := &Request{HTTP: &facts.HTTP{
+func (h *Setup) parseRequest(r *http.Request, s *connector.Stream) *Request {
+	request := &Request{HTTP: &HTTPFacts{
 		Method: strings.ToValidUTF8(r.Method, "�"), Host: strings.ToValidUTF8(r.Host, "�"),
 		Path: strings.ToValidUTF8(r.URL.EscapedPath(), "�"),
 	}}
@@ -117,7 +104,7 @@ func (h *HTTP) parseRequest(r *http.Request, s *connector.Stream) *Request {
 
 // parse fills facts only as their validation succeeds. A selected connection,
 // unlike a routed one, has no channel host to match.
-func (request *Request) parse(h *HTTP, r *http.Request, s *connector.Stream) error {
+func (request *Request) parse(h *Setup, r *http.Request, s *connector.Stream) error {
 	scheme, host, port, err := authority(r)
 	if err != nil {
 		return err
@@ -157,7 +144,7 @@ func (request *Request) parse(h *HTTP, r *http.Request, s *connector.Stream) err
 	origin := origin(scheme, host, port)
 	r.URL.Scheme, r.URL.Host, r.URL.RawPath, r.URL.RawQuery = scheme, strings.TrimPrefix(origin, scheme+"://"), "", encodeQuery(query)
 	r.Host = r.URL.Host
-	layer := &facts.HTTP{WebSocket: upgrade, Method: r.Method, Origin: origin, Host: host, Path: r.URL.Path, Query: query, Headers: r.Header.Clone()}
+	layer := &HTTPFacts{WebSocket: upgrade, Method: r.Method, Origin: origin, Host: host, Path: r.URL.Path, Query: query, Headers: r.Header.Clone()}
 	request.HTTP = layer
 	if err := inspect(r, layer); err != nil {
 		return err
@@ -269,7 +256,7 @@ func encodeQuery(q url.Values) string {
 }
 
 // inspect decodes a complete body of at most maxBodyBytes without repeated names; anything else is opaque and still forwarded.
-func inspect(r *http.Request, layer *facts.HTTP) error {
+func inspect(r *http.Request, layer *HTTPFacts) error {
 	body, err := io.ReadAll(io.LimitReader(r.Body, maxBodyBytes+1))
 	if err != nil {
 		return err
@@ -361,7 +348,7 @@ func unique(dec *json.Decoder) bool {
 }
 
 // Claim ranks exact slot origins by their length and host patterns, which serve only default ports, by theirs.
-func (h *HTTP) Claim(host string, port uint32) int {
+func (h *Setup) Claim(host string, port uint32) int {
 	host = strings.ToLower(host)
 	score := -1
 	for _, s := range h.Slots {

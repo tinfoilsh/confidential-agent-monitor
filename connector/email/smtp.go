@@ -17,7 +17,22 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var SMTPDefinition = connector.Definition{NewConfig: func() connector.Server { return new(SMTP) }, Requests: []connector.Request{new(SMTPRequest)}}
+var SMTPDefinition = connector.Definition{Parse: parseSMTP, New: func() connector.Server { return new(SMTP) }}
+
+func parseSMTP(source connector.Setup) (connector.Prepared, error) {
+	c := new(smtpSetup)
+	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+		return connector.Prepared{}, err
+	}
+	if err := c.Endpoint.Parse(); err != nil {
+		return connector.Prepared{}, err
+	}
+	names, err := c.Declarations("password")
+	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+}
+
+// SMTP keeps one immutable setup for each admitted stream.
+type SMTP struct{ connector.Slot[smtpSetup] }
 
 const (
 	smtpTLSScheme = "smtps"
@@ -26,11 +41,18 @@ const (
 	smtpRefused     = 550
 )
 
-type SMTP struct{ connector.Endpoint }
+type smtpSetup struct{ connector.Endpoint }
 
-func (r *SMTP) Serve(s *connector.Stream, e *connector.Env) {
+func (owner *SMTP) Serve(s *connector.Stream, e *connector.Env) {
+	captured := owner.Load()
+	if captured == nil {
+		return
+	}
+	r := captured.Value
+	r.Secrets = captured.Secrets
+
 	server := smtp.NewServer(smtp.BackendFunc(func(*smtp.Conn) (smtp.Session, error) {
-		return &smtpSession{stream: s, relay: r, env: e}, nil
+		return &smtpSession{stream: s, relay: &r, env: e}, nil
 	}))
 	server.Domain = "monitor"
 	server.MaxMessageBytes = maxMessageBytes
@@ -43,7 +65,7 @@ func (r *SMTP) Serve(s *connector.Stream, e *connector.Env) {
 type smtpSession struct {
 	env    *connector.Env
 	stream *connector.Stream
-	relay  *SMTP
+	relay  *smtpSetup
 	from   string
 	to     []string
 }
@@ -62,13 +84,13 @@ func (s *smtpSession) Data(r io.Reader) error {
 	if err != nil {
 		return err
 	}
-	if err := s.stream.Gate(s.stream.Context, &SMTPRequest{SMTP: &facts.SMTP{From: s.from, To: s.to}, Mail: mailHeaders(message)}); err != nil {
+	if err := s.stream.Gate(s.stream.Context, s.relay.Event((&SMTPRequest{SMTP: &SMTPFacts{From: s.from, To: s.to}, Mail: mailHeaders(message)}).Describe(s.relay.Semantics.Address))); err != nil {
 		return &smtp.SMTPError{Code: smtpRefused, EnhancedCode: smtp.EnhancedCode{5, 7, 1}, Message: err.Error()}
 	}
 	return s.relay.submit(s.stream, s.env, s.from, s.to, message)
 }
 
-func (r *SMTP) submit(s *connector.Stream, e *connector.Env, from string, to []string, message []byte) error {
+func (r *smtpSetup) submit(s *connector.Stream, e *connector.Env, from string, to []string, message []byte) error {
 	u := &r.URL
 	pass, err := r.Secret(s.Context, "password")
 	if err != nil {
@@ -97,12 +119,12 @@ func (r *SMTP) submit(s *connector.Stream, e *connector.Env, from string, to []s
 const multipartPrefix = "multipart/"
 
 // Only top-level attachments are named.
-func mailHeaders(message []byte) *facts.Mail {
+func mailHeaders(message []byte) *MailFacts {
 	msg, err := mail.ReadMessage(bytes.NewReader(message))
 	if err != nil {
 		return nil
 	}
-	return &facts.Mail{
+	return &MailFacts{
 		From:        addresses(msg.Header, "From"),
 		To:          addresses(msg.Header, "To"),
 		Cc:          addresses(msg.Header, "Cc"),
@@ -145,12 +167,12 @@ func attachments(msg *mail.Message) []string {
 }
 
 type SMTPRequest struct {
-	SMTP *facts.SMTP `json:"smtp"`
-	Mail *facts.Mail `json:"mail,omitempty"`
+	SMTP *SMTPFacts `json:"smtp"`
+	Mail *MailFacts `json:"mail,omitempty"`
 }
 
-func (r *SMTPRequest) Describe(c connector.Context) (facts.Facts, error) {
-	details := facts.Details{SMTP: r.SMTP}
+func (r *SMTPRequest) Describe(address string) (facts.Facts, error) {
+	details := Details{SMTP: r.SMTP}
 	if r.Mail != nil {
 		details.Mail = r.Mail
 	}
@@ -162,7 +184,7 @@ func (r *SMTPRequest) Describe(c connector.Context) (facts.Facts, error) {
 	slices.Sort(to)
 	sends := "account"
 	for _, to := range v.To {
-		if !strings.EqualFold(to, c.Options.Address) {
+		if !strings.EqualFold(to, address) {
 			sends = "anyone"
 		}
 	}

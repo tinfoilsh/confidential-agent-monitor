@@ -35,7 +35,7 @@ func websocketUpgrade(r *http.Request) (bool, error) {
 	return false, errors.New("WebSocket handshake requires Connection: Upgrade")
 }
 
-func serveWebSocket(w http.ResponseWriter, r *http.Request, handshake *Request, s *connector.Stream, transport http.RoundTripper) {
+func (h *Setup) serveWebSocket(w http.ResponseWriter, r *http.Request, handshake *Request, s *connector.Stream, transport http.RoundTripper) {
 	var protocols []string
 	for _, protocol := range strings.Split(strings.Join(r.Header.Values("Sec-WebSocket-Protocol"), ","), ",") {
 		if protocol = strings.TrimSpace(protocol); protocol != "" {
@@ -88,7 +88,7 @@ func serveWebSocket(w http.ResponseWriter, r *http.Request, handshake *Request, 
 			// Classify the whole delivery using the account's contents and trust.
 			// Its payload is opaque to policy and can stream after admission,
 			// including large images, without an unbounded allocation.
-			if err := s.Gate(s.Context, &WebSocketReceive{Origin: handshake.HTTP.Origin, Host: handshake.HTTP.Host, Path: handshake.HTTP.Path}); err != nil {
+			if err := s.Gate(s.Context, h.Event((&WebSocketReceive{Origin: handshake.HTTP.Origin, Host: handshake.HTTP.Host, Path: handshake.HTTP.Path}).Describe())); err != nil {
 				client.Close(websocket.StatusPolicyViolation, "delivery refused by monitor; see activity")
 				return
 			}
@@ -110,7 +110,7 @@ func serveWebSocket(w http.ResponseWriter, r *http.Request, handshake *Request, 
 			return
 		}
 		request := websocketMessage(handshake, kind, body)
-		if err := s.Gate(s.Context, request); err != nil {
+		if err := s.Gate(s.Context, h.Event((request).Describe(h))); err != nil {
 			client.Close(websocket.StatusPolicyViolation, "request refused by monitor; see activity")
 			return
 		}
@@ -129,12 +129,12 @@ type WebSocketReceive struct {
 	Path   string `json:"path"`
 }
 
-func (r *WebSocketReceive) Describe(connector.Context) (facts.Facts, error) {
+func (r *WebSocketReceive) Describe() (facts.Facts, error) {
 	return facts.Facts{
 		Operation:  &facts.Operation{ID: "websocket.receive", Action: "receive", Effects: []string{"read"}},
 		Title:      "Receive WebSocket message from " + r.Host + r.Path,
 		Parameters: map[string]any{"origin": r.Origin, "path": r.Path},
-		Details:    facts.Details{HTTP: &facts.HTTP{WebSocket: true, Origin: r.Origin, Host: r.Host, Path: r.Path, BodyKind: "opaque"}},
+		Details:    Details{HTTP: &HTTPFacts{WebSocket: true, Origin: r.Origin, Host: r.Host, Path: r.Path, BodyKind: "opaque"}},
 		Context:    facts.Context{Sends: "me"},
 	}, nil
 }

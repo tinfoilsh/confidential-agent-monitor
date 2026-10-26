@@ -10,7 +10,6 @@ require (
 	github.com/chromedp/chromedp v0.20.1
 	github.com/coder/websocket v1.8.15
 	github.com/eclipse/paho.mqtt.golang v1.5.1
-	github.com/elazarl/goproxy v1.9.2
 	github.com/emersion/go-sasl v0.0.0-20241020182733-b788ff22d5a6
 	github.com/emersion/go-smtp v0.25.0
 	github.com/evanphx/json-patch/v5 v5.9.11

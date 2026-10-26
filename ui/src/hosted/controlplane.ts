@@ -207,6 +207,7 @@ export const sandboxRequest = (options: {
   owner: string;
   instanceId: string;
   monitorId: string;
+  monitorSSH: boolean;
   workspace?: string;
 }) => ({
   name: options.name,
@@ -215,6 +216,7 @@ export const sandboxRequest = (options: {
   variables: {
     SANDBOX_INSTANCE_ID: options.instanceId,
     SANDBOX_OWNER_PUBLIC_KEY: options.owner,
+    SANDBOX_MONITOR_SSH: options.monitorSSH ? "1" : "0",
   },
   network_policy: sandboxNetwork(options.monitorId),
   ...(options.workspace && { volumes: { workspace: options.workspace } }),

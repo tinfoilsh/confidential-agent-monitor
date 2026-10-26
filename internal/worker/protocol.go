@@ -6,11 +6,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net"
 	"net/http"
-	"reflect"
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector"
@@ -32,15 +30,16 @@ const (
 	maxRPCConnections     = 32
 	maxIdleRPCConnections = 8
 	idleRPCTimeout        = 30 * time.Second
+	rpcReadTimeout        = 10 * time.Second
 )
 
-const protocolVersion = 6
+const protocolVersion = 9
 const readyPath = "/_monitor/ready"
 
 type bootstrap struct {
+	connector.Setup
 	Version  int                     `json:"version"`
 	Kind     string                  `json:"kind"`
-	Config   json.RawMessage         `json:"config"`
 	Settings json.RawMessage         `json:"settings,omitempty"`
 	Secrets  map[string]secretHandle `json:"secrets,omitempty"`
 	HostKey  []byte                  `json:"host_key,omitempty"`
@@ -60,15 +59,37 @@ type sessionInfo struct {
 	Port uint32 `json:"port"`
 }
 
-func readJSON(r io.Reader, value any) error {
+func readBody(r io.Reader) ([]byte, error) {
 	raw, err := io.ReadAll(io.LimitReader(r, maxMessage+1))
+	if err != nil {
+		return nil, err
+	}
+	if len(raw) > maxMessage {
+		return nil, errors.New("host message exceeds size limit")
+	}
+	return raw, nil
+}
+
+func readJSON(r io.Reader, value any) error {
+	raw, err := readBody(r)
 	if err != nil {
 		return err
 	}
-	if len(raw) > maxMessage {
-		return errors.New("host message exceeds size limit")
-	}
 	return facts.DecodeNumbers(raw, value)
+}
+
+// Bound receipt of a callback's payload, then clear the deadline before Gate or
+// a credential provider waits. A completed request may require owner approval.
+func readRequest(w http.ResponseWriter, r *http.Request) ([]byte, error) {
+	control := http.NewResponseController(w)
+	if err := control.SetReadDeadline(time.Now().Add(rpcReadTimeout)); err != nil {
+		return nil, err
+	}
+	raw, err := readBody(r.Body)
+	if err == nil {
+		err = control.SetReadDeadline(time.Time{})
+	}
+	return raw, err
 }
 
 func call(ctx context.Context, transport http.RoundTripper, path string, input, output any) error {
@@ -117,35 +138,19 @@ type signing struct {
 	Algorithm string
 }
 
-type event struct {
-	Type int             `json:"type"`
-	Data json.RawMessage `json:"data"`
-}
-
-func encode(d connector.Definition, r connector.Request) (event, error) {
-	for i, sample := range d.Requests {
-		if reflect.TypeOf(sample) == reflect.TypeOf(r) && !reflect.ValueOf(r).IsNil() {
-			raw, err := json.Marshal(r)
-			return event{i, raw}, err
-		}
-	}
-	return event{}, fmt.Errorf("unregistered request %T", r)
-}
-
-func decode(d connector.Definition, e event) (connector.Request, error) {
-	if e.Type < 0 || e.Type >= len(d.Requests) || len(e.Data) == 0 || string(e.Data) == "null" {
-		return nil, errors.New("invalid connector request")
-	}
-	r := reflect.New(reflect.TypeOf(d.Requests[e.Type]).Elem()).Interface().(connector.Request)
-	return r, facts.DecodeNumbers(e.Data, r)
-}
-
 type bufferedConn struct {
 	net.Conn
 	reader *bufio.Reader
 }
 
-func (c *bufferedConn) Read(b []byte) (int, error) { return c.reader.Read(b) }
+func (c *bufferedConn) Read(b []byte) (int, error) {
+	// Drain the handshake prefix, then leave net/http's connection reader behind.
+	// A later protocol read deadline must not cancel the hijacked request context.
+	if buffered := c.reader.Buffered(); buffered > 0 {
+		return c.reader.Read(b[:min(len(b), buffered)])
+	}
+	return c.Conn.Read(b)
+}
 
 func (c *bufferedConn) CloseWrite() error {
 	if writer, ok := c.Conn.(interface{ CloseWrite() error }); ok {
@@ -198,4 +203,10 @@ func Accept(w http.ResponseWriter, r *http.Request) (net.Conn, error) {
 		return nil, err
 	}
 	return &bufferedConn{Conn: c, reader: rw.Reader}, nil
+}
+
+// Worker RPC has stricter header and idle bounds than arbitrary protocol HTTP.
+func serve(ctx context.Context, ln net.Listener, handler http.Handler) error {
+	return connector.ServeListener(ctx, ln, &http.Server{Handler: handler,
+		ReadHeaderTimeout: rpcReadTimeout, IdleTimeout: time.Minute, MaxHeaderBytes: 16 << 10})
 }

@@ -81,7 +81,7 @@ export default function App(props: MonitorOptions) {
 }
 function Shell() {
   const m = useMonitor();
-  const initial = location.hash.slice(1) || "connections";
+  const initial = location.hash.slice(1) || "agents";
   const [route, setRoute] = createSignal(initial),
     [page, setPage] = createSignal(
       isDialog(initial)
@@ -168,7 +168,7 @@ function Shell() {
         location.reload();
         return;
       }
-      const next = location.hash.slice(1) || "connections";
+      const next = location.hash.slice(1) || "agents";
       setRoute(next);
       if (!isDialog(next)) setPage(next);
       setMobile(false);

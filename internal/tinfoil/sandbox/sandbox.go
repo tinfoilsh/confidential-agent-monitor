@@ -8,6 +8,7 @@ import (
 	"crypto/hkdf"
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"encoding/pem"
 	"errors"
 	"fmt"
@@ -18,7 +19,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/tinfoilsh/monitor/internal/policy"
+	"github.com/tinfoilsh/monitor/internal/frontdoor"
 	"github.com/tinfoilsh/tinfoil-go/verify/document"
 	"golang.org/x/crypto/ssh"
 )
@@ -46,12 +47,12 @@ const (
 
 // Monitor is everything the sandbox package may use of the Monitor.
 type Monitor interface {
-	// Boot is the boot enrolled for an identity, or zero.
-	Boot(name string) policy.Boot
+	// IdentityMetadata is the stored integration data of an identity, or nil.
+	IdentityMetadata(name string) json.RawMessage
 	HostKey() ssh.Signer
 	// CheckIdentity reports whether AddIdentity would accept the identity, without changing policy.
-	CheckIdentity(name, key string, boot policy.Boot) error
-	AddIdentity(ctx context.Context, name, key string, boot policy.Boot) error
+	CheckIdentity(name, key string, metadata json.RawMessage) error
+	AddIdentity(ctx context.Context, name, key string, metadata json.RawMessage) error
 }
 
 // Verifier proves what a boot's attestation document endorses.
@@ -59,22 +60,22 @@ type Verifier func(doc, nonce []byte, source string) (*Evidence, error)
 
 // Service holds the owner's open sandbox terminals by ID.
 type Service struct {
-	monitor Monitor
-	routes  *RouteTable
-	verify  Verifier
+	monitor  Monitor
+	forwards *frontdoor.Forwarder
+	verify   Verifier
 
 	mu     sync.Mutex
 	shells map[string]*shellSession
 }
 
-func New(m Monitor, routes *RouteTable, verify Verifier) *Service {
-	return &Service{monitor: m, routes: routes, verify: verify}
+func New(m Monitor, forwards *frontdoor.Forwarder, verify Verifier) *Service {
+	return &Service{monitor: m, forwards: forwards, verify: verify}
 }
 
 // access selects one sandbox boot and holds the seed of its measured owner key.
 type access struct {
 	OwnerSeed []byte `json:"owner_seed"`
-	policy.Boot
+	Boot
 }
 
 // Evidence is what verified attestation proves about one sandbox boot.
@@ -108,7 +109,7 @@ func (a access) agentKey() (ed25519.PrivateKey, ssh.PublicKey, error) {
 
 // connect attests the boot through its bootstrap route, then logs in with signer
 // over the route of the endorsed SSH host key.
-func (svc *Service) connect(ctx context.Context, boot policy.Boot, signer ssh.Signer) (*ssh.Client, error) {
+func (svc *Service) connect(ctx context.Context, boot Boot, signer ssh.Signer) (*ssh.Client, error) {
 	ctx, cancel := context.WithTimeout(ctx, sandboxConnectTimeout)
 	defer cancel()
 	evidence, err := svc.attest(ctx, boot)
@@ -116,6 +117,7 @@ func (svc *Service) connect(ctx context.Context, boot policy.Boot, signer ssh.Si
 		return nil, err
 	}
 	client, err := svc.login(ctx, evidence.HostKey, signer)
+	// Recheck freshness after login.
 	if err == nil && !time.Now().Before(evidence.Expires) {
 		client.Close()
 		err = errors.New("sandbox attestation expired during SSH login")
@@ -125,7 +127,7 @@ func (svc *Service) connect(ctx context.Context, boot policy.Boot, signer ssh.Si
 
 // login logs in as the sandbox user over the route of its host key.
 func (svc *Service) login(ctx context.Context, hostKey ssh.PublicKey, signer ssh.Signer) (*ssh.Client, error) {
-	conn, err := svc.routes.Dial(RouteName(hostKey), 22)
+	conn, err := Dial(svc.forwards, RouteName(hostKey), 22)
 	if err != nil {
 		return nil, fmt.Errorf("sandbox SSH: %w", err)
 	}
@@ -146,7 +148,7 @@ func (svc *Service) login(ctx context.Context, hostKey ssh.PublicKey, signer ssh
 
 // attest fetches fresh evidence through the unverified bootstrap route. Only a
 // public nonce and the attestation cross it before verification pins the host key.
-func (svc *Service) attest(ctx context.Context, a policy.Boot) (*Evidence, error) {
+func (svc *Service) attest(ctx context.Context, a Boot) (*Evidence, error) {
 	if svc.verify == nil {
 		return nil, errors.New("sandbox attestation is unavailable")
 	}
@@ -155,7 +157,7 @@ func (svc *Service) attest(ctx context.Context, a policy.Boot) (*Evidence, error
 		return nil, err
 	}
 	transport := &http.Transport{DisableKeepAlives: true, DialContext: func(context.Context, string, string) (net.Conn, error) {
-		return svc.routes.Dial(bootstrapRoute(BootstrapUser+a.InstanceID), 443)
+		return Dial(svc.forwards, bootstrapRoute(BootstrapUser+a.InstanceID), 443)
 	}}
 	defer transport.CloseIdleConnections()
 	request, err := http.NewRequestWithContext(ctx, http.MethodGet, sandboxAttestationURL+"?nonce="+hex.EncodeToString(nonce), nil)
@@ -224,7 +226,8 @@ func (svc *Service) Enroll(ctx context.Context, name string, in EnrollInput) err
 	}
 	defer clear(agent)
 	key := strings.TrimSpace(string(ssh.MarshalAuthorizedKey(public)))
-	if err := svc.monitor.CheckIdentity(name, key, in.Boot); err != nil {
+	metadata, _ := json.Marshal(in.Boot)
+	if err := svc.monitor.CheckIdentity(name, key, metadata); err != nil {
 		return err
 	}
 	owner := ed25519.NewKeyFromSeed(in.OwnerSeed)
@@ -238,7 +241,8 @@ func (svc *Service) Enroll(ctx context.Context, name string, in EnrollInput) err
 		return err
 	}
 	defer client.Close()
-	if err := svc.monitor.AddIdentity(ctx, name, key, in.Boot); err != nil {
+	// Enroll before starting networking.
+	if err := svc.monitor.AddIdentity(ctx, name, key, metadata); err != nil {
 		return err
 	}
 	block, err := ssh.MarshalPrivateKey(agent, "")

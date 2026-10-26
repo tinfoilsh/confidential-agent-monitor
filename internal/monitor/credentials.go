@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector/credential"
-	"github.com/tinfoilsh/monitor/internal/policy"
+	"github.com/tinfoilsh/monitor/internal/config"
 	"github.com/tinfoilsh/monitor/internal/store"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
 	"github.com/tinfoilsh/monitor/presets"
@@ -28,19 +28,21 @@ func placeholder(k store.Keys, id store.SecretID) string {
 	raw, _ := json.Marshal([]string{id.Account, id.Connection, id.Name})
 	mac.Write(raw)
 	suffix := strings.ToLower(base32.StdEncoding.EncodeToString(mac.Sum(nil))[:9])
-	return "tfm_" + policy.ConnectionName(id.Account, id.Connection) + "_" + suffix
+	return "tfm_" + config.ConnectionName(id.Account, id.Connection) + "_" + suffix
 }
 
 // Provider writes preserve the connector and publish only after persistence.
-func (m *monitor) replaceValue(ctx context.Context, c *connection, id store.SecretID, before, after json.RawMessage) error {
+func (m *monitor) replaceValue(ctx context.Context, id store.SecretID, value *credential.Value, before, after json.RawMessage) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if m.live.Load().connections[c.Name] != c || !bytes.Equal(m.store.Doc.Secrets[id], before) {
+	c := m.connections[config.ConnectionName(id.Account, id.Connection)]
+	// Reject stale credential refreshes.
+	if c == nil || c.Secrets[id.Name] != value || !bytes.Equal(m.store.Doc.Secrets.Get(id), before) {
 		return errors.New("credential changed; start again")
 	}
 	next := m.store.Doc
 	next.Secrets = next.Secrets.Clone()
-	next.Secrets[id] = bytes.Clone(after)
+	next.Secrets.Set(id, bytes.Clone(after))
 	return m.store.Commit(ctx, next)
 }
 
@@ -63,12 +65,16 @@ func (m *monitor) signInCredential(account string, path []string) (json.RawMessa
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	s := m.live.Load()
-	c := s.connections[policy.ConnectionName(account, requested.Connection)]
+	c := m.connections[config.ConnectionName(account, requested.Connection)]
 	if c == nil || c.Account != account || c.Protocol != requested.Protocol || c.Secrets[requested.Secret] == nil {
 		return nil, nil, errors.New("connection does not exist")
 	}
 	paths := []presets.CredentialPath{requested}
-	fields, err := s.Config.Resolved[s.Config.Accounts[account].Preset].Catalog.CredentialFields()
+	preset, err := s.Config.Preset(s.Config.Accounts[account].Preset)
+	if err != nil {
+		return nil, nil, err
+	}
+	fields, err := preset.Catalog.CredentialFields()
 	if err != nil {
 		return nil, nil, err
 	}
@@ -80,13 +86,14 @@ func (m *monitor) signInCredential(account string, path []string) (json.RawMessa
 	}
 	type destination struct {
 		connection *connection
+		value      *credential.Value
 		path       []string
 		id         store.SecretID
 		before     json.RawMessage
 	}
 	var destinations []destination
 	for _, p := range paths {
-		target := s.connections[policy.ConnectionName(account, p.Connection)]
+		target := m.connections[config.ConnectionName(account, p.Connection)]
 		// An account may disable one of the preset's connections.
 		if target == nil {
 			continue
@@ -96,19 +103,23 @@ func (m *monitor) signInCredential(account string, path []string) (json.RawMessa
 		}
 		destinationID := store.SecretID{Account: account, Connection: p.Connection, Name: p.Secret}
 		path := append([]string{"accounts", account}, p.Path()...)
-		destinations = append(destinations, destination{target, path, destinationID, bytes.Clone(m.store.Doc.Secrets[destinationID])})
+		destinations = append(destinations, destination{target, target.Secrets[p.Secret], path, destinationID, bytes.Clone(m.store.Doc.Secrets.Get(destinationID))})
 	}
-	return bytes.Clone(m.store.Doc.Secrets[store.SecretID{Account: account, Connection: requested.Connection, Name: requested.Secret}]), func(ctx context.Context, raw json.RawMessage) error {
-		m.mu.Lock()
-		defer m.mu.Unlock()
-		var changes []policy.Change
+	return bytes.Clone(m.store.Doc.Secrets.Get(store.SecretID{Account: account, Connection: requested.Connection, Name: requested.Secret})), func(ctx context.Context, raw json.RawMessage) error {
+		m.writes.Lock()
+		defer m.writes.Unlock()
+		var changes []config.Change
 		for _, d := range destinations {
-			if m.live.Load().connections[d.connection.Name] != d.connection || !bytes.Equal(m.store.Doc.Secrets[d.id], d.before) {
-				return errors.New("credential changed; start again")
-			}
-			changes = append(changes, policy.Change{Path: d.path, Value: raw})
+			changes = append(changes, config.Change{Path: d.path, Value: raw})
 		}
-		return m.editPolicy(ctx, changes)
+		return m.writePolicy(ctx, nil, changes, func() error {
+			for _, d := range destinations {
+				if m.connections[d.connection.Name] != d.connection || d.connection.Secrets[d.id.Name] != d.value || !bytes.Equal(m.store.Doc.Secrets.Get(d.id), d.before) {
+					return errors.New("credential changed; start again")
+				}
+			}
+			return nil
+		}, nil)
 	}, nil
 }
 
@@ -151,39 +162,28 @@ func (m *monitor) startSignIn(r *http.Request, req signInInput) (any, error) {
 		return nil, err
 	}
 	var response any = map[string]string{"url": sign.URL}
-	if sign.UserCode == "" {
-		pending.finish = func(ctx context.Context, result finishSignInInput) error {
-			if result.Error != nil {
-				return errors.New("sign-in was not completed; try again")
-			}
-			secret, err := sign.Exchange(ctx, result.Code, result.ClientID)
-			if err != nil {
-				return err
-			}
-			return save(ctx, secret)
-		}
-	} else {
+	exchange := sign.Exchange
+	if sign.UserCode != "" {
 		poll, stop := context.WithDeadline(context.Background(), sign.Expires)
 		done := make(chan struct{})
 		var secret json.RawMessage
 		var failure error
-		go func() {
-			defer close(done)
-			defer stop()
-			secret, failure = sign.WaitDevice(poll)
-		}()
+		go func() { defer close(done); defer stop(); secret, failure = sign.WaitDevice(poll) }()
 		pending.expires, pending.done, pending.cancel = sign.Expires, done, stop
-		pending.finish = func(ctx context.Context, result finishSignInInput) error {
-			if result.Error != nil {
-				return errors.New("sign-in was not completed; try again")
-			}
-			if failure != nil {
-				return failure
-			}
-			return save(ctx, secret)
-		}
+		exchange = func(context.Context, string, string) (json.RawMessage, error) { return secret, failure }
 		response = map[string]any{"url": sign.URL, "state": sign.State, "user_code": sign.UserCode, "expires": sign.Expires}
 	}
+	pending.finish = func(ctx context.Context, result finishSignInInput) error {
+		if result.Error != nil {
+			return errors.New("sign-in was not completed; try again")
+		}
+		secret, err := exchange(ctx, result.Code, result.ClientID)
+		if err != nil {
+			return err
+		}
+		return save(ctx, secret)
+	}
+
 	m.signIns.Store(sign.State, pending)
 	time.AfterFunc(time.Until(pending.expires), func() { m.signIns.CompareAndDelete(sign.State, pending) })
 	return response, nil

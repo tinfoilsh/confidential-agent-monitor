@@ -134,7 +134,7 @@ func ValidOrigin(origin string) bool {
 }
 
 // bind returns the slots this request fills and refuses a placeholder anywhere else.
-func (h *HTTP) bind(r *http.Request, origin string) ([]*Slot, error) {
+func (h *Setup) bind(r *http.Request, origin string) ([]*Slot, error) {
 	header := r.Header.Clone()
 	query := r.URL.Query()
 	segments := strings.Split(r.URL.Path, "/")

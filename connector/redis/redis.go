@@ -13,7 +13,22 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var Definition = connector.Definition{NewConfig: func() connector.Server { return new(Redis) }, Requests: []connector.Request{new(Request)}}
+var Definition = connector.Definition{Parse: parseRedis, New: func() connector.Server { return new(Redis) }}
+
+func parseRedis(source connector.Setup) (connector.Prepared, error) {
+	c := new(redisSetup)
+	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+		return connector.Prepared{}, err
+	}
+	if err := c.validate(); err != nil {
+		return connector.Prepared{}, err
+	}
+	names, err := c.Declarations("password")
+	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+}
+
+// Redis keeps one immutable setup for each admitted stream.
+type Redis struct{ connector.Slot[redisSetup] }
 
 const (
 	redisPort = "6379"
@@ -24,10 +39,10 @@ var containerCommands = []string{
 	"MODULE", "OBJECT", "PUBSUB", "SCRIPT", "SLOWLOG", "XGROUP", "XINFO",
 }
 
-type Redis struct{ connector.Endpoint }
+type redisSetup struct{ connector.Endpoint }
 
-func (r *Redis) Prepare() error {
-	if err := r.Endpoint.Prepare(); err != nil {
+func (r *redisSetup) validate() error {
+	if err := r.Endpoint.Parse(); err != nil {
 		return err
 	}
 	if r.URL.Scheme != "rediss" {
@@ -36,7 +51,14 @@ func (r *Redis) Prepare() error {
 	return nil
 }
 
-func (r *Redis) Serve(s *connector.Stream, e *connector.Env) {
+func (owner *Redis) Serve(s *connector.Stream, e *connector.Env) {
+	captured := owner.Load()
+	if captured == nil {
+		return
+	}
+	r := captured.Value
+	r.Secrets = captured.Secrets
+
 	u := &r.URL
 	up, err := connector.DialURL(s.Context, e.Dialer, u, "rediss", redisPort, redisPort)
 	if err != nil {
@@ -72,7 +94,7 @@ func (r *Redis) Serve(s *connector.Stream, e *connector.Env) {
 		for i, arg := range cmd.Args {
 			args[i] = string(arg)
 		}
-		if err := s.Gate(s.Context, &Request{Command: commandName(args), Argv: args}); err != nil {
+		if err := s.Gate(s.Context, r.Event((&Request{Command: commandName(args), Argv: args}).Describe())); err != nil {
 			if _, err := s.Write(redcon.AppendError(nil, "ERR "+err.Error())); err != nil {
 				return
 			}
@@ -131,10 +153,10 @@ func encode(args [][]byte) []byte {
 	return out
 }
 
-type Request facts.Redis
+type Request RedisFacts
 
-func (v *Request) Describe(c connector.Context) (facts.Facts, error) {
-	details := facts.Details{Redis: (*facts.Redis)(v)}
+func (v *Request) Describe() (facts.Facts, error) {
+	details := Details{Redis: (*RedisFacts)(v)}
 	action := "write"
 	if slices.Contains(redisReads, v.Command) {
 		action = "read"

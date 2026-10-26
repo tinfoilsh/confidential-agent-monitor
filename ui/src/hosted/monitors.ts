@@ -17,6 +17,7 @@ import {
 import {
   diskKey,
   measuredOwner,
+  measuredPublicKey,
   ownerSeed,
   sandboxOwnerSeed,
   signer,
@@ -215,8 +216,21 @@ export async function openMonitor(options: {
   }
 }
 
+export function sandboxMonitorSSH(row: Container): boolean {
+  try {
+    const mode = workload(row, SANDBOX_REPO).env.get("SANDBOX_MONITOR_SSH");
+    return mode === undefined || mode === "1";
+  } catch {
+    return false;
+  }
+}
+
 function sandboxOwner(work: Workload, root: Uint8Array, monitorId: string) {
   const { row, env } = work;
+  if (env.get("SANDBOX_MONITOR_SSH") === "0")
+    throw new Error(
+      `${row.name} uses your SSH key. Run \`tinfoil attest-ssh --install ${row.name}\` to unlock it.`,
+    );
   const instanceId = env.get("SANDBOX_INSTANCE_ID") ?? "";
   if (!UUID.test(instanceId) || env.get("NO_MONITOR") === "1")
     throw new Error(`${row.name} has no measured instance bound to a monitor.`);
@@ -225,7 +239,7 @@ function sandboxOwner(work: Workload, root: Uint8Array, monitorId: string) {
   const seed = sandboxOwnerSeed(root, instanceId);
   if (env.get("SANDBOX_OWNER_PUBLIC_KEY") !== measuredOwner(seed)) {
     seed.fill(0);
-    throw foreign(row.name, "sandbox enroll");
+    throw foreign(row.name, "attest-ssh --install");
   }
   return { seed, instanceId };
 }
@@ -234,6 +248,8 @@ export type SandboxRequest = {
   name: string;
   workspace?: string;
   instanceId: string;
+  // Omitted when the owner grants Monitor SSH access; otherwise this stays the only login key.
+  ownerPublicKey?: string;
 };
 
 // Keep one request per attempt: a retry must target the same name, workspace and instance.
@@ -247,25 +263,36 @@ export async function createSandbox(options: {
   signal?: AbortSignal;
 }) {
   const { root, monitorId, request } = options;
-  const seed = sandboxOwnerSeed(root, request.instanceId);
-  const owner = measuredOwner(seed);
-  seed.fill(0);
+  const monitorSSH = request.ownerPublicKey === undefined;
+  let owner: string;
+  if (monitorSSH) {
+    const seed = sandboxOwnerSeed(root, request.instanceId);
+    owner = measuredOwner(seed);
+    seed.fill(0);
+  } else owner = measuredPublicKey(request.ownerPublicKey!);
   // The instance ID is fresh, so this intent can only reach the sandbox this request
   // creates; a reused workspace already holds a disk and is never initialized.
-  if (request.workspace) options.intents.clear(request.instanceId);
+  if (request.workspace || !monitorSSH)
+    options.intents.clear(request.instanceId);
   else options.intents.set(request.instanceId);
   const { row } = await createOnce(
     options.api,
-    sandboxRequest({ ...request, tag: options.tag, owner, monitorId }),
+    sandboxRequest({
+      ...request,
+      tag: options.tag,
+      owner,
+      monitorId,
+      monitorSSH,
+    }),
     (row) => {
       try {
-        const { seed, instanceId } = sandboxOwner(
-          workload(row, SANDBOX_REPO),
-          root,
-          monitorId,
+        const { env } = workload(row, SANDBOX_REPO);
+        return (
+          attachedMonitor(row) === monitorId &&
+          env.get("SANDBOX_INSTANCE_ID") === request.instanceId &&
+          env.get("SANDBOX_OWNER_PUBLIC_KEY") === owner &&
+          env.get("SANDBOX_MONITOR_SSH") === (monitorSSH ? "1" : "0")
         );
-        seed.fill(0);
-        return instanceId === request.instanceId;
       } catch {
         return false;
       }

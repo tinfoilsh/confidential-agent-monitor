@@ -20,17 +20,8 @@ import (
 //go:embed lib.rego
 var library string
 
-// Lattice switches control enforcement. Labels keep recording both axes.
-type Lattices struct {
-	Confidentiality bool `json:"confidentiality"`
-	Integrity       bool `json:"integrity"`
-}
-
-// IDs bind approval waivers; messages explain them without granting authority.
-type Requirement struct {
-	ID      string `json:"id"`
-	Message string `json:"message"`
-}
+// Requirement IDs bind approval waivers; messages explain them without granting authority.
+type Requirement = facts.Requirement
 
 type Decision struct {
 	Deny         []string      `json:"deny"`
@@ -45,7 +36,7 @@ type Engine struct {
 	query   rego.PreparedEvalQuery
 }
 
-func prepare(ctx context.Context, data map[string]any, policies map[string]string, lattices Lattices) (*Engine, error) {
+func Prepare(ctx context.Context, data map[string]any, policies map[string]string, confidentiality, integrity bool) (*Engine, error) {
 	reserved := []string{"monitor", "lattices", "levels"}
 	for _, name := range reserved {
 		if _, ok := data[name]; ok {
@@ -57,7 +48,7 @@ func prepare(ctx context.Context, data map[string]any, policies map[string]strin
 		store = map[string]any{}
 	}
 	store["levels"] = map[string]any{"audiences": facts.Audiences, "trusts": facts.Trusts, "effects": facts.Effects}
-	store["lattices"] = map[string]any{"confidentiality": lattices.Confidentiality, "integrity": lattices.Integrity}
+	store["lattices"] = map[string]any{"confidentiality": confidentiality, "integrity": integrity}
 	opts := []func(*rego.Rego){rego.Query("data.monitor.decision"), rego.Module("monitor/lib.rego", library),
 		rego.Store(inmem.NewFromObjectWithOpts(store, inmem.OptReturnASTValuesOnRead(true))), rego.StrictBuiltinErrors(true)}
 	h := sha256.New()

@@ -4,6 +4,7 @@ FROM docker.io/library/golang:1.27.3-alpine@sha256:f2c872bcee949b7be9c490efd02b4
 FROM docker.io/oven/bun:1.3.13@sha256:87416c977a612a204eb54ab9f3927023c2a3c971f4f345a01da08ea6262ae30e AS ui-build
 WORKDIR /src/ui
 COPY ui/package.json ui/bun.lock ./
+COPY ui/vendor/ ./vendor/
 RUN bun install --frozen-lockfile
 COPY ui/ ./
 RUN bun run build

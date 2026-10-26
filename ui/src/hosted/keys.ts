@@ -301,6 +301,27 @@ export const diskKey = (root: Uint8Array, volumeId: string) =>
 export const measuredOwner = (seed: Uint8Array) =>
   "ed25519:" + toBase64(ed25519.getPublicKey(seed));
 
+// Match the sandbox's existing measured Ed25519 owner format; accept one OpenSSH public key.
+export function measuredPublicKey(publicKey: string): string {
+  const match = publicKey
+    .trim()
+    .match(/^ssh-ed25519[ \t]+([A-Za-z0-9+/]+={0,2})(?:[ \t]+[^\r\n]*)?$/);
+  try {
+    const wire = Uint8Array.from(atob(match?.[1] ?? ""), (c) =>
+      c.charCodeAt(0),
+    );
+    if (
+      wire.length === 51 &&
+      bytesToHex(wire.subarray(0, 19)) ===
+        "0000000b7373682d6564323535313900000020"
+    )
+      return "ed25519:" + toBase64(wire.subarray(19));
+  } catch {}
+  throw new Error(
+    "Enter one Ed25519 SSH public key beginning with ssh-ed25519.",
+  );
+}
+
 export const signer =
   (seed: Uint8Array, signal: AbortSignal) => async (message: Uint8Array) => {
     signal.throwIfAborted();

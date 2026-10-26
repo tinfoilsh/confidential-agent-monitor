@@ -6,11 +6,10 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"maps"
+	"net/http"
 	"sync"
 	"time"
 
-	"github.com/tinfoilsh/monitor/internal/policy"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -30,7 +29,7 @@ const (
 	shellWriteTimeout = 10 * time.Second
 )
 
-var ErrShellGone = errors.New("the shell session ended or does not exist")
+var ErrShellGone = responseError{"the shell session ended or does not exist", http.StatusNotFound}
 
 type ShellInput struct {
 	Action string `json:"action"`
@@ -121,9 +120,12 @@ func (svc *Service) openShell(ctx context.Context, owner, name string, in ShellI
 	if !validTerminal(in.Cols, in.Rows) {
 		return ShellReply{}, fmt.Errorf("terminal size must be 1-%d columns and rows", maxTerminalSize)
 	}
-	boot := svc.monitor.Boot(name)
-	if boot == (policy.Boot{}) {
-		return ShellReply{}, errors.New("enroll this sandbox from the console to open its shell")
+	boot, err := decodeBoot(svc.monitor.IdentityMetadata(name))
+	if err != nil {
+		return ShellReply{}, err
+	}
+	if boot == (Boot{}) {
+		return ShellReply{}, errors.New("this identity has no sandbox enrolled for Monitor SSH access")
 	}
 	if err := boot.Validate(); err != nil {
 		return ShellReply{}, err
@@ -157,7 +159,7 @@ func (svc *Service) openShell(ctx context.Context, owner, name string, in ShellI
 	return ShellReply{ID: id, Data: []byte{}}, nil
 }
 
-func (svc *Service) startShell(ctx context.Context, owner, name string, boot policy.Boot, in ShellInput) (*shellSession, io.Reader, error) {
+func (svc *Service) startShell(ctx context.Context, owner, name string, boot Boot, in ShellInput) (*shellSession, io.Reader, error) {
 	client, err := svc.connect(ctx, boot, svc.monitor.HostKey())
 	if err != nil {
 		return nil, nil, err
@@ -198,18 +200,6 @@ func (svc *Service) dropShell(id string, s *shellSession) {
 	}
 	svc.mu.Unlock()
 	s.close()
-}
-
-// CloseShells closes every open shell; one still connecting stays unreachable until idle.
-func (svc *Service) CloseShells() {
-	svc.mu.Lock()
-	shells := maps.Clone(svc.shells)
-	svc.mu.Unlock()
-	for id, s := range shells {
-		if s != nil {
-			svc.dropShell(id, s)
-		}
-	}
 }
 
 // signal wakes waiters; the caller holds mu.
@@ -253,6 +243,7 @@ func (s *shellSession) relay(stdout io.Reader) {
 func (s *shellSession) append(p []byte) bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	// Backpressure bounds unread output.
 	for len(s.output)+len(p) > MaxShellBuffer && !s.ended {
 		changed := s.changed
 		s.mu.Unlock()
@@ -276,6 +267,7 @@ func (s *shellSession) poll(ctx context.Context, cursor uint64) (ShellReply, err
 	if cursor < s.start || cursor-s.start > uint64(len(s.output)) {
 		return ShellReply{}, errors.New("shell cursor is outside the unacknowledged output")
 	}
+	// Cursor advances acknowledge consumption.
 	if cursor > s.start {
 		s.output = s.output[cursor-s.start:]
 		s.start = cursor

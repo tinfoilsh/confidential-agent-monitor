@@ -1,18 +1,14 @@
-// Package presets decodes the shipped account presets.
+// Package presets exposes opaque preset sources and their setup/control metadata.
 package presets
 
 import (
-	"cmp"
 	"embed"
 	"encoding/json"
 	"fmt"
 	"io/fs"
-	"slices"
 	"strings"
 	"sync"
 
-	"github.com/tinfoilsh/monitor/connector/mcp"
-	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/facts"
 )
 
@@ -23,8 +19,6 @@ var Files embed.FS
 type Preset struct {
 	Title       string          `json:"title"`
 	Catalog     *Catalog        `json:"catalog"`
-	HTTP        *web.Preset     `json:"http,omitempty"`
-	MCP         *mcp.Preset     `json:"mcp,omitempty"`
 	PublicScope []string        `json:"public_scope,omitempty"`
 	Source      json.RawMessage `json:"-"`
 }
@@ -32,20 +26,18 @@ type Preset struct {
 type Catalog struct {
 	Group       string                     `json:"group,omitempty"`
 	ReplacedBy  string                     `json:"replaced_by,omitempty"`
-	Actions     map[string]Action          `json:"actions,omitempty"`
+	Actions     map[string]facts.Action    `json:"actions,omitempty"`
 	Connections map[string]json.RawMessage `json:"connections,omitempty"`
 	Defaults    json.RawMessage            `json:"defaults,omitempty"`
 	Fields      []json.RawMessage          `json:"fields,omitempty"`
 }
 
-type Action struct {
-	Title   string   `json:"title"`
-	Effects []string `json:"effects,omitempty"`
-}
+// MarshalJSON preserves protocol definitions without catalog-owned decoding.
+func (p Preset) MarshalJSON() ([]byte, error) { return p.Source, nil }
 
 func Decode(raw []byte) (*Preset, error) {
 	p := Preset{Source: raw}
-	if err := facts.DecodeNumbers(raw, &p); err != nil {
+	if err := json.Unmarshal(raw, &p); err != nil {
 		return nil, err
 	}
 	if p.Catalog == nil {
@@ -60,34 +52,6 @@ func Decode(raw []byte) (*Preset, error) {
 		}
 	}
 	return &p, nil
-}
-
-func lineage(action string) []string {
-	var lineage []string
-	for action != "" {
-		lineage = append(lineage, action)
-		i := strings.LastIndexByte(action, '.')
-		if i < 0 {
-			break
-		}
-		action = action[:i]
-	}
-	return lineage
-}
-
-// Operation resolves op's effects from its nearest configured action.
-func (c *Catalog) Operation(op facts.Operation) *facts.Operation {
-	op.Lineage = lineage(op.Action)
-	effects := op.Effects
-	for i := 0; effects == nil && i < len(op.Lineage); i++ {
-		effects = c.Actions[op.Lineage[i]].Effects
-	}
-	// An action without configured semantics is unknown.
-	if op.Action == "" || effects == nil {
-		return nil
-	}
-	op.Effects, op.ID = slices.Compact(slices.Sorted(slices.Values(effects))), cmp.Or(op.ID, op.Action)
-	return &op
 }
 
 var Shipped = sync.OnceValues(func() (map[string]*Preset, error) {
@@ -105,6 +69,43 @@ var Shipped = sync.OnceValues(func() (map[string]*Preset, error) {
 	}
 	return out, nil
 })
+
+// Entry is the owner's catalog presentation. Operations are display metadata;
+// their protocol definitions remain opaque until a connector decodes them.
+type Entry struct {
+	*Catalog
+	Title      string                `json:"title"`
+	Operations *map[string]Operation `json:"operations,omitempty"`
+}
+
+type Operation struct {
+	Action  string   `json:"action"`
+	Effects []string `json:"effects,omitempty"`
+}
+
+func (p *Preset) Entry(used bool) (Entry, error) {
+	metadata := *p.Catalog
+	entry := Entry{Catalog: &metadata, Title: p.Title}
+	if !used {
+		metadata.Actions = nil
+		return entry, nil
+	}
+	var display struct {
+		HTTP *struct {
+			Operations map[string]Operation `json:"operations"`
+		} `json:"http"`
+	}
+	if err := json.Unmarshal(p.Source, &display); err != nil {
+		return entry, err
+	}
+	if display.HTTP != nil {
+		if display.HTTP.Operations == nil {
+			display.HTTP.Operations = map[string]Operation{}
+		}
+		entry.Operations = &display.HTTP.Operations
+	}
+	return entry, nil
+}
 
 // CredentialPath identifies a credential within an account's connection settings.
 // Connection may be empty for the account's default connection.

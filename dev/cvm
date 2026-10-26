@@ -16,7 +16,7 @@ podman build -q -t confidential-agent-sandbox-dev "$src" > /dev/null
 podman rm -f --ignore "$name" > /dev/null
 podman run -d --name "$name" --hostname workspace --privileged --systemd=always \
   --userns=keep-id --user root --network "pasta:-T,$port" --dns 100.127.255.2 \
-  -e SANDBOX_INSTANCE_ID -e SANDBOX_OWNER_PUBLIC_KEY -e MONITOR_PORT="$port" \
+  -e SANDBOX_INSTANCE_ID -e SANDBOX_OWNER_PUBLIC_KEY -e SANDBOX_MONITOR_SSH -e MONITOR_PORT="$port" \
   -v "$workspace:/mnt/disk" -v "$workspace:/nix" -v "$toolchain:/tinfoil/models/nix:ro" \
   -v "$PWD/dev/cvm-services:/usr/local/libexec/cvm-services:ro" \
   --entrypoint bash confidential-agent-sandbox-dev -c '

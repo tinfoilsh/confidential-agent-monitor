@@ -13,31 +13,48 @@ import (
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
 	"golang.org/x/crypto/ssh"
 )
 
-var CLIDefinition = connector.Definition{HostKey: true, NewConfig: func() connector.Server { return new(CLI) }, Requests: []connector.Request{new(SSHRequest)}}
+var CLIDefinition = connector.Definition{HostKey: true, Parse: parseCLI, New: func() connector.Server { return new(CLI) }}
+
+func parseCLI(source connector.Setup) (connector.Prepared, error) {
+	c := new(cliSetup)
+	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+		return connector.Prepared{}, err
+	}
+	names, err := c.Declarations()
+	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+}
+
+// CLI keeps one immutable setup for each admitted stream.
+type CLI struct{ connector.Slot[cliSetup] }
 
 const (
 	maxStdinBytes = 1 << 20
 	exitRefused   = 126
 )
 
-type CLI struct {
+type cliSetup struct {
 	connector.SecretConfig
 	Path  string `json:"path"`
 	Stdin string `json:"stdin"`
 }
 
-func (t *CLI) Serve(s *connector.Stream, e *connector.Env) {
-	_, chans, reqs, err := innerSSH(s, e.HostKey)
+func (owner *CLI) Serve(s *connector.Stream, e *connector.Env) {
+	captured := owner.Load()
+	if captured == nil {
+		return
+	}
+	t := captured.Value
+	t.Secrets = captured.Secrets
+
+	chans, err := innerSSH(s, e.HostKey)
 	if err != nil {
 		return
 	}
 	var workers sync.WaitGroup
 	defer func() { s.Close(); workers.Wait() }()
-	go ssh.DiscardRequests(reqs)
 	for nc := range chans {
 		if nc.ChannelType() != channelSession {
 			nc.Reject(ssh.Prohibited, "only session channels are served")
@@ -51,7 +68,7 @@ func (t *CLI) Serve(s *connector.Stream, e *connector.Env) {
 	}
 }
 
-func (t *CLI) session(s *connector.Stream, ch ssh.Channel, reqs <-chan *ssh.Request) {
+func (t *cliSetup) session(s *connector.Stream, ch ssh.Channel, reqs <-chan *ssh.Request) {
 	defer ch.Close()
 	for r := range reqs {
 		e := eventForSSH(r)
@@ -66,7 +83,7 @@ func (t *CLI) session(s *connector.Stream, ch ssh.Channel, reqs <-chan *ssh.Requ
 			e.Payload = gitObject(stdin)
 		}
 		status := exitRefused
-		if err := s.Gate(s.Context, e); err != nil {
+		if err := s.Gate(s.Context, t.Event((e).Describe(""))); err != nil {
 			fmt.Fprintf(ch.Stderr(), "monitor: %v\n", err)
 		} else {
 			status = t.execute(s.Context, e.Command.Argv, io.MultiReader(bytes.NewReader(stdin), ch), ch)
@@ -76,7 +93,7 @@ func (t *CLI) session(s *connector.Stream, ch ssh.Channel, reqs <-chan *ssh.Requ
 	}
 }
 
-func (t *CLI) execute(ctx context.Context, args []string, stdin io.Reader, ch ssh.Channel) int {
+func (t *cliSetup) execute(ctx context.Context, args []string, stdin io.Reader, ch ssh.Channel) int {
 	cmd := exec.CommandContext(ctx, t.Path, args[1:]...)
 	cmd.WaitDelay = time.Second
 	cmd.Env = []string{}
@@ -101,9 +118,9 @@ func (t *CLI) execute(ctx context.Context, args []string, stdin io.Reader, ch ss
 	return exitRefused
 }
 
-func gitObject(b []byte) *facts.Git {
+func gitObject(b []byte) *GitFacts {
 	header, message, _ := bytes.Cut(b, []byte("\n\n"))
-	object := &facts.Git{Message: string(message), Parents: []string{}}
+	object := &GitFacts{Message: string(message), Parents: []string{}}
 	for line := range strings.SplitSeq(string(header), "\n") {
 		key, value, _ := strings.Cut(line, " ")
 		switch key {

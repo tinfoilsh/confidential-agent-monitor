@@ -19,7 +19,19 @@ import (
 	"mvdan.cc/sh/v3/syntax"
 )
 
-var SSHDefinition = connector.Definition{HostKey: true, NewConfig: func() connector.Server { return new(SSH) }, Requests: []connector.Request{new(SSHRequest)}}
+var SSHDefinition = connector.Definition{HostKey: true, Parse: parseSSH, New: func() connector.Server { return new(SSH) }}
+
+func parseSSH(source connector.Setup) (connector.Prepared, error) {
+	c := new(sshSetup)
+	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+		return connector.Prepared{}, err
+	}
+	names, err := c.Declarations("key")
+	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+}
+
+// SSH keeps one immutable setup for each admitted stream.
+type SSH struct{ connector.Slot[sshSetup] }
 
 const (
 	channelSession = "session"
@@ -29,7 +41,7 @@ const (
 
 var refusedRequests = []string{"auth-agent-req@openssh.com", "x11-req"}
 
-type SSH struct {
+type sshSetup struct {
 	connector.SecretConfig
 	Host    string `json:"host"`
 	Port    int    `json:"port"`
@@ -37,7 +49,7 @@ type SSH struct {
 	HostKey string `json:"host_key"`
 }
 
-func (t *SSH) dial(s *connector.Stream, e *connector.Env) (*ssh.Client, error) {
+func (t *sshSetup) dial(s *connector.Stream, e *connector.Env) (*ssh.Client, error) {
 	hostKey, _, _, _, err := ssh.ParseAuthorizedKey([]byte(t.HostKey))
 	if err != nil {
 		return nil, fmt.Errorf("host_key: %w", err)
@@ -73,20 +85,26 @@ func (t *SSH) dial(s *connector.Stream, e *connector.Env) (*ssh.Client, error) {
 	return ssh.NewClient(c, chans, reqs), nil
 }
 
-func (t *SSH) Serve(s *connector.Stream, e *connector.Env) {
+func (owner *SSH) Serve(s *connector.Stream, e *connector.Env) {
+	captured := owner.Load()
+	if captured == nil {
+		return
+	}
+	t := captured.Value
+	t.Secrets = captured.Secrets
+
 	t.serve(s, e, func(up *ssh.Client, nc ssh.NewChannel) {
-		relayChannel(up, nc, func(r *ssh.Request) error { return s.Gate(s.Context, eventForSSH(r)) })
+		relayChannel(up, nc, func(r *ssh.Request) error { return s.Gate(s.Context, t.Event((eventForSSH(r)).Describe(t.Host))) })
 	})
 }
 
-func (t *SSH) serve(s *connector.Stream, e *connector.Env, pump func(*ssh.Client, ssh.NewChannel)) {
-	_, chans, reqs, err := innerSSH(s, e.HostKey)
+func (t *sshSetup) serve(s *connector.Stream, e *connector.Env, pump func(*ssh.Client, ssh.NewChannel)) {
+	chans, err := innerSSH(s, e.HostKey)
 	if err != nil {
 		return
 	}
 	var workers sync.WaitGroup
 	defer func() { s.Close(); workers.Wait() }()
-	go ssh.DiscardRequests(reqs)
 	up, err := t.dial(s, e)
 	if err != nil {
 		log.Printf("%s: %v", t.Host, err)
@@ -134,7 +152,7 @@ func relayChannel(up *ssh.Client, nc ssh.NewChannel, check func(*ssh.Request) er
 	var replies, output sync.WaitGroup
 	replies.Go(func() { forwardRequests(ch, upReqs, nil) })
 	output.Go(func() { io.Copy(ch, upCh) })
-	output.Go(func() { io.Copy(ch.Stderr(), upCh.Stderr()) })
+	io.Copy(ch.Stderr(), upCh.Stderr())
 	// EOF ends extended data too, so it waits for stderr as well as stdout.
 	output.Wait()
 	ch.CloseWrite()
@@ -154,7 +172,7 @@ func forwardRequests(dst ssh.Channel, reqs <-chan *ssh.Request, check func(*ssh.
 }
 
 func eventForSSH(r *ssh.Request) *SSHRequest {
-	layer := &facts.SSH{Request: r.Type}
+	layer := &SSHFacts{Request: r.Type}
 	e := &SSHRequest{SSH: layer}
 	switch r.Type {
 	case requestExec:
@@ -162,7 +180,7 @@ func eventForSSH(r *ssh.Request) *SSHRequest {
 		if ssh.Unmarshal(r.Payload, &p) == nil {
 			layer.Command = p.Command
 			if args := argv(p.Command); args != nil {
-				e.Command = &facts.Command{Argv: args}
+				e.Command = &CommandFacts{Argv: args}
 			}
 		}
 	case "subsystem":
@@ -171,7 +189,7 @@ func eventForSSH(r *ssh.Request) *SSHRequest {
 			layer.Subsystem = p.Name
 		}
 	case "env":
-		var p facts.SSHEnv
+		var p SSHEnvFacts
 		if ssh.Unmarshal(r.Payload, &p) == nil {
 			layer.Env = &p
 		}
@@ -226,19 +244,24 @@ func literal(parts []syntax.WordPart) bool {
 }
 
 // NoClientAuth is safe because the tunnel already checked the client's key.
-func innerSSH(s *connector.Stream, hostKey ssh.Signer) (*ssh.ServerConn, <-chan ssh.NewChannel, <-chan *ssh.Request, error) {
+func innerSSH(s *connector.Stream, hostKey ssh.Signer) (<-chan ssh.NewChannel, error) {
 	if hostKey == nil {
-		return nil, nil, nil, errors.New("SSH host identity is unavailable")
+		return nil, errors.New("SSH host identity is unavailable")
 	}
 	cfg := &ssh.ServerConfig{NoClientAuth: true}
 	cfg.AddHostKey(hostKey)
-	return ssh.NewServerConn(s, cfg)
+	_, chans, reqs, err := ssh.NewServerConn(s, cfg)
+	if err != nil {
+		return nil, err
+	}
+	go ssh.DiscardRequests(reqs)
+	return chans, nil
 }
 
-type SSHRequest facts.Details
+type SSHRequest Details
 
-func (r *SSHRequest) Describe(c connector.Context) (facts.Facts, error) {
-	details := facts.Details(*r)
+func (r *SSHRequest) Describe(host string) (facts.Facts, error) {
+	details := Details(*r)
 	v := r.SSH
 	if v == nil {
 		return facts.Facts{Details: details}, nil
@@ -250,10 +273,6 @@ func (r *SSHRequest) Describe(c connector.Context) (facts.Facts, error) {
 	scope := map[string]any{}
 	if v.Command != "" {
 		scope["command"] = v.Command
-	}
-	host := ""
-	if config, ok := c.Config.(*SSH); ok {
-		host = config.Host
 	}
 	title := map[string]string{"run": "Run " + v.Command + " on " + host, "shell": "Open a shell on " + host, "files": "Transfer files on " + host}[action]
 	if title == "" {

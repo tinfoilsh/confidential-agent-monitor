@@ -16,19 +16,31 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-var SFTPDefinition = connector.Definition{HostKey: true, NewConfig: func() connector.Server { return new(SFTP) }, Requests: []connector.Request{new(SSHRequest), new(SFTPRequest)}}
+var SFTPDefinition = connector.Definition{HostKey: true, Parse: parseSFTP, New: func() connector.Server { return new(SFTP) }}
 
 // SFTP terminates the SSH subsystem and mediates SFTP v3 requests. Root is
 // presented as / to clients. Use a server-side chroot when other writers can
 // replace upstream directories concurrently with path resolution.
-type SFTP struct {
-	SSH
+type sftpSetup struct {
+	sshSetup
 	Root string `json:"root"`
 }
 
 const maxSFTPPacket = 1 << 20
 
 // SFTP v3 packet types and status codes, from draft-ietf-secsh-filexfer-02.
+func parseSFTP(source connector.Setup) (connector.Prepared, error) {
+	c := new(sftpSetup)
+	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+		return connector.Prepared{}, err
+	}
+	names, err := c.Declarations("key")
+	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+}
+
+// SFTP keeps one immutable setup for each admitted stream.
+type SFTP struct{ connector.Slot[sftpSetup] }
+
 const (
 	sftpVersion = 3
 
@@ -64,7 +76,14 @@ const (
 	fxOpUnsupported    = 8
 )
 
-func (t *SFTP) Serve(s *connector.Stream, e *connector.Env) {
+func (owner *SFTP) Serve(s *connector.Stream, e *connector.Env) {
+	captured := owner.Load()
+	if captured == nil {
+		return
+	}
+	t := captured.Value
+	t.Secrets = captured.Secrets
+
 	t.serve(s, e, func(up *ssh.Client, nc ssh.NewChannel) {
 		if nc.ChannelType() != channelSession {
 			nc.Reject(ssh.Prohibited, "only SFTP sessions are supported")
@@ -107,7 +126,7 @@ func (t *SFTP) Serve(s *connector.Stream, e *connector.Env) {
 				r.Reply(true, nil)
 			}
 			go ssh.DiscardRequests(requests)
-			p := sftpProxy{up: reader, out: writer, check: func(r connector.Request) error { return s.Gate(s.Context, r) }, handles: map[string]*sftpHandle{}}
+			p := sftpProxy{up: reader, out: writer, check: func(r *SFTPRequest) error { return s.Gate(s.Context, t.Event((r).Describe())) }, handles: map[string]*sftpHandle{}}
 			p.serve(ch, cmp.Or(t.Root, "/"))
 			return
 		}
@@ -123,7 +142,7 @@ type sftpHandle struct {
 type sftpProxy struct {
 	up      io.Reader
 	out     io.Writer
-	check   func(connector.Request) error
+	check   func(*SFTPRequest) error
 	root    string
 	handles map[string]*sftpHandle
 	next    uint64
@@ -537,10 +556,10 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 	return r, nil
 }
 
-type SFTPRequest facts.SFTP
+type SFTPRequest SFTPFacts
 
-func (v *SFTPRequest) Describe(c connector.Context) (facts.Facts, error) {
-	details := facts.Details{SFTP: (*facts.SFTP)(v)}
+func (v *SFTPRequest) Describe() (facts.Facts, error) {
+	details := Details{SFTP: (*SFTPFacts)(v)}
 	action := map[string]string{
 		"read": "read", "stat": "read", "lstat": "read", "fstat": "read", "opendir": "read", "readdir": "read", "realpath": "read", "readlink": "read",
 		"write": "write", "mkdir": "write", "remove": "delete", "rmdir": "delete", "rename": "rename", "setstat": "metadata", "fsetstat": "metadata", "close": "session",

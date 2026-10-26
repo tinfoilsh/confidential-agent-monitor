@@ -2,6 +2,7 @@ package signer
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -11,7 +12,18 @@ import (
 	"github.com/tinfoilsh/monitor/connector"
 )
 
-var GPGAgentDefinition = connector.Definition{NewConfig: func() connector.Server { return new(GPGAgent) }, Requests: []connector.Request{new(Request)}}
+var GPGAgentDefinition = connector.Definition{Parse: parseGPGAgent, New: func() connector.Server { return new(GPGAgent) }}
+
+func parseGPGAgent(source connector.Setup) (connector.Prepared, error) {
+	c := new(gpgAgentSetup)
+	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+		return connector.Prepared{}, err
+	}
+	return connector.Prepared{Source: source, Value: c}, nil
+}
+
+// GPGAgent keeps one immutable setup for each admitted stream.
+type GPGAgent struct{ connector.Slot[gpgAgentSetup] }
 
 const (
 	agentGPG           = "gpg"
@@ -25,10 +37,21 @@ var agentCommands = map[string]bool{
 	"SETHASH": true, "PKSIGN": true, "PKDECRYPT": true,
 }
 
-type GPGAgent string
+type gpgAgentSetup struct {
+	connector.Semantics
+	socket string
+}
 
-func (socket *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
-	up, err := (&net.Dialer{Timeout: connector.DialTimeout}).DialContext(s.Context, "unix", string(*socket))
+func (s *gpgAgentSetup) UnmarshalJSON(raw []byte) error { return json.Unmarshal(raw, &s.socket) }
+
+func (owner *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
+	captured := owner.Load()
+	if captured == nil {
+		return
+	}
+	socket := captured.Value
+
+	up, err := (&net.Dialer{Timeout: connector.DialTimeout}).DialContext(s.Context, "unix", socket.socket)
 	if err != nil {
 		log.Printf("gpg-agent: %v", err)
 		return
@@ -54,7 +77,7 @@ func (socket *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
 			sign.Hash = rest
 		case command == "PKSIGN" || command == "PKDECRYPT":
 			sign.Op = strings.ToLower(command)
-			if err := s.Gate(s.Context, &sign); err != nil {
+			if err := s.Gate(s.Context, socket.Event((&sign).Describe())); err != nil {
 				fmt.Fprintf(s, "ERR %d %v <Monitor>\n", assuanNotSupported, err)
 				continue
 			}

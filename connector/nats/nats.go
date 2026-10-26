@@ -23,21 +23,36 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var Definition = connector.Definition{PerMessage: true, NewConfig: func() connector.Server { return new(NATS) }, Requests: []connector.Request{new(Request)}}
+var Definition = connector.Definition{PerMessage: true, Parse: parseNATS, New: func() connector.Server { return new(NATS) }}
+
+func parseNATS(source connector.Setup) (connector.Prepared, error) {
+	c := new(natsSetup)
+	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+		return connector.Prepared{}, err
+	}
+	if err := c.validate(); err != nil {
+		return connector.Prepared{}, err
+	}
+	names, err := c.Declarations("password", "token")
+	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+}
+
+// NATS keeps one immutable setup for each admitted stream.
+type NATS struct{ connector.Slot[natsSetup] }
 
 const (
 	maxPayload = 1 << 20
 	maxLine    = 8192
 )
 
-type NATS struct {
+type natsSetup struct {
 	connector.SecretConfig
 	Address string `json:"url"`
 	User    string `json:"user"`
 	url     *url.URL
 }
 
-func (n *NATS) Prepare() error {
+func (n *natsSetup) validate() error {
 	u, err := connector.ParseURL(n.Address)
 	if err != nil {
 		return err
@@ -72,6 +87,7 @@ type clientOptions struct {
 }
 
 type client struct {
+	owner   *natsSetup
 	s       *connector.Stream
 	up      *nats.Conn
 	options clientOptions
@@ -79,8 +95,15 @@ type client struct {
 	subs    map[string]*nats.Subscription
 }
 
-func (n *NATS) Serve(s *connector.Stream, e *connector.Env) {
-	c := &client{s: s, subs: map[string]*nats.Subscription{}}
+func (owner *NATS) Serve(s *connector.Stream, e *connector.Env) {
+	captured := owner.Load()
+	if captured == nil {
+		return
+	}
+	n := captured.Value
+	n.Secrets = captured.Secrets
+
+	c := &client{owner: &n, s: s, subs: map[string]*nats.Subscription{}}
 	// Cluster addresses, upstream names and authentication details never leave
 	// the connector. Clients reconnect through the monitor's own address.
 	if err := c.write([]byte(`INFO {"server_id":"monitor","server_name":"monitor","version":"2.10.0","proto":1,"headers":true,"max_payload":1048576,"auth_required":false,"tls_required":false}` + "\r\n")); err != nil {
@@ -101,7 +124,7 @@ func (n *NATS) Serve(s *connector.Stream, e *connector.Env) {
 		c.fail("invalid CONNECT")
 		return
 	}
-	if err := c.s.Gate(c.s.Context, &Request{Command: "connect"}); err != nil {
+	if err := c.s.Gate(c.s.Context, c.owner.Event((&Request{Command: "connect"}).Describe())); err != nil {
 		c.fail("connection refused")
 		return
 	}
@@ -191,7 +214,7 @@ func (c *client) command(line string, r *bufio.Reader) error {
 		if m.Header != nil && !c.options.Headers {
 			return errors.New("headers were not negotiated")
 		}
-		if err := c.s.Gate(c.s.Context, &Request{Command: "publish", Subject: m.Subject, Reply: m.Reply, Headers: m.Header, Payload: m.Data}); err != nil {
+		if err := c.s.Gate(c.s.Context, c.owner.Event((&Request{Command: "publish", Subject: m.Subject, Reply: m.Reply, Headers: m.Header, Payload: m.Data}).Describe())); err != nil {
 			return err
 		}
 		if err := c.up.PublishMsg(m); err != nil {
@@ -219,7 +242,7 @@ func (c *client) command(line string, r *bufio.Reader) error {
 				return errors.New("invalid queue")
 			}
 		}
-		if err := c.s.Gate(c.s.Context, &Request{Command: "subscribe", Subject: subject, Queue: queue}); err != nil {
+		if err := c.s.Gate(c.s.Context, c.owner.Event((&Request{Command: "subscribe", Subject: subject, Queue: queue}).Describe())); err != nil {
 			return err
 		}
 		callback := func(m *nats.Msg) { c.deliver(sid, queue, m) }
@@ -288,7 +311,7 @@ func (c *client) deliver(sid, queue string, m *nats.Msg) {
 		c.s.Close()
 		return
 	}
-	if err := c.s.Gate(c.s.Context, &Request{Command: "receive", Subject: m.Subject, Reply: m.Reply, Queue: queue, Headers: m.Header, Payload: m.Data}); err != nil {
+	if err := c.s.Gate(c.s.Context, c.owner.Event((&Request{Command: "receive", Subject: m.Subject, Reply: m.Reply, Queue: queue, Headers: m.Header, Payload: m.Data}).Describe())); err != nil {
 		c.s.Close()
 		return
 	}
@@ -441,10 +464,10 @@ func subjectValid(s string, filter bool) bool {
 	return true
 }
 
-type Request facts.NATS
+type Request NATSFacts
 
-func (v *Request) Describe(c connector.Context) (facts.Facts, error) {
-	details := facts.Details{NATS: (*facts.NATS)(v)}
+func (v *Request) Describe() (facts.Facts, error) {
+	details := Details{NATS: (*NATSFacts)(v)}
 	action := ""
 	if slices.Contains([]string{"connect", "subscribe", "receive", "publish"}, v.Command) {
 		action = v.Command

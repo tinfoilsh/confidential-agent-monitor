@@ -14,9 +14,6 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Extension marks an SSH connection authenticated with the owner key.
-const Extension = "owner"
-
 const (
 	ownerSSHChannel        = "tinfoil-owner-http-v1"
 	ownerGenerationRequest = "tinfoil-owner-generation-v1"
@@ -48,9 +45,10 @@ func ServeChannel(nc ssh.NewChannel, api http.Handler, generation Generation) {
 	if err != nil {
 		return
 	}
-	s := connector.NewStream(context.Background(), connector.NewChannelConn(ch))
+	conn := connector.NewChannelConn(ch, reqs)
+	s := connector.NewStream(context.Background(), conn)
 	defer s.Close()
-	go func() { ssh.DiscardRequests(reqs); s.Close() }()
+	go func() { <-conn.Closed(); s.Close() }()
 	acknowledge := func() error {
 		current, _ := generation()
 		// Do not report success until the CLI has persisted the generation. Close

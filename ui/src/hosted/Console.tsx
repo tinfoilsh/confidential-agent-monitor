@@ -34,6 +34,7 @@ import {
   openMonitor,
   ownedMonitor,
   sandboxIdentity,
+  sandboxMonitorSSH,
   type AttestMonitor,
   type MonitorSession,
   type SandboxRequest,
@@ -316,7 +317,12 @@ export default function Console(props: {
         update,
       );
     });
-    if (!signal.aborted && row.repo === cp.SANDBOX_REPO && !failures()[row.id])
+    if (
+      !signal.aborted &&
+      row.repo === cp.SANDBOX_REPO &&
+      sandboxMonitorSSH(row) &&
+      !failures()[row.id]
+    )
       await enroll(row);
   };
   const stop = (row: cp.Container) =>
@@ -457,7 +463,7 @@ export default function Console(props: {
         });
         signal.throwIfAborted();
         add(row);
-        void enroll(row);
+        if (sandboxMonitorSSH(row)) void enroll(row);
       },
       () => void createBox(request, monitorId),
     );
@@ -471,9 +477,13 @@ export default function Console(props: {
     try {
       if (row.status !== "running")
         throw new Error(`${row.name} is ${row.status}.`);
+      if (!sandboxMonitorSSH(row))
+        throw new Error(
+          "This sandbox uses your SSH key. Connect with the Tinfoil CLI.",
+        );
       const { client } = await connect(cp.attachedMonitor(row)!);
       // Setup reinstalls the Monitor credentials and restarts sandbox networking, so
-      // opening a shell never repeats it; after a reboot, use Unlock.
+      // opening a shell never repeats it; starting a sandbox enrolls it first.
       show({ name, message: "", client });
     } catch (cause) {
       if (!signal.aborted) show({ name, message: text(cause) });
@@ -532,13 +542,18 @@ export default function Console(props: {
   const addMonitor = async (name: string, tinfoilApiKey?: string) => {
     setAdding(undefined);
     const row = await create(name, tinfoilApiKey);
-    if (row) setSelected(row.id);
+    if (row)
+      batch(() => {
+        setSelected(row.id);
+        home();
+      });
   };
   const home = () =>
     batch(() => {
       setViewing(false);
       setMenu(false);
       sessionStorage.removeItem(REOPEN);
+      location.hash = "#agents";
     });
 
   const navigation = () => (
@@ -713,7 +728,7 @@ export default function Console(props: {
   const ready = (box: cp.Container) =>
     ownedBox(box) && box.status === "running" && !pending()[box.id];
   const shellButton = (box: cp.Container) => (
-    <Show when={ownedBox(box)}>
+    <Show when={ownedBox(box) && sandboxMonitorSSH(box)}>
       <button
         class="icon-button open-shell"
         aria-label="Open shell"
@@ -762,9 +777,20 @@ export default function Console(props: {
     >
       {(box) => (
         <div class="console-sandbox-actions">
+          {sandboxAccess(box())}
           <Alert message={failure(box())}>{blankRecovery(box())}</Alert>
         </div>
       )}
+    </Show>
+  );
+  const sandboxAccess = (box: cp.Container) => (
+    <Show when={!sandboxMonitorSSH(box)}>
+      <p class="muted">
+        This sandbox uses your SSH key. Run{" "}
+        <code>tinfoil attest-ssh --install {box.name}</code> on your computer to
+        unlock it, then <code>ssh {box.name}</code> to connect. Its monitor has
+        no SSH access.
+      </p>
     </Show>
   );
   const sandboxList = () => (
@@ -805,6 +831,7 @@ export default function Console(props: {
                 kind="sandbox"
                 owned={ownedBox(box())}
                 action={shellButton(box())}
+                details={sandboxAccess(box())}
                 recovery={blankRecovery(box())}
               />
             );
@@ -1149,6 +1176,8 @@ function NewSandbox(props: {
     props.monitor ?? props.monitors[0]?.id ?? "",
   );
   const [workspace, setWorkspace] = createSignal("");
+  const [monitorSSH, setMonitorSSH] = createSignal(true);
+  const [publicKey, setPublicKey] = createSignal("");
   const [volumes, setVolumes] = createSignal<cp.Volume[]>([]);
   const [error, setError] = createSignal("");
   const closed = new AbortController();
@@ -1170,11 +1199,19 @@ function NewSandbox(props: {
         class="dialog-body form-fields"
         onSubmit={(event) => {
           event.preventDefault();
+          setError("");
+          try {
+            if (!monitorSSH()) keys.measuredPublicKey(publicKey());
+          } catch (cause) {
+            setError(text(cause));
+            return;
+          }
           props.onCreate(
             {
               name: name(),
               workspace: workspace() || undefined,
               instanceId: crypto.randomUUID(),
+              ...(!monitorSSH() && { ownerPublicKey: publicKey().trim() }),
             },
             monitor(),
           );
@@ -1210,6 +1247,34 @@ function NewSandbox(props: {
         <button type="button" class="link" onClick={props.onNewMonitor}>
           Create a new monitor instead
         </button>
+        <label class="setting-row">
+          <span classList={{ muted: !monitorSSH() }}>
+            Give Monitor SSH access
+            <small>
+              Allow accessing your sandbox from the browser. The monitor can
+              read and modify anything in it.
+            </small>
+          </span>
+          <input
+            type="checkbox"
+            role="switch"
+            checked={monitorSSH()}
+            onChange={(event) => setMonitorSSH(event.currentTarget.checked)}
+          />
+        </label>
+        <Show when={!monitorSSH()}>
+          <label>
+            Your SSH public key
+            <textarea
+              value={publicKey()}
+              onInput={(event) => setPublicKey(event.currentTarget.value)}
+              placeholder="ssh-ed25519 AAAA…"
+              required
+              rows={3}
+              spellcheck={false}
+            />
+          </label>
+        </Show>
         <label>
           Workspace
           <select
@@ -1229,8 +1294,9 @@ function NewSandbox(props: {
         </label>
         <Show when={workspace()}>
           <p class="muted">
-            A reused workspace opens only with the key this console derived for
-            it.
+            {monitorSSH()
+              ? "A reused workspace opens only with the key this console derived for it."
+              : "Keep the workspace's original SSH key and encryption credentials to unlock it with the CLI."}
           </p>
         </Show>
         <Show when={error()}>

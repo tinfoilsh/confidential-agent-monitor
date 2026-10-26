@@ -33,7 +33,10 @@ import (
 	"github.com/tinfoilsh/monitor/connector/tcp"
 	"github.com/tinfoilsh/monitor/connector/tinfoil"
 	"github.com/tinfoilsh/monitor/connector/web"
+	"github.com/tinfoilsh/monitor/internal/frontdoor"
 	"github.com/tinfoilsh/monitor/internal/monitor"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
 	"github.com/tinfoilsh/monitor/internal/worker"
 	"github.com/tinfoilsh/monitor/ui"
 	"gocloud.dev/blob"
@@ -96,10 +99,7 @@ func main() {
 	}
 	if *healthcheck {
 		client := &http.Client{Timeout: 5 * time.Second}
-		resp, err := client.Get("http://" + *api + "/healthz")
-		if err != nil {
-			log.Fatal(err)
-		}
+		resp := must(client.Get("http://" + *api + "/healthz"))
 		resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
 			log.Fatalf("healthcheck: %s", resp.Status)
@@ -107,18 +107,11 @@ func main() {
 		return
 	}
 	dev := !*production && strings.HasPrefix(*bucketURL, "file://")
-	assets, err := fs.Sub(ui.Files, "dist")
-	if err != nil {
-		log.Fatal(err)
-	}
+	assets := must(fs.Sub(ui.Files, "dist"))
 	embeddedFiles := http.StripPrefix("/app/", http.FileServerFS(assets))
 	var files http.Handler
 	if *uiDevURL != "" {
-		var err error
-		files, err = uiDevProxy(*uiDevURL, dev)
-		if err != nil {
-			log.Fatal(err)
-		}
+		files = must(uiDevProxy(*uiDevURL, dev))
 	} else if dev {
 		if dir, err := os.Stat("ui/dist"); err == nil && dir.IsDir() {
 			files = http.StripPrefix("/app/", http.FileServer(http.Dir("ui/dist")))
@@ -126,26 +119,13 @@ func main() {
 	}
 	var public ed25519.PublicKey
 	if *ownerPublic != "" || !dev {
-		var err error
-		public, err = parseOwnerPublicKey(*ownerPublic)
-		if err != nil {
-			log.Fatal(err)
-		}
+		public = must(parseOwnerPublicKey(*ownerPublic))
 	}
-	origins, err := ownerOrigins(*originList)
-	if err != nil {
-		log.Fatal(err)
-	}
+	origins := must(ownerOrigins(*originList))
 	var hostSigner ssh.Signer
 	if *hostKey != "" {
-		data, err := os.ReadFile(*hostKey)
-		if err != nil {
-			log.Fatal(err)
-		}
-		hostSigner, err = ssh.ParsePrivateKey(data)
-		if err != nil {
-			log.Fatal(err)
-		}
+		data := must(os.ReadFile(*hostKey))
+		hostSigner = must(ssh.ParsePrivateKey(data))
 	}
 	if (*production || public != nil) && hostSigner == nil {
 		log.Fatal("production and owner SSH require -ssh-host-key")
@@ -154,19 +134,35 @@ func main() {
 		delete(connectorKinds, "cli")
 		delete(connectorKinds, "gpg-agent")
 	}
-	bucket, err := blob.OpenBucket(context.Background(), *bucketURL)
-	if err != nil {
-		log.Fatal(err)
-	}
-	ln, err := net.Listen("tcp", *listen)
-	if err != nil {
-		log.Fatal(err)
-	}
+	bucket := must(blob.OpenBucket(context.Background(), *bucketURL))
+	defer bucket.Close()
+	ln := must(net.Listen("tcp", *listen))
+	defer ln.Close()
 	options := monitor.Options{Bucket: bucket, BucketURL: *bucketURL, OwnerPublicKey: public, HostKey: hostSigner, Connectors: connectorKinds, EmbeddedFiles: embeddedFiles}
 	if *workers {
 		options.Workers = &worker.Local{Root: *workerRoot}
 	}
+	var service *sandbox.Service
+	var view func() (any, error)
+	forwards := new(frontdoor.Forwarder)
+	options.ValidateIdentity = sandbox.ValidateMetadata
+	options.SSHForwards = forwards
+	options.OwnerRoutes = func(mux *http.ServeMux) {
+		mux.Handle("POST /sandboxes/{name}/enroll", monitor.JSONHandler(sandbox.MaxRequestBytes, func(r *http.Request, in sandbox.EnrollInput) (any, error) {
+			if err := service.Enroll(r.Context(), r.PathValue("name"), in); err != nil {
+				return nil, err
+			}
+			return view()
+		}))
+		mux.Handle("POST /sandboxes/{name}/shell", monitor.JSONHandler(sandbox.MaxRequestBytes, func(r *http.Request, in sandbox.ShellInput) (any, error) {
+			session, _ := ownerauth.FromContext(r.Context())
+			return service.Shell(r.Context(), session.ID, r.PathValue("name"), in)
+		}))
+	}
 	m := monitor.New(options)
+	defer m.Close()
+	view = m.OwnerView
+	service = sandbox.New(m, forwards, sandbox.Verify)
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	go m.ServeSSH(ln)
@@ -174,6 +170,14 @@ func main() {
 		log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.Handler(files)), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
 	}()
 	m.WriteAudit(ctx)
+}
+
+// Startup cannot serve a partially configured application.
+func must[T any](value T, err error) T {
+	if err != nil {
+		log.Fatal(err)
+	}
+	return value
 }
 
 func parseOwnerPublicKey(value string) (ed25519.PublicKey, error) {
