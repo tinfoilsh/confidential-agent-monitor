@@ -32,9 +32,9 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// state is an immutable settings snapshot, published as a whole through live.
+// settings is an immutable snapshot of the saved settings, published as a whole.
 // Mutable connector availability and stream authority belong to monitor.
-type state struct {
+type settings struct {
 	*config.Config
 	Engine    *policy.Engine
 	Catalog   map[string]presets.Entry
@@ -44,16 +44,16 @@ type state struct {
 
 type connection struct {
 	config.ConnectionSpec
-	Server  connector.Server
-	Secrets map[string]*credential.Value
-	setup   *connector.Prepared
-	env     connector.Env
-	ctx     context.Context // Logical stream authority, not resource lifetime.
-	cancel  context.CancelFunc
-	active  sync.WaitGroup // Final retirement only; ordinary Update does not join uses.
-	ready   bool
-	err     error
-	details json.RawMessage
+	Server      connector.Server
+	Credentials map[string]*credential.Value
+	prepared    *connector.Prepared
+	env         connector.Env
+	setupCtx    context.Context // Logical stream authority, not resource lifetime.
+	cancelSetup context.CancelFunc
+	active      sync.WaitGroup // Final retirement only; ordinary Update does not join uses.
+	ready       bool
+	err         error
+	details     json.RawMessage
 }
 
 type status struct {
@@ -62,31 +62,42 @@ type status struct {
 	Details json.RawMessage `json:"details,omitempty"`
 }
 
+const (
+	statusError      = "error"
+	statusConnecting = "connecting"
+	statusReady      = "ready"
+)
+
 // Status runs under monitor.mu. Process availability is independent
 // of successful setup delivery; it is queried directly without a watcher.
 func (c *connection) Status() status {
 	if c.err != nil {
-		return status{State: "error", Error: c.err.Error()}
+		return status{State: statusError, Error: c.err.Error()}
 	}
 	if !c.ready {
-		return status{State: "connecting"}
+		return status{State: statusConnecting}
 	}
 	if runtime, ok := c.Server.(interface{ Ready() error }); ok {
 		if err := runtime.Ready(); err != nil {
-			return status{State: "error", Error: err.Error()}
+			return status{State: statusError, Error: err.Error()}
 		}
 	}
-	return status{State: "ready", Details: c.details}
+	return status{State: statusReady, Details: c.details}
 }
 
-// acquire runs under mu and pins a ready connector until the caller finishes.
+// usable runs under mu: c is still installed with this setup and ready.
+func (m *monitor) usable(c *connection, prepared *connector.Prepared) bool {
+	return c != nil && m.connections[c.Name] == c && c.prepared == prepared && c.Status().State == statusReady
+}
+
+// acquire runs under mu and pins a ready connector until release.
 // Retirement cancels its authority before waiting for these uses to return.
-func (m *monitor) acquire(c *connection, setup *connector.Prepared) error {
-	if c == nil || m.connections[c.Name] != c || c.setup != setup || c.Status().State != "ready" {
-		return errChanged
+func (m *monitor) acquire(c *connection, prepared *connector.Prepared) (release func(), err error) {
+	if !m.usable(c, prepared) {
+		return nil, errChanged
 	}
 	c.active.Add(1)
-	return nil
+	return c.active.Done, nil
 }
 func (c *connection) close() {
 	// Drain work before teardown.
@@ -98,13 +109,13 @@ func (c *connection) close() {
 
 type connectionPlan struct {
 	config.ConnectionSpec
-	setup   *connector.Prepared
-	secrets map[string]*credential.Value
+	prepared    *connector.Prepared
+	credentials map[string]*credential.Value
 }
 
 // settingsPlan contains parsed settings, never candidate runtime instances.
 type settingsPlan struct {
-	next    *state
+	next    *settings
 	source  string
 	secrets store.Secrets
 	updates []connectionPlan
@@ -116,15 +127,15 @@ type Options struct {
 	BucketURL      string
 	OwnerPublicKey ed25519.PublicKey
 	HostKey        ssh.Signer
-	Connectors     map[string]connector.Definition
+	Connectors     map[string]connector.Kind
 	Workers        worker.Launcher
 	EmbeddedFiles  http.Handler
 }
-type streamAuthority struct {
-	key        string
-	connection *connection
-	setup      *connector.Prepared
-	route      bool
+type admission struct {
+	fingerprint string
+	connection  *connection
+	prepared    *connector.Prepared
+	route       bool
 }
 
 // monitor owns the mutable document, connections, streams and approvals under mu.
@@ -133,8 +144,8 @@ type streamAuthority struct {
 // require both locks, so a reader may hold either; gate only needs mu.
 type monitor struct {
 	workers                 worker.Launcher
-	kinds                   map[string]connector.Definition
-	live                    atomic.Pointer[state]
+	kinds                   map[string]connector.Kind
+	settings                atomic.Pointer[settings]
 	mu                      sync.Mutex
 	writes                  sync.Mutex
 	store                   store.Store
@@ -143,10 +154,10 @@ type monitor struct {
 	ownerPublicKey          ed25519.PublicKey
 	sshHostKey              ssh.Signer
 	embeddedFiles, ownerAPI http.Handler
-	bucket                  string
+	bucketURL               string
 	forwards                *frontdoor.Forwarder
 	sandboxes               *sandbox.Service
-	streams                 map[*connector.Stream]streamAuthority
+	streams                 map[*connector.Stream]admission
 	records                 []*record
 	signIns                 sync.Map
 }
@@ -160,13 +171,13 @@ func New(o Options) *monitor {
 		audit:          store.AuditLog[*record]{Bucket: o.Bucket},
 		ownerPublicKey: o.OwnerPublicKey,
 		sshHostKey:     o.HostKey,
-		bucket:         o.BucketURL,
+		bucketURL:      o.BucketURL,
 		kinds:          o.Connectors,
 		workers:        o.Workers,
 		embeddedFiles:  o.EmbeddedFiles,
 		forwards:       new(frontdoor.Forwarder),
 		connections:    map[string]*connection{},
-		streams:        map[*connector.Stream]streamAuthority{},
+		streams:        map[*connector.Stream]admission{},
 	}
 	m.sandboxes = sandbox.New(m, m.forwards, sandbox.Verify)
 	m.ownerAPI = m.newOwnerAPI()
@@ -175,7 +186,14 @@ func New(o Options) *monitor {
 func (m *monitor) generation() (uint64, bool) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	return m.store.Doc.Generation, m.live.Load() != nil
+	return m.store.Doc.Generation, m.settings.Load() != nil
+}
+
+// snapshot returns the committed document and the settings published from it.
+func (m *monitor) snapshot() (store.Document, *settings) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.store.Doc, m.settings.Load()
 }
 
 func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64, initialize bool) error {
@@ -186,7 +204,7 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64, initia
 		m.mu.Unlock()
 		return store.ErrOwner
 	}
-	if m.live.Load() != nil {
+	if m.settings.Load() != nil {
 		defer m.mu.Unlock()
 		if !m.store.IsOwner(key) {
 			return store.ErrOwner
@@ -236,7 +254,7 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64, initia
 // mu. It creates no runtime instances. Stored maps and settings snapshots are
 // immutable; credential refreshes can still commit while validation runs.
 func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Document, env connector.Env) (*settingsPlan, error) {
-	current := m.live.Load()
+	current := m.settings.Load()
 	next := current
 	if current == nil || proposed.Policy != base.Policy {
 		cfg, err := config.Load(proposed.Policy)
@@ -256,7 +274,7 @@ func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Docu
 			} else if engine, err = policy.Prepare(ctx, cfg.Data, cfg.Policies, cfg.Lattices.Confidentiality, cfg.Lattices.Integrity); err != nil {
 				return nil, err
 			}
-			next = &state{Config: cfg, Engine: engine, Env: env}
+			next = &settings{Config: cfg, Engine: engine, Env: env}
 			next.Dialer = connector.NewDialer(cfg.AllowNetworks)
 			if next.Catalog, next.CatalogID, err = cfg.Catalog(); err != nil {
 				return nil, err
@@ -273,8 +291,8 @@ func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Docu
 		}
 		for _, spec := range specs {
 			present[spec.Name] = true
-			def := m.kinds[spec.Protocol]
-			if def.Parse == nil || def.New == nil {
+			kind := m.kinds[spec.Protocol]
+			if kind.Parse == nil || kind.New == nil {
 				return nil, fmt.Errorf("connection %s has unknown kind %s", spec.Name, spec.Protocol)
 			}
 			c, values := m.connections[spec.Name], proposed.Secrets.Connection(spec.Account, spec.Key)
@@ -287,32 +305,32 @@ func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Docu
 				bytes.Equal(c.Config, spec.Config) &&
 				bytes.Equal(c.Definition, spec.Definition) &&
 				bytes.Equal(c.Options, spec.Options) &&
-				slices.Equal(c.Credentials, spec.Credentials)
+				slices.Equal(c.CredentialNames, spec.CredentialNames)
 			var parsed connector.Prepared
 			if unchanged {
-				parsed = *c.setup
-			} else if parsed, err = def.Parse(connector.Setup{Config: spec.Config, Definition: spec.Definition, Options: spec.Options}); err != nil {
+				parsed = *c.prepared
+			} else if parsed, err = kind.Parse(connector.Setup{Config: spec.Config, Definition: spec.Definition, Options: spec.Options}); err != nil {
 				return nil, fmt.Errorf("connection %s: %w", spec.Name, err)
 			}
-			if parsed.Secrets != nil {
+			if parsed.SecretNames != nil {
 				for name, raw := range values {
 					plan.secrets.Set(store.SecretID{Account: spec.Account, Connection: spec.Key, Name: name}, raw)
 				}
 			}
 			if unchanged && maps.EqualFunc(base.Secrets.Connection(spec.Account, spec.Key), values, slices.Equal[json.RawMessage]) {
 				// Retry unavailable, unchanged connections.
-				if !c.ready || c.Status().State != "ready" {
-					plan.updates = append(plan.updates, connectionPlan{spec, c.setup, c.Secrets})
+				if c.Status().State != statusReady {
+					plan.updates = append(plan.updates, connectionPlan{spec, c.prepared, c.Credentials})
 				}
 				continue
 			}
 			var handles map[string]*credential.Value
-			if parsed.Secrets != nil {
+			if parsed.SecretNames != nil {
 				handles = map[string]*credential.Value{}
-				for _, name := range parsed.Secrets {
+				for _, name := range parsed.SecretNames {
 					handles[name] = nil
 				}
-				for _, name := range spec.Credentials {
+				for _, name := range spec.CredentialNames {
 					handles[name] = nil
 				}
 				for name := range values {
@@ -320,8 +338,8 @@ func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Docu
 				}
 				for name := range handles {
 					id := store.SecretID{Account: spec.Account, Connection: spec.Key, Name: name}
-					if reusable && c.Secrets[name] != nil && bytes.Equal(base.Secrets.Get(id), values[name]) {
-						handles[name] = c.Secrets[name]
+					if reusable && c.Credentials[name] != nil && bytes.Equal(base.Secrets.Get(id), values[name]) {
+						handles[name] = c.Credentials[name]
 					}
 				}
 			}
@@ -347,7 +365,7 @@ func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Docu
 // publish the settings and revoke lost authority. Changed connectors remain
 // unavailable until installation. A saved approval is answered after persistence
 // and before general settings invalidation.
-func (m *monitor) commitSettings(ctx context.Context, base store.Document, plan *settingsPlan, saved *savedApproval) (install, retired []*connection, err error) {
+func (m *monitor) commitSettings(ctx context.Context, base store.Document, plan *settingsPlan, saved *savedAnswer) (install, retired []*connection, err error) {
 	next := m.store.Doc
 	next.Policy, next.Secrets = plan.source, store.Secrets{}
 	for account, connections := range plan.secrets {
@@ -366,7 +384,7 @@ func (m *monitor) commitSettings(ctx context.Context, base store.Document, plan 
 	// This is pure credential validation; it takes no Value lock or network call.
 	client := plan.next.Client()
 	for _, update := range plan.updates {
-		for name, value := range update.secrets {
+		for name, value := range update.credentials {
 			if value != nil {
 				continue
 			}
@@ -381,7 +399,7 @@ func (m *monitor) commitSettings(ctx context.Context, base store.Document, plan 
 			v.Save = func(ctx context.Context, before, after json.RawMessage) error {
 				return m.replaceValue(ctx, id, v, before, after)
 			}
-			update.secrets[name] = v
+			update.credentials[name] = v
 		}
 	}
 	next.Enrolled, next.Labels = maps.Clone(next.Enrolled), maps.Clone(next.Labels)
@@ -394,7 +412,7 @@ func (m *monitor) commitSettings(ctx context.Context, base store.Document, plan 
 	}
 	maps.DeleteFunc(next.Labels, func(key string, _ facts.Label) bool { _, ok := plan.next.Principals[key]; return !ok })
 	// Persist before publishing authority.
-	if !reflect.DeepEqual(next, m.store.Doc) || m.live.Load() == nil {
+	if !reflect.DeepEqual(next, m.store.Doc) || m.settings.Load() == nil {
 		if err := m.store.Commit(ctx, next); err != nil {
 			return nil, nil, err
 		}
@@ -402,10 +420,10 @@ func (m *monitor) commitSettings(ctx context.Context, base store.Document, plan 
 	if saved != nil {
 		saved.record.ruleSaved(saved.answer)
 	}
-	old, changed := m.live.Load(), false
+	old, changed := m.settings.Load(), false
 	for _, name := range plan.remove {
 		c := m.connections[name]
-		c.cancel()
+		c.cancelSetup()
 		retired = append(retired, c)
 		delete(m.connections, name)
 		changed = true
@@ -413,34 +431,34 @@ func (m *monitor) commitSettings(ctx context.Context, base store.Document, plan 
 	for _, update := range plan.updates {
 		c := m.connections[update.Name]
 		if c == nil {
-			def := m.kinds[update.Protocol]
+			kind := m.kinds[update.Protocol]
 			c = &connection{}
 			if m.workers != nil {
-				c.Server = &worker.Proxy{Definition: def, Kind: update.Protocol, Launcher: m.workers}
+				c.Server = &worker.Proxy{Kind: kind, Protocol: update.Protocol, Launcher: m.workers}
 			} else {
-				c.Server = def.New()
+				c.Server = kind.New()
 			}
 			m.connections[update.Name] = c
 		}
-		if c.setup != update.setup {
-			if c.cancel != nil {
-				c.cancel()
+		if c.prepared != update.prepared {
+			if c.cancelSetup != nil {
+				c.cancelSetup()
 			}
-			c.ctx, c.cancel = context.WithCancel(context.Background())
+			c.setupCtx, c.cancelSetup = context.WithCancel(context.Background())
 			changed = true
 		}
-		c.ConnectionSpec, c.setup, c.Secrets = update.ConnectionSpec, update.setup, update.secrets
+		c.ConnectionSpec, c.prepared, c.Credentials = update.ConnectionSpec, update.prepared, update.credentials
 		// Admission requires successful delivery.
 		c.env, c.ready, c.err = plan.next.Env, false, nil
-		if !m.kinds[c.Protocol].HostKey {
+		if !m.kinds[c.Protocol].UsesHostKey {
 			c.env.HostKey = nil
 		}
 		install = append(install, c)
 	}
-	m.live.Store(plan.next)
+	m.settings.Store(plan.next)
 	// Close streams losing authority.
-	for stream, authority := range m.streams {
-		if !m.sameStreamAuthority(old, authority) {
+	for stream, a := range m.streams {
+		if !m.stillAdmitted(old, a) {
 			stream.Close()
 		}
 	}
@@ -461,7 +479,7 @@ func (m *monitor) installConnections(install, retired []*connection) {
 	defer cancel()
 	for _, c := range install {
 		env := c.env
-		err := c.Server.Update(ctx, *c.setup, c.Secrets, &env)
+		err := c.Server.Update(ctx, *c.prepared, c.Credentials, &env)
 		m.mu.Lock()
 		c.err, c.ready = err, err == nil
 		if d, ok := c.Server.(connector.Detailer); ok && err == nil {
@@ -477,7 +495,7 @@ func (m *monitor) Close() {
 	m.mu.Lock()
 	retired := slices.Collect(maps.Values(m.connections))
 	for _, c := range retired {
-		c.cancel()
+		c.cancelSetup()
 	}
 	clear(m.connections)
 	m.mu.Unlock()

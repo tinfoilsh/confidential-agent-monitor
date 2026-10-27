@@ -15,7 +15,7 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var IMAPDefinition = connector.Definition{Parse: parseIMAP, New: func() connector.Server { return new(IMAP) }}
+var IMAPKind = connector.Kind{Parse: parseIMAP, New: func() connector.Server { return new(IMAP) }}
 
 func parseIMAP(source connector.Setup) (connector.Prepared, error) {
 	c := new(imapSetup)
@@ -26,7 +26,7 @@ func parseIMAP(source connector.Setup) (connector.Prepared, error) {
 		return connector.Prepared{}, err
 	}
 	names, err := c.Declarations("password")
-	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
 }
 
 // IMAP keeps one immutable setup for each admitted stream.
@@ -118,7 +118,7 @@ func (owner *IMAP) Serve(s *connector.Stream, e *connector.Env) {
 			mailbox = strings.Trim(args, `"`)
 		}
 		dst := io.Writer(up)
-		if err := s.Gate(s.Context, r.Event((&IMAPRequest{Command: command, Args: args, Mailbox: mailbox}).Describe())); err != nil {
+		if err := s.Gate(s.Context, r.Capture((&IMAPRequest{Command: command, Args: args, Mailbox: mailbox}).Describe())); err != nil {
 			fmt.Fprintf(s, "%s NO %v\r\n", tag, err)
 			dst = io.Discard
 		}

@@ -59,7 +59,7 @@ func (c *Config) Effective() (string, error) {
 // agentFields is the single definition of what an agent may read and propose.
 // A nil value omits an absent field from the view without forbidding its creation.
 func (c *Config) agentFields(p Principal) ([]Change, error) {
-	if name, ok := c.Principals[p.Key]; !ok || name != p.Name {
+	if name, ok := c.Principals[p.Fingerprint]; !ok || name != p.Name {
 		return nil, errors.New("agent identity changed")
 	}
 	var rules any

@@ -19,7 +19,7 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var Definition = connector.Definition{PerMessage: true, Parse: parseMQTT, New: func() connector.Server { return new(MQTT) }}
+var Kind = connector.Kind{PerMessage: true, Parse: parseMQTT, New: func() connector.Server { return new(MQTT) }}
 
 func parseMQTT(source connector.Setup) (connector.Prepared, error) {
 	c := new(mqttSetup)
@@ -30,7 +30,7 @@ func parseMQTT(source connector.Setup) (connector.Prepared, error) {
 		return connector.Prepared{}, err
 	}
 	names, err := c.Declarations("password")
-	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
 }
 
 // MQTT keeps one immutable setup for each admitted stream.
@@ -87,7 +87,7 @@ func (owner *MQTT) Serve(s *connector.Stream, e *connector.Env) {
 		refuse(5)
 		return
 	}
-	if err := s.Gate(s.Context, m.Event((&Request{Command: "connect"}).Describe())); err != nil {
+	if err := s.Gate(s.Context, m.Capture((&Request{Command: "connect"}).Describe())); err != nil {
 		refuse(5)
 		return
 	}
@@ -154,7 +154,7 @@ type proxy struct {
 }
 
 func (p *proxy) publish(command string, v *packets.PublishPacket) error {
-	return p.s.Gate(p.s.Context, p.owner.Event((&Request{Command: command, Topic: v.TopicName, QoS: v.Qos, Retain: v.Retain, Payload: v.Payload}).Describe()))
+	return p.s.Gate(p.s.Context, p.owner.Capture((&Request{Command: command, Topic: v.TopicName, QoS: v.Qos, Retain: v.Retain, Payload: v.Payload}).Describe()))
 }
 
 func (p *proxy) request(packet packets.ControlPacket) error {
@@ -189,7 +189,7 @@ func (p *proxy) request(packet packets.ControlPacket) error {
 		return p.publish("publish", publish)
 	case *packets.SubscribePacket:
 		for i, topic := range v.Topics {
-			if err := p.s.Gate(p.s.Context, p.owner.Event((&Request{Command: "subscribe", Topic: topic, QoS: v.Qoss[i]}).Describe())); err != nil {
+			if err := p.s.Gate(p.s.Context, p.owner.Capture((&Request{Command: "subscribe", Topic: topic, QoS: v.Qoss[i]}).Describe())); err != nil {
 				return err
 			}
 		}

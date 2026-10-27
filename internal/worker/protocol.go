@@ -39,7 +39,7 @@ const readyPath = "/_monitor/ready"
 type bootstrap struct {
 	connector.Setup
 	Version  int                     `json:"version"`
-	Kind     string                  `json:"kind"`
+	Protocol string                  `json:"kind"`
 	Settings json.RawMessage         `json:"settings,omitempty"`
 	Secrets  map[string]secretHandle `json:"secrets,omitempty"`
 	HostKey  []byte                  `json:"host_key,omitempty"`
@@ -50,9 +50,9 @@ type secretHandle struct {
 	Placeholder string `json:"placeholder"`
 }
 
-const sessionHeader = "X-Monitor-Session"
+const streamHeader = "X-Monitor-Session"
 
-type sessionInfo struct {
+type streamInfo struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 	Host string `json:"host"`
@@ -206,7 +206,7 @@ func Accept(w http.ResponseWriter, r *http.Request) (net.Conn, error) {
 }
 
 // Worker RPC has stricter header and idle bounds than arbitrary protocol HTTP.
-func serve(ctx context.Context, ln net.Listener, handler http.Handler) error {
+func serveRPC(ctx context.Context, ln net.Listener, handler http.Handler) error {
 	return connector.ServeListener(ctx, ln, &http.Server{Handler: handler,
 		ReadHeaderTimeout: rpcReadTimeout, IdleTimeout: time.Minute, MaxHeaderBytes: 16 << 10})
 }

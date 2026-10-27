@@ -16,7 +16,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-var CLIDefinition = connector.Definition{HostKey: true, Parse: parseCLI, New: func() connector.Server { return new(CLI) }}
+var CLIKind = connector.Kind{UsesHostKey: true, Parse: parseCLI, New: func() connector.Server { return new(CLI) }}
 
 func parseCLI(source connector.Setup) (connector.Prepared, error) {
 	c := new(cliSetup)
@@ -24,7 +24,7 @@ func parseCLI(source connector.Setup) (connector.Prepared, error) {
 		return connector.Prepared{}, err
 	}
 	names, err := c.Declarations()
-	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
 }
 
 // CLI keeps one immutable setup for each admitted stream.
@@ -83,7 +83,7 @@ func (t *cliSetup) session(s *connector.Stream, ch ssh.Channel, reqs <-chan *ssh
 			e.Payload = gitObject(stdin)
 		}
 		status := exitRefused
-		if err := s.Gate(s.Context, t.Event((e).Describe(""))); err != nil {
+		if err := s.Gate(s.Context, t.Capture((e).Describe(""))); err != nil {
 			fmt.Fprintf(ch.Stderr(), "monitor: %v\n", err)
 		} else {
 			status = t.execute(s.Context, e.Command.Argv, io.MultiReader(bytes.NewReader(stdin), ch), ch)

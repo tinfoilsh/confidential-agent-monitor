@@ -23,7 +23,7 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var Definition = connector.Definition{PerMessage: true, Parse: parseNATS, New: func() connector.Server { return new(NATS) }}
+var Kind = connector.Kind{PerMessage: true, Parse: parseNATS, New: func() connector.Server { return new(NATS) }}
 
 func parseNATS(source connector.Setup) (connector.Prepared, error) {
 	c := new(natsSetup)
@@ -34,7 +34,7 @@ func parseNATS(source connector.Setup) (connector.Prepared, error) {
 		return connector.Prepared{}, err
 	}
 	names, err := c.Declarations("password", "token")
-	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
 }
 
 // NATS keeps one immutable setup for each admitted stream.
@@ -124,7 +124,7 @@ func (owner *NATS) Serve(s *connector.Stream, e *connector.Env) {
 		c.fail("invalid CONNECT")
 		return
 	}
-	if err := c.s.Gate(c.s.Context, c.owner.Event((&Request{Command: "connect"}).Describe())); err != nil {
+	if err := c.s.Gate(c.s.Context, c.owner.Capture((&Request{Command: "connect"}).Describe())); err != nil {
 		c.fail("connection refused")
 		return
 	}
@@ -214,7 +214,7 @@ func (c *client) command(line string, r *bufio.Reader) error {
 		if m.Header != nil && !c.options.Headers {
 			return errors.New("headers were not negotiated")
 		}
-		if err := c.s.Gate(c.s.Context, c.owner.Event((&Request{Command: "publish", Subject: m.Subject, Reply: m.Reply, Headers: m.Header, Payload: m.Data}).Describe())); err != nil {
+		if err := c.s.Gate(c.s.Context, c.owner.Capture((&Request{Command: "publish", Subject: m.Subject, Reply: m.Reply, Headers: m.Header, Payload: m.Data}).Describe())); err != nil {
 			return err
 		}
 		if err := c.up.PublishMsg(m); err != nil {
@@ -242,7 +242,7 @@ func (c *client) command(line string, r *bufio.Reader) error {
 				return errors.New("invalid queue")
 			}
 		}
-		if err := c.s.Gate(c.s.Context, c.owner.Event((&Request{Command: "subscribe", Subject: subject, Queue: queue}).Describe())); err != nil {
+		if err := c.s.Gate(c.s.Context, c.owner.Capture((&Request{Command: "subscribe", Subject: subject, Queue: queue}).Describe())); err != nil {
 			return err
 		}
 		callback := func(m *nats.Msg) { c.deliver(sid, queue, m) }
@@ -311,7 +311,7 @@ func (c *client) deliver(sid, queue string, m *nats.Msg) {
 		c.s.Close()
 		return
 	}
-	if err := c.s.Gate(c.s.Context, c.owner.Event((&Request{Command: "receive", Subject: m.Subject, Reply: m.Reply, Queue: queue, Headers: m.Header, Payload: m.Data}).Describe())); err != nil {
+	if err := c.s.Gate(c.s.Context, c.owner.Capture((&Request{Command: "receive", Subject: m.Subject, Reply: m.Reply, Queue: queue, Headers: m.Header, Payload: m.Data}).Describe())); err != nil {
 		c.s.Close()
 		return
 	}

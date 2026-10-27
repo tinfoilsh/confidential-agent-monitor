@@ -113,8 +113,8 @@ type Facts struct {
 	Details    any            `json:"details"`
 }
 
-// Policy is an agent proposal to change the owner source.
-type Policy struct {
+// PolicyDiff is an agent proposal to change the owner source.
+type PolicyDiff struct {
 	SourceDiff    string `json:"source_diff"`
 	EffectiveDiff string `json:"effective_diff"`
 }

@@ -25,7 +25,7 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var Definition = connector.Definition{PerMessage: true, Parse: Parse, New: func() connector.Server { return new(Server) }}
+var Kind = connector.Kind{PerMessage: true, Parse: Parse, New: func() connector.Server { return new(Server) }}
 
 const (
 	httpsPort    = 443
@@ -83,7 +83,7 @@ func (h *Setup) ServeWithTransport(s *connector.Stream, e *connector.Env, transp
 				}
 			}
 		}
-		if err := s.Gate(r.Context(), h.Event(request.Describe(h))); err != nil {
+		if err := s.Gate(r.Context(), h.Capture(request.Describe(h))); err != nil {
 			log.Printf("refused %s %s%s: %v", r.Method, r.Host, r.URL.Path, err)
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return

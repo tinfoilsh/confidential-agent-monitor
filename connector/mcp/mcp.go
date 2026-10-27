@@ -22,7 +22,7 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var Definition = connector.Definition{Parse: Parse, New: func() connector.Server { return new(Server) }}
+var Kind = connector.Kind{Parse: Parse, New: func() connector.Server { return new(Server) }}
 
 type Setup struct {
 	connector.SecretConfig
@@ -58,7 +58,7 @@ func ParseSetup(source connector.Setup, config any, setup *Setup) (connector.Pre
 	}
 	setup.preset = preset.MCP
 	names, err := setup.Declarations("token")
-	return connector.Prepared{Source: source, Value: setup, Secrets: names}, err
+	return connector.Prepared{Source: source, Value: setup, SecretNames: names}, err
 }
 
 func Parse(source connector.Setup) (connector.Prepared, error) {
@@ -162,7 +162,7 @@ func (m *session) serve(s *connector.Stream, e *connector.Env) {
 		server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: Version}, &sdk.ServerOptions{Instructions: m.instructions})
 		for _, t := range m.tools {
 			server.AddTool(t, func(ctx context.Context, req *sdk.CallToolRequest) (*sdk.CallToolResult, error) {
-				if err := s.Gate(ctx, m.Event((&Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}).Describe(m.preset))); err != nil {
+				if err := s.Gate(ctx, m.Capture((&Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}).Describe(m.preset))); err != nil {
 					log.Printf("%s: blocked %s: %v", m.URL, t.Name, err)
 					return &sdk.CallToolResult{IsError: true, Content: []sdk.Content{&sdk.TextContent{Text: "blocked by policy: " + err.Error()}}}, nil
 				}

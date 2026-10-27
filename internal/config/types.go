@@ -14,7 +14,7 @@ const AgentConnection = "agent"
 type ConnectionSpec struct {
 	Name, Protocol, Account, Key string
 	Config, Definition, Options  json.RawMessage
-	PublicScope, Credentials     []string
+	PublicScope, CredentialNames []string
 }
 
 func ConnectionName(account, key string) string {
@@ -25,7 +25,7 @@ func ConnectionName(account, key string) string {
 }
 
 type Principal struct {
-	Key, Name string
+	Fingerprint, Name string
 }
 
 type Identity struct {
@@ -50,7 +50,7 @@ type Rule struct {
 	Account      string              `json:"account"`
 	Action       string              `json:"action"`
 	Operation    string              `json:"operation,omitempty"`
-	Definition   string              `json:"definition,omitempty"`
+	ApprovalKey  string              `json:"definition,omitempty"`
 	Scope        map[string]any      `json:"scope"`
 	Requirements []facts.Requirement `json:"requirements"`
 }

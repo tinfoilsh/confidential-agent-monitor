@@ -17,7 +17,7 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var Definition = connector.Definition{Parse: parsePostgres, New: func() connector.Server { return new(Postgres) }}
+var Kind = connector.Kind{Parse: parsePostgres, New: func() connector.Server { return new(Postgres) }}
 
 func parsePostgres(source connector.Setup) (connector.Prepared, error) {
 	c := new(postgresSetup)
@@ -28,7 +28,7 @@ func parsePostgres(source connector.Setup) (connector.Prepared, error) {
 		return connector.Prepared{}, err
 	}
 	names, err := c.Declarations("password")
-	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
 }
 
 // Postgres keeps one immutable setup for each admitted stream.
@@ -158,7 +158,7 @@ func (r *postgresSetup) relayQueries(s *connector.Stream, backend *pgproto3.Back
 			sql = msg.Query
 		}
 		if sql != "" {
-			if err := s.Gate(s.Context, r.Event((&Request{SQL: sql}).Describe())); err != nil {
+			if err := s.Gate(s.Context, r.Capture((&Request{SQL: sql}).Describe())); err != nil {
 				backend.Send(&pgproto3.ErrorResponse{Severity: "ERROR", Code: "42501", Message: err.Error()})
 				if _, simple := msg.(*pgproto3.Query); simple {
 					backend.Send(&pgproto3.ReadyForQuery{TxStatus: byte(status.Load())})

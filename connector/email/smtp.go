@@ -17,7 +17,7 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var SMTPDefinition = connector.Definition{Parse: parseSMTP, New: func() connector.Server { return new(SMTP) }}
+var SMTPKind = connector.Kind{Parse: parseSMTP, New: func() connector.Server { return new(SMTP) }}
 
 func parseSMTP(source connector.Setup) (connector.Prepared, error) {
 	c := new(smtpSetup)
@@ -28,7 +28,7 @@ func parseSMTP(source connector.Setup) (connector.Prepared, error) {
 		return connector.Prepared{}, err
 	}
 	names, err := c.Declarations("password")
-	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
 }
 
 // SMTP keeps one immutable setup for each admitted stream.
@@ -84,7 +84,7 @@ func (s *smtpSession) Data(r io.Reader) error {
 	if err != nil {
 		return err
 	}
-	if err := s.stream.Gate(s.stream.Context, s.relay.Event((&SMTPRequest{SMTP: &SMTPFacts{From: s.from, To: s.to}, Mail: mailHeaders(message)}).Describe(s.relay.Semantics.Address))); err != nil {
+	if err := s.stream.Gate(s.stream.Context, s.relay.Capture((&SMTPRequest{SMTP: &SMTPFacts{From: s.from, To: s.to}, Mail: mailHeaders(message)}).Describe(s.relay.Semantics.Address))); err != nil {
 		return &smtp.SMTPError{Code: smtpRefused, EnhancedCode: smtp.EnhancedCode{5, 7, 1}, Message: err.Error()}
 	}
 	return s.relay.submit(s.stream, s.env, s.from, s.to, message)

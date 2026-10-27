@@ -24,7 +24,7 @@ import (
 )
 
 const (
-	maxSessions            = 128
+	maxStreams             = 128
 	maxUpstreamConnections = 32
 )
 
@@ -46,23 +46,23 @@ type Launcher interface {
 // Proxy is stable across setup changes. Update and Close are serialized by its
 // owner; calls already handed off retain their original process capabilities.
 type Proxy struct {
-	Kind       string
-	Definition connector.Definition
-	Launcher   Launcher
-	mu         sync.Mutex
-	current    *process
+	Protocol string
+	Kind     connector.Kind
+	Launcher Launcher
+	mu       sync.Mutex
+	current  *process
 }
 
 type process struct {
 	Endpoint
-	env       *connector.Env
-	hostKey   bool
-	secrets   map[string]*credential.Value
-	transport *http.Transport
-	details   json.RawMessage
-	mu        sync.Mutex
-	next      uint64
-	sessions  map[string]*connector.Stream
+	env         *connector.Env
+	usesHostKey bool
+	secrets     map[string]*credential.Value
+	transport   *http.Transport
+	details     json.RawMessage
+	mu          sync.Mutex
+	next        uint64
+	streams     map[string]*connector.Stream
 }
 
 func (p *Proxy) Update(ctx context.Context, prepared connector.Prepared, secrets map[string]*credential.Value, env *connector.Env) error {
@@ -70,15 +70,15 @@ func (p *Proxy) Update(ctx context.Context, prepared connector.Prepared, secrets
 	if p.Launcher == nil || env.Dialer == nil {
 		return errors.New("connector worker is not configured")
 	}
-	settings, err := json.Marshal(p.Definition.Settings)
+	settings, err := json.Marshal(p.Kind.Settings)
 	if err != nil {
 		return err
 	}
-	boot := bootstrap{Setup: prepared.Source, Version: protocolVersion, Kind: p.Kind, Settings: settings, Secrets: map[string]secretHandle{}}
+	boot := bootstrap{Setup: prepared.Source, Version: protocolVersion, Protocol: p.Protocol, Settings: settings, Secrets: map[string]secretHandle{}}
 	for name, value := range secrets {
 		boot.Secrets[name] = secretHandle{len(value.Raw()) > 0, value.Placeholder}
 	}
-	if p.Definition.HostKey && env.HostKey != nil {
+	if p.Kind.UsesHostKey && env.HostKey != nil {
 		boot.HostKey = env.HostKey.PublicKey().Marshal()
 	}
 	raw, err := json.Marshal(boot)
@@ -88,8 +88,8 @@ func (p *Proxy) Update(ctx context.Context, prepared connector.Prepared, secrets
 	if len(raw) > maxMessage {
 		return errors.New("worker configuration exceeds size limit")
 	}
-	running := &process{env: env, hostKey: p.Definition.HostKey, secrets: maps.Clone(secrets), sessions: map[string]*connector.Stream{}}
-	running.Endpoint, err = p.Launcher.Start(ctx, raw, running.callbacks())
+	running := &process{env: env, usesHostKey: p.Kind.UsesHostKey, secrets: maps.Clone(secrets), streams: map[string]*connector.Stream{}}
+	running.Endpoint, err = p.Launcher.Start(ctx, raw, running.broker())
 	if err != nil {
 		return err
 	}
@@ -149,17 +149,17 @@ func (p *Proxy) Serve(s *connector.Stream, _ *connector.Env) {
 	ctx, cancel := connector.Bind(s.Context, running.Context)
 	defer cancel()
 	running.mu.Lock()
-	if ctx.Err() != nil || len(running.sessions) >= maxSessions {
+	if ctx.Err() != nil || len(running.streams) >= maxStreams {
 		running.mu.Unlock()
 		return
 	}
 	running.next++
 	id := fmt.Sprint(running.next)
-	running.sessions[id] = s
+	running.streams[id] = s
 	running.mu.Unlock()
-	defer func() { running.mu.Lock(); delete(running.sessions, id); running.mu.Unlock() }()
-	raw, _ := json.Marshal(sessionInfo{id, s.Name, s.Host, s.Port})
-	header := http.Header{sessionHeader: {base64.RawStdEncoding.EncodeToString(raw)}, "Connection": {"Upgrade"}, "Upgrade": {"monitor-connector"}}
+	defer func() { running.mu.Lock(); delete(running.streams, id); running.mu.Unlock() }()
+	raw, _ := json.Marshal(streamInfo{id, s.Name, s.Host, s.Port})
+	header := http.Header{streamHeader: {base64.RawStdEncoding.EncodeToString(raw)}, "Connection": {"Upgrade"}, "Upgrade": {"monitor-connector"}}
 	request := &http.Request{Method: "GET", URL: &url.URL{Path: "/stream"}, Host: "worker", Header: header}
 	upstream, err := connect(ctx, running.Dial, request, http.StatusSwitchingProtocols)
 	if err != nil {
@@ -189,7 +189,7 @@ func (p *Proxy) Control() http.Handler {
 			r.Out.URL.Path = "/control" + r.Out.URL.Path
 			r.Out.URL.RawPath = ""
 			// Monitor authenticates controls; they carry no stream authority.
-			for _, name := range []string{"Authorization", "Proxy-Authorization", "Cookie", sessionHeader} {
+			for _, name := range []string{"Authorization", "Proxy-Authorization", "Cookie", streamHeader} {
 				r.Out.Header.Del(name)
 			}
 		}, FlushInterval: -1}
@@ -197,7 +197,7 @@ func (p *Proxy) Control() http.Handler {
 	})
 }
 
-func (p *process) callbacks() http.Handler {
+func (p *process) broker() http.Handler {
 	mux := http.NewServeMux()
 	// These capabilities belong to the connection, including setup and owner controls.
 	mux.Handle("POST /credential/{name}", callback(func(ctx context.Context, r *http.Request, _ []byte) (any, error) {
@@ -207,11 +207,11 @@ func (p *process) callbacks() http.Handler {
 		return p.signHost(raw)
 	}))
 	// These operations additionally require a live stream admitted by the host.
-	mux.Handle("POST /gate/{session}", p.sessionCallback(func(ctx context.Context, stream *connector.Stream, raw []byte) (any, error) {
+	mux.Handle("POST /gate/{stream}", p.streamCallback(func(ctx context.Context, stream *connector.Stream, raw []byte) (any, error) {
 		return nil, stream.Gate(ctx, facts.Event(raw))
 	}))
-	mux.Handle("POST /certificate/{session}", p.sessionCallback(p.certificate))
-	network := broker(p.env.Dialer)
+	mux.Handle("POST /certificate/{stream}", p.streamCallback(p.certificate))
+	network := connectProxy(p.env.Dialer)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodConnect {
 			network.ServeHTTP(w, r)
@@ -232,13 +232,13 @@ func callback(fn func(context.Context, *http.Request, []byte) (any, error)) http
 	}
 }
 
-func (p *process) sessionCallback(fn func(context.Context, *connector.Stream, []byte) (any, error)) http.HandlerFunc {
+func (p *process) streamCallback(fn func(context.Context, *connector.Stream, []byte) (any, error)) http.HandlerFunc {
 	return callback(func(ctx context.Context, r *http.Request, raw []byte) (any, error) {
 		p.mu.Lock()
-		stream := p.sessions[r.PathValue("session")]
+		stream := p.streams[r.PathValue("stream")]
 		p.mu.Unlock()
 		if stream == nil {
-			return nil, errors.New("session is not admitted")
+			return nil, errors.New("stream is not admitted")
 		}
 		if err := stream.Context.Err(); err != nil {
 			return nil, err
@@ -255,7 +255,7 @@ func (p *process) credential(ctx context.Context, name string) (string, error) {
 }
 
 func (p *process) signHost(raw []byte) (*ssh.Signature, error) {
-	if !p.hostKey || p.env.HostKey == nil {
+	if !p.usesHostKey || p.env.HostKey == nil {
 		return nil, errors.New("host identity is not granted")
 	}
 	var in signing
@@ -304,7 +304,7 @@ func (p *process) certificate(_ context.Context, stream *connector.Stream, raw [
 	return certificate{cert.Certificate, key}, err
 }
 
-func broker(dialer connector.Dialer) http.Handler {
+func connectProxy(dialer connector.Dialer) http.Handler {
 	slots := make(chan struct{}, maxUpstreamConnections)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodConnect || r.URL.Host != r.Host || len(r.Host) > 8192 {

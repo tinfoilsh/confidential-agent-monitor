@@ -16,7 +16,7 @@ import (
 	"github.com/tinfoilsh/monitor/connector/web"
 )
 
-var Definition = connector.Definition{PerMessage: true, Parse: parseHTTP, New: func() connector.Server { return new(Server) }}
+var Kind = connector.Kind{PerMessage: true, Parse: parseHTTP, New: func() connector.Server { return new(Server) }}
 
 type httpSetup struct {
 	connector.SecretConfig
@@ -49,7 +49,7 @@ func parseHTTP(source connector.Setup) (connector.Prepared, error) {
 		return connector.Prepared{}, err
 	}
 	route := &web.Setup{Credentials: web.Credentials{Slots: setup.http.Slots}}
-	return connector.Prepared{Source: source, Value: setup, Secrets: names, Claim: route.Claim,
+	return connector.Prepared{Source: source, Value: setup, SecretNames: names, Claim: route.Claim,
 		Discovery: connector.Discovery{Slots: setup.http.Slots, Placeholders: map[string]string{}}}, nil
 }
 

@@ -27,25 +27,25 @@ type Server interface {
 // Prepared is a pure parser result. Source is sent to isolated execution; Value
 // belongs to the concrete protocol. A nil Secrets slice means no credential scope.
 type Prepared struct {
-	Source    Setup
-	Value     any
-	Claim     func(string, uint32) int
-	Discovery Discovery
-	Secrets   []string
+	Source      Setup
+	Value       any
+	Claim       func(string, uint32) int
+	Discovery   Discovery
+	SecretNames []string
 }
 
 type Controller interface{ Control() http.Handler }
 
-// Definition registers a concrete connector.
-type Definition struct {
+// Kind registers a concrete connector.
+type Kind struct {
 	// PerMessage promises that each operation is gated against captured input.
 	// Such streams can stay open across label changes and gate the next operation.
 	// Opaque sessions keep the default: close when another operation changes the label.
-	PerMessage bool
-	HostKey    bool
-	Parse      func(Setup) (Prepared, error)
-	New        func() Server
-	Settings   any // Optional pointer to deployment settings, filled before Parse in a worker.
+	PerMessage  bool
+	UsesHostKey bool
+	Parse       func(Setup) (Prepared, error)
+	New         func() Server
+	Settings    any // Optional pointer to deployment settings, filled before Parse in a worker.
 }
 
 // Control handles private host HTTP after owner authentication.
@@ -148,7 +148,7 @@ func (c *SecretConfig) Declarations(required ...string) ([]string, error) {
 	return names, nil
 }
 
-func (c *Semantics) Event(f facts.Facts, err error) facts.Event {
+func (c *Semantics) Capture(f facts.Facts, err error) facts.Event {
 	if f.Operation != nil {
 		f.Operation = f.Operation.Resolve(c.Catalog.Actions)
 	}

@@ -88,7 +88,7 @@ func (h *Setup) serveWebSocket(w http.ResponseWriter, r *http.Request, handshake
 			// Classify the whole delivery using the account's contents and trust.
 			// Its payload is opaque to policy and can stream after admission,
 			// including large images, without an unbounded allocation.
-			if err := s.Gate(s.Context, h.Event((&WebSocketReceive{Origin: handshake.HTTP.Origin, Host: handshake.HTTP.Host, Path: handshake.HTTP.Path}).Describe())); err != nil {
+			if err := s.Gate(s.Context, h.Capture((&WebSocketReceive{Origin: handshake.HTTP.Origin, Host: handshake.HTTP.Host, Path: handshake.HTTP.Path}).Describe())); err != nil {
 				client.Close(websocket.StatusPolicyViolation, "delivery refused by monitor; see activity")
 				return
 			}
@@ -110,7 +110,7 @@ func (h *Setup) serveWebSocket(w http.ResponseWriter, r *http.Request, handshake
 			return
 		}
 		request := websocketMessage(handshake, kind, body)
-		if err := s.Gate(s.Context, h.Event((request).Describe(h))); err != nil {
+		if err := s.Gate(s.Context, h.Capture((request).Describe(h))); err != nil {
 			client.Close(websocket.StatusPolicyViolation, "request refused by monitor; see activity")
 			return
 		}

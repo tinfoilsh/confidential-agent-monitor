@@ -47,26 +47,6 @@ const (
 	preflightMaxAge   = "600"
 )
 
-// The kind is also the protocol policies see.
-var connectorKinds = map[string]connector.Definition{
-	"tcp":         tcp.Definition,
-	"http":        web.Definition,
-	"tinfoil":     tinfoil.Definition,
-	"tinfoil-mcp": tinfoil.MCPDefinition,
-	"mcp":         mcp.Definition,
-	"ssh":         session.SSHDefinition,
-	"sftp":        session.SFTPDefinition,
-	"cli":         session.CLIDefinition,
-	"mqtt":        mqtt.Definition,
-	"nats":        nats.Definition,
-	"imap":        email.IMAPDefinition,
-	"smtp":        email.SMTPDefinition,
-	"redis":       redis.Definition,
-	"postgres":    postgres.Definition,
-	"ssh-agent":   signer.SSHAgentDefinition,
-	"gpg-agent":   signer.GPGAgentDefinition,
-}
-
 func main() {
 	listen := flag.String("listen", "127.0.0.1:2223", "SSH address; it refuses agents until unlock")
 	api := flag.String("api", "127.0.0.1:8080", "owner API address")
@@ -78,19 +58,38 @@ func main() {
 	hostKey := flag.String("ssh-host-key", "", "runtime attested SSH private key")
 	healthcheck := flag.Bool("healthcheck", false, "check the local owner API and exit, including while locked")
 	originList := flag.String("owner-origins", "", "comma-separated browser origins allowed to call the owner API, such as https://dash.tinfoil.sh")
-	workers := flag.Bool("connector-workers", false, "run all connectors in isolated worker processes")
+	isolateConnectors := flag.Bool("connector-workers", false, "run all connectors in isolated worker processes")
 	workerRoot := flag.String("worker-root", "/opt/monitor/worker", "prepared read-only filesystem for connector workers")
-	workerMode := flag.Bool("connector-worker", false, "serve one connector on inherited descriptors")
+	serveWorker := flag.Bool("serve-connector-worker", false, "serve one connector on inherited descriptors")
 	flag.Parse()
 	if flag.NArg() != 0 {
 		log.Fatal("unexpected server arguments; use the separately installed monitor client")
 	}
-	if *extension != "" || *workerMode {
-		connectorKinds["browser"] = browser.Definition(*extension, *workerMode)
+	// The kind is also the protocol policies see.
+	connectorKinds := map[string]connector.Kind{
+		"tcp":         tcp.Kind,
+		"http":        web.Kind,
+		"tinfoil":     tinfoil.Kind,
+		"tinfoil-mcp": tinfoil.MCPKind,
+		"mcp":         mcp.Kind,
+		"ssh":         session.SSHKind,
+		"sftp":        session.SFTPKind,
+		"cli":         session.CLIKind,
+		"mqtt":        mqtt.Kind,
+		"nats":        nats.Kind,
+		"imap":        email.IMAPKind,
+		"smtp":        email.SMTPKind,
+		"redis":       redis.Kind,
+		"postgres":    postgres.Kind,
+		"ssh-agent":   signer.SSHAgentKind,
+		"gpg-agent":   signer.GPGAgentKind,
+	}
+	if *extension != "" || *serveWorker {
+		connectorKinds["browser"] = browser.Kind(*extension, *serveWorker)
 	}
 	// Workers run one connector over inherited descriptors. Host owns configuration,
 	// authenticated streams, policy decisions and credentials.
-	if *workerMode {
+	if *serveWorker {
 		if err := worker.ServeInherited(connectorKinds); err != nil {
 			log.Fatal(err)
 		}
@@ -108,12 +107,12 @@ func main() {
 	dev := !*production && strings.HasPrefix(*bucketURL, "file://")
 	assets := must(fs.Sub(ui.Files, "dist"))
 	embeddedFiles := http.StripPrefix("/app/", http.FileServerFS(assets))
-	var files http.Handler
+	var devFiles http.Handler
 	if *uiDevURL != "" {
-		files = must(uiDevProxy(*uiDevURL, dev))
+		devFiles = must(uiDevProxy(*uiDevURL, dev))
 	} else if dev {
 		if dir, err := os.Stat("ui/dist"); err == nil && dir.IsDir() {
-			files = http.StripPrefix("/app/", http.FileServer(http.Dir("ui/dist")))
+			devFiles = http.StripPrefix("/app/", http.FileServer(http.Dir("ui/dist")))
 		}
 	}
 	// Production owners authenticate through SSH or signed RPC and unlock the
@@ -147,7 +146,7 @@ func main() {
 		Connectors:     connectorKinds,
 		EmbeddedFiles:  embeddedFiles,
 	}
-	if *workers {
+	if *isolateConnectors {
 		options.Workers = &worker.Local{Root: *workerRoot}
 	}
 	m := monitor.New(options)
@@ -159,9 +158,9 @@ func main() {
 	// Owners can connect to the API using either SSH or the HTTP listener
 	go m.ServeSSH(ln)
 	go func() {
-		log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.Handler(files)), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
+		log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.HTTPHandler(devFiles)), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
 	}()
-	m.WriteAudit(ctx)
+	m.RunAudit(ctx)
 }
 
 // Startup cannot serve a partially configured application.

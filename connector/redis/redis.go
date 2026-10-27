@@ -13,7 +13,7 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var Definition = connector.Definition{Parse: parseRedis, New: func() connector.Server { return new(Redis) }}
+var Kind = connector.Kind{Parse: parseRedis, New: func() connector.Server { return new(Redis) }}
 
 func parseRedis(source connector.Setup) (connector.Prepared, error) {
 	c := new(redisSetup)
@@ -24,7 +24,7 @@ func parseRedis(source connector.Setup) (connector.Prepared, error) {
 		return connector.Prepared{}, err
 	}
 	names, err := c.Declarations("password")
-	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
 }
 
 // Redis keeps one immutable setup for each admitted stream.
@@ -94,7 +94,7 @@ func (owner *Redis) Serve(s *connector.Stream, e *connector.Env) {
 		for i, arg := range cmd.Args {
 			args[i] = string(arg)
 		}
-		if err := s.Gate(s.Context, r.Event((&Request{Command: commandName(args), Argv: args}).Describe())); err != nil {
+		if err := s.Gate(s.Context, r.Capture((&Request{Command: commandName(args), Argv: args}).Describe())); err != nil {
 			if _, err := s.Write(redcon.AppendError(nil, "ERR "+err.Error())); err != nil {
 				return
 			}

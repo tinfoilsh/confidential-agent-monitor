@@ -20,12 +20,12 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-type sessionKey struct{}
+type streamKey struct{}
 
 // Serve runs a worker using a supplied listener and connection to host services.
 // The launcher establishes isolation and authenticates both directions before
 // calling Serve. Serve closes ln and stops the connector when ctx ends.
-func Serve(ctx context.Context, definitions map[string]connector.Definition, config io.Reader, ln net.Listener, host DialFunc) error {
+func Serve(ctx context.Context, kinds map[string]connector.Kind, config io.Reader, ln net.Listener, broker DialFunc) error {
 	defer ln.Close()
 	var boot bootstrap
 	if err := readJSON(config, &boot); err != nil {
@@ -34,24 +34,24 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 	if boot.Version != protocolVersion {
 		return errors.New("unsupported worker protocol")
 	}
-	def := definitions[boot.Kind]
-	if def.New == nil || def.Parse == nil {
+	kind := kinds[boot.Protocol]
+	if kind.New == nil || kind.Parse == nil {
 		return errors.New("unknown connector")
 	}
-	if def.Settings != nil {
-		if err := facts.DecodeNumbers(boot.Settings, def.Settings); err != nil {
+	if kind.Settings != nil {
+		if err := facts.DecodeNumbers(boot.Settings, kind.Settings); err != nil {
 			return err
 		}
 	}
-	prepared, err := def.Parse(boot.Setup)
+	prepared, err := kind.Parse(boot.Setup)
 	if err != nil {
 		return err
 	}
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
-	callbacks := host.Transport()
+	callbacks := broker.Transport()
 	defer callbacks.CloseIdleConnections()
-	env := connector.Env{Dialer: BrokerDialer{Dial: host}}
+	env := connector.Env{Dialer: BrokerDialer{Dial: broker}}
 	secrets := map[string]*credential.Value{}
 	for name, handle := range boot.Secrets {
 		secrets[name] = credential.Remote(handle.Configured, func(ctx context.Context) (string, error) {
@@ -73,7 +73,7 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 		if !ok {
 			return nil, errors.New("TLS handshake has no admitted stream")
 		}
-		id, _ := s.Context.Value(sessionKey{}).(string)
+		id, _ := s.Context.Value(streamKey{}).(string)
 		var cert certificate
 		if err := call(s.Context, callbacks, "/certificate/"+id, hello.ServerName, &cert); err != nil {
 			return nil, err
@@ -84,7 +84,7 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 		}
 		return &tls.Certificate{Certificate: cert.Chain, PrivateKey: key}, nil
 	}}
-	instance := def.New()
+	instance := kind.New()
 	if closer, ok := instance.(io.Closer); ok {
 		defer closer.Close()
 	}
@@ -93,7 +93,7 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 	if d, ok := instance.(connector.Detailer); ok {
 		details = d.Details()
 	}
-	return serve(ctx, ln, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return serveRPC(ctx, ln, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == readyPath {
 			reply(w, details, startErr)
 			return
@@ -113,10 +113,10 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 			connector.Control(instance).ServeHTTP(w, r)
 			return
 		}
-		raw, err := base64.RawStdEncoding.DecodeString(r.Header.Get(sessionHeader))
-		var info sessionInfo
+		raw, err := base64.RawStdEncoding.DecodeString(r.Header.Get(streamHeader))
+		var info streamInfo
 		if err != nil || len(raw) > 8192 || facts.DecodeNumbers(raw, &info) != nil || info.ID == "" {
-			http.Error(w, "invalid session", 400)
+			http.Error(w, "invalid stream", 400)
 			return
 		}
 		conn, err := Accept(w, r)
@@ -124,7 +124,7 @@ func Serve(ctx context.Context, definitions map[string]connector.Definition, con
 			return
 		}
 		// Keep upgraded work in this handler so shutdown joins its actual return.
-		stream := connector.NewStream(context.WithValue(r.Context(), sessionKey{}, info.ID), conn)
+		stream := connector.NewStream(context.WithValue(r.Context(), streamKey{}, info.ID), conn)
 		defer stream.Close()
 		stream.Name, stream.Host, stream.Port = info.Name, info.Host, info.Port
 		stream.Gate = func(ctx context.Context, event facts.Event) error {

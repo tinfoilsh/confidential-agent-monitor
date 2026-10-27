@@ -37,7 +37,7 @@ func (m *monitor) replaceValue(ctx context.Context, id store.SecretID, value *cr
 	defer m.mu.Unlock()
 	c := m.connections[config.ConnectionName(id.Account, id.Connection)]
 	// Reject stale credential refreshes.
-	if c == nil || c.Secrets[id.Name] != value || !bytes.Equal(m.store.Doc.Secrets.Get(id), before) {
+	if c == nil || c.Credentials[id.Name] != value || !bytes.Equal(m.store.Doc.Secrets.Get(id), before) {
 		return errors.New("credential changed; start again")
 	}
 	next := m.store.Doc
@@ -64,9 +64,9 @@ func (m *monitor) signInCredential(account string, path []string) (json.RawMessa
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	s := m.live.Load()
+	s := m.settings.Load()
 	c := m.connections[config.ConnectionName(account, requested.Connection)]
-	if c == nil || c.Account != account || c.Protocol != requested.Protocol || c.Secrets[requested.Secret] == nil {
+	if c == nil || c.Account != account || c.Protocol != requested.Protocol || c.Credentials[requested.Secret] == nil {
 		return nil, nil, errors.New("connection does not exist")
 	}
 	paths := []presets.CredentialPath{requested}
@@ -98,12 +98,12 @@ func (m *monitor) signInCredential(account string, path []string) (json.RawMessa
 		if target == nil {
 			continue
 		}
-		if target.Account != account || target.Protocol != p.Protocol || target.Secrets[p.Secret] == nil {
+		if target.Account != account || target.Protocol != p.Protocol || target.Credentials[p.Secret] == nil {
 			return nil, nil, errors.New("credential connection does not exist")
 		}
 		destinationID := store.SecretID{Account: account, Connection: p.Connection, Name: p.Secret}
 		path := append([]string{"accounts", account}, p.Path()...)
-		destinations = append(destinations, destination{target, target.Secrets[p.Secret], path, destinationID, bytes.Clone(m.store.Doc.Secrets.Get(destinationID))})
+		destinations = append(destinations, destination{target, target.Credentials[p.Secret], path, destinationID, bytes.Clone(m.store.Doc.Secrets.Get(destinationID))})
 	}
 	return bytes.Clone(m.store.Doc.Secrets.Get(store.SecretID{Account: account, Connection: requested.Connection, Name: requested.Secret})), func(ctx context.Context, raw json.RawMessage) error {
 		m.writes.Lock()
@@ -112,9 +112,9 @@ func (m *monitor) signInCredential(account string, path []string) (json.RawMessa
 		for _, d := range destinations {
 			changes = append(changes, config.Change{Path: d.path, Value: raw})
 		}
-		return m.writePolicy(ctx, nil, changes, func() error {
+		return m.writeSettings(ctx, nil, changes, func() error {
 			for _, d := range destinations {
-				if m.connections[d.connection.Name] != d.connection || d.connection.Secrets[d.id.Name] != d.value || !bytes.Equal(m.store.Doc.Secrets.Get(d.id), d.before) {
+				if m.connections[d.connection.Name] != d.connection || d.connection.Credentials[d.id.Name] != d.value || !bytes.Equal(m.store.Doc.Secrets.Get(d.id), d.before) {
 					return errors.New("credential changed; start again")
 				}
 			}
@@ -157,7 +157,7 @@ func (m *monitor) startSignIn(r *http.Request, req signInInput) (any, error) {
 	defer cancel()
 	session, _ := ownerauth.FromContext(r.Context())
 	pending := &pendingSignIn{session: session.ID, expires: time.Now().Add(10 * time.Minute)}
-	sign, err := credential.NewSignIn(ctx, m.live.Load().Client(), record, req.Redirect)
+	sign, err := credential.NewSignIn(ctx, m.settings.Load().Client(), record, req.Redirect)
 	if err != nil {
 		return nil, err
 	}
@@ -221,8 +221,5 @@ func (m *monitor) finishSignIn(r *http.Request, req finishSignInInput) (any, err
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
 	defer cancel()
-	err := pending.finish(ctx, req)
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	return m.view(err)
+	return m.viewAfter(pending.finish(ctx, req))
 }

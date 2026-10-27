@@ -31,10 +31,10 @@ func (m *monitor) ServeSSH(ln net.Listener) {
 					return &ssh.Permissions{Extensions: map[string]string{"owner": "true"}}, nil
 				}
 			}
-			if m.live.Load() == nil {
+			if m.settings.Load() == nil {
 				return nil, errLocked
 			}
-			extensions, err := sandbox.Authenticate(conn, key, m.Identity)
+			extensions, err := sandbox.Authenticate(conn, key, m.keyAccess)
 			if err != nil {
 				return nil, err
 			}
@@ -55,7 +55,7 @@ func (m *monitor) ServeSSH(ln net.Listener) {
 
 		fingerprint := conn.Permissions.Extensions[fingerprintExtension]
 		if conn.Permissions.Extensions[sandbox.RouteExtension] != "" {
-			known, _ := m.Identity(fingerprint)
+			known, _ := m.keyAccess(fingerprint)
 			// A sandbox registers a reverse-ssh route that principals can connect to
 			m.forwards.ServePublisher(conn, chans, reqs, frontdoor.Publisher{
 				Name:    conn.Permissions.Extensions[sandbox.RouteExtension],
@@ -90,13 +90,12 @@ func (m *monitor) ServeSSH(ln net.Listener) {
 }
 
 func (m *monitor) forwardSandbox(key string, nc ssh.NewChannel, target frontdoor.Target) {
-	st := m.live.Load()
-	p, known := st.Principal(key)
+	known, routes := m.keyAccess(key)
 	if !known {
 		nc.Reject(ssh.Prohibited, "key has no agent access")
 		return
 	}
-	if !st.Identities[p.Name].Routes {
+	if !routes {
 		nc.Reject(ssh.Prohibited, "identity cannot open sandbox routes")
 		return
 	}
@@ -113,13 +112,14 @@ func (m *monitor) forwardSandbox(key string, nc ssh.NewChannel, target frontdoor
 	s := connector.NewStream(context.Background(), connector.NewChannelConn(ch, reqs))
 	s.Host, s.Port = target.Host, target.Port
 	defer s.Close()
-	if m.trackStream(s, st, streamAuthority{key: key, route: true}) {
+	if release, ok := m.admitStream(s, m.settings.Load(), admission{fingerprint: key, route: true}); ok {
+		defer release()
 		connector.Relay(s.Context, s.Conn, upstream)
 	}
 }
 
 func (m *monitor) serveAgentAPI(key string, nc ssh.NewChannel, target frontdoor.Target) {
-	if _, known := m.live.Load().Principal(key); !known {
+	if _, known := m.settings.Load().Principal(key); !known {
 		nc.Reject(ssh.Prohibited, "key has no agent access")
 		return
 	}
@@ -139,7 +139,7 @@ func (m *monitor) serveAgentAPI(key string, nc ssh.NewChannel, target frontdoor.
 }
 
 func (m *monitor) forwardConnection(key string, nc ssh.NewChannel, target frontdoor.Target) {
-	st := m.live.Load()
+	st := m.settings.Load()
 	p, known := st.Principal(key)
 	if !known {
 		nc.Reject(ssh.Prohibited, "key has no agent access")
@@ -148,9 +148,9 @@ func (m *monitor) forwardConnection(key string, nc ssh.NewChannel, target frontd
 	m.mu.Lock()
 	var candidates []frontdoor.Candidate
 	for name, c := range m.connections {
-		if st.Reaches(p.Name, c.Account) && c.Status().State == "ready" {
+		if st.Reaches(p.Name, c.Account) && c.Status().State == statusReady {
 			route := frontdoor.Candidate{Name: name}
-			route.Claim = c.setup.Claim
+			route.Claim = c.prepared.Claim
 			candidates = append(candidates, route)
 		}
 	}
@@ -161,13 +161,13 @@ func (m *monitor) forwardConnection(key string, nc ssh.NewChannel, target frontd
 		nc.Reject(ssh.Prohibited, "the monitor does not forward this target")
 		return
 	}
-	ctx, name, binding, env := c.ctx, c.Name, streamAuthority{key: key, connection: c, setup: c.setup}, c.env
+	ctx, name, admitted, env := c.setupCtx, c.Name, admission{fingerprint: key, connection: c, prepared: c.prepared}, c.env
 	m.mu.Unlock()
 	host := target.Host
 	if explicit {
 		host = ""
 	}
-	if err := m.authorizeAdmission(ctx, binding, target); err != nil {
+	if err := m.authorizeAdmission(ctx, admitted, target); err != nil {
 		nc.Reject(ssh.Prohibited, err.Error())
 		return
 	}
@@ -181,62 +181,63 @@ func (m *monitor) forwardConnection(key string, nc ssh.NewChannel, target frontd
 	defer s.Close()
 	// Disconnects cancel pending operations.
 	go func() { <-conn.Closed(); s.Close() }()
-	if !m.trackStream(s, st, binding) {
+	release, ok := m.admitStream(s, st, admitted)
+	if !ok {
 		return
 	}
+	defer release()
 	s.Gate = func(ctx context.Context, event facts.Event) error {
-		return m.authorizeOperation(ctx, s, binding, event)
+		return m.authorizeOperation(ctx, s, admitted, event)
 	}
-	defer c.active.Done()
 	// A worker proxy relays the bytes into the concrete connector and sends its
 	// Gate calls back to this stream. Identity and policy remain owned by Monitor.
 	c.Server.Serve(s, &env)
 }
 
-// sameStreamAuthority runs under mu. Commit compares each surviving stream with
+// stillAdmitted runs under mu. Commit compares each surviving stream with
 // the previous settings: preserving authority at every transition preserves the
 // original admission without storing another settings snapshot on the stream.
-func (m *monitor) sameStreamAuthority(old *state, authority streamAuthority) bool {
-	st := m.live.Load()
-	p, ok := st.Principal(authority.key)
+func (m *monitor) stillAdmitted(old *settings, admitted admission) bool {
+	st := m.settings.Load()
+	p, ok := st.Principal(admitted.fingerprint)
 	if !ok {
 		return false
 	}
-	if authority.route {
+	if admitted.route {
 		return st.Identities[p.Name].Routes
 	}
-	c := authority.connection
-	if c == nil || m.connections[c.Name] != c || c.setup != authority.setup {
-		return false
-	}
-	if !c.ready || !st.Reaches(p.Name, c.Account) {
+	c := admitted.connection
+	if !m.usable(c, admitted.prepared) || !st.Reaches(p.Name, c.Account) {
 		return false
 	}
 	if st == old {
 		return true
 	}
 	// Unrelated settings edits preserve this principal's authority on the account.
-	return st.Engine.Program == old.Engine.Program && st.Config.SameAuthority(old.Config, authority.key, c.Account)
+	return st.Engine.Program == old.Engine.Program && st.Config.SameAuthority(old.Config, admitted.fingerprint, c.Account)
 }
-func (m *monitor) trackStream(s *connector.Stream, st *state, authority streamAuthority) bool {
+
+// admitStream registers s for revocation and pins its connector until release.
+func (m *monitor) admitStream(s *connector.Stream, st *settings, admitted admission) (release func(), ok bool) {
 	// Prevent admission racing with revocation.
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if !m.sameStreamAuthority(st, authority) {
-		return false
+	if !m.stillAdmitted(st, admitted) {
+		return nil, false
 	}
-	if !authority.route {
-		if err := m.acquire(authority.connection, authority.setup); err != nil {
-			return false
+	release = func() {}
+	if !admitted.route {
+		if release, _ = m.acquire(admitted.connection, admitted.prepared); release == nil {
+			return nil, false
 		}
 	}
-	m.streams[s] = authority
+	m.streams[s] = admitted
 	context.AfterFunc(s.Context, func() { m.mu.Lock(); delete(m.streams, s); m.mu.Unlock() })
-	return true
+	return release, true
 }
 
-func (m *monitor) Identity(key string) (known, routes bool) {
-	s := m.live.Load()
+func (m *monitor) keyAccess(key string) (known, routes bool) {
+	s := m.settings.Load()
 	if s == nil {
 		return false, false
 	}
@@ -244,7 +245,7 @@ func (m *monitor) Identity(key string) (known, routes bool) {
 	return known, s.Identities[p.Name].Routes
 }
 func (m *monitor) HostKey() ssh.Signer {
-	if s := m.live.Load(); s != nil {
+	if s := m.settings.Load(); s != nil {
 		return s.HostKey
 	}
 	return m.sshHostKey

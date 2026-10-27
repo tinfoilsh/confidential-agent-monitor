@@ -12,7 +12,7 @@ import (
 	"github.com/tinfoilsh/monitor/connector"
 )
 
-var GPGAgentDefinition = connector.Definition{Parse: parseGPGAgent, New: func() connector.Server { return new(GPGAgent) }}
+var GPGAgentKind = connector.Kind{Parse: parseGPGAgent, New: func() connector.Server { return new(GPGAgent) }}
 
 func parseGPGAgent(source connector.Setup) (connector.Prepared, error) {
 	c := new(gpgAgentSetup)
@@ -77,7 +77,7 @@ func (owner *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
 			sign.Hash = rest
 		case command == "PKSIGN" || command == "PKDECRYPT":
 			sign.Op = strings.ToLower(command)
-			if err := s.Gate(s.Context, socket.Event((&sign).Describe())); err != nil {
+			if err := s.Gate(s.Context, socket.Capture((&sign).Describe())); err != nil {
 				fmt.Fprintf(s, "ERR %d %v <Monitor>\n", assuanNotSupported, err)
 				continue
 			}

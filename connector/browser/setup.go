@@ -11,8 +11,8 @@ import (
 	"github.com/tinfoilsh/monitor/connector/credential"
 )
 
-func Definition(extension string, sandboxed bool) connector.Definition {
-	return connector.Definition{Settings: &extension, New: func() connector.Server { return new(Browser) }, Parse: func(source connector.Setup) (connector.Prepared, error) {
+func Kind(extension string, sandboxed bool) connector.Kind {
+	return connector.Kind{Settings: &extension, New: func() connector.Server { return new(Browser) }, Parse: func(source connector.Setup) (connector.Prepared, error) {
 		c := &setup{Extension: extension, NoSandbox: sandboxed}
 		if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
 			return connector.Prepared{}, err
@@ -28,7 +28,7 @@ func Definition(extension string, sandboxed bool) connector.Definition {
 			names = append(names, slot.Value)
 		}
 		slices.Sort(names)
-		return connector.Prepared{Source: source, Value: c, Secrets: slices.Compact(names)}, nil
+		return connector.Prepared{Source: source, Value: c, SecretNames: slices.Compact(names)}, nil
 	}}
 }
 

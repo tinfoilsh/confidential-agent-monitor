@@ -19,7 +19,7 @@ import (
 	"mvdan.cc/sh/v3/syntax"
 )
 
-var SSHDefinition = connector.Definition{HostKey: true, Parse: parseSSH, New: func() connector.Server { return new(SSH) }}
+var SSHKind = connector.Kind{UsesHostKey: true, Parse: parseSSH, New: func() connector.Server { return new(SSH) }}
 
 func parseSSH(source connector.Setup) (connector.Prepared, error) {
 	c := new(sshSetup)
@@ -27,7 +27,7 @@ func parseSSH(source connector.Setup) (connector.Prepared, error) {
 		return connector.Prepared{}, err
 	}
 	names, err := c.Declarations("key")
-	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
 }
 
 // SSH keeps one immutable setup for each admitted stream.
@@ -94,7 +94,7 @@ func (owner *SSH) Serve(s *connector.Stream, e *connector.Env) {
 	t.Secrets = captured.Secrets
 
 	t.serve(s, e, func(up *ssh.Client, nc ssh.NewChannel) {
-		relayChannel(up, nc, func(r *ssh.Request) error { return s.Gate(s.Context, t.Event((eventForSSH(r)).Describe(t.Host))) })
+		relayChannel(up, nc, func(r *ssh.Request) error { return s.Gate(s.Context, t.Capture((eventForSSH(r)).Describe(t.Host))) })
 	})
 }
 

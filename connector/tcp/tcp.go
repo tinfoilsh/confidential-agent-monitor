@@ -12,7 +12,7 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var Definition = connector.Definition{Parse: Parse, New: func() connector.Server { return new(Server) }}
+var Kind = connector.Kind{Parse: Parse, New: func() connector.Server { return new(Server) }}
 
 const maxPort = 65535
 
@@ -73,7 +73,7 @@ func (owner *Server) Serve(s *connector.Stream, e *connector.Env) {
 	c := captured.Value
 
 	host, port := s.Host, s.Port
-	if c.Claim(host, port) < 0 || s.Gate(s.Context, c.Event((&TCPRequest{Host: host, Port: port}).Describe())) != nil {
+	if c.Claim(host, port) < 0 || s.Gate(s.Context, c.Capture((&TCPRequest{Host: host, Port: port}).Describe())) != nil {
 		return
 	}
 	upstream, err := e.Dialer.DialContext(s.Context, "tcp", net.JoinHostPort(host, strconv.Itoa(int(port))))

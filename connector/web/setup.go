@@ -36,7 +36,7 @@ func Parse(source connector.Setup) (connector.Prepared, error) {
 	slices.Sort(names)
 	h.Preset = preset.HTTP
 	route := &Setup{Hosts: h.Hosts, Credentials: Credentials{Slots: h.Slots}}
-	return connector.Prepared{Source: source, Value: h, Claim: route.Claim, Secrets: slices.Compact(names),
+	return connector.Prepared{Source: source, Value: h, Claim: route.Claim, SecretNames: slices.Compact(names),
 		Discovery: connector.Discovery{Hosts: h.Hosts, Slots: h.Slots, Placeholders: map[string]string{}}}, nil
 }
 

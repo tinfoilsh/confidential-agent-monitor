@@ -16,7 +16,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-var SFTPDefinition = connector.Definition{HostKey: true, Parse: parseSFTP, New: func() connector.Server { return new(SFTP) }}
+var SFTPKind = connector.Kind{UsesHostKey: true, Parse: parseSFTP, New: func() connector.Server { return new(SFTP) }}
 
 // SFTP terminates the SSH subsystem and mediates SFTP v3 requests. Root is
 // presented as / to clients. Use a server-side chroot when other writers can
@@ -35,7 +35,7 @@ func parseSFTP(source connector.Setup) (connector.Prepared, error) {
 		return connector.Prepared{}, err
 	}
 	names, err := c.Declarations("key")
-	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
 }
 
 // SFTP keeps one immutable setup for each admitted stream.
@@ -126,7 +126,7 @@ func (owner *SFTP) Serve(s *connector.Stream, e *connector.Env) {
 				r.Reply(true, nil)
 			}
 			go ssh.DiscardRequests(requests)
-			p := sftpProxy{up: reader, out: writer, check: func(r *SFTPRequest) error { return s.Gate(s.Context, t.Event((r).Describe())) }, handles: map[string]*sftpHandle{}}
+			p := sftpProxy{up: reader, out: writer, check: func(r *SFTPRequest) error { return s.Gate(s.Context, t.Capture((r).Describe())) }, handles: map[string]*sftpHandle{}}
 			p.serve(ch, cmp.Or(t.Root, "/"))
 			return
 		}

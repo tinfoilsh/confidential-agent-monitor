@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/ssh/agent"
 )
 
-var SSHAgentDefinition = connector.Definition{Parse: parseSSHAgent, New: func() connector.Server { return new(SSHAgent) }}
+var SSHAgentKind = connector.Kind{Parse: parseSSHAgent, New: func() connector.Server { return new(SSHAgent) }}
 
 func parseSSHAgent(source connector.Setup) (connector.Prepared, error) {
 	c := new(sshAgentSetup)
@@ -17,7 +17,7 @@ func parseSSHAgent(source connector.Setup) (connector.Prepared, error) {
 		return connector.Prepared{}, err
 	}
 	names, err := c.Declarations()
-	return connector.Prepared{Source: source, Value: c, Secrets: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
 }
 
 // SSHAgent keeps one immutable setup for each admitted stream.
@@ -65,7 +65,7 @@ func (owner *SSHAgent) Serve(s *connector.Stream, _ *connector.Env) {
 }
 
 func (a gatedAgent) SignWithFlags(key ssh.PublicKey, data []byte, flags agent.SignatureFlags) (*ssh.Signature, error) {
-	if err := a.s.Gate(a.s.Context, a.semantics.Event((signEvent(key, data)).Describe())); err != nil {
+	if err := a.s.Gate(a.s.Context, a.semantics.Capture((signEvent(key, data)).Describe())); err != nil {
 		return nil, err
 	}
 	return a.ExtendedAgent.SignWithFlags(key, data, flags)

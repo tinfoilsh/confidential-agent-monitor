@@ -50,17 +50,17 @@ type editsInput struct {
 	Changes    []config.Change `json:"changes"`
 }
 
-// Handler serves the owner API on the local listener; a nil file handler uses embedded assets.
-func (m *monitor) Handler(files http.Handler) http.Handler {
+// HTTPHandler serves the owner API on the local listener; nil devFiles uses embedded assets.
+func (m *monitor) HTTPHandler(devFiles http.Handler) http.Handler {
 	mux := http.NewServeMux()
 	if m.ownerPublicKey != nil {
 		mux.Handle("GET /healthz", m.ownerAPI)
 		// Base64 inflates the signed request by a third.
-		mux.Handle("POST /owner/rpc", &ownerauth.Handler{Key: m.ownerPublicKey, Monitor: m.bucket, MaxBytes: 2 * maxDocumentBytes, API: m.ownerAPI, Generation: m.generation})
+		mux.Handle("POST /owner/rpc", &ownerauth.Handler{Key: m.ownerPublicKey, Monitor: m.bucketURL, MaxBytes: 2 * maxDocumentBytes, API: m.ownerAPI, Generation: m.generation})
 		return mux
 	}
 	m.registerOwnerRoutes(mux)
-	m.registerOwnerApp(mux, "bearer", files)
+	m.registerOwnerApp(mux, "bearer", devFiles)
 	return mux
 }
 
@@ -76,7 +76,7 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 	mux.Handle("GET /healthz", JSONHandler(0, func(_ *http.Request, _ struct{}) (any, error) {
 		return struct {
 			Locked bool `json:"locked"`
-		}{Locked: m.live.Load() == nil}, nil
+		}{Locked: m.settings.Load() == nil}, nil
 	}))
 	mux.Handle("POST /unlock", JSONHandler(maxDocumentBytes, func(r *http.Request, req unlockInput) (any, error) {
 		key := req.StorageKey
@@ -98,25 +98,25 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 		if err == nil && req.DeviceKey != "" {
 			err = m.restoreDevice(r.Context(), req.DeviceKey)
 		}
-		return m.ownerResult(err)
+		return m.viewAfter(err)
 	}))
-	mux.Handle("GET /{$}", ownerLocked(m, func(_ *http.Request, _ struct{}) (any, error) { return m.view(nil) }))
+	mux.Handle("GET /{$}", ownerTx(m, func(_ *http.Request, _ struct{}) (any, error) { return m.view() }))
 	mux.Handle("POST /enroll", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input map[string]identityEnrollment) (any, error) {
-		return m.ownerResult(m.enroll(r.Context(), input))
+		return m.viewAfter(m.enroll(r.Context(), input))
 	})))
 	mux.Handle("POST /sandboxes/{name}/enroll", m.ownerOnly(JSONHandler(sandbox.MaxRequestBytes, func(r *http.Request, in sandbox.EnrollInput) (any, error) {
-		return m.ownerResult(m.sandboxes.Enroll(r.Context(), r.PathValue("name"), in))
+		return m.viewAfter(m.sandboxes.Enroll(r.Context(), r.PathValue("name"), in))
 	})))
 	mux.Handle("POST /sandboxes/{name}/shell", m.ownerOnly(JSONHandler(sandbox.MaxRequestBytes, func(r *http.Request, in sandbox.ShellInput) (any, error) {
 		session, _ := ownerauth.FromContext(r.Context())
 		return m.sandboxes.Shell(r.Context(), session.ID, r.PathValue("name"), in)
 	})))
-	mux.Handle("GET /presets/{name}", ownerLocked(m, func(r *http.Request, _ struct{}) (any, error) {
-		return m.live.Load().Config.Preset(r.PathValue("name"))
+	mux.Handle("GET /presets/{name}", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) {
+		return m.settings.Load().Config.Preset(r.PathValue("name"))
 	}))
-	mux.Handle("POST /labels/{identity}", ownerLocked(m, func(r *http.Request, l facts.Label) (any, error) {
+	mux.Handle("POST /labels/{identity}", ownerTx(m, func(r *http.Request, l facts.Label) (any, error) {
 		var fingerprint string
-		for key, name := range m.live.Load().Principals {
+		for key, name := range m.settings.Load().Principals {
 			if name == r.PathValue("identity") {
 				fingerprint = key
 			}
@@ -135,12 +135,15 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 		if l.Audience != cleanLabel.Audience {
 			l.Because["audience"] = cmp.Or(old.Because["audience"], "the owner")
 		}
-		return m.view(m.resetLabel(r.Context(), fingerprint, l))
+		if err := m.relabel(r.Context(), fingerprint, l, nil); err != nil {
+			return nil, err
+		}
+		return m.view()
 	}))
 	mux.Handle("POST /accounts/{account}/sign-in", m.ownerOnly(JSONHandler(maxDocumentBytes, m.startSignIn)))
 	mux.Handle("POST /sign-in/{state}", m.ownerOnly(JSONHandler(maxDocumentBytes, m.finishSignIn)))
 	mux.Handle("/connections/{name}/{control...}", m.ownerOnly(m.connectionControl))
-	mux.Handle("GET /requests", ownerLocked(m, func(*http.Request, struct{}) (any, error) {
+	mux.Handle("GET /requests", ownerTx(m, func(*http.Request, struct{}) (any, error) {
 		newest := make([]recordSummary, 0, len(m.records))
 		for _, r := range slices.Backward(m.records) {
 			newest = append(newest, r.summary())
@@ -153,54 +156,56 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 	mux.Handle("GET /audit/{segment}/{id}", m.ownerOnly(JSONHandler(0, func(r *http.Request, _ struct{}) (any, error) {
 		return m.readAuditRecord(r.Context(), r.PathValue("segment"), r.PathValue("id"))
 	})))
-	mux.Handle("GET /requests/{id}", ownerLocked(m, func(r *http.Request, _ struct{}) (any, error) {
+	mux.Handle("GET /requests/{id}", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) {
 		if record := m.findRecord(r.PathValue("id")); record != nil {
 			return *record, nil
 		}
 		return nil, errRecordGone
 	}))
-	mux.Handle("POST /requests/{id}", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, req approvalInput) (any, error) {
+	mux.Handle("POST /requests/{id}", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, req answerInput) (any, error) {
 		return nil, m.answerRequest(r.Context(), "owner", r.PathValue("id"), req)
 	})))
-	mux.Handle("GET /policy", ownerLocked(m, func(r *http.Request, _ struct{}) (any, error) {
+	mux.Handle("GET /policy", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) {
 		result := map[string]any{"source": m.store.Doc.Policy}
 		var err error
 		if r.URL.Query().Has("effective") {
-			result["effective"], err = m.live.Load().Config.Effective()
+			result["effective"], err = m.settings.Load().Config.Effective()
 		}
 		return result, err
 	}))
 	mux.Handle("POST /policy/preview", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input sourceInput) (any, error) {
-		return m.previewPolicy(r.Context(), input.Source)
+		m.writes.Lock()
+		defer m.writes.Unlock()
+		base, before := m.snapshot()
+		return m.previewPolicy(r.Context(), base, before, input.Source)
 	})))
 	mux.Handle("POST /policy", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input sourceInput) (any, error) {
-		return m.ownerResult(m.setPolicy(r.Context(), input.Source))
+		m.writes.Lock()
+		defer m.writes.Unlock()
+		return m.viewAfter(m.writeSettings(r.Context(), &input.Source, nil, nil, nil))
 	})))
 	mux.Handle("POST /policy/edits", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input editsInput) (any, error) {
 		m.writes.Lock()
 		defer m.writes.Unlock()
-		err := m.writePolicy(r.Context(), nil, input.Changes, func() error {
+		err := m.writeSettings(r.Context(), nil, input.Changes, func() error {
 			if input.Generation != nil && *input.Generation != m.store.Doc.Generation {
 				return errPolicyConflict
 			}
 			return nil
 		}, nil)
-		return m.ownerResult(err)
+		return m.viewAfter(err)
 	})))
 }
 
-func (m *monitor) registerOwnerApp(mux *http.ServeMux, mode string, files http.Handler) {
+func (m *monitor) registerOwnerApp(mux *http.ServeMux, mode string, devFiles http.Handler) {
 	mux.Handle("GET /app/auth.json", JSONHandler(0, func(_ *http.Request, _ struct{}) (any, error) {
 		return map[string]string{"mode": mode}, nil
 	}))
-	localFiles := files != nil
-	if !localFiles {
-		files = m.embeddedFiles
-	}
+	files := cmp.Or(devFiles, m.embeddedFiles)
 	mux.HandleFunc("GET /app/", func(w http.ResponseWriter, r *http.Request) {
 		// Authenticated owner transports use embedded assets; local development can reload files.
 		w.Header().Set("Cache-Control", "no-store")
-		if localFiles {
+		if devFiles != nil {
 			r.Header.Del("If-Modified-Since")
 			r.Header.Del("If-None-Match")
 		}
@@ -216,15 +221,16 @@ func (m *monitor) connectionControl(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	if err := m.acquire(c, c.setup); err != nil {
+	release, err := m.acquire(c, c.prepared)
+	if err != nil {
 		m.mu.Unlock()
 		http.Error(w, err.Error(), http.StatusConflict)
 		return
 	}
-	authority, name, server := c.ctx, c.Name, c.Server
+	setupCtx, name, server := c.setupCtx, c.Name, c.Server
 	m.mu.Unlock()
-	defer c.active.Done()
-	ctx, cancel := connector.Bind(r.Context(), authority)
+	defer release()
+	ctx, cancel := connector.Bind(r.Context(), setupCtx)
 	defer cancel()
 	r.Body = http.MaxBytesReader(w, r.Body, maxDocumentBytes)
 	http.StripPrefix("/connections/"+name, connector.Control(server)).ServeHTTP(w, r.WithContext(ctx))
@@ -232,29 +238,23 @@ func (m *monitor) connectionControl(w http.ResponseWriter, r *http.Request) {
 
 func (m *monitor) agentHandler(key string) http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /connections", agentLocked(m, key, func(_ *http.Request, _ struct{}, p config.Principal) (any, error) {
+	mux.HandleFunc("GET /connections", agentTx(m, key, func(_ *http.Request, _ struct{}, p config.Principal) (any, error) {
 		return m.listing(p), nil
 	}))
-	mux.HandleFunc("GET /policy", agentLocked(m, key, func(*http.Request, struct{}, config.Principal) (any, error) {
-		return m.agentPolicy(key, nil)
+	mux.HandleFunc("GET /policy", agentTx(m, key, func(*http.Request, struct{}, config.Principal) (any, error) {
+		return m.agentPolicy(key)
 	}))
 	mux.HandleFunc("POST /policy/proposals", JSONHandler(maxAgentBytes, func(r *http.Request, input proposalInput) (any, error) {
-		m.mu.Lock()
-		p, known := m.live.Load().Principal(key)
-		m.mu.Unlock()
-		if !known {
-			return nil, errNoAgent
+		if err := m.proposePolicy(r.Context(), key, input); err != nil {
+			return nil, err
 		}
-		err := m.proposePolicy(r.Context(), p, input)
-		m.mu.Lock()
-		defer m.mu.Unlock()
-		return m.agentPolicy(key, err)
+		return m.agentPolicy(key)
 	}))
 	return mux
 }
 
-// ownerLocked runs each owner request as one transaction; reading the body and writing the response stay outside it.
-func ownerLocked[T any](m *monitor, fn func(*http.Request, T) (any, error)) http.HandlerFunc {
+// ownerTx runs each owner request as one transaction; reading the body and writing the response stay outside it.
+func ownerTx[T any](m *monitor, fn func(*http.Request, T) (any, error)) http.HandlerFunc {
 	return m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input T) (any, error) {
 		m.mu.Lock()
 		defer m.mu.Unlock()
@@ -265,7 +265,7 @@ func ownerLocked[T any](m *monitor, fn func(*http.Request, T) (any, error)) http
 // ownerOnly serves the owner without the monitor's lock, for calls that wait on the network.
 func (m *monitor) ownerOnly(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		unlocked := m.live.Load() != nil
+		unlocked := m.settings.Load() != nil
 		var err error
 		if m.ownerPublicKey != nil {
 			if _, ok := ownerauth.FromContext(r.Context()); !ok {
@@ -302,11 +302,11 @@ func bearerKey(r *http.Request) ([]byte, error) {
 	return key, nil
 }
 
-func agentLocked[T any](m *monitor, key string, fn func(*http.Request, T, config.Principal) (any, error)) http.HandlerFunc {
+func agentTx[T any](m *monitor, key string, fn func(*http.Request, T, config.Principal) (any, error)) http.HandlerFunc {
 	return JSONHandler(maxAgentBytes, func(r *http.Request, input T) (any, error) {
 		m.mu.Lock()
 		defer m.mu.Unlock()
-		p, ok := m.live.Load().Principal(key)
+		p, ok := m.settings.Load().Principal(key)
 		if !ok {
 			return nil, errNoAgent
 		}
@@ -416,11 +416,8 @@ type ownerView struct {
 }
 
 // view snapshots owner state while the caller holds mu. It never calls a connector.
-func (m *monitor) view(err error) (any, error) {
-	if err != nil {
-		return nil, err
-	}
-	s := m.live.Load()
+func (m *monitor) view() (any, error) {
+	s := m.settings.Load()
 	// The persisted CA identifies the host across restarts and SSH key rotation.
 	block, _ := pem.Decode([]byte(m.store.Doc.Keys.CACert))
 	if block == nil {
@@ -447,7 +444,7 @@ func (m *monitor) view(err error) (any, error) {
 	}
 	for _, c := range m.connections {
 		v.Status[c.Name] = c.Status()
-		for name, value := range c.Secrets {
+		for name, value := range c.Credentials {
 			path := presets.CredentialPath{Connection: c.Key, Protocol: c.Protocol, Secret: name}.Path()
 			kind, account := credential.Describe(m.store.Doc.Secrets.Get(store.SecretID{Account: c.Account, Connection: c.Key, Name: name}))
 			v.Fields[c.Account] = append(v.Fields[c.Account], fieldMetadata{Path: path, Kind: kind, Placeholder: value.Placeholder, Account: account})
@@ -467,7 +464,7 @@ func (m *monitor) view(err error) (any, error) {
 type connectionListing struct {
 	Name         string            `json:"name"`
 	Account      string            `json:"account"`
-	Kind         string            `json:"kind"`
+	Protocol     string            `json:"kind"`
 	Host         string            `json:"host"`
 	State        string            `json:"state"`
 	Access       config.Access     `json:"access"`
@@ -485,22 +482,19 @@ func (m *monitor) listing(p config.Principal) any {
 	}{p.Name, m.store.Doc.Keys.CACert, []connectionListing{}}
 	for _, name := range slices.Sorted(maps.Keys(m.connections)) {
 		c := m.connections[name]
-		if !m.live.Load().Reaches(p.Name, c.Account) {
+		if !m.settings.Load().Reaches(p.Name, c.Account) {
 			continue
 		}
-		l := connectionListing{Name: name, Account: c.Account, Kind: c.Protocol, Host: name + ".monitor",
-			State: c.Status().State, Access: m.live.Load().Access(p.Name, c.Account)}
-		l.Hosts, l.Slots, l.Placeholders = c.setup.Discovery.Hosts, c.setup.Discovery.Slots, c.setup.Discovery.Placeholders
+		l := connectionListing{Name: name, Account: c.Account, Protocol: c.Protocol, Host: name + ".monitor",
+			State: c.Status().State, Access: m.settings.Load().Access(p.Name, c.Account)}
+		l.Hosts, l.Slots, l.Placeholders = c.prepared.Discovery.Hosts, c.prepared.Discovery.Slots, c.prepared.Discovery.Placeholders
 		result.Connections = append(result.Connections, l)
 	}
 	return result
 }
 
-func (m *monitor) agentPolicy(key string, err error) (any, error) {
-	if err != nil {
-		return nil, err
-	}
-	st := m.live.Load()
+func (m *monitor) agentPolicy(key string) (any, error) {
+	st := m.settings.Load()
 	p, known := st.Principal(key)
 	if !known {
 		return nil, errNoAgent

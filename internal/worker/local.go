@@ -44,22 +44,22 @@ func unixDial(socket string) DialFunc {
 }
 
 // ServeInherited adapts the local launcher's descriptors to the common server.
-func ServeInherited(definitions map[string]connector.Definition) error {
+func ServeInherited(kinds map[string]connector.Kind) error {
 	file := os.NewFile(3, "connector-listener")
 	ln, err := net.FileListener(file)
 	file.Close()
 	if err != nil {
 		return err
 	}
-	return Serve(context.Background(), definitions, os.Stdin, ln, unixDial("/broker.sock"))
+	return Serve(context.Background(), kinds, os.Stdin, ln, unixDial("/broker.sock"))
 }
 
 // Start runs the same binary in the prepared root. It never decodes config.
-func (m *Local) Start(ctx context.Context, config []byte, host http.Handler) (Endpoint, error) {
+func (m *Local) Start(ctx context.Context, config []byte, broker http.Handler) (Endpoint, error) {
 	if err := ctx.Err(); err != nil {
 		return Endpoint{}, err
 	}
-	if m == nil || host == nil {
+	if m == nil || broker == nil {
 		return Endpoint{}, errors.New("connector worker launcher is not configured")
 	}
 	root, err := filepath.Abs(m.Root)
@@ -127,7 +127,7 @@ func (m *Local) Start(ctx context.Context, config []byte, host http.Handler) (En
 	// Workers outlive setup requests.
 	childCtx, cancel := context.WithCancel(context.WithoutCancel(ctx))
 	brokerDone := make(chan struct{})
-	go func() { defer close(brokerDone); serve(childCtx, bl, host) }()
+	go func() { defer close(brokerDone); serveRPC(childCtx, bl, broker) }()
 	userns := "--disable-userns"
 	if value, err := os.ReadFile("/proc/sys/kernel/unprivileged_userns_clone"); err == nil && strings.TrimSpace(string(value)) == "0" {
 		// The CVM already forbids nested user namespaces. Verify that restriction;
@@ -140,7 +140,7 @@ func (m *Local) Start(ctx context.Context, config []byte, host http.Handler) (En
 		"--size", "67108864", "--tmpfs", "/tmp", "--chdir", "/tmp",
 		"--remount-ro", "/dev", "--remount-ro", "/",
 		"--setenv", "HOME", "/tmp", "--setenv", "TMPDIR", "/tmp", "--setenv", "PATH", "/usr/local/bin:/usr/bin:/bin",
-		"--setenv", "GOMEMLIMIT", "256MiB", "--setenv", "GOMAXPROCS", "2", "--", "/worker", "--connector-worker"}
+		"--setenv", "GOMEMLIMIT", "256MiB", "--setenv", "GOMAXPROCS", "2", "--", "/worker", "--serve-connector-worker"}
 	cmd := exec.Command(launcher, args...)
 	cmd.Env = []string{}
 	cmd.Stdin = bytes.NewReader(config)

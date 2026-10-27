@@ -12,7 +12,7 @@ import (
 	"github.com/tinfoilsh/monitor/connector/mcp"
 )
 
-var MCPDefinition = connector.Definition{Parse: parseMCP, New: func() connector.Server { return new(MCP) }}
+var MCPKind = connector.Kind{Parse: parseMCP, New: func() connector.Server { return new(MCP) }}
 
 type mcpSetup struct {
 	mcp.Setup

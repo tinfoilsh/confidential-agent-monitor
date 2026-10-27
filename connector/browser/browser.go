@@ -246,7 +246,7 @@ func (b *session) handle(stream *connector.Stream, command string, do func(conte
 		if req.slot != nil {
 			layer.Secrets = []string{req.slot.Value}
 		}
-		if err := stream.Gate(r.Context(), b.Event((layer).Describe(len(b.Slots) != 0))); err != nil {
+		if err := stream.Gate(r.Context(), b.Capture((layer).Describe(len(b.Slots) != 0))); err != nil {
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
 		}

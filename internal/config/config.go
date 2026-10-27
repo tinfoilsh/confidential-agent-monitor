@@ -133,7 +133,7 @@ func Load(text string) (*Config, error) {
 
 func (c *Config) Principal(key string) (Principal, bool) {
 	name, ok := c.Principals[key]
-	return Principal{Key: key, Name: name}, ok
+	return Principal{Fingerprint: key, Name: name}, ok
 }
 
 // An explicit level replaces defaults; an omitted level inherits and overlays them.
@@ -231,7 +231,7 @@ func (c *Config) Connections(account string) ([]ConnectionSpec, error) {
 			}
 			raw, _ := json.Marshal(value) // Setup bytes retain the deployed canonical grant encoding.
 			specs = append(specs, ConnectionSpec{Name: ConnectionName(account, key), Protocol: kind, Account: account, Key: key,
-				Config: raw, Definition: semantic, Options: options, PublicScope: preset.PublicScope, Credentials: slices.Compact(slices.Sorted(slices.Values(credentials)))})
+				Config: raw, Definition: semantic, Options: options, PublicScope: preset.PublicScope, CredentialNames: slices.Compact(slices.Sorted(slices.Values(credentials)))})
 		}
 	}
 	return specs, nil
