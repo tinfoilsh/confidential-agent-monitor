@@ -431,9 +431,6 @@ function Gate() {
             <Show when={m.error()}>
               <p role="alert">{m.error()}</p>
               <button onClick={() => location.reload()}>Reload</button>
-              <Show when={m.options.onLock}>
-                <button onClick={() => m.options.onLock!()}>Lock</button>
-              </Show>
             </Show>
           </>
         }

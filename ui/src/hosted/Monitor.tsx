@@ -4,12 +4,7 @@ import App from "../App";
 import { Icon } from "../components";
 import * as keys from "./keys";
 import { readMonitorLink, hasMonitorHandoff, type MonitorLink } from "./links";
-import {
-  MissingState,
-  monitorConfig,
-  openMonitor,
-  type AttestMonitor,
-} from "./monitors";
+import { monitorConfig, openMonitor, type AttestMonitor } from "./monitors";
 import "./console.css";
 
 export default function Monitor(props: {
@@ -19,7 +14,6 @@ export default function Monitor(props: {
   const manager = props.manager ?? keys.passkeys();
   const [error, setError] = createSignal("");
   const [busy, setBusy] = createSignal(false);
-  const [missing, setMissing] = createSignal(false);
   const [session, setSession] =
     createSignal<Awaited<ReturnType<typeof openMonitor>>>();
   let target: MonitorLink | undefined;
@@ -41,24 +35,22 @@ export default function Monitor(props: {
         : "Could not read the monitor link.",
     );
   }
-  const lock = () => {
+  const cancel = () => {
     attempt?.abort();
     attempt = undefined;
     manager.cancelActiveCeremony();
     manager.clearLocalState();
-    setSession(undefined);
     setBusy(false);
   };
-  onCleanup(lock);
+  onCleanup(cancel);
 
-  const open = async (initialize = false) => {
+  const open = async () => {
     if (!target || busy()) return;
-    lock();
+    cancel();
     const current = new AbortController();
     attempt = current;
     setBusy(true);
     setError("");
-    setMissing(false);
     let key: Uint8Array | undefined;
     try {
       const file = recovery;
@@ -74,13 +66,11 @@ export default function Monitor(props: {
         target,
         key,
         signal: current.signal,
-        initialize,
         attest: props.attest,
       });
       if (!current.signal.aborted) setSession(connected);
     } catch (cause) {
       if (!current.signal.aborted) {
-        setMissing(cause instanceof MissingState);
         setError(
           cause instanceof Error
             ? cause.message
@@ -96,85 +86,84 @@ export default function Monitor(props: {
 
   return (
     <div class="hosted-monitor">
-      <header class="start-header">
-        <a href={keys.DASHBOARD}>
-          <Icon name="arrow" /> Dashboard
-        </a>
-        <strong>{target?.name ?? "Monitor"}</strong>
-        <Show when={session()}>
-          <button onClick={lock}>Lock monitor</button>
-        </Show>
-      </header>
       <Show
         when={session()}
         keyed
         fallback={
-          <main class="start-welcome">
-            <span class="start-mark">
-              <Icon name="rules" />
-            </span>
-            <h1>{target ? `Open ${target.name}` : "Could not open Monitor"}</h1>
-            <Show when={target}>
-              <p>
-                {local
-                  ? "Use the key saved in this browser, or choose your downloaded key bundle."
-                  : "Unlock with the passkey you used to create this monitor."}
-              </p>
-            </Show>
-            <Show when={error()}>
-              <p class="start-notice" role="alert">
-                {error()}
-              </p>
-            </Show>
-            <Show when={target}>
-              <Show when={local}>
-                <label class="start-help">
-                  Saved key bundle
-                  <input
-                    type="file"
-                    accept="application/json,.json"
+          <div class="start-page monitor-welcome">
+            <main class="start-welcome">
+              <span class="start-mark">
+                <Icon name="rules" />
+              </span>
+              <div class="monitor-intro">
+                <p class="start-eyebrow">Tinfoil Monitor</p>
+                <h1>
+                  {target
+                    ? `Welcome to ${target.name}`
+                    : "Could not open Monitor"}
+                </h1>
+                <Show when={target}>
+                  <p class="monitor-description">
+                    {local
+                      ? "Use the key saved in this browser, or choose your downloaded key bundle."
+                      : "Sign in with the passkey you used to create this monitor."}
+                  </p>
+                </Show>
+              </div>
+              <Show when={error()}>
+                <p class="start-notice" role="alert">
+                  {error()}
+                </p>
+              </Show>
+              <Show when={target}>
+                <Show when={local}>
+                  <label class="start-help">
+                    Saved key bundle
+                    <input
+                      type="file"
+                      accept="application/json,.json"
+                      disabled={busy()}
+                      onChange={(event) => {
+                        recovery = event.currentTarget.files?.[0];
+                      }}
+                    />
+                  </label>
+                </Show>
+              </Show>
+              <div class="monitor-actions">
+                <Show
+                  when={target}
+                  fallback={
+                    <a class="button primary" href={keys.DASHBOARD}>
+                      Return to dashboard
+                    </a>
+                  }
+                >
+                  <button
+                    class="primary"
                     disabled={busy()}
-                    onChange={(event) => {
-                      recovery = event.currentTarget.files?.[0];
-                    }}
-                  />
-                </label>
-              </Show>
-              <button
-                class="primary"
-                disabled={busy()}
-                aria-busy={busy()}
-                onClick={() => void open(missing())}
-              >
-                {busy()
-                  ? "Opening monitor…"
-                  : missing()
-                    ? "Initialize monitor"
-                    : local
-                      ? "Open monitor"
-                      : "Unlock with passkey"}
-              </button>
-              <Show when={busy()}>
-                <button onClick={lock}>Cancel</button>
-              </Show>
-              <p class="start-help">
-                Your connection is verified before your monitor is unlocked.
-              </p>
-            </Show>
-            <Show when={!target}>
-              <a class="button primary" href={keys.DASHBOARD}>
-                Return to dashboard
-              </a>
-            </Show>
-          </main>
+                    aria-busy={busy()}
+                    onClick={() => void open()}
+                  >
+                    {busy()
+                      ? "Opening monitor…"
+                      : local
+                        ? "Open monitor"
+                        : "Continue with passkey"}
+                  </button>
+                  <Show when={busy()}>
+                    <button class="link" onClick={cancel}>
+                      Cancel
+                    </button>
+                  </Show>
+                </Show>
+              </div>
+            </main>
+          </div>
         }
       >
         {(connected) => (
-          <App
-            client={connected.client}
-            snapshot={connected.snapshot}
-            onLock={lock}
-          />
+          <App client={connected.client} snapshot={connected.snapshot} />
         )}
       </Show>
     </div>

@@ -3,11 +3,9 @@ import { sha256 } from "@noble/hashes/sha2.js";
 import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils.js";
 import { parse } from "yaml";
 import { SecureClient } from "tinfoil";
-import { OwnerError, sealedOwnerClient } from "../owner";
+import { sealedOwnerClient, storedGeneration } from "../owner";
 import { monitorKeys, publicKey } from "./keys";
 import type { MonitorLink } from "./links";
-
-export class MissingState extends Error {}
 
 export type AttestMonitor = (
   target: { url: string; source: string },
@@ -82,14 +80,12 @@ export async function openMonitor({
   target,
   key,
   signal,
-  initialize = false,
   attest = attestMonitor,
   storage = globalThis.localStorage,
 }: {
   target: MonitorLink;
   key: Uint8Array;
   signal: AbortSignal;
-  initialize?: boolean;
   attest?: AttestMonitor;
   storage?: Pick<Storage, "getItem" | "setItem">;
 }) {
@@ -116,7 +112,9 @@ export async function openMonitor({
         return ed25519.sign(message, secrets.seed);
       },
       storageKey: btoa(String.fromCharCode(...secrets.storage)),
-      initialize,
+      // First open also creates the encrypted store. A remembered generation
+      // keeps a returning monitor from treating missing state as a fresh start.
+      initialize: storedGeneration(config.bucket, storage) === 0,
       storage,
       assets: "/",
       fetch: (input, init) => {
@@ -130,15 +128,7 @@ export async function openMonitor({
       },
     });
     secrets.storage.fill(0);
-    try {
-      await client.unlock(undefined, signal);
-    } catch (cause) {
-      if (cause instanceof OwnerError && cause.status === 428 && !initialize)
-        throw new MissingState(
-          "This monitor has no saved state yet. Initialize it only if it has never been used.",
-        );
-      throw cause;
-    }
+    await client.unlock(undefined, signal);
     const snapshot = await client.read(signal);
     signal.throwIfAborted();
     return { client, snapshot };

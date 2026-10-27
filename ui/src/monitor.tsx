@@ -27,7 +27,6 @@ const KEY = "monitor-owner-key",
 
 export type MonitorOptions = {
   client?: owner.OwnerApi;
-  onLock?: () => void;
   snapshot?: owner.Snapshot;
 };
 
