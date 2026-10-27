@@ -1,15 +1,16 @@
-import { keyBundle } from "./keys";
+import { validateOwnerKey, type OwnerKey } from "./keys";
 
 export type MonitorLink = {
   name: string;
   endpoint: string;
   // Exact config returned by the container API, pinned by its SHA-256 digest.
   config: string;
-  // The public reference or passkey-wrapped bundle returned by /start.
-  bundle: string;
+  // The owner key record as stored by the dashboard: JSON of OwnerKey. Only
+  // the public key is readable; the rest needs the owner's passkey or data key.
+  key: string;
 };
 
-const fields = ["endpoint", "config", "bundle"] as const;
+const fields = ["endpoint", "config", "key"] as const;
 const validate = (target: MonitorLink): MonitorLink => {
   if (
     !target.name ||
@@ -29,14 +30,18 @@ const validate = (target: MonitorLink): MonitorLink => {
     throw new Error("The monitor endpoint must be an HTTPS origin.");
   if (!target.config || target.config.length > 128_000)
     throw new Error("The monitor link is missing its measured configuration.");
-  if (!target.bundle || target.bundle.length > 16_000)
-    throw new Error("The monitor link is missing its key bundle.");
-  keyBundle(target.bundle);
+  if (!target.key || target.key.length > 64_000)
+    throw new Error("The monitor link is missing its owner key.");
+  ownerKey(target);
   return { ...target, endpoint: endpoint.origin };
 };
 
+export const ownerKey = (target: Pick<MonitorLink, "key">): OwnerKey =>
+  validateOwnerKey(JSON.parse(target.key));
+
 // Dashboard callers pass the container's name, HTTPS domain and exact config,
-// together with the bundle from onboarding. No private key or login token belongs here.
+// together with the owner key record. No unencrypted private key or login
+// token belongs here.
 export function monitorURL(
   target: MonitorLink,
   consoleURL = "https://terminal.tinfoil.sh",
@@ -56,8 +61,11 @@ export const hasMonitorHandoff = (hash: string) => {
   return fields.some((key) => params.has(key));
 };
 
-// Keep only public connection metadata in this tab, leaving the hash available
-// for App's navigation and preserving reloads and OAuth returns.
+const LINK_PREFIX = "tinfoil-console/monitor/";
+
+// Keep the connection record for this tab only, leaving the hash available
+// for App's navigation and preserving reloads and OAuth returns. Switching
+// Monitors goes through the dashboard, so nothing outlives the tab.
 export function readMonitorLink(
   url: URL,
   storage: Pick<Storage, "getItem" | "setItem">,
@@ -66,7 +74,7 @@ export function readMonitorLink(
   if (!match)
     throw new Error("Open a monitor link from your Tinfoil dashboard.");
   const name = decodeURIComponent(match[1]);
-  const key = `tinfoil-console/monitor/${encodeURIComponent(name)}`;
+  const key = LINK_PREFIX + encodeURIComponent(name);
   const params = new URLSearchParams(url.hash.slice(1));
   if (hasMonitorHandoff(url.hash)) {
     if (
@@ -80,7 +88,7 @@ export function readMonitorLink(
       name,
       endpoint: params.get("endpoint")!,
       config: params.get("config")!,
-      bundle: params.get("bundle")!,
+      key: params.get("key")!,
     });
     storage.setItem(key, JSON.stringify(target));
     return target;

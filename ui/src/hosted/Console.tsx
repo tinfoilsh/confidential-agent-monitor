@@ -30,6 +30,10 @@ export default function Console(props: {
   const [fallback, setFallback] = createSignal(false);
   const [setup, setSetup] = createSignal<keys.Setup>();
   const [downloaded, setDownloaded] = createSignal(false);
+  // The dashboard's one-time state, echoed back so it accepts the result.
+  const state = keys.setupState(new URL(location.href));
+  const finish = (result: keys.Setup) =>
+    navigate(keys.dashboardURL(result, state));
   let ceremony: AbortController | undefined;
 
   const cancel = () => {
@@ -61,13 +65,13 @@ export default function Console(props: {
   });
   onCleanup(cancel);
 
-  const local = (unavailable = false) => {
+  const local = async (unavailable = false) => {
     if (busy()) return;
     setError("");
     setFallback(unavailable);
     setDownloaded(false);
     try {
-      setSetup(keys.setupLocal());
+      setSetup(await keys.setupLocal());
     } catch {
       setError("We couldn't create your key. Please reload and try again.");
     }
@@ -83,12 +87,12 @@ export default function Console(props: {
       const result = await keys.setupPasskey(manager, attempt.signal);
       if (!attempt.signal.aborted) {
         setSetup(result);
-        navigate(keys.dashboardURL(result));
+        finish(result);
       }
     } catch (cause) {
       if (attempt.signal.aborted) return;
       setBusy(false);
-      if (keys.unavailablePasskey(cause)) local(true);
+      if (keys.unavailablePasskey(cause)) void local(true);
       else setError(keys.passkeyMessage(cause));
     } finally {
       if (ceremony === attempt) {
@@ -174,12 +178,12 @@ export default function Console(props: {
                   <div>
                     <h2>
                       {capability() === "unsupported"
-                        ? "A local key works here"
+                        ? "A data key works here"
                         : "A passkey makes it easy"}
                     </h2>
                     <p>
                       {capability() === "unsupported"
-                        ? "Passkeys aren't available in this browser. We'll create a key bundle for you to save instead."
+                        ? "Passkeys aren't available in this browser. We'll create a data key for you to save instead."
                         : "Use your fingerprint, face, screen lock, or a security key to protect your access."}
                     </p>
                   </div>
@@ -198,7 +202,7 @@ export default function Console(props: {
                   {busy()
                     ? "Follow your device's prompt…"
                     : capability() === "unsupported"
-                      ? "Create a local key"
+                      ? "Create a data key"
                       : "Create a passkey"}
                   <Show when={!busy()}>
                     <Icon name="arrow" />
@@ -208,9 +212,9 @@ export default function Console(props: {
                   <button
                     class="link start-alternative"
                     disabled={busy()}
-                    onClick={() => local()}
+                    onClick={() => void local()}
                   >
-                    Use a local key instead
+                    Use a data key instead
                   </button>
                 </Show>
                 <Show when={busy()}>
@@ -227,42 +231,34 @@ export default function Console(props: {
                 <>
                   <p id="start-description">
                     {fallback()
-                      ? "No passkey? No problem. You can use a local key bundle to get started."
-                      : "Your local key is ready. Save a copy before you head to your sandboxes."}
+                      ? "No passkey? No problem. A data key file gets you started."
+                      : "Your data key is ready. Save it before you head to your sandboxes."}
                   </p>
                   <div class="start-key-choice">
                     <Icon name="devices" />
                     <div>
-                      <h2>Save your key bundle somewhere safe</h2>
+                      <h2>Save your data key somewhere safe</h2>
                       <p>
-                        You'll need this file if you switch browsers or clear
-                        your browser data. Keep it private: anyone with the file
+                        This file is the only way to open your sandboxes: it is
+                        not kept anywhere else. Keep it private, anyone with it
                         can use your key.
                       </p>
                     </div>
                   </div>
-                  <Show when={!recovery().savedLocally}>
-                    <p class="start-notice" role="status">
-                      This browser couldn't keep a copy. Your saved file will be
-                      how you recover access.
-                    </p>
-                  </Show>
                   <button
                     class="start-download"
                     classList={{ primary: !downloaded() }}
                     onClick={() => {
                       download(
-                        recovery().json,
+                        recovery().text,
                         recovery().filename,
-                        "application/json",
+                        "application/x-pem-file",
                       );
                       setDownloaded(true);
                     }}
                   >
                     <Icon name="download" />{" "}
-                    {downloaded()
-                      ? "Download key bundle again"
-                      : "Save key bundle"}
+                    {downloaded() ? "Download data key again" : "Save data key"}
                   </button>
                   <Show when={downloaded()}>
                     <p class="start-help" role="status">
@@ -272,7 +268,7 @@ export default function Console(props: {
                   <button
                     class="primary start-continue"
                     disabled={!downloaded()}
-                    onClick={() => navigate(keys.dashboardURL(setup()!))}
+                    onClick={() => finish(setup()!)}
                   >
                     Continue to sandboxes <Icon name="arrow" />
                   </button>
@@ -291,7 +287,7 @@ export default function Console(props: {
                   </p>
                   <a
                     class="button primary start-continue"
-                    href={keys.dashboardURL(ready())}
+                    href={keys.dashboardURL(ready(), state)}
                   >
                     Continue to sandboxes <Icon name="arrow" />
                   </a>

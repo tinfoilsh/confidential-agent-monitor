@@ -3,7 +3,12 @@ import type { PasskeyKeyManager } from "@tinfoilsh/passkey-kit";
 import App from "../App";
 import { Icon } from "../components";
 import * as keys from "./keys";
-import { readMonitorLink, hasMonitorHandoff, type MonitorLink } from "./links";
+import {
+  hasMonitorHandoff,
+  ownerKey,
+  readMonitorLink,
+  type MonitorLink,
+} from "./links";
 import { monitorConfig, openMonitor, type AttestMonitor } from "./monitors";
 import "./console.css";
 
@@ -17,13 +22,15 @@ export default function Monitor(props: {
   const [session, setSession] =
     createSignal<Awaited<ReturnType<typeof openMonitor>>>();
   let target: MonitorLink | undefined;
+  let record: keys.OwnerKey | undefined;
   let local = false;
   let attempt: AbortController | undefined;
   let recovery: File | undefined;
   try {
     target = readMonitorLink(new URL(location.href), sessionStorage);
     monitorConfig(target.config);
-    local = keys.keyBundle(target.bundle).type === "local";
+    record = ownerKey(target);
+    local = record.passkeys.length === 0;
     if (hasMonitorHandoff(location.hash))
       history.replaceState(null, "", location.pathname + "#agents");
     document.title = `${target.name} · Monitor`;
@@ -51,20 +58,20 @@ export default function Monitor(props: {
     attempt = current;
     setBusy(true);
     setError("");
-    let key: Uint8Array | undefined;
+    let seed: Uint8Array | undefined;
     try {
       const file = recovery;
       if (file && file.size > 16_000)
-        throw new Error("This file is too large to be a key bundle.");
-      key = await keys.recoverMonitorKey(
-        target.bundle,
+        throw new Error("This file is too large to be a data key.");
+      seed = await keys.recoverOwnerSeed(
+        record!,
         manager,
         current.signal,
         await file?.text(),
       );
       const connected = await openMonitor({
         target,
-        key,
+        seed,
         signal: current.signal,
         attest: props.attest,
       });
@@ -79,7 +86,7 @@ export default function Monitor(props: {
       }
       current.abort();
     } finally {
-      key?.fill(0);
+      seed?.fill(0);
       if (attempt === current) setBusy(false);
     }
   };
@@ -105,7 +112,7 @@ export default function Monitor(props: {
                 <Show when={target}>
                   <p class="monitor-description">
                     {local
-                      ? "Use the key saved in this browser, or choose your downloaded key bundle."
+                      ? "Choose the data key file you saved when setting up your key."
                       : "Sign in with the passkey you used to create this monitor."}
                   </p>
                 </Show>
@@ -118,10 +125,10 @@ export default function Monitor(props: {
               <Show when={target}>
                 <Show when={local}>
                   <label class="start-help">
-                    Saved key bundle
+                    Data key file
                     <input
                       type="file"
-                      accept="application/json,.json"
+                      accept=".pem,application/x-pem-file,text/plain"
                       disabled={busy()}
                       onChange={(event) => {
                         recovery = event.currentTarget.files?.[0];
@@ -163,9 +170,47 @@ export default function Monitor(props: {
         }
       >
         {(connected) => (
-          <App client={connected.client} snapshot={connected.snapshot} />
+          <>
+            <App client={connected.client} snapshot={connected.snapshot} />
+            <Connected
+              target={target!}
+              onLock={() => {
+                manager.clearLocalState();
+                location.reload();
+              }}
+            />
+          </>
         )}
       </Show>
     </div>
+  );
+}
+
+// What this tab is talking to: the Monitor's endpoint and the exact measured
+// configuration its attestation was checked against. The console has both in
+// hand, so showing them costs nothing and lets the owner confirm the target.
+function Connected(props: { target: MonitorLink; onLock: () => void }) {
+  const config = () => monitorConfig(props.target.config);
+  const digest = () => config().source.split("@")[1]?.slice(0, 12) ?? "";
+  return (
+    <aside class="monitor-connected" aria-label="Connected Monitor">
+      <Icon name="rules" />
+      <span>
+        <strong>{props.target.name}</strong>
+        <small>
+          {new URL(props.target.endpoint).host} · config {digest()}… · attested
+        </small>
+      </span>
+      <a class="link" href={keys.DASHBOARD}>
+        Dashboard <Icon name="external" />
+      </a>
+      <button
+        class="link"
+        title="Forget the passkey in this browser; the next open asks for it again."
+        onClick={props.onLock}
+      >
+        Lock
+      </button>
+    </aside>
   );
 }

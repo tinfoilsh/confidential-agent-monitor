@@ -4,7 +4,7 @@ import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils.js";
 import { parse } from "yaml";
 import { SecureClient } from "tinfoil";
 import { sealedOwnerClient, storedGeneration } from "../owner";
-import { monitorKeys, publicKey } from "./keys";
+import { measuredPublicKey, sshPublicKey, storageKey } from "./keys";
 import type { MonitorLink } from "./links";
 
 export type AttestMonitor = (
@@ -78,40 +78,41 @@ export function monitorConfig(config: string) {
 
 export async function openMonitor({
   target,
-  key,
+  seed,
   signal,
   attest = attestMonitor,
   storage = globalThis.localStorage,
 }: {
   target: MonitorLink;
-  key: Uint8Array;
+  /** The owner's 32-byte Ed25519 seed; zeroed by the caller. */
+  seed: Uint8Array;
   signal: AbortSignal;
   attest?: AttestMonitor;
   storage?: Pick<Storage, "getItem" | "setItem">;
 }) {
   signal.throwIfAborted();
   const config = monitorConfig(target.config);
-  if (publicKey(key) !== config.owner)
+  if (
+    measuredPublicKey(sshPublicKey(ed25519.getPublicKey(seed))) !== config.owner
+  )
     throw new Error(
-      "This key does not own this monitor. Open the link with the key bundle used to create it.",
+      "This key does not own this monitor. Open the link with the owner key used to create it.",
     );
   const sealed = await attest(
     { url: target.endpoint, source: config.source },
     signal,
   );
   signal.throwIfAborted();
-  const secrets = monitorKeys(key, config.bucket);
-  const clear = () => secrets.seed.fill(0);
-  signal.addEventListener("abort", clear, { once: true });
+  const storage32 = storageKey(seed, config.bucket);
   try {
     const client = sealedOwnerClient({
       endpoint: target.endpoint,
       monitor: config.bucket,
       sign: async (message) => {
         signal.throwIfAborted();
-        return ed25519.sign(message, secrets.seed);
+        return ed25519.sign(message, seed);
       },
-      storageKey: btoa(String.fromCharCode(...secrets.storage)),
+      storageKey: btoa(String.fromCharCode(...storage32)),
       // First open also creates the encrypted store. A remembered generation
       // keeps a returning monitor from treating missing state as a fresh start.
       initialize: storedGeneration(config.bucket, storage) === 0,
@@ -127,16 +128,12 @@ export async function openMonitor({
         });
       },
     });
-    secrets.storage.fill(0);
+    storage32.fill(0);
     await client.unlock(undefined, signal);
     const snapshot = await client.read(signal);
     signal.throwIfAborted();
     return { client, snapshot };
-  } catch (cause) {
-    clear();
-    signal.removeEventListener("abort", clear);
-    throw cause;
   } finally {
-    secrets.storage.fill(0);
+    storage32.fill(0);
   }
 }
