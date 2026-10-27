@@ -646,7 +646,7 @@ export function download(text: string, name: string, type: string) {
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
-const SandboxTerminal = lazy(() => import("./SandboxTerminal"));
+const SandboxTerminal = /* @__PURE__ */ lazy(() => import("./SandboxTerminal"));
 const SHELL_MIN_WIDTH = 320;
 export type ShellTarget = {
   name: string;

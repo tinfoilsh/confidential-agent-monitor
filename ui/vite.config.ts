@@ -1,8 +1,8 @@
 import { fileURLToPath } from "node:url";
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig } from "vite";
 import solid from "vite-plugin-solid";
 import sri from "vite-plugin-sri-gen";
-import local from "./dev/local";
+import monitorRelay from "./dev/relay";
 
 // Hosted and detached builds get their own outputs, so neither can replace the embedded ui/dist.
 const builds: Record<string, { base: string; outDir: string }> = {
@@ -10,22 +10,22 @@ const builds: Record<string, { base: string; outDir: string }> = {
   static: { base: "./", outDir: "dist-static" },
 };
 
-// The hosted console's local HTTPS name, proxied to this dev server, so the production
-// Clerk instance and the tinfoil.sh passkey RP accept it.
+// The hosted console's local HTTPS name, proxied to this dev server, so the
+// tinfoil.sh passkey relying party accepts it.
 const HOSTED_DEV_HOST = "local.tinfoil.sh";
 
-export default defineConfig(({ command, mode }) => ({
+export default defineConfig(({ mode }) => ({
   root: fileURLToPath(new URL(".", import.meta.url)),
   base: builds[mode]?.base ?? "/app/",
   // The hosted CSP allows no inline script, so integrity travels on modulepreload
   // links for every chunk, and one stylesheet carries all CSS.
   plugins: [
     solid(),
+    mode === "hosted" && monitorRelay(),
     mode === "hosted" &&
       sri({ importMapIntegrity: false, runtimePatchDynamicLinks: false }),
-    command === "serve" && !!loadEnv(mode, ".").VITE_LOCAL_MONITORS && local(),
   ],
-  // The hosted console routes on the path (/<monitor>), so unknown paths serve its page.
+  // Hosted routes, including /start, serve the console entry point.
   appType: mode === "hosted" ? "spa" : "mpa",
   server: {
     host: "127.0.0.1",

@@ -10,7 +10,6 @@ import {
   onCleanup,
   onMount,
   useContext,
-  type JSX,
   type ParentProps,
 } from "solid-js";
 import { createStore } from "solid-js/store";
@@ -29,15 +28,6 @@ const KEY = "monitor-owner-key",
 export type MonitorOptions = {
   client?: owner.OwnerApi;
   onLock?: () => void;
-  onAddSandbox?: () => void;
-  // Sandboxes the host knows of, which the Monitor may not have enrolled yet.
-  sandboxes?: () => string[];
-  sandboxStatus?: (name: string) => JSX.Element;
-  sandboxActions?: (name: string) => JSX.Element;
-  // A host app's sidebar entries; with them, setup and unlock render inside its layout.
-  brand?: string;
-  navigation?: () => JSX.Element;
-  context?: () => JSX.Element;
   snapshot?: owner.Snapshot;
 };
 

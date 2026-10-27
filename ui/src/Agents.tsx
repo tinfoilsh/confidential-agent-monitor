@@ -36,11 +36,7 @@ export function Agents(props: { expanded?: string }) {
         }),
     );
   });
-  const names = createMemo(() =>
-    [
-      ...new Set([...summaries().keys(), ...(m.options.sandboxes?.() ?? [])]),
-    ].sort(),
-  );
+  const names = createMemo(() => [...summaries().keys()]);
   return (
     <>
       <For
@@ -54,7 +50,7 @@ export function Agents(props: { expanded?: string }) {
             names().filter((name) => type(name) === kind),
           );
           return (
-            <Show when={members().length}>
+            <Show when={members().length || kind === "devices"}>
               <div class="resource-list collection-list">
                 <div class="resource-heading">
                   <h2>
@@ -89,28 +85,25 @@ export function Agents(props: { expanded?: string }) {
                             {name}
                           </strong>
                           <span class="collection-description">
-                            {summaries().get(name)?.description ??
-                              "Not set up yet"}
+                            {summaries().get(name)?.description}
                           </span>
                           <Show when={kind !== "devices"}>
                             <span class="resource-meta">
-                              {m.options.sandboxStatus?.(name) ?? (
-                                <Show
-                                  when={
-                                    m.view()!.config.identities?.[name]?.sandbox
-                                  }
+                              <Show
+                                when={
+                                  m.view()!.config.identities?.[name]?.sandbox
+                                }
+                              >
+                                <button
+                                  type="button"
+                                  class="icon-button open-shell"
+                                  aria-label="Open shell"
+                                  title="Open shell"
+                                  onClick={() => m.setShell(name)}
                                 >
-                                  <button
-                                    type="button"
-                                    class="icon-button open-shell"
-                                    aria-label="Open shell"
-                                    title="Open shell"
-                                    onClick={() => m.setShell(name)}
-                                  >
-                                    <Icon name="integrations" />
-                                  </button>
-                                </Show>
-                              )}
+                                  <Icon name="integrations" />
+                                </button>
+                              </Show>
                             </span>
                           </Show>
                           <span class="collection-chevron">
@@ -122,14 +115,9 @@ export function Agents(props: { expanded?: string }) {
                       {() => (
                         <div class="agent-inline">
                           <Show when={kind !== "devices"}>
-                            {m.options.sandboxActions?.(name)}
+                            <AgentAccess name={name} />
                           </Show>
-                          <Show when={summaries().has(name)}>
-                            <Show when={kind !== "devices"}>
-                              <AgentAccess name={name} />
-                            </Show>
-                            <AgentSettings name={name} />
-                          </Show>
+                          <AgentSettings name={name} />
                         </div>
                       )}
                     </ResourceDisclosure>
@@ -148,12 +136,8 @@ export function Agents(props: { expanded?: string }) {
             action={<AddSandbox class="button primary" />}
           >
             A sandbox runs your agent in an isolated environment. This monitor
-            guards what it can reach and holds its credentials.
-            <Show when={!m.options.onAddSandbox}>
-              {" "}
-              If yours is missing, run{" "}
-              <code>tinfoil attest-ssh &lt;sandbox-name&gt;</code>.
-            </Show>
+            guards what it can reach and holds its credentials. If yours is
+            missing, run <code>tinfoil attest-ssh &lt;sandbox-name&gt;</code>.
           </Empty>
         </div>
       </Show>
@@ -161,32 +145,17 @@ export function Agents(props: { expanded?: string }) {
   );
 }
 function AddSandbox(props: { class: string; children?: JSX.Element }) {
-  const m = useMonitor();
   return (
-    <Show
-      when={m.options.onAddSandbox}
-      fallback={
-        <a
-          class={props.class}
-          href="https://dash.tinfoil.sh/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Icon name="plus" />
-          Create sandbox
-          {props.children}
-        </a>
-      }
+    <a
+      class={props.class}
+      href="https://dash.tinfoil.sh/?tab=sandboxes"
+      target="_blank"
+      rel="noopener noreferrer"
     >
-      <button
-        type="button"
-        class={props.class}
-        onClick={() => m.options.onAddSandbox!()}
-      >
-        <Icon name="plus" />
-        Create sandbox
-      </button>
-    </Show>
+      <Icon name="plus" />
+      Create sandbox
+      {props.children}
+    </a>
   );
 }
 // Adds a TRUSTED DEVICE: your own key, allowed to reach sandboxes through
@@ -289,9 +258,7 @@ function Actions(props: {
       descendants(node).map((k) => [k, null]),
     );
     actions[node.key] = value;
-    void m.edit(
-      owner.edits.setAccess(props.name, props.account, { actions }),
-    );
+    void m.edit(owner.edits.setAccess(props.name, props.account, { actions }));
   };
   // Keyed by action name: node objects are rebuilt on every view update,
   // and keying by them would recreate (and close) the rows.

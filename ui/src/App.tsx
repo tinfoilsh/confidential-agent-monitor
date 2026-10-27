@@ -10,7 +10,6 @@ import {
   lazy,
   onCleanup,
   onMount,
-  type JSX,
 } from "solid-js";
 import * as owner from "./owner.js";
 import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
@@ -186,7 +185,7 @@ function Shell() {
   });
   return (
     <>
-      <Show when={ready() || m.options.navigation} fallback={<Gate />}>
+      <Show when={ready()} fallback={<Gate />}>
         <ShellSplit
           shell={
             m.shell()
@@ -202,7 +201,7 @@ function Shell() {
                   src={import.meta.env.BASE_URL + "icons/tinfoil-white.svg"}
                   alt="Tinfoil"
                 />
-                <span>{m.options.brand ?? "Monitor"}</span>
+                <span>Monitor</span>
               </a>
               <button
                 class="mobile-toggle"
@@ -214,77 +213,62 @@ function Shell() {
                 Menu
               </button>
               <nav id="tree" aria-label="Management">
-                {m.options.navigation?.()}
-                <Show when={ready()}>
-                  <For each={["agents", "activity", "connections", "settings"]}>
-                    {(key) => <NavItem key={key} />}
-                  </For>
-                </Show>
+                <For each={["agents", "activity", "connections", "settings"]}>
+                  {(key) => <NavItem key={key} />}
+                </For>
               </nav>
             </aside>
-            <Show
-              when={ready()}
-              fallback={
-                <main id="workspace" tabIndex={-1}>
-                  <Gate />
-                </main>
-              }
-            >
-              <main id="workspace" tabIndex={-1}>
-                <header id="page-header">
-                  <div class="page-heading">
-                    <div>
-                      <h1>{title()}</h1>
-                      <p>
-                        {
-                          sections[
-                            ["agent", "agent-settings"].includes(kind())
-                              ? "agents"
-                              : kind() === "rules"
-                                ? "activity"
-                                : [
-                                      "account",
-                                      "accounts",
-                                      "connection",
-                                      "catalog",
-                                      "presets",
-                                    ].includes(kind())
-                                  ? "connections"
-                                  : kind()
-                          ]?.[1]
-                        }
-                      </p>
-                    </div>
-                    <div class="header-actions">
-                      <button
-                        aria-label="Refresh monitor"
-                        aria-busy={m.loading()}
-                        onClick={() => void m.refresh()}
-                      >
-                        <Icon name="refresh" />
-                        Refresh
-                      </button>
-                    </div>
+            <main id="workspace" tabIndex={-1}>
+              <header id="page-header">
+                <div class="page-heading">
+                  <div>
+                    <h1>{title()}</h1>
+                    <p>
+                      {
+                        sections[
+                          ["agent", "agent-settings"].includes(kind())
+                            ? "agents"
+                            : kind() === "rules"
+                              ? "activity"
+                              : [
+                                    "account",
+                                    "accounts",
+                                    "connection",
+                                    "catalog",
+                                    "presets",
+                                  ].includes(kind())
+                                ? "connections"
+                                : kind()
+                        ]?.[1]
+                      }
+                    </p>
                   </div>
-                </header>
-                <div id="page-content">
-                  <Show when={kind() === "agents"}>
-                    {m.options.context?.()}
-                  </Show>
-                  <Show when={page()} keyed>
-                    {(path) => (
-                      <Page
-                        path={path}
-                        theme={theme()}
-                        onThemeChange={setTheme}
-                      />
-                    )}
-                  </Show>
+                  <div class="header-actions">
+                    <button
+                      aria-label="Refresh monitor"
+                      aria-busy={m.loading()}
+                      onClick={() => void m.refresh()}
+                    >
+                      <Icon name="refresh" />
+                      Refresh
+                    </button>
+                  </div>
                 </div>
-              </main>
-              <CreationDialog path={dialogRoute()} close={close} />
-              <DeviceSignInDialog attempt={m.deviceSignIn()} />
-            </Show>
+              </header>
+              <div id="page-content">
+                <Show when={page()} keyed>
+                  {(path) => (
+                    <Page
+                      path={path}
+                      theme={theme()}
+                      onThemeChange={setTheme}
+                    />
+                  )}
+                </Show>
+              </div>
+            </main>
+            <CreationDialog path={dialogRoute()} close={close} />
+            <DeviceSignInDialog attempt={m.deviceSignIn()} />
           </div>
         </ShellSplit>
       </Show>
@@ -505,10 +489,9 @@ function Gate() {
     </div>
   );
 }
-export function Onboarding(props: {
+function Onboarding(props: {
   busy: boolean;
   onFinish(tinfoilApiKey?: string): void;
-  children?: JSX.Element;
 }) {
   const [step, setStep] = createSignal<"policy" | "tinfoil">("policy"),
     [tinfoilKey, setTinfoilKey] = createSignal("");
@@ -542,7 +525,9 @@ export function Onboarding(props: {
           </span>
         </Show>
         <h1 ref={heading} tabIndex={-1}>
-          {step() === "policy" ? "Create monitor" : "Add the Tinfoil connection"}
+          {step() === "policy"
+            ? "Create monitor"
+            : "Add the Tinfoil connection"}
         </h1>
         <p>
           {step() === "policy"
@@ -552,7 +537,6 @@ export function Onboarding(props: {
       </header>
       <Switch>
         <Match when={step() === "policy"}>
-          {props.children}
           <button class="primary" disabled={props.busy}>
             Continue
             <Icon name="arrow" />

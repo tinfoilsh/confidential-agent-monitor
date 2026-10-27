@@ -2269,8 +2269,7 @@ td {
 }
 #creation-dialog,
 #device-sign-in-dialog,
-#policy-review-dialog,
-.console-dialog {
+#policy-review-dialog {
   width: min(680px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
   padding: 0;
@@ -2283,15 +2282,13 @@ td {
 }
 #creation-dialog[open],
 #device-sign-in-dialog[open],
-#policy-review-dialog[open],
-.console-dialog[open] {
+#policy-review-dialog[open] {
   display: flex;
   flex-direction: column;
 }
 #creation-dialog::backdrop,
 #device-sign-in-dialog::backdrop,
-#policy-review-dialog::backdrop,
-.console-dialog::backdrop {
+#policy-review-dialog::backdrop {
   background: #06182099;
 }
 #policy-review-dialog {
@@ -2694,21 +2691,18 @@ td {
   }
   #creation-dialog::backdrop,
   #device-sign-in-dialog::backdrop,
-  #policy-review-dialog::backdrop,
-  .console-dialog::backdrop {
+  #policy-review-dialog::backdrop {
     transition: background-color 0.12s ease-out;
   }
   #creation-dialog[data-closing]::backdrop,
   #device-sign-in-dialog[data-closing]::backdrop,
-  #policy-review-dialog[data-closing]::backdrop,
-  .console-dialog[data-closing]::backdrop {
+  #policy-review-dialog[data-closing]::backdrop {
     background: #06182000;
   }
   @starting-style {
     #creation-dialog[open]::backdrop,
     #device-sign-in-dialog[open]::backdrop,
-    #policy-review-dialog[open]::backdrop,
-    .console-dialog[open]::backdrop {
+    #policy-review-dialog[open]::backdrop {
       background: #06182000;
     }
   }

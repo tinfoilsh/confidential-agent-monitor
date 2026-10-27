@@ -1,8 +1,10 @@
 import { render } from "solid-js/web";
-import App from "./App";
 import "./dashboard.css";
 import "./shell.css";
 
-// The constant check drops the hosted console, Clerk and key code from other builds.
+// Each build only includes its own entry point and dependencies.
 if (import.meta.env.MODE === "hosted") void import("./hosted/main");
-else render(() => <App />, document.getElementById("root")!);
+else
+  void import("./App").then(({ default: App }) =>
+    render(() => <App />, document.getElementById("root")!),
+  );

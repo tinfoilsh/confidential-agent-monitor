@@ -14,19 +14,16 @@
     "format:check": "prettier --check ."
   },
   "exports": {
-    ".": "./src/owner.ts"
+    ".": "./src/owner.ts",
+    "./hosted": "./src/hosted/links.ts"
   },
   "dependencies": {
-    "@clerk/clerk-js": "6.40.0",
-    "@clerk/ui": "1.41.1",
     "@noble/curves": "2.4.0",
     "@noble/hashes": "2.4.0",
     "@tinfoilsh/passkey-kit": "0.2.4",
     "@xterm/addon-fit": "0.11.0",
     "@xterm/addon-webgl": "0.19.0",
     "@xterm/xterm": "6.0.0",
-    "react": "19.3.1",
-    "react-dom": "19.3.1",
     "solid-js": "1.9.17",
     "tinfoil": "file:vendor/tinfoil-c7f0a57fa557a5b75834dea5f92f0fc5adf4b631.tgz",
     "yaml": "2.9.1"
