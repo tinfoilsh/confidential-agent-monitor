@@ -3,6 +3,7 @@ package tinfoil
 
 import (
 	"context"
+	"errors"
 	"maps"
 	"net/http"
 	"net/http/httputil"
@@ -108,25 +109,30 @@ func (s *Server) Serve(stream *connector.Stream, env *connector.Env) {
 }
 
 func (s *httpState) serve(stream *connector.Stream, e *connector.Env) {
-	if stream.Host != "" {
-		s.http.ServeWithTransport(stream, e, apiTransport{RoundTripper: s.transport}, nil)
-		return
-	}
-	// The private route describes its actual enclave target before admission.
-	privateHost := stream.Name + ".monitor"
-	capture := func(r *web.Request) {
-		if r.Invalid == "" && r.HTTP.Host == privateHost {
-			if r.HTTP.Path != "/v1" && !strings.HasPrefix(r.HTTP.Path, "/v1/") {
-				r.Invalid = "Tinfoil API requests must use a /v1 path"
-			} else {
-				r.HTTP.Origin, r.HTTP.Host = "https://"+s.Enclave, s.Enclave
-				r.HTTP.Secrets = []string{"TINFOIL_API_KEY"}
-			}
-		}
-	}
 	h := *s.http
-	h.Hosts = []string{privateHost}
-	h.ServeWithTransport(stream, e, apiTransport{RoundTripper: s.transport, privateHost: privateHost, enclave: s.Enclave, key: s.Secrets["TINFOIL_API_KEY"]}, capture)
+	privateHost := ""
+	if stream.Host == "" {
+		privateHost = stream.Name + ".monitor"
+		h.Hosts = []string{privateHost}
+	}
+	prepare := func(r *http.Request, original *web.HTTPFacts) (http.RoundTripper, error) {
+		if privateHost != "" && r.URL.Host == privateHost {
+			if r.URL.Path != "/v1" && !strings.HasPrefix(r.URL.Path, "/v1/") {
+				return nil, errors.New("Tinfoil API requests must use a /v1 path")
+			}
+			// Put a public placeholder in the normal slot. The shared HTTP path
+			// captures the enclave target and resolves the key only after the gate.
+			placeholder := h.Placeholder("TINFOIL_API_KEY")
+			if placeholder == "" {
+				return nil, errors.New("Tinfoil credential is unavailable")
+			}
+			r.URL.Scheme, r.URL.Host, r.Host = "https", s.Enclave, s.Enclave
+			r.Header.Del("X-Api-Key")
+			r.Header.Set("Authorization", "Bearer "+placeholder)
+		}
+		return prepareAPIRequest(r, original, s.transport)
+	}
+	h.ServeWithTransport(stream, e, s.transport, prepare)
 }
 
 func (s *Server) Control() http.Handler {
@@ -145,7 +151,7 @@ func (s *Server) Control() http.Handler {
 func (s *httpState) control() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /review", s.review)
-	mux.Handle("POST /chat/completions", &httputil.ReverseProxy{Transport: apiTransport{RoundTripper: s.transport}, Rewrite: func(r *httputil.ProxyRequest) {
+	mux.Handle("POST /chat/completions", &httputil.ReverseProxy{Transport: s.transport, Rewrite: func(r *httputil.ProxyRequest) {
 		key, _ := s.Secrets["TINFOIL_API_KEY"].Value(r.In.Context())
 		r.Out.URL, r.Out.Host = &url.URL{Scheme: "https", Host: s.Enclave, Path: "/v1/chat/completions"}, ""
 		r.Out.Header = http.Header{"Authorization": {"Bearer " + key}, "Content-Type": {"application/json"}}

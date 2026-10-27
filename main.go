@@ -33,10 +33,7 @@ import (
 	"github.com/tinfoilsh/monitor/connector/tcp"
 	"github.com/tinfoilsh/monitor/connector/tinfoil"
 	"github.com/tinfoilsh/monitor/connector/web"
-	"github.com/tinfoilsh/monitor/internal/frontdoor"
 	"github.com/tinfoilsh/monitor/internal/monitor"
-	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
-	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
 	"github.com/tinfoilsh/monitor/internal/worker"
 	"github.com/tinfoilsh/monitor/ui"
 	"gocloud.dev/blob"
@@ -91,6 +88,8 @@ func main() {
 	if *extension != "" || *workerMode {
 		connectorKinds["browser"] = browser.Definition(*extension, *workerMode)
 	}
+	// Workers run one connector over inherited descriptors. Host owns configuration,
+	// authenticated streams, policy decisions and credentials.
 	if *workerMode {
 		if err := worker.ServeInherited(connectorKinds); err != nil {
 			log.Fatal(err)
@@ -117,6 +116,8 @@ func main() {
 			files = http.StripPrefix("/app/", http.FileServer(http.Dir("ui/dist")))
 		}
 	}
+	// Production owners authenticate through SSH or signed RPC and unlock the
+	// encrypted state. Only local development permits bearer authentication.
 	var public ed25519.PublicKey
 	if *ownerPublic != "" || !dev {
 		public = must(parseOwnerPublicKey(*ownerPublic))
@@ -138,33 +139,24 @@ func main() {
 	defer bucket.Close()
 	ln := must(net.Listen("tcp", *listen))
 	defer ln.Close()
-	options := monitor.Options{Bucket: bucket, BucketURL: *bucketURL, OwnerPublicKey: public, HostKey: hostSigner, Connectors: connectorKinds, EmbeddedFiles: embeddedFiles}
+	options := monitor.Options{
+		Bucket:         bucket,
+		BucketURL:      *bucketURL,
+		OwnerPublicKey: public,
+		HostKey:        hostSigner,
+		Connectors:     connectorKinds,
+		EmbeddedFiles:  embeddedFiles,
+	}
 	if *workers {
 		options.Workers = &worker.Local{Root: *workerRoot}
 	}
-	var service *sandbox.Service
-	var view func() (any, error)
-	forwards := new(frontdoor.Forwarder)
-	options.ValidateIdentity = sandbox.ValidateMetadata
-	options.SSHForwards = forwards
-	options.OwnerRoutes = func(mux *http.ServeMux) {
-		mux.Handle("POST /sandboxes/{name}/enroll", monitor.JSONHandler(sandbox.MaxRequestBytes, func(r *http.Request, in sandbox.EnrollInput) (any, error) {
-			if err := service.Enroll(r.Context(), r.PathValue("name"), in); err != nil {
-				return nil, err
-			}
-			return view()
-		}))
-		mux.Handle("POST /sandboxes/{name}/shell", monitor.JSONHandler(sandbox.MaxRequestBytes, func(r *http.Request, in sandbox.ShellInput) (any, error) {
-			session, _ := ownerauth.FromContext(r.Context())
-			return service.Shell(r.Context(), session.ID, r.PathValue("name"), in)
-		}))
-	}
 	m := monitor.New(options)
 	defer m.Close()
-	view = m.OwnerView
-	service = sandbox.New(m, forwards, sandbox.Verify)
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+	// SSH acts as a frontdoor for traffic.
+	// Access control is applied based on the keypair identity identified during the handshake
+	// Owners can connect to the API using either SSH or the HTTP listener
 	go m.ServeSSH(ln)
 	go func() {
 		log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.Handler(files)), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())

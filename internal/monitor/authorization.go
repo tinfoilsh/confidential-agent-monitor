@@ -20,6 +20,7 @@ import (
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/facts"
 	"github.com/tinfoilsh/monitor/internal/config"
+	"github.com/tinfoilsh/monitor/internal/frontdoor"
 	"github.com/tinfoilsh/monitor/internal/policy"
 )
 
@@ -56,6 +57,12 @@ type reviewAnswer struct {
 type approvalInput struct {
 	Decision string `json:"decision"`
 	Reason   string `json:"reason,omitempty"`
+}
+
+// savedApproval carries the answer to publish with its durable policy rule.
+type savedApproval struct {
+	record *record
+	answer reviewAnswer
 }
 
 // A record is one decision; requests are the pending and expired ones.
@@ -100,120 +107,194 @@ var (
 	errNoAgent      = errors.New("this agent's identity was removed")
 )
 
-// input binds parsed protocol input to its authenticated routing identity.
-type input struct {
-	stream *connector.Stream
-	streamAuthority
-	Event     facts.Event
-	admission bool // admission is host authority, never a connector-supplied fact
-}
-
-// gate enriches captured input under the authorization lock. Approval waits
-// release the lock, so other streams and the opposite direction can progress.
-// Once admitted, this operation may finish under its decision.
-func (m *monitor) gate(ctx context.Context, in input) (err error) {
-	if in.stream != nil {
-		if err := in.stream.Context.Err(); err != nil {
-			return err
-		}
-		var cancel context.CancelFunc
-		ctx, cancel = connector.Bind(ctx, in.stream.Context)
-		defer cancel()
-	}
+func (m *monitor) authorizeAdmission(ctx context.Context, authority streamAuthority, target frontdoor.Target) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if err := ctx.Err(); err != nil {
+	if authority.connection == nil {
+		return errors.New("connection removed")
+	}
+	f := facts.Facts{
+		Operation:  &facts.Operation{Action: "session.admit", Effects: []string{"session"}},
+		Title:      "Open " + authority.connection.Name,
+		Parameters: map[string]any{"host": target.Host, "port": target.Port},
+		Details:    map[string]any{"tcp": map[string]any{"host": target.Host, "port": target.Port}},
+		Context:    facts.Context{Observes: cleanLabel},
+	}
+	r, err := m.authorizeLocked(ctx, authority, facts.KindAdmission, facts.Capture(f, nil))
+	if r != nil {
+		m.settleRecord(r, err)
+	}
+	return err
+}
+
+func (m *monitor) authorizeOperation(ctx context.Context, stream *connector.Stream, authority streamAuthority, event facts.Event) error {
+	if stream == nil {
+		return errors.New("operation authorization requires a stream")
+	}
+	if err := stream.Context.Err(); err != nil {
 		return err
+	}
+	ctx, cancel := connector.Bind(ctx, stream.Context)
+	defer cancel()
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	r, err := m.authorizeLocked(ctx, authority, facts.KindOperation, event)
+	if r != nil {
+		if err == nil {
+			err = m.observeOperation(ctx, authority.key, r.Next, stream)
+		}
+		m.settleRecord(r, err)
+	}
+	return err
+}
+
+// authorizeLocked runs under mu, releasing it only around the approval wait.
+// Callers settle its record after any label persistence, before execution begins.
+func (m *monitor) authorizeLocked(ctx context.Context, authority streamAuthority, kind facts.Kind, event facts.Event) (*record, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
 	}
 	// Refuse work without audit capacity.
 	if m.audit.Backlogged() {
-		return errAuditBacklog
+		return nil, errAuditBacklog
 	}
 	st := m.live.Load()
-	p, ok := st.Principal(in.key)
+	p, ok := st.Principal(authority.key)
 	if !ok {
-		return errNoAgent
+		return nil, errNoAgent
 	}
-	c := in.connection
+	c := authority.connection
 	if c == nil || m.connections[c.Name] != c {
-		return errors.New("connection removed")
+		return nil, errors.New("connection removed")
 	}
-	if c.setup != in.setup || c.Status().State != "ready" {
-		return errChanged
+	if c.setup != authority.setup || c.Status().State != "ready" {
+		return nil, errChanged
 	}
-	token := c.setup
-	a := st.Config.Accounts[c.Account]
-	f, describeErr := in.Event.Facts()
-	// Authenticated routing supplies identity.
-	f.Version, f.Account, f.Service, f.Connection = facts.Version, c.Account, a.Preset, c.Name
-	f.Kind = facts.KindOperation
-	if in.admission {
-		f.Kind = facts.KindAdmission
+	f, describeErr := st.bindFacts(c, p, m.currentLabel(p.Key), kind, event)
+	if describeErr != nil {
+		f.Operation = nil
+		raw, _, err := facts.Encode(f)
+		if err != nil {
+			return nil, err
+		}
+		return m.addRecord(&record{Facts: raw, Invalid: true}), describeErr
 	}
+	r, err := st.evaluate(ctx, c, p, f)
+	if err != nil {
+		return nil, err
+	}
+	m.addRecord(r)
+	if len(r.Deny) != 0 {
+		return r, errors.New(strings.Join(r.Deny, "; "))
+	}
+	if len(r.Requirements) != 0 {
+		if autoReviewEnabled {
+			r.Reviewer = st.Identities[p.Name].Reviewer
+		}
+		wait, cancel := m.requestApproval(ctx, r)
+		m.mu.Unlock()
+		awaitApproval(wait, r.answered)
+		cancel()
+		m.mu.Lock()
+		if err := r.approvalResult(ctx); err != nil {
+			return r, err
+		}
+		if m.live.Load() != st || m.connections[c.Name] != c || c.setup != authority.setup || c.Status().State != "ready" {
+			return r, errChanged
+		}
+		label := m.currentLabel(p.Key)
+		if label.Audience != f.Context.Label.Audience || label.Trust != f.Context.Label.Trust {
+			return r, errLabelChanged
+		}
+	}
+	return r, ctx.Err()
+}
+
+func (st *state) bindFacts(c *connection, p config.Principal, label facts.Label, kind facts.Kind, event facts.Event) (facts.Facts, error) {
+	f, err := event.Facts()
+	f.Version, f.Kind = facts.Version, kind
+	f.Account, f.Service, f.Connection = c.Account, st.Accounts[c.Account].Preset, c.Name
+	f.Principal, f.Context.Label = facts.Principal{Key: p.Key, Name: p.Name}, label
 	if f.Parameters == nil {
 		f.Parameters = map[string]any{}
 	}
 	if f.Scope == nil {
 		f.Scope = f.Parameters
 	}
-	f.Principal, f.Context.Label = facts.Principal{Key: p.Key, Name: p.Name}, m.currentLabel(p.Key)
-	if describeErr != nil {
-		f.Operation = nil
-		raw, _, err := facts.Encode(f)
-		if err != nil {
-			return err
-		}
-		r := m.addRecord(&record{Facts: raw})
-		r.Invalid = true
-		m.settleRecord(r, describeErr)
-		return describeErr
-	}
-	// Approval definitions bind semantics and configuration, independently of facts
-	// shown to users. Display edits and current labels do not invalidate a grant.
+	return f, err
+}
+
+func (st *state) evaluate(ctx context.Context, c *connection, p config.Principal, f facts.Facts) (*record, error) {
+	// Bind saved approvals to the operation's meaning under these settings.
 	modes := st.Config.EffectModes(p.Name, c.Account, f.Operation)
-	raw, _ := json.Marshal([]any{st.Engine.Program, st.Config.Lattices, modes, f.Kind, a.Preset, c.Name, c.Config, a.PolicyOptions,
-		a.Contents, a.Strangers, a.Sends, c.PublicScope, f.Definition, f.Operation, f.Context.Sends, f.Context.Observes})
-	sum := sha256.Sum256(raw)
-	definition := hex.EncodeToString(sum[:])
+	definition, err := approvalDefinition(st, c, f, modes)
+	if err != nil {
+		return nil, err
+	}
 	grant := f.Scope
 	// Policy and audit share one snapshot, independent of connector buffers.
 	encoded, policyFacts, err := facts.Encode(f)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	access, _ := facts.JSON[map[string]any](st.Access(p.Name, c.Account))
-	d, err := st.Engine.Decide(ctx, map[string]any{"facts": policyFacts,
-		"authorization": map[string]any{"access": access, "effects": modes, "rules": st.Identities[p.Name].Rules, "definition": definition, "grant": grant},
-		"account":       map[string]any{"contents": a.Contents, "strangers": a.Strangers, "sends": a.Sends, "private": a.PolicyOptions.Private, "public_scope": c.PublicScope}})
+	access, err := facts.JSON[map[string]any](st.Access(p.Name, c.Account))
 	if err != nil {
-		return err
+		return nil, err
 	}
-	r := m.addRecord(&record{Decision: d, Facts: encoded, Grant: grant, Definition: definition})
-	defer func() { m.settleRecord(r, err) }()
-	if len(d.Deny) != 0 {
-		return errors.New(strings.Join(d.Deny, "; "))
+	authorization := map[string]any{
+		"access":     access,
+		"effects":    modes,
+		"rules":      st.Identities[p.Name].Rules,
+		"definition": definition,
+		"grant":      grant,
 	}
-	if len(d.Requirements) != 0 {
-		if autoReviewEnabled {
-			r.Reviewer = st.Identities[p.Name].Reviewer
-		}
-		if err = m.awaitApproval(ctx, r); err != nil {
-			return err
-		}
-		// Revalidate after approval waits.
-		if m.live.Load() != st || m.connections[c.Name] != c || c.setup != token || c.Status().State != "ready" {
-			return errChanged
-		}
-		// Concurrent streams change labels.
-		label := m.currentLabel(p.Key)
-		if label.Audience != f.Context.Label.Audience || label.Trust != f.Context.Label.Trust {
-			return errLabelChanged
-		}
+	account := st.Accounts[c.Account]
+	accountInput := map[string]any{
+		"contents":     account.Contents,
+		"strangers":    account.Strangers,
+		"sends":        account.Sends,
+		"private":      account.PolicyOptions.Private,
+		"public_scope": c.PublicScope,
 	}
-	if err = ctx.Err(); err != nil {
-		return err
+	d, err := st.Engine.Decide(ctx, map[string]any{
+		"facts":         policyFacts,
+		"authorization": authorization,
+		"account":       accountInput,
+	})
+	if err != nil {
+		return nil, err
 	}
-	return m.observe(ctx, p.Key, d.Next, in.stream)
+	return &record{Decision: d, Facts: encoded, Grant: grant, Definition: definition}, nil
+}
+
+// approvalDefinition binds saved grants to semantics and configuration, excluding
+// display fields and current labels. The positional encoding is persisted in
+// existing grants: preserve its order and representation when refactoring.
+func approvalDefinition(st *state, c *connection, f facts.Facts, modes map[string]string) (string, error) {
+	account := st.Accounts[c.Account]
+	raw, err := json.Marshal([]any{
+		st.Engine.Program,
+		st.Lattices,
+		modes,
+		f.Kind,
+		account.Preset,
+		c.Name,
+		c.Config,
+		account.PolicyOptions,
+		account.Contents,
+		account.Strangers,
+		account.Sends,
+		c.PublicScope,
+		f.Definition,
+		f.Operation,
+		f.Context.Sends,
+		f.Context.Observes,
+	})
+	if err != nil {
+		return "", fmt.Errorf("encode approval definition: %w", err)
+	}
+	sum := sha256.Sum256(raw)
+	return hex.EncodeToString(sum[:]), nil
 }
 
 // ruleChange derives a saved rule only from frozen audit/grant data under mu.
@@ -239,21 +320,27 @@ func (m *monitor) currentLabel(fingerprint string) facts.Label {
 	return cleanLabel
 }
 
-// observe persists a changed label before the operation runs. Message-gated
-// streams use the shared label on their next operation; opaque sessions close.
 // autoReviewEnabled lets an identity's `reviewer = "tinfoil"` hand its
 // pending requests to the Tinfoil reviewer. Off for this release: the field
 // is accepted and kept, but every request waits for the owner.
 const autoReviewEnabled = false
 
-func (m *monitor) observe(ctx context.Context, fingerprint string, l facts.Label, source *connector.Stream) error {
+// persistLabel runs under mu; a failed write never publishes an observation.
+func (m *monitor) persistLabel(ctx context.Context, fingerprint string, l facts.Label) (bool, error) {
 	if old := m.currentLabel(fingerprint); old.Trust == l.Trust && old.Audience == l.Audience {
-		return nil
+		return false, nil
 	}
 	next := m.store.Doc
 	next.Labels = maps.Clone(m.store.Doc.Labels)
 	next.Labels[fingerprint] = l
 	if err := m.store.Commit(ctx, next); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (m *monitor) observeOperation(ctx context.Context, fingerprint string, l facts.Label, source *connector.Stream) error {
+	if changed, err := m.persistLabel(ctx, fingerprint, l); err != nil || !changed {
 		return err
 	}
 	// With both lattices off a label is recorded but never enforced, so a
@@ -264,14 +351,26 @@ func (m *monitor) observe(ctx context.Context, fingerprint string, l facts.Label
 	}
 	// An opaque source may finish the session it just admitted. Other opaque
 	// sessions cannot recheck their bytes, so revoke them. Sandbox routes carry
-	// end-to-end traffic under Routes alone. An owner reset (source == nil)
-	// closes all connector streams so old deliveries cannot recontaminate it.
+	// end-to-end traffic under Routes alone.
 	for s, authority := range m.streams {
 		if authority.key == fingerprint && s != source && !authority.route {
 			c := authority.connection
-			if source == nil || c == nil || !m.kinds[c.Protocol].PerMessage {
+			if c == nil || !m.kinds[c.Protocol].PerMessage {
 				s.Close()
 			}
+		}
+	}
+	return nil
+}
+
+func (m *monitor) resetLabel(ctx context.Context, fingerprint string, l facts.Label) error {
+	if changed, err := m.persistLabel(ctx, fingerprint, l); err != nil || !changed {
+		return err
+	}
+	// Close every connector stream so old deliveries cannot recontaminate a reset.
+	for stream, authority := range m.streams {
+		if authority.key == fingerprint && !authority.route {
+			stream.Close()
 		}
 	}
 	return nil
@@ -319,21 +418,25 @@ func (m *monitor) refusePending(err error) {
 	}
 }
 
-// awaitApproval holds a record for the owner's answer, releasing mu while it waits.
-// The caller holds mu on entry and again on return.
-func (m *monitor) awaitApproval(ctx context.Context, r *record) error {
+// requestApproval publishes a pending record under mu. The caller waits without mu.
+func (m *monitor) requestApproval(ctx context.Context, r *record) (context.Context, context.CancelFunc) {
 	r.State, r.Expires, r.answered = statePending, r.Time.Add(approvalWait), make(chan struct{})
 	wait, cancel := context.WithDeadline(ctx, r.Expires)
 	if r.Reviewer != "" {
 		m.reviewApproval(wait, r)
 	}
-	m.mu.Unlock()
+	return wait, cancel
+}
+
+func awaitApproval(ctx context.Context, answered <-chan struct{}) {
 	select {
-	case <-r.answered:
-	case <-wait.Done():
+	case <-answered:
+	case <-ctx.Done():
 	}
-	cancel()
-	m.mu.Lock()
+}
+
+// approvalResult examines the answer under mu after the caller has stopped waiting.
+func (r *record) approvalResult(ctx context.Context) error {
 	if err := ctx.Err(); err != nil {
 		return err
 	}
@@ -415,13 +518,9 @@ func (m *monitor) answerRequest(ctx context.Context, actor, id string, input app
 				return errRecordGone
 			}
 			return err
-		}, func() {
-			if r.State == statePending {
-				close(r.answered)
-			}
-			// Saved rules require retries.
-			r.State, r.Deny = stateRefused, []string{errRuleSaved.Error()}
-			r.Reviews = append(r.Reviews, reviewAnswer{By: actor, Decision: input.Decision, Reason: input.Reason, Time: time.Now()})
+		}, &savedApproval{
+			record: r,
+			answer: reviewAnswer{By: actor, Decision: input.Decision, Reason: input.Reason},
 		})
 	}
 	m.mu.Lock()
@@ -443,11 +542,22 @@ func (m *monitor) answerRequest(ctx context.Context, actor, id string, input app
 	return nil
 }
 
+func (r *record) ruleSaved(answer reviewAnswer) {
+	if r.State == statePending {
+		close(r.answered)
+	}
+	// Retry evaluates the operation under the newly committed rule.
+	r.State, r.Deny = stateRefused, []string{errRuleSaved.Error()}
+	answer.Time = time.Now()
+	r.Reviews = append(r.Reviews, answer)
+}
+
 // Leave time for the owner to respond after a failed or slow review.
 const reviewWait = 45 * time.Second
 
-// review answers the same pending record; unavailable or invalid responses
-// return it to the owner. The connector owns the model protocol and prompt.
+// reviewApproval starts under mu and answers the same pending record;
+// unavailable or invalid responses return it to the owner. The connector owns
+// the model protocol and prompt.
 func (m *monitor) reviewApproval(wait context.Context, r *record) {
 	cfg, id := m.live.Load().Reviewer, r.ID
 	c := m.connections[cfg.Connection]

@@ -7,85 +7,90 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/tinfoilsh/monitor/connector/credential"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/monitor/connector/web"
 )
 
-// apiTransport adapts the deployed coding clients after the original request
-// passes policy. Every upstream request still uses the attested transport.
+// apiTransport only adapts responses. Request normalization is complete before
+// the gate, and every upstream request uses the original attested transport.
 type apiTransport struct {
 	http.RoundTripper
-	privateHost string
-	enclave     string
-	key         *credential.Value
+	messages    bool
+	streaming   bool
+	model       any
+	countTokens bool
 }
 
 func (t apiTransport) RoundTrip(r *http.Request) (*http.Response, error) {
-	if t.privateHost != "" && r.URL.Host == t.privateHost {
-		// Private .monitor requests need no client credential. Resolve the owner's
-		// key only after the request has passed the normal per-operation gate.
-		key, err := t.key.Value(r.Context())
+	// The deployed router has no token-count endpoint. Let Claude use its local
+	// estimate instead of making a billed completion disguised as token counting.
+	if t.countTokens {
+		return messageError(r, 501, "not_supported_error", "Tinfoil does not expose token counting"), nil
+	}
+	resp, err := t.RoundTripper.RoundTrip(r)
+	if err != nil || !t.messages {
+		return resp, err
+	}
+	return messageResponse(r, resp, t.model, t.streaming)
+}
+
+// prepareAPIRequest consumes the web parser's unambiguous JSON, normalizes the
+// deployed coding clients and leaves response conversion for after execution.
+func prepareAPIRequest(r *http.Request, original *web.HTTPFacts, transport http.RoundTripper) (http.RoundTripper, error) {
+	if r.Method != http.MethodPost {
+		return nil, nil
+	}
+	switch r.URL.Path {
+	case "/v1/messages", "/v1/messages/count_tokens", "/v1/responses":
+	default:
+		return nil, nil
+	}
+	body, ok := original.Body.(map[string]any)
+	if original.BodyKind != "json" || !ok {
+		return nil, errors.New("inference requests require an unambiguous JSON object of at most 8 MiB")
+	}
+	response := apiTransport{RoundTripper: transport}
+	if r.URL.Path == "/v1/responses" {
+		// Codex 0.153.4 emits developer messages. Tinfoil's Responses backend
+		// accepts these instructions under the system role instead.
+		input, _ := body["input"].([]any)
+		for _, item := range input {
+			if message, ok := item.(map[string]any); ok && message["role"] == "developer" {
+				message["role"] = "system"
+			}
+		}
+	} else {
+		response.messages, response.model = true, body["model"]
+		response.streaming, _ = body["stream"].(bool)
+		var err error
+		body, err = chatRequest(body)
 		if err != nil {
 			return nil, err
 		}
-		r = r.Clone(r.Context())
-		r.URL.Scheme, r.URL.Host, r.Host = "https", t.enclave, ""
-		r.Header.Del("X-Api-Key")
-		r.Header.Set("Authorization", "Bearer "+key)
-	}
-	if r.Method == http.MethodPost {
-		switch r.URL.Path {
-		case "/v1/messages", "/v1/messages/count_tokens":
-			return t.messages(r)
-		case "/v1/responses":
-			body, err := requestObject(r)
-			if err != nil {
-				return messageError(r, 400, "invalid_request_error", err.Error()), nil
-			}
-			// Codex 0.153.4 emits developer messages. Tinfoil's Responses backend
-			// accepts these instructions under the system role instead.
-			input, _ := body["input"].([]any)
-			for _, item := range input {
-				if message, ok := item.(map[string]any); ok && message["role"] == "developer" {
-					message["role"] = "system"
-				}
-			}
-			upstream, err := jsonRequest(r, body)
-			if err != nil {
-				return nil, err
-			}
-			return t.RoundTripper.RoundTrip(upstream)
+		if r.URL.Path == "/v1/messages/count_tokens" {
+			response.countTokens = true
+			return response, nil
 		}
+		r.URL.Path, r.URL.RawPath, r.URL.RawQuery = "/v1/chat/completions", "", ""
+		r.Header.Del("Anthropic-Version")
+		r.Header.Del("Anthropic-Beta")
+		// Response conversion reads uncompressed bytes, including streamed events.
+		r.Header.Set("Accept-Encoding", "identity")
 	}
-	return t.RoundTripper.RoundTrip(r)
-}
-
-func requestObject(r *http.Request) (object, error) {
-	defer r.Body.Close()
-	const limit = 8 << 20
-	raw, err := io.ReadAll(io.LimitReader(r.Body, limit+1))
-	if err != nil {
+	if err := setJSONBody(r, body); err != nil {
 		return nil, err
 	}
-	if len(raw) > limit {
-		return nil, errors.New("inference request exceeds 8 MiB")
-	}
-	var body object
-	if facts.DecodeNumbers(raw, &body) != nil {
-		return nil, errors.New("invalid inference JSON")
-	}
-	return body, nil
+	return response, nil
 }
 
-func jsonRequest(r *http.Request, body object) (*http.Request, error) {
+func setJSONBody(r *http.Request, body object) error {
 	raw, err := json.Marshal(body)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	out := r.Clone(r.Context())
-	out.Body = io.NopCloser(bytes.NewReader(raw))
-	out.GetBody = func() (io.ReadCloser, error) { return io.NopCloser(bytes.NewReader(raw)), nil }
-	out.ContentLength = int64(len(raw))
-	out.Header.Del("Content-Length")
-	return out, nil
+	r.Body = io.NopCloser(bytes.NewReader(raw))
+	r.GetBody = func() (io.ReadCloser, error) { return io.NopCloser(bytes.NewReader(raw)), nil }
+	r.ContentLength = int64(len(raw))
+	r.TransferEncoding = nil
+	r.Header.Del("Content-Length")
+	return nil
 }

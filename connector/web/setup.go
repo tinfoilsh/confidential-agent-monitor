@@ -49,10 +49,10 @@ func (s *Server) Serve(stream *connector.Stream, env *connector.Env) {
 	s.ServeWithTransport(stream, env, transport, nil)
 }
 
-func (s *Server) ServeWithTransport(stream *connector.Stream, env *connector.Env, transport http.RoundTripper, capture func(*Request)) {
+func (s *Server) ServeWithTransport(stream *connector.Stream, env *connector.Env, transport http.RoundTripper, prepare PrepareRequest) {
 	if captured := s.Load(); captured != nil {
 		h := captured.Value
 		h.Secrets = captured.Secrets
-		h.ServeWithTransport(stream, env, transport, capture)
+		h.ServeWithTransport(stream, env, transport, prepare)
 	}
 }

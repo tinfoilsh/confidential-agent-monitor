@@ -14,14 +14,10 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 	"github.com/tinfoilsh/monitor/internal/config"
 	"github.com/tinfoilsh/monitor/internal/policy"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
 	"golang.org/x/crypto/ssh"
 )
 
-func (m *monitor) editPolicy(ctx context.Context, changes []config.Change) error {
-	m.writes.Lock()
-	defer m.writes.Unlock()
-	return m.writePolicy(ctx, nil, changes, nil, nil)
-}
 func (m *monitor) setPolicy(ctx context.Context, source string) error {
 	m.writes.Lock()
 	defer m.writes.Unlock()
@@ -29,9 +25,9 @@ func (m *monitor) setPolicy(ctx context.Context, source string) error {
 }
 
 // writePolicy is the single ordered settings path; writes is held, mu is not.
-// check runs under mu before validation and again before persistence. after runs
-// after durability but before general invalidation, for atomic saved-rule answers.
-func (m *monitor) writePolicy(ctx context.Context, source *string, changes []config.Change, check func() error, after func()) error {
+// check runs under mu before validation and again before persistence. A saved
+// approval is answered atomically with the durable settings change.
+func (m *monitor) writePolicy(ctx context.Context, source *string, changes []config.Change, check func() error, saved *savedApproval) error {
 	m.mu.Lock()
 	if check != nil {
 		if err := check(); err != nil {
@@ -67,7 +63,7 @@ func (m *monitor) writePolicy(ctx context.Context, source *string, changes []con
 	} else if next.Policy, err = config.EditSource(base.Policy, edits); err != nil {
 		return err
 	}
-	plan, err := m.prepare(ctx, base, next, env)
+	plan, err := m.prepareSettings(ctx, base, next, env)
 	if err != nil {
 		return err
 	}
@@ -83,22 +79,22 @@ func (m *monitor) writePolicy(ctx context.Context, source *string, changes []con
 			return err
 		}
 	}
-	retired, err := m.commit(ctx, base, plan, after)
+	install, retired, err := m.commitSettings(ctx, base, plan, saved)
 	m.mu.Unlock()
 	if err == nil {
-		m.deliver(plan, retired)
+		m.installConnections(install, retired)
 	}
 	return err
 }
 
 var errPolicyConflict = errors.New("policy changed; reload it and review a new diff before applying")
 
-func policyPreview(beforeSource string, before *state, after *prepared) (*facts.Policy, error) {
+func policyPreview(beforeSource string, before *state, after *settingsPlan) (*facts.Policy, error) {
 	beforeText, err := before.Config.Effective()
 	if err != nil {
 		return nil, err
 	}
-	afterText, err := after.Config.Effective()
+	afterText, err := after.next.Config.Effective()
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +113,7 @@ func (m *monitor) previewPolicy(ctx context.Context, source string) (*facts.Poli
 	m.mu.Unlock()
 	next := base
 	next.Policy = source
-	plan, err := m.prepare(ctx, base, next, before.Env)
+	plan, err := m.prepareSettings(ctx, base, next, before.Env)
 	if err != nil {
 		return nil, err
 	}
@@ -159,9 +155,9 @@ func (m *monitor) proposePolicy(ctx context.Context, p config.Principal, input p
 	if err == nil && next.Policy == base.Policy {
 		err = errors.New("proposal does not change policy")
 	}
-	var plan *prepared
+	var plan *settingsPlan
 	if err == nil {
-		plan, err = m.prepare(ctx, base, next, before.Env)
+		plan, err = m.prepareSettings(ctx, base, next, before.Env)
 	}
 	var diff *facts.Policy
 	if err == nil {
@@ -182,7 +178,12 @@ func (m *monitor) proposePolicy(ctx context.Context, p config.Principal, input p
 		return err
 	}
 	r := m.addRecord(&record{Facts: raw, Decision: policy.Decision{Requirements: []policy.Requirement{{ID: "policy", Message: input.Reason}}}})
-	err = m.awaitApproval(ctx, r)
+	wait, cancel := m.requestApproval(ctx, r)
+	m.mu.Unlock()
+	awaitApproval(wait, r.answered)
+	cancel()
+	m.mu.Lock()
+	err = r.approvalResult(ctx)
 	m.mu.Unlock()
 	if err == nil {
 		m.writes.Lock()
@@ -213,10 +214,8 @@ type identityEnrollment struct {
 func (m *monitor) enrollmentChanges(input map[string]identityEnrollment) ([]config.Change, error) {
 	var changes []config.Change
 	for name, id := range input {
-		if m.validateIdentity != nil {
-			if err := m.validateIdentity(id.Sandbox); err != nil {
-				return nil, err
-			}
+		if err := sandbox.ValidateMetadata(id.Sandbox); err != nil {
+			return nil, err
 		}
 		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(id.Key))
 		if err != nil {
@@ -280,7 +279,7 @@ func (m *monitor) enroll(ctx context.Context, identities map[string]identityEnro
 	return m.writePolicy(ctx, nil, changes, nil, nil)
 }
 
-// Identity metadata is opaque to Monitor; its integration validates its contents.
+// IdentityMetadata returns the sandbox metadata validated during settings preparation.
 func (m *monitor) IdentityMetadata(name string) json.RawMessage {
 	return bytes.Clone(m.live.Load().Identities[name].Sandbox)
 }
@@ -293,7 +292,6 @@ func (m *monitor) CheckIdentity(name, key string, metadata json.RawMessage) erro
 func (m *monitor) AddIdentity(ctx context.Context, name, key string, metadata json.RawMessage) error {
 	return m.enroll(ctx, map[string]identityEnrollment{name: {Key: key, Sandbox: metadata}})
 }
-func (m *monitor) OwnerView() (any, error) { return m.ownerResult(nil) }
 func (m *monitor) ownerResult(err error) (any, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()

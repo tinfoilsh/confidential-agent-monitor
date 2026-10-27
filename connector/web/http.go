@@ -50,24 +50,45 @@ type Setup struct {
 	Hosts []string `json:"hosts"`
 }
 
-// ServeWithTransport shares HTTP parsing, gating and credential placement with connectors
-// that own their upstream transport.
-func (h *Setup) ServeWithTransport(s *connector.Stream, e *connector.Env, transport http.RoundTripper, capture func(*Request)) {
+// PrepareRequest may normalize validated input before its final capture. It must
+// perform no I/O or credential resolution. An optional returned transport may
+// adapt the response, but must send the prepared request without rewriting it.
+type PrepareRequest func(*http.Request, *HTTPFacts) (http.RoundTripper, error)
+
+// ServeWithTransport validates client input, prepares and captures the upstream
+// request, gates it, then substitutes credentials and sends those admitted bytes.
+func (h *Setup) ServeWithTransport(s *connector.Stream, e *connector.Env, transport http.RoundTripper, prepare PrepareRequest) {
 	var c net.Conn = s
 	if s.Port != httpPort {
 		c = tls.Server(s, e.TLS)
 	}
 	connector.ServeHTTP(s, c, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		request := h.parseRequest(r, s)
-		if capture != nil {
-			capture(request)
+		upstreamTransport := transport
+		if prepare != nil && request.Invalid == "" {
+			prepared := r.Clone(r.Context())
+			responseTransport, err := prepare(prepared, request.HTTP)
+			if err != nil {
+				request.Invalid = strings.ToValidUTF8(err.Error(), "�")
+			} else {
+				r = prepared
+				// Capture the actual prepared request, including its credential slots.
+				// This also checks that normalization kept the target in this setup.
+				request = newRequest(r)
+				if err := request.capture(h, r); err != nil {
+					request.Invalid = strings.ToValidUTF8(err.Error(), "�")
+				}
+				if responseTransport != nil {
+					upstreamTransport = responseTransport
+				}
+			}
 		}
-		if err := s.Gate(r.Context(), h.Event((request).Describe(h))); err != nil {
+		if err := s.Gate(r.Context(), h.Event(request.Describe(h))); err != nil {
 			log.Printf("refused %s %s%s: %v", r.Method, r.Host, r.URL.Path, err)
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
 		}
-		upstream := substitution{transport, h.Secrets, request.slots}
+		upstream := substitution{upstreamTransport, h.Secrets, request.slots}
 		if request.HTTP.WebSocket {
 			h.serveWebSocket(w, r, request, s, upstream)
 			return
@@ -92,26 +113,47 @@ func proxy(transport http.RoundTripper) *httputil.ReverseProxy {
 // Parsing retains errors as part of the connector request so the monitor records
 // them through Describe. Unvalidated input is never interpreted as an operation.
 func (h *Setup) parseRequest(r *http.Request, s *connector.Stream) *Request {
-	request := &Request{HTTP: &HTTPFacts{
-		Method: strings.ToValidUTF8(r.Method, "�"), Host: strings.ToValidUTF8(r.Host, "�"),
-		Path: strings.ToValidUTF8(r.URL.EscapedPath(), "�"),
-	}}
+	request := newRequest(r)
 	if err := request.parse(h, r, s); err != nil {
 		request.Invalid = strings.ToValidUTF8(err.Error(), "�")
 	}
 	return request
 }
 
-// parse fills facts only as their validation succeeds. A selected connection,
-// unlike a routed one, has no channel host to match.
+func newRequest(r *http.Request) *Request {
+	return &Request{HTTP: &HTTPFacts{
+		Method: strings.ToValidUTF8(r.Method, "�"), Host: strings.ToValidUTF8(r.Host, "�"),
+		Path: strings.ToValidUTF8(r.URL.EscapedPath(), "�"),
+	}}
+}
+
+// parse checks the original request against its authenticated channel before any
+// normalization. A selected connection has no channel host to match.
 func (request *Request) parse(h *Setup, r *http.Request, s *connector.Stream) error {
 	scheme, host, port, err := authority(r)
 	if err != nil {
 		return err
 	}
-	switch {
-	case s.Host != "" && (host != strings.ToLower(s.Host) || port != s.Port):
+	if s.Host != "" && (host != strings.ToLower(s.Host) || port != s.Port) {
 		return fmt.Errorf("a channel to %s:%d cannot carry a request for %s:%d", s.Host, s.Port, host, port)
+	}
+	r.URL.Scheme, r.URL.Host = scheme, strings.TrimPrefix(origin(scheme, host, port), scheme+"://")
+	r.Host = r.URL.Host
+	return request.capture(h, r)
+}
+
+// capture validates and describes an upstream request without changing its
+// meaning. Both the original and any prepared request use the same checks.
+func (request *Request) capture(h *Setup, r *http.Request) error {
+	if r.URL.Opaque != "" || r.URL.User != nil || r.URL.Fragment != "" || r.Host != r.URL.Host {
+		return errors.New("invalid upstream request target")
+	}
+	scheme := r.URL.Scheme
+	host, port, err := canonicalAuthority(scheme, r.URL.Host)
+	if err != nil {
+		return err
+	}
+	switch {
 	case h.Claim(host, port) < 0:
 		return fmt.Errorf("this connection does not serve %s:%d", host, port)
 	case !slices.Contains(Methods, r.Method):
@@ -182,12 +224,26 @@ func authority(r *http.Request) (scheme, host string, port uint32, err error) {
 	if r.URL.Host != "" || r.URL.Opaque != "" {
 		return "", "", 0, errors.New("only origin-form request targets are accepted")
 	}
-	scheme, port = "http", httpPort
+	scheme = "http"
 	if r.TLS != nil {
-		scheme, port = "https", httpsPort
+		scheme = "https"
 	}
-	u := url.URL{Host: r.Host}
-	host = strings.ToLower(u.Hostname())
+	host, port, err = canonicalAuthority(scheme, r.Host)
+	if err == nil && r.TLS != nil && r.TLS.ServerName != "" && !strings.EqualFold(r.TLS.ServerName, host) {
+		err = fmt.Errorf("TLS server name %s differs from host %s", r.TLS.ServerName, host)
+	}
+	return
+}
+
+func canonicalAuthority(scheme, authority string) (string, uint32, error) {
+	port := uint32(httpPort)
+	if scheme == "https" {
+		port = httpsPort
+	} else if scheme != "http" {
+		return "", 0, errors.New("only HTTP and HTTPS request targets are accepted")
+	}
+	u := url.URL{Host: authority}
+	host := strings.ToLower(u.Hostname())
 	spelled := host
 	if strings.Contains(host, ":") {
 		spelled = "[" + host + "]"
@@ -195,19 +251,17 @@ func authority(r *http.Request) (scheme, host string, port uint32, err error) {
 	if text := u.Port(); text != "" {
 		n, err := strconv.ParseUint(text, 10, 16)
 		if err != nil || n == 0 || strconv.FormatUint(n, 10) != text {
-			return "", "", 0, fmt.Errorf("invalid port in %q", r.Host)
+			return "", 0, fmt.Errorf("invalid port in %q", authority)
 		}
 		port, spelled = uint32(n), spelled+":"+text
 	}
 	switch {
-	case host == "" || strings.Trim(host, hostChars) != "" || !strings.EqualFold(r.Host, spelled):
-		return "", "", 0, fmt.Errorf("noncanonical host %q", r.Host)
+	case host == "" || strings.Trim(host, hostChars) != "" || !strings.EqualFold(authority, spelled):
+		return "", 0, fmt.Errorf("noncanonical host %q", authority)
 	case (scheme == "http") != (port == httpPort):
-		return "", "", 0, fmt.Errorf("%s cannot use port %d", scheme, port)
-	case r.TLS != nil && r.TLS.ServerName != "" && !strings.EqualFold(r.TLS.ServerName, host):
-		return "", "", 0, fmt.Errorf("TLS server name %s differs from host %s", r.TLS.ServerName, host)
+		return "", 0, fmt.Errorf("%s cannot use port %d", scheme, port)
 	}
-	return scheme, host, port, nil
+	return host, port, nil
 }
 
 func origin(scheme, host string, port uint32) string {

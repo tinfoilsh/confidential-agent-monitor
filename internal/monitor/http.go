@@ -24,6 +24,7 @@ import (
 	"github.com/tinfoilsh/monitor/internal/config"
 	"github.com/tinfoilsh/monitor/internal/store"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
 	"github.com/tinfoilsh/monitor/presets"
 	"golang.org/x/crypto/ssh"
 )
@@ -50,21 +51,33 @@ type editsInput struct {
 }
 
 // Handler serves the owner API on the local listener; a nil file handler uses embedded assets.
-func (m *monitor) Handler(files http.Handler) http.Handler { return m.ownerHandler(false, files) }
-
-// A nil file handler uses embedded assets. Owner SSH always uses embedded assets.
-func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
+func (m *monitor) Handler(files http.Handler) http.Handler {
 	mux := http.NewServeMux()
+	if m.ownerPublicKey != nil {
+		mux.Handle("GET /healthz", m.ownerAPI)
+		// Base64 inflates the signed request by a third.
+		mux.Handle("POST /owner/rpc", &ownerauth.Handler{Key: m.ownerPublicKey, Monitor: m.bucket, MaxBytes: 2 * maxDocumentBytes, API: m.ownerAPI, Generation: m.generation})
+		return mux
+	}
+	m.registerOwnerRoutes(mux)
+	m.registerOwnerApp(mux, "bearer", files)
+	return mux
+}
+
+// newOwnerAPI is shared by authenticated SSH and signed RPC transports.
+func (m *monitor) newOwnerAPI() http.Handler {
+	mux := http.NewServeMux()
+	m.registerOwnerRoutes(mux)
+	m.registerOwnerApp(mux, "ssh", nil)
+	return mux
+}
+
+func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 	mux.Handle("GET /healthz", JSONHandler(0, func(_ *http.Request, _ struct{}) (any, error) {
 		return struct {
 			Locked bool `json:"locked"`
 		}{Locked: m.live.Load() == nil}, nil
 	}))
-	if m.ownerPublicKey != nil && !overSSH {
-		// Base64 inflates the signed request by a third.
-		mux.Handle("POST /owner/rpc", &ownerauth.Handler{Key: m.ownerPublicKey, Monitor: m.bucket, MaxBytes: 2 * maxDocumentBytes, API: m.ownerAPI, Generation: m.generation})
-		return mux
-	}
 	mux.Handle("POST /unlock", JSONHandler(maxDocumentBytes, func(r *http.Request, req unlockInput) (any, error) {
 		key := req.StorageKey
 		if m.ownerPublicKey != nil {
@@ -91,11 +104,13 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 	mux.Handle("POST /enroll", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input map[string]identityEnrollment) (any, error) {
 		return m.ownerResult(m.enroll(r.Context(), input))
 	})))
-	if m.ownerRoutes != nil {
-		integrations := http.NewServeMux()
-		m.ownerRoutes(integrations)
-		mux.Handle("/", m.ownerOnly(integrations.ServeHTTP))
-	}
+	mux.Handle("POST /sandboxes/{name}/enroll", m.ownerOnly(JSONHandler(sandbox.MaxRequestBytes, func(r *http.Request, in sandbox.EnrollInput) (any, error) {
+		return m.ownerResult(m.sandboxes.Enroll(r.Context(), r.PathValue("name"), in))
+	})))
+	mux.Handle("POST /sandboxes/{name}/shell", m.ownerOnly(JSONHandler(sandbox.MaxRequestBytes, func(r *http.Request, in sandbox.ShellInput) (any, error) {
+		session, _ := ownerauth.FromContext(r.Context())
+		return m.sandboxes.Shell(r.Context(), session.ID, r.PathValue("name"), in)
+	})))
 	mux.Handle("GET /presets/{name}", ownerLocked(m, func(r *http.Request, _ struct{}) (any, error) {
 		return m.live.Load().Config.Preset(r.PathValue("name"))
 	}))
@@ -120,7 +135,7 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 		if l.Audience != cleanLabel.Audience {
 			l.Because["audience"] = cmp.Or(old.Because["audience"], "the owner")
 		}
-		return m.view(m.observe(r.Context(), fingerprint, l, nil))
+		return m.view(m.resetLabel(r.Context(), fingerprint, l))
 	}))
 	mux.Handle("POST /accounts/{account}/sign-in", m.ownerOnly(JSONHandler(maxDocumentBytes, m.startSignIn)))
 	mux.Handle("POST /sign-in/{state}", m.ownerOnly(JSONHandler(maxDocumentBytes, m.finishSignIn)))
@@ -172,19 +187,18 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 		}, nil)
 		return m.ownerResult(err)
 	})))
+}
+
+func (m *monitor) registerOwnerApp(mux *http.ServeMux, mode string, files http.Handler) {
 	mux.Handle("GET /app/auth.json", JSONHandler(0, func(_ *http.Request, _ struct{}) (any, error) {
-		mode := "bearer"
-		if overSSH {
-			mode = "ssh"
-		}
 		return map[string]string{"mode": mode}, nil
 	}))
-	localFiles := files != nil && !overSSH
+	localFiles := files != nil
 	if !localFiles {
 		files = m.embeddedFiles
 	}
 	mux.HandleFunc("GET /app/", func(w http.ResponseWriter, r *http.Request) {
-		// Owner SSH always serves the embedded assets. Local development can reload files.
+		// Authenticated owner transports use embedded assets; local development can reload files.
 		w.Header().Set("Cache-Control", "no-store")
 		if localFiles {
 			r.Header.Del("If-Modified-Since")
@@ -192,7 +206,6 @@ func (m *monitor) ownerHandler(overSSH bool, files http.Handler) http.Handler {
 		}
 		files.ServeHTTP(w, r)
 	})
-	return mux
 }
 
 func (m *monitor) connectionControl(w http.ResponseWriter, r *http.Request) {

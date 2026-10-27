@@ -13,34 +13,7 @@ import (
 
 type object = map[string]any
 
-func (t apiTransport) messages(r *http.Request) (*http.Response, error) {
-	input, err := requestObject(r)
-	if err != nil {
-		return messageError(r, 400, "invalid_request_error", err.Error()), nil
-	}
-	body, err := chatRequest(input)
-	if err != nil {
-		return messageError(r, 400, "invalid_request_error", err.Error()), nil
-	}
-	// The deployed router has no token-count endpoint. Let Claude use its local
-	// estimate instead of making a billed completion disguised as token counting.
-	if r.URL.Path == "/v1/messages/count_tokens" {
-		return messageError(r, 501, "not_supported_error", "Tinfoil does not expose token counting"), nil
-	}
-	upstream, err := jsonRequest(r, body)
-	if err != nil {
-		return nil, err
-	}
-	upstream.URL.Path, upstream.URL.RawQuery = "/v1/chat/completions", ""
-	upstream.Header.Del("Anthropic-Version")
-	upstream.Header.Del("Anthropic-Beta")
-	// This response is decoded and rewritten, so ask for uncompressed bytes even
-	// when the downstream SDK advertises gzip or Brotli.
-	upstream.Header.Set("Accept-Encoding", "identity")
-	resp, err := t.RoundTripper.RoundTrip(upstream)
-	if err != nil {
-		return nil, err
-	}
+func messageResponse(r *http.Request, resp *http.Response, model any, streaming bool) (*http.Response, error) {
 	if resp.StatusCode >= 400 {
 		defer resp.Body.Close()
 		var failure struct {
@@ -58,7 +31,6 @@ func (t apiTransport) messages(r *http.Request) (*http.Response, error) {
 		}
 		return converted, nil
 	}
-	streaming, _ := input["stream"].(bool)
 	if !streaming {
 		defer resp.Body.Close()
 		var result chatChunk
@@ -83,13 +55,13 @@ func (t apiTransport) messages(r *http.Request) (*http.Response, error) {
 			}
 			content = append(content, object{"type": "tool_use", "id": call.ID, "name": call.Function.Name, "input": args})
 		}
-		return messageJSON(r, resp.StatusCode, object{"id": result.ID, "type": "message", "role": "assistant", "model": input["model"], "content": content, "stop_reason": stopReason(choice.FinishReason), "stop_sequence": nil, "usage": result.Usage.anthropic()}), nil
+		return messageJSON(r, resp.StatusCode, object{"id": result.ID, "type": "message", "role": "assistant", "model": model, "content": content, "stop_reason": stopReason(choice.FinishReason), "stop_sequence": nil, "usage": result.Usage.anthropic()}), nil
 	}
 	reader, writer := io.Pipe()
 	original := resp.Body
 	go func() {
 		defer original.Close()
-		writer.CloseWithError(streamMessages(writer, original, input["model"]))
+		writer.CloseWithError(streamMessages(writer, original, model))
 	}()
 	resp.Body = &messageStream{PipeReader: reader, upstream: original}
 	resp.ContentLength = -1

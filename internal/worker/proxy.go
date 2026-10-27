@@ -198,93 +198,110 @@ func (p *Proxy) Control() http.Handler {
 }
 
 func (p *process) callbacks() http.Handler {
+	mux := http.NewServeMux()
+	// These capabilities belong to the connection, including setup and owner controls.
+	mux.Handle("POST /credential/{name}", callback(func(ctx context.Context, r *http.Request, _ []byte) (any, error) {
+		return p.credential(ctx, r.PathValue("name"))
+	}))
+	mux.Handle("POST /host-sign", callback(func(_ context.Context, _ *http.Request, raw []byte) (any, error) {
+		return p.signHost(raw)
+	}))
+	// These operations additionally require a live stream admitted by the host.
+	mux.Handle("POST /gate/{session}", p.sessionCallback(func(ctx context.Context, stream *connector.Stream, raw []byte) (any, error) {
+		return nil, stream.Gate(ctx, facts.Event(raw))
+	}))
+	mux.Handle("POST /certificate/{session}", p.sessionCallback(p.certificate))
 	network := broker(p.env.Dialer)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodConnect {
 			network.ServeHTTP(w, r)
-		} else if r.Method == http.MethodPost {
-			raw, err := readRequest(w, r)
-			var value any
-			if err == nil {
-				value, err = p.dispatch(r.Context(), r.URL.Path, raw)
-			}
-			reply(w, value, err)
 		} else {
-			http.NotFound(w, r)
+			mux.ServeHTTP(w, r)
 		}
 	})
 }
 
-func (p *process) dispatch(ctx context.Context, path string, raw []byte) (any, error) {
-	op, name, _ := strings.Cut(strings.TrimPrefix(path, "/"), "/")
-	switch op {
-	case "credential":
-		if value := p.secrets[name]; value != nil {
-			return value.Value(ctx)
+func callback(fn func(context.Context, *http.Request, []byte) (any, error)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		raw, err := readRequest(w, r)
+		var value any
+		if err == nil {
+			value, err = fn(r.Context(), r, raw)
 		}
-		return nil, errors.New("credential is not granted")
-	case "host-sign":
-		if !p.hostKey || p.env.HostKey == nil {
-			return nil, errors.New("host identity is not granted")
+		reply(w, value, err)
+	}
+}
+
+func (p *process) sessionCallback(fn func(context.Context, *connector.Stream, []byte) (any, error)) http.HandlerFunc {
+	return callback(func(ctx context.Context, r *http.Request, raw []byte) (any, error) {
+		p.mu.Lock()
+		stream := p.sessions[r.PathValue("session")]
+		p.mu.Unlock()
+		if stream == nil {
+			return nil, errors.New("session is not admitted")
 		}
-		var in signing
-		if err := facts.DecodeNumbers(raw, &in); err != nil {
+		if err := stream.Context.Err(); err != nil {
 			return nil, err
 		}
-		if len(in.Data) > 1024 {
-			return nil, errors.New("signing input exceeds limit")
-		}
-		if in.Algorithm != "" {
-			signer, ok := p.env.HostKey.(ssh.AlgorithmSigner)
-			if !ok {
-				return nil, errors.New("unsupported signing algorithm")
-			}
-			return signer.SignWithAlgorithm(rand.Reader, in.Data, in.Algorithm)
-		}
-		return p.env.HostKey.Sign(rand.Reader, in.Data)
+		return fn(ctx, stream, raw)
+	})
+}
+
+func (p *process) credential(ctx context.Context, name string) (string, error) {
+	if value := p.secrets[name]; value != nil {
+		return value.Value(ctx)
 	}
-	p.mu.Lock()
-	stream := p.sessions[name]
-	p.mu.Unlock()
-	if stream == nil {
-		return nil, errors.New("session is not admitted")
+	return "", errors.New("credential is not granted")
+}
+
+func (p *process) signHost(raw []byte) (*ssh.Signature, error) {
+	if !p.hostKey || p.env.HostKey == nil {
+		return nil, errors.New("host identity is not granted")
 	}
-	if err := stream.Context.Err(); err != nil {
+	var in signing
+	if err := facts.DecodeNumbers(raw, &in); err != nil {
 		return nil, err
 	}
-	switch op {
-	case "gate":
-		return nil, stream.Gate(ctx, facts.Event(raw))
-	case "certificate":
-		var name string
-		if err := facts.DecodeNumbers(raw, &name); err != nil {
-			return nil, err
-		}
-		if len(name) > 253 || stream.Host != "" && name != "" && !strings.EqualFold(name, stream.Host) {
-			return nil, errors.New("TLS name differs from admitted stream")
-		}
-		if p.env.TLS == nil || p.env.TLS.GetCertificate == nil {
-			return nil, errors.New("TLS identity unavailable")
-		}
-		if name == "" {
-			name = stream.Host
-		}
-		cert, err := p.env.TLS.GetCertificate(&tls.ClientHelloInfo{ServerName: name})
-		if err != nil {
-			return nil, err
-		}
-		if len(cert.Certificate) == 0 {
-			return nil, errors.New("empty certificate")
-		}
-		leaf, err := x509.ParseCertificate(cert.Certificate[0])
-		if err != nil || leaf.IsCA {
-			return nil, errors.New("only leaf certificates may enter a worker")
-		}
-		key, err := x509.MarshalPKCS8PrivateKey(cert.PrivateKey)
-		return certificate{cert.Certificate, key}, err
-	default:
-		return nil, errors.New("unknown host operation")
+	if len(in.Data) > 1024 {
+		return nil, errors.New("signing input exceeds limit")
 	}
+	if in.Algorithm != "" {
+		signer, ok := p.env.HostKey.(ssh.AlgorithmSigner)
+		if !ok {
+			return nil, errors.New("unsupported signing algorithm")
+		}
+		return signer.SignWithAlgorithm(rand.Reader, in.Data, in.Algorithm)
+	}
+	return p.env.HostKey.Sign(rand.Reader, in.Data)
+}
+
+func (p *process) certificate(_ context.Context, stream *connector.Stream, raw []byte) (any, error) {
+	var name string
+	if err := facts.DecodeNumbers(raw, &name); err != nil {
+		return nil, err
+	}
+	if len(name) > 253 || stream.Host != "" && name != "" && !strings.EqualFold(name, stream.Host) {
+		return nil, errors.New("TLS name differs from admitted stream")
+	}
+	if p.env.TLS == nil || p.env.TLS.GetCertificate == nil {
+		return nil, errors.New("TLS identity unavailable")
+	}
+	if name == "" {
+		name = stream.Host
+	}
+	cert, err := p.env.TLS.GetCertificate(&tls.ClientHelloInfo{ServerName: name})
+	if err != nil {
+		return nil, err
+	}
+	if len(cert.Certificate) == 0 {
+		return nil, errors.New("empty certificate")
+	}
+	leaf, err := x509.ParseCertificate(cert.Certificate[0])
+	if err != nil || leaf.IsCA {
+		return nil, errors.New("only leaf certificates may enter a worker")
+	}
+	key, err := x509.MarshalPKCS8PrivateKey(cert.PrivateKey)
+	return certificate{cert.Certificate, key}, err
 }
 
 func broker(dialer connector.Dialer) http.Handler {

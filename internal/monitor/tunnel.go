@@ -79,9 +79,11 @@ func (m *monitor) ServeSSH(ln net.Listener) {
 			if sandbox.ReservedRoute(target.Host) {
 				// Forward to a registered reverse-ssh route
 				go m.forwardSandbox(fingerprint, nc, target)
+			} else if target.Host == agentHost {
+				go m.serveAgentAPI(fingerprint, nc, target)
 			} else {
 				// Forward to a connector
-				go m.forward(fingerprint, nc, target)
+				go m.forwardConnection(fingerprint, nc, target)
 			}
 		}
 	})
@@ -116,51 +118,58 @@ func (m *monitor) forwardSandbox(key string, nc ssh.NewChannel, target frontdoor
 	}
 }
 
-func (m *monitor) forward(key string, nc ssh.NewChannel, target frontdoor.Target) {
+func (m *monitor) serveAgentAPI(key string, nc ssh.NewChannel, target frontdoor.Target) {
+	if _, known := m.live.Load().Principal(key); !known {
+		nc.Reject(ssh.Prohibited, "key has no agent access")
+		return
+	}
+	if target.Port != agentPort {
+		nc.Reject(ssh.Prohibited, fmt.Sprintf("%s uses HTTP on port %d inside the SSH tunnel", agentHost, agentPort))
+		return
+	}
+	ch, reqs, err := nc.Accept()
+	if err != nil {
+		return
+	}
+	conn := connector.NewChannelConn(ch, reqs)
+	s := connector.NewStream(context.Background(), conn)
+	defer s.Close()
+	go func() { <-conn.Closed(); s.Close() }()
+	connector.ServeHTTP(s, s, m.agentHandler(key))
+}
+
+func (m *monitor) forwardConnection(key string, nc ssh.NewChannel, target frontdoor.Target) {
 	st := m.live.Load()
 	p, known := st.Principal(key)
 	if !known {
 		nc.Reject(ssh.Prohibited, "key has no agent access")
 		return
 	}
-	ctx := context.Background()
-	host, name := target.Host, ""
-	var c *connection
-	var binding streamAuthority
-	var env connector.Env
-	if target.Host == agentHost {
-		if target.Port != agentPort {
-			nc.Reject(ssh.Prohibited, fmt.Sprintf("%s uses HTTP on port %d inside the SSH tunnel", target.Host, agentPort))
-			return
+	m.mu.Lock()
+	var candidates []frontdoor.Candidate
+	for name, c := range m.connections {
+		if st.Reaches(p.Name, c.Account) && c.Status().State == "ready" {
+			route := frontdoor.Candidate{Name: name}
+			route.Claim = c.setup.Claim
+			candidates = append(candidates, route)
 		}
-	} else {
-		m.mu.Lock()
-		var candidates []frontdoor.Candidate
-		for name, c := range m.connections {
-			if st.Reaches(p.Name, c.Account) && c.Status().State == "ready" {
-				route := frontdoor.Candidate{Name: name}
-				route.Claim = c.setup.Claim
-				candidates = append(candidates, route)
-			}
-		}
-		selected, explicit := frontdoor.Select(target.Host, target.Port, candidates)
-		c = m.connections[selected]
-		if c != nil {
-			ctx, name, binding, env = c.ctx, c.Name, streamAuthority{key: key, connection: c, setup: c.setup}, c.env
-		}
+	}
+	selected, explicit := frontdoor.Select(target.Host, target.Port, candidates)
+	c := m.connections[selected]
+	if c == nil {
 		m.mu.Unlock()
-		if c == nil {
-			nc.Reject(ssh.Prohibited, "the monitor does not forward this target")
-			return
-		}
-		if explicit {
-			host = ""
-		}
-		f := facts.Facts{Kind: facts.KindAdmission, Operation: &facts.Operation{Action: "session.admit", Effects: []string{"session"}}, Title: "Open " + name, Parameters: map[string]any{"host": target.Host, "port": target.Port}, Details: map[string]any{"tcp": map[string]any{"host": target.Host, "port": target.Port}}, Context: facts.Context{Observes: cleanLabel}}
-		if err := m.gate(ctx, input{streamAuthority: binding, admission: true, Event: facts.Capture(f, nil)}); err != nil {
-			nc.Reject(ssh.Prohibited, err.Error())
-			return
-		}
+		nc.Reject(ssh.Prohibited, "the monitor does not forward this target")
+		return
+	}
+	ctx, name, binding, env := c.ctx, c.Name, streamAuthority{key: key, connection: c, setup: c.setup}, c.env
+	m.mu.Unlock()
+	host := target.Host
+	if explicit {
+		host = ""
+	}
+	if err := m.authorizeAdmission(ctx, binding, target); err != nil {
+		nc.Reject(ssh.Prohibited, err.Error())
+		return
 	}
 	ch, reqs, err := nc.Accept()
 	if err != nil {
@@ -172,41 +181,56 @@ func (m *monitor) forward(key string, nc ssh.NewChannel, target frontdoor.Target
 	defer s.Close()
 	// Disconnects cancel pending operations.
 	go func() { <-conn.Closed(); s.Close() }()
-	if c == nil {
-		connector.ServeHTTP(s, s, m.agentHandler(key))
-		return
-	}
 	if !m.trackStream(s, st, binding) {
 		return
 	}
 	s.Gate = func(ctx context.Context, event facts.Event) error {
-		return m.gate(ctx, input{stream: s, streamAuthority: binding, Event: event})
+		return m.authorizeOperation(ctx, s, binding, event)
 	}
 	defer c.active.Done()
+	// A worker proxy relays the bytes into the concrete connector and sends its
+	// Gate calls back to this stream. Identity and policy remain owned by Monitor.
 	c.Server.Serve(s, &env)
 }
 
-func (m *monitor) sameStreamAuthority(old *state, a streamAuthority) bool {
+// sameStreamAuthority runs under mu. Commit compares each surviving stream with
+// the previous settings: preserving authority at every transition preserves the
+// original admission without storing another settings snapshot on the stream.
+func (m *monitor) sameStreamAuthority(old *state, authority streamAuthority) bool {
 	st := m.live.Load()
-	p, ok := st.Principal(a.key)
+	p, ok := st.Principal(authority.key)
 	if !ok {
 		return false
 	}
-	if a.route {
+	if authority.route {
 		return st.Identities[p.Name].Routes
 	}
-	c := a.connection
-	// Unrelated edits preserve authority.
-	return c != nil && m.connections[c.Name] == c && c.setup == a.setup && c.ready && st.Reaches(p.Name, c.Account) && (st == old || st.Engine.Program == old.Engine.Program && st.Config.SameAuthority(old.Config, a.key, c.Account))
+	c := authority.connection
+	if c == nil || m.connections[c.Name] != c || c.setup != authority.setup {
+		return false
+	}
+	if !c.ready || !st.Reaches(p.Name, c.Account) {
+		return false
+	}
+	if st == old {
+		return true
+	}
+	// Unrelated settings edits preserve this principal's authority on the account.
+	return st.Engine.Program == old.Engine.Program && st.Config.SameAuthority(old.Config, authority.key, c.Account)
 }
-func (m *monitor) trackStream(s *connector.Stream, st *state, a streamAuthority) bool {
+func (m *monitor) trackStream(s *connector.Stream, st *state, authority streamAuthority) bool {
 	// Prevent admission racing with revocation.
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if !m.sameStreamAuthority(st, a) || !a.route && m.acquire(a.connection, a.setup) != nil {
+	if !m.sameStreamAuthority(st, authority) {
 		return false
 	}
-	m.streams[s] = a
+	if !authority.route {
+		if err := m.acquire(authority.connection, authority.setup); err != nil {
+			return false
+		}
+	}
+	m.streams[s] = authority
 	context.AfterFunc(s.Context, func() { m.mu.Lock(); delete(m.streams, s); m.mu.Unlock() })
 	return true
 }
