@@ -84,7 +84,7 @@ export async function openMonitor({
   storage = globalThis.localStorage,
 }: {
   target: MonitorLink;
-  /** The owner's 32-byte Ed25519 seed; zeroed by the caller. */
+  /** The owner's 32-byte Ed25519 seed. */
   seed: Uint8Array;
   signal: AbortSignal;
   attest?: AttestMonitor;
@@ -103,37 +103,29 @@ export async function openMonitor({
     signal,
   );
   signal.throwIfAborted();
-  const storage32 = storageKey(seed, config.bucket);
-  try {
-    const client = sealedOwnerClient({
-      endpoint: target.endpoint,
-      monitor: config.bucket,
-      sign: async (message) => {
-        signal.throwIfAborted();
-        return ed25519.sign(message, seed);
-      },
-      storageKey: btoa(String.fromCharCode(...storage32)),
-      // First open also creates the encrypted store. A remembered generation
-      // keeps a returning monitor from treating missing state as a fresh start.
-      initialize: storedGeneration(config.bucket, storage) === 0,
-      storage,
-      assets: "/",
-      fetch: (input, init) => {
-        signal.throwIfAborted();
-        return sealed(input, {
-          ...init,
-          signal: init?.signal
-            ? AbortSignal.any([signal, init.signal])
-            : signal,
-        });
-      },
-    });
-    storage32.fill(0);
-    await client.unlock(undefined, signal);
-    const snapshot = await client.read(signal);
-    signal.throwIfAborted();
-    return { client, snapshot };
-  } finally {
-    storage32.fill(0);
-  }
+  const client = sealedOwnerClient({
+    endpoint: target.endpoint,
+    monitor: config.bucket,
+    sign: async (message) => {
+      signal.throwIfAborted();
+      return ed25519.sign(message, seed);
+    },
+    storageKey: btoa(String.fromCharCode(...storageKey(seed, config.bucket))),
+    // First open also creates the encrypted store. A remembered generation
+    // keeps a returning monitor from treating missing state as a fresh start.
+    initialize: storedGeneration(config.bucket, storage) === 0,
+    storage,
+    assets: "/",
+    fetch: (input, init) => {
+      signal.throwIfAborted();
+      return sealed(input, {
+        ...init,
+        signal: init?.signal ? AbortSignal.any([signal, init.signal]) : signal,
+      });
+    },
+  });
+  await client.unlock(undefined, signal);
+  const snapshot = await client.read(signal);
+  signal.throwIfAborted();
+  return { client, snapshot };
 }

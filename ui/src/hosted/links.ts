@@ -62,10 +62,19 @@ export const hasMonitorHandoff = (hash: string) => {
 };
 
 const LINK_PREFIX = "tinfoil-console/monitor/";
+const OWNER_PREFIX = "tinfoil-console/owner-key/";
 
-// Keep the connection record for this tab only, leaving the hash available
-// for App's navigation and preserving reloads and OAuth returns. Switching
-// Monitors goes through the dashboard, so nothing outlives the tab.
+// Monitors whose connection records this browser remembers.
+export const savedMonitors = (storage: Storage) =>
+  Object.keys(storage)
+    .filter((key) => key.startsWith(LINK_PREFIX))
+    .map((key) => decodeURIComponent(key.slice(LINK_PREFIX.length)))
+    .sort();
+
+// Remember the connection record in this browser, with each owner key record
+// kept once for all its Monitors, leaving the hash available for App's
+// navigation and preserving reloads and OAuth returns. The console lists
+// remembered Monitors, so reopening one needs no dashboard.
 export function readMonitorLink(
   url: URL,
   storage: Pick<Storage, "getItem" | "setItem">,
@@ -90,7 +99,10 @@ export function readMonitorLink(
       config: params.get("config")!,
       key: params.get("key")!,
     });
-    storage.setItem(key, JSON.stringify(target));
+    const { key: record, ...link } = target;
+    const owner = ownerKey(target).public_key;
+    storage.setItem(OWNER_PREFIX + owner, record);
+    storage.setItem(key, JSON.stringify({ ...link, owner }));
     return target;
   }
   const saved = storage.getItem(key);
@@ -98,7 +110,11 @@ export function readMonitorLink(
     throw new Error(
       "This monitor link is missing its connection details. Open it again from your dashboard.",
     );
-  const target = validate(JSON.parse(saved));
+  const { owner, ...link } = JSON.parse(saved);
+  const target = validate({
+    ...link,
+    key: storage.getItem(OWNER_PREFIX + owner),
+  });
   if (target.name !== name)
     throw new Error("The saved connection belongs to a different monitor.");
   return target;

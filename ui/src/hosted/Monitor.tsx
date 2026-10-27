@@ -27,7 +27,7 @@ export default function Monitor(props: {
   let attempt: AbortController | undefined;
   let recovery: File | undefined;
   try {
-    target = readMonitorLink(new URL(location.href), sessionStorage);
+    target = readMonitorLink(new URL(location.href), localStorage);
     monitorConfig(target.config);
     record = ownerKey(target);
     local = record.passkeys.length === 0;
@@ -46,7 +46,6 @@ export default function Monitor(props: {
     attempt?.abort();
     attempt = undefined;
     manager.cancelActiveCeremony();
-    manager.clearLocalState();
     setBusy(false);
   };
   onCleanup(cancel);
@@ -58,12 +57,11 @@ export default function Monitor(props: {
     attempt = current;
     setBusy(true);
     setError("");
-    let seed: Uint8Array | undefined;
     try {
       const file = recovery;
       if (file && file.size > 16_000)
         throw new Error("This file is too large to be a data key.");
-      seed = await keys.recoverOwnerSeed(
+      const seed = await keys.recoverOwnerSeed(
         record!,
         manager,
         current.signal,
@@ -86,7 +84,6 @@ export default function Monitor(props: {
       }
       current.abort();
     } finally {
-      seed?.fill(0);
       if (attempt === current) setBusy(false);
     }
   };
@@ -170,46 +167,9 @@ export default function Monitor(props: {
         }
       >
         {(connected) => (
-          <>
-            <App client={connected.client} snapshot={connected.snapshot} />
-            <Connected
-              target={target!}
-              onLock={() => {
-                manager.clearLocalState();
-                location.reload();
-              }}
-            />
-          </>
+          <App client={connected.client} snapshot={connected.snapshot} />
         )}
       </Show>
     </div>
-  );
-}
-
-// What this tab is talking to: the Monitor's endpoint and the exact measured
-// configuration its attestation was checked against.
-function Connected(props: { target: MonitorLink; onLock: () => void }) {
-  const config = () => monitorConfig(props.target.config);
-  const digest = () => config().source.split("@")[1]?.slice(0, 12) ?? "";
-  return (
-    <aside class="monitor-connected" aria-label="Connected Monitor">
-      <Icon name="rules" />
-      <span>
-        <strong>{props.target.name}</strong>
-        <small>
-          {new URL(props.target.endpoint).host} · config {digest()}… · attested
-        </small>
-      </span>
-      <a class="link" href={keys.DASHBOARD}>
-        Dashboard <Icon name="external" />
-      </a>
-      <button
-        class="link"
-        title="Forget the passkey in this browser; the next open asks for it again."
-        onClick={props.onLock}
-      >
-        Lock
-      </button>
-    </aside>
   );
 }

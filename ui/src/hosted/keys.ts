@@ -41,16 +41,16 @@ export const PROFILE: PasskeyKeyProfile = {
   hkdfInfo: utf8ToBytes("tinfoil-console-kek-v1"),
 };
 
-// The passkey's PRF output is cached in this browser, as chat caches it, so
-// reopening a Monitor does not prompt again. "Lock" clears it.
-export const passkeys = () =>
-  createPasskeyKeyManager({
+// No PRF output is kept, and any left in localStorage is cleared, so every
+// open asks for the passkey and the remembered owner key is sealed without it.
+export const passkeys = () => {
+  createInsecureBrowserLocalStoragePasskeyKeyStorage("tinfoil-console").clear();
+  return createPasskeyKeyManager({
     profile: PROFILE,
     relyingPartyName: "Tinfoil",
     enrollmentAttachment: "any",
-    storage:
-      createInsecureBrowserLocalStoragePasskeyKeyStorage("tinfoil-console"),
   });
+};
 
 const SSH_PREFIX = new Uint8Array([
   0,
@@ -195,16 +195,12 @@ export type Setup = {
 async function newOwnerKey() {
   const seed = randomBytes(32);
   const dataKey = randomBytes(32);
-  try {
-    const key: OwnerKey = {
-      public_key: sshPublicKey(ed25519.getPublicKey(seed)),
-      encrypted_private_key: await encryptPrivateKey(seed, dataKey),
-      passkeys: [],
-    };
-    return { key, dataKey };
-  } finally {
-    seed.fill(0);
-  }
+  const key: OwnerKey = {
+    public_key: sshPublicKey(ed25519.getPublicKey(seed)),
+    encrypted_private_key: await encryptPrivateKey(seed, dataKey),
+    passkeys: [],
+  };
+  return { key, dataKey };
 }
 
 export async function setupPasskey(
@@ -213,49 +209,41 @@ export async function setupPasskey(
 ): Promise<Setup> {
   signal.throwIfAborted();
   const { key, dataKey } = await newOwnerKey();
-  try {
-    const { wrappedKey } = await manager.createAndWrapKey({
-      user: {
-        // A fresh handle prevents authenticators replacing an earlier credential.
-        id: concatBytes(utf8ToBytes("tinfoil-console/"), randomBytes(32)),
-        name: "Tinfoil sandbox key",
-        displayName: "Your Tinfoil sandboxes",
-      },
-      key: dataKey,
-      signal,
-    });
-    signal.throwIfAborted();
-    const passkey: OwnerPasskey = {
-      credential_id: wrappedKey.credentialId,
-      wrapped_data_key: encodeWrappedKeyRecord(wrappedKey),
-    };
-    return { key: { ...key, passkeys: [passkey] }, passkey };
-  } finally {
-    dataKey.fill(0);
-  }
+  const { wrappedKey } = await manager.createAndWrapKey({
+    user: {
+      // A fresh handle prevents authenticators replacing an earlier credential.
+      id: concatBytes(utf8ToBytes("tinfoil-console/"), randomBytes(32)),
+      name: "Tinfoil sandbox key",
+      displayName: "Your Tinfoil sandboxes",
+    },
+    key: dataKey,
+    signal,
+  });
+  signal.throwIfAborted();
+  const passkey: OwnerPasskey = {
+    credential_id: wrappedKey.credentialId,
+    wrapped_data_key: encodeWrappedKeyRecord(wrappedKey),
+  };
+  return { key: { ...key, passkeys: [passkey] }, passkey };
 }
 
 // Without a passkey the owner keeps the data key, as chat keeps its
 // encryption key: shown once, downloadable, never stored by this page.
 export async function setupLocal(): Promise<Setup> {
   const { key, dataKey } = await newOwnerKey();
-  try {
-    const text = [
-      "-----BEGIN TINFOIL SANDBOX DATA KEY-----",
-      bytesToHex(dataKey),
-      "-----END TINFOIL SANDBOX DATA KEY-----",
-      "",
-    ].join("\n");
-    return {
-      key,
-      recovery: {
-        filename: `tinfoil-sandbox-key-${new Date().toISOString().slice(0, 10)}.pem`,
-        text,
-      },
-    };
-  } finally {
-    dataKey.fill(0);
-  }
+  const text = [
+    "-----BEGIN TINFOIL SANDBOX DATA KEY-----",
+    bytesToHex(dataKey),
+    "-----END TINFOIL SANDBOX DATA KEY-----",
+    "",
+  ].join("\n");
+  return {
+    key,
+    recovery: {
+      filename: `tinfoil-sandbox-key-${new Date().toISOString().slice(0, 10)}.pem`,
+      text,
+    },
+  };
 }
 
 export function parseDataKey(text: string): Uint8Array {
@@ -312,28 +300,21 @@ export async function recoverOwnerSeed(
   dataKeyFile?: string,
 ): Promise<Uint8Array> {
   signal.throwIfAborted();
-  let dataKey: Uint8Array | undefined;
-  try {
-    if (dataKeyFile) dataKey = parseDataKey(dataKeyFile);
-    else if (record.passkeys.length) {
-      dataKey = (
-        await manager.recoverKey({
-          wrappedKeys: record.passkeys.map(passkeyRecord),
-          signal,
-        })
-      ).key;
-    } else
-      throw new Error(
-        "Choose the data key file you saved when setting up this key.",
-      );
-    signal.throwIfAborted();
-    return await decryptPrivateKey(record.encrypted_private_key, dataKey);
-  } catch (cause) {
-    manager.clearLocalState();
-    throw cause;
-  } finally {
-    dataKey?.fill(0);
-  }
+  let dataKey: Uint8Array;
+  if (dataKeyFile) dataKey = parseDataKey(dataKeyFile);
+  else if (record.passkeys.length) {
+    dataKey = (
+      await manager.recoverKey({
+        wrappedKeys: record.passkeys.map(passkeyRecord),
+        signal,
+      })
+    ).key;
+  } else
+    throw new Error(
+      "Choose the data key file you saved when setting up this key.",
+    );
+  signal.throwIfAborted();
+  return await decryptPrivateKey(record.encrypted_private_key, dataKey);
 }
 
 export const unavailablePasskey = (cause: unknown) =>

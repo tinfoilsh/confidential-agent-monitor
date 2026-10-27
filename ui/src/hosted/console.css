@@ -83,6 +83,12 @@
   min-height: 44px;
   padding: 10px 24px;
 }
+.start-monitors {
+  display: grid;
+  gap: 8px;
+  width: min(360px, 100%);
+  margin-top: 16px;
+}
 .start-footnote,
 .start-footer {
   color: var(--muted);
@@ -297,42 +303,4 @@ dialog.start-dialog {
     gap: 12px;
     font-size: 10px;
   }
-}
-
-/* Bottom-left: which Monitor this tab is connected to and what it attested. */
-.monitor-connected {
-  position: fixed;
-  left: 16px;
-  bottom: 16px;
-  z-index: 5;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--card-radius);
-  background: var(--bg);
-  color: var(--text);
-  font-size: var(--font-detail);
-  box-shadow: 0 2px 8px rgb(0 0 0 / 0.06);
-}
-.monitor-connected svg {
-  width: 16px;
-  height: 16px;
-  color: var(--muted);
-}
-.monitor-connected span {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.3;
-}
-.monitor-connected small {
-  color: var(--muted);
-  font-family: var(--mono, ui-monospace, monospace);
-}
-.monitor-connected .link {
-  margin-left: 6px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
 }

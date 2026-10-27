@@ -3,6 +3,7 @@ import type {
   PasskeyKeyManager,
 } from "@tinfoilsh/passkey-kit";
 import {
+  For,
   Match,
   Show,
   Switch,
@@ -12,6 +13,7 @@ import {
 } from "solid-js";
 import { download, Icon, Modal } from "../components";
 import * as keys from "./keys";
+import { savedMonitors } from "./links";
 import "./console.css";
 
 const starting = () => location.pathname.replace(/\/+$/, "") === "/start";
@@ -30,6 +32,7 @@ export default function Console(props: {
   const [fallback, setFallback] = createSignal(false);
   const [setup, setSetup] = createSignal<keys.Setup>();
   const [downloaded, setDownloaded] = createSignal(false);
+  const monitors = savedMonitors(localStorage);
   // The dashboard's one-time state, echoed back so it accepts the result.
   const state = keys.setupState(new URL(location.href));
   const finish = (result: keys.Setup) =>
@@ -125,6 +128,18 @@ export default function Console(props: {
         <button class="primary" onClick={() => route(true)}>
           Get started <Icon name="arrow" />
         </button>
+        <Show when={monitors.length}>
+          <nav class="start-monitors" aria-label="Your monitors">
+            <p class="start-eyebrow">Your monitors</p>
+            <For each={monitors}>
+              {(name) => (
+                <a class="button" href={`/monitor/${encodeURIComponent(name)}`}>
+                  <Icon name="rules" /> {name}
+                </a>
+              )}
+            </For>
+          </nav>
+        </Show>
       </main>
       <footer class="start-footer">
         <Icon name="rules" /> Privacy by design.
