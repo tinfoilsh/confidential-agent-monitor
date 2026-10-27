@@ -490,113 +490,76 @@ function Onboarding(props: {
   busy: boolean;
   onFinish(tinfoilApiKey?: string): void;
 }) {
-  const [step, setStep] = createSignal<"policy" | "tinfoil">("policy"),
-    [tinfoilKey, setTinfoilKey] = createSignal("");
-  let heading!: HTMLHeadingElement, tinfoilInput!: HTMLInputElement;
-  const goToStep = (next: "policy" | "tinfoil") => {
-    setStep(next);
-    (next === "tinfoil" ? tinfoilInput : heading).focus();
-  };
+  const [tinfoilKey, setTinfoilKey] = createSignal("");
   return (
     <form
       class="onboarding"
       onSubmit={(e) => {
         e.preventDefault();
-        if (step() === "policy") goToStep("tinfoil");
-        else props.onFinish(tinfoilKey());
+        props.onFinish(tinfoilKey());
       }}
     >
       <header class="onboarding-heading">
-        <Show when={step() === "tinfoil"} fallback={<Icon name="eye" />}>
-          <span class="connector-icon" aria-hidden="true">
-            <img
-              class="dark-icon"
-              src={import.meta.env.BASE_URL + "icons/tinfoil.dark.svg"}
-              alt=""
-            />
-            <img
-              class="light-icon"
-              src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
-              alt=""
-            />
-          </span>
-        </Show>
-        <h1 ref={heading} tabIndex={-1}>
-          {step() === "policy"
-            ? "Create monitor"
-            : "Add the Tinfoil connection"}
-        </h1>
-        <p>
-          {step() === "policy"
-            ? "A monitor is how your sandbox communicates with the outside world. It can hold credentials and set policies on what a sandbox can do."
-            : "Use Tinfoil models from your sandbox for private AI & web search."}
-        </p>
+        <span class="connector-icon" aria-hidden="true">
+          <img
+            class="dark-icon"
+            src={import.meta.env.BASE_URL + "icons/tinfoil.dark.svg"}
+            alt=""
+          />
+          <img
+            class="light-icon"
+            src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
+            alt=""
+          />
+        </span>
+        <h1>Add the Tinfoil connection</h1>
+        <p>Use Tinfoil models from your sandbox for private AI & web search.</p>
       </header>
-      <Switch>
-        <Match when={step() === "policy"}>
-          <button class="primary" disabled={props.busy}>
-            Continue
-            <Icon name="arrow" />
-          </button>
-        </Match>
-        <Match when={step() === "tinfoil"}>
-          <fieldset class="onboarding-key" disabled={props.busy}>
-            <div class="onboarding-key-label">
-              <label for="tinfoil-api-key">API key</label>
-              <a
-                href="https://dash.tinfoil.sh/?tab=api-keys"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Get an API key
-                <Icon name="external" />
-              </a>
-            </div>
-            <input
-              ref={tinfoilInput}
-              id="tinfoil-api-key"
-              type="password"
-              required
-              autofocus
-              pattern={".*\\S.*"}
-              title="Enter your Tinfoil API key"
-              placeholder="tk-…"
-              autocomplete="off"
-              spellcheck={false}
-              aria-describedby="tinfoil-key-help"
-              value={tinfoilKey()}
-              onInput={(e) => setTinfoilKey(e.currentTarget.value)}
-            />
-            <p id="tinfoil-key-help" class="onboarding-key-help">
-              <Icon name="rules" />
-              Your key stays in Monitor, hidden from your sandboxes.
-            </p>
-          </fieldset>
-          <button class="primary" disabled={props.busy}>
-            {props.busy ? "Saving…" : "Add the Tinfoil connection"}
-            <Icon name="arrow" />
-          </button>
-          <div class="onboarding-actions">
-            <button
-              type="button"
-              class="link onboarding-back"
-              disabled={props.busy}
-              onClick={() => goToStep("policy")}
-            >
-              <Icon name="arrow" />
-              Back
-            </button>
-            <button
-              type="button"
-              class="link"
-              disabled={props.busy}
-              onClick={() => props.onFinish()}
-            >
-              Skip for now
-            </button>
-          </div>
-        </Match>
-      </Switch>
+      <fieldset class="onboarding-key" disabled={props.busy}>
+        <div class="onboarding-key-label">
+          <label for="tinfoil-api-key">API key</label>
+          <a
+            href="https://dash.tinfoil.sh/?tab=api-keys"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Get an API key
+            <Icon name="external" />
+          </a>
+        </div>
+        <input
+          id="tinfoil-api-key"
+          type="password"
+          required
+          autofocus
+          pattern={".*\\S.*"}
+          title="Enter your Tinfoil API key"
+          placeholder="tk-…"
+          autocomplete="off"
+          spellcheck={false}
+          aria-describedby="tinfoil-key-help"
+          value={tinfoilKey()}
+          onInput={(e) => setTinfoilKey(e.currentTarget.value)}
+        />
+        <p id="tinfoil-key-help" class="onboarding-key-help">
+          <Icon name="rules" />
+          Your key stays in Monitor, hidden from your sandboxes.
+        </p>
+      </fieldset>
+      <button class="primary" disabled={props.busy}>
+        {props.busy ? "Saving…" : "Add the Tinfoil connection"}
+        <Icon name="arrow" />
+      </button>
+      <div class="onboarding-actions">
+        <button
+          type="button"
+          class="link"
+          disabled={props.busy}
+          onClick={() => props.onFinish()}
+        >
+          Skip for now
+        </button>
+      </div>
     </form>
   );
 }
