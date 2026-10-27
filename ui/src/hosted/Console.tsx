@@ -241,7 +241,7 @@ export default function Console(props: {
                       <p>
                         This file is the only way to open your sandboxes: it is
                         not kept anywhere else. Keep it private, anyone with it
-                        can use your key.
+                        can access your monitor
                       </p>
                     </div>
                   </div>

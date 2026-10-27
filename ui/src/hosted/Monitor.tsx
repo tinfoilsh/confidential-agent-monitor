@@ -187,8 +187,7 @@ export default function Monitor(props: {
 }
 
 // What this tab is talking to: the Monitor's endpoint and the exact measured
-// configuration its attestation was checked against. The console has both in
-// hand, so showing them costs nothing and lets the owner confirm the target.
+// configuration its attestation was checked against.
 function Connected(props: { target: MonitorLink; onLock: () => void }) {
   const config = () => monitorConfig(props.target.config);
   const digest = () => config().source.split("@")[1]?.slice(0, 12) ?? "";
