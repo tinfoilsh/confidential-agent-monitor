@@ -104,7 +104,11 @@ export class ApiError extends Error {
 }
 export type Api = (
   path: string,
-  init?: { method?: "GET" | "POST"; body?: unknown; signal?: AbortSignal },
+  init?: {
+    method?: "GET" | "POST" | "PUT";
+    body?: unknown;
+    signal?: AbortSignal;
+  },
 ) => Promise<unknown>;
 
 export type RecoveryInput = {
@@ -112,12 +116,13 @@ export type RecoveryInput = {
   type: "passkey" | "manual";
   credential_id: string | null;
   encrypted_dek: string;
+  created_at: string;
 };
 export type KeyState = {
   revision: number;
   dek_id: string | null;
   encrypted_mk: string | null;
-  recovery: (RecoveryInput & { created_at: string })[];
+  recovery: RecoveryInput[];
   umk: {
     key_id: string;
     kind: "monitor" | "sandbox";
@@ -125,29 +130,13 @@ export type KeyState = {
     registered_at: string;
   }[];
 };
-type Op =
-  | {
-      op: "initialize";
-      dek_id: string;
-      encrypted_mk: string;
-      recovery: RecoveryInput;
-    }
-  | { op: "update_mk"; encrypted_mk: string }
-  | { op: "add_recovery"; recovery: RecoveryInput }
-  | { op: "remove_recovery"; recovery_id: string }
-  | {
-      op: "register_umk";
-      umk: {
-        key_id: string;
-        kind: "monitor" | "sandbox";
-        public_key: string;
-      }[];
-    };
-export type Mutation = {
-  mutation_id: string;
-  expected_revision: number;
-  expected_dek_id: string | null;
-} & Op;
+type KeyChange = {
+  dek_id: string;
+  encrypted_mk: string;
+  recovery: RecoveryInput[];
+};
+// A whole state write and the revision it replaces.
+type KeyWrite = KeyChange & { expected_revision: number };
 
 const KEY_STATE = "/api/sandboxes/owner-key";
 // A timeout or server error may follow a commit; only a 4xx answer is definitive.
@@ -184,32 +173,50 @@ const conflict = (cause: unknown, ...errors: string[]) =>
   cause.status === 409 &&
   errors.includes(cause.body?.error ?? "");
 
-// An uncertain outcome resends the exact mutation: the service replays a committed one.
-export async function sendMutation(
+async function putKeyState(
   api: Api,
-  mutation: Mutation,
+  write: KeyWrite,
   signal?: AbortSignal,
-): Promise<{ revision: number }> {
-  for (let attempt = 0; ; attempt++) {
+): Promise<number> {
+  const reply = (await api(KEY_STATE, {
+    method: "PUT",
+    body: write,
+    signal,
+  })) as {
+    revision?: unknown;
+  };
+  if (reply?.revision !== write.expected_revision + 1)
+    throw new Error("The key service returned an unreadable reply.");
+  return reply.revision;
+}
+
+// Writes a change over the latest state by compare-and-swap and returns the
+// revision holding the result. A stale or uncertain write reads again and
+// reapplies the change, which returns null once it finds itself applied.
+async function writeState(
+  api: Api,
+  change: (state: KeyState) => Promise<KeyChange | null>,
+  signal?: AbortSignal,
+): Promise<number> {
+  for (let attempt = 0; attempt < MERGE_ATTEMPTS; attempt++) {
+    const state = await readKeyState(api, signal);
+    const next = await change(state);
+    if (!next) return state.revision;
     try {
-      const reply = (await api(`${KEY_STATE}/mutations`, {
-        method: "POST",
-        body: mutation,
+      return await putKeyState(
+        api,
+        { expected_revision: state.revision, ...next },
         signal,
-      })) as { mutation_id?: unknown; revision?: unknown; replayed?: unknown };
-      // A committed mutation advances the expected revision by exactly one.
-      if (
-        reply?.mutation_id !== mutation.mutation_id ||
-        reply.revision !== mutation.expected_revision + 1 ||
-        typeof reply.replayed !== "boolean"
-      )
-        throw new Error("The key service returned an unreadable receipt.");
-      return { revision: reply.revision };
+      );
     } catch (cause) {
-      if (signal?.aborted || !uncertain(cause) || attempt >= UNCERTAIN_RETRIES)
+      if (
+        signal?.aborted ||
+        !(uncertain(cause) || conflict(cause, "stale_revision"))
+      )
         throw cause;
     }
   }
+  throw new Error("Your keys keep changing in another session. Try again.");
 }
 
 // --- unlocked MK (memory only) ----------------------------------------------
@@ -219,8 +226,6 @@ export type Unlocked = {
   context: MKContext;
   revision: number;
   payload: MKPayload;
-  // An update whose outcome is unknown; it is resent exactly before any other write.
-  pending?: Mutation;
 };
 
 const order = (resources: MKResource[]) =>
@@ -239,12 +244,7 @@ async function open(
   };
 }
 
-async function reopen(
-  api: Api,
-  u: Unlocked,
-  signal?: AbortSignal,
-): Promise<Unlocked> {
-  const state = await readKeyState(api, signal);
+function reopen(state: KeyState, u: Unlocked): Promise<Unlocked> {
   if (state.dek_id !== u.context.dek_id)
     throw new Error(
       "Your keys were replaced elsewhere. Unlock them again to continue.",
@@ -254,8 +254,7 @@ async function reopen(
 
 export type Delta = (payload: MKPayload) => MKPayload;
 
-// Writes a delta by stable key ID; a stale write reloads, reapplies it and
-// retries. An uncertain write stays pending on the caller's own object.
+// Writes a delta by stable key ID over the latest MK.
 export async function updateMK(
   api: Api,
   caller: Unlocked,
@@ -263,42 +262,22 @@ export async function updateMK(
   signal?: AbortSignal,
 ): Promise<Unlocked> {
   let u = caller;
-  if (caller.pending) {
-    try {
-      await sendMutation(api, caller.pending, signal);
-    } catch (cause) {
-      if (uncertain(cause)) throw cause;
-      if (!conflict(cause, "stale_revision", "dek_mismatch")) {
-        caller.pending = undefined;
-        throw cause;
-      }
-    }
-    caller.pending = undefined;
-    u = await reopen(api, caller, signal);
-  }
-  for (let attempt = 0; attempt < MERGE_ATTEMPTS; attempt++) {
-    const payload = parseMKPayload(delta(u.payload));
-    if (JSON.stringify(payload) === JSON.stringify(u.payload)) return u;
-    const mutation: Mutation = {
-      mutation_id: id16(),
-      expected_revision: u.revision,
-      expected_dek_id: u.context.dek_id,
-      op: "update_mk",
-      encrypted_mk: await sealMK(payload, u.dek, u.context),
-    };
-    try {
-      const { revision } = await sendMutation(api, mutation, signal);
-      return { ...u, revision, payload, pending: undefined };
-    } catch (cause) {
-      if (uncertain(cause)) {
-        caller.pending = mutation;
-        throw cause;
-      }
-      if (!conflict(cause, "stale_revision")) throw cause;
-      u = await reopen(api, u, signal);
-    }
-  }
-  throw new Error("Your keys keep changing in another session. Try again.");
+  const revision = await writeState(
+    api,
+    async (state) => {
+      u = await reopen(state, caller);
+      const payload = parseMKPayload(delta(u.payload));
+      if (JSON.stringify(payload) === JSON.stringify(u.payload)) return null;
+      u = { ...u, payload };
+      return {
+        dek_id: u.context.dek_id,
+        encrypted_mk: await sealMK(payload, u.dek, u.context),
+        recovery: state.recovery,
+      };
+    },
+    signal,
+  );
+  return { ...u, revision };
 }
 
 const sameKey = (a: MKResource, b: MKResource) =>
@@ -402,7 +381,7 @@ export const newAttempt = id16;
 type LocalRecord = {
   version: 1;
   kek: string;
-  pending: { mutation_id: string; request: Mutation } | null;
+  pending: KeyWrite | null;
 };
 // One store keyed by the frozen record keys, plus one fence key per API and user,
 // so a single transaction can check the fence and write or wipe the records.
@@ -533,12 +512,8 @@ function parseRecord(value: string): LocalRecord | undefined {
   }
 }
 
-const recordValue = (kek: Uint8Array, pending: Mutation | null) =>
-  JSON.stringify({
-    version: 1,
-    kek: b64u(kek),
-    pending: pending && { mutation_id: pending.mutation_id, request: pending },
-  });
+const recordValue = (kek: Uint8Array, pending: KeyWrite | null) =>
+  JSON.stringify({ version: 1, kek: b64u(kek), pending });
 
 // What one sign-in may write under: the epoch it began in and its Clerk session.
 // A completed explicit sign-out replaces the epoch with a nonsecret
@@ -633,15 +608,12 @@ export async function reconcilePending(
       s.dek_id === dek_id &&
       s.recovery.some((r) => r.recovery_id === recovery_id);
     const kek = unb64u(record.kek, 32);
-    const { request } = record.pending;
+    // Only a write still at its revision can commit now.
     const retry =
-      !committed(state) &&
-      (request.op === "initialize"
-        ? state.dek_id === null
-        : state.dek_id === dek_id);
+      !committed(state) && state.revision === record.pending.expected_revision;
     if (retry)
       try {
-        await sendMutation(api, request, signal);
+        await putKeyState(api, record.pending, signal);
       } catch (cause) {
         if (uncertain(cause)) continue;
       }
@@ -658,7 +630,7 @@ export async function reconcilePending(
 }
 
 // Before an explicit sign-out deletes this browser's KEKs, settles pending
-// recovery commits by their exact mutation and returns every cached recovery
+// recovery commits by their exact write and returns every cached recovery
 // file, so it can be saved first; a click elsewhere is no evidence it was. A
 // commit still unknown sets `unresolved`.
 export async function settlePending(
@@ -719,6 +691,7 @@ async function recoveryInput(
         type: "manual",
         credential_id: null,
         encrypted_dek: await wrapManualKEK(kek, dek, context, recovery_id),
+        created_at: new Date().toISOString(),
       },
     };
   }
@@ -738,6 +711,7 @@ async function recoveryInput(
       type: "passkey",
       credential_id: wrappedKey.credentialId,
       encrypted_dek: encodeWrappedKeyRecord(wrappedKey),
+      created_at: new Date().toISOString(),
     },
   };
 }
@@ -751,45 +725,61 @@ const recoveryFile = (
   text: manualRecoveryFile({ kek, dek_id, recovery_id }),
 });
 
-// The manual KEK is durably saved before the server commit; a pending record
-// lets a reload settle a lost response.
-async function commitRecovery(
-  api: Api,
-  mutation: Mutation & { recovery: RecoveryInput },
-  context: MKContext,
-  kek: Uint8Array | undefined,
-  fence: KekFence,
-  signal?: AbortSignal,
-) {
-  const key = manualKEKStorageKey(context, mutation.recovery.recovery_id);
-  // Passkey prompts and sealing precede this; a sign-out or account change
-  // meanwhile, in this or another tab, stores and sends nothing.
-  signal?.throwIfAborted();
-  if (kek)
-    await write(context, fence, signal, (store) =>
-      store.put(recordValue(kek, mutation), key),
-    );
-  try {
-    const result = await sendMutation(api, mutation, signal);
-    if (kek)
-      await write(context, fence, signal, (store) =>
-        store.put(recordValue(kek, null), key),
-      ).catch(() => {});
-    return result;
-  } catch (cause) {
-    if (kek && !uncertain(cause))
-      await write(context, fence, signal, (store) => store.delete(key)).catch(
-        () => {},
-      );
-    throw cause;
-  }
-}
-
 export class SetupLostError extends Error {
   constructor() {
     super(
       "Your keys were set up in another session first. Unlock them with that passkey or recovery key.",
     );
+  }
+}
+
+// Writes a change that adds `input`. A manual KEK is durably saved with the
+// exact write before the server commit; a pending record lets a reload settle
+// a lost response.
+async function commitRecovery(
+  api: Api,
+  context: MKContext,
+  input: RecoveryInput,
+  kek: Uint8Array | undefined,
+  fence: KekFence,
+  change: (state: KeyState) => Promise<KeyChange | null>,
+  signal?: AbortSignal,
+): Promise<number> {
+  const key = manualKEKStorageKey(context, input.recovery_id);
+  const holds = (s: KeyState) =>
+    s.dek_id === context.dek_id &&
+    s.recovery.some((r) => r.recovery_id === input.recovery_id);
+  try {
+    const revision = await writeState(
+      api,
+      async (state) => {
+        const next = await change(state);
+        if (!next || holds(state)) return null;
+        // Passkey prompts and sealing precede this; a sign-out or account change
+        // meanwhile, in this or another tab, stores and sends nothing.
+        signal?.throwIfAborted();
+        if (kek)
+          await write(context, fence, signal, (store) =>
+            store.put(
+              recordValue(kek, { expected_revision: state.revision, ...next }),
+              key,
+            ),
+          );
+        return next;
+      },
+      signal,
+    );
+    if (kek)
+      await write(context, fence, signal, (store) =>
+        store.put(recordValue(kek, null), key),
+      ).catch(() => {});
+    return revision;
+  } catch (cause) {
+    if (kek && (cause instanceof SetupLostError || !uncertain(cause)))
+      await write(context, fence, signal, (store) => store.delete(key)).catch(
+        () => {},
+      );
+    throw cause;
   }
 }
 
@@ -828,46 +818,26 @@ export async function setupMK({
   );
   signal?.throwIfAborted();
   const encrypted_mk = await sealMK(payload, dek, context);
-  for (let revision = state.revision, attempt = 0; ; attempt++) {
-    const mutation = {
-      mutation_id: id16(),
-      expected_revision: revision,
-      expected_dek_id: null,
-      op: "initialize" as const,
-      dek_id: context.dek_id,
-      encrypted_mk,
-      recovery: input,
-    };
-    try {
-      const result = await commitRecovery(
-        api,
-        mutation,
-        context,
-        kek,
-        fence,
-        signal,
-      );
-      return {
-        unlocked: { dek, context, revision: result.revision, payload },
-        file: kek && recoveryFile(kek, context.dek_id, input.recovery_id),
-      };
-    } catch (cause) {
-      // Only a revision change with no DEK yet (such as a UMK registration) is retried.
-      const body = cause instanceof ApiError ? cause.body : null;
-      if (
-        conflict(cause, "stale_revision") &&
-        body?.dek_id === null &&
-        Number.isSafeInteger((body as { revision?: unknown }).revision) &&
-        attempt < MERGE_ATTEMPTS
-      ) {
-        revision = (body as { revision: number }).revision;
-        continue;
-      }
-      if (conflict(cause, "dek_mismatch", "stale_revision"))
-        throw new SetupLostError();
-      throw cause;
-    }
-  }
+  let unlocked: Unlocked = { dek, context, revision: 0, payload };
+  const revision = await commitRecovery(
+    api,
+    context,
+    input,
+    kek,
+    fence,
+    async (s) => {
+      if (s.dek_id === null)
+        return { dek_id: context.dek_id, encrypted_mk, recovery: [input] };
+      if (s.dek_id !== context.dek_id) throw new SetupLostError();
+      unlocked = await open(s, dek, context);
+      return null;
+    },
+    signal,
+  );
+  return {
+    unlocked: { ...unlocked, revision },
+    file: kek && recoveryFile(kek, context.dek_id, input.recovery_id),
+  };
 }
 
 export async function addRecovery({
@@ -892,34 +862,27 @@ export async function addRecovery({
     manager,
     signal,
   );
-  for (let attempt = 0; ; attempt++) {
-    const mutation = {
-      mutation_id: id16(),
-      expected_revision: unlocked.revision,
-      expected_dek_id: unlocked.context.dek_id,
-      op: "add_recovery" as const,
-      recovery: input,
-    };
-    try {
-      const { revision } = await commitRecovery(
-        api,
-        mutation,
-        unlocked.context,
-        kek,
-        fence,
-        signal,
-      );
+  let u = unlocked;
+  const revision = await commitRecovery(
+    api,
+    unlocked.context,
+    input,
+    kek,
+    fence,
+    async (s) => {
+      u = await reopen(s, unlocked);
       return {
-        unlocked: { ...unlocked, revision },
-        file:
-          kek && recoveryFile(kek, unlocked.context.dek_id, input.recovery_id),
+        dek_id: u.context.dek_id,
+        encrypted_mk: s.encrypted_mk!,
+        recovery: [...s.recovery, input],
       };
-    } catch (cause) {
-      if (!conflict(cause, "stale_revision") || attempt >= MERGE_ATTEMPTS)
-        throw cause;
-      unlocked = await reopen(api, unlocked, signal);
-    }
-  }
+    },
+    signal,
+  );
+  return {
+    unlocked: { ...u, revision },
+    file: kek && recoveryFile(kek, unlocked.context.dek_id, input.recovery_id),
+  };
 }
 
 export async function removeRecovery(
@@ -928,32 +891,28 @@ export async function removeRecovery(
   recovery_id: string,
   signal?: AbortSignal,
 ): Promise<Unlocked> {
-  for (let attempt = 0; ; attempt++) {
-    try {
-      const { revision } = await sendMutation(
-        api,
-        {
-          mutation_id: id16(),
-          expected_revision: unlocked.revision,
-          expected_dek_id: unlocked.context.dek_id,
-          op: "remove_recovery",
-          recovery_id,
-        },
-        signal,
-      );
-      // The removed recovery's wrapped DEK is gone, so a KEK left behind opens nothing.
-      await transact("readwrite", (store) =>
-        request(
-          store.delete(manualKEKStorageKey(unlocked.context, recovery_id)),
-        ),
-      ).catch(() => {});
-      return { ...unlocked, revision };
-    } catch (cause) {
-      if (!conflict(cause, "stale_revision") || attempt >= MERGE_ATTEMPTS)
-        throw cause;
-      unlocked = await reopen(api, unlocked, signal);
-    }
-  }
+  let u = unlocked;
+  const revision = await writeState(
+    api,
+    async (s) => {
+      u = await reopen(s, unlocked);
+      const recovery = s.recovery.filter((r) => r.recovery_id !== recovery_id);
+      if (recovery.length === s.recovery.length) return null;
+      if (!recovery.length)
+        throw new Error("Keep at least one way to unlock your keys.");
+      return {
+        dek_id: u.context.dek_id,
+        encrypted_mk: s.encrypted_mk!,
+        recovery,
+      };
+    },
+    signal,
+  );
+  // The removed recovery's wrapped DEK is gone, so a KEK left behind opens nothing.
+  await transact("readwrite", (store) =>
+    request(store.delete(manualKEKStorageKey(unlocked.context, recovery_id))),
+  ).catch(() => {});
+  return { ...u, revision };
 }
 
 const contextOf = (state: KeyState, user_id: string): MKContext => {
@@ -1052,38 +1011,26 @@ export async function refreshUnlocked(
 ): Promise<Unlocked | undefined> {
   if (!u) return u;
   if (state.dek_id !== u.context.dek_id) return undefined;
-  if (u.pending) return u;
   return state.revision === u.revision ? u : open(state, u.dek, u.context);
 }
 
 // --- UMK ------------------------------------------------------------------------
 
 // Registers public owner keys only; their private and storage keys stay with the CLI.
+// An identical registration changes nothing, so an uncertain one is resent.
 export async function registerUMK(
   api: Api,
-  state: KeyState,
   entries: { kind: MKResource["kind"]; public_key: string }[],
   signal?: AbortSignal,
 ) {
   const umk = entries.map((e) => ({ key_id: id16(), ...e }));
   for (let attempt = 0; ; attempt++) {
     try {
-      await sendMutation(
-        api,
-        {
-          mutation_id: id16(),
-          expected_revision: state.revision,
-          expected_dek_id: state.dek_id,
-          op: "register_umk",
-          umk,
-        },
-        signal,
-      );
+      await api(`${KEY_STATE}/umk`, { method: "POST", body: { umk }, signal });
       return umk;
     } catch (cause) {
-      if (!conflict(cause, "stale_revision") || attempt >= MERGE_ATTEMPTS)
+      if (signal?.aborted || !uncertain(cause) || attempt >= UNCERTAIN_RETRIES)
         throw cause;
-      state = await readKeyState(api, signal);
     }
   }
 }

@@ -142,12 +142,8 @@ function Start(props: {
     });
   const registerUMK = () =>
     act(async (scope) => {
-      await props.session.refresh();
-      const state = scope.keyState();
-      if (!state) throw new Error("Your keys could not be read. Try again.");
       const umk = await keys.registerUMK(
         scope.api,
-        state,
         r.roles.map((kind) => ({
           kind,
           public_key: ownerKeyFromSSH(entries()[kind] ?? ""),
