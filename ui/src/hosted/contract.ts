@@ -5,7 +5,7 @@ import { KEM_DHKEM_X25519_HKDF_SHA256 } from "@panva/hpke-noble";
 import type { PasskeyKeyProfile } from "@tinfoilsh/passkey-kit";
 import { AEAD_AES_256_GCM, CipherSuite, KDF_HKDF_SHA256 } from "hpke";
 
-// Wire formats shared with the CLI and Dashboard; test/owner-contract-v1.json freezes them.
+// Wire formats shared with the CLI and Dashboard.
 
 export const PRF_PROFILES: Record<
   "production" | "development",
