@@ -28,6 +28,8 @@ const KEY = "monitor-owner-key",
 export type MonitorOptions = {
   client?: owner.OwnerApi;
   snapshot?: owner.Snapshot;
+  // Hosted builds own sandbox signers; other builds have no browser shell.
+  shell?: (name: string) => owner.ShellOpener | undefined;
 };
 
 function createMonitor(options: MonitorOptions) {
@@ -570,6 +572,7 @@ function createMonitor(options: MonitorOptions) {
     deviceSignIn,
     shell,
     setShell,
+    shellFor: (name: string) => options.shell?.(name),
     cancelSignIn: () => setDeviceSignIn(undefined),
     unlock: () =>
       perform(

@@ -8,8 +8,8 @@ import (
 	"github.com/tinfoilsh/tinfoil-go/verify"
 )
 
-// Boot is what a sandbox must attest before Monitor logs in. Its persisted JSON
-// matches the existing identity.sandbox source and owner API representation.
+// Boot is the sandbox boot an identity belongs to. Its persisted JSON matches the
+// existing identity.sandbox source and owner API representation.
 type Boot struct {
 	Source     string `json:"source"`
 	InstanceID string `json:"instance_id"`

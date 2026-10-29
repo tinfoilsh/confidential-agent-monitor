@@ -11,6 +11,7 @@ import subprocess
 import threading
 
 HOST_KEY = Path("/run/tinfoil/keys/host-ssh/private_key.pem")
+EHBP_KEY = Path("/run/tinfoil/keys/sandbox-ehbp/private_key.pem")
 ATTESTATION = "/tinfoil/attestation.sock"
 CONTROL = Path("/run/tinfoil/volumes/workspace/control.sock")
 MEASURED = ("SANDBOX_INSTANCE_ID", "SANDBOX_OWNER_PUBLIC_KEY")
@@ -34,19 +35,29 @@ class UnixServer(socketserver.ThreadingMixIn, socketserver.UnixStreamServer):
 
 
 def unlock_once(control):
-    # Like the real worker, answer the first unlock and drop the socket so the boot continues.
-    connection, _ = control.accept()
-    with connection:
-        connection.recv(256)
-        connection.sendall(b"ok")
+    # Like the real worker, report status while locked, answer the first unlock and drop
+    # the socket so the boot continues.
+    while True:
+        connection, _ = control.accept()
+        with connection:
+            if connection.recv(256)[1:2] == b"s":
+                connection.sendall(b"used" if any(Path("/mnt/disk").iterdir()) else b"blank")
+                continue
+            connection.sendall(b"ok")
+        break
     CONTROL.unlink()
 
 
+def generate(path, *algorithm):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(["openssl", "genpkey", *algorithm, "-out", path], check=True)
+    return subprocess.run(["openssl", "pkey", "-in", path, "-pubout"], check=True, capture_output=True, text=True).stdout
+
+
 if __name__ == "__main__":
-    HOST_KEY.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(["openssl", "genpkey", "-algorithm", "EC", "-pkeyopt", "ec_paramgen_curve:P-256", "-out", HOST_KEY], check=True)
-    public = subprocess.run(["openssl", "pkey", "-in", HOST_KEY, "-pubout"], check=True, capture_output=True, text=True).stdout
-    Attestation.document = json.dumps({"host_key": public, "env": {name: os.environ[name] for name in MEASURED}}).encode()
+    public = generate(HOST_KEY, "-algorithm", "EC", "-pkeyopt", "ec_paramgen_curve:P-256")
+    ehbp = generate(EHBP_KEY, "-algorithm", "X25519")
+    Attestation.document = json.dumps({"host_key": public, "sandbox_ehbp": ehbp, "env": {name: os.environ[name] for name in MEASURED}}).encode()
     server = UnixServer(ATTESTATION, Attestation)
     CONTROL.parent.mkdir(parents=True, exist_ok=True)
     control = socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET)

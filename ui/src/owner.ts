@@ -240,23 +240,6 @@ export type OwnerApi = {
     signal?: AbortSignal,
   ): Promise<BrowserFrame>;
   icons(signal?: AbortSignal): Promise<(preset: string) => ConnectorIcon>;
-  enrollSandbox(
-    name: string,
-    credentials: SandboxEnrollment,
-    signal?: AbortSignal,
-  ): Promise<View>;
-  shell(
-    name: string,
-    request: ShellRequest,
-    signal?: AbortSignal,
-  ): Promise<ShellReply>;
-};
-export type SandboxEnrollment = {
-  owner_seed: string;
-  disk_key: string;
-  initialize: boolean;
-  source: string;
-  instance_id: string;
 };
 export type ShellOpen = {
   cols: number;
@@ -265,7 +248,7 @@ export type ShellOpen = {
 export type ShellRequest =
   | ({ action: "open" } & ShellOpen)
   | { action: "poll"; id: string; cursor: number }
-  | { action: "input"; id: string; data: string }
+  | { action: "input"; id: string; seq: number; data: string }
   | { action: "resize"; id: string; cols: number; rows: number }
   | { action: "close"; id: string };
 export type ShellReply = {
@@ -274,11 +257,27 @@ export type ShellReply = {
   cursor: number;
   closed: boolean;
   exit_code?: number;
+  accepted?: number;
 };
+export type ShellSend = (
+  request: ShellRequest,
+  signal?: AbortSignal,
+) => Promise<ShellReply>;
 export type Shell = {
   input(data: Uint8Array): void;
   resize(cols: number, rows: number): void;
 };
+export type ShellHandlers = {
+  output(data: Uint8Array): void;
+  exit(code?: number): void;
+  error(cause: unknown): void;
+};
+// Only builds holding a sandbox signer can open a shell.
+export type ShellOpener = (
+  open: ShellOpen,
+  handlers: ShellHandlers,
+  signal: AbortSignal,
+) => Promise<Shell>;
 export type ConnectorIcon = { src: string; dark?: string };
 export type IconManifest = { [preset: string]: { src: string; dark?: string } };
 export type ActionNode = {
@@ -685,15 +684,6 @@ export function ownerApi(
       const manifest = await get<IconManifest>(ICON_MANIFEST, signal);
       return (preset) => connectorIcon(manifest, preset, base);
     },
-    enrollSandbox: (name, credentials, signal) =>
-      snapshot(
-        "POST",
-        `/sandboxes/${encodeURIComponent(name)}/enroll`,
-        credentials,
-        signal,
-      ),
-    shell: (name, body, signal) =>
-      post(`/sandboxes/${encodeURIComponent(name)}/shell`, body, signal),
   };
 }
 
@@ -2323,62 +2313,61 @@ export function localOwnerClient({
   }, generation);
 }
 
-const RPC_DOMAIN = "monitor owner rpc v1\0",
-  RPC_NONCE_BYTES = 24,
-  RPC_ORIGIN = "https://owner.invalid";
+const RPC_ORIGIN = "https://owner.invalid",
+  OWNER_DEADLINE_MS = 60_000,
+  OWNER_ATTEMPTS = 3,
+  // Statuses whose Response must have a null body.
+  NULL_BODY_STATUSES = [204, 205, 304],
+  // Forwarded sandbox ciphertext; the sandbox owns retries of what it carries.
+  RELAY_PATH = "/sandboxes/relay";
 const toBase64 = (bytes: Uint8Array) => {
   let text = "";
   for (const byte of bytes) text += String.fromCharCode(byte);
   return btoa(text);
 };
+const toBase64Url = (bytes: Uint8Array) =>
+  toBase64(bytes).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 const fromBase64 = (text: string) =>
   Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
 const isGeneration = (n: number) => Number.isSafeInteger(n) && n >= 0;
 
-export function storedGeneration(
-  monitor: string,
-  storage: Pick<Storage, "getItem"> | undefined = globalThis.localStorage,
-): number {
-  const text = storage?.getItem(`monitor-generation:${monitor}`) ?? "0";
-  if (!/^(0|[1-9][0-9]*)$/.test(text) || !isGeneration(Number(text)))
-    throw new Error("The saved monitor generation is invalid.");
-  return Number(text);
-}
+/** One signed owner operation; retries keep its operation and original time. */
+export type OwnerCall = {
+  method: "GET" | "POST";
+  path: string;
+  body: string;
+  operation: string;
+  issued_at: number;
+  generation: number;
+};
 
 // The caller supplies an EHBP fetch that seals bodies to the Monitor and owns its attestation, so every call is a POST with a body, reads included.
-// Each envelope is signed for one Monitor and carries the newest generation seen, which persists per Monitor.
+// Each envelope is signed for one Monitor and carries the newest generation seen; the caller persists advances.
 export function sealedOwnerClient({
   endpoint,
-  monitor,
   sign,
   generation = 0,
   storageKey,
-  initialize = false,
   fetch,
-  storage = globalThis.localStorage,
+  remember,
   assets = "/",
 }: {
   endpoint: string;
-  /** The Monitor's TINFOIL_STORAGE_BUCKET. */
-  monitor: string;
-  /** Signs the complete domain-separated message with the owner Ed25519 key. */
-  sign: (message: Uint8Array) => Promise<Uint8Array>;
+  /** Signs one attempt of a call with a fresh nonce, returning the envelope. */
+  sign: (call: OwnerCall) => Promise<string>;
   generation?: number;
   storageKey: string;
-  initialize?: boolean;
   /** Must seal request and response bodies to the attested Monitor. */
   fetch: typeof globalThis.fetch;
-  storage?: Pick<Storage, "getItem" | "setItem">;
+  /** Called with each newer generation the Monitor reports. */
+  remember?: (generation: number) => void;
   /** URL prefix of the local build whose icons/ icons() reads. */
   assets?: string;
-}): OwnerApi {
+}): OwnerApi & { call: Request } {
   const rpc = endpointBase(endpoint) + "/owner/rpc";
-  if (typeof monitor !== "string" || !monitor)
-    throw new Error("Invalid monitor.");
   if (!isGeneration(generation)) throw new Error("Invalid monitor generation.");
-  // Another tab may raise the floor, so it is reread for every envelope and view.
-  const stored = () => storedGeneration(monitor, storage);
-  let floor = Math.max(generation, stored());
+  let floor = generation;
+  const encoder = new TextEncoder();
   const json = ownerJSON(
     async (
       path,
@@ -2386,7 +2375,7 @@ export function sealedOwnerClient({
         method,
         body,
         signal,
-      }: { method: string; body: unknown; signal?: AbortSignal },
+      }: { method: "GET" | "POST"; body: unknown; signal?: AbortSignal },
     ) => {
       const target = new URL(path, RPC_ORIGIN);
       if (
@@ -2394,60 +2383,67 @@ export function sealedOwnerClient({
         target.pathname !== path.split("?")[0]
       )
         throw new OwnerError("Refused owner path.", 400);
-      floor = Math.max(floor, stored());
-      const text = JSON.stringify({
-        monitor,
+      const call: OwnerCall = {
         method,
         path,
-        body,
+        body:
+          method === "GET"
+            ? ""
+            : toBase64Url(encoder.encode(JSON.stringify(body))),
+        operation: toBase64Url(crypto.getRandomValues(new Uint8Array(16))),
+        issued_at: Date.now(),
         generation: floor,
-        issued_at: Math.floor(Date.now() / 1000),
-        nonce: toBase64(
-          crypto.getRandomValues(new Uint8Array(RPC_NONCE_BYTES)),
-        ),
-      });
-      const encoder = new TextEncoder(),
-        request = encoder.encode(text),
-        signature = await sign(encoder.encode(RPC_DOMAIN + text));
-      return fetch(rpc, {
-        method: "POST",
-        signal,
-        cache: "no-store",
-        credentials: "omit",
-        redirect: "error",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          request: toBase64(request),
-          signature: toBase64(signature),
-        }),
-      });
+      };
+      // A lost reply is retried as the same operation, which the Monitor answers from its record.
+      for (let attempt = 1; ; attempt++) {
+        const envelope = await sign(call);
+        try {
+          const response = await fetch(rpc, {
+            method: "POST",
+            signal,
+            cache: "no-store",
+            credentials: "omit",
+            redirect: "error",
+            headers: { "Content-Type": "application/json" },
+            body: envelope,
+          });
+          // A reply lost while its body streams is retried like a lost reply.
+          const text = await response.text();
+          return new Response(
+            NULL_BODY_STATUSES.includes(response.status) ? null : text,
+            { status: response.status, headers: response.headers },
+          );
+        } catch (cause) {
+          if (
+            signal?.aborted ||
+            path === RELAY_PATH ||
+            attempt >= OWNER_ATTEMPTS ||
+            Date.now() >= call.issued_at + OWNER_DEADLINE_MS
+          )
+            throw cause;
+        }
+      }
     },
   );
-  const api = ownerApi(
-    async (method, path, body = null, signal) => {
-      const unlocking = path.split("?")[0] === "/unlock";
-      const value = await json(path, {
-        method,
-        signal,
-        body: unlocking
-          ? { ...(body as object), storage_key: storageKey, initialize }
+  const request: Request = async (method, path, body = null, signal) =>
+    json(path, {
+      method,
+      signal,
+      body:
+        path.split("?")[0] === "/unlock"
+          ? { ...(body as object), storage_key: storageKey }
           : body,
-      });
-      // Initializing is for the first unlock only; later ones refuse missing state.
-      if (unlocking) initialize = false;
-      return value;
-    },
-    floor,
-    "",
-    (seen) => {
-      if (!isGeneration(seen) || seen < Math.max(floor, stored()))
-        throw new OwnerError(ROLLBACK, 409);
-      floor = seen;
-      storage?.setItem(`monitor-generation:${monitor}`, String(seen));
-    },
-  );
+    });
+  const api = ownerApi(request, floor, "", (seen) => {
+    if (!isGeneration(seen) || seen < floor)
+      throw new OwnerError(ROLLBACK, 409);
+    if (seen > floor) remember?.(seen);
+    floor = seen;
+  });
   return {
     ...api,
+    // Hosted callers also reach owner routes outside the shared management API.
+    call: request,
     icons: async (signal) => {
       const response = await globalThis.fetch(assets + "icons/manifest.json", {
         signal,
@@ -2475,28 +2471,20 @@ const wait = (ms: number, signal: AbortSignal) =>
   });
 
 // One sandbox PTY session. Only polls move the output cursor, so a failed poll is retried from the same cursor.
-// Input and resizes are sent one at a time in order and never retried. Every end, including a delivered exit,
-// sends one close so the Monitor can release the session it keeps for a lost final poll.
+// Input and resizes are sent one at a time in order; input carries its sequence so a retried write is never
+// repeated. Every end, including a delivered exit, sends one close so the sandbox can release the session.
 export async function openShell(
-  client: OwnerApi,
-  name: string,
+  transport: ShellSend,
   open: ShellOpen,
-  {
-    output,
-    exit,
-    error,
-  }: {
-    output(data: Uint8Array): void;
-    exit(code?: number): void;
-    error(cause: unknown): void;
-  },
+  { output, exit, error }: ShellHandlers,
   signal: AbortSignal,
 ): Promise<Shell> {
-  const opened = await client.shell(name, { action: "open", ...open }, signal);
+  const opened = await transport({ action: "open", ...open }, signal);
   const id = opened.id,
     stop = new AbortController(),
     live = AbortSignal.any([signal, stop.signal]);
   let cursor = 0,
+    seq = 0,
     ended = false,
     outbox: Promise<unknown> = Promise.resolve(),
     typed: Uint8Array[] | undefined,
@@ -2505,7 +2493,7 @@ export async function openShell(
     if (ended) return;
     ended = true;
     stop.abort();
-    void client.shell(name, { action: "close", id }).catch(() => {});
+    void transport({ action: "close", id }).catch(() => {});
     if (!signal.aborted) report?.();
   };
   const deliver = (reply: ShellReply) => {
@@ -2525,11 +2513,7 @@ export async function openShell(
   void (async () => {
     for (let failures = 0; !ended;) {
       try {
-        const reply = await client.shell(
-          name,
-          { action: "poll", id, cursor },
-          live,
-        );
+        const reply = await transport({ action: "poll", id, cursor }, live);
         failures = 0;
         deliver(reply);
         if (!reply.data) await wait(SHELL_IDLE_MS, live);
@@ -2549,16 +2533,15 @@ export async function openShell(
         const data = new Uint8Array(
           await new Blob(batch as BlobPart[]).arrayBuffer(),
         );
-        for (let at = 0; at < data.length; at += SHELL_INPUT_BYTES)
-          await client.shell(
-            name,
-            {
-              action: "input",
-              id,
-              data: toBase64(data.subarray(at, at + SHELL_INPUT_BYTES)),
-            },
+        for (let at = 0; at < data.length; at += SHELL_INPUT_BYTES) {
+          const chunk = data.subarray(at, at + SHELL_INPUT_BYTES);
+          const reply = await transport(
+            { action: "input", id, seq: seq++, data: toBase64(chunk) },
             live,
           );
+          if (reply.accepted !== chunk.length)
+            throw new Error("The sandbox did not accept all input.");
+        }
       });
     },
     resize(cols, rows) {
@@ -2566,7 +2549,7 @@ export async function openShell(
       const latest = (size = { cols, rows });
       send(() => {
         size = undefined;
-        return client.shell(name, { action: "resize", id, ...latest }, live);
+        return transport({ action: "resize", id, ...latest }, live);
       });
     },
   };

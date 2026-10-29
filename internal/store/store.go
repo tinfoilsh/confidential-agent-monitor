@@ -26,7 +26,6 @@ const (
 )
 
 var ErrOwner = errors.New("invalid owner secret")
-var ErrMissingState = errors.New("the Monitor has no saved state; initialize it to create one")
 
 // Document is the state encrypted in storage.
 // Labels are shared by all streams authenticated with the same SSH fingerprint.
@@ -68,68 +67,88 @@ type Store struct {
 
 type Sealer struct{ aead cipher.AEAD }
 
-// Load returns a candidate without changing the current store or initializing storage.
-func (s Store) Load(ctx context.Context, key []byte, minimum uint64, initialize bool) (Store, error) {
+// Load returns a candidate without changing the current store or writing storage, and
+// whether it is new. Only confirmed absence with no saved minimum starts new state.
+func (s Store) Load(ctx context.Context, key []byte, minimum uint64) (Store, bool, error) {
 	if len(key) < MinOwnerKeyBytes || len(key) > MaxOwnerKeyBytes {
-		return s, ErrOwner
+		return s, false, ErrOwner
 	}
 	sl := Document{Version: stateVersion, Labels: map[string]facts.Label{}}
 	raw, err := s.Bucket.ReadAll(ctx, stateObject)
-	missing := gcerrors.Code(err) == gcerrors.NotFound
-	// S3 hides missing objects behind AccessDenied when ListBucket is scoped
-	// by prefix. Confirm absence with an authorized prefix listing. A denied
-	// listing or an existing unreadable object must never reset the state.
-	if gcerrors.Code(err) == gcerrors.PermissionDenied && minimum == 0 {
-		items := s.Bucket.List(&blob.ListOptions{Prefix: stateObject})
-		for {
-			item, listErr := items.Next(ctx)
-			if errors.Is(listErr, io.EOF) {
-				missing = true
-				break
-			}
-			if listErr != nil {
-				return s, errors.Join(err, listErr)
-			}
-			if item.Key == stateObject {
-				break
-			}
+	missing := false
+	if err != nil {
+		if missing, err = s.missing(ctx, err); err != nil {
+			return s, false, err
 		}
 	}
-	if err != nil && missing && minimum == 0 && !initialize {
-		return s, ErrMissingState
+	if missing && minimum != 0 {
+		return s, false, fmt.Errorf("the Monitor has no saved state, but generation %d was saved", minimum)
 	}
-	if err != nil && (!missing || minimum != 0 || !initialize) {
-		return s, err
-	}
-	storageKey, header, keyErr := stateEncryptionKey(key, raw, missing && minimum == 0)
+	storageKey, header, keyErr := stateEncryptionKey(key, raw, missing)
 	if keyErr != nil {
-		return s, keyErr
+		return s, false, keyErr
 	}
 	block, keyErr := aes.NewCipher(storageKey)
 	clear(storageKey)
 	if keyErr != nil {
-		return s, keyErr
+		return s, false, keyErr
 	}
 	aead, keyErr := cipher.NewGCMWithRandomNonce(block)
 	if keyErr != nil {
-		return s, keyErr
+		return s, false, keyErr
 	}
-	if !missing || minimum != 0 {
+	if !missing {
 		plain, err := aead.Open(nil, nil, raw[len(header):], header)
 		if err != nil {
-			return s, ErrOwner
+			return s, false, ErrOwner
 		}
 		sl, err = decodeState(plain)
 		if err != nil {
-			return s, err
+			return s, false, err
 		}
 	}
 	// Reject stored state rollback.
 	if sl.Generation < minimum {
-		return s, fmt.Errorf("stored generation %d is older than %d", sl.Generation, minimum)
+		return s, false, fmt.Errorf("stored generation %d is older than %d", sl.Generation, minimum)
 	}
 	s.Doc, s.owner, s.Sealer, s.header = sl, bytes.Clone(key), Sealer{aead}, header
-	return s, nil
+	return s, missing, nil
+}
+
+// Exists reports whether state is stored; a failed probe is never absence.
+func (s Store) Exists(ctx context.Context) (bool, error) {
+	_, err := s.Bucket.Attributes(ctx, stateObject)
+	if err == nil {
+		return true, nil
+	}
+	missing, err := s.missing(ctx, err)
+	return !missing, err
+}
+
+// missing confirms that a failed read means no state exists. S3 hides missing
+// objects behind AccessDenied when ListBucket is scoped by prefix, so absence is
+// confirmed with an authorized prefix listing. A denied listing or an existing
+// unreadable object must never reset the state.
+func (s Store) missing(ctx context.Context, err error) (bool, error) {
+	switch gcerrors.Code(err) {
+	case gcerrors.NotFound:
+		return true, nil
+	case gcerrors.PermissionDenied:
+		items := s.Bucket.List(&blob.ListOptions{Prefix: stateObject})
+		for {
+			item, listErr := items.Next(ctx)
+			if errors.Is(listErr, io.EOF) {
+				return true, nil
+			}
+			if listErr != nil {
+				return false, errors.Join(err, listErr)
+			}
+			if item.Key == stateObject {
+				return false, err
+			}
+		}
+	}
+	return false, err
 }
 
 func (s Store) IsOwner(key []byte) bool { return subtle.ConstantTimeCompare(key, s.owner) == 1 }

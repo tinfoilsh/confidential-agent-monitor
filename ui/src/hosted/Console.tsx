@@ -1,312 +1,588 @@
-import type {
-  PasskeyCapability,
-  PasskeyKeyManager,
-} from "@tinfoilsh/passkey-kit";
+import type { PasskeyKeyManager } from "@tinfoilsh/passkey-kit";
 import {
   For,
   Match,
   Show,
   Switch,
+  createEffect,
   createSignal,
-  onCleanup,
-  onMount,
+  on,
 } from "solid-js";
-import { download, Icon, Modal } from "../components";
+import { Icon, Modal } from "../components";
+import {
+  parseStartRequest,
+  startErrorURL,
+  startReturnURL,
+  type MKResource,
+  type StartRequest,
+  type StartRole,
+} from "./contract";
 import * as keys from "./keys";
-import { savedMonitors } from "./links";
+import {
+  KeyGate,
+  RecoveryDownload,
+  RecoveryMethods,
+  SetupKeys,
+  UnlockKeys,
+} from "./KeyPanel";
+import {
+  MONITOR_REPO,
+  SANDBOX_REPO,
+  monitorOf,
+  type Container,
+  type Scope,
+  type Session,
+} from "./session";
 import "./console.css";
 
-const starting = () => location.pathname.replace(/\/+$/, "") === "/start";
+const START = "tinfoil.start";
+const SSH_ED25519_PREFIX = "AAAAC3NzaC1lZDI1NTE5AAAAI";
+
+// The /start fragment is read once, kept for this tab across sign-in and removed from the URL.
+export function capture() {
+  if (location.pathname.replace(/\/+$/, "") !== "/start" || !location.hash)
+    return;
+  let request = "invalid";
+  try {
+    request = JSON.stringify(parseStartRequest(location.hash));
+  } catch {}
+  sessionStorage.setItem(START, request);
+  history.replaceState(null, "", "/start");
+}
+
+function startRequest(): StartRequest | "invalid" | undefined {
+  const saved = sessionStorage.getItem(START);
+  if (!saved || location.pathname.replace(/\/+$/, "") !== "/start") return;
+  return saved === "invalid" ? "invalid" : JSON.parse(saved);
+}
+
+// An OpenSSH Ed25519 public key in the measured owner key form.
+function ownerKeyFromSSH(line: string): string {
+  const [type, blob] = line.trim().split(/\s+/);
+  try {
+    const wire = Uint8Array.from(atob(blob), (c) => c.charCodeAt(0));
+    if (
+      type === "ssh-ed25519" &&
+      blob.startsWith(SSH_ED25519_PREFIX) &&
+      wire.length === 51
+    )
+      return "ed25519:" + btoa(String.fromCharCode(...wire.subarray(19)));
+  } catch {}
+  throw new Error("Paste an ssh-ed25519 public key.");
+}
+
+function roleKeys(
+  resources: { kind: StartRole; public_key: string; key_id: string }[],
+) {
+  const out = {} as Record<StartRole, { public_key: string; key_id: string }>;
+  for (const r of resources) out[r.kind] = r;
+  return out;
+}
+
+// Key-only handoff: persists the requested keys, then returns only public keys.
+function Start(props: {
+  session: Session;
+  manager: PasskeyKeyManager;
+  request: StartRequest;
+  navigate: (url: string) => void;
+}) {
+  const r = props.request;
+  const dashboard = keys.TARGETS.dashboard!;
+  const [file, setFile] = createSignal<keys.RecoveryFile>();
+  const [error, setError] = createSignal("");
+  const [busy, setBusy] = createSignal(false);
+  const [entries, setEntries] = createSignal<Record<string, string>>({});
+  let created: MKResource[] | undefined;
+  // Fresh keys per attempt; a retry after an uncertain write resends the same ones.
+  const generate = () => {
+    const attempt = keys.newAttempt();
+    return (created = r.roles.map((role) =>
+      keys.newResourceKey(role, attempt),
+    ));
+  };
+  const finish = (
+    resources: { kind: StartRole; public_key: string; key_id: string }[],
+  ) => {
+    sessionStorage.removeItem(START);
+    props.navigate(startReturnURL(dashboard, r, roleKeys(resources)));
+  };
+  const finishTMK = (resources: MKResource[]) =>
+    finish(
+      resources.map((x) => ({
+        kind: x.kind,
+        public_key: x.owner_public_key,
+        key_id: x.key_id,
+      })),
+    );
+  const leave = (reason: "cancelled" | "account_mismatch" | "unsupported") => {
+    sessionStorage.removeItem(START);
+    props.navigate(startErrorURL(dashboard, r.state, reason));
+  };
+  // Bound to the user and account it started in; a switch discards the result.
+  const act = async (task: (scope: Scope) => Promise<void>) => {
+    if (busy()) return;
+    const scope = props.session.bind();
+    setBusy(true);
+    setError("");
+    try {
+      await task(scope);
+    } catch (cause) {
+      if (scope.live())
+        setError(cause instanceof Error ? cause.message : String(cause));
+    } finally {
+      setBusy(false);
+    }
+  };
+  const addTMK = () =>
+    act(async (scope) => {
+      await props.session.refresh();
+      const resources = created ?? generate();
+      await scope.update(keys.addResources(resources));
+      if (scope.live()) finishTMK(resources);
+    });
+  const registerUMK = () =>
+    act(async (scope) => {
+      await props.session.refresh();
+      const state = scope.keyState();
+      if (!state) throw new Error("Your keys could not be read. Try again.");
+      const umk = await keys.registerUMK(
+        scope.api,
+        state,
+        r.roles.map((kind) => ({
+          kind,
+          public_key: ownerKeyFromSSH(entries()[kind] ?? ""),
+        })),
+      );
+      if (scope.live()) finish(umk);
+    });
+  const state = () => props.session.keyState().value;
+  return (
+    <>
+      <p class="start-eyebrow">Sandbox keys</p>
+      <h1 id="start-title">
+        {r.mode === "tmk"
+          ? "Create keys for your sandbox"
+          : "Add your CLI keys"}
+      </h1>
+      <p id="start-description">
+        {r.mode === "tmk"
+          ? `New keys for your ${r.roles.join(" and ")} are saved, encrypted, with your account. Your dashboard receives only their public keys.`
+          : "Paste the public keys made by the Tinfoil CLI. Their private keys stay on your computer, so this sandbox is reached with the CLI only."}
+      </p>
+      <Show when={error()}>
+        <p class="start-notice" role="alert">
+          {error()}
+        </p>
+      </Show>
+      <Switch>
+        <Match when={props.session.user()?.id !== r.user}>
+          <p class="start-notice" role="alert">
+            You are signed in as a different user than the one who started this
+            setup.
+          </p>
+          <button
+            class="primary start-continue"
+            onClick={() => leave("account_mismatch")}
+          >
+            Return to dashboard
+          </button>
+        </Match>
+        <Match when={r.mode === "umk"}>
+          <For each={r.roles}>
+            {(role) => (
+              <label class="start-help">
+                {role === "monitor" ? "Monitor" : "Sandbox"} owner public key
+                <textarea
+                  rows={2}
+                  disabled={busy()}
+                  placeholder="ssh-ed25519 AAAA…"
+                  onInput={(event) =>
+                    setEntries({
+                      ...entries(),
+                      [role]: event.currentTarget.value,
+                    })
+                  }
+                />
+              </label>
+            )}
+          </For>
+          <button
+            class="primary start-continue"
+            disabled={busy() || !state()}
+            onClick={() => void registerUMK()}
+          >
+            Continue to dashboard
+          </button>
+        </Match>
+        <Match when={file()}>
+          {(recovery) => (
+            <>
+              <RecoveryDownload file={recovery()} />
+              <button
+                class="primary start-continue"
+                onClick={() => finishTMK(created!)}
+              >
+                Continue to dashboard
+              </button>
+            </>
+          )}
+        </Match>
+        <Match when={state() && !state()!.dek_id}>
+          <SetupKeys
+            session={props.session}
+            manager={props.manager}
+            resources={generate}
+            onDone={(saved) => (saved ? setFile(saved) : finishTMK(created!))}
+          />
+        </Match>
+        <Match when={state() && !props.session.unlocked()}>
+          <UnlockKeys session={props.session} manager={props.manager} />
+        </Match>
+        <Match when={props.session.unlocked()}>
+          <button
+            class="primary start-continue"
+            disabled={busy()}
+            aria-busy={busy()}
+            onClick={() => void addTMK()}
+          >
+            {busy() ? "Saving keys…" : "Create keys and continue"}
+          </button>
+        </Match>
+      </Switch>
+      <button
+        class="link start-alternative"
+        disabled={busy()}
+        onClick={() => leave("cancelled")}
+      >
+        Cancel and return to dashboard
+      </button>
+    </>
+  );
+}
+
+function Inventory(props: { session: Session }) {
+  const read = () => props.session.inventory();
+  const mine = (row: Container) =>
+    row.clerk_user_id === props.session.user()?.id;
+  const monitors = () =>
+    (read().value ?? []).filter((r) => r.repo === MONITOR_REPO && mine(r));
+  const sandboxes = (monitor: Container) =>
+    (read().value ?? []).filter(
+      (r) => r.repo === SANDBOX_REPO && monitorOf(r) === monitor.id,
+    );
+  return (
+    <nav class="start-monitors" aria-label="Your monitors">
+      <p class="start-eyebrow">Your monitors</p>
+      <Show when={read().error}>
+        <p class="start-notice" role="alert">
+          {read().value
+            ? "Could not refresh your resources. This list may be out of date."
+            : `Your resources could not be loaded: ${read().error}`}
+        </p>
+      </Show>
+      <Show when={read().value && !monitors().length}>
+        <p class="start-help">
+          No Monitors in this account yet. Create one from your dashboard.
+        </p>
+      </Show>
+      <For each={monitors()}>
+        {(monitor) => (
+          <div class="start-key-choice">
+            <Icon name="rules" />
+            <div>
+              <h2>{monitor.name}</h2>
+              <p>
+                {monitor.status}
+                {sandboxes(monitor).length
+                  ? ` · ${sandboxes(monitor)
+                      .map((s) => s.name)
+                      .join(", ")}`
+                  : ""}
+              </p>
+              <Show
+                when={monitor.owner_key_mode === "tmk"}
+                fallback={
+                  <p>
+                    Open with the CLI:{" "}
+                    <code>tinfoil monitor open {monitor.name}</code>
+                  </p>
+                }
+              >
+                <a class="button" href={`/monitor/${monitor.id}`}>
+                  Open
+                </a>
+              </Show>
+            </div>
+          </div>
+        )}
+      </For>
+    </nav>
+  );
+}
+
+// Removes saved keys only for resources confirmed deleted in their own account.
+function Cleanup(props: { session: Session }) {
+  const [error, setError] = createSignal("");
+  const candidates = () => {
+    const rows = props.session.inventory();
+    if (!rows.value || rows.error) return [];
+    return (props.session.unlocked()?.payload.resources ?? []).filter(
+      (r) =>
+        r.binding?.account === props.session.account() &&
+        !rows.value!.some((row) => row.id === r.binding!.container_id),
+    );
+  };
+  // Absence must be confirmed per resource in its own account, not inferred.
+  const clean = async () => {
+    setError("");
+    const scope = props.session.bind();
+    try {
+      const gone: string[] = [];
+      for (const r of candidates())
+        try {
+          await scope.api(`/api/containers/${r.binding!.container_id}`);
+        } catch (cause) {
+          if (cause instanceof keys.ApiError && cause.status === 404)
+            gone.push(r.key_id);
+          else throw cause;
+        }
+      if (gone.length) await scope.update(keys.removeResources(gone));
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : String(cause));
+    }
+  };
+  return (
+    <Show when={candidates().length}>
+      <p class="start-help">
+        Some saved keys belong to resources that are no longer listed.{" "}
+        <button class="link" onClick={() => void clean()}>
+          Check and remove deleted ones
+        </button>
+      </p>
+      <Show when={error()}>
+        <p class="start-notice" role="alert">
+          {error()}
+        </p>
+      </Show>
+    </Show>
+  );
+}
+
+export function Header(props: { session: Session }) {
+  // Recovery keys settled at sign-out, offered once before they are deleted.
+  const [leaving, setLeaving] =
+    createSignal<Awaited<ReturnType<Session["prepareLogout"]>>>();
+  const [busy, setBusy] = createSignal(false);
+  createEffect(
+    on(
+      [() => props.session.user()?.id, props.session.account],
+      () => setLeaving(undefined),
+      { defer: true },
+    ),
+  );
+  const stay = () => {
+    setLeaving(undefined);
+    props.session.cancelLogout();
+  };
+  const [failed, setFailed] = createSignal("");
+  const signOut = async () => {
+    if (busy()) return;
+    setBusy(true);
+    setFailed("");
+    try {
+      // An account change at any point offers and deletes nothing; records
+      // changed by another tab are settled and offered again.
+      for (;;) {
+        const settled = await props.session.prepareLogout();
+        if (!settled.live()) return;
+        if (settled.files.length || settled.unresolved)
+          return setLeaving(settled);
+        if ((await props.session.logout(settled)) || !settled.live()) return;
+      }
+    } catch (cause) {
+      setFailed(cause instanceof Error ? cause.message : String(cause));
+    } finally {
+      setBusy(false);
+    }
+  };
+  const confirm = async () => {
+    const offer = leaving();
+    try {
+      if (await props.session.logout(offer)) return;
+    } catch (cause) {
+      return setFailed(cause instanceof Error ? cause.message : String(cause));
+    }
+    setLeaving(undefined);
+    if (offer?.live()) await signOut();
+  };
+  return (
+    <header class="start-header">
+      <a href="/" class="start-brand" aria-label="Tinfoil home">
+        <img src="/icons/tinfoil.svg" alt="" />
+        <span>Tinfoil</span>
+      </a>
+      <Show
+        when={props.session.user()}
+        fallback={
+          <a href={keys.TARGETS.dashboard}>
+            Open dashboard <Icon name="external" />
+          </a>
+        }
+      >
+        {(user) => (
+          <span>
+            {user().label}{" "}
+            <button
+              class="link"
+              disabled={busy()}
+              onClick={() => void signOut()}
+            >
+              Sign out
+            </button>
+            <Show when={failed()}>
+              <span class="start-notice" role="alert">
+                {failed()}
+              </span>
+            </Show>
+          </span>
+        )}
+      </Show>
+      <Modal
+        class="start-dialog"
+        open={!!leaving()}
+        onClose={stay}
+        aria-labelledby="leave-title"
+      >
+        <button
+          class="icon-button start-close"
+          aria-label="Stay signed in"
+          onClick={stay}
+        >
+          <Icon name="close" />
+        </button>
+        <div class="start-dialog-body">
+          <h1 id="leave-title">Save your recovery key first</h1>
+          <Show when={failed()}>
+            <p class="start-notice" role="alert">
+              {failed()}
+            </p>
+          </Show>
+          <Show when={leaving()?.unresolved}>
+            <p class="start-notice" role="alert">
+              A recovery key in this browser could not be confirmed. If your
+              setup finished, it may be the only way to open your keys, and
+              signing out deletes it. Stay signed in to try again later.
+            </p>
+          </Show>
+          <For each={leaving()?.files ?? []}>
+            {(file) => <RecoveryDownload file={file} />}
+          </For>
+          <p class="start-help">
+            Signing out removes the recovery keys saved in this browser.
+          </p>
+          <button class="primary start-continue" onClick={() => void confirm()}>
+            {leaving()?.unresolved ? "Sign out anyway" : "Sign out"}
+          </button>
+        </div>
+      </Modal>
+    </header>
+  );
+}
 
 export default function Console(props: {
+  session: Session;
   manager?: PasskeyKeyManager;
   navigate?: (url: string) => void;
 }) {
   const manager = props.manager ?? keys.passkeys();
   const navigate = props.navigate ?? ((url: string) => location.assign(url));
-  const [open, setOpen] = createSignal(starting());
-  const [capability, setCapability] =
-    createSignal<PasskeyCapability>("unknown");
-  const [busy, setBusy] = createSignal(false);
-  const [error, setError] = createSignal("");
-  const [fallback, setFallback] = createSignal(false);
-  const [setup, setSetup] = createSignal<keys.Setup>();
-  const [downloaded, setDownloaded] = createSignal(false);
-  const monitors = savedMonitors(localStorage);
-  // The dashboard's one-time state, echoed back so it accepts the result.
-  const state = keys.setupState(new URL(location.href));
-  const finish = (result: keys.Setup) =>
-    navigate(keys.dashboardURL(result, state));
-  let ceremony: AbortController | undefined;
-
-  const cancel = () => {
-    ceremony?.abort();
-    ceremony = undefined;
-    manager.cancelActiveCeremony();
-    setBusy(false);
+  const [start, setStart] = createSignal(startRequest());
+  const close = () => {
+    sessionStorage.removeItem(START);
+    history.pushState(null, "", "/");
+    setStart(undefined);
   };
-  const route = (next: boolean) => {
-    if (!next) cancel();
-    history.pushState(null, "", next ? "/start" : "/");
-    setOpen(next);
-  };
-  onMount(() => {
-    let mounted = true;
-    void manager.capability({ operation: "enroll" }).then(
-      (value) => mounted && setCapability(value),
-      () => {},
-    );
-    const pop = () => {
-      if (!starting()) cancel();
-      setOpen(starting());
-    };
-    window.addEventListener("popstate", pop);
-    onCleanup(() => {
-      mounted = false;
-      window.removeEventListener("popstate", pop);
-    });
-  });
-  onCleanup(cancel);
-
-  const local = async (unavailable = false) => {
-    if (busy()) return;
-    setError("");
-    setFallback(unavailable);
-    setDownloaded(false);
-    try {
-      setSetup(await keys.setupLocal());
-    } catch {
-      setError("We couldn't create your key. Please reload and try again.");
-    }
-  };
-  const enroll = async () => {
-    if (busy()) return;
-    if (capability() === "unsupported") return local(true);
-    const attempt = new AbortController();
-    ceremony = attempt;
-    setBusy(true);
-    setError("");
-    try {
-      const result = await keys.setupPasskey(manager, attempt.signal);
-      if (!attempt.signal.aborted) {
-        setSetup(result);
-        finish(result);
-      }
-    } catch (cause) {
-      if (attempt.signal.aborted) return;
-      setBusy(false);
-      if (keys.unavailablePasskey(cause)) void local(true);
-      else setError(keys.passkeyMessage(cause));
-    } finally {
-      if (ceremony === attempt) {
-        ceremony = undefined;
-        setBusy(false);
-      }
-    }
-  };
-
   return (
     <div class="start-page">
-      <header class="start-header">
-        <a href="/" class="start-brand" aria-label="Tinfoil home">
-          <img src="/icons/tinfoil.svg" alt="" />
-          <span>Tinfoil</span>
-        </a>
-        <a href={keys.DASHBOARD}>
-          Open dashboard <Icon name="external" />
-        </a>
-      </header>
+      <Header session={props.session} />
       <main class="start-welcome">
         <span class="start-mark">
           <Icon name="sandboxes" />
         </span>
-        <h1>Set up a sandbox</h1>
-        <p>
-          Give your agents a sandbox of their own, with you in control of what
-          they can access.
-        </p>
-        <button class="primary" onClick={() => route(true)}>
-          Get started <Icon name="arrow" />
-        </button>
-        <Show when={monitors.length}>
-          <nav class="start-monitors" aria-label="Your monitors">
-            <p class="start-eyebrow">Your monitors</p>
-            <For each={monitors}>
-              {(name) => (
-                <a class="button" href={`/monitor/${encodeURIComponent(name)}`}>
-                  <Icon name="rules" /> {name}
-                </a>
-              )}
-            </For>
-          </nav>
+        <h1>Your sandboxes</h1>
+        <Show
+          when={props.session.user()}
+          fallback={
+            <>
+              <p>Sign in to open your Monitors and set up sandbox keys.</p>
+              <button
+                class="primary"
+                onClick={() => void props.session.signIn()}
+              >
+                Sign in <Icon name="arrow" />
+              </button>
+            </>
+          }
+        >
+          <Inventory session={props.session} />
+          <Show when={props.session.keyState().error}>
+            {(error) => (
+              <p class="start-notice" role="alert">
+                Your saved keys could not be refreshed: {error()}
+              </p>
+            )}
+          </Show>
+          <Show when={props.session.keyState().value?.dek_id}>
+            <KeyGate session={props.session} manager={manager}>
+              <Cleanup session={props.session} />
+              <RecoveryMethods session={props.session} manager={manager} />
+            </KeyGate>
+          </Show>
         </Show>
       </main>
       <footer class="start-footer">
         <Icon name="rules" /> Privacy by design.
       </footer>
-
       <Modal
         class="start-dialog"
-        open={open()}
-        onClose={() => route(false)}
+        open={!!start()}
+        onClose={close}
         aria-labelledby="start-title"
         aria-describedby="start-description"
       >
         <button
           class="icon-button start-close"
           aria-label="Close setup"
-          onClick={() => route(false)}
+          onClick={close}
         >
           <Icon name="close" />
         </button>
         <div class="start-dialog-body">
-          <span class="start-mark">
-            <Icon name={setup()?.recovery ? "devices" : "rules"} />
-          </span>
-          <p class="start-eyebrow">Let's get you started</p>
-          <h1 id="start-title">
-            {setup()?.recovery
-              ? "Keep your key close."
-              : setup()
-                ? "You're all set."
-                : "Welcome to Tinfoil."}
-          </h1>
-          <Switch
-            fallback={
-              <>
-                <p id="start-description">
-                  First, let's set up your key. Then we'll take you to the
-                  dashboard to create your sandbox.
-                </p>
-                <ol class="start-steps" aria-label="Getting started">
-                  <li aria-current="step">
-                    <span>1</span> Set up your key
-                  </li>
-                  <li>
-                    <span>2</span> Create your sandbox
-                  </li>
-                </ol>
-                <div class="start-key-choice">
-                  <Icon
-                    name={capability() === "unsupported" ? "devices" : "rules"}
-                  />
-                  <div>
-                    <h2>
-                      {capability() === "unsupported"
-                        ? "A data key works here"
-                        : "A passkey makes it easy"}
-                    </h2>
-                    <p>
-                      {capability() === "unsupported"
-                        ? "Passkeys aren't available in this browser. We'll create a data key for you to save instead."
-                        : "Use your fingerprint, face, screen lock, or a security key to protect your access."}
-                    </p>
-                  </div>
-                </div>
-                <Show when={error()}>
-                  <p class="start-notice" role="alert">
-                    {error()}
-                  </p>
-                </Show>
-                <button
-                  class="primary start-continue"
-                  disabled={busy()}
-                  aria-busy={busy()}
-                  onClick={() => void enroll()}
-                >
-                  {busy()
-                    ? "Follow your device's prompt…"
-                    : capability() === "unsupported"
-                      ? "Create a data key"
-                      : "Create a passkey"}
-                  <Show when={!busy()}>
-                    <Icon name="arrow" />
-                  </Show>
-                </button>
-                <Show when={capability() !== "unsupported"}>
-                  <button
-                    class="link start-alternative"
-                    disabled={busy()}
-                    onClick={() => void local()}
-                  >
-                    Use a data key instead
-                  </button>
-                </Show>
-                <Show when={busy()}>
-                  <p class="start-help" role="status">
-                    Your browser may ask you to confirm twice. You can close
-                    this dialog to cancel.
-                  </p>
-                </Show>
-              </>
-            }
-          >
-            <Match when={setup()?.recovery}>
-              {(recovery) => (
-                <>
-                  <p id="start-description">
-                    {fallback()
-                      ? "No passkey? No problem. A data key file gets you started."
-                      : "Your data key is ready. Save it before you head to your sandboxes."}
-                  </p>
-                  <div class="start-key-choice">
-                    <Icon name="devices" />
-                    <div>
-                      <h2>Save your data key somewhere safe</h2>
-                      <p>
-                        This file is the only way to open your sandboxes: it is
-                        not kept anywhere else. Keep it private, anyone with it
-                        can access your monitor
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    class="start-download"
-                    classList={{ primary: !downloaded() }}
-                    onClick={() => {
-                      download(
-                        recovery().text,
-                        recovery().filename,
-                        "application/x-pem-file",
-                      );
-                      setDownloaded(true);
-                    }}
-                  >
-                    <Icon name="download" />{" "}
-                    {downloaded() ? "Download data key again" : "Save data key"}
-                  </button>
-                  <Show when={downloaded()}>
-                    <p class="start-help" role="status">
-                      Keep the downloaded file somewhere you can find it later.
-                    </p>
-                  </Show>
-                  <button
-                    class="primary start-continue"
-                    disabled={!downloaded()}
-                    onClick={() => finish(setup()!)}
-                  >
-                    Continue to sandboxes <Icon name="arrow" />
-                  </button>
-                  <p class="start-help">Next stop: your Tinfoil dashboard.</p>
-                </>
-              )}
+          <Switch>
+            <Match when={start() === "invalid"}>
+              <h1 id="start-title">This setup link is not valid</h1>
+              <p id="start-description">Start again from your dashboard.</p>
             </Match>
-            <Match when={setup()}>
-              {(ready) => (
-                <>
-                  <p id="start-description">
-                    Your passkey is ready. Let's find a home for your next idea.
-                  </p>
-                  <p class="start-help" role="status">
-                    Opening your Tinfoil dashboard…
-                  </p>
-                  <a
-                    class="button primary start-continue"
-                    href={keys.dashboardURL(ready(), state)}
-                  >
-                    Continue to sandboxes <Icon name="arrow" />
-                  </a>
-                </>
+            <Match when={!props.session.user()}>
+              <h1 id="start-title">Sign in to continue</h1>
+              <p id="start-description">
+                Sign in with the account that started this setup.
+              </p>
+              <button
+                class="primary start-continue"
+                onClick={() => void props.session.signIn()}
+              >
+                Sign in
+              </button>
+            </Match>
+            <Match when={start() as StartRequest}>
+              {(request) => (
+                <Start
+                  session={props.session}
+                  manager={manager}
+                  request={request()}
+                  navigate={navigate}
+                />
               )}
             </Match>
           </Switch>

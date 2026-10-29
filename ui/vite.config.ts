@@ -10,8 +10,8 @@ const builds: Record<string, { base: string; outDir: string }> = {
   static: { base: "./", outDir: "dist-static" },
 };
 
-// The hosted console's local HTTPS name, proxied to this dev server, so the
-// tinfoil.sh passkey relying party accepts it.
+// The hosted console's local HTTPS name, proxied to this dev server, which is
+// the development passkey profile's relying party.
 const HOSTED_DEV_HOST = "local.tinfoil.sh";
 
 export default defineConfig(({ mode }) => ({
@@ -32,6 +32,8 @@ export default defineConfig(({ mode }) => ({
     port: 5173,
     strictPort: true,
     allowedHosts: mode === "hosted" ? [HOSTED_DEV_HOST] : [],
+    // The hosted build compiles in the Monitor's own trusted config template.
+    fs: { allow: [".", "../tinfoil-config.yml"] },
   },
   build: {
     outDir: builds[mode]?.outDir ?? "dist",

@@ -189,7 +189,7 @@ function Shell() {
         <ShellSplit
           shell={
             m.shell()
-              ? { name: m.shell()!, message: "", client: m.api() }
+              ? { name: m.shell()!, message: "", open: m.shellFor(m.shell()!) }
               : undefined
           }
           onClose={() => m.setShell()}

@@ -1,296 +1,135 @@
-// Package sandbox provides sandbox routes, attestation, enrollment and owner shells.
+// Package sandbox provides sandbox routes and the owner's relay to sandbox attestation and owner APIs.
 package sandbox
 
 import (
 	"bytes"
 	"context"
-	"crypto/ed25519"
-	"crypto/hkdf"
-	"crypto/sha256"
-	"encoding/hex"
-	"encoding/json"
-	"encoding/pem"
+	"encoding/base64"
 	"errors"
-	"fmt"
 	"io"
 	"net"
 	"net/http"
+	"regexp"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/tinfoilsh/monitor/internal/frontdoor"
-	"github.com/tinfoilsh/tinfoil-go/verify/document"
-	"golang.org/x/crypto/ssh"
 )
 
 const (
 	// BootstrapUser prefixes the SSH user a sandbox boot publishes its bootstrap route as.
 	BootstrapUser = "sandbox-v2:"
-	// WorkspaceKeyBytes is the length of an enrollment's disk_key.
-	WorkspaceKeyBytes = 32
-	// MaxRequestBytes bounds an enroll or shell request body.
-	MaxRequestBytes = 1 << 18
+	// MaxRelayBytes bounds a relay request, including its base64url body.
+	MaxRelayBytes = 1 << 20
 
-	sandboxLoginUser           = "sandbox"
-	sandboxAttestationURL      = "http://sandbox/.well-known/tinfoil-attestation"
-	sandboxHostKeyID           = "host-ssh"
-	sandboxAgentInfo           = "tinfoil monitor web sandbox agent v1"
-	sandboxNameCharacters      = "abcdefghijklmnopqrstuvwxyz0123456789-_."
-	maxSandboxNameBytes        = 128
-	maxSandboxAttestationBytes = 32 << 20
-	maxSandboxReplyBytes       = 1 << 12
-	sandboxConnectTimeout      = 2 * time.Minute
-	// Formatting a new workspace can take minutes.
-	sandboxCommandTimeout = 10 * time.Minute
+	maxRelayBodyBytes        = 512 << 10
+	maxRelayOwnerReplyBytes  = 2 << 20
+	maxRelayAttestationBytes = 32 << 20
+	maxRelayContentType      = 256
+	relayHopTimeout          = 30 * time.Second
+	sandboxAttestationURL    = "http://sandbox/.well-known/tinfoil-attestation?nonce="
+	sandboxOwnerURL          = "http://sandbox/owner/rpc"
 )
 
-// Monitor is everything the sandbox package may use of the Monitor.
-type Monitor interface {
-	// IdentityMetadata is the stored integration data of an identity, or nil.
-	IdentityMetadata(name string) json.RawMessage
-	HostKey() ssh.Signer
-	// CheckIdentity reports whether AddIdentity would accept the identity, without changing policy.
-	CheckIdentity(name, key string, metadata json.RawMessage) error
-	AddIdentity(ctx context.Context, name, key string, metadata json.RawMessage) error
+var (
+	instancePattern = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
+	hex32Pattern    = regexp.MustCompile(`^[0-9a-fA-F]{64}$`)
+	errRelayInput   = errors.New("a relay needs a sandbox instance_id and either an attestation nonce or an EHBP owner request")
+)
+
+// RelayInput selects a sandbox boot by its measured instance and carries bytes Monitor cannot read.
+type RelayInput struct {
+	InstanceID string        `json:"instance_id"`
+	Target     string        `json:"target"`
+	Nonce      *string       `json:"nonce"`
+	Headers    *RelayHeaders `json:"headers"`
+	Body       string        `json:"body"`
 }
 
-// Verifier proves what a boot's attestation document endorses.
-type Verifier func(doc, nonce []byte, source string) (*Evidence, error)
-
-// Service holds the owner's open sandbox terminals by ID.
-type Service struct {
-	monitor  Monitor
-	forwards *frontdoor.Forwarder
-	verify   Verifier
-
-	mu     sync.Mutex
-	shells map[string]*shellSession
+// RelayHeaders are the only request headers an owner request carries to the sandbox.
+type RelayHeaders struct {
+	EncapsulatedKey string `json:"Ehbp-Encapsulated-Key"`
+	ContentType     string `json:"Content-Type"`
 }
 
-func New(m Monitor, forwards *frontdoor.Forwarder, verify Verifier) *Service {
-	return &Service{monitor: m, forwards: forwards, verify: verify}
+type RelayReply struct {
+	Status  int               `json:"status"`
+	Headers map[string]string `json:"headers"`
+	Body    string            `json:"body"`
 }
 
-// access selects one sandbox boot and holds the seed of its measured owner key.
-type access struct {
-	OwnerSeed []byte `json:"owner_seed"`
-	Boot
-}
-
-// Evidence is what verified attestation proves about one sandbox boot.
-type Evidence struct {
-	HostKey ssh.PublicKey
-	Expires time.Time
-}
-
-func (a access) validate(name string) error {
-	if name == "" || len(name) > maxSandboxNameBytes || strings.Trim(name, sandboxNameCharacters) != "" {
-		return fmt.Errorf("sandbox identity name must be 1-%d of %q", maxSandboxNameBytes, sandboxNameCharacters)
-	}
-	if len(a.OwnerSeed) != ed25519.SeedSize {
-		return fmt.Errorf("owner_seed must be %d bytes", ed25519.SeedSize)
-	}
-	return a.Boot.Validate()
-}
-
-// agentKey derives the sandbox's Monitor identity from its owner seed. The derivation is
-// specific to web enrollment, so repeating it keeps one identity and CLI keys never change.
-func (a access) agentKey() (ed25519.PrivateKey, ssh.PublicKey, error) {
-	seed, err := hkdf.Key(sha256.New, a.OwnerSeed, nil, sandboxAgentInfo, ed25519.SeedSize)
+// Relay sends one attestation or EHBP owner request over a sandbox's bootstrap route and
+// returns the response bytes unchanged. That route is unverified and grants no agent access.
+func Relay(ctx context.Context, forwards *frontdoor.Forwarder, in RelayInput) (RelayReply, error) {
+	request, limit, err := in.request()
 	if err != nil {
-		return nil, nil, err
+		return RelayReply{}, err
 	}
-	defer clear(seed)
-	private := ed25519.NewKeyFromSeed(seed)
-	public, err := ssh.NewPublicKey(private.Public())
-	return private, public, err
-}
-
-// connect attests the boot through its bootstrap route, then logs in with signer
-// over the route of the endorsed SSH host key.
-func (svc *Service) connect(ctx context.Context, boot Boot, signer ssh.Signer) (*ssh.Client, error) {
-	ctx, cancel := context.WithTimeout(ctx, sandboxConnectTimeout)
+	ctx, cancel := context.WithTimeout(ctx, relayHopTimeout)
 	defer cancel()
-	evidence, err := svc.attest(ctx, boot)
+	conn, err := Dial(forwards, bootstrapRoute(BootstrapUser+in.InstanceID), 443)
 	if err != nil {
-		return nil, err
+		return RelayReply{}, err
 	}
-	client, err := svc.login(ctx, evidence.HostKey, signer)
-	// Recheck freshness after login.
-	if err == nil && !time.Now().Before(evidence.Expires) {
-		client.Close()
-		err = errors.New("sandbox attestation expired during SSH login")
-	}
-	return client, err
-}
-
-// login logs in as the sandbox user over the route of its host key.
-func (svc *Service) login(ctx context.Context, hostKey ssh.PublicKey, signer ssh.Signer) (*ssh.Client, error) {
-	conn, err := Dial(svc.forwards, RouteName(hostKey), 22)
-	if err != nil {
-		return nil, fmt.Errorf("sandbox SSH: %w", err)
-	}
-	// SSH channels have no deadlines, so ending ctx closes a stalled handshake.
-	stop := context.AfterFunc(ctx, func() { conn.Close() })
-	c, channels, requests, err := ssh.NewClientConn(conn, sandboxLoginUser, &ssh.ClientConfig{
-		User: sandboxLoginUser, Auth: []ssh.AuthMethod{ssh.PublicKeys(signer)}, HostKeyCallback: ssh.FixedHostKey(hostKey),
-	})
-	if !stop() {
-		err = errors.Join(err, context.Cause(ctx))
-	}
-	if err != nil {
-		conn.Close()
-		return nil, fmt.Errorf("sandbox SSH login: %w", err)
-	}
-	return ssh.NewClient(c, channels, requests), nil
-}
-
-// attest fetches fresh evidence through the unverified bootstrap route. Only a
-// public nonce and the attestation cross it before verification pins the host key.
-func (svc *Service) attest(ctx context.Context, a Boot) (*Evidence, error) {
-	if svc.verify == nil {
-		return nil, errors.New("sandbox attestation is unavailable")
-	}
-	nonce, err := document.RandomNonce()
-	if err != nil {
-		return nil, err
-	}
-	transport := &http.Transport{DisableKeepAlives: true, DialContext: func(context.Context, string, string) (net.Conn, error) {
-		return Dial(svc.forwards, bootstrapRoute(BootstrapUser+a.InstanceID), 443)
+	defer conn.Close()
+	// The hop deadline also covers the dial, which cannot be canceled itself.
+	defer context.AfterFunc(ctx, func() { conn.Close() })()
+	transport := &http.Transport{DisableKeepAlives: true, DisableCompression: true, DialContext: func(context.Context, string, string) (net.Conn, error) {
+		return conn, nil
 	}}
-	defer transport.CloseIdleConnections()
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, sandboxAttestationURL+"?nonce="+hex.EncodeToString(nonce), nil)
+	response, err := transport.RoundTrip(request.WithContext(ctx))
 	if err != nil {
-		return nil, err
-	}
-	response, err := transport.RoundTrip(request)
-	if err != nil {
-		return nil, fmt.Errorf("sandbox attestation: %w", err)
+		return RelayReply{}, responseError{"sandbox relay: " + err.Error(), http.StatusBadGateway}
 	}
 	defer response.Body.Close()
-	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("sandbox attestation: %s", response.Status)
-	}
-	doc, err := io.ReadAll(io.LimitReader(response.Body, maxSandboxAttestationBytes+1))
-	if err == nil && len(doc) > maxSandboxAttestationBytes {
-		err = errors.New("attestation is too large")
+	body, err := io.ReadAll(io.LimitReader(response.Body, limit+1))
+	if err == nil && int64(len(body)) > limit {
+		err = errors.New("the response is too large")
 	}
 	if err != nil {
-		return nil, fmt.Errorf("sandbox attestation: %w", err)
+		return RelayReply{}, responseError{"sandbox relay: " + err.Error(), http.StatusBadGateway}
 	}
-	evidence, err := svc.verify(doc, nonce, a.Source)
-	if err != nil {
-		return nil, fmt.Errorf("verifying sandbox attestation: %w", err)
+	reply := RelayReply{Status: response.StatusCode, Headers: map[string]string{}, Body: base64.RawURLEncoding.EncodeToString(body)}
+	for _, name := range []string{"Content-Type", "Ehbp-Response-Nonce"} {
+		if value := response.Header.Get(name); value != "" {
+			reply.Headers[name] = value
+		}
 	}
-	if !time.Now().Before(evidence.Expires) {
-		return nil, errors.New("sandbox attestation has expired")
-	}
-	return evidence, nil
+	return reply, nil
 }
 
-type EnrollInput struct {
-	access
-	DiskKey    []byte `json:"disk_key"`
-	Initialize bool   `json:"initialize"`
-}
-
-const installSandboxMonitorCommand = `sudo -n sh -c '
-set -eu
-install -d -m 0750 -g sandbox /run/monitor
-umask 077
-cat > /run/monitor/identity
-printf "monitor %s\n" "$1" > /run/monitor/known_hosts
-printf "restrict,pty %s\n" "$1" > /run/monitor/authorized_keys
-chmod 0600 /run/monitor/identity /run/monitor/known_hosts /run/monitor/authorized_keys
-chown sandbox:sandbox /run/monitor/identity /run/monitor/known_hosts /run/monitor/authorized_keys
-if [ -d /run/systemd/system ]; then
-    systemctl restart monitor-network.service
-fi
-' sh`
-
-// Enroll registers the sandbox's agent identity once the boot attests, installs it
-// and unlocks the workspace over owner SSH, as the CLI does. Keys are cleared on return.
-func (svc *Service) Enroll(ctx context.Context, name string, in EnrollInput) error {
-	defer clear(in.OwnerSeed)
-	defer clear(in.DiskKey)
-	if err := in.validate(name); err != nil {
-		return err
+// request builds one of the two requests a relay may send, and the response bound for it.
+func (in RelayInput) request() (*http.Request, int64, error) {
+	if !instancePattern.MatchString(in.InstanceID) {
+		return nil, 0, errRelayInput
 	}
-	if len(in.DiskKey) != WorkspaceKeyBytes {
-		return fmt.Errorf("disk_key must be %d bytes", WorkspaceKeyBytes)
+	var request *http.Request
+	var limit int64
+	var err error
+	switch {
+	case in.Target == "attestation" && in.Nonce != nil && hex32Pattern.MatchString(*in.Nonce) && in.Headers == nil && in.Body == "":
+		request, err = http.NewRequest(http.MethodGet, sandboxAttestationURL+*in.Nonce, nil)
+		limit = maxRelayAttestationBytes
+	case in.Target == "owner" && in.Nonce == nil && in.Headers != nil && hex32Pattern.MatchString(in.Headers.EncapsulatedKey) &&
+		in.Headers.ContentType != "" && len(in.Headers.ContentType) <= maxRelayContentType &&
+		strings.IndexFunc(in.Headers.ContentType, func(r rune) bool { return r < 0x20 || r > 0x7e }) < 0:
+		body, decodeErr := base64.RawURLEncoding.Strict().DecodeString(in.Body)
+		if decodeErr != nil || base64.RawURLEncoding.EncodeToString(body) != in.Body || len(body) == 0 || len(body) > maxRelayBodyBytes {
+			return nil, 0, errRelayInput
+		}
+		request, err = http.NewRequest(http.MethodPost, sandboxOwnerURL, bytes.NewReader(body))
+		limit = maxRelayOwnerReplyBytes
+	default:
+		return nil, 0, errRelayInput
 	}
-	agent, public, err := in.agentKey()
 	if err != nil {
-		return err
+		return nil, 0, err
 	}
-	defer clear(agent)
-	key := strings.TrimSpace(string(ssh.MarshalAuthorizedKey(public)))
-	metadata, _ := json.Marshal(in.Boot)
-	if err := svc.monitor.CheckIdentity(name, key, metadata); err != nil {
-		return err
+	// An empty User-Agent is omitted, so the sandbox receives only these headers.
+	request.Header = http.Header{"User-Agent": {""}}
+	if in.Headers != nil {
+		request.Header.Set("Ehbp-Encapsulated-Key", in.Headers.EncapsulatedKey)
+		request.Header.Set("Content-Type", in.Headers.ContentType)
 	}
-	owner := ed25519.NewKeyFromSeed(in.OwnerSeed)
-	defer clear(owner)
-	signer, err := ssh.NewSignerFromKey(owner)
-	if err != nil {
-		return err
-	}
-	client, err := svc.connect(ctx, in.Boot, signer)
-	if err != nil {
-		return err
-	}
-	defer client.Close()
-	// Enroll before starting networking.
-	if err := svc.monitor.AddIdentity(ctx, name, key, metadata); err != nil {
-		return err
-	}
-	block, err := ssh.MarshalPrivateKey(agent, "")
-	if err != nil {
-		return err
-	}
-	private := pem.EncodeToMemory(block)
-	clear(block.Bytes)
-	defer clear(private)
-	ctx, cancel := context.WithTimeout(ctx, sandboxCommandTimeout)
-	defer cancel()
-	known := strings.TrimSpace(string(ssh.MarshalAuthorizedKey(svc.monitor.HostKey().PublicKey())))
-	if err := runCommand(ctx, client, installSandboxMonitorCommand+" '"+known+"'", private); err != nil {
-		return fmt.Errorf("install Monitor credentials: %w", err)
-	}
-	command := "/usr/local/bin/workspace-unlock"
-	if in.Initialize {
-		command += " --initialize"
-	}
-	// A previous request may have opened the disk before its reply was lost.
-	command = "if test -S /run/tinfoil/volumes/workspace/control.sock; then " + command + "; else findmnt -rn -M /mnt/disk -t ext4 -O rw >/dev/null; fi"
-	if err := runCommand(ctx, client, command, in.DiskKey); err != nil {
-		return fmt.Errorf("unlock workspace: %w", err)
-	}
-	return nil
-}
-
-// runCommand sends input on stdin and reports at most maxSandboxReplyBytes of stderr.
-func runCommand(ctx context.Context, client *ssh.Client, command string, input []byte) error {
-	// Closing the connection also ends a channel open the sandbox never answers.
-	stop := context.AfterFunc(ctx, func() { client.Close() })
-	defer stop()
-	session, err := client.NewSession()
-	if err != nil {
-		return errors.Join(err, context.Cause(ctx))
-	}
-	defer session.Close()
-	var reply limitedReply
-	session.Stdin, session.Stderr = bytes.NewReader(input), &reply
-	if err := session.Run(command); err != nil {
-		return fmt.Errorf("%w: %s", errors.Join(err, context.Cause(ctx)), strings.TrimSpace(strings.ToValidUTF8(string(reply), "")))
-	}
-	return nil
-}
-
-type limitedReply []byte
-
-func (b *limitedReply) Write(p []byte) (int, error) {
-	*b = append(*b, p[:min(len(p), maxSandboxReplyBytes-len(*b))]...)
-	return len(p), nil
+	return request, limit, nil
 }

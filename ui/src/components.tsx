@@ -651,7 +651,7 @@ const SHELL_MIN_WIDTH = 320;
 export type ShellTarget = {
   name: string;
   message: string;
-  client?: owner.OwnerApi;
+  open?: owner.ShellOpener;
 };
 export function ShellSplit(props: {
   shell?: ShellTarget;
@@ -680,7 +680,7 @@ export function ShellSplit(props: {
               }
             />
             <Show
-              when={current.client}
+              when={current.open}
               fallback={
                 <div class="dialog-body">
                   <h1>{current.name}</h1>
@@ -690,7 +690,7 @@ export function ShellSplit(props: {
               }
             >
               <SandboxTerminal
-                client={current.client!}
+                open={current.open!}
                 name={current.name}
                 onClose={props.onClose}
               />

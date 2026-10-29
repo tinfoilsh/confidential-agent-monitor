@@ -26,8 +26,9 @@ func RouteName(key ssh.PublicKey) string {
 	return strings.ToLower(base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(digest[:])) + routeSuffix
 }
 
-// bootstrapRoute names an unverified publisher by its claimed SSH user. Only
-// attestation is reachable this way; callers must verify it before sending secrets.
+// bootstrapRoute names an unverified publisher by its claimed SSH user. Only its port
+// 443 attestation and EHBP-sealed owner API are reachable this way; callers verify the
+// attestation and seal to its attested key, and the route grants no agent access.
 func bootstrapRoute(identity string) string {
 	digest := sha256.Sum256([]byte(identity))
 	return "bootstrap-" + strings.ToLower(base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(digest[:])) + routeSuffix
@@ -39,7 +40,7 @@ func ReservedRoute(host string) bool {
 }
 
 // Dial resolves sandbox destinations to their virtual loopback forwards.
-// Bootstrap aliases expose only attestation; key-derived names may use any port.
+// Bootstrap aliases expose only port 443; key-derived names may use any port.
 func Dial(forwards *frontdoor.Forwarder, host string, port uint32) (net.Conn, error) {
 	host = strings.TrimSuffix(strings.ToLower(host), ".")
 	if strings.HasPrefix(host, "bootstrap-") && port != 443 {
