@@ -127,8 +127,8 @@ export function sandboxClient(
       ),
   });
 
-  // A lost reply is retried as the same operation and time with a fresh nonce;
-  // the sandbox returns its recorded result instead of repeating the effect.
+  // A lost reply is retried at the same time with a fresh nonce; every sandbox
+  // effect is safe to repeat.
   async function call(
     method: "GET" | "POST",
     path: string,
@@ -199,8 +199,8 @@ export function sandboxClient(
         throw new Error("The sandbox answered for a different instance.");
       return status;
     },
-    post: (path: "/enroll" | "/relink", body: unknown, signal?: AbortSignal) =>
-      call("POST", path, body, "", signal) as Promise<SandboxStatus>,
+    enroll: (body: unknown, signal?: AbortSignal) =>
+      call("POST", "/enroll", body, "", signal) as Promise<SandboxStatus>,
     shell: (request: ShellRequest, signal?: AbortSignal) =>
       call(
         "POST",
@@ -298,7 +298,7 @@ export function connectPlan(
   hostKey: string,
   known: boolean,
   restore: boolean,
-): { monitor: boolean; sandbox?: "enroll" | "relink" } {
+): { monitor: boolean; sandbox: boolean } {
   if (status.agent_public_key && status.agent_public_key !== agent)
     throw new Error("This sandbox holds a different agent identity.");
   const initial = !status.agent_public_key && status.volume === "locked_blank";
@@ -309,11 +309,9 @@ export function connectPlan(
   return {
     monitor: !known,
     sandbox:
-      !status.agent_public_key || status.volume !== "unlocked"
-        ? "enroll"
-        : status.monitor_host_key !== hostKey
-          ? "relink"
-          : undefined,
+      !status.agent_public_key ||
+      status.volume !== "unlocked" ||
+      status.monitor_host_key !== hostKey,
   };
 }
 
@@ -358,9 +356,8 @@ export async function connectSandbox({
       { [row.name]: { key: agent, routes: false, restore } },
       signal,
     );
-  if (steps.sandbox === "enroll")
-    await sandbox.post(
-      "/enroll",
+  if (steps.sandbox)
+    await sandbox.enroll(
       {
         agent_seed: resource.agent_seed,
         monitor_host_key: hostKey,
@@ -370,8 +367,6 @@ export async function connectSandbox({
       },
       signal,
     );
-  else if (steps.sandbox === "relink")
-    await sandbox.post("/relink", { monitor_host_key: hostKey }, signal);
   return sandbox;
 }
 
@@ -412,9 +407,13 @@ export async function relinkSandboxes(monitor: OpenedMonitor) {
         status.agent_public_key === agent &&
         status.monitor_host_key !== hostKey
       )
-        await sandbox.post(
-          "/relink",
-          { monitor_host_key: hostKey },
+        await sandbox.enroll(
+          {
+            agent_seed: resource.agent_seed,
+            monitor_host_key: hostKey,
+            disk_key: resource.storage_key,
+            allow_initialize: false,
+          },
           monitor.scope.signal,
         );
     } catch (cause) {
