@@ -1,4 +1,5 @@
 import type { PasskeyKeyManager } from "@tinfoilsh/passkey-kit";
+import { useParams } from "@solidjs/router";
 import { Show, createEffect, createSignal, on, onCleanup } from "solid-js";
 import App from "../App";
 import { Icon } from "../components";
@@ -30,7 +31,7 @@ export default function Monitor(props: {
   attest?: AttestMonitor;
 }) {
   const manager = props.manager ?? keys.passkeys();
-  const id = decodeURIComponent(location.pathname.split("/")[2] ?? "");
+  const id = decodeURIComponent(useParams().id ?? "");
   const [error, setError] = createSignal("");
   const [notice, setNotice] = createSignal("");
   const [busy, setBusy] = createSignal(false);
@@ -157,7 +158,7 @@ export default function Monitor(props: {
                     <Show
                       when={UUID.test(id)}
                       fallback={
-                        <a class="button primary" href="/">
+                        <a class="button primary" href="/" link>
                           Choose a Monitor
                         </a>
                       }

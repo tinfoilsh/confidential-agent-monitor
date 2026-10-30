@@ -182,6 +182,7 @@ function Shell() {
   createEffect(() => {
     document.documentElement.dataset.theme =
       theme() === "system" ? (dark() ? "dark" : "light") : theme();
+    onCleanup(() => delete document.documentElement.dataset.theme);
     localStorage.setItem("monitor-theme", theme());
   });
   return (

@@ -33,6 +33,7 @@ const MANUAL_WRAPPED_CHARS = 86;
 const MAX_KEY_SYNC_PAYLOAD = 8192;
 const OWNER_REQUEST_CONTEXT = "tinfoil owner request v2\0";
 const CONFIRM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+export const CONFIRMATION_CODE_LENGTH = 6;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const USER = /^user_[A-Za-z0-9]{1,64}$/;
 const ACCOUNT = /^(personal|org_[A-Za-z0-9]{1,64})$/;

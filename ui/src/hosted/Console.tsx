@@ -38,6 +38,19 @@ import "./console.css";
 
 const START = "tinfoil.start";
 const SSH_ED25519_PREFIX = "AAAAC3NzaC1lZDI1NTE5AAAAI";
+// Mirrors the dashboard's container state labels.
+const STATUS_LABELS: Record<string, string> = {
+  created: "Provisioning",
+  pending: "Queued",
+  started: "Booting",
+};
+const BUSY_STATUSES = [
+  "created",
+  "pending",
+  "deploying",
+  "started",
+  "stopping",
+];
 
 // The /start fragment is read once, kept for this tab across sign-in and removed from the URL.
 export function capture() {
@@ -307,33 +320,42 @@ function Inventory(props: { session: Session }) {
       </Show>
       <For each={monitors()}>
         {(monitor) => (
-          <div class="start-key-choice">
-            <Icon name="rules" />
+          <a
+            class="start-key-choice"
+            link
+            href={
+              monitor.owner_key_mode === "tmk"
+                ? `/monitor/${monitor.id}`
+                : undefined
+            }
+          >
             <div>
-              <h2>{monitor.name}</h2>
+              <h2>
+                {monitor.name}
+                <span
+                  class="start-status"
+                  classList={{ busy: BUSY_STATUSES.includes(monitor.status) }}
+                  data-status={monitor.status}
+                >
+                  {STATUS_LABELS[monitor.status] ?? monitor.status}
+                </span>
+              </h2>
               <p>
-                {monitor.status}
-                {sandboxes(monitor).length
-                  ? ` · ${sandboxes(monitor)
-                      .map((s) => s.name)
-                      .join(", ")}`
-                  : ""}
+                {sandboxes(monitor)
+                  .map((s) => s.name)
+                  .join(", ")}
               </p>
-              <Show
-                when={monitor.owner_key_mode === "tmk"}
-                fallback={
-                  <p>
-                    Open with the CLI:{" "}
-                    <code>tinfoil monitor open {monitor.name}</code>
-                  </p>
-                }
-              >
-                <a class="button" href={`/monitor/${monitor.id}`}>
-                  Open
-                </a>
+              <Show when={monitor.owner_key_mode !== "tmk"}>
+                <p>
+                  Open with the CLI:{" "}
+                  <code>tinfoil monitor open {monitor.name}</code>
+                </p>
               </Show>
             </div>
-          </div>
+            <Show when={monitor.owner_key_mode === "tmk"}>
+              <Icon name="arrow" />
+            </Show>
+          </a>
         )}
       </For>
     </nav>
@@ -437,7 +459,7 @@ export function Header(props: { session: Session }) {
   };
   return (
     <header class="start-header">
-      <a href="/" class="start-brand" aria-label="Tinfoil home">
+      <a href="/" class="start-brand" aria-label="Tinfoil home" link>
         <img src="/icons/tinfoil.svg" alt="" />
         <span>Tinfoil</span>
       </a>
@@ -525,11 +547,8 @@ export default function Console(props: {
   return (
     <div class="start-page">
       <Header session={props.session} />
-      <main class="start-welcome">
-        <span class="start-mark">
-          <Icon name="sandboxes" />
-        </span>
-        <h1>Your sandboxes</h1>
+      <main class="start-welcome start-home">
+        <h1>{props.session.user() ? "Welcome back" : "Welcome to Tinfoil"}</h1>
         <Show
           when={props.session.user()}
           fallback={

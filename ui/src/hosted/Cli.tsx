@@ -1,10 +1,11 @@
 import { sha256 } from "@noble/hashes/sha2.js";
 import type { PasskeyKeyManager } from "@tinfoilsh/passkey-kit";
-import { Match, Show, Switch, createSignal } from "solid-js";
+import { For, Match, Show, Switch, createSignal } from "solid-js";
 import { Icon } from "../components";
 import {
   b64u,
   canonicalKeySyncRequest,
+  CONFIRMATION_CODE_LENGTH,
   confirmationCode,
   confirmationCodeMatches,
   keySyncCallbackURL,
@@ -199,7 +200,7 @@ export default function Cli(props: {
         <span class="start-mark">
           <Icon name="devices" />
         </span>
-        <h1>Sync your keys to the Tinfoil CLI</h1>
+        <h1>Sync your CLI</h1>
         <Show when={error()}>
           <p class="start-notice" role="alert">
             {error()}
@@ -207,10 +208,7 @@ export default function Cli(props: {
         </Show>
         <Switch>
           <Match when={!props.session.user()}>
-            <p>
-              Your CLI is already signed in. Sign in here with the same user to
-              unlock and sync your keys.
-            </p>
+            <p>Sign in with the same account as your CLI.</p>
             <button class="primary" onClick={() => void props.session.signIn()}>
               Sign in
             </button>
@@ -232,7 +230,7 @@ export default function Cli(props: {
                 Try again
               </button>
             </Show>
-            <a class="button" href="/">
+            <a class="button" href="/" link>
               Open your sandboxes
             </a>
           </Match>
@@ -244,41 +242,65 @@ export default function Cli(props: {
           </Match>
           <Match when={ready()}>
             <p>Unlock your keys so the CLI can open your sandboxes.</p>
-            <KeyGate session={props.session} manager={manager}>
-              <button
-                class="primary"
-                disabled={busy()}
-                onClick={() => void finish()}
-              >
-                Send keys to the CLI
-              </button>
-            </KeyGate>
+            <section class="start-monitors" aria-label="Your keys">
+              <KeyGate session={props.session} manager={manager}>
+                <button
+                  class="primary"
+                  disabled={busy()}
+                  onClick={() => void finish()}
+                >
+                  Send keys to the CLI
+                </button>
+              </KeyGate>
+            </section>
           </Match>
           <Match when={profile && live()}>
-            <p>
-              Signed in as <strong>{props.session.user()!.label}</strong>. Type
-              the key sync code shown in your terminal.
-            </p>
-            <label class="start-help">
-              Confirmation code
-              <input
-                autocomplete="off"
-                spellcheck={false}
-                value={typed()}
-                onInput={(event) => setTyped(event.currentTarget.value)}
-              />
-            </label>
-            <button
-              class="primary"
-              disabled={busy()}
-              onClick={() => void confirm()}
+            <p>Type the code shown in your terminal.</p>
+            <form
+              class="start-code"
+              onSubmit={(event) => {
+                event.preventDefault();
+                void confirm();
+              }}
             >
-              Continue
-            </button>
-            <p>
-              You can close this page to skip syncing keys. Your CLI will stay
-              signed in.
-            </p>
+              <label class="start-code-boxes">
+                <input
+                  aria-label="Confirmation code"
+                  autocomplete="one-time-code"
+                  autocapitalize="characters"
+                  spellcheck={false}
+                  value={typed()}
+                  onInput={(event) => {
+                    const input = event.currentTarget;
+                    input.value = input.value
+                      .toUpperCase()
+                      .replace(/[^A-Z]/g, "")
+                      .slice(0, CONFIRMATION_CODE_LENGTH);
+                    setTyped(input.value);
+                  }}
+                />
+                <For each={Array.from({ length: CONFIRMATION_CODE_LENGTH })}>
+                  {(_, i) => (
+                    <span
+                      aria-hidden="true"
+                      classList={{
+                        active:
+                          i() ===
+                          Math.min(
+                            typed().length,
+                            CONFIRMATION_CODE_LENGTH - 1,
+                          ),
+                      }}
+                    >
+                      {typed()[i()]}
+                    </span>
+                  )}
+                </For>
+              </label>
+              <button class="primary" disabled={busy()}>
+                Continue
+              </button>
+            </form>
           </Match>
           <Match when={!error()}>
             <p class="start-notice" role="alert">
@@ -288,6 +310,9 @@ export default function Cli(props: {
           </Match>
         </Switch>
       </main>
+      <footer class="start-footer">
+        <Icon name="rules" /> Privacy by design.
+      </footer>
     </div>
   );
 }

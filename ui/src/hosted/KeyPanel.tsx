@@ -439,8 +439,7 @@ export function RecoveryMethods(props: {
       download(file.text, file.filename, "text/plain");
     });
   return (
-    <section class="start-monitors" aria-label="Recovery methods">
-      <p class="start-eyebrow">Recovery methods</p>
+    <>
       <For each={state()?.recovery ?? []}>
         {(r) => (
           <div class="start-key-choice">
@@ -495,7 +494,7 @@ export function RecoveryMethods(props: {
           and the old file stops working.
         </p>
       </Show>
-    </section>
+    </>
   );
 }
 
