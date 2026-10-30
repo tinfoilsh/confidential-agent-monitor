@@ -89,6 +89,9 @@
   width: min(360px, 100%);
   margin-top: 16px;
 }
+.start-monitors > .start-eyebrow + .start-help {
+  margin: 0;
+}
 .start-footer {
   color: var(--muted);
   font-size: 12px;
@@ -169,6 +172,7 @@ dialog.start-dialog {
 }
 .start-key-choice {
   display: flex;
+  text-align: left;
   align-items: flex-start;
   gap: 12px;
   margin: 0 0 24px;
@@ -202,6 +206,15 @@ dialog.start-dialog {
 }
 .start-download {
   margin-bottom: 12px;
+}
+.start-file {
+  display: none;
+}
+button.start-continue.danger,
+button.start-continue.danger:hover:not(:disabled) {
+  border-color: transparent;
+  background: var(--bad);
+  color: var(--on-primary);
 }
 .start-alternative {
   display: flex;
@@ -268,14 +281,6 @@ dialog.start-dialog {
   line-height: 1.65;
   overflow-wrap: anywhere;
   text-wrap: pretty;
-}
-.monitor-welcome .start-help {
-  display: grid;
-  gap: 8px;
-  width: min(360px, 100%);
-  margin: 0;
-  color: var(--muted);
-  text-align: left;
 }
 .monitor-actions {
   display: flex;

@@ -552,10 +552,13 @@ export default function Console(props: {
               </p>
             )}
           </Show>
-          <KeyGate session={props.session} manager={manager}>
-            <Cleanup session={props.session} />
-            <RecoveryMethods session={props.session} manager={manager} />
-          </KeyGate>
+          <section class="start-monitors" aria-label="Your keys">
+            <p class="start-eyebrow">Your keys</p>
+            <KeyGate session={props.session} manager={manager}>
+              <Cleanup session={props.session} />
+              <RecoveryMethods session={props.session} manager={manager} />
+            </KeyGate>
+          </section>
         </Show>
       </main>
       <footer class="start-footer">

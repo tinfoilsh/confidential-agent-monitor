@@ -15,7 +15,9 @@ document.title =
       : "Get started · Tinfoil";
 const root = document.getElementById("root")!;
 // A new launch fragment in this tab is captured by a fresh load, like the first.
-addEventListener("hashchange", () => location.hash && location.reload());
+// A Monitor's own pages navigate by fragment, so they never reload.
+if (route !== "monitor")
+  addEventListener("hashchange", () => location.hash && location.reload());
 
 async function start() {
   const problem = profileError();

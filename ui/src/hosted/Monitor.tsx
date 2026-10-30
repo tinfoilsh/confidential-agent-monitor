@@ -46,6 +46,16 @@ export default function Monitor(props: {
     props.session
       .inventory()
       .value?.find((r) => r.id === id && r.repo === MONITOR_REPO);
+  // Unlocking opens the Monitor; after a failure, opening is the owner's retry.
+  let opening = true;
+  createEffect(
+    on([props.session.unlocked, row], ([unlocked, found]) => {
+      if (opening && unlocked && found && !session()) {
+        opening = false;
+        void open();
+      }
+    }),
+  );
 
   const open = async () => {
     if (busy()) return;
@@ -149,29 +159,31 @@ export default function Monitor(props: {
                   </div>
                 }
               >
-                <KeyGate session={props.session} manager={manager}>
-                  <Show when={props.session.inventory().value && !row()}>
-                    <p class="start-notice" role="alert">
-                      This Monitor is not in the selected account. Switch
-                      accounts or choose another Monitor.
-                    </p>
-                  </Show>
-                  <div class="monitor-actions">
-                    <button
-                      class="primary"
-                      disabled={busy() || !row()}
-                      aria-busy={busy()}
-                      onClick={() => void open()}
-                    >
-                      {busy() ? "Verifying and opening…" : "Open Monitor"}
-                    </button>
-                    <Show when={busy()}>
-                      <button class="link" onClick={cancel}>
-                        Cancel
-                      </button>
+                <section class="start-monitors" aria-label="Your keys">
+                  <KeyGate session={props.session} manager={manager}>
+                    <Show when={props.session.inventory().value && !row()}>
+                      <p class="start-notice" role="alert">
+                        This Monitor is not in the selected account. Switch
+                        accounts or choose another Monitor.
+                      </p>
                     </Show>
-                  </div>
-                </KeyGate>
+                    <div class="monitor-actions">
+                      <button
+                        class="primary"
+                        disabled={busy() || !row()}
+                        aria-busy={busy()}
+                        onClick={() => void open()}
+                      >
+                        {busy() ? "Verifying and opening…" : "Open Monitor"}
+                      </button>
+                      <Show when={busy()}>
+                        <button class="link" onClick={cancel}>
+                          Cancel
+                        </button>
+                      </Show>
+                    </div>
+                  </KeyGate>
+                </section>
               </Show>
             </main>
           </div>

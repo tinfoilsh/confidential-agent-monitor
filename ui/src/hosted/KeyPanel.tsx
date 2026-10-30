@@ -254,6 +254,8 @@ export function UnlockKeys(props: {
   const hasPasskey = () => state().recovery.some((r) => r.type === "passkey");
   const [noPasskey, setNoPasskey] = createSignal(false);
   const [confirming, setConfirming] = createSignal(false);
+  const usePasskey = () => hasPasskey() && !noPasskey();
+  let picker!: HTMLInputElement;
   const unlock = (
     task: (
       state: keys.KeyState,
@@ -317,33 +319,47 @@ export function UnlockKeys(props: {
           </>
         }
       >
+        <div class="start-key-choice">
+          <Icon name="rules" />
+          <div>
+            <h2>Unlock your keys</h2>
+            <p>
+              {usePasskey()
+                ? "Use your passkey to open your sandbox keys in this browser."
+                : "Choose the recovery key file you saved when you set up your keys."}
+            </p>
+          </div>
+        </div>
         <Show
-          when={hasPasskey() && !noPasskey()}
+          when={usePasskey()}
           fallback={
             <>
-              <label class="start-help">
-                Recovery key file
-                <input
-                  type="file"
-                  accept=".txt,text/plain"
-                  disabled={action.busy()}
-                  onChange={(event) => {
-                    const file = event.currentTarget.files?.[0];
-                    if (file)
-                      void unlock(async (current, user) => {
-                        if (file.size > MAX_RECOVERY_FILE_BYTES)
-                          throw new Error(
-                            "This file is too large to be a recovery key.",
-                          );
-                        return keys.unlockFile(
-                          await file.text(),
-                          current,
-                          user,
+              <input
+                ref={picker}
+                class="start-file"
+                type="file"
+                accept=".txt,text/plain"
+                onChange={(event) => {
+                  const file = event.currentTarget.files?.[0];
+                  event.currentTarget.value = "";
+                  if (file)
+                    void unlock(async (current, user) => {
+                      if (file.size > MAX_RECOVERY_FILE_BYTES)
+                        throw new Error(
+                          "This file is too large to be a recovery key.",
                         );
-                      });
-                  }}
-                />
-              </label>
+                      return keys.unlockFile(await file.text(), current, user);
+                    });
+                }}
+              />
+              <button
+                class="primary start-continue"
+                disabled={action.busy()}
+                aria-busy={action.busy()}
+                onClick={() => picker.click()}
+              >
+                {action.busy() ? "Unlocking…" : "Choose recovery key file"}
+              </button>
               <p class="start-help">
                 Lost your recovery key?{" "}
                 <button
