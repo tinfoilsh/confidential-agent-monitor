@@ -23,11 +23,6 @@ jobs:
     outputs:
       digest: ${{ steps.push.outputs.digest }}
     steps:
-      - name: Require public image provenance
-        if: github.event.repository.visibility != 'public'
-        run: |
-          echo "::error::Make the repository public before building release image provenance."
-          exit 1
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           persist-credentials: false
@@ -69,11 +64,22 @@ jobs:
           docker push "$IMAGE"
           ref=$(docker image inspect --format '{{index .RepoDigests 0}}' "$IMAGE")
           echo "digest=${ref##*@}" >> "$GITHUB_OUTPUT"
+      # actions/attest signs a non-public repository's attestations with GitHub's Sigstore, which clients do not trust.
       - name: Attest the pushed image
-        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
-        with:
-          subject-name: ghcr.io/${{ github.repository }}
-          subject-digest: ${{ steps.push.outputs.digest }}
+        working-directory: ${{ runner.temp }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IMAGE: ghcr.io/${{ github.repository }}
+          DIGEST: ${{ steps.push.outputs.digest }}
+        run: |
+          npm install --no-save --ignore-scripts @actions/attest@3.2.0
+          node --input-type=module -e '
+            import { attestProvenance } from "@actions/attest";
+            await attestProvenance({
+              subjects: [{ name: process.env.IMAGE, digest: { sha256: process.env.DIGEST.slice("sha256:".length) } }],
+              token: process.env.GH_TOKEN,
+              sigstore: "public-good",
+            });'
 
   prepare-release:
     needs: build
