@@ -48,30 +48,47 @@ function useAction(session: Session, manager: PasskeyKeyManager) {
   return { busy, error, run };
 }
 
-export function RecoveryDownload(props: { file: keys.RecoveryFile }) {
+// With no passkey yet, the file is the only way back in, so Continue waits for it.
+export function RecoveryDownload(props: {
+  file: keys.RecoveryFile;
+  onContinue?: () => void;
+}) {
   const [saved, setSaved] = createSignal(false);
   return (
-    <div class="start-key-choice">
-      <Icon name="devices" />
-      <div>
-        <h2>Save your recovery key</h2>
-        <p>
-          It opens your sandboxes if you lose your passkey or switch browsers.
-          This browser keeps a copy until you sign out.
-        </p>
-        <button
-          class="start-download"
-          classList={{ primary: !saved() }}
-          onClick={() => {
-            download(props.file.text, props.file.filename, "text/plain");
-            setSaved(true);
-          }}
-        >
-          <Icon name="download" />{" "}
-          {saved() ? "Download recovery key again" : "Download recovery key"}
-        </button>
+    <>
+      <div class="start-key-choice">
+        <Icon name="devices" />
+        <div>
+          <h2>Save your recovery key</h2>
+          <p>
+            It opens your sandboxes after you sign out or switch browsers. This
+            browser keeps a copy only until you sign out.
+          </p>
+          <button
+            class="start-download"
+            classList={{ primary: !saved() }}
+            onClick={() => {
+              download(props.file.text, props.file.filename, "text/plain");
+              setSaved(true);
+            }}
+          >
+            <Icon name="download" />{" "}
+            {saved() ? "Download recovery key again" : "Download recovery key"}
+          </button>
+        </div>
       </div>
-    </div>
+      <Show when={props.onContinue}>
+        {(next) => (
+          <button
+            class="primary start-continue"
+            disabled={!saved()}
+            onClick={() => next()()}
+          >
+            Continue <Icon name="arrow" />
+          </button>
+        )}
+      </Show>
+    </>
   );
 }
 
@@ -108,10 +125,10 @@ export function SetupKeys(props: {
       <div class="start-key-choice">
         <Icon name="rules" />
         <div>
-          <h2>Protect your sandbox keys</h2>
+          <h2>A passkey makes it easy</h2>
           <p>
-            Your keys are encrypted in this browser. Use a passkey or a recovery
-            key file to open them anywhere.
+            Use your fingerprint, face, screen lock, or a security key to open
+            your sandbox keys on any device.
           </p>
         </div>
       </div>
@@ -126,16 +143,95 @@ export function SetupKeys(props: {
         aria-busy={action.busy()}
         onClick={() => void setup("passkey")}
       >
-        {action.busy() ? "Follow your device's prompt…" : "Use a passkey"}
+        {action.busy() ? (
+          "Follow your device's prompt…"
+        ) : (
+          <>
+            Create a passkey <Icon name="arrow" />
+          </>
+        )}
       </button>
       <button
         class="link start-alternative"
         disabled={action.busy()}
         onClick={() => void setup("manual")}
       >
-        Use a recovery key file instead
+        Use a recovery key instead
       </button>
+      <PromptHint busy={action.busy()} />
     </>
+  );
+}
+
+function PromptHint(props: { busy: boolean }) {
+  return (
+    <Show when={props.busy}>
+      <p class="start-help" role="status">
+        Your browser may ask you to confirm twice. A security key needs a second
+        touch.
+      </p>
+    </Show>
+  );
+}
+
+const addPasskey = (
+  session: Session,
+  manager: PasskeyKeyManager,
+  action: ReturnType<typeof useAction>,
+) =>
+  action.run(async (scope, signal) => {
+    const { unlocked } = await keys.addRecovery({
+      api: scope.api,
+      manager,
+      unlocked: scope.unlocked()!,
+      method: "passkey",
+      signal,
+      fence: await scope.fence,
+    });
+    await scope.setUnlocked(unlocked);
+    await session.refresh();
+  });
+
+// Keys opened only by a recovery key are offered a passkey wherever they are used.
+export function AddPasskey(props: {
+  session: Session;
+  manager: PasskeyKeyManager;
+}) {
+  const action = useAction(props.session, props.manager);
+  return (
+    <Show
+      when={
+        !props.session
+          .keyState()
+          .value?.recovery.some((r) => r.type === "passkey")
+      }
+    >
+      <div class="start-key-choice">
+        <Icon name="rules" />
+        <div>
+          <h2>Add a passkey</h2>
+          <p>
+            Your keys open only with your recovery key. A passkey opens them on
+            any device with your fingerprint, face, screen lock, or a security
+            key.
+          </p>
+        </div>
+      </div>
+      <Show when={action.error()}>
+        <p class="start-notice" role="alert">
+          {action.error()}
+        </p>
+      </Show>
+      <button
+        class="start-download"
+        disabled={action.busy()}
+        aria-busy={action.busy()}
+        onClick={() => void addPasskey(props.session, props.manager, action)}
+      >
+        {action.busy() ? "Follow your device's prompt…" : "Add a passkey"}
+      </button>
+      <PromptHint busy={action.busy()} />
+    </Show>
   );
 }
 
@@ -216,25 +312,31 @@ export function RecoveryMethods(props: {
   manager: PasskeyKeyManager;
 }) {
   const action = useAction(props.session, props.manager);
-  const [file, setFile] = createSignal<keys.RecoveryFile>();
   const state = () => props.session.keyState().value;
   const user = () => props.session.user()!.id;
   const [saved] = createResource(state, (s) =>
     keys.savedRecoveryFile(s, user()),
   );
-  const add = (method: keys.RecoveryMethod) =>
+  const replaces = () =>
+    !saved() && !!state()?.recovery.some((r) => r.type === "manual");
+  // Saves this browser's recovery key, or makes one that replaces any other.
+  const save = () =>
     action.run(async (scope, signal) => {
-      const result = await keys.addRecovery({
-        api: scope.api,
-        manager: props.manager,
-        unlocked: scope.unlocked()!,
-        method,
-        signal,
-        fence: await scope.fence,
-      });
-      await scope.setUnlocked(result.unlocked);
-      setFile(result.file);
-      await props.session.refresh();
+      let file = saved.error ? undefined : saved();
+      if (!file) {
+        const result = await keys.addRecovery({
+          api: scope.api,
+          manager: props.manager,
+          unlocked: scope.unlocked()!,
+          method: "manual",
+          signal,
+          fence: await scope.fence,
+        });
+        await scope.setUnlocked(result.unlocked);
+        file = result.file!;
+        await props.session.refresh();
+      }
+      download(file.text, file.filename, "text/plain");
     });
   return (
     <section class="start-monitors" aria-label="Recovery methods">
@@ -244,7 +346,7 @@ export function RecoveryMethods(props: {
           <div class="start-key-choice">
             <Icon name={r.type === "passkey" ? "rules" : "devices"} />
             <div>
-              <h2>{r.type === "passkey" ? "Passkey" : "Recovery key file"}</h2>
+              <h2>{r.type === "passkey" ? "Passkey" : "Recovery key"}</h2>
               <p>Added {new Date(r.created_at).toLocaleDateString()}</p>
             </div>
             <Show when={(state()?.recovery.length ?? 0) > 1}>
@@ -276,17 +378,23 @@ export function RecoveryMethods(props: {
           {action.error() || message(saved.error)}
         </p>
       </Show>
-      <Show when={file() ?? (saved.error ? undefined : saved())}>
-        {(recovery) => <RecoveryDownload file={recovery()} />}
-      </Show>
       <div class="monitor-actions">
-        <button disabled={action.busy()} onClick={() => void add("passkey")}>
+        <button
+          disabled={action.busy()}
+          onClick={() => void addPasskey(props.session, props.manager, action)}
+        >
           Add a passkey
         </button>
-        <button disabled={action.busy()} onClick={() => void add("manual")}>
-          Add a recovery key file
+        <button disabled={action.busy()} onClick={() => void save()}>
+          <Icon name="download" /> Save recovery key
         </button>
       </div>
+      <Show when={replaces()}>
+        <p class="start-help">
+          This browser doesn't have your recovery key, so saving makes a new one
+          and the old file stops working.
+        </p>
+      </Show>
     </section>
   );
 }
@@ -335,15 +443,10 @@ export function KeyGate(props: {
               }
             >
               {(recovery) => (
-                <>
-                  <RecoveryDownload file={recovery()} />
-                  <button
-                    class="primary start-continue"
-                    onClick={() => setFile()}
-                  >
-                    Continue
-                  </button>
-                </>
+                <RecoveryDownload
+                  file={recovery()}
+                  onContinue={() => setFile()}
+                />
               )}
             </Show>
           )}

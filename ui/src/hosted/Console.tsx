@@ -19,6 +19,7 @@ import {
 } from "./contract";
 import * as keys from "./keys";
 import {
+  AddPasskey,
   KeyGate,
   RecoveryDownload,
   RecoveryMethods,
@@ -154,17 +155,34 @@ function Start(props: {
   const state = () => props.session.keyState().value;
   return (
     <>
-      <p class="start-eyebrow">Sandbox keys</p>
+      <span class="start-mark">
+        <Icon name={file() ? "devices" : "sandboxes"} />
+      </span>
+      <p class="start-eyebrow">Let's get you started</p>
       <h1 id="start-title">
-        {r.mode === "tmk"
-          ? "Create keys for your sandbox"
-          : "Add your CLI keys"}
+        {r.mode === "umk"
+          ? "Add your CLI keys"
+          : file()
+            ? "Keep your key close."
+            : "Welcome to Tinfoil."}
       </h1>
       <p id="start-description">
-        {r.mode === "tmk"
-          ? `New keys for your ${r.roles.join(" and ")} are saved, encrypted, with your account. Your dashboard receives only their public keys.`
-          : "Paste the public keys made by the Tinfoil CLI. Their private keys stay on your computer, so this sandbox is reached with the CLI only."}
+        {r.mode === "umk"
+          ? "Paste the public keys made by the Tinfoil CLI. Their private keys stay on your computer, so this sandbox is reached with the CLI only."
+          : file()
+            ? "Save your recovery key before you head to your sandboxes."
+            : `First, we'll create keys for your ${r.roles.join(" and ")}. They're encrypted with your account, and your dashboard only sees their public keys.`}
       </p>
+      <Show when={r.mode === "tmk" && !file()}>
+        <ol class="start-steps" aria-label="Getting started">
+          <li aria-current="step">
+            <span>1</span> Set up your keys
+          </li>
+          <li>
+            <span>2</span> Create your sandbox
+          </li>
+        </ol>
+      </Show>
       <Show when={error()}>
         <p class="start-notice" role="alert">
           {error()}
@@ -186,7 +204,7 @@ function Start(props: {
         <Match when={r.mode === "umk"}>
           <For each={r.roles}>
             {(role) => (
-              <label class="start-help">
+              <label class="start-field">
                 {role === "monitor" ? "Monitor" : "Sandbox"} owner public key
                 <textarea
                   rows={2}
@@ -212,15 +230,10 @@ function Start(props: {
         </Match>
         <Match when={file()}>
           {(recovery) => (
-            <>
-              <RecoveryDownload file={recovery()} />
-              <button
-                class="primary start-continue"
-                onClick={() => finishTMK(created!)}
-              >
-                Continue to dashboard
-              </button>
-            </>
+            <RecoveryDownload
+              file={recovery()}
+              onContinue={() => finishTMK(created!)}
+            />
           )}
         </Match>
         <Match when={state() && !state()!.dek_id}>
@@ -235,6 +248,7 @@ function Start(props: {
           <UnlockKeys session={props.session} manager={props.manager} />
         </Match>
         <Match when={props.session.unlocked()}>
+          <AddPasskey session={props.session} manager={props.manager} />
           <button
             class="primary start-continue"
             disabled={busy()}

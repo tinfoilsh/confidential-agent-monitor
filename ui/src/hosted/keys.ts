@@ -863,6 +863,7 @@ export async function addRecovery({
     signal,
   );
   let u = unlocked;
+  const replaced: string[] = [];
   const revision = await commitRecovery(
     api,
     unlocked.context,
@@ -871,14 +872,21 @@ export async function addRecovery({
     fence,
     async (s) => {
       u = await reopen(s, unlocked);
+      // A new recovery key replaces the old one, so there is only ever one.
+      const kept = s.recovery.filter(
+        (r) => method === "passkey" || r.type !== "manual",
+      );
+      for (const r of s.recovery)
+        if (!kept.includes(r)) replaced.push(r.recovery_id);
       return {
         dek_id: u.context.dek_id,
         encrypted_mk: s.encrypted_mk!,
-        recovery: [...s.recovery, input],
+        recovery: [...kept, input],
       };
     },
     signal,
   );
+  await forgetKEKs(unlocked.context, replaced);
   return {
     unlocked: { ...u, revision },
     file: kek && recoveryFile(kek, unlocked.context.dek_id, input.recovery_id),
@@ -908,12 +916,19 @@ export async function removeRecovery(
     },
     signal,
   );
-  // The removed recovery's wrapped DEK is gone, so a KEK left behind opens nothing.
-  await transact("readwrite", (store) =>
-    request(store.delete(manualKEKStorageKey(unlocked.context, recovery_id))),
-  ).catch(() => {});
+  await forgetKEKs(unlocked.context, [recovery_id]);
   return { ...u, revision };
 }
+
+// A removed recovery's wrapped DEK is gone, so a KEK left behind opens nothing.
+const forgetKEKs = (context: MKContext, recovery_ids: string[]) =>
+  transact("readwrite", (store) =>
+    Promise.all(
+      recovery_ids.map((id) =>
+        request(store.delete(manualKEKStorageKey(context, id))),
+      ),
+    ),
+  ).catch(() => {});
 
 const contextOf = (state: KeyState, user_id: string): MKContext => {
   if (!state.dek_id)
@@ -1037,17 +1052,14 @@ export async function registerUMK(
 
 // --- messages -----------------------------------------------------------------
 
-export const unavailablePasskey = (cause: unknown) =>
-  cause instanceof PasskeyKeyError &&
-  (cause.category === "unsupported" || cause.category === "cancelled");
-
 export function passkeyMessage(cause: unknown): string {
   if (cause instanceof PasskeyKeyError) {
     if (cause.category === "timeout")
       return "That took a little too long. Try your passkey again, or use a recovery key.";
     if (cause.category === "operation_in_progress")
       return "There's already a passkey prompt open. Finish that one, then try again.";
-    if (cause.category === "cancelled") return "The passkey prompt was closed.";
+    if (cause.category === "cancelled")
+      return "The passkey prompt was closed or your device declined it. Try again, or use a recovery key.";
   }
   return cause instanceof Error
     ? cause.message
