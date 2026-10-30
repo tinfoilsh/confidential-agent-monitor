@@ -248,15 +248,25 @@ function Start(props: {
           <UnlockKeys session={props.session} manager={props.manager} />
         </Match>
         <Match when={props.session.unlocked()}>
-          <AddPasskey session={props.session} manager={props.manager} />
-          <button
-            class="primary start-continue"
-            disabled={busy()}
-            aria-busy={busy()}
-            onClick={() => void addTMK()}
+          <Show
+            when={state()?.recovery.some((r) => r.type === "passkey")}
+            fallback={
+              <AddPasskey
+                session={props.session}
+                manager={props.manager}
+                onContinue={() => void addTMK()}
+              />
+            }
           >
-            {busy() ? "Saving keys…" : "Create keys and continue"}
-          </button>
+            <button
+              class="primary start-continue"
+              disabled={busy()}
+              aria-busy={busy()}
+              onClick={() => void addTMK()}
+            >
+              {busy() ? "Saving keys…" : "Create keys and continue"}
+            </button>
+          </Show>
         </Match>
       </Switch>
       <button
@@ -542,12 +552,10 @@ export default function Console(props: {
               </p>
             )}
           </Show>
-          <Show when={props.session.keyState().value?.dek_id}>
-            <KeyGate session={props.session} manager={manager}>
-              <Cleanup session={props.session} />
-              <RecoveryMethods session={props.session} manager={manager} />
-            </KeyGate>
-          </Show>
+          <KeyGate session={props.session} manager={manager}>
+            <Cleanup session={props.session} />
+            <RecoveryMethods session={props.session} manager={manager} />
+          </KeyGate>
         </Show>
       </main>
       <footer class="start-footer">

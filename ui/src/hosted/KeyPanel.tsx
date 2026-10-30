@@ -121,6 +121,21 @@ export function SetupKeys(props: {
       props.onDone(file);
     });
   return (
+    <PasskeyChoice
+      action={action}
+      onPasskey={() => void setup("passkey")}
+      onSkip={() => void setup("manual")}
+    />
+  );
+}
+
+// Leads with a passkey; the alternative goes on without one.
+function PasskeyChoice(props: {
+  action: ReturnType<typeof useAction>;
+  onPasskey: () => void;
+  onSkip: () => void;
+}) {
+  return (
     <>
       <div class="start-key-choice">
         <Icon name="rules" />
@@ -132,18 +147,18 @@ export function SetupKeys(props: {
           </p>
         </div>
       </div>
-      <Show when={action.error()}>
+      <Show when={props.action.error()}>
         <p class="start-notice" role="alert">
-          {action.error()}
+          {props.action.error()}
         </p>
       </Show>
       <button
         class="primary start-continue"
-        disabled={action.busy()}
-        aria-busy={action.busy()}
-        onClick={() => void setup("passkey")}
+        disabled={props.action.busy()}
+        aria-busy={props.action.busy()}
+        onClick={() => props.onPasskey()}
       >
-        {action.busy() ? (
+        {props.action.busy() ? (
           "Follow your device's prompt…"
         ) : (
           <>
@@ -153,24 +168,18 @@ export function SetupKeys(props: {
       </button>
       <button
         class="link start-alternative"
-        disabled={action.busy()}
-        onClick={() => void setup("manual")}
+        disabled={props.action.busy()}
+        onClick={() => props.onSkip()}
       >
-        Use a recovery key instead
+        I don't have a passkey
       </button>
-      <PromptHint busy={action.busy()} />
+      <Show when={props.action.busy()}>
+        <p class="start-help" role="status">
+          Your browser may ask you to confirm twice. A security key needs a
+          second touch.
+        </p>
+      </Show>
     </>
-  );
-}
-
-function PromptHint(props: { busy: boolean }) {
-  return (
-    <Show when={props.busy}>
-      <p class="start-help" role="status">
-        Your browser may ask you to confirm twice. A security key needs a second
-        touch.
-      </p>
-    </Show>
   );
 }
 
@@ -178,6 +187,7 @@ const addPasskey = (
   session: Session,
   manager: PasskeyKeyManager,
   action: ReturnType<typeof useAction>,
+  onAdded?: () => void,
 ) =>
   action.run(async (scope, signal) => {
     const { unlocked } = await keys.addRecovery({
@@ -190,48 +200,24 @@ const addPasskey = (
     });
     await scope.setUnlocked(unlocked);
     await session.refresh();
+    onAdded?.();
   });
 
-// Keys opened only by a recovery key are offered a passkey wherever they are used.
+// Offers a passkey to keys that open only with a recovery key, then continues either way.
 export function AddPasskey(props: {
   session: Session;
   manager: PasskeyKeyManager;
+  onContinue: () => void;
 }) {
   const action = useAction(props.session, props.manager);
   return (
-    <Show
-      when={
-        !props.session
-          .keyState()
-          .value?.recovery.some((r) => r.type === "passkey")
+    <PasskeyChoice
+      action={action}
+      onPasskey={() =>
+        void addPasskey(props.session, props.manager, action, props.onContinue)
       }
-    >
-      <div class="start-key-choice">
-        <Icon name="rules" />
-        <div>
-          <h2>Add a passkey</h2>
-          <p>
-            Your keys open only with your recovery key. A passkey opens them on
-            any device with your fingerprint, face, screen lock, or a security
-            key.
-          </p>
-        </div>
-      </div>
-      <Show when={action.error()}>
-        <p class="start-notice" role="alert">
-          {action.error()}
-        </p>
-      </Show>
-      <button
-        class="start-download"
-        disabled={action.busy()}
-        aria-busy={action.busy()}
-        onClick={() => void addPasskey(props.session, props.manager, action)}
-      >
-        {action.busy() ? "Follow your device's prompt…" : "Add a passkey"}
-      </button>
-      <PromptHint busy={action.busy()} />
-    </Show>
+      onSkip={props.onContinue}
+    />
   );
 }
 
@@ -242,6 +228,8 @@ export function UnlockKeys(props: {
   const action = useAction(props.session, props.manager);
   const state = () => props.session.keyState().value!;
   const hasPasskey = () => state().recovery.some((r) => r.type === "passkey");
+  const [noPasskey, setNoPasskey] = createSignal(false);
+  const [confirming, setConfirming] = createSignal(false);
   const unlock = (
     task: (
       state: keys.KeyState,
@@ -257,6 +245,13 @@ export function UnlockKeys(props: {
         throw new Error("No recovery key is saved in this browser.");
       await scope.setUnlocked(unlocked);
     });
+  const startOver = () =>
+    action.run(async (scope, signal) => {
+      const current = scope.keyState();
+      if (!current) throw new Error("Your account is still loading.");
+      await keys.resetKeyState(scope.api, current, signal);
+      await props.session.refresh();
+    });
   // A recovery key saved in this browser opens without a prompt.
   void action.run(async (scope) => {
     const current = scope.keyState();
@@ -270,39 +265,95 @@ export function UnlockKeys(props: {
           {action.error()}
         </p>
       </Show>
-      <Show when={hasPasskey()}>
-        <button
-          class="primary start-continue"
-          disabled={action.busy()}
-          aria-busy={action.busy()}
-          onClick={() =>
-            void unlock((current, user, signal) =>
-              keys.unlockPasskey(props.manager, current, user, signal),
-            )
+      <Show
+        when={!confirming()}
+        fallback={
+          <>
+            <p class="start-notice" role="alert">
+              <strong>You will lose your sandboxes.</strong> Starting over makes
+              new keys. Sandboxes and Monitors that use your current keys can't
+              be opened again, and their data can't be recovered. CLI keys you
+              added stay.
+            </p>
+            <button
+              class="danger start-continue"
+              disabled={action.busy()}
+              aria-busy={action.busy()}
+              onClick={() => void startOver()}
+            >
+              Yes, start over
+            </button>
+            <button
+              class="link start-alternative"
+              disabled={action.busy()}
+              onClick={() => setConfirming(false)}
+            >
+              Go back
+            </button>
+          </>
+        }
+      >
+        <Show
+          when={hasPasskey() && !noPasskey()}
+          fallback={
+            <>
+              <label class="start-help">
+                Recovery key file
+                <input
+                  type="file"
+                  accept=".txt,text/plain"
+                  disabled={action.busy()}
+                  onChange={(event) => {
+                    const file = event.currentTarget.files?.[0];
+                    if (file)
+                      void unlock(async (current, user) => {
+                        if (file.size > MAX_RECOVERY_FILE_BYTES)
+                          throw new Error(
+                            "This file is too large to be a recovery key.",
+                          );
+                        return keys.unlockFile(
+                          await file.text(),
+                          current,
+                          user,
+                        );
+                      });
+                  }}
+                />
+              </label>
+              <p class="start-help">
+                Lost your recovery key?{" "}
+                <button
+                  class="link"
+                  disabled={action.busy()}
+                  onClick={() => setConfirming(true)}
+                >
+                  Start over
+                </button>
+              </p>
+            </>
           }
         >
-          {action.busy() ? "Unlocking…" : "Unlock with passkey"}
-        </button>
+          <button
+            class="primary start-continue"
+            disabled={action.busy()}
+            aria-busy={action.busy()}
+            onClick={() =>
+              void unlock((current, user, signal) =>
+                keys.unlockPasskey(props.manager, current, user, signal),
+              )
+            }
+          >
+            {action.busy() ? "Unlocking…" : "Unlock with passkey"}
+          </button>
+          <button
+            class="link start-alternative"
+            disabled={action.busy()}
+            onClick={() => setNoPasskey(true)}
+          >
+            I don't have a passkey
+          </button>
+        </Show>
       </Show>
-      <label class="start-help">
-        Recovery key file
-        <input
-          type="file"
-          accept=".txt,text/plain"
-          disabled={action.busy()}
-          onChange={(event) => {
-            const file = event.currentTarget.files?.[0];
-            if (file)
-              void unlock(async (current, user) => {
-                if (file.size > MAX_RECOVERY_FILE_BYTES)
-                  throw new Error(
-                    "This file is too large to be a recovery key.",
-                  );
-                return keys.unlockFile(await file.text(), current, user);
-              });
-          }}
-        />
-      </label>
     </>
   );
 }

@@ -105,7 +105,7 @@ export class ApiError extends Error {
 export type Api = (
   path: string,
   init?: {
-    method?: "GET" | "POST" | "PUT";
+    method?: "GET" | "POST" | "PUT" | "DELETE";
     body?: unknown;
     signal?: AbortSignal;
   },
@@ -929,6 +929,19 @@ const forgetKEKs = (context: MKContext, recovery_ids: string[]) =>
       ),
     ),
   ).catch(() => {});
+
+// Forgets keys that can no longer be opened, as read, so the account can start
+// over; registered CLI keys stay.
+export const resetKeyState = (
+  api: Api,
+  state: KeyState,
+  signal?: AbortSignal,
+) =>
+  api(KEY_STATE, {
+    method: "DELETE",
+    body: { expected_revision: state.revision, dek_id: state.dek_id },
+    signal,
+  });
 
 const contextOf = (state: KeyState, user_id: string): MKContext => {
   if (!state.dek_id)
