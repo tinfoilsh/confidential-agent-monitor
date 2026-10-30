@@ -1,6 +1,6 @@
 import { sha256 } from "@noble/hashes/sha2.js";
 import type { PasskeyKeyManager } from "@tinfoilsh/passkey-kit";
-import { For, Match, Show, Switch, createSignal } from "solid-js";
+import { For, Match, Show, Switch, createSignal, onMount } from "solid-js";
 import { Icon } from "../components";
 import {
   b64u,
@@ -70,7 +70,7 @@ export default function Cli(props: {
   const [error, setError] = createSignal(launchError);
   const [typed, setTyped] = createSignal("");
   const [confirmed, setConfirmed] = createSignal("");
-  const [done, setDone] = createSignal("");
+  const [done, setDone] = createSignal(false);
   const [busy, setBusy] = createSignal(false);
   let profile: KeySyncProfile | undefined;
   try {
@@ -180,11 +180,7 @@ export default function Cli(props: {
       )
         throw new Error("Your account changed before this page finished.");
       sessionStorage.removeItem(PENDING);
-      setDone(
-        completion.account === "personal"
-          ? "your personal account"
-          : "the organization you chose",
-      );
+      setDone(true);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
     } finally {
@@ -192,15 +188,19 @@ export default function Cli(props: {
     }
   };
   if (route() === "/cli/complete" && completion) void complete();
+  const Send = () => {
+    onMount(() => void finish());
+    return null;
+  };
 
   return (
     <div class="start-page">
       <Header session={props.session} />
       <main class="start-welcome">
         <span class="start-mark">
-          <Icon name="devices" />
+          <Icon name={done() ? "check" : "devices"} />
         </span>
-        <h1>Sync your CLI</h1>
+        <h1>{done() ? "Sync successful" : "Sync your CLI"}</h1>
         <Show when={error()}>
           <p class="start-notice" role="alert">
             {error()}
@@ -216,7 +216,7 @@ export default function Cli(props: {
           <Match when={route() === "/cli/complete"}>
             <p role="status">
               {done()
-                ? `Your keys are synced. This page now shows ${done()}.`
+                ? "Your keys are synced. You can close this tab."
                 : error()
                   ? "Return to your terminal to check whether key sync finished."
                   : "Finishing key sync…"}
@@ -244,13 +244,7 @@ export default function Cli(props: {
             <p>Unlock your keys so the CLI can open your sandboxes.</p>
             <section class="start-monitors" aria-label="Your keys">
               <KeyGate session={props.session} manager={manager}>
-                <button
-                  class="primary"
-                  disabled={busy()}
-                  onClick={() => void finish()}
-                >
-                  Send keys to the CLI
-                </button>
+                <Send />
               </KeyGate>
             </section>
           </Match>

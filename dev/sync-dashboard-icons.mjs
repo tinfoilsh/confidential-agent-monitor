@@ -28,6 +28,7 @@ const components = {
   plus: 'TfPlus',
   help: 'TfQuestionMarkCircle',
   close: 'TfBoxX',
+  check: 'TfBoxCheck',
   copy: 'TfCopy',
   download: 'TfDownload',
   clock: 'TfClock',
