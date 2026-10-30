@@ -5,12 +5,7 @@ import { b64u, signOwnerRequest, unb64u, type MKBinding } from "./contract";
 import * as keys from "./keys";
 import { MONITOR_REPO, type Container, type Scope } from "./session";
 import { TEMPLATES } from "./templates";
-import {
-  bucketOwnedBy,
-  measuredEnv,
-  monitorDigest,
-  verifyImage,
-} from "./trust";
+import { bucketOwnedBy, measuredEnv, monitorDigest } from "./trust";
 
 const SPKI = "https://tinfoil.sh/key/spki/v1";
 const ED25519_SPKI = /^302a300506032b6570032100([0-9a-f]{64})$/;
@@ -147,12 +142,11 @@ export async function openMonitor({
     {
       url: `https://${row.domain}`,
       authorize: async (config) => {
-        const digest = monitorDigest(TEMPLATES.monitor, config, {
+        monitorDigest(TEMPLATES.monitor, config, {
           owner,
           bucket,
           credentials: keys.TARGETS.api_origin + CREDENTIALS_PATH,
         });
-        await verifyImage("monitor", digest, { signal });
       },
     },
     signal,

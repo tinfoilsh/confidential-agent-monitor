@@ -19,7 +19,7 @@ import * as keys from "./keys";
 import { checkHostKey, sshPublicKey, type OpenedMonitor } from "./monitors";
 import { SANDBOX_REPO, monitorOf, type Container } from "./session";
 import { TEMPLATES } from "./templates";
-import { measuredEnv, sandboxDigest, verifyImage, volumeSize } from "./trust";
+import { measuredEnv, sandboxDigest, volumeSize } from "./trust";
 
 const OWNER_DEADLINE_MS = 60_000;
 const OWNER_ATTEMPTS = 3;
@@ -82,12 +82,11 @@ export function sandboxClient(
     configRepo: "",
     verification: {
       configAuthorizer: async ({ config }) => {
-        const digest = sandboxDigest(TEMPLATES.sandbox, config, {
+        sandboxDigest(TEMPLATES.sandbox, config, {
           owner,
           instance_id,
           size,
         });
-        await verifyImage("sandbox", digest);
       },
     },
     acquisition: {
