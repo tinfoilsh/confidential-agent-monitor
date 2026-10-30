@@ -210,14 +210,38 @@ export function AddPasskey(props: {
   onContinue: () => void;
 }) {
   const action = useAction(props.session, props.manager);
+  const [recovery, setRecovery] = createSignal<keys.RecoveryFile>();
+  // Without a passkey, this browser's recovery key is saved before going on;
+  // keys opened from a file need nothing more.
+  const skip = () =>
+    action.run(async (scope) => {
+      const state = scope.keyState();
+      const file = state && (await keys.savedRecoveryFile(state, scope.user));
+      if (file) setRecovery(file);
+      else props.onContinue();
+    });
   return (
-    <PasskeyChoice
-      action={action}
-      onPasskey={() =>
-        void addPasskey(props.session, props.manager, action, props.onContinue)
+    <Show
+      when={recovery()}
+      fallback={
+        <PasskeyChoice
+          action={action}
+          onPasskey={() =>
+            void addPasskey(
+              props.session,
+              props.manager,
+              action,
+              props.onContinue,
+            )
+          }
+          onSkip={() => void skip()}
+        />
       }
-      onSkip={props.onContinue}
-    />
+    >
+      {(file) => (
+        <RecoveryDownload file={file()} onContinue={props.onContinue} />
+      )}
+    </Show>
   );
 }
 
