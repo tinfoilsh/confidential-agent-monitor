@@ -10,7 +10,13 @@ import {
   type AttestMonitor,
   type OpenedMonitor,
 } from "./monitors";
-import { RestoreRequired, relinkSandboxes, shellOpener } from "./sandboxes";
+import {
+  RestoreRequired,
+  acceptSandbox,
+  relinkSandboxes,
+  sandboxCandidates,
+  shellOpener,
+} from "./sandboxes";
 import { MONITOR_REPO, type Session } from "./session";
 import "./console.css";
 
@@ -71,14 +77,21 @@ export default function Monitor(props: {
         onCheckpoint: (problem) => setNotice(problem ?? ""),
         attest: props.attest,
       });
-      const failures = await relinkSandboxes(opened);
-      if (failures.length)
-        setNotice(
-          `Some sandboxes could not be re-linked: ${failures.join("; ")}`,
-        );
       if (!current.signal.aborted && opened.scope.live()) {
         document.title = `${opened.row.name} · Monitor`;
         setSession(opened);
+        // Restarted sandboxes are re-linked while the Monitor is already showing.
+        void relinkSandboxes(opened).then(
+          (failures) =>
+            failures.length &&
+            setNotice(
+              `Some sandboxes could not be re-linked: ${failures.join("; ")}`,
+            ),
+          (cause) =>
+            setNotice(
+              `Sandboxes could not be re-linked: ${cause instanceof Error ? cause.message : cause}`,
+            ),
+        );
       }
     } catch (cause) {
       if (!current.signal.aborted)
@@ -200,6 +213,16 @@ export default function Monitor(props: {
               client={opened.client}
               snapshot={opened.snapshot}
               shell={shell(opened)}
+              candidates={() =>
+                sandboxCandidates(opened, props.session.inventory().value ?? [])
+              }
+              accept={(name) =>
+                acceptSandbox(
+                  opened,
+                  props.session.inventory().value ?? [],
+                  name,
+                )
+              }
             />
           </>
         )}

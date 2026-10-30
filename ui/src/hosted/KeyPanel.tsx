@@ -52,6 +52,7 @@ function useAction(session: Session, manager: PasskeyKeyManager) {
 export function RecoveryDownload(props: {
   file: keys.RecoveryFile;
   onContinue?: () => void;
+  onBack?: () => void;
 }) {
   const [saved, setSaved] = createSignal(false);
   return (
@@ -85,6 +86,13 @@ export function RecoveryDownload(props: {
             onClick={() => next()()}
           >
             Continue <Icon name="arrow" />
+          </button>
+        )}
+      </Show>
+      <Show when={props.onBack}>
+        {(back) => (
+          <button class="link start-alternative" onClick={() => back()()}>
+            Use a passkey instead
           </button>
         )}
       </Show>
@@ -239,7 +247,11 @@ export function AddPasskey(props: {
       }
     >
       {(file) => (
-        <RecoveryDownload file={file()} onContinue={props.onContinue} />
+        <RecoveryDownload
+          file={file()}
+          onContinue={props.onContinue}
+          onBack={() => setRecovery()}
+        />
       )}
     </Show>
   );
@@ -254,7 +266,6 @@ export function UnlockKeys(props: {
   const hasPasskey = () => state().recovery.some((r) => r.type === "passkey");
   const [noPasskey, setNoPasskey] = createSignal(false);
   const [confirming, setConfirming] = createSignal(false);
-  const usePasskey = () => hasPasskey() && !noPasskey();
   let picker!: HTMLInputElement;
   const unlock = (
     task: (
@@ -319,19 +330,8 @@ export function UnlockKeys(props: {
           </>
         }
       >
-        <div class="start-key-choice">
-          <Icon name="rules" />
-          <div>
-            <h2>Unlock your keys</h2>
-            <p>
-              {usePasskey()
-                ? "Use your passkey to open your sandbox keys in this browser."
-                : "Choose the recovery key file you saved when you set up your keys."}
-            </p>
-          </div>
-        </div>
         <Show
-          when={usePasskey()}
+          when={hasPasskey() && !noPasskey()}
           fallback={
             <>
               <input
@@ -360,6 +360,15 @@ export function UnlockKeys(props: {
               >
                 {action.busy() ? "Unlocking…" : "Choose recovery key file"}
               </button>
+              <Show when={hasPasskey()}>
+                <button
+                  class="link start-alternative"
+                  disabled={action.busy()}
+                  onClick={() => setNoPasskey(false)}
+                >
+                  Use a passkey instead
+                </button>
+              </Show>
               <p class="start-help">
                 Lost your recovery key?{" "}
                 <button

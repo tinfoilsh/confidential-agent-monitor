@@ -75,10 +75,11 @@ export const attestMonitor: AttestMonitor = async (
 // The saved key of a TMK Monitor, re-resolved from a fresh, successful read of
 // the operation's own account; the existing binding must still match it.
 async function resolve(scope: Scope, id: string) {
-  const rows = await scope.fresh();
-  const row = rows.find((r) => r.id === id && r.repo === MONITOR_REPO);
-  if (!row) throw new Error("This Monitor is not in the selected account.");
-  const detail = (await scope.api(`/api/containers/${id}`)) as Container;
+  const detail = (await scope.api(`/api/containers/${id}`).catch((cause) => {
+    throw cause instanceof keys.ApiError && cause.status === 404
+      ? new Error("This Monitor is not in the selected account.")
+      : cause;
+  })) as Container;
   if (
     detail.id !== id ||
     detail.repo !== MONITOR_REPO ||
@@ -186,21 +187,7 @@ export async function openMonitor({
       });
     },
   });
-  // A signed status read precedes the state key: saved state that has gone
-  // missing below a recorded generation is a rollback, not a new Monitor.
-  const health = (await client.call("GET", "/healthz", undefined, signal)) as {
-    locked?: unknown;
-    state?: unknown;
-  };
-  if (
-    typeof health?.locked !== "boolean" ||
-    (health.state !== "present" && health.state !== "absent")
-  )
-    throw new Error("This Monitor does not support the owner protocol.");
-  if (health.state === "absent" && resource.min_generation! > 0)
-    throw new Error(
-      "This Monitor's saved state is missing. Restore its storage before opening it.",
-    );
+  // The Monitor refuses saved state that is missing or older than the recovered generation.
   await client.unlock(undefined, signal);
   const snapshot: Snapshot = await client.read(signal);
   signal.throwIfAborted();

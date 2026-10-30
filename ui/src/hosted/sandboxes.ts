@@ -388,50 +388,90 @@ export async function relinkSandboxes(monitor: OpenedMonitor) {
   const identities = Object.values(
     monitor.snapshot.view.config.identities ?? {},
   );
-  for (const row of await monitor.scope.fresh()) {
-    if (
-      row.repo !== SANDBOX_REPO ||
-      monitorOf(row) !== monitor.row.id ||
-      row.owner_key_mode !== "tmk" ||
-      row.status !== "running"
-    )
-      continue;
-    try {
-      const resolved = await resolve(monitor, row.id, false);
-      if (!resolved) continue;
-      const { resource, binding } = resolved;
-      const agent = sshPublicKey(
-        ed25519.getPublicKey(unb64u(resource.agent_seed, 32)),
-      );
-      if (!identities.some((identity) => identity.key === agent)) continue;
-      const sandbox = sandboxClient(
-        monitor,
-        resolved.row,
-        resource.owner_seed,
-        binding,
-        resolved.size,
-      );
-      const status = await sandbox.status(monitor.scope.signal);
-      if (
-        status.agent_public_key === agent &&
-        status.monitor_host_key !== hostKey
-      )
-        await sandbox.enroll(
-          {
-            agent_seed: resource.agent_seed,
-            monitor_host_key: hostKey,
-            disk_key: resource.storage_key,
-            allow_initialize: false,
-          },
-          monitor.scope.signal,
+  const rows = (await monitor.scope.fresh()).filter(
+    (row) =>
+      row.repo === SANDBOX_REPO &&
+      monitorOf(row) === monitor.row.id &&
+      row.owner_key_mode === "tmk" &&
+      row.status === "running",
+  );
+  await Promise.all(
+    rows.map(async (row) => {
+      try {
+        const resolved = await resolve(monitor, row.id, false);
+        if (!resolved) return;
+        const { resource, binding } = resolved;
+        const agent = sshPublicKey(
+          ed25519.getPublicKey(unb64u(resource.agent_seed, 32)),
         );
-    } catch (cause) {
-      failures.push(
-        `${row.name}: ${cause instanceof Error ? cause.message : cause}`,
-      );
-    }
-  }
+        if (!identities.some((identity) => identity.key === agent)) return;
+        const sandbox = sandboxClient(
+          monitor,
+          resolved.row,
+          resource.owner_seed,
+          binding,
+          resolved.size,
+        );
+        const status = await sandbox.status(monitor.scope.signal);
+        if (
+          status.agent_public_key === agent &&
+          status.monitor_host_key !== hostKey
+        )
+          await sandbox.enroll(
+            {
+              agent_seed: resource.agent_seed,
+              monitor_host_key: hostKey,
+              disk_key: resource.storage_key,
+              allow_initialize: false,
+            },
+            monitor.scope.signal,
+          );
+      } catch (cause) {
+        failures.push(
+          `${row.name}: ${cause instanceof Error ? cause.message : cause}`,
+        );
+      }
+    }),
+  );
   return failures;
+}
+
+// Sandboxes routed through this Monitor whose keys this terminal holds, with
+// the agent key each would enroll.
+export function sandboxCandidates(monitor: OpenedMonitor, rows: Container[]) {
+  const resources = monitor.scope.unlocked()?.payload.resources ?? [];
+  return rows.flatMap((row) => {
+    const resource = resources.find(
+      (r) =>
+        r.kind === "sandbox" && r.owner_public_key === row.owner_public_key,
+    );
+    return row.repo === SANDBOX_REPO &&
+      monitorOf(row) === monitor.row.id &&
+      row.owner_key_mode === "tmk" &&
+      row.status === "running" &&
+      resource?.agent_seed
+      ? [
+          {
+            name: row.name,
+            key: sshPublicKey(
+              ed25519.getPublicKey(unb64u(resource.agent_seed, 32)),
+            ),
+          },
+        ]
+      : [];
+  });
+}
+
+// Accepting is the owner's explicit first open: it adds the sandbox to the
+// Monitor, or restores a removed one, then enrolls and unlocks it.
+export async function acceptSandbox(
+  monitor: OpenedMonitor,
+  rows: Container[],
+  name: string,
+) {
+  const row = rows.find((r) => r.name === name && r.repo === SANDBOX_REPO);
+  if (!row) throw new Error(`${name} is no longer in this account.`);
+  await connectSandbox({ monitor, id: row.id, restore: true });
 }
 
 // The hosted shell capability: opening a shell first connects the sandbox.

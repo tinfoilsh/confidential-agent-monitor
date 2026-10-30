@@ -39,6 +39,37 @@ export function Agents(props: { expanded?: string }) {
   const names = createMemo(() => [...summaries().keys()]);
   return (
     <>
+      <Show when={m.waiting().length}>
+        <div class="resource-list">
+          <div class="resource-heading">
+            <h2>
+              Waiting to join <span class="count">{m.waiting().length}</span>
+            </h2>
+          </div>
+          <For each={m.waiting()}>
+            {(name) => (
+              <div class="resource-row waiting-row">
+                <Icon name="sandboxes" />
+                <strong class="collection-name" title={name}>
+                  {name}
+                </strong>
+                <span class="collection-description">
+                  Accepting adds it to this Monitor and unlocks its workspace
+                </span>
+                <button
+                  type="button"
+                  class="primary"
+                  disabled={!!m.accepting()}
+                  aria-busy={m.accepting() === name}
+                  onClick={() => void m.accept(name)}
+                >
+                  {m.accepting() === name ? "Accepting…" : "Accept"}
+                </button>
+              </div>
+            )}
+          </For>
+        </div>
+      </Show>
       <For
         each={[
           ["sandboxes", "Sandboxes", ""],
@@ -124,7 +155,7 @@ export function Agents(props: { expanded?: string }) {
           );
         }}
       </For>
-      <Show when={!names().length}>
+      <Show when={!names().length && !m.waiting().length}>
         <div class="resource-list">
           <Empty
             icon="sandboxes"

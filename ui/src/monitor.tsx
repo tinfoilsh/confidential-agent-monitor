@@ -30,6 +30,10 @@ export type MonitorOptions = {
   snapshot?: owner.Snapshot;
   // Hosted builds own sandbox signers; other builds have no browser shell.
   shell?: (name: string) => owner.ShellOpener | undefined;
+  // Sandboxes routed here whose keys a hosted build holds, by the agent key
+  // each would enroll; accepting one adds it to this Monitor.
+  candidates?: () => { name: string; key: string }[];
+  accept?: (name: string) => Promise<void>;
 };
 
 function createMonitor(options: MonitorOptions) {
@@ -68,6 +72,7 @@ function createMonitor(options: MonitorOptions) {
   const [icons, setIcons] = createSignal<owner.IconManifest>({});
   // The sandbox whose shell is open beside the page.
   const [shell, setShell] = createSignal<string>();
+  const [accepting, setAccepting] = createSignal<string>();
   const [deviceSignIn, setDeviceSignIn] = createSignal<
     owner.DeviceSignIn & {
       title: string;
@@ -573,6 +578,28 @@ function createMonitor(options: MonitorOptions) {
     shell,
     setShell,
     shellFor: (name: string) => options.shell?.(name),
+    waiting: () => {
+      const keys = Object.values(view()?.config.identities ?? {}).map(
+        (identity) => identity.key,
+      );
+      return (options.candidates?.() ?? [])
+        .filter((candidate) => !keys.includes(candidate.key))
+        .map((candidate) => candidate.name);
+    },
+    accepting,
+    accept: async (name: string) => {
+      if (accepting()) return;
+      setAccepting(name);
+      try {
+        await options.accept!(name);
+        await refresh();
+        notify(`${name} joined this Monitor`);
+      } catch (cause) {
+        report(cause);
+      } finally {
+        setAccepting();
+      }
+    },
     cancelSignIn: () => setDeviceSignIn(undefined),
     unlock: () =>
       perform(

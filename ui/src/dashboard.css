@@ -752,6 +752,9 @@ summary + * {
 .catalog-row .collection-name {
   flex: 1;
 }
+.waiting-row .collection-description {
+  flex: 1;
+}
 .catalog-row .resource-meta:empty {
   display: none;
 }
