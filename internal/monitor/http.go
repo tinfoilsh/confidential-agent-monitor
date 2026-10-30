@@ -123,7 +123,7 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 		return m.viewAfter(m.enroll(r.Context(), input))
 	})))
 	mux.Handle("POST "+sandboxRelayPath, m.ownerOnly(JSONHandler(sandbox.MaxRelayBytes, func(r *http.Request, in sandbox.RelayInput) (any, error) {
-		return sandbox.Relay(r.Context(), m.forwards, in)
+		return sandbox.Relay(r.Context(), m.relays, in)
 	})))
 	mux.Handle("GET /presets/{name}", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) {
 		return m.settings.Load().Config.Preset(r.PathValue("name"))

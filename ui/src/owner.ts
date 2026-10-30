@@ -304,6 +304,19 @@ export type Review = {
   changed: number;
   removed: number;
   changes: string[];
+  tools: McpTool[];
+};
+export type McpTool = {
+  name: string;
+  description?: string;
+  inputSchema?: {
+    properties?: Record<
+      string,
+      { type?: string | string[]; description?: string }
+    >;
+    required?: string[];
+  };
+  annotations?: { readOnlyHint?: boolean; destructiveHint?: boolean };
 };
 export type CredentialField = PresetField & {
   path: string[];
@@ -757,7 +770,7 @@ export function applyChanges<T extends object>(
     if (change.delete) delete parent[key];
     else
       Object.defineProperty(parent, key, {
-        value: structuredClone(change.value),
+        value: clone(change.value),
         enumerable: true,
         configurable: true,
         writable: true,
@@ -852,6 +865,9 @@ const filled = <T>(c: T, values?: { [key: string]: any }): T =>
   JSON.parse(JSON.stringify(c), (_, v) =>
     typeof v === "string" ? fill(v, values) : v,
   );
+// View values can be store proxies, which structuredClone refuses; they are JSON.
+const clone = <T>(value: T): T =>
+  value === undefined ? value : JSON.parse(JSON.stringify(value));
 const atPath = (object: any, path: string[]): any =>
   path.reduce((value, key) => value?.[key], object);
 // JSON values are equal regardless of key order, which differs between server responses and edited copies.
@@ -871,7 +887,7 @@ function putPath(object: any, path: string[], value: unknown, defaults?: any) {
     if (!Object.hasOwn(object, key))
       Object.defineProperty(object, key, {
         value: Array.isArray(defaults)
-          ? structuredClone(defaults)
+          ? clone(defaults)
           : typeof path[index + 1] === "number"
             ? []
             : {},
@@ -1056,14 +1072,19 @@ const groupsOf = (view: View, account: string) =>
     operationsOf(view, account).map((o) => [o.action, { title: o.action }]),
   );
 // effectsOf unions the effects of every operation under an action, so a group shows its strictest obligations.
+// A preset keeps its identity when a read changes it in place; a new catalog marks the change.
 const effectGroups = new WeakMap<
   Preset,
-  Map<string, { effects: Set<string>; otherPayments: boolean }>
+  {
+    catalog?: string;
+    groups: Map<string, { effects: Set<string>; otherPayments: boolean }>;
+  }
 >();
 const effectGroupsOf = (view: View, account: string) => {
   const preset = presetOf(view, account),
     actions = preset.actions ?? {};
-  let groups = effectGroups.get(preset);
+  const cached = effectGroups.get(preset);
+  let groups = cached?.catalog === view.catalog_id ? cached?.groups : undefined;
   if (!groups) {
     groups = new Map();
     const add = (action: string, effects: string[]) =>
@@ -1080,7 +1101,7 @@ const effectGroupsOf = (view: View, account: string) => {
       add(action, meta.effects ?? []);
     for (const op of Object.values(preset.operations ?? {}))
       add(op.action, op.effects ?? []);
-    effectGroups.set(preset, groups);
+    effectGroups.set(preset, { catalog: view.catalog_id, groups });
   }
   return groups;
 };
@@ -1361,8 +1382,31 @@ export const reviews = (view: View, account: string): Review[] =>
       changed: count("~"),
       removed: count("-"),
       changes: s.changes ?? [],
+      tools: (s.pin as { tools?: McpTool[] } | undefined)?.tools ?? [],
     };
   });
+
+// A pin change is "+ name", "~ name" or "- name" and then the tool's definition,
+// or "~ instructions:" and then the server's instructions.
+export function toolChange(change: string, tools: McpTool[]) {
+  const [head, ...rest] = change.split("\n");
+  const name = head.slice(2);
+  const tool = tools.find((t) => t.name === name);
+  return {
+    sign: head[0],
+    name,
+    tool,
+    text: rest.join("\n"),
+    parameters: Object.entries(tool?.inputSchema?.properties ?? {}).map(
+      ([key, p]) => ({
+        name: key,
+        type: [p.type ?? []].flat().join(" | "),
+        description: p.description,
+        required: !!tool?.inputSchema?.required?.includes(key),
+      }),
+    ),
+  };
+}
 
 export function accountStatus(
   view: View,
@@ -1733,7 +1777,7 @@ export function draftOperation(
 }
 
 export function withDraft(file: PresetFile, r?: RequestRecord): PresetFile {
-  file = structuredClone(file);
+  file = clone(file);
   if (unmatchedHTTP(r)) {
     const { id, ...operation } = draftOperation(r!.facts.details!);
     file.http = {
@@ -1993,7 +2037,7 @@ export const edits = {
   copySettings: (view: View, from: string, name: string): Change[] =>
     ["accounts", "rules", "effects", "reviewer"].map((key) => ({
       path: ["identities", name, key],
-      value: structuredClone(
+      value: clone(
         identities(view)[from]?.[key as keyof Identity] ??
           (key === "reviewer" ? "" : {}),
       ),
@@ -2165,7 +2209,7 @@ export const edits = {
     },
   ): Change[] {
     const acc = accounts(view)[account],
-      updated = structuredClone(acc),
+      updated = clone(acc),
       changed = new Set<string>(),
       removals: Change[] = [];
     const set = (path: string[], value: unknown) => {
@@ -2493,8 +2537,8 @@ const wait = (ms: number, signal: AbortSignal) =>
   });
 
 // One sandbox PTY session. Only polls move the output cursor, so a failed poll is retried from the same cursor.
-// Input and resizes are sent one at a time in order; input carries its sequence so a retried write is never
-// repeated. Every end, including a delivered exit, sends one close so the sandbox can release the session.
+// Input is sent as typed with its sequence, so the sandbox writes it in order and never repeats a retried write.
+// Resizes go one at a time. Every end, including a delivered exit, sends one close so the sandbox can release the session.
 export async function openShell(
   transport: ShellSend,
   open: ShellOpen,
@@ -2509,7 +2553,6 @@ export async function openShell(
     seq = 0,
     ended = false,
     outbox: Promise<unknown> = Promise.resolve(),
-    typed: Uint8Array[] | undefined,
     size: { cols: number; rows: number } | undefined;
   const end = (report?: () => void) => {
     if (ended) return;
@@ -2548,23 +2591,18 @@ export async function openShell(
   })();
   return {
     input(bytes) {
-      if (typed) return void typed.push(bytes);
-      const batch = (typed = [bytes]);
-      send(async () => {
-        typed = undefined;
-        const data = new Uint8Array(
-          await new Blob(batch as BlobPart[]).arrayBuffer(),
-        );
-        for (let at = 0; at < data.length; at += SHELL_INPUT_BYTES) {
-          const chunk = data.subarray(at, at + SHELL_INPUT_BYTES);
-          const reply = await transport(
-            { action: "input", id, seq: seq++, data: toBase64(chunk) },
-            live,
-          );
-          if (reply.accepted !== chunk.length)
-            throw new Error("The sandbox did not accept all input.");
-        }
-      });
+      for (let at = 0; !ended && at < bytes.length; at += SHELL_INPUT_BYTES) {
+        const chunk = bytes.subarray(at, at + SHELL_INPUT_BYTES);
+        transport(
+          { action: "input", id, seq: seq++, data: toBase64(chunk) },
+          live,
+        )
+          .then((reply) => {
+            if (reply.accepted !== chunk.length)
+              throw new Error("The sandbox did not accept all input.");
+          })
+          .catch((cause) => end(() => error(cause)));
+      }
     },
     resize(cols, rows) {
       if (size) return void Object.assign(size, { cols, rows });

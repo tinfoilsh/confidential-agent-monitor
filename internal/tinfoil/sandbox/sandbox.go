@@ -27,6 +27,8 @@ const (
 	maxRelayAttestationBytes = 32 << 20
 	maxRelayContentType      = 256
 	relayHopTimeout          = 30 * time.Second
+	relayIdleTimeout         = time.Minute
+	relayIdleConns           = 4
 	sandboxAttestationURL    = "http://sandbox/.well-known/tinfoil-attestation?nonce="
 	sandboxOwnerURL          = "http://sandbox/owner/rpc"
 )
@@ -60,24 +62,16 @@ type RelayReply struct {
 
 // Relay sends one attestation or EHBP owner request over a sandbox's bootstrap route and
 // returns the response bytes unchanged. That route is unverified and grants no agent access.
-func Relay(ctx context.Context, forwards *frontdoor.Forwarder, in RelayInput) (RelayReply, error) {
+func Relay(ctx context.Context, relays http.RoundTripper, in RelayInput) (RelayReply, error) {
 	request, limit, err := in.request()
 	if err != nil {
 		return RelayReply{}, err
 	}
+	// Connections are pooled per route; the sandbox still sees its own Host.
+	request.URL.Host = bootstrapRoute(BootstrapUser + in.InstanceID)
 	ctx, cancel := context.WithTimeout(ctx, relayHopTimeout)
 	defer cancel()
-	conn, err := Dial(forwards, bootstrapRoute(BootstrapUser+in.InstanceID), 443)
-	if err != nil {
-		return RelayReply{}, err
-	}
-	defer conn.Close()
-	// The hop deadline also covers the dial, which cannot be canceled itself.
-	defer context.AfterFunc(ctx, func() { conn.Close() })()
-	transport := &http.Transport{DisableKeepAlives: true, DisableCompression: true, DialContext: func(context.Context, string, string) (net.Conn, error) {
-		return conn, nil
-	}}
-	response, err := transport.RoundTrip(request.WithContext(ctx))
+	response, err := relays.RoundTrip(request.WithContext(ctx))
 	if err != nil {
 		return RelayReply{}, responseError{"sandbox relay: " + err.Error(), http.StatusBadGateway}
 	}
@@ -96,6 +90,19 @@ func Relay(ctx context.Context, forwards *frontdoor.Forwarder, in RelayInput) (R
 		}
 	}
 	return reply, nil
+}
+
+// Relays keeps each sandbox's bootstrap connections open between relayed requests, so a
+// request does not wait for a new forwarded channel.
+func Relays(forwards *frontdoor.Forwarder) http.RoundTripper {
+	return &http.Transport{DisableCompression: true, MaxIdleConnsPerHost: relayIdleConns, IdleConnTimeout: relayIdleTimeout,
+		DialContext: func(_ context.Context, _, address string) (net.Conn, error) {
+			host, _, err := net.SplitHostPort(address)
+			if err != nil {
+				return nil, err
+			}
+			return Dial(forwards, host, 443)
+		}}
 }
 
 // request builds one of the two requests a relay may send, and the response bound for it.

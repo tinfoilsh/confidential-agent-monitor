@@ -1,5 +1,6 @@
 import type { Clerk } from "@clerk/clerk-js/no-rhc";
 import { createSignal } from "solid-js";
+import { createStore, reconcile } from "solid-js/store";
 import * as keys from "./keys";
 
 export const MONITOR_REPO = "tinfoilsh/confidential-agent-monitor";
@@ -58,7 +59,9 @@ export function createSession(clerk: Clerk) {
   const [user, setUser] = createSignal<{ id: string; label: string }>();
   const [account, setAccount] = createSignal("");
   const [keyState, setKeyState] = createSignal<Read<keys.KeyState>>({});
-  const [inventory, setInventory] = createSignal<Read<Container[]>>({});
+  // Reads change rows in place, so unchanged rows keep their identity.
+  const [rows, setRows] = createStore<Read<Container[]>>({});
+  const inventory = () => rows;
   const [unlocked, setUnlocked] = createSignal<keys.Unlocked>();
   let scope = new AbortController();
   let writes: Promise<unknown> = Promise.resolve();
@@ -156,7 +159,7 @@ export function createSession(clerk: Clerk) {
         : undefined,
     );
     setAccount(next);
-    setInventory({});
+    setRows(reconcile({}));
     setUnlocked(undefined);
     if (id) void refresh();
   }
@@ -196,9 +199,9 @@ export function createSession(clerk: Clerk) {
         }),
       api("/api/containers")
         .then(containers)
-        .then((rows) => live() && setInventory({ value: rows }))
+        .then((value) => live() && setRows(reconcile({ value })))
         .catch((cause) => {
-          if (live()) setInventory((s) => ({ ...s, error: message(cause) }));
+          if (live()) setRows("error", message(cause));
         }),
     ]);
   }

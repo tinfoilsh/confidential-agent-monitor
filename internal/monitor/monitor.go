@@ -156,6 +156,7 @@ type monitor struct {
 	embeddedFiles, ownerAPI http.Handler
 	bucketURL               string
 	forwards                *frontdoor.Forwarder
+	relays                  http.RoundTripper
 	streams                 map[*connector.Stream]admission
 	records                 []*record
 	signIns                 sync.Map
@@ -178,6 +179,7 @@ func New(o Options) *monitor {
 		connections:    map[string]*connection{},
 		streams:        map[*connector.Stream]admission{},
 	}
+	m.relays = sandbox.Relays(m.forwards)
 	m.ownerAPI = m.newOwnerAPI()
 	return m
 }

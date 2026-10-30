@@ -12,7 +12,7 @@ import {
   useContext,
   type ParentProps,
 } from "solid-js";
-import { createStore } from "solid-js/store";
+import { createStore, reconcile } from "solid-js/store";
 import * as owner from "./owner.js";
 import { createRequestLog } from "./requests";
 
@@ -50,7 +50,13 @@ function createMonitor(options: MonitorOptions) {
   const [credential, setCredential] = createSignal(
     mode() ? (sessionStorage.getItem(KEY) ?? "") : "",
   );
-  const [snapshot, setSnapshot] = createSignal(options.snapshot);
+  // Reads change the snapshot in place, so unchanged requests and settings keep their identity.
+  const [store, setStore] = createStore<{ snapshot?: owner.Snapshot }>({
+    snapshot: options.snapshot,
+  });
+  const snapshot = () => store.snapshot;
+  const setSnapshot = (next?: owner.Snapshot) =>
+    setStore("snapshot", reconcile(next));
   const [locked, setLocked] = createSignal(false);
   type PendingEdit = {
     source: owner.OwnerApi;

@@ -1,5 +1,6 @@
 import {
   For,
+  Index,
   Show,
   createMemo,
   createSignal,
@@ -834,6 +835,69 @@ function ConnectionForm(props: { name: string }) {
   );
 }
 
+const TOOL_CHANGES: Record<string, string> = {
+  "+": "New",
+  "~": "Changed",
+  "-": "Removed",
+};
+function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
+  return (
+    <li class="tool-change">
+      <header>
+        <span class="badge">{TOOL_CHANGES[props.change.sign]}</span>
+        <code>{props.change.name}</code>
+        <Show when={props.change.tool?.annotations?.readOnlyHint}>
+          <span class="badge effect-read">Treated as read-only</span>
+        </Show>
+        <Show when={props.change.tool?.annotations?.destructiveHint}>
+          <span class="badge effect-delete">Marked destructive</span>
+        </Show>
+      </header>
+      <Show
+        when={props.change.tool}
+        fallback={
+          <Show when={props.change.text}>
+            <pre>{props.change.text}</pre>
+          </Show>
+        }
+      >
+        {(tool) => (
+          <>
+            <Show when={tool().description}>
+              <p class="tool-description">{tool().description}</p>
+            </Show>
+            <Show when={props.change.parameters.length}>
+              <dl>
+                <For each={props.change.parameters}>
+                  {(parameter) => (
+                    <div>
+                      <dt>
+                        <code>{parameter.name}</code>
+                        <span class="muted">
+                          {[parameter.type, !parameter.required && "optional"]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </span>
+                      </dt>
+                      <Show when={parameter.description}>
+                        <dd>{parameter.description}</dd>
+                      </Show>
+                    </div>
+                  )}
+                </For>
+              </dl>
+            </Show>
+            <details>
+              <summary>Full definition</summary>
+              <pre>{props.change.text}</pre>
+            </details>
+          </>
+        )}
+      </Show>
+    </li>
+  );
+}
+
 function Connection(props: { name: string; active: boolean }) {
   const m = useMonitor(),
     account = () => m.view()!.config.accounts?.[props.name];
@@ -884,43 +948,43 @@ function Connection(props: { name: string; active: boolean }) {
         </Show>
         <Show when={reviews().length}>
           <section class="connection-section" aria-label="Connection status">
-            <For each={reviews()}>
+            <Index each={reviews()}>
               {(review) => (
                 <div class="settings-group">
                   <Show
-                    when={review.blocked}
+                    when={review().blocked}
                     fallback={
                       <div class="setting-row" role="status">
-                        <span>{review.name}</span>
+                        <span>{review().name}</span>
                         <span
                           class="badge"
-                          classList={{ "status-denied": !!review.error }}
+                          classList={{ "status-denied": !!review().error }}
                         >
-                          {review.error ? "Connection error" : "Connecting…"}
+                          {review().error ? "Connection error" : "Connecting…"}
                         </span>
                       </div>
                     }
                   >
                     <SectionHeading
                       title="Review tool changes"
-                      description={`${review.blocked} ${review.blocked === 1 ? "tool on" : "tools on"} ${review.name} ${review.blocked === 1 ? "is" : "are"} blocked until you approve these changes.`}
+                      description={`${review().blocked} ${review().blocked === 1 ? "tool on" : "tools on"} ${review().name} ${review().blocked === 1 ? "is" : "are"} blocked until you approve these changes.`}
                     />
                   </Show>
-                  <Show when={review.error}>
+                  <Show when={review().error}>
                     <p class="muted" role="alert">
-                      Can't connect: {review.error}
+                      Can't connect: {review().error}
                     </p>
                   </Show>
-                  <Show when={review.blocked}>
+                  <Show when={review().blocked}>
                     <ResourceDisclosure
                       class="section-disclosure"
                       summary={
                         <DisclosureHeading
                           title="View changes"
                           description={[
-                            review.added && `${review.added} new`,
-                            review.changed && `${review.changed} changed`,
-                            review.removed && `${review.removed} removed`,
+                            review().added && `${review().added} new`,
+                            review().changed && `${review().changed} changed`,
+                            review().removed && `${review().removed} removed`,
                           ]
                             .filter(Boolean)
                             .join(", ")}
@@ -929,9 +993,18 @@ function Connection(props: { name: string; active: boolean }) {
                       }
                     >
                       {() => (
-                        <div class="section-content">
-                          <pre>{review.changes.join("\n\n")}</pre>
-                        </div>
+                        <ul class="section-content tool-changes">
+                          <For each={review().changes}>
+                            {(change) => (
+                              <ToolChange
+                                change={owner.toolChange(
+                                  change,
+                                  review().tools,
+                                )}
+                              />
+                            )}
+                          </For>
+                        </ul>
                       )}
                     </ResourceDisclosure>
                     <div class="form-actions">
@@ -943,7 +1016,7 @@ function Connection(props: { name: string; active: boolean }) {
                             owner.edits.approveTools(
                               m.view()!,
                               props.name,
-                              review.key,
+                              review().key,
                             ),
                           )
                         }
@@ -954,7 +1027,7 @@ function Connection(props: { name: string; active: boolean }) {
                   </Show>
                 </div>
               )}
-            </For>
+            </Index>
           </section>
         </Show>
         <section class="connection-section">

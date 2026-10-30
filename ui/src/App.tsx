@@ -10,6 +10,7 @@ import {
   lazy,
   onCleanup,
   onMount,
+  untrack,
 } from "solid-js";
 import * as owner from "./owner.js";
 import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
@@ -189,7 +190,12 @@ function Shell() {
         <ShellSplit
           shell={
             m.shell()
-              ? { name: m.shell()!, message: "", open: m.shellFor(m.shell()!) }
+              ? {
+                  name: m.shell()!,
+                  message: "",
+                  // Only choosing another sandbox replaces an open shell.
+                  open: untrack(() => m.shellFor(m.shell()!)),
+                }
               : undefined
           }
           onClose={() => m.setShell()}

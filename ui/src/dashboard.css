@@ -1015,6 +1015,38 @@ details[open] > summary > .collection-chevron {
   padding-top: 16px;
   border-top: 1px solid var(--line);
 }
+.tool-changes {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+.tool-change + .tool-change {
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.tool-change header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.tool-change :is(.tool-description, dl, details) {
+  margin: 8px 0 0;
+}
+.tool-description {
+  white-space: pre-wrap;
+}
+.tool-change dt {
+  display: flex;
+  gap: 8px;
+}
+.tool-change dd {
+  margin: 2px 0 6px;
+  color: var(--muted);
+  white-space: pre-wrap;
+}
 .settings-group,
 .form-fields {
   display: grid;
