@@ -4,6 +4,7 @@ import { SecureClient } from "tinfoil";
 import {
   OwnerError,
   openShell,
+  refusedTime,
   type ShellOpener,
   type ShellReply,
   type ShellRequest,
@@ -126,6 +127,8 @@ export function sandboxClient(
       ),
   });
 
+  // The sandbox's clock minus ours, learned when it refuses a request's time.
+  let skew = 0;
   // A lost reply is retried at the same time with a fresh nonce; every sandbox
   // effect is safe to repeat.
   async function call(
@@ -135,9 +138,10 @@ export function sandboxClient(
     session = "",
     signal?: AbortSignal,
   ): Promise<unknown> {
+    const started = Date.now();
     const operation = {
       operation: b64u(randomBytes(16)),
-      issued_at: Date.now(),
+      issued_at: Date.now() + skew,
       body:
         method === "GET"
           ? ""
@@ -163,6 +167,12 @@ export function sandboxClient(
           signal,
         });
         const text = await reply.text();
+        const now = refusedTime(reply.status, text);
+        if (now !== undefined && attempt < OWNER_ATTEMPTS) {
+          skew = now - Date.now();
+          operation.issued_at = now;
+          continue;
+        }
         if (!reply.ok)
           throw new OwnerError(
             text.trim() || `Sandbox request failed (${reply.status})`,
@@ -175,7 +185,7 @@ export function sandboxClient(
           (cause instanceof OwnerError && cause.status < 500) ||
           signal?.aborted ||
           attempt >= OWNER_ATTEMPTS ||
-          Date.now() >= operation.issued_at + OWNER_DEADLINE_MS
+          Date.now() >= started + OWNER_DEADLINE_MS
         )
           throw cause;
       }

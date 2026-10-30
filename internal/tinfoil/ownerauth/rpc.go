@@ -26,7 +26,8 @@ const (
 	// RequestContext prefixes the request bytes an envelope signature covers.
 	RequestContext = "tinfoil owner request v2\x00"
 	Protocol       = "monitor-owner-v2"
-	// RequestWindow is the inclusive age, in milliseconds, of an acceptable request.
+	// RequestWindow is how far, in milliseconds, a request's time may be from this
+	// Monitor's clock in either direction.
 	RequestWindow = 60_000
 
 	nonceBytes      = 24
@@ -116,7 +117,8 @@ func reject(w http.ResponseWriter, err error) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(r.status)
-	json.NewEncoder(w).Encode(map[string]string{"error": r.class})
+	// The Monitor's clock lets an owner whose clock differs re-sign on it.
+	json.NewEncoder(w).Encode(map[string]any{"error": r.class, "now": time.Now().UnixMilli()})
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -217,7 +219,7 @@ func (h *Handler) open(raw []byte, now int64) (request, error) {
 		return call, errProtocol
 	case call.Resource != h.Resource:
 		return call, errResource
-	case now < call.IssuedAt:
+	case call.IssuedAt-now > RequestWindow:
 		return call, errFuture
 	case now-call.IssuedAt > RequestWindow:
 		return call, errExpired

@@ -2341,6 +2341,19 @@ export type OwnerCall = {
   generation: number;
 };
 
+/** The owner API's clock, in ms, when it refused a request's time. */
+export function refusedTime(status: number, text: string) {
+  if (status !== 401) return;
+  try {
+    const reply = JSON.parse(text);
+    if (
+      ["request_time_in_future", "request_expired"].includes(reply?.error) &&
+      Number.isSafeInteger(reply.now)
+    )
+      return reply.now as number;
+  } catch {}
+}
+
 // The caller supplies an EHBP fetch that seals bodies to the Monitor and owns its attestation, so every call is a POST with a body, reads included.
 // Each envelope is signed for one Monitor and carries the newest generation seen; the caller persists advances.
 export function sealedOwnerClient({
@@ -2367,6 +2380,8 @@ export function sealedOwnerClient({
   const rpc = endpointBase(endpoint) + "/owner/rpc";
   if (!isGeneration(generation)) throw new Error("Invalid monitor generation.");
   let floor = generation;
+  // The Monitor's clock minus ours, learned when it refuses a request's time.
+  let skew = 0;
   const encoder = new TextEncoder();
   const json = ownerJSON(
     async (
@@ -2391,9 +2406,10 @@ export function sealedOwnerClient({
             ? ""
             : toBase64Url(encoder.encode(JSON.stringify(body))),
         operation: toBase64Url(crypto.getRandomValues(new Uint8Array(16))),
-        issued_at: Date.now(),
+        issued_at: Date.now() + skew,
         generation: floor,
       };
+      const started = Date.now();
       // A lost reply is retried as the same operation, which the Monitor answers from its record.
       for (let attempt = 1; ; attempt++) {
         const envelope = await sign(call);
@@ -2409,6 +2425,12 @@ export function sealedOwnerClient({
           });
           // A reply lost while its body streams is retried like a lost reply.
           const text = await response.text();
+          const now = refusedTime(response.status, text);
+          if (now !== undefined && attempt < OWNER_ATTEMPTS) {
+            skew = now - Date.now();
+            call.issued_at = now;
+            continue;
+          }
           return new Response(
             NULL_BODY_STATUSES.includes(response.status) ? null : text,
             { status: response.status, headers: response.headers },
@@ -2418,7 +2440,7 @@ export function sealedOwnerClient({
             signal?.aborted ||
             path === RELAY_PATH ||
             attempt >= OWNER_ATTEMPTS ||
-            Date.now() >= call.issued_at + OWNER_DEADLINE_MS
+            Date.now() >= started + OWNER_DEADLINE_MS
           )
             throw cause;
         }
