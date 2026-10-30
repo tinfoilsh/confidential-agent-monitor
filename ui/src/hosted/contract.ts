@@ -31,7 +31,7 @@ const MAX_MK_PLAINTEXT = 196576;
 const MAX_MK_RESOURCES = 256;
 const MANUAL_WRAPPED_CHARS = 86;
 const MAX_KEY_SYNC_PAYLOAD = 8192;
-const OWNER_REQUEST_CONTEXT = "tinfoil owner request v2\0";
+const OWNER_REQUEST_CONTEXT = "tinfoil owner request v3\0";
 const CONFIRM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ";
 export const CONFIRMATION_CODE_LENGTH = 6;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -112,7 +112,7 @@ export type MKResource = {
   owner_seed: string;
   owner_public_key: string;
   storage_key: string;
-  agent_seed: string | null;
+  monitor_identity_seed: string | null;
   min_generation: number | null;
   binding: MKBinding | null;
 };
@@ -146,7 +146,7 @@ function resource(value: unknown): MKResource {
     "owner_seed",
     "owner_public_key",
     "storage_key",
-    "agent_seed",
+    "monitor_identity_seed",
     "min_generation",
     "binding",
   ]);
@@ -158,8 +158,9 @@ function resource(value: unknown): MKResource {
     r.owner_public_key !== ownerPublicKey(unb64u(r.owner_seed, 32)) ||
     unb64u(r.storage_key, 32).length !== 32 ||
     (sandbox
-      ? unb64u(r.agent_seed, 32).length !== 32 || r.min_generation !== null
-      : r.agent_seed !== null ||
+      ? unb64u(r.monitor_identity_seed, 32).length !== 32 ||
+        r.min_generation !== null
+      : r.monitor_identity_seed !== null ||
         !Number.isSafeInteger(r.min_generation) ||
         (r.min_generation as number) < 0)
   )
@@ -171,7 +172,7 @@ function resource(value: unknown): MKResource {
     owner_seed: r.owner_seed as string,
     owner_public_key: r.owner_public_key as string,
     storage_key: r.storage_key as string,
-    agent_seed: r.agent_seed as string | null,
+    monitor_identity_seed: r.monitor_identity_seed as string | null,
     min_generation: r.min_generation as number | null,
     binding: binding(r.binding, sandbox),
   };
@@ -403,7 +404,7 @@ export function signOwnerRequest(seed: Uint8Array, r: OwnerRequest): string {
     }),
   );
   const signature = ed25519.sign(
-    concatBytes(utf8ToBytes(OWNER_REQUEST_CONTEXT), bytes),
+    concatBytes(utf8ToBytes(OWNER_REQUEST_CONTEXT), sha256(bytes)),
     seed,
   );
   return JSON.stringify({ request: b64u(bytes), signature: b64u(signature) });

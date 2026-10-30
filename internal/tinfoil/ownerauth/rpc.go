@@ -23,8 +23,8 @@ import (
 )
 
 const (
-	// RequestContext prefixes the request bytes an envelope signature covers.
-	RequestContext = "tinfoil owner request v2\x00"
+	// RequestContext prefixes the SHA-256 of the request bytes an envelope signature covers.
+	RequestContext = "tinfoil owner request v3\x00"
 	Protocol       = "monitor-owner-v2"
 	// RequestWindow is how far, in milliseconds, a request's time may be from this
 	// Monitor's clock in either direction.
@@ -206,7 +206,8 @@ func (h *Handler) open(raw []byte, now int64) (request, error) {
 		return call, errMalformed
 	}
 	// Verify original request bytes.
-	if !ed25519.Verify(h.Key, append([]byte(RequestContext), signed...), signature) {
+	digest := sha256.Sum256(signed)
+	if !ed25519.Verify(h.Key, append([]byte(RequestContext), digest[:]...), signature) {
 		return call, errSignature
 	}
 	if decodeCanonical(signed, &call) != nil || !call.wellFormed() {

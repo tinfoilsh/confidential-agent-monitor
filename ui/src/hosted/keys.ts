@@ -285,7 +285,7 @@ const sameKey = (a: MKResource, b: MKResource) =>
   a.attempt_id === b.attempt_id &&
   a.owner_seed === b.owner_seed &&
   a.storage_key === b.storage_key &&
-  a.agent_seed === b.agent_seed;
+  a.monitor_identity_seed === b.monitor_identity_seed;
 const sameBinding = (a: MKBinding, b: MKBinding) =>
   JSON.stringify(a) === JSON.stringify(b);
 
@@ -369,7 +369,7 @@ export function newResourceKey(
     owner_seed: b64u(seed),
     owner_public_key: ownerPublicKey(seed),
     storage_key: b64u(randomBytes(32)),
-    agent_seed: kind === "sandbox" ? b64u(randomBytes(32)) : null,
+    monitor_identity_seed: kind === "sandbox" ? b64u(randomBytes(32)) : null,
     min_generation: kind === "monitor" ? 0 : null,
     binding: null,
   };

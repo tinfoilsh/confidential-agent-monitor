@@ -32,7 +32,7 @@ export type SandboxStatus = {
   protocol: "sandbox-owner-v1";
   instance_id: string;
   volume: "unlocked" | "locked";
-  agent_public_key: string | null;
+  monitor_identity: string | null;
   monitor_host_key: string | null;
 };
 type RelayReply = {
@@ -308,8 +308,8 @@ export function connectPlan(
   known: boolean,
   restore: boolean,
 ): { monitor: boolean; sandbox: boolean } {
-  if (status.agent_public_key && status.agent_public_key !== agent)
-    throw new Error("This sandbox holds a different agent identity.");
+  if (status.monitor_identity && status.monitor_identity !== agent)
+    throw new Error("This sandbox holds a different Monitor identity.");
   if (!known && !restore)
     throw new RestoreRequired(
       "This sandbox's identity is not on its Monitor. Restore it to reconnect.",
@@ -317,7 +317,7 @@ export function connectPlan(
   return {
     monitor: !known,
     sandbox:
-      !status.agent_public_key ||
+      !status.monitor_identity ||
       status.volume !== "unlocked" ||
       status.monitor_host_key !== hostKey,
   };
@@ -348,7 +348,7 @@ export async function connectSandbox({
   );
   const status = await sandbox.status(signal);
   const agent = sshPublicKey(
-    ed25519.getPublicKey(unb64u(resource.agent_seed, 32)),
+    ed25519.getPublicKey(unb64u(resource.monitor_identity_seed, 32)),
   );
   const hostKey = monitor.hostKey();
   const { view } = await monitor.client.read(signal);
@@ -367,7 +367,7 @@ export async function connectSandbox({
   if (steps.sandbox)
     await sandbox.enroll(
       {
-        agent_seed: resource.agent_seed,
+        monitor_identity_seed: resource.monitor_identity_seed,
         monitor_host_key: hostKey,
         disk_key: resource.storage_key,
         // The volume worker formats only a blank workspace and otherwise unlocks it.
@@ -401,7 +401,7 @@ export async function relinkSandboxes(monitor: OpenedMonitor) {
         if (!resolved) return;
         const { resource, binding } = resolved;
         const agent = sshPublicKey(
-          ed25519.getPublicKey(unb64u(resource.agent_seed, 32)),
+          ed25519.getPublicKey(unb64u(resource.monitor_identity_seed, 32)),
         );
         if (!identities.some((identity) => identity.key === agent)) return;
         const sandbox = sandboxClient(
@@ -413,12 +413,12 @@ export async function relinkSandboxes(monitor: OpenedMonitor) {
         );
         const status = await sandbox.status(monitor.scope.signal);
         if (
-          status.agent_public_key === agent &&
+          status.monitor_identity === agent &&
           status.monitor_host_key !== hostKey
         )
           await sandbox.enroll(
             {
-              agent_seed: resource.agent_seed,
+              monitor_identity_seed: resource.monitor_identity_seed,
               monitor_host_key: hostKey,
               disk_key: resource.storage_key,
               allow_initialize: false,
@@ -436,7 +436,7 @@ export async function relinkSandboxes(monitor: OpenedMonitor) {
 }
 
 // Sandboxes routed through this Monitor whose keys this terminal holds, with
-// the agent key each would enroll.
+// the Monitor identity each would enroll.
 export function sandboxCandidates(monitor: OpenedMonitor, rows: Container[]) {
   const resources = monitor.scope.unlocked()?.payload.resources ?? [];
   return rows.flatMap((row) => {
@@ -448,12 +448,12 @@ export function sandboxCandidates(monitor: OpenedMonitor, rows: Container[]) {
       monitorOf(row) === monitor.row.id &&
       row.owner_key_mode === "tmk" &&
       row.status === "running" &&
-      resource?.agent_seed
+      resource?.monitor_identity_seed
       ? [
           {
             name: row.name,
             key: sshPublicKey(
-              ed25519.getPublicKey(unb64u(resource.agent_seed, 32)),
+              ed25519.getPublicKey(unb64u(resource.monitor_identity_seed, 32)),
             ),
           },
         ]
