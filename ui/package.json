@@ -14,18 +14,21 @@
     "format:check": "prettier --check ."
   },
   "exports": {
-    ".": "./src/owner.ts",
-    "./hosted": "./src/hosted/links.ts"
+    ".": "./src/owner.ts"
   },
   "dependencies": {
+    "@clerk/clerk-js": "6.42.0",
+    "@freedomofpress/sigstore-browser": "0.1.15",
     "@noble/curves": "2.4.0",
     "@noble/hashes": "2.4.0",
+    "@panva/hpke-noble": "1.1.7",
     "@tinfoilsh/passkey-kit": "0.2.4",
     "@xterm/addon-fit": "0.11.0",
     "@xterm/addon-webgl": "0.19.0",
     "@xterm/xterm": "6.0.0",
+    "hpke": "1.1.7",
     "solid-js": "1.9.17",
-    "tinfoil": "file:vendor/tinfoil-c7f0a57fa557a5b75834dea5f92f0fc5adf4b631.tgz",
+    "tinfoil": "file:vendor/tinfoil-sha256-19f4a1e033d3859c46ab99c4b12386aa152f50c4116853b0ddd8080f1183f28e.tgz",
     "yaml": "2.9.1"
   },
   "devDependencies": {

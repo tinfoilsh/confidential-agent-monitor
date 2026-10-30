@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"crypto/ed25519"
-	"encoding/base64"
 	"errors"
 	"flag"
 	"fmt"
@@ -34,6 +33,7 @@ import (
 	"github.com/tinfoilsh/monitor/connector/tinfoil"
 	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/internal/monitor"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
 	"github.com/tinfoilsh/monitor/internal/worker"
 	"github.com/tinfoilsh/monitor/ui"
 	"gocloud.dev/blob"
@@ -119,7 +119,7 @@ func main() {
 	// encrypted state. Only local development permits bearer authentication.
 	var public ed25519.PublicKey
 	if *ownerPublic != "" || !dev {
-		public = must(parseOwnerPublicKey(*ownerPublic))
+		public = must(ownerauth.ParseOwnerKey(*ownerPublic))
 	}
 	origins := must(ownerOrigins(*originList))
 	var hostSigner ssh.Signer
@@ -169,15 +169,6 @@ func must[T any](value T, err error) T {
 		log.Fatal(err)
 	}
 	return value
-}
-
-func parseOwnerPublicKey(value string) (ed25519.PublicKey, error) {
-	encoded, ok := strings.CutPrefix(value, "ed25519:")
-	key, err := base64.StdEncoding.Strict().DecodeString(encoded)
-	if !ok || err != nil || len(key) != ed25519.PublicKeySize || base64.StdEncoding.EncodeToString(key) != encoded {
-		return nil, errors.New("MONITOR_OWNER_PUBLIC_KEY must be ed25519: followed by a base64 public key")
-	}
-	return ed25519.PublicKey(key), nil
 }
 
 func uiDevProxy(address string, development bool) (http.Handler, error) {

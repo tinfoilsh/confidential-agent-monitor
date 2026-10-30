@@ -8,7 +8,7 @@ import * as owner from "./owner.js";
 import "./terminal.css";
 
 export default function SandboxTerminal(props: {
-  client: owner.OwnerApi;
+  open: owner.ShellOpener;
   name: string;
   onClose: () => void;
 }) {
@@ -42,9 +42,7 @@ export default function SandboxTerminal(props: {
     setMessage("");
     try {
       const size = { cols: terminal.cols, rows: terminal.rows };
-      const opened = await owner.openShell(
-        props.client,
-        props.name,
+      const opened = await props.open(
         size,
         {
           output: (data) => terminal.write(data),

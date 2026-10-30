@@ -32,10 +32,10 @@ import (
 const (
 	maxDocumentBytes = 16 << 20
 	maxAgentBytes    = 96 << 10
+	sandboxRelayPath = "/sandboxes/relay"
 )
 
 type unlockInput struct {
-	Initialize bool   `json:"initialize,omitempty"`
 	Generation uint64 `json:"generation"`
 	StorageKey []byte `json:"storage_key,omitempty"`
 	DeviceKey  string `json:"device_key,omitempty"`
@@ -56,7 +56,7 @@ func (m *monitor) HTTPHandler(devFiles http.Handler) http.Handler {
 	if m.ownerPublicKey != nil {
 		mux.Handle("GET /healthz", m.ownerAPI)
 		// Base64 inflates the signed request by a third.
-		mux.Handle("POST /owner/rpc", &ownerauth.Handler{Key: m.ownerPublicKey, Monitor: m.bucketURL, MaxBytes: 2 * maxDocumentBytes, API: m.ownerAPI, Generation: m.generation})
+		mux.Handle("POST /owner/rpc", &ownerauth.Handler{Key: m.ownerPublicKey, Resource: m.bucketURL, MaxBytes: 2 * maxDocumentBytes, API: m.ownerAPI, Generation: m.generation, Untracked: []string{sandboxRelayPath}})
 		return mux
 	}
 	m.registerOwnerRoutes(mux)
@@ -73,10 +73,23 @@ func (m *monitor) newOwnerAPI() http.Handler {
 }
 
 func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
-	mux.Handle("GET /healthz", JSONHandler(0, func(_ *http.Request, _ struct{}) (any, error) {
-		return struct {
-			Locked bool `json:"locked"`
-		}{Locked: m.settings.Load() == nil}, nil
+	mux.Handle("GET /healthz", JSONHandler(0, func(r *http.Request, _ struct{}) (any, error) {
+		health := struct {
+			Locked bool   `json:"locked"`
+			State  string `json:"state,omitempty"`
+		}{Locked: m.settings.Load() == nil}
+		// Only owners learn whether state exists; the probe reads storage.
+		if _, owner := ownerauth.FromContext(r.Context()); owner {
+			m.mu.Lock()
+			current := m.store
+			m.mu.Unlock()
+			present, err := current.Exists(r.Context())
+			if err != nil {
+				return nil, unavailable{err}
+			}
+			health.State = map[bool]string{false: "absent", true: "present"}[present]
+		}
+		return health, nil
 	}))
 	mux.Handle("POST /unlock", JSONHandler(maxDocumentBytes, func(r *http.Request, req unlockInput) (any, error) {
 		key := req.StorageKey
@@ -94,22 +107,23 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 			}
 		}
 		defer clear(key)
-		err := m.unlock(r.Context(), key, req.Generation, req.Initialize || m.ownerPublicKey == nil)
+		initialized, err := m.unlock(r.Context(), key, req.Generation)
 		if err == nil && req.DeviceKey != "" {
 			err = m.restoreDevice(r.Context(), req.DeviceKey)
 		}
-		return m.viewAfter(err)
+		view, err := m.viewAfter(err)
+		if v, ok := view.(ownerView); ok {
+			v.Initialized = initialized
+			view = v
+		}
+		return view, err
 	}))
 	mux.Handle("GET /{$}", ownerTx(m, func(_ *http.Request, _ struct{}) (any, error) { return m.view() }))
 	mux.Handle("POST /enroll", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input map[string]identityEnrollment) (any, error) {
 		return m.viewAfter(m.enroll(r.Context(), input))
 	})))
-	mux.Handle("POST /sandboxes/{name}/enroll", m.ownerOnly(JSONHandler(sandbox.MaxRequestBytes, func(r *http.Request, in sandbox.EnrollInput) (any, error) {
-		return m.viewAfter(m.sandboxes.Enroll(r.Context(), r.PathValue("name"), in))
-	})))
-	mux.Handle("POST /sandboxes/{name}/shell", m.ownerOnly(JSONHandler(sandbox.MaxRequestBytes, func(r *http.Request, in sandbox.ShellInput) (any, error) {
-		session, _ := ownerauth.FromContext(r.Context())
-		return m.sandboxes.Shell(r.Context(), session.ID, r.PathValue("name"), in)
+	mux.Handle("POST "+sandboxRelayPath, m.ownerOnly(JSONHandler(sandbox.MaxRelayBytes, func(r *http.Request, in sandbox.RelayInput) (any, error) {
+		return sandbox.Relay(r.Context(), m.forwards, in)
 	})))
 	mux.Handle("GET /presets/{name}", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) {
 		return m.settings.Load().Config.Preset(r.PathValue("name"))
@@ -383,8 +397,6 @@ func responseError(w http.ResponseWriter, err error) {
 		status = http.StatusUnauthorized
 	case errors.Is(err, errLocked):
 		status = http.StatusLocked
-	case errors.Is(err, store.ErrMissingState):
-		status = http.StatusPreconditionRequired
 	case errors.Is(err, errPolicyConflict):
 		status = http.StatusConflict
 	case errors.Is(err, errRecordGone):
@@ -392,6 +404,11 @@ func responseError(w http.ResponseWriter, err error) {
 	}
 	http.Error(w, err.Error(), status)
 }
+
+// unavailable is a dependency failure, never a client error.
+type unavailable struct{ error }
+
+func (unavailable) HTTPStatus() int { return http.StatusServiceUnavailable }
 
 type fieldMetadata struct {
 	Path        []string `json:"path"`
@@ -413,6 +430,8 @@ type ownerView struct {
 	CatalogID  string                       `json:"catalog_id"`
 	Presets    map[string]presets.Entry     `json:"presets,omitempty"`
 	Vocabulary map[string]facts.Obligations `json:"vocabulary"`
+	// Initialized is true only on the unlock that created this Monitor's state.
+	Initialized bool `json:"initialized"`
 }
 
 // view snapshots owner state while the caller holds mu. It never calls a connector.

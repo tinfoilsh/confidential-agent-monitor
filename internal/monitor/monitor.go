@@ -156,7 +156,6 @@ type monitor struct {
 	embeddedFiles, ownerAPI http.Handler
 	bucketURL               string
 	forwards                *frontdoor.Forwarder
-	sandboxes               *sandbox.Service
 	streams                 map[*connector.Stream]admission
 	records                 []*record
 	signIns                 sync.Map
@@ -179,7 +178,6 @@ func New(o Options) *monitor {
 		connections:    map[string]*connection{},
 		streams:        map[*connector.Stream]admission{},
 	}
-	m.sandboxes = sandbox.New(m, m.forwards, sandbox.Verify)
 	m.ownerAPI = m.newOwnerAPI()
 	return m
 }
@@ -196,43 +194,44 @@ func (m *monitor) snapshot() (store.Document, *settings) {
 	return m.store.Doc, m.settings.Load()
 }
 
-func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64, initialize bool) error {
+// unlock reports whether it created the Monitor's state.
+func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (bool, error) {
 	m.writes.Lock()
 	defer m.writes.Unlock()
 	m.mu.Lock()
 	if m.ownerPublicKey != nil && len(key) != store.OwnerKeyBytes {
 		m.mu.Unlock()
-		return store.ErrOwner
+		return false, store.ErrOwner
 	}
 	if m.settings.Load() != nil {
 		defer m.mu.Unlock()
 		if !m.store.IsOwner(key) {
-			return store.ErrOwner
+			return false, store.ErrOwner
 		}
 		if m.store.Doc.Generation < minimum {
-			return fmt.Errorf("live generation %d is older than %d", m.store.Doc.Generation, minimum)
+			return false, fmt.Errorf("live generation %d is older than %d", m.store.Doc.Generation, minimum)
 		}
-		return nil
+		return false, nil
 	}
 	base := m.store
 	m.mu.Unlock()
-	next, err := base.Load(ctx, key, minimum, initialize)
+	next, created, err := base.Load(ctx, key, minimum)
 	if err != nil {
-		return err
+		return false, err
 	}
 	var env connector.Env
 	if env.TLS, err = connectionTLS(&next.Doc.Keys); err != nil {
-		return err
+		return false, err
 	}
 	env.HostKey = m.sshHostKey
 	if env.HostKey == nil {
 		if env.HostKey, err = next.Doc.Keys.HostSigner(); err != nil {
-			return err
+			return false, err
 		}
 	}
 	plan, err := m.prepareSettings(ctx, next.Doc, next.Doc, env)
 	if err != nil {
-		return err
+		return false, err
 	}
 	m.mu.Lock()
 	m.store = next
@@ -244,10 +243,10 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64, initia
 	}
 	m.mu.Unlock()
 	if err != nil {
-		return err
+		return false, err
 	}
 	m.installConnections(install, retired)
-	return nil
+	return created, nil
 }
 
 // prepareSettings validates settings and parses connector setups under writes, without

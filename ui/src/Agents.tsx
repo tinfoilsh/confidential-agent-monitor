@@ -89,11 +89,7 @@ export function Agents(props: { expanded?: string }) {
                           </span>
                           <Show when={kind !== "devices"}>
                             <span class="resource-meta">
-                              <Show
-                                when={
-                                  m.view()!.config.identities?.[name]?.sandbox
-                                }
-                              >
+                              <Show when={m.shellFor(name)}>
                                 <button
                                   type="button"
                                   class="icon-button open-shell"

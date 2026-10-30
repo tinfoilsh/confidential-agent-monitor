@@ -23,7 +23,7 @@ printf 'Monitor UI with hot reload: %s/app/\n' "${MONITOR_API:-http://127.0.0.1:
 sed -e 's|IdentityFile .*|IdentityFile /run/monitor/id|' \
     -e 's|UserKnownHostsFile .*|UserKnownHostsFile /run/monitor/known_hosts|' \
     "$dev/ssh_config" > "$dev/sandbox-ssh.conf"
-# The reverse service publishes the sandbox's SSH for Monitor shells.
+# The reverse service publishes the sandbox's SSH for native SSH through Monitor.
 printf 'Host monitor\n  User sandbox-v2:%s\n  ExitOnForwardFailure yes\n  RemoteForward 127.0.0.1:22 127.0.0.1:22\n' "$name" |
   cat - "$dev/sandbox-ssh.conf" > "$dev/sandbox-reverse.conf"
 podman run -d --name "$name" --hostname workspace --privileged --systemd=always \
@@ -31,7 +31,6 @@ podman run -d --name "$name" --hostname workspace --privileged --systemd=always 
   -v "$name:/mnt/disk" -v "$name:/nix" -v "$toolchain:/tinfoil/models/nix:ro" \
   -v "$dev/id:/run/monitor/id:ro" -v "$dev/id.pub:/run/monitor/id.pub:ro" \
   -v "$dev/known_hosts:/run/monitor/known_hosts:ro" \
-  -v "$dev/monitor_authorized_keys:/run/monitor/authorized_keys:ro" \
   -v "$dev/sandbox-ssh.conf:/etc/ssh/ssh_config.d/monitor.conf:ro" \
   -v "$dev/sandbox-reverse.conf:/etc/ssh/monitor-reverse.conf:ro" \
   --entrypoint bash "$name" -c '

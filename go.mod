@@ -4,6 +4,7 @@ go 1.27.3
 
 require (
 	code.dny.dev/ssrf v0.3.0
+	filippo.io/edwards25519 v1.2.0
 	github.com/aws/aws-sdk-go-v2 v1.47.1
 	github.com/aws/smithy-go v1.28.1
 	github.com/chromedp/cdproto v0.157.8

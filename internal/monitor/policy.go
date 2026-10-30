@@ -1,7 +1,6 @@
 package monitor
 
 import (
-	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/json"
@@ -184,7 +183,7 @@ type identityEnrollment struct {
 	Key     string `json:"key"`
 	Routes  bool   `json:"routes"`
 	Restore bool   `json:"restore"`
-	// Sandbox names the boots the Monitor may attest and log in to for shells.
+	// Sandbox names the sandbox boot an identity belongs to.
 	Sandbox json.RawMessage `json:"sandbox,omitzero"`
 }
 
@@ -256,20 +255,6 @@ func (m *monitor) enroll(ctx context.Context, identities map[string]identityEnro
 		return err
 	}
 	return m.writeSettings(ctx, nil, changes, nil, nil)
-}
-
-// IdentityMetadata returns the sandbox metadata validated during settings preparation.
-func (m *monitor) IdentityMetadata(name string) json.RawMessage {
-	return bytes.Clone(m.settings.Load().Identities[name].Sandbox)
-}
-func (m *monitor) CheckIdentity(name, key string, metadata json.RawMessage) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	_, err := m.enrollmentChanges(map[string]identityEnrollment{name: {Key: key, Sandbox: metadata}})
-	return err
-}
-func (m *monitor) AddIdentity(ctx context.Context, name, key string, metadata json.RawMessage) error {
-	return m.enroll(ctx, map[string]identityEnrollment{name: {Key: key, Sandbox: metadata}})
 }
 
 // viewAfter renders the owner view once an action that ran without mu succeeds.
