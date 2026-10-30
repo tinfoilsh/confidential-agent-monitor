@@ -31,7 +31,7 @@ const HOST = /^[a-z0-9.-]+$/;
 export type SandboxStatus = {
   protocol: "sandbox-owner-v1";
   instance_id: string;
-  volume: "unlocked" | "locked_blank" | "locked_initialized" | "locked_unknown";
+  volume: "unlocked" | "locked";
   agent_public_key: string | null;
   monitor_host_key: string | null;
 };
@@ -298,9 +298,9 @@ async function resolve(monitor: OpenedMonitor, id: string, bind: boolean) {
   };
 }
 
-// What connecting needs. Only a blank workspace without an agent is a first
-// enrollment; a missing Monitor identity otherwise needs an explicit restore,
-// and a running agent pinned to an older Monitor boot is re-linked.
+// What connecting needs. A sandbox not on its Monitor is added only by the
+// owner's explicit accept or restore; a running agent pinned to an older Monitor
+// boot is re-linked.
 export function connectPlan(
   status: SandboxStatus,
   agent: string,
@@ -310,8 +310,7 @@ export function connectPlan(
 ): { monitor: boolean; sandbox: boolean } {
   if (status.agent_public_key && status.agent_public_key !== agent)
     throw new Error("This sandbox holds a different agent identity.");
-  const initial = !status.agent_public_key && status.volume === "locked_blank";
-  if (!known && !initial && !restore)
+  if (!known && !restore)
     throw new RestoreRequired(
       "This sandbox's identity is not on its Monitor. Restore it to reconnect.",
     );
@@ -371,8 +370,8 @@ export async function connectSandbox({
         agent_seed: resource.agent_seed,
         monitor_host_key: hostKey,
         disk_key: resource.storage_key,
-        // Only authenticated blank-disk evidence permits first initialization.
-        allow_initialize: status.volume === "locked_blank",
+        // The volume worker formats only a blank workspace and otherwise unlocks it.
+        allow_initialize: true,
       },
       signal,
     );
