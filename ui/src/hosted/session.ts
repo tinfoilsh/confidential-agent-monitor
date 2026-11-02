@@ -49,7 +49,7 @@ function containers(value: unknown): Container[] {
 export const monitorOf = (sandbox: Container) =>
   sandbox.network_policy?.egress?.[0]?.container_id;
 
-type Read<T> = { value?: T; error?: string };
+type Read<T> = { value?: T; error?: string; loading?: boolean };
 const message = (cause: unknown) =>
   cause instanceof Error ? cause.message : String(cause);
 
@@ -170,6 +170,9 @@ export function createSession(clerk: Clerk) {
     const api = scoped(current);
     const live = () => current === scope && !current.signal.aborted;
     const sign_in = fence;
+    setKeyState((state) => ({ ...state, error: undefined, loading: true }));
+    setRows("error", undefined);
+    setRows("loading", true);
     // A sign-in ended elsewhere (even across a reload) neither reads nor reconciles keys.
     await Promise.all([
       checkEnded()
@@ -187,7 +190,7 @@ export function createSession(clerk: Clerk) {
         .then(async (state) => {
           const next = await keys.refreshUnlocked(unlocked(), state);
           if (!live()) return;
-          setKeyState({ value: state });
+          setKeyState({ value: state, loading: false });
           setUnlocked(next);
         })
         .catch((cause) => {
@@ -195,13 +198,16 @@ export function createSession(clerk: Clerk) {
             setKeyState((s) => ({
               ...s,
               error: ended ? ENDED : message(cause),
+              loading: false,
             }));
         }),
       api("/api/containers")
         .then(containers)
-        .then((value) => live() && setRows(reconcile({ value })))
+        .then(
+          (value) => live() && setRows(reconcile({ value, loading: false })),
+        )
         .catch((cause) => {
-          if (live()) setRows("error", message(cause));
+          if (live()) setRows({ error: message(cause), loading: false });
         }),
     ]);
   }

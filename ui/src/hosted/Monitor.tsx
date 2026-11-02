@@ -29,12 +29,14 @@ export default function Monitor(props: {
   session: Session;
   manager?: PasskeyKeyManager;
   attest?: AttestMonitor;
+  open?: typeof openMonitor;
 }) {
   const manager = props.manager ?? keys.passkeys();
   const id = decodeURIComponent(useParams().id ?? "");
   const [error, setError] = createSignal("");
   const [notice, setNotice] = createSignal("");
   const [busy, setBusy] = createSignal(false);
+  const [linking, setLinking] = createSignal(false);
   const [session, setSession] = createSignal<OpenedMonitor>();
   let attempt: AbortController | undefined;
   const cancel = () => {
@@ -44,8 +46,14 @@ export default function Monitor(props: {
   };
   onCleanup(cancel);
   // Keys opened for one user and account never outlive a switch.
+  let opening = true;
   createEffect(
     on([() => props.session.user()?.id, props.session.account], () => {
+      cancel();
+      opening = true;
+      setError("");
+      setNotice("");
+      setLinking(false);
       if (session() && !session()!.scope.live()) setSession(undefined);
     }),
   );
@@ -53,11 +61,15 @@ export default function Monitor(props: {
     props.session
       .inventory()
       .value?.find((r) => r.id === id && r.repo === MONITOR_REPO);
-  // Unlocking opens the Monitor; after a failure, opening is the owner's retry.
-  let opening = true;
+  const inventory = () => props.session.inventory();
+  const booting = () =>
+    ["created", "pending", "deploying", "started"].includes(
+      row()?.status ?? "",
+    );
+  // Unlocking opens the Monitor once its boot is ready; a failed open needs a retry.
   createEffect(
-    on([props.session.unlocked, row], ([unlocked, found]) => {
-      if (opening && unlocked && found && !session()) {
+    on([props.session.unlocked, () => row()?.status], ([unlocked, status]) => {
+      if (opening && unlocked && status === "running" && !session()) {
         opening = false;
         void open();
       }
@@ -65,13 +77,13 @@ export default function Monitor(props: {
   );
 
   const open = async () => {
-    if (busy()) return;
+    if (busy() || row()?.status !== "running") return;
     cancel();
     const current = (attempt = new AbortController());
     setBusy(true);
     setError("");
     try {
-      const opened = await openMonitor({
+      const opened = await (props.open ?? openMonitor)({
         scope: props.session.bind(),
         id,
         signal: current.signal,
@@ -82,17 +94,25 @@ export default function Monitor(props: {
         document.title = `${opened.row.name} · Monitor`;
         setSession(opened);
         // Restarted sandboxes are re-linked while the Monitor is already showing.
-        void relinkSandboxes(opened).then(
-          (failures) =>
-            failures.length &&
-            setNotice(
-              `Some sandboxes could not be re-linked: ${failures.join("; ")}`,
-            ),
-          (cause) =>
-            setNotice(
-              `Sandboxes could not be re-linked: ${cause instanceof Error ? cause.message : cause}`,
-            ),
-        );
+        setLinking(true);
+        void relinkSandboxes(opened)
+          .then(
+            (failures) => {
+              if (opened.scope.live() && failures.length)
+                setNotice(
+                  `Some sandboxes could not be re-linked: ${failures.join("; ")}`,
+                );
+            },
+            (cause) => {
+              if (opened.scope.live())
+                setNotice(
+                  `Sandboxes could not be re-linked: ${cause instanceof Error ? cause.message : cause}`,
+                );
+            },
+          )
+          .finally(() => {
+            if (opened.scope.live()) setLinking(false);
+          });
       }
     } catch (cause) {
       if (!current.signal.aborted)
@@ -175,20 +195,64 @@ export default function Monitor(props: {
               >
                 <section class="start-monitors" aria-label="Your keys">
                   <KeyGate session={props.session} manager={manager}>
-                    <Show when={props.session.inventory().value && !row()}>
+                    <Show when={inventory().loading && !inventory().value}>
+                      <p class="start-help" role="status">
+                        Loading your Monitor…
+                      </p>
+                    </Show>
+                    <Show when={inventory().error}>
+                      <p class="start-notice" role="alert">
+                        Could not load your Monitor: {inventory().error}
+                      </p>
+                      <button
+                        class="link"
+                        onClick={() => void props.session.refresh()}
+                      >
+                        Try again
+                      </button>
+                    </Show>
+                    <Show
+                      when={
+                        inventory().value &&
+                        !inventory().loading &&
+                        !inventory().error &&
+                        !row()
+                      }
+                    >
                       <p class="start-notice" role="alert">
                         This Monitor is not in the selected account. Switch
                         accounts or choose another Monitor.
                       </p>
                     </Show>
+                    <Show when={booting()}>
+                      <p class="start-help" role="status">
+                        Your Monitor is starting. It will open when it is ready.
+                      </p>
+                    </Show>
+                    <Show
+                      when={row() && row()!.status !== "running" && !booting()}
+                    >
+                      <p class="start-help" role="status">
+                        Your Monitor is {row()!.status}. Open the dashboard to
+                        start it or check its status.
+                      </p>
+                    </Show>
                     <div class="monitor-actions">
                       <button
                         class="primary"
-                        disabled={busy() || !row()}
+                        disabled={
+                          busy() ||
+                          row()?.status !== "running" ||
+                          !!inventory().error
+                        }
                         aria-busy={busy()}
                         onClick={() => void open()}
                       >
-                        {busy() ? "Verifying and opening…" : "Open Monitor"}
+                        {busy()
+                          ? "Verifying and opening Monitor…"
+                          : booting()
+                            ? "Waiting for Monitor…"
+                            : "Open Monitor"}
                       </button>
                       <Show when={busy()}>
                         <button class="link" onClick={cancel}>
@@ -214,6 +278,9 @@ export default function Monitor(props: {
               client={opened.client}
               snapshot={opened.snapshot}
               shell={shell(opened)}
+              sandboxesLoading={() =>
+                linking() || (!!inventory().loading && !inventory().value)
+              }
               candidates={() =>
                 sandboxCandidates(opened, props.session.inventory().value ?? [])
               }

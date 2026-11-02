@@ -245,8 +245,21 @@ function Start(props: {
             <RecoveryDownload
               file={recovery()}
               onContinue={() => finishTMK(created!)}
+              onBack={() => setFile()}
             />
           )}
+        </Match>
+        <Match when={!state()}>
+          <p
+            class={
+              props.session.keyState().error ? "start-notice" : "start-help"
+            }
+            role={props.session.keyState().error ? "alert" : "status"}
+          >
+            {props.session.keyState().error
+              ? `Your keys could not be loaded: ${props.session.keyState().error}`
+              : "Loading your keys…"}
+          </p>
         </Match>
         <Match when={state() && !state()!.dek_id}>
           <SetupKeys
@@ -305,6 +318,11 @@ function Inventory(props: { session: Session }) {
   return (
     <nav class="start-monitors" aria-label="Your monitors">
       <p class="start-eyebrow">Your monitors</p>
+      <Show when={read().loading && !read().value}>
+        <p class="start-help" role="status">
+          Loading your Monitors and sandboxes…
+        </p>
+      </Show>
       <Show when={read().error}>
         <p class="start-notice" role="alert">
           {read().value
@@ -312,7 +330,11 @@ function Inventory(props: { session: Session }) {
             : `Your resources could not be loaded: ${read().error}`}
         </p>
       </Show>
-      <Show when={read().value && !monitors().length}>
+      <Show
+        when={
+          read().value && !read().loading && !read().error && !monitors().length
+        }
+      >
         <p class="start-help">
           No Monitors in this account yet. Create one from your dashboard.
         </p>

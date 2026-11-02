@@ -89,6 +89,35 @@ Open [the UI](http://127.0.0.1:8080/app/) and initialize an owner key or passphr
 SSH listens on `127.0.0.1:2223`. See [Dockerfile](Dockerfile) and
 [tinfoil-config.yml](tinfoil-config.yml) for deployment configuration.
 
+### Local development console (fake account)
+
+To explore the hosted Terminal UI against a real local Monitor, without Clerk,
+passkey prompts, cloud resources, or sandbox VMs:
+
+```sh
+(cd ui && bun install --frozen-lockfile)
+bun dev/console.ts
+```
+
+Open **http://127.0.0.1:5175**. The console hot-reloads local UI changes and seeds
+`danielbox1`, `danielbox2`, a trusted development device, and network access
+settings. The sandbox rows are fake, CLI-only inventory/identities: attestation,
+enrollment, and shells are deliberately unavailable. Monitor configuration and
+permission edits are real and persist across restarts, under **`.dev/console/`**.
+No existing `.dev/store`, SSH configuration, account, or running service is used.
+The runner refuses to start if ports 5175, 8082, or 2225 are occupied.
+
+This replaces the older `dmccanns/dev-mode` console with the current key-bundle
+and session flow. Only the account/passkey provider and resource inventory are
+fake; the normal session, encrypted key-bundle code, and local Monitor API are
+used. Development passkey records intentionally contain plaintext keys. All
+credentials are throwaway, publicly known fixtures: **never use real keys or
+credentials here, expose these servers, or deploy this mode**. The local mode
+cannot be built, and its entry is excluded from production builds.
+
+Stop with Ctrl-C. To reset this development instance, stop it first and remove
+only `.dev/console/`, then restart. No development reset changes production state.
+
 ## Access control
 
 In **Agents**, set each agent's access to each account.

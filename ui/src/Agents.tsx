@@ -39,6 +39,9 @@ export function Agents(props: { expanded?: string }) {
   const names = createMemo(() => [...summaries().keys()]);
   return (
     <>
+      <Show when={m.sandboxesLoading()}>
+        <p class="muted" role="status">Loading your sandboxes…</p>
+      </Show>
       <Show when={m.waiting().length}>
         <div class="resource-list">
           <div class="resource-heading">
@@ -155,7 +158,7 @@ export function Agents(props: { expanded?: string }) {
           );
         }}
       </For>
-      <Show when={!names().length && !m.waiting().length}>
+      <Show when={!m.sandboxesLoading() && !names().length && !m.waiting().length}>
         <div class="resource-list">
           <Empty
             icon="sandboxes"

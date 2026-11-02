@@ -11,7 +11,6 @@ import * as owner from "./owner.js";
 import {
   ConnectorIcon,
   Copy,
-  DataPermissions,
   Empty,
   DisclosureHeading,
   SectionHeading,
@@ -479,7 +478,8 @@ export function AddConnection(props: { preset: string }) {
   );
   const [tokens, setTokens] = createStore<Record<string, boolean>>({});
   const signIns = () => fields.filter((f) => f.oauth && !tokens[f.key]);
-  const [sharing, setSharing] = createSignal(answers(preset?.defaults));
+  // Keep the preset's data-flow defaults even though this editor is hidden.
+  const sharing = () => answers(preset?.defaults);
   const [api, setApi] = createSignal(owner.apiSettings(m.view()!)),
     [token, setToken] = createSignal("");
   const names = () =>
@@ -633,25 +633,6 @@ export function AddConnection(props: { preset: string }) {
             </select>
           </label>
         </Show>
-        <ResourceDisclosure
-          class="section-disclosure"
-          summary={
-            <DisclosureHeading
-              title="Advanced"
-              description="Data sharing"
-              small
-            />
-          }
-        >
-          {() => (
-            <div class="section-content">
-              <section class="settings-group" aria-label="Data sharing">
-                <SectionHeading title="Data sharing" small />
-                <DataPermissions value={sharing()} onChange={setSharing} />
-              </section>
-            </div>
-          )}
-        </ResourceDisclosure>
         <div class="form-actions">
           <button
             classList={{ primary: !signIns().length }}
@@ -846,6 +827,9 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
       <header>
         <span class="badge">{TOOL_CHANGES[props.change.sign]}</span>
         <code>{props.change.name}</code>
+        <Show when={props.change.tool}>
+          <span class="muted">{props.change.parameters.length} parameters</span>
+        </Show>
         <Show when={props.change.tool?.annotations?.readOnlyHint}>
           <span class="badge effect-read">Treated as read-only</span>
         </Show>
@@ -857,14 +841,21 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
         when={props.change.tool}
         fallback={
           <Show when={props.change.text}>
-            <pre>{props.change.text}</pre>
+            <details>
+              <summary>View details</summary>
+              <pre>{props.change.text}</pre>
+            </details>
           </Show>
         }
       >
         {(tool) => (
           <>
-            <Show when={tool().description}>
-              <p class="tool-description">{tool().description}</p>
+            <Show when={props.change.changedFields.length}>
+              <ul class="tool-field-changes">
+                <For each={props.change.changedFields}>
+                  {(field) => <li>{field.kind}: <code>{field.name}</code></li>}
+                </For>
+              </ul>
             </Show>
             <Show when={props.change.parameters.length}>
               <dl>
@@ -874,22 +865,37 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
                       <dt>
                         <code>{parameter.name}</code>
                         <span class="muted">
-                          {[parameter.type, !parameter.required && "optional"]
+                          {[parameter.type, parameter.required ? "required" : "optional"]
                             .filter(Boolean)
                             .join(" · ")}
                         </span>
                       </dt>
-                      <Show when={parameter.description}>
-                        <dd>{parameter.description}</dd>
-                      </Show>
                     </div>
                   )}
                 </For>
               </dl>
             </Show>
+            <Show when={tool().description || props.change.parameters.some((p) => p.description)}>
+              <details>
+                <summary>Descriptions</summary>
+                <Show when={tool().description}>
+                  <p class="tool-description">{tool().description}</p>
+                </Show>
+                <dl>
+                  <For each={props.change.parameters.filter((p) => p.description)}>
+                    {(parameter) => (
+                      <div>
+                        <dt><code>{parameter.name}</code></dt>
+                        <dd>{parameter.description}</dd>
+                      </div>
+                    )}
+                  </For>
+                </dl>
+              </details>
+            </Show>
             <details>
               <summary>Full definition</summary>
-              <pre>{props.change.text}</pre>
+              <pre>{props.change.text || JSON.stringify(tool(), null, 2)}</pre>
             </details>
           </>
         )}
@@ -1000,6 +1006,7 @@ function Connection(props: { name: string; active: boolean }) {
                                 change={owner.toolChange(
                                   change,
                                   review().tools,
+                                  review().previousTools,
                                 )}
                               />
                             )}

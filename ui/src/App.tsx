@@ -251,6 +251,35 @@ function Shell() {
                     </p>
                   </div>
                   <div class="header-actions">
+                    <details
+                      class="pending-activity"
+                      onClick={(event) => {
+                        if ((event.target as HTMLElement).closest("a"))
+                          event.currentTarget.open = false;
+                      }}
+                    >
+                      <summary aria-label={`${m.pendingCount()} requests need your approval`}>
+                        <Icon name="activity" />
+                        Activity
+                        <Show when={m.pendingCount()}>
+                          <span class="badge status-pending">{m.pendingCount()} pending</span>
+                        </Show>
+                      </summary>
+                      <div class="pending-activity-menu">
+                        <For
+                          each={owner.pendingSoonest(m.records().filter(owner.needsOwner))}
+                          fallback={<p class="muted">No requests need your approval.</p>}
+                        >
+                          {(record) => (
+                            <a href={href("request", record.id)}>
+                              <strong>{owner.requestTitle(record)}</strong>
+                              <small>{record.facts.principal.name} · {record.facts.account}</small>
+                            </a>
+                          )}
+                        </For>
+                        <a href="#activity">View all activity <Icon name="arrow" /></a>
+                      </div>
+                    </details>
                     <button
                       aria-label="Refresh monitor"
                       aria-busy={m.loading()}

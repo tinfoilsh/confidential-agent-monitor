@@ -394,6 +394,10 @@ export function UnlockKeys(props: {
           >
             {action.busy() ? "Unlocking…" : "Unlock with passkey"}
           </button>
+          <p class="start-help">
+            Your keys stay unlocked while this page is open. Reopening or
+            reloading terminal.tinfoil.sh asks for your passkey again.
+          </p>
           <button
             class="link start-alternative"
             disabled={action.busy()}
@@ -515,11 +519,11 @@ export function KeyGate(props: {
           fallback={
             <p
               class={read().error ? "start-notice" : "start-help"}
-              role="status"
+              role={read().error ? "alert" : "status"}
             >
               {read().error
                 ? `Your keys could not be read: ${read().error}`
-                : "Checking your keys…"}
+                : "Loading your keys…"}
             </p>
           }
         >

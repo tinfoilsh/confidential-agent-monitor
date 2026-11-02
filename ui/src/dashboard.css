@@ -435,6 +435,54 @@ summary + * {
   padding-block: 0;
   white-space: nowrap;
 }
+.pending-activity {
+  position: relative;
+}
+.pending-activity > summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+  list-style: none;
+}
+.pending-activity > summary::-webkit-details-marker {
+  display: none;
+}
+.pending-activity-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 50;
+  width: min(360px, calc(100vw - 48px));
+  max-height: 60vh;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 8px 24px #0002;
+}
+.pending-activity-menu > :is(a, p) {
+  display: block;
+  margin: 0;
+  padding: 12px;
+}
+.pending-activity-menu > a + a {
+  border-top: 1px solid var(--line);
+}
+.pending-activity-menu :is(strong, small) {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pending-activity-menu small {
+  margin-top: 4px;
+  color: var(--muted);
+}
 #page-content {
   max-width: var(--page-width);
   margin-inline: auto;
@@ -1034,6 +1082,12 @@ details[open] > summary > .collection-chevron {
 }
 .tool-change :is(.tool-description, dl, details) {
   margin: 8px 0 0;
+}
+.tool-field-changes {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
 }
 .tool-description {
   white-space: pre-wrap;
@@ -2602,6 +2656,10 @@ td {
   }
   .header-actions {
     flex-wrap: wrap;
+  }
+  .pending-activity-menu {
+    left: 0;
+    right: auto;
   }
   #toolbar > select {
     max-width: none;
