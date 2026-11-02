@@ -8,6 +8,7 @@ import { TEMPLATES } from "./templates";
 import { bucketOwnedBy, measuredEnv, monitorDigest } from "./trust";
 
 const SPKI = "https://tinfoil.sh/key/spki/v1";
+const PROTOCOL = "monitor-owner-v1";
 const ED25519_SPKI = /^302a300506032b6570032100([0-9a-f]{64})$/;
 const X25519_SPKI = /^302a300506032b656e032100([0-9a-f]{64})$/;
 const CREDENTIALS_PATH = "/api/deployments/storage-credentials";
@@ -155,7 +156,7 @@ export async function openMonitor({
   const url = `wss://${row.domain}/owner/ws`;
   const session = (hello: object): Session => ({
     serverKey: sessionKey(),
-    prologue: `monitor-owner-v3\0${bucket}`,
+    prologue: PROTOCOL,
     seed,
     hello,
   });

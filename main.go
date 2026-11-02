@@ -141,7 +141,6 @@ func main() {
 	defer ln.Close()
 	options := monitor.Options{
 		Bucket:         bucket,
-		BucketURL:      *bucketURL,
 		OwnerPublicKey: public,
 		HostKey:        hostSigner,
 		Connectors:     connectorKinds,

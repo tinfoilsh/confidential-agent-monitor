@@ -125,7 +125,6 @@ type settingsPlan struct {
 
 type Options struct {
 	Bucket         *blob.Bucket
-	BucketURL      string
 	OwnerPublicKey ed25519.PublicKey
 	SessionKey     noise.DHKey
 	HostKey        ssh.Signer
@@ -157,7 +156,6 @@ type monitor struct {
 	sessionKey              noise.DHKey
 	sshHostKey              ssh.Signer
 	embeddedFiles, ownerAPI http.Handler
-	bucketURL               string
 	forwards                *frontdoor.Forwarder
 	relays                  http.RoundTripper
 	streams                 map[*connector.Stream]admission
@@ -175,7 +173,6 @@ func New(o Options) *monitor {
 		ownerPublicKey: o.OwnerPublicKey,
 		sessionKey:     o.SessionKey,
 		sshHostKey:     o.HostKey,
-		bucketURL:      o.BucketURL,
 		kinds:          o.Connectors,
 		workers:        o.Workers,
 		embeddedFiles:  o.EmbeddedFiles,

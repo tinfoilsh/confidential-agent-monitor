@@ -58,7 +58,7 @@ func (m *monitor) HTTPHandler(devFiles http.Handler) http.Handler {
 	if m.ownerPublicKey != nil {
 		mux.Handle("GET /healthz", m.ownerAPI)
 		// Base64 inflates the call by a third.
-		mux.Handle("GET /owner/ws", &ownerauth.Handler{Key: m.ownerPublicKey, SessionKey: m.sessionKey, Resource: m.bucketURL, MaxBytes: 2 * maxDocumentBytes, API: m.ownerAPI, Generation: m.generation,
+		mux.Handle("GET /owner/ws", &ownerauth.Handler{Key: m.ownerPublicKey, SessionKey: m.sessionKey, MaxBytes: 2 * maxDocumentBytes, API: m.ownerAPI, Generation: m.generation,
 			Relay: func(ctx context.Context, instance string) (*websocket.Conn, error) {
 				return sandbox.DialOwner(ctx, m.relays, instance)
 			}})

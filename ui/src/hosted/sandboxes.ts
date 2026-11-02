@@ -14,7 +14,7 @@ import { SANDBOX_REPO, monitorOf, type Container } from "./session";
 import { TEMPLATES } from "./templates";
 import { measuredEnv, sandboxDigest, volumeSize } from "./trust";
 
-const PROTOCOL = "sandbox-owner-v2";
+const PROTOCOL = "sandbox-owner-v1";
 const ATTESTATION = "/.well-known/tinfoil-attestation";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const HOST = /^[a-z0-9.-]+$/;
@@ -79,10 +79,9 @@ export function sandboxClient(
   const connect = async (hello: object, signal?: AbortSignal) => {
     await secure.ready({ signal });
     const serverKey = attestedKey(secure, "owner-session");
-    const prologue = `${PROTOCOL}\0${instance_id}`;
     return monitor.relay(
       instance_id,
-      { serverKey, prologue, seed, hello },
+      { serverKey, prologue: PROTOCOL, seed, hello },
       signal,
     );
   };

@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	Protocol        = "monitor-owner-v3"
+	Protocol        = "monitor-owner-v1"
 	ownerRPCSession = "owner-rpc"
 )
 
@@ -28,9 +28,7 @@ type Handler struct {
 	Key ed25519.PublicKey
 	// SessionKey is this boot's attested static key for owner sessions.
 	SessionKey noise.DHKey
-	// Resource is the storage URL that binds sessions to this Monitor.
-	Resource string
-	MaxBytes int
+	MaxBytes   int
 	// API serves authenticated calls as the owner.
 	API        http.Handler
 	Generation Generation
@@ -45,7 +43,7 @@ type hello struct {
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var open hello
-	c, err := Accept(w, r, h.SessionKey, Protocol+"\x00"+h.Resource, h.Key, &open)
+	c, err := Accept(w, r, h.SessionKey, Protocol, h.Key, &open)
 	if err != nil {
 		return
 	}
