@@ -2,7 +2,7 @@ import { ed25519 } from "@noble/curves/ed25519.js";
 import { concatBytes, utf8ToBytes } from "@noble/hashes/utils.js";
 import {
   Handshake,
-  Noise_25519_ChaChaPoly_BLAKE2s,
+  Noise_25519_ChaChaPoly_BLAKE2s as NOISE,
   type TransportState,
 } from "salty-crypto";
 import {
@@ -39,27 +39,28 @@ export async function openChannel(
   const socket = new WebSocket(url);
   socket.binaryType = "arraybuffer";
   signal?.addEventListener("abort", () => socket.close(), { once: true });
-  const inbox: Uint8Array[] = [];
-  let wake = () => {},
-    closed: Error | undefined,
+  let reason = "The owner connection closed.",
     transport!: TransportState;
-  socket.onopen = () => wake();
-  socket.onmessage = ({ data }) => (inbox.push(new Uint8Array(data)), wake());
-  socket.onclose = ({ reason }) => {
-    closed = new Error(reason || "The owner connection closed.");
-    wake();
+  // Closing keeps queued messages readable, so a final message is not lost.
+  const inbox = new ReadableStream<ArrayBuffer>({
+    start(queue) {
+      socket.onmessage = ({ data }) => queue.enqueue(data);
+      socket.onclose = (event) => {
+        reason = event.reason || reason;
+        queue.close();
+      };
+    },
+  }).getReader();
+  const next = async () => {
+    const { done, value } = await inbox.read();
+    if (done) throw new Error(reason);
+    return new Uint8Array(value);
   };
   // salty types its output over any buffer, but it always allocates ArrayBuffers.
   const write = (data: Uint8Array) =>
     socket.send(data as Uint8Array<ArrayBuffer>);
-  const until = async <T>(ready: () => T | undefined) => {
-    for (let value; ; await new Promise<void>((resolve) => (wake = resolve))) {
-      if ((value = ready()) !== undefined) return value;
-      if (closed) throw closed;
-    }
-  };
   const send = (message: Uint8Array) => {
-    if (closed) throw closed;
+    if (socket.readyState !== WebSocket.OPEN) throw new Error(reason);
     for (let at = 0; ; at += FRAME_BYTES) {
       const last = at + FRAME_BYTES >= message.length;
       const flag = Uint8Array.of(last ? FRAME_LAST : FRAME_MORE);
@@ -68,21 +69,17 @@ export async function openChannel(
       if (last) return;
     }
   };
-  await until(() => socket.readyState === WebSocket.OPEN || undefined);
+  await new Promise((resolve, reject) => {
+    socket.onopen = resolve;
+    socket.onerror = () => reject(new Error(reason));
+  });
   for (const { serverKey, prologue, seed, hello } of sessions) {
-    const handshake = new Handshake(
-      Noise_25519_ChaChaPoly_BLAKE2s,
-      "NK",
-      "initiator",
-      {
-        prologue: utf8ToBytes(prologue),
-        remoteStaticPublicKey: serverKey,
-      },
-    );
+    const handshake = new Handshake(NOISE, "NK", "initiator", {
+      prologue: utf8ToBytes(prologue),
+      remoteStaticPublicKey: serverKey,
+    });
     write(handshake.writeMessage(new Uint8Array()).packet);
-    transport = handshake.readMessage(
-      await until(() => inbox.shift()),
-    ).finished!;
+    transport = handshake.readMessage(await next()).finished!;
     const signed = concatBytes(
       utf8ToBytes(SESSION_CONTEXT),
       handshake.handshakeHash,
@@ -95,7 +92,9 @@ export async function openChannel(
     async receive() {
       const parts: Uint8Array[] = [];
       for (;;) {
-        const frame = transport.recv.decrypt(await until(() => inbox.shift()));
+        const frame = transport.recv.decrypt(await next());
+        if (frame[0] !== FRAME_LAST && frame[0] !== FRAME_MORE)
+          throw new Error("The owner connection sent a malformed message.");
         parts.push(frame.subarray(1));
         if (frame[0] === FRAME_LAST) return concatBytes(...parts);
       }
