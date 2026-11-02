@@ -1,17 +1,13 @@
 import { ed25519 } from "@noble/curves/ed25519.js";
 import { concatBytes, utf8ToBytes } from "@noble/hashes/utils.js";
 import {
-  Handshake,
-  Noise_25519_ChaChaPoly_BLAKE2s as NOISE,
-  type TransportState,
-} from "salty-crypto";
-import {
   OwnerError,
   fromBase64,
   toBase64,
   type OwnerChannel,
   type OwnerRpc,
 } from "../owner";
+import { initiateNK, type Transport } from "./noise";
 
 const SESSION_CONTEXT = "tinfoil owner session v1\0";
 // A frame is a flag byte, then data filling the rest of one Noise message.
@@ -40,7 +36,7 @@ export async function openChannel(
   socket.binaryType = "arraybuffer";
   signal?.addEventListener("abort", () => socket.close(), { once: true });
   let reason = "The owner connection closed.",
-    transport!: TransportState;
+    transport!: Transport;
   // Closing keeps queued messages readable, so a final message is not lost.
   const inbox = new ReadableStream<ArrayBuffer>({
     start(queue) {
@@ -56,16 +52,13 @@ export async function openChannel(
     if (done) throw new Error(reason);
     return new Uint8Array(value);
   };
-  // salty types its output over any buffer, but it always allocates ArrayBuffers.
-  const write = (data: Uint8Array) =>
-    socket.send(data as Uint8Array<ArrayBuffer>);
   const send = (message: Uint8Array) => {
     if (socket.readyState !== WebSocket.OPEN) throw new Error(reason);
     for (let at = 0; ; at += FRAME_BYTES) {
       const last = at + FRAME_BYTES >= message.length;
       const flag = Uint8Array.of(last ? FRAME_LAST : FRAME_MORE);
       const data = message.subarray(at, at + FRAME_BYTES);
-      write(transport.send.encrypt(concatBytes(flag, data)));
+      socket.send(transport.send.encrypt(concatBytes(flag, data)));
       if (last) return;
     }
   };
@@ -74,16 +67,10 @@ export async function openChannel(
     socket.onerror = () => reject(new Error(reason));
   });
   for (const { serverKey, prologue, seed, hello } of sessions) {
-    const handshake = new Handshake(NOISE, "NK", "initiator", {
-      prologue: utf8ToBytes(prologue),
-      remoteStaticPublicKey: serverKey,
-    });
-    write(handshake.writeMessage(new Uint8Array()).packet);
-    transport = handshake.readMessage(await next()).finished!;
-    const signed = concatBytes(
-      utf8ToBytes(SESSION_CONTEXT),
-      handshake.handshakeHash,
-    );
+    const handshake = initiateNK(serverKey, utf8ToBytes(prologue));
+    socket.send(handshake.message);
+    transport = handshake.finish(await next());
+    const signed = concatBytes(utf8ToBytes(SESSION_CONTEXT), transport.hash);
     const signature = toBase64(ed25519.sign(signed, seed));
     send(utf8ToBytes(JSON.stringify({ signature, ...hello })));
   }
