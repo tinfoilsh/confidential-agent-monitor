@@ -1,3 +1,4 @@
+import { createSignal } from "solid-js";
 import type { Session } from "../src/hosted/session";
 
 export const SCENARIOS = [
@@ -5,6 +6,8 @@ export const SCENARIOS = [
   "inventory-loading",
   "sandboxes-loading",
   "monitor-booting",
+  "monitor-startup",
+  "monitor-locked",
   "monitor-opening",
   "monitor-stopped",
   "monitor-error",
@@ -16,24 +19,40 @@ export const scenarioOf = (value: string | null): Scenario | undefined =>
 // Render-only overrides: no fixture changes reach the API or saved key bundle.
 export function previewSession(session: Session, scenario?: Scenario): Session {
   if (!scenario) return session;
+  const [locked, setLocked] = createSignal(scenario === "monitor-locked");
+  const [starting, setStarting] = createSignal(scenario === "monitor-startup");
+  if (starting()) setTimeout(() => setStarting(false), 5000);
   return {
     ...session,
     keyState: () =>
       scenario === "keys-loading" ? { loading: true } : session.keyState(),
     unlocked: () =>
-      scenario === "keys-loading" ? undefined : session.unlocked(),
+      scenario === "keys-loading" || locked() ? undefined : session.unlocked(),
+    bind:
+      scenario === "monitor-locked"
+        ? () => {
+            const scope = session.bind();
+            return {
+              ...scope,
+              setUnlocked: async (unlocked) => {
+                await scope.setUnlocked(unlocked);
+                setLocked(!unlocked);
+              },
+            };
+          }
+        : session.bind,
     inventory: () => {
       if (scenario === "inventory-loading") return { loading: true };
       const inventory = session.inventory();
-      if (scenario !== "monitor-booting" && scenario !== "monitor-stopped")
-        return inventory;
+      const booting = scenario === "monitor-booting" || starting();
+      if (!booting && scenario !== "monitor-stopped") return inventory;
       return {
         ...inventory,
         value: inventory.value?.map((row) =>
           row.repo.endsWith("agent-monitor")
             ? {
                 ...row,
-                status: scenario === "monitor-booting" ? "pending" : "stopped",
+                status: booting ? "pending" : "stopped",
               }
             : row,
         ),

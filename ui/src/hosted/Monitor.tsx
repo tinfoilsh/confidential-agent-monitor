@@ -1,6 +1,14 @@
 import type { PasskeyKeyManager } from "@tinfoilsh/passkey-kit";
 import { useParams } from "@solidjs/router";
-import { Show, createEffect, createSignal, on, onCleanup } from "solid-js";
+import {
+  Match,
+  Show,
+  Switch,
+  createEffect,
+  createSignal,
+  on,
+  onCleanup,
+} from "solid-js";
 import App from "../App";
 import { Icon, Loading } from "../components";
 import { Header } from "./Console";
@@ -36,6 +44,7 @@ export default function Monitor(props: {
   const [error, setError] = createSignal("");
   const [notice, setNotice] = createSignal("");
   const [busy, setBusy] = createSignal(false);
+  const [cancelled, setCancelled] = createSignal(false);
   const [linking, setLinking] = createSignal(false);
   const [session, setSession] = createSignal<OpenedMonitor>();
   let attempt: AbortController | undefined;
@@ -52,6 +61,7 @@ export default function Monitor(props: {
       cancel();
       opening = true;
       setError("");
+      setCancelled(false);
       setNotice("");
       setLinking(false);
       if (session() && !session()!.scope.live()) setSession(undefined);
@@ -66,22 +76,51 @@ export default function Monitor(props: {
     ["created", "pending", "deploying", "started"].includes(
       row()?.status ?? "",
     );
+  const title = () => {
+    if (!UUID.test(id)) return "Choose a Monitor";
+    if (!props.session.user()) return "Sign in to open your Monitor";
+    const name = row()?.name ?? "your Monitor";
+    if (props.session.keyState().error) return "Could not load your keys";
+    if (inventory().error) return "Could not load your Monitor";
+    if (error()) return `Could not open ${name}`;
+    if (cancelled()) return `Open ${name}`;
+    if (booting()) return `Starting ${name}…`;
+    if (row() && row()!.status !== "running")
+      return `${name} is ${row()!.status}`;
+    if (props.session.keyState().value && !props.session.unlocked())
+      return props.session.keyState().value!.dek_id
+        ? `Unlock keys for ${name}`
+        : `Set up keys for ${name}`;
+    if (inventory().value && !inventory().loading && !row())
+      return "Monitor not found";
+    return `Opening ${name}…`;
+  };
   // Unlocking opens the Monitor once its boot is ready; a failed open needs a retry.
   createEffect(
-    on([props.session.unlocked, () => row()?.status], ([unlocked, status]) => {
-      if (opening && unlocked && status === "running" && !session()) {
-        opening = false;
-        void open();
-      }
-    }),
+    on(
+      [props.session.unlocked, () => row()?.status, () => inventory().error],
+      ([unlocked, status, readError]) => {
+        if (
+          opening &&
+          unlocked &&
+          status === "running" &&
+          !readError &&
+          !session()
+        ) {
+          opening = false;
+          void open();
+        }
+      },
+    ),
   );
 
   const open = async () => {
-    if (busy() || row()?.status !== "running") return;
+    if (busy() || row()?.status !== "running" || inventory().error) return;
     cancel();
     const current = (attempt = new AbortController());
     setBusy(true);
     setError("");
+    setCancelled(false);
     try {
       const opened = await (props.open ?? openMonitor)({
         scope: props.session.bind(),
@@ -162,9 +201,7 @@ export default function Monitor(props: {
               </span>
               <div class="monitor-intro">
                 <p class="start-eyebrow">Tinfoil Monitor</p>
-                <h1>
-                  {row() ? `Welcome to ${row()!.name}` : "Open your Monitor"}
-                </h1>
+                <h1>{title()}</h1>
               </div>
               <Show when={error()}>
                 <p class="start-notice" role="alert">
@@ -193,75 +230,91 @@ export default function Monitor(props: {
                   </div>
                 }
               >
-                <section class="start-monitors" aria-label="Your keys">
+                <section class="start-monitors" aria-label="Monitor connection">
                   <KeyGate session={props.session} manager={manager}>
-                    <Show when={inventory().loading && !inventory().value}>
-                      <Loading label="Loading your Monitor…" />
-                    </Show>
-                    <Show when={inventory().error}>
-                      <p class="start-notice" role="alert">
-                        Could not load your Monitor: {inventory().error}
-                      </p>
-                      <button
-                        class="link"
-                        onClick={() => void props.session.refresh()}
-                      >
-                        Try again
-                      </button>
-                    </Show>
-                    <Show
-                      when={
-                        inventory().value &&
-                        !inventory().loading &&
-                        !inventory().error &&
-                        !row()
-                      }
-                    >
-                      <p class="start-notice" role="alert">
-                        This Monitor is not in the selected account. Switch
-                        accounts or choose another Monitor.
-                      </p>
-                    </Show>
-                    <Show when={booting()}>
-                      <p class="start-help" role="status">
-                        Your Monitor is starting. It will open when it is ready.
-                      </p>
-                    </Show>
-                    <Show
-                      when={row() && row()!.status !== "running" && !booting()}
-                    >
-                      <p class="start-help" role="status">
-                        Your Monitor is {row()!.status}. Open the dashboard to
-                        start it or check its status.
-                      </p>
-                    </Show>
-                    <div class="monitor-actions">
-                      <button
-                        class="primary"
-                        disabled={
-                          busy() ||
-                          row()?.status !== "running" ||
-                          !!inventory().error
-                        }
-                        aria-busy={busy()}
-                        onClick={() => void open()}
-                      >
-                        <Show when={busy()}>
-                          <span class="loading-spinner" aria-hidden="true" />
-                        </Show>
-                        {busy()
-                          ? "Verifying and opening Monitor…"
-                          : booting()
-                            ? "Waiting for Monitor…"
-                            : "Open Monitor"}
-                      </button>
-                      <Show when={busy()}>
-                        <button class="link" onClick={cancel}>
-                          Cancel
+                    <Switch>
+                      <Match when={inventory().loading && !inventory().value}>
+                        <Loading label="Loading your Monitor…" />
+                      </Match>
+                      <Match when={inventory().error}>
+                        <p class="start-notice" role="alert">
+                          Could not load your Monitor: {inventory().error}
+                        </p>
+                        <button
+                          class="link"
+                          onClick={() => void props.session.refresh()}
+                        >
+                          Try again
                         </button>
-                      </Show>
-                    </div>
+                      </Match>
+                      <Match
+                        when={
+                          inventory().value && !inventory().loading && !row()
+                        }
+                      >
+                        <p class="start-notice" role="alert">
+                          This Monitor is not in the selected account. Switch
+                          accounts or choose another Monitor.
+                        </p>
+                      </Match>
+                      <Match when={booting()}>
+                        <Loading label="Your Monitor will open automatically when it is ready." />
+                      </Match>
+                      <Match when={row() && row()!.status !== "running"}>
+                        <p class="start-help">
+                          Open the dashboard to start this Monitor or check its
+                          status.
+                        </p>
+                        <a class="button primary" href={keys.TARGETS.dashboard}>
+                          Open dashboard
+                        </a>
+                      </Match>
+                      <Match
+                        when={
+                          busy() ||
+                          (!error() &&
+                            !cancelled() &&
+                            row()?.status === "running")
+                        }
+                      >
+                        <Loading label="Verifying and connecting to your Monitor…" />
+                        <Show when={busy()}>
+                          <button
+                            class="link"
+                            onClick={() => {
+                              cancel();
+                              setCancelled(true);
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </Show>
+                      </Match>
+                      <Match
+                        when={
+                          (error() || cancelled()) &&
+                          row()?.status === "running"
+                        }
+                      >
+                        <div class="monitor-actions">
+                          <button class="primary" onClick={() => void open()}>
+                            {error() ? "Try again" : "Open Monitor"}
+                          </button>
+                        </div>
+                      </Match>
+                    </Switch>
                   </KeyGate>
+                  <Show when={props.session.keyState().error}>
+                    <button
+                      class="link"
+                      onClick={() => void props.session.refresh()}
+                    >
+                      Try again
+                    </button>
+                  </Show>
+                  <a class="link" href="/" link>
+                    Back to your Monitors
+                  </a>
                 </section>
               </Show>
             </main>

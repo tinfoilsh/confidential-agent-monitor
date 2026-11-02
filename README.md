@@ -118,8 +118,11 @@ cannot be built, and its entry is excluded from production builds.
 For frozen loading/startup previews, append `?state=keys-loading`,
 `?state=inventory-loading`, `?state=sandboxes-loading`, `?state=monitor-booting`,
 `?state=monitor-opening`, or `?state=monitor-stopped` to a Monitor page URL.
-`?state=monitor-error` fails the first open; clicking **Open Monitor** retries
-against the real local backend. Inventory loading can also be viewed at
+`?state=monitor-error` fails the first open; clicking **Try again** retries
+against the real local backend. `?state=monitor-locked` shows the key-unlock
+step and then opens the Monitor when you click **Unlock with passkey** (without
+a real passkey prompt in dev mode). `?state=monitor-startup` shows booting for
+five seconds, then automatically opens the running local Monitor. Inventory loading can also be viewed at
 `/?state=inventory-loading`. These are render-only overrides: they never stop or
 restart a Monitor, change its saved configuration, or clear actual keys. Remove
 the query parameter to return to the normal preview.
