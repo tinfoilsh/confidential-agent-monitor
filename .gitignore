@@ -11,6 +11,8 @@
 
 *.test.*
 *_test.go
+!internal/store/store_test.go
+!internal/monitor/http_test.go
 __pycache__/
 *.md
 !README.md

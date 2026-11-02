@@ -13,7 +13,11 @@ import (
 	"fmt"
 	"io"
 	"maps"
+	"net/url"
+	"strings"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/tinfoilsh/monitor/facts"
 	"gocloud.dev/blob"
 	"gocloud.dev/gcerrors"
@@ -58,11 +62,13 @@ func decodeState(plain []byte) (Document, error) {
 // Store owns the last committed document and its encryption state.
 // The monitor's authorization lock serializes loads and commits with runtime changes.
 type Store struct {
-	Bucket *blob.Bucket
-	Doc    Document
-	owner  []byte
+	Bucket    *blob.Bucket
+	BucketURL string
+	Doc       Document
+	owner     []byte
 	Sealer
 	header []byte
+	etag   string
 }
 
 type Sealer struct{ aead cipher.AEAD }
@@ -74,7 +80,21 @@ func (s Store) Load(ctx context.Context, key []byte, minimum uint64) (Store, boo
 		return s, false, ErrOwner
 	}
 	sl := Document{Version: stateVersion, Labels: map[string]facts.Label{}}
-	raw, err := s.Bucket.ReadAll(ctx, stateObject)
+	reader, err := s.Bucket.NewReader(ctx, stateObject, nil)
+	var raw []byte
+	s.etag = ""
+	if err == nil {
+		var object s3.GetObjectOutput
+		if reader.As(&object) {
+			s.etag = aws.ToString(object.ETag)
+			if s.etag == "" {
+				reader.Close()
+				return s, false, errors.New("state read returned no ETag")
+			}
+		}
+		raw, err = io.ReadAll(reader)
+		err = errors.Join(err, reader.Close())
+	}
 	missing := false
 	if err != nil {
 		if missing, err = s.missing(ctx, err); err != nil {
@@ -170,7 +190,30 @@ func (s *Store) Commit(ctx context.Context, next Document) error {
 	if err != nil {
 		return err
 	}
-	if err := s.Bucket.WriteAll(ctx, stateObject, s.aead.Seal(bytes.Clone(s.header), nil, plain, s.header), nil); err != nil {
+	sealed := s.aead.Seal(bytes.Clone(s.header), nil, plain, s.header)
+	var client *s3.Client
+	if s.Bucket.As(&client) {
+		// Use the ETag from the exact document loaded, then the successful PUT
+		// response. A HEAD after writing could pick up another writer's ETag.
+		u, err := url.Parse(s.BucketURL)
+		if err != nil || u.Scheme != "s3" || u.Host == "" {
+			return errors.New("missing S3 state binding")
+		}
+		input := &s3.PutObjectInput{Bucket: aws.String(u.Host), Key: aws.String(u.Query().Get("prefix") + stateObject), Body: bytes.NewReader(sealed)}
+		if s.etag == "" {
+			input.IfNoneMatch = aws.String("*")
+		} else {
+			input.IfMatch = aws.String(s.etag)
+		}
+		result, err := client.PutObject(ctx, input)
+		if err != nil {
+			return fmt.Errorf("commit state: %w", err)
+		}
+		if result.ETag == nil || strings.TrimSpace(*result.ETag) == "" {
+			return errors.New("state write returned no ETag")
+		}
+		s.etag = *result.ETag
+	} else if err := s.Bucket.WriteAll(ctx, stateObject, sealed, nil); err != nil {
 		return err
 	}
 	s.Doc = next

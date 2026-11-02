@@ -54,7 +54,9 @@ type editsInput struct {
 func (m *monitor) HTTPHandler(devFiles http.Handler) http.Handler {
 	mux := http.NewServeMux()
 	if m.ownerPublicKey != nil {
-		mux.Handle("GET /healthz", m.ownerAPI)
+		mux.Handle("GET /healthz", JSONHandler(0, func(*http.Request, struct{}) (any, error) {
+			return struct{}{}, nil
+		}))
 		// Base64 inflates the signed request by a third.
 		mux.Handle("POST /owner/rpc", &ownerauth.Handler{Key: m.ownerPublicKey, Resource: m.bucketURL, MaxBytes: 2 * maxDocumentBytes, API: m.ownerAPI, Generation: m.generation, Untracked: []string{sandboxRelayPath}})
 		return mux

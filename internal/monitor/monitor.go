@@ -167,7 +167,7 @@ func New(o Options) *monitor {
 		o.EmbeddedFiles = http.NotFoundHandler()
 	}
 	m := &monitor{
-		store:          store.Store{Bucket: o.Bucket},
+		store:          store.Store{Bucket: o.Bucket, BucketURL: o.BucketURL},
 		audit:          store.AuditLog[*record]{Bucket: o.Bucket},
 		ownerPublicKey: o.OwnerPublicKey,
 		sshHostKey:     o.HostKey,
