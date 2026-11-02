@@ -115,6 +115,15 @@ credentials are throwaway, publicly known fixtures: **never use real keys or
 credentials here, expose these servers, or deploy this mode**. The local mode
 cannot be built, and its entry is excluded from production builds.
 
+For frozen loading/startup previews, append `?state=keys-loading`,
+`?state=inventory-loading`, `?state=sandboxes-loading`, `?state=monitor-booting`,
+`?state=monitor-opening`, or `?state=monitor-stopped` to a Monitor page URL.
+`?state=monitor-error` fails the first open; clicking **Open Monitor** retries
+against the real local backend. Inventory loading can also be viewed at
+`/?state=inventory-loading`. These are render-only overrides: they never stop or
+restart a Monitor, change its saved configuration, or clear actual keys. Remove
+the query parameter to return to the normal preview.
+
 Stop with Ctrl-C. To reset this development instance, stop it first and remove
 only `.dev/console/`, then restart. No development reset changes production state.
 

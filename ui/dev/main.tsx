@@ -5,9 +5,10 @@ import Monitor from "../src/hosted/Monitor";
 import * as keys from "../src/hosted/keys";
 import type { openMonitor } from "../src/hosted/monitors";
 import { createSession } from "../src/hosted/session";
-import { ownerClient } from "../src/owner";
+import { ownerClient, type Snapshot } from "../src/owner";
 import { devClerk, devPasskeys } from "./account";
 import { MONITOR_ID, ORIGIN, resource, STORAGE_KEY } from "./fixtures";
+import { hold, previewSession, scenarioOf } from "./scenarios";
 
 const root = document.getElementById("root")!;
 const loading = render(
@@ -52,9 +53,18 @@ async function start() {
   await scope.setUnlocked(unlocked);
   await session.refresh();
 
+  const scenario = scenarioOf(
+    new URLSearchParams(location.search).get("state"),
+  );
+  const preview = previewSession(session, scenario);
+  let openAttempts = 0;
+
   // No attestation bypass is installed in the production opener. This explicitly
   // local adapter uses the real backend's file-bucket/bearer development API.
   const openLocal: typeof openMonitor = async ({ scope, id, signal }) => {
+    if (scenario === "monitor-opening") return hold(signal);
+    if (scenario === "monitor-error" && openAttempts++ === 0)
+      throw new Error("Could not reach your Monitor. Please try again.");
     if (id !== MONITOR_ID) throw new Error("There is no such local Monitor.");
     const row = (await scope.fresh()).find((row) => row.id === id)!;
     const client = Object.assign(
@@ -69,7 +79,26 @@ async function start() {
       },
     );
     await client.unlock(undefined, signal);
-    const snapshot = await client.read(signal);
+    let snapshot = await client.read(signal);
+    if (scenario === "sandboxes-loading") {
+      snapshot = {
+        ...snapshot,
+        view: {
+          ...snapshot.view,
+          config: {
+            ...snapshot.view.config,
+            identities: Object.fromEntries(
+              Object.entries(snapshot.view.config.identities ?? {}).filter(
+                ([, identity]) => identity.routes,
+              ),
+            ),
+          },
+        },
+      };
+      const current = AbortSignal.any([signal, scope.signal]);
+      client.read = (readSignal) => hold<Snapshot>(readSignal ?? current);
+      scope = { ...scope, fresh: () => hold(current) };
+    }
     return {
       row,
       resource,
@@ -86,12 +115,12 @@ async function start() {
         <Route
           path="/monitor/:id"
           component={() => (
-            <Monitor session={session} manager={manager} open={openLocal} />
+            <Monitor session={preview} manager={manager} open={openLocal} />
           )}
         />
         <Route
           path="*"
-          component={() => <Console session={session} manager={manager} />}
+          component={() => <Console session={preview} manager={manager} />}
         />
       </Router>
     ),
