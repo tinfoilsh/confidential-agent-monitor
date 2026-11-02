@@ -601,6 +601,106 @@ summary + * {
 .resource-list + .resource-list {
   margin-top: 16px;
 }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.loading-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.loading-spinner {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: loading-spin 1s linear infinite;
+}
+.loading-skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 16px var(--card-inset);
+  border-bottom: 1px solid var(--line);
+}
+.loading-skeleton-row:last-child {
+  border-bottom: 0;
+}
+.loading-skeleton-lines {
+  display: grid;
+  flex: 1;
+  gap: 10px;
+}
+.loading-skeleton {
+  display: block;
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(
+    100deg,
+    var(--line) 20%,
+    var(--subtle) 45%,
+    var(--line) 70%
+  );
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.6s linear infinite;
+}
+.loading-skeleton-icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+.loading-skeleton-title {
+  width: 40%;
+}
+.loading-skeleton-description {
+  width: 65%;
+}
+.loading-skeleton-cards {
+  display: grid;
+  gap: 12px;
+}
+.loading-skeleton-cards .loading-skeleton-row {
+  min-height: 88px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+}
+@keyframes loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes loading-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner,
+  .loading-skeleton {
+    animation: none;
+  }
+}
 .resource-heading,
 .section-heading {
   display: flex;

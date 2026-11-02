@@ -26,6 +26,39 @@ export function Icon(props: { name: string }) {
     />
   );
 }
+export function Loading(props: { label: string }) {
+  return (
+    <p class="loading-status" role="status">
+      <span class="loading-spinner" aria-hidden="true" />
+      {props.label}
+    </p>
+  );
+}
+
+export function SkeletonRows(props: { label: string; cards?: boolean }) {
+  return (
+    <div
+      class="loading-skeletons"
+      classList={{ "loading-skeleton-cards": props.cards }}
+      role="status"
+      aria-label={props.label}
+    >
+      <span class="sr-only">{props.label}</span>
+      <For each={[0, 1]}>
+        {() => (
+          <div class="loading-skeleton-row" aria-hidden="true">
+            <span class="loading-skeleton loading-skeleton-icon" />
+            <div class="loading-skeleton-lines">
+              <span class="loading-skeleton loading-skeleton-title" />
+              <span class="loading-skeleton loading-skeleton-description" />
+            </div>
+          </div>
+        )}
+      </For>
+    </div>
+  );
+}
+
 export function ConnectorIcon(props: { preset: string }) {
   const m = useMonitor();
   const icon = createMemo(() =>

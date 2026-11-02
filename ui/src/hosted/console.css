@@ -293,6 +293,12 @@ button.start-continue.danger:hover:not(:disabled) {
 .monitor-welcome .start-welcome > .start-mark {
   margin: 0;
 }
+.monitor-welcome .start-welcome > .start-monitors {
+  margin-top: 0;
+}
+.monitor-welcome .start-monitors > .start-help {
+  margin: 0;
+}
 .monitor-intro {
   display: grid;
   justify-items: center;

@@ -2,7 +2,7 @@ import type { PasskeyKeyManager } from "@tinfoilsh/passkey-kit";
 import { useParams } from "@solidjs/router";
 import { Show, createEffect, createSignal, on, onCleanup } from "solid-js";
 import App from "../App";
-import { Icon } from "../components";
+import { Icon, Loading } from "../components";
 import { Header } from "./Console";
 import * as keys from "./keys";
 import { KeyGate } from "./KeyPanel";
@@ -196,9 +196,7 @@ export default function Monitor(props: {
                 <section class="start-monitors" aria-label="Your keys">
                   <KeyGate session={props.session} manager={manager}>
                     <Show when={inventory().loading && !inventory().value}>
-                      <p class="start-help" role="status">
-                        Loading your Monitor…
-                      </p>
+                      <Loading label="Loading your Monitor…" />
                     </Show>
                     <Show when={inventory().error}>
                       <p class="start-notice" role="alert">
@@ -248,6 +246,9 @@ export default function Monitor(props: {
                         aria-busy={busy()}
                         onClick={() => void open()}
                       >
+                        <Show when={busy()}>
+                          <span class="loading-spinner" aria-hidden="true" />
+                        </Show>
                         {busy()
                           ? "Verifying and opening Monitor…"
                           : booting()

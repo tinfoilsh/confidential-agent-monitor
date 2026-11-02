@@ -7,7 +7,7 @@ import {
   onCleanup,
   type JSX,
 } from "solid-js";
-import { download, Icon } from "../components";
+import { download, Icon, Loading } from "../components";
 import type { MKResource } from "./contract";
 import * as keys from "./keys";
 import type { Scope, Session } from "./session";
@@ -517,14 +517,14 @@ export function KeyGate(props: {
         <Show
           when={read().value}
           fallback={
-            <p
-              class={read().error ? "start-notice" : "start-help"}
-              role={read().error ? "alert" : "status"}
+            <Show
+              when={read().error}
+              fallback={<Loading label="Loading your keys…" />}
             >
-              {read().error
-                ? `Your keys could not be read: ${read().error}`
-                : "Loading your keys…"}
-            </p>
+              <p class="start-notice" role="alert">
+                Your keys could not be read: {read().error}
+              </p>
+            </Show>
           }
         >
           {(state) => (

@@ -9,6 +9,7 @@ import {
   Icon,
   LazyDetails,
   ResourceDisclosure,
+  SkeletonRows,
   href,
 } from "./components";
 import { useMonitor } from "./monitor";
@@ -39,9 +40,6 @@ export function Agents(props: { expanded?: string }) {
   const names = createMemo(() => [...summaries().keys()]);
   return (
     <>
-      <Show when={m.sandboxesLoading()}>
-        <p class="muted" role="status">Loading your sandboxes…</p>
-      </Show>
       <Show when={m.waiting().length}>
         <div class="resource-list">
           <div class="resource-heading">
@@ -84,11 +82,24 @@ export function Agents(props: { expanded?: string }) {
             names().filter((name) => type(name) === kind),
           );
           return (
-            <Show when={members().length || kind === "devices"}>
+            <Show
+              when={
+                members().length ||
+                kind === "devices" ||
+                (kind === "sandboxes" && m.sandboxesLoading())
+              }
+            >
               <div class="resource-list collection-list">
                 <div class="resource-heading">
                   <h2>
-                    {title} <span class="count">{members().length}</span>
+                    {title}{" "}
+                    <span class="count">
+                      {kind === "sandboxes" &&
+                      m.sandboxesLoading() &&
+                      !members().length
+                        ? "…"
+                        : members().length}
+                    </span>
                   </h2>
                   <Show when={blurb}>
                     <span class="muted">{blurb}</span>
@@ -107,6 +118,15 @@ export function Agents(props: { expanded?: string }) {
                     </a>
                   </Show>
                 </div>
+                <Show
+                  when={
+                    kind === "sandboxes" &&
+                    m.sandboxesLoading() &&
+                    !members().length
+                  }
+                >
+                  <SkeletonRows label="Loading your sandboxes…" />
+                </Show>
                 <For each={members()}>
                   {(name) => (
                     <ResourceDisclosure
@@ -158,7 +178,9 @@ export function Agents(props: { expanded?: string }) {
           );
         }}
       </For>
-      <Show when={!m.sandboxesLoading() && !names().length && !m.waiting().length}>
+      <Show
+        when={!m.sandboxesLoading() && !names().length && !m.waiting().length}
+      >
         <div class="resource-list">
           <Empty
             icon="sandboxes"

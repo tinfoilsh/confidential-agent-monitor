@@ -5,7 +5,7 @@ import Monitor from "../src/hosted/Monitor";
 import * as keys from "../src/hosted/keys";
 import type { openMonitor } from "../src/hosted/monitors";
 import { createSession } from "../src/hosted/session";
-import { ownerClient, type Snapshot } from "../src/owner";
+import { isDevice, ownerClient, type Snapshot } from "../src/owner";
 import { devClerk, devPasskeys } from "./account";
 import { MONITOR_ID, ORIGIN, resource, STORAGE_KEY } from "./fixtures";
 import { hold, previewSession, scenarioOf } from "./scenarios";
@@ -89,7 +89,7 @@ async function start() {
             ...snapshot.view.config,
             identities: Object.fromEntries(
               Object.entries(snapshot.view.config.identities ?? {}).filter(
-                ([, identity]) => identity.routes,
+                ([name]) => isDevice(name),
               ),
             ),
           },

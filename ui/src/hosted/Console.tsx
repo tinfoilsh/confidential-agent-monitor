@@ -8,7 +8,7 @@ import {
   createSignal,
   on,
 } from "solid-js";
-import { Icon, Modal } from "../components";
+import { Icon, Loading, Modal, SkeletonRows } from "../components";
 import {
   parseStartRequest,
   startErrorURL,
@@ -250,16 +250,14 @@ function Start(props: {
           )}
         </Match>
         <Match when={!state()}>
-          <p
-            class={
-              props.session.keyState().error ? "start-notice" : "start-help"
-            }
-            role={props.session.keyState().error ? "alert" : "status"}
+          <Show
+            when={props.session.keyState().error}
+            fallback={<Loading label="Loading your keys…" />}
           >
-            {props.session.keyState().error
-              ? `Your keys could not be loaded: ${props.session.keyState().error}`
-              : "Loading your keys…"}
-          </p>
+            <p class="start-notice" role="alert">
+              Your keys could not be loaded: {props.session.keyState().error}
+            </p>
+          </Show>
         </Match>
         <Match when={state() && !state()!.dek_id}>
           <SetupKeys
@@ -319,9 +317,7 @@ function Inventory(props: { session: Session }) {
     <nav class="start-monitors" aria-label="Your monitors">
       <p class="start-eyebrow">Your monitors</p>
       <Show when={read().loading && !read().value}>
-        <p class="start-help" role="status">
-          Loading your Monitors and sandboxes…
-        </p>
+        <SkeletonRows cards label="Loading your Monitors and sandboxes…" />
       </Show>
       <Show when={read().error}>
         <p class="start-notice" role="alert">
