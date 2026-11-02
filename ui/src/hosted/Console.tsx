@@ -154,17 +154,16 @@ function Start(props: {
       await scope.update(keys.addResources(resources));
       if (scope.live()) finishTMK(resources);
     });
-  const registerUMK = () =>
-    act(async (scope) => {
-      const umk = await keys.registerUMK(
-        scope.api,
+  const finishUMK = () =>
+    act(async () =>
+      finish(
         r.roles.map((kind) => ({
           kind,
           public_key: ownerKeyFromSSH(entries()[kind] ?? ""),
+          key_id: keys.id16(),
         })),
-      );
-      if (scope.live()) finish(umk);
-    });
+      ),
+    );
   const state = () => props.session.keyState().value;
   return (
     <>
@@ -236,7 +235,7 @@ function Start(props: {
           <button
             class="primary start-continue"
             disabled={busy() || !state()}
-            onClick={() => void registerUMK()}
+            onClick={() => void finishUMK()}
           >
             Continue to dashboard
           </button>

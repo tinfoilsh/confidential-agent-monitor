@@ -123,12 +123,6 @@ export type KeyState = {
   dek_id: string | null;
   encrypted_mk: string | null;
   recovery: RecoveryInput[];
-  umk: {
-    key_id: string;
-    kind: "monitor" | "sandbox";
-    public_key: string;
-    registered_at: string;
-  }[];
 };
 type KeyChange = {
   dek_id: string;
@@ -142,9 +136,8 @@ const KEY_STATE = "/api/sandboxes/owner-key";
 // A timeout or server error may follow a commit; only a 4xx answer is definitive.
 const REQUEST_TIMEOUT = 408;
 const SERVER_ERROR = 500;
-const UNCERTAIN_RETRIES = 3;
 const MERGE_ATTEMPTS = 5;
-const id16 = () => b64u(randomBytes(16));
+export const id16 = () => b64u(randomBytes(16));
 
 export async function readKeyState(
   api: Api,
@@ -157,8 +150,7 @@ export async function readKeyState(
     (s.dek_id !== null && !isID16(s.dek_id)) ||
     (s.encrypted_mk !== null && typeof s.encrypted_mk !== "string") ||
     (s.dek_id === null) !== (s.encrypted_mk === null) ||
-    !Array.isArray(s.recovery) ||
-    !Array.isArray(s.umk)
+    !Array.isArray(s.recovery)
   )
     throw new Error("The key service returned an invalid key state.");
   return s;
@@ -1040,27 +1032,6 @@ export async function refreshUnlocked(
   if (!u) return u;
   if (state.dek_id !== u.context.dek_id) return undefined;
   return state.revision === u.revision ? u : open(state, u.dek, u.context);
-}
-
-// --- UMK ------------------------------------------------------------------------
-
-// Registers public owner keys only; their private and storage keys stay with the CLI.
-// An identical registration changes nothing, so an uncertain one is resent.
-export async function registerUMK(
-  api: Api,
-  entries: { kind: MKResource["kind"]; public_key: string }[],
-  signal?: AbortSignal,
-) {
-  const umk = entries.map((e) => ({ key_id: id16(), ...e }));
-  for (let attempt = 0; ; attempt++) {
-    try {
-      await api(`${KEY_STATE}/umk`, { method: "POST", body: { umk }, signal });
-      return umk;
-    } catch (cause) {
-      if (signal?.aborted || !uncertain(cause) || attempt >= UNCERTAIN_RETRIES)
-        throw cause;
-    }
-  }
 }
 
 // --- messages -----------------------------------------------------------------
