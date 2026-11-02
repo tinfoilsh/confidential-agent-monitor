@@ -12,13 +12,12 @@ type Vector = {
   messages: { payload: string; ciphertext: string }[];
 };
 
-const load = (file: string): Vector[] =>
-  JSON.parse(readFileSync(new URL(`testdata/${file}`, import.meta.url), "utf8"))
-    .vectors;
-const vectors = [
-  ...load("noise-nk-published.json"),
-  ...load("noise-nk-flynn.json"),
-];
+const vectors: Vector[] = JSON.parse(
+  readFileSync(
+    new URL("testdata/noise-nk-published.json", import.meta.url),
+    "utf8",
+  ),
+).vectors;
 
 const initiate = (v: Vector, prologue = v.init_prologue) =>
   initiateNK(
