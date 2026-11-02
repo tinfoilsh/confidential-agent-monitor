@@ -31,7 +31,6 @@ const MAX_MK_PLAINTEXT = 196576;
 const MAX_MK_RESOURCES = 256;
 const MANUAL_WRAPPED_CHARS = 86;
 const MAX_KEY_SYNC_PAYLOAD = 8192;
-const OWNER_REQUEST_CONTEXT = "tinfoil owner request v3\0";
 const CONFIRM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ";
 export const CONFIRMATION_CODE_LENGTH = 6;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -347,68 +346,6 @@ export const manualKEKStorageKey = (c: MKContext, recoveryID: string) =>
   ["tinfoil.manual-kek.v1", c.api_origin, c.user_id, c.dek_id, recoveryID].join(
     "|",
   );
-
-// --- signed owner requests --------------------------------------------------
-
-export type OwnerRequest = {
-  protocol: "monitor-owner-v2" | "sandbox-owner-v1";
-  owner: string;
-  resource: string;
-  method: "GET" | "POST";
-  path: string;
-  body: string;
-  operation: string;
-  session: string;
-  generation: number;
-  issued_at: number;
-  nonce: string;
-};
-
-export function signOwnerRequest(seed: Uint8Array, r: OwnerRequest): string {
-  unb64u(r.nonce, 24);
-  unb64u(r.body);
-  if (
-    r.owner !== ownerPublicKey(seed) ||
-    !isID16(r.operation) ||
-    (r.session !== "" && !isID16(r.session)) ||
-    !/^\/[\x21-\x7e]*$/.test(r.path) ||
-    ![r.generation, r.issued_at].every((n) => Number.isSafeInteger(n) && n >= 0)
-  )
-    fail("Invalid owner request.");
-  const {
-    protocol,
-    owner,
-    resource,
-    method,
-    path,
-    body,
-    operation,
-    session,
-    generation,
-    issued_at,
-    nonce,
-  } = r;
-  const bytes = utf8ToBytes(
-    JSON.stringify({
-      protocol,
-      owner,
-      resource,
-      method,
-      path,
-      body,
-      operation,
-      session,
-      generation,
-      issued_at,
-      nonce,
-    }),
-  );
-  const signature = ed25519.sign(
-    concatBytes(utf8ToBytes(OWNER_REQUEST_CONTEXT), sha256(bytes)),
-    seed,
-  );
-  return JSON.stringify({ request: b64u(bytes), signature: b64u(signature) });
-}
 
 // --- CLI key sync ----------------------------------------------------------------
 

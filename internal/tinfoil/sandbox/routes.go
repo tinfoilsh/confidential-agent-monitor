@@ -27,8 +27,8 @@ func RouteName(key ssh.PublicKey) string {
 }
 
 // bootstrapRoute names an unverified publisher by its claimed SSH user. Only its port
-// 443 attestation and EHBP-sealed owner API are reachable this way; callers verify the
-// attestation and seal to its attested key, and the route grants no agent access.
+// 443 attestation and owner socket are reachable this way; callers verify the
+// attestation and handshake with its attested key, and the route grants no agent access.
 func bootstrapRoute(identity string) string {
 	digest := sha256.Sum256([]byte(identity))
 	return "bootstrap-" + strings.ToLower(base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(digest[:])) + routeSuffix

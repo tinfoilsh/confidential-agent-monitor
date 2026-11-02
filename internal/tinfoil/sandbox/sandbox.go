@@ -1,8 +1,7 @@
-// Package sandbox provides sandbox routes and the owner's relay to sandbox attestation and owner APIs.
+// Package sandbox provides sandbox routes and the owner's relay to sandbox attestation and owner sockets.
 package sandbox
 
 import (
-	"bytes"
 	"context"
 	"encoding/base64"
 	"errors"
@@ -10,63 +9,55 @@ import (
 	"net"
 	"net/http"
 	"regexp"
-	"strings"
 	"time"
 
+	"github.com/coder/websocket"
 	"github.com/tinfoilsh/monitor/internal/frontdoor"
 )
 
 const (
 	// BootstrapUser prefixes the SSH user a sandbox boot publishes its bootstrap route as.
 	BootstrapUser = "sandbox-v2:"
-	// MaxRelayBytes bounds a relay request, including its base64url body.
+	// MaxRelayBytes bounds a relay request.
 	MaxRelayBytes = 1 << 20
 
-	maxRelayBodyBytes        = 512 << 10
-	maxRelayOwnerReplyBytes  = 2 << 20
 	maxRelayAttestationBytes = 32 << 20
-	maxRelayContentType      = 256
 	relayHopTimeout          = 30 * time.Second
 	relayIdleTimeout         = time.Minute
 	relayIdleConns           = 4
 	sandboxAttestationURL    = "http://sandbox/.well-known/tinfoil-attestation?nonce="
-	sandboxOwnerURL          = "http://sandbox/owner/rpc"
+	sandboxOwnerPath         = "/owner/ws"
 )
 
 var (
 	instancePattern = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
 	hex32Pattern    = regexp.MustCompile(`^[0-9a-fA-F]{64}$`)
-	errRelayInput   = errors.New("a relay needs a sandbox instance_id and either an attestation nonce or an EHBP owner request")
+	errRelayInput   = errors.New("a relay needs a sandbox instance_id and an attestation nonce")
 )
 
-// RelayInput selects a sandbox boot by its measured instance and carries bytes Monitor cannot read.
+// RelayInput selects a sandbox boot by its measured instance.
 type RelayInput struct {
-	InstanceID string        `json:"instance_id"`
-	Target     string        `json:"target"`
-	Nonce      *string       `json:"nonce"`
-	Headers    *RelayHeaders `json:"headers"`
-	Body       string        `json:"body"`
-}
-
-// RelayHeaders are the only request headers an owner request carries to the sandbox.
-type RelayHeaders struct {
-	EncapsulatedKey string `json:"Ehbp-Encapsulated-Key"`
-	ContentType     string `json:"Content-Type"`
+	InstanceID string `json:"instance_id"`
+	Nonce      string `json:"nonce"`
 }
 
 type RelayReply struct {
-	Status  int               `json:"status"`
-	Headers map[string]string `json:"headers"`
-	Body    string            `json:"body"`
+	Status int    `json:"status"`
+	Body   string `json:"body"`
 }
 
-// Relay sends one attestation or EHBP owner request over a sandbox's bootstrap route and
-// returns the response bytes unchanged. That route is unverified and grants no agent access.
+// Relay fetches one attestation over a sandbox's bootstrap route and returns the response
+// bytes unchanged. That route is unverified and grants no agent access.
 func Relay(ctx context.Context, relays http.RoundTripper, in RelayInput) (RelayReply, error) {
-	request, limit, err := in.request()
+	if !instancePattern.MatchString(in.InstanceID) || !hex32Pattern.MatchString(in.Nonce) {
+		return RelayReply{}, errRelayInput
+	}
+	request, err := http.NewRequest(http.MethodGet, sandboxAttestationURL+in.Nonce, nil)
 	if err != nil {
 		return RelayReply{}, err
 	}
+	// An empty User-Agent is omitted, so the sandbox receives no client headers.
+	request.Header = http.Header{"User-Agent": {""}}
 	// Connections are pooled per route; the sandbox still sees its own Host.
 	request.URL.Host = bootstrapRoute(BootstrapUser + in.InstanceID)
 	ctx, cancel := context.WithTimeout(ctx, relayHopTimeout)
@@ -76,20 +67,24 @@ func Relay(ctx context.Context, relays http.RoundTripper, in RelayInput) (RelayR
 		return RelayReply{}, responseError{"sandbox relay: " + err.Error(), http.StatusBadGateway}
 	}
 	defer response.Body.Close()
-	body, err := io.ReadAll(io.LimitReader(response.Body, limit+1))
-	if err == nil && int64(len(body)) > limit {
+	body, err := io.ReadAll(io.LimitReader(response.Body, maxRelayAttestationBytes+1))
+	if err == nil && len(body) > maxRelayAttestationBytes {
 		err = errors.New("the response is too large")
 	}
 	if err != nil {
 		return RelayReply{}, responseError{"sandbox relay: " + err.Error(), http.StatusBadGateway}
 	}
-	reply := RelayReply{Status: response.StatusCode, Headers: map[string]string{}, Body: base64.RawURLEncoding.EncodeToString(body)}
-	for _, name := range []string{"Content-Type", "Ehbp-Response-Nonce"} {
-		if value := response.Header.Get(name); value != "" {
-			reply.Headers[name] = value
-		}
+	return RelayReply{Status: response.StatusCode, Body: base64.RawURLEncoding.EncodeToString(body)}, nil
+}
+
+// DialOwner opens a sandbox boot's owner socket over its bootstrap route.
+func DialOwner(ctx context.Context, relays http.RoundTripper, instance string) (*websocket.Conn, error) {
+	if !instancePattern.MatchString(instance) {
+		return nil, errRelayInput
 	}
-	return reply, nil
+	client := &http.Client{Transport: relays, Timeout: relayHopTimeout}
+	conn, _, err := websocket.Dial(ctx, "ws://"+bootstrapRoute(BootstrapUser+instance)+sandboxOwnerPath, &websocket.DialOptions{HTTPClient: client})
+	return conn, err
 }
 
 // Relays keeps each sandbox's bootstrap connections open between relayed requests, so a
@@ -103,40 +98,4 @@ func Relays(forwards *frontdoor.Forwarder) http.RoundTripper {
 			}
 			return Dial(forwards, host, 443)
 		}}
-}
-
-// request builds one of the two requests a relay may send, and the response bound for it.
-func (in RelayInput) request() (*http.Request, int64, error) {
-	if !instancePattern.MatchString(in.InstanceID) {
-		return nil, 0, errRelayInput
-	}
-	var request *http.Request
-	var limit int64
-	var err error
-	switch {
-	case in.Target == "attestation" && in.Nonce != nil && hex32Pattern.MatchString(*in.Nonce) && in.Headers == nil && in.Body == "":
-		request, err = http.NewRequest(http.MethodGet, sandboxAttestationURL+*in.Nonce, nil)
-		limit = maxRelayAttestationBytes
-	case in.Target == "owner" && in.Nonce == nil && in.Headers != nil && hex32Pattern.MatchString(in.Headers.EncapsulatedKey) &&
-		in.Headers.ContentType != "" && len(in.Headers.ContentType) <= maxRelayContentType &&
-		strings.IndexFunc(in.Headers.ContentType, func(r rune) bool { return r < 0x20 || r > 0x7e }) < 0:
-		body, decodeErr := base64.RawURLEncoding.Strict().DecodeString(in.Body)
-		if decodeErr != nil || base64.RawURLEncoding.EncodeToString(body) != in.Body || len(body) == 0 || len(body) > maxRelayBodyBytes {
-			return nil, 0, errRelayInput
-		}
-		request, err = http.NewRequest(http.MethodPost, sandboxOwnerURL, bytes.NewReader(body))
-		limit = maxRelayOwnerReplyBytes
-	default:
-		return nil, 0, errRelayInput
-	}
-	if err != nil {
-		return nil, 0, err
-	}
-	// An empty User-Agent is omitted, so the sandbox receives only these headers.
-	request.Header = http.Header{"User-Agent": {""}}
-	if in.Headers != nil {
-		request.Header.Set("Ehbp-Encapsulated-Key", in.Headers.EncapsulatedKey)
-		request.Header.Set("Content-Type", in.Headers.ContentType)
-	}
-	return request, limit, nil
 }

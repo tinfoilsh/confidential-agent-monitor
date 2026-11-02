@@ -2,6 +2,7 @@ package monitor
 
 import (
 	"cmp"
+	"context"
 	"crypto"
 	"crypto/sha256"
 	"crypto/x509"
@@ -16,6 +17,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/coder/websocket"
 	"github.com/klauspost/compress/gzhttp"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/tinfoilsh/monitor/connector"
@@ -55,8 +57,11 @@ func (m *monitor) HTTPHandler(devFiles http.Handler) http.Handler {
 	mux := http.NewServeMux()
 	if m.ownerPublicKey != nil {
 		mux.Handle("GET /healthz", m.ownerAPI)
-		// Base64 inflates the signed request by a third.
-		mux.Handle("POST /owner/rpc", &ownerauth.Handler{Key: m.ownerPublicKey, Resource: m.bucketURL, MaxBytes: 2 * maxDocumentBytes, API: m.ownerAPI, Generation: m.generation, Untracked: []string{sandboxRelayPath}})
+		// Base64 inflates the call by a third.
+		mux.Handle("GET /owner/ws", &ownerauth.Handler{Key: m.ownerPublicKey, SessionKey: m.sessionKey, Resource: m.bucketURL, MaxBytes: 2 * maxDocumentBytes, API: m.ownerAPI, Generation: m.generation,
+			Relay: func(ctx context.Context, instance string) (*websocket.Conn, error) {
+				return sandbox.DialOwner(ctx, m.relays, instance)
+			}})
 		return mux
 	}
 	m.registerOwnerRoutes(mux)
@@ -64,7 +69,7 @@ func (m *monitor) HTTPHandler(devFiles http.Handler) http.Handler {
 	return mux
 }
 
-// newOwnerAPI is shared by authenticated SSH and signed RPC transports.
+// newOwnerAPI is shared by authenticated SSH and Noise session transports.
 func (m *monitor) newOwnerAPI() http.Handler {
 	mux := http.NewServeMux()
 	m.registerOwnerRoutes(mux)

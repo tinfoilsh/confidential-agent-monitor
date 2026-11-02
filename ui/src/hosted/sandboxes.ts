@@ -1,61 +1,39 @@
 import { ed25519 } from "@noble/curves/ed25519.js";
-import { randomBytes } from "@noble/hashes/utils.js";
 import { SecureClient } from "tinfoil";
-import {
-  OwnerError,
-  openShell,
-  refusedTime,
-  type ShellOpener,
-  type ShellReply,
-  type ShellRequest,
-} from "../owner";
-import {
-  b64u,
-  ownerPublicKey,
-  signOwnerRequest,
-  unb64u,
-  type MKBinding,
-} from "./contract";
+import { openShell, type ShellOpen, type ShellOpener } from "../owner";
+import { rpcChannel } from "./channel";
+import { ownerPublicKey, unb64u, type MKBinding } from "./contract";
 import * as keys from "./keys";
-import { checkHostKey, sshPublicKey, type OpenedMonitor } from "./monitors";
+import {
+  attestedKey,
+  checkHostKey,
+  sshPublicKey,
+  type OpenedMonitor,
+} from "./monitors";
 import { SANDBOX_REPO, monitorOf, type Container } from "./session";
 import { TEMPLATES } from "./templates";
 import { measuredEnv, sandboxDigest, volumeSize } from "./trust";
 
-const OWNER_DEADLINE_MS = 60_000;
-const OWNER_ATTEMPTS = 3;
+const PROTOCOL = "sandbox-owner-v2";
 const ATTESTATION = "/.well-known/tinfoil-attestation";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const HOST = /^[a-z0-9.-]+$/;
 
 export type SandboxStatus = {
-  protocol: "sandbox-owner-v1";
+  protocol: typeof PROTOCOL;
   instance_id: string;
   volume: "unlocked" | "locked";
   monitor_identity: string | null;
   monitor_host_key: string | null;
 };
-type RelayReply = {
-  status: number;
-  headers: Record<string, string>;
-  body: string;
-};
+type RelayReply = { status: number; body: string };
 
 // Sandbox identity that is not on its Monitor; only an explicit restore re-adds it.
 export class RestoreRequired extends Error {}
 
-const response = (reply: RelayReply) =>
-  new Response(
-    reply.status === 204 ? null : new Uint8Array(unb64u(reply.body)),
-    {
-      status: reply.status,
-      headers: reply.headers,
-    },
-  );
-
-// One sandbox reached through its Monitor's relay. Requests are signed by the
-// sandbox owner key and sealed to the attested sandbox-ehbp key, so Monitor
-// carries only ciphertext.
+// One sandbox reached through its Monitor's relay. Its sessions handshake with
+// the attested owner-session key and are signed by the sandbox owner key, so
+// Monitor carries only ciphertext.
 export function sandboxClient(
   monitor: OpenedMonitor,
   row: Container,
@@ -68,18 +46,8 @@ export function sandboxClient(
   const instance_id = binding.instance_id!;
   if (!HOST.test(row.domain)) throw new Error("This sandbox has no address.");
   const host = `https://${row.domain}`;
-  const relay = async (body: unknown, signal?: AbortSignal | null) =>
-    response(
-      (await monitor.client.call(
-        "POST",
-        "/sandboxes/relay",
-        body,
-        signal ?? undefined,
-      )) as RelayReply,
-    );
   const secure = new SecureClient({
     enclaveURL: host,
-    baseURL: host,
     configRepo: "",
     verification: {
       configAuthorizer: async ({ config }) => {
@@ -96,101 +64,32 @@ export function sandboxClient(
         const nonce = url.searchParams.get("nonce") ?? "";
         if (url.pathname !== ATTESTATION || !/^[0-9a-f]{64}$/.test(nonce))
           throw new Error("Refused sandbox attestation request.");
-        return relay(
-          {
-            instance_id,
-            target: "attestation",
-            nonce,
-            headers: null,
-            body: "",
-          },
-          init?.signal,
-        );
+        const reply = (await monitor.client.call(
+          "POST",
+          "/sandboxes/relay",
+          { instance_id, nonce },
+          init?.signal ?? undefined,
+        )) as RelayReply;
+        return new Response(new Uint8Array(unb64u(reply.body)), {
+          status: reply.status,
+        });
       },
     },
-    ehbpKeyID: "sandbox-ehbp",
-    ehbpRelay: async (sealed) =>
-      relay(
-        {
-          instance_id,
-          target: "owner",
-          nonce: null,
-          headers: {
-            "Ehbp-Encapsulated-Key": sealed.headers.get(
-              "Ehbp-Encapsulated-Key",
-            ),
-            "Content-Type": sealed.headers.get("Content-Type"),
-          },
-          body: b64u(new Uint8Array(await sealed.arrayBuffer())),
-        },
-        sealed.signal,
-      ),
   });
-
-  // The sandbox's clock minus ours, learned when it refuses a request's time.
-  let skew = 0;
-  // A lost reply is retried at the same time with a fresh nonce; every sandbox
-  // effect is safe to repeat.
-  async function call(
-    method: "GET" | "POST",
-    path: string,
-    body?: unknown,
-    session = "",
-    signal?: AbortSignal,
-  ): Promise<unknown> {
-    const started = Date.now();
-    const operation = {
-      operation: b64u(randomBytes(16)),
-      issued_at: Date.now() + skew,
-      body:
-        method === "GET"
-          ? ""
-          : b64u(new TextEncoder().encode(JSON.stringify(body))),
-    };
-    for (let attempt = 1; ; attempt++) {
-      const envelope = signOwnerRequest(seed, {
-        protocol: "sandbox-owner-v1",
-        owner,
-        resource: instance_id,
-        method,
-        path,
-        ...operation,
-        session,
-        generation: 0,
-        nonce: b64u(randomBytes(24)),
-      });
-      try {
-        const reply = await secure.fetch(`${host}/owner/rpc`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: envelope,
-          signal,
-        });
-        const text = await reply.text();
-        const now = refusedTime(reply.status, text);
-        if (now !== undefined && attempt < OWNER_ATTEMPTS) {
-          skew = now - Date.now();
-          operation.issued_at = now;
-          continue;
-        }
-        if (!reply.ok)
-          throw new OwnerError(
-            text.trim() || `Sandbox request failed (${reply.status})`,
-            reply.status,
-          );
-        return text ? JSON.parse(text) : null;
-      } catch (cause) {
-        // A 4xx answer is definitive; a lost hop or 5xx may follow the effect.
-        if (
-          (cause instanceof OwnerError && cause.status < 500) ||
-          signal?.aborted ||
-          attempt >= OWNER_ATTEMPTS ||
-          Date.now() >= started + OWNER_DEADLINE_MS
-        )
-          throw cause;
-      }
-    }
-  }
+  const connect = async (hello: object, signal?: AbortSignal) => {
+    await secure.ready({ signal });
+    const serverKey = attestedKey(secure, "owner-session");
+    const prologue = `${PROTOCOL}\0${instance_id}`;
+    return monitor.relay(
+      instance_id,
+      { serverKey, prologue, seed, hello },
+      signal,
+    );
+  };
+  const call = rpcChannel(
+    () => connect({ open: "rpc" }),
+    async () => (await monitor.refresh(), secure.refresh()),
+  );
 
   return {
     status: async (signal?: AbortSignal) => {
@@ -198,26 +97,17 @@ export function sandboxClient(
         "GET",
         "/status",
         undefined,
-        "",
+        0,
         signal,
       )) as SandboxStatus;
-      if (
-        status?.protocol !== "sandbox-owner-v1" ||
-        status.instance_id !== instance_id
-      )
+      if (status?.protocol !== PROTOCOL || status.instance_id !== instance_id)
         throw new Error("The sandbox answered for a different instance.");
       return status;
     },
     enroll: (body: unknown, signal?: AbortSignal) =>
-      call("POST", "/enroll", body, "", signal) as Promise<SandboxStatus>,
-    shell: (request: ShellRequest, signal?: AbortSignal) =>
-      call(
-        "POST",
-        "/shell",
-        request,
-        request.action === "open" ? "" : request.id,
-        signal,
-      ) as Promise<ShellReply>,
+      call("POST", "/enroll", body, 0, signal) as Promise<SandboxStatus>,
+    shell: (size: ShellOpen, signal: AbortSignal) =>
+      connect({ open: "shell", ...size }, signal),
   };
 }
 export type SandboxClient = ReturnType<typeof sandboxClient>;
@@ -490,6 +380,6 @@ export function shellOpener(
       restore,
       signal,
     });
-    return openShell(sandbox.shell, size, handlers, signal);
+    return openShell(await sandbox.shell(size, signal), handlers, signal);
   };
 }

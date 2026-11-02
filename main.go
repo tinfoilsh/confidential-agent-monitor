@@ -56,6 +56,7 @@ func main() {
 	uiDevURL := flag.String("ui-dev-url", "", "proxy local UI development to a loopback Vite server (bun dev/run.ts)")
 	ownerPublic := flag.String("owner-public-key", os.Getenv("MONITOR_OWNER_PUBLIC_KEY"), "Ed25519 owner public key")
 	hostKey := flag.String("ssh-host-key", "", "runtime attested SSH private key")
+	sessionKey := flag.String("owner-session-key", "", "runtime attested X25519 key for owner sessions")
 	healthcheck := flag.Bool("healthcheck", false, "check the local owner API and exit, including while locked")
 	originList := flag.String("owner-origins", "", "comma-separated browser origins allowed to call the owner API, such as https://dash.tinfoil.sh")
 	isolateConnectors := flag.Bool("connector-workers", false, "run all connectors in isolated worker processes")
@@ -115,7 +116,7 @@ func main() {
 			devFiles = http.StripPrefix("/app/", http.FileServer(http.Dir("ui/dist")))
 		}
 	}
-	// Production owners authenticate through SSH or signed RPC and unlock the
+	// Production owners authenticate through SSH or Noise sessions and unlock the
 	// encrypted state. Only local development permits bearer authentication.
 	var public ed25519.PublicKey
 	if *ownerPublic != "" || !dev {
@@ -145,6 +146,9 @@ func main() {
 		HostKey:        hostSigner,
 		Connectors:     connectorKinds,
 		EmbeddedFiles:  embeddedFiles,
+	}
+	if public != nil {
+		options.SessionKey = must(ownerauth.LoadKey(*sessionKey))
 	}
 	if *isolateConnectors {
 		options.Workers = &worker.Local{Root: *workerRoot}

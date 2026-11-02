@@ -10,8 +10,8 @@ shim:
   authenticated: false
   paths:
     - /healthz
-    # Owner calls arrive EHBP-sealed and signed by the measured owner key.
-    - /owner/rpc
+    # Owner sessions are Noise handshakes to owner-session, signed by the measured owner key.
+    - /owner/ws
   origins:
     - https://console.tinfoil.sh
     - https://terminal.tinfoil.sh
@@ -25,6 +25,10 @@ attested-keys:
     key: ed25519
     uid: 0
     gid: 0
+  - id: owner-session
+    key: x25519
+    uid: 0
+    gid: 0
 
 containers:
   - name: monitor
@@ -32,7 +36,7 @@ containers:
     # The Monitor holds keys and tokens; root/cvm_admin also lets it launch namespaces.
     cvm_admin: true
     user: "0:0"
-    keys: [host-ssh]
+    keys: [host-ssh, owner-session]
     ports: ["22:2223"]
     networks: [upstream]
     env:
@@ -46,6 +50,8 @@ containers:
       - -connector-workers
       - -ssh-host-key
       - /run/tinfoil/keys/host-ssh/private_key.pem
+      - -owner-session-key
+      - /run/tinfoil/keys/owner-session/private_key.pem
       - -api
       - 0.0.0.0:8080
       - -listen

@@ -14,6 +14,7 @@ require (
 	github.com/emersion/go-sasl v0.0.0-20241020182733-b788ff22d5a6
 	github.com/emersion/go-smtp v0.25.0
 	github.com/evanphx/json-patch/v5 v5.9.11
+	github.com/flynn/noise v1.1.0
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/klauspost/compress v1.20.0
 	github.com/lestrrat-go/jwx/v3 v3.2.0
