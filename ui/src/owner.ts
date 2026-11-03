@@ -242,28 +242,24 @@ export type OwnerApi = {
   ): Promise<BrowserFrame>;
   icons(signal?: AbortSignal): Promise<(preset: string) => ConnectorIcon>;
 };
+/** An authenticated owner socket that carries whole messages. */
+export type OwnerChannel = {
+  send(message: Uint8Array): void;
+  receive(): Promise<Uint8Array>;
+  close(): void;
+};
+/** One owner call over a channel: the parsed reply, or an OwnerError. */
+export type OwnerRpc = (
+  method: "GET" | "POST",
+  path: string,
+  body: unknown,
+  generation: number,
+  signal?: AbortSignal,
+) => Promise<unknown>;
 export type ShellOpen = {
   cols: number;
   rows: number;
 };
-export type ShellRequest =
-  | ({ action: "open" } & ShellOpen)
-  | { action: "poll"; id: string; cursor: number }
-  | { action: "input"; id: string; seq: number; data: string }
-  | { action: "resize"; id: string; cols: number; rows: number }
-  | { action: "close"; id: string };
-export type ShellReply = {
-  id: string;
-  data: string;
-  cursor: number;
-  closed: boolean;
-  exit_code?: number;
-  accepted?: number;
-};
-export type ShellSend = (
-  request: ShellRequest,
-  signal?: AbortSignal,
-) => Promise<ShellReply>;
 export type Shell = {
   input(data: Uint8Array): void;
   resize(cols: number, rows: number): void;
@@ -2411,149 +2407,45 @@ export function localOwnerClient({
   }, generation);
 }
 
-const RPC_ORIGIN = "https://owner.invalid",
-  OWNER_DEADLINE_MS = 60_000,
-  OWNER_ATTEMPTS = 3,
-  // Statuses whose Response must have a null body.
-  NULL_BODY_STATUSES = [204, 205, 304],
-  // Forwarded sandbox ciphertext; the sandbox owns retries of what it carries.
-  RELAY_PATH = "/sandboxes/relay";
-const toBase64 = (bytes: Uint8Array) => {
+const SHELL_INPUT_BYTES = 16384;
+export const toBase64 = (bytes: Uint8Array) => {
   let text = "";
   for (const byte of bytes) text += String.fromCharCode(byte);
   return btoa(text);
 };
-const toBase64Url = (bytes: Uint8Array) =>
-  toBase64(bytes).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-const fromBase64 = (text: string) =>
+export const fromBase64 = (text: string) =>
   Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
 const isGeneration = (n: number) => Number.isSafeInteger(n) && n >= 0;
 
-/** One signed owner operation; retries keep its operation and original time. */
-export type OwnerCall = {
-  method: "GET" | "POST";
-  path: string;
-  body: string;
-  operation: string;
-  issued_at: number;
-  generation: number;
-};
-
-/** The owner API's clock, in ms, when it refused a request's time. */
-export function refusedTime(status: number, text: string) {
-  if (status !== 401) return;
-  try {
-    const reply = JSON.parse(text);
-    if (
-      ["request_time_in_future", "request_expired"].includes(reply?.error) &&
-      Number.isSafeInteger(reply.now)
-    )
-      return reply.now as number;
-  } catch {}
-}
-
-// The caller supplies an EHBP fetch that seals bodies to the Monitor and owns its attestation, so every call is a POST with a body, reads included.
-// Each envelope is signed for one Monitor and carries the newest generation seen; the caller persists advances.
+// The caller supplies a call over an authenticated channel to the attested Monitor.
+// Each call carries the newest generation seen; the caller persists advances.
 export function sealedOwnerClient({
-  endpoint,
-  sign,
+  call,
   generation = 0,
   storageKey,
-  fetch,
   remember,
   assets = "/",
 }: {
-  endpoint: string;
-  /** Signs one attempt of a call with a fresh nonce, returning the envelope. */
-  sign: (call: OwnerCall) => Promise<string>;
+  call: OwnerRpc;
   generation?: number;
   storageKey: string;
-  /** Must seal request and response bodies to the attested Monitor. */
-  fetch: typeof globalThis.fetch;
   /** Called with each newer generation the Monitor reports. */
   remember?: (generation: number) => void;
   /** URL prefix of the local build whose icons/ icons() reads. */
   assets?: string;
 }): OwnerApi & { call: Request } {
-  const rpc = endpointBase(endpoint) + "/owner/rpc";
   if (!isGeneration(generation)) throw new Error("Invalid monitor generation.");
   let floor = generation;
-  // The Monitor's clock minus ours, learned when it refuses a request's time.
-  let skew = 0;
-  const encoder = new TextEncoder();
-  const json = ownerJSON(
-    async (
-      path,
-      {
-        method,
-        body,
-        signal,
-      }: { method: "GET" | "POST"; body: unknown; signal?: AbortSignal },
-    ) => {
-      const target = new URL(path, RPC_ORIGIN);
-      if (
-        target.origin !== RPC_ORIGIN ||
-        target.pathname !== path.split("?")[0]
-      )
-        throw new OwnerError("Refused owner path.", 400);
-      const call: OwnerCall = {
-        method,
-        path,
-        body:
-          method === "GET"
-            ? ""
-            : toBase64Url(encoder.encode(JSON.stringify(body))),
-        operation: toBase64Url(crypto.getRandomValues(new Uint8Array(16))),
-        issued_at: Date.now() + skew,
-        generation: floor,
-      };
-      const started = Date.now();
-      // A lost reply is retried as the same operation, which the Monitor answers from its record.
-      for (let attempt = 1; ; attempt++) {
-        const envelope = await sign(call);
-        try {
-          const response = await fetch(rpc, {
-            method: "POST",
-            signal,
-            cache: "no-store",
-            credentials: "omit",
-            redirect: "error",
-            headers: { "Content-Type": "application/json" },
-            body: envelope,
-          });
-          // A reply lost while its body streams is retried like a lost reply.
-          const text = await response.text();
-          const now = refusedTime(response.status, text);
-          if (now !== undefined && attempt < OWNER_ATTEMPTS) {
-            skew = now - Date.now();
-            call.issued_at = now;
-            continue;
-          }
-          return new Response(
-            NULL_BODY_STATUSES.includes(response.status) ? null : text,
-            { status: response.status, headers: response.headers },
-          );
-        } catch (cause) {
-          if (
-            signal?.aborted ||
-            path === RELAY_PATH ||
-            attempt >= OWNER_ATTEMPTS ||
-            Date.now() >= started + OWNER_DEADLINE_MS
-          )
-            throw cause;
-        }
-      }
-    },
-  );
-  const request: Request = async (method, path, body = null, signal) =>
-    json(path, {
+  const request: Request = (method, path, body = null, signal) =>
+    call(
       method,
+      path,
+      path.split("?")[0] === "/unlock"
+        ? { ...(body as object), storage_key: storageKey }
+        : body,
+      floor,
       signal,
-      body:
-        path.split("?")[0] === "/unlock"
-          ? { ...(body as object), storage_key: storageKey }
-          : body,
-    });
+    );
   const api = ownerApi(request, floor, "", (seen) => {
     if (!isGeneration(seen) || seen < floor)
       throw new OwnerError(ROLLBACK, 409);
@@ -2576,95 +2468,30 @@ export function sealedOwnerClient({
   };
 }
 
-const SHELL_IDLE_MS = 250,
-  SHELL_RETRIES = 3,
-  SHELL_INPUT_BYTES = 16384;
-const wait = (ms: number, signal: AbortSignal) =>
-  new Promise<void>((resolve) => {
-    const done = () => {
-      clearTimeout(timer);
-      signal.removeEventListener("abort", done);
-      resolve();
-    };
-    const timer = setTimeout(done, signal.aborted ? 0 : ms);
-    signal.addEventListener("abort", done);
-  });
-
-// One sandbox PTY session. Only polls move the output cursor, so a failed poll is retried from the same cursor.
-// Input is sent as typed with its sequence, so the sandbox writes it in order and never repeats a retried write.
-// Resizes go one at a time. Every end, including a delivered exit, sends one close so the sandbox can release the session.
-export async function openShell(
-  transport: ShellSend,
-  open: ShellOpen,
+// One sandbox shell for as long as its socket: input and resizes go out as they happen,
+// output streams back until the exit code.
+export function openShell(
+  channel: OwnerChannel,
   { output, exit, error }: ShellHandlers,
   signal: AbortSignal,
-): Promise<Shell> {
-  const opened = await transport({ action: "open", ...open }, signal);
-  const id = opened.id,
-    stop = new AbortController(),
-    live = AbortSignal.any([signal, stop.signal]);
-  let cursor = 0,
-    seq = 0,
-    ended = false,
-    outbox: Promise<unknown> = Promise.resolve(),
-    size: { cols: number; rows: number } | undefined;
-  const end = (report?: () => void) => {
-    if (ended) return;
-    ended = true;
-    stop.abort();
-    void transport({ action: "close", id }).catch(() => {});
-    if (!signal.aborted) report?.();
-  };
-  const deliver = (reply: ShellReply) => {
-    if (ended) return;
-    if (reply.data) output(fromBase64(reply.data));
-    cursor = reply.cursor;
-    if (reply.closed) end(() => exit(reply.exit_code));
-  };
-  const send = (task: () => Promise<unknown>) => {
-    outbox = outbox
-      .then(() => !ended && task())
-      .catch((cause) => end(() => error(cause)));
-  };
-  signal.addEventListener("abort", () => end(), { once: true });
-  if (signal.aborted) end();
-  deliver(opened);
+): Shell {
+  const send = (message: object) =>
+    channel.send(new TextEncoder().encode(JSON.stringify(message)));
+  signal.addEventListener("abort", () => channel.close(), { once: true });
   void (async () => {
-    for (let failures = 0; !ended;) {
-      try {
-        const reply = await transport({ action: "poll", id, cursor }, live);
-        failures = 0;
-        deliver(reply);
-        if (!reply.data) await wait(SHELL_IDLE_MS, live);
-      } catch (cause) {
-        if (ended) return;
-        if (++failures > SHELL_RETRIES) return end(() => error(cause));
-        await wait(SHELL_IDLE_MS * 2 ** failures, live);
-      }
+    for (;;) {
+      const message = JSON.parse(
+        new TextDecoder().decode(await channel.receive()),
+      );
+      if ("exit" in message) return exit(message.exit ?? undefined);
+      output(fromBase64(message.output));
     }
-  })();
+  })().catch((cause) => signal.aborted || error(cause));
   return {
     input(bytes) {
-      for (let at = 0; !ended && at < bytes.length; at += SHELL_INPUT_BYTES) {
-        const chunk = bytes.subarray(at, at + SHELL_INPUT_BYTES);
-        transport(
-          { action: "input", id, seq: seq++, data: toBase64(chunk) },
-          live,
-        )
-          .then((reply) => {
-            if (reply.accepted !== chunk.length)
-              throw new Error("The sandbox did not accept all input.");
-          })
-          .catch((cause) => end(() => error(cause)));
-      }
+      for (let at = 0; at < bytes.length; at += SHELL_INPUT_BYTES)
+        send({ input: toBase64(bytes.subarray(at, at + SHELL_INPUT_BYTES)) });
     },
-    resize(cols, rows) {
-      if (size) return void Object.assign(size, { cols, rows });
-      const latest = (size = { cols, rows });
-      send(() => {
-        size = undefined;
-        return transport({ action: "resize", id, ...latest }, live);
-      });
-    },
+    resize: (cols, rows) => send({ resize: { cols, rows } }),
   };
 }

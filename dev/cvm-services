@@ -11,7 +11,7 @@ import subprocess
 import threading
 
 HOST_KEY = Path("/run/tinfoil/keys/host-ssh/private_key.pem")
-EHBP_KEY = Path("/run/tinfoil/keys/sandbox-ehbp/private_key.pem")
+SESSION_KEY = Path("/run/tinfoil/keys/owner-session/private_key.pem")
 ATTESTATION = "/tinfoil/attestation.sock"
 CONTROL = Path("/run/tinfoil/volumes/workspace/control.sock")
 MEASURED = ("SANDBOX_INSTANCE_ID", "SANDBOX_OWNER_PUBLIC_KEY")
@@ -56,8 +56,8 @@ def generate(path, *algorithm):
 
 if __name__ == "__main__":
     public = generate(HOST_KEY, "-algorithm", "EC", "-pkeyopt", "ec_paramgen_curve:P-256")
-    ehbp = generate(EHBP_KEY, "-algorithm", "X25519")
-    Attestation.document = json.dumps({"host_key": public, "sandbox_ehbp": ehbp, "env": {name: os.environ[name] for name in MEASURED}}).encode()
+    session = generate(SESSION_KEY, "-algorithm", "X25519")
+    Attestation.document = json.dumps({"host_key": public, "owner_session": session, "env": {name: os.environ[name] for name in MEASURED}}).encode()
     server = UnixServer(ATTESTATION, Attestation)
     CONTROL.parent.mkdir(parents=True, exist_ok=True)
     control = socket.socket(socket.AF_UNIX, socket.SOCK_SEQPACKET)

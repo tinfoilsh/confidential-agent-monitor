@@ -1,14 +1,16 @@
-import { randomBytes } from "@noble/hashes/utils.js";
 import { SecureClient } from "tinfoil";
 import { sealedOwnerClient, type Snapshot } from "../owner";
-import { b64u, signOwnerRequest, unb64u, type MKBinding } from "./contract";
+import { openChannel, rpcChannel, type Session } from "./channel";
+import { unb64u, type MKBinding } from "./contract";
 import * as keys from "./keys";
 import { MONITOR_REPO, type Container, type Scope } from "./session";
 import { TEMPLATES } from "./templates";
 import { bucketOwnedBy, measuredEnv, monitorDigest } from "./trust";
 
 const SPKI = "https://tinfoil.sh/key/spki/v1";
+const PROTOCOL = "monitor-owner-v1";
 const ED25519_SPKI = /^302a300506032b6570032100([0-9a-f]{64})$/;
+const X25519_SPKI = /^302a300506032b656e032100([0-9a-f]{64})$/;
 const CREDENTIALS_PATH = "/api/deployments/storage-credentials";
 const SSH_ED25519 = new Uint8Array([
   0, 0, 0, 11, 115, 115, 104, 45, 101, 100, 50, 53, 53, 49, 57, 0, 0, 0, 32,
@@ -22,12 +24,31 @@ const hex = (text: string) =>
 export const sshPublicKey = (raw: Uint8Array) =>
   "ssh-ed25519 " + std64(new Uint8Array([...SSH_ED25519, ...raw]));
 
+// An attested key's raw bytes, read from the SDK's current verification, which
+// follows a newly verified boot.
+export function attestedKey(
+  client: SecureClient,
+  id: string,
+  spki = X25519_SPKI,
+) {
+  const key = client
+    .inspect()
+    ?.verification.cryptoMaterialData(id, SPKI)
+    ?.match(spki)?.[1];
+  if (!key) throw new Error(`The enclave did not attest its ${id} key.`);
+  return hex(key);
+}
+
 export type AttestMonitor = (
   target: { url: string; authorize: (config: Uint8Array) => Promise<void> },
   signal: AbortSignal,
-) => Promise<{ fetch: typeof fetch; hostKey: () => string }>;
+) => Promise<{
+  hostKey: () => string;
+  sessionKey: () => Uint8Array;
+  refresh: () => Promise<void>;
+}>;
 
-// The SDK owns attestation and EHBP key refresh; only sealed owner RPC is allowed.
+// The SDK owns attestation and its refresh; owner sessions use the attested owner-session key.
 export const attestMonitor: AttestMonitor = async (
   { url, authorize },
   signal,
@@ -38,38 +59,18 @@ export const attestMonitor: AttestMonitor = async (
       : undefined;
   const client = new SecureClient({
     enclaveURL: url,
-    baseURL: relay ?? url,
     configRepo: "",
-    transport: "ehbp",
     attestationRelayURL: relay,
     verification: { configAuthorizer: ({ config }) => authorize(config) },
   });
   await client.ready({ signal });
   signal.throwIfAborted();
-  // Read from the SDK's current verification, which follows a newly verified boot.
-  const hostKey = () => {
-    const spki = client
-      .inspect()
-      ?.verification.cryptoMaterialData("host-ssh", SPKI)
-      ?.match(ED25519_SPKI)?.[1];
-    if (!spki) throw new Error("The Monitor did not attest its SSH host key.");
-    return sshPublicKey(hex(spki));
-  };
+  const hostKey = () =>
+    sshPublicKey(attestedKey(client, "host-ssh", ED25519_SPKI));
+  const sessionKey = () => attestedKey(client, "owner-session");
   hostKey();
-  return {
-    hostKey,
-    fetch: (input, init) => {
-      if (
-        String(input) !== `${url}/owner/rpc` ||
-        init?.method !== "POST" ||
-        typeof init.body !== "string"
-      )
-        throw new Error(
-          "Refusing to send credentials outside the monitor owner API.",
-        );
-      return client.fetch(relay ? `${relay}/owner/rpc` : input, init);
-    },
-  };
+  sessionKey();
+  return { hostKey, sessionKey, refresh: () => client.refresh() };
 };
 
 // The saved key of a TMK Monitor, re-resolved from a fresh, successful read of
@@ -139,7 +140,7 @@ export async function openMonitor({
   const { row, resource, bucket } = await resolve(scope, id);
   const owner = resource.owner_public_key;
   const seed = unb64u(resource.owner_seed, 32);
-  const { fetch: sealed, hostKey } = await attest(
+  const { hostKey, sessionKey, refresh } = await attest(
     {
       url: `https://${row.domain}`,
       authorize: async (config) => {
@@ -152,20 +153,26 @@ export async function openMonitor({
     },
     signal,
   );
+  const url = `wss://${row.domain}/owner/ws`;
+  const session = (hello: object): Session => ({
+    serverKey: sessionKey(),
+    prologue: PROTOCOL,
+    seed,
+    hello,
+  });
+  // A sandbox session runs inside a relay socket, so Monitor carries only its ciphertext.
+  const relay = (instance_id: string, inner: Session, at?: AbortSignal) =>
+    openChannel(
+      url,
+      [session({ open: "relay", instance_id }), inner],
+      AbortSignal.any(at ? [signal, at] : [signal]),
+    );
   let checkpoints: Promise<unknown> = Promise.resolve();
   const client = sealedOwnerClient({
-    endpoint: `https://${row.domain}`,
-    sign: async (call) => {
-      signal.throwIfAborted();
-      return signOwnerRequest(seed, {
-        protocol: "monitor-owner-v2",
-        owner,
-        resource: bucket,
-        ...call,
-        session: "",
-        nonce: b64u(randomBytes(24)),
-      });
-    },
+    call: rpcChannel(
+      () => openChannel(url, [session({ open: "rpc" })], signal),
+      refresh,
+    ),
     generation: resource.min_generation!,
     storageKey: std64(unb64u(resource.storage_key, 32)),
     remember: (generation) => {
@@ -179,20 +186,13 @@ export async function openMonitor({
             ),
         );
     },
-    fetch: (input, init) => {
-      signal.throwIfAborted();
-      return sealed(input, {
-        ...init,
-        signal: init?.signal ? AbortSignal.any([signal, init.signal]) : signal,
-      });
-    },
   });
   // The Monitor refuses saved state that is missing or older than the recovered generation.
   await client.unlock(undefined, signal);
   const snapshot: Snapshot = await client.read(signal);
   signal.throwIfAborted();
   checkHostKey(snapshot.view.host_key, hostKey());
-  return { row, resource, client, snapshot, hostKey, scope };
+  return { row, resource, client, snapshot, hostKey, relay, refresh, scope };
 }
 
 // The Monitor's own view must name the host key its attestation verified.

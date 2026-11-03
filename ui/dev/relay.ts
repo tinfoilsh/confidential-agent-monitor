@@ -3,19 +3,17 @@ import type { IncomingHttpHeaders } from "node:http";
 import type { Plugin } from "vite";
 
 const ATTESTATION = "/.well-known/tinfoil-attestation";
-const ENCAPSULATED_KEY = "ehbp-encapsulated-key";
 const LOCAL_ORIGIN = "https://local.tinfoil.sh";
-const MAX_BODY = 16 * 1024 * 1024;
 
 // Use the SDK's existing relay contract. The browser still verifies the actual
-// enclave and encrypts owner bodies to its attested key before they reach Vite.
+// enclave; owner sockets connect to it directly.
 export function relayTarget(
   method: string,
   path: string,
   headers: IncomingHttpHeaders,
 ) {
   const url = new URL(path, LOCAL_ORIGIN);
-  if (url.pathname !== ATTESTATION && url.pathname !== "/owner/rpc") return;
+  if (url.pathname !== ATTESTATION) return;
   if (
     (headers.origin && headers.origin !== LOCAL_ORIGIN) ||
     (headers["sec-fetch-site"] &&
@@ -25,27 +23,14 @@ export function relayTarget(
     throw new Error(
       "The monitor relay is only available to the local console.",
     );
-  let target: URL;
-  if (url.pathname === ATTESTATION) {
-    if (
-      method !== "GET" ||
-      url.searchParams.size !== 2 ||
-      url.searchParams.getAll("enclave").length !== 1 ||
-      !/^[a-f0-9]{64}$/i.test(url.searchParams.get("nonce") ?? "")
-    )
-      throw new Error("Invalid attestation relay request.");
-    target = new URL(`https://${url.searchParams.get("enclave")}`);
-  } else {
-    if (
-      method !== "POST" ||
-      url.search ||
-      typeof headers[ENCAPSULATED_KEY] !== "string" ||
-      !/^[a-f0-9]{64}$/i.test(headers[ENCAPSULATED_KEY]) ||
-      typeof headers["x-tinfoil-enclave-url"] !== "string"
-    )
-      throw new Error("The monitor relay requires an encrypted owner request.");
-    target = new URL(headers["x-tinfoil-enclave-url"]);
-  }
+  if (
+    method !== "GET" ||
+    url.searchParams.size !== 2 ||
+    url.searchParams.getAll("enclave").length !== 1 ||
+    !/^[a-f0-9]{64}$/i.test(url.searchParams.get("nonce") ?? "")
+  )
+    throw new Error("Invalid attestation relay request.");
+  const target = new URL(`https://${url.searchParams.get("enclave")}`);
   if (
     target.protocol !== "https:" ||
     target.port ||
@@ -62,8 +47,7 @@ export function relayTarget(
       "The monitor relay only forwards to hosted Tinfoil containers.",
     );
   target.pathname = url.pathname;
-  if (url.pathname === ATTESTATION)
-    target.searchParams.set("nonce", url.searchParams.get("nonce")!);
+  target.searchParams.set("nonce", url.searchParams.get("nonce")!);
   return target;
 }
 
@@ -94,23 +78,14 @@ export default function monitorRelay(): Plugin {
           return;
         }
         if (!target) return next();
-        const headers: Record<string, string> = {};
         // Cookies, authorization, and the browser's Origin never travel upstream.
-        for (const name of ["content-type", ENCAPSULATED_KEY])
-          if (typeof req.headers[name] === "string")
-            headers[name] = req.headers[name];
         const upstream = request(
           target,
-          { method: req.method, headers },
+          { method: req.method, headers: {} },
           (response) => {
             res.statusCode = response.statusCode ?? 502;
             res.setHeader("Cache-Control", "no-store");
-            for (const name of [
-              "content-type",
-              ENCAPSULATED_KEY,
-              "ehbp-response-nonce",
-              "retry-after",
-            ])
+            for (const name of ["content-type", "retry-after"])
               if (response.headers[name])
                 res.setHeader(name, response.headers[name]);
             response.on("error", () => res.destroy());
@@ -122,15 +97,6 @@ export default function monitorRelay(): Plugin {
         req.on("aborted", () => upstream.destroy());
         req.on("error", () => upstream.destroy());
         res.on("close", () => upstream.destroy());
-        let bytes = 0;
-        req.on("data", (chunk: Buffer) => {
-          bytes += chunk.length;
-          if (bytes > MAX_BODY) {
-            req.unpipe(upstream);
-            fail(413, "Monitor request is too large.");
-            upstream.destroy();
-          }
-        });
         req.pipe(upstream);
       });
     },

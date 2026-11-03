@@ -18,6 +18,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/flynn/noise"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/facts"
@@ -124,8 +125,8 @@ type settingsPlan struct {
 
 type Options struct {
 	Bucket         *blob.Bucket
-	BucketURL      string
 	OwnerPublicKey ed25519.PublicKey
+	SessionKey     noise.DHKey
 	HostKey        ssh.Signer
 	Connectors     map[string]connector.Kind
 	Workers        worker.Launcher
@@ -152,9 +153,9 @@ type monitor struct {
 	connections             map[string]*connection
 	audit                   store.AuditLog[*record]
 	ownerPublicKey          ed25519.PublicKey
+	sessionKey              noise.DHKey
 	sshHostKey              ssh.Signer
 	embeddedFiles, ownerAPI http.Handler
-	bucketURL               string
 	forwards                *frontdoor.Forwarder
 	relays                  http.RoundTripper
 	streams                 map[*connector.Stream]admission
@@ -170,8 +171,8 @@ func New(o Options) *monitor {
 		store:          store.Store{Bucket: o.Bucket},
 		audit:          store.AuditLog[*record]{Bucket: o.Bucket},
 		ownerPublicKey: o.OwnerPublicKey,
+		sessionKey:     o.SessionKey,
 		sshHostKey:     o.HostKey,
-		bucketURL:      o.BucketURL,
 		kinds:          o.Connectors,
 		workers:        o.Workers,
 		embeddedFiles:  o.EmbeddedFiles,
