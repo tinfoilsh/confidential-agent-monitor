@@ -7,7 +7,7 @@ import {
   onCleanup,
   type JSX,
 } from "solid-js";
-import { download, Icon } from "../components";
+import { download, Icon, Loading } from "../components";
 import type { MKResource } from "./contract";
 import * as keys from "./keys";
 import type { Scope, Session } from "./session";
@@ -394,6 +394,10 @@ export function UnlockKeys(props: {
           >
             {action.busy() ? "Unlocking…" : "Unlock with passkey"}
           </button>
+          <p class="start-help">
+            Your keys stay unlocked while this page is open. Reopening or
+            reloading terminal.tinfoil.sh asks for your passkey again.
+          </p>
           <button
             class="link start-alternative"
             disabled={action.busy()}
@@ -513,14 +517,14 @@ export function KeyGate(props: {
         <Show
           when={read().value}
           fallback={
-            <p
-              class={read().error ? "start-notice" : "start-help"}
-              role="status"
+            <Show
+              when={read().error}
+              fallback={<Loading label="Loading your keys…" />}
             >
-              {read().error
-                ? `Your keys could not be read: ${read().error}`
-                : "Checking your keys…"}
-            </p>
+              <p class="start-notice" role="alert">
+                Your keys could not be read: {read().error}
+              </p>
+            </Show>
           }
         >
           {(state) => (

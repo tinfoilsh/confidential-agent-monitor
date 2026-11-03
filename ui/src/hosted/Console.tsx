@@ -8,7 +8,7 @@ import {
   createSignal,
   on,
 } from "solid-js";
-import { Icon, Modal } from "../components";
+import { Icon, Loading, Modal, SkeletonRows } from "../components";
 import {
   parseStartRequest,
   startErrorURL,
@@ -245,8 +245,19 @@ function Start(props: {
             <RecoveryDownload
               file={recovery()}
               onContinue={() => finishTMK(created!)}
+              onBack={() => setFile()}
             />
           )}
+        </Match>
+        <Match when={!state()}>
+          <Show
+            when={props.session.keyState().error}
+            fallback={<Loading label="Loading your keys…" />}
+          >
+            <p class="start-notice" role="alert">
+              Your keys could not be loaded: {props.session.keyState().error}
+            </p>
+          </Show>
         </Match>
         <Match when={state() && !state()!.dek_id}>
           <SetupKeys
@@ -305,6 +316,9 @@ function Inventory(props: { session: Session }) {
   return (
     <nav class="start-monitors" aria-label="Your monitors">
       <p class="start-eyebrow">Your monitors</p>
+      <Show when={read().loading && !read().value}>
+        <SkeletonRows cards label="Loading your Monitors and sandboxes…" />
+      </Show>
       <Show when={read().error}>
         <p class="start-notice" role="alert">
           {read().value
@@ -312,7 +326,11 @@ function Inventory(props: { session: Session }) {
             : `Your resources could not be loaded: ${read().error}`}
         </p>
       </Show>
-      <Show when={read().value && !monitors().length}>
+      <Show
+        when={
+          read().value && !read().loading && !read().error && !monitors().length
+        }
+      >
         <p class="start-help">
           No Monitors in this account yet. Create one from your dashboard.
         </p>
@@ -458,9 +476,9 @@ export function Header(props: { session: Session }) {
   };
   return (
     <header class="start-header">
-      <a href="/" class="start-brand" aria-label="Tinfoil home" link>
+      <a href="/" class="start-brand" aria-label="Tinfoil Terminal home" link>
         <img src="/icons/tinfoil.svg" alt="" />
-        <span>Tinfoil</span>
+        <span>Terminal</span>
       </a>
       <Show
         when={props.session.user()}

@@ -59,6 +59,7 @@ export type PresetField = {
   key: string;
   label: string;
   hint?: string;
+  help?: string;
   secret?: boolean;
   multiline?: boolean;
   json?: boolean;
@@ -305,6 +306,8 @@ export type Review = {
   removed: number;
   changes: string[];
   tools: McpTool[];
+  previousTools: McpTool[];
+  previouslyApproved: boolean;
 };
 export type McpTool = {
   name: string;
@@ -1247,7 +1250,8 @@ export function actionTree(view: View, account: string): ActionNode[] {
 
 export const levelsOf = (account?: Account) =>
   (Object.entries(LEVELS) as [Level, string][]).filter(
-    ([l]) => account?.preset !== "custom_api" || l !== "read",
+    ([l]) =>
+      !["custom_api", "tcp"].includes(account?.preset ?? "") || l !== "read",
   );
 
 // agentAccess describes an agent's level for every account and, below it, each action's own and inherited mode.
@@ -1383,19 +1387,69 @@ export const reviews = (view: View, account: string): Review[] =>
       removed: count("-"),
       changes: s.changes ?? [],
       tools: (s.pin as { tools?: McpTool[] } | undefined)?.tools ?? [],
+      previouslyApproved: Object.values(
+        accounts(view)[account].connections![key],
+      ).some((connection) => connection.pin != null),
+      previousTools: Object.values(
+        accounts(view)[account].connections![key],
+      ).flatMap(
+        (connection) =>
+          (connection.pin as { tools?: McpTool[] } | undefined)?.tools ?? [],
+      ),
     };
   });
 
+export function toolReviewDescription(review: Review): string {
+  if (!review.previouslyApproved)
+    return `${review.name} advertises ${review.blocked} MCP ${review.blocked === 1 ? "tool you haven’t" : "tools you haven’t"} approved yet. Review their definitions before using them.`;
+  if (review.changes.some((change) => change.startsWith("~ instructions:")))
+    return `Server instructions advertised by ${review.name} differ from those you last approved. Review the instructions and any tool-definition changes before using the affected tools.`;
+  return `Tool definitions advertised by ${review.name} differ from those you last approved. Review and approve the changes before using the affected tools.`;
+}
+
 // A pin change is "+ name", "~ name" or "- name" and then the tool's definition,
 // or "~ instructions:" and then the server's instructions.
-export function toolChange(change: string, tools: McpTool[]) {
+export function toolChange(
+  change: string,
+  tools: McpTool[],
+  previousTools: McpTool[] = [],
+) {
   const [head, ...rest] = change.split("\n");
   const name = head.slice(2);
-  const tool = tools.find((t) => t.name === name);
+  const previous = previousTools.find((t) => t.name === name);
+  const tool = head[0] === "-" ? previous : tools.find((t) => t.name === name);
+  // Compare the fetched definition with the saved, owner-approved pin. The
+  // server's change text contains only the new definition, not a before/after.
+  const changedFields: { name: string; kind: string }[] = [];
+  const compare = (before: object = {}, after: object = {}, prefix = "") => {
+    const old = before as Record<string, unknown>,
+      next = after as Record<string, unknown>;
+    for (const key of new Set([...Object.keys(old), ...Object.keys(next)])) {
+      if (same(old[key], next[key])) continue;
+      changedFields.push({
+        name: prefix + key,
+        kind: !Object.hasOwn(old, key)
+          ? "Added"
+          : !Object.hasOwn(next, key)
+            ? "Removed"
+            : "Changed",
+      });
+    }
+  };
+  if (head[0] === "~" && previous && tool) {
+    const { inputSchema: oldSchema, ...old } = previous,
+      { inputSchema: newSchema, ...next } = tool;
+    compare(old, next);
+    const { properties: oldProperties, ...oldRest } = oldSchema ?? {},
+      { properties: newProperties, ...newRest } = newSchema ?? {};
+    compare(oldRest, newRest, "inputSchema.");
+    compare(oldProperties, newProperties, "parameter: ");
+  }
   return {
     sign: head[0],
     name,
     tool,
+    changedFields,
     text: rest.join("\n"),
     parameters: Object.entries(tool?.inputSchema?.properties ?? {}).map(
       ([key, p]) => ({

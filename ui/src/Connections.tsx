@@ -11,7 +11,6 @@ import * as owner from "./owner.js";
 import {
   ConnectorIcon,
   Copy,
-  DataPermissions,
   Empty,
   DisclosureHeading,
   SectionHeading,
@@ -24,7 +23,6 @@ import {
 } from "./components";
 import { useMonitor } from "./monitor";
 import { AgentConnectionAccess } from "./Agents";
-
 
 export function DeviceSignInDialog(props: {
   attempt: (owner.DeviceSignIn & { title: string; preset: string }) | undefined;
@@ -232,7 +230,7 @@ function MyConnections(props: { expanded?: string }) {
                           class={`badge${status().state === "connecting" ? "" : ` status-${status().state === "error" ? "denied" : "pending"}`}`}
                         >
                           {status().blocked
-                            ? `${status().blocked} tools await review`
+                            ? `${status().blocked} MCP ${status().blocked === 1 ? "tool needs" : "tools need"} review`
                             : status().state === "error"
                               ? "Connection error"
                               : "Connecting…"}
@@ -479,7 +477,8 @@ export function AddConnection(props: { preset: string }) {
   );
   const [tokens, setTokens] = createStore<Record<string, boolean>>({});
   const signIns = () => fields.filter((f) => f.oauth && !tokens[f.key]);
-  const [sharing, setSharing] = createSignal(answers(preset?.defaults));
+  // Keep the preset's data-flow defaults even though this editor is hidden.
+  const sharing = () => answers(preset?.defaults);
   const [api, setApi] = createSignal(owner.apiSettings(m.view()!)),
     [token, setToken] = createSignal("");
   const names = () =>
@@ -633,25 +632,6 @@ export function AddConnection(props: { preset: string }) {
             </select>
           </label>
         </Show>
-        <ResourceDisclosure
-          class="section-disclosure"
-          summary={
-            <DisclosureHeading
-              title="Advanced"
-              description="Data sharing"
-              small
-            />
-          }
-        >
-          {() => (
-            <div class="section-content">
-              <section class="settings-group" aria-label="Data sharing">
-                <SectionHeading title="Data sharing" small />
-                <DataPermissions value={sharing()} onChange={setSharing} />
-              </section>
-            </div>
-          )}
-        </ResourceDisclosure>
         <div class="form-actions">
           <button
             classList={{ primary: !signIns().length }}
@@ -844,10 +824,27 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
   return (
     <li class="tool-change">
       <header>
-        <span class="badge">{TOOL_CHANGES[props.change.sign]}</span>
+        <span
+          class="badge"
+          classList={{
+            "status-approved": props.change.sign === "+",
+            "status-pending": props.change.sign === "~",
+            "status-denied": props.change.sign === "-",
+          }}
+        >
+          {TOOL_CHANGES[props.change.sign]}
+        </span>
         <code>{props.change.name}</code>
+        <Show when={props.change.tool}>
+          <span class="muted">{props.change.parameters.length} parameters</span>
+        </Show>
         <Show when={props.change.tool?.annotations?.readOnlyHint}>
-          <span class="badge effect-read">Treated as read-only</span>
+          <span
+            class="badge effect-read"
+            title="The MCP server advertises readOnlyHint. Monitor uses it for permission classification; it does not verify that the implementation cannot change data."
+          >
+            Server marks read-only
+          </span>
         </Show>
         <Show when={props.change.tool?.annotations?.destructiveHint}>
           <span class="badge effect-delete">Marked destructive</span>
@@ -857,7 +854,10 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
         when={props.change.tool}
         fallback={
           <Show when={props.change.text}>
-            <pre>{props.change.text}</pre>
+            <details>
+              <summary>View details</summary>
+              <pre>{props.change.text}</pre>
+            </details>
           </Show>
         }
       >
@@ -865,6 +865,17 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
           <>
             <Show when={tool().description}>
               <p class="tool-description">{tool().description}</p>
+            </Show>
+            <Show when={props.change.changedFields.length}>
+              <ul class="tool-field-changes">
+                <For each={props.change.changedFields}>
+                  {(field) => (
+                    <li>
+                      {field.kind}: <code>{field.name}</code>
+                    </li>
+                  )}
+                </For>
+              </ul>
             </Show>
             <Show when={props.change.parameters.length}>
               <dl>
@@ -874,7 +885,10 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
                       <dt>
                         <code>{parameter.name}</code>
                         <span class="muted">
-                          {[parameter.type, !parameter.required && "optional"]
+                          {[
+                            parameter.type,
+                            parameter.required ? "required" : "optional",
+                          ]
                             .filter(Boolean)
                             .join(" · ")}
                         </span>
@@ -889,7 +903,7 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
             </Show>
             <details>
               <summary>Full definition</summary>
-              <pre>{props.change.text}</pre>
+              <pre>{props.change.text || JSON.stringify(tool(), null, 2)}</pre>
             </details>
           </>
         )}
@@ -966,8 +980,8 @@ function Connection(props: { name: string; active: boolean }) {
                     }
                   >
                     <SectionHeading
-                      title="Review tool changes"
-                      description={`${review().blocked} ${review().blocked === 1 ? "tool on" : "tools on"} ${review().name} ${review().blocked === 1 ? "is" : "are"} blocked until you approve these changes.`}
+                      title="Review MCP tool definitions"
+                      description={owner.toolReviewDescription(review())}
                     />
                   </Show>
                   <Show when={review().error}>
@@ -976,53 +990,56 @@ function Connection(props: { name: string; active: boolean }) {
                     </p>
                   </Show>
                   <Show when={review().blocked}>
-                    <ResourceDisclosure
-                      class="section-disclosure"
-                      summary={
-                        <DisclosureHeading
-                          title="View changes"
-                          description={[
-                            review().added && `${review().added} new`,
-                            review().changed && `${review().changed} changed`,
-                            review().removed && `${review().removed} removed`,
-                          ]
-                            .filter(Boolean)
-                            .join(", ")}
-                          small
-                        />
-                      }
-                    >
-                      {() => (
-                        <ul class="section-content tool-changes">
-                          <For each={review().changes}>
-                            {(change) => (
-                              <ToolChange
-                                change={owner.toolChange(
-                                  change,
-                                  review().tools,
-                                )}
-                              />
-                            )}
-                          </For>
-                        </ul>
-                      )}
-                    </ResourceDisclosure>
-                    <div class="form-actions">
-                      <button
-                        class="primary"
-                        disabled={m.busy()}
-                        onClick={() =>
-                          void m.edit(
-                            owner.edits.approveTools(
-                              m.view()!,
-                              props.name,
-                              review().key,
-                            ),
-                          )
+                    <div class="mcp-review-panel">
+                      <ResourceDisclosure
+                        class="section-disclosure mcp-review-changes"
+                        summary={
+                          <DisclosureHeading
+                            title="View changes"
+                            description={[
+                              review().added && `${review().added} new`,
+                              review().changed && `${review().changed} changed`,
+                              review().removed && `${review().removed} removed`,
+                            ]
+                              .filter(Boolean)
+                              .join(", ")}
+                            small
+                          />
                         }
                       >
-                        Approve changes
-                      </button>
+                        {() => (
+                          <ul class="section-content tool-changes">
+                            <For each={review().changes}>
+                              {(change) => (
+                                <ToolChange
+                                  change={owner.toolChange(
+                                    change,
+                                    review().tools,
+                                    review().previousTools,
+                                  )}
+                                />
+                              )}
+                            </For>
+                          </ul>
+                        )}
+                      </ResourceDisclosure>
+                      <div class="form-actions">
+                        <button
+                          class="mcp-review-approve"
+                          disabled={m.busy()}
+                          onClick={() =>
+                            void m.edit(
+                              owner.edits.approveTools(
+                                m.view()!,
+                                props.name,
+                                review().key,
+                              ),
+                            )
+                          }
+                        >
+                          Approve changes
+                        </button>
+                      </div>
                     </div>
                   </Show>
                 </div>

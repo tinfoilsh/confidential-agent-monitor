@@ -15,6 +15,10 @@ import {
 import * as owner from "./owner.js";
 import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
 import { Activity, RequestDetail } from "./Activity";
+import {
+  monitorCreatedAt,
+  monitorReleaseURL,
+} from "./monitor-info";
 import { Agents, AddAgent } from "./Agents";
 import { AddConnection, Connections, DeviceSignInDialog } from "./Connections";
 import {
@@ -182,7 +186,6 @@ function Shell() {
   createEffect(() => {
     document.documentElement.dataset.theme =
       theme() === "system" ? (dark() ? "dark" : "light") : theme();
-    onCleanup(() => delete document.documentElement.dataset.theme);
     localStorage.setItem("monitor-theme", theme());
   });
   return (
@@ -205,10 +208,15 @@ function Shell() {
             <aside id="navigation" aria-label="Monitor navigation">
               <a class="brand" href="#activity">
                 <img
-                  src={import.meta.env.BASE_URL + "icons/tinfoil-white.svg"}
+                  src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
                   alt="Tinfoil"
                 />
-                <span>Monitor</span>
+                <span class="brand-context">
+                  <span>Monitor</span>
+                  <Show when={m.options.monitorInfo}>
+                    {(info) => <small title={info().name}>{info().name}</small>}
+                  </Show>
+                </span>
               </a>
               <button
                 class="mobile-toggle"
@@ -224,6 +232,7 @@ function Shell() {
                   {(key) => <NavItem key={key} />}
                 </For>
               </nav>
+              <MonitorFooter />
             </aside>
             <main id="workspace" tabIndex={-1}>
               <header id="page-header">
@@ -261,6 +270,12 @@ function Shell() {
                     </button>
                   </div>
                 </div>
+                <ApprovalBar />
+                <Show when={m.message() && !dialogRoute()}>
+                  <div id="toast" role="status">
+                    {m.message()}
+                  </div>
+                </Show>
               </header>
               <div id="page-content">
                 <Show when={page()} keyed>
@@ -279,11 +294,6 @@ function Shell() {
           </div>
         </ShellSplit>
       </Show>
-      <Show when={m.message() && !dialogRoute()}>
-        <div id="toast" role="status">
-          {m.message()}
-        </div>
-      </Show>
       <Show when={m.busy()}>
         <div id="saving" role="status">
           Saving…
@@ -292,6 +302,123 @@ function Shell() {
     </>
   );
 }
+function ApprovalBar() {
+  const m = useMonitor();
+  const pending = createMemo(() =>
+    owner.pendingSoonest(m.records().filter(owner.needsOwner)),
+  );
+  return (
+    <Show when={pending()[0]}>
+      {(request) => (
+        <div class="approval-bar" role="status" aria-label="Pending approvals">
+          <Icon name="activity" />
+          <div class="approval-copy">
+            <strong>
+              {pending().length === 1
+                ? "1 request needs your approval"
+                : `${pending().length} requests need your approval`}
+            </strong>
+            <p>
+              {request().facts.principal.name} · {owner.requestTitle(request())}
+            </p>
+          </div>
+          <a
+            class="button"
+            onClick={() => m.setActivity({ scope: "", page: 0, anchor: 0 })}
+            href={
+              pending().length === 1
+                ? href("request", request().id)
+                : "#activity"
+            }
+          >
+            {pending().length === 1 ? "Review request" : "Review requests"}{" "}
+            <Icon name="arrow" />
+          </a>
+        </div>
+      )}
+    </Show>
+  );
+}
+
+function MonitorFooter() {
+  const m = useMonitor();
+  return (
+    <Show when={m.options.monitorInfo || m.options.terminalHome}>
+      <footer class="monitor-footer">
+        <Show when={m.options.monitorInfo}>
+          {(info) => (
+            <section class="monitor-card" aria-label={`${info().name} details`}>
+              <h2 title={info().name}>{info().name}</h2>
+              <dl>
+                <Show
+                  when={typeof info().release === "string" && info().release}
+                >
+                  <div>
+                    <dt>Version</dt>
+                    <dd>
+                      <Show
+                        when={monitorReleaseURL(info())}
+                        fallback={info().release}
+                      >
+                        {(url) => (
+                          <a
+                            class="monitor-release"
+                            href={url()}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {info().release}
+                            <Icon name="external" />
+                          </a>
+                        )}
+                      </Show>
+                    </dd>
+                  </div>
+                </Show>
+                <Show when={monitorCreatedAt(info())}>
+                  {(date) => (
+                    <div>
+                      <dt>Created</dt>
+                      <dd>
+                        <time
+                          dateTime={date().toISOString()}
+                          title={date().toLocaleString()}
+                        >
+                          {date().toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </time>
+                      </dd>
+                    </div>
+                  )}
+                </Show>
+              </dl>
+              <Show
+                when={
+                  !(typeof info().release === "string" && info().release) &&
+                  !monitorCreatedAt(info())
+                }
+              >
+                <p class="monitor-details-unavailable">Details unavailable.</p>
+              </Show>
+            </section>
+          )}
+        </Show>
+        <Show when={m.options.terminalHome}>
+          {(home) => (
+            <a class="nav-item back-terminal" href={home()} link>
+              <Icon name="arrow" />
+              <span>Back to Terminal</span>
+            </a>
+          )}
+        </Show>
+      </footer>
+    </Show>
+  );
+}
+
 function Page(props: {
   path: string;
   theme: string;

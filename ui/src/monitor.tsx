@@ -15,6 +15,7 @@ import {
 import { createStore, reconcile } from "solid-js/store";
 import * as owner from "./owner.js";
 import { createRequestLog } from "./requests";
+import type { MonitorInfo } from "./monitor-info";
 
 const KEY = "monitor-owner-key",
   SESSION = "monitor-local-session",
@@ -26,6 +27,8 @@ const KEY = "monitor-owner-key",
     import.meta.env.VITE_MONITOR_ENDPOINT || undefined;
 
 export type MonitorOptions = {
+  monitorInfo?: MonitorInfo;
+  terminalHome?: string;
   client?: owner.OwnerApi;
   snapshot?: owner.Snapshot;
   // Hosted builds own sandbox signers; other builds have no browser shell.
@@ -33,6 +36,7 @@ export type MonitorOptions = {
   // Sandboxes routed here whose keys a hosted build holds, by the agent key
   // each would enroll; accepting one adds it to this Monitor.
   candidates?: () => { name: string; key: string }[];
+  sandboxesLoading?: () => boolean;
   accept?: (name: string) => Promise<void>;
 };
 
@@ -584,6 +588,7 @@ function createMonitor(options: MonitorOptions) {
     shell,
     setShell,
     shellFor: (name: string) => options.shell?.(name),
+    sandboxesLoading: () => options.sandboxesLoading?.() ?? false,
     waiting: () => {
       const keys = Object.values(view()?.config.identities ?? {}).map(
         (identity) => identity.key,
