@@ -839,7 +839,12 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
           <span class="muted">{props.change.parameters.length} parameters</span>
         </Show>
         <Show when={props.change.tool?.annotations?.readOnlyHint}>
-          <span class="badge effect-read">Treated as read-only</span>
+          <span
+            class="badge effect-read"
+            title="The MCP server advertises readOnlyHint. Monitor uses it for permission classification; it does not verify that the implementation cannot change data."
+          >
+            Server marks read-only
+          </span>
         </Show>
         <Show when={props.change.tool?.annotations?.destructiveHint}>
           <span class="badge effect-delete">Marked destructive</span>

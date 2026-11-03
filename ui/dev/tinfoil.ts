@@ -78,7 +78,7 @@ const tools: DemoTool[] = [
 const pin = { instructions: "", tools };
 const json = (value: unknown): Json => JSON.parse(JSON.stringify(value));
 
-export function createTinfoilDemo(firstUse = false) {
+export function createTinfoilDemo(firstUse = false, showRules = false) {
   const name = "tinfoil";
   const edits: Change[] = [];
   const decorate = (original: View): View => {
@@ -126,6 +126,21 @@ export function createTinfoilDemo(firstUse = false) {
       if (identity)
         identity.accounts = { ...identity.accounts, [name]: { level: "ask" } };
     }
+    if (showRules && view.config.identities?.danielbox1) {
+      const identity = view.config.identities.danielbox1;
+      identity.rules = {
+        ...identity.rules,
+        "dev-object-rule": {
+          account: name,
+          action: "use.fetch",
+          operation: "use.fetch",
+          scope: {
+            urls: ["https://example.com/docs", "https://example.com/status"],
+            options: { format: "text", max_length: 2000 },
+          },
+        },
+      };
+    }
     applyChanges(view.config, edits);
     if (!view.config.accounts[name]) {
       delete view.fields[name];
@@ -160,7 +175,11 @@ export function createTinfoilDemo(firstUse = false) {
     return (
       (["accounts", "policies", "default_access"].includes(root) &&
         key === name) ||
-      (root === "identities" && section === "accounts" && account === name)
+      (root === "identities" && section === "accounts" && account === name) ||
+      (root === "identities" &&
+        key === "danielbox1" &&
+        section === "rules" &&
+        account === "dev-object-rule")
     );
   };
   return {

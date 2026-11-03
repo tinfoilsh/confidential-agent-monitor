@@ -73,6 +73,7 @@ async function start() {
     : manager;
   const tinfoil = createTinfoilDemo(
     new URLSearchParams(location.search).get("mcp") === "first-use",
+    new URLSearchParams(location.search).get("rules") === "1",
   );
   let openAttempts = 0;
 
