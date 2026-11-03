@@ -4,4 +4,3 @@ dist-static/
 public/
 src/dashboard-icons.js
 bun.lock
-src/hosted/testdata/

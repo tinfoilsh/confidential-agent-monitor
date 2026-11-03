@@ -1,5 +1,6 @@
 import { ed25519 } from "@noble/curves/ed25519.js";
 import { concatBytes, utf8ToBytes } from "@noble/hashes/utils.js";
+import { Handshake, type Transport } from "@tinfoilsh/noise";
 import {
   OwnerError,
   fromBase64,
@@ -7,8 +8,8 @@ import {
   type OwnerChannel,
   type OwnerRpc,
 } from "../owner";
-import { initiateNK, type Transport } from "./noise";
 
+const PROTOCOL = "Noise_NK_25519_ChaChaPoly_BLAKE2s";
 const SESSION_CONTEXT = "tinfoil owner session v1\0";
 // A frame is a flag byte, then data filling the rest of one Noise message.
 const FRAME_BYTES = 65518,
@@ -58,7 +59,7 @@ export async function openChannel(
       const last = at + FRAME_BYTES >= message.length;
       const flag = Uint8Array.of(last ? FRAME_LAST : FRAME_MORE);
       const data = message.subarray(at, at + FRAME_BYTES);
-      socket.send(transport.send.encrypt(concatBytes(flag, data)));
+      socket.send(transport.writeMessage(concatBytes(flag, data)));
       if (last) return;
     }
   };
@@ -67,10 +68,18 @@ export async function openChannel(
     socket.onerror = () => reject(new Error(reason));
   });
   for (const { serverKey, prologue, seed, hello } of sessions) {
-    const handshake = initiateNK(serverKey, utf8ToBytes(prologue));
-    socket.send(handshake.message);
-    transport = handshake.finish(await next());
-    const signed = concatBytes(utf8ToBytes(SESSION_CONTEXT), transport.hash);
+    const handshake = Handshake.initiator({
+      protocol: PROTOCOL,
+      prologue: utf8ToBytes(prologue),
+      remoteStaticPublicKey: serverKey,
+    });
+    socket.send(handshake.writeMessage());
+    handshake.readMessage(await next());
+    transport = handshake.intoTransport();
+    const signed = concatBytes(
+      utf8ToBytes(SESSION_CONTEXT),
+      transport.handshakeHash,
+    );
     const signature = toBase64(ed25519.sign(signed, seed));
     send(utf8ToBytes(JSON.stringify({ signature, ...hello })));
   }
@@ -79,7 +88,7 @@ export async function openChannel(
     async receive() {
       const parts: Uint8Array[] = [];
       for (;;) {
-        const frame = transport.recv.decrypt(await next());
+        const frame = transport.readMessage(await next());
         if (frame[0] !== FRAME_LAST && frame[0] !== FRAME_MORE)
           throw new Error("The owner connection sent a malformed message.");
         parts.push(frame.subarray(1));
