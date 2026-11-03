@@ -150,21 +150,6 @@ class Client:
         except (ValueError, KeyError, TypeError) as error:
             raise MonitorError("invalid connection catalog from the monitor") from error
 
-    def browser(self, name):
-        browsers = [c for c in self.connections() if c["kind"] == "browser"]
-        if name:
-            browsers = [c for c in browsers if c["name"] == name]
-        if not browsers:
-            raise MonitorError("no accessible browser connection; check monitor connections and ask the owner to grant access")
-        if len(browsers) != 1:
-            names = ", ".join(c["name"] for c in browsers)
-            raise MonitorError(f"choose a browser with --connection NAME; available: {names}")
-        browser = browsers[0]
-        if browser["state"] != "ready":
-            raise MonitorError(f"browser {browser['name']!r} is {browser['state']}; check monitor connections again later")
-        return browser["host"]
-
-
 def receive(sock, size):
     data = b""
     while len(data) < size:
@@ -1228,25 +1213,6 @@ def parser():
     serve.add_argument("--listen", default="127.0.0.1:8400", help="loopback IP:first port; uses consecutive ports, or free ports with port 0")
     connections = commands.add_parser("connections", help="list reachable connections and their current status")
     connections.add_argument("--json", action="store_true", help="include account, host and access settings as JSON")
-    browser = commands.add_parser(
-        "browser", help="use the monitor's browser",
-        description="Navigate, read pages, and act on refs from the latest snapshot. The browser runs outside this sandbox.",
-        epilog="Take a new snapshot after navigation or a stale-ref 409. If the owner paused the browser, wait for them to return control. Actions are never retried automatically.",
-    )
-    browser.add_argument("--connection", metavar="NAME", help="browser connection name; required if more than one is available")
-    actions = browser.add_subparsers(dest="action", required=True)
-    actions.add_parser("navigate", help="open an HTTP or HTTPS URL").add_argument("url")
-    actions.add_parser("snapshot", help="read the page's element refs for click, type and fill")
-    actions.add_parser("text", help="read censored page text")
-    screenshot = actions.add_parser("screenshot", help="save a censored PNG screenshot")
-    screenshot.add_argument("output", help="new output filename, or - for stdout")
-    actions.add_parser("click", help="click a ref from the latest snapshot").add_argument("ref")
-    for action, help_text in [("type", "type into a ref"), ("fill", "replace a field's contents")]:
-        a = actions.add_parser(action, help=help_text)
-        a.add_argument("ref")
-        text = a.add_mutually_exclusive_group(required=True)
-        text.add_argument("--text", help="text to enter")
-        text.add_argument("--stdin", action="store_true", help="read text from stdin, including newlines")
     commands.metavar = "{" + ",".join(name for name in commands.choices if not name.startswith("_")) + "}"
     return p
 
@@ -1302,22 +1268,6 @@ def main(argv=None):
             else:
                 print("No connections are available to this agent. Ask the owner to grant access.")
             return 0
-        host = client.browser(args.connection)
-        body = None
-        if args.action == "navigate":
-            body = {"url": args.url}
-        elif args.action == "click":
-            body = {"ref": args.ref}
-        elif args.action in ("type", "fill"):
-            body = {"ref": args.ref, "text": sys.stdin.read() if args.stdin else args.text}
-        content = client.request(host, "POST" if body is not None else "GET", "/" + args.action, body)
-        if args.action == "screenshot" and args.output != "-":
-            with Path(args.output).open("xb") as output:
-                output.write(content)
-            print(f"Saved screenshot to {args.output}")
-        else:
-            sys.stdout.buffer.write(content)
-        return 0
     except (MonitorError, OSError, http.client.HTTPException, subprocess.TimeoutExpired, ValueError, KeyError, EOFError) as error:
         print(f"monitor: {error}", file=sys.stderr)
         return 1

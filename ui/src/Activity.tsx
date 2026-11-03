@@ -191,7 +191,7 @@ function Requests(props: { scope?: string; name?: string }) {
                       <ConnectorIcon
                         preset={
                           m.view()!.config.accounts?.[record().facts.account]
-                            ?.preset ?? "custom"
+                            ?.preset ?? ""
                         }
                       />
                       <span>

@@ -22,6 +22,14 @@ const view = (): owner.View => ({
   presets: { tcp: { title: tcp.title, ...tcp.catalog } },
 });
 
+test("missing preset metadata has a display fallback, not a raw Custom connection", () => {
+  const v = view();
+  expect(owner.presetOf(v, "removed-account").title).toBe("Connection");
+  expect(owner.connectorIcon({}, "", "/app/").src).toContain("custom.svg");
+  expect(Object.hasOwn(v.presets, "custom")).toBe(false);
+  expect(owner.catalog(v).flatMap((group) => group.presets).some((p) => p.name === "custom" || p.name === "browser")).toBe(false);
+});
+
 describe("raw TCP setup and access", () => {
   test("does not offer read-only; existing stored settings remain unchanged", () => {
     const v = view();

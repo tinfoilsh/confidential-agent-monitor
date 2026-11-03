@@ -89,6 +89,27 @@ Open [the UI](http://127.0.0.1:8080/app/) and initialize an owner key or passphr
 SSH listens on `127.0.0.1:2223`. See [Dockerfile](Dockerfile) and
 [tinfoil-config.yml](tinfoil-config.yml) for deployment configuration.
 
+### Experimental development connectors
+
+Normal builds exclude the Browser connector implementation, registration and
+`-extension` flag, including worker mode. Browser and raw Custom presets are not
+shipped. The backend source is retained for explicit development builds:
+
+```sh
+mkdir -p .dev
+go build -tags monitor_dev -o .dev/monitor-dev .
+```
+
+Browser still requires its extension/runtime dependencies; its old UI and client
+command are not restored. Experimental preset definitions are kept as non-embedded
+fixtures in `dev/presets/experimental/`. Do not publish a `monitor_dev` binary as a
+release artifact: `-production` does not turn it into one. A tagged parent disables
+Browser with that flag, but worker subprocesses do not inherit the flag; release
+exclusion is enforced by the build tag, not by a worker's runtime options.
+
+Old configurations referencing the removed presets or Browser protocol are not
+supported. There is no migration or inactive-record compatibility layer.
+
 ## Access control
 
 In **Agents**, set each agent's access to each account.

@@ -163,14 +163,6 @@ export type RequestRecord = {
 export type Change = { path: string[]; value?: Json; delete?: boolean };
 export type Snapshot = { view: View; requests: RequestRecord[] };
 export type PolicyDiff = { source_diff: string; effective_diff: string };
-export type BrowserFrame = {
-  owner: boolean;
-  frame?: string;
-  url?: string;
-  screenshot?: string;
-  error?: string;
-  tabs?: { id: string; title: string; url: string; active: boolean }[];
-};
 export type PresetFile = {
   title?: string;
   catalog?: Json;
@@ -235,11 +227,6 @@ export type OwnerApi = {
       | { code?: string; client_id?: string; error?: string; cancel?: boolean },
     signal?: AbortSignal,
   ): Promise<View | { pending: true } | null>;
-  browser(
-    name: string,
-    body?: { [key: string]: Json | undefined },
-    signal?: AbortSignal,
-  ): Promise<BrowserFrame>;
   icons(signal?: AbortSignal): Promise<(preset: string) => ConnectorIcon>;
 };
 /** An authenticated owner socket that carries whole messages. */
@@ -363,9 +350,6 @@ export const CATALOG_GROUPS: { [group: string]: string } = {
   mcp: "MCP",
   protocol: "Protocol",
 };
-// Not in this release: the Monitor-hosted browser (remote sign-in and
-// browsing sessions). The connector stays; the UI never offers or shows it.
-export const HIDDEN_PRESETS = ["browser"];
 export const COMMON_PRESETS = [
   "tinfoil",
   "anthropic",
@@ -685,13 +669,6 @@ export function ownerApi(
         typeof result === "string" ? { code: result } : result,
         signal,
       ),
-    browser: (name, body, signal) =>
-      request(
-        body ? "POST" : "GET",
-        `/connections/${encodeURIComponent(name)}/browser`,
-        body,
-        signal,
-      ) as Promise<BrowserFrame>,
     icons: async (signal) => {
       const manifest = await get<IconManifest>(ICON_MANIFEST, signal);
       return (preset) => connectorIcon(manifest, preset, base);
@@ -821,7 +798,7 @@ export function previewChanges(
     const file = (view.config.presets?.[name] ?? shipped[name]) as
       PresetFile | undefined;
     if (!file) continue; // A shipped preset not fetched yet needs the server's resolved catalog.
-    const previous = view.presets[name] ?? view.presets.custom,
+    const previous = view.presets[name] ?? UNKNOWN_PRESET,
       catalog = (file.catalog ?? {}) as Partial<Preset>;
     view.presets[name] = {
       ...previous,
@@ -848,8 +825,9 @@ export const lattices = (view: View) => ({
   confidentiality: view.config.lattices?.confidentiality ?? true,
   integrity: view.config.lattices?.integrity ?? false,
 });
+const UNKNOWN_PRESET: Preset = { title: "Connection" };
 export const presetOf = (view: View, account: string): Preset =>
-  view.presets[accounts(view)[account]?.preset] ?? view.presets.custom;
+  view.presets[accounts(view)[account]?.preset] ?? UNKNOWN_PRESET;
 export const connectionName = (account: string, key: string) =>
   key ? `${account}-${key}` : account;
 export const tinfoilConnection = (view: View): string | undefined =>
@@ -1470,13 +1448,6 @@ export function accountStatus(
   return { state: blocked ? "review" : null, blocked };
 }
 
-export const liveConnection = (view: View, account: string) => {
-  const key = Object.entries(accounts(view)[account]?.connections ?? {}).find(
-    ([, c]) => c.browser,
-  )?.[0];
-  return key == null ? null : connectionName(account, key);
-};
-
 export const fieldPaths = (f: PresetField) => f.paths ?? [f.path!];
 const paths = fieldPaths;
 const fieldsOf = (c?: Preset) => c?.fields ?? [];
@@ -1599,14 +1570,13 @@ export function catalog(view: View) {
   )) {
     // Retired definitions still serve stored credentials and permission names.
     if (preset.replaced_by && view.presets[preset.replaced_by]) continue;
-    if (HIDDEN_PRESETS.includes(name)) continue;
     const group = preset.group ?? "api";
     if (!groups.has(group)) groups.set(group, []);
     groups
       .get(group)!
       .push({ name, title: preset.title, accounts: counts.get(name) ?? 0 });
   }
-  // The ones most people add first lead as "Common"; blank "custom"
+  // The ones most people add first lead as "Common"; generic connection
   // presets live under Settings → Advanced, not in the browse list.
   const common: CatalogEntry[] = [];
   for (const entries of groups.values())

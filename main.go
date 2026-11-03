@@ -20,7 +20,6 @@ import (
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/connector/browser"
 	"github.com/tinfoilsh/monitor/connector/email"
 	"github.com/tinfoilsh/monitor/connector/mcp"
 	"github.com/tinfoilsh/monitor/connector/mqtt"
@@ -51,7 +50,6 @@ func main() {
 	listen := flag.String("listen", "127.0.0.1:2223", "SSH address; it refuses agents until unlock")
 	api := flag.String("api", "127.0.0.1:8080", "owner API address")
 	bucketURL := flag.String("bucket", os.Getenv("TINFOIL_STORAGE_BUCKET"), "blob URL holding the encrypted state")
-	extension := flag.String("extension", "", "the english-only extension directory; browser connections need it")
 	production := flag.Bool("production", false, "disable development connectors and local UI files, including with a file:// bucket")
 	uiDevURL := flag.String("ui-dev-url", "", "proxy local UI development to a loopback Vite server (bun dev/run.ts)")
 	ownerPublic := flag.String("owner-public-key", os.Getenv("MONITOR_OWNER_PUBLIC_KEY"), "Ed25519 owner public key")
@@ -85,9 +83,7 @@ func main() {
 		"ssh-agent":   signer.SSHAgentKind,
 		"gpg-agent":   signer.GPGAgentKind,
 	}
-	if *extension != "" || *serveWorker {
-		connectorKinds["browser"] = browser.Kind(*extension, *serveWorker)
-	}
+	registerDevelopmentConnectors(connectorKinds, *serveWorker, *production)
 	// Workers run one connector over inherited descriptors. Host owns configuration,
 	// authenticated streams, policy decisions and credentials.
 	if *serveWorker {

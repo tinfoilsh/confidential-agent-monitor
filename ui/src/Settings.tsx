@@ -160,8 +160,7 @@ export function Rules() {
               <a class="resource-link" href={href("connection", rule().account)}>
                 <ConnectorIcon
                   preset={
-                    m.view()!.config.accounts?.[rule().account]?.preset ??
-                    "custom"
+                    m.view()!.config.accounts?.[rule().account]?.preset ?? ""
                   }
                 />
                 <span>
