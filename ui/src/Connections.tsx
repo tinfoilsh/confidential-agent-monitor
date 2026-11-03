@@ -824,7 +824,16 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
   return (
     <li class="tool-change">
       <header>
-        <span class="badge">{TOOL_CHANGES[props.change.sign]}</span>
+        <span
+          class="badge"
+          classList={{
+            "status-approved": props.change.sign === "+",
+            "status-pending": props.change.sign === "~",
+            "status-denied": props.change.sign === "-",
+          }}
+        >
+          {TOOL_CHANGES[props.change.sign]}
+        </span>
         <code>{props.change.name}</code>
         <Show when={props.change.tool}>
           <span class="muted">{props.change.parameters.length} parameters</span>
@@ -849,6 +858,9 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
       >
         {(tool) => (
           <>
+            <Show when={tool().description}>
+              <p class="tool-description">{tool().description}</p>
+            </Show>
             <Show when={props.change.changedFields.length}>
               <ul class="tool-field-changes">
                 <For each={props.change.changedFields}>
@@ -876,37 +888,13 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
                             .join(" · ")}
                         </span>
                       </dt>
+                      <Show when={parameter.description}>
+                        <dd>{parameter.description}</dd>
+                      </Show>
                     </div>
                   )}
                 </For>
               </dl>
-            </Show>
-            <Show
-              when={
-                tool().description ||
-                props.change.parameters.some((p) => p.description)
-              }
-            >
-              <details>
-                <summary>Descriptions</summary>
-                <Show when={tool().description}>
-                  <p class="tool-description">{tool().description}</p>
-                </Show>
-                <dl>
-                  <For
-                    each={props.change.parameters.filter((p) => p.description)}
-                  >
-                    {(parameter) => (
-                      <div>
-                        <dt>
-                          <code>{parameter.name}</code>
-                        </dt>
-                        <dd>{parameter.description}</dd>
-                      </div>
-                    )}
-                  </For>
-                </dl>
-              </details>
             </Show>
             <details>
               <summary>Full definition</summary>
