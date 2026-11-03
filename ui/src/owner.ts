@@ -59,6 +59,7 @@ export type PresetField = {
   key: string;
   label: string;
   hint?: string;
+  help?: string;
   secret?: boolean;
   multiline?: boolean;
   json?: boolean;
@@ -1248,7 +1249,8 @@ export function actionTree(view: View, account: string): ActionNode[] {
 
 export const levelsOf = (account?: Account) =>
   (Object.entries(LEVELS) as [Level, string][]).filter(
-    ([l]) => !["custom_api", "tcp"].includes(account?.preset ?? "") || l !== "read",
+    ([l]) =>
+      !["custom_api", "tcp"].includes(account?.preset ?? "") || l !== "read",
   );
 
 // agentAccess describes an agent's level for every account and, below it, each action's own and inherited mode.

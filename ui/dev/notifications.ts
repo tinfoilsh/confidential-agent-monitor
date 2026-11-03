@@ -123,22 +123,15 @@ export function createActivityDemo() {
         return snapshot({ view, requests: [] }).view;
       },
     });
-  const play = (
-    notify: (text: string) => void,
-    refresh: () => Promise<void>,
-  ) => {
+  const play = (refresh: () => Promise<void>) => {
     let live = true;
     const remaining = Math.max(0, samples.length - cursor);
     const timers = Array.from({ length: remaining }, (_, index) =>
       setTimeout(
         () => {
-          const record = addRequest();
-          void refresh().then(() => {
-            if (live)
-              notify(
-                `${record.facts.principal.name} needs approval: ${record.facts.title}`,
-              );
-          });
+          if (!live) return;
+          addRequest();
+          void refresh();
         },
         1000 + index * 5000,
       ),

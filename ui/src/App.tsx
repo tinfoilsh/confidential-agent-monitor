@@ -168,7 +168,7 @@ function Shell() {
       let live = true;
       let stop = () => {};
       void import("../dev/notifications").then(({ playNotifications }) => {
-        if (live) stop = playNotifications(m.notify, m.refresh);
+        if (live) stop = playNotifications(m.refresh);
       });
       onCleanup(() => {
         live = false;
@@ -272,48 +272,6 @@ function Shell() {
                     </p>
                   </div>
                   <div class="header-actions">
-                    <details
-                      class="pending-activity"
-                      onClick={(event) => {
-                        if ((event.target as HTMLElement).closest("a"))
-                          event.currentTarget.open = false;
-                      }}
-                    >
-                      <summary
-                        aria-label={`${m.pendingCount()} requests need your approval`}
-                      >
-                        <Icon name="activity" />
-                        Activity
-                        <Show when={m.pendingCount()}>
-                          <span class="badge status-pending">
-                            {m.pendingCount()} pending
-                          </span>
-                        </Show>
-                      </summary>
-                      <div class="pending-activity-menu">
-                        <For
-                          each={owner.pendingSoonest(
-                            m.records().filter(owner.needsOwner),
-                          )}
-                          fallback={
-                            <p class="muted">No requests need your approval.</p>
-                          }
-                        >
-                          {(record) => (
-                            <a href={href("request", record.id)}>
-                              <strong>{owner.requestTitle(record)}</strong>
-                              <small>
-                                {record.facts.principal.name} ·{" "}
-                                {record.facts.account}
-                              </small>
-                            </a>
-                          )}
-                        </For>
-                        <a href="#activity">
-                          View all activity <Icon name="arrow" />
-                        </a>
-                      </div>
-                    </details>
                     <button
                       aria-label="Refresh monitor"
                       aria-busy={m.loading()}
@@ -324,6 +282,12 @@ function Shell() {
                     </button>
                   </div>
                 </div>
+                <ApprovalBar />
+                <Show when={m.message() && !dialogRoute()}>
+                  <div id="toast" role="status">
+                    {m.message()}
+                  </div>
+                </Show>
               </header>
               <div id="page-content">
                 <Show when={page()} keyed>
@@ -342,11 +306,6 @@ function Shell() {
           </div>
         </ShellSplit>
       </Show>
-      <Show when={m.message() && !dialogRoute()}>
-        <div id="toast" role="status">
-          {m.message()}
-        </div>
-      </Show>
       <Show when={m.busy()}>
         <div id="saving" role="status">
           Saving…
@@ -355,6 +314,44 @@ function Shell() {
     </>
   );
 }
+function ApprovalBar() {
+  const m = useMonitor();
+  const pending = createMemo(() =>
+    owner.pendingSoonest(m.records().filter(owner.needsOwner)),
+  );
+  return (
+    <Show when={pending()[0]}>
+      {(request) => (
+        <div class="approval-bar" role="status" aria-label="Pending approvals">
+          <Icon name="activity" />
+          <div class="approval-copy">
+            <strong>
+              {pending().length === 1
+                ? "1 request needs your approval"
+                : `${pending().length} requests need your approval`}
+            </strong>
+            <p>
+              {request().facts.principal.name} · {owner.requestTitle(request())}
+            </p>
+          </div>
+          <a
+            class="button"
+            onClick={() => m.setActivity({ scope: "", page: 0, anchor: 0 })}
+            href={
+              pending().length === 1
+                ? href("request", request().id)
+                : "#activity"
+            }
+          >
+            {pending().length === 1 ? "Review request" : "Review requests"}{" "}
+            <Icon name="arrow" />
+          </a>
+        </div>
+      )}
+    </Show>
+  );
+}
+
 function MonitorFooter() {
   const m = useMonitor();
   return (

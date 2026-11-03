@@ -518,6 +518,7 @@ export function Field(props: {
 }) {
   const id = createUniqueId(),
     [shown, setShown] = createSignal(false);
+  const help = () => props.help ?? props.field.help;
   return (
     <div class="field">
       <label for={id}>{props.field.label}</label>
@@ -527,7 +528,7 @@ export function Field(props: {
           <div class="secret-input">
             <input
               id={id}
-              aria-describedby={props.help ? `${id}-help` : undefined}
+              aria-describedby={help() ? `${id}-help` : undefined}
               type="text"
               classList={{ "secret-value": !!props.field.secret }}
               data-concealed={props.field.secret && !shown()}
@@ -560,16 +561,16 @@ export function Field(props: {
       >
         <textarea
           id={id}
-          aria-describedby={props.help ? `${id}-help` : undefined}
+          aria-describedby={help() ? `${id}-help` : undefined}
           rows={6}
           disabled={props.disabled}
           value={props.value}
           onInput={(e) => props.onInput(e.currentTarget.value)}
         />
       </Show>
-      <Show when={props.help}>
+      <Show when={help()}>
         <p id={`${id}-help`} class="muted field-help">
-          {props.help}
+          {help()}
         </p>
       </Show>
     </div>
