@@ -1,5 +1,6 @@
 import { Route, Router } from "@solidjs/router";
 import { render } from "solid-js/web";
+import { onCleanup, onMount } from "solid-js";
 import Console from "../src/hosted/Console";
 import Monitor from "../src/hosted/Monitor";
 import * as keys from "../src/hosted/keys";
@@ -9,6 +10,7 @@ import { isDevice, ownerClient, type Snapshot } from "../src/owner";
 import { devClerk, devPasskeys } from "./account";
 import { MONITOR_ID, ORIGIN, resource, STORAGE_KEY } from "./fixtures";
 import { hold, previewSession, scenarioOf } from "./scenarios";
+import { createFullFlow, delay } from "./flow";
 
 const root = document.getElementById("root")!;
 const loading = render(
@@ -56,13 +58,24 @@ async function start() {
   const scenario = scenarioOf(
     new URLSearchParams(location.search).get("state"),
   );
-  const preview = previewSession(session, scenario);
+  const flow = scenario === "full-flow" ? createFullFlow() : undefined;
+  const preview = previewSession(session, scenario, flow);
+  const previewManager: typeof manager = flow
+    ? {
+        ...manager,
+        recoverKey: async (options) => {
+          await delay(900, options.signal);
+          return manager.recoverKey(options);
+        },
+      }
+    : manager;
   let openAttempts = 0;
 
   // No attestation bypass is installed in the production opener. This explicitly
   // local adapter uses the real backend's file-bucket/bearer development API.
   const openLocal: typeof openMonitor = async ({ scope, id, signal }) => {
     if (scenario === "monitor-opening") return hold(signal);
+    if (flow) await delay(1800, signal);
     if (scenario === "monitor-error" && openAttempts++ === 0)
       throw new Error("Could not reach your Monitor. Please try again.");
     if (id !== MONITOR_ID) throw new Error("There is no such local Monitor.");
@@ -80,7 +93,7 @@ async function start() {
     );
     await client.unlock(undefined, signal);
     let snapshot = await client.read(signal);
-    if (scenario === "sandboxes-loading") {
+    if (scenario === "sandboxes-loading" || flow) {
       snapshot = {
         ...snapshot,
         view: {
@@ -96,8 +109,29 @@ async function start() {
         },
       };
       const current = AbortSignal.any([signal, scope.signal]);
-      client.read = (readSignal) => hold<Snapshot>(readSignal ?? current);
-      scope = { ...scope, fresh: () => hold(current) };
+      if (flow) {
+        const read = client.read,
+          fresh = scope.fresh;
+        const ready = delay(2200, current).then(() => read(current));
+        ready.catch(() => {});
+        let pending: Promise<Snapshot> | undefined = ready;
+        client.read = async (readSignal) => {
+          if (!pending) return read(readSignal);
+          const loaded = await pending;
+          pending = undefined;
+          return loaded;
+        };
+        scope = {
+          ...scope,
+          fresh: async () => {
+            await ready;
+            return fresh();
+          },
+        };
+      } else {
+        client.read = (readSignal) => hold<Snapshot>(readSignal ?? current);
+        scope = { ...scope, fresh: () => hold(current) };
+      }
     }
     return {
       row,
@@ -108,19 +142,26 @@ async function start() {
       scope,
     };
   };
+  const MonitorPage = () => {
+    const abort = new AbortController();
+    onMount(() => {
+      void flow?.start(abort.signal).catch(() => {});
+    });
+    onCleanup(() => abort.abort());
+    return (
+      <Monitor session={preview} manager={previewManager} open={openLocal} />
+    );
+  };
   loading();
   render(
     () => (
       <Router explicitLinks>
-        <Route
-          path="/monitor/:id"
-          component={() => (
-            <Monitor session={preview} manager={manager} open={openLocal} />
-          )}
-        />
+        <Route path="/monitor/:id" component={MonitorPage} />
         <Route
           path="*"
-          component={() => <Console session={preview} manager={manager} />}
+          component={() => (
+            <Console session={preview} manager={previewManager} />
+          )}
         />
       </Router>
     ),

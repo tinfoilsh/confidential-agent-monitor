@@ -8,6 +8,7 @@ import type { Container } from "../src/hosted/session";
 export const ORIGIN = "http://127.0.0.1:5175";
 export const BACKEND = "http://127.0.0.1:8082";
 export const USER = "user_dev";
+export const DEVICE_ID = "device-0000000000000001";
 export const MONITOR_ID = "11111111-1111-4111-8111-111111111111";
 export const bytes = (name: string) =>
   sha256(utf8ToBytes(`tinfoil-local-console:${name}`));
@@ -39,7 +40,7 @@ export const identities = {
     key: publicSSH("sandbox-2"),
     accounts: { network: { level: "allow" } },
   },
-  "dev-laptop": { key: publicSSH("device"), routes: true, accounts: {} },
+  [DEVICE_ID]: { key: publicSSH("device"), routes: true, accounts: {} },
 };
 export const resource: MKResource = {
   key_id: b64u(bytes("key-id").slice(0, 16)),

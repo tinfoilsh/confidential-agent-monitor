@@ -115,6 +115,12 @@ credentials are throwaway, publicly known fixtures: **never use real keys or
 credentials here, expose these servers, or deploy this mode**. The local mode
 cannot be built, and its entry is excluded from production builds.
 
+For the full successful walkthrough, open **http://127.0.0.1:5175/?state=full-flow**.
+Unlock with the fake passkey, select `monitor`, and watch booting → verification
+→ sandbox skeletons → populated Monitor UI. Every loading stage finishes;
+booting starts only after selecting the Monitor. Reopen the same link to restart
+the demonstration. No VM is actually booted or restarted by this demo.
+
 For frozen loading/startup previews, append `?state=keys-loading`,
 `?state=inventory-loading`, `?state=sandboxes-loading`, `?state=monitor-booting`,
 `?state=monitor-opening`, or `?state=monitor-stopped` to a Monitor page URL.

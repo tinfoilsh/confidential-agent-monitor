@@ -5,13 +5,15 @@ import {
 } from "@tinfoilsh/passkey-kit";
 import { parseMKPayload } from "../src/hosted/contract";
 import { devPasskeys } from "../dev/account";
-import { ORIGIN, resource, rows } from "../dev/fixtures";
+import { DEVICE_ID, ORIGIN, resource, rows } from "../dev/fixtures";
+import { isDevice } from "../src/owner";
 import { localRequestAllowed } from "../dev/local-console";
 
 test("local resource uses the current MK schema and sandbox fixtures cannot start hosted enrollment", () => {
   expect(
     parseMKPayload({ version: 1, resources: [resource] }).resources[0],
   ).toEqual(resource);
+  expect(isDevice(DEVICE_ID)).toBe(true);
   expect(
     rows
       .filter((row) => row.repo.endsWith("sandbox"))

@@ -1,7 +1,9 @@
 import { createSignal } from "solid-js";
 import type { Session } from "../src/hosted/session";
+import type { FullFlow } from "./flow";
 
 export const SCENARIOS = [
+  "full-flow",
   "keys-loading",
   "inventory-loading",
   "sandboxes-loading",
@@ -17,9 +19,15 @@ export const scenarioOf = (value: string | null): Scenario | undefined =>
   SCENARIOS.find((scenario) => scenario === value);
 
 // Render-only overrides: no fixture changes reach the API or saved key bundle.
-export function previewSession(session: Session, scenario?: Scenario): Session {
+export function previewSession(
+  session: Session,
+  scenario?: Scenario,
+  flow?: FullFlow,
+): Session {
   if (!scenario) return session;
-  const [locked, setLocked] = createSignal(scenario === "monitor-locked");
+  const [locked, setLocked] = createSignal(
+    scenario === "monitor-locked" || scenario === "full-flow",
+  );
   const [starting, setStarting] = createSignal(scenario === "monitor-startup");
   if (starting()) setTimeout(() => setStarting(false), 5000);
   return {
@@ -29,7 +37,7 @@ export function previewSession(session: Session, scenario?: Scenario): Session {
     unlocked: () =>
       scenario === "keys-loading" || locked() ? undefined : session.unlocked(),
     bind:
-      scenario === "monitor-locked"
+      scenario === "monitor-locked" || scenario === "full-flow"
         ? () => {
             const scope = session.bind();
             return {
@@ -42,9 +50,11 @@ export function previewSession(session: Session, scenario?: Scenario): Session {
           }
         : session.bind,
     inventory: () => {
-      if (scenario === "inventory-loading") return { loading: true };
+      if (scenario === "inventory-loading" || flow?.inventoryLoading())
+        return { loading: true };
       const inventory = session.inventory();
-      const booting = scenario === "monitor-booting" || starting();
+      const booting =
+        scenario === "monitor-booting" || starting() || flow?.booting();
       if (!booting && scenario !== "monitor-stopped") return inventory;
       return {
         ...inventory,

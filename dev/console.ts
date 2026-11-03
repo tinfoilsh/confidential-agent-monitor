@@ -4,8 +4,14 @@ import { existsSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { join } from "node:path";
-import { onboarded, ownerClient, sourceChanges } from "../ui/src/owner";
-import { BACKEND, identities, ORIGIN, STORAGE_KEY } from "../ui/dev/fixtures";
+import { edits, onboarded, ownerClient, sourceChanges } from "../ui/src/owner";
+import {
+  BACKEND,
+  DEVICE_ID,
+  identities,
+  ORIGIN,
+  STORAGE_KEY,
+} from "../ui/dev/fixtures";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const ui = join(root, "ui");
@@ -103,6 +109,17 @@ try {
     console.log(
       "Seeded two fake sandbox identities and a trusted development device.",
     );
+  }
+  // Repair the old fixture name without resetting any permissions edited in dev.
+  const oldDevice = view.config.identities?.["dev-laptop"];
+  if (
+    oldDevice?.key === identities[DEVICE_ID].key &&
+    !view.config.identities?.[DEVICE_ID]
+  ) {
+    await client.edit([
+      ...sourceChanges({ identities: { [DEVICE_ID]: oldDevice } }),
+      ...edits.removeAgent("dev-laptop"),
+    ]);
   }
   const vite = start(
     [
