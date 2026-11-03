@@ -29,6 +29,9 @@
   width: 28px;
   height: 28px;
 }
+:root[data-theme="dark"] .start-brand img {
+  filter: invert(1);
+}
 .start-welcome {
   display: flex;
   flex: 1;

@@ -344,13 +344,86 @@ summary + * {
   font-size: 13px;
 }
 .brand img {
-  width: 96px;
-  height: 25px;
+  flex: none;
+  width: 28px;
+  height: 28px;
   object-fit: contain;
+  filter: invert(1);
 }
-.brand > span {
-  border-left: 1px solid #ffffff33;
-  padding-left: 12px;
+.brand-context {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+.brand-context small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #ffffff99;
+  font-size: 12px;
+}
+.monitor-footer {
+  flex: none;
+  margin-top: auto;
+  padding: 12px;
+  border-top: 1px solid #ffffff1a;
+}
+.monitor-details summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  list-style: none;
+  color: #ffffffcc;
+  font-size: 12px;
+}
+.monitor-details summary::-webkit-details-marker {
+  display: none;
+}
+.monitor-details summary > span:not(.icon) {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.monitor-details summary:hover {
+  background: #ffffff0d;
+}
+.monitor-details summary:focus-visible {
+  outline: 2px solid #ffffff99;
+  outline-offset: 2px;
+}
+.monitor-details[open] summary .icon {
+  transform: rotate(90deg);
+}
+.monitor-details dl {
+  display: grid;
+  gap: 12px;
+  margin: 4px 12px 12px;
+  max-height: 36vh;
+  overflow-y: auto;
+  font-size: 12px;
+}
+.monitor-details dt {
+  margin-bottom: 2px;
+  color: #ffffff80;
+  font-size: 11px;
+}
+.monitor-details dd {
+  margin: 0;
+  color: #ffffffdd;
+  overflow-wrap: anywhere;
+}
+.monitor-details-unavailable {
+  margin: 4px 12px 12px;
+  color: #ffffff99;
+  font-size: 12px;
+}
+.back-terminal .icon {
+  transform: rotate(180deg);
 }
 #tree {
   display: flex;
@@ -2718,9 +2791,18 @@ td {
   #tree {
     display: none;
   }
+  .monitor-footer {
+    display: none;
+  }
   .navigation-open #navigation {
     height: auto;
     max-height: 100dvh;
+    grid-template-rows: 64px minmax(0, 1fr) auto;
+  }
+  .navigation-open #navigation .monitor-footer {
+    display: block;
+    grid-column: 1 / -1;
+    align-self: stretch;
   }
   .navigation-open #navigation #tree {
     display: flex;

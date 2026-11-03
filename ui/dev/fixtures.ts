@@ -62,9 +62,13 @@ export const resource: MKResource = {
 export const rows: Container[] = [
   {
     id: MONITOR_ID,
-    name: "monitor",
+    name: "monitor-daniel",
     repo: "tinfoilsh/confidential-agent-monitor",
     status: "running",
+    current_tag: "Local development",
+    cpus: 2,
+    memory_mb: 2048,
+    created_at: "2026-11-01T17:00:00Z",
     domain: "127.0.0.1:8082",
     clerk_user_id: USER,
     owner_key_mode: "tmk",

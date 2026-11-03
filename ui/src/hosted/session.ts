@@ -20,6 +20,10 @@ export type Container = {
   owner_key_mode: "tmk" | "umk" | null;
   owner_public_key: string | null;
   config?: string;
+  current_tag?: string;
+  cpus?: number;
+  memory_mb?: number | null;
+  created_at?: string;
   volumes?: Record<string, string>;
   network_policy?: { egress?: { container_id: string }[] } | null;
 };

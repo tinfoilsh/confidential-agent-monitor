@@ -15,6 +15,7 @@ import {
 import { createStore, reconcile } from "solid-js/store";
 import * as owner from "./owner.js";
 import { createRequestLog } from "./requests";
+import type { MonitorInfo } from "./monitor-info";
 
 const KEY = "monitor-owner-key",
   SESSION = "monitor-local-session",
@@ -26,6 +27,8 @@ const KEY = "monitor-owner-key",
     import.meta.env.VITE_MONITOR_ENDPOINT || undefined;
 
 export type MonitorOptions = {
+  monitorInfo?: MonitorInfo;
+  terminalHome?: string;
   client?: owner.OwnerApi;
   snapshot?: owner.Snapshot;
   // Hosted builds own sandbox signers; other builds have no browser shell.

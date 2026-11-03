@@ -329,6 +329,14 @@ export default function Monitor(props: {
               </p>
             </Show>
             <App
+              monitorInfo={{
+                name: opened.row.name,
+                release: opened.row.current_tag,
+                cpus: opened.row.cpus,
+                memoryMb: opened.row.memory_mb,
+                createdAt: opened.row.created_at,
+              }}
+              terminalHome="/"
               client={opened.client}
               snapshot={opened.snapshot}
               shell={shell(opened)}

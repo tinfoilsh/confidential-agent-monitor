@@ -476,9 +476,9 @@ export function Header(props: { session: Session }) {
   };
   return (
     <header class="start-header">
-      <a href="/" class="start-brand" aria-label="Tinfoil home" link>
+      <a href="/" class="start-brand" aria-label="Tinfoil Terminal home" link>
         <img src="/icons/tinfoil.svg" alt="" />
-        <span>Tinfoil</span>
+        <span>Terminal</span>
       </a>
       <Show
         when={props.session.user()}

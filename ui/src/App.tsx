@@ -15,6 +15,7 @@ import {
 import * as owner from "./owner.js";
 import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
 import { Activity, RequestDetail } from "./Activity";
+import { monitorCreatedAt, monitorResources } from "./monitor-info";
 import { Agents, AddAgent } from "./Agents";
 import { AddConnection, Connections, DeviceSignInDialog } from "./Connections";
 import {
@@ -204,10 +205,15 @@ function Shell() {
             <aside id="navigation" aria-label="Monitor navigation">
               <a class="brand" href="#activity">
                 <img
-                  src={import.meta.env.BASE_URL + "icons/tinfoil-white.svg"}
+                  src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
                   alt="Tinfoil"
                 />
-                <span>Monitor</span>
+                <span class="brand-context">
+                  <span>Monitor</span>
+                  <Show when={m.options.monitorInfo}>
+                    {(info) => <small title={info().name}>{info().name}</small>}
+                  </Show>
+                </span>
               </a>
               <button
                 class="mobile-toggle"
@@ -223,6 +229,7 @@ function Shell() {
                   {(key) => <NavItem key={key} />}
                 </For>
               </nav>
+              <MonitorFooter />
             </aside>
             <main id="workspace" tabIndex={-1}>
               <header id="page-header">
@@ -257,26 +264,39 @@ function Shell() {
                           event.currentTarget.open = false;
                       }}
                     >
-                      <summary aria-label={`${m.pendingCount()} requests need your approval`}>
+                      <summary
+                        aria-label={`${m.pendingCount()} requests need your approval`}
+                      >
                         <Icon name="activity" />
                         Activity
                         <Show when={m.pendingCount()}>
-                          <span class="badge status-pending">{m.pendingCount()} pending</span>
+                          <span class="badge status-pending">
+                            {m.pendingCount()} pending
+                          </span>
                         </Show>
                       </summary>
                       <div class="pending-activity-menu">
                         <For
-                          each={owner.pendingSoonest(m.records().filter(owner.needsOwner))}
-                          fallback={<p class="muted">No requests need your approval.</p>}
+                          each={owner.pendingSoonest(
+                            m.records().filter(owner.needsOwner),
+                          )}
+                          fallback={
+                            <p class="muted">No requests need your approval.</p>
+                          }
                         >
                           {(record) => (
                             <a href={href("request", record.id)}>
                               <strong>{owner.requestTitle(record)}</strong>
-                              <small>{record.facts.principal.name} · {record.facts.account}</small>
+                              <small>
+                                {record.facts.principal.name} ·{" "}
+                                {record.facts.account}
+                              </small>
                             </a>
                           )}
                         </For>
-                        <a href="#activity">View all activity <Icon name="arrow" /></a>
+                        <a href="#activity">
+                          View all activity <Icon name="arrow" />
+                        </a>
                       </div>
                     </details>
                     <button
@@ -320,6 +340,82 @@ function Shell() {
     </>
   );
 }
+function MonitorFooter() {
+  const m = useMonitor();
+  return (
+    <Show when={m.options.monitorInfo || m.options.terminalHome}>
+      <footer class="monitor-footer">
+        <Show when={m.options.monitorInfo}>
+          {(info) => (
+            <details class="monitor-details">
+              <summary>
+                <span title={`${info().name} details`}>
+                  {info().name} details
+                </span>
+                <Icon name="arrow" />
+              </summary>
+              <dl>
+                <Show
+                  when={typeof info().release === "string" && info().release}
+                >
+                  <div>
+                    <dt>Version</dt>
+                    <dd>{info().release}</dd>
+                  </div>
+                </Show>
+                <Show when={monitorResources(info())}>
+                  {(resources) => (
+                    <div>
+                      <dt>Resources</dt>
+                      <dd>{resources()}</dd>
+                    </div>
+                  )}
+                </Show>
+                <Show when={monitorCreatedAt(info())}>
+                  {(date) => (
+                    <div>
+                      <dt>Created</dt>
+                      <dd>
+                        <time
+                          dateTime={date().toISOString()}
+                          title={date().toLocaleString()}
+                        >
+                          {date().toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </time>
+                      </dd>
+                    </div>
+                  )}
+                </Show>
+              </dl>
+              <Show
+                when={
+                  !(typeof info().release === "string" && info().release) &&
+                  !monitorResources(info()) &&
+                  !monitorCreatedAt(info())
+                }
+              >
+                <p class="monitor-details-unavailable">Details unavailable.</p>
+              </Show>
+            </details>
+          )}
+        </Show>
+        <Show when={m.options.terminalHome}>
+          {(home) => (
+            <a class="nav-item back-terminal" href={home()} link>
+              <Icon name="arrow" />
+              <span>Back to Terminal</span>
+            </a>
+          )}
+        </Show>
+      </footer>
+    </Show>
+  );
+}
+
 function Page(props: {
   path: string;
   theme: string;
