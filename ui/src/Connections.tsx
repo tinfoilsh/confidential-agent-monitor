@@ -997,54 +997,56 @@ function Connection(props: { name: string; active: boolean }) {
                     </p>
                   </Show>
                   <Show when={review().blocked}>
-                    <ResourceDisclosure
-                      class="section-disclosure"
-                      summary={
-                        <DisclosureHeading
-                          title="View changes"
-                          description={[
-                            review().added && `${review().added} new`,
-                            review().changed && `${review().changed} changed`,
-                            review().removed && `${review().removed} removed`,
-                          ]
-                            .filter(Boolean)
-                            .join(", ")}
-                          small
-                        />
-                      }
-                    >
-                      {() => (
-                        <ul class="section-content tool-changes">
-                          <For each={review().changes}>
-                            {(change) => (
-                              <ToolChange
-                                change={owner.toolChange(
-                                  change,
-                                  review().tools,
-                                  review().previousTools,
-                                )}
-                              />
-                            )}
-                          </For>
-                        </ul>
-                      )}
-                    </ResourceDisclosure>
-                    <div class="form-actions">
-                      <button
-                        class="primary"
-                        disabled={m.busy()}
-                        onClick={() =>
-                          void m.edit(
-                            owner.edits.approveTools(
-                              m.view()!,
-                              props.name,
-                              review().key,
-                            ),
-                          )
+                    <div class="mcp-review-panel">
+                      <ResourceDisclosure
+                        class="section-disclosure mcp-review-changes"
+                        summary={
+                          <DisclosureHeading
+                            title="View changes"
+                            description={[
+                              review().added && `${review().added} new`,
+                              review().changed && `${review().changed} changed`,
+                              review().removed && `${review().removed} removed`,
+                            ]
+                              .filter(Boolean)
+                              .join(", ")}
+                            small
+                          />
                         }
                       >
-                        Approve changes
-                      </button>
+                        {() => (
+                          <ul class="section-content tool-changes">
+                            <For each={review().changes}>
+                              {(change) => (
+                                <ToolChange
+                                  change={owner.toolChange(
+                                    change,
+                                    review().tools,
+                                    review().previousTools,
+                                  )}
+                                />
+                              )}
+                            </For>
+                          </ul>
+                        )}
+                      </ResourceDisclosure>
+                      <div class="form-actions">
+                        <button
+                          class="mcp-review-approve"
+                          disabled={m.busy()}
+                          onClick={() =>
+                            void m.edit(
+                              owner.edits.approveTools(
+                                m.view()!,
+                                props.name,
+                                review().key,
+                              ),
+                            )
+                          }
+                        >
+                          Approve changes
+                        </button>
+                      </div>
                     </div>
                   </Show>
                 </div>

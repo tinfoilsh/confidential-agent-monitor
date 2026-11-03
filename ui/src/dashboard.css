@@ -1228,6 +1228,58 @@ details[open] > summary > .collection-chevron {
 .section-disclosure > summary::-webkit-details-marker {
   display: none;
 }
+.mcp-review-panel {
+  --review-border: #fde68a;
+  --review-bg: #fffbeb;
+  --review-text: #92400e;
+  border: 1px solid var(--review-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.mcp-review-panel .mcp-review-changes > summary {
+  padding: 12px 16px;
+  border-radius: 8px 8px 0 0;
+  background: var(--review-bg);
+  color: var(--review-text);
+}
+.mcp-review-panel .mcp-review-changes > summary:hover {
+  background: color-mix(in srgb, var(--review-bg), var(--review-text) 10%);
+  color: var(--review-text);
+}
+.mcp-review-changes > div > .tool-changes {
+  padding: 16px;
+  border: 0;
+  background: var(--card);
+  color: var(--text);
+}
+:root[data-theme="dark"] .mcp-review-panel {
+  --review-border: #92400e;
+  --review-bg: #451a03;
+  --review-text: #fde68a;
+}
+.mcp-review-changes
+  > summary
+  :is(.section-title, .section-description, .collection-chevron) {
+  color: var(--review-text);
+}
+.mcp-review-panel > .form-actions {
+  border-top: 1px solid var(--review-border);
+  margin-top: 0;
+  padding: 12px 16px;
+  border-radius: 0 0 8px 8px;
+  background: var(--review-bg);
+  color: var(--review-text);
+}
+.mcp-review-panel button.mcp-review-approve {
+  border-color: var(--review-border);
+  background: var(--review-bg);
+  color: var(--review-text);
+}
+.mcp-review-panel button.mcp-review-approve:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--review-bg), var(--review-text) 10%);
+  border-color: var(--review-text);
+  color: var(--review-text);
+}
 .section-content {
   padding: 0 0 16px;
 }
