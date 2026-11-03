@@ -204,6 +204,9 @@ function createMonitor(options: MonitorOptions) {
     byId: recordsById,
     pendingCount,
   } = createRequestLog(requests, now);
+  const approvalCount = createMemo(
+    () => pendingCount() + proposals().length,
+  );
   const remember = (
     next: owner.View,
     requests = snapshot()?.requests ?? [],
@@ -488,7 +491,7 @@ function createMonitor(options: MonitorOptions) {
     ),
   );
   createEffect(() => {
-    const count = pendingCount();
+    const count = approvalCount();
     document.title = count ? `(${count}) Monitor` : "Monitor";
   });
   onMount(async () => {
@@ -586,6 +589,7 @@ function createMonitor(options: MonitorOptions) {
     recordsById,
     pendingCount,
     proposals,
+    approvalCount,
     submitProposal,
     approveProposal,
     rejectProposal,

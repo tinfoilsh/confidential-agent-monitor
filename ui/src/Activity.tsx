@@ -16,6 +16,7 @@ import {
   href,
 } from "./components";
 import { useMonitor } from "./monitor";
+import { PolicyProposals } from "./PolicyProposals";
 
 const Rules = lazy(() =>
   import("./Settings").then((m) => ({ default: m.Rules })),
@@ -55,26 +56,44 @@ export function Badge(props: { state: string; record?: owner.RequestRecord }) {
 }
 export function Activity(props: { scope?: string; name?: string }) {
   const rules = () => props.scope === "rules";
+  const proposals = () => props.scope === "proposals";
+  const request = () => props.scope === "request" ? props.name : undefined;
   return (
     <>
       <nav class="page-tabs" aria-label="Activity views">
-        <a href="#activity" aria-current={!rules() ? "page" : undefined}>
+        <a
+          href="#activity"
+          aria-current={!rules() && !proposals() ? "page" : undefined}
+        >
           Requests
+        </a>
+        <a
+          href="#activity/proposals"
+          aria-current={proposals() ? "page" : undefined}
+        >
+          Proposed connection changes
         </a>
         <a href="#activity/rules" aria-current={rules() ? "page" : undefined}>
           Saved Rules
         </a>
       </nav>
       <Show
-        when={rules()}
-        fallback={<Requests scope={props.scope} name={props.name} />}
+        when={proposals()}
+        fallback={
+          <Show
+            when={rules()}
+            fallback={<Requests scope={props.scope} name={props.name} expanded={request()} />}
+          >
+            <Rules />
+          </Show>
+        }
       >
-        <Rules />
+        <PolicyProposals />
       </Show>
     </>
   );
 }
-function Requests(props: { scope?: string; name?: string }) {
+function Requests(props: { scope?: string; name?: string; expanded?: string }) {
   const m = useMonitor();
   const scope = () =>
     props.scope === "agent" || props.scope === "account" ? props.scope : "";
@@ -87,6 +106,7 @@ function Requests(props: { scope?: string; name?: string }) {
   const filtered = createMemo(() =>
     owner
       .ordered(m.records(), m.dismissed())
+      .filter((r) => !owner.isConnectionProposalRecord(r))
       .filter((r) =>
         scope() === "agent"
           ? r.facts.principal.name === props.name
@@ -184,7 +204,8 @@ function Requests(props: { scope?: string; name?: string }) {
             return (
               <ResourceDisclosure
                 class="request-item"
-                summaryClass="request-row"
+                summaryClass="request-row activity-row"
+                open={props.expanded === id}
                 summary={
                   <>
                     <span class="resource-link">
@@ -433,9 +454,15 @@ export function RequestDetail(props: {
                           ? "Blocked by policy. No one was asked."
                           : state() === "expired"
                             ? "Nobody answered in time."
-                            : state() === "approved"
-                              ? "Allowed by policy."
-                              : "Blocked."}
+                            : state() === "outdated"
+                              ? "Settings affecting this connection changed before review."
+                              : state() === "approved"
+                                ? owner.isConnectionProposalRecord(r())
+                                  ? "Proposal approved."
+                                  : "Allowed by policy."
+                                : state() === "denied" && owner.isConnectionProposalRecord(r())
+                                  ? "Proposal rejected."
+                                  : "Blocked."}
                     </p>
                   }
                 >
@@ -450,7 +477,9 @@ export function RequestDetail(props: {
                           : answer.decision === "once"
                             ? " approved it once"
                             : answer.decision === "deny"
-                              ? " denied it"
+                              ? owner.isConnectionProposalRecord(r())
+                                ? " rejected it"
+                                : " denied it"
                               : " approved it and saved a rule"}
                         <Show when={answer.reason}>: {answer.reason}</Show>
                       </p>
@@ -476,7 +505,10 @@ export function RequestDetail(props: {
                 }
               >
                 <div class="request-access">
-                  <a class="button" href={href("connection", r().facts.account)}>
+                  <a
+                    class="button"
+                    href={href("connection", r().facts.account)}
+                  >
                     {r().invalid ? "View connection setup" : "Change access"}
                     <Icon name="arrow" />
                   </a>
@@ -495,10 +527,9 @@ export function RequestDetail(props: {
                   <>
                     <h3>Source changes</h3>
                     <pre>{policy().source_diff}</pre>
-                    <h3>Effective changes</h3>
-                    <pre>
-                      {policy().effective_diff || "No effective changes."}
-                    </pre>
+                    <Show when={!owner.isConnectionProposalRecord(r()) && policy().effective_diff}>
+                      {(effective) => <><h3>Expanded configuration changes</h3><pre>{effective()}</pre></>}
+                    </Show>
                   </>
                 )}
               </Show>

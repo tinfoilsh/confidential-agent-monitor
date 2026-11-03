@@ -537,8 +537,11 @@ summary + * {
   font-size: 12px;
   overflow-wrap: anywhere;
 }
-.approval-bar > a {
+.approval-actions {
+  display: flex;
   flex: none;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 @keyframes notice-enter {
   from {
@@ -1632,7 +1635,8 @@ details[open] > summary > .collection-chevron {
   background: #fef2f2;
   color: #991b1b;
 }
-.status-expired {
+.status-expired,
+.status-outdated {
   border-color: #e5e7eb;
   background: #f3f4f6;
   color: #4b5563;
@@ -2891,7 +2895,7 @@ td {
   .approval-copy {
     flex-basis: calc(100% - 28px);
   }
-  .approval-bar > a {
+  .approval-actions {
     margin-left: 28px;
   }
   #toolbar > select {
@@ -2910,7 +2914,7 @@ td {
   .catalog-row .resource-meta {
     flex-basis: 100%;
   }
-  .request-row .resource-link {
+  .activity-row .resource-link {
     flex-basis: 100%;
   }
   .row-actions {
@@ -3051,7 +3055,7 @@ td {
   border-color: #991b1b;
   color: #fecaca;
 }
-:root[data-theme="dark"] .status-expired {
+:root[data-theme="dark"] :is(.status-expired, .status-outdated) {
   background: #373739;
   border-color: #404045;
   color: #b0b5c0;

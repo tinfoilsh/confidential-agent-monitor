@@ -22,7 +22,7 @@ export type ApprovalAnswer = {
   time: string;
 };
 export type RequestState =
-  "pending" | "allowed" | "approved" | "refused" | "denied" | "expired";
+  "pending" | "allowed" | "approved" | "refused" | "denied" | "expired" | "outdated";
 export type Access = {
   level: Level;
   actions?: Record<string, Mode>;
@@ -133,7 +133,7 @@ export type RequestDetails = {
   smtp?: { to: string[] };
   mail?: { subject?: string };
   imap?: { command: string; args: string };
-  policy?: { source_diff: string; effective_diff: string };
+  policy?: { source_diff: string; effective_diff?: string };
 };
 export type RequestRecord = {
   invalid?: boolean;
@@ -172,7 +172,6 @@ export type PolicyProposal = {
   affected: { kind: "connection"; target: string }[];
   changes: Change[];
   source_diff: string;
-  effective_diff: string;
   stale?: boolean;
 };
 export type PolicyProposalInput = {
@@ -953,6 +952,9 @@ export const stateAt = (r: RequestRecord, now: number): RequestState =>
     : r.state;
 export const needsOwner = (r: RequestRecord) =>
   r.state === "pending" && !r.reviewer;
+export const isConnectionProposalRecord = (r: RequestRecord) =>
+  r.facts.service === "policy-proposal" ||
+  (r.facts.title === "Change connection" && !!r.facts.details?.policy);
 export function reviewStatus(r: RequestRecord): string {
   const last = r.reviews?.at(-1);
   if (r.state === "pending")
@@ -964,8 +966,15 @@ export function reviewStatus(r: RequestRecord): string {
   if (
     (last || r.savingDecision) &&
     (r.state === "approved" || r.state === "denied")
-  )
-    return `${r.state === "approved" ? "Approved" : "Denied"} by ${!r.savingDecision && last?.by === "tinfoil" ? "Tinfoil" : "you"}`;
+  ) {
+    const outcome =
+      r.state === "approved"
+        ? "Approved"
+        : isConnectionProposalRecord(r)
+          ? "Rejected"
+          : "Denied";
+    return `${outcome} by ${!r.savingDecision && last?.by === "tinfoil" ? "Tinfoil" : "you"}`;
+  }
   return r.state.charAt(0).toUpperCase() + r.state.slice(1);
 }
 export const pendingSoonest = (records: RequestRecord[]) =>

@@ -240,6 +240,14 @@ export function ResourceDisclosure(props: {
   const [visited, setVisited] = createSignal(!!props.open);
   let element!: HTMLDetailsElement, summary!: HTMLElement;
   let animation: Animation | undefined;
+  // A route may deep-link an already-mounted list item. Open that item without
+  // closing disclosures the user has opened around it.
+  createEffect(() => {
+    if (!props.open || expanded()) return;
+    setExpanded(true);
+    setVisited(true);
+    element.open = true;
+  });
   const toggle = (event: MouseEvent) => {
     if (
       (event.target as HTMLElement).closest(

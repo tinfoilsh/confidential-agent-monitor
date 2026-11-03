@@ -30,6 +30,7 @@ const (
 
 	statePending  = "pending"
 	stateExpired  = "expired"
+	stateOutdated = "outdated"
 	stateAllowed  = "allowed"
 	stateRefused  = "refused"
 	stateApproved = "approved"
@@ -95,6 +96,7 @@ type recordSummary struct {
 	Facts    struct {
 		Principal facts.Principal  `json:"principal"`
 		Account   string           `json:"account"`
+		Service   string           `json:"service"`
 		Operation *facts.Operation `json:"operation"`
 		Title     string           `json:"title"`
 	} `json:"facts"`
@@ -490,7 +492,7 @@ func (m *monitor) answerRequest(ctx context.Context, actor, id string, input ans
 		}, &savedAnswer{
 			record: r,
 			answer: reviewAnswer{By: actor, answerInput: input},
-		})
+		}, "")
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()

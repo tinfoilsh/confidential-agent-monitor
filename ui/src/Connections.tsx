@@ -23,6 +23,7 @@ import {
 } from "./components";
 import { useMonitor } from "./monitor";
 import { AgentConnectionAccess } from "./Agents";
+import { ConnectionProposals } from "./PolicyProposals";
 
 export function DeviceSignInDialog(props: {
   attempt: (owner.DeviceSignIn & { title: string; preset: string }) | undefined;
@@ -98,7 +99,7 @@ export function DeviceSignInDialog(props: {
   );
 }
 
-export function Connections(props: { catalog?: boolean; expanded?: string }) {
+export function Connections(props: { catalog?: boolean; expanded?: string; proposal?: string }) {
   return (
     <>
       <nav class="page-tabs" aria-label="Connection views">
@@ -115,16 +116,13 @@ export function Connections(props: { catalog?: boolean; expanded?: string }) {
           Catalog
         </a>
       </nav>
-      <Show
-        when={props.catalog}
-        fallback={<MyConnections expanded={props.expanded} />}
-      >
+      <Show when={props.catalog} fallback={<MyConnections expanded={props.expanded} proposal={props.proposal} />}>
         <Catalog />
       </Show>
     </>
   );
 }
-function MyConnections(props: { expanded?: string }) {
+function MyConnections(props: { expanded?: string; proposal?: string }) {
   const m = useMonitor(),
     // Mine and Catalog share one search: switching tabs keeps the term.
     [query, setQuery] = m.search("connections");
@@ -206,9 +204,7 @@ function MyConnections(props: { expanded?: string }) {
           }
         >
           {(name) => {
-            const status = createMemo(() =>
-              owner.accountStatus(m.view()!, name),
-            );
+            const status = createMemo(() => owner.accountStatus(m.view()!, name));
             return (
               <ResourceDisclosure
                 class="connection-item"
@@ -253,6 +249,9 @@ function MyConnections(props: { expanded?: string }) {
           }}
         </For>
       </div>
+      <Show when={m.proposals().length}>
+        <ConnectionProposals id={props.proposal} />
+      </Show>
       <Show when={catalogMatches().shown.length}>
         <div class="resource-list collection-list catalog-peek">
           <div class="resource-heading">

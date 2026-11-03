@@ -143,6 +143,7 @@ export function Rules() {
         <h2>
           Saved rules <span class="count">{rules().length}</span>
         </h2>
+        <span>Updates every 5 seconds</span>
       </div>
       <For
         each={rules()}

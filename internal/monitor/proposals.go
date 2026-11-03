@@ -54,7 +54,6 @@ type policyProposal struct {
 	Connection      string
 	Changes         json.RawMessage
 	SourceDiff      string
-	EffectiveDiff   string
 	Affected        []proposalArea
 }
 
@@ -64,18 +63,17 @@ type proposalArea struct {
 }
 
 type proposalView struct {
-	ID            string          `json:"id"`
-	Digest        string          `json:"digest"`
-	CreatedAt     string          `json:"created_at"`
-	Reason        string          `json:"reason"`
-	Proposer      facts.Principal `json:"proposer"`
-	ProposerKind  string          `json:"proposer_kind"`
-	Connection    string          `json:"connection"`
-	Affected      []proposalArea  `json:"affected"`
-	Changes       []config.Change `json:"changes"`
-	SourceDiff    string          `json:"source_diff"`
-	EffectiveDiff string          `json:"effective_diff"`
-	Stale         bool            `json:"stale,omitempty"`
+	ID           string          `json:"id"`
+	Digest       string          `json:"digest"`
+	CreatedAt    string          `json:"created_at"`
+	Reason       string          `json:"reason"`
+	Proposer     facts.Principal `json:"proposer"`
+	ProposerKind string          `json:"proposer_kind"`
+	Connection   string          `json:"connection"`
+	Affected     []proposalArea  `json:"affected"`
+	Changes      []config.Change `json:"changes"`
+	SourceDiff   string          `json:"source_diff"`
+	Stale        bool            `json:"stale,omitempty"`
 }
 
 type proposalReceipt struct {
@@ -102,7 +100,7 @@ func policyDigest(source string) string {
 func storedProposalDigest(p policyProposal) string {
 	raw, _ := json.Marshal([]any{
 		p.BaseScopeDigest, p.Reason, p.Proposer, p.ProposerKind, p.Connection,
-		json.RawMessage(p.Changes), p.SourceDiff, p.EffectiveDiff,
+		json.RawMessage(p.Changes), p.SourceDiff,
 	})
 	return policyDigest(string(raw))
 }
@@ -235,6 +233,13 @@ func proposalChanges(input proposalInput) ([]config.Change, error) {
 	return changes, nil
 }
 
+// normalizeProposalChanges applies each submitted edit to the candidate in order
+// and retains only edits that actually change its source. The resulting list is
+// what the owner reviews, approves and later sees in the audit record.
+func normalizeProposalChanges(source string, changes []config.Change) (string, []config.Change, error) {
+	return config.EditSourceNormalized(source, changes)
+}
+
 func splitProposalChanges(changes []config.Change) map[string][]config.Change {
 	groups := map[string][]config.Change{}
 	for _, change := range changes {
@@ -282,7 +287,7 @@ func proposalViewOf(p policyProposal, stale bool) proposalView {
 		ID: p.ID, Digest: p.Digest, CreatedAt: p.CreatedAt, Reason: p.Reason,
 		Proposer: p.Proposer, ProposerKind: p.ProposerKind, Connection: p.Connection,
 		Affected: p.Affected, Changes: changes, SourceDiff: p.SourceDiff,
-		EffectiveDiff: p.EffectiveDiff, Stale: stale,
+		Stale: stale,
 	}
 }
 
@@ -310,7 +315,7 @@ func proposalCallerKind(before *settings, proposer facts.Principal) string {
 }
 
 func (m *monitor) buildPolicyProposal(ctx context.Context, base store.Document, before *settings, proposer facts.Principal, kind, connection, reason, idempotency string, changes []config.Change) (policyProposal, error) {
-	candidate, err := config.EditSource(base.Policy, changes)
+	candidate, normalized, err := normalizeProposalChanges(base.Policy, changes)
 	if err != nil {
 		return policyProposal{}, err
 	}
@@ -325,7 +330,7 @@ func (m *monitor) buildPolicyProposal(ctx context.Context, base store.Document, 
 	if err != nil {
 		return policyProposal{}, err
 	}
-	rawChanges, err := json.Marshal(changes)
+	rawChanges, err := json.Marshal(normalized)
 	if err != nil {
 		return policyProposal{}, err
 	}
@@ -334,8 +339,7 @@ func (m *monitor) buildPolicyProposal(ctx context.Context, base store.Document, 
 		IdempotencyKey: idempotency, CreatedAt: time.Now().UTC().Format(time.RFC3339Nano),
 		Reason: strings.TrimSpace(reason), Proposer: proposer, ProposerKind: kind,
 		Connection: connection, Changes: rawChanges, SourceDiff: diff.SourceDiff,
-		EffectiveDiff: diff.EffectiveDiff,
-		Affected:      []proposalArea{{Kind: "connection", Target: connection}},
+		Affected: []proposalArea{{Kind: "connection", Target: connection}},
 	}
 	if stored, err := json.Marshal(proposal); err != nil {
 		return policyProposal{}, err
@@ -486,14 +490,69 @@ func decodeProposalChanges(proposal policyProposal) ([]config.Change, error) {
 	return changes, nil
 }
 
-func (m *monitor) recordPolicyProposalDecision(proposal policyProposal, approved bool) {
+// expireStaleProposals consumes proposals whose reviewed connection context changed
+// after a successful settings write. The proposal being approved is preserved until
+// its own decision is recorded; other proposals for that connection become outdated.
+func (m *monitor) expireStaleProposals(preserve string) {
+	cfg := m.settings.Load().Config
+	var outdated []policyProposal
+	m.mu.Lock()
+	for id, proposal := range m.proposals {
+		if id != preserve && connectionScopeDigest(cfg, proposal.Connection) != proposal.BaseScopeDigest {
+			delete(m.proposals, id)
+			outdated = append(outdated, proposal)
+		}
+	}
+	m.mu.Unlock()
+	for _, proposal := range outdated {
+		m.recordPolicyProposalOutdated(proposal)
+	}
+}
+
+func (m *monitor) proposalDecisionFacts(proposal policyProposal) (json.RawMessage, error) {
 	raw, _, err := facts.Encode(facts.Facts{
-		Version: facts.Version, Principal: proposal.Proposer, Title: "Change connection",
+		Version: facts.Version, Principal: proposal.Proposer,
+		Account: proposal.Connection, Connection: proposal.Connection,
+		Service: "policy-proposal", Title: proposal.Reason,
 		Parameters: map[string]any{"connection": proposal.Connection},
-		Details: map[string]any{"policy": facts.PolicyDiff{
-			SourceDiff: proposal.SourceDiff, EffectiveDiff: proposal.EffectiveDiff,
+		Details: map[string]any{"policy": map[string]any{
+			"source_diff": proposal.SourceDiff,
 		}},
 	})
+	return raw, err
+}
+
+func (m *monitor) consumeOutdatedProposal(proposal policyProposal) {
+	m.mu.Lock()
+	current, ok := m.proposals[proposal.ID]
+	if ok && current.Digest == proposal.Digest {
+		delete(m.proposals, proposal.ID)
+	}
+	m.mu.Unlock()
+	if ok && current.Digest == proposal.Digest {
+		m.recordPolicyProposalOutdated(proposal)
+	}
+}
+
+func (m *monitor) recordPolicyProposalOutdated(proposal policyProposal) {
+	raw, err := m.proposalDecisionFacts(proposal)
+	if err != nil {
+		return
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	record := m.addRecord(&record{
+		Facts: raw,
+		Decision: policy.Decision{Requirements: []policy.Requirement{{
+			ID: "policy.outdated", Message: "Settings affecting this connection changed before the proposal was reviewed.",
+		}}},
+	})
+	record.State = stateOutdated
+	m.settleRecord(record, nil)
+}
+
+func (m *monitor) recordPolicyProposalDecision(proposal policyProposal, approved bool) {
+	raw, err := m.proposalDecisionFacts(proposal)
 	if err != nil {
 		return
 	}
@@ -543,6 +602,7 @@ func (m *monitor) approvePolicyProposal(ctx context.Context, id string, decision
 	}
 	base, before := m.snapshot()
 	if connectionScopeDigest(before.Config, proposal.Connection) != proposal.BaseScopeDigest {
+		m.consumeOutdatedProposal(proposal)
 		return errPolicyConflict
 	}
 	changes, err := decodeProposalChanges(proposal)
@@ -566,7 +626,7 @@ func (m *monitor) approvePolicyProposal(ctx context.Context, id string, decision
 			return errPolicyConflict
 		}
 		return checkProposalDecision(current, decision)
-	}, nil)
+	}, nil, id)
 	if err != nil {
 		return err
 	}

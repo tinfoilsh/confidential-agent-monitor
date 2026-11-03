@@ -38,8 +38,9 @@ proposal workflow built from the existing `/policy/proposals` path.
 8. Approval/rejection applies to the entire proposal. A small self-contained proposal
    may link from Activity to an inline review at the affected connection/agent/setting,
    similar to MCP review. Multi-resource proposals use a combined review page.
-9. Activity shows proposer, reason, affected areas and a concise before/after summary
-   or small diff. Preserve source TOML and effective diffs as a detailed fallback.
+9. Activity shows proposer and reason, then links to concise current → proposed review
+   under Connections. Preserve the source TOML diff as the detailed proposal/audit fallback;
+   the expanded configuration diff remains only in the explicit raw policy editor.
 10. MCP tool-definition/pin review remains separate from configuration proposals.
 11. Nov 3 13:41 pivot: creating generic connections and custom presets in the
     human owner UI saves directly. They show product warnings but do not enter the
@@ -51,7 +52,8 @@ proposal workflow built from the existing `/policy/proposals` path.
 - Agent endpoint: `POST /policy/proposals` on `agent.monitor`.
 - Existing input: TOML fragment plus optional deletions and required reason.
 - Existing validation parses the fragment to `config.Change[]`, checks the agent's
-  allowed proposal fields, prepares a candidate, and computes source/effective diffs.
+  allowed proposal fields, prepares a candidate, and computes source plus expanded
+  configuration diffs. The proposal product retains only its source diff.
 - Existing UI renders the proposal as a `Change policy` Activity request.
 - Existing approval detects policy conflicts and applies through `writeSettings`.
 - Current limitations to replace: two-minute expiry, live waiting request, in-memory
@@ -72,8 +74,6 @@ proposal workflow built from the existing `/policy/proposals` path.
 - [x] Backend/client checkpoint reviewed by Daniel.
 - [x] Rebuild Activity as a pointer and review changes under Connections.
 - [ ] PAUSED FOR DANIEL UI REVIEW; Daniel owns responsive and real-browser validation.
-- [x] Inspect `dmccanns/dev-mode` history and propose preview commits below; do not
-      cherry-pick until selected with Daniel.
 - [ ] Then restore Generic connections and create-only custom presets as direct
       human owner writes—not proposals—with prominent shared catalog warnings.
 - [ ] Add structured warning metadata to generic preset catalog entries and a
@@ -97,7 +97,7 @@ Once this is finished & clean, resume CCH!
 - Backend checkpoint contract: owner submit/list/read/approve/reject plus agent submit;
   immutable exact-digest decisions; no revise endpoint—submit a replacement instead.
 - Agent submission returns a non-sensitive receipt/status, never owner-only policy or
-  effective diffs. Owner review may see the full candidate and diffs.
+  diffs. Owner proposal review sees normalized changes and the source TOML diff.
 - Reject every path outside the connection allowlist before candidate construction.
   Reject credential paths/values inside otherwise allowed connection changes before
   storing or previewing. `allow_networks` is not allowed in this checkpoint.
@@ -114,13 +114,17 @@ Once this is finished & clean, resume CCH!
 - Proposals are immutable. Exact digest approval/rejection; replace by resubmitting.
 - Normalize and split every submission by connection. Every split candidate passes
   normal config, connector and policy preparation before any proposal is stored.
-- Stored owner review includes normalized connection changes, source diff and effective
-  diff. Setup plus default/sandbox access for one connection remains one proposal.
+- Stored owner review applies each change to the temporary candidate and removes semantic
+  no-ops before publishing the reviewed change list. The source diff is retained; expanded
+  configuration is calculated transiently during preparation but not stored on proposals
+  or their audit outcomes. Setup plus default/sandbox access remains one proposal.
 - Credential leaf paths and nested credential values are rejected before preview or
   publication in memory.
 - Staleness binds account configuration, resolved preset, default/effective sandbox
   access, relevant saved rules, and global inputs that affect connection behavior.
-  Another connection can change without staling the proposal.
+  Another connection can change without invalidating the proposal. A relevant successful
+  settings write now consumes the proposal immediately and records an encrypted
+  **Outdated** audit outcome instead of leaving a dead pending review.
 - Approval rebases reviewed changes over unrelated connection edits, revalidates, and
   atomically applies/consumes that connection proposal. Rejection consumes without apply.
   Approved/rejected outcomes (reason, proposer and diff) are appended to the existing
@@ -162,39 +166,31 @@ No live Monitor was changed.
 
 ## Connection proposal UI checkpoint
 
-- Activity's **Proposed changes** view is a concise index only: proposer identity,
-  connection, reason, status, and **Review in Connections**.
-- Nov 3 14:28 correction: **Pending changes** is not a third tab. It is a conditional
-  block at the bottom of Mine, after active Connections and any search/catalog result
-  block. It appears only when proposals exist, with one inactive card per proposal.
-  New connections are absent from active Connections until approval; existing cards
-  show pending badges.
-- Opening an existing connection shows a pending-change notice linking to review.
-- Review under Connections shows current → proposed values for setup and access,
-  explicitly says credentials are excluded, and approves/rejects the whole connection.
-- Stale proposals show an alert and disable approval. Source TOML and effective diffs
-  remain collapsed under technical details. MCP definition review remains separate.
+- Activity's clickable **Proposed connection changes** view has a **Proposed changes**
+  heading and mirrors the Connections proposal rows: reason,
+  `connection · proposer`, then timestamp, **New/Update**, and **Review in Connections**.
+  Settled Approved, Rejected, and Outdated proposal audit outcomes appear below as muted
+  history rows; ordinary Requests excludes them. Pending review remains under Connections.
+- Nov 3 14:28 correction: **Proposals** is not a third tab. It is a conditional,
+  subtly gray block in Mine, after active Connections and before the **From the catalog**
+  search results. It appears only when proposals exist, with one inactive card per proposal.
+  New connections are absent from active Connections until approval. Existing connection
+  rows/details do not duplicate pending badges or notices; review stays in the single
+  Proposals block.
+- Pending cards expand in place like existing connection cards; an Activity deep link
+  opens the matching card, but there is no separate proposal page or Back button.
+- Pending summaries use the same two-line hierarchy as Activity: a roughly 50-character
+  reason, then `connection · proposer`, with no prefixes. **Update** is yellow;
+  **New** is green. Expanded cards label the full Reason and proposer type.
+- Review shows current → proposed values for setup and access and approves/rejects the
+  whole connection with only **Approve changes?** in the footer. The introductory
+  credentials/setup copy and expanded configuration diff are not part of proposal review.
+  The technical TOML diff remains collapsible with colored +/- lines; raw file headers and
+  `@@` hunk coordinates are hidden. MCP definition review remains separate.
+- Activity orders Requests, Saved Rules, then Proposed connection changes. It does not show
+  a proposal count in the tab. All three views say **Updates every 5 seconds**, and the
+  proposal empty state remains stable during background polls. A single-request approval
+  link opens that request inline in Activity rather than navigating to a standalone page.
 
-## Dev-mode preview commit review
-
-Inspected `dmccanns/dev-mode` at `992a26f`. Its worktree has unrelated unstaged
-`ui/src/App.tsx` and `dashboard.css` edits; do not touch or copy those.
-Recommended historical sequence for a later preview-only integration:
-
-1. `09de15b` — required local console foundation (`dev/console.ts`, `ui/dev/*`,
-   Vite/TS entry wiring and local-console tests).
-2. `022587d` — frozen loading/startup scenario selector; useful for deterministic
-   screenshots but not required for proposal states.
-3. `13b2a62` — timed full-flow harness; useful for testing state transitions.
-4. `5ce3322` — Activity notification wrapper/demo; the best base for pending proposal
-   fixtures and shared approval-banner checks.
-5. `89808ed` — MCP fixture wrapper; useful to verify MCP definition review remains
-   separate from connection proposal review.
-
-Do not blindly cherry-pick product/style commits `22e372e`, `29c720a`, `945f0e9`,
-`b4d3b5e`, or `992a26f`; their production changes are already merged/diverged and
-would conflict with this proposal UI. When Daniel selects the preview set, apply the
-chosen commits without committing first and retain only development/test wiring plus
-required entry-point hooks; review every production hunk separately.
 
 Local checks stay outside the repository; no Go test sources are tracked.

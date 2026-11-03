@@ -137,7 +137,7 @@ function Shell() {
         : args()[0] || "Monitor");
   const count = (section: string) =>
     section === "activity"
-      ? m.pendingCount()
+      ? m.approvalCount()
       : Object.keys(
           (section === "agents"
             ? m.view()?.config.identities
@@ -307,35 +307,32 @@ function ApprovalBar() {
   const pending = createMemo(() =>
     owner.pendingSoonest(m.records().filter(owner.needsOwner)),
   );
+  const proposals = m.proposals;
+  const total = m.approvalCount;
   return (
-    <Show when={pending()[0]}>
-      {(request) => (
-        <div class="approval-bar" role="status" aria-label="Pending approvals">
-          <Icon name="activity" />
-          <div class="approval-copy">
-            <strong>
-              {pending().length === 1
-                ? "1 request needs your approval"
-                : `${pending().length} requests need your approval`}
-            </strong>
-            <p>
-              {request().facts.principal.name} · {owner.requestTitle(request())}
-            </p>
-          </div>
-          <a
-            class="button"
-            onClick={() => m.setActivity({ scope: "", page: 0, anchor: 0 })}
-            href={
-              pending().length === 1
-                ? href("request", request().id)
-                : "#activity"
-            }
-          >
-            {pending().length === 1 ? "Review request" : "Review requests"}{" "}
-            <Icon name="arrow" />
-          </a>
+    <Show when={total()}>
+      <div class="approval-bar" role="status" aria-label="Pending approvals">
+        <Icon name="activity" />
+        <div class="approval-copy">
+          <strong>{total() === 1 ? "1 item needs your approval" : `${total()} items need your approval`}</strong>
+          <p>{proposals().length
+            ? `${proposals().length} proposed change${proposals().length === 1 ? "" : "s"}${pending().length ? ` · ${pending().length} request${pending().length === 1 ? "" : "s"}` : ""}`
+            : `${pending()[0].facts.principal.name} · ${owner.requestTitle(pending()[0])}`}</p>
         </div>
-      )}
+        <div class="approval-actions">
+          <Show when={proposals().length}>
+            <a class="button" href={proposals().length === 1 ? `#connections/pending/${encodeURIComponent(proposals()[0].id)}` : "#connections/pending"}>
+              {proposals().length === 1 ? "Review change" : "Review changes"} <Icon name="arrow" />
+            </a>
+          </Show>
+          <Show when={pending().length}>
+            <a class="button" onClick={() => m.setActivity({ scope: "", page: 0, anchor: 0 })}
+              href={pending().length === 1 ? href("activity", "request", pending()[0].id) : "#activity"}>
+              {pending().length === 1 ? "Review request" : "Review requests"} <Icon name="arrow" />
+            </a>
+          </Show>
+        </div>
+      </div>
     </Show>
   );
 }
@@ -448,7 +445,10 @@ function Page(props: {
           kind === "connections" || kind === "accounts" || kind === "catalog"
         }
       >
-        <Connections catalog={kind === "catalog" || name === "catalog"} />
+        <Connections
+          catalog={kind === "catalog" || name === "catalog"}
+          proposal={kind === "connections" && name === "pending" ? request : undefined}
+        />
       </Match>
       <Match when={kind === "connection" || kind === "account"}>
         <Connections expanded={name} />
