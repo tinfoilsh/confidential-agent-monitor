@@ -515,7 +515,6 @@ summary + * {
   margin-top: 16px;
   padding: 12px 16px;
   border: 1px solid var(--edge);
-  border-left: 3px solid var(--warn);
   border-radius: 8px;
   background: var(--card);
   animation: notice-enter 0.15s ease-out;

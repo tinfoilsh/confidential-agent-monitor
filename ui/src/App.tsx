@@ -18,7 +18,6 @@ import { Activity, RequestDetail } from "./Activity";
 import {
   monitorCreatedAt,
   monitorReleaseURL,
-  monitorResources,
 } from "./monitor-info";
 import { Agents, AddAgent } from "./Agents";
 import { AddConnection, Connections, DeviceSignInDialog } from "./Connections";
@@ -376,14 +375,6 @@ function MonitorFooter() {
                     </dd>
                   </div>
                 </Show>
-                <Show when={monitorResources(info())}>
-                  {(resources) => (
-                    <div>
-                      <dt>Resources</dt>
-                      <dd>{resources()}</dd>
-                    </div>
-                  )}
-                </Show>
                 <Show when={monitorCreatedAt(info())}>
                   {(date) => (
                     <div>
@@ -407,7 +398,6 @@ function MonitorFooter() {
               <Show
                 when={
                   !(typeof info().release === "string" && info().release) &&
-                  !monitorResources(info()) &&
                   !monitorCreatedAt(info())
                 }
               >
