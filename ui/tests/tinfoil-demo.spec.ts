@@ -41,6 +41,9 @@ test("Tinfoil demo exposes added/changed/removed tools against a previous approv
     review.removed,
     review.blocked,
   ]).toEqual([1, 1, 1, 2]);
+  expect(owner.toolReviewDescription(review)).toBe(
+    "Tool definitions advertised by tinfoil-websearch differ from those you last approved. Review and approve the changes before using the affected tools.",
+  );
   const changed = owner.toolChange(
     review.changes.find((c) => c.startsWith("~"))!,
     review.tools,
@@ -66,6 +69,9 @@ test("first-use demo stays blocked until an explicit approval and never writes r
     .reviews(view, "tinfoil")
     .find((r) => r.key === "websearch")!;
   expect(review.previousTools).toEqual([]);
+  expect(owner.toolReviewDescription(review)).toBe(
+    "tinfoil-websearch advertises 2 MCP tools you haven’t approved yet. Review their definitions before using them.",
+  );
   expect([review.added, review.changed, review.blocked]).toEqual([2, 0, 2]);
   const approved = await client.edit(
     owner.edits.approveTools(view, "tinfoil", "websearch"),
@@ -75,6 +81,25 @@ test("first-use demo stays blocked until an explicit approval and never writes r
     owner.accountStatus((await client.read()).view, "tinfoil").blocked,
   ).toBe(0);
   expect(real.view.config.accounts!.tinfoil).toBeUndefined();
+});
+
+test("instruction changes and previously approved empty catalogs are not described as first-use tools", async () => {
+  const client = createTinfoilDemo().wrap(backend().client);
+  const { view } = await client.read();
+  view.config.accounts!.tinfoil.connections!.websearch["tinfoil-mcp"].pin = {
+    tools: [],
+    instructions: "Old instructions",
+  };
+  view.status["tinfoil-websearch"].details!.changes = [
+    "~ instructions:\nNew instructions",
+  ];
+  const review = owner
+    .reviews(view, "tinfoil")
+    .find((r) => r.key === "websearch")!;
+  expect(review.previouslyApproved).toBe(true);
+  expect(owner.toolReviewDescription(review)).toBe(
+    "Server instructions advertised by tinfoil-websearch differ from those you last approved. Review the instructions and any tool-definition changes before using the affected tools.",
+  );
 });
 
 test("the existing Tinfoil entry is used without creating a duplicate or persisting fixture edits", async () => {

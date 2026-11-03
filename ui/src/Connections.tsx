@@ -24,7 +24,6 @@ import {
 import { useMonitor } from "./monitor";
 import { AgentConnectionAccess } from "./Agents";
 
-
 export function DeviceSignInDialog(props: {
   attempt: (owner.DeviceSignIn & { title: string; preset: string }) | undefined;
 }) {
@@ -231,7 +230,7 @@ function MyConnections(props: { expanded?: string }) {
                           class={`badge${status().state === "connecting" ? "" : ` status-${status().state === "error" ? "denied" : "pending"}`}`}
                         >
                           {status().blocked
-                            ? `${status().blocked} tools await review`
+                            ? `${status().blocked} MCP ${status().blocked === 1 ? "tool needs" : "tools need"} review`
                             : status().state === "error"
                               ? "Connection error"
                               : "Connecting…"}
@@ -853,7 +852,11 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
             <Show when={props.change.changedFields.length}>
               <ul class="tool-field-changes">
                 <For each={props.change.changedFields}>
-                  {(field) => <li>{field.kind}: <code>{field.name}</code></li>}
+                  {(field) => (
+                    <li>
+                      {field.kind}: <code>{field.name}</code>
+                    </li>
+                  )}
                 </For>
               </ul>
             </Show>
@@ -865,7 +868,10 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
                       <dt>
                         <code>{parameter.name}</code>
                         <span class="muted">
-                          {[parameter.type, parameter.required ? "required" : "optional"]
+                          {[
+                            parameter.type,
+                            parameter.required ? "required" : "optional",
+                          ]
                             .filter(Boolean)
                             .join(" · ")}
                         </span>
@@ -875,17 +881,26 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
                 </For>
               </dl>
             </Show>
-            <Show when={tool().description || props.change.parameters.some((p) => p.description)}>
+            <Show
+              when={
+                tool().description ||
+                props.change.parameters.some((p) => p.description)
+              }
+            >
               <details>
                 <summary>Descriptions</summary>
                 <Show when={tool().description}>
                   <p class="tool-description">{tool().description}</p>
                 </Show>
                 <dl>
-                  <For each={props.change.parameters.filter((p) => p.description)}>
+                  <For
+                    each={props.change.parameters.filter((p) => p.description)}
+                  >
                     {(parameter) => (
                       <div>
-                        <dt><code>{parameter.name}</code></dt>
+                        <dt>
+                          <code>{parameter.name}</code>
+                        </dt>
                         <dd>{parameter.description}</dd>
                       </div>
                     )}
@@ -972,8 +987,8 @@ function Connection(props: { name: string; active: boolean }) {
                     }
                   >
                     <SectionHeading
-                      title="Review tool changes"
-                      description={`${review().blocked} ${review().blocked === 1 ? "tool on" : "tools on"} ${review().name} ${review().blocked === 1 ? "is" : "are"} blocked until you approve these changes.`}
+                      title="Review MCP tool definitions"
+                      description={owner.toolReviewDescription(review())}
                     />
                   </Show>
                   <Show when={review().error}>

@@ -307,6 +307,7 @@ export type Review = {
   changes: string[];
   tools: McpTool[];
   previousTools: McpTool[];
+  previouslyApproved: boolean;
 };
 export type McpTool = {
   name: string;
@@ -1386,6 +1387,9 @@ export const reviews = (view: View, account: string): Review[] =>
       removed: count("-"),
       changes: s.changes ?? [],
       tools: (s.pin as { tools?: McpTool[] } | undefined)?.tools ?? [],
+      previouslyApproved: Object.values(
+        accounts(view)[account].connections![key],
+      ).some((connection) => connection.pin != null),
       previousTools: Object.values(
         accounts(view)[account].connections![key],
       ).flatMap(
@@ -1394,6 +1398,14 @@ export const reviews = (view: View, account: string): Review[] =>
       ),
     };
   });
+
+export function toolReviewDescription(review: Review): string {
+  if (!review.previouslyApproved)
+    return `${review.name} advertises ${review.blocked} MCP ${review.blocked === 1 ? "tool you haven’t" : "tools you haven’t"} approved yet. Review their definitions before using them.`;
+  if (review.changes.some((change) => change.startsWith("~ instructions:")))
+    return `Server instructions advertised by ${review.name} differ from those you last approved. Review the instructions and any tool-definition changes before using the affected tools.`;
+  return `Tool definitions advertised by ${review.name} differ from those you last approved. Review and approve the changes before using the affected tools.`;
+}
 
 // A pin change is "+ name", "~ name" or "- name" and then the tool's definition,
 // or "~ instructions:" and then the server's instructions.
