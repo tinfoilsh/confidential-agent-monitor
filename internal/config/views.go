@@ -56,8 +56,8 @@ func (c *Config) Effective() (string, error) {
 	return RenderTOML(v)
 }
 
-// agentFields is the single definition of what an agent may read and propose.
-// A nil value omits an absent field from the view without forbidding its creation.
+// agentFields defines the restricted configuration view returned to an agent.
+// Proposals may request broader changes, but never reveal owner-only state.
 func (c *Config) agentFields(p Principal) ([]Change, error) {
 	if name, ok := c.Principals[p.Fingerprint]; !ok || name != p.Name {
 		return nil, errors.New("agent identity changed")
@@ -99,23 +99,6 @@ func (c *Config) AgentView(p Principal) (map[string]any, error) {
 		at[field.Path[len(field.Path)-1]] = field.Value
 	}
 	return facts.JSON[map[string]any](view)
-}
-
-// AgentChanges checks original edit roots before the source editor normalizes
-// table replacement. Permission for a descendant never permits deleting its parent.
-func (c *Config) AgentChanges(p Principal, changes []Change) error {
-	fields, err := c.agentFields(p)
-	if err != nil {
-		return err
-	}
-	for _, change := range changes {
-		if !slices.ContainsFunc(fields, func(field Change) bool {
-			return len(change.Path) >= len(field.Path) && slices.Equal(change.Path[:len(field.Path)], field.Path)
-		}) {
-			return errors.New("proposal may edit only your permissions, reachable accounts' policy settings, or lattice switches")
-		}
-	}
-	return nil
 }
 
 // Catalog is a control presentation, never an authorization or runtime registry.

@@ -176,6 +176,7 @@ function createMonitor(options: MonitorOptions) {
     return next;
   });
   const view = createMemo(() => projected()?.view);
+  const proposals = createMemo(() => projected()?.proposals ?? []);
   // Archived records continue past the live log, which the monitor caps and clears on restart.
   const [archived, setArchived] = createSignal<owner.RequestRecord[]>([]);
   const [older, setOlder] = createSignal<string | null>("");
@@ -206,6 +207,7 @@ function createMonitor(options: MonitorOptions) {
   const remember = (
     next: owner.View,
     requests = snapshot()?.requests ?? [],
+    proposals = snapshot()?.proposals ?? [],
   ) => {
     setLocked(false);
     if (!options.client)
@@ -218,7 +220,7 @@ function createMonitor(options: MonitorOptions) {
           ),
         ),
       );
-    setSnapshot({ view: next, requests });
+    setSnapshot({ view: next, requests, proposals });
     if (older() === "" && !loadingOlder()) void loadOlder();
   };
 
@@ -234,7 +236,7 @@ function createMonitor(options: MonitorOptions) {
           const next = await source.read(lifetime.signal);
           if (source !== api()) continue;
           if (revision !== version || lifetime.signal.aborted) return;
-          remember(next.view, next.requests);
+          remember(next.view, next.requests, next.proposals ?? []);
           setError("");
           return;
         }
@@ -336,6 +338,29 @@ function createMonitor(options: MonitorOptions) {
       },
       to,
     });
+  const submitProposal = async (input: owner.PolicyProposalInput) => {
+    const source = api();
+    if (!source || busy()) return;
+    try {
+      const proposals = await source.submitProposal(input, lifetime.signal);
+      const current = snapshot();
+      if (source === api() && current && !lifetime.signal.aborted) {
+        const ids = new Set(proposals.map((proposal) => proposal.id));
+        setSnapshot({ ...current, proposals: [
+          ...(current.proposals ?? []).filter((proposal) => !ids.has(proposal.id)),
+          ...proposals,
+        ] });
+      }
+      notify(proposals.length === 1 ? "Submitted for review" : `${proposals.length} connection proposals submitted`);
+      return proposals;
+    } catch (cause) {
+      report(cause);
+    }
+  };
+  const approveProposal = (proposal: owner.PolicyProposal) =>
+    perform(async (client) => { await client.approveProposal(proposal, lifetime.signal); }, "Proposal approved");
+  const rejectProposal = (proposal: owner.PolicyProposal) =>
+    perform(async (client) => { await client.rejectProposal(proposal, lifetime.signal); }, "Proposal rejected");
   const label = (
     name: string,
     change: Partial<Pick<owner.Label, "trust" | "audience">>,
@@ -560,6 +585,10 @@ function createMonitor(options: MonitorOptions) {
     records,
     recordsById,
     pendingCount,
+    proposals,
+    submitProposal,
+    approveProposal,
+    rejectProposal,
     older,
     loadingOlder,
     loadOlder,

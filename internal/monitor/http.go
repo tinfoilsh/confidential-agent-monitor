@@ -184,6 +184,29 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 	mux.Handle("POST /requests/{id}", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, req answerInput) (any, error) {
 		return nil, m.answerRequest(r.Context(), "owner", r.PathValue("id"), req)
 	})))
+	mux.Handle("GET /policy/proposals", m.ownerOnly(JSONHandler(0, func(*http.Request, struct{}) (any, error) {
+		return m.policyProposals(), nil
+	})))
+	mux.Handle("GET /policy/proposals/{id}", m.ownerOnly(JSONHandler(0, func(r *http.Request, _ struct{}) (any, error) {
+		return m.policyProposalView(r.PathValue("id"))
+	})))
+	mux.Handle("POST /policy/proposals", m.ownerOnly(JSONHandler(maxProposalBytes, func(r *http.Request, input proposalInput) (any, error) {
+		proposals, err := m.submitPolicyProposals(r.Context(), facts.Principal{Name: "owner"}, input)
+		if err != nil {
+			return nil, err
+		}
+		views := make([]proposalView, 0, len(proposals))
+		for _, proposal := range proposals {
+			views = append(views, proposalViewOf(proposal, false))
+		}
+		return views, nil
+	})))
+	mux.Handle("POST /policy/proposals/{id}/approve", m.ownerOnly(JSONHandler(maxProposalBytes, func(r *http.Request, decision proposalDecision) (any, error) {
+		return m.viewAfter(m.approvePolicyProposal(r.Context(), r.PathValue("id"), decision))
+	})))
+	mux.Handle("POST /policy/proposals/{id}/reject", m.ownerOnly(JSONHandler(maxProposalBytes, func(r *http.Request, decision proposalDecision) (any, error) {
+		return nil, m.rejectPolicyProposal(r.Context(), r.PathValue("id"), decision)
+	})))
 	mux.Handle("GET /policy", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) {
 		result := map[string]any{"source": m.store.Doc.Policy}
 		var err error
@@ -264,10 +287,21 @@ func (m *monitor) agentHandler(key string) http.Handler {
 		return m.agentPolicy(key)
 	}))
 	mux.HandleFunc("POST /policy/proposals", JSONHandler(maxAgentBytes, func(r *http.Request, input proposalInput) (any, error) {
-		if err := m.proposePolicy(r.Context(), key, input); err != nil {
+		m.mu.Lock()
+		principal, known := m.settings.Load().Principal(key)
+		m.mu.Unlock()
+		if !known {
+			return nil, errNoAgent
+		}
+		proposals, err := m.submitPolicyProposals(r.Context(), facts.Principal{Key: principal.Fingerprint, Name: principal.Name}, input)
+		if err != nil {
 			return nil, err
 		}
-		return m.agentPolicy(key)
+		receipts := make([]proposalReceipt, 0, len(proposals))
+		for _, proposal := range proposals {
+			receipts = append(receipts, proposalReceiptOf(proposal))
+		}
+		return receipts, nil
 	}))
 	return mux
 }

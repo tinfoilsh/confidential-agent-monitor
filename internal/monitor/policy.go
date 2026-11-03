@@ -12,7 +12,6 @@ import (
 	"github.com/pmezard/go-difflib/difflib"
 	"github.com/tinfoilsh/monitor/facts"
 	"github.com/tinfoilsh/monitor/internal/config"
-	"github.com/tinfoilsh/monitor/internal/policy"
 	"github.com/tinfoilsh/monitor/internal/store"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
 	"golang.org/x/crypto/ssh"
@@ -104,79 +103,6 @@ func (m *monitor) previewPolicy(ctx context.Context, base store.Document, before
 		return text
 	}
 	return &facts.PolicyDiff{SourceDiff: diff(base.Policy, source), EffectiveDiff: diff(beforeText, afterText)}, nil
-}
-
-const (
-	maxProposalBytes   = 64 << 10
-	maxProposalReason  = 4096
-	maxProposalDeletes = 64
-)
-
-type proposalInput struct {
-	Source string     `json:"source"`
-	Reason string     `json:"reason"`
-	Delete [][]string `json:"delete,omitempty"`
-}
-
-// proposePolicy holds an agent's change as an approval card and applies it once the owner allows it.
-func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalInput) (err error) {
-	if len(input.Source) > maxProposalBytes || len(input.Reason) > maxProposalReason || strings.TrimSpace(input.Reason) == "" || len(input.Delete) > maxProposalDeletes {
-		return fmt.Errorf("proposal needs a reason of 1-%d bytes, at most %d bytes of TOML, and at most %d deletions", maxProposalReason, maxProposalBytes, maxProposalDeletes)
-	}
-	changes, err := config.Fragment(input.Source)
-	if err != nil {
-		return err
-	}
-	for _, path := range input.Delete {
-		changes = append(changes, config.Change{Path: path, Delete: true})
-	}
-	m.writes.Lock()
-	base, before := m.snapshot()
-	next := base
-	p, known := before.Principal(key)
-	if !known {
-		err = errNoAgent
-	} else if err = before.AgentChanges(p, changes); err == nil {
-		next.Policy, err = config.EditSource(base.Policy, changes)
-	}
-	if err == nil && next.Policy == base.Policy {
-		err = errors.New("proposal does not change policy")
-	}
-	var diff *facts.PolicyDiff
-	if err == nil {
-		diff, err = m.previewPolicy(ctx, base, before, next.Policy)
-	}
-	m.writes.Unlock()
-	if err != nil {
-		return err
-	}
-	m.mu.Lock()
-	if m.store.Doc.Policy != base.Policy {
-		m.mu.Unlock()
-		return errPolicyConflict
-	}
-	raw, _, err := facts.Encode(facts.Facts{Version: facts.Version, Principal: facts.Principal{Key: p.Fingerprint, Name: p.Name}, Title: "Change policy", Parameters: map[string]any{}, Details: map[string]any{"policy": diff}})
-	if err != nil {
-		m.mu.Unlock()
-		return err
-	}
-	r := m.addRecord(&record{Facts: raw, Decision: policy.Decision{Requirements: []policy.Requirement{{ID: "policy", Message: input.Reason}}}})
-	err = m.awaitAnswer(ctx, r)
-	m.mu.Unlock()
-	if err == nil {
-		m.writes.Lock()
-		err = m.writeSettings(ctx, &next.Policy, nil, func() error {
-			if m.store.Doc.Policy != base.Policy {
-				return errPolicyConflict
-			}
-			return ctx.Err()
-		}, nil)
-		m.writes.Unlock()
-	}
-	m.mu.Lock()
-	m.settleRecord(r, err)
-	m.mu.Unlock()
-	return err
 }
 
 type identityEnrollment struct {

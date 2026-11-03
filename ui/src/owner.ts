@@ -161,7 +161,28 @@ export type RequestRecord = {
   };
 };
 export type Change = { path: string[]; value?: Json; delete?: boolean };
-export type Snapshot = { view: View; requests: RequestRecord[] };
+export type PolicyProposal = {
+  id: string;
+  digest: string;
+  created_at: string;
+  reason: string;
+  proposer: { key?: string; name: string };
+  proposer_kind: "owner_api" | "trusted_device" | "sandbox";
+  connection: string;
+  affected: { kind: "connection"; target: string }[];
+  changes: Change[];
+  source_diff: string;
+  effective_diff: string;
+  stale?: boolean;
+};
+export type PolicyProposalInput = {
+  reason: string;
+  idempotency_key?: string;
+} & (
+  | { changes: Change[]; source?: never; delete?: never }
+  | { source: string; delete?: string[][]; changes?: never }
+);
+export type Snapshot = { view: View; requests: RequestRecord[]; proposals?: PolicyProposal[] };
 export type PolicyDiff = { source_diff: string; effective_diff: string };
 export type PresetFile = {
   title?: string;
@@ -200,6 +221,11 @@ export type OwnerApi = {
     options?: { allowPaidInference?: boolean; tinfoilApiKey?: string },
   ): Promise<View>;
   edit(changes: Change[], signal?: AbortSignal): Promise<View>;
+  proposals(signal?: AbortSignal): Promise<PolicyProposal[]>;
+  proposal(id: string, signal?: AbortSignal): Promise<PolicyProposal>;
+  submitProposal(input: PolicyProposalInput, signal?: AbortSignal): Promise<PolicyProposal[]>;
+  approveProposal(proposal: PolicyProposal, signal?: AbortSignal): Promise<View>;
+  rejectProposal(proposal: PolicyProposal, signal?: AbortSignal): Promise<null>;
   decide(id: string, decision: Decision, signal?: AbortSignal): Promise<null>;
   label(
     name: string,
@@ -601,17 +627,19 @@ export function ownerApi(
   return {
     async read(signal) {
       const path = "/requests";
-      const [view, requests] = await Promise.all([
+      const [view, requests, proposals] = await Promise.all([
         snapshot("GET", "/", undefined, signal),
         get<RequestRecord[] | null>(path, signal),
+        get<PolicyProposal[]>("/policy/proposals", signal),
       ]).catch(async (err) => {
         if (err.status !== 423 || minimum === undefined) throw err;
         return [
           await unlock(minimum, signal),
           await get<RequestRecord[] | null>(path, signal),
+          await get<PolicyProposal[]>("/policy/proposals", signal),
         ] as const;
       });
-      return { view: checked(view), requests: requests ?? [] };
+      return { view: checked(view), requests: requests ?? [], proposals };
     },
     request: (id, signal) => get(`/requests/${encodeURIComponent(id)}`, signal),
     archive: (before, signal) =>
@@ -644,6 +672,17 @@ export function ownerApi(
           ),
     edit: (changes, signal) =>
       snapshot("POST", "/policy/edits", { changes }, signal),
+    proposals: (signal) => get("/policy/proposals", signal),
+    proposal: (id, signal) => get(`/policy/proposals/${encodeURIComponent(id)}`, signal),
+    submitProposal: (input, signal) => post("/policy/proposals", input, signal),
+    approveProposal: (proposal, signal) => snapshot(
+      "POST", `/policy/proposals/${encodeURIComponent(proposal.id)}/approve`,
+      { digest: proposal.digest }, signal,
+    ),
+    rejectProposal: (proposal, signal) => post(
+      `/policy/proposals/${encodeURIComponent(proposal.id)}/reject`,
+      { digest: proposal.digest }, signal,
+    ),
     decide: (id, decision, signal) =>
       post(`/requests/${encodeURIComponent(id)}`, { decision }, signal),
     label: (name, label, signal) =>

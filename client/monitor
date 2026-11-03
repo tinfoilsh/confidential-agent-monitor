@@ -1119,18 +1119,35 @@ def policy_command(client, args):
         else:
             print(result["effective" if args.effective else "source"], end="")
         return 0
-    source = sys.stdin.read() if args.file == "-" else Path(args.file).read_text()
-    body = {"source": source}
     if args.policy_action == "propose":
-        deletions = []
-        for pointer in args.delete:
-            if not pointer.startswith("/") or re.search(r"~(?![01])", pointer):
-                raise MonitorError("--delete requires a JSON Pointer, for example /identities/claude/accounts/github")
-            deletions.append([part.replace("~1", "/").replace("~0", "~") for part in pointer[1:].split("/")])
-        body.update(reason=args.reason, delete=deletions)
+        if bool(args.file) == bool(args.changes):
+            raise MonitorError("provide exactly one TOML file or --changes JSON file")
+        if args.changes:
+            if args.delete:
+                raise MonitorError("put deletions in the structured changes file, not --delete")
+            raw = sys.stdin.read() if args.changes == "-" else Path(args.changes).read_text()
+            try:
+                changes = json.loads(raw)
+            except json.JSONDecodeError as err:
+                raise MonitorError(f"invalid structured changes JSON: {err}") from err
+            if not isinstance(changes, list) or not changes:
+                raise MonitorError("structured changes must be a non-empty JSON array")
+            body = {"reason": args.reason, "changes": changes}
+        else:
+            source = sys.stdin.read() if args.file == "-" else Path(args.file).read_text()
+            deletions = []
+            for pointer in args.delete:
+                if not pointer.startswith("/") or re.search(r"~(?![01])", pointer):
+                    raise MonitorError("--delete requires a JSON Pointer, for example /accounts/github")
+                deletions.append([part.replace("~1", "/").replace("~0", "~") for part in pointer[1:].split("/")])
+            body = {"source": source, "reason": args.reason, "delete": deletions}
         result = json.loads(client.request("agent.monitor", "POST", "/policy/proposals", body))
         print(json.dumps(result, indent=2))
-    elif args.policy_action == "diff":
+        return 0
+    else:
+        source = sys.stdin.read() if args.file == "-" else Path(args.file).read_text()
+        body = {"source": source}
+    if args.policy_action == "diff":
         preview = owner.request("POST", body, path="/policy/preview")
         print(preview["source_diff"] or "No source changes.")
         print("Effective policy changes:")
@@ -1161,11 +1178,12 @@ def parser():
     show_policy.add_argument("--json", action="store_true", help="show the response as JSON")
     show_policy.add_argument("--effective", action="store_true", help="expand presets and defaults; requires owner authentication")
     for action in ("propose", "diff", "apply"):
-        command = policy_commands.add_parser(action, help={"propose": "submit a TOML patch and wait for the owner to approve it", "diff": "validate and preview a replacement policy", "apply": "apply a replacement policy"}[action])
-        command.add_argument("file", help="TOML file, or - for stdin")
+        command = policy_commands.add_parser(action, help={"propose": "submit connection changes for owner review", "diff": "validate and preview a replacement policy", "apply": "apply a replacement policy"}[action])
+        command.add_argument("file", nargs="?" if action == "propose" else None, help="TOML file, or - for stdin")
         if action == "propose":
-            command.add_argument("--reason", required=True, help="explain why the policy change is needed")
-            command.add_argument("--delete", action="append", default=[], help="JSON Pointer to remove; repeat for multiple deletions")
+            command.add_argument("--changes", metavar="FILE", help="structured Change[] JSON file, or - for stdin")
+            command.add_argument("--reason", required=True, help="explain why the connection change is needed")
+            command.add_argument("--delete", action="append", default=[], help="connection-scoped JSON Pointer to remove; repeat for multiple deletions")
     setup = commands.add_parser("setup", help="configure one-command Linux VM launch")
     setup.add_argument("--owner-url", help="unlocked Monitor owner API URL")
     setup.add_argument("--owner-key-file", help="owner-only file containing a key or passphrase; otherwise prompt privately")

@@ -148,5 +148,18 @@ delete = "off"
 
 Account levels are `off`, `read`, `ask`, and `allow`. Action and effect overrides
 use `off`, `ask`, and `allow`. The value `off` means Deny. Agents can inspect their settings
-with `monitor policy show` and submit changes with `monitor policy propose` for
-owner approval.
+with `monitor policy show` and submit connection changes with
+`monitor policy propose` for owner approval.
+
+Automation on a paired computer should use its trusted-device identity rather than
+an owner-panel session. It can submit TOML, or the structured changes already used
+by setup tools:
+
+```sh
+monitor policy propose --changes changes.json \
+  --reason "Configure GitHub access"
+```
+
+The JSON file is an array of `{ "path": [...], "value": ... }` or deletion
+changes. Monitor splits a multi-connection submission into one proposal per
+connection. Credentials are configured separately through owner account settings.
