@@ -111,6 +111,29 @@ describe("MCP review uses saved pins without approving them", () => {
     expect(owner.toolChange("+ search", [after]).changedFields).toEqual([]);
     expect(owner.toolChange("~ search", [after]).changedFields).toEqual([]);
   });
+  test("review wording distinguishes first-use tools from changed server instructions", () => {
+    const v = view();
+    v.config.accounts!.network.connections = { "": { mcp: {} } };
+    v.status.network = {
+      state: "ready",
+      details: { blocked: 1, changes: ["+ search"], pin: { tools: [after] } },
+    };
+    const first = owner.reviews(v, "network")[0];
+    expect(first.previouslyApproved).toBe(false);
+    expect(owner.toolReviewDescription(first)).toBe(
+      "network advertises 1 MCP tool you haven’t approved yet. Review their definitions before using them.",
+    );
+    v.config.accounts!.network.connections[""].mcp.pin = {
+      tools: [],
+      instructions: "Old",
+    };
+    v.status.network.details!.changes = ["~ instructions:\nNew"];
+    const changed = owner.reviews(v, "network")[0];
+    expect(changed.previouslyApproved).toBe(true);
+    expect(owner.toolReviewDescription(changed)).toContain(
+      "Server instructions advertised by network differ from those you last approved.",
+    );
+  });
   test("reviews read the prior pin from config and leave approval an explicit edit", () => {
     const v = view();
     v.config.accounts!.network.connections = {
@@ -122,6 +145,10 @@ describe("MCP review uses saved pins without approving them", () => {
     };
     const original = JSON.stringify(v);
     const review = owner.reviews(v, "network")[0];
+    expect(review.previouslyApproved).toBe(true);
+    expect(owner.toolReviewDescription(review)).toContain(
+      "Tool definitions advertised by network differ from those you last approved.",
+    );
     expect(review.previousTools).toEqual([before]);
     expect(review.tools).toEqual([after]);
     expect(JSON.stringify(v)).toBe(original);

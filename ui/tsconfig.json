@@ -12,11 +12,5 @@
     "skipLibCheck": true,
     "types": ["vite/client"]
   },
-  "include": [
-    "src",
-    "dev",
-    "vite.config.ts",
-    "../dev/run.ts",
-    "../dev/console.ts"
-  ]
+  "include": ["src", "vite.config.ts", "../dev/run.ts"]
 }

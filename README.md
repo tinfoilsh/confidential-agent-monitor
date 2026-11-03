@@ -89,67 +89,6 @@ Open [the UI](http://127.0.0.1:8080/app/) and initialize an owner key or passphr
 SSH listens on `127.0.0.1:2223`. See [Dockerfile](Dockerfile) and
 [tinfoil-config.yml](tinfoil-config.yml) for deployment configuration.
 
-### Local development console (fake account)
-
-To explore the hosted Terminal UI against a real local Monitor, without Clerk,
-passkey prompts, cloud resources, or sandbox VMs:
-
-```sh
-(cd ui && bun install --frozen-lockfile)
-bun dev/console.ts
-```
-
-Open **http://127.0.0.1:5175**. The console hot-reloads local UI changes and seeds
-`danielbox1`, `danielbox2`, a trusted development device, and network access
-settings. The sandbox rows are fake, CLI-only inventory/identities: attestation,
-enrollment, and shells are deliberately unavailable. Monitor configuration and
-permission edits are real and persist across restarts, under **`.dev/console/`**.
-No existing `.dev/store`, SSH configuration, account, or running service is used.
-The runner refuses to start if ports 5175, 8082, or 2225 are occupied.
-
-This replaces the older `dmccanns/dev-mode` console with the current key-bundle
-and session flow. Only the account/passkey provider and resource inventory are
-fake; the normal session, encrypted key-bundle code, and local Monitor API are
-used. Development passkey records intentionally contain plaintext keys. All
-credentials are throwaway, publicly known fixtures: **never use real keys or
-credentials here, expose these servers, or deploy this mode**. The local mode
-cannot be built, and its entry is excluded from production builds.
-
-For the full successful walkthrough, open **http://127.0.0.1:5175/?state=full-flow**.
-Unlock with the fake passkey, select `monitor-daniel`, and watch booting → verification
-→ sandbox skeletons → populated Monitor UI. Every loading stage finishes;
-booting starts only after selecting the Monitor. Reopen the same link to restart
-the demonstration. No VM is actually booted or restarted by this demo.
-
-After opening a Monitor, the development activity demo adds six mock approval
-requests, five seconds apart. The approval bar under each page title, Activity
-list, request details, Allow/Deny, and saved-rule controls share these records. Mock decisions
-and rules stay in page memory; they never reach the real Monitor policy or the
-example hosts. Reload to reset and replay the demo. Its code is in
-`ui/dev/notifications.ts`.
-
-The `tinfoil` entry includes a render-only MCP review fixture: added `fetch`,
-changed `search`, and removed `fetch_page`. Open `#connection/tinfoil` and expand
-**View changes**. Add `?mcp=first-use` before the fragment to see an initial
-review without a previous approval. These are representative definitions, not
-live Tinfoil tool schemas. Approvals and edits to this fixture stay in page memory;
-reload resets them, and the existing local backend connection is unchanged.
-
-For frozen loading/startup previews, append `?state=keys-loading`,
-`?state=inventory-loading`, `?state=sandboxes-loading`, `?state=monitor-booting`,
-`?state=monitor-opening`, or `?state=monitor-stopped` to a Monitor page URL.
-`?state=monitor-error` fails the first open; clicking **Try again** retries
-against the real local backend. `?state=monitor-locked` shows the key-unlock
-step and then opens the Monitor when you click **Unlock with passkey** (without
-a real passkey prompt in dev mode). `?state=monitor-startup` shows booting for
-five seconds, then automatically opens the running local Monitor. Inventory loading can also be viewed at
-`/?state=inventory-loading`. These are render-only overrides: they never stop or
-restart a Monitor, change its saved configuration, or clear actual keys. Remove
-the query parameter to return to the normal preview.
-
-Stop with Ctrl-C. To reset this development instance, stop it first and remove
-only `.dev/console/`, then restart. No development reset changes production state.
-
 ## Access control
 
 In **Agents**, set each agent's access to each account.

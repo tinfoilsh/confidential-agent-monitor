@@ -37,7 +37,6 @@ export default function Monitor(props: {
   session: Session;
   manager?: PasskeyKeyManager;
   attest?: AttestMonitor;
-  open?: typeof openMonitor;
 }) {
   const manager = props.manager ?? keys.passkeys();
   const id = decodeURIComponent(useParams().id ?? "");
@@ -122,7 +121,7 @@ export default function Monitor(props: {
     setError("");
     setCancelled(false);
     try {
-      const opened = await (props.open ?? openMonitor)({
+      const opened = await openMonitor({
         scope: props.session.bind(),
         id,
         signal: current.signal,
