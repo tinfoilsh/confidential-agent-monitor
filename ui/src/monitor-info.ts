@@ -21,6 +21,12 @@ export function monitorResources(info: MonitorInfo): string {
     .join(" / ");
 }
 
+export function monitorReleaseURL(info: MonitorInfo): string | undefined {
+  if (!info.release || !/^v\d+\.\d+\.\d+(?:[-+][\w.-]+)?$/.test(info.release))
+    return;
+  return `https://github.com/tinfoilsh/confidential-agent-monitor/releases/tag/${encodeURIComponent(info.release)}`;
+}
+
 export function monitorCreatedAt(info: MonitorInfo): Date | undefined {
   if (typeof info.createdAt !== "string" || !info.createdAt) return;
   const date = new Date(info.createdAt);

@@ -15,7 +15,11 @@ import {
 import * as owner from "./owner.js";
 import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
 import { Activity, RequestDetail } from "./Activity";
-import { monitorCreatedAt, monitorResources } from "./monitor-info";
+import {
+  monitorCreatedAt,
+  monitorReleaseURL,
+  monitorResources,
+} from "./monitor-info";
 import { Agents, AddAgent } from "./Agents";
 import { AddConnection, Connections, DeviceSignInDialog } from "./Connections";
 import {
@@ -347,20 +351,32 @@ function MonitorFooter() {
       <footer class="monitor-footer">
         <Show when={m.options.monitorInfo}>
           {(info) => (
-            <details class="monitor-details">
-              <summary>
-                <span title={`${info().name} details`}>
-                  {info().name} details
-                </span>
-                <Icon name="arrow" />
-              </summary>
+            <section class="monitor-card" aria-label={`${info().name} details`}>
+              <h2 title={info().name}>{info().name}</h2>
               <dl>
                 <Show
                   when={typeof info().release === "string" && info().release}
                 >
                   <div>
                     <dt>Version</dt>
-                    <dd>{info().release}</dd>
+                    <dd>
+                      <Show
+                        when={monitorReleaseURL(info())}
+                        fallback={info().release}
+                      >
+                        {(url) => (
+                          <a
+                            class="monitor-release"
+                            href={url()}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {info().release}
+                            <Icon name="external" />
+                          </a>
+                        )}
+                      </Show>
+                    </dd>
                   </div>
                 </Show>
                 <Show when={monitorResources(info())}>
@@ -400,7 +416,7 @@ function MonitorFooter() {
               >
                 <p class="monitor-details-unavailable">Details unavailable.</p>
               </Show>
-            </details>
+            </section>
           )}
         </Show>
         <Show when={m.options.terminalHome}>

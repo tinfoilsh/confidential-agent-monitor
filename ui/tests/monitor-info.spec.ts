@@ -1,5 +1,9 @@
 import { expect, test } from "bun:test";
-import { monitorCreatedAt, monitorResources } from "../src/monitor-info";
+import {
+  monitorCreatedAt,
+  monitorReleaseURL,
+  monitorResources,
+} from "../src/monitor-info";
 
 test("Monitor resources use inventory values and omit unavailable values", () => {
   expect(monitorResources({ name: "one", cpus: 2, memoryMb: 2048 })).toBe(
@@ -12,6 +16,19 @@ test("Monitor resources use inventory values and omit unavailable values", () =>
     "",
   );
   expect(monitorResources({ name: "one", cpus: 0, memoryMb: null })).toBe("");
+});
+
+test("deployed versions link to Monitor releases, not the frontend or a development label", () => {
+  expect(monitorReleaseURL({ name: "one", release: "v0.1.46" })).toBe(
+    "https://github.com/tinfoilsh/confidential-agent-monitor/releases/tag/v0.1.46",
+  );
+  expect(monitorReleaseURL({ name: "one", release: "v0.1.47-rc.1" })).toBe(
+    "https://github.com/tinfoilsh/confidential-agent-monitor/releases/tag/v0.1.47-rc.1",
+  );
+  expect(
+    monitorReleaseURL({ name: "one", release: "Local development" }),
+  ).toBeUndefined();
+  expect(monitorReleaseURL({ name: "one" })).toBeUndefined();
 });
 
 test("creation dates are real calendar dates, not guessed from runtime or frontend build", () => {
