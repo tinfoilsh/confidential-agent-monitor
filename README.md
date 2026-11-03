@@ -121,6 +121,13 @@ Unlock with the fake passkey, select `monitor-daniel`, and watch booting → ver
 booting starts only after selecting the Monitor. Reopen the same link to restart
 the demonstration. No VM is actually booted or restarted by this demo.
 
+After opening a Monitor, the development activity demo adds six mock approval
+requests, five seconds apart. Sidebar counts, the Activity menu/list, request
+details, Allow/Deny, and saved-rule controls share these records. Mock decisions
+and rules stay in page memory; they never reach the real Monitor policy or the
+example hosts. Reload to reset and replay the demo. Its code is in
+`ui/dev/notifications.ts`.
+
 For frozen loading/startup previews, append `?state=keys-loading`,
 `?state=inventory-loading`, `?state=sandboxes-loading`, `?state=monitor-booting`,
 `?state=monitor-opening`, or `?state=monitor-stopped` to a Monitor page URL.

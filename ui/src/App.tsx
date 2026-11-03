@@ -164,6 +164,17 @@ function Shell() {
     location.hash = page();
   };
   onMount(() => {
+    if (import.meta.env.DEV && import.meta.env.MODE === "dev-console") {
+      let live = true;
+      let stop = () => {};
+      void import("../dev/notifications").then(({ playNotifications }) => {
+        if (live) stop = playNotifications(m.notify, m.refresh);
+      });
+      onCleanup(() => {
+        live = false;
+        stop();
+      });
+    }
     const hash = () => {
       // A restarted SSH tunnel can reuse this origin with a new owner session.
       if (new URLSearchParams(location.hash.slice(1)).has("session")) {

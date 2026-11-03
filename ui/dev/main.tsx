@@ -11,6 +11,7 @@ import { devClerk, devPasskeys } from "./account";
 import { MONITOR_ID, ORIGIN, resource, STORAGE_KEY } from "./fixtures";
 import { hold, previewSession, scenarioOf } from "./scenarios";
 import { createFullFlow, delay } from "./flow";
+import { activityDemo } from "./notifications";
 
 const root = document.getElementById("root")!;
 const loading = render(
@@ -80,16 +81,18 @@ async function start() {
       throw new Error("Could not reach your Monitor. Please try again.");
     if (id !== MONITOR_ID) throw new Error("There is no such local Monitor.");
     const row = (await scope.fresh()).find((row) => row.id === id)!;
-    const client = Object.assign(
-      ownerClient({ endpoint: `${ORIGIN}/__dev/monitor`, key: STORAGE_KEY }),
-      {
-        // The extra hosted call capability is for sandbox enrollment/shells only.
-        call: async () => {
-          throw new Error(
-            "Sandbox VMs and shells are not running in this local preview.",
-          );
+    const client = activityDemo.wrap(
+      Object.assign(
+        ownerClient({ endpoint: `${ORIGIN}/__dev/monitor`, key: STORAGE_KEY }),
+        {
+          // The extra hosted call capability is for sandbox enrollment/shells only.
+          call: async () => {
+            throw new Error(
+              "Sandbox VMs and shells are not running in this local preview.",
+            );
+          },
         },
-      },
+      ),
     );
     await client.unlock(undefined, signal);
     let snapshot = await client.read(signal);
