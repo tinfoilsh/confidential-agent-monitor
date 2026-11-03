@@ -128,6 +128,13 @@ and rules stay in page memory; they never reach the real Monitor policy or the
 example hosts. Reload to reset and replay the demo. Its code is in
 `ui/dev/notifications.ts`.
 
+The `tinfoil` entry includes a render-only MCP review fixture: added `fetch`,
+changed `search`, and removed `fetch_page`. Open `#connection/tinfoil` and expand
+**View changes**. Add `?mcp=first-use` before the fragment to see an initial
+review without a previous approval. These are representative definitions, not
+live Tinfoil tool schemas. Approvals and edits to this fixture stay in page memory;
+reload resets them, and the existing local backend connection is unchanged.
+
 For frozen loading/startup previews, append `?state=keys-loading`,
 `?state=inventory-loading`, `?state=sandboxes-loading`, `?state=monitor-booting`,
 `?state=monitor-opening`, or `?state=monitor-stopped` to a Monitor page URL.

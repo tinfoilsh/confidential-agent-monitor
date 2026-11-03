@@ -12,6 +12,7 @@ import { MONITOR_ID, ORIGIN, resource, STORAGE_KEY } from "./fixtures";
 import { hold, previewSession, scenarioOf } from "./scenarios";
 import { createFullFlow, delay } from "./flow";
 import { activityDemo } from "./notifications";
+import { createTinfoilDemo } from "./tinfoil";
 
 const root = document.getElementById("root")!;
 const loading = render(
@@ -70,6 +71,9 @@ async function start() {
         },
       }
     : manager;
+  const tinfoil = createTinfoilDemo(
+    new URLSearchParams(location.search).get("mcp") === "first-use",
+  );
   let openAttempts = 0;
 
   // No attestation bypass is installed in the production opener. This explicitly
@@ -81,7 +85,7 @@ async function start() {
       throw new Error("Could not reach your Monitor. Please try again.");
     if (id !== MONITOR_ID) throw new Error("There is no such local Monitor.");
     const row = (await scope.fresh()).find((row) => row.id === id)!;
-    const client = activityDemo.wrap(
+    const activityClient = activityDemo.wrap(
       Object.assign(
         ownerClient({ endpoint: `${ORIGIN}/__dev/monitor`, key: STORAGE_KEY }),
         {
@@ -94,6 +98,7 @@ async function start() {
         },
       ),
     );
+    const client = tinfoil.wrap(activityClient);
     await client.unlock(undefined, signal);
     let snapshot = await client.read(signal);
     if (scenario === "sandboxes-loading" || flow) {
