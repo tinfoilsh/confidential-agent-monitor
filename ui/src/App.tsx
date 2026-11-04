@@ -684,8 +684,7 @@ function Onboarding(props: {
       </button>
       <Show when={props.generate}>
         <p class="onboarding-note">
-          Creates an API key named after this Monitor in your Tinfoil account.
-          It stays in Monitor, hidden from your sandboxes.
+          Your key stays in Monitor, hidden from your sandboxes.
         </p>
       </Show>
       <div class="onboarding-actions">
