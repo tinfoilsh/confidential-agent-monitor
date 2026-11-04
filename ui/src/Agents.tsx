@@ -72,14 +72,7 @@ export function Agents(props: { expanded?: string }) {
             !members().length &&
             !waiting().length;
           return (
-            <Show
-              when={
-                members().length ||
-                waiting().length ||
-                kind === "devices" ||
-                loading()
-              }
-            >
+            <Show when={members().length || waiting().length || loading()}>
               <div class="resource-list collection-list">
                 <div class="resource-heading">
                   <h2>

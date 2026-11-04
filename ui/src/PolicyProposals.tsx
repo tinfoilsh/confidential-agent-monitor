@@ -159,7 +159,7 @@ export function PolicyProposals() {
             title={
               !m.view() && m.loading()
                 ? "Loading proposals…"
-                : "No proposed connection changes"
+                : "No config proposals"
             }
             icon="policy"
           >

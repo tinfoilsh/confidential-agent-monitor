@@ -66,7 +66,7 @@ export function Activity(props: { scope?: string; name?: string }) {
           href="#activity/proposals"
           aria-current={proposals() ? "page" : undefined}
         >
-          Proposed connection changes
+          Config proposals
         </a>
         <a href="#activity/rules" aria-current={rules() ? "page" : undefined}>
           Saved Rules
@@ -437,7 +437,7 @@ export function RequestDetail(props: {
                             ? "Nobody answered in time."
                             : state() === "outdated"
                               ? "Settings affecting this connection changed before review."
-                              : state() === "approved"
+                              : state() === "allowed" || state() === "approved"
                                 ? owner.isConnectionProposalRecord(r())
                                   ? "Proposal approved."
                                   : "Allowed by policy."
