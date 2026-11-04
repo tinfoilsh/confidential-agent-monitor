@@ -44,7 +44,7 @@ async function start() {
     import("./session"),
   ]);
   const clerk = new Clerk(TARGETS.clerk_publishable_key);
-  await clerk.load();
+  await clerk.load({ touchSession: false });
   const session = createSession(clerk);
   const view = (name: keyof typeof PAGES) => {
     const Page = lazy(PAGES[name]);

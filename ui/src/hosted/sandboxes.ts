@@ -16,6 +16,7 @@ import { measuredEnv, sandboxDigest, volumeSize } from "./trust";
 
 const PROTOCOL = "sandbox-owner-v1";
 const ATTESTATION = "/.well-known/tinfoil-attestation";
+const VOLUMES = "/api/volumes";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const HOST = /^[a-z0-9.-]+$/;
 
@@ -114,11 +115,13 @@ export type SandboxClient = ReturnType<typeof sandboxClient>;
 // A TMK sandbox routed through this Monitor, re-resolved from a fresh,
 // successful read of the operation's account. Its saved binding must name the
 // same instance and workspace volume before any sandbox secret is sent.
-async function resolve(monitor: OpenedMonitor, id: string, bind: boolean) {
+async function resolve(
+  monitor: OpenedMonitor,
+  id: string,
+  bind: boolean,
+  readVolumes = () => monitor.scope.api(VOLUMES),
+) {
   const { scope } = monitor;
-  const rows = await scope.fresh();
-  if (!rows.some((r) => r.id === id && r.repo === SANDBOX_REPO))
-    throw new Error("This sandbox is not in the selected account.");
   const detail = (await scope.api(`/api/containers/${id}`)) as Container;
   if (
     detail.id !== id ||
@@ -143,7 +146,7 @@ async function resolve(monitor: OpenedMonitor, id: string, bind: boolean) {
     throw new Error("Your saved keys do not include this sandbox's owner key.");
   const instance_id = measuredEnv(detail.config).SANDBOX_INSTANCE_ID ?? "";
   const volume_id = detail.volumes?.workspace ?? "";
-  const volumes = (await scope.api("/api/volumes")) as {
+  const volumes = (await readVolumes()) as {
     volumes?: {
       id: string;
       container_id: string | null;
@@ -283,10 +286,12 @@ export async function relinkSandboxes(monitor: OpenedMonitor) {
       row.owner_key_mode === "tmk" &&
       row.status === "running",
   );
+  let volumes: Promise<unknown> | undefined;
+  const readVolumes = () => (volumes ??= monitor.scope.api(VOLUMES));
   await Promise.all(
     rows.map(async (row) => {
       try {
-        const resolved = await resolve(monitor, row.id, false);
+        const resolved = await resolve(monitor, row.id, false, readVolumes);
         if (!resolved) return;
         const { resource, binding } = resolved;
         const agent = sshPublicKey(

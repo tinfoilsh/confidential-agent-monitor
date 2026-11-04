@@ -6,6 +6,7 @@ import * as keys from "./keys";
 export const MONITOR_REPO = "tinfoilsh/confidential-agent-monitor";
 export const SANDBOX_REPO = "tinfoilsh/confidential-agent-sandbox";
 const REFRESH_MS = 30_000;
+const FOCUS_REFRESH_MS = 5_000;
 const SIGN_OUT_CHANNEL = "tinfoil.manual-kek";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 
@@ -80,6 +81,7 @@ export function createSession(clerk: Clerk) {
   const fenced = new AbortController();
   fenced.abort();
   let inflight: { scope: AbortController; done: Promise<void> } | undefined;
+  let lastRead = 0;
 
   async function request(
     path: string,
@@ -219,6 +221,7 @@ export function createSession(clerk: Clerk) {
   // Joins a read already running for the same account.
   function refresh() {
     if (inflight?.scope !== scope) {
+      lastRead = Date.now();
       const current = scope;
       const done = read(current).finally(() => {
         if (inflight?.scope === current) inflight = undefined;
@@ -233,7 +236,13 @@ export function createSession(clerk: Clerk) {
     const next = writes.then(async () => {
       const u = unlocked();
       if (!u || current !== scope) throw new Error("Unlock your keys first.");
-      const updated = await keys.updateMK(scoped(current), u, delta);
+      const state = keyState().value;
+      const updated = await keys.updateMK(
+        scoped(current),
+        u,
+        delta,
+        state?.revision === u.revision ? state : undefined,
+      );
       if (current === scope) setUnlocked(updated);
       return updated;
     });
@@ -309,8 +318,9 @@ export function createSession(clerk: Clerk) {
     void refresh();
   }
   const stop = clerk.addListener(sync);
-  const onFocus = () => void refresh();
-  const onVisible = () => document.visibilityState === "visible" && refresh();
+  const onFocus = () =>
+    Date.now() - lastRead >= FOCUS_REFRESH_MS && void refresh();
+  const onVisible = () => document.visibilityState === "visible" && onFocus();
   addEventListener("focus", onFocus);
   addEventListener("online", onFocus);
   document.addEventListener("visibilitychange", onVisible);

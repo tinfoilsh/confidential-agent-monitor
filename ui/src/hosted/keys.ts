@@ -189,9 +189,10 @@ async function writeState(
   api: Api,
   change: (state: KeyState) => Promise<KeyChange | null>,
   signal?: AbortSignal,
+  known?: KeyState,
 ): Promise<number> {
   for (let attempt = 0; attempt < MERGE_ATTEMPTS; attempt++) {
-    const state = await readKeyState(api, signal);
+    const state = (attempt === 0 && known) || (await readKeyState(api, signal));
     const next = await change(state);
     if (!next) return state.revision;
     try {
@@ -251,7 +252,7 @@ export async function updateMK(
   api: Api,
   caller: Unlocked,
   delta: Delta,
-  signal?: AbortSignal,
+  known?: KeyState,
 ): Promise<Unlocked> {
   let u = caller;
   const revision = await writeState(
@@ -267,7 +268,8 @@ export async function updateMK(
         recovery: state.recovery,
       };
     },
-    signal,
+    undefined,
+    known,
   );
   return { ...u, revision };
 }
