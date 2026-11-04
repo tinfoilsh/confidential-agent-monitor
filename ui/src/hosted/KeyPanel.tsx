@@ -4,6 +4,7 @@ import {
   Match,
   Show,
   Switch,
+  createEffect,
   createResource,
   createSignal,
   createUniqueId,
@@ -562,8 +563,8 @@ export function KeyIntro(props: {
 
 // Shows setup to new users and unlock to returning ones, in the key dialog,
 // until the user's keys are open in memory. Closing the dialog leaves one
-// button that reopens it; a deferred gate stays closed while another dialog
-// handles the keys.
+// button that reopens it. A deferred gate counts as closed, so it waits behind
+// its button while another dialog handles the keys and after that one closes.
 export function KeyGate(props: {
   session: Session;
   manager: PasskeyKeyManager;
@@ -592,7 +593,10 @@ export function KeyGate(props: {
           }
         >
           {(state) => {
-            const [dismissed, setDismissed] = createSignal(false);
+            const [dismissed, setDismissed] = createSignal(!!props.deferDialog);
+            createEffect(() => {
+              if (props.deferDialog) setDismissed(true);
+            });
             return (
               <>
                 <Show when={dismissed()}>
@@ -608,7 +612,7 @@ export function KeyGate(props: {
                   </button>
                 </Show>
                 <KeyDialog
-                  open={!dismissed() && !props.deferDialog}
+                  open={!dismissed()}
                   onClose={() => setDismissed(true)}
                   closeLabel="Close"
                   labelledby={titleId}
