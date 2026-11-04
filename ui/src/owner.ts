@@ -825,7 +825,6 @@ export const isConnectionProposalRecord = (r: RequestRecord) =>
   (r.facts.title === "Change connection" && !!r.facts.details?.policy);
 export function reviewStatus(r: RequestRecord): string {
   const last = r.reviews?.at(-1);
-  if (r.state === "pending") return "Needs your approval";
   if (
     (last || r.savingDecision) &&
     (r.state === "approved" || r.state === "denied")

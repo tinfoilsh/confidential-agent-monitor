@@ -304,9 +304,6 @@ export default function Cli(props: {
           </Match>
         </Switch>
       </main>
-      <footer class="start-footer">
-        <Icon name="rules" /> Privacy by design.
-      </footer>
     </div>
   );
 }

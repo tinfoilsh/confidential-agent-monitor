@@ -37,21 +37,16 @@ const requestDate = new Intl.DateTimeFormat(undefined, {
   second: "numeric",
 });
 
-export function Badge(props: { state: string; record?: owner.RequestRecord }) {
+export function Badge(props: { state: string; record: owner.RequestRecord }) {
   return (
-    <span class={`badge status-${props.state}`}>
-      <Show when={props.state === "pending"}>
-        <Icon name="clock" />
-      </Show>
-      {props.record
-        ? owner.reviewStatus({
-            ...props.record,
-            state: props.state as owner.RequestState,
-          })
-        : props.state === "pending"
-          ? "Needs your approval"
-          : props.state[0].toUpperCase() + props.state.slice(1)}
-    </span>
+    <Show when={props.state !== "pending"}>
+      <span class={`badge status-${props.state}`}>
+        {owner.reviewStatus({
+          ...props.record,
+          state: props.state as owner.RequestState,
+        })}
+      </span>
+    </Show>
   );
 }
 export function Activity(props: { scope?: string; name?: string }) {
@@ -373,16 +368,6 @@ export function RequestDetail(props: {
                   : reason,
             ),
           );
-          const destination = createMemo(() => {
-            const http = r().facts.details?.http;
-            return http
-              ? `${http.host}${http.path === "/" ? "" : http.path}`
-              : r()
-                  .facts.title?.match(
-                    /^(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|CONNECT|TRACE) (.+)$/,
-                  )?.[1]
-                  .replace(/\/$/, "");
-          });
           return (
             <section class="request-detail">
               <Show when={!props.inline}>
@@ -421,9 +406,6 @@ export function RequestDetail(props: {
                           <Icon name="arrow" />
                         </a>
                       )}
-                    </Show>
-                    <Show when={destination()}>
-                      <div class="request-destination">{destination()}</div>
                     </Show>
                   </dd>
                 </div>

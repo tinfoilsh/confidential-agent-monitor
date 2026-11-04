@@ -94,15 +94,6 @@
 .start-monitors > .start-eyebrow + .start-help {
   margin: 0;
 }
-.start-footer {
-  color: var(--muted);
-  font-size: var(--font-detail);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  padding: 24px;
-}
 dialog.start-dialog {
   width: min(480px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);

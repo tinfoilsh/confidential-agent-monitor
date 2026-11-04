@@ -1118,12 +1118,6 @@ details[open] > summary > .collection-chevron {
 .request-detail > .decisions:empty {
   display: none;
 }
-.request-destination {
-  margin-top: 4px;
-  color: var(--muted);
-  font-size: var(--font-detail);
-  overflow-wrap: anywhere;
-}
 
 .request-access {
   padding-top: 16px;

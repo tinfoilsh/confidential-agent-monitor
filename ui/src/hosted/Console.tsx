@@ -625,9 +625,6 @@ export default function Console(props: {
           </section>
         </Show>
       </main>
-      <footer class="start-footer">
-        <Icon name="rules" /> Privacy by design.
-      </footer>
       <KeyDialog
         open={!!start}
         labelledby={START_TITLE}
