@@ -25,7 +25,7 @@
     "@solidjs/router": "1.0.1",
     "@tinfoilsh/noise": "file:vendor/tinfoilsh-noise-27953447ce2308993f5d6b5386795f6f015bb4f1.tgz",
     "@tinfoilsh/passkey-kit": "0.2.4",
-    "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-sha256-080ed71eb059899421eac2f7dd3faf59fecf48658dac568147a0b9db247c148d.tgz",
+    "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-sha256-fc768c0c0d17b69de929399776ff1632812f982684dca634a9d0bb01fad7adde.tgz",
     "@xterm/addon-fit": "0.11.0",
     "@xterm/addon-webgl": "0.19.0",
     "@xterm/xterm": "6.0.0",
@@ -44,6 +44,6 @@
     "vite-plugin-sri-gen": "1.7.5"
   },
   "overrides": {
-    "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-sha256-080ed71eb059899421eac2f7dd3faf59fecf48658dac568147a0b9db247c148d.tgz"
+    "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-sha256-fc768c0c0d17b69de929399776ff1632812f982684dca634a9d0bb01fad7adde.tgz"
   }
 }

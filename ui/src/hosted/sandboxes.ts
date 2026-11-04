@@ -47,6 +47,7 @@ export async function sandboxClient(
   owner_seed: string,
   binding: MKBinding,
   size: string,
+  signal: AbortSignal,
 ) {
   const seed = unb64u(owner_seed, 32);
   const owner = ownerPublicKey(seed);
@@ -60,8 +61,8 @@ export async function sandboxClient(
     size,
   });
   const target = registryTarget(row, config, monitor.registry);
-  await verifyImage("sandbox", digest, { signal: monitor.scope.signal });
-  monitor.scope.signal.throwIfAborted();
+  await verifyImage("sandbox", digest, { signal });
+  signal.throwIfAborted();
   const secure = new SecureClient({
     enclaveURL: host,
     configRepo: target.reference,
@@ -244,6 +245,7 @@ export async function connectSandbox({
     resource.owner_seed,
     binding,
     size,
+    signal,
   );
   const status = await sandbox.status(signal);
   const agent = sshPublicKey(
@@ -311,6 +313,7 @@ export async function relinkSandboxes(monitor: OpenedMonitor) {
           resource.owner_seed,
           binding,
           resolved.size,
+          monitor.scope.signal,
         );
         const status = await sandbox.status(monitor.scope.signal);
         if (
