@@ -254,7 +254,7 @@ function createMonitor(options: MonitorOptions) {
   }
   function perform(
     task: (client: owner.OwnerApi) => Promise<owner.View | null | void>,
-    text = "Saved",
+    text = "",
     options: { update?: PendingEdit["update"]; to?: string } = {},
   ): Promise<boolean> {
     const source = api();
@@ -335,7 +335,7 @@ function createMonitor(options: MonitorOptions) {
     }
   }
   const edit = (changes: owner.Change[], to?: string) =>
-    perform((client) => client.edit(changes), "Saved", {
+    perform((client) => client.edit(changes), "", {
       update: (state) => {
         owner.previewChanges(state.view, changes);
       },
@@ -375,7 +375,7 @@ function createMonitor(options: MonitorOptions) {
     });
     return perform(
       (client) => client.label(name, next(snapshot()!.view)),
-      "Saved",
+      "",
       {
         update: (state) => {
           state.view.labels[name] = next(state.view);
