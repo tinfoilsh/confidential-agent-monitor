@@ -53,18 +53,16 @@ export function Agents(props: { expanded?: string }) {
                 m.stalled().includes(name) && m.accepting() !== name;
               return (
                 <div class="resource-row waiting-row">
+                  <Icon name="sandboxes" />
+                  <strong class="collection-name" title={name}>
+                    {name}
+                  </strong>
                   <Show
                     when={manual()}
                     fallback={
                       <span class="loading-spinner" aria-hidden="true" />
                     }
                   >
-                    <Icon name="sandboxes" />
-                  </Show>
-                  <strong class="collection-name" title={name}>
-                    {name}
-                  </strong>
-                  <Show when={manual()}>
                     <span class="collection-description">
                       Accepting adds it to this Monitor and unlocks its
                       workspace
