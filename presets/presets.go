@@ -4,6 +4,7 @@ package presets
 import (
 	"embed"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/fs"
 	"strings"
@@ -25,6 +26,7 @@ type Preset struct {
 
 type Catalog struct {
 	Group       string                     `json:"group,omitempty"`
+	Warning     string                     `json:"warning,omitempty"`
 	ReplacedBy  string                     `json:"replaced_by,omitempty"`
 	Actions     map[string]facts.Action    `json:"actions,omitempty"`
 	Connections map[string]json.RawMessage `json:"connections,omitempty"`
@@ -45,6 +47,14 @@ func Decode(raw []byte) (*Preset, error) {
 	}
 	if _, err := p.Catalog.CredentialFields(); err != nil {
 		return nil, err
+	}
+	if warning := p.Catalog.Warning; warning != "" {
+		if strings.TrimSpace(warning) == "" {
+			return nil, errors.New("catalog warning cannot be blank")
+		}
+		if len(warning) > 2000 {
+			return nil, errors.New("catalog warning is too long")
+		}
 	}
 	for name, a := range p.Catalog.Actions {
 		if a.Effects != nil && !facts.ValidEffects(a.Effects) {

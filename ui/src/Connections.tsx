@@ -395,6 +395,12 @@ function Catalog() {
     </div>
   );
 }
+function ConnectionWarning(props: { warning?: string }) {
+  return <Show when={props.warning}>
+    {(warning) => <p class="connection-warning" role="note">{warning()}</p>}
+  </Show>;
+}
+
 const answers = (a?: Partial<owner.AccountAnswers>): owner.AccountAnswers => ({
   contents: a?.contents ?? "me",
   sends: a?.sends ?? "me",
@@ -538,6 +544,7 @@ export function AddConnection(props: { preset: string }) {
           void add();
         }}
       >
+        <ConnectionWarning warning={preset?.warning} />
         <label>
           Name
           <input
@@ -950,14 +957,10 @@ function Connection(props: { name: string; active: boolean }) {
   return (
     <div class="connection-detail">
       <Show when={account()} fallback={<Empty title="Connection not found" />}>
-        <Show when={owner.isRawNetwork(m.view()!, props.name)}>
-          <section class="connection-section">
-            <p class="raw-network-note">
-              General network access is a raw connection. The Monitor can see
-              where a sandbox connects (host and port) but not what it sends.
-              Prefer a named connection when one exists.
-            </p>
-          </section>
+        <Show when={owner.presetOf(m.view()!, props.name).warning}>
+          {(warning) => <section class="connection-section">
+            <ConnectionWarning warning={warning()} />
+          </section>}
         </Show>
         <Show when={reviews().length}>
           <section class="connection-section" aria-label="Connection status">

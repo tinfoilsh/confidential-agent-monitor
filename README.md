@@ -55,11 +55,24 @@ or select a configuration with `--ssh-host` and `--ssh-config`.
 
 ```sh
 monitor connections
+monitor catalog
 monitor run -- your-command
 monitor shell
 ```
 
-Use `monitor mcp serve` to connect local MCP clients.
+`monitor catalog --json` returns the safe connection catalog, including shared
+warning copy, to both sandboxes and trusted devices. `monitor policy show`
+is identity-scoped: a sandbox sees only its own settings and reachable-account
+semantics, while a trusted device sees the complete non-secret Monitor
+configuration, including identities, public keys, routes, access and global
+settings. Credentials are never part of either policy view.
+
+Use `monitor mcp serve` to connect local MCP clients. Trusted-device automation
+should follow the full [Monitor skill](client/skills/monitor/SKILL.md) for catalog
+discovery, broad non-secret reads, proposals and direct API calls. Managed sandbox
+images should seed the reduced [sandbox Monitor skill](client/skills/monitor-sandbox/SKILL.md),
+which covers only that sandbox's discovery, policy, proposals, credentials boundary
+and connection usage.
 
 ### Local VM
 
@@ -114,12 +127,12 @@ supported. There is no migration or inactive-record compatibility layer.
 
 In **Agents**, set each agent's access to each account.
 
-| Access | Default behavior |
-| --- | --- |
-| No access | Deny access. |
+| Access    | Default behavior                         |
+| --------- | ---------------------------------------- |
+| No access | Deny access.                             |
 | Read only | Allow recognized reads and deny changes. |
-| Ask | Allow reads and ask before changes. |
-| Allow | Allow recognized operations. |
+| Ask       | Allow reads and ask before changes.      |
+| Allow     | Allow recognized operations.             |
 
 Expand an account to override individual actions. Set effect permissions—such
 as payments, publishing, or deletion—in **Settings**, with overrides per account

@@ -150,6 +150,15 @@ class Client:
         except (ValueError, KeyError, TypeError) as error:
             raise MonitorError("invalid connection catalog from the monitor") from error
 
+    def catalog(self):
+        try:
+            value = json.loads(self.request("agent.monitor", "GET", "/catalog"))
+            if not isinstance(value.get("catalog_id"), str) or not isinstance(value.get("presets"), dict):
+                raise ValueError()
+            return value
+        except (ValueError, KeyError, TypeError) as error:
+            raise MonitorError("invalid preset catalog from the monitor") from error
+
 def receive(sock, size):
     data = b""
     while len(data) < size:
@@ -1231,6 +1240,8 @@ def parser():
     serve.add_argument("--listen", default="127.0.0.1:8400", help="loopback IP:first port; uses consecutive ports, or free ports with port 0")
     connections = commands.add_parser("connections", help="list reachable connections and their current status")
     connections.add_argument("--json", action="store_true", help="include account, host and access settings as JSON")
+    catalog = commands.add_parser("catalog", help="list connection types available for owner-reviewed setup")
+    catalog.add_argument("--json", action="store_true", help="show complete safe catalog metadata as JSON")
     commands.metavar = "{" + ",".join(name for name in commands.choices if not name.startswith("_")) + "}"
     return p
 
@@ -1285,6 +1296,23 @@ def main(argv=None):
                     print("  ".join(value.ljust(width) for value, width in zip(row, widths)).rstrip())
             else:
                 print("No connections are available to this agent. Ask the owner to grant access.")
+            return 0
+        if args.command == "catalog":
+            catalog = client.catalog()
+            if args.json:
+                print(json.dumps(catalog, indent=2))
+            else:
+                presets = catalog["presets"]
+                group_order = {"api": 0, "mcp": 1, "protocol": 2, "generic": 99}
+                rows = [("GROUP", "NAME", "TITLE")] + [
+                    (entry.get("group", "api"), name, entry.get("title", name))
+                    for name, entry in sorted(presets.items(), key=lambda item: (
+                        group_order.get(item[1].get("group", "api"), 50),
+                        item[1].get("title", item[0])))
+                ]
+                widths = [max(len(str(row[i])) for row in rows) for i in range(3)]
+                for row in rows:
+                    print("  ".join(str(value).ljust(width) for value, width in zip(row, widths)).rstrip())
             return 0
     except (MonitorError, OSError, http.client.HTTPException, subprocess.TimeoutExpired, ValueError, KeyError, EOFError) as error:
         print(f"monitor: {error}", file=sys.stderr)

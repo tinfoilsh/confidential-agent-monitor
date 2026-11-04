@@ -286,6 +286,13 @@ func (m *monitor) agentHandler(key string) http.Handler {
 	mux.HandleFunc("GET /policy", agentTx(m, key, func(*http.Request, struct{}, config.Principal) (any, error) {
 		return m.agentPolicy(key)
 	}))
+	mux.HandleFunc("GET /catalog", agentTx(m, key, func(*http.Request, struct{}, config.Principal) (any, error) {
+		settings := m.settings.Load()
+		return struct {
+			CatalogID string                   `json:"catalog_id"`
+			Presets   map[string]presets.Entry `json:"presets"`
+		}{CatalogID: settings.CatalogID, Presets: settings.Catalog}, nil
+	}))
 	mux.HandleFunc("POST /policy/proposals", JSONHandler(maxAgentBytes, func(r *http.Request, input proposalInput) (any, error) {
 		m.mu.Lock()
 		principal, known := m.settings.Load().Principal(key)
@@ -557,7 +564,16 @@ func (m *monitor) agentPolicy(key string) (any, error) {
 	if !known {
 		return nil, errNoAgent
 	}
-	visible, err := st.Config.AgentView(p)
+	var visible map[string]any
+	var err error
+	if st.Identities[p.Name].Routes {
+		// Trusted devices can inspect the complete non-secret configuration they
+		// manage through owner-reviewed proposals. Credentials live outside Config.
+		visible, err = st.Config.View()
+	} else {
+		// A sandbox sees only its own identity and reachable account semantics.
+		visible, err = st.Config.AgentView(p)
+	}
 	if err != nil {
 		return nil, err
 	}

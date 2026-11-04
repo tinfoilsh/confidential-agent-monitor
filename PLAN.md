@@ -74,11 +74,14 @@ proposal workflow built from the existing `/policy/proposals` path.
 - [x] Backend/client checkpoint reviewed by Daniel.
 - [x] Rebuild Activity as a pointer and review changes under Connections.
 - [ ] PAUSED FOR DANIEL UI REVIEW; Daniel owns responsive and real-browser validation.
-- [ ] Then restore Generic connections and create-only custom presets as direct
-      human owner writes—not proposals—with prominent shared catalog warnings.
-- [ ] Add structured warning metadata to generic preset catalog entries and a
-      server-supplied warning for custom presets, so UI and API see the same copy.
-- [ ] Update setup/automation guidance to prefer proposals; see if we shuold add a skill.md for this.
+- [x] Restore the five-item Generic catalog group as direct human owner writes—not
+      proposals—with the original yellow warning panels in Catalog, edit and Mine views.
+- [x] Add shared `warning` strings to Generic presets and expose the same safe catalog
+      through the owner UI/API and agent `GET /catalog`.
+- [x] Add a canonical full `client/skills/monitor/SKILL.md` for trusted automation and
+      a reduced `client/skills/monitor-sandbox/SKILL.md` for sandbox images, covering
+      their respective catalog, read, proposal, API and credential boundaries; link both
+      from README automation guidance.
 - [ ] Later: move `allow_networks` semantics into connection configuration so private/
       raw network reachability is not exposed as an independent global setting.
 - [ ] Later: remove/exclude unsupported custom-preset creation/edit backend and UI
@@ -130,8 +133,10 @@ Once this is finished & clean, resume CCH!
   Approved/rejected outcomes (reason, proposer and diff) are appended to the existing
   encrypted S3-backed Activity/audit history. Approved policy persists normally;
   rejected proposal content is retained only in that decision audit.
-- Agent proposal scope is widened only to the strict connection allowlist; the
-  restricted agent _read_ view remains.
+- Agent proposal scope is widened only to the strict connection allowlist. Sandboxes
+  retain an own-identity/reachable-account policy view plus the safe catalog. Trusted
+  devices receive the complete non-secret configuration, including identities, public
+  keys, routes, access and global settings; credentials remain separate.
 - Existing owner direct-write APIs and MCP definition review are unchanged.
 - Client `monitor policy propose` now returns a pending receipt instead of waiting.
 

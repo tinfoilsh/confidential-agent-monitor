@@ -2,9 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import * as owner from "../src/owner";
 
-const tcp = JSON.parse(
-  readFileSync(new URL("../../presets/tcp.json", import.meta.url), "utf8"),
+const preset = (name: string) => JSON.parse(
+  readFileSync(new URL(`../../presets/${name}.json`, import.meta.url), "utf8"),
 );
+const tcp = preset("tcp");
 const view = (): owner.View => ({
   generation: 1,
   host_key: "",
@@ -28,6 +29,21 @@ test("missing preset metadata has a display fallback, not a raw Custom connectio
   expect(owner.connectorIcon({}, "", "/app/").src).toContain("custom.svg");
   expect(Object.hasOwn(v.presets, "custom")).toBe(false);
   expect(owner.catalog(v).flatMap((group) => group.presets).some((p) => p.name === "custom" || p.name === "browser")).toBe(false);
+});
+
+test("generic connections are an informed fallback group at the end of the catalog", () => {
+  const v = view();
+  const names = ["web", "ssh", "tcp", "custom_api", "mcp"];
+  v.presets = Object.fromEntries(names.map((name) => {
+    const value = preset(name);
+    return [name, { title: value.title, ...value.catalog }];
+  }));
+  const groups = owner.catalog(v);
+  expect(groups.at(-1)?.title).toBe("Generic");
+  expect(groups.at(-1)?.presets.map((entry) => entry.name)).toEqual(names);
+  for (const name of names) {
+    expect(v.presets[name].warning).toBeTruthy();
+  }
 });
 
 describe("raw TCP setup and access", () => {

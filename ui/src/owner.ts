@@ -74,6 +74,7 @@ export type PresetAction = { title: string; effects?: string[] };
 export type Preset = {
   title: string;
   group?: string;
+  warning?: string;
   replaced_by?: string;
   defaults?: { contents?: Audience; sends?: Audience; strangers?: boolean };
   fields?: PresetField[];
@@ -374,6 +375,7 @@ export const CATALOG_GROUPS: { [group: string]: string } = {
   api: "API",
   mcp: "MCP",
   protocol: "Protocol",
+  generic: "Generic",
 };
 export const COMMON_PRESETS = [
   "tinfoil",
@@ -382,10 +384,8 @@ export const COMMON_PRESETS = [
   "github",
   "gmail",
   "email",
-  "web",
-  "ssh",
-  "tcp",
 ];
+export const GENERIC_PRESETS = ["web", "ssh", "tcp", "custom_api", "mcp"];
 export const CREDENTIAL_STATUS: { [kind: string]: string } = {
   "oauth-required": "Sign-in required",
   unset: "Not configured",
@@ -1602,7 +1602,6 @@ export const signInLabel = (view: View, preset: string) =>
     : "Sign in";
 
 export function catalog(view: View) {
-  const custom = ["custom_api", "mcp"].filter((name) => view.presets[name]);
   const counts = new Map<string, number>();
   for (const acc of Object.values(accounts(view))) {
     const replacement = view.presets[acc.preset]?.replaced_by;
@@ -1631,10 +1630,12 @@ export function catalog(view: View) {
     for (let i = entries.length - 1; i >= 0; i--) {
       if (COMMON_PRESETS.includes(entries[i].name))
         common.push(...entries.splice(i, 1));
-      else if (custom.includes(entries[i].name)) entries.splice(i, 1);
     }
   common.sort(
     (a, b) => COMMON_PRESETS.indexOf(a.name) - COMMON_PRESETS.indexOf(b.name),
+  );
+  groups.get("generic")?.sort(
+    (a, b) => GENERIC_PRESETS.indexOf(a.name) - GENERIC_PRESETS.indexOf(b.name),
   );
   return [
     ...(common.length
