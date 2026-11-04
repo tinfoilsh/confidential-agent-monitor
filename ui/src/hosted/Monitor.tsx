@@ -83,7 +83,7 @@ export default function Monitor(props: {
     if (inventory().error) return "Could not load your Monitor";
     if (error()) return `Could not open ${name}`;
     if (cancelled()) return `Open ${name}`;
-    if (booting()) return `Starting ${name}…`;
+    if (booting()) return `Waiting for ${name} to start…`;
     if (row() && row()!.status !== "running")
       return `${name} is ${row()!.status}`;
     if (props.session.keyState().value && !props.session.unlocked())

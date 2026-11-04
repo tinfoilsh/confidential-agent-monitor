@@ -578,12 +578,7 @@ export default function Console(props: {
 }) {
   const manager = props.manager ?? keys.passkeys();
   const navigate = props.navigate ?? ((url: string) => location.assign(url));
-  const [start, setStart] = createSignal(startRequest());
-  const close = () => {
-    sessionStorage.removeItem(START);
-    history.pushState(null, "", "/");
-    setStart(undefined);
-  };
+  const start = startRequest();
   return (
     <div class="start-page">
       <Header session={props.session} />
@@ -616,7 +611,7 @@ export default function Console(props: {
             <KeyGate
               session={props.session}
               manager={manager}
-              deferDialog={!!start()}
+              deferDialog={!!start}
             >
               <Cleanup session={props.session} />
               <RecoveryMethods session={props.session} manager={manager} />
@@ -628,14 +623,12 @@ export default function Console(props: {
         <Icon name="rules" /> Privacy by design.
       </footer>
       <KeyDialog
-        open={!!start()}
-        onClose={close}
-        closeLabel="Close setup"
+        open={!!start}
         labelledby={START_TITLE}
         describedby={START_DESCRIPTION}
       >
         <Switch>
-          <Match when={start() === "invalid"}>
+          <Match when={start === "invalid"}>
             <KeyIntro
               icon="terminal"
               title="This setup link is not valid"
@@ -659,7 +652,7 @@ export default function Console(props: {
               Sign in
             </button>
           </Match>
-          <Match when={start() as StartRequest}>
+          <Match when={start as StartRequest}>
             {(request) => (
               <Start
                 session={props.session}

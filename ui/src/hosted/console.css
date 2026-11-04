@@ -118,8 +118,7 @@ dialog.start-dialog {
   box-shadow: 0 24px 80px #06182026;
 }
 .start-dialog::backdrop {
-  background: #06182052;
-  backdrop-filter: blur(4px);
+  background: none;
 }
 .start-close {
   position: absolute;
@@ -313,7 +312,7 @@ button.start-continue.danger:hover:not(:disabled) {
   margin: 0;
 }
 .monitor-welcome .start-welcome > .start-monitors {
-  margin-top: 0;
+  margin-top: -12px;
 }
 .monitor-welcome .start-monitors > .start-help {
   margin: 0;

@@ -2458,6 +2458,9 @@ td {
   border-bottom: 1px solid var(--line);
   vertical-align: top;
 }
+body:has(#gate) {
+  background: var(--surface) var(--grid) repeat center;
+}
 #gate {
   max-width: 520px;
   margin: 18vh auto;

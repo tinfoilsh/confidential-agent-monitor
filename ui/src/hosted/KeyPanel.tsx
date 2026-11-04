@@ -4,7 +4,6 @@ import {
   Match,
   Show,
   Switch,
-  createEffect,
   createResource,
   createSignal,
   createUniqueId,
@@ -509,12 +508,10 @@ export function RecoveryMethods(props: {
   );
 }
 
-// The one dialog for key setup, unlock and recovery, over a blurred page. It
-// mounts on the body so page layouts never restyle it.
+// The one dialog for key setup, unlock and recovery. It mounts on the body so
+// page layouts never restyle it.
 export function KeyDialog(props: {
   open: boolean;
-  onClose: () => void;
-  closeLabel: string;
   labelledby: string;
   describedby?: string;
   children: JSX.Element;
@@ -524,17 +521,10 @@ export function KeyDialog(props: {
       <Modal
         class="start-dialog"
         open={props.open}
-        onClose={props.onClose}
+        closedby="none"
         aria-labelledby={props.labelledby}
         aria-describedby={props.describedby}
       >
-        <button
-          class="dialog-close icon-button start-close"
-          aria-label={props.closeLabel}
-          onClick={props.onClose}
-        >
-          <Icon name="close" />
-        </button>
         <div class="start-dialog-body start-setup">{props.children}</div>
       </Modal>
     </Portal>
@@ -592,82 +582,57 @@ export function KeyGate(props: {
             </Show>
           }
         >
-          {(state) => {
-            const [dismissed, setDismissed] = createSignal(!!props.deferDialog);
-            createEffect(() => {
-              if (props.deferDialog) setDismissed(true);
-            });
-            return (
-              <>
-                <Show when={dismissed()}>
-                  <button
-                    class="primary start-continue"
-                    onClick={() => setDismissed(false)}
-                  >
-                    {file()
-                      ? "Save your recovery key"
-                      : state().dek_id
-                        ? "Unlock your keys"
-                        : "Set up your keys"}
-                  </button>
-                </Show>
-                <KeyDialog
-                  open={!dismissed()}
-                  onClose={() => setDismissed(true)}
-                  closeLabel="Close"
-                  labelledby={titleId}
-                  describedby={descriptionId}
-                >
-                  <Switch>
-                    <Match when={file()}>
-                      {(recovery) => (
-                        <>
-                          <KeyIntro
-                            icon="devices"
-                            title="Keep your key close."
-                            description="Save your recovery key before you head to your sandboxes."
-                            titleId={titleId}
-                            descriptionId={descriptionId}
-                          />
-                          <RecoveryDownload
-                            file={recovery()}
-                            onContinue={() => setFile()}
-                          />
-                        </>
-                      )}
-                    </Match>
-                    <Match when={!state().dek_id}>
+          {(state) => (
+            <KeyDialog
+              open={!props.deferDialog}
+              labelledby={titleId}
+              describedby={descriptionId}
+            >
+              <Switch>
+                <Match when={file()}>
+                  {(recovery) => (
+                    <>
                       <KeyIntro
-                        icon="terminal"
-                        title="Welcome to Tinfoil."
-                        description="First, we'll create your keys. They're encrypted with your account, so only you can open your sandboxes."
+                        icon="devices"
+                        title="Keep your key close."
+                        description="Save your recovery key before you head to your sandboxes."
                         titleId={titleId}
                         descriptionId={descriptionId}
                       />
-                      <SetupKeys
-                        session={props.session}
-                        manager={props.manager}
-                        onDone={setFile}
+                      <RecoveryDownload
+                        file={recovery()}
+                        onContinue={() => setFile()}
                       />
-                    </Match>
-                    <Match when={state().dek_id}>
-                      <KeyIntro
-                        icon="terminal"
-                        title="Welcome back."
-                        description="Unlock your keys to open your sandboxes."
-                        titleId={titleId}
-                        descriptionId={descriptionId}
-                      />
-                      <UnlockKeys
-                        session={props.session}
-                        manager={props.manager}
-                      />
-                    </Match>
-                  </Switch>
-                </KeyDialog>
-              </>
-            );
-          }}
+                    </>
+                  )}
+                </Match>
+                <Match when={!state().dek_id}>
+                  <KeyIntro
+                    icon="terminal"
+                    title="Welcome to Tinfoil."
+                    description="First, we'll create your keys. They're encrypted with your account, so only you can open your sandboxes."
+                    titleId={titleId}
+                    descriptionId={descriptionId}
+                  />
+                  <SetupKeys
+                    session={props.session}
+                    manager={props.manager}
+                    onDone={setFile}
+                  />
+                </Match>
+                <Match when={state().dek_id}>
+                  <KeyIntro
+                    icon="terminal"
+                    title="Welcome back."
+                    description="Unlock your keys to open your sandboxes."
+                    titleId={titleId}
+                    descriptionId={descriptionId}
+                  />
+                  <UnlockKeys session={props.session} manager={props.manager} />
+                </Match>
+              </Switch>
+            </KeyDialog>
+          )}
         </Show>
       }
     >

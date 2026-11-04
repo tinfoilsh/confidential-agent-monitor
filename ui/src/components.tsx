@@ -196,7 +196,7 @@ export function createDialogMotion(
 export function Modal(
   props: Omit<JSX.DialogHtmlAttributes<HTMLDialogElement>, "onClose"> & {
     open: boolean;
-    onClose(): void;
+    onClose?(): void;
   },
 ) {
   const [own, rest] = splitProps(props, ["open", "onClose"]);
@@ -211,7 +211,7 @@ export function Modal(
       ref={dialog}
       onCancel={(event) => {
         event.preventDefault();
-        own.onClose();
+        own.onClose?.();
       }}
       onClick={(event) => {
         const r = dialog.getBoundingClientRect();
@@ -222,7 +222,7 @@ export function Modal(
             event.clientY < r.top ||
             event.clientY > r.bottom)
         )
-          own.onClose();
+          own.onClose?.();
       }}
     />
   );
