@@ -156,8 +156,15 @@ func EditSource(source string, changes []Change) (string, error) {
 // EditSourceNormalized applies changes in order while omitting semantic no-ops.
 // It preserves the current source text when the editor only changes formatting.
 func EditSourceNormalized(source string, changes []Change) (string, []Change, error) {
+	parse := func(source string) (map[string]any, error) {
+		value, err := readSource(source)
+		if err != nil {
+			return nil, err
+		}
+		return facts.JSON[map[string]any](value)
+	}
 	candidate := source
-	current, err := readSource(candidate)
+	current, err := parse(candidate)
 	if err != nil {
 		return "", nil, err
 	}
@@ -167,7 +174,7 @@ func EditSourceNormalized(source string, changes []Change) (string, []Change, er
 		if err != nil {
 			return "", nil, err
 		}
-		parsed, err := readSource(next)
+		parsed, err := parse(next)
 		if err != nil {
 			return "", nil, err
 		}

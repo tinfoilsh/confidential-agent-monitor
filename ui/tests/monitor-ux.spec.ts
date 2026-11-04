@@ -25,7 +25,8 @@ const view = (): owner.View => ({
 
 test("missing preset metadata has a display fallback, not a raw Custom connection", () => {
   const v = view();
-  expect(owner.presetOf(v, "removed-account").title).toBe("Connection");
+  v.config.accounts!.network.preset = "removed";
+  expect(owner.presetOf(v, "network").title).toBe("Connection");
   expect(owner.connectorIcon({}, "", "/app/").src).toContain("custom.svg");
   expect(Object.hasOwn(v.presets, "custom")).toBe(false);
   expect(owner.catalog(v).flatMap((group) => group.presets).some((p) => p.name === "custom" || p.name === "browser")).toBe(false);
