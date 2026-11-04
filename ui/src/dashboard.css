@@ -2724,6 +2724,14 @@ td {
   color: var(--muted);
   box-shadow: none;
 }
+.dialog-close:hover:not(:disabled) {
+  background: transparent;
+  color: var(--text);
+}
+.dialog-close > .icon {
+  width: 20px;
+  height: 20px;
+}
 .shell-split {
   display: flex;
   height: 100dvh;

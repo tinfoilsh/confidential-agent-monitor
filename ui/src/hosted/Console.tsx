@@ -513,7 +513,7 @@ export function Header(props: { session: Session }) {
         aria-labelledby="leave-title"
       >
         <button
-          class="icon-button start-close"
+          class="dialog-close icon-button start-close"
           aria-label="Stay signed in"
           onClick={stay}
         >
@@ -608,7 +608,7 @@ export default function Console(props: {
         aria-describedby="start-description"
       >
         <button
-          class="icon-button start-close"
+          class="dialog-close icon-button start-close"
           aria-label="Close setup"
           onClick={close}
         >
