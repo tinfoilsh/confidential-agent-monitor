@@ -40,7 +40,7 @@ export function attestedKey(
 }
 
 export type AttestMonitor = (
-  target: { url: string; authorize: (config: Uint8Array) => Promise<void> },
+  target: { url: string; config: Uint8Array },
   signal: AbortSignal,
 ) => Promise<{
   hostKey: () => string;
@@ -49,10 +49,7 @@ export type AttestMonitor = (
 }>;
 
 // The SDK owns attestation and its refresh; owner sessions use the attested owner-session key.
-export const attestMonitor: AttestMonitor = async (
-  { url, authorize },
-  signal,
-) => {
+export const attestMonitor: AttestMonitor = async ({ url, config }, signal) => {
   const relay =
     import.meta.env.DEV && location.origin === "https://local.tinfoil.sh"
       ? location.origin
@@ -61,7 +58,7 @@ export const attestMonitor: AttestMonitor = async (
     enclaveURL: url,
     configRepo: "",
     attestationRelayURL: relay,
-    verification: { configAuthorizer: ({ config }) => authorize(config) },
+    verification: { embeddedReferences: { config: { bytes: config } } },
   });
   await client.ready({ signal });
   signal.throwIfAborted();
@@ -140,17 +137,15 @@ export async function openMonitor({
   const { row, resource, bucket } = await resolve(scope, id);
   const owner = resource.owner_public_key;
   const seed = unb64u(resource.owner_seed, 32);
+  // The attestation carries only the config digest, so the SDK proves the enclave measured these checked bytes.
+  const config = new TextEncoder().encode(row.config ?? "");
+  monitorDigest(TEMPLATES.monitor, config, {
+    owner,
+    bucket,
+    credentials: keys.TARGETS.api_origin + CREDENTIALS_PATH,
+  });
   const { hostKey, sessionKey, refresh } = await attest(
-    {
-      url: `https://${row.domain}`,
-      authorize: async (config) => {
-        monitorDigest(TEMPLATES.monitor, config, {
-          owner,
-          bucket,
-          credentials: keys.TARGETS.api_origin + CREDENTIALS_PATH,
-        });
-      },
-    },
+    { url: `https://${row.domain}`, config },
     signal,
   );
   const url = `wss://${row.domain}/owner/ws`;

@@ -47,18 +47,12 @@ export function sandboxClient(
   const instance_id = binding.instance_id!;
   if (!HOST.test(row.domain)) throw new Error("This sandbox has no address.");
   const host = `https://${row.domain}`;
+  const config = new TextEncoder().encode(row.config ?? "");
+  sandboxDigest(TEMPLATES.sandbox, config, { owner, instance_id, size });
   const secure = new SecureClient({
     enclaveURL: host,
     configRepo: "",
-    verification: {
-      configAuthorizer: async ({ config }) => {
-        sandboxDigest(TEMPLATES.sandbox, config, {
-          owner,
-          instance_id,
-          size,
-        });
-      },
-    },
+    verification: { embeddedReferences: { config: { bytes: config } } },
     acquisition: {
       fetch: async (input, init) => {
         const url = new URL(String(input));

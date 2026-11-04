@@ -43,6 +43,6 @@
     "vite-plugin-sri-gen": "1.7.5"
   },
   "overrides": {
-    "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-c7f0a57fa557a5b75834dea5f92f0fc5adf4b631.tgz"
+    "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-sha256-bc6e46aee7edd4bb1cbd0755e9bc1382bbbcd6f7fa6e37716d67cbee0e10c2c9.tgz"
   }
 }

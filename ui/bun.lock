@@ -33,7 +33,7 @@
     },
   },
   "overrides": {
-    "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-c7f0a57fa557a5b75834dea5f92f0fc5adf4b631.tgz",
+    "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-sha256-bc6e46aee7edd4bb1cbd0755e9bc1382bbbcd6f7fa6e37716d67cbee0e10c2c9.tgz",
   },
   "packages": {
     "@adraffy/ens-normalize": ["@adraffy/ens-normalize@1.11.1", "", {}, "sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ=="],
@@ -170,7 +170,7 @@
 
     "@tinfoilsh/tinfoil-icons": ["@tinfoilsh/tinfoil-icons@2.3.5", "", { "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0" } }, "sha512-+FHGonwTQMl1GrBtgbvbymt8T8Ouk0c0RI+6rot37ARamVnKkerdmfmOoqEi20I6ZcFNIM76QUqi5h9/2U28yw=="],
 
-    "@tinfoilsh/verifier": ["@tinfoilsh/verifier@vendor/tinfoilsh-verifier-c7f0a57fa557a5b75834dea5f92f0fc5adf4b631.tgz", { "dependencies": { "@freedomofpress/crypto-browser": "^0.1.7", "@freedomofpress/sigstore-browser": "^0.1.15", "@noble/curves": "^2.0.1", "@noble/hashes": "^2.0.1", "yaml": "^2.9.1" } }, "sha512-9IainoRdRBs3CvSeTIhKFw7PejJkPBVUDMgZjmQOjMTXCs/L098fsLmQc420MDEh8ARnDbpvwLwIeHUYAbpxOQ=="],
+    "@tinfoilsh/verifier": ["@tinfoilsh/verifier@vendor/tinfoilsh-verifier-sha256-bc6e46aee7edd4bb1cbd0755e9bc1382bbbcd6f7fa6e37716d67cbee0e10c2c9.tgz", { "dependencies": { "@freedomofpress/crypto-browser": "^0.1.7", "@freedomofpress/sigstore-browser": "^0.1.15", "@noble/curves": "^2.0.1", "@noble/hashes": "^2.0.1", "yaml": "^2.9.1" } }, "sha512-AfsoQXJy3doyYLM6QcXhYJAthzdc/T1IhdF1m6cIW9im6w6A/jI7FLazwlN9QoCleEeFNYDOn+AXvLAyJapkdA=="],
 
     "@types/babel__core": ["@types/babel__core@7.20.5", "", { "dependencies": { "@babel/parser": "^7.20.7", "@babel/types": "^7.20.7", "@types/babel__generator": "*", "@types/babel__template": "*", "@types/babel__traverse": "*" } }, "sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA=="],
 
