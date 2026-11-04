@@ -366,7 +366,7 @@ function createMonitor(options: MonitorOptions) {
       (client) => client.decide(record.id, decision),
       decision === "save"
         ? "Rule saved. Retry the request from your sandbox."
-        : "Decision saved",
+        : "",
       {
         update: (state) => {
           state.requests = state.requests.map((r) =>
@@ -433,7 +433,6 @@ function createMonitor(options: MonitorOptions) {
           completed = true;
           version++;
           setDeviceSignIn(undefined);
-          notify("Signed in");
           // Fetch a fresh view; other owner edits may have completed while waiting.
           await refreshing;
           void refresh();
@@ -523,7 +522,7 @@ function createMonitor(options: MonitorOptions) {
           if (!result || "pending" in result)
             throw new Error("Sign-in was not completed. Start again.");
           return result;
-        }, "Signed in");
+        });
       }
     } catch (cause) {
       report(cause);
@@ -571,7 +570,6 @@ function createMonitor(options: MonitorOptions) {
     try {
       await options.accept!(name, restore);
       await refresh();
-      notify(`${name} joined this Monitor`);
     } catch (cause) {
       if (restore) report(cause);
       else setStalled((names) => [...names, name]);
@@ -640,7 +638,6 @@ function createMonitor(options: MonitorOptions) {
                 ? 0
                 : Number(localStorage.getItem(GENERATION)) || 0,
           ),
-        "Unlocked",
       ),
     login: (value: string) => {
       try {

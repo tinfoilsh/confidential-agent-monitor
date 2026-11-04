@@ -46,7 +46,12 @@ const SSH_ED25519_PREFIX = "AAAAC3NzaC1lZDI1NTE5AAAAI";
 const STATUS_LABELS: Record<string, string> = {
   created: "Provisioning",
   pending: "Queued",
+  deploying: "Deploying",
   started: "Booting",
+  running: "Running",
+  stopping: "Stopping",
+  stopped: "Stopped",
+  failed: "Failed",
 };
 const BUSY_STATUSES = [
   "created",
@@ -196,7 +201,7 @@ function Start(props: {
             ? "Add your CLI keys"
             : file()
               ? "Keep your key close."
-              : "Welcome to Tinfoil."
+              : "Welcome to Terminal."
         }
         description={
           r.mode === "umk"
@@ -373,11 +378,12 @@ function Inventory(props: { session: Session }) {
               <h2>
                 {monitor.name}
                 <span
-                  class="start-status"
-                  classList={{ busy: BUSY_STATUSES.includes(monitor.status) }}
-                  data-status={monitor.status}
+                  class={`badge status-${BUSY_STATUSES.includes(monitor.status) ? "busy" : monitor.status}`}
                 >
-                  {STATUS_LABELS[monitor.status] ?? monitor.status}
+                  <Show when={BUSY_STATUSES.includes(monitor.status)}>
+                    <span class="loading-spinner" aria-hidden="true" />
+                  </Show>
+                  {STATUS_LABELS[monitor.status] ?? "Status unavailable"}
                 </span>
               </h2>
               <p>
@@ -583,7 +589,7 @@ export default function Console(props: {
     <div class="start-page">
       <Header session={props.session} />
       <main class="start-welcome start-home">
-        <h1>{props.session.user() ? "Welcome back" : "Welcome to Tinfoil"}</h1>
+        <h1>{props.session.user() ? "Welcome back" : "Welcome to Terminal"}</h1>
         <Show
           when={props.session.user()}
           fallback={

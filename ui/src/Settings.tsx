@@ -282,7 +282,6 @@ function PolicyEditor(props: {
     if (
       await m.perform(
         (client) => client.applyPolicy(change.source),
-        "Policy applied",
       )
     ) {
       setPreview(undefined);

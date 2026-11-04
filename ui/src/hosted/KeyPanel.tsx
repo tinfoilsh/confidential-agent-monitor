@@ -609,7 +609,7 @@ export function KeyGate(props: {
                 <Match when={!state().dek_id}>
                   <KeyIntro
                     icon="terminal"
-                    title="Welcome to Tinfoil."
+                    title="Welcome to Terminal."
                     description="First, we'll create your keys. They're encrypted with your account, so only you can open your sandboxes."
                     titleId={titleId}
                     descriptionId={descriptionId}

@@ -10,8 +10,8 @@ const PAGES = {
 };
 const TITLES = {
   monitor: "Monitor",
-  cli: "CLI key sync · Tinfoil",
-  console: "Get started · Tinfoil",
+  cli: "CLI key sync · Terminal",
+  console: "Get started · Terminal",
 };
 const routeOf = (pathname: string): keyof typeof PAGES => {
   const path = pathname.replace(/\/+$/, "");

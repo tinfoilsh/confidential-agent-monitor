@@ -40,46 +40,19 @@ export function Agents(props: { expanded?: string }) {
   const names = createMemo(() => [...summaries().keys()]);
   return (
     <>
-      <Show when={m.waiting().length}>
+      <Show
+        when={!m.sandboxesLoading() && !names().length && !m.waiting().length}
+      >
         <div class="resource-list">
-          <div class="resource-heading">
-            <h2>
-              Waiting to join <span class="count">{m.waiting().length}</span>
-            </h2>
-          </div>
-          <For each={m.waiting()}>
-            {(name) => {
-              const manual = () =>
-                m.stalled().includes(name) && m.accepting() !== name;
-              return (
-                <div class="resource-row waiting-row">
-                  <Icon name="sandboxes" />
-                  <strong class="collection-name" title={name}>
-                    {name}
-                  </strong>
-                  <Show
-                    when={manual()}
-                    fallback={
-                      <span class="loading-spinner" aria-hidden="true" />
-                    }
-                  >
-                    <span class="collection-description">
-                      Accepting adds it to this Monitor and unlocks its
-                      workspace
-                    </span>
-                    <button
-                      type="button"
-                      class="primary"
-                      disabled={!!m.accepting()}
-                      onClick={() => void m.accept(name)}
-                    >
-                      Accept
-                    </button>
-                  </Show>
-                </div>
-              );
-            }}
-          </For>
+          <Empty
+            icon="sandboxes"
+            title="Create your first sandbox"
+            action={<AddSandbox class="button primary" />}
+          >
+            A sandbox runs your agent in an isolated environment. This monitor
+            guards what it can reach and holds its credentials. If yours is
+            missing, run <code>tinfoil attest-ssh &lt;sandbox-name&gt;</code>.
+          </Empty>
         </div>
       </Show>
       <For
@@ -92,12 +65,19 @@ export function Agents(props: { expanded?: string }) {
           const members = createMemo(() =>
             names().filter((name) => type(name) === kind),
           );
+          const waiting = () => (kind === "sandboxes" ? m.waiting() : []);
+          const loading = () =>
+            kind === "sandboxes" &&
+            m.sandboxesLoading() &&
+            !members().length &&
+            !waiting().length;
           return (
             <Show
               when={
                 members().length ||
+                waiting().length ||
                 kind === "devices" ||
-                (kind === "sandboxes" && m.sandboxesLoading())
+                loading()
               }
             >
               <div class="resource-list collection-list">
@@ -105,11 +85,7 @@ export function Agents(props: { expanded?: string }) {
                   <h2>
                     {title}{" "}
                     <span class="count">
-                      {kind === "sandboxes" &&
-                      m.sandboxesLoading() &&
-                      !members().length
-                        ? "…"
-                        : members().length}
+                      {loading() ? "…" : members().length + waiting().length}
                     </span>
                   </h2>
                   <Show when={blurb}>
@@ -129,15 +105,42 @@ export function Agents(props: { expanded?: string }) {
                     </a>
                   </Show>
                 </div>
-                <Show
-                  when={
-                    kind === "sandboxes" &&
-                    m.sandboxesLoading() &&
-                    !members().length
-                  }
-                >
+                <Show when={loading()}>
                   <SkeletonRows label="Loading your sandboxes…" />
                 </Show>
+                <For each={waiting()}>
+                  {(name) => {
+                    const manual = () =>
+                      m.stalled().includes(name) && m.accepting() !== name;
+                    return (
+                      <div class="resource-row waiting-row">
+                        <Icon name="sandboxes" />
+                        <strong class="collection-name" title={name}>
+                          {name}
+                        </strong>
+                        <Show
+                          when={manual()}
+                          fallback={
+                            <span class="loading-spinner" aria-hidden="true" />
+                          }
+                        >
+                          <span class="collection-description">
+                            Accepting adds it to this Monitor and unlocks its
+                            workspace
+                          </span>
+                          <button
+                            type="button"
+                            class="primary"
+                            disabled={!!m.accepting()}
+                            onClick={() => void m.accept(name)}
+                          >
+                            Accept
+                          </button>
+                        </Show>
+                      </div>
+                    );
+                  }}
+                </For>
                 <For each={members()}>
                   {(name) => (
                     <ResourceDisclosure
@@ -189,21 +192,6 @@ export function Agents(props: { expanded?: string }) {
           );
         }}
       </For>
-      <Show
-        when={!m.sandboxesLoading() && !names().length && !m.waiting().length}
-      >
-        <div class="resource-list">
-          <Empty
-            icon="sandboxes"
-            title="Create your first sandbox"
-            action={<AddSandbox class="button primary" />}
-          >
-            A sandbox runs your agent in an isolated environment. This monitor
-            guards what it can reach and holds its credentials. If yours is
-            missing, run <code>tinfoil attest-ssh &lt;sandbox-name&gt;</code>.
-          </Empty>
-        </div>
-      </Show>
     </>
   );
 }

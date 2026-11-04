@@ -254,12 +254,6 @@ function Shell() {
                     </button>
                   </div>
                 </div>
-                <ApprovalBar />
-                <Show when={m.message() && !dialogRoute()}>
-                  <div id="toast" role="status">
-                    {m.message()}
-                  </div>
-                </Show>
               </header>
               <div id="page-content">
                 <Show when={page()} keyed>
@@ -271,6 +265,14 @@ function Shell() {
                     />
                   )}
                 </Show>
+                <div id="notices">
+                  <ApprovalBar />
+                  <Show when={m.message() && !dialogRoute()}>
+                    <div id="toast" role="status">
+                      {m.message()}
+                    </div>
+                  </Show>
+                </div>
               </div>
             </main>
             <CreationDialog path={dialogRoute()} close={close} />
@@ -329,7 +331,7 @@ function MonitorFooter() {
         <footer class="monitor-footer">
           <a class="nav-item back-terminal" href={home()} link>
             <Icon name="arrow" />
-            <span>Back to Terminal</span>
+            <span>Back</span>
           </a>
         </footer>
       )}
@@ -469,7 +471,6 @@ function Gate() {
           allowPaidInference: true,
           tinfoilApiKey: await tinfoilApiKey?.(),
         }),
-      "Monitor set up",
     );
   return (
     <div id="gate">
