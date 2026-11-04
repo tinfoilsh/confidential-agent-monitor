@@ -5,7 +5,14 @@ import { unb64u, type MKBinding } from "./contract";
 import * as keys from "./keys";
 import { MONITOR_REPO, type Container, type Scope } from "./session";
 import { TEMPLATES } from "./templates";
-import { bucketOwnedBy, measuredEnv, monitorDigest } from "./trust";
+import {
+  bucketOwnedBy,
+  measuredEnv,
+  monitorDigest,
+  registryTarget,
+  verifyImage,
+  type RegistryTarget,
+} from "./trust";
 
 const SPKI = "https://tinfoil.sh/key/spki/v1";
 const PROTOCOL = "monitor-owner-v1";
@@ -40,34 +47,40 @@ export function attestedKey(
 }
 
 export type AttestMonitor = (
-  target: { url: string; config: Uint8Array },
+  target: RegistryTarget,
   signal: AbortSignal,
 ) => Promise<{
   hostKey: () => string;
-  sessionKey: () => Uint8Array;
+  sessionKey: (signal?: AbortSignal) => Promise<Uint8Array>;
   refresh: () => Promise<void>;
 }>;
 
 // The SDK owns attestation and its refresh; owner sessions use the attested owner-session key.
-export const attestMonitor: AttestMonitor = async ({ url, config }, signal) => {
+export const attestMonitor: AttestMonitor = async (
+  { url, reference, registry },
+  signal,
+) => {
   const relay =
     import.meta.env.DEV && location.origin === "https://local.tinfoil.sh"
       ? location.origin
       : undefined;
   const client = new SecureClient({
     enclaveURL: url,
-    configRepo: "",
+    configRepo: reference,
     attestationRelayURL: relay,
-    verification: { embeddedReferences: { config: { bytes: config } } },
+    verification: { configScopes: [registry] },
   });
   await client.ready({ signal });
   signal.throwIfAborted();
   const hostKey = () =>
     sshPublicKey(attestedKey(client, "host-ssh", ED25519_SPKI));
-  const sessionKey = () => attestedKey(client, "owner-session");
+  const sessionKey = async (at = signal) => {
+    await client.ready({ signal: AbortSignal.any([signal, at]) });
+    return attestedKey(client, "owner-session");
+  };
   hostKey();
-  sessionKey();
-  return { hostKey, sessionKey, refresh: () => client.refresh() };
+  await sessionKey();
+  return { hostKey, sessionKey, refresh: () => client.refresh({ signal }) };
 };
 
 // The saved key of a TMK Monitor, re-resolved from a fresh, successful read of
@@ -137,35 +150,38 @@ export async function openMonitor({
   const { row, resource, bucket } = await resolve(scope, id);
   const owner = resource.owner_public_key;
   const seed = unb64u(resource.owner_seed, 32);
-  // The attestation carries only the config digest, so the SDK proves the enclave measured these checked bytes.
+  // The attestation binds these checked bytes through the pinned config digest.
   const config = new TextEncoder().encode(row.config ?? "");
-  monitorDigest(TEMPLATES.monitor, config, {
+  const digest = monitorDigest(TEMPLATES.monitor, config, {
     owner,
     bucket,
     credentials: keys.TARGETS.api_origin + CREDENTIALS_PATH,
   });
-  const { hostKey, sessionKey, refresh } = await attest(
-    { url: `https://${row.domain}`, config },
-    signal,
-  );
+  await verifyImage("monitor", digest, { signal });
+  const account = (await scope.api("/api/config-registry/v2/account")) as {
+    scope: string;
+  };
+  signal.throwIfAborted();
+  const target = registryTarget(row, config, account.scope);
+  const { hostKey, sessionKey, refresh } = await attest(target, signal);
   const url = `wss://${row.domain}/owner/ws`;
-  const session = (hello: object): Session => ({
-    serverKey: sessionKey(),
+  const session = async (hello: object, at = signal): Promise<Session> => ({
+    serverKey: await sessionKey(at),
     prologue: PROTOCOL,
     seed,
     hello,
   });
   // A sandbox session runs inside a relay socket, so Monitor carries only its ciphertext.
-  const relay = (instance_id: string, inner: Session, at?: AbortSignal) =>
+  const relay = async (instance_id: string, inner: Session, at?: AbortSignal) =>
     openChannel(
       url,
-      [session({ open: "relay", instance_id }), inner],
+      [await session({ open: "relay", instance_id }, at), inner],
       AbortSignal.any(at ? [signal, at] : [signal]),
     );
   let checkpoints: Promise<unknown> = Promise.resolve();
   const client = sealedOwnerClient({
     call: rpcChannel(
-      () => openChannel(url, [session({ open: "rpc" })], signal),
+      async () => openChannel(url, [await session({ open: "rpc" })], signal),
       refresh,
     ),
     generation: resource.min_generation!,
@@ -187,7 +203,17 @@ export async function openMonitor({
   const snapshot: Snapshot = await client.read(signal);
   signal.throwIfAborted();
   checkHostKey(snapshot.view.host_key, hostKey());
-  return { row, resource, client, snapshot, hostKey, relay, refresh, scope };
+  return {
+    row,
+    resource,
+    client,
+    snapshot,
+    hostKey,
+    relay,
+    refresh,
+    scope,
+    registry: target.registry,
+  };
 }
 
 // The Monitor's own view must name the host key its attestation verified.

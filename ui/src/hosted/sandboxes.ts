@@ -12,7 +12,13 @@ import {
 } from "./monitors";
 import { SANDBOX_REPO, monitorOf, type Container } from "./session";
 import { TEMPLATES } from "./templates";
-import { measuredEnv, sandboxDigest, volumeSize } from "./trust";
+import {
+  measuredEnv,
+  registryTarget,
+  sandboxDigest,
+  verifyImage,
+  volumeSize,
+} from "./trust";
 
 const PROTOCOL = "sandbox-owner-v1";
 const ATTESTATION = "/.well-known/tinfoil-attestation";
@@ -35,12 +41,13 @@ export class RestoreRequired extends Error {}
 // One sandbox reached through its Monitor's relay. Its sessions handshake with
 // the attested owner-session key and are signed by the sandbox owner key, so
 // Monitor carries only ciphertext.
-export function sandboxClient(
+export async function sandboxClient(
   monitor: OpenedMonitor,
   row: Container,
   owner_seed: string,
   binding: MKBinding,
   size: string,
+  signal: AbortSignal,
 ) {
   const seed = unb64u(owner_seed, 32);
   const owner = ownerPublicKey(seed);
@@ -48,11 +55,18 @@ export function sandboxClient(
   if (!HOST.test(row.domain)) throw new Error("This sandbox has no address.");
   const host = `https://${row.domain}`;
   const config = new TextEncoder().encode(row.config ?? "");
-  sandboxDigest(TEMPLATES.sandbox, config, { owner, instance_id, size });
+  const digest = sandboxDigest(TEMPLATES.sandbox, config, {
+    owner,
+    instance_id,
+    size,
+  });
+  const target = registryTarget(row, config, monitor.registry);
+  await verifyImage("sandbox", digest, { signal });
+  signal.throwIfAborted();
   const secure = new SecureClient({
     enclaveURL: host,
-    configRepo: "",
-    verification: { embeddedReferences: { config: { bytes: config } } },
+    configRepo: target.reference,
+    verification: { configScopes: [target.registry] },
     acquisition: {
       fetch: async (input, init) => {
         const url = new URL(String(input));
@@ -104,7 +118,7 @@ export function sandboxClient(
       connect({ open: "shell", ...size }, signal),
   };
 }
-export type SandboxClient = ReturnType<typeof sandboxClient>;
+export type SandboxClient = Awaited<ReturnType<typeof sandboxClient>>;
 
 // A TMK sandbox routed through this Monitor, re-resolved from a fresh,
 // successful read of the operation's account. Its saved binding must name the
@@ -225,12 +239,13 @@ export async function connectSandbox({
     ? AbortSignal.any([signal, monitor.scope.signal])
     : monitor.scope.signal;
   const { row, resource, binding, size } = (await resolve(monitor, id, true))!;
-  const sandbox = sandboxClient(
+  const sandbox = await sandboxClient(
     monitor,
     row,
     resource.owner_seed,
     binding,
     size,
+    signal,
   );
   const status = await sandbox.status(signal);
   const agent = sshPublicKey(
@@ -292,12 +307,13 @@ export async function relinkSandboxes(monitor: OpenedMonitor) {
           ed25519.getPublicKey(unb64u(resource.monitor_identity_seed, 32)),
         );
         if (!identities.some((identity) => identity.key === agent)) return;
-        const sandbox = sandboxClient(
+        const sandbox = await sandboxClient(
           monitor,
           resolved.row,
           resource.owner_seed,
           binding,
           resolved.size,
+          monitor.scope.signal,
         );
         const status = await sandbox.status(monitor.scope.signal);
         if (

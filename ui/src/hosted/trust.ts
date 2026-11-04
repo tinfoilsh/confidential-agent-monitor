@@ -16,6 +16,8 @@ import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils.js";
 import { parseDocument } from "yaml";
 // Sigstore public-good trusted root, as compiled into tinfoil-js verifier c7f0a57.
 import SIGSTORE_ROOT from "./sigstore-root.json";
+import { parseReference } from "@tinfoilsh/verifier";
+import type { Container } from "./session";
 
 export type Workload = "monitor" | "sandbox";
 const REPOS: Record<Workload, string> = {
@@ -34,6 +36,33 @@ const OWNER_KEY = /^ed25519:[A-Za-z0-9+/]{43}=$/;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const BUCKET =
   /^s3:\/\/[a-z0-9.-]+\?prefix=containers%2F([0-9a-f]{64})%2F[A-Za-z0-9-]+%2F&region=[a-z0-9-]+$/;
+const PRIVATE_REGISTRY =
+  /^https:\/\/registry\.tinfoil\.sh\/scopes\/[0-9a-f]{32}$/;
+const CONFIG_NAME = /^\/([^/]+\/[^/]+)\/([^/]+)$/;
+
+export function registryTarget(
+  row: Container,
+  config: Uint8Array,
+  registry: string,
+) {
+  if (!PRIVATE_REGISTRY.test(registry))
+    throw new Error("This account has no valid private Registry ID.");
+  const connection = row.connections?.production;
+  const name = connection?.config_name?.match(CONFIG_NAME);
+  if (
+    !name ||
+    connection?.url !== `https://${row.domain}` ||
+    connection.config_digest !== bytesToHex(sha256(config))
+  )
+    throw new Error(
+      "This deployment's config could not be confirmed. Refresh and try again.",
+    );
+  const reference = `${name[1]}@${name[2]}@sha256:${connection.config_digest}`;
+  parseReference(reference);
+  return { url: connection.url, reference, registry };
+}
+
+export type RegistryTarget = ReturnType<typeof registryTarget>;
 
 const reject = (reason: string): never => {
   throw new Error(`The attested configuration is not approved: ${reason}.`);
