@@ -356,12 +356,15 @@ func (r *record) summary() recordSummary {
 // addRecord and the other decision transitions run under the authorization lock.
 func (m *monitor) addRecord(r *record) *record {
 	r.ID, r.Time, r.State = rand.Text(), time.Now(), stateAllowed
-	m.records = append(m.records, r)
-	if len(m.records) > maxRecords {
+	for len(m.records) >= maxRecords {
 		// Nothing else holds a pending proposal.
 		i := slices.IndexFunc(m.records, func(r *record) bool { return r.State != statePending })
+		if i < 0 {
+			break
+		}
 		m.records = slices.Delete(m.records, i, i+1)
 	}
+	m.records = append(m.records, r)
 	return r
 }
 
@@ -383,7 +386,7 @@ func (m *monitor) refusePending(err error) {
 		case r.Changes == nil:
 			r.State, r.Deny = stateRefused, []string{err.Error()}
 			close(r.answered)
-		case cfg.ProposalScope(r.Changes) != r.scope:
+		case cfg.ProposalScope(r.summary().Facts.Principal.Name, r.Changes) != r.scope:
 			r.State = stateOutdated
 			close(r.answered)
 			m.settleRecord(r, nil)

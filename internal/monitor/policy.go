@@ -185,7 +185,7 @@ func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalI
 		if err != nil {
 			return nil, fmt.Errorf("connection %s: %w", target, err)
 		}
-		proposals = append(proposals, &record{Facts: raw, Changes: normalized, scope: before.ProposalScope(normalized),
+		proposals = append(proposals, &record{Facts: raw, Changes: normalized, scope: before.ProposalScope(p.Name, normalized),
 			Decision: policy.Decision{Requirements: []policy.Requirement{{ID: "policy", Message: reason}}}})
 	}
 

@@ -112,10 +112,10 @@ func ProposalTarget(path []string) (string, bool) {
 	return "", false
 }
 
-// ProposalChanges groups p's edits by connection. A proposal may set only what the
-// owner's setup form can: access, account semantics and non-credential catalog fields.
+// ProposalChanges groups p's edits by connection. Credentials are refused because
+// approval stores them as secrets, unlike the source edit the owner previews.
 func (c *Config) ProposalChanges(p Principal, changes []Change) (map[string][]Change, error) {
-	groups, presetNames := map[string][]Change{}, map[string]string{}
+	groups := map[string][]Change{}
 	var leaves []Change
 	for _, change := range changes {
 		target, ok := ProposalTarget(change.Path)
@@ -133,37 +133,19 @@ func (c *Config) ProposalChanges(p Principal, changes []Change) (map[string][]Ch
 		}
 	}
 	for _, leaf := range leaves {
-		if name, ok := leaf.Value.(string); ok && len(leaf.Path) == 3 && leaf.Path[0] == "accounts" && leaf.Path[2] == "preset" {
-			presetNames[leaf.Path[1]] = name
-		}
-	}
-	for _, leaf := range leaves {
-		if len(leaf.Path) < 3 || leaf.Path[0] != "accounts" || leaf.Path[2] != "connections" {
-			continue
-		}
-		name, ok := presetNames[leaf.Path[1]]
-		if !ok {
-			name = c.Accounts[leaf.Path[1]].Preset
-		}
-		preset, err := c.Preset(name)
-		if err != nil {
-			return nil, fmt.Errorf("account %s: %w", leaf.Path[1], err)
-		}
-		if !slices.ContainsFunc(preset.Catalog.SetupPaths(), func(field []string) bool {
-			return len(leaf.Path) >= 2+len(field) && slices.Equal(leaf.Path[2:2+len(field)], field)
-		}) {
-			return nil, fmt.Errorf("proposals cannot change %v; only the owner sets credentials and connector state", leaf.Path)
+		if _, credential := presets.ParseCredentialPath(leaf.Path[2:]); credential && leaf.Path[0] == "accounts" {
+			return nil, fmt.Errorf("proposals cannot change %v; only the owner sets credentials", leaf.Path)
 		}
 	}
 	return groups, nil
 }
 
 // ProposalScope digests the settings one connection's proposal was reviewed against.
-// Identity edits also bind the name to its key, so a grant cannot move to a
-// replacement principal while pending.
-func (c *Config) ProposalScope(changes []Change) string {
+// The proposer and edited identities also bind their keys and route access, so a
+// pending proposal cannot outlive its authority or move to a replacement principal.
+func (c *Config) ProposalScope(proposer string, changes []Change) string {
 	connection, _ := ProposalTarget(changes[0].Path)
-	targeted := map[string]bool{}
+	targeted := map[string]bool{proposer: true}
 	for _, change := range changes {
 		if change.Path[0] == "identities" {
 			targeted[change.Path[1]] = true
@@ -183,7 +165,7 @@ func (c *Config) ProposalScope(changes []Change) string {
 			if targeted[name] {
 				key = identity.Key
 			}
-			identities[name] = []any{key, access, identity.Effects, rules}
+			identities[name] = []any{key, identity.Routes, access, identity.Effects, rules}
 		}
 	}
 	account, accountExists := c.Accounts[connection]
