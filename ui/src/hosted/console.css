@@ -245,6 +245,9 @@ button.start-continue.danger:hover:not(:disabled) {
   line-height: 1.6;
   text-align: center;
 }
+.start-help button.link {
+  font-size: inherit;
+}
 .start-field {
   display: grid;
   gap: 8px;
