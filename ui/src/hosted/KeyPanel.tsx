@@ -1,13 +1,18 @@
 import type { PasskeyKeyManager } from "@tinfoilsh/passkey-kit";
 import {
   For,
+  Match,
   Show,
+  Switch,
+  createEffect,
   createResource,
   createSignal,
+  createUniqueId,
   onCleanup,
   type JSX,
 } from "solid-js";
-import { download, Icon, Loading } from "../components";
+import { Portal } from "solid-js/web";
+import { download, Icon, Loading, Modal } from "../components";
 import type { MKResource } from "./contract";
 import * as keys from "./keys";
 import type { Scope, Session } from "./session";
@@ -358,6 +363,7 @@ export function UnlockKeys(props: {
                 aria-busy={action.busy()}
                 onClick={() => picker.click()}
               >
+                <Icon name="document" />{" "}
                 {action.busy() ? "Unlocking…" : "Choose recovery key file"}
               </button>
               <Show when={hasPasskey()}>
@@ -392,6 +398,7 @@ export function UnlockKeys(props: {
               )
             }
           >
+            <Icon name="passkey" />{" "}
             {action.busy() ? "Unlocking…" : "Unlock with passkey"}
           </button>
           <p class="start-help">
@@ -502,13 +509,71 @@ export function RecoveryMethods(props: {
   );
 }
 
-// Shows setup or unlock until the user's keys are open in memory.
+// The one dialog for key setup, unlock and recovery, over a blurred page. It
+// mounts on the body so page layouts never restyle it.
+export function KeyDialog(props: {
+  open: boolean;
+  onClose: () => void;
+  closeLabel: string;
+  labelledby: string;
+  describedby?: string;
+  children: JSX.Element;
+}) {
+  return (
+    <Portal>
+      <Modal
+        class="start-dialog"
+        open={props.open}
+        onClose={props.onClose}
+        aria-labelledby={props.labelledby}
+        aria-describedby={props.describedby}
+      >
+        <button
+          class="dialog-close icon-button start-close"
+          aria-label={props.closeLabel}
+          onClick={props.onClose}
+        >
+          <Icon name="close" />
+        </button>
+        <div class="start-dialog-body start-setup">{props.children}</div>
+      </Modal>
+    </Portal>
+  );
+}
+
+export function KeyIntro(props: {
+  icon: string;
+  title: JSX.Element;
+  description: JSX.Element;
+  titleId: string;
+  descriptionId: string;
+}) {
+  return (
+    <>
+      <span class="start-mark">
+        <Icon name={props.icon} />
+      </span>
+      <h1 id={props.titleId}>{props.title}</h1>
+      <p id={props.descriptionId} class="start-description">
+        {props.description}
+      </p>
+    </>
+  );
+}
+
+// Shows setup to new users and unlock to returning ones, in the key dialog,
+// until the user's keys are open in memory. Closing the dialog leaves one
+// button that reopens it. A deferred gate counts as closed, so it waits behind
+// its button while another dialog handles the keys and after that one closes.
 export function KeyGate(props: {
   session: Session;
   manager: PasskeyKeyManager;
+  deferDialog?: boolean;
   children: JSX.Element;
 }) {
   const [file, setFile] = createSignal<keys.RecoveryFile>();
+  const titleId = createUniqueId();
+  const descriptionId = createUniqueId();
   const read = () => props.session.keyState();
   return (
     <Show
@@ -527,32 +592,82 @@ export function KeyGate(props: {
             </Show>
           }
         >
-          {(state) => (
-            <Show
-              when={file()}
-              fallback={
-                <Show
-                  when={state().dek_id}
-                  fallback={
-                    <SetupKeys
-                      session={props.session}
-                      manager={props.manager}
-                      onDone={setFile}
-                    />
-                  }
-                >
-                  <UnlockKeys session={props.session} manager={props.manager} />
+          {(state) => {
+            const [dismissed, setDismissed] = createSignal(!!props.deferDialog);
+            createEffect(() => {
+              if (props.deferDialog) setDismissed(true);
+            });
+            return (
+              <>
+                <Show when={dismissed()}>
+                  <button
+                    class="primary start-continue"
+                    onClick={() => setDismissed(false)}
+                  >
+                    {file()
+                      ? "Save your recovery key"
+                      : state().dek_id
+                        ? "Unlock your keys"
+                        : "Set up your keys"}
+                  </button>
                 </Show>
-              }
-            >
-              {(recovery) => (
-                <RecoveryDownload
-                  file={recovery()}
-                  onContinue={() => setFile()}
-                />
-              )}
-            </Show>
-          )}
+                <KeyDialog
+                  open={!dismissed()}
+                  onClose={() => setDismissed(true)}
+                  closeLabel="Close"
+                  labelledby={titleId}
+                  describedby={descriptionId}
+                >
+                  <Switch>
+                    <Match when={file()}>
+                      {(recovery) => (
+                        <>
+                          <KeyIntro
+                            icon="devices"
+                            title="Keep your key close."
+                            description="Save your recovery key before you head to your sandboxes."
+                            titleId={titleId}
+                            descriptionId={descriptionId}
+                          />
+                          <RecoveryDownload
+                            file={recovery()}
+                            onContinue={() => setFile()}
+                          />
+                        </>
+                      )}
+                    </Match>
+                    <Match when={!state().dek_id}>
+                      <KeyIntro
+                        icon="terminal"
+                        title="Welcome to Tinfoil."
+                        description="First, we'll create your keys. They're encrypted with your account, so only you can open your sandboxes."
+                        titleId={titleId}
+                        descriptionId={descriptionId}
+                      />
+                      <SetupKeys
+                        session={props.session}
+                        manager={props.manager}
+                        onDone={setFile}
+                      />
+                    </Match>
+                    <Match when={state().dek_id}>
+                      <KeyIntro
+                        icon="terminal"
+                        title="Welcome back."
+                        description="Unlock your keys to open your sandboxes."
+                        titleId={titleId}
+                        descriptionId={descriptionId}
+                      />
+                      <UnlockKeys
+                        session={props.session}
+                        manager={props.manager}
+                      />
+                    </Match>
+                  </Switch>
+                </KeyDialog>
+              </>
+            );
+          }}
         </Show>
       }
     >
