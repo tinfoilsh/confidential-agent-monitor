@@ -107,6 +107,7 @@ function Start(props: {
   const [busy, setBusy] = createSignal(false);
   const [entries, setEntries] = createSignal<Record<string, string>>({});
   let created: MKResource[] | undefined;
+  let finished = false;
   // Fresh keys per attempt; a retry after an uncertain write resends the same ones.
   const generate = () => {
     const attempt = keys.newAttempt();
@@ -117,6 +118,7 @@ function Start(props: {
   const finish = (
     resources: { kind: StartRole; public_key: string; key_id: string }[],
   ) => {
+    finished = true;
     sessionStorage.removeItem(START);
     props.navigate(startReturnURL(dashboard, r, roleKeys(resources)));
   };
@@ -165,6 +167,22 @@ function Start(props: {
       ),
     );
   const state = () => props.session.keyState().value;
+  const hasPasskey = () =>
+    !!state()?.recovery.some((r) => r.type === "passkey");
+  // Opening keys that a passkey protects is the go-ahead; the button remains for retries.
+  createEffect(
+    on(
+      () =>
+        r.mode === "tmk" &&
+        !file() &&
+        props.session.user()?.id === r.user &&
+        !!props.session.unlocked() &&
+        hasPasskey(),
+      (ready) => {
+        if (ready && !finished) void addTMK();
+      },
+    ),
+  );
   return (
     <>
       <span class="start-mark">
@@ -271,7 +289,7 @@ function Start(props: {
         </Match>
         <Match when={props.session.unlocked()}>
           <Show
-            when={state()?.recovery.some((r) => r.type === "passkey")}
+            when={hasPasskey()}
             fallback={
               <AddPasskey
                 session={props.session}
