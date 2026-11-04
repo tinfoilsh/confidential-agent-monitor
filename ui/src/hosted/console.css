@@ -150,7 +150,7 @@ dialog.start-dialog {
   letter-spacing: -0.8px;
   line-height: 1.3;
 }
-.start-dialog #start-description {
+.start-dialog .start-description {
   margin: 12px 0 24px;
   color: var(--muted);
   line-height: 1.65;

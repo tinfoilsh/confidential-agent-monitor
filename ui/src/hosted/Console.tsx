@@ -20,7 +20,9 @@ import {
 import * as keys from "./keys";
 import {
   AddPasskey,
+  KeyDialog,
   KeyGate,
+  KeyIntro,
   RecoveryDownload,
   RecoveryMethods,
   SetupKeys,
@@ -37,6 +39,8 @@ import {
 import "./console.css";
 
 const START = "tinfoil.start";
+const START_TITLE = "start-title";
+const START_DESCRIPTION = "start-description";
 const SSH_ED25519_PREFIX = "AAAAC3NzaC1lZDI1NTE5AAAAI";
 // Mirrors the dashboard's container state labels.
 const STATUS_LABELS: Record<string, string> = {
@@ -185,23 +189,25 @@ function Start(props: {
   );
   return (
     <>
-      <span class="start-mark">
-        <Icon name={file() ? "devices" : "terminal"} />
-      </span>
-      <h1 id="start-title">
-        {r.mode === "umk"
-          ? "Add your CLI keys"
-          : file()
-            ? "Keep your key close."
-            : "Welcome to Tinfoil."}
-      </h1>
-      <p id="start-description">
-        {r.mode === "umk"
-          ? "Paste the public keys made by the Tinfoil CLI. Their private keys stay on your computer, so this sandbox is reached with the CLI only."
-          : file()
-            ? "Save your recovery key before you head to your sandboxes."
-            : `First, we'll create keys for your ${r.roles.join(" and ")}. They're encrypted with your account, and your dashboard only sees their public keys.`}
-      </p>
+      <KeyIntro
+        icon={file() ? "devices" : "terminal"}
+        title={
+          r.mode === "umk"
+            ? "Add your CLI keys"
+            : file()
+              ? "Keep your key close."
+              : "Welcome to Tinfoil."
+        }
+        description={
+          r.mode === "umk"
+            ? "Paste the public keys made by the Tinfoil CLI. Their private keys stay on your computer, so this sandbox is reached with the CLI only."
+            : file()
+              ? "Save your recovery key before you head to your sandboxes."
+              : `First, we'll create keys for your ${r.roles.join(" and ")}. They're encrypted with your account, and your dashboard only sees their public keys.`
+        }
+        titleId={START_TITLE}
+        descriptionId={START_DESCRIPTION}
+      />
       <Show when={r.mode === "tmk" && !file()}>
         <ol class="start-steps" aria-label="Getting started">
           <li aria-current="step">
@@ -607,7 +613,11 @@ export default function Console(props: {
           </Show>
           <section class="start-monitors" aria-label="Your keys">
             <p class="start-eyebrow">Your keys</p>
-            <KeyGate session={props.session} manager={manager}>
+            <KeyGate
+              session={props.session}
+              manager={manager}
+              deferDialog={!!start()}
+            >
               <Cleanup session={props.session} />
               <RecoveryMethods session={props.session} manager={manager} />
             </KeyGate>
@@ -617,51 +627,50 @@ export default function Console(props: {
       <footer class="start-footer">
         <Icon name="rules" /> Privacy by design.
       </footer>
-      <Modal
-        class="start-dialog"
+      <KeyDialog
         open={!!start()}
         onClose={close}
-        aria-labelledby="start-title"
-        aria-describedby="start-description"
+        closeLabel="Close setup"
+        labelledby={START_TITLE}
+        describedby={START_DESCRIPTION}
       >
-        <button
-          class="dialog-close icon-button start-close"
-          aria-label="Close setup"
-          onClick={close}
-        >
-          <Icon name="close" />
-        </button>
-        <div class="start-dialog-body start-setup">
-          <Switch>
-            <Match when={start() === "invalid"}>
-              <h1 id="start-title">This setup link is not valid</h1>
-              <p id="start-description">Start again from your dashboard.</p>
-            </Match>
-            <Match when={!props.session.user()}>
-              <h1 id="start-title">Sign in to continue</h1>
-              <p id="start-description">
-                Sign in with the account that started this setup.
-              </p>
-              <button
-                class="primary start-continue"
-                onClick={() => void props.session.signIn()}
-              >
-                Sign in
-              </button>
-            </Match>
-            <Match when={start() as StartRequest}>
-              {(request) => (
-                <Start
-                  session={props.session}
-                  manager={manager}
-                  request={request()}
-                  navigate={navigate}
-                />
-              )}
-            </Match>
-          </Switch>
-        </div>
-      </Modal>
+        <Switch>
+          <Match when={start() === "invalid"}>
+            <KeyIntro
+              icon="terminal"
+              title="This setup link is not valid"
+              description="Start again from your dashboard."
+              titleId={START_TITLE}
+              descriptionId={START_DESCRIPTION}
+            />
+          </Match>
+          <Match when={!props.session.user()}>
+            <KeyIntro
+              icon="terminal"
+              title="Sign in to continue"
+              description="Sign in with the account that started this setup."
+              titleId={START_TITLE}
+              descriptionId={START_DESCRIPTION}
+            />
+            <button
+              class="primary start-continue"
+              onClick={() => void props.session.signIn()}
+            >
+              Sign in
+            </button>
+          </Match>
+          <Match when={start() as StartRequest}>
+            {(request) => (
+              <Start
+                session={props.session}
+                manager={manager}
+                request={request()}
+                navigate={navigate}
+              />
+            )}
+          </Match>
+        </Switch>
+      </KeyDialog>
     </div>
   );
 }
