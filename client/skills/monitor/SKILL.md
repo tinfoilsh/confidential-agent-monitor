@@ -113,8 +113,8 @@ prints one receipt per connection; poll a receipt without owner credentials:
 monitor policy status PROPOSAL_ID
 ```
 
-The result is limited to receipt metadata and reports `pending`, `approving`,
-`approved`, `rejected`, or `outdated`. Status is process-local like the pending
+The result is a receipt, `{id, state, connection}`, with state `pending`,
+`approved`, `denied`, or `outdated`. Status is process-local like the pending
 proposal itself, so Monitor restart may make an old receipt unavailable.
 
 If relevant configuration changes before review, Monitor consumes the proposal
@@ -173,12 +173,11 @@ curl -fsS -X POST http://agent.monitor/policy/proposals \
   --data-binary @proposal.json
 ```
 
-A structured request body has `reason`, optional `idempotency_key`, and `changes`:
+A structured request body has `reason` and `changes`:
 
 ```json
 {
   "reason": "Grant this sandbox GitHub access for issue triage",
-  "idempotency_key": "github-issue-triage-v1",
   "changes": [
     {
       "path": ["identities", "my-sandbox", "accounts", "github", "level"],
@@ -189,8 +188,9 @@ A structured request body has `reason`, optional `idempotency_key`, and `changes
 ```
 
 A TOML request body uses `source`, optional path arrays in `delete`, and
-`reason`. Agent proposal responses contain only pending receipts;
-owner-only source diffs and configuration are not returned.
+`reason`. Agent proposal responses contain only receipts, and resubmitting
+identical changes returns the pending one; owner-only source diffs and
+configuration are not returned.
 
 On a paired host, use the `monitor` CLI because it carries these requests through
 the authenticated SSH transport. Run `monitor --help` for SSH host, config, and

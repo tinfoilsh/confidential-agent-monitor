@@ -181,29 +181,6 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 	mux.Handle("POST /requests/{id}", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, req answerInput) (any, error) {
 		return nil, m.answerRequest(r.Context(), r.PathValue("id"), req)
 	})))
-	mux.Handle("GET /policy/proposals", m.ownerOnly(JSONHandler(0, func(*http.Request, struct{}) (any, error) {
-		return m.policyProposals(), nil
-	})))
-	mux.Handle("GET /policy/proposals/{id}", m.ownerOnly(JSONHandler(0, func(r *http.Request, _ struct{}) (any, error) {
-		return m.policyProposalView(r.PathValue("id"))
-	})))
-	mux.Handle("POST /policy/proposals", m.ownerOnly(JSONHandler(maxProposalBytes, func(r *http.Request, input proposalInput) (any, error) {
-		proposals, err := m.submitPolicyProposals(r.Context(), facts.Principal{Name: "owner"}, input)
-		if err != nil {
-			return nil, err
-		}
-		views := make([]proposalView, 0, len(proposals))
-		for _, proposal := range proposals {
-			views = append(views, proposalViewOf(proposal, false))
-		}
-		return views, nil
-	})))
-	mux.Handle("POST /policy/proposals/{id}/approve", m.ownerOnly(JSONHandler(maxProposalBytes, func(r *http.Request, decision proposalDecision) (any, error) {
-		return m.viewAfter(m.approvePolicyProposal(r.Context(), r.PathValue("id"), decision))
-	})))
-	mux.Handle("POST /policy/proposals/{id}/reject", m.ownerOnly(JSONHandler(maxProposalBytes, func(r *http.Request, decision proposalDecision) (any, error) {
-		return nil, m.rejectPolicyProposal(r.Context(), r.PathValue("id"), decision)
-	})))
 	mux.Handle("GET /policy", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) {
 		result := map[string]any{"source": m.store.Doc.Policy}
 		var err error
@@ -293,25 +270,15 @@ func (m *monitor) agentHandler(key string) http.Handler {
 		settings := m.settings.Load()
 		return agentCatalogView{CatalogID: settings.CatalogID, Presets: settings.Catalog, Vocabulary: facts.Effects}, nil
 	}))
-	mux.HandleFunc("GET /policy/proposals/{id}", agentTx(m, key, func(r *http.Request, _ struct{}, principal config.Principal) (any, error) {
-		return m.agentPolicyProposalStatus(r.PathValue("id"), principal)
+	mux.HandleFunc("GET /policy/proposals/{id}", agentTx(m, key, func(r *http.Request, _ struct{}, p config.Principal) (any, error) {
+		record := m.findRecord(r.PathValue("id"))
+		if record == nil || record.Changes == nil || record.summary().Facts.Principal != (facts.Principal{Key: p.Fingerprint, Name: p.Name}) {
+			return nil, errRecordGone
+		}
+		return record.receipt(), nil
 	}))
 	mux.HandleFunc("POST /policy/proposals", JSONHandler(maxAgentBytes, func(r *http.Request, input proposalInput) (any, error) {
-		m.mu.Lock()
-		principal, known := m.settings.Load().Principal(key)
-		m.mu.Unlock()
-		if !known {
-			return nil, errNoAgent
-		}
-		proposals, err := m.submitPolicyProposals(r.Context(), facts.Principal{Key: principal.Fingerprint, Name: principal.Name}, input)
-		if err != nil {
-			return nil, err
-		}
-		receipts := make([]proposalReceipt, 0, len(proposals))
-		for _, proposal := range proposals {
-			receipts = append(receipts, proposalReceiptOf(proposal))
-		}
-		return receipts, nil
+		return m.proposePolicy(r.Context(), key, input)
 	}))
 	return mux
 }
@@ -578,12 +545,9 @@ func (m *monitor) agentPolicy(key string) (any, error) {
 	var visible map[string]any
 	var err error
 	if st.Identities[p.Name].Routes {
-		// Trusted devices can inspect the expanded, credential-free configuration
-		// used to prepare owner-reviewed proposals. Credential values live outside
-		// Config.
+		// Credential values live outside Config.
 		visible, err = st.Config.View()
 	} else {
-		// A sandbox sees only its own identity and reachable account semantics.
 		visible, err = st.Config.AgentView(p)
 	}
 	if err != nil {

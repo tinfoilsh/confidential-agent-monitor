@@ -160,7 +160,6 @@ type monitor struct {
 	relays                  http.RoundTripper
 	streams                 map[*connector.Stream]admission
 	records                 []*record
-	proposals               map[string]policyProposal
 	signIns                 sync.Map
 }
 
@@ -180,7 +179,6 @@ func New(o Options) *monitor {
 		forwards:       new(frontdoor.Forwarder),
 		connections:    map[string]*connection{},
 		streams:        map[*connector.Stream]admission{},
-		proposals:      map[string]policyProposal{},
 	}
 	m.relays = sandbox.Relays(m.forwards)
 	m.ownerAPI = m.newOwnerAPI()
@@ -422,7 +420,7 @@ func (m *monitor) commitSettings(ctx context.Context, base store.Document, plan 
 		}
 	}
 	if saved != nil {
-		saved.record.ruleSaved(saved.answer)
+		saved.record.committed(saved.answer)
 	}
 	old, changed := m.settings.Load(), false
 	for _, name := range plan.remove {

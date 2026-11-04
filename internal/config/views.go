@@ -101,6 +101,99 @@ func (c *Config) AgentView(p Principal) (map[string]any, error) {
 	return facts.JSON[map[string]any](view)
 }
 
+// ProposalTarget names the connection whose setup or access path changes.
+func ProposalTarget(path []string) (string, bool) {
+	switch {
+	case len(path) >= 2 && (path[0] == "accounts" || path[0] == "default_access") && path[1] != "":
+		return path[1], true
+	case len(path) >= 4 && path[0] == "identities" && path[1] != "" && path[2] == "accounts" && path[3] != "":
+		return path[3], true
+	}
+	return "", false
+}
+
+// ProposalChanges groups p's edits by connection. A proposal may set only what the
+// owner's setup form can: access, account semantics and non-credential catalog fields.
+func (c *Config) ProposalChanges(p Principal, changes []Change) (map[string][]Change, error) {
+	groups, presetNames := map[string][]Change{}, map[string]string{}
+	var leaves []Change
+	for _, change := range changes {
+		target, ok := ProposalTarget(change.Path)
+		if !ok {
+			return nil, errors.New("proposals may change only connection setup and access")
+		}
+		if !c.Identities[p.Name].Routes && (change.Path[0] == "default_access" || change.Path[0] == "identities" && change.Path[1] != p.Name) {
+			return nil, errors.New("a sandbox may propose only connection setup and its own access")
+		}
+		groups[target] = append(groups[target], change)
+		if table, ok := change.Value.(map[string]any); ok && len(table) > 0 && table["$json"] == nil {
+			leaves = append(leaves, fragmentChanges(table, change.Path)...)
+		} else {
+			leaves = append(leaves, change)
+		}
+	}
+	for _, leaf := range leaves {
+		if name, ok := leaf.Value.(string); ok && len(leaf.Path) == 3 && leaf.Path[0] == "accounts" && leaf.Path[2] == "preset" {
+			presetNames[leaf.Path[1]] = name
+		}
+	}
+	for _, leaf := range leaves {
+		if len(leaf.Path) < 3 || leaf.Path[0] != "accounts" || leaf.Path[2] != "connections" {
+			continue
+		}
+		name, ok := presetNames[leaf.Path[1]]
+		if !ok {
+			name = c.Accounts[leaf.Path[1]].Preset
+		}
+		preset, err := c.Preset(name)
+		if err != nil {
+			return nil, fmt.Errorf("account %s: %w", leaf.Path[1], err)
+		}
+		if !slices.ContainsFunc(preset.Catalog.SetupPaths(), func(field []string) bool {
+			return len(leaf.Path) >= 2+len(field) && slices.Equal(leaf.Path[2:2+len(field)], field)
+		}) {
+			return nil, fmt.Errorf("proposals cannot change %v; only the owner sets credentials and connector state", leaf.Path)
+		}
+	}
+	return groups, nil
+}
+
+// ProposalScope digests the settings one connection's proposal was reviewed against.
+// Identity edits also bind the name to its key, so a grant cannot move to a
+// replacement principal while pending.
+func (c *Config) ProposalScope(changes []Change) string {
+	connection, _ := ProposalTarget(changes[0].Path)
+	targeted := map[string]bool{}
+	for _, change := range changes {
+		if change.Path[0] == "identities" {
+			targeted[change.Path[1]] = true
+		}
+	}
+	identities := map[string]any{}
+	for name, identity := range c.Identities {
+		access := c.Access(name, connection)
+		rules := map[string]Rule{}
+		for id, rule := range identity.Rules {
+			if rule.Account == connection {
+				rules[id] = rule
+			}
+		}
+		if access.Level != "" || len(rules) != 0 || targeted[name] {
+			key := ""
+			if targeted[name] {
+				key = identity.Key
+			}
+			identities[name] = []any{key, access, identity.Effects, rules}
+		}
+	}
+	account, accountExists := c.Accounts[connection]
+	fallback, fallbackExists := c.DefaultAccess[connection]
+	// Global settings change this connection's effective behavior too.
+	raw, _ := json.Marshal([]any{accountExists, account, fallbackExists, fallback, identities,
+		c.Effects, c.AllowPaidInference, c.Lattices, c.AllowNetworks, c.Policies, c.Data})
+	return fmt.Sprintf("%x", sha256.Sum256(raw))
+}
+
 // Catalog is a control presentation, never an authorization or runtime registry.
 func (c *Config) Catalog() (map[string]presets.Entry, string, error) {
 	shipped, err := presets.Shipped()

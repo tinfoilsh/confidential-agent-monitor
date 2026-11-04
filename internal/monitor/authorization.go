@@ -43,7 +43,6 @@ var (
 	errRuleSaved  = errors.New("approval rule saved; retry the request")
 )
 
-// A review answer records who resolved one pending request.
 type reviewAnswer struct {
 	By string `json:"by"`
 	answerInput
@@ -55,7 +54,7 @@ type answerInput struct {
 	Reason string `json:"reason,omitempty"`
 }
 
-// savedAnswer carries the answer to publish with its durable policy rule.
+// savedAnswer carries the answer to publish with its durable settings change.
 type savedAnswer struct {
 	record *record
 	answer reviewAnswer
@@ -73,7 +72,10 @@ type record struct {
 	ApprovalKey string         `json:"definition"`
 	Grant       map[string]any `json:"grant"`
 	Reviews     []reviewAnswer `json:"reviews,omitempty"`
-	answered    chan struct{}
+	// Changes makes the record a policy proposal; scope is what it was reviewed against.
+	Changes  []config.Change `json:"changes,omitempty"`
+	answered chan struct{}
+	scope    string
 }
 
 // Activity never needs request bodies, policy parameters or saved-rule grants.
@@ -356,7 +358,9 @@ func (m *monitor) addRecord(r *record) *record {
 	r.ID, r.Time, r.State = rand.Text(), time.Now(), stateAllowed
 	m.records = append(m.records, r)
 	if len(m.records) > maxRecords {
-		m.records = m.records[1:]
+		// Nothing else holds a pending proposal.
+		i := slices.IndexFunc(m.records, func(r *record) bool { return r.State != statePending })
+		m.records = slices.Delete(m.records, i, i+1)
 	}
 	return r
 }
@@ -369,12 +373,20 @@ func (m *monitor) findRecord(id string) *record {
 	return m.records[i]
 }
 
-// refusePending refuses every record still waiting for an answer; the caller holds mu.
+// refusePending refuses every request still waiting for an answer and outdates
+// proposals whose scope changed; the caller holds mu.
 func (m *monitor) refusePending(err error) {
+	cfg := m.settings.Load().Config
 	for _, r := range m.records {
-		if r.State == statePending {
+		switch {
+		case r.State != statePending:
+		case r.Changes == nil:
 			r.State, r.Deny = stateRefused, []string{err.Error()}
 			close(r.answered)
+		case cfg.ProposalScope(r.Changes) != r.scope:
+			r.State = stateOutdated
+			close(r.answered)
+			m.settleRecord(r, nil)
 		}
 	}
 }
@@ -422,18 +434,19 @@ func (m *monitor) settleRecord(r *record, err error) {
 
 // answerable validates an answer under mu; callers recheck it after pure
 // preparation so a concurrent answer cannot be overwritten by a saved rule.
-func (m *monitor) answerable(id string, input answerInput, choices []string, reasonRequired bool) (*record, error) {
+func (m *monitor) answerable(id string, input answerInput) (*record, error) {
+	choices := []string{answerOnce, answerSave, answerDeny}
 	if !slices.Contains(choices, input.Choice) {
 		return nil, fmt.Errorf("decision must be one of %s", strings.Join(choices, ", "))
 	}
-	if len(input.Reason) > 4096 || (reasonRequired && input.Reason == "") {
-		return nil, errors.New("a reason of 1-4096 bytes is required")
+	if len(input.Reason) > 4096 {
+		return nil, errors.New("a reason must be at most 4096 bytes")
 	}
 	r := m.findRecord(id)
 	if r == nil {
 		return nil, fmt.Errorf("no request %s", id)
 	}
-	if r.State == statePending && !time.Now().Before(r.Expires) {
+	if r.State == statePending && !r.Expires.IsZero() && !time.Now().Before(r.Expires) {
 		r.State = stateExpired
 		close(r.answered)
 	}
@@ -446,22 +459,29 @@ func (m *monitor) answerable(id string, input answerInput, choices []string, rea
 
 func (m *monitor) answerRequest(ctx context.Context, id string, input answerInput) error {
 	input.Reason = strings.TrimSpace(input.Reason)
-	choices := []string{answerOnce, answerSave, answerDeny}
-	if input.Choice == answerSave {
+	m.mu.Lock()
+	r := m.findRecord(id)
+	applies := input.Choice == answerSave || input.Choice == answerOnce && r != nil && r.Changes != nil
+	m.mu.Unlock()
+	if applies {
 		m.writes.Lock()
 		defer m.writes.Unlock()
 		m.mu.Lock()
-		r, err := m.answerable(id, input, choices, false)
+		r, err := m.answerable(id, input)
 		var change config.Change
-		if err == nil {
+		if err == nil && input.Choice == answerSave {
 			change, err = m.ruleChange(r)
 		}
 		m.mu.Unlock()
 		if err != nil {
 			return err
 		}
-		return m.writeSettings(ctx, nil, []config.Change{change}, func() error {
-			current, err := m.answerable(id, input, choices, false)
+		changes := r.Changes
+		if input.Choice == answerSave {
+			changes = []config.Change{change}
+		}
+		err = m.writeSettings(ctx, nil, changes, func() error {
+			current, err := m.answerable(id, input)
 			if err == nil && current != r {
 				return errRecordGone
 			}
@@ -470,10 +490,16 @@ func (m *monitor) answerRequest(ctx context.Context, id string, input answerInpu
 			record: r,
 			answer: reviewAnswer{By: "owner", answerInput: input},
 		})
+		if err == nil && r.Changes != nil {
+			m.mu.Lock()
+			m.settleRecord(r, nil)
+			m.mu.Unlock()
+		}
+		return err
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	r, err := m.answerable(id, input, choices, false)
+	r, err := m.answerable(id, input)
 	if err != nil {
 		return err
 	}
@@ -483,15 +509,21 @@ func (m *monitor) answerRequest(ctx context.Context, id string, input answerInpu
 		r.State = stateDenied
 	}
 	close(r.answered)
+	if r.Changes != nil {
+		m.settleRecord(r, nil)
+	}
 	return nil
 }
 
-func (r *record) ruleSaved(answer reviewAnswer) {
+func (r *record) committed(answer reviewAnswer) {
 	if r.State == statePending {
 		close(r.answered)
 	}
 	// Retry evaluates the operation under the newly committed rule.
 	r.State, r.Deny = stateRefused, []string{errRuleSaved.Error()}
+	if r.Changes != nil {
+		r.State, r.Deny = stateApproved, nil
+	}
 	answer.Time = time.Now()
 	r.Reviews = append(r.Reviews, answer)
 }

@@ -4,7 +4,6 @@ package presets
 import (
 	"embed"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/fs"
 	"strings"
@@ -47,14 +46,6 @@ func Decode(raw []byte) (*Preset, error) {
 	}
 	if _, err := p.Catalog.CredentialFields(); err != nil {
 		return nil, err
-	}
-	if warning := p.Catalog.Warning; warning != "" {
-		if strings.TrimSpace(warning) == "" {
-			return nil, errors.New("catalog warning cannot be blank")
-		}
-		if len(warning) > 2000 {
-			return nil, errors.New("catalog warning is too long")
-		}
 	}
 	for name, a := range p.Catalog.Actions {
 		if a.Effects != nil && !facts.ValidEffects(a.Effects) {
@@ -170,4 +161,33 @@ func (c *Catalog) CredentialFields() ([][]CredentialPath, error) {
 		}
 	}
 	return fields, nil
+}
+
+// SetupPaths lists the account paths that non-credential fields set, each cut at
+// its first array index.
+func (c *Catalog) SetupPaths() [][]string {
+	var paths [][]string
+	for _, raw := range c.Fields {
+		var field struct {
+			Path  []any   `json:"path"`
+			Paths [][]any `json:"paths"`
+		}
+		if json.Unmarshal(raw, &field) != nil {
+			continue
+		}
+		for _, path := range append(field.Paths, field.Path) {
+			var prefix []string
+			for _, segment := range path {
+				s, ok := segment.(string)
+				if !ok {
+					break
+				}
+				prefix = append(prefix, s)
+			}
+			if _, credential := ParseCredentialPath(prefix); len(prefix) != 0 && !credential {
+				paths = append(paths, prefix)
+			}
+		}
+	}
+	return paths
 }

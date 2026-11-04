@@ -1,4 +1,4 @@
-import { For, Show, createMemo, onMount } from "solid-js";
+import { For, Show, createMemo, createResource, onMount } from "solid-js";
 import * as owner from "./owner.js";
 import {
   ConnectorIcon,
@@ -20,23 +20,11 @@ const date = (value: string) => {
   const parsed = new Date(value);
   return Number.isNaN(parsed.valueOf()) ? value : proposalTime.format(parsed);
 };
-const proposerType = (proposal: owner.PolicyProposal) =>
-  proposal.proposer_kind === "owner_api"
-    ? "Owner API"
-    : proposal.proposer_kind === "trusted_device"
-      ? "Trusted Device"
-      : "Sandbox";
-const proposerIdentity = (proposal: owner.PolicyProposal) =>
-  proposal.proposer_kind === "owner_api" ? "Owner API" : proposal.proposer.name;
-function ProposerByline(props: { proposal: owner.PolicyProposal }) {
-  return props.proposal.proposer_kind === "owner_api" ? (
+function ProposerByline(props: { proposal: owner.RequestRecord }) {
+  return (
     <>
-      <strong>By Owner API</strong>
-    </>
-  ) : (
-    <>
-      <strong>By {proposerType(props.proposal)}:</strong>{" "}
-      {props.proposal.proposer.name}
+      <strong>By {owner.isDevice(props.proposal.facts.principal.name) ? "Trusted Device" : "Sandbox"}:</strong>{" "}
+      {props.proposal.facts.principal.name}
     </>
   );
 }
@@ -56,39 +44,37 @@ const valueText = (value: owner.Json | undefined) => {
   if (typeof value === "string") return value || "Empty";
   return JSON.stringify(value, null, 2);
 };
-const pathLabel = (proposal: owner.PolicyProposal, path: string[]) => {
+const pathLabel = (proposal: owner.RequestRecord, path: string[]) => {
   if (path[0] === "identities")
     return [`Sandbox ${path[1]}`, ...path.slice(4)].join(" › ");
   if (path[0] === "default_access")
     return ["Default access", ...path.slice(2)].join(" › ");
-  if (path[0] === "accounts" && path[1] === proposal.connection)
+  if (path[0] === "accounts" && path[1] === proposal.facts.account)
     return ["Connection", ...path.slice(2)].join(" › ");
   return path.join(" › ");
 };
-const proposalPreset = (proposal: owner.PolicyProposal, view: owner.View) => {
-  for (const change of proposal.changes) {
+const proposalPreset = (proposal: owner.RequestRecord, view: owner.View) => {
+  for (const change of proposal.changes ?? []) {
     if (
-      change.path.join("/") === `accounts/${proposal.connection}/preset` &&
+      change.path.join("/") === `accounts/${proposal.facts.account}/preset` &&
       typeof change.value === "string"
     )
       return change.value;
     if (
       change.path.length === 2 &&
       change.path[0] === "accounts" &&
-      change.path[1] === proposal.connection
+      change.path[1] === proposal.facts.account
     ) {
       const account = change.value as { preset?: owner.Json } | undefined;
       if (typeof account?.preset === "string") return account.preset;
     }
   }
-  return view.config.accounts?.[proposal.connection]?.preset ?? "";
+  return view.config.accounts?.[proposal.facts.account]?.preset ?? "";
 };
-const proposalBadge = (proposal: owner.PolicyProposal, view: owner.View) =>
-  proposal.state === "approving"
-    ? { label: "Applying…", class: "status-pending" }
-    : view.config.accounts?.[proposal.connection]
-      ? { label: "Update", class: "status-pending" }
-      : { label: "New", class: "status-new" };
+const proposalBadge = (proposal: owner.RequestRecord, view: owner.View) =>
+  view.config.accounts?.[proposal.facts.account]
+    ? { label: "Update", class: "status-pending" }
+    : { label: "New", class: "status-new" };
 
 export function TechnicalDiff(props: { text: string }) {
   const lines = () =>
@@ -118,7 +104,7 @@ export function TechnicalDiff(props: { text: string }) {
 }
 
 function Change(props: {
-  proposal: owner.PolicyProposal;
+  proposal: owner.RequestRecord;
   change: owner.Change;
 }) {
   const m = useMonitor();
@@ -193,15 +179,15 @@ export function PolicyProposals() {
                     preset={proposalPreset(proposal(), m.view()!)}
                   />
                   <span>
-                    <strong>{reasonPreview(proposal().reason)}</strong>
+                    <strong>{reasonPreview(proposal().facts.title ?? "")}</strong>
                     <small>
-                      {proposal().connection} · {proposerIdentity(proposal())}
+                      {proposal().facts.account} · {proposal().facts.principal.name}
                     </small>
                   </span>
                 </span>
                 <span class="resource-meta">
-                  <time datetime={proposal().created_at}>
-                    {date(proposal().created_at)}
+                  <time datetime={proposal().time}>
+                    {date(proposal().time)}
                   </time>
                   <span class={`badge proposal-kind ${badge().class}`}>
                     {badge().label}
@@ -291,10 +277,10 @@ export function ConnectionProposals(props: { id?: string }) {
                   />
                   <span class="proposal-summary">
                     <strong class="proposal-reason-preview">
-                      {reasonPreview(proposal().reason)}
+                      {reasonPreview(proposal().facts.title ?? "")}
                     </strong>
                     <small>
-                      {proposal().connection} · {proposerIdentity(proposal())}
+                      {proposal().facts.account} · {proposal().facts.principal.name}
                     </small>
                   </span>
                   <span class="resource-meta">
@@ -321,44 +307,31 @@ export function ConnectionProposals(props: { id?: string }) {
   );
 }
 
-function ConnectionProposalDetail(props: { proposal: owner.PolicyProposal }) {
+function ConnectionProposalDetail(props: { proposal: owner.RequestRecord }) {
   const m = useMonitor();
-  const actionable = () =>
-    props.proposal.state === "pending" && !props.proposal.stale;
-  const decide = async (choice: "approve" | "reject") => {
-    if (m.busy() || !actionable()) return;
-    const saved =
-      choice === "approve"
-        ? await m.approveProposal(props.proposal)
-        : await m.rejectProposal(props.proposal);
-    if (saved) location.hash = "#connections";
+  const [full] = createResource(() => props.proposal.id, (id) => m.api()!.request(id));
+  const loaded = () => (full.error ? undefined : full());
+  const decide = async (decision: "once" | "deny") => {
+    if (m.busy() || !loaded()) return;
+    if (await m.decide(props.proposal, decision)) location.hash = "#connections";
   };
   return (
     <div class="proposal-card proposal-card-inline">
       <div class="proposal-body">
         <div class="proposal-context">
           <p>
-            <strong>Reason:</strong> {props.proposal.reason}
+            <strong>Reason:</strong> {loaded()?.facts.title ?? props.proposal.facts.title}
           </p>
           <p class="proposal-byline">
             <ProposerByline proposal={props.proposal} />
           </p>
         </div>
-        <Show when={props.proposal.state === "approving"}>
-          <div class="proposal-applying" role="status">
-            <strong>Applying changes…</strong>
-            <p>Monitor is updating this connection.</p>
-          </div>
-        </Show>
-        <Show when={props.proposal.stale}>
-          <div class="proposal-stale" role="status">
-            <strong>Settings changed</strong>
-            <p>This proposal can no longer be approved.</p>
-          </div>
+        <Show when={full.error}>
+          <p role="alert">{String(full.error)}</p>
         </Show>
         <Show
           when={
-            m.view()!.presets[proposalPreset(props.proposal, m.view()!)]
+            m.view()!.presets[proposalPreset(loaded() ?? props.proposal, m.view()!)]
               ?.warning
           }
         >
@@ -369,34 +342,32 @@ function ConnectionProposalDetail(props: { proposal: owner.PolicyProposal }) {
           )}
         </Show>
         <div class="proposal-change-list">
-          <For each={props.proposal.changes}>
+          <For each={loaded()?.changes}>
             {(change) => <Change proposal={props.proposal} change={change} />}
           </For>
         </div>
-        <details class="proposal-diff" open>
-          <summary>Technical TOML diff</summary>
-          <TechnicalDiff text={props.proposal.source_diff} />
-        </details>
+        <Show when={loaded()} fallback={!full.error && <p class="muted">Loading changes…</p>}>
+          {(proposal) => (
+            <details class="proposal-diff" open>
+              <summary>Technical TOML diff</summary>
+              <TechnicalDiff text={proposal().facts.details?.policy?.source_diff ?? ""} />
+            </details>
+          )}
+        </Show>
       </div>
       <footer class="proposal-decision">
-        <strong>
-          {actionable()
-            ? "Approve changes?"
-            : props.proposal.state === "approving"
-              ? "Applying changes…"
-              : "Proposal is outdated"}
-        </strong>
+        <strong>Approve changes?</strong>
         <div class="form-actions">
           <button
-            disabled={m.busy() || !actionable()}
-            onClick={() => void decide("reject")}
+            disabled={m.busy() || !loaded()}
+            onClick={() => void decide("deny")}
           >
             Reject
           </button>
           <button
             class="primary"
-            disabled={m.busy() || !actionable()}
-            onClick={() => void decide("approve")}
+            disabled={m.busy() || !loaded()}
+            onClick={() => void decide("once")}
           >
             Approve changes
           </button>

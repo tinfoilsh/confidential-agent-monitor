@@ -98,7 +98,7 @@ monitor policy status PROPOSAL_ID
 ```
 
 Status is limited to this sandbox's own proposals and reports `pending`,
-`approving`, `approved`, `rejected`, or `outdated`. It is process-local like the
+`approved`, `denied`, or `outdated`. It is process-local like the
 pending proposal itself. If a relevant setting changes first, Monitor records the
 proposal as Outdated; submit a new proposal if it is still needed.
 
@@ -150,6 +150,6 @@ curl -fsS -X POST http://agent.monitor/policy/proposals \
   --data-binary @proposal.json
 ```
 
-A structured proposal body has `reason`, optional `idempotency_key`, and a
-non-empty `changes` array. Responses contain pending receipts, not owner-only
-configuration or diffs.
+A structured proposal body has `reason` and a non-empty `changes` array.
+Responses contain `{id, state, connection}` receipts, not owner-only
+configuration or diffs. Resubmitting identical changes returns the pending receipt.

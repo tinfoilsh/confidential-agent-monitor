@@ -176,7 +176,6 @@ function createMonitor(options: MonitorOptions) {
     return next;
   });
   const view = createMemo(() => projected()?.view);
-  const proposals = createMemo(() => projected()?.proposals ?? []);
   // Archived records continue past the live log, which the monitor caps and clears on restart.
   const [archived, setArchived] = createSignal<owner.RequestRecord[]>([]);
   const [older, setOlder] = createSignal<string | null>("");
@@ -204,13 +203,12 @@ function createMonitor(options: MonitorOptions) {
     byId: recordsById,
     pendingCount,
   } = createRequestLog(requests, now);
-  const approvalCount = createMemo(
-    () => pendingCount() + proposals().length,
+  const proposals = createMemo(() =>
+    records().filter((r) => r.state === "pending" && owner.isConnectionProposalRecord(r)),
   );
   const remember = (
     next: owner.View,
     requests = snapshot()?.requests ?? [],
-    proposals = snapshot()?.proposals ?? [],
   ) => {
     setLocked(false);
     if (!options.client)
@@ -223,7 +221,7 @@ function createMonitor(options: MonitorOptions) {
           ),
         ),
       );
-    setSnapshot({ view: next, requests, proposals });
+    setSnapshot({ view: next, requests });
     if (older() === "" && !loadingOlder()) void loadOlder();
   };
 
@@ -239,7 +237,7 @@ function createMonitor(options: MonitorOptions) {
           const next = await source.read(lifetime.signal);
           if (source !== api()) continue;
           if (revision !== version || lifetime.signal.aborted) return;
-          remember(next.view, next.requests, next.proposals ?? []);
+          remember(next.view, next.requests);
           setError("");
           return;
         }
@@ -341,29 +339,6 @@ function createMonitor(options: MonitorOptions) {
       },
       to,
     });
-  const submitProposal = async (input: owner.PolicyProposalInput) => {
-    const source = api();
-    if (!source || busy()) return;
-    try {
-      const proposals = await source.submitProposal(input, lifetime.signal);
-      const current = snapshot();
-      if (source === api() && current && !lifetime.signal.aborted) {
-        const ids = new Set(proposals.map((proposal) => proposal.id));
-        setSnapshot({ ...current, proposals: [
-          ...(current.proposals ?? []).filter((proposal) => !ids.has(proposal.id)),
-          ...proposals,
-        ] });
-      }
-      notify(proposals.length === 1 ? "Submitted for review" : `${proposals.length} connection proposals submitted`);
-      return proposals;
-    } catch (cause) {
-      report(cause);
-    }
-  };
-  const approveProposal = (proposal: owner.PolicyProposal) =>
-    perform(async (client) => { await client.approveProposal(proposal, lifetime.signal); }, "Proposal approved");
-  const rejectProposal = (proposal: owner.PolicyProposal) =>
-    perform(async (client) => { await client.rejectProposal(proposal, lifetime.signal); }, "Proposal rejected");
   const label = (
     name: string,
     change: Partial<Pick<owner.Label, "trust" | "audience">>,
@@ -491,7 +466,7 @@ function createMonitor(options: MonitorOptions) {
     ),
   );
   createEffect(() => {
-    const count = approvalCount();
+    const count = pendingCount();
     document.title = count ? `(${count}) Monitor` : "Monitor";
   });
   onMount(async () => {
@@ -589,10 +564,6 @@ function createMonitor(options: MonitorOptions) {
     recordsById,
     pendingCount,
     proposals,
-    approvalCount,
-    submitProposal,
-    approveProposal,
-    rejectProposal,
     older,
     loadingOlder,
     loadOlder,

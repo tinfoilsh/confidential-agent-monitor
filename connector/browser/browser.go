@@ -1,5 +1,3 @@
-//go:build monitor_dev
-
 package browser
 
 import (

@@ -1139,11 +1139,11 @@ def policy_command(client, args):
             print(result["effective" if args.effective else "source"], end="")
         return 0
     if args.policy_action == "status":
-        if not re.fullmatch(r"[0-9a-f]{32}", args.id):
-            raise MonitorError("proposal ID must be 32 lowercase hexadecimal characters")
+        if not re.fullmatch(r"[A-Z2-7]{26,}", args.id):
+            raise MonitorError("proposal ID must be at least 26 base32 characters")
         result = json.loads(client.request("agent.monitor", "GET", f"/policy/proposals/{args.id}"))
         if (not isinstance(result, dict) or result.get("id") != args.id
-                or result.get("state") not in ("pending", "approving", "approved", "rejected", "outdated")):
+                or result.get("state") not in ("pending", "approved", "denied", "outdated")):
             raise MonitorError("invalid proposal status from the monitor")
         print(json.dumps(result, indent=2))
         return 0

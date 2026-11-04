@@ -131,22 +131,6 @@
 .proposal-context p {
   margin: 0;
 }
-.proposal-applying,
-.proposal-stale {
-  margin: 0 16px 12px;
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--subtle);
-}
-.proposal-stale {
-  border-color: var(--bad);
-}
-.proposal-applying p,
-.proposal-stale p {
-  margin: 5px 0 0;
-  color: var(--muted);
-}
 .proposal-card .connection-warning {
   margin: 0 16px 12px;
 }

@@ -126,7 +126,7 @@ function Shell() {
     (kind() === "request" ? "Request" : args()[0] || "Monitor");
   const count = (section: string) =>
     section === "activity"
-      ? m.approvalCount()
+      ? m.pendingCount()
       : Object.keys(
           (section === "agents"
             ? m.view()?.config.identities
@@ -293,10 +293,10 @@ function Shell() {
 function ApprovalBar() {
   const m = useMonitor();
   const pending = createMemo(() =>
-    owner.pendingSoonest(m.records().filter(owner.needsOwner)),
+    owner.pendingSoonest(m.records().filter((r) => owner.needsOwner(r) && !owner.isConnectionProposalRecord(r))),
   );
   const proposals = m.proposals;
-  const total = m.approvalCount;
+  const total = m.pendingCount;
   return (
     <Show when={total()}>
       <div class="approval-bar" role="status" aria-label="Pending approvals">
