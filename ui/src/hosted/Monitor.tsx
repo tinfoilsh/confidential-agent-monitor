@@ -9,7 +9,7 @@ import {
   on,
   onCleanup,
 } from "solid-js";
-import App from "../App";
+import Workspace from "./Workspace";
 import { Icon, Loading } from "../components";
 import { Header } from "./Console";
 import * as keys from "./keys";
@@ -19,13 +19,7 @@ import {
   type AttestMonitor,
   type OpenedMonitor,
 } from "./monitors";
-import {
-  RestoreRequired,
-  acceptSandbox,
-  relinkSandboxes,
-  sandboxCandidates,
-  shellOpener,
-} from "./sandboxes";
+import { relinkSandboxes } from "./sandboxes";
 import { MONITOR_REPO, type Session } from "./session";
 import "./console.css";
 
@@ -53,6 +47,19 @@ export default function Monitor(props: {
     setBusy(false);
   };
   onCleanup(cancel);
+  // Scope invalidation can also come from cross-tab sign-out without changing
+  // the local user/account signals. Drop the whole workspace in that case.
+  createEffect(() => {
+    const opened = session();
+    if (!opened) return;
+    const expired = () => {
+      setSession(undefined);
+      setError("Your Monitor connection ended. Unlock your keys to reconnect.");
+    };
+    opened.scope.signal.addEventListener("abort", expired, { once: true });
+    onCleanup(() => opened.scope.signal.removeEventListener("abort", expired));
+    if (opened.scope.signal.aborted) expired();
+  });
   // Keys opened for one user and account never outlive a switch.
   let opening = true;
   createEffect(
@@ -163,27 +170,6 @@ export default function Monitor(props: {
     } finally {
       if (attempt === current) setBusy(false);
     }
-  };
-
-  // Restoring a removed sandbox identity is an explicit owner choice.
-  const shell = (opened: OpenedMonitor) => (name: string) => {
-    const rows = props.session.inventory().value ?? [];
-    const opener = shellOpener(opened, rows, name);
-    if (!opener) return undefined;
-    return (async (size, handlers, signal) => {
-      try {
-        return await opener(size, handlers, signal);
-      } catch (cause) {
-        if (
-          !(cause instanceof RestoreRequired) ||
-          !confirm(
-            `${cause.message}\n\nRestore ${name}'s access to this Monitor?`,
-          )
-        )
-          throw cause;
-        return shellOpener(opened, rows, name, true)!(size, handlers, signal);
-      }
-    }) satisfies NonNullable<ReturnType<typeof shellOpener>>;
   };
 
   return (
@@ -321,41 +307,12 @@ export default function Monitor(props: {
         }
       >
         {(opened) => (
-          <>
-            <Show when={notice()}>
-              <p class="start-notice" role="alert">
-                {notice()}
-              </p>
-            </Show>
-            <App
-              monitorInfo={{ name: opened.row.name }}
-              terminalHome="/"
-              client={opened.client}
-              snapshot={opened.snapshot}
-              shell={shell(opened)}
-              sandboxesLoading={() =>
-                linking() || (!!inventory().loading && !inventory().value)
-              }
-              candidates={() =>
-                sandboxCandidates(opened, props.session.inventory().value ?? [])
-              }
-              accept={(name, restore) =>
-                acceptSandbox(
-                  opened,
-                  props.session.inventory().value ?? [],
-                  name,
-                  restore,
-                )
-              }
-              tinfoilApiKey={async () => {
-                const { key } = (await opened.scope.api("/api/keys/", {
-                  method: "POST",
-                  body: { name: opened.row.name },
-                })) as { key: string };
-                return key;
-              }}
-            />
-          </>
+          <Workspace
+            monitor={opened}
+            session={props.session}
+            linking={linking()}
+            notice={notice()}
+          />
         )}
       </Show>
     </div>

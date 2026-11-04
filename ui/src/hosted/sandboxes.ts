@@ -372,10 +372,11 @@ export async function acceptSandbox(
   rows: Container[],
   name: string,
   restore: boolean,
+  signal?: AbortSignal,
 ) {
   const row = rows.find((r) => r.name === name && r.repo === SANDBOX_REPO);
   if (!row) throw new Error(`${name} is no longer in this account.`);
-  await connectSandbox({ monitor, id: row.id, restore });
+  await connectSandbox({ monitor, id: row.id, restore, signal });
 }
 
 // The hosted shell capability: opening a shell first connects the sandbox.

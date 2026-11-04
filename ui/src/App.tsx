@@ -10,21 +10,13 @@ import {
   lazy,
   onCleanup,
   onMount,
-  untrack,
 } from "solid-js";
 import * as owner from "./owner.js";
-import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
+import { MonitorProvider, useMonitor, type MonitorConnection } from "./monitor";
 import { Activity, RequestDetail } from "./Activity";
 import { Agents, AddAgent } from "./Agents";
 import { AddConnection, Connections, DeviceSignInDialog } from "./Connections";
-import {
-  ConnectorIcon,
-  Empty,
-  Icon,
-  Modal,
-  ShellSplit,
-  href,
-} from "./components";
+import { ConnectorIcon, Empty, Icon, Modal, href } from "./components";
 
 const Settings = lazy(() =>
   import("./Settings").then((m) => ({ default: m.Settings })),
@@ -55,7 +47,7 @@ const parse = (path: string) => {
 };
 const isDialog = (path: string) => ["pair", "add"].includes(parse(path)[0]);
 
-export default function App(props: MonitorOptions) {
+export default function App(props: { connection?: MonitorConnection }) {
   return (
     <ErrorBoundary
       fallback={(error) => (
@@ -66,7 +58,7 @@ export default function App(props: MonitorOptions) {
         </div>
       )}
     >
-      <MonitorProvider {...props}>
+      <MonitorProvider connection={props.connection}>
         <Shell />
       </MonitorProvider>
     </ErrorBoundary>
@@ -110,16 +102,10 @@ function Shell() {
         ? "agents"
         : kind() === "rules"
           ? "activity"
-          : [
-                "account",
-                "accounts",
-                "connection",
-                "catalog",
-              ].includes(kind())
+          : ["account", "accounts", "connection", "catalog"].includes(kind())
             ? "connections"
             : kind()
-    ]?.[0] ??
-    (kind() === "request" ? "Request" : args()[0] || "Monitor");
+    ]?.[0] ?? (kind() === "request" ? "Request" : args()[0] || "Monitor");
   const count = (section: string) =>
     section === "activity"
       ? m.pendingCount()
@@ -176,109 +162,87 @@ function Shell() {
   return (
     <>
       <Show when={ready()} fallback={<Gate />}>
-        <ShellSplit
-          shell={
-            m.shell()
-              ? {
-                  name: m.shell()!,
-                  message: "",
-                  // Only choosing another sandbox replaces an open shell.
-                  open: untrack(() => m.shellFor(m.shell()!)),
-                }
-              : undefined
-          }
-          onClose={() => m.setShell()}
-        >
-          <div id="app" classList={{ "navigation-open": mobile() }}>
-            <aside id="navigation" aria-label="Monitor navigation">
-              <a class="brand" href="#activity">
-                <img
-                  src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
-                  alt="Tinfoil"
-                />
-                <span class="brand-context">
-                  <span>Monitor</span>
-                  <Show when={m.options.monitorInfo}>
-                    {(info) => <small title={info().name}>{info().name}</small>}
-                  </Show>
-                </span>
-              </a>
-              <button
-                class="mobile-toggle"
-                aria-label="Toggle navigation"
-                aria-controls="tree"
-                aria-expanded={mobile()}
-                onClick={() => setMobile(!mobile())}
-              >
-                Menu
-              </button>
-              <nav id="tree" aria-label="Management">
-                <For each={["agents", "activity", "connections", "settings"]}>
-                  {(key) => <NavItem key={key} />}
-                </For>
-              </nav>
-              <MonitorFooter />
-            </aside>
-            <main id="workspace" tabIndex={-1}>
-              <header id="page-header">
-                <div class="page-heading">
-                  <div>
-                    <h1>{title()}</h1>
-                    <p>
-                      {
-                        sections[
-                          ["agent", "agent-settings"].includes(kind())
-                            ? "agents"
-                            : kind() === "rules"
-                              ? "activity"
-                              : [
-                                    "account",
-                                    "accounts",
-                                    "connection",
-                                    "catalog",
-                                  ].includes(kind())
-                                ? "connections"
-                                : kind()
-                        ]?.[1]
-                      }
-                    </p>
-                  </div>
-                  <div class="header-actions">
-                    <button
-                      aria-label="Refresh monitor"
-                      aria-busy={m.loading()}
-                      onClick={() => void m.refresh()}
-                    >
-                      <Icon name="refresh" />
-                      Refresh
-                    </button>
-                  </div>
+        <div id="app" classList={{ "navigation-open": mobile() }}>
+          <aside id="navigation" aria-label="Monitor navigation">
+            <a class="brand" href="#activity">
+              <img
+                src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
+                alt="Tinfoil"
+              />
+              <span class="brand-context">
+                <span>Monitor</span>
+              </span>
+            </a>
+            <button
+              class="mobile-toggle"
+              aria-label="Toggle navigation"
+              aria-controls="tree"
+              aria-expanded={mobile()}
+              onClick={() => setMobile(!mobile())}
+            >
+              Menu
+            </button>
+            <nav id="tree" aria-label="Management">
+              <For each={["agents", "activity", "connections", "settings"]}>
+                {(key) => <NavItem key={key} />}
+              </For>
+            </nav>
+          </aside>
+          <main id="workspace" tabIndex={-1}>
+            <header id="page-header">
+              <div class="page-heading">
+                <div>
+                  <h1>{title()}</h1>
+                  <p>
+                    {
+                      sections[
+                        ["agent", "agent-settings"].includes(kind())
+                          ? "agents"
+                          : kind() === "rules"
+                            ? "activity"
+                            : [
+                                  "account",
+                                  "accounts",
+                                  "connection",
+                                  "catalog",
+                                ].includes(kind())
+                              ? "connections"
+                              : kind()
+                      ]?.[1]
+                    }
+                  </p>
                 </div>
-              </header>
-              <div id="page-content">
-                <Show when={page()} keyed>
-                  {(path) => (
-                    <Page
-                      path={path}
-                      theme={theme()}
-                      onThemeChange={setTheme}
-                    />
-                  )}
-                </Show>
-                <div id="notices">
-                  <ApprovalBar />
-                  <Show when={m.message() && !dialogRoute()}>
-                    <div id="toast" role="status">
-                      {m.message()}
-                    </div>
-                  </Show>
+                <div class="header-actions">
+                  <button
+                    aria-label="Refresh monitor"
+                    aria-busy={m.loading()}
+                    onClick={() => void m.refresh()}
+                  >
+                    <Icon name="refresh" />
+                    Refresh
+                  </button>
                 </div>
               </div>
-            </main>
-            <CreationDialog path={dialogRoute()} close={close} />
-            <DeviceSignInDialog attempt={m.deviceSignIn()} />
-          </div>
-        </ShellSplit>
+            </header>
+            <div id="page-content">
+              <Show when={page()} keyed>
+                {(path) => (
+                  <Page path={path} theme={theme()} onThemeChange={setTheme} />
+                )}
+              </Show>
+              <div id="notices">
+                <ApprovalBar />
+                <Show when={m.message() && !dialogRoute()}>
+                  <div id="toast" role="status">
+                    {m.message()}
+                  </div>
+                </Show>
+              </div>
+            </div>
+          </main>
+          <CreationDialog path={dialogRoute()} close={close} />
+          <DeviceSignInDialog attempt={m.deviceSignIn()} />
+        </div>
       </Show>
       <Show when={m.busy()}>
         <div id="saving" role="status">
@@ -291,7 +255,13 @@ function Shell() {
 function ApprovalBar() {
   const m = useMonitor();
   const pending = createMemo(() =>
-    owner.pendingSoonest(m.records().filter((r) => owner.needsOwner(r) && !owner.isConnectionProposalRecord(r))),
+    owner.pendingSoonest(
+      m
+        .records()
+        .filter(
+          (r) => owner.needsOwner(r) && !owner.isConnectionProposalRecord(r),
+        ),
+    ),
   );
   const proposals = m.proposals;
   const total = m.pendingCount;
@@ -300,41 +270,47 @@ function ApprovalBar() {
       <div class="approval-bar" role="status" aria-label="Pending approvals">
         <Icon name="activity" />
         <div class="approval-copy">
-          <strong>{total() === 1 ? "1 item needs your approval" : `${total()} items need your approval`}</strong>
-          <p>{proposals().length
-            ? `${proposals().length} proposed change${proposals().length === 1 ? "" : "s"}${pending().length ? ` · ${pending().length} request${pending().length === 1 ? "" : "s"}` : ""}`
-            : `${pending()[0].facts.principal.name} · ${owner.requestTitle(pending()[0])}`}</p>
+          <strong>
+            {total() === 1
+              ? "1 item needs your approval"
+              : `${total()} items need your approval`}
+          </strong>
+          <p>
+            {proposals().length
+              ? `${proposals().length} proposed change${proposals().length === 1 ? "" : "s"}${pending().length ? ` · ${pending().length} request${pending().length === 1 ? "" : "s"}` : ""}`
+              : `${pending()[0].facts.principal.name} · ${owner.requestTitle(pending()[0])}`}
+          </p>
         </div>
         <div class="approval-actions">
           <Show when={proposals().length}>
-            <a class="button" href={proposals().length === 1 ? `#connections/pending/${encodeURIComponent(proposals()[0].id)}` : "#connections/pending"}>
-              {proposals().length === 1 ? "Review change" : "Review changes"} <Icon name="arrow" />
+            <a
+              class="button"
+              href={
+                proposals().length === 1
+                  ? `#connections/pending/${encodeURIComponent(proposals()[0].id)}`
+                  : "#connections/pending"
+              }
+            >
+              {proposals().length === 1 ? "Review change" : "Review changes"}{" "}
+              <Icon name="arrow" />
             </a>
           </Show>
           <Show when={pending().length}>
-            <a class="button" onClick={() => m.setActivity({ scope: "", page: 0, anchor: 0 })}
-              href={pending().length === 1 ? href("activity", "request", pending()[0].id) : "#activity"}>
-              {pending().length === 1 ? "Review request" : "Review requests"} <Icon name="arrow" />
+            <a
+              class="button"
+              onClick={() => m.setActivity({ scope: "", page: 0, anchor: 0 })}
+              href={
+                pending().length === 1
+                  ? href("activity", "request", pending()[0].id)
+                  : "#activity"
+              }
+            >
+              {pending().length === 1 ? "Review request" : "Review requests"}{" "}
+              <Icon name="arrow" />
             </a>
           </Show>
         </div>
       </div>
-    </Show>
-  );
-}
-
-function MonitorFooter() {
-  const m = useMonitor();
-  return (
-    <Show when={m.options.terminalHome}>
-      {(home) => (
-        <footer class="monitor-footer">
-          <a class="nav-item back-terminal" href={home()} link>
-            <Icon name="arrow" />
-            <span>Back</span>
-          </a>
-        </footer>
-      )}
     </Show>
   );
 }
@@ -370,7 +346,9 @@ function Page(props: {
       >
         <Connections
           catalog={kind === "catalog" || name === "catalog"}
-          proposal={kind === "connections" && name === "pending" ? request : undefined}
+          proposal={
+            kind === "connections" && name === "pending" ? request : undefined
+          }
         />
       </Match>
       <Match when={kind === "connection" || kind === "account"}>
@@ -463,14 +441,13 @@ function Gate() {
     // Local dev (bun run dev) only: a prefilled passphrase so the dev
     // server unlocks with one click. Stripped from production builds.
     [key, setKey] = createSignal(import.meta.env.DEV ? "testtesttesttest" : "");
-  const finish = (tinfoilApiKey?: () => Promise<string> | string) =>
+  const finish = (tinfoilApiKey?: string) =>
     m.busy() ||
-    m.perform(
-      async (client) =>
-        client.onboard(m.view()!, "known_only", undefined, {
-          allowPaidInference: true,
-          tinfoilApiKey: await tinfoilApiKey?.(),
-        }),
+    m.perform(async (client) =>
+      client.onboard(m.view()!, "known_only", undefined, {
+        allowPaidInference: true,
+        tinfoilApiKey,
+      }),
     );
   return (
     <div id="gate">
@@ -530,11 +507,7 @@ function Gate() {
           </Show>
         </Match>
         <Match when={m.view() && !owner.onboarded(m.view()!)}>
-          <Onboarding
-            busy={m.busy()}
-            generate={m.options.tinfoilApiKey}
-            onFinish={finish}
-          />
+          <Onboarding busy={m.busy()} onFinish={finish} />
           <Show when={m.error()}>
             <p role="alert">{m.error()}</p>
           </Show>
@@ -545,8 +518,7 @@ function Gate() {
 }
 function Onboarding(props: {
   busy: boolean;
-  generate?: () => Promise<string>;
-  onFinish(tinfoilApiKey?: () => Promise<string> | string): void;
+  onFinish(tinfoilApiKey?: string): void;
 }) {
   const [tinfoilKey, setTinfoilKey] = createSignal("");
   return (
@@ -554,7 +526,7 @@ function Onboarding(props: {
       class="onboarding"
       onSubmit={(e) => {
         e.preventDefault();
-        props.onFinish(props.generate ?? tinfoilKey);
+        props.onFinish(tinfoilKey());
       }}
     >
       <header class="onboarding-heading">
@@ -576,51 +548,40 @@ function Onboarding(props: {
           workloads.
         </p>
       </header>
-      <Show when={!props.generate}>
-        <fieldset class="onboarding-key" disabled={props.busy}>
-          <div class="onboarding-key-label">
-            <label for="tinfoil-api-key">API key</label>
-            <a
-              href="https://dash.tinfoil.sh/?tab=api-keys"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Get an API key
-              <Icon name="external" />
-            </a>
-          </div>
-          <input
-            id="tinfoil-api-key"
-            type="password"
-            required
-            autofocus
-            pattern={".*\\S.*"}
-            title="Enter your Tinfoil API key"
-            placeholder="tk-…"
-            autocomplete="off"
-            spellcheck={false}
-            aria-describedby="tinfoil-key-help"
-            value={tinfoilKey()}
-            onInput={(e) => setTinfoilKey(e.currentTarget.value)}
-          />
-          <p id="tinfoil-key-help" class="onboarding-key-help">
-            <Icon name="rules" />
-            Your key stays in Monitor, hidden from your sandboxes.
-          </p>
-        </fieldset>
-      </Show>
-      <button class="primary" disabled={props.busy}>
-        {props.busy
-          ? "Saving…"
-          : props.generate
-            ? "Generate an API key automatically"
-            : "Add the Tinfoil connection"}
-      </button>
-      <Show when={props.generate}>
-        <p class="onboarding-note">
+      <fieldset class="onboarding-key" disabled={props.busy}>
+        <div class="onboarding-key-label">
+          <label for="tinfoil-api-key">API key</label>
+          <a
+            href="https://dash.tinfoil.sh/?tab=api-keys"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Get an API key
+            <Icon name="external" />
+          </a>
+        </div>
+        <input
+          id="tinfoil-api-key"
+          type="password"
+          required
+          autofocus
+          pattern={".*\\S.*"}
+          title="Enter your Tinfoil API key"
+          placeholder="tk-…"
+          autocomplete="off"
+          spellcheck={false}
+          aria-describedby="tinfoil-key-help"
+          value={tinfoilKey()}
+          onInput={(e) => setTinfoilKey(e.currentTarget.value)}
+        />
+        <p id="tinfoil-key-help" class="onboarding-key-help">
+          <Icon name="rules" />
           Your key stays in Monitor, hidden from your sandboxes.
         </p>
-      </Show>
+      </fieldset>
+      <button class="primary" disabled={props.busy}>
+        {props.busy ? "Saving…" : "Add the Tinfoil connection"}
+      </button>
       <div class="onboarding-actions">
         <button
           type="button"
