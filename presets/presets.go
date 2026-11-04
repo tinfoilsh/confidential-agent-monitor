@@ -25,6 +25,7 @@ type Preset struct {
 
 type Catalog struct {
 	Group       string                     `json:"group,omitempty"`
+	Warning     string                     `json:"warning,omitempty"`
 	ReplacedBy  string                     `json:"replaced_by,omitempty"`
 	Actions     map[string]facts.Action    `json:"actions,omitempty"`
 	Connections map[string]json.RawMessage `json:"connections,omitempty"`

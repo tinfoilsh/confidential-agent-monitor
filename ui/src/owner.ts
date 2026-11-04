@@ -10,19 +10,14 @@ export type PolicyPreset = "open" | "known_only" | "offline";
 export type Audience = "me" | "team" | "anyone";
 export type Trust = "trusted" | "untrusted";
 export type Decision = "once" | "save" | "deny";
-export type ReviewerConfig = {
-  connection: string;
-  model: string;
-  instructions: string;
-};
 export type ApprovalAnswer = {
-  by: "owner" | "tinfoil";
-  decision: Decision | "escalate";
+  by: "owner";
+  decision: Decision;
   reason?: string;
   time: string;
 };
 export type RequestState =
-  "pending" | "allowed" | "approved" | "refused" | "denied" | "expired";
+  "pending" | "allowed" | "approved" | "refused" | "denied" | "expired" | "outdated";
 export type Access = {
   level: Level;
   actions?: Record<string, Mode>;
@@ -41,7 +36,6 @@ export type Rule = {
 export type Identity = {
   key: string;
   sandbox?: { source: string; instance_id: string };
-  reviewer?: "" | "tinfoil";
   effects?: Record<string, Mode>;
   routes?: boolean;
   accounts?: Record<string, Access>;
@@ -74,6 +68,7 @@ export type PresetAction = { title: string; effects?: string[] };
 export type Preset = {
   title: string;
   group?: string;
+  warning?: string;
   replaced_by?: string;
   defaults?: { contents?: Audience; sends?: Audience; strangers?: boolean };
   fields?: PresetField[];
@@ -98,7 +93,6 @@ export type View = {
   host_id: string;
   ca: string;
   config: {
-    reviewer?: ReviewerConfig;
     allow_paid_inference?: boolean;
     effects?: Record<string, Mode>;
     default_access?: Record<string, Access>;
@@ -106,7 +100,6 @@ export type View = {
     identities?: Record<string, Identity> | null;
     accounts?: Record<string, Account> | null;
     policies?: Record<string, string> | null;
-    presets?: Record<string, Json> | null;
     lattices?: { confidentiality?: boolean; integrity?: boolean };
     allow_networks?: string[] | null;
   };
@@ -120,20 +113,12 @@ export type View = {
   vocabulary: Record<string, { change?: boolean; ask?: boolean }>;
 };
 export type RequestDetails = {
-  http?: {
-    method: string;
-    host: string;
-    path: string;
-    origin?: string;
-    query?: Record<string, Json>;
-    body_kind?: string;
-  };
-  graphql?: { kind: string; fields: { name: string }[] };
+  http?: { method: string; host: string; path: string };
   mcp?: { tool: string };
   smtp?: { to: string[] };
   mail?: { subject?: string };
   imap?: { command: string; args: string };
-  policy?: { source_diff: string; effective_diff: string };
+  policy?: { source_diff: string; effective_diff?: string };
 };
 export type RequestRecord = {
   invalid?: boolean;
@@ -147,12 +132,12 @@ export type RequestRecord = {
   grant?: { [key: string]: Json };
   definition?: string;
   savingDecision?: boolean;
-  reviewer?: "" | "tinfoil";
   reviews?: ApprovalAnswer[];
   segment?: string;
+  changes?: Change[];
   facts: {
     title?: string;
-    principal: { name: string };
+    principal: { key?: string; name: string };
     account: string;
     service?: string;
     operation?: { id: string; action: string; effects?: string[] };
@@ -163,19 +148,6 @@ export type RequestRecord = {
 export type Change = { path: string[]; value?: Json; delete?: boolean };
 export type Snapshot = { view: View; requests: RequestRecord[] };
 export type PolicyDiff = { source_diff: string; effective_diff: string };
-export type BrowserFrame = {
-  owner: boolean;
-  frame?: string;
-  url?: string;
-  screenshot?: string;
-  error?: string;
-  tabs?: { id: string; title: string; url: string; active: boolean }[];
-};
-export type PresetFile = {
-  title?: string;
-  catalog?: Json;
-  http?: { operations?: { [key: string]: Json } } & { [key: string]: Json };
-} & { [key: string]: Json };
 export type Request = (
   method: "GET" | "POST",
   path: string,
@@ -214,7 +186,6 @@ export type OwnerApi = {
     label: { trust: Trust; audience: Audience },
     signal?: AbortSignal,
   ): Promise<View>;
-  preset(name: string, signal?: AbortSignal): Promise<PresetFile>;
   policy(
     effective?: boolean,
     signal?: AbortSignal,
@@ -235,11 +206,6 @@ export type OwnerApi = {
       | { code?: string; client_id?: string; error?: string; cancel?: boolean },
     signal?: AbortSignal,
   ): Promise<View | { pending: true } | null>;
-  browser(
-    name: string,
-    body?: { [key: string]: Json | undefined },
-    signal?: AbortSignal,
-  ): Promise<BrowserFrame>;
   icons(signal?: AbortSignal): Promise<(preset: string) => ConnectorIcon>;
 };
 /** An authenticated owner socket that carries whole messages. */
@@ -362,10 +328,8 @@ export const CATALOG_GROUPS: { [group: string]: string } = {
   api: "API",
   mcp: "MCP",
   protocol: "Protocol",
+  generic: "Generic",
 };
-// Not in this release: the Monitor-hosted browser (remote sign-in and
-// browsing sessions). The connector stays; the UI never offers or shows it.
-export const HIDDEN_PRESETS = ["browser"];
 export const COMMON_PRESETS = [
   "tinfoil",
   "anthropic",
@@ -373,18 +337,11 @@ export const COMMON_PRESETS = [
   "github",
   "gmail",
   "email",
-  "web",
-  "ssh",
-  "tcp",
 ];
+export const GENERIC_PRESETS = ["web", "ssh", "tcp", "custom_api", "mcp"];
 export const CREDENTIAL_STATUS: { [kind: string]: string } = {
   "oauth-required": "Sign-in required",
   unset: "Not configured",
-};
-const DEFAULT_REVIEWER = {
-  model: "gpt-oss-120b",
-  instructions:
-    "Approve routine, reversible actions. Ask me before payments, deletion, publishing, sharing private data, or changes to access. Deny requests that clearly violate these instructions. Ask me when context is missing.",
 };
 export const POLICY_PRESETS: Record<
   PolicyPreset,
@@ -404,37 +361,6 @@ export const POLICY_PRESETS: Record<
     description:
       "Block all requests. Nothing in a sandbox can talk to anything.",
   },
-};
-// A new preset starts as one bearer-token API; the owner sets its origin, slots and operations.
-export const NEW_PRESET: PresetFile = {
-  catalog: {
-    group: "api",
-    fields: [
-      {
-        key: "token",
-        label: "API token",
-        secret: true,
-        path: ["connections", "", "http", "secrets", "token"],
-      },
-    ],
-    connections: {
-      "": {
-        http: {
-          slots: [
-            {
-              value: "token",
-              origin: "https://api.example.com",
-              path: "/",
-              header: "Authorization",
-              prefix: "Bearer ",
-            },
-          ],
-        },
-      },
-    },
-    defaults: { contents: "me", strangers: true, sends: "me" },
-  },
-  http: { operations: {} },
 };
 const LOOPBACK = ["localhost", "127.0.0.1", "[::1]"];
 
@@ -664,8 +590,6 @@ export function ownerApi(
       post(`/requests/${encodeURIComponent(id)}`, { decision }, signal),
     label: (name, label, signal) =>
       snapshot("POST", `/labels/${encodeURIComponent(name)}`, label, signal),
-    preset: (name, signal) =>
-      get(`/presets/${encodeURIComponent(name)}`, signal),
     policy: (effective, signal) =>
       get(effective ? "/policy?effective" : "/policy", signal),
     previewPolicy: (source, signal) =>
@@ -685,13 +609,6 @@ export function ownerApi(
         typeof result === "string" ? { code: result } : result,
         signal,
       ),
-    browser: (name, body, signal) =>
-      request(
-        body ? "POST" : "GET",
-        `/connections/${encodeURIComponent(name)}/browser`,
-        body,
-        signal,
-      ) as Promise<BrowserFrame>,
     icons: async (signal) => {
       const manifest = await get<IconManifest>(ICON_MANIFEST, signal);
       return (preset) => connectorIcon(manifest, preset, base);
@@ -778,12 +695,8 @@ export function applyChanges<T extends object>(
   return target;
 }
 
-// previewChanges shows edits before the server confirms them, including edited presets' catalogs.
-export function previewChanges(
-  view: View,
-  changes: Change[],
-  shipped: { [name: string]: PresetFile } = {},
-): View {
+// previewChanges shows ordinary configuration edits before the server confirms them.
+export function previewChanges(view: View, changes: Change[]): View {
   // Fork only edited paths. Large preset catalogs remain shared with the confirmed view.
   const config = { ...view.config },
     copied = new WeakSet<object>([config]);
@@ -811,29 +724,6 @@ export function previewChanges(
     applyChanges(config, [change]);
   }
   view.config = config;
-  const presets = new Set(
-    changes
-      .filter((c) => c.path[0] === "presets" && c.path.length > 1)
-      .map((c) => c.path[1]),
-  );
-  if (presets.size) view.presets = { ...view.presets };
-  for (const name of presets) {
-    const file = (view.config.presets?.[name] ?? shipped[name]) as
-      PresetFile | undefined;
-    if (!file) continue; // A shipped preset not fetched yet needs the server's resolved catalog.
-    const previous = view.presets[name] ?? view.presets.custom,
-      catalog = (file.catalog ?? {}) as Partial<Preset>;
-    view.presets[name] = {
-      ...previous,
-      ...catalog,
-      title: typeof file.title === "string" ? file.title : name,
-      fields: Array.isArray(catalog.fields)
-        ? catalog.fields
-        : (previous?.fields ?? []),
-      actions: catalog.actions ?? {},
-      operations: (file.http?.operations ?? {}) as Preset["operations"],
-    };
-  }
   return view;
 }
 
@@ -848,16 +738,11 @@ export const lattices = (view: View) => ({
   confidentiality: view.config.lattices?.confidentiality ?? true,
   integrity: view.config.lattices?.integrity ?? false,
 });
+const UNKNOWN_PRESET: Preset = { title: "Connection" };
 export const presetOf = (view: View, account: string): Preset =>
-  view.presets[accounts(view)[account]?.preset] ?? view.presets.custom;
+  view.presets[accounts(view)[account]?.preset] ?? UNKNOWN_PRESET;
 export const connectionName = (account: string, key: string) =>
   key ? `${account}-${key}` : account;
-export const tinfoilConnection = (view: View): string | undefined =>
-  Object.entries(accounts(view)).flatMap(([account, config]) =>
-    Object.entries(config.connections ?? {})
-      .filter(([, kinds]) => kinds.tinfoil)
-      .map(([key]) => connectionName(account, key)),
-  )[0];
 const fill = (text: string, scope?: { [key: string]: any }) =>
   text.replace(/\{(\w+)\}/g, (m, k) => scope?.[k] ?? m);
 const filled = <T>(c: T, values?: { [key: string]: any }): T =>
@@ -934,21 +819,25 @@ export const stateAt = (r: RequestRecord, now: number): RequestState =>
   r.state === "pending" && r.expires && Date.parse(r.expires) <= now
     ? "expired"
     : r.state;
-export const needsOwner = (r: RequestRecord) =>
-  r.state === "pending" && !r.reviewer;
+export const needsOwner = (r: RequestRecord) => r.state === "pending";
+export const isConnectionProposalRecord = (r: RequestRecord) =>
+  r.facts.service === "policy-proposal" ||
+  (r.facts.title === "Change connection" && !!r.facts.details?.policy);
 export function reviewStatus(r: RequestRecord): string {
   const last = r.reviews?.at(-1);
-  if (r.state === "pending")
-    return r.reviewer === "tinfoil"
-      ? "Tinfoil is reviewing"
-      : last?.decision === "escalate"
-        ? "Tinfoil needs your decision"
-        : "Needs your approval";
+  if (r.state === "pending") return "Needs your approval";
   if (
     (last || r.savingDecision) &&
     (r.state === "approved" || r.state === "denied")
-  )
-    return `${r.state === "approved" ? "Approved" : "Denied"} by ${!r.savingDecision && last?.by === "tinfoil" ? "Tinfoil" : "you"}`;
+  ) {
+    const outcome =
+      r.state === "approved"
+        ? "Approved"
+        : isConnectionProposalRecord(r)
+          ? "Rejected"
+          : "Denied";
+    return `${outcome} by you`;
+  }
   return r.state.charAt(0).toUpperCase() + r.state.slice(1);
 }
 export const pendingSoonest = (records: RequestRecord[]) =>
@@ -1470,13 +1359,6 @@ export function accountStatus(
   return { state: blocked ? "review" : null, blocked };
 }
 
-export const liveConnection = (view: View, account: string) => {
-  const key = Object.entries(accounts(view)[account]?.connections ?? {}).find(
-    ([, c]) => c.browser,
-  )?.[0];
-  return key == null ? null : connectionName(account, key);
-};
-
 export const fieldPaths = (f: PresetField) => f.paths ?? [f.path!];
 const paths = fieldPaths;
 const fieldsOf = (c?: Preset) => c?.fields ?? [];
@@ -1583,7 +1465,6 @@ export const signInLabel = (view: View, preset: string) =>
     : "Sign in";
 
 export function catalog(view: View) {
-  const custom = ["custom_api", "mcp"].filter((name) => view.presets[name]);
   const counts = new Map<string, number>();
   for (const acc of Object.values(accounts(view))) {
     const replacement = view.presets[acc.preset]?.replaced_by;
@@ -1599,25 +1480,30 @@ export function catalog(view: View) {
   )) {
     // Retired definitions still serve stored credentials and permission names.
     if (preset.replaced_by && view.presets[preset.replaced_by]) continue;
-    if (HIDDEN_PRESETS.includes(name)) continue;
     const group = preset.group ?? "api";
     if (!groups.has(group)) groups.set(group, []);
     groups
       .get(group)!
       .push({ name, title: preset.title, accounts: counts.get(name) ?? 0 });
   }
-  // The ones most people add first lead as "Common"; blank "custom"
-  // presets live under Settings → Advanced, not in the browse list.
+  // The ones most people add first lead as "Common"; broad Generic fallbacks
+  // remain together in their explicit, final catalog group.
   const common: CatalogEntry[] = [];
   for (const entries of groups.values())
     for (let i = entries.length - 1; i >= 0; i--) {
       if (COMMON_PRESETS.includes(entries[i].name))
         common.push(...entries.splice(i, 1));
-      else if (custom.includes(entries[i].name)) entries.splice(i, 1);
     }
   common.sort(
     (a, b) => COMMON_PRESETS.indexOf(a.name) - COMMON_PRESETS.indexOf(b.name),
   );
+  groups.get("generic")?.sort((a, b) => {
+    const rank = (name: string) => {
+      const index = GENERIC_PRESETS.indexOf(name);
+      return index < 0 ? GENERIC_PRESETS.length : index;
+    };
+    return rank(a.name) - rank(b.name) || a.title.localeCompare(b.title);
+  });
   return [
     ...(common.length
       ? [{ group: "common", title: "Common", presets: common }]
@@ -1790,94 +1676,6 @@ export function tinfoilSetup(view: View, account: string) {
   );
 }
 
-// Only valid, unmatched HTTP input can become a new operation, including policy refusals.
-const unmatchedHTTP = (r?: RequestRecord) =>
-  r?.facts?.details?.http && !r.invalid && r.facts.operation == null;
-export const draftable = (view: View, r: RequestRecord): string | null =>
-  unmatchedHTTP(r) &&
-  accounts(view)[r.facts.account] &&
-  presetOf(view, r.facts.account).operations
-    ? accounts(view)[r.facts.account].preset
-    : null;
-
-// The draft matches only this exact path; the owner turns segments into {parameters} and sets its effects and scope.
-export function draftOperation(
-  e: RequestDetails,
-): { id: string } & { [key: string]: Json } {
-  const h = e.http!,
-    read = ["GET", "HEAD"].includes(h.method),
-    params = Object.keys(h.query ?? {});
-  return {
-    id: `${h.method} ${h.path}`,
-    action: read ? "read" : "write",
-    effects: [read ? "read" : "write"],
-    method: h.method,
-    origin: h.origin!,
-    path: h.path,
-    ...(params.length && { params }),
-    ...(h.body_kind !== "none" && {
-      body: ["json", "form"].includes(h.body_kind!) ? h.body_kind! : "any",
-    }),
-    ...(e.graphql?.fields?.length === 1 && {
-      body: "graphql",
-      graphql: { operation: e.graphql.kind, field: e.graphql.fields[0].name },
-    }),
-    scope: {},
-  };
-}
-
-export function withDraft(file: PresetFile, r?: RequestRecord): PresetFile {
-  file = clone(file);
-  if (unmatchedHTTP(r)) {
-    const { id, ...operation } = draftOperation(r!.facts.details!);
-    file.http = {
-      ...file.http,
-      operations: { ...(file.http?.operations ?? {}), [id]: operation },
-    };
-  }
-  return file;
-}
-
-export const newPreset = (name: string): PresetFile => ({
-  title: name,
-  ...structuredClone(NEW_PRESET),
-});
-
-// Preset files keep one field, action and operation per line, as the shipped files do.
-const EXPANDED = [
-  "",
-  "catalog",
-  "catalog.fields",
-  "catalog.actions",
-  "http",
-  "http.operations",
-];
-const compact = (v: unknown): string =>
-  Array.isArray(v)
-    ? `[${v.map(compact).join(", ")}]`
-    : v && typeof v === "object"
-      ? `{${Object.entries(v)
-          .map(([k, x]) => `${JSON.stringify(k)}: ${compact(x)}`)
-          .join(", ")}}`
-      : JSON.stringify(v);
-export function presetText(v: unknown, path = "", indent = ""): string {
-  if (!EXPANDED.includes(path) || v === null || typeof v !== "object")
-    return compact(v);
-  const [open, close, items] = Array.isArray(v)
-    ? ["[", "]", v.map((x) => presetText(x, path + ".*", indent + "  "))]
-    : [
-        "{",
-        "}",
-        Object.entries(v).map(
-          ([k, x]) =>
-            `${JSON.stringify(k)}: ${presetText(x, path ? `${path}.${k}` : k, indent + "  ")}`,
-        ),
-      ];
-  return items.length
-    ? `${open}\n${indent}  ${items.join(`,\n${indent}  `)}\n${indent}${close}`
-    : open + close;
-}
-
 // The starting choice only produces the initial policy. Persist completion and
 // the effective configuration, without retaining a preset to reapply later.
 function onboardingChanges(
@@ -2033,26 +1831,6 @@ export const edits = {
   setRoutes: (name: string, routes: boolean): Change[] => [
     { path: ["identities", name, "routes"], value: routes },
   ],
-  setReviewer: (view: View, name: string, on: boolean): Change[] => [
-    ...(on && !view.config.reviewer
-      ? [
-          {
-            path: ["reviewer"],
-            value: {
-              ...DEFAULT_REVIEWER,
-              connection: tinfoilConnection(view)!,
-            },
-          },
-        ]
-      : []),
-    {
-      path: ["identities", name, "reviewer"],
-      ...(on ? { value: "tinfoil" } : { delete: true }),
-    },
-  ],
-  setReviewerInstructions: (text: string): Change[] => [
-    { path: ["reviewer", "instructions"], value: text.trim() },
-  ],
   // An action set to null inherits again.
   setAccess: (
     name: string,
@@ -2085,12 +1863,9 @@ export const edits = {
     },
   ],
   copySettings: (view: View, from: string, name: string): Change[] =>
-    ["accounts", "rules", "effects", "reviewer"].map((key) => ({
+    ["accounts", "rules", "effects"].map((key) => ({
       path: ["identities", name, key],
-      value: clone(
-        identities(view)[from]?.[key as keyof Identity] ??
-          (key === "reviewer" ? "" : {}),
-      ),
+      value: clone(identities(view)[from]?.[key as keyof Identity] ?? {}),
     })),
   removeRule: (name: string, id: string): Change[] => [
     { path: ["identities", name, "rules", id], delete: true },
@@ -2122,29 +1897,18 @@ export const edits = {
       },
     }),
   // Identities may not name a missing account, so removing one also clears it from every agent.
-  removeAccount: (view: View, account: string) => {
-    const reviewer = Object.keys(
-      accounts(view)[account]?.connections ?? {},
-    ).some(
-      (key) =>
-        connectionName(account, key) === view.config.reviewer?.connection,
-    );
-    return sourceChanges({
-      ...(reviewer ? { reviewer: null } : {}),
+  removeAccount: (view: View, account: string) =>
+    sourceChanges({
       accounts: { [account]: null },
       policies: { [account]: null },
       default_access: { [account]: null },
       identities: Object.fromEntries(
-        Object.keys(identities(view)).map((n) => [
-          n,
-          {
-            accounts: { [account]: null },
-            ...(reviewer ? { reviewer: null } : {}),
-          },
+        Object.keys(identities(view)).map((name) => [
+          name,
+          { accounts: { [account]: null } },
         ]),
       ),
-    });
-  },
+    }),
   // values holds every setup field read with readField; oauth names the fields that sign in instead of taking a token.
   addAccount(
     view: View,
@@ -2224,15 +1988,17 @@ export const edits = {
       throw new Error(
         "An account with that name already exists. Choose another name.",
       );
-    if (!token.trim()) throw new Error("Enter the API key or token.");
+    const http: {
+      slots: { [key: string]: string }[];
+      secrets?: { token: string };
+    } = { slots: [apiSlot(api)] };
+    if (token.trim()) http.secrets = { token };
     const body: { [key: string]: unknown } = {
       accounts: {
         [name]: {
           preset: "custom_api",
           ...answers,
-          connections: {
-            "": { http: { slots: [apiSlot(api)], secrets: { token } } },
-          },
+          connections: { "": { http } },
         },
       },
     };
@@ -2314,18 +2080,6 @@ export const edits = {
       ...removals,
     ];
   },
-  // Operations missing from an edited preset are disabled rather than left to the shipped definition.
-  savePreset(name: string, text: string, previous?: PresetFile): Change[] {
-    const value = JSON.parse(text);
-    for (const id of Object.keys(previous?.http?.operations ?? {})) {
-      if (value.http?.operations && !Object.hasOwn(value.http.operations, id))
-        value.http.operations[id] = { enabled: false };
-    }
-    return [{ path: ["presets", name], value }];
-  },
-  removePreset: (name: string): Change[] => [
-    { path: ["presets", name], delete: true },
-  ],
 };
 
 // Setup guides for connecting tools. href maps a route such as ["pair"] or ["agent-settings", name] to a link, which

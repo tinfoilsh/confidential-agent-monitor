@@ -1,13 +1,14 @@
 {
   "title": "Web",
   "catalog": {
-    "group": "protocol",
+    "group": "generic",
+    "warning": "Allows requests to websites that do not have a dedicated connection. This can be used to exfiltrate arbitrary information; be careful.",
     "actions": {
-      "browse": {"title": "Browse", "effects": ["read"]},
-      "submit": {"title": "Submit forms and post", "effects": ["send"]}
+      "browse": { "title": "Browse", "effects": ["read"] },
+      "submit": { "title": "Submit forms and post", "effects": ["send"] }
     },
-    "connections": {"": {"http": {"hosts": ["*"]}}},
-    "defaults": {"contents": "anyone", "sends": "anyone", "strangers": true},
+    "connections": { "": { "http": { "hosts": ["*"] } } },
+    "defaults": { "contents": "anyone", "sends": "anyone", "strangers": true },
     "fields": []
   }
 }

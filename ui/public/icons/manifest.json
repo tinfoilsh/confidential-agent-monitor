@@ -95,9 +95,6 @@
   "brandfetch": {
     "src": "brandfetch.svg"
   },
-  "browser": {
-    "src": "browser.svg"
-  },
   "cal": {
     "src": "cal.svg"
   },

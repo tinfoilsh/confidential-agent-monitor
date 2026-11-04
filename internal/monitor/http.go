@@ -130,9 +130,6 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 	mux.Handle("POST "+sandboxRelayPath, m.ownerOnly(JSONHandler(sandbox.MaxRelayBytes, func(r *http.Request, in sandbox.RelayInput) (any, error) {
 		return sandbox.Relay(r.Context(), m.relays, in)
 	})))
-	mux.Handle("GET /presets/{name}", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) {
-		return m.settings.Load().Config.Preset(r.PathValue("name"))
-	}))
 	mux.Handle("POST /labels/{identity}", ownerTx(m, func(r *http.Request, l facts.Label) (any, error) {
 		var fingerprint string
 		for key, name := range m.settings.Load().Principals {
@@ -182,7 +179,7 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 		return nil, errRecordGone
 	}))
 	mux.Handle("POST /requests/{id}", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, req answerInput) (any, error) {
-		return nil, m.answerRequest(r.Context(), "owner", r.PathValue("id"), req)
+		return nil, m.answerRequest(r.Context(), r.PathValue("id"), req)
 	})))
 	mux.Handle("GET /policy", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) {
 		result := map[string]any{"source": m.store.Doc.Policy}
@@ -255,6 +252,12 @@ func (m *monitor) connectionControl(w http.ResponseWriter, r *http.Request) {
 	http.StripPrefix("/connections/"+name, connector.Control(server)).ServeHTTP(w, r.WithContext(ctx))
 }
 
+type agentCatalogView struct {
+	CatalogID  string                       `json:"catalog_id"`
+	Presets    map[string]presets.Entry     `json:"presets"`
+	Vocabulary map[string]facts.Obligations `json:"vocabulary"`
+}
+
 func (m *monitor) agentHandler(key string) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /connections", agentTx(m, key, func(_ *http.Request, _ struct{}, p config.Principal) (any, error) {
@@ -263,11 +266,19 @@ func (m *monitor) agentHandler(key string) http.Handler {
 	mux.HandleFunc("GET /policy", agentTx(m, key, func(*http.Request, struct{}, config.Principal) (any, error) {
 		return m.agentPolicy(key)
 	}))
-	mux.HandleFunc("POST /policy/proposals", JSONHandler(maxAgentBytes, func(r *http.Request, input proposalInput) (any, error) {
-		if err := m.proposePolicy(r.Context(), key, input); err != nil {
-			return nil, err
+	mux.HandleFunc("GET /catalog", agentTx(m, key, func(*http.Request, struct{}, config.Principal) (any, error) {
+		settings := m.settings.Load()
+		return agentCatalogView{CatalogID: settings.CatalogID, Presets: settings.Catalog, Vocabulary: facts.Effects}, nil
+	}))
+	mux.HandleFunc("GET /policy/proposals/{id}", agentTx(m, key, func(r *http.Request, _ struct{}, p config.Principal) (any, error) {
+		record := m.findRecord(r.PathValue("id"))
+		if record == nil || record.Changes == nil || record.summary().Facts.Principal != (facts.Principal{Key: p.Fingerprint, Name: p.Name}) {
+			return nil, errRecordGone
 		}
-		return m.agentPolicy(key)
+		return record.receipt(), nil
+	}))
+	mux.HandleFunc("POST /policy/proposals", JSONHandler(maxAgentBytes, func(r *http.Request, input proposalInput) (any, error) {
+		return m.proposePolicy(r.Context(), key, input)
 	}))
 	return mux
 }
@@ -495,6 +506,7 @@ type connectionListing struct {
 	Hosts        []string          `json:"hosts"`
 	Slots        any               `json:"slots"`
 	Placeholders map[string]string `json:"placeholders"`
+	Credentials  map[string]string `json:"credentials,omitempty"`
 }
 
 // listing snapshots the connections p reaches while the caller holds mu.
@@ -512,6 +524,13 @@ func (m *monitor) listing(p config.Principal) any {
 		l := connectionListing{Name: name, Account: c.Account, Protocol: c.Protocol, Host: name + ".monitor",
 			State: c.Status().State, Access: m.settings.Load().Access(p.Name, c.Account)}
 		l.Hosts, l.Slots, l.Placeholders = c.prepared.Discovery.Hosts, c.prepared.Discovery.Slots, c.prepared.Discovery.Placeholders
+		if len(c.Credentials) != 0 {
+			l.Credentials = map[string]string{}
+			for name := range c.Credentials {
+				id := store.SecretID{Account: c.Account, Connection: c.Key, Name: name}
+				l.Credentials[name], _ = credential.Describe(m.store.Doc.Secrets.Get(id))
+			}
+		}
 		result.Connections = append(result.Connections, l)
 	}
 	return result
@@ -523,7 +542,14 @@ func (m *monitor) agentPolicy(key string) (any, error) {
 	if !known {
 		return nil, errNoAgent
 	}
-	visible, err := st.Config.AgentView(p)
+	var visible map[string]any
+	var err error
+	if st.Identities[p.Name].Routes {
+		// Credential values live outside Config.
+		visible, err = st.Config.View()
+	} else {
+		visible, err = st.Config.AgentView(p)
+	}
 	if err != nil {
 		return nil, err
 	}

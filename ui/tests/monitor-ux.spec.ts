@@ -2,9 +2,10 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import * as owner from "../src/owner";
 
-const tcp = JSON.parse(
-  readFileSync(new URL("../../presets/tcp.json", import.meta.url), "utf8"),
+const preset = (name: string) => JSON.parse(
+  readFileSync(new URL(`../../presets/${name}.json`, import.meta.url), "utf8"),
 );
+const tcp = preset("tcp");
 const view = (): owner.View => ({
   generation: 1,
   host_key: "",
@@ -20,6 +21,30 @@ const view = (): owner.View => ({
     },
   },
   presets: { tcp: { title: tcp.title, ...tcp.catalog } },
+});
+
+test("missing preset metadata has a display fallback, not a raw Custom connection", () => {
+  const v = view();
+  v.config.accounts!.network.preset = "removed";
+  expect(owner.presetOf(v, "network").title).toBe("Connection");
+  expect(owner.connectorIcon({}, "", "/app/").src).toContain("custom.svg");
+  expect(Object.hasOwn(v.presets, "custom")).toBe(false);
+  expect(owner.catalog(v).flatMap((group) => group.presets).some((p) => p.name === "custom" || p.name === "browser")).toBe(false);
+});
+
+test("generic connections are an informed fallback group at the end of the catalog", () => {
+  const v = view();
+  const names = ["web", "ssh", "tcp", "custom_api", "mcp"];
+  v.presets = Object.fromEntries(names.map((name) => {
+    const value = preset(name);
+    return [name, { title: value.title, ...value.catalog }];
+  }));
+  const groups = owner.catalog(v);
+  expect(groups.at(-1)?.title).toBe("Generic");
+  expect(groups.at(-1)?.presets.map((entry) => entry.name)).toEqual(names);
+  for (const name of names) {
+    expect(v.presets[name].warning).toBeTruthy();
+  }
 });
 
 describe("raw TCP setup and access", () => {
@@ -64,6 +89,40 @@ describe("raw TCP setup and access", () => {
       hosts,
     );
     expect(v.config.accounts!.restricted).toMatchObject(tcp.catalog.defaults);
+  });
+});
+
+test("Custom API can be created before its credential is configured", () => {
+  const v = view();
+  const changes = owner.edits.addCustomApi(v, {
+    name: "example-api",
+    api: {
+      url: "https://api.example.com/v1",
+      auth: "bearer",
+      header: "X-API-Key",
+      prefix: "",
+      query: "api_key",
+    },
+    token: "",
+    answers: { contents: "me", sends: "me", strangers: true },
+  });
+  expect(changes.some((change) => change.path.includes("secrets"))).toBe(false);
+  owner.applyChanges(v.config, changes);
+  expect(v.config.accounts!["example-api"]).toMatchObject({
+    preset: "custom_api",
+    connections: {
+      "": {
+        http: {
+          slots: [{
+            value: "token",
+            origin: "https://api.example.com",
+            path: "/v1",
+            header: "Authorization",
+            prefix: "Bearer ",
+          }],
+        },
+      },
+    },
   });
 });
 

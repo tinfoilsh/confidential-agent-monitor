@@ -420,7 +420,7 @@ func (m *monitor) commitSettings(ctx context.Context, base store.Document, plan 
 		}
 	}
 	if saved != nil {
-		saved.record.ruleSaved(saved.answer)
+		saved.record.committed(saved.answer)
 	}
 	old, changed := m.settings.Load(), false
 	for _, name := range plan.remove {

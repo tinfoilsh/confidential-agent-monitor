@@ -1,6 +1,5 @@
-Each preset has a `<name>.json` record. Accounts select it with
-`"preset": "<name>"`. Owner entries in `config.presets` override the corresponding fields in the
-pinned record of the same name.
+Each shipped preset has a `<name>.json` record. Accounts select it with
+`"preset": "<name>"`. Monitor accepts only these shipped definitions.
 
 The catalog contains setup fields, connections, defaults, and permission actions.
 Protocol definitions have their own sections:
@@ -206,8 +205,8 @@ API catalogs use resource parents and capability leaves. The most specific
 permission override wins. The account and agent views display the same hierarchy.
 The [preset generator](../dev/presets/README.md) reads these files as its baseline
 and writes proposals under `dev/presets/`. Edit accepted definitions here.
-`drafts/` holds records loaded only with `-drafts`. Authorization rules live in
-`../internal/policy/`; owner Rego policies live in `config.policies`.
+Authorization rules live in `../internal/policy/`; owner Rego policies live in
+`config.policies`.
 
 The SFTP, MQTT, and NATS presets include setup forms and operation permissions.
 See [file and broker protocols](../docs/file-and-broker-protocols.md) for supported

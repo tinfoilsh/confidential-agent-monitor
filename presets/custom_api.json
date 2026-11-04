@@ -3,17 +3,38 @@
   "http": {
     "slots": true,
     "operations": {
-      "request": {"action":"request","effects":["execute","send"],"method":"*","origin":"*","path":"*","open_params":true,"body":"any","sends":"account","scope":{"origin":{"from":"http","at":"/origin"},"method":{"from":"http","at":"/method"},"path":{"from":"http","at":"/path"}},"grant":["origin"]}
+      "request": {
+        "action": "request",
+        "effects": ["execute", "send"],
+        "method": "*",
+        "origin": "*",
+        "path": "*",
+        "open_params": true,
+        "body": "any",
+        "sends": "account",
+        "scope": {
+          "origin": { "from": "http", "at": "/origin" },
+          "method": { "from": "http", "at": "/method" },
+          "path": { "from": "http", "at": "/path" }
+        },
+        "grant": ["origin"]
+      }
     }
   },
   "catalog": {
-    "group": "api",
+    "group": "generic",
+    "warning": "Allows requests to the HTTPS API address you configure. Adds a broad action and cannot infer endpoint-specific effects; prefer a named connection when one exists.",
     "actions": {
-      "request": {"title": "Use API", "effects": ["execute", "send"]}
+      "request": { "title": "Use API", "effects": ["execute", "send"] }
     },
-    "defaults": {"contents": "me", "sends": "me", "strangers": true},
+    "defaults": { "contents": "me", "sends": "me", "strangers": true },
     "fields": [
-      {"key": "token", "label": "API key", "secret": true, "path": ["connections", "", "http", "secrets", "token"]}
+      {
+        "key": "token",
+        "label": "API key",
+        "secret": true,
+        "path": ["connections", "", "http", "secrets", "token"]
+      }
     ]
   }
 }

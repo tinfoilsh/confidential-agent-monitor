@@ -143,6 +143,7 @@ export function Rules() {
         <h2>
           Saved rules <span class="count">{rules().length}</span>
         </h2>
+        <span>Updates every 5 seconds</span>
       </div>
       <For
         each={rules()}
@@ -160,8 +161,7 @@ export function Rules() {
               <a class="resource-link" href={href("connection", rule().account)}>
                 <ConnectorIcon
                   preset={
-                    m.view()!.config.accounts?.[rule().account]?.preset ??
-                    "custom"
+                    m.view()!.config.accounts?.[rule().account]?.preset ?? ""
                   }
                 />
                 <span>
@@ -510,152 +510,6 @@ function EffectivePolicy() {
     </Show>
   );
 }
-export function PresetEditor(props: { name: string; request?: string }) {
-  const m = useMonitor();
-  const [request, setRequest] = createSignal<owner.RequestRecord>();
-  const lifetime = new AbortController();
-  onCleanup(() => lifetime.abort());
-  const [file, { refetch }] = createResource(async () => {
-    const [file, context] = await Promise.all([
-      props.name
-        ? m.api()!.preset(props.name, lifetime.signal)
-        : owner.NEW_PRESET,
-      props.request
-        ? m.api()!.request(props.request, lifetime.signal)
-        : undefined,
-    ]);
-    setRequest(context);
-    return owner.withDraft(file, context);
-  });
-  return (
-    <div id="pane">
-      <a class="button back-button" href="#connections/catalog">
-        <Icon name="arrow" />
-        Back to catalog
-      </a>
-      <Show when={file.error}>
-        <p role="alert">{String(file.error)}</p>
-        <button onClick={() => void refetch()}>Retry</button>
-      </Show>
-      <Show
-        when={!file.error && file()}
-        keyed
-        fallback={!file.error && <p>Loading preset…</p>}
-      >
-        {(previous) => {
-          const [name, setName] = createSignal(props.name),
-            [text, setText] = createSignal(owner.presetText(previous));
-          return (
-            <section>
-              <p class="muted">
-                Changes apply to every connection using this preset:{" "}
-                {Object.entries(m.view()!.config.accounts ?? {})
-                  .filter(([, account]) => account.preset === props.name)
-                  .map(([name]) => name)
-                  .join(", ") || "none yet"}
-                .
-              </p>
-              <Show when={request()}>
-                {(record) => (
-                  <>
-                    <h2>{owner.requestTitle(record())}</h2>
-                    <ul>
-                      <For each={record().deny ?? []}>
-                        {(reason) => <li>{reason}</li>}
-                      </For>
-                    </ul>
-                    <p>
-                      Review the request and its settings, then retry from your
-                      agent after saving corrections.
-                    </p>
-                    <p>
-                      <a href={href("request", record().id)}>Back to request</a>{" "}
-                      ·{" "}
-                      <a href={href("connection", record().facts.account)}>
-                        Connection settings
-                      </a>
-                    </p>
-                  </>
-                )}
-              </Show>
-              <form
-                class="form-fields"
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  try {
-                    if (
-                      await m.edit(
-                        owner.edits.savePreset(name(), text(), previous),
-                      )
-                    )
-                      location.hash = href("preset", name());
-                  } catch (cause) {
-                    m.report(cause);
-                  }
-                }}
-              >
-                <label>
-                  Preset name
-                  <input
-                    required
-                    value={name()}
-                    disabled={!!props.name}
-                    onInput={(e) => setName(e.currentTarget.value)}
-                  />
-                </label>
-                <label>
-                  Preset JSON
-                  <textarea
-                    rows={30}
-                    spellcheck={false}
-                    value={text()}
-                    onInput={(e) => setText(e.currentTarget.value)}
-                  />
-                </label>
-                <div class="form-actions">
-                  <button class="primary" disabled={m.busy()}>
-                    Save preset
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      download(
-                        text(),
-                        `${name() || "preset"}.json`,
-                        "application/json",
-                      )
-                    }
-                  >
-                    Download preset
-                  </button>
-                  <Show
-                    when={props.name && m.view()!.config.presets?.[props.name]}
-                  >
-                    <button
-                      type="button"
-                      class="danger"
-                      disabled={m.busy()}
-                      onClick={async () => {
-                        if (
-                          confirm(`Remove custom preset ${props.name}?`) &&
-                          (await m.edit(owner.edits.removePreset(props.name)))
-                        )
-                          location.hash = "#connections/catalog";
-                      }}
-                    >
-                      Remove custom preset
-                    </button>
-                  </Show>
-                </div>
-              </form>
-            </section>
-          );
-        }}
-      </Show>
-    </div>
-  );
-}
-
 export function Integrations(props: { page: string }) {
   const m = useMonitor();
   const page = () =>

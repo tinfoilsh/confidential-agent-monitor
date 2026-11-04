@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
 	"reflect"
+	"slices"
 	"strings"
 
 	"github.com/pmezard/go-difflib/difflib"
@@ -107,76 +109,116 @@ func (m *monitor) previewPolicy(ctx context.Context, base store.Document, before
 }
 
 const (
-	maxProposalBytes   = 64 << 10
 	maxProposalReason  = 4096
-	maxProposalDeletes = 64
+	maxProposalChanges = 256
+	maxPolicyProposals = 32
 )
 
 type proposalInput struct {
-	Source string     `json:"source"`
-	Reason string     `json:"reason"`
-	Delete [][]string `json:"delete,omitempty"`
+	Source  string          `json:"source,omitempty"`
+	Changes []config.Change `json:"changes,omitempty"`
+	Reason  string          `json:"reason"`
+	Delete  [][]string      `json:"delete,omitempty"`
 }
 
-// proposePolicy holds an agent's change as an approval card and applies it once the owner allows it.
-func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalInput) (err error) {
-	if len(input.Source) > maxProposalBytes || len(input.Reason) > maxProposalReason || strings.TrimSpace(input.Reason) == "" || len(input.Delete) > maxProposalDeletes {
-		return fmt.Errorf("proposal needs a reason of 1-%d bytes, at most %d bytes of TOML, and at most %d deletions", maxProposalReason, maxProposalBytes, maxProposalDeletes)
+type proposalReceipt struct {
+	ID         string `json:"id"`
+	State      string `json:"state"`
+	Connection string `json:"connection"`
+}
+
+func (r *record) receipt() proposalReceipt {
+	return proposalReceipt{ID: r.ID, State: r.State, Connection: r.summary().Facts.Account}
+}
+
+// proposePolicy publishes one pending record per connection, or none if any fails.
+// The owner answers it like a request; approval writes its changes.
+func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalInput) ([]proposalReceipt, error) {
+	reason := strings.TrimSpace(input.Reason)
+	if reason == "" || len(reason) > maxProposalReason {
+		return nil, fmt.Errorf("proposal needs a reason of 1-%d bytes", maxProposalReason)
 	}
-	changes, err := config.Fragment(input.Source)
-	if err != nil {
-		return err
+	if (input.Source != "" || input.Delete != nil) == (input.Changes != nil) {
+		return nil, errors.New("proposal requires exactly one of a TOML fragment or structured changes")
 	}
-	for _, path := range input.Delete {
-		changes = append(changes, config.Change{Path: path, Delete: true})
+	changes := input.Changes
+	if changes == nil {
+		var err error
+		if changes, err = config.Fragment(input.Source); err != nil {
+			return nil, err
+		}
+		for _, path := range input.Delete {
+			changes = append(changes, config.Change{Path: path, Delete: true})
+		}
+	}
+	if len(changes) == 0 || len(changes) > maxProposalChanges {
+		return nil, fmt.Errorf("proposal must contain 1-%d changes", maxProposalChanges)
 	}
 	m.writes.Lock()
+	defer m.writes.Unlock()
 	base, before := m.snapshot()
-	next := base
 	p, known := before.Principal(key)
 	if !known {
-		err = errNoAgent
-	} else if err = before.AgentChanges(p, changes); err == nil {
-		next.Policy, err = config.EditSource(base.Policy, changes)
+		return nil, errNoAgent
 	}
-	if err == nil && next.Policy == base.Policy {
-		err = errors.New("proposal does not change policy")
-	}
-	var diff *facts.PolicyDiff
-	if err == nil {
-		diff, err = m.previewPolicy(ctx, base, before, next.Policy)
-	}
-	m.writes.Unlock()
+	groups, err := before.ProposalChanges(p, changes)
 	if err != nil {
-		return err
+		return nil, err
 	}
+	proposer := facts.Principal{Key: p.Fingerprint, Name: p.Name}
+	var proposals []*record
+	for _, target := range slices.Sorted(maps.Keys(groups)) {
+		candidate, normalized, err := config.EditSourceNormalized(base.Policy, groups[target])
+		if err == nil && candidate == base.Policy {
+			err = errors.New("proposal does not change policy")
+		}
+		var diff *facts.PolicyDiff
+		if err == nil {
+			diff, err = m.previewPolicy(ctx, base, before, candidate)
+		}
+		var raw json.RawMessage
+		if err == nil {
+			raw, _, err = facts.Encode(facts.Facts{Version: facts.Version, Principal: proposer, Account: target, Connection: target,
+				Service: "policy-proposal", Title: reason, Parameters: map[string]any{},
+				Details: map[string]any{"policy": facts.PolicyDiff{SourceDiff: diff.SourceDiff}}})
+		}
+		if err != nil {
+			return nil, fmt.Errorf("connection %s: %w", target, err)
+		}
+		proposals = append(proposals, &record{Facts: raw, Changes: normalized, scope: before.ProposalScope(p.Name, normalized),
+			Decision: policy.Decision{Requirements: []policy.Requirement{{ID: "policy", Message: reason}}}})
+	}
+
 	m.mu.Lock()
-	if m.store.Doc.Policy != base.Policy {
-		m.mu.Unlock()
-		return errPolicyConflict
+	defer m.mu.Unlock()
+	pending := 0
+	for _, r := range m.records {
+		if r.State == statePending && r.Changes != nil {
+			pending++
+		}
 	}
-	raw, _, err := facts.Encode(facts.Facts{Version: facts.Version, Principal: facts.Principal{Key: p.Fingerprint, Name: p.Name}, Title: "Change policy", Parameters: map[string]any{}, Details: map[string]any{"policy": diff}})
-	if err != nil {
-		m.mu.Unlock()
-		return err
+	for i, proposal := range proposals {
+		// A retried submission receives its pending record.
+		if j := slices.IndexFunc(m.records, func(r *record) bool {
+			return r.State == statePending && reflect.DeepEqual(r.Changes, proposal.Changes) && r.summary().Facts.Principal == proposer
+		}); j >= 0 {
+			proposals[i] = m.records[j]
+		} else {
+			pending++
+		}
 	}
-	r := m.addRecord(&record{Facts: raw, Decision: policy.Decision{Requirements: []policy.Requirement{{ID: "policy", Message: input.Reason}}}})
-	err = m.awaitAnswer(ctx, r)
-	m.mu.Unlock()
-	if err == nil {
-		m.writes.Lock()
-		err = m.writeSettings(ctx, &next.Policy, nil, func() error {
-			if m.store.Doc.Policy != base.Policy {
-				return errPolicyConflict
-			}
-			return ctx.Err()
-		}, nil)
-		m.writes.Unlock()
+	if pending > maxPolicyProposals {
+		return nil, errors.New("too many pending policy proposals")
 	}
-	m.mu.Lock()
-	m.settleRecord(r, err)
-	m.mu.Unlock()
-	return err
+	receipts := make([]proposalReceipt, 0, len(proposals))
+	for _, proposal := range proposals {
+		if proposal.ID == "" {
+			m.addRecord(proposal)
+			proposal.State, proposal.answered = statePending, make(chan struct{})
+		}
+		receipts = append(receipts, proposal.receipt())
+	}
+	return receipts, nil
 }
 
 type identityEnrollment struct {

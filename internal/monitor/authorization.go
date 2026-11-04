@@ -1,7 +1,6 @@
 package monitor
 
 import (
-	"bytes"
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
@@ -11,8 +10,6 @@ import (
 	"fmt"
 	"log"
 	"maps"
-	"net/http"
-	"net/http/httptest"
 	"slices"
 	"strings"
 	"time"
@@ -30,15 +27,15 @@ const (
 
 	statePending  = "pending"
 	stateExpired  = "expired"
+	stateOutdated = "outdated"
 	stateAllowed  = "allowed"
 	stateRefused  = "refused"
 	stateApproved = "approved"
 	stateDenied   = "denied"
 
-	answerOnce     = "once"
-	answerSave     = "save"
-	answerDeny     = "deny"
-	answerEscalate = "escalate"
+	answerOnce = "once"
+	answerSave = "save"
+	answerDeny = "deny"
 )
 
 var (
@@ -46,7 +43,6 @@ var (
 	errRuleSaved  = errors.New("approval rule saved; retry the request")
 )
 
-// Both human and automated reviewers resolve the same pending record.
 type reviewAnswer struct {
 	By string `json:"by"`
 	answerInput
@@ -58,7 +54,7 @@ type answerInput struct {
 	Reason string `json:"reason,omitempty"`
 }
 
-// savedAnswer carries the answer to publish with its durable policy rule.
+// savedAnswer carries the answer to publish with its durable settings change.
 type savedAnswer struct {
 	record *record
 	answer reviewAnswer
@@ -75,26 +71,28 @@ type record struct {
 	policy.Decision
 	ApprovalKey string         `json:"definition"`
 	Grant       map[string]any `json:"grant"`
-	Reviewer    string         `json:"reviewer,omitempty"`
 	Reviews     []reviewAnswer `json:"reviews,omitempty"`
-	answered    chan struct{}
+	// Changes makes the record a policy proposal; scope is what it was reviewed against.
+	Changes  []config.Change `json:"changes,omitempty"`
+	answered chan struct{}
+	scope    string
 }
 
 // Activity never needs request bodies, policy parameters or saved-rule grants.
 // Keep those in the existing audit record and load one through /requests/{id}.
 type recordSummary struct {
-	ID       string         `json:"id"`
-	State    string         `json:"state"`
-	Invalid  bool           `json:"invalid,omitempty"`
-	Time     time.Time      `json:"time"`
-	Expires  time.Time      `json:"expires,omitzero"`
-	Summary  bool           `json:"summary"`
-	Reviewer string         `json:"reviewer,omitempty"`
-	Reviews  []reviewAnswer `json:"reviews,omitempty"`
-	Segment  string         `json:"segment,omitempty"`
-	Facts    struct {
+	ID      string         `json:"id"`
+	State   string         `json:"state"`
+	Invalid bool           `json:"invalid,omitempty"`
+	Time    time.Time      `json:"time"`
+	Expires time.Time      `json:"expires,omitzero"`
+	Summary bool           `json:"summary"`
+	Reviews []reviewAnswer `json:"reviews,omitempty"`
+	Segment string         `json:"segment,omitempty"`
+	Facts   struct {
 		Principal facts.Principal  `json:"principal"`
 		Account   string           `json:"account"`
+		Service   string           `json:"service"`
 		Operation *facts.Operation `json:"operation"`
 		Title     string           `json:"title"`
 	} `json:"facts"`
@@ -187,9 +185,6 @@ func (m *monitor) authorizeLocked(ctx context.Context, admitted admission, kind 
 		return r, errors.New(strings.Join(r.Deny, "; "))
 	}
 	if len(r.Requirements) != 0 {
-		if autoReviewEnabled {
-			r.Reviewer = st.Identities[p.Name].Reviewer
-		}
 		if err := m.awaitAnswer(ctx, r); err != nil {
 			return r, err
 		}
@@ -311,11 +306,6 @@ func (m *monitor) currentLabel(fingerprint string) facts.Label {
 	return cleanLabel
 }
 
-// autoReviewEnabled lets an identity's `reviewer = "tinfoil"` hand its
-// pending requests to the Tinfoil reviewer. Off for this release: the field
-// is accepted and kept, but every request waits for the owner.
-const autoReviewEnabled = false
-
 // relabel runs under mu; a failed write never publishes an observation.
 // source is the stream whose operation produced l, or nil for an owner reset.
 func (m *monitor) relabel(ctx context.Context, fingerprint string, l facts.Label, source *connector.Stream) error {
@@ -350,7 +340,7 @@ func (m *monitor) relabel(ctx context.Context, fingerprint string, l facts.Label
 }
 
 func (r *record) summary() recordSummary {
-	v := recordSummary{ID: r.ID, State: r.State, Invalid: r.Invalid, Time: r.Time, Expires: r.Expires, Summary: true, Reviewer: r.Reviewer}
+	v := recordSummary{ID: r.ID, State: r.State, Invalid: r.Invalid, Time: r.Time, Expires: r.Expires, Summary: true}
 	for _, answer := range r.Reviews {
 		answer.Reason = ""
 		v.Reviews = append(v.Reviews, answer)
@@ -366,10 +356,15 @@ func (r *record) summary() recordSummary {
 // addRecord and the other decision transitions run under the authorization lock.
 func (m *monitor) addRecord(r *record) *record {
 	r.ID, r.Time, r.State = rand.Text(), time.Now(), stateAllowed
-	m.records = append(m.records, r)
-	if len(m.records) > maxRecords {
-		m.records = m.records[1:]
+	for len(m.records) >= maxRecords {
+		// Nothing else holds a pending proposal.
+		i := slices.IndexFunc(m.records, func(r *record) bool { return r.State != statePending })
+		if i < 0 {
+			break
+		}
+		m.records = slices.Delete(m.records, i, i+1)
 	}
+	m.records = append(m.records, r)
 	return r
 }
 
@@ -381,12 +376,20 @@ func (m *monitor) findRecord(id string) *record {
 	return m.records[i]
 }
 
-// refusePending refuses every record still waiting for an answer; the caller holds mu.
+// refusePending refuses every request still waiting for an answer and outdates
+// proposals whose scope changed; the caller holds mu.
 func (m *monitor) refusePending(err error) {
+	cfg := m.settings.Load().Config
 	for _, r := range m.records {
-		if r.State == statePending {
+		switch {
+		case r.State != statePending:
+		case r.Changes == nil:
 			r.State, r.Deny = stateRefused, []string{err.Error()}
 			close(r.answered)
+		case cfg.ProposalScope(r.summary().Facts.Principal.Name, r.Changes) != r.scope:
+			r.State = stateOutdated
+			close(r.answered)
+			m.settleRecord(r, nil)
 		}
 	}
 }
@@ -396,9 +399,6 @@ func (m *monitor) refusePending(err error) {
 func (m *monitor) awaitAnswer(ctx context.Context, r *record) error {
 	r.State, r.Expires, r.answered = statePending, r.Time.Add(approvalWait), make(chan struct{})
 	wait, cancel := context.WithDeadline(ctx, r.Expires)
-	if r.Reviewer != "" {
-		m.reviewApproval(wait, r)
-	}
 	m.mu.Unlock()
 	select {
 	case <-r.answered:
@@ -414,7 +414,7 @@ func (m *monitor) awaitAnswer(ctx context.Context, r *record) error {
 		r.State = stateExpired
 		return errors.New("waiting for approval in the monitor timed out")
 	case stateDenied:
-		return errors.New("the reviewer denied this request")
+		return errors.New("this request was denied")
 	case stateRefused:
 		return errors.New(strings.Join(r.Deny, "; "))
 	}
@@ -437,25 +437,19 @@ func (m *monitor) settleRecord(r *record, err error) {
 
 // answerable validates an answer under mu; callers recheck it after pure
 // preparation so a concurrent answer cannot be overwritten by a saved rule.
-func (m *monitor) answerable(actor, id string, input answerInput) (*record, error) {
+func (m *monitor) answerable(id string, input answerInput) (*record, error) {
 	choices := []string{answerOnce, answerSave, answerDeny}
-	if actor != "owner" {
-		choices = []string{answerOnce, answerDeny, answerEscalate}
-	}
 	if !slices.Contains(choices, input.Choice) {
 		return nil, fmt.Errorf("decision must be one of %s", strings.Join(choices, ", "))
 	}
-	if len(input.Reason) > 4096 || (actor != "owner" && input.Reason == "") {
-		return nil, errors.New("automated decisions need a reason of 1-4096 bytes")
+	if len(input.Reason) > 4096 {
+		return nil, errors.New("a reason must be at most 4096 bytes")
 	}
 	r := m.findRecord(id)
 	if r == nil {
 		return nil, fmt.Errorf("no request %s", id)
 	}
-	if actor != "owner" && actor != r.Reviewer {
-		return nil, errors.New("the request is not assigned to this reviewer")
-	}
-	if r.State == statePending && !time.Now().Before(r.Expires) {
+	if r.State == statePending && !r.Expires.IsZero() && !time.Now().Before(r.Expires) {
 		r.State = stateExpired
 		close(r.answered)
 	}
@@ -466,97 +460,75 @@ func (m *monitor) answerable(actor, id string, input answerInput) (*record, erro
 	return r, nil
 }
 
-func (m *monitor) answerRequest(ctx context.Context, actor, id string, input answerInput) error {
+func (m *monitor) answerRequest(ctx context.Context, id string, input answerInput) error {
 	input.Reason = strings.TrimSpace(input.Reason)
-	if input.Choice == answerSave && actor == "owner" {
+	m.mu.Lock()
+	r := m.findRecord(id)
+	applies := input.Choice == answerSave || input.Choice == answerOnce && r != nil && r.Changes != nil
+	m.mu.Unlock()
+	if applies {
 		m.writes.Lock()
 		defer m.writes.Unlock()
 		m.mu.Lock()
-		r, err := m.answerable(actor, id, input)
+		r, err := m.answerable(id, input)
 		var change config.Change
-		if err == nil {
+		if err == nil && input.Choice == answerSave {
 			change, err = m.ruleChange(r)
 		}
 		m.mu.Unlock()
 		if err != nil {
 			return err
 		}
-		return m.writeSettings(ctx, nil, []config.Change{change}, func() error {
-			current, err := m.answerable(actor, id, input)
+		changes := r.Changes
+		if input.Choice == answerSave {
+			changes = []config.Change{change}
+		}
+		err = m.writeSettings(ctx, nil, changes, func() error {
+			current, err := m.answerable(id, input)
 			if err == nil && current != r {
 				return errRecordGone
 			}
 			return err
 		}, &savedAnswer{
 			record: r,
-			answer: reviewAnswer{By: actor, answerInput: input},
+			answer: reviewAnswer{By: "owner", answerInput: input},
 		})
+		if err == nil && r.Changes != nil {
+			m.mu.Lock()
+			m.settleRecord(r, nil)
+			m.mu.Unlock()
+		}
+		return err
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	r, err := m.answerable(actor, id, input)
+	r, err := m.answerable(id, input)
 	if err != nil {
 		return err
 	}
-	r.Reviews = append(r.Reviews, reviewAnswer{By: actor, answerInput: input, Time: time.Now()})
-	if input.Choice == answerEscalate {
-		r.Reviewer = ""
-		return nil
-	}
+	r.Reviews = append(r.Reviews, reviewAnswer{By: "owner", answerInput: input, Time: time.Now()})
 	r.State = stateApproved
 	if input.Choice == answerDeny {
 		r.State = stateDenied
 	}
 	close(r.answered)
+	if r.Changes != nil {
+		m.settleRecord(r, nil)
+	}
 	return nil
 }
 
-func (r *record) ruleSaved(answer reviewAnswer) {
+func (r *record) committed(answer reviewAnswer) {
 	if r.State == statePending {
 		close(r.answered)
 	}
 	// Retry evaluates the operation under the newly committed rule.
 	r.State, r.Deny = stateRefused, []string{errRuleSaved.Error()}
+	if r.Changes != nil {
+		r.State, r.Deny = stateApproved, nil
+	}
 	answer.Time = time.Now()
 	r.Reviews = append(r.Reviews, answer)
-}
-
-// Leave time for the owner to respond after a failed or slow review.
-const reviewWait = 45 * time.Second
-
-// reviewApproval starts under mu and answers the same pending record;
-// unavailable or invalid responses return it to the owner. The connector owns
-// the model protocol and prompt.
-func (m *monitor) reviewApproval(wait context.Context, r *record) {
-	cfg, id := m.settings.Load().Reviewer, r.ID
-	c := m.connections[cfg.Connection]
-	var release func()
-	var setupCtx context.Context
-	if c != nil {
-		if release, _ = m.acquire(c, c.prepared); release != nil {
-			setupCtx = c.setupCtx
-		}
-	}
-	body, _ := json.Marshal(map[string]any{"model": cfg.Model, "instructions": cfg.Instructions, "facts": r.Facts, "requirements": r.Requirements, "sends": r.Sends, "grant": r.Grant})
-	go func() {
-		ctx, cancel := context.WithTimeout(wait, reviewWait)
-		defer cancel()
-		var answer answerInput
-		if release != nil {
-			defer release()
-			ctx, cancel := connector.Bind(ctx, setupCtx)
-			defer cancel()
-			req, _ := http.NewRequestWithContext(ctx, http.MethodPost, "http://connector/review", bytes.NewReader(body))
-			response := httptest.NewRecorder()
-			connector.Control(c.Server).ServeHTTP(response, req)
-			if response.Code != http.StatusOK || facts.DecodeNumbers(response.Body.Bytes(), &answer) != nil {
-				answer = answerInput{}
-			}
-		}
-		if wait.Err() == nil && m.answerRequest(wait, "tinfoil", id, answer) != nil {
-			_ = m.answerRequest(wait, "tinfoil", id, answerInput{Choice: answerEscalate, Reason: "Tinfoil could not complete this review. Please review the request yourself."})
-		}
-	}()
 }
 
 var errAuditBacklog = errors.New("the monitor cannot write its audit log; requests are refused until storage recovers")

@@ -14,7 +14,7 @@ mkdir -p "$dev/firefox" "$dev/store"
 [[ -f $dev/owner.key ]] || head -c32 /dev/urandom | base64 > "$dev/owner.key"
 if ! curl --max-time 1 -fs "$api/healthz" > /dev/null; then
   CGO_ENABLED=0 setsid bun dev/run.ts -listen "$listen" -api "${api#http://}" -bucket "file://$dev/store?no_tmp_dir=true" \
-    -extension "$(realpath "${MONITOR_EXTENSION:-../english-only}")" > "$dev/monitor.log" 2>&1 < /dev/null &
+    > "$dev/monitor.log" 2>&1 < /dev/null &
   monitor_pid=$!
   deadline=$((SECONDS + 30))
   until curl --max-time 1 -fs "$api/healthz" > /dev/null; do

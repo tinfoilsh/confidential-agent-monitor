@@ -56,8 +56,8 @@ func (c *Config) Effective() (string, error) {
 	return RenderTOML(v)
 }
 
-// agentFields is the single definition of what an agent may read and propose.
-// A nil value omits an absent field from the view without forbidding its creation.
+// agentFields defines the restricted configuration view returned to an agent.
+// Proposals may request broader changes, but never reveal owner-only state.
 func (c *Config) agentFields(p Principal) ([]Change, error) {
 	if name, ok := c.Principals[p.Fingerprint]; !ok || name != p.Name {
 		return nil, errors.New("agent identity changed")
@@ -101,21 +101,79 @@ func (c *Config) AgentView(p Principal) (map[string]any, error) {
 	return facts.JSON[map[string]any](view)
 }
 
-// AgentChanges checks original edit roots before the source editor normalizes
-// table replacement. Permission for a descendant never permits deleting its parent.
-func (c *Config) AgentChanges(p Principal, changes []Change) error {
-	fields, err := c.agentFields(p)
-	if err != nil {
-		return err
+// ProposalTarget names the connection whose setup or access path changes.
+func ProposalTarget(path []string) (string, bool) {
+	switch {
+	case len(path) >= 2 && (path[0] == "accounts" || path[0] == "default_access") && path[1] != "":
+		return path[1], true
+	case len(path) >= 4 && path[0] == "identities" && path[1] != "" && path[2] == "accounts" && path[3] != "":
+		return path[3], true
 	}
+	return "", false
+}
+
+// ProposalChanges groups p's edits by connection. Credentials are refused because
+// approval stores them as secrets, unlike the source edit the owner previews.
+func (c *Config) ProposalChanges(p Principal, changes []Change) (map[string][]Change, error) {
+	groups := map[string][]Change{}
+	var leaves []Change
 	for _, change := range changes {
-		if !slices.ContainsFunc(fields, func(field Change) bool {
-			return len(change.Path) >= len(field.Path) && slices.Equal(change.Path[:len(field.Path)], field.Path)
-		}) {
-			return errors.New("proposal may edit only your permissions, reachable accounts' policy settings, or lattice switches")
+		target, ok := ProposalTarget(change.Path)
+		if !ok {
+			return nil, errors.New("proposals may change only connection setup and access")
+		}
+		if !c.Identities[p.Name].Routes && (change.Path[0] == "default_access" || change.Path[0] == "identities" && change.Path[1] != p.Name) {
+			return nil, errors.New("a sandbox may propose only connection setup and its own access")
+		}
+		groups[target] = append(groups[target], change)
+		if table, ok := change.Value.(map[string]any); ok && len(table) > 0 && table["$json"] == nil {
+			leaves = append(leaves, fragmentChanges(table, change.Path)...)
+		} else {
+			leaves = append(leaves, change)
 		}
 	}
-	return nil
+	for _, leaf := range leaves {
+		if _, credential := presets.ParseCredentialPath(leaf.Path[2:]); credential && leaf.Path[0] == "accounts" {
+			return nil, fmt.Errorf("proposals cannot change %v; only the owner sets credentials", leaf.Path)
+		}
+	}
+	return groups, nil
+}
+
+// ProposalScope digests the settings one connection's proposal was reviewed against.
+// The proposer and edited identities also bind their keys and route access, so a
+// pending proposal cannot outlive its authority or move to a replacement principal.
+func (c *Config) ProposalScope(proposer string, changes []Change) string {
+	connection, _ := ProposalTarget(changes[0].Path)
+	targeted := map[string]bool{proposer: true}
+	for _, change := range changes {
+		if change.Path[0] == "identities" {
+			targeted[change.Path[1]] = true
+		}
+	}
+	identities := map[string]any{}
+	for name, identity := range c.Identities {
+		access := c.Access(name, connection)
+		rules := map[string]Rule{}
+		for id, rule := range identity.Rules {
+			if rule.Account == connection {
+				rules[id] = rule
+			}
+		}
+		if access.Level != "" || len(rules) != 0 || targeted[name] {
+			key := ""
+			if targeted[name] {
+				key = identity.Key
+			}
+			identities[name] = []any{key, identity.Routes, access, identity.Effects, rules}
+		}
+	}
+	account, accountExists := c.Accounts[connection]
+	fallback, fallbackExists := c.DefaultAccess[connection]
+	// Global settings change this connection's effective behavior too.
+	raw, _ := json.Marshal([]any{accountExists, account, fallbackExists, fallback, identities,
+		c.Effects, c.AllowPaidInference, c.Lattices, c.AllowNetworks, c.Policies, c.Data})
+	return fmt.Sprintf("%x", sha256.Sum256(raw))
 }
 
 // Catalog is a control presentation, never an authorization or runtime registry.
@@ -126,9 +184,6 @@ func (c *Config) Catalog() (map[string]presets.Entry, string, error) {
 	}
 	used, names := map[string]bool{}, map[string]bool{}
 	for name := range shipped {
-		names[name] = true
-	}
-	for name := range c.Presets {
 		names[name] = true
 	}
 	for _, a := range c.Accounts {

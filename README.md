@@ -55,11 +55,17 @@ or select a configuration with `--ssh-host` and `--ssh-config`.
 
 ```sh
 monitor connections
+monitor catalog
 monitor run -- your-command
 monitor shell
 ```
 
-Use `monitor mcp serve` to connect local MCP clients.
+Use `monitor mcp serve` to connect local MCP clients. Trusted-device automation
+should follow the full [Monitor skill](client/skills/monitor/SKILL.md) for
+catalog discovery, broad credential-free reads, proposals and direct API calls. Managed sandbox
+images should seed the reduced [sandbox Monitor skill](client/skills/monitor-sandbox/SKILL.md),
+which covers only that sandbox's discovery, policy, proposals, credentials boundary
+and connection usage.
 
 ### Local VM
 
@@ -91,41 +97,56 @@ SSH listens on `127.0.0.1:2223`. See [Dockerfile](Dockerfile) and
 
 ## Access control
 
-In **Agents**, set each agent's access to each account.
+In **Agents**, set each sandbox's access to each connection.
 
-| Access | Default behavior |
-| --- | --- |
-| No access | Deny access. |
-| Read only | Allow recognized reads and deny changes. |
-| Ask | Allow reads and ask before changes. |
-| Allow | Allow recognized operations. |
+| Access    | TOML/API | Default behavior                         |
+| --------- | -------- | ---------------------------------------- |
+| No access | `off`    | Deny access.                             |
+| Read only | `read`   | Allow recognized reads and deny changes. |
+| Ask       | `ask`    | Allow reads and ask before changes.      |
+| Allow     | `allow`  | Allow recognized operations.             |
 
-Expand an account to override individual actions. Set effect permissions—such
-as payments, publishing, or deletion—in **Settings**, with overrides per account
-or agent. Other policy checks still apply. Review pending requests in
-**Activity**. Approvals cannot override an explicit denial.
+Expand a connection to override individual actions. Action and effect overrides
+use `off`, `ask`, and `allow`; `off` means Deny. Other policy checks still apply,
+and an approval cannot override an explicit denial. Review pending requests in
+**Activity**.
 
 Payments and publishing default to Ask. Onboarding enables **Allow paid AI
 inference**, which skips payment approval for model generation unless an explicit
 payment setting requires it.
 
-### TOML
+## How to edit Monitor policy
 
-**Settings → Policy editor** edits the same policy as the UI. Validate changes,
-review the diff, then apply. Credentials are stored separately.
+- **Owner UI:** People make supported changes directly under **Connections**,
+  **Agents**, and **Settings**. Configure credentials through connection settings;
+  credentials are stored separately from policy.
+- **Agent proposals:** Sandboxes and trusted devices can inspect their policy with
+  `monitor policy show` and submit connection-scoped changes for owner review with
+  `monitor policy propose`. Trusted devices receive a credential-free, expanded
+  configuration projection, while sandboxes see only their own access and reachable
+  connection semantics. This view materializes inherited settings and is not source
+  TOML. Both remain limited to connection-scoped proposals. See the full
+  [Monitor skill](client/skills/monitor/SKILL.md) and reduced
+  [sandbox skill](client/skills/monitor-sandbox/SKILL.md) for TOML, structured
+  changes, direct API requests, and credential boundaries.
+- **Owner API:** The owner API is root authority and applies full-policy changes
+  directly. Use it only for intentional owner operations, preview the TOML diff
+  before applying it, and never give owner credentials to a sandbox or routine
+  automation. Credentials are not part of policy TOML.
 
-For an existing agent and GitHub account, merge these settings into your policy
-using their names. They allow reads, ask before changes, and deny deletion.
+With owner authentication, `monitor policy diff FILE` validates a complete TOML
+policy replacement and `monitor policy apply FILE` applies it. By contrast,
+`monitor policy propose FILE --reason …` submits a connection-scoped TOML fragment
+for review; `--changes FILE` submits structured path/value/deletion edits instead.
 
-```toml
-[identities.agent.accounts.github]
-level = "ask"
+Automation on a paired computer should use its trusted-device identity instead of
+an owner session:
 
-[identities.agent.accounts.github.effects]
-delete = "off"
+```sh
+monitor policy propose --changes changes.json \
+  --reason "Configure GitHub access"
 ```
 
-Account levels are `off`, `read`, `ask`, and `allow`. Action and effect overrides
-use `off`, `ask`, and `allow`. The value `off` means Deny. Agents can inspect their settings
-with `monitor policy show` and submit changes with `monitor policy propose` for
-owner approval.
+The changes file is an array of `{ "path": [...], "value": ... }` or deletion
+changes. Monitor validates the entire submission and splits it into one proposal
+per connection.

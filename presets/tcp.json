@@ -1,14 +1,26 @@
 {
   "title": "General network access",
   "catalog": {
-    "group": "protocol",
+    "group": "generic",
+    "warning": "Monitor can see where a sandbox connects (host and port) but not what it sends. Prefer a named connection when one exists.",
     "actions": {
-      "connect": {"title": "Connect and exchange data", "effects": ["read", "send"]}
+      "connect": {
+        "title": "Connect and exchange data",
+        "effects": ["read", "send"]
+      }
     },
-    "connections": {"": {"tcp": {"hosts": ["*"]}}},
-    "defaults": {"contents": "anyone", "sends": "anyone", "strangers": true},
+    "connections": { "": { "tcp": { "hosts": ["*"] } } },
+    "defaults": { "contents": "anyone", "sends": "anyone", "strangers": true },
     "fields": [
-      {"key": "hosts", "label": "Hosts", "list": true, "default": ["*"], "hint": "example.com, *.example.com, or * for all hosts", "help": "Hostnames or wildcard patterns. Matches all TCP ports.", "path": ["connections", "", "tcp", "hosts"]}
+      {
+        "key": "hosts",
+        "label": "Hosts",
+        "list": true,
+        "default": ["*"],
+        "hint": "example.com, *.example.com, or * for all hosts",
+        "help": "Hostnames or wildcard patterns. Matches all TCP ports.",
+        "path": ["connections", "", "tcp", "hosts"]
+      }
     ]
   }
 }

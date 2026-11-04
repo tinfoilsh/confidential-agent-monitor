@@ -150,20 +150,24 @@ class Client:
         except (ValueError, KeyError, TypeError) as error:
             raise MonitorError("invalid connection catalog from the monitor") from error
 
-    def browser(self, name):
-        browsers = [c for c in self.connections() if c["kind"] == "browser"]
-        if name:
-            browsers = [c for c in browsers if c["name"] == name]
-        if not browsers:
-            raise MonitorError("no accessible browser connection; check monitor connections and ask the owner to grant access")
-        if len(browsers) != 1:
-            names = ", ".join(c["name"] for c in browsers)
-            raise MonitorError(f"choose a browser with --connection NAME; available: {names}")
-        browser = browsers[0]
-        if browser["state"] != "ready":
-            raise MonitorError(f"browser {browser['name']!r} is {browser['state']}; check monitor connections again later")
-        return browser["host"]
-
+    def catalog(self):
+        try:
+            value = json.loads(self.request("agent.monitor", "GET", "/catalog"))
+            if (not isinstance(value, dict)
+                    or not isinstance(value.get("catalog_id"), str)
+                    or not isinstance(value.get("presets"), dict)
+                    or not isinstance(value.get("vocabulary"), dict)):
+                raise ValueError()
+            for name, entry in value["presets"].items():
+                if (not isinstance(name, str)
+                        or not isinstance(entry, dict)
+                        or not isinstance(entry.get("title"), str)):
+                    raise ValueError()
+                if "group" in entry and not isinstance(entry["group"], str):
+                    raise ValueError()
+            return value
+        except (ValueError, KeyError, TypeError, AttributeError) as error:
+            raise MonitorError("invalid preset catalog from the monitor") from error
 
 def receive(sock, size):
     data = b""
@@ -1123,8 +1127,8 @@ def policy_command(client, args):
         owner = OwnerClient(args.owner_url, private_read(Path(args.owner_key_file).expanduser()))
     if args.policy_action in ("diff", "apply") and owner is None:
         raise MonitorError("policy diff and apply require owner authentication")
-    if args.policy_action == "propose" and owner is not None:
-        raise MonitorError("proposals use the agent's SSH identity; omit owner options")
+    if args.policy_action in ("propose", "status") and owner is not None:
+        raise MonitorError("proposal commands use the agent's SSH identity; omit owner options")
     if args.policy_action == "show":
         if args.effective and owner is None:
             raise MonitorError("the complete effective policy requires owner authentication")
@@ -1134,18 +1138,44 @@ def policy_command(client, args):
         else:
             print(result["effective" if args.effective else "source"], end="")
         return 0
-    source = sys.stdin.read() if args.file == "-" else Path(args.file).read_text()
-    body = {"source": source}
+    if args.policy_action == "status":
+        if not re.fullmatch(r"[A-Z2-7]{26,}", args.id):
+            raise MonitorError("proposal ID must be at least 26 base32 characters")
+        result = json.loads(client.request("agent.monitor", "GET", f"/policy/proposals/{args.id}"))
+        if (not isinstance(result, dict) or result.get("id") != args.id
+                or result.get("state") not in ("pending", "approved", "denied", "outdated")):
+            raise MonitorError("invalid proposal status from the monitor")
+        print(json.dumps(result, indent=2))
+        return 0
     if args.policy_action == "propose":
-        deletions = []
-        for pointer in args.delete:
-            if not pointer.startswith("/") or re.search(r"~(?![01])", pointer):
-                raise MonitorError("--delete requires a JSON Pointer, for example /identities/claude/accounts/github")
-            deletions.append([part.replace("~1", "/").replace("~0", "~") for part in pointer[1:].split("/")])
-        body.update(reason=args.reason, delete=deletions)
+        if bool(args.file) == bool(args.changes):
+            raise MonitorError("provide exactly one TOML file or --changes JSON file")
+        if args.changes:
+            if args.delete:
+                raise MonitorError("put deletions in the structured changes file, not --delete")
+            raw = sys.stdin.read() if args.changes == "-" else Path(args.changes).read_text()
+            try:
+                changes = json.loads(raw)
+            except json.JSONDecodeError as err:
+                raise MonitorError(f"invalid structured changes JSON: {err}") from err
+            if not isinstance(changes, list) or not changes:
+                raise MonitorError("structured changes must be a non-empty JSON array")
+            body = {"reason": args.reason, "changes": changes}
+        else:
+            source = sys.stdin.read() if args.file == "-" else Path(args.file).read_text()
+            deletions = []
+            for pointer in args.delete:
+                if not pointer.startswith("/") or re.search(r"~(?![01])", pointer):
+                    raise MonitorError("--delete requires a JSON Pointer, for example /accounts/github")
+                deletions.append([part.replace("~1", "/").replace("~0", "~") for part in pointer[1:].split("/")])
+            body = {"source": source, "reason": args.reason, "delete": deletions}
         result = json.loads(client.request("agent.monitor", "POST", "/policy/proposals", body))
         print(json.dumps(result, indent=2))
-    elif args.policy_action == "diff":
+        return 0
+    else:
+        source = sys.stdin.read() if args.file == "-" else Path(args.file).read_text()
+        body = {"source": source}
+    if args.policy_action == "diff":
         preview = owner.request("POST", body, path="/policy/preview")
         print(preview["source_diff"] or "No source changes.")
         print("Effective policy changes:")
@@ -1168,19 +1198,22 @@ def parser():
     p.add_argument("--client-config", default=str(Path.home() / ".config/monitor/client.json"), help="client profiles JSON file")
     p.add_argument("--timeout", type=float, default=300, help="request timeout in seconds (default: 300)")
     commands = p.add_subparsers(dest="command", required=True)
-    policy = commands.add_parser("policy", help="inspect policy and propose TOML edits")
+    policy = commands.add_parser("policy", help="inspect policy views and propose TOML edits")
     policy.add_argument("--owner-url", help="owner API URL for the full source, diff and apply")
     policy.add_argument("--owner-key-file", help="owner key or passphrase file; never needed for agent proposals")
     policy_commands = policy.add_subparsers(dest="policy_action", required=True)
-    show_policy = policy_commands.add_parser("show", help="show your policy settings as TOML")
+    show_policy = policy_commands.add_parser("show", help="show the policy view available to this identity as TOML")
     show_policy.add_argument("--json", action="store_true", help="show the response as JSON")
     show_policy.add_argument("--effective", action="store_true", help="expand presets and defaults; requires owner authentication")
+    status_policy = policy_commands.add_parser("status", help="show the current state of one submitted proposal")
+    status_policy.add_argument("id", help="proposal ID returned by policy propose")
     for action in ("propose", "diff", "apply"):
-        command = policy_commands.add_parser(action, help={"propose": "submit a TOML patch and wait for the owner to approve it", "diff": "validate and preview a replacement policy", "apply": "apply a replacement policy"}[action])
-        command.add_argument("file", help="TOML file, or - for stdin")
+        command = policy_commands.add_parser(action, help={"propose": "submit connection changes for owner review", "diff": "validate and preview a replacement policy", "apply": "apply a replacement policy"}[action])
+        command.add_argument("file", nargs="?" if action == "propose" else None, help="TOML file, or - for stdin")
         if action == "propose":
-            command.add_argument("--reason", required=True, help="explain why the policy change is needed")
-            command.add_argument("--delete", action="append", default=[], help="JSON Pointer to remove; repeat for multiple deletions")
+            command.add_argument("--changes", metavar="FILE", help="structured Change[] JSON file, or - for stdin")
+            command.add_argument("--reason", required=True, help="explain why the connection change is needed")
+            command.add_argument("--delete", action="append", default=[], help="connection-scoped JSON Pointer to remove; repeat for multiple deletions")
     setup = commands.add_parser("setup", help="configure one-command Linux VM launch")
     setup.add_argument("--owner-url", help="unlocked Monitor owner API URL")
     setup.add_argument("--owner-key-file", help="owner-only file containing a key or passphrase; otherwise prompt privately")
@@ -1228,25 +1261,8 @@ def parser():
     serve.add_argument("--listen", default="127.0.0.1:8400", help="loopback IP:first port; uses consecutive ports, or free ports with port 0")
     connections = commands.add_parser("connections", help="list reachable connections and their current status")
     connections.add_argument("--json", action="store_true", help="include account, host and access settings as JSON")
-    browser = commands.add_parser(
-        "browser", help="use the monitor's browser",
-        description="Navigate, read pages, and act on refs from the latest snapshot. The browser runs outside this sandbox.",
-        epilog="Take a new snapshot after navigation or a stale-ref 409. If the owner paused the browser, wait for them to return control. Actions are never retried automatically.",
-    )
-    browser.add_argument("--connection", metavar="NAME", help="browser connection name; required if more than one is available")
-    actions = browser.add_subparsers(dest="action", required=True)
-    actions.add_parser("navigate", help="open an HTTP or HTTPS URL").add_argument("url")
-    actions.add_parser("snapshot", help="read the page's element refs for click, type and fill")
-    actions.add_parser("text", help="read censored page text")
-    screenshot = actions.add_parser("screenshot", help="save a censored PNG screenshot")
-    screenshot.add_argument("output", help="new output filename, or - for stdout")
-    actions.add_parser("click", help="click a ref from the latest snapshot").add_argument("ref")
-    for action, help_text in [("type", "type into a ref"), ("fill", "replace a field's contents")]:
-        a = actions.add_parser(action, help=help_text)
-        a.add_argument("ref")
-        text = a.add_mutually_exclusive_group(required=True)
-        text.add_argument("--text", help="text to enter")
-        text.add_argument("--stdin", action="store_true", help="read text from stdin, including newlines")
+    catalog = commands.add_parser("catalog", help="list connection types available for owner-reviewed setup")
+    catalog.add_argument("--json", action="store_true", help="show complete safe catalog metadata as JSON")
     commands.metavar = "{" + ",".join(name for name in commands.choices if not name.startswith("_")) + "}"
     return p
 
@@ -1302,22 +1318,23 @@ def main(argv=None):
             else:
                 print("No connections are available to this agent. Ask the owner to grant access.")
             return 0
-        host = client.browser(args.connection)
-        body = None
-        if args.action == "navigate":
-            body = {"url": args.url}
-        elif args.action == "click":
-            body = {"ref": args.ref}
-        elif args.action in ("type", "fill"):
-            body = {"ref": args.ref, "text": sys.stdin.read() if args.stdin else args.text}
-        content = client.request(host, "POST" if body is not None else "GET", "/" + args.action, body)
-        if args.action == "screenshot" and args.output != "-":
-            with Path(args.output).open("xb") as output:
-                output.write(content)
-            print(f"Saved screenshot to {args.output}")
-        else:
-            sys.stdout.buffer.write(content)
-        return 0
+        if args.command == "catalog":
+            catalog = client.catalog()
+            if args.json:
+                print(json.dumps(catalog, indent=2))
+            else:
+                presets = catalog["presets"]
+                group_order = {"api": 0, "mcp": 1, "protocol": 2, "generic": 99}
+                rows = [("GROUP", "NAME", "TITLE")] + [
+                    (entry.get("group", "api"), name, entry.get("title", name))
+                    for name, entry in sorted(presets.items(), key=lambda item: (
+                        group_order.get(item[1].get("group", "api"), 50),
+                        item[1].get("title", item[0])))
+                ]
+                widths = [max(len(str(row[i])) for row in rows) for i in range(3)]
+                for row in rows:
+                    print("  ".join(str(value).ljust(width) for value, width in zip(row, widths)).rstrip())
+            return 0
     except (MonitorError, OSError, http.client.HTTPException, subprocess.TimeoutExpired, ValueError, KeyError, EOFError) as error:
         print(f"monitor: {error}", file=sys.stderr)
         return 1

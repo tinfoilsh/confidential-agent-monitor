@@ -33,10 +33,6 @@ import {
 const Settings = lazy(() =>
   import("./Settings").then((m) => ({ default: m.Settings })),
 );
-const PresetEditor = lazy(() =>
-  import("./Settings").then((m) => ({ default: m.PresetEditor })),
-);
-
 const sections: Record<string, [string, string]> = {
   activity: ["Activity", "Review requests and manage saved approval rules."],
   agents: [
@@ -111,8 +107,6 @@ function Shell() {
       request: "activity",
       rules: "activity",
       policy: "settings",
-      presets: "connections",
-      preset: "connections",
     })[kind()] ?? kind();
   const title = () =>
     sections[
@@ -125,16 +119,11 @@ function Shell() {
                 "accounts",
                 "connection",
                 "catalog",
-                "presets",
               ].includes(kind())
             ? "connections"
             : kind()
     ]?.[0] ??
-    (kind() === "request"
-      ? "Request"
-      : kind() === "preset"
-        ? `Preset: ${args()[0] || "New preset"}`
-        : args()[0] || "Monitor");
+    (kind() === "request" ? "Request" : args()[0] || "Monitor");
   const count = (section: string) =>
     section === "activity"
       ? m.pendingCount()
@@ -251,7 +240,6 @@ function Shell() {
                                     "accounts",
                                     "connection",
                                     "catalog",
-                                    "presets",
                                   ].includes(kind())
                                 ? "connections"
                                 : kind()
@@ -305,37 +293,34 @@ function Shell() {
 function ApprovalBar() {
   const m = useMonitor();
   const pending = createMemo(() =>
-    owner.pendingSoonest(m.records().filter(owner.needsOwner)),
+    owner.pendingSoonest(m.records().filter((r) => owner.needsOwner(r) && !owner.isConnectionProposalRecord(r))),
   );
+  const proposals = m.proposals;
+  const total = m.pendingCount;
   return (
-    <Show when={pending()[0]}>
-      {(request) => (
-        <div class="approval-bar" role="status" aria-label="Pending approvals">
-          <Icon name="activity" />
-          <div class="approval-copy">
-            <strong>
-              {pending().length === 1
-                ? "1 request needs your approval"
-                : `${pending().length} requests need your approval`}
-            </strong>
-            <p>
-              {request().facts.principal.name} · {owner.requestTitle(request())}
-            </p>
-          </div>
-          <a
-            class="button"
-            onClick={() => m.setActivity({ scope: "", page: 0, anchor: 0 })}
-            href={
-              pending().length === 1
-                ? href("request", request().id)
-                : "#activity"
-            }
-          >
-            {pending().length === 1 ? "Review request" : "Review requests"}{" "}
-            <Icon name="arrow" />
-          </a>
+    <Show when={total()}>
+      <div class="approval-bar" role="status" aria-label="Pending approvals">
+        <Icon name="activity" />
+        <div class="approval-copy">
+          <strong>{total() === 1 ? "1 item needs your approval" : `${total()} items need your approval`}</strong>
+          <p>{proposals().length
+            ? `${proposals().length} proposed change${proposals().length === 1 ? "" : "s"}${pending().length ? ` · ${pending().length} request${pending().length === 1 ? "" : "s"}` : ""}`
+            : `${pending()[0].facts.principal.name} · ${owner.requestTitle(pending()[0])}`}</p>
         </div>
-      )}
+        <div class="approval-actions">
+          <Show when={proposals().length}>
+            <a class="button" href={proposals().length === 1 ? `#connections/pending/${encodeURIComponent(proposals()[0].id)}` : "#connections/pending"}>
+              {proposals().length === 1 ? "Review change" : "Review changes"} <Icon name="arrow" />
+            </a>
+          </Show>
+          <Show when={pending().length}>
+            <a class="button" onClick={() => m.setActivity({ scope: "", page: 0, anchor: 0 })}
+              href={pending().length === 1 ? href("activity", "request", pending()[0].id) : "#activity"}>
+              {pending().length === 1 ? "Review request" : "Review requests"} <Icon name="arrow" />
+            </a>
+          </Show>
+        </div>
+      </div>
     </Show>
   );
 }
@@ -448,7 +433,10 @@ function Page(props: {
           kind === "connections" || kind === "accounts" || kind === "catalog"
         }
       >
-        <Connections catalog={kind === "catalog" || name === "catalog"} />
+        <Connections
+          catalog={kind === "catalog" || name === "catalog"}
+          proposal={kind === "connections" && name === "pending" ? request : undefined}
+        />
       </Match>
       <Match when={kind === "connection" || kind === "account"}>
         <Connections expanded={name} />
@@ -461,12 +449,6 @@ function Page(props: {
       </Match>
       {/* #integrations (Monitor client on your own machine) and #policy (raw
           document editor) are not part of this release: no route, no link. */}
-      <Match when={kind === "presets"}>
-        <Connections catalog />
-      </Match>
-      <Match when={kind === "preset"}>
-        <PresetEditor name={name} request={request} />
-      </Match>
     </Switch>
   );
 }
