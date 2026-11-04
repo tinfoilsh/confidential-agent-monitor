@@ -649,19 +649,20 @@ func (m *monitor) expireStaleProposals() {
 	cfg := m.settings.Load().Config
 	var outdated []policyProposal
 	m.mu.Lock()
-	for id, proposal := range m.proposals {
+	for _, proposal := range m.proposals {
 		if proposal.State == proposalPending && proposalScopeDigest(cfg, proposal) != proposal.BaseScopeDigest {
-			delete(m.proposals, id)
 			outdated = append(outdated, proposal)
 		}
 	}
 	m.mu.Unlock()
 	for _, proposal := range outdated {
-		m.recordPolicyProposalOutdated(proposal)
+		if outcome, err := newPolicyProposalOutcome(proposal, proposalOutdated); err == nil {
+			m.publishPolicyProposalOutcome(proposal, proposalPending, outcome)
+		}
 	}
 }
 
-func (m *monitor) proposalDecisionFacts(proposal policyProposal) (json.RawMessage, error) {
+func proposalDecisionFacts(proposal policyProposal) (json.RawMessage, error) {
 	raw, _, err := facts.Encode(facts.Facts{
 		Version: facts.Version, Principal: proposal.Proposer,
 		Account: proposal.Connection, Connection: proposal.Connection,
@@ -677,53 +678,59 @@ func (m *monitor) proposalDecisionFacts(proposal policyProposal) (json.RawMessag
 	return raw, err
 }
 
-func (m *monitor) consumeOutdatedProposal(proposal policyProposal) {
-	m.mu.Lock()
-	current, ok := m.proposals[proposal.ID]
-	if ok && current.Digest == proposal.Digest {
-		delete(m.proposals, proposal.ID)
-	}
-	m.mu.Unlock()
-	if ok && current.Digest == proposal.Digest {
-		m.recordPolicyProposalOutdated(proposal)
-	}
+type policyProposalOutcome struct {
+	record *record
+	state  string
+	choice string
 }
 
-func (m *monitor) recordPolicyProposalOutdated(proposal policyProposal) {
-	raw, err := m.proposalDecisionFacts(proposal)
+func newPolicyProposalOutcome(proposal policyProposal, state proposalState) (policyProposalOutcome, error) {
+	raw, err := proposalDecisionFacts(proposal)
 	if err != nil {
-		return
+		return policyProposalOutcome{}, err
 	}
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	record := m.addRecord(&record{
-		Facts: raw,
-		Decision: policy.Decision{Requirements: []policy.Requirement{{
+	outcome := policyProposalOutcome{record: &record{Facts: raw}, state: string(state)}
+	switch state {
+	case proposalApproved:
+		outcome.choice = answerOnce
+	case proposalRejected:
+		outcome.choice, outcome.state = answerDeny, stateDenied
+	case proposalOutdated:
+		outcome.record.Decision = policy.Decision{Requirements: []policy.Requirement{{
 			ID: "policy.outdated", Message: "Settings affecting this connection changed before the proposal was reviewed.",
-		}}},
-	})
-	record.State = stateOutdated
-	m.settleRecord(record, nil)
+		}}}
+	default:
+		return policyProposalOutcome{}, errors.New("policy proposal outcome is not terminal")
+	}
+	if state != proposalOutdated {
+		outcome.record.Decision = policy.Decision{Requirements: []policy.Requirement{{ID: "policy", Message: proposal.Reason}}}
+	}
+	return outcome, nil
 }
 
-func (m *monitor) recordPolicyProposalDecision(proposal policyProposal, approved bool) {
-	raw, err := m.proposalDecisionFacts(proposal)
-	if err != nil {
-		return
-	}
-	choice, state := answerDeny, stateDenied
-	if approved {
-		choice, state = answerOnce, stateApproved
-	}
+// publishPolicyProposalOutcome replaces an active proposal with its live audit
+// record under one lock, so an authenticated status poll always sees one or the other.
+func (m *monitor) publishPolicyProposalOutcome(proposal policyProposal, expected proposalState, outcome policyProposalOutcome) bool {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	record := m.addRecord(&record{
-		Facts:    raw,
-		Decision: policy.Decision{Requirements: []policy.Requirement{{ID: "policy", Message: proposal.Reason}}},
-		Reviews:  []reviewAnswer{{By: "owner", answerInput: answerInput{Choice: choice}, Time: time.Now()}},
-	})
-	record.State = state
+	current, ok := m.proposals[proposal.ID]
+	if !ok || current.Digest != proposal.Digest || current.State != expected {
+		return false
+	}
+	delete(m.proposals, proposal.ID)
+	if outcome.choice != "" {
+		outcome.record.Reviews = []reviewAnswer{{By: "owner", answerInput: answerInput{Choice: outcome.choice}, Time: time.Now()}}
+	}
+	record := m.addRecord(outcome.record)
+	record.State = outcome.state
 	m.settleRecord(record, nil)
+	return true
+}
+
+func (m *monitor) consumeOutdatedProposal(proposal policyProposal) {
+	if outcome, err := newPolicyProposalOutcome(proposal, proposalOutdated); err == nil {
+		m.publishPolicyProposalOutcome(proposal, proposal.State, outcome)
+	}
 }
 
 func (m *monitor) rejectPolicyProposal(_ context.Context, id string, decision proposalDecision) error {
@@ -743,9 +750,14 @@ func (m *monitor) rejectPolicyProposal(_ context.Context, id string, decision pr
 		m.mu.Unlock()
 		return proposalConflict{errors.New("policy proposal is already being applied")}
 	}
-	delete(m.proposals, id)
 	m.mu.Unlock()
-	m.recordPolicyProposalDecision(proposal, false)
+	outcome, err := newPolicyProposalOutcome(proposal, proposalRejected)
+	if err != nil {
+		return err
+	}
+	if !m.publishPolicyProposalOutcome(proposal, proposalPending, outcome) {
+		return proposalConflict{errors.New("policy proposal changed while being rejected")}
+	}
 	return nil
 }
 
@@ -761,6 +773,10 @@ func (m *monitor) approvePolicyProposal(ctx context.Context, id string, decision
 	if proposalScopeDigest(before.Config, proposal) != proposal.BaseScopeDigest {
 		m.consumeOutdatedProposal(proposal)
 		return errPolicyConflict
+	}
+	outcome, err := newPolicyProposalOutcome(proposal, proposalApproved)
+	if err != nil {
+		return err
 	}
 	changes, err := decodeProposalChanges(proposal)
 	if err != nil {
@@ -790,9 +806,8 @@ func (m *monitor) approvePolicyProposal(ctx context.Context, id string, decision
 	if err != nil {
 		return err
 	}
-	m.mu.Lock()
-	delete(m.proposals, id)
-	m.mu.Unlock()
-	m.recordPolicyProposalDecision(proposal, true)
+	if !m.publishPolicyProposalOutcome(proposal, proposalApproving, outcome) {
+		return proposalConflict{errors.New("policy proposal changed while being applied")}
+	}
 	return nil
 }
