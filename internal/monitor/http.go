@@ -275,6 +275,12 @@ func (m *monitor) connectionControl(w http.ResponseWriter, r *http.Request) {
 	http.StripPrefix("/connections/"+name, connector.Control(server)).ServeHTTP(w, r.WithContext(ctx))
 }
 
+type agentCatalogView struct {
+	CatalogID  string                       `json:"catalog_id"`
+	Presets    map[string]presets.Entry     `json:"presets"`
+	Vocabulary map[string]facts.Obligations `json:"vocabulary"`
+}
+
 func (m *monitor) agentHandler(key string) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /connections", agentTx(m, key, func(_ *http.Request, _ struct{}, p config.Principal) (any, error) {
@@ -285,10 +291,10 @@ func (m *monitor) agentHandler(key string) http.Handler {
 	}))
 	mux.HandleFunc("GET /catalog", agentTx(m, key, func(*http.Request, struct{}, config.Principal) (any, error) {
 		settings := m.settings.Load()
-		return struct {
-			CatalogID string                   `json:"catalog_id"`
-			Presets   map[string]presets.Entry `json:"presets"`
-		}{CatalogID: settings.CatalogID, Presets: settings.Catalog}, nil
+		return agentCatalogView{CatalogID: settings.CatalogID, Presets: settings.Catalog, Vocabulary: facts.Effects}, nil
+	}))
+	mux.HandleFunc("GET /policy/proposals/{id}", agentTx(m, key, func(r *http.Request, _ struct{}, principal config.Principal) (any, error) {
+		return m.agentPolicyProposalStatus(r.PathValue("id"), principal)
 	}))
 	mux.HandleFunc("POST /policy/proposals", JSONHandler(maxAgentBytes, func(r *http.Request, input proposalInput) (any, error) {
 		m.mu.Lock()
@@ -533,6 +539,7 @@ type connectionListing struct {
 	Hosts        []string          `json:"hosts"`
 	Slots        any               `json:"slots"`
 	Placeholders map[string]string `json:"placeholders"`
+	Credentials  map[string]string `json:"credentials,omitempty"`
 }
 
 // listing snapshots the connections p reaches while the caller holds mu.
@@ -550,6 +557,13 @@ func (m *monitor) listing(p config.Principal) any {
 		l := connectionListing{Name: name, Account: c.Account, Protocol: c.Protocol, Host: name + ".monitor",
 			State: c.Status().State, Access: m.settings.Load().Access(p.Name, c.Account)}
 		l.Hosts, l.Slots, l.Placeholders = c.prepared.Discovery.Hosts, c.prepared.Discovery.Slots, c.prepared.Discovery.Placeholders
+		if len(c.Credentials) != 0 {
+			l.Credentials = map[string]string{}
+			for name := range c.Credentials {
+				id := store.SecretID{Account: c.Account, Connection: c.Key, Name: name}
+				l.Credentials[name], _ = credential.Describe(m.store.Doc.Secrets.Get(id))
+			}
+		}
 		result.Connections = append(result.Connections, l)
 	}
 	return result

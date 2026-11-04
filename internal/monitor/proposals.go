@@ -24,6 +24,9 @@ type proposalState string
 const (
 	proposalPending   proposalState = "pending"
 	proposalApproving proposalState = "approving"
+	proposalApproved  proposalState = "approved"
+	proposalRejected  proposalState = "rejected"
+	proposalOutdated  proposalState = "outdated"
 
 	maxProposalBytes          = 64 << 10
 	maxProposalReason         = 4096
@@ -385,6 +388,47 @@ func proposalReceiptOf(p policyProposal) proposalReceipt {
 	}
 }
 
+// agentPolicyProposalStatus returns only receipt metadata for the authenticated
+// proposer. Terminal outcomes remain queryable while their audit record is live.
+// The caller holds mu.
+func (m *monitor) agentPolicyProposalStatus(id string, principal config.Principal) (proposalReceipt, error) {
+	if proposal, ok := m.proposals[id]; ok {
+		if proposal.Proposer.Key != principal.Fingerprint || proposal.Proposer.Name != principal.Name {
+			return proposalReceipt{}, proposalMissing{errors.New("policy proposal not found")}
+		}
+		return proposalReceiptOf(proposal), nil
+	}
+	for _, record := range slices.Backward(m.records) {
+		var proposalFacts facts.Facts
+		if json.Unmarshal(record.Facts, &proposalFacts) != nil || proposalFacts.Service != "policy-proposal" ||
+			proposalFacts.Principal.Key != principal.Fingerprint || proposalFacts.Principal.Name != principal.Name ||
+			proposalFacts.Parameters["proposal_id"] != id {
+			continue
+		}
+		var state proposalState
+		switch record.State {
+		case stateApproved:
+			state = proposalApproved
+		case stateDenied:
+			state = proposalRejected
+		case stateOutdated:
+			state = proposalOutdated
+		default:
+			continue
+		}
+		return proposalReceipt{
+			ID: id, Digest: stringParameter(proposalFacts.Parameters, "digest"), State: state,
+			Connection: proposalFacts.Connection, ProposerKind: stringParameter(proposalFacts.Parameters, "proposer_kind"),
+		}, nil
+	}
+	return proposalReceipt{}, proposalMissing{errors.New("policy proposal not found")}
+}
+
+func stringParameter(parameters map[string]any, name string) string {
+	value, _ := parameters[name].(string)
+	return value
+}
+
 func sameProposalSubmission(a, b policyProposal) bool {
 	return a.BaseScopeDigest == b.BaseScopeDigest && a.Reason == b.Reason &&
 		a.Proposer == b.Proposer && a.ProposerKind == b.ProposerKind &&
@@ -622,7 +666,10 @@ func (m *monitor) proposalDecisionFacts(proposal policyProposal) (json.RawMessag
 		Version: facts.Version, Principal: proposal.Proposer,
 		Account: proposal.Connection, Connection: proposal.Connection,
 		Service: "policy-proposal", Title: proposal.Reason,
-		Parameters: map[string]any{"connection": proposal.Connection},
+		Parameters: map[string]any{
+			"connection": proposal.Connection, "proposal_id": proposal.ID,
+			"digest": proposal.Digest, "proposer_kind": proposal.ProposerKind,
+		},
 		Details: map[string]any{"policy": map[string]any{
 			"source_diff": proposal.SourceDiff,
 		}},

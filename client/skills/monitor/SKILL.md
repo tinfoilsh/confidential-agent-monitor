@@ -32,8 +32,9 @@ monitor catalog --json
 ```
 
 Each preset can include its name, title, group, defaults, setup fields,
-connection templates, and shared `warning` copy. The final `generic` group is a
-fallback for broad connection types.
+connection templates, and shared `warning` copy. `vocabulary` describes the
+effects referenced by catalog actions, including change and approval defaults.
+The final `generic` group is a fallback for broad connection types.
 
 Inspect connections this identity may actually use:
 
@@ -42,8 +43,9 @@ monitor connections --json
 ```
 
 Connection discovery includes routing names, protocol, readiness, effective
-access, safe credential placeholders, and allowed upstream hosts. It never
-contains credential values.
+access, allowed upstream hosts, safe credential placeholders, and credential
+states such as `unset`, `static`, `oauth`, or `oauth-required`. It never contains
+credential values or verified credential account identifiers.
 
 Inspect policy visible to this identity:
 
@@ -105,7 +107,15 @@ publishing them for review.
 
 A batch affecting several connections is split into one proposal per connection.
 Setup and default/sandbox access for the same connection stay together. The CLI
-prints pending receipts; the owner reviews each connection independently.
+prints one receipt per connection; poll a receipt without owner credentials:
+
+```sh
+monitor policy status PROPOSAL_ID
+```
+
+The result is limited to receipt metadata and reports `pending`, `approving`,
+`approved`, `rejected`, or `outdated`. Status is process-local like the pending
+proposal itself, so Monitor restart may make an old receipt unavailable.
 
 If relevant configuration changes before review, Monitor consumes the proposal
 as Outdated and records that outcome in Activity. Submit a new proposal against
@@ -148,8 +158,9 @@ an owner bearer token.
 | ------ | ------------------- | -------------------------------------------- |
 | `GET`  | `/catalog`          | Safe preset catalog and shared warnings      |
 | `GET`  | `/connections`      | Connections this identity can use            |
-| `GET`  | `/policy`           | Identity-scoped non-secret policy TOML       |
-| `POST` | `/policy/proposals` | Submit TOML or structured connection changes |
+| `GET`  | `/policy`                | Identity-scoped credential-free policy TOML  |
+| `GET`  | `/policy/proposals/{id}` | Poll one proposal submitted by this identity |
+| `POST` | `/policy/proposals`      | Submit TOML or structured connection changes |
 
 Examples from a sandbox where `agent.monitor` is directly routable:
 

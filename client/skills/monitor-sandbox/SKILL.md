@@ -31,7 +31,8 @@ monitor catalog --json
 ```
 
 Catalog entries describe setup fields, defaults, connection templates, and
-shared `warning` copy. The final `generic` group contains broad fallback types.
+shared `warning` copy. `vocabulary` describes the effects referenced by catalog
+actions. The final `generic` group contains broad fallback types.
 
 See connections this sandbox can currently use:
 
@@ -40,7 +41,9 @@ monitor connections --json
 ```
 
 Discovery includes connection names, protocols, readiness, effective access,
-allowed hosts, and safe credential placeholders. It never includes credentials.
+allowed hosts, safe credential placeholders, and credential states such as
+`unset`, `static`, `oauth`, or `oauth-required`. It never includes credential
+values or verified credential account identifiers.
 
 See this sandbox's own policy projection:
 
@@ -88,8 +91,16 @@ configuration. Monitor validates the candidate and removes semantic no-ops befor
 publishing it.
 
 A batch is split into one proposal per connection. The owner reviews each
-connection independently. If a relevant setting changes first, Monitor records
-the proposal as Outdated; submit a new proposal if it is still needed.
+connection independently. Poll the ID from a submitted receipt with:
+
+```sh
+monitor policy status PROPOSAL_ID
+```
+
+Status is limited to this sandbox's own proposals and reports `pending`,
+`approving`, `approved`, `rejected`, or `outdated`. It is process-local like the
+pending proposal itself. If a relevant setting changes first, Monitor records the
+proposal as Outdated; submit a new proposal if it is still needed.
 
 ## Use connections
 
@@ -126,7 +137,8 @@ Inside the managed sandbox, the identity-authenticated API is available at
 | --- | --- | --- |
 | `GET` | `/catalog` | Safe connection catalog and warnings |
 | `GET` | `/connections` | Connections granted to this sandbox |
-| `GET` | `/policy` | This sandbox's non-secret policy projection |
+| `GET` | `/policy` | This sandbox's credential-free policy view |
+| `GET` | `/policy/proposals/{id}` | Poll this sandbox's submitted proposal |
 | `POST` | `/policy/proposals` | Submit owner-reviewed connection changes |
 
 ```sh

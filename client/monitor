@@ -155,7 +155,8 @@ class Client:
             value = json.loads(self.request("agent.monitor", "GET", "/catalog"))
             if (not isinstance(value, dict)
                     or not isinstance(value.get("catalog_id"), str)
-                    or not isinstance(value.get("presets"), dict)):
+                    or not isinstance(value.get("presets"), dict)
+                    or not isinstance(value.get("vocabulary"), dict)):
                 raise ValueError()
             for name, entry in value["presets"].items():
                 if (not isinstance(name, str)
@@ -1126,8 +1127,8 @@ def policy_command(client, args):
         owner = OwnerClient(args.owner_url, private_read(Path(args.owner_key_file).expanduser()))
     if args.policy_action in ("diff", "apply") and owner is None:
         raise MonitorError("policy diff and apply require owner authentication")
-    if args.policy_action == "propose" and owner is not None:
-        raise MonitorError("proposals use the agent's SSH identity; omit owner options")
+    if args.policy_action in ("propose", "status") and owner is not None:
+        raise MonitorError("proposal commands use the agent's SSH identity; omit owner options")
     if args.policy_action == "show":
         if args.effective and owner is None:
             raise MonitorError("the complete effective policy requires owner authentication")
@@ -1136,6 +1137,15 @@ def policy_command(client, args):
             print(json.dumps(result, indent=2))
         else:
             print(result["effective" if args.effective else "source"], end="")
+        return 0
+    if args.policy_action == "status":
+        if not re.fullmatch(r"[0-9a-f]{32}", args.id):
+            raise MonitorError("proposal ID must be 32 lowercase hexadecimal characters")
+        result = json.loads(client.request("agent.monitor", "GET", f"/policy/proposals/{args.id}"))
+        if (not isinstance(result, dict) or result.get("id") != args.id
+                or result.get("state") not in ("pending", "approving", "approved", "rejected", "outdated")):
+            raise MonitorError("invalid proposal status from the monitor")
+        print(json.dumps(result, indent=2))
         return 0
     if args.policy_action == "propose":
         if bool(args.file) == bool(args.changes):
@@ -1195,6 +1205,8 @@ def parser():
     show_policy = policy_commands.add_parser("show", help="show the policy view available to this identity as TOML")
     show_policy.add_argument("--json", action="store_true", help="show the response as JSON")
     show_policy.add_argument("--effective", action="store_true", help="expand presets and defaults; requires owner authentication")
+    status_policy = policy_commands.add_parser("status", help="show the current state of one submitted proposal")
+    status_policy.add_argument("id", help="proposal ID returned by policy propose")
     for action in ("propose", "diff", "apply"):
         command = policy_commands.add_parser(action, help={"propose": "submit connection changes for owner review", "diff": "validate and preview a replacement policy", "apply": "apply a replacement policy"}[action])
         command.add_argument("file", nargs="?" if action == "propose" else None, help="TOML file, or - for stdin")
