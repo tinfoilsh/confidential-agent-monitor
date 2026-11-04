@@ -528,13 +528,13 @@ function Gate() {
     // Local dev (bun run dev) only: a prefilled passphrase so the dev
     // server unlocks with one click. Stripped from production builds.
     [key, setKey] = createSignal(import.meta.env.DEV ? "testtesttesttest" : "");
-  const finish = (tinfoilApiKey?: string) =>
+  const finish = (tinfoilApiKey?: () => Promise<string> | string) =>
     m.busy() ||
     m.perform(
-      (client) =>
+      async (client) =>
         client.onboard(m.view()!, "known_only", undefined, {
           allowPaidInference: true,
-          tinfoilApiKey,
+          tinfoilApiKey: await tinfoilApiKey?.(),
         }),
       "Monitor set up",
     );
@@ -596,7 +596,14 @@ function Gate() {
           </Show>
         </Match>
         <Match when={m.view() && !owner.onboarded(m.view()!)}>
-          <Onboarding busy={m.busy()} onFinish={finish} />
+          <Onboarding
+            busy={m.busy()}
+            generate={m.tinfoilApiKey}
+            onFinish={finish}
+          />
+          <Show when={m.error()}>
+            <p role="alert">{m.error()}</p>
+          </Show>
         </Match>
       </Switch>
     </div>
@@ -604,7 +611,8 @@ function Gate() {
 }
 function Onboarding(props: {
   busy: boolean;
-  onFinish(tinfoilApiKey?: string): void;
+  generate?: () => Promise<string>;
+  onFinish(tinfoilApiKey?: () => Promise<string> | string): void;
 }) {
   const [tinfoilKey, setTinfoilKey] = createSignal("");
   return (
@@ -612,7 +620,7 @@ function Onboarding(props: {
       class="onboarding"
       onSubmit={(e) => {
         e.preventDefault();
-        props.onFinish(tinfoilKey());
+        props.onFinish(props.generate ?? tinfoilKey);
       }}
     >
       <header class="onboarding-heading">
@@ -628,42 +636,51 @@ function Onboarding(props: {
             alt=""
           />
         </span>
-        <h1>Add the Tinfoil connection</h1>
-        <p>Use Tinfoil models from your sandbox for private AI & web search.</p>
-      </header>
-      <fieldset class="onboarding-key" disabled={props.busy}>
-        <div class="onboarding-key-label">
-          <label for="tinfoil-api-key">API key</label>
-          <a
-            href="https://dash.tinfoil.sh/?tab=api-keys"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Get an API key
-            <Icon name="external" />
-          </a>
-        </div>
-        <input
-          id="tinfoil-api-key"
-          type="password"
-          required
-          autofocus
-          pattern={".*\\S.*"}
-          title="Enter your Tinfoil API key"
-          placeholder="tk-…"
-          autocomplete="off"
-          spellcheck={false}
-          aria-describedby="tinfoil-key-help"
-          value={tinfoilKey()}
-          onInput={(e) => setTinfoilKey(e.currentTarget.value)}
-        />
-        <p id="tinfoil-key-help" class="onboarding-key-help">
-          <Icon name="rules" />
-          Your key stays in Monitor, hidden from your sandboxes.
+        <h1>Connect Tinfoil to your sandbox</h1>
+        <p>
+          Use Tinfoil models in your sandbox for end-to-end confidential
+          workloads.
         </p>
-      </fieldset>
+      </header>
+      <Show when={!props.generate}>
+        <fieldset class="onboarding-key" disabled={props.busy}>
+          <div class="onboarding-key-label">
+            <label for="tinfoil-api-key">API key</label>
+            <a
+              href="https://dash.tinfoil.sh/?tab=api-keys"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Get an API key
+              <Icon name="external" />
+            </a>
+          </div>
+          <input
+            id="tinfoil-api-key"
+            type="password"
+            required
+            autofocus
+            pattern={".*\\S.*"}
+            title="Enter your Tinfoil API key"
+            placeholder="tk-…"
+            autocomplete="off"
+            spellcheck={false}
+            aria-describedby="tinfoil-key-help"
+            value={tinfoilKey()}
+            onInput={(e) => setTinfoilKey(e.currentTarget.value)}
+          />
+          <p id="tinfoil-key-help" class="onboarding-key-help">
+            <Icon name="rules" />
+            Your key stays in Monitor, hidden from your sandboxes.
+          </p>
+        </fieldset>
+      </Show>
       <button class="primary" disabled={props.busy}>
-        {props.busy ? "Saving…" : "Add the Tinfoil connection"}
+        {props.busy
+          ? "Saving…"
+          : props.generate
+            ? "Generate an API key automatically"
+            : "Add the Tinfoil connection"}
         <Icon name="arrow" />
       </button>
       <div class="onboarding-actions">

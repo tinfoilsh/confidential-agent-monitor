@@ -352,6 +352,13 @@ export default function Monitor(props: {
                   name,
                 )
               }
+              tinfoilApiKey={async () => {
+                const { key } = (await opened.scope.api("/api/keys/", {
+                  method: "POST",
+                  body: { name: opened.row.name },
+                })) as { key: string };
+                return key;
+              }}
             />
           </>
         )}

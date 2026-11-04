@@ -38,6 +38,8 @@ export type MonitorOptions = {
   candidates?: () => { name: string; key: string }[];
   sandboxesLoading?: () => boolean;
   accept?: (name: string) => Promise<void>;
+  // Hosted builds mint a Tinfoil API key for the signed-in account.
+  tinfoilApiKey?: () => Promise<string>;
 };
 
 function createMonitor(options: MonitorOptions) {
@@ -592,6 +594,7 @@ function createMonitor(options: MonitorOptions) {
     shell,
     setShell,
     shellFor: (name: string) => options.shell?.(name),
+    tinfoilApiKey: options.tinfoilApiKey,
     sandboxesLoading: () => options.sandboxesLoading?.() ?? false,
     waiting: () => {
       const keys = Object.values(view()?.config.identities ?? {}).map(
