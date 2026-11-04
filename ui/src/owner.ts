@@ -147,6 +147,7 @@ export type RequestRecord = {
 export type Change = { path: string[]; value?: Json; delete?: boolean };
 export type PolicyProposal = {
   id: string;
+  state: "pending" | "approving";
   digest: string;
   created_at: string;
   reason: string;

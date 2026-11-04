@@ -469,7 +469,7 @@ func (m *monitor) answerRequest(ctx context.Context, id string, input answerInpu
 		}, &savedAnswer{
 			record: r,
 			answer: reviewAnswer{By: "owner", answerInput: input},
-		}, "")
+		})
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()

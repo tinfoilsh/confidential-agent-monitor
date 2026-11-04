@@ -119,7 +119,7 @@ func (m *monitor) signInCredential(account string, path []string) (json.RawMessa
 				}
 			}
 			return nil
-		}, nil, "")
+		}, nil)
 	}, nil
 }
 

@@ -221,7 +221,7 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 	mux.Handle("POST /policy", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input sourceInput) (any, error) {
 		m.writes.Lock()
 		defer m.writes.Unlock()
-		return m.viewAfter(m.writeSettings(r.Context(), &input.Source, nil, nil, nil, ""))
+		return m.viewAfter(m.writeSettings(r.Context(), &input.Source, nil, nil, nil))
 	})))
 	mux.Handle("POST /policy/edits", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input editsInput) (any, error) {
 		m.writes.Lock()
@@ -231,7 +231,7 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 				return errPolicyConflict
 			}
 			return nil
-		}, nil, "")
+		}, nil)
 		return m.viewAfter(err)
 	})))
 }

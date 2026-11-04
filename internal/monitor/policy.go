@@ -20,7 +20,7 @@ import (
 // writeSettings is the single ordered settings path; writes is held, mu is not.
 // check runs under mu before validation and again before persistence. A saved
 // approval is answered atomically with the durable settings change.
-func (m *monitor) writeSettings(ctx context.Context, source *string, changes []config.Change, check func() error, saved *savedAnswer, preserveProposal string) error {
+func (m *monitor) writeSettings(ctx context.Context, source *string, changes []config.Change, check func() error, saved *savedAnswer) error {
 	m.mu.Lock()
 	if check != nil {
 		if err := check(); err != nil {
@@ -76,7 +76,7 @@ func (m *monitor) writeSettings(ctx context.Context, source *string, changes []c
 	m.mu.Unlock()
 	if err == nil {
 		m.installConnections(install, retired)
-		m.expireStaleProposals(preserveProposal)
+		m.expireStaleProposals()
 	}
 	return err
 }
@@ -181,7 +181,7 @@ func (m *monitor) enroll(ctx context.Context, identities map[string]identityEnro
 	if err != nil {
 		return err
 	}
-	return m.writeSettings(ctx, nil, changes, nil, nil, "")
+	return m.writeSettings(ctx, nil, changes, nil, nil)
 }
 
 // viewAfter renders the owner view once an action that ran without mu succeeds.

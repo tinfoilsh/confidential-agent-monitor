@@ -19,7 +19,12 @@ import (
 	"github.com/tinfoilsh/monitor/internal/store"
 )
 
+type proposalState string
+
 const (
+	proposalPending   proposalState = "pending"
+	proposalApproving proposalState = "approving"
+
 	maxProposalBytes          = 64 << 10
 	maxProposalReason         = 4096
 	maxProposalDeletes        = 64
@@ -41,9 +46,11 @@ type proposalDecision struct {
 	Digest string `json:"digest"`
 }
 
-// Pending proposals are process-local. Approved/rejected outcomes are recorded in the audit log
+// Active proposals and their transitions are process-local. Terminal outcomes are
+// recorded in the audit log.
 type policyProposal struct {
 	ID              string
+	State           proposalState
 	Digest          string
 	BaseScopeDigest string
 	IdempotencyKey  string
@@ -64,6 +71,7 @@ type proposalArea struct {
 
 type proposalView struct {
 	ID           string          `json:"id"`
+	State        proposalState   `json:"state"`
 	Digest       string          `json:"digest"`
 	CreatedAt    string          `json:"created_at"`
 	Reason       string          `json:"reason"`
@@ -77,11 +85,11 @@ type proposalView struct {
 }
 
 type proposalReceipt struct {
-	ID           string `json:"id"`
-	Digest       string `json:"digest"`
-	State        string `json:"state"`
-	Connection   string `json:"connection"`
-	ProposerKind string `json:"proposer_kind"`
+	ID           string        `json:"id"`
+	Digest       string        `json:"digest"`
+	State        proposalState `json:"state"`
+	Connection   string        `json:"connection"`
+	ProposerKind string        `json:"proposer_kind"`
 }
 
 type proposalMissing struct{ error }
@@ -363,7 +371,7 @@ func proposalViewOf(p policyProposal, stale bool) proposalView {
 	var changes []config.Change
 	_ = json.Unmarshal(p.Changes, &changes)
 	return proposalView{
-		ID: p.ID, Digest: p.Digest, CreatedAt: p.CreatedAt, Reason: p.Reason,
+		ID: p.ID, State: p.State, Digest: p.Digest, CreatedAt: p.CreatedAt, Reason: p.Reason,
 		Proposer: p.Proposer, ProposerKind: p.ProposerKind, Connection: p.Connection,
 		Affected: p.Affected, Changes: changes, SourceDiff: p.SourceDiff,
 		Stale: stale,
@@ -372,7 +380,7 @@ func proposalViewOf(p policyProposal, stale bool) proposalView {
 
 func proposalReceiptOf(p policyProposal) proposalReceipt {
 	return proposalReceipt{
-		ID: p.ID, Digest: p.Digest, State: "pending", Connection: p.Connection,
+		ID: p.ID, Digest: p.Digest, State: p.State, Connection: p.Connection,
 		ProposerKind: p.ProposerKind,
 	}
 }
@@ -414,7 +422,7 @@ func (m *monitor) buildPolicyProposal(ctx context.Context, base store.Document, 
 		return policyProposal{}, err
 	}
 	proposal := policyProposal{
-		ID: id, BaseScopeDigest: connectionScopeDigest(before.Config, connection, normalized),
+		ID: id, State: proposalPending, BaseScopeDigest: connectionScopeDigest(before.Config, connection, normalized),
 		IdempotencyKey: idempotency, CreatedAt: time.Now().UTC().Format(time.RFC3339Nano),
 		Reason: strings.TrimSpace(reason), Proposer: proposer, ProposerKind: kind,
 		Connection: connection, Changes: rawChanges, SourceDiff: diff.SourceDiff,
@@ -519,7 +527,7 @@ func (m *monitor) policyProposals() []proposalView {
 	defer m.mu.Unlock()
 	result := make([]proposalView, 0, len(m.proposals))
 	for _, proposal := range m.proposals {
-		stale := proposalScopeDigest(m.settings.Load().Config, proposal) != proposal.BaseScopeDigest
+		stale := proposal.State == proposalPending && proposalScopeDigest(m.settings.Load().Config, proposal) != proposal.BaseScopeDigest
 		result = append(result, proposalViewOf(proposal, stale))
 	}
 	slices.SortFunc(result, func(a, b proposalView) int {
@@ -538,18 +546,36 @@ func (m *monitor) policyProposalView(id string) (proposalView, error) {
 	if !ok {
 		return proposalView{}, proposalMissing{errors.New("policy proposal not found")}
 	}
-	stale := proposalScopeDigest(m.settings.Load().Config, proposal) != proposal.BaseScopeDigest
+	stale := proposal.State == proposalPending && proposalScopeDigest(m.settings.Load().Config, proposal) != proposal.BaseScopeDigest
 	return proposalViewOf(proposal, stale), nil
 }
 
-func (m *monitor) policyProposal(id string) (policyProposal, error) {
+func (m *monitor) beginPolicyProposalApproval(id string, decision proposalDecision) (policyProposal, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	proposal, ok := m.proposals[id]
 	if !ok {
 		return proposal, proposalMissing{errors.New("policy proposal not found")}
 	}
+	if err := checkProposalDecision(proposal, decision); err != nil {
+		return proposal, err
+	}
+	if proposal.State != proposalPending {
+		return proposal, proposalConflict{errors.New("policy proposal is already being applied")}
+	}
+	proposal.State = proposalApproving
+	m.proposals[id] = proposal
 	return proposal, nil
+}
+
+func (m *monitor) restorePolicyProposalPending(proposal policyProposal) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	current, ok := m.proposals[proposal.ID]
+	if ok && current.Digest == proposal.Digest && current.State == proposalApproving {
+		current.State = proposalPending
+		m.proposals[proposal.ID] = current
+	}
 }
 
 func checkProposalDecision(proposal policyProposal, decision proposalDecision) error {
@@ -572,15 +598,15 @@ func decodeProposalChanges(proposal policyProposal) ([]config.Change, error) {
 	return changes, nil
 }
 
-// expireStaleProposals consumes proposals whose reviewed connection context changed
-// after a successful settings write. The proposal being approved is preserved until
-// its own decision is recorded; other proposals for that connection become outdated.
-func (m *monitor) expireStaleProposals(preserve string) {
+// expireStaleProposals consumes pending proposals whose reviewed connection
+// context changed after a successful settings write. A proposal being applied owns
+// the write that changed its scope and completes its own terminal transition.
+func (m *monitor) expireStaleProposals() {
 	cfg := m.settings.Load().Config
 	var outdated []policyProposal
 	m.mu.Lock()
 	for id, proposal := range m.proposals {
-		if id != preserve && proposalScopeDigest(cfg, proposal) != proposal.BaseScopeDigest {
+		if proposal.State == proposalPending && proposalScopeDigest(cfg, proposal) != proposal.BaseScopeDigest {
 			delete(m.proposals, id)
 			outdated = append(outdated, proposal)
 		}
@@ -666,6 +692,10 @@ func (m *monitor) rejectPolicyProposal(_ context.Context, id string, decision pr
 		m.mu.Unlock()
 		return err
 	}
+	if proposal.State != proposalPending {
+		m.mu.Unlock()
+		return proposalConflict{errors.New("policy proposal is already being applied")}
+	}
 	delete(m.proposals, id)
 	m.mu.Unlock()
 	m.recordPolicyProposalDecision(proposal, false)
@@ -675,13 +705,11 @@ func (m *monitor) rejectPolicyProposal(_ context.Context, id string, decision pr
 func (m *monitor) approvePolicyProposal(ctx context.Context, id string, decision proposalDecision) error {
 	m.writes.Lock()
 	defer m.writes.Unlock()
-	proposal, err := m.policyProposal(id)
+	proposal, err := m.beginPolicyProposalApproval(id, decision)
 	if err != nil {
 		return err
 	}
-	if err := checkProposalDecision(proposal, decision); err != nil {
-		return err
-	}
+	defer m.restorePolicyProposalPending(proposal)
 	base, before := m.snapshot()
 	if proposalScopeDigest(before.Config, proposal) != proposal.BaseScopeDigest {
 		m.consumeOutdatedProposal(proposal)
@@ -704,11 +732,14 @@ func (m *monitor) approvePolicyProposal(ctx context.Context, id string, decision
 		if !ok {
 			return proposalMissing{errors.New("policy proposal not found")}
 		}
+		if current.State != proposalApproving {
+			return proposalConflict{errors.New("policy proposal is no longer being applied")}
+		}
 		if proposalScopeDigest(m.settings.Load().Config, current) != current.BaseScopeDigest {
 			return errPolicyConflict
 		}
 		return checkProposalDecision(current, decision)
-	}, nil, id)
+	}, nil)
 	if err != nil {
 		return err
 	}
