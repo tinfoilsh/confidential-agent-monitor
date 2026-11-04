@@ -21,6 +21,13 @@ export type Container = {
   owner_key_mode: "tmk" | "umk" | null;
   owner_public_key: string | null;
   config?: string;
+  connections?: {
+    production?: {
+      url: string;
+      config_name: string;
+      config_digest: string;
+    } | null;
+  };
   current_tag?: string;
   cpus?: number;
   memory_mb?: number | null;
