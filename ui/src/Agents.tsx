@@ -48,26 +48,39 @@ export function Agents(props: { expanded?: string }) {
             </h2>
           </div>
           <For each={m.waiting()}>
-            {(name) => (
-              <div class="resource-row waiting-row">
-                <Icon name="sandboxes" />
-                <strong class="collection-name" title={name}>
-                  {name}
-                </strong>
-                <span class="collection-description">
-                  Accepting adds it to this Monitor and unlocks its workspace
-                </span>
-                <button
-                  type="button"
-                  class="primary"
-                  disabled={!!m.accepting()}
-                  aria-busy={m.accepting() === name}
-                  onClick={() => void m.accept(name)}
-                >
-                  {m.accepting() === name ? "Accepting…" : "Accept"}
-                </button>
-              </div>
-            )}
+            {(name) => {
+              const manual = () =>
+                m.stalled().includes(name) && m.accepting() !== name;
+              return (
+                <div class="resource-row waiting-row">
+                  <Show
+                    when={manual()}
+                    fallback={
+                      <span class="loading-spinner" aria-hidden="true" />
+                    }
+                  >
+                    <Icon name="sandboxes" />
+                  </Show>
+                  <strong class="collection-name" title={name}>
+                    {name}
+                  </strong>
+                  <Show when={manual()}>
+                    <span class="collection-description">
+                      Accepting adds it to this Monitor and unlocks its
+                      workspace
+                    </span>
+                    <button
+                      type="button"
+                      class="primary"
+                      disabled={!!m.accepting()}
+                      onClick={() => void m.accept(name)}
+                    >
+                      Accept
+                    </button>
+                  </Show>
+                </div>
+              );
+            }}
           </For>
         </div>
       </Show>

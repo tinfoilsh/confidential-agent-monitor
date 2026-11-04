@@ -187,9 +187,9 @@ async function resolve(monitor: OpenedMonitor, id: string, bind: boolean) {
   };
 }
 
-// What connecting needs. A sandbox not on its Monitor is added only by the
-// owner's explicit accept or restore; a running agent pinned to an older Monitor
-// boot is re-linked.
+// What connecting needs. A never-enrolled sandbox is added, a removed one
+// returns only by explicit restore, and a running agent pinned to an older
+// Monitor boot is re-linked.
 export function connectPlan(
   status: SandboxStatus,
   agent: string,
@@ -199,7 +199,7 @@ export function connectPlan(
 ): { monitor: boolean; sandbox: boolean } {
   if (status.monitor_identity && status.monitor_identity !== agent)
     throw new Error("This sandbox holds a different Monitor identity.");
-  if (!known && !restore)
+  if (!known && !restore && status.monitor_identity)
     throw new RestoreRequired(
       "This sandbox's identity is not on its Monitor. Restore it to reconnect.",
     );
@@ -350,16 +350,17 @@ export function sandboxCandidates(monitor: OpenedMonitor, rows: Container[]) {
   });
 }
 
-// Accepting is the owner's explicit first open: it adds the sandbox to the
-// Monitor, or restores a removed one, then enrolls and unlocks it.
+// Accepting adds the sandbox to the Monitor, or with restore re-adds a removed
+// one, then enrolls and unlocks it.
 export async function acceptSandbox(
   monitor: OpenedMonitor,
   rows: Container[],
   name: string,
+  restore: boolean,
 ) {
   const row = rows.find((r) => r.name === name && r.repo === SANDBOX_REPO);
   if (!row) throw new Error(`${name} is no longer in this account.`);
-  await connectSandbox({ monitor, id: row.id, restore: true });
+  await connectSandbox({ monitor, id: row.id, restore });
 }
 
 // The hosted shell capability: opening a shell first connects the sandbox.

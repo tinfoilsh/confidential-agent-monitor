@@ -15,7 +15,6 @@ import {
 import { createStore, reconcile } from "solid-js/store";
 import * as owner from "./owner.js";
 import { createRequestLog } from "./requests";
-import type { MonitorInfo } from "./monitor-info";
 
 const KEY = "monitor-owner-key",
   SESSION = "monitor-local-session",
@@ -27,7 +26,7 @@ const KEY = "monitor-owner-key",
     import.meta.env.VITE_MONITOR_ENDPOINT || undefined;
 
 export type MonitorOptions = {
-  monitorInfo?: MonitorInfo;
+  monitorInfo?: { name: string };
   terminalHome?: string;
   client?: owner.OwnerApi;
   snapshot?: owner.Snapshot;
@@ -37,7 +36,7 @@ export type MonitorOptions = {
   // each would enroll; accepting one adds it to this Monitor.
   candidates?: () => { name: string; key: string }[];
   sandboxesLoading?: () => boolean;
-  accept?: (name: string) => Promise<void>;
+  accept?: (name: string, restore: boolean) => Promise<void>;
   // Hosted builds mint a Tinfoil API key for the signed-in account.
   tinfoilApiKey?: () => Promise<string>;
 };
@@ -85,6 +84,8 @@ function createMonitor(options: MonitorOptions) {
   // The sandbox whose shell is open beside the page.
   const [shell, setShell] = createSignal<string>();
   const [accepting, setAccepting] = createSignal<string>();
+  // Sandboxes whose automatic accept failed; they wait for an explicit one.
+  const [stalled, setStalled] = createSignal<string[]>([]);
   const [deviceSignIn, setDeviceSignIn] = createSignal<
     owner.DeviceSignIn & {
       title: string;
@@ -556,6 +557,32 @@ function createMonitor(options: MonitorOptions) {
     lifetime.abort();
     clearTimeout(toastTimer);
   });
+  const waiting = () => {
+    const keys = Object.values(view()?.config.identities ?? {}).map(
+      (identity) => identity.key,
+    );
+    return (options.candidates?.() ?? [])
+      .filter((candidate) => !keys.includes(candidate.key))
+      .map((candidate) => candidate.name);
+  };
+  const accept = async (name: string, restore = true) => {
+    if (accepting()) return;
+    setAccepting(name);
+    try {
+      await options.accept!(name, restore);
+      await refresh();
+      notify(`${name} joined this Monitor`);
+    } catch (cause) {
+      if (restore) report(cause);
+      else setStalled((names) => [...names, name]);
+    } finally {
+      setAccepting();
+    }
+  };
+  createEffect(() => {
+    const next = view() && waiting().find((name) => !stalled().includes(name));
+    if (next && !accepting()) void accept(next, false);
+  });
 
   return {
     options,
@@ -595,28 +622,10 @@ function createMonitor(options: MonitorOptions) {
     setShell,
     shellFor: (name: string) => options.shell?.(name),
     sandboxesLoading: () => options.sandboxesLoading?.() ?? false,
-    waiting: () => {
-      const keys = Object.values(view()?.config.identities ?? {}).map(
-        (identity) => identity.key,
-      );
-      return (options.candidates?.() ?? [])
-        .filter((candidate) => !keys.includes(candidate.key))
-        .map((candidate) => candidate.name);
-    },
+    waiting,
     accepting,
-    accept: async (name: string) => {
-      if (accepting()) return;
-      setAccepting(name);
-      try {
-        await options.accept!(name);
-        await refresh();
-        notify(`${name} joined this Monitor`);
-      } catch (cause) {
-        report(cause);
-      } finally {
-        setAccepting();
-      }
-    },
+    stalled,
+    accept,
     cancelSignIn: () => setDeviceSignIn(undefined),
     unlock: () =>
       perform(

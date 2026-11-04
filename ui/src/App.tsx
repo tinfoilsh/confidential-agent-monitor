@@ -15,10 +15,6 @@ import {
 import * as owner from "./owner.js";
 import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
 import { Activity, RequestDetail } from "./Activity";
-import {
-  monitorCreatedAt,
-  monitorReleaseURL,
-} from "./monitor-info";
 import { Agents, AddAgent } from "./Agents";
 import { AddConnection, Connections, DeviceSignInDialog } from "./Connections";
 import {
@@ -328,78 +324,15 @@ function ApprovalBar() {
 function MonitorFooter() {
   const m = useMonitor();
   return (
-    <Show when={m.options.monitorInfo || m.options.terminalHome}>
-      <footer class="monitor-footer">
-        <Show when={m.options.monitorInfo}>
-          {(info) => (
-            <section class="monitor-card" aria-label={`${info().name} details`}>
-              <h2 title={info().name}>{info().name}</h2>
-              <dl>
-                <Show
-                  when={typeof info().release === "string" && info().release}
-                >
-                  <div>
-                    <dt>Version</dt>
-                    <dd>
-                      <Show
-                        when={monitorReleaseURL(info())}
-                        fallback={info().release}
-                      >
-                        {(url) => (
-                          <a
-                            class="monitor-release"
-                            href={url()}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {info().release}
-                            <Icon name="external" />
-                          </a>
-                        )}
-                      </Show>
-                    </dd>
-                  </div>
-                </Show>
-                <Show when={monitorCreatedAt(info())}>
-                  {(date) => (
-                    <div>
-                      <dt>Created</dt>
-                      <dd>
-                        <time
-                          dateTime={date().toISOString()}
-                          title={date().toLocaleString()}
-                        >
-                          {date().toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </time>
-                      </dd>
-                    </div>
-                  )}
-                </Show>
-              </dl>
-              <Show
-                when={
-                  !(typeof info().release === "string" && info().release) &&
-                  !monitorCreatedAt(info())
-                }
-              >
-                <p class="monitor-details-unavailable">Details unavailable.</p>
-              </Show>
-            </section>
-          )}
-        </Show>
-        <Show when={m.options.terminalHome}>
-          {(home) => (
-            <a class="nav-item back-terminal" href={home()} link>
-              <Icon name="arrow" />
-              <span>Back to Terminal</span>
-            </a>
-          )}
-        </Show>
-      </footer>
+    <Show when={m.options.terminalHome}>
+      {(home) => (
+        <footer class="monitor-footer">
+          <a class="nav-item back-terminal" href={home()} link>
+            <Icon name="arrow" />
+            <span>Back to Terminal</span>
+          </a>
+        </footer>
+      )}
     </Show>
   );
 }
