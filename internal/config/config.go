@@ -52,9 +52,6 @@ func Load(text string) (*Config, error) {
 	if err := validateEffects("global settings", cfg.Effects); err != nil {
 		return nil, err
 	}
-	if err := cfg.validateDevelopmentPresets(); err != nil {
-		return nil, err
-	}
 	connections := map[string]string{}
 	for acct, a := range cfg.Accounts {
 		if err := validateEffects("account "+acct, a.Effects); err != nil {
@@ -110,9 +107,6 @@ func Load(text string) (*Config, error) {
 			return nil, fmt.Errorf("identity %s shares another identity's public key", name)
 		}
 		cfg.Principals[fingerprint] = name
-	}
-	if err := cfg.validateDevelopment(connections); err != nil {
-		return nil, err
 	}
 	return cfg, nil
 }
@@ -223,12 +217,15 @@ func (c *Config) Connections(account string) ([]ConnectionSpec, error) {
 	return specs, nil
 }
 
-// Preset resolves shipped definitions in release builds. Explicit development
-// builds may additionally merge custom source overrides.
+// Preset resolves one shipped definition.
 func (c *Config) Preset(name string) (*presets.Preset, error) {
 	shipped, err := presets.Shipped()
 	if err != nil {
 		return nil, err
 	}
-	return c.resolvePreset(shipped, name)
+	preset := shipped[name]
+	if preset == nil {
+		return nil, fmt.Errorf("unknown preset %s", name)
+	}
+	return preset, nil
 }

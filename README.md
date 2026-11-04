@@ -95,22 +95,6 @@ Open [the UI](http://127.0.0.1:8080/app/) and initialize an owner key or passphr
 SSH listens on `127.0.0.1:2223`. See [Dockerfile](Dockerfile) and
 [tinfoil-config.yml](tinfoil-config.yml) for deployment configuration.
 
-### Experimental development features
-
-Release builds do not include the experimental Browser connector or its
-`-extension` development option, including in isolated connector workers; they
-also exclude arbitrary custom-preset authoring and automated Tinfoil review.
-Build the development backends explicitly:
-
-```sh
-mkdir -p .dev
-go build -tags monitor_dev -o .dev/monitor-dev .
-```
-
-Development builds retain those backends and experimental preset fixtures for
-local testing only; their old UI/client surfaces are not restored, and
-`monitor_dev` binaries must not be published.
-
 ## Access control
 
 In **Agents**, set each sandbox's access to each connection.

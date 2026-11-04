@@ -147,11 +147,8 @@ func (s *Server) Control() http.Handler {
 	})
 }
 
-// Development review, when compiled in, shares this control transport and
-// credential identity.
 func (s *httpState) control() http.Handler {
 	mux := http.NewServeMux()
-	registerDevelopmentControl(mux, s)
 	mux.Handle("POST /chat/completions", &httputil.ReverseProxy{Transport: s.transport, Rewrite: func(r *httputil.ProxyRequest) {
 		key, _ := s.Secrets["TINFOIL_API_KEY"].Value(r.In.Context())
 		r.Out.URL, r.Out.Host = &url.URL{Scheme: "https", Host: s.Enclave, Path: "/v1/chat/completions"}, ""

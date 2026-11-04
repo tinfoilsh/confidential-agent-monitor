@@ -130,7 +130,6 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 	mux.Handle("POST "+sandboxRelayPath, m.ownerOnly(JSONHandler(sandbox.MaxRelayBytes, func(r *http.Request, in sandbox.RelayInput) (any, error) {
 		return sandbox.Relay(r.Context(), m.relays, in)
 	})))
-	m.registerDevelopmentOwnerRoutes(mux)
 	mux.Handle("POST /labels/{identity}", ownerTx(m, func(r *http.Request, l facts.Label) (any, error) {
 		var fingerprint string
 		for key, name := range m.settings.Load().Principals {

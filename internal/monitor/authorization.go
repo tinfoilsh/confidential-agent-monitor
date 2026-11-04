@@ -63,7 +63,6 @@ type savedAnswer struct {
 
 // A record is one decision; requests are the pending and expired ones.
 type record struct {
-	developmentRecordFields
 	ID      string          `json:"id"`
 	State   string          `json:"state"`
 	Invalid bool            `json:"invalid,omitempty"`
@@ -80,7 +79,6 @@ type record struct {
 // Activity never needs request bodies, policy parameters or saved-rule grants.
 // Keep those in the existing audit record and load one through /requests/{id}.
 type recordSummary struct {
-	developmentRecordSummaryFields
 	ID      string         `json:"id"`
 	State   string         `json:"state"`
 	Invalid bool           `json:"invalid,omitempty"`
@@ -185,7 +183,6 @@ func (m *monitor) authorizeLocked(ctx context.Context, admitted admission, kind 
 		return r, errors.New(strings.Join(r.Deny, "; "))
 	}
 	if len(r.Requirements) != 0 {
-		assignDevelopmentReviewer(st, r, p.Name)
 		if err := m.awaitAnswer(ctx, r); err != nil {
 			return r, err
 		}
@@ -342,7 +339,6 @@ func (m *monitor) relabel(ctx context.Context, fingerprint string, l facts.Label
 
 func (r *record) summary() recordSummary {
 	v := recordSummary{ID: r.ID, State: r.State, Invalid: r.Invalid, Time: r.Time, Expires: r.Expires, Summary: true}
-	copyDevelopmentReviewSummary(r, &v)
 	for _, answer := range r.Reviews {
 		answer.Reason = ""
 		v.Reviews = append(v.Reviews, answer)
@@ -388,7 +384,6 @@ func (m *monitor) refusePending(err error) {
 func (m *monitor) awaitAnswer(ctx context.Context, r *record) error {
 	r.State, r.Expires, r.answered = statePending, r.Time.Add(approvalWait), make(chan struct{})
 	wait, cancel := context.WithDeadline(ctx, r.Expires)
-	m.startDevelopmentReview(wait, r)
 	m.mu.Unlock()
 	select {
 	case <-r.answered:

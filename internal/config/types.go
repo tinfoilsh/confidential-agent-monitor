@@ -29,7 +29,6 @@ type Principal struct {
 }
 
 type Identity struct {
-	developmentIdentity
 	Routes   bool              `json:"routes,omitempty"`
 	Key      string            `json:"key"`
 	Sandbox  json.RawMessage   `json:"sandbox,omitzero"`
@@ -80,7 +79,6 @@ type Lattices struct {
 // Config is immutable declared settings. Inheritance and setup defaults are
 // projected for their consumers, never written back into these declarations.
 type Config struct {
-	developmentConfig
 	AllowPaidInference bool                `json:"allow_paid_inference,omitempty"`
 	Effects            map[string]string   `json:"effects,omitempty"`
 	DefaultAccess      map[string]Access   `json:"default_access,omitempty"`

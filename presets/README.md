@@ -1,7 +1,5 @@
 Each shipped preset has a `<name>.json` record. Accounts select it with
-`"preset": "<name>"`. Release builds accept only shipped definitions. Explicit
-`monitor_dev` builds additionally let owner `config.presets` entries override a
-pinned definition or define an experimental one.
+`"preset": "<name>"`. Monitor accepts only these shipped definitions.
 
 The catalog contains setup fields, connections, defaults, and permission actions.
 Protocol definitions have their own sections:
