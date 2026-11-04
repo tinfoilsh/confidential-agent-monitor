@@ -594,7 +594,6 @@ function createMonitor(options: MonitorOptions) {
     shell,
     setShell,
     shellFor: (name: string) => options.shell?.(name),
-    tinfoilApiKey: options.tinfoilApiKey,
     sandboxesLoading: () => options.sandboxesLoading?.() ?? false,
     waiting: () => {
       const keys = Object.values(view()?.config.identities ?? {}).map(

@@ -598,7 +598,7 @@ function Gate() {
         <Match when={m.view() && !owner.onboarded(m.view()!)}>
           <Onboarding
             busy={m.busy()}
-            generate={m.tinfoilApiKey}
+            generate={m.options.tinfoilApiKey}
             onFinish={finish}
           />
           <Show when={m.error()}>
@@ -681,8 +681,13 @@ function Onboarding(props: {
           : props.generate
             ? "Generate an API key automatically"
             : "Add the Tinfoil connection"}
-        <Icon name="arrow" />
       </button>
+      <Show when={props.generate}>
+        <p class="onboarding-note">
+          Creates an API key named after this Monitor in your Tinfoil account.
+          It stays in Monitor, hidden from your sandboxes.
+        </p>
+      </Show>
       <div class="onboarding-actions">
         <button
           type="button"

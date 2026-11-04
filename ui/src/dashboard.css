@@ -2462,13 +2462,13 @@ body:has(#gate) {
   background: var(--surface) var(--grid) repeat center;
 }
 #gate {
-  max-width: 520px;
+  max-width: 480px;
   margin: 18vh auto;
   padding: 32px;
   border: 1px solid var(--line);
-  border-radius: var(--card-radius);
+  border-radius: 12px;
   background: var(--card);
-  box-shadow: 0 1px 2px #0000000d;
+  box-shadow: 0 24px 80px #06182026;
 }
 #gate p:last-child {
   margin-bottom: 0;
@@ -2479,6 +2479,10 @@ body:has(#gate) {
 }
 .onboarding h1 {
   margin: 0;
+  font-size: 26px;
+  font-weight: 500;
+  letter-spacing: -0.8px;
+  line-height: 1.3;
 }
 .onboarding-heading {
   display: flex;
@@ -2487,7 +2491,15 @@ body:has(#gate) {
   gap: 12px;
   text-align: center;
 }
-.onboarding-heading > :first-child,
+.onboarding-heading > :first-child {
+  width: 56px;
+  height: 56px;
+  margin: 0 0 12px;
+  padding: 13px;
+  border: 1px solid var(--edge);
+  border-radius: 16px;
+  background: var(--card);
+}
 .dialog-header > .icon {
   grid-row: span 2;
   width: 40px;
@@ -2501,6 +2513,7 @@ body:has(#gate) {
 .onboarding-heading p {
   margin: 0;
   color: var(--muted);
+  line-height: 1.65;
 }
 .onboarding fieldset {
   display: grid;
@@ -2553,7 +2566,15 @@ body:has(#gate) {
   height: 14px;
 }
 .onboarding > .primary {
+  min-height: 44px;
   margin-top: 0;
+}
+.onboarding-note {
+  margin: -12px 0 0;
+  color: var(--muted);
+  font-size: var(--font-detail);
+  line-height: 1.65;
+  text-align: center;
 }
 
 .onboarding-actions {
