@@ -343,7 +343,6 @@ export function RequestDetail(props: {
       current && {
         ...current,
         state: listed()?.state ?? current.state,
-        reviewer: listed() ? listed()!.reviewer : current.reviewer,
         savingDecision: listed()?.savingDecision,
       }
     );
@@ -469,18 +468,14 @@ export function RequestDetail(props: {
                   <For each={r().reviews}>
                     {(answer) => (
                       <p>
-                        <strong>
-                          {answer.by === "tinfoil" ? "Tinfoil" : "You"}
-                        </strong>
-                        {answer.decision === "escalate"
-                          ? " passed this to you"
-                          : answer.decision === "once"
-                            ? " approved it once"
-                            : answer.decision === "deny"
-                              ? owner.isConnectionProposalRecord(r())
-                                ? " rejected it"
-                                : " denied it"
-                              : " approved it and saved a rule"}
+                        <strong>You</strong>
+                        {answer.decision === "once"
+                          ? " approved it once"
+                          : answer.decision === "deny"
+                            ? owner.isConnectionProposalRecord(r())
+                              ? " rejected it"
+                              : " denied it"
+                            : " approved it and saved a rule"}
                         <Show when={answer.reason}>: {answer.reason}</Show>
                       </p>
                     )}
@@ -567,13 +562,6 @@ export function RequestDetail(props: {
                   >
                     Deny
                   </button>
-                </Show>
-                <Show when={owner.draftable(m.view()!, r())}>
-                  {(preset) => (
-                    <a href={href("preset", preset(), r().id)}>
-                      Draft operation in preset
-                    </a>
-                  )}
                 </Show>
               </div>
             </section>

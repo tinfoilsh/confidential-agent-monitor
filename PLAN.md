@@ -84,9 +84,11 @@ proposal workflow built from the existing `/policy/proposals` path.
       from README automation guidance.
 - [ ] Later: move `allow_networks` semantics into connection configuration so private/
       raw network reachability is not exposed as an independent global setting.
-- [ ] Later: remove/exclude unsupported custom-preset creation/edit backend and UI
-      remnants using the Browser treatment, without removing shipped presets.
-- [ ] Later: remove unsupported automated-reviewer configuration and execution paths.
+- [x] Exclude unsupported custom-preset creation/edit backend and UI from release
+      builds without removing shipped presets; retain raw policy/API support under
+      `monitor_dev`, like Browser.
+- [x] Exclude automated-reviewer configuration, record fields, execution and Tinfoil
+      connector control from release builds; retain the backend under `monitor_dev`.
 - [ ] Later: investigate/remove unsupported lattice configuration surfaces and state.
 
 Once this is finished & clean, resume CCH!

@@ -270,12 +270,12 @@ func connectionScopeDigest(cfg *config.Config, connection string) string {
 			}
 		}
 		if access.Level != "" || len(rules) != 0 {
-			identities[name] = []any{access, identity.Effects, identity.Reviewer, rules}
+			identities[name] = []any{access, identity.Effects, cfg.DevelopmentIdentityAuthority(name), rules}
 		}
 	}
 	// These global inputs can change this connection's effective behavior. Another
 	// account cannot stale it, but a global policy change appropriately does.
-	global := []any{cfg.Effects, cfg.AllowPaidInference, cfg.Lattices, cfg.AllowNetworks, cfg.Policies, cfg.Data, cfg.Reviewer}
+	global := []any{cfg.Effects, cfg.AllowPaidInference, cfg.Lattices, cfg.AllowNetworks, cfg.Policies, cfg.Data, cfg.DevelopmentAuthority()}
 	raw, _ := json.Marshal([]any{accountExists, account, preset, fallbackExists, fallback, identities, global})
 	return policyDigest(string(raw))
 }

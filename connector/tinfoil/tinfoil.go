@@ -150,7 +150,7 @@ func (s *Server) Control() http.Handler {
 // Control and review share the captured pool and credential identity.
 func (s *httpState) control() http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /review", s.review)
+	registerDevelopmentControl(mux, s)
 	mux.Handle("POST /chat/completions", &httputil.ReverseProxy{Transport: s.transport, Rewrite: func(r *httputil.ProxyRequest) {
 		key, _ := s.Secrets["TINFOIL_API_KEY"].Value(r.In.Context())
 		r.Out.URL, r.Out.Host = &url.URL{Scheme: "https", Host: s.Enclave, Path: "/v1/chat/completions"}, ""

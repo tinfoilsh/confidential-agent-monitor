@@ -111,7 +111,7 @@ func (c *Config) Catalog() (map[string]presets.Entry, string, error) {
 	for name := range shipped {
 		names[name] = true
 	}
-	for name := range c.Presets {
+	for _, name := range c.developmentPresetNames() {
 		names[name] = true
 	}
 	for _, a := range c.Accounts {

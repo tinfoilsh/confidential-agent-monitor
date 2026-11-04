@@ -33,10 +33,6 @@ import {
 const Settings = lazy(() =>
   import("./Settings").then((m) => ({ default: m.Settings })),
 );
-const PresetEditor = lazy(() =>
-  import("./Settings").then((m) => ({ default: m.PresetEditor })),
-);
-
 const sections: Record<string, [string, string]> = {
   activity: ["Activity", "Review requests and manage saved approval rules."],
   agents: [
@@ -111,8 +107,6 @@ function Shell() {
       request: "activity",
       rules: "activity",
       policy: "settings",
-      presets: "connections",
-      preset: "connections",
     })[kind()] ?? kind();
   const title = () =>
     sections[
@@ -125,16 +119,11 @@ function Shell() {
                 "accounts",
                 "connection",
                 "catalog",
-                "presets",
               ].includes(kind())
             ? "connections"
             : kind()
     ]?.[0] ??
-    (kind() === "request"
-      ? "Request"
-      : kind() === "preset"
-        ? `Preset: ${args()[0] || "New preset"}`
-        : args()[0] || "Monitor");
+    (kind() === "request" ? "Request" : args()[0] || "Monitor");
   const count = (section: string) =>
     section === "activity"
       ? m.approvalCount()
@@ -251,7 +240,6 @@ function Shell() {
                                     "accounts",
                                     "connection",
                                     "catalog",
-                                    "presets",
                                   ].includes(kind())
                                 ? "connections"
                                 : kind()
@@ -461,12 +449,6 @@ function Page(props: {
       </Match>
       {/* #integrations (Monitor client on your own machine) and #policy (raw
           document editor) are not part of this release: no route, no link. */}
-      <Match when={kind === "presets"}>
-        <Connections catalog />
-      </Match>
-      <Match when={kind === "preset"}>
-        <PresetEditor name={name} request={request} />
-      </Match>
     </Switch>
   );
 }

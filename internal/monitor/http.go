@@ -130,9 +130,7 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 	mux.Handle("POST "+sandboxRelayPath, m.ownerOnly(JSONHandler(sandbox.MaxRelayBytes, func(r *http.Request, in sandbox.RelayInput) (any, error) {
 		return sandbox.Relay(r.Context(), m.relays, in)
 	})))
-	mux.Handle("GET /presets/{name}", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) {
-		return m.settings.Load().Config.Preset(r.PathValue("name"))
-	}))
+	m.registerDevelopmentOwnerRoutes(mux)
 	mux.Handle("POST /labels/{identity}", ownerTx(m, func(r *http.Request, l facts.Label) (any, error) {
 		var fingerprint string
 		for key, name := range m.settings.Load().Principals {
@@ -182,7 +180,7 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 		return nil, errRecordGone
 	}))
 	mux.Handle("POST /requests/{id}", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, req answerInput) (any, error) {
-		return nil, m.answerRequest(r.Context(), "owner", r.PathValue("id"), req)
+		return nil, m.answerRequest(r.Context(), r.PathValue("id"), req)
 	})))
 	mux.Handle("GET /policy/proposals", m.ownerOnly(JSONHandler(0, func(*http.Request, struct{}) (any, error) {
 		return m.policyProposals(), nil

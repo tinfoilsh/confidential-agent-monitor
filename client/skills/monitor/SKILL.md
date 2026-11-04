@@ -95,7 +95,7 @@ Proposals may change only:
 - `identities.<sandbox>.accounts.<connection>...`
 
 They cannot change credentials, identity keys or routes, global policies, data,
-effects, reviewer settings, lattice settings, or unrelated owner configuration.
+effects, lattice settings, or unrelated owner configuration.
 Monitor validates all submitted changes and removes semantic no-ops before
 publishing them for review.
 

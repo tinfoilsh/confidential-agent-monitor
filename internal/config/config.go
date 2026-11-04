@@ -2,12 +2,10 @@ package config
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"maps"
 	"reflect"
 	"slices"
-	"strings"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/tinfoilsh/monitor/facts"
@@ -54,10 +52,8 @@ func Load(text string) (*Config, error) {
 	if err := validateEffects("global settings", cfg.Effects); err != nil {
 		return nil, err
 	}
-	for name := range cfg.Presets {
-		if _, err := cfg.Preset(name); err != nil {
-			return nil, err
-		}
+	if err := cfg.validateDevelopmentPresets(); err != nil {
+		return nil, err
 	}
 	connections := map[string]string{}
 	for acct, a := range cfg.Accounts {
@@ -99,9 +95,6 @@ func Load(text string) (*Config, error) {
 	}
 	cfg.Principals = map[string]string{}
 	for name, id := range cfg.Identities {
-		if id.Reviewer != "" && (id.Reviewer != "tinfoil" || cfg.Reviewer == nil) {
-			return nil, fmt.Errorf("identity %s: configure Tinfoil review before assigning it", name)
-		}
 		if err := validateEffects("agent "+name, id.Effects); err != nil {
 			return nil, err
 		}
@@ -118,16 +111,9 @@ func Load(text string) (*Config, error) {
 		}
 		cfg.Principals[fingerprint] = name
 	}
-	if cfg.Reviewer != nil {
-		r := cfg.Reviewer
-		if connections[r.Connection] != "tinfoil" {
-			return nil, errors.New("reviewer requires a Tinfoil connection")
-		}
-		if strings.TrimSpace(r.Model) == "" || len(r.Model) > 200 || strings.TrimSpace(r.Instructions) == "" || len(r.Instructions) > 8192 {
-			return nil, errors.New("reviewer requires a model and instructions of 1-8192 bytes")
-		}
+	if err := cfg.validateDevelopment(connections); err != nil {
+		return nil, err
 	}
-
 	return cfg, nil
 }
 
@@ -237,33 +223,12 @@ func (c *Config) Connections(account string) ([]ConnectionSpec, error) {
 	return specs, nil
 }
 
-// Preset merges one source override without retaining a resolved authority graph.
+// Preset resolves shipped definitions in release builds. Explicit development
+// builds may additionally merge custom source overrides.
 func (c *Config) Preset(name string) (*presets.Preset, error) {
 	shipped, err := presets.Shipped()
 	if err != nil {
 		return nil, err
 	}
-	preset, override := shipped[name], c.Presets[name]
-	if override == nil {
-		if preset == nil {
-			return nil, fmt.Errorf("unknown preset %s", name)
-		}
-		return preset, nil
-	}
-	base := json.RawMessage(`{}`)
-	if preset != nil {
-		base = preset.Source
-	}
-	patch, err := json.Marshal(override)
-	if err == nil {
-		base, err = jsonpatch.MergePatch(base, patch)
-	}
-	if err != nil {
-		return nil, err
-	}
-	p, err := presets.Decode(base)
-	if err != nil {
-		return nil, fmt.Errorf("preset %s: %w", name, err)
-	}
-	return p, nil
+	return c.resolvePreset(shipped, name)
 }

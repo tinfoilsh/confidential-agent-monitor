@@ -1,3 +1,5 @@
+//go:build monitor_dev
+
 package tinfoil
 
 import (

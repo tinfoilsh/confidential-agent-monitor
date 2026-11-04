@@ -29,10 +29,10 @@ type Principal struct {
 }
 
 type Identity struct {
+	developmentIdentity
 	Routes   bool              `json:"routes,omitempty"`
 	Key      string            `json:"key"`
 	Sandbox  json.RawMessage   `json:"sandbox,omitzero"`
-	Reviewer string            `json:"reviewer,omitempty"`
 	Effects  map[string]string `json:"effects,omitempty"`
 	Accounts map[string]Access `json:"accounts"`
 	Rules    map[string]Rule   `json:"rules,omitempty"`
@@ -72,12 +72,6 @@ type Account struct {
 	Connections   map[string]map[string]json.RawMessage `json:"connections,omitempty"`
 }
 
-type Reviewer struct {
-	Connection   string `json:"connection"`
-	Model        string `json:"model"`
-	Instructions string `json:"instructions"`
-}
-
 type Lattices struct {
 	Confidentiality bool `json:"confidentiality"`
 	Integrity       bool `json:"integrity"`
@@ -86,16 +80,15 @@ type Lattices struct {
 // Config is immutable declared settings. Inheritance and setup defaults are
 // projected for their consumers, never written back into these declarations.
 type Config struct {
-	Reviewer           *Reviewer                 `json:"reviewer,omitempty"`
-	AllowPaidInference bool                      `json:"allow_paid_inference,omitempty"`
-	Effects            map[string]string         `json:"effects,omitempty"`
-	DefaultAccess      map[string]Access         `json:"default_access,omitempty"`
-	Lattices           Lattices                  `json:"lattices"`
-	AllowNetworks      []netip.Prefix            `json:"allow_networks"`
-	Accounts           map[string]Account        `json:"accounts"`
-	Identities         map[string]Identity       `json:"identities"`
-	Policies           map[string]string         `json:"policies"`
-	Data               map[string]any            `json:"data"`
-	Presets            map[string]map[string]any `json:"presets,omitempty"`
-	Principals         map[string]string         `json:"-"`
+	developmentConfig
+	AllowPaidInference bool                `json:"allow_paid_inference,omitempty"`
+	Effects            map[string]string   `json:"effects,omitempty"`
+	DefaultAccess      map[string]Access   `json:"default_access,omitempty"`
+	Lattices           Lattices            `json:"lattices"`
+	AllowNetworks      []netip.Prefix      `json:"allow_networks"`
+	Accounts           map[string]Account  `json:"accounts"`
+	Identities         map[string]Identity `json:"identities"`
+	Policies           map[string]string   `json:"policies"`
+	Data               map[string]any      `json:"data"`
+	Principals         map[string]string   `json:"-"`
 }

@@ -83,7 +83,7 @@ monitor policy propose change.toml \
 
 Proposals may contain only connection setup or connection access paths. They
 cannot contain credentials, identity keys or routes, global policies, data,
-effects, reviewer settings, or other owner configuration. Monitor validates the
+effects, or other owner configuration. Monitor validates the
 candidate and removes semantic no-ops before publishing it.
 
 A batch is split into one proposal per connection. The owner reviews each
