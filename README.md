@@ -95,6 +95,44 @@ Open [the UI](http://127.0.0.1:8080/app/) and initialize an owner key or passphr
 SSH listens on `127.0.0.1:2223`. See [Dockerfile](Dockerfile) and
 [tinfoil-config.yml](tinfoil-config.yml) for deployment configuration.
 
+### Local development console
+
+The isolated preview console runs a real local Monitor with fake account,
+passkey, inventory, activity, MCP, and proposal fixtures:
+
+```sh
+(cd ui && bun install --frozen-lockfile)
+bun dev/console.ts
+```
+
+Open **http://127.0.0.1:5175**. Local Monitor configuration persists under
+`.dev/console/`; proposal decisions, approval requests, MCP review state, and
+saved demo rules remain only in page memory. The console never uses an existing
+`.dev/store`, account, SSH configuration, or service, and refuses to start when
+ports 5175, 8082, or 2225 are occupied. Its public fixture keys and plaintext
+development passkeys must never be used with real credentials or exposed outside
+loopback.
+
+Connection proposals default to a mixed preview: an existing-connection update
+and a proposed new connection. Open the Monitor directly at
+`/monitor/11111111-1111-4111-8111-111111111111?proposals=mixed#connections`.
+Select a focused state with `proposals=existing` or `proposals=new`, or disable
+fixtures with `proposals=none`. Review them from
+Activity or the conditional **Proposals** block at the bottom of
+Connections. Approve/reject changes are local to the page and never mutate the
+development Monitor.
+
+Use `?state=full-flow` for the timed unlock/startup walkthrough. Frozen states
+include `keys-loading`, `inventory-loading`, `sandboxes-loading`,
+`monitor-booting`, `monitor-startup`, `monitor-locked`, `monitor-opening`,
+`monitor-stopped`, and `monitor-error`. Use `?mcp=first-use` for first-use MCP
+review and `?rules=1` for saved-rule fixtures. Incremental Activity playback is
+not started by the proposal preview. Query parameters precede the hash, for example
+`http://127.0.0.1:5175/monitor/11111111-1111-4111-8111-111111111111?proposals=new#connections`.
+
+The dev-console mode cannot be built. Stop it with Ctrl-C; reset only this fixture
+by deleting `.dev/console/` while it is stopped.
+
 ## Access control
 
 In **Agents**, set each sandbox's access to each connection.

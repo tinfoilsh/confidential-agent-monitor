@@ -67,14 +67,14 @@ export function Activity(props: { scope?: string; name?: string }) {
         >
           Requests
         </a>
+        <a href="#activity/rules" aria-current={rules() ? "page" : undefined}>
+          Saved Rules
+        </a>
         <a
           href="#activity/proposals"
           aria-current={proposals() ? "page" : undefined}
         >
           Proposed connection changes
-        </a>
-        <a href="#activity/rules" aria-current={rules() ? "page" : undefined}>
-          Saved Rules
         </a>
       </nav>
       <Show
