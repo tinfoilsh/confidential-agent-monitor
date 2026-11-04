@@ -1,9 +1,9 @@
 import { For, Show, createMemo, createSignal, onCleanup } from "solid-js";
-import App from "../App";
-import { Icon } from "../components";
+import App from "../monitor/App";
+import { Icon } from "../monitor/components";
 import { ShellSplit, type ShellTarget } from "./ShellSplit";
-import type { ShellOpener } from "../owner";
-import type { OpenedMonitor } from "./monitors";
+import type { ShellOpener } from "../monitor/owner";
+import type { OpenedMonitor } from "./connection";
 import {
   RestoreRequired,
   acceptSandbox,
@@ -15,7 +15,7 @@ import "./workspace.css";
 
 // Trusted Terminal chrome. Account and sandbox capabilities stay here; the
 // shared Monitor app receives only its owner API connection and initial state.
-export default function Workspace(props: {
+export default function MonitorWorkspace(props: {
   monitor: OpenedMonitor;
   session: Session;
   linking: boolean;

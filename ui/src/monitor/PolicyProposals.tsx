@@ -7,7 +7,7 @@ import {
   ResourceDisclosure,
   href,
 } from "./components";
-import { useMonitor } from "./monitor";
+import { useMonitor } from "./context";
 import "./policy-proposals.css";
 
 const proposalTime = new Intl.DateTimeFormat(undefined, {

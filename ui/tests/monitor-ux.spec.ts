@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
-import * as owner from "../src/owner";
+import * as owner from "../src/monitor/owner";
 
 const preset = (name: string) => JSON.parse(
   readFileSync(new URL(`../../presets/${name}.json`, import.meta.url), "utf8"),

@@ -40,10 +40,10 @@ function dependencies(entry: string) {
 }
 
 test("shared Monitor UI has no Terminal, account, attestation or shell dependencies", () => {
-  const graph = dependencies("App.tsx");
+  const graph = dependencies("monitor/App.tsx");
   expect(
     [...graph.files].filter((file) =>
-      file.startsWith(resolve(src, "hosted") + "/"),
+      file.startsWith(resolve(src, "terminal") + "/"),
     ),
   ).toEqual([]);
   expect(
@@ -53,16 +53,16 @@ test("shared Monitor UI has no Terminal, account, attestation or shell dependenc
   ).toEqual([]);
   // Exercise the recursive/lazy walk, so silently ignoring lazy imports cannot
   // make the boundary test pass when a Settings screen pulls in host code.
-  expect(graph.files.has(resolve(src, "Settings.tsx"))).toBe(true);
-  expect(graph.files.has(resolve(src, "owner.ts"))).toBe(true);
+  expect(graph.files.has(resolve(src, "monitor/Settings.tsx"))).toBe(true);
+  expect(graph.files.has(resolve(src, "monitor/owner.ts"))).toBe(true);
 });
 
 test("Terminal composes the same Monitor app and owns the sandbox shell", () => {
-  const graph = dependencies("hosted/Workspace.tsx");
-  expect(graph.files.has(resolve(src, "App.tsx"))).toBe(true);
-  expect(graph.files.has(resolve(src, "hosted/SandboxTerminal.tsx"))).toBe(
+  const graph = dependencies("terminal/MonitorWorkspace.tsx");
+  expect(graph.files.has(resolve(src, "monitor/App.tsx"))).toBe(true);
+  expect(graph.files.has(resolve(src, "terminal/SandboxTerminal.tsx"))).toBe(
     true,
   );
-  expect(graph.files.has(resolve(src, "hosted/sandboxes.ts"))).toBe(true);
+  expect(graph.files.has(resolve(src, "terminal/sandboxes.ts"))).toBe(true);
   expect(graph.packages.has("@xterm/xterm")).toBe(true);
 });

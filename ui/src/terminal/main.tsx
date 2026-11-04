@@ -4,7 +4,7 @@ import { render } from "solid-js/web";
 import { TARGETS, profileError } from "./keys";
 
 const PAGES = {
-  monitor: () => import("./Monitor"),
+  monitor: () => import("./MonitorPage"),
   cli: () => import("./Cli"),
   console: () => import("./Console"),
 };

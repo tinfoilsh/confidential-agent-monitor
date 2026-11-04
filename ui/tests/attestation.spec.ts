@@ -25,8 +25,8 @@ mock.module("tinfoil", () => ({
     }
   },
 }));
-mock.module("../src/hosted/templates", () => ({ TEMPLATES: {} }));
-const { attestMonitor } = await import("../src/hosted/monitors");
+mock.module("../src/terminal/templates", () => ({ TEMPLATES: {} }));
+const { attestMonitor } = await import("../src/terminal/connection");
 const target = {
   url: "https://monitor.example",
   reference: "acme/monitor@release-1@sha256:" + "a".repeat(64),

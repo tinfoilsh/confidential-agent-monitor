@@ -21,7 +21,7 @@ import {
   createDialogMotion,
   href,
 } from "./components";
-import { useMonitor } from "./monitor";
+import { useMonitor } from "./context";
 import { AgentConnectionAccess } from "./Agents";
 import { ConnectionProposals } from "./PolicyProposals";
 

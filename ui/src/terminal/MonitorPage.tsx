@@ -9,8 +9,8 @@ import {
   on,
   onCleanup,
 } from "solid-js";
-import Workspace from "./Workspace";
-import { Icon, Loading } from "../components";
+import MonitorWorkspace from "./MonitorWorkspace";
+import { Icon, Loading } from "../monitor/components";
 import { Header } from "./Console";
 import * as keys from "./keys";
 import { KeyGate } from "./KeyPanel";
@@ -18,7 +18,7 @@ import {
   openMonitor,
   type AttestMonitor,
   type OpenedMonitor,
-} from "./monitors";
+} from "./connection";
 import { relinkSandboxes } from "./sandboxes";
 import { MONITOR_REPO, type Session } from "./session";
 import "./console.css";
@@ -27,7 +27,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 export const capture = () => {};
 
 // A Monitor link names only its resource; inventory and saved keys supply the rest.
-export default function Monitor(props: {
+export default function MonitorPage(props: {
   session: Session;
   manager?: PasskeyKeyManager;
   attest?: AttestMonitor;
@@ -307,7 +307,7 @@ export default function Monitor(props: {
         }
       >
         {(opened) => (
-          <Workspace
+          <MonitorWorkspace
             monitor={opened}
             session={props.session}
             linking={linking()}

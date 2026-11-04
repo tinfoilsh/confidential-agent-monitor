@@ -11,7 +11,7 @@ import {
   ResourceDisclosure,
   href,
 } from "./components";
-import { useMonitor } from "./monitor";
+import { useMonitor } from "./context";
 
 export function Agents(props: { expanded?: string }) {
   const m = useMonitor();

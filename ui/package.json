@@ -14,7 +14,7 @@
     "format:check": "prettier --check ."
   },
   "exports": {
-    ".": "./src/owner.ts"
+    ".": "./src/monitor/owner.ts"
   },
   "dependencies": {
     "@clerk/clerk-js": "6.42.0",

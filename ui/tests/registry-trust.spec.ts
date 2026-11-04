@@ -1,8 +1,8 @@
 import { expect, test } from "bun:test";
 import { sha256 } from "@noble/hashes/sha2.js";
 import { bytesToHex } from "@noble/hashes/utils.js";
-import type { Container } from "../src/hosted/session";
-import { registryTarget, verifyImage } from "../src/hosted/trust";
+import type { Container } from "../src/terminal/session";
+import { registryTarget, verifyImage } from "../src/terminal/trust";
 import build from "./fixtures/monitor-build.json";
 
 const registry = "https://registry.tinfoil.sh/scopes/" + "0".repeat(32);

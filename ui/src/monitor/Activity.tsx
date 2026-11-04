@@ -15,7 +15,7 @@ import {
   ResourceDisclosure,
   href,
 } from "./components";
-import { useMonitor } from "./monitor";
+import { useMonitor } from "./context";
 import { PolicyProposals } from "./PolicyProposals";
 
 const Rules = lazy(() =>

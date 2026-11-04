@@ -14,7 +14,7 @@ import {
 } from "solid-js";
 import * as owner from "./owner.js";
 import { icons } from "./dashboard-icons.js";
-import { useMonitor } from "./monitor";
+import { useMonitor } from "./context";
 
 // The only HTML insertion is our checked-in SVG icon set, never server data.
 export function Icon(props: { name: string }) {

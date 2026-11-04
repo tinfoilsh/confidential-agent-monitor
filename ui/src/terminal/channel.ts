@@ -7,7 +7,7 @@ import {
   toBase64,
   type OwnerChannel,
   type OwnerRpc,
-} from "../owner";
+} from "../monitor/owner";
 
 const PROTOCOL = "Noise_NK_25519_ChaChaPoly_BLAKE2s";
 const SESSION_CONTEXT = "tinfoil owner session v1\0";

@@ -1,7 +1,7 @@
 import { sha256 } from "@noble/hashes/sha2.js";
 import type { PasskeyKeyManager } from "@tinfoilsh/passkey-kit";
 import { For, Match, Show, Switch, createSignal, onMount } from "solid-js";
-import { Icon } from "../components";
+import { Icon } from "../monitor/components";
 import {
   b64u,
   canonicalKeySyncRequest,

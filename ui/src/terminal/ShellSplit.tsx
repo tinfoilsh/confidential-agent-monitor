@@ -1,5 +1,5 @@
 import { Show, createSignal, lazy, type JSX } from "solid-js";
-import type { ShellOpener } from "../owner";
+import type { ShellOpener } from "../monitor/owner";
 
 const SandboxTerminal = lazy(() => import("./SandboxTerminal"));
 const SHELL_MIN_WIDTH = 320;

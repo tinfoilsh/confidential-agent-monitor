@@ -12,7 +12,7 @@ import {
   onMount,
 } from "solid-js";
 import * as owner from "./owner.js";
-import { MonitorProvider, useMonitor, type MonitorConnection } from "./monitor";
+import { MonitorProvider, useMonitor, type MonitorConnection } from "./context";
 import { Activity, RequestDetail } from "./Activity";
 import { Agents, AddAgent } from "./Agents";
 import { AddConnection, Connections, DeviceSignInDialog } from "./Connections";

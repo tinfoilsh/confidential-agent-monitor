@@ -16,7 +16,7 @@ import {
   download,
   href,
 } from "./components";
-import { useMonitor } from "./monitor";
+import { useMonitor } from "./context";
 
 export function Settings(props: {
   theme: string;

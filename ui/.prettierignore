@@ -2,5 +2,5 @@ dist/
 dist-hosted/
 dist-static/
 public/
-src/dashboard-icons.js
+src/monitor/dashboard-icons.js
 bun.lock

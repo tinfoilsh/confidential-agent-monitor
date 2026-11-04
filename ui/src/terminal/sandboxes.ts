@@ -1,6 +1,6 @@
 import { ed25519 } from "@noble/curves/ed25519.js";
 import { SecureClient } from "tinfoil";
-import { openShell, type ShellOpen, type ShellOpener } from "../owner";
+import { openShell, type ShellOpen, type ShellOpener } from "../monitor/owner";
 import { rpcChannel } from "./channel";
 import { ownerPublicKey, unb64u, type MKBinding } from "./contract";
 import * as keys from "./keys";
@@ -9,7 +9,7 @@ import {
   checkHostKey,
   sshPublicKey,
   type OpenedMonitor,
-} from "./monitors";
+} from "./connection";
 import { SANDBOX_REPO, monitorOf, type Container } from "./session";
 import { TEMPLATES } from "./templates";
 import {
