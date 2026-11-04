@@ -358,6 +358,7 @@ export function UnlockKeys(props: {
                 aria-busy={action.busy()}
                 onClick={() => picker.click()}
               >
+                <Icon name="document" />{" "}
                 {action.busy() ? "Unlocking…" : "Choose recovery key file"}
               </button>
               <Show when={hasPasskey()}>
@@ -392,6 +393,7 @@ export function UnlockKeys(props: {
               )
             }
           >
+            <Icon name="passkey" />{" "}
             {action.busy() ? "Unlocking…" : "Unlock with passkey"}
           </button>
           <p class="start-help">

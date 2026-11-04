@@ -129,6 +129,19 @@ dialog.start-dialog {
 .start-dialog-body {
   padding: 32px;
 }
+.start-setup {
+  text-align: center;
+}
+.start-setup > .start-mark {
+  display: flex;
+  margin: 0 auto 24px;
+}
+.start-setup .start-steps {
+  justify-content: center;
+}
+.start-setup textarea {
+  text-align: start;
+}
 .start-dialog h1 {
   margin: 0;
   color: var(--text);

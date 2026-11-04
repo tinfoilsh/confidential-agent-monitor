@@ -168,9 +168,8 @@ function Start(props: {
   return (
     <>
       <span class="start-mark">
-        <Icon name={file() ? "devices" : "sandboxes"} />
+        <Icon name={file() ? "devices" : "terminal"} />
       </span>
-      <p class="start-eyebrow">Let's get you started</p>
       <h1 id="start-title">
         {r.mode === "umk"
           ? "Add your CLI keys"
@@ -614,7 +613,7 @@ export default function Console(props: {
         >
           <Icon name="close" />
         </button>
-        <div class="start-dialog-body">
+        <div class="start-dialog-body start-setup">
           <Switch>
             <Match when={start() === "invalid"}>
               <h1 id="start-title">This setup link is not valid</h1>
