@@ -136,7 +136,7 @@ export type RequestRecord = {
   segment?: string;
   facts: {
     title?: string;
-    principal: { name: string };
+    principal: { key?: string; name: string };
     account: string;
     service?: string;
     operation?: { id: string; action: string; effects?: string[] };
@@ -1523,8 +1523,8 @@ export function catalog(view: View) {
       .get(group)!
       .push({ name, title: preset.title, accounts: counts.get(name) ?? 0 });
   }
-  // The ones most people add first lead as "Common"; generic connection
-  // presets live under Settings → Advanced, not in the browse list.
+  // The ones most people add first lead as "Common"; broad Generic fallbacks
+  // remain together in their explicit, final catalog group.
   const common: CatalogEntry[] = [];
   for (const entries of groups.values())
     for (let i = entries.length - 1; i >= 0; i--) {
@@ -1534,9 +1534,13 @@ export function catalog(view: View) {
   common.sort(
     (a, b) => COMMON_PRESETS.indexOf(a.name) - COMMON_PRESETS.indexOf(b.name),
   );
-  groups.get("generic")?.sort(
-    (a, b) => GENERIC_PRESETS.indexOf(a.name) - GENERIC_PRESETS.indexOf(b.name),
-  );
+  groups.get("generic")?.sort((a, b) => {
+    const rank = (name: string) => {
+      const index = GENERIC_PRESETS.indexOf(name);
+      return index < 0 ? GENERIC_PRESETS.length : index;
+    };
+    return rank(a.name) - rank(b.name) || a.title.localeCompare(b.title);
+  });
   return [
     ...(common.length
       ? [{ group: "common", title: "Common", presets: common }]
@@ -2021,15 +2025,17 @@ export const edits = {
       throw new Error(
         "An account with that name already exists. Choose another name.",
       );
-    if (!token.trim()) throw new Error("Enter the API key or token.");
+    const http: {
+      slots: { [key: string]: string }[];
+      secrets?: { token: string };
+    } = { slots: [apiSlot(api)] };
+    if (token.trim()) http.secrets = { token };
     const body: { [key: string]: unknown } = {
       accounts: {
         [name]: {
           preset: "custom_api",
           ...answers,
-          connections: {
-            "": { http: { slots: [apiSlot(api)], secrets: { token } } },
-          },
+          connections: { "": { http } },
         },
       },
     };

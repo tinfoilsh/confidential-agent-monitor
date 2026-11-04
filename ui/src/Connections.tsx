@@ -249,6 +249,17 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
           }}
         </For>
       </div>
+      <Show when={props.proposal && !m.proposals().some((proposal) => proposal.id === props.proposal)}>
+        <div class="resource-list">
+          <Empty
+            title="Proposal no longer pending"
+            icon="policy"
+            action={<a class="button" href="#activity/proposals">View proposal history</a>}
+          >
+            It may have been reviewed, become outdated, or been discarded when Monitor restarted.
+          </Empty>
+        </div>
+      </Show>
       <Show when={m.proposals().length}>
         <ConnectionProposals id={props.proposal} />
       </Show>

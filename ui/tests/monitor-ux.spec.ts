@@ -91,6 +91,40 @@ describe("raw TCP setup and access", () => {
   });
 });
 
+test("Custom API can be created before its credential is configured", () => {
+  const v = view();
+  const changes = owner.edits.addCustomApi(v, {
+    name: "example-api",
+    api: {
+      url: "https://api.example.com/v1",
+      auth: "bearer",
+      header: "X-API-Key",
+      prefix: "",
+      query: "api_key",
+    },
+    token: "",
+    answers: { contents: "me", sends: "me", strangers: true },
+  });
+  expect(changes.some((change) => change.path.includes("secrets"))).toBe(false);
+  owner.applyChanges(v.config, changes);
+  expect(v.config.accounts!["example-api"]).toMatchObject({
+    preset: "custom_api",
+    connections: {
+      "": {
+        http: {
+          slots: [{
+            value: "token",
+            origin: "https://api.example.com",
+            path: "/v1",
+            header: "Authorization",
+            prefix: "Bearer ",
+          }],
+        },
+      },
+    },
+  });
+});
+
 describe("MCP review uses saved pins without approving them", () => {
   const before: owner.McpTool = {
     name: "search",

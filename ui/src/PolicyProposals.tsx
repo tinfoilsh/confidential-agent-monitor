@@ -1,6 +1,6 @@
 import { For, Show, createMemo, onMount } from "solid-js";
 import * as owner from "./owner.js";
-import { ConnectorIcon, Empty, Icon, ResourceDisclosure } from "./components";
+import { ConnectorIcon, Empty, Icon, ResourceDisclosure, href } from "./components";
 import { useMonitor } from "./monitor";
 import "./policy-proposals.css";
 
@@ -96,7 +96,7 @@ function Change(props: { proposal: owner.PolicyProposal; change: owner.Change })
   </div>;
 }
 
-/** Activity indexes pending proposals and their settled audit outcomes. */
+/** Activity lists pending proposals and links settled outcomes to their audit details. */
 export function PolicyProposals() {
   const m = useMonitor();
   const history = createMemo(() =>
@@ -123,7 +123,7 @@ export function PolicyProposals() {
             </span>
             <span class="resource-meta">
               <time datetime={proposal().created_at}>{date(proposal().created_at)}</time>
-              <span class={`badge proposal-kind ${update() ? "status-pending" : "status-approved"}`}>{update() ? "Update" : "New"}</span>
+              <span class={`badge proposal-kind ${update() ? "status-pending" : "status-new"}`}>{update() ? "Update" : "New"}</span>
               <a class="button" href={`#connections/pending/${encodeURIComponent(id)}`}>Review in Connections <Icon name="arrow" /></a>
             </span>
           </article>;
@@ -131,13 +131,13 @@ export function PolicyProposals() {
       </For>
       <For each={history()}>
         {(record) => <article class="resource-row activity-row proposal-history-row">
-          <span class="resource-link">
+          <a class="resource-link" href={href("request", record.id)}>
             <ConnectorIcon preset={m.view()!.config.accounts?.[record.facts.account]?.preset ?? ""} />
             <span>
               <strong>{reasonPreview(record.facts.title || "Connection proposal")}</strong>
-              <small>{record.facts.account || "Policy"} · {record.facts.principal.name || "Owner API"}</small>
+              <small>{record.facts.account || "Policy"} · {record.facts.principal.key ? record.facts.principal.name : "Owner API"}</small>
             </span>
-          </span>
+          </a>
           <span class="resource-meta">
             <time datetime={record.time}>{date(record.time)}</time>
             <span class={`badge status-${record.state}`}>{owner.reviewStatus(record)}</span>
@@ -153,7 +153,11 @@ export function ConnectionProposals(props: { id?: string }) {
   const m = useMonitor();
   let list!: HTMLDivElement;
   onMount(() => {
-    if (props.id) queueMicrotask(() => list.scrollIntoView({ block: "start" }));
+    if (props.id) queueMicrotask(() => {
+      const summary = list.querySelector<HTMLElement>("details[open] > summary");
+      (summary ?? list).scrollIntoView({ block: "start" });
+      summary?.focus();
+    });
   });
   return <div ref={list} class="resource-list collection-list proposal-list">
     <div class="resource-heading"><h2>Proposals <span class="count">{m.proposals().length}</span></h2></div>
@@ -170,7 +174,7 @@ export function ConnectionProposals(props: { id?: string }) {
               <strong class="proposal-reason-preview">{reasonPreview(proposal().reason)}</strong>
               <small>{proposal().connection} · {proposerIdentity(proposal())}</small>
             </span>
-            <span class="resource-meta"><span class={`badge proposal-kind ${m.view()!.config.accounts?.[proposal().connection] ? "status-pending" : "status-approved"}`}>{m.view()!.config.accounts?.[proposal().connection] ? "Update" : "New"}</span></span>
+            <span class="resource-meta"><span class={`badge proposal-kind ${m.view()!.config.accounts?.[proposal().connection] ? "status-pending" : "status-new"}`}>{m.view()!.config.accounts?.[proposal().connection] ? "Update" : "New"}</span></span>
             <span class="collection-chevron"><Icon name="arrow" /></span>
           </>}
         >
@@ -196,6 +200,9 @@ function ConnectionProposalDetail(props: { proposal: owner.PolicyProposal }) {
         <p><strong>Reason:</strong> {props.proposal.reason}</p>
         <p class="proposal-byline"><ProposerByline proposal={props.proposal} /></p>
       </div>
+      <Show when={m.view()!.presets[proposalPreset(props.proposal, m.view()!)]?.warning}>
+        {(warning) => <p class="connection-warning" role="note">{warning()}</p>}
+      </Show>
       <div class="proposal-change-list"><For each={props.proposal.changes}>{(change) => <Change proposal={props.proposal} change={change} />}</For></div>
       <details class="proposal-diff" open><summary>Technical TOML diff</summary><TechnicalDiff text={props.proposal.source_diff} /></details>
     </div>

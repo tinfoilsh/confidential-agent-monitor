@@ -153,10 +153,19 @@ class Client:
     def catalog(self):
         try:
             value = json.loads(self.request("agent.monitor", "GET", "/catalog"))
-            if not isinstance(value.get("catalog_id"), str) or not isinstance(value.get("presets"), dict):
+            if (not isinstance(value, dict)
+                    or not isinstance(value.get("catalog_id"), str)
+                    or not isinstance(value.get("presets"), dict)):
                 raise ValueError()
+            for name, entry in value["presets"].items():
+                if (not isinstance(name, str)
+                        or not isinstance(entry, dict)
+                        or not isinstance(entry.get("title"), str)):
+                    raise ValueError()
+                if "group" in entry and not isinstance(entry["group"], str):
+                    raise ValueError()
             return value
-        except (ValueError, KeyError, TypeError) as error:
+        except (ValueError, KeyError, TypeError, AttributeError) as error:
             raise MonitorError("invalid preset catalog from the monitor") from error
 
 def receive(sock, size):
@@ -1179,11 +1188,11 @@ def parser():
     p.add_argument("--client-config", default=str(Path.home() / ".config/monitor/client.json"), help="client profiles JSON file")
     p.add_argument("--timeout", type=float, default=300, help="request timeout in seconds (default: 300)")
     commands = p.add_subparsers(dest="command", required=True)
-    policy = commands.add_parser("policy", help="inspect policy and propose TOML edits")
+    policy = commands.add_parser("policy", help="inspect policy views and propose TOML edits")
     policy.add_argument("--owner-url", help="owner API URL for the full source, diff and apply")
     policy.add_argument("--owner-key-file", help="owner key or passphrase file; never needed for agent proposals")
     policy_commands = policy.add_subparsers(dest="policy_action", required=True)
-    show_policy = policy_commands.add_parser("show", help="show your policy settings as TOML")
+    show_policy = policy_commands.add_parser("show", help="show the policy view available to this identity as TOML")
     show_policy.add_argument("--json", action="store_true", help="show the response as JSON")
     show_policy.add_argument("--effective", action="store_true", help="expand presets and defaults; requires owner authentication")
     for action in ("propose", "diff", "apply"):

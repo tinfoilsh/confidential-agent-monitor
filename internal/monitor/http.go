@@ -565,8 +565,9 @@ func (m *monitor) agentPolicy(key string) (any, error) {
 	var visible map[string]any
 	var err error
 	if st.Identities[p.Name].Routes {
-		// Trusted devices can inspect the complete non-secret configuration they
-		// manage through owner-reviewed proposals. Credentials live outside Config.
+		// Trusted devices can inspect the expanded, credential-free configuration
+		// used to prepare owner-reviewed proposals. Credential values live outside
+		// Config.
 		visible, err = st.Config.View()
 	} else {
 		// A sandbox sees only its own identity and reachable account semantics.

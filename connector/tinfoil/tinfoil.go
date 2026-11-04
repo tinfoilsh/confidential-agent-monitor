@@ -147,7 +147,8 @@ func (s *Server) Control() http.Handler {
 	})
 }
 
-// Control and review share the captured pool and credential identity.
+// Development review, when compiled in, shares this control transport and
+// credential identity.
 func (s *httpState) control() http.Handler {
 	mux := http.NewServeMux()
 	registerDevelopmentControl(mux, s)

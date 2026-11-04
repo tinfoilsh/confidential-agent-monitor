@@ -81,10 +81,11 @@ monitor policy propose change.toml \
   --reason "Grant this sandbox GitHub access for issue triage"
 ```
 
-Proposals may contain only connection setup or connection access paths. They
-cannot contain credentials, identity keys or routes, global policies, data,
-effects, or other owner configuration. Monitor validates the
-candidate and removes semantic no-ops before publishing it.
+Proposals may contain shared connection setup or access for this sandbox only.
+They cannot change default access, credentials, MCP tool pins, identity keys or
+routes, global policies, data, global effect defaults, or other owner
+configuration. Monitor validates the candidate and removes semantic no-ops before
+publishing it.
 
 A batch is split into one proposal per connection. The owner reviews each
 connection independently. If a relevant setting changes first, Monitor records

@@ -1646,6 +1646,7 @@ details[open] > summary > .collection-chevron {
   background: #f3f4f6;
   color: #4b5563;
 }
+.status-new,
 .effect-read,
 .level-read {
   border-color: #bfdbfe;
@@ -3065,7 +3066,7 @@ td {
   border-color: #404045;
   color: #b0b5c0;
 }
-:root[data-theme="dark"] :is(.effect-read, .level-read) {
+:root[data-theme="dark"] :is(.status-new, .effect-read, .level-read) {
   background: #172554;
   border-color: #1e40af;
   color: #bfdbfe;

@@ -61,8 +61,8 @@ monitor shell
 ```
 
 Use `monitor mcp serve` to connect local MCP clients. Trusted-device automation
-should follow the full [Monitor skill](client/skills/monitor/SKILL.md) for catalog
-discovery, broad non-secret reads, proposals and direct API calls. Managed sandbox
+should follow the full [Monitor skill](client/skills/monitor/SKILL.md) for
+catalog discovery, broad credential-free reads, proposals and direct API calls. Managed sandbox
 images should seed the reduced [sandbox Monitor skill](client/skills/monitor-sandbox/SKILL.md),
 which covers only that sandbox's discovery, policy, proposals, credentials boundary
 and connection usage.
@@ -138,9 +138,10 @@ payment setting requires it.
   credentials are stored separately from policy.
 - **Agent proposals:** Sandboxes and trusted devices can inspect their policy with
   `monitor policy show` and submit connection-scoped changes for owner review with
-  `monitor policy propose`. Trusted devices can read the complete non-secret
-  configuration, while sandboxes see only their own access and reachable connection
-  semantics. Both remain limited to connection-scoped proposals. See the full
+  `monitor policy propose`. Trusted devices receive a credential-free, expanded
+  configuration projection, while sandboxes see only their own access and reachable
+  connection semantics. This view materializes inherited settings and is not source
+  TOML. Both remain limited to connection-scoped proposals. See the full
   [Monitor skill](client/skills/monitor/SKILL.md) and reduced
   [sandbox skill](client/skills/monitor-sandbox/SKILL.md) for TOML, structured
   changes, direct API requests, and credential boundaries.

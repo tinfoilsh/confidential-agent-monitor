@@ -53,9 +53,11 @@ monitor policy show --json
 ```
 
 A sandbox sees only its own identity, its own access and rules, and semantics
-for accounts it can reach. A trusted device sees the complete non-secret Monitor
-configuration, including accounts, identities, public keys, routes, sandbox
-access and global settings. Neither view includes credentials.
+for accounts it can reach. A trusted device sees a credential-free, expanded
+configuration projection, including accounts, identities, public keys, routes,
+sandbox access and global settings. Inherited access and resolved connections are
+materialized, so this projection is not source TOML and must not be round-tripped.
+Neither view includes values from Monitor's credential store.
 
 ## Propose connection changes
 
@@ -88,14 +90,16 @@ monitor policy propose change.toml \
   --reason "Grant this sandbox GitHub access for issue triage"
 ```
 
-Proposals may change only:
+Trusted-device proposals may change only:
 
 - `accounts.<connection>...`
 - `default_access.<connection>...`
 - `identities.<sandbox>.accounts.<connection>...`
 
-They cannot change credentials, identity keys or routes, global policies, data,
-effects, lattice settings, or unrelated owner configuration.
+A sandbox may propose shared connection setup under `accounts`, but may change
+access only for its own identity and cannot change `default_access`. No proposal
+may change credentials, MCP tool pins, identity keys or routes, global policies,
+data, global effect defaults, lattice settings, or unrelated owner configuration.
 Monitor validates all submitted changes and removes semantic no-ops before
 publishing them for review.
 

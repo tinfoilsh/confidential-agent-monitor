@@ -168,8 +168,42 @@ func containsProposalCredential(value any) bool {
 	return false
 }
 
-// connectionProposalTarget is the capability boundary. Future configuration
-// fields do not expand this strict allowlist.
+// proposalMCPPin finds MCP approval snapshots in both leaf edits and parent
+// replacements. Tool definitions must pass through the dedicated MCP review.
+func proposalMCPPin(path []string, value any) bool {
+	inMCP := false
+	for _, segment := range path {
+		if inMCP && strings.EqualFold(segment, "pin") {
+			return true
+		}
+		inMCP = strings.EqualFold(segment, "mcp")
+	}
+	var contains func(any, bool) bool
+	contains = func(value any, inMCP bool) bool {
+		switch x := value.(type) {
+		case map[string]any:
+			for key, child := range x {
+				if inMCP && strings.EqualFold(key, "pin") {
+					return true
+				}
+				if contains(child, inMCP || strings.EqualFold(key, "mcp")) {
+					return true
+				}
+			}
+		case []any:
+			for _, child := range x {
+				if contains(child, inMCP) {
+					return true
+				}
+			}
+		}
+		return false
+	}
+	return contains(value, inMCP)
+}
+
+// connectionProposalTarget limits proposals to the three connection-owned roots.
+// Additional validation below restricts security-sensitive descendants and callers.
 func connectionProposalTarget(path []string) (string, bool) {
 	switch {
 	case len(path) >= 2 && path[0] == "accounts" && path[1] != "":
@@ -229,8 +263,30 @@ func proposalChanges(input proposalInput) ([]config.Change, error) {
 		if _, credential := credentialID(change.Path); credential || credentialPath || containsProposalCredential(change.Value) {
 			return nil, errors.New("credentials cannot be proposed; configure them through owner account settings after approval")
 		}
+		if proposalMCPPin(change.Path, change.Value) {
+			return nil, errors.New("MCP tool approvals cannot be proposed; review discovered tools separately after approving the connection")
+		}
 	}
 	return changes, nil
+}
+
+func authorizeProposalChanges(proposer facts.Principal, kind string, changes []config.Change) error {
+	if kind != "sandbox" {
+		return nil
+	}
+	for _, change := range changes {
+		switch change.Path[0] {
+		case "accounts":
+			// Sandboxes may request shared setup; an owner still reviews the change.
+		case "identities":
+			if change.Path[1] != proposer.Name {
+				return errors.New("a sandbox may propose access changes only for itself")
+			}
+		case "default_access":
+			return errors.New("only a trusted device may propose default access changes")
+		}
+	}
+	return nil
 }
 
 // normalizeProposalChanges applies each submitted edit to the candidate in order
@@ -249,15 +305,23 @@ func splitProposalChanges(changes []config.Change) map[string][]config.Change {
 	return groups
 }
 
-// connectionScopeDigest binds only the state one proposal may change. Saved rules
-// are included because account changes can invalidate their reviewed definitions.
-func connectionScopeDigest(cfg *config.Config, connection string) string {
+// connectionScopeDigest binds the state one proposal may change. Identity-specific
+// edits additionally bind the target name to its key, so a grant cannot move to a
+// replacement principal while pending. Saved rules are included because account
+// changes can invalidate their reviewed definitions.
+func connectionScopeDigest(cfg *config.Config, connection string, changes []config.Change) string {
 	account, accountExists := cfg.Accounts[connection]
 	fallback, fallbackExists := cfg.DefaultAccess[connection]
 	var preset json.RawMessage
 	if accountExists {
 		if resolved, err := cfg.Preset(account.Preset); err == nil {
 			preset = resolved.Source
+		}
+	}
+	targeted := map[string]bool{}
+	for _, change := range changes {
+		if len(change.Path) >= 4 && change.Path[0] == "identities" && change.Path[2] == "accounts" && change.Path[3] == connection {
+			targeted[change.Path[1]] = true
 		}
 	}
 	identities := map[string]any{}
@@ -269,8 +333,17 @@ func connectionScopeDigest(cfg *config.Config, connection string) string {
 				rules[id] = rule
 			}
 		}
-		if access.Level != "" || len(rules) != 0 {
-			identities[name] = []any{access, identity.Effects, cfg.DevelopmentIdentityAuthority(name), rules}
+		if access.Level != "" || len(rules) != 0 || targeted[name] {
+			key := ""
+			if targeted[name] {
+				key = identity.Key
+			}
+			identities[name] = []any{key, access, identity.Effects, cfg.DevelopmentIdentityAuthority(name), rules}
+		}
+	}
+	for name := range targeted {
+		if _, exists := cfg.Identities[name]; !exists {
+			identities[name] = []any{"", config.Access{}, nil, nil, nil}
 		}
 	}
 	// These global inputs can change this connection's effective behavior. Another
@@ -278,6 +351,12 @@ func connectionScopeDigest(cfg *config.Config, connection string) string {
 	global := []any{cfg.Effects, cfg.AllowPaidInference, cfg.Lattices, cfg.AllowNetworks, cfg.Policies, cfg.Data, cfg.DevelopmentAuthority()}
 	raw, _ := json.Marshal([]any{accountExists, account, preset, fallbackExists, fallback, identities, global})
 	return policyDigest(string(raw))
+}
+
+func proposalScopeDigest(cfg *config.Config, proposal policyProposal) string {
+	var changes []config.Change
+	_ = json.Unmarshal(proposal.Changes, &changes)
+	return connectionScopeDigest(cfg, proposal.Connection, changes)
 }
 
 func proposalViewOf(p policyProposal, stale bool) proposalView {
@@ -335,7 +414,7 @@ func (m *monitor) buildPolicyProposal(ctx context.Context, base store.Document, 
 		return policyProposal{}, err
 	}
 	proposal := policyProposal{
-		ID: id, BaseScopeDigest: connectionScopeDigest(before.Config, connection),
+		ID: id, BaseScopeDigest: connectionScopeDigest(before.Config, connection, normalized),
 		IdempotencyKey: idempotency, CreatedAt: time.Now().UTC().Format(time.RFC3339Nano),
 		Reason: strings.TrimSpace(reason), Proposer: proposer, ProposerKind: kind,
 		Connection: connection, Changes: rawChanges, SourceDiff: diff.SourceDiff,
@@ -371,6 +450,9 @@ func (m *monitor) submitPolicyProposals(ctx context.Context, proposer facts.Prin
 		}
 	}
 	kind := proposalCallerKind(before, proposer)
+	if err := authorizeProposalChanges(proposer, kind, changes); err != nil {
+		return nil, err
+	}
 	proposals := make([]policyProposal, 0, len(targets))
 	for _, target := range targets {
 		idempotency := ""
@@ -437,7 +519,7 @@ func (m *monitor) policyProposals() []proposalView {
 	defer m.mu.Unlock()
 	result := make([]proposalView, 0, len(m.proposals))
 	for _, proposal := range m.proposals {
-		stale := connectionScopeDigest(m.settings.Load().Config, proposal.Connection) != proposal.BaseScopeDigest
+		stale := proposalScopeDigest(m.settings.Load().Config, proposal) != proposal.BaseScopeDigest
 		result = append(result, proposalViewOf(proposal, stale))
 	}
 	slices.SortFunc(result, func(a, b proposalView) int {
@@ -456,7 +538,7 @@ func (m *monitor) policyProposalView(id string) (proposalView, error) {
 	if !ok {
 		return proposalView{}, proposalMissing{errors.New("policy proposal not found")}
 	}
-	stale := connectionScopeDigest(m.settings.Load().Config, proposal.Connection) != proposal.BaseScopeDigest
+	stale := proposalScopeDigest(m.settings.Load().Config, proposal) != proposal.BaseScopeDigest
 	return proposalViewOf(proposal, stale), nil
 }
 
@@ -498,7 +580,7 @@ func (m *monitor) expireStaleProposals(preserve string) {
 	var outdated []policyProposal
 	m.mu.Lock()
 	for id, proposal := range m.proposals {
-		if id != preserve && connectionScopeDigest(cfg, proposal.Connection) != proposal.BaseScopeDigest {
+		if id != preserve && proposalScopeDigest(cfg, proposal) != proposal.BaseScopeDigest {
 			delete(m.proposals, id)
 			outdated = append(outdated, proposal)
 		}
@@ -601,7 +683,7 @@ func (m *monitor) approvePolicyProposal(ctx context.Context, id string, decision
 		return err
 	}
 	base, before := m.snapshot()
-	if connectionScopeDigest(before.Config, proposal.Connection) != proposal.BaseScopeDigest {
+	if proposalScopeDigest(before.Config, proposal) != proposal.BaseScopeDigest {
 		m.consumeOutdatedProposal(proposal)
 		return errPolicyConflict
 	}
@@ -622,7 +704,7 @@ func (m *monitor) approvePolicyProposal(ctx context.Context, id string, decision
 		if !ok {
 			return proposalMissing{errors.New("policy proposal not found")}
 		}
-		if connectionScopeDigest(m.settings.Load().Config, current.Connection) != current.BaseScopeDigest {
+		if proposalScopeDigest(m.settings.Load().Config, current) != current.BaseScopeDigest {
 			return errPolicyConflict
 		}
 		return checkProposalDecision(current, decision)
