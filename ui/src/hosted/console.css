@@ -114,6 +114,7 @@ dialog.start-dialog {
   border-radius: 12px;
   background: var(--card);
   color: var(--text);
+  outline: none;
   overflow-y: auto;
   box-shadow: 0 24px 80px #06182026;
 }
