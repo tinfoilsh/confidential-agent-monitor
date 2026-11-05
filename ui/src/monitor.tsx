@@ -28,7 +28,8 @@ const KEY = "monitor-owner-key",
 
 export type MonitorOptions = {
   monitorInfo?: { name: string };
-  terminalHome?: string;
+  // Where the hosted Back link returns: the Terminal home or the dashboard.
+  backTo?: string;
   // Hosted builds show their site header above the setup screens.
   header?: JSX.Element;
   client?: owner.OwnerApi;

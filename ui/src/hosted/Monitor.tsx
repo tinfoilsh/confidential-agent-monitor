@@ -11,7 +11,7 @@ import {
 } from "solid-js";
 import App from "../App";
 import { AuthCard, AuthScreen, Icon, Loading } from "../components";
-import { Header } from "./Console";
+import { Header, openedFromHome } from "./Console";
 import * as keys from "./keys";
 import { KeyGate } from "./KeyPanel";
 import {
@@ -40,6 +40,8 @@ export default function Monitor(props: {
 }) {
   const manager = props.manager ?? keys.passkeys();
   const id = decodeURIComponent(useParams().id ?? "");
+  const fromHome = openedFromHome();
+  const back = fromHome ? "/" : keys.TARGETS.dashboard;
   const [error, setError] = createSignal("");
   const [notice, setNotice] = createSignal("");
   const [busy, setBusy] = createSignal(false);
@@ -306,8 +308,8 @@ export default function Monitor(props: {
                       Try again
                     </button>
                   </Show>
-                  <a class="auth-link" href="/" link>
-                    Back to your Monitors
+                  <a class="auth-link" href={back} link>
+                    {fromHome ? "Back to your Monitors" : "Back to dashboard"}
                   </a>
                 </AuthScreen>
               </KeyGate>
@@ -324,7 +326,7 @@ export default function Monitor(props: {
             </Show>
             <App
               monitorInfo={{ name: opened.row.name }}
-              terminalHome="/"
+              backTo={back}
               header={<Header session={props.session} />}
               client={opened.client}
               snapshot={opened.snapshot}

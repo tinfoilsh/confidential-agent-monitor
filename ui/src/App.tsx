@@ -355,10 +355,10 @@ function ApprovalBar() {
 function MonitorFooter() {
   const m = useMonitor();
   return (
-    <Show when={m.options.terminalHome}>
-      {(home) => (
+    <Show when={m.options.backTo}>
+      {(back) => (
         <footer class="monitor-footer">
-          <a class="nav-item back-terminal" href={home()} link>
+          <a class="nav-item back-terminal" href={back()} link>
             <Icon name="arrow" />
             <span>Back</span>
           </a>

@@ -63,6 +63,15 @@ const BUSY_STATUSES = [
   "started",
   "stopping",
 ];
+const OPENED_FROM = "from";
+const HOME = "home";
+
+// A Monitor opened from this page goes back here; one opened elsewhere, such
+// as from the dashboard, goes back to the dashboard.
+const monitorURL = (id: string) =>
+  `/monitor/${id}?${new URLSearchParams({ [OPENED_FROM]: HOME })}`;
+export const openedFromHome = () =>
+  new URLSearchParams(location.search).get(OPENED_FROM) === HOME;
 
 // The /start fragment is read once, kept for this tab across sign-in and removed from the URL.
 export function capture() {
@@ -379,7 +388,7 @@ function Inventory(props: { session: Session }) {
             link
             href={
               monitor.owner_key_mode === "tmk"
-                ? `/monitor/${monitor.id}`
+                ? monitorURL(monitor.id)
                 : undefined
             }
           >
