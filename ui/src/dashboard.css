@@ -57,6 +57,8 @@
   --frame-inset: 30px;
   --frame-radius: 12px;
   --page-height: 100dvh;
+  --nav-width: 224px;
+  --nav-height: 64px;
   --tinfoil-dark: #061820;
   --backdrop: #06182099;
   --shadow: 0 1px 2px #0000000d;
@@ -379,7 +381,7 @@ summary + * {
 #app {
   height: 100vh;
   height: 100dvh;
-  padding-left: 224px;
+  padding-left: var(--nav-width);
 }
 #navigation {
   position: fixed;
@@ -387,7 +389,7 @@ summary + * {
   inset: 0 auto 0 0;
   display: flex;
   flex-direction: column;
-  width: 224px;
+  width: var(--nav-width);
   color: var(--nav-text);
   background: var(--tinfoil-dark) url("/icons/dashboard-grain.svg") repeat;
 }
@@ -2858,36 +2860,21 @@ td {
   height: 20px;
 }
 .shell-split {
-  display: flex;
+  position: relative;
   height: var(--page-height);
-}
-.shell-split > * {
-  flex: 1 1 0;
-  min-width: 0;
-  min-height: 0;
 }
 .shell-split #app {
   height: 100%;
 }
 .shell-pane {
-  position: relative;
+  position: absolute;
+  z-index: 35;
+  inset: 0 0 0 var(--nav-width);
   display: flex;
   flex-direction: column;
-  border-left: 1px solid var(--line);
   background: var(--card);
 }
-.shell-pane-resize {
-  position: absolute;
-  z-index: 1;
-  inset: 0 auto 0 -3px;
-  width: 6px;
-  cursor: col-resize;
-  touch-action: none;
-}
 @media (min-width: 1024px) {
-  .shell-split > .shell-pane {
-    flex: 0 0 var(--shell-width);
-  }
   /* Desktop pages float on a black frame. */
   :root {
     --page-height: calc(100dvh - 2 * var(--frame-inset));
@@ -2912,23 +2899,66 @@ td {
     border-width: 0 0 0 1px;
     border-radius: 0;
   }
+  .brand {
+    padding-right: calc(var(--control-height) + 24px);
+  }
+  .sidebar-toggle {
+    position: absolute;
+    top: 20px;
+    right: 12px;
+    border-color: transparent;
+    background: var(--tinfoil-dark);
+    color: var(--nav-muted);
+  }
+  .sidebar-toggle:hover:not(:disabled) {
+    background: var(--nav-line);
+    color: var(--nav-text);
+  }
+  .sidebar-toggle > .icon {
+    transform: scaleX(-1);
+  }
+  #app.collapsed {
+    padding-left: 0;
+  }
+  #app.collapsed #navigation {
+    transform: translateX(-100%);
+  }
+  #app.collapsed + .shell-pane {
+    inset: 0;
+  }
+  #app.collapsed #page-header,
+  #app.collapsed + .shell-pane > .sandbox-terminal:not(.floating) > header {
+    padding-left: calc(var(--control-height) + 24px);
+  }
+  /* Collapsed, the toggle rests just past the hidden sidebar, at the window's corner. */
+  #app.collapsed .sidebar-toggle {
+    top: 8px;
+    right: auto;
+    left: calc(100% + 12px);
+    border-color: var(--nav-edge);
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+  }
+  #app.collapsed .sidebar-toggle::before {
+    content: "";
+    position: absolute;
+    inset: -8px -12px -24px;
+  }
+  #app.collapsed .sidebar-toggle:is(:hover, :focus-visible),
+  #app.collapsed:has(+ .shell-pane > .sandbox-terminal:not(.floating))
+    .sidebar-toggle {
+    background: var(--tinfoil-dark);
+    opacity: 1;
+  }
 }
-.shell-split > .shell-pane:has(> .sandbox-terminal.floating) {
-  flex: 0 0 0;
-  border: 0;
-}
-.shell-pane:has(> .sandbox-terminal.floating) > .shell-pane-resize {
-  display: none;
+.shell-pane:has(> .sandbox-terminal.floating) {
+  display: contents;
 }
 @media (max-width: 1023px) {
-  .shell-split {
-    flex-direction: column;
-  }
   .shell-pane {
-    border-left: 0;
-    border-top: 1px solid var(--line);
+    inset: var(--nav-height) 0 0;
   }
-  .shell-pane-resize {
+  .sidebar-toggle {
     display: none;
   }
 }
@@ -2961,7 +2991,7 @@ td {
 }
 @media (max-width: 1023px) {
   #app {
-    padding: 64px 0 0;
+    padding: var(--nav-height) 0 0;
   }
   #navigation {
     inset: 0 0 auto;
@@ -2969,7 +2999,7 @@ td {
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: 64px minmax(0, 1fr);
     width: auto;
-    height: 64px;
+    height: var(--nav-height);
     align-items: center;
   }
   .brand {
@@ -3148,6 +3178,12 @@ td {
   }
   .collection-chevron {
     transition: transform 0.12s ease-out;
+  }
+  #navigation {
+    transition: transform 0.15s ease-out;
+  }
+  .sidebar-toggle {
+    transition: opacity 0.15s;
   }
   @supports (interpolate-size: allow-keywords) {
     details {

@@ -93,6 +93,7 @@ function Shell() {
         : initial,
     );
   const [mobile, setMobile] = createSignal(false),
+    [collapsed, setCollapsed] = createSignal(false),
     [theme, setTheme] = createSignal(
       localStorage.getItem("monitor-theme") || "system",
     );
@@ -170,6 +171,12 @@ function Shell() {
       media.removeEventListener("change", changed);
     });
   });
+  createEffect(() => {
+    const [kind, name, view] = parse(page());
+    if (kind !== "agents" || view !== "terminal") return;
+    m.setShell(name);
+    setCollapsed(true);
+  });
   const ready = () => m.view() && !m.locked() && owner.onboarded(m.view()!);
   createEffect(() => {
     document.documentElement.dataset.theme =
@@ -192,7 +199,10 @@ function Shell() {
           }
           onClose={() => m.setShell()}
         >
-          <div id="app" classList={{ "navigation-open": mobile() }}>
+          <div
+            id="app"
+            classList={{ "navigation-open": mobile(), collapsed: collapsed() }}
+          >
             <aside id="navigation" aria-label="Monitor navigation">
               <a class="brand" href="#activity">
                 <img
@@ -206,6 +216,14 @@ function Shell() {
                   </Show>
                 </span>
               </a>
+              <button
+                class="icon-button sidebar-toggle"
+                aria-label="Toggle sidebar"
+                aria-expanded={!collapsed()}
+                onClick={() => setCollapsed(!collapsed())}
+              >
+                <Icon name={collapsed() ? "sidebar" : "dock"} />
+              </button>
               <button
                 class="mobile-toggle"
                 aria-label="Toggle navigation"

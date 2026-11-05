@@ -766,7 +766,6 @@ export function download(text: string, name: string, type: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 const SandboxTerminal = /* @__PURE__ */ lazy(() => import("./SandboxTerminal"));
-const SHELL_MIN_WIDTH = 320;
 export type ShellTarget = {
   name: string;
   message: string;
@@ -777,29 +776,12 @@ export function ShellSplit(props: {
   onClose: () => void;
   children: JSX.Element;
 }) {
-  const [width, setWidth] = createSignal("50%");
-  let split!: HTMLDivElement;
   return (
-    <div class="shell-split" ref={split}>
+    <div class="shell-split">
       {props.children}
       <Show when={props.shell} keyed>
         {(current) => (
-          <aside
-            class="shell-pane"
-            aria-label="Sandbox shell"
-            style={{ "--shell-width": width() }}
-          >
-            <div
-              class="shell-pane-resize"
-              onPointerDown={(event) =>
-                drag(event, (move) => {
-                  const box = split.getBoundingClientRect();
-                  setWidth(
-                    `${Math.max(SHELL_MIN_WIDTH, Math.min(box.right - move.clientX, box.width - SHELL_MIN_WIDTH))}px`,
-                  );
-                })
-              }
-            />
+          <aside class="shell-pane" aria-label="Sandbox shell">
             <Show
               when={current.open}
               fallback={

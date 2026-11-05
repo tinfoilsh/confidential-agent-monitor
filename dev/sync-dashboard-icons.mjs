@@ -36,6 +36,7 @@ const components = {
   external: 'TfExternalLink',
   popout: 'TfApplicationWindow',
   dock: 'TfSidebarClose',
+  sidebar: 'TfSidebarOpen',
   sun: 'TfSunLightMode',
   moon: 'TfMoon',
   eye: 'TfEye',

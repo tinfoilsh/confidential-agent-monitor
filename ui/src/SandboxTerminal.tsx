@@ -126,7 +126,7 @@ export default function SandboxTerminal(props: {
         <button
           type="button"
           class="dialog-close icon-button"
-          aria-label={floating() ? "Dock shell" : "Pop out shell"}
+          aria-label={floating() ? "Expand shell" : "Pop out shell"}
           aria-pressed={floating()}
           onClick={() => {
             panel.removeAttribute("style");
