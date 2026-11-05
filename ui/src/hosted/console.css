@@ -22,6 +22,14 @@
   width: 28px;
   height: 28px;
 }
+.start-brand-name {
+  display: grid;
+  line-height: 1.2;
+}
+.start-brand-name small {
+  color: var(--muted);
+  font-weight: 400;
+}
 :root[data-theme="dark"] .start-brand img {
   filter: invert(1);
 }
