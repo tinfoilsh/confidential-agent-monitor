@@ -6,12 +6,18 @@ import {
   Switch,
   createResource,
   createSignal,
-  createUniqueId,
   onCleanup,
   type JSX,
 } from "solid-js";
-import { Portal } from "solid-js/web";
-import { download, Icon, Loading, Modal } from "../components";
+import {
+  AuthCard,
+  AuthOptions,
+  AuthScreen,
+  AuthTip,
+  download,
+  Icon,
+  Loading,
+} from "../components";
 import type { MKResource } from "./contract";
 import * as keys from "./keys";
 import type { Scope, Session } from "./session";
@@ -61,43 +67,42 @@ export function RecoveryDownload(props: {
   const [saved, setSaved] = createSignal(false);
   return (
     <>
-      <div class="start-key-choice">
-        <Icon name="devices" />
-        <div>
-          <h2>Save your recovery key</h2>
-          <p>
-            It opens your sandboxes after you sign out or switch browsers. This
-            browser keeps a copy only until you sign out.
-          </p>
-          <button
-            class="start-download"
-            classList={{ primary: !saved() }}
-            onClick={() => {
-              download(props.file.text, props.file.filename, "text/plain");
-              setSaved(true);
-            }}
-          >
-            <Icon name="download" />{" "}
-            {saved() ? "Download recovery key again" : "Download recovery key"}
-          </button>
-        </div>
-      </div>
-      <Show when={props.onContinue}>
-        {(next) => (
-          <button
-            class="primary start-continue"
-            disabled={!saved()}
-            onClick={() => next()()}
-          >
-            Continue <Icon name="arrow" />
-          </button>
-        )}
-      </Show>
+      <AuthCard icon={<Icon name="key" />} title="Recovery key">
+        <p>
+          It opens your sandboxes after you sign out or switch browsers. This
+          browser keeps a copy only until you sign out.
+        </p>
+        <button
+          classList={{ primary: !saved() }}
+          onClick={() => {
+            download(props.file.text, props.file.filename, "text/plain");
+            setSaved(true);
+          }}
+        >
+          <Icon name="download" />{" "}
+          {saved() ? "Download recovery key again" : "Download recovery key"}
+        </button>
+        <Show when={props.onContinue}>
+          {(next) => (
+            <button
+              class="primary"
+              disabled={!saved()}
+              onClick={() => next()()}
+            >
+              Continue
+            </button>
+          )}
+        </Show>
+      </AuthCard>
       <Show when={props.onBack}>
         {(back) => (
-          <button class="link start-alternative" onClick={() => back()()}>
-            Use a passkey instead
-          </button>
+          <AuthOptions title="Rather use a passkey?">
+            <li>
+              <button class="link" onClick={() => back()()}>
+                Use a passkey instead
+              </button>
+            </li>
+          </AuthOptions>
         )}
       </Show>
     </>
@@ -149,48 +154,42 @@ function PasskeyChoice(props: {
 }) {
   return (
     <>
-      <div class="start-key-choice">
-        <Icon name="rules" />
-        <div>
-          <h2>A passkey makes it easy</h2>
-          <p>
-            Use your fingerprint, face, screen lock, or a security key to open
-            your sandbox keys on any device.
+      <AuthCard icon={<Icon name="fingerprint" />} title="Passkey">
+        <p>
+          Use your fingerprint, face, screen lock, or a security key to open
+          your sandbox keys on any device.
+        </p>
+        <Show when={props.action.error()}>
+          <p role="alert">{props.action.error()}</p>
+        </Show>
+        <button
+          class="primary"
+          disabled={props.action.busy()}
+          aria-busy={props.action.busy()}
+          onClick={() => props.onPasskey()}
+        >
+          {props.action.busy()
+            ? "Follow your device's prompt…"
+            : "Create a passkey"}
+        </button>
+        <Show when={props.action.busy()}>
+          <p class="auth-help" role="status">
+            Your browser may ask you to confirm twice. A security key needs a
+            second touch.
           </p>
-        </div>
-      </div>
-      <Show when={props.action.error()}>
-        <p class="start-notice" role="alert">
-          {props.action.error()}
-        </p>
-      </Show>
-      <button
-        class="primary start-continue"
-        disabled={props.action.busy()}
-        aria-busy={props.action.busy()}
-        onClick={() => props.onPasskey()}
-      >
-        {props.action.busy() ? (
-          "Follow your device's prompt…"
-        ) : (
-          <>
-            Create a passkey <Icon name="arrow" />
-          </>
-        )}
-      </button>
-      <button
-        class="link start-alternative"
-        disabled={props.action.busy()}
-        onClick={() => props.onSkip()}
-      >
-        I don't have a passkey
-      </button>
-      <Show when={props.action.busy()}>
-        <p class="start-help" role="status">
-          Your browser may ask you to confirm twice. A security key needs a
-          second touch.
-        </p>
-      </Show>
+        </Show>
+      </AuthCard>
+      <AuthOptions title="Don't have a passkey?">
+        <li>
+          <button
+            class="link"
+            disabled={props.action.busy()}
+            onClick={() => props.onSkip()}
+          >
+            Save a recovery key file instead
+          </button>
+        </li>
+      </AuthOptions>
     </>
   );
 }
@@ -299,45 +298,47 @@ export function UnlockKeys(props: {
     const unlocked = current && (await keys.unlockSaved(current, scope.user));
     if (unlocked) await scope.setUnlocked(unlocked);
   });
+  const error = () => (
+    <Show when={action.error()}>
+      <p role="alert">{action.error()}</p>
+    </Show>
+  );
   return (
-    <>
-      <Show when={action.error()}>
-        <p class="start-notice" role="alert">
-          {action.error()}
-        </p>
-      </Show>
+    <Show
+      when={!confirming()}
+      fallback={
+        <AuthCard icon={<Icon name="warning" />} title="Start over?">
+          <p>
+            <strong>You will lose your sandboxes.</strong> Starting over makes
+            new keys. Sandboxes and Monitors that use your current keys can't be
+            opened again, and their data can't be recovered. CLI keys you added
+            stay.
+          </p>
+          {error()}
+          <button
+            class="danger"
+            disabled={action.busy()}
+            aria-busy={action.busy()}
+            onClick={() => void startOver()}
+          >
+            Yes, start over
+          </button>
+          <button disabled={action.busy()} onClick={() => setConfirming(false)}>
+            Go back
+          </button>
+        </AuthCard>
+      }
+    >
       <Show
-        when={!confirming()}
+        when={hasPasskey() && !noPasskey()}
         fallback={
           <>
-            <p class="start-notice" role="alert">
-              <strong>You will lose your sandboxes.</strong> Starting over makes
-              new keys. Sandboxes and Monitors that use your current keys can't
-              be opened again, and their data can't be recovered. CLI keys you
-              added stay.
-            </p>
-            <button
-              class="danger start-continue"
-              disabled={action.busy()}
-              aria-busy={action.busy()}
-              onClick={() => void startOver()}
-            >
-              Yes, start over
-            </button>
-            <button
-              class="link start-alternative"
-              disabled={action.busy()}
-              onClick={() => setConfirming(false)}
-            >
-              Go back
-            </button>
-          </>
-        }
-      >
-        <Show
-          when={hasPasskey() && !noPasskey()}
-          fallback={
-            <>
+            <AuthCard icon={<Icon name="document" />} title="Recovery key">
+              <p>
+                Choose the recovery key file you saved when you set up your
+                keys.
+              </p>
+              {error()}
               <input
                 ref={picker}
                 class="start-file"
@@ -357,38 +358,47 @@ export function UnlockKeys(props: {
                 }}
               />
               <button
-                class="primary start-continue"
+                class="primary"
                 disabled={action.busy()}
                 aria-busy={action.busy()}
                 onClick={() => picker.click()}
               >
-                <Icon name="document" />{" "}
                 {action.busy() ? "Unlocking…" : "Choose recovery key file"}
               </button>
+            </AuthCard>
+            <AuthOptions>
               <Show when={hasPasskey()}>
-                <button
-                  class="link start-alternative"
-                  disabled={action.busy()}
-                  onClick={() => setNoPasskey(false)}
-                >
-                  Use a passkey instead
-                </button>
+                <li>
+                  <button
+                    class="link"
+                    disabled={action.busy()}
+                    onClick={() => setNoPasskey(false)}
+                  >
+                    Use a passkey instead
+                  </button>
+                </li>
               </Show>
-              <p class="start-help">
-                Lost your recovery key?{" "}
+              <li>
                 <button
                   class="link"
                   disabled={action.busy()}
                   onClick={() => setConfirming(true)}
                 >
-                  Start over
+                  I lost my recovery key
                 </button>
-              </p>
-            </>
-          }
-        >
+              </li>
+            </AuthOptions>
+          </>
+        }
+      >
+        <AuthCard icon={<Icon name="fingerprint" />} title="Passkey">
+          <p>
+            When you're ready, unlock with your fingerprint, face, screen lock,
+            or security key.
+          </p>
+          {error()}
           <button
-            class="primary start-continue"
+            class="primary"
             disabled={action.busy()}
             aria-busy={action.busy()}
             onClick={() =>
@@ -397,23 +407,26 @@ export function UnlockKeys(props: {
               )
             }
           >
-            <Icon name="passkey" />{" "}
             {action.busy() ? "Unlocking…" : "Unlock with passkey"}
           </button>
-          <p class="start-help">
-            Your keys stay unlocked while this page is open. Reopening or
-            reloading terminal.tinfoil.sh asks for your passkey again.
-          </p>
-          <button
-            class="link start-alternative"
-            disabled={action.busy()}
-            onClick={() => setNoPasskey(true)}
-          >
-            I don't have a passkey
-          </button>
-        </Show>
+        </AuthCard>
+        <AuthOptions>
+          <li>
+            <button
+              class="link"
+              disabled={action.busy()}
+              onClick={() => setNoPasskey(true)}
+            >
+              Use your recovery key file
+            </button>
+          </li>
+        </AuthOptions>
+        <AuthTip>
+          Your keys stay unlocked while this page is open. Reopening or
+          reloading terminal.tinfoil.sh asks for your passkey again.
+        </AuthTip>
       </Show>
-    </>
+    </Show>
   );
 }
 
@@ -453,7 +466,7 @@ export function RecoveryMethods(props: {
       <For each={state()?.recovery ?? []}>
         {(r) => (
           <div class="start-key-choice">
-            <Icon name={r.type === "passkey" ? "rules" : "devices"} />
+            <Icon name={r.type === "passkey" ? "fingerprint" : "key"} />
             <div>
               <h2>{r.type === "passkey" ? "Passkey" : "Recovery key"}</h2>
               <p>Added {new Date(r.created_at).toLocaleDateString()}</p>
@@ -508,63 +521,17 @@ export function RecoveryMethods(props: {
   );
 }
 
-// The one dialog for key setup, unlock and recovery. It mounts on the body so
-// page layouts never restyle it.
-export function KeyDialog(props: {
-  open: boolean;
-  labelledby: string;
-  describedby?: string;
-  children: JSX.Element;
-}) {
-  return (
-    <Portal>
-      <Modal
-        class="start-dialog"
-        open={props.open}
-        closedby="none"
-        aria-labelledby={props.labelledby}
-        aria-describedby={props.describedby}
-      >
-        <div class="start-dialog-body start-setup">{props.children}</div>
-      </Modal>
-    </Portal>
-  );
-}
-
-export function KeyIntro(props: {
-  icon: string;
-  title: JSX.Element;
-  description: JSX.Element;
-  titleId: string;
-  descriptionId: string;
-}) {
-  return (
-    <>
-      <span class="start-mark">
-        <Icon name={props.icon} />
-      </span>
-      <h1 id={props.titleId}>{props.title}</h1>
-      <p id={props.descriptionId} class="start-description">
-        {props.description}
-      </p>
-    </>
-  );
-}
-
-// Shows setup to new users and unlock to returning ones, in the key dialog,
-// until the user's keys are open in memory. Closing the dialog leaves one
-// button that reopens it. A deferred gate counts as closed, so it waits behind
-// its button while another dialog handles the keys and after that one closes.
+// Stands in for its page, showing setup to new users and unlock to returning
+// ones, until the user's keys are open in memory.
 export function KeyGate(props: {
   session: Session;
   manager: PasskeyKeyManager;
-  deferDialog?: boolean;
+  purpose?: string;
   children: JSX.Element;
 }) {
   const [file, setFile] = createSignal<keys.RecoveryFile>();
-  const titleId = createUniqueId();
-  const descriptionId = createUniqueId();
   const read = () => props.session.keyState();
+  const purpose = () => props.purpose ?? "open your sandboxes";
   return (
     <Show
       when={props.session.unlocked() && !file()}
@@ -574,64 +541,64 @@ export function KeyGate(props: {
           fallback={
             <Show
               when={read().error}
-              fallback={<Loading label="Loading your keys…" />}
+              fallback={
+                <AuthScreen>
+                  <Loading label="Loading your keys…" />
+                </AuthScreen>
+              }
             >
-              <p class="start-notice" role="alert">
-                Your keys could not be read: {read().error}
-              </p>
+              <AuthScreen title="Could not load your keys">
+                <AuthCard icon={<Icon name="warning" />}>
+                  <p role="alert">{read().error}</p>
+                  <button
+                    class="primary"
+                    onClick={() => void props.session.refresh()}
+                  >
+                    Try again
+                  </button>
+                </AuthCard>
+              </AuthScreen>
             </Show>
           }
         >
           {(state) => (
-            <KeyDialog
-              open={!props.deferDialog}
-              labelledby={titleId}
-              describedby={descriptionId}
-            >
-              <Switch>
-                <Match when={file()}>
-                  {(recovery) => (
-                    <>
-                      <KeyIntro
-                        icon="devices"
-                        title="Keep your key close."
-                        description="Save your recovery key before you head to your sandboxes."
-                        titleId={titleId}
-                        descriptionId={descriptionId}
-                      />
-                      <RecoveryDownload
-                        file={recovery()}
-                        onContinue={() => setFile()}
-                      />
-                    </>
-                  )}
-                </Match>
-                <Match when={!state().dek_id}>
-                  <KeyIntro
-                    icon="terminal"
-                    title="Welcome to Terminal."
-                    description="First, we'll create your keys. They're encrypted with your account, so only you can open your sandboxes."
-                    titleId={titleId}
-                    descriptionId={descriptionId}
-                  />
+            <Switch>
+              <Match when={file()}>
+                {(recovery) => (
+                  <AuthScreen
+                    title="Save your recovery key"
+                    account={props.session.user()?.label}
+                  >
+                    <RecoveryDownload
+                      file={recovery()}
+                      onContinue={() => setFile()}
+                    />
+                  </AuthScreen>
+                )}
+              </Match>
+              <Match when={!state().dek_id}>
+                <AuthScreen
+                  title="Set up your keys"
+                  description={`Your keys ${purpose()}. They're encrypted with your account, so only you can open them.`}
+                  account={props.session.user()?.label}
+                >
                   <SetupKeys
                     session={props.session}
                     manager={props.manager}
                     onDone={setFile}
                   />
-                </Match>
-                <Match when={state().dek_id}>
-                  <KeyIntro
-                    icon="terminal"
-                    title="Welcome back."
-                    description="Unlock your keys to open your sandboxes."
-                    titleId={titleId}
-                    descriptionId={descriptionId}
-                  />
+                </AuthScreen>
+              </Match>
+              <Match when={state().dek_id}>
+                <AuthScreen
+                  title="Unlock your keys"
+                  description={`You need them to ${purpose()}.`}
+                  account={props.session.user()?.label}
+                >
                   <UnlockKeys session={props.session} manager={props.manager} />
-                </Match>
-              </Switch>
-            </KeyDialog>
+                </AuthScreen>
+              </Match>
+            </Switch>
           )}
         </Show>
       }

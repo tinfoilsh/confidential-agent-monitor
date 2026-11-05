@@ -43,24 +43,6 @@
   padding: 64px 24px;
   text-align: center;
 }
-.start-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: var(--card-radius);
-  border: 1px solid var(--edge);
-  background: var(--card);
-  color: var(--primary);
-}
-.start-mark > .icon {
-  width: 28px;
-  height: 28px;
-}
-.start-page > .start-welcome > .start-mark {
-  margin-bottom: 24px;
-}
 .start-eyebrow {
   margin: 24px 0 8px;
   color: var(--muted);
@@ -80,10 +62,6 @@
   font-size: var(--font-section);
   line-height: 1.7;
   text-wrap: balance;
-}
-.start-welcome > button {
-  min-height: 44px;
-  padding: 10px 24px;
 }
 .start-monitors {
   display: grid;
@@ -108,7 +86,7 @@ dialog.start-dialog {
   box-shadow: var(--shadow-lg);
 }
 .start-dialog::backdrop {
-  background: none;
+  background: var(--backdrop);
 }
 .start-close {
   position: absolute;
@@ -118,29 +96,16 @@ dialog.start-dialog {
 .start-dialog-body {
   padding: 32px;
 }
-.start-setup {
-  text-align: center;
-}
-.start-setup > .start-mark {
-  display: flex;
-  margin: 0 auto 24px;
-}
-.start-setup .start-steps {
-  justify-content: center;
-}
-.start-setup textarea {
-  text-align: start;
-}
 .start-dialog h1 {
-  margin: 0;
+  margin: 0 0 24px;
   color: var(--text);
   font-weight: 500;
   line-height: 1.3;
 }
-.start-dialog .start-description {
-  margin: 12px 0 24px;
-  color: var(--muted);
-  line-height: 1.65;
+.start-dialog .auth-card {
+  margin-bottom: 16px;
+  background: var(--subtle);
+  box-shadow: none;
 }
 .start-steps {
   display: flex;
@@ -174,6 +139,10 @@ dialog.start-dialog {
   background: var(--primary);
   color: var(--on-primary);
 }
+.auth .start-steps {
+  justify-content: center;
+  margin: 0;
+}
 .start-key-choice {
   display: flex;
   text-align: left;
@@ -205,28 +174,13 @@ dialog.start-dialog {
   font-size: var(--font-detail);
   line-height: 1.65;
 }
-.start-continue,
-.start-download {
+.start-continue {
   width: 100%;
   min-height: 44px;
   padding: 10px 16px;
 }
-.start-download {
-  margin-bottom: 12px;
-}
 .start-file {
   display: none;
-}
-button.start-continue.danger,
-button.start-continue.danger:hover:not(:disabled) {
-  border-color: transparent;
-  background: var(--bad);
-  color: var(--on-primary);
-}
-.start-alternative {
-  display: flex;
-  margin: 18px auto 0;
-  font-size: var(--font-detail);
 }
 .start-help {
   margin: 12px 0 0;
@@ -241,11 +195,9 @@ button.start-continue.danger:hover:not(:disabled) {
 .start-field {
   display: grid;
   gap: 8px;
-  margin: 0 0 24px;
+  margin: 0;
   font-size: var(--font-detail);
-}
-.start-download + .start-help {
-  margin: 0 0 16px;
+  text-align: start;
 }
 .start-notice {
   margin: 0 0 16px;
@@ -254,8 +206,6 @@ button.start-continue.danger:hover:not(:disabled) {
 .start-code {
   display: grid;
   gap: 12px;
-  width: min(280px, 100%);
-  margin-bottom: 8px;
 }
 .start-code-boxes {
   position: relative;
@@ -287,44 +237,7 @@ button.start-continue.danger:hover:not(:disabled) {
   outline-offset: 2px;
 }
 .start-code button {
-  min-height: 44px;
-}
-.monitor-welcome .start-welcome {
-  width: min(520px, 100%);
-  gap: 24px;
-  padding: 48px 24px;
-}
-.monitor-welcome .start-welcome > .start-mark {
-  margin: 0;
-}
-.monitor-welcome .start-welcome > .start-monitors {
-  margin-top: -12px;
-}
-.monitor-welcome .start-monitors > .start-help {
-  margin: 0;
-}
-.monitor-intro {
-  display: grid;
-  justify-items: center;
-  gap: 12px;
-  width: 100%;
-}
-.monitor-intro .start-eyebrow {
-  margin: 0;
-}
-.monitor-intro h1 {
-  line-height: 1.25;
-  overflow-wrap: anywhere;
-  text-wrap: balance;
-}
-.monitor-welcome .start-welcome > .start-notice {
-  width: 100%;
-  margin: 0;
-  padding: 16px 20px;
-  font-size: var(--font-body);
-  line-height: 1.65;
-  overflow-wrap: anywhere;
-  text-wrap: pretty;
+  min-height: 40px;
 }
 .monitor-actions {
   display: flex;
@@ -378,9 +291,6 @@ button.start-continue.danger:hover:not(:disabled) {
 .start-home a.start-key-choice > .icon {
   margin: 0;
   color: var(--muted);
-}
-.start-home .start-alternative {
-  margin-top: 0;
 }
 .start-header > span {
   display: flex;
