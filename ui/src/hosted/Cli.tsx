@@ -1,7 +1,7 @@
 import { sha256 } from "@noble/hashes/sha2.js";
 import type { PasskeyKeyManager } from "@tinfoilsh/passkey-kit";
 import { For, Match, Show, Switch, createSignal, onMount } from "solid-js";
-import { Icon } from "../components";
+import { AuthCard, AuthScreen, Icon, Loading } from "../components";
 import {
   b64u,
   canonicalKeySyncRequest,
@@ -193,18 +193,14 @@ export default function Cli(props: {
     return null;
   };
 
-  return (
-    <div class="start-page">
-      <Header session={props.session} />
-      <main class="start-welcome">
-        <span class="start-mark">
-          <Icon name={done() ? "check" : "devices"} />
-        </span>
-        <h1>{done() ? "Sync successful" : "Sync your CLI"}</h1>
+  const page = () => (
+    <AuthScreen
+      title={done() ? "Sync successful" : "Sync your CLI"}
+      account={props.session.user()?.label}
+    >
+      <AuthCard icon={<Icon name={done() ? "check" : "devices"} />}>
         <Show when={error()}>
-          <p class="start-notice" role="alert">
-            {error()}
-          </p>
+          <p role="alert">{error()}</p>
         </Show>
         <Switch>
           <Match when={!props.session.user()}>
@@ -235,18 +231,16 @@ export default function Cli(props: {
             </a>
           </Match>
           <Match when={profile && live() && !sameUser()}>
-            <p class="start-notice" role="alert">
+            <p role="alert">
               This key-sync request belongs to a different user. Sign out here
               and sign in as the user you chose in the CLI.
             </p>
           </Match>
           <Match when={ready()}>
-            <p>Unlock your keys so the CLI can open your sandboxes.</p>
-            <section class="start-monitors" aria-label="Your keys">
-              <KeyGate session={props.session} manager={manager}>
-                <Send />
-              </KeyGate>
-            </section>
+            <Show when={!error()}>
+              <Loading label="Sending your keys to the CLI…" />
+            </Show>
+            <Send />
           </Match>
           <Match when={profile && live()}>
             <p>Type the code shown in your terminal.</p>
@@ -297,13 +291,28 @@ export default function Cli(props: {
             </form>
           </Match>
           <Match when={!error()}>
-            <p class="start-notice" role="alert">
+            <p role="alert">
               This key-sync request has expired or is missing. Run tinfoil login
               --sync again.
             </p>
           </Match>
         </Switch>
-      </main>
+      </AuthCard>
+    </AuthScreen>
+  );
+
+  return (
+    <div class="start-page">
+      <Header session={props.session} />
+      <Show when={ready()} fallback={page()}>
+        <KeyGate
+          session={props.session}
+          manager={manager}
+          purpose="let the CLI open your sandboxes"
+        >
+          {page()}
+        </KeyGate>
+      </Show>
     </div>
   );
 }

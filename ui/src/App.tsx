@@ -11,6 +11,7 @@ import {
   onCleanup,
   onMount,
   untrack,
+  type JSX,
 } from "solid-js";
 import * as owner from "./owner.js";
 import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
@@ -18,9 +19,12 @@ import { Activity, RequestDetail } from "./Activity";
 import { Agents, AddAgent } from "./Agents";
 import { AddConnection, Connections, DeviceSignInDialog } from "./Connections";
 import {
+  AuthCard,
+  AuthScreen,
   ConnectorIcon,
   Empty,
   Icon,
+  Loading,
   Modal,
   ShellSplit,
   href,
@@ -59,11 +63,14 @@ export default function App(props: MonitorOptions) {
   return (
     <ErrorBoundary
       fallback={(error) => (
-        <div id="gate">
-          <h1>Could not show Monitor</h1>
-          <p>{String(error)}</p>
-          <button onClick={() => location.reload()}>Reload</button>
-        </div>
+        <AuthScreen id="gate" title="Could not show Monitor">
+          <AuthCard icon={<Icon name="warning" />}>
+            <p role="alert">{String(error)}</p>
+            <button class="primary" onClick={() => location.reload()}>
+              Reload
+            </button>
+          </AuthCard>
+        </AuthScreen>
       )}
     >
       <MonitorProvider {...props}>
@@ -110,16 +117,10 @@ function Shell() {
         ? "agents"
         : kind() === "rules"
           ? "activity"
-          : [
-                "account",
-                "accounts",
-                "connection",
-                "catalog",
-              ].includes(kind())
+          : ["account", "accounts", "connection", "catalog"].includes(kind())
             ? "connections"
             : kind()
-    ]?.[0] ??
-    (kind() === "request" ? "Request" : args()[0] || "Monitor");
+    ]?.[0] ?? (kind() === "request" ? "Request" : args()[0] || "Monitor");
   const count = (section: string) =>
     section === "activity"
       ? m.pendingCount()
@@ -291,7 +292,13 @@ function Shell() {
 function ApprovalBar() {
   const m = useMonitor();
   const pending = createMemo(() =>
-    owner.pendingSoonest(m.records().filter((r) => owner.needsOwner(r) && !owner.isConnectionProposalRecord(r))),
+    owner.pendingSoonest(
+      m
+        .records()
+        .filter(
+          (r) => owner.needsOwner(r) && !owner.isConnectionProposalRecord(r),
+        ),
+    ),
   );
   const proposals = m.proposals;
   const total = m.pendingCount;
@@ -300,21 +307,43 @@ function ApprovalBar() {
       <div class="approval-bar" role="status" aria-label="Pending approvals">
         <Icon name="activity" />
         <div class="approval-copy">
-          <strong>{total() === 1 ? "1 item needs your approval" : `${total()} items need your approval`}</strong>
-          <p>{proposals().length
-            ? `${proposals().length} proposed change${proposals().length === 1 ? "" : "s"}${pending().length ? ` · ${pending().length} request${pending().length === 1 ? "" : "s"}` : ""}`
-            : `${pending()[0].facts.principal.name} · ${owner.requestTitle(pending()[0])}`}</p>
+          <strong>
+            {total() === 1
+              ? "1 item needs your approval"
+              : `${total()} items need your approval`}
+          </strong>
+          <p>
+            {proposals().length
+              ? `${proposals().length} proposed change${proposals().length === 1 ? "" : "s"}${pending().length ? ` · ${pending().length} request${pending().length === 1 ? "" : "s"}` : ""}`
+              : `${pending()[0].facts.principal.name} · ${owner.requestTitle(pending()[0])}`}
+          </p>
         </div>
         <div class="approval-actions">
           <Show when={proposals().length}>
-            <a class="button" href={proposals().length === 1 ? `#connections/pending/${encodeURIComponent(proposals()[0].id)}` : "#connections/pending"}>
-              {proposals().length === 1 ? "Review change" : "Review changes"} <Icon name="arrow" />
+            <a
+              class="button"
+              href={
+                proposals().length === 1
+                  ? `#connections/pending/${encodeURIComponent(proposals()[0].id)}`
+                  : "#connections/pending"
+              }
+            >
+              {proposals().length === 1 ? "Review change" : "Review changes"}{" "}
+              <Icon name="arrow" />
             </a>
           </Show>
           <Show when={pending().length}>
-            <a class="button" onClick={() => m.setActivity({ scope: "", page: 0, anchor: 0 })}
-              href={pending().length === 1 ? href("activity", "request", pending()[0].id) : "#activity"}>
-              {pending().length === 1 ? "Review request" : "Review requests"} <Icon name="arrow" />
+            <a
+              class="button"
+              onClick={() => m.setActivity({ scope: "", page: 0, anchor: 0 })}
+              href={
+                pending().length === 1
+                  ? href("activity", "request", pending()[0].id)
+                  : "#activity"
+              }
+            >
+              {pending().length === 1 ? "Review request" : "Review requests"}{" "}
+              <Icon name="arrow" />
             </a>
           </Show>
         </div>
@@ -370,7 +399,9 @@ function Page(props: {
       >
         <Connections
           catalog={kind === "catalog" || name === "catalog"}
-          proposal={kind === "connections" && name === "pending" ? request : undefined}
+          proposal={
+            kind === "connections" && name === "pending" ? request : undefined
+          }
         />
       </Match>
       <Match when={kind === "connection" || kind === "account"}>
@@ -465,172 +496,196 @@ function Gate() {
     [key, setKey] = createSignal(import.meta.env.DEV ? "testtesttesttest" : "");
   const finish = (tinfoilApiKey?: () => Promise<string> | string) =>
     m.busy() ||
-    m.perform(
-      async (client) =>
-        client.onboard(m.view()!, "known_only", undefined, {
-          allowPaidInference: true,
-          tinfoilApiKey: await tinfoilApiKey?.(),
-        }),
+    m.perform(async (client) =>
+      client.onboard(m.view()!, "known_only", undefined, {
+        allowPaidInference: true,
+        tinfoilApiKey: await tinfoilApiKey?.(),
+      }),
     );
+  const error = () => (
+    <Show when={m.error()}>
+      <p role="alert">{m.error()}</p>
+    </Show>
+  );
   return (
-    <div id="gate">
+    <>
+      {m.options.header}
       <Switch
         fallback={
-          <>
-            <h1>Loading Monitor…</h1>
-            <Show when={m.error()}>
-              <p role="alert">{m.error()}</p>
-              <button onClick={() => location.reload()}>Reload</button>
+          <AuthScreen
+            id="gate"
+            title={m.error() ? "Could not load Monitor" : undefined}
+          >
+            <Show
+              when={m.error()}
+              fallback={<Loading label="Loading Monitor…" />}
+            >
+              <AuthCard icon={<Icon name="warning" />}>
+                {error()}
+                <button class="primary" onClick={() => location.reload()}>
+                  Reload
+                </button>
+              </AuthCard>
             </Show>
-          </>
+          </AuthScreen>
         }
       >
         <Match when={m.locked()}>
-          <h1>Monitor is locked</h1>
-          <p>Unlock the monitor to continue.</p>
-          <button
-            class="primary"
-            disabled={m.busy()}
-            onClick={() => void m.unlock()}
-          >
-            Unlock
-          </button>
+          <AuthScreen id="gate" title="Monitor is locked">
+            <AuthCard icon={<Icon name="lock" />}>
+              <p>Unlock the monitor to continue.</p>
+              <button
+                class="primary"
+                disabled={m.busy()}
+                onClick={() => void m.unlock()}
+              >
+                Unlock
+              </button>
+            </AuthCard>
+          </AuthScreen>
         </Match>
         <Match when={m.mode() && !m.credential()}>
-          <h1>Open Monitor</h1>
-          <Show
-            when={m.mode() === "ssh"}
-            fallback={
-              <form
-                class="form-fields"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  m.login(key());
-                }}
+          <AuthScreen id="gate" title="Open Monitor">
+            <AuthCard
+              icon={<Icon name={m.mode() === "ssh" ? "terminal" : "key"} />}
+            >
+              <Show
+                when={m.mode() === "ssh"}
+                fallback={
+                  <form
+                    class="form-fields"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      m.login(key());
+                    }}
+                  >
+                    <label>
+                      Owner passphrase
+                      <input
+                        type="password"
+                        required
+                        autocomplete="current-password"
+                        value={key()}
+                        onInput={(e) => setKey(e.currentTarget.value)}
+                      />
+                    </label>
+                    <button class="primary">Continue</button>
+                  </form>
+                }
               >
-                <label>
-                  Owner passphrase
-                  <input
-                    type="password"
-                    required
-                    autocomplete="current-password"
-                    value={key()}
-                    onInput={(e) => setKey(e.currentTarget.value)}
-                  />
-                </label>
-                <button class="primary">Continue</button>
-              </form>
-            }
-          >
-            <p>Open this monitor through the attested owner SSH connection.</p>
-            <pre>tinfoil monitor</pre>
-          </Show>
-          <Show when={m.error()}>
-            <p role="alert">{m.error()}</p>
-          </Show>
+                <p>
+                  Open this monitor through the attested owner SSH connection.
+                </p>
+                <pre>tinfoil monitor</pre>
+              </Show>
+              {error()}
+            </AuthCard>
+          </AuthScreen>
         </Match>
         <Match when={m.view() && !owner.onboarded(m.view()!)}>
-          <Onboarding
-            busy={m.busy()}
-            generate={m.options.tinfoilApiKey}
-            onFinish={finish}
-          />
-          <Show when={m.error()}>
-            <p role="alert">{m.error()}</p>
-          </Show>
+          <AuthScreen
+            id="gate"
+            title="Connect Tinfoil to your sandbox"
+            description="Use Tinfoil models in your sandbox for end-to-end confidential workloads."
+          >
+            <Onboarding
+              busy={m.busy()}
+              generate={m.options.tinfoilApiKey}
+              error={error()}
+              onFinish={finish}
+            />
+          </AuthScreen>
         </Match>
       </Switch>
-    </div>
+    </>
   );
 }
 function Onboarding(props: {
   busy: boolean;
   generate?: () => Promise<string>;
+  error: JSX.Element;
   onFinish(tinfoilApiKey?: () => Promise<string> | string): void;
 }) {
   const [tinfoilKey, setTinfoilKey] = createSignal("");
   return (
-    <form
-      class="onboarding"
-      onSubmit={(e) => {
-        e.preventDefault();
-        props.onFinish(props.generate ?? tinfoilKey);
-      }}
-    >
-      <header class="onboarding-heading">
-        <span class="connector-icon" aria-hidden="true">
-          <img
-            class="dark-icon"
-            src={import.meta.env.BASE_URL + "icons/tinfoil.dark.svg"}
-            alt=""
-          />
-          <img
-            class="light-icon"
-            src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
-            alt=""
-          />
+    <>
+      <form
+        class="auth-card onboarding"
+        onSubmit={(e) => {
+          e.preventDefault();
+          props.onFinish(props.generate ?? tinfoilKey);
+        }}
+      >
+        <span class="auth-icon">
+          <span class="connector-icon" aria-hidden="true">
+            <img
+              class="dark-icon"
+              src={import.meta.env.BASE_URL + "icons/tinfoil.dark.svg"}
+              alt=""
+            />
+            <img
+              class="light-icon"
+              src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
+              alt=""
+            />
+          </span>
         </span>
-        <h1>Connect Tinfoil to your sandbox</h1>
-        <p>
-          Use Tinfoil models in your sandbox for end-to-end confidential
-          workloads.
-        </p>
-      </header>
-      <Show when={!props.generate}>
-        <fieldset class="onboarding-key" disabled={props.busy}>
-          <div class="onboarding-key-label">
-            <label for="tinfoil-api-key">API key</label>
-            <a
-              href="https://dash.tinfoil.sh/?tab=api-keys"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Get an API key
-              <Icon name="external" />
-            </a>
-          </div>
-          <input
-            id="tinfoil-api-key"
-            type="password"
-            required
-            autofocus
-            pattern={".*\\S.*"}
-            title="Enter your Tinfoil API key"
-            placeholder="tk-…"
-            autocomplete="off"
-            spellcheck={false}
-            aria-describedby="tinfoil-key-help"
-            value={tinfoilKey()}
-            onInput={(e) => setTinfoilKey(e.currentTarget.value)}
-          />
-          <p id="tinfoil-key-help" class="onboarding-key-help">
-            <Icon name="rules" />
-            Your key stays in Monitor, hidden from your sandboxes.
-          </p>
-        </fieldset>
-      </Show>
-      <button class="primary" disabled={props.busy}>
-        {props.busy
-          ? "Saving…"
-          : props.generate
-            ? "Generate an API key automatically"
-            : "Add the Tinfoil connection"}
-      </button>
-      <Show when={props.generate}>
-        <p class="onboarding-note">
-          Your key stays in Monitor, hidden from your sandboxes.
-        </p>
-      </Show>
-      <div class="onboarding-actions">
-        <button
-          type="button"
-          class="link"
-          disabled={props.busy}
-          onClick={() => props.onFinish()}
+        <h2>Tinfoil API key</h2>
+        <Show
+          when={!props.generate}
+          fallback={
+            <p>Your key stays in Monitor, hidden from your sandboxes.</p>
+          }
         >
-          Skip for now
+          <fieldset class="onboarding-key" disabled={props.busy}>
+            <div class="onboarding-key-label">
+              <label for="tinfoil-api-key">API key</label>
+              <a
+                href="https://dash.tinfoil.sh/?tab=api-keys"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Get an API key
+                <Icon name="external" />
+              </a>
+            </div>
+            <input
+              id="tinfoil-api-key"
+              type="password"
+              required
+              autofocus
+              pattern={".*\\S.*"}
+              title="Enter your Tinfoil API key"
+              placeholder="tk-…"
+              autocomplete="off"
+              spellcheck={false}
+              aria-describedby="tinfoil-key-help"
+              value={tinfoilKey()}
+              onInput={(e) => setTinfoilKey(e.currentTarget.value)}
+            />
+            <p id="tinfoil-key-help" class="onboarding-key-help">
+              <Icon name="rules" />
+              Your key stays in Monitor, hidden from your sandboxes.
+            </p>
+          </fieldset>
+        </Show>
+        {props.error}
+        <button class="primary" disabled={props.busy}>
+          {props.busy
+            ? "Saving…"
+            : props.generate
+              ? "Generate an API key automatically"
+              : "Add the Tinfoil connection"}
         </button>
-      </div>
-    </form>
+      </form>
+      <button
+        type="button"
+        class="link auth-link"
+        disabled={props.busy}
+        onClick={() => props.onFinish()}
+      >
+        Skip for now
+      </button>
+    </>
   );
 }

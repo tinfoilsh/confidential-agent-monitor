@@ -10,7 +10,7 @@ import {
   onCleanup,
 } from "solid-js";
 import App from "../App";
-import { Icon, Loading } from "../components";
+import { AuthCard, AuthScreen, Icon, Loading } from "../components";
 import { Header } from "./Console";
 import * as keys from "./keys";
 import { KeyGate } from "./KeyPanel";
@@ -86,10 +86,6 @@ export default function Monitor(props: {
     if (booting()) return `Waiting for ${name} to start…`;
     if (row() && row()!.status !== "running")
       return `${name} is ${row()!.status}`;
-    if (props.session.keyState().value && !props.session.unlocked())
-      return props.session.keyState().value!.dek_id
-        ? `Unlock keys for ${name}`
-        : `Set up keys for ${name}`;
     if (inventory().value && !inventory().loading && !row())
       return "Monitor not found";
     return `Opening ${name}…`;
@@ -192,25 +188,13 @@ export default function Monitor(props: {
         when={session()}
         keyed
         fallback={
-          <div class="start-page monitor-welcome">
+          <div class="start-page">
             <Header session={props.session} />
-            <main class="start-welcome">
-              <span class="start-mark">
-                <Icon name="rules" />
-              </span>
-              <div class="monitor-intro">
-                <p class="start-eyebrow">Tinfoil Monitor</p>
-                <h1>{title()}</h1>
-              </div>
-              <Show when={error()}>
-                <p class="start-notice" role="alert">
-                  {error()}
-                </p>
-              </Show>
-              <Show
-                when={UUID.test(id) && props.session.user()}
-                fallback={
-                  <div class="monitor-actions">
+            <Show
+              when={UUID.test(id) && props.session.user()}
+              fallback={
+                <AuthScreen title={title()}>
+                  <AuthCard icon={<Icon name="rules" />}>
                     <Show
                       when={UUID.test(id)}
                       fallback={
@@ -219,6 +203,7 @@ export default function Monitor(props: {
                         </a>
                       }
                     >
+                      <p>Use the account that owns this Monitor.</p>
                       <button
                         class="primary"
                         onClick={() => void props.session.signIn()}
@@ -226,21 +211,33 @@ export default function Monitor(props: {
                         Sign in
                       </button>
                     </Show>
-                  </div>
-                }
+                  </AuthCard>
+                </AuthScreen>
+              }
+            >
+              <KeyGate
+                session={props.session}
+                manager={manager}
+                purpose={`open ${row()?.name ?? "your Monitor"}`}
               >
-                <section class="start-monitors" aria-label="Monitor connection">
-                  <KeyGate session={props.session} manager={manager}>
+                <AuthScreen
+                  title={title()}
+                  account={props.session.user()?.label}
+                >
+                  <AuthCard icon={<Icon name="rules" />}>
+                    <Show when={error()}>
+                      <p role="alert">{error()}</p>
+                    </Show>
                     <Switch>
                       <Match when={inventory().loading && !inventory().value}>
                         <Loading label="Loading your Monitor…" />
                       </Match>
                       <Match when={inventory().error}>
-                        <p class="start-notice" role="alert">
+                        <p role="alert">
                           Could not load your Monitor: {inventory().error}
                         </p>
                         <button
-                          class="link"
+                          class="primary"
                           onClick={() => void props.session.refresh()}
                         >
                           Try again
@@ -251,7 +248,7 @@ export default function Monitor(props: {
                           inventory().value && !inventory().loading && !row()
                         }
                       >
-                        <p class="start-notice" role="alert">
+                        <p role="alert">
                           This Monitor is not in the selected account. Switch
                           accounts or choose another Monitor.
                         </p>
@@ -260,7 +257,7 @@ export default function Monitor(props: {
                         <Loading label="Your Monitor will open automatically when it is ready." />
                       </Match>
                       <Match when={row() && row()!.status !== "running"}>
-                        <p class="start-help">
+                        <p>
                           Open the dashboard to start this Monitor or check its
                           status.
                         </p>
@@ -295,28 +292,26 @@ export default function Monitor(props: {
                           row()?.status === "running"
                         }
                       >
-                        <div class="monitor-actions">
-                          <button class="primary" onClick={() => void open()}>
-                            {error() ? "Try again" : "Open Monitor"}
-                          </button>
-                        </div>
+                        <button class="primary" onClick={() => void open()}>
+                          {error() ? "Try again" : "Open Monitor"}
+                        </button>
                       </Match>
                     </Switch>
-                  </KeyGate>
+                  </AuthCard>
                   <Show when={props.session.keyState().error}>
                     <button
-                      class="link"
+                      class="link auth-link"
                       onClick={() => void props.session.refresh()}
                     >
                       Try again
                     </button>
                   </Show>
-                  <a class="link" href="/" link>
+                  <a class="auth-link" href="/" link>
                     Back to your Monitors
                   </a>
-                </section>
-              </Show>
-            </main>
+                </AuthScreen>
+              </KeyGate>
+            </Show>
           </div>
         }
       >
@@ -330,6 +325,7 @@ export default function Monitor(props: {
             <App
               monitorInfo={{ name: opened.row.name }}
               terminalHome="/"
+              header={<Header session={props.session} />}
               client={opened.client}
               snapshot={opened.snapshot}
               shell={shell(opened)}

@@ -8,7 +8,14 @@ import {
   createSignal,
   on,
 } from "solid-js";
-import { Icon, Loading, Modal, SkeletonRows } from "../components";
+import {
+  AuthCard,
+  AuthScreen,
+  Icon,
+  Loading,
+  Modal,
+  SkeletonRows,
+} from "../components";
 import {
   parseStartRequest,
   startErrorURL,
@@ -20,9 +27,7 @@ import {
 import * as keys from "./keys";
 import {
   AddPasskey,
-  KeyDialog,
   KeyGate,
-  KeyIntro,
   RecoveryDownload,
   RecoveryMethods,
   SetupKeys,
@@ -39,8 +44,6 @@ import {
 import "./console.css";
 
 const START = "tinfoil.start";
-const START_TITLE = "start-title";
-const START_DESCRIPTION = "start-description";
 const SSH_ED25519_PREFIX = "AAAAC3NzaC1lZDI1NTE5AAAAI";
 // Mirrors the dashboard's container state labels.
 const STATUS_LABELS: Record<string, string> = {
@@ -193,26 +196,23 @@ function Start(props: {
     ),
   );
   return (
-    <>
-      <KeyIntro
-        icon={file() ? "devices" : "terminal"}
-        title={
-          r.mode === "umk"
-            ? "Add your CLI keys"
-            : file()
-              ? "Keep your key close."
-              : "Welcome to Terminal."
-        }
-        description={
-          r.mode === "umk"
-            ? "Paste the public keys made by the Tinfoil CLI. Their private keys stay on your computer, so this sandbox is reached with the CLI only."
-            : file()
-              ? "Save your recovery key before you head to your sandboxes."
-              : `First, we'll create keys for your ${r.roles.join(" and ")}. They're encrypted with your account, and your dashboard only sees their public keys.`
-        }
-        titleId={START_TITLE}
-        descriptionId={START_DESCRIPTION}
-      />
+    <AuthScreen
+      title={
+        r.mode === "umk"
+          ? "Add your CLI keys"
+          : file()
+            ? "Save your recovery key"
+            : "Welcome to Terminal"
+      }
+      description={
+        r.mode === "umk"
+          ? "Paste the public keys made by the Tinfoil CLI. Their private keys stay on your computer, so this sandbox is reached with the CLI only."
+          : file()
+            ? "Save your recovery key before you head to your sandboxes."
+            : `First, we'll create keys for your ${r.roles.join(" and ")}. They're encrypted with your account, and your dashboard only sees their public keys.`
+      }
+      account={props.session.user()?.label}
+    >
       <Show when={r.mode === "tmk" && !file()}>
         <ol class="start-steps" aria-label="Getting started">
           <li aria-current="step">
@@ -230,43 +230,44 @@ function Start(props: {
       </Show>
       <Switch>
         <Match when={props.session.user()?.id !== r.user}>
-          <p class="start-notice" role="alert">
-            You are signed in as a different user than the one who started this
-            setup.
-          </p>
-          <button
-            class="primary start-continue"
-            onClick={() => leave("account_mismatch")}
-          >
-            Return to dashboard
-          </button>
+          <AuthCard icon={<Icon name="warning" />} title="Different account">
+            <p>
+              You are signed in as a different user than the one who started
+              this setup.
+            </p>
+            <button class="primary" onClick={() => leave("account_mismatch")}>
+              Return to dashboard
+            </button>
+          </AuthCard>
         </Match>
         <Match when={r.mode === "umk"}>
-          <For each={r.roles}>
-            {(role) => (
-              <label class="start-field">
-                {role === "monitor" ? "Monitor" : "Sandbox"} owner public key
-                <textarea
-                  rows={2}
-                  disabled={busy()}
-                  placeholder="ssh-ed25519 AAAA…"
-                  onInput={(event) =>
-                    setEntries({
-                      ...entries(),
-                      [role]: event.currentTarget.value,
-                    })
-                  }
-                />
-              </label>
-            )}
-          </For>
-          <button
-            class="primary start-continue"
-            disabled={busy() || !state()}
-            onClick={() => void finishUMK()}
-          >
-            Continue to dashboard
-          </button>
+          <AuthCard icon={<Icon name="terminal" />}>
+            <For each={r.roles}>
+              {(role) => (
+                <label class="start-field">
+                  {role === "monitor" ? "Monitor" : "Sandbox"} owner public key
+                  <textarea
+                    rows={2}
+                    disabled={busy()}
+                    placeholder="ssh-ed25519 AAAA…"
+                    onInput={(event) =>
+                      setEntries({
+                        ...entries(),
+                        [role]: event.currentTarget.value,
+                      })
+                    }
+                  />
+                </label>
+              )}
+            </For>
+            <button
+              class="primary"
+              disabled={busy() || !state()}
+              onClick={() => void finishUMK()}
+            >
+              Continue to dashboard
+            </button>
+          </AuthCard>
         </Match>
         <Match when={file()}>
           {(recovery) => (
@@ -278,14 +279,16 @@ function Start(props: {
           )}
         </Match>
         <Match when={!state()}>
-          <Show
-            when={props.session.keyState().error}
-            fallback={<Loading label="Loading your keys…" />}
-          >
-            <p class="start-notice" role="alert">
-              Your keys could not be loaded: {props.session.keyState().error}
-            </p>
-          </Show>
+          <AuthCard>
+            <Show
+              when={props.session.keyState().error}
+              fallback={<Loading label="Loading your keys…" />}
+            >
+              <p role="alert">
+                Your keys could not be loaded: {props.session.keyState().error}
+              </p>
+            </Show>
+          </AuthCard>
         </Match>
         <Match when={state() && !state()!.dek_id}>
           <SetupKeys
@@ -309,25 +312,31 @@ function Start(props: {
               />
             }
           >
-            <button
-              class="primary start-continue"
-              disabled={busy()}
-              aria-busy={busy()}
-              onClick={() => void addTMK()}
-            >
-              {busy() ? "Saving keys…" : "Create keys and continue"}
-            </button>
+            <AuthCard icon={<Icon name="key" />} title="Sandbox keys">
+              <p>
+                Your keys are unlocked. Create keys for your{" "}
+                {r.roles.join(" and ")} to continue.
+              </p>
+              <button
+                class="primary"
+                disabled={busy()}
+                aria-busy={busy()}
+                onClick={() => void addTMK()}
+              >
+                {busy() ? "Saving keys…" : "Create keys and continue"}
+              </button>
+            </AuthCard>
           </Show>
         </Match>
       </Switch>
       <button
-        class="link start-alternative"
+        class="link auth-link"
         disabled={busy()}
         onClick={() => leave("cancelled")}
       >
         Cancel and return to dashboard
       </button>
-    </>
+    </AuthScreen>
   );
 }
 
@@ -588,85 +597,66 @@ export default function Console(props: {
   return (
     <div class="start-page">
       <Header session={props.session} />
-      <main class="start-welcome start-home">
-        <h1>{props.session.user() ? "Welcome back" : "Welcome to Terminal"}</h1>
-        <Show
-          when={props.session.user()}
-          fallback={
-            <>
-              <p>Sign in to open your Monitors and set up sandbox keys.</p>
+      <Switch
+        fallback={
+          <KeyGate session={props.session} manager={manager}>
+            <main class="start-welcome start-home">
+              <h1>Welcome back</h1>
+              <Inventory session={props.session} />
+              <Show when={props.session.keyState().error}>
+                {(error) => (
+                  <p class="start-notice" role="alert">
+                    Your saved keys could not be refreshed: {error()}
+                  </p>
+                )}
+              </Show>
+              <section class="start-monitors" aria-label="Your keys">
+                <p class="start-eyebrow">Your keys</p>
+                <Cleanup session={props.session} />
+                <RecoveryMethods session={props.session} manager={manager} />
+              </section>
+            </main>
+          </KeyGate>
+        }
+      >
+        <Match when={start === "invalid"}>
+          <AuthScreen title="This setup link is not valid">
+            <AuthCard icon={<Icon name="warning" />}>
+              <p>Start again from your dashboard.</p>
+              <a class="button primary" href={keys.TARGETS.dashboard}>
+                Open dashboard
+              </a>
+            </AuthCard>
+          </AuthScreen>
+        </Match>
+        <Match when={!props.session.user()}>
+          <AuthScreen title="Welcome to Terminal">
+            <AuthCard icon={<Icon name="terminal" />}>
+              <p>
+                {start
+                  ? "Sign in with the account that started this setup."
+                  : "Sign in to open your Monitors and set up sandbox keys."}
+              </p>
               <button
                 class="primary"
                 onClick={() => void props.session.signIn()}
               >
-                Sign in <Icon name="arrow" />
+                Sign in
               </button>
-            </>
-          }
-        >
-          <Inventory session={props.session} />
-          <Show when={props.session.keyState().error}>
-            {(error) => (
-              <p class="start-notice" role="alert">
-                Your saved keys could not be refreshed: {error()}
-              </p>
-            )}
-          </Show>
-          <section class="start-monitors" aria-label="Your keys">
-            <p class="start-eyebrow">Your keys</p>
-            <KeyGate
+            </AuthCard>
+          </AuthScreen>
+        </Match>
+        <Match when={start as StartRequest}>
+          {(request) => (
+            <Start
               session={props.session}
               manager={manager}
-              deferDialog={!!start}
-            >
-              <Cleanup session={props.session} />
-              <RecoveryMethods session={props.session} manager={manager} />
-            </KeyGate>
-          </section>
-        </Show>
-      </main>
-      <KeyDialog
-        open={!!start}
-        labelledby={START_TITLE}
-        describedby={START_DESCRIPTION}
-      >
-        <Switch>
-          <Match when={start === "invalid"}>
-            <KeyIntro
-              icon="terminal"
-              title="This setup link is not valid"
-              description="Start again from your dashboard."
-              titleId={START_TITLE}
-              descriptionId={START_DESCRIPTION}
+              request={request()}
+              navigate={navigate}
             />
-          </Match>
-          <Match when={!props.session.user()}>
-            <KeyIntro
-              icon="terminal"
-              title="Sign in to continue"
-              description="Sign in with the account that started this setup."
-              titleId={START_TITLE}
-              descriptionId={START_DESCRIPTION}
-            />
-            <button
-              class="primary start-continue"
-              onClick={() => void props.session.signIn()}
-            >
-              Sign in
-            </button>
-          </Match>
-          <Match when={start as StartRequest}>
-            {(request) => (
-              <Start
-                session={props.session}
-                manager={manager}
-                request={request()}
-                navigate={navigate}
-              />
-            )}
-          </Match>
-        </Switch>
-      </KeyDialog>
+          )}
+        </Match>
+      </Switch>
     </div>
   );
 }
