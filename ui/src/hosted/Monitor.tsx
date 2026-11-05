@@ -325,6 +325,7 @@ export default function Monitor(props: {
             <App
               monitorInfo={{ name: opened.row.name }}
               terminalHome="/"
+              header={<Header session={props.session} />}
               client={opened.client}
               snapshot={opened.snapshot}
               shell={shell(opened)}

@@ -2449,18 +2449,6 @@ td {
 body:has(#gate) {
   background: var(--surface) var(--grid) repeat center;
 }
-#gate {
-  max-width: 480px;
-  margin: 18vh auto;
-  padding: 32px;
-  border: 1px solid var(--line);
-  border-radius: var(--card-radius);
-  background: var(--card);
-  box-shadow: var(--shadow-lg);
-}
-#gate p:last-child {
-  margin-bottom: 0;
-}
 .auth {
   --primary: var(--confirm);
   --primary-hover: var(--confirm-hover);
@@ -2605,31 +2593,6 @@ body:has(#gate) {
 .auth-card > button.danger:hover:not(:disabled) {
   background: var(--destructive-hover);
 }
-.onboarding {
-  display: grid;
-  gap: 24px;
-}
-.onboarding h1 {
-  margin: 0;
-  font-weight: 500;
-  line-height: 1.3;
-}
-.onboarding-heading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  text-align: center;
-}
-.onboarding-heading > :first-child {
-  width: 56px;
-  height: 56px;
-  margin: 0 0 12px;
-  padding: 13px;
-  border: 1px solid var(--edge);
-  border-radius: var(--card-radius);
-  background: var(--card);
-}
 .dialog-header > .icon {
   grid-row: span 2;
   width: 40px;
@@ -2640,17 +2603,13 @@ body:has(#gate) {
   border-radius: var(--card-radius);
   background: var(--hover);
 }
-.onboarding-heading p {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.65;
-}
 .onboarding fieldset {
   display: grid;
   gap: 10px;
   margin: 0;
   padding: 0;
   border: 0;
+  text-align: start;
 }
 .onboarding legend {
   margin-bottom: 10px;
@@ -2694,22 +2653,6 @@ body:has(#gate) {
 .onboarding-key .icon {
   width: 14px;
   height: 14px;
-}
-.onboarding > .primary {
-  min-height: 44px;
-  margin-top: 0;
-}
-.onboarding-note {
-  margin: -12px 0 0;
-  color: var(--muted);
-  font-size: var(--font-detail);
-  line-height: 1.65;
-  text-align: center;
-}
-
-.onboarding-actions {
-  display: flex;
-  justify-content: center;
 }
 #notices {
   position: sticky;

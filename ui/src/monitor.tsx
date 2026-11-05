@@ -10,6 +10,7 @@ import {
   onCleanup,
   onMount,
   useContext,
+  type JSX,
   type ParentProps,
 } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
@@ -28,6 +29,8 @@ const KEY = "monitor-owner-key",
 export type MonitorOptions = {
   monitorInfo?: { name: string };
   terminalHome?: string;
+  // Hosted builds show their site header above the setup screens.
+  header?: JSX.Element;
   client?: owner.OwnerApi;
   snapshot?: owner.Snapshot;
   // Hosted builds own sandbox signers; other builds have no browser shell.
@@ -207,7 +210,9 @@ function createMonitor(options: MonitorOptions) {
     pendingCount,
   } = createRequestLog(requests, now);
   const proposals = createMemo(() =>
-    records().filter((r) => r.state === "pending" && owner.isConnectionProposalRecord(r)),
+    records().filter(
+      (r) => r.state === "pending" && owner.isConnectionProposalRecord(r),
+    ),
   );
   const remember = (
     next: owner.View,
@@ -351,15 +356,11 @@ function createMonitor(options: MonitorOptions) {
       audience: view.labels[name]?.audience ?? "anyone",
       ...change,
     });
-    return perform(
-      (client) => client.label(name, next(snapshot()!.view)),
-      "",
-      {
-        update: (state) => {
-          state.view.labels[name] = next(state.view);
-        },
+    return perform((client) => client.label(name, next(snapshot()!.view)), "", {
+      update: (state) => {
+        state.view.labels[name] = next(state.view);
       },
-    );
+    });
   };
   const decide = (record: owner.RequestRecord, decision: owner.Decision) =>
     perform(
@@ -626,18 +627,17 @@ function createMonitor(options: MonitorOptions) {
     accept,
     cancelSignIn: () => setDeviceSignIn(undefined),
     unlock: () =>
-      perform(
-        (client) =>
-          // Rollback floor: never unlock a state older than the newest
-          // generation this browser has seen. Local dev wipes its store,
-          // which looks identical to a rollback, so the floor is off there.
-          client.unlock(
-            options.client
-              ? undefined
-              : import.meta.env.DEV
-                ? 0
-                : Number(localStorage.getItem(GENERATION)) || 0,
-          ),
+      perform((client) =>
+        // Rollback floor: never unlock a state older than the newest
+        // generation this browser has seen. Local dev wipes its store,
+        // which looks identical to a rollback, so the floor is off there.
+        client.unlock(
+          options.client
+            ? undefined
+            : import.meta.env.DEV
+              ? 0
+              : Number(localStorage.getItem(GENERATION)) || 0,
+        ),
       ),
     login: (value: string) => {
       try {
