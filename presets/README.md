@@ -30,8 +30,9 @@ policy. Monitor does not filter them by channel or correlate acknowledgement IDs
 with received envelopes. These descriptors authorize traffic, not validate the
 complete Slack message schema.
 
-The temporary `ticket` is a bearer credential and currently appears in the shared
-HTTP capture's owner-visible query details. Keep real handshake captures private.
+The temporary `ticket` is a bearer credential. `http.sensitive_query` replaces it
+with a SHA-256 fingerprint before description, so policy, approval scope and audit
+see the fingerprint while the upstream request keeps the real value.
 
 ## Preset format and authorization
 
@@ -40,6 +41,7 @@ Protocol definitions have their own sections:
 
 - `http.operations` maps operation IDs to reviewed HTTP operations, including GraphQL matchers. IDs also determine candidate evaluation order; ambiguous matches are rejected.
 - `http.slots` requires requests to stay within the connection's configured API addresses.
+- `http.sensitive_query` lists high-entropy bearer query values to fingerprint before capture, including unknown or invalid requests. Extracted parameters see the same fingerprints, preserving approval distinctions without retaining the credentials. Literal query-value matchers cannot use these fields.
 - `mcp.scope` selects service resource identifiers from MCP tool arguments.
 - `public_scope` names the extracted parameters that identify public or private resources across protocols.
 

@@ -41,6 +41,7 @@
     ]
   },
   "http": {
+    "sensitive_query": ["ticket"],
     "operations": {
       "apps.connections.open": {
         "action": "connect",

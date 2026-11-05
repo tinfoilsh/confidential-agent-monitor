@@ -1,6 +1,7 @@
 package web
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -20,6 +21,26 @@ type Request struct {
 }
 
 func (r *Request) Describe(config *Setup) (facts.Facts, error) {
+	if r.HTTP != nil && config != nil && config.Preset != nil && len(config.Preset.SensitiveQuery) != 0 {
+		// Describe a private copy; the admitted upstream request keeps its real values.
+		described, layer := *r, *r.HTTP
+		layer.Query = maps.Clone(r.HTTP.Query)
+		for _, key := range config.Preset.SensitiveQuery {
+			if values, present := layer.Query[key]; present {
+				fingerprints := make([]string, len(values))
+				for i, value := range values {
+					fingerprints[i] = fmt.Sprintf("sha256:%x", sha256.Sum256([]byte(value)))
+				}
+				layer.Query[key] = fingerprints
+			}
+		}
+		described.HTTP = &layer
+		return described.describe(config)
+	}
+	return r.describe(config)
+}
+
+func (r *Request) describe(config *Setup) (facts.Facts, error) {
 	if r.HTTP == nil {
 		return facts.Facts{}, errors.New("missing HTTP request")
 	}
@@ -50,9 +71,10 @@ func (r *Request) Describe(config *Setup) (facts.Facts, error) {
 
 // Preset contains reviewed HTTP operations, including GraphQL requests.
 type Preset struct {
-	Operations map[string]Operation `json:"operations"`
-	Slots      bool                 `json:"slots,omitempty"`
-	routes     map[routeKey]*routeNode
+	Operations     map[string]Operation `json:"operations"`
+	Slots          bool                 `json:"slots,omitempty"`
+	SensitiveQuery []string             `json:"sensitive_query,omitempty"`
+	routes         map[routeKey]*routeNode
 }
 
 // UnmarshalJSON compiles the operations, so only a validated preset can match requests.
@@ -65,6 +87,11 @@ func (p *Preset) UnmarshalJSON(raw []byte) error {
 }
 
 func (p *Preset) validate() error {
+	for i, key := range p.SensitiveQuery {
+		if key == "" || slices.Contains(p.SensitiveQuery[:i], key) {
+			return errors.New("sensitive query names must be nonempty and unique")
+		}
+	}
 	for id, o := range p.Operations {
 		if o.Enabled != nil && !*o.Enabled {
 			continue
@@ -74,6 +101,11 @@ func (p *Preset) validate() error {
 		}
 		if o.Method == "" || o.Origin == "" || o.Path == "" || o.Scope == nil {
 			return fmt.Errorf("operation %s needs method, origin, path and scope", id)
+		}
+		for _, key := range p.SensitiveQuery {
+			if o.Query[key] != nil {
+				return fmt.Errorf("operation %s cannot match a literal sensitive query value", id)
+			}
 		}
 		if o.WebSocket && (o.Method != "GET" || !slices.Contains([]string{"", "none", "json"}, o.Body)) {
 			return fmt.Errorf("WebSocket operation %s needs GET and a none or json body", id)
@@ -389,7 +421,7 @@ func (p *Preset) compile() error {
 			spec.name = name
 			selectors = append(selectors, spec)
 		}
-		definition, err := json.Marshal([]any{o, p.Slots})
+		definition, err := json.Marshal([]any{o, p.Slots, p.SensitiveQuery})
 		if err != nil {
 			return err
 		}
