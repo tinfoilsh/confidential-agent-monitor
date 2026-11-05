@@ -127,10 +127,15 @@ async function resolve(
   monitor: OpenedMonitor,
   id: string,
   bind: boolean,
-  readVolumes = () => monitor.scope.api(VOLUMES),
+  signal = monitor.scope.signal,
+  readVolumes = (at: AbortSignal) => monitor.scope.api(VOLUMES, { signal: at }),
 ) {
+  signal.throwIfAborted();
   const { scope } = monitor;
-  const detail = (await scope.api(`/api/containers/${id}`)) as Container;
+  const detail = (await scope.api(`/api/containers/${id}`, {
+    signal,
+  })) as Container;
+  signal.throwIfAborted();
   if (
     detail.id !== id ||
     detail.repo !== SANDBOX_REPO ||
@@ -154,7 +159,7 @@ async function resolve(
     throw new Error("Your saved keys do not include this sandbox's owner key.");
   const instance_id = measuredEnv(detail.config).SANDBOX_INSTANCE_ID ?? "";
   const volume_id = detail.volumes?.workspace ?? "";
-  const volumes = (await readVolumes()) as {
+  const volumes = (await readVolumes(signal)) as {
     volumes?: {
       id: string;
       container_id: string | null;
@@ -162,6 +167,7 @@ async function resolve(
       size_bytes: number;
     }[];
   };
+  signal.throwIfAborted();
   const volume = volumes.volumes?.find(
     (v) =>
       v.id === volume_id && v.container_id === id && v.slot === "workspace",
@@ -187,9 +193,13 @@ async function resolve(
       throw new Error(
         "This sandbox's instance or workspace no longer matches its saved key.",
       );
-  } else if (bind)
+  } else if (bind) {
+    // Once admitted, a write may finish; never admit a binding after the
+    // initiating workspace/shell has been cancelled during resolution.
+    signal.throwIfAborted();
     await scope.update(keys.bindResource(resource.key_id, binding));
-  else return;
+  } else return;
+  signal.throwIfAborted();
   return {
     row: detail,
     resource,
@@ -238,7 +248,12 @@ export async function connectSandbox({
   signal = signal
     ? AbortSignal.any([signal, monitor.scope.signal])
     : monitor.scope.signal;
-  const { row, resource, binding, size } = (await resolve(monitor, id, true))!;
+  const { row, resource, binding, size } = (await resolve(
+    monitor,
+    id,
+    true,
+    signal,
+  ))!;
   const sandbox = await sandboxClient(
     monitor,
     row,
@@ -300,7 +315,13 @@ export async function relinkSandboxes(monitor: OpenedMonitor) {
   await Promise.all(
     rows.map(async (row) => {
       try {
-        const resolved = await resolve(monitor, row.id, false, readVolumes);
+        const resolved = await resolve(
+          monitor,
+          row.id,
+          false,
+          monitor.scope.signal,
+          readVolumes,
+        );
         if (!resolved) return;
         const { resource, binding } = resolved;
         const agent = sshPublicKey(
