@@ -1,47 +1,11 @@
 Each shipped preset has a `<name>.json` record. Accounts select it with
 `"preset": "<name>"`. Monitor accepts only these shipped definitions.
 
-For the authoring and test workflow, see [adding protocol presets](../dev/presets/README.md#adding-protocol-presets).
-
-## Slack Socket Mode
-
-`slack_socket_mode.json` adds a separate **Slack Socket Mode** connection using
-the shared HTTP/WebSocket connector. Enable Socket Mode in the Slack app and set
-an app-level `xapp-` token with `connections:write`. The normal **Slack** connection
-uses a separate bot/user token for Web API calls.
-
-The app token is substituted only in the Authorization header for
-[`apps.connections.open`](https://docs.slack.dev/reference/methods/apps.connections.open),
-which returns a temporary WebSocket URL. The client SDK manages the session and
-reconnection, following [Slack's protocol](https://docs.slack.dev/apis/events-api/using-socket-mode).
-
-The opening POST accepts an empty body, JSON or form. WebSocket handshakes use
-port 443, `/link/`, and `ticket`, `app_id` and `debug_reconnects` query parameters.
-Supported hosts are `wss.slack.com`, `wss-primary.slack.com` and
-`wss-backup.slack.com`; other returned hosts require a reviewed preset update.
-
-Permissions are `connect` (session), `receive` (read) and `respond` (send).
-All acknowledgements count as send because they can contain interactive responses.
-The whole response is bound to approval scope, not just its envelope ID; read-only
-access therefore cannot acknowledge events.
-
-Incoming deliveries use the account's contents/trust labels and remain opaque to
-policy. Monitor does not filter them by channel or correlate acknowledgement IDs
-with received envelopes. These descriptors authorize traffic, not validate the
-complete Slack message schema.
-
-The temporary `ticket` is a bearer credential. `http.sensitive_query` replaces it
-with a SHA-256 fingerprint before description, so policy, approval scope and audit
-see the fingerprint while the upstream request keeps the real value.
-
-## Grafana
-
-Set the Grafana origin to `https://host` (or its configured HTTPS port), without an
-`/api` suffix, and configure the API key separately. Operation paths include the
-`/api` base declared by the pinned vendor specification. Correcting a path changes
-its approval definition; saved approvals for the old path do not apply to the new one.
-See the [manual tests](../dev/manual_tests/README.md) for health and read-only
-search checks. Public health does not prove authenticated dashboard access.
+For authoring, see [adding protocol presets](../dev/presets/README.md#adding-protocol-presets).
+Provider request definitions live in the JSON files; SDK scenarios and coverage
+live in [tf-test's use cases](https://github.com/tinfoilsh/tf-test/tree/eaf007c2890ca041df40a2cf3bc79c23507bb8cf/services/connections-flywheel/usecases).
+For local live smoke checks and service setup, see the
+[manual connector tests](../dev/manual_tests/README.md).
 
 ## Preset format and authorization
 
@@ -49,6 +13,7 @@ The catalog contains setup fields, connections, defaults, and permission actions
 Protocol definitions have their own sections:
 
 - `http.operations` maps operation IDs to reviewed HTTP operations, including GraphQL matchers. IDs also determine candidate evaluation order; ambiguous matches are rejected.
+- An operation's optional `path_patterns` maps capture names to Go regular expressions. Each expression must match the entire captured value and is checked before ambiguity detection. Unknown capture names and invalid expressions fail compilation. For example, `"path_patterns": {"release_id": "[0-9]+"}` keeps GitHub release-by-ID requests distinct from `/releases/latest`. This is a matching constraint, not a scope type conversion; extracted IDs remain strings. Literal routes do not automatically outrank parameter routes. Constraints participate in the approval definition hash and require a Monitor version supporting this field.
 - `http.slots` requires requests to stay within the connection's configured API addresses.
 - `http.sensitive_query` lists high-entropy bearer query values to fingerprint before capture, including unknown or invalid requests. Extracted parameters see the same fingerprints, preserving approval distinctions without retaining the credentials. Literal query-value matchers cannot use these fields.
 - `mcp.scope` selects service resource identifiers from MCP tool arguments.
@@ -59,19 +24,21 @@ For example:
 ```json
 {
   "title": "Example",
-  "catalog": {"actions": {"items.read": {"title": "Read items"}}},
+  "catalog": { "actions": { "items.read": { "title": "Read items" } } },
   "http": {
-    "operations": {"items.get": {
-      "action": "items.read",
-      "effects": ["read"],
-      "method": "GET",
-      "origin": "https://api.example.com",
-      "path": "/items/{id}",
-      "scope": {"id": {"from": "path", "at": "id"}}
-    }}
+    "operations": {
+      "items.get": {
+        "action": "items.read",
+        "effects": ["read"],
+        "method": "GET",
+        "origin": "https://api.example.com",
+        "path": "/items/{id}",
+        "scope": { "id": { "from": "path", "at": "id" } }
+      }
+    }
   },
   "mcp": {
-    "scope": {"id": {"at": "/id", "optional": true}}
+    "scope": { "id": { "at": "/id", "optional": true } }
   }
 }
 ```
