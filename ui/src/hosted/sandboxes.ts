@@ -66,7 +66,7 @@ export async function sandboxClient(
   const secure = new SecureClient({
     enclaveURL: host,
     configRepo: target.reference,
-    verification: { configScopes: [target.registry] },
+    verification: { configRegistryIDs: [target.registry] },
     acquisition: {
       fetch: async (input, init) => {
         const url = new URL(String(input));

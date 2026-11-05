@@ -40,7 +40,7 @@ afterEach(() => {
 test("uses registry trust and exact config pins for Monitor attestation", async () => {
   await attestMonitor(target, new AbortController().signal);
   expect(options.configRepo).toBe(target.reference);
-  expect(options.verification).toEqual({ configScopes: [target.registry] });
+  expect(options.verification).toEqual({ configRegistryIDs: [target.registry] });
 });
 
 test("requires fresh admission before returning a key for another owner session", async () => {
