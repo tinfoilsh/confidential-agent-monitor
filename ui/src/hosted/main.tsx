@@ -2,6 +2,7 @@ import { Route, Router } from "@solidjs/router";
 import { lazy } from "solid-js";
 import { render } from "solid-js/web";
 import { TARGETS, profileError } from "./keys";
+import { PRODUCT } from "./product";
 
 const PAGES = {
   monitor: () => import("./Monitor"),
@@ -9,9 +10,9 @@ const PAGES = {
   console: () => import("./Console"),
 };
 const TITLES = {
-  monitor: "Monitor",
-  cli: "CLI key sync · Terminal",
-  console: "Get started · Terminal",
+  monitor: PRODUCT.name,
+  cli: `CLI key sync · ${PRODUCT.name}`,
+  console: `Get started · ${PRODUCT.name}`,
 };
 const routeOf = (pathname: string): keyof typeof PAGES => {
   const path = pathname.replace(/\/+$/, "");

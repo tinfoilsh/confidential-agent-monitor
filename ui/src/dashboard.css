@@ -424,9 +424,10 @@ summary + * {
 .brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  /* As in the hosted header, so "Secure browser console" fits the sidebar. */
+  gap: 8px;
   min-height: 72px;
-  padding: 20px 24px;
+  padding: 20px;
   border-bottom: 1px solid var(--nav-line);
   color: var(--nav-text);
   font-size: var(--font-body);
@@ -437,6 +438,17 @@ summary + * {
   height: 28px;
   object-fit: contain;
   filter: invert(1);
+}
+.brand-name {
+  display: grid;
+  min-width: 0;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.brand-name small {
+  color: var(--nav-muted);
+  font-weight: 400;
 }
 .monitor-footer {
   flex: none;

@@ -34,6 +34,7 @@ import {
   SetupKeys,
   UnlockKeys,
 } from "./KeyPanel";
+import { PRODUCT } from "./product";
 import {
   MONITOR_REPO,
   SANDBOX_REPO,
@@ -531,8 +532,8 @@ export function Header(props: { session: Session }) {
       <a href="/" class="start-brand" aria-label="Tinfoil Terminal home" link>
         <img src="/icons/tinfoil.svg" alt="" />
         <span class="start-brand-name">
-          Terminal
-          <small>Secure browser console</small>
+          {PRODUCT.name}
+          <small>{PRODUCT.tagline}</small>
         </span>
       </a>
       <Show
