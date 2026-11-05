@@ -75,6 +75,9 @@
   --nav-height: 64px;
   --tinfoil-dark: #061820;
   --tinfoil-accent-dark: #004444;
+  --tinfoil-accent-light: #68c7ac;
+  --text-secondary: #292f3d;
+  --border-strong: #374151;
   --backdrop: #06182099;
   --shadow: 0 1px 2px #0000000d;
   --shadow-lg: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a;
@@ -113,6 +116,8 @@
   --surface: #121212;
   --subtle: #2c2c2e;
   --text: #fafafa;
+  --text-secondary: #d5d8dd;
+  --border-strong: #62626a;
   --muted: #b0b8c0;
   --dim: #b0b5c0;
   --input: #62626a;
@@ -272,34 +277,41 @@ input[type="checkbox"] {
   vertical-align: -3px;
   accent-color: var(--primary);
 }
+/* Tinfoil Chat's settings toggle. */
 input[type="checkbox"][role="switch"] {
   appearance: none;
   position: relative;
   flex-shrink: 0;
-  width: 32px;
-  height: 18px;
-  border: 1px solid var(--input);
-  border-radius: 10px;
-  background: var(--input);
+  width: 36px;
+  height: 20px;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--muted) 40%, transparent);
   cursor: pointer;
-  vertical-align: -4px;
+  vertical-align: -5px;
 }
 input[type="checkbox"][role="switch"]::before {
   content: "";
   position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 12px;
-  height: 12px;
+  top: 1px;
+  left: 1px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: var(--on-primary);
+  background: color-mix(in srgb, var(--muted) 70%, transparent);
+  box-shadow: var(--shadow);
 }
 input[type="checkbox"][role="switch"]:checked {
-  border-color: var(--primary);
-  background: var(--primary);
+  background: var(--tinfoil-accent-light);
 }
 input[type="checkbox"][role="switch"]:checked::before {
-  transform: translateX(14px);
+  transform: translateX(16px);
+  background: #fff;
+}
+input[type="checkbox"][role="switch"]:focus-visible {
+  outline: 2px solid var(--border-strong);
+  outline-offset: 0;
 }
 textarea {
   resize: vertical;
@@ -2089,28 +2101,94 @@ details[open] > summary > .collection-chevron {
 .access-action-group[open] > summary .access-group-title::before {
   content: "▾";
 }
-#pane:has(> .settings-section) {
-  padding: var(--card-inset) var(--card-inset) 0;
-  border-radius: var(--card-radius);
-  background: var(--card);
+/* Settings follow Tinfoil Chat: titled sections of one card per setting. */
+#pane.settings {
+  display: grid;
+  gap: 24px;
 }
 .settings-note {
   margin: 0;
+  color: var(--muted);
   font-size: var(--font-detail);
 }
 #pane > .settings-section {
+  display: grid;
+  gap: 12px;
   margin: 0;
-  padding: var(--card-inset) 0;
+  padding: 0;
   border: 0;
-  border-radius: 0;
   background: none;
   box-shadow: none;
 }
-#pane > .settings-section + .settings-section {
-  border-top: 1px solid var(--line);
+.settings-section > h2 {
+  margin: 0;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: var(--font-body);
+  line-height: 20px;
+  font-weight: 400;
 }
-.settings-section h2 {
-  margin-bottom: 8px;
+.settings-card {
+  display: block;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--card);
+  overflow-wrap: anywhere;
+}
+.setting-title {
+  display: block;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: var(--font-body);
+  line-height: 20px;
+}
+.setting-toggle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+}
+.setting-toggle small {
+  display: block;
+  color: var(--muted);
+  line-height: 16px;
+}
+.theme-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.theme-option {
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+  padding: 12px;
+  border-color: var(--line);
+  background: transparent;
+  box-shadow: none;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: var(--font-detail);
+  font-weight: 400;
+  line-height: 16px;
+}
+.theme-option > .icon {
+  width: 20px;
+  height: 20px;
+  color: var(--text);
+}
+.theme-option:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: transparent;
+}
+.theme-option[aria-pressed="true"],
+.theme-option[aria-pressed="true"]:hover {
+  border-color: var(--tinfoil-accent-light);
+  background: rgb(104 199 172 / 10%);
 }
 .setting-row {
   display: grid;
@@ -2143,10 +2221,7 @@ details[open] > summary > .collection-chevron {
 .setting-row input[type="checkbox"] {
   margin: 0;
 }
-.settings-danger {
-  border-color: var(--bad);
-}
-.settings-danger h2 {
+.settings-danger > h2 {
   color: var(--bad);
 }
 
