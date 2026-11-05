@@ -50,7 +50,10 @@ func ServeChannel(nc ssh.NewChannel, api http.Handler, generation Generation) {
 	defer s.Close()
 	go func() { <-conn.Closed(); s.Close() }()
 	acknowledge := func() error {
-		current, _ := generation()
+		current, unlocked := generation()
+		if !unlocked {
+			return nil
+		}
 		// Do not report success until the CLI has persisted the generation. Close
 		// a stalled channel so an owner client cannot leave this goroutine behind.
 		timer := time.AfterFunc(10*time.Second, func() { s.Close() })
