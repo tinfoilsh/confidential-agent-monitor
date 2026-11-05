@@ -74,6 +74,7 @@ func TestPathPatternsCompileValidation(t *testing.T) {
 		{"/releases/{id}", "missing", "[0-9]+"},
 		{"/releases/{id}", "", "[0-9]+"},
 		{"/releases/{id}", "id", "["},
+		{"/releases/{id}", "id", "foo)|.*(?:bar"},
 		{"*", "id", "[0-9]+"},
 		{"/releases/{id}/{id}", "id", "[0-9]+"},
 	} {

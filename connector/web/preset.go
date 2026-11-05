@@ -426,8 +426,12 @@ func (p *Preset) compile() error {
 			if name == "" || count != 1 {
 				return fmt.Errorf("operation %s needs exactly one path capture named %q", id, name)
 			}
-			// Anchor independently of flags inside the reviewed expression.
-			compiled, err := regexp.Compile(`\A(?:` + pattern + `)\z`)
+			// Validate the expression on its own so unbalanced groups cannot
+			// escape the wrapper, then anchor independently of embedded flags.
+			compiled, err := regexp.Compile(pattern)
+			if err == nil {
+				compiled, err = regexp.Compile(`\A(?:` + pattern + `)\z`)
+			}
 			if err != nil {
 				return fmt.Errorf("operation %s has an invalid path pattern for %s: %w", id, name, err)
 			}
