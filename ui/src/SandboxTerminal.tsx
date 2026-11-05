@@ -1,22 +1,21 @@
-import { Show, createSignal, onCleanup, onMount } from "solid-js";
+import { Show, createEffect, createSignal, onCleanup, onMount } from "solid-js";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebglAddon } from "@xterm/addon-webgl";
 import { Terminal } from "@xterm/xterm";
 import "@xterm/xterm/css/xterm.css";
-import { Icon, drag } from "./components";
 import * as owner from "./owner.js";
 import "./terminal.css";
 
 export default function SandboxTerminal(props: {
   open: owner.ShellOpener;
   name: string;
-  onClose: () => void;
+  // Whether its tab is shown; a hidden terminal keeps its session.
+  active: boolean;
 }) {
   const [status, setStatus] = createSignal<
     "connecting" | "open" | "exited" | "failed"
   >("connecting");
   const [message, setMessage] = createSignal("");
-  const [floating, setFloating] = createSignal(false);
   const terminal = new Terminal({
     cursorBlink: true,
     fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
@@ -26,7 +25,6 @@ export default function SandboxTerminal(props: {
   const fit = new FitAddon();
   terminal.loadAddon(fit);
   let screen!: HTMLDivElement, session: AbortController | undefined;
-  let panel!: HTMLElement;
   let shell: owner.Shell | undefined;
   const fail = (cause: unknown) => {
     shell = undefined;
@@ -81,35 +79,24 @@ export default function SandboxTerminal(props: {
     webgl.onContextLoss(() => webgl.dispose());
     terminal.loadAddon(webgl);
     fit.fit();
-    const resized = new ResizeObserver(() => fit.fit());
+    // A hidden tab has no size, and fitting it would shrink the remote shell.
+    const resized = new ResizeObserver(() => {
+      if (screen.offsetWidth && screen.offsetHeight) fit.fit();
+    });
     resized.observe(screen);
     onCleanup(() => resized.disconnect());
     void connect();
+  });
+  createEffect(() => {
+    if (props.active) terminal.focus();
   });
   onCleanup(() => {
     session?.abort();
     terminal.dispose();
   });
   return (
-    <section
-      ref={panel}
-      class="sandbox-terminal"
-      classList={{ floating: floating() }}
-      aria-label={`Shell in ${props.name}`}
-    >
-      <header
-        onPointerDown={(event) => {
-          if (!floating() || (event.target as Element).closest("button"))
-            return;
-          const { left, top } = panel.getBoundingClientRect();
-          const x = event.clientX - left;
-          const y = event.clientY - top;
-          drag(event, (move) => {
-            panel.style.left = `${Math.max(0, Math.min(move.clientX - x, innerWidth - panel.offsetWidth))}px`;
-            panel.style.top = `${Math.max(0, Math.min(move.clientY - y, innerHeight - panel.offsetHeight))}px`;
-          });
-        }}
-      >
+    <section class="sandbox-terminal" aria-label={`Shell in ${props.name}`}>
+      <header>
         <strong title={props.name}>{props.name}</strong>
         <span role="status">
           {status() === "connecting"
@@ -123,29 +110,6 @@ export default function SandboxTerminal(props: {
             Reconnect
           </button>
         </Show>
-        <button
-          type="button"
-          class="dialog-close icon-button"
-          aria-label={floating() ? "Expand shell" : "Pop out shell"}
-          aria-pressed={floating()}
-          onClick={() => {
-            panel.removeAttribute("style");
-            setFloating(!floating());
-          }}
-        >
-          <Icon name={floating() ? "dock" : "popout"} />
-        </button>
-        <button
-          type="button"
-          class="dialog-close icon-button"
-          aria-label="Close shell"
-          onClick={() => {
-            session?.abort();
-            props.onClose();
-          }}
-        >
-          <Icon name="close" />
-        </button>
       </header>
       <div ref={screen} class="sandbox-terminal-screen" />
     </section>

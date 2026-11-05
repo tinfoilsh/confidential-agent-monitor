@@ -156,7 +156,13 @@ export function Agents(props: { expanded?: string }) {
                                   class="icon-button open-shell"
                                   aria-label="Open shell"
                                   title="Open shell"
-                                  onClick={() => m.setShell(name)}
+                                  onClick={() => {
+                                    location.hash = href(
+                                      "agents",
+                                      name,
+                                      "terminal",
+                                    );
+                                  }}
                                 >
                                   <Icon name="integrations" />
                                 </button>

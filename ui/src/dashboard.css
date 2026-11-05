@@ -425,18 +425,6 @@ summary + * {
   object-fit: contain;
   filter: invert(1);
 }
-.brand-context {
-  display: grid;
-  min-width: 0;
-  gap: 2px;
-}
-.brand-context small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--nav-muted);
-  font-size: var(--font-detail);
-}
 .monitor-footer {
   flex: none;
   margin-top: auto;
@@ -474,6 +462,42 @@ summary + * {
 .nav-count {
   margin-left: auto;
   color: inherit;
+}
+.nav-shell {
+  position: relative;
+  margin-top: 8px;
+  padding: 0 4px 0 0;
+}
+.nav-shell::before {
+  content: "";
+  position: absolute;
+  inset: -6px 0 auto;
+  border-top: 1px solid var(--nav-line);
+}
+.nav-shell > a {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 0 8px 12px;
+  color: inherit;
+}
+.nav-shell > a > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-shell-close {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: var(--nav-muted);
+}
+.nav-shell-close:hover:not(:disabled) {
+  background: var(--nav-hover);
+  color: var(--nav-text);
 }
 .mobile-toggle {
   display: none;
@@ -2877,20 +2901,19 @@ td {
   width: 20px;
   height: 20px;
 }
-.shell-split {
+.app-frame {
   position: relative;
   height: var(--page-height);
 }
-.shell-split #app {
+.app-frame #app {
   height: 100%;
 }
-.shell-pane {
-  position: absolute;
-  z-index: 35;
-  inset: 0 0 0 var(--nav-width);
-  display: flex;
-  flex-direction: column;
-  background: var(--card);
+/* The open shell fills the workspace while its sidebar tab is shown. */
+#workspace.shell-shown {
+  overflow: hidden;
+}
+.shell-view {
+  height: 100%;
 }
 @media (min-width: 1024px) {
   /* Desktop pages float on a black frame. */
@@ -2902,7 +2925,7 @@ td {
     background: var(--frame);
   }
   .start-page,
-  .shell-split {
+  .app-frame {
     border: 1px solid var(--nav-line);
     border-radius: var(--frame-radius);
     overflow: hidden;
@@ -2916,68 +2939,6 @@ td {
   #workspace {
     border-width: 0 0 0 1px;
     border-radius: 0;
-  }
-  .brand {
-    padding-right: calc(var(--control-height) + 24px);
-  }
-  .sidebar-toggle {
-    position: absolute;
-    top: 20px;
-    right: 12px;
-    border-color: transparent;
-    background: var(--tinfoil-dark);
-    color: var(--nav-muted);
-  }
-  .sidebar-toggle:hover:not(:disabled) {
-    background: var(--nav-line);
-    color: var(--nav-text);
-  }
-  .sidebar-toggle > .icon {
-    transform: scaleX(-1);
-  }
-  #app.collapsed {
-    padding-left: 0;
-  }
-  #app.collapsed #navigation {
-    transform: translateX(-100%);
-  }
-  #app.collapsed + .shell-pane {
-    inset: 0;
-  }
-  #app.collapsed #page-header,
-  #app.collapsed + .shell-pane > .sandbox-terminal:not(.floating) > header {
-    padding-left: calc(var(--control-height) + 24px);
-  }
-  /* Collapsed, the toggle rests just past the hidden sidebar, at the window's corner. */
-  #app.collapsed .sidebar-toggle {
-    top: 8px;
-    right: auto;
-    left: calc(100% + 12px);
-    border-color: var(--nav-edge);
-    box-shadow: var(--shadow-lg);
-    opacity: 0;
-  }
-  #app.collapsed .sidebar-toggle::before {
-    content: "";
-    position: absolute;
-    inset: -8px -12px -24px;
-  }
-  #app.collapsed .sidebar-toggle:is(:hover, :focus-visible),
-  #app.collapsed:has(+ .shell-pane > .sandbox-terminal:not(.floating))
-    .sidebar-toggle {
-    background: var(--tinfoil-dark);
-    opacity: 1;
-  }
-}
-.shell-pane:has(> .sandbox-terminal.floating) {
-  display: contents;
-}
-@media (max-width: 1023px) {
-  .shell-pane {
-    inset: var(--nav-height) 0 0;
-  }
-  .sidebar-toggle {
-    display: none;
   }
 }
 .icon-button {
@@ -3199,9 +3160,6 @@ td {
   }
   #navigation {
     transition: transform 0.15s ease-out;
-  }
-  .sidebar-toggle {
-    transition: opacity 0.15s;
   }
   @supports (interpolate-size: allow-keywords) {
     details {

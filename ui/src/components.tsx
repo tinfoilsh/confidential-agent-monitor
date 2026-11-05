@@ -5,7 +5,6 @@ import {
   createMemo,
   createSignal,
   createUniqueId,
-  lazy,
   on,
   onMount,
   onCleanup,
@@ -764,54 +763,4 @@ export function download(text: string, name: string, type: string) {
   link.download = name;
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-const SandboxTerminal = /* @__PURE__ */ lazy(() => import("./SandboxTerminal"));
-export type ShellTarget = {
-  name: string;
-  message: string;
-  open?: owner.ShellOpener;
-};
-export function ShellSplit(props: {
-  shell?: ShellTarget;
-  onClose: () => void;
-  children: JSX.Element;
-}) {
-  return (
-    <div class="shell-split">
-      {props.children}
-      <Show when={props.shell} keyed>
-        {(current) => (
-          <aside class="shell-pane" aria-label="Sandbox shell">
-            <Show
-              when={current.open}
-              fallback={
-                <div class="dialog-body">
-                  <h1>{current.name}</h1>
-                  <p>{current.message}</p>
-                  <button onClick={props.onClose}>Close</button>
-                </div>
-              }
-            >
-              <SandboxTerminal
-                open={current.open!}
-                name={current.name}
-                onClose={props.onClose}
-              />
-            </Show>
-          </aside>
-        )}
-      </Show>
-    </div>
-  );
-}
-export function drag(event: PointerEvent, move: (event: PointerEvent) => void) {
-  const target = event.currentTarget as HTMLElement;
-  event.preventDefault();
-  target.setPointerCapture(event.pointerId);
-  target.addEventListener("pointermove", move);
-  target.addEventListener(
-    "lostpointercapture",
-    () => target.removeEventListener("pointermove", move),
-    { once: true },
-  );
 }
