@@ -21,9 +21,9 @@ can use a reviewed, handwritten definition with SDK fixtures. For example,
    delivery and record the tested workflow, not a claim of complete API coverage.
    Repeat the checks when SDKs or definitions change.
 
-Slack's [fixture](../fixtures/slack-socket-mode.json) pins the SDK version;
-[`check-slack-socket-mode.py`](../check-slack-socket-mode.py) reproduces it. Keep
-live tokens and temporary connection tickets out of fixtures and shared logs.
+Slack's [manual test tool](../slack/README.md) includes a synthetic SDK fixture
+and a capture mode for inspecting changes. It is not an automatic freshness check.
+Keep live tokens and temporary connection tickets out of fixtures and shared logs.
 
 ## Generation commands
 

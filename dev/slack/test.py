@@ -24,7 +24,7 @@ import threading
 import time
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 SDK_VERSION = "3.38.0"
 
 
@@ -64,6 +64,35 @@ def safe_error(error):
     response = getattr(error, "response", None)
     code = response.get("error") if response is not None else None
     return code if isinstance(code, str) and re.fullmatch(r"[a-z_]{1,60}", code) else type(error).__name__
+
+
+def capture_sdk():
+    """Manually inspect wire shapes without credentials or network requests."""
+    from slack_sdk import WebClient
+    from slack_sdk.socket_mode import SocketModeClient
+    from slack_sdk.socket_mode.response import SocketModeResponse
+
+    requests = []
+
+    class Capture(WebClient):
+        def _perform_urllib_http_request_internal(self, url, req):
+            requests.append({"method": req.method, "url": url,
+                             "authorization": req.get_header("Authorization"),
+                             "content_type": req.get_header("Content-type"),
+                             "body": (req.data or b"").decode()})
+            return {"status": 200, "headers": {}, "body": '{"ok":true}'}
+
+    Capture(token="tfm_bot_SYNTHETIC").apps_connections_open(app_token="tfm_socket_SYNTHETIC")
+    responses = []
+    socket = SocketModeClient.__new__(SocketModeClient)
+    socket.send_message = lambda body: responses.append(json.loads(body))
+    for payload in (None, {}, {"text": "SYNTHETIC reply"},
+                    {"response_action": "update", "view": {"type": "modal"}},
+                    {"options": [{"text": {"type": "plain_text", "text": "SYNTHETIC"}, "value": "1"}]}):
+        socket.send_socket_mode_response(SocketModeResponse(envelope_id="SYNTHETIC-envelope", payload=payload))
+    print(json.dumps({"sdk": "slack_sdk", "version": importlib.metadata.version("slack_sdk"),
+                      "requests": requests, "responses": responses}, indent=2))
+    return 0
 
 
 def sdk_client():
@@ -132,6 +161,7 @@ def sdk_client():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--capture", action="store_true", help="manually capture synthetic SDK wire shapes offline; no tokens needed")
     parser.add_argument("--env-file", type=Path, help="read literal token assignments from an explicitly supplied private 0600 file; never source it as shell code")
     parser.add_argument("--duration", type=int, default=180, help="listen for 10-600 seconds (default 180)")
     parser.add_argument("--reconnect-after", type=int, default=0, help="optionally request a fresh session after this many seconds")
@@ -141,6 +171,8 @@ def main():
     args = parser.parse_args()
     if args.sdk_client:
         return sdk_client()
+    if args.capture:
+        return capture_sdk()
     if not args.env_file and not sys.stdin.isatty():
         parser.error("Use a terminal for hidden prompts, or --env-file with a private token file")
     if not 10 <= args.duration <= 600 or not 0 <= args.reconnect_after < args.duration:
@@ -152,7 +184,7 @@ def main():
     with tempfile.TemporaryDirectory(prefix="monitor-slack-live-build-") as temporary:
         binary = str(Path(temporary) / "connector-harness")
         print("Building the local harness from this worktree (before credential entry)…", flush=True)
-        subprocess.run(["go", "build", "-o", binary, "./dev/slack-socket-live"], cwd=ROOT, check=True)
+        subprocess.run(["go", "build", "-o", binary, "./dev/slack"], cwd=ROOT, check=True)
         print("Use a dedicated test app: concurrent Socket Mode clients can take events from each other.", flush=True)
         if args.env_file:
             bot_token, app_token = private_tokens(args.env_file)
