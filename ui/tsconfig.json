@@ -7,10 +7,17 @@
     "jsx": "preserve",
     "jsxImportSource": "solid-js",
     "allowJs": true,
+    "allowImportingTsExtensions": true,
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
     "types": ["vite/client"]
   },
-  "include": ["src", "vite.config.ts", "../dev/run.ts"]
+  "include": [
+    "src",
+    "dev",
+    "vite.config.ts",
+    "../dev/run.ts",
+    "../dev/console.ts"
+  ]
 }

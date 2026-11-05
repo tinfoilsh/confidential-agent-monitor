@@ -9,10 +9,9 @@ import {
   Icon,
   LazyDetails,
   ResourceDisclosure,
-  SkeletonRows,
   href,
 } from "./components";
-import { useMonitor } from "./monitor";
+import { useMonitor } from "./context";
 
 export function Agents(props: { expanded?: string }) {
   const m = useMonitor();
@@ -40,9 +39,7 @@ export function Agents(props: { expanded?: string }) {
   const names = createMemo(() => [...summaries().keys()]);
   return (
     <>
-      <Show
-        when={!m.sandboxesLoading() && !names().length && !m.waiting().length}
-      >
+      <Show when={!names().length}>
         <div class="resource-list">
           <Empty
             icon="sandboxes"
@@ -65,21 +62,12 @@ export function Agents(props: { expanded?: string }) {
           const members = createMemo(() =>
             names().filter((name) => type(name) === kind),
           );
-          const waiting = () => (kind === "sandboxes" ? m.waiting() : []);
-          const loading = () =>
-            kind === "sandboxes" &&
-            m.sandboxesLoading() &&
-            !members().length &&
-            !waiting().length;
           return (
-            <Show when={members().length || waiting().length || loading()}>
+            <Show when={members().length}>
               <div class="resource-list collection-list">
                 <div class="resource-heading">
                   <h2>
-                    {title}{" "}
-                    <span class="count">
-                      {loading() ? "…" : members().length + waiting().length}
-                    </span>
+                    {title} <span class="count">{members().length}</span>
                   </h2>
                   <Show when={blurb}>
                     <span class="muted">{blurb}</span>
@@ -98,42 +86,6 @@ export function Agents(props: { expanded?: string }) {
                     </a>
                   </Show>
                 </div>
-                <Show when={loading()}>
-                  <SkeletonRows label="Loading your sandboxes…" />
-                </Show>
-                <For each={waiting()}>
-                  {(name) => {
-                    const manual = () =>
-                      m.stalled().includes(name) && m.accepting() !== name;
-                    return (
-                      <div class="resource-row waiting-row">
-                        <Icon name="sandboxes" />
-                        <strong class="collection-name" title={name}>
-                          {name}
-                        </strong>
-                        <Show
-                          when={manual()}
-                          fallback={
-                            <span class="loading-spinner" aria-hidden="true" />
-                          }
-                        >
-                          <span class="collection-description">
-                            Accepting adds it to this Monitor and unlocks its
-                            workspace
-                          </span>
-                          <button
-                            type="button"
-                            class="primary"
-                            disabled={!!m.accepting()}
-                            onClick={() => void m.accept(name)}
-                          >
-                            Accept
-                          </button>
-                        </Show>
-                      </div>
-                    );
-                  }}
-                </For>
                 <For each={members()}>
                   {(name) => (
                     <ResourceDisclosure
@@ -148,21 +100,6 @@ export function Agents(props: { expanded?: string }) {
                           <span class="collection-description">
                             {summaries().get(name)?.description}
                           </span>
-                          <Show when={kind !== "devices"}>
-                            <span class="resource-meta">
-                              <Show when={m.shellFor(name)}>
-                                <button
-                                  type="button"
-                                  class="icon-button open-shell"
-                                  aria-label="Open shell"
-                                  title="Open shell"
-                                  onClick={() => m.setShell(name)}
-                                >
-                                  <Icon name="integrations" />
-                                </button>
-                              </Show>
-                            </span>
-                          </Show>
                           <span class="collection-chevron">
                             <Icon name="arrow" />
                           </span>

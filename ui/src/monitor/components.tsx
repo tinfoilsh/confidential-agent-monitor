@@ -5,7 +5,6 @@ import {
   createMemo,
   createSignal,
   createUniqueId,
-  lazy,
   on,
   onMount,
   onCleanup,
@@ -15,7 +14,7 @@ import {
 } from "solid-js";
 import * as owner from "./owner.js";
 import { icons } from "./dashboard-icons.js";
-import { useMonitor } from "./monitor";
+import { useMonitor } from "./context";
 
 // The only HTML insertion is our checked-in SVG icon set, never server data.
 export function Icon(props: { name: string }) {
@@ -693,70 +692,4 @@ export function download(text: string, name: string, type: string) {
   link.download = name;
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-const SandboxTerminal = /* @__PURE__ */ lazy(() => import("./SandboxTerminal"));
-const SHELL_MIN_WIDTH = 320;
-export type ShellTarget = {
-  name: string;
-  message: string;
-  open?: owner.ShellOpener;
-};
-export function ShellSplit(props: {
-  shell?: ShellTarget;
-  onClose: () => void;
-  children: JSX.Element;
-}) {
-  const [width, setWidth] = createSignal("50%");
-  return (
-    <div class="shell-split">
-      {props.children}
-      <Show when={props.shell} keyed>
-        {(current) => (
-          <aside
-            class="shell-pane"
-            aria-label="Sandbox shell"
-            style={{ "--shell-width": width() }}
-          >
-            <div
-              class="shell-pane-resize"
-              onPointerDown={(event) =>
-                drag(event, (move) =>
-                  setWidth(
-                    `${Math.max(SHELL_MIN_WIDTH, Math.min(innerWidth - move.clientX, innerWidth - SHELL_MIN_WIDTH))}px`,
-                  ),
-                )
-              }
-            />
-            <Show
-              when={current.open}
-              fallback={
-                <div class="dialog-body">
-                  <h1>{current.name}</h1>
-                  <p>{current.message}</p>
-                  <button onClick={props.onClose}>Close</button>
-                </div>
-              }
-            >
-              <SandboxTerminal
-                open={current.open!}
-                name={current.name}
-                onClose={props.onClose}
-              />
-            </Show>
-          </aside>
-        )}
-      </Show>
-    </div>
-  );
-}
-export function drag(event: PointerEvent, move: (event: PointerEvent) => void) {
-  const target = event.currentTarget as HTMLElement;
-  event.preventDefault();
-  target.setPointerCapture(event.pointerId);
-  target.addEventListener("pointermove", move);
-  target.addEventListener(
-    "lostpointercapture",
-    () => target.removeEventListener("pointermove", move),
-    { once: true },
-  );
 }

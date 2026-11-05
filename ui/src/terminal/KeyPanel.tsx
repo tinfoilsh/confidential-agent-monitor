@@ -11,7 +11,7 @@ import {
   type JSX,
 } from "solid-js";
 import { Portal } from "solid-js/web";
-import { download, Icon, Loading, Modal } from "../components";
+import { download, Icon, Loading, Modal } from "../monitor/components";
 import type { MKResource } from "./contract";
 import * as keys from "./keys";
 import type { Scope, Session } from "./session";

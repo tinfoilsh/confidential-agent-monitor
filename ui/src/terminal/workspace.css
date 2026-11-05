@@ -1,0 +1,164 @@
+.monitor-host {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100dvh;
+  padding: 10px;
+  background: var(--card);
+}
+.monitor-bezel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-height: 40px;
+  padding: 0 4px;
+}
+.monitor-bezel > a .icon {
+  transform: rotate(180deg);
+}
+.monitor-bezel > a,
+.monitor-host-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.monitor-host-name {
+  overflow: hidden;
+  max-width: 240px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.monitor-host-status {
+  color: var(--muted);
+  font-size: 12px;
+}
+.monitor-host-actions {
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+.monitor-host-actions select {
+  width: auto;
+  max-width: 200px;
+}
+.monitor-host-keys {
+  position: relative;
+}
+.monitor-host-keys > summary {
+  cursor: pointer;
+  padding: 8px;
+}
+.monitor-host-key-panel {
+  position: absolute;
+  z-index: 80;
+  top: 100%;
+  right: 0;
+  width: min(340px, calc(100vw - 32px));
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--card);
+  box-shadow: var(--shadow-lg);
+}
+.monitor-host-key-panel p {
+  margin: 0;
+}
+.monitor-host-notice {
+  margin: 0;
+  padding: 8px 12px;
+}
+.monitor-host-workspace {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+}
+.shell-split {
+  display: flex;
+  height: 100%;
+}
+.shell-split > * {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+}
+.shell-pane {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--line);
+  background: var(--card);
+}
+.shell-pane-resize {
+  position: absolute;
+  z-index: 1;
+  inset: 0 auto 0 -3px;
+  width: 6px;
+  cursor: col-resize;
+  touch-action: none;
+}
+@media (min-width: 1024px) {
+  .shell-split > .shell-pane {
+    flex: 0 0 var(--shell-width);
+  }
+}
+.shell-split > .shell-pane:has(> .sandbox-terminal.floating) {
+  flex: 0 0 0;
+  border: 0;
+}
+.shell-pane:has(> .sandbox-terminal.floating) > .shell-pane-resize {
+  display: none;
+}
+@media (max-width: 1023px) {
+  .shell-split {
+    flex-direction: column;
+  }
+  .shell-pane {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .shell-pane-resize {
+    display: none;
+  }
+}
+.monitor-host-app #app {
+  height: 100%;
+}
+.monitor-host-app {
+  position: relative;
+  overflow: auto;
+  isolation: isolate;
+}
+.monitor-host-app #navigation {
+  position: absolute;
+}
+.monitor-host-app #workspace {
+  border-top: 0;
+  border-right: 0;
+  border-radius: 0;
+}
+.monitor-host-app #gate {
+  margin: 32px auto;
+}
+@media (max-width: 767px) {
+  .monitor-host {
+    padding: 4px;
+    gap: 4px;
+  }
+  .monitor-bezel {
+    position: relative;
+  }
+  .monitor-host-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+  .monitor-host-keys {
+    position: static;
+  }
+  .monitor-host-status {
+    margin-left: auto;
+  }
+}

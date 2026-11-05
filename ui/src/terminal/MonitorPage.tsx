@@ -9,8 +9,8 @@ import {
   on,
   onCleanup,
 } from "solid-js";
-import App from "../App";
-import { Icon, Loading } from "../components";
+import MonitorWorkspace from "./MonitorWorkspace";
+import { Icon, Loading } from "../monitor/components";
 import { Header } from "./Console";
 import * as keys from "./keys";
 import { KeyGate } from "./KeyPanel";
@@ -18,14 +18,8 @@ import {
   openMonitor,
   type AttestMonitor,
   type OpenedMonitor,
-} from "./monitors";
-import {
-  RestoreRequired,
-  acceptSandbox,
-  relinkSandboxes,
-  sandboxCandidates,
-  shellOpener,
-} from "./sandboxes";
+} from "./connection";
+import { relinkSandboxes } from "./sandboxes";
 import { MONITOR_REPO, type Session } from "./session";
 import "./console.css";
 
@@ -33,10 +27,12 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 export const capture = () => {};
 
 // A Monitor link names only its resource; inventory and saved keys supply the rest.
-export default function Monitor(props: {
+export default function MonitorPage(props: {
   session: Session;
   manager?: PasskeyKeyManager;
   attest?: AttestMonitor;
+  // Only the local serve entry supplies a fixture opener; builds ignore it.
+  open?: typeof openMonitor;
 }) {
   const manager = props.manager ?? keys.passkeys();
   const id = decodeURIComponent(useParams().id ?? "");
@@ -53,6 +49,19 @@ export default function Monitor(props: {
     setBusy(false);
   };
   onCleanup(cancel);
+  // Scope invalidation can also come from cross-tab sign-out without changing
+  // the local user/account signals. Drop the whole workspace in that case.
+  createEffect(() => {
+    const opened = session();
+    if (!opened) return;
+    const expired = () => {
+      setSession(undefined);
+      setError("Your Monitor connection ended. Unlock your keys to reconnect.");
+    };
+    opened.scope.signal.addEventListener("abort", expired, { once: true });
+    onCleanup(() => opened.scope.signal.removeEventListener("abort", expired));
+    if (opened.scope.signal.aborted) expired();
+  });
   // Keys opened for one user and account never outlive a switch.
   let opening = true;
   createEffect(
@@ -121,7 +130,10 @@ export default function Monitor(props: {
     setError("");
     setCancelled(false);
     try {
-      const opened = await openMonitor({
+      const opener = import.meta.env.DEV
+        ? (props.open ?? openMonitor)
+        : openMonitor;
+      const opened = await opener({
         scope: props.session.bind(),
         id,
         signal: current.signal,
@@ -163,27 +175,6 @@ export default function Monitor(props: {
     } finally {
       if (attempt === current) setBusy(false);
     }
-  };
-
-  // Restoring a removed sandbox identity is an explicit owner choice.
-  const shell = (opened: OpenedMonitor) => (name: string) => {
-    const rows = props.session.inventory().value ?? [];
-    const opener = shellOpener(opened, rows, name);
-    if (!opener) return undefined;
-    return (async (size, handlers, signal) => {
-      try {
-        return await opener(size, handlers, signal);
-      } catch (cause) {
-        if (
-          !(cause instanceof RestoreRequired) ||
-          !confirm(
-            `${cause.message}\n\nRestore ${name}'s access to this Monitor?`,
-          )
-        )
-          throw cause;
-        return shellOpener(opened, rows, name, true)!(size, handlers, signal);
-      }
-    }) satisfies NonNullable<ReturnType<typeof shellOpener>>;
   };
 
   return (
@@ -321,41 +312,12 @@ export default function Monitor(props: {
         }
       >
         {(opened) => (
-          <>
-            <Show when={notice()}>
-              <p class="start-notice" role="alert">
-                {notice()}
-              </p>
-            </Show>
-            <App
-              monitorInfo={{ name: opened.row.name }}
-              terminalHome="/"
-              client={opened.client}
-              snapshot={opened.snapshot}
-              shell={shell(opened)}
-              sandboxesLoading={() =>
-                linking() || (!!inventory().loading && !inventory().value)
-              }
-              candidates={() =>
-                sandboxCandidates(opened, props.session.inventory().value ?? [])
-              }
-              accept={(name, restore) =>
-                acceptSandbox(
-                  opened,
-                  props.session.inventory().value ?? [],
-                  name,
-                  restore,
-                )
-              }
-              tinfoilApiKey={async () => {
-                const { key } = (await opened.scope.api("/api/keys/", {
-                  method: "POST",
-                  body: { name: opened.row.name },
-                })) as { key: string };
-                return key;
-              }}
-            />
-          </>
+          <MonitorWorkspace
+            monitor={opened}
+            session={props.session}
+            linking={linking()}
+            notice={notice()}
+          />
         )}
       </Show>
     </div>

@@ -8,7 +8,7 @@ import {
   createSignal,
   on,
 } from "solid-js";
-import { Icon, Loading, Modal, SkeletonRows } from "../components";
+import { Icon, Loading, Modal, SkeletonRows } from "../monitor/components";
 import {
   parseStartRequest,
   startErrorURL,

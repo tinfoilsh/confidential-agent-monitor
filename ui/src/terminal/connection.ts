@@ -1,5 +1,5 @@
 import { SecureClient } from "tinfoil";
-import { sealedOwnerClient, type Snapshot } from "../owner";
+import { sealedOwnerClient, type Snapshot } from "../monitor/owner";
 import { openChannel, rpcChannel, type Session } from "./channel";
 import { unb64u, type MKBinding } from "./contract";
 import * as keys from "./keys";

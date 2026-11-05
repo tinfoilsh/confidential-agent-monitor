@@ -10,7 +10,7 @@ class ApiError extends Error {
   }
 }
 
-mock.module("../src/hosted/keys", () => ({
+mock.module("../src/terminal/keys", () => ({
   TARGETS: { api_origin: "https://api.example" },
   ApiError,
   kekFence: async () => ({ epoch: "test", session: "session_test" }),
@@ -20,7 +20,7 @@ mock.module("../src/hosted/keys", () => ({
   refreshUnlocked: async (unlocked: unknown) => unlocked,
 }));
 
-const { createSession } = await import("../src/hosted/session");
+const { createSession } = await import("../src/terminal/session");
 const originalFetch = globalThis.fetch;
 const originalAdd = globalThis.addEventListener;
 const originalRemove = globalThis.removeEventListener;

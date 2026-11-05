@@ -25,23 +25,14 @@ const KEY = "monitor-owner-key",
   ENDPOINT: string | undefined =
     import.meta.env.VITE_MONITOR_ENDPOINT || undefined;
 
-export type MonitorOptions = {
-  monitorInfo?: { name: string };
-  terminalHome?: string;
-  client?: owner.OwnerApi;
+// The shared UI receives only a Monitor connection, never account or sandbox
+// capabilities. Without one, the standalone entry opens its local HTTP API.
+export type MonitorConnection = {
+  client: owner.OwnerApi;
   snapshot?: owner.Snapshot;
-  // Hosted builds own sandbox signers; other builds have no browser shell.
-  shell?: (name: string) => owner.ShellOpener | undefined;
-  // Sandboxes routed here whose keys a hosted build holds, by the agent key
-  // each would enroll; accepting one adds it to this Monitor.
-  candidates?: () => { name: string; key: string }[];
-  sandboxesLoading?: () => boolean;
-  accept?: (name: string, restore: boolean) => Promise<void>;
-  // Hosted builds mint a Tinfoil API key for the signed-in account.
-  tinfoilApiKey?: () => Promise<string>;
 };
 
-function createMonitor(options: MonitorOptions) {
+function createMonitor(connection?: MonitorConnection) {
   const lifetime = new AbortController();
   const fragment = new URLSearchParams(location.hash.slice(1));
   if (fragment.has("session")) {
@@ -50,14 +41,14 @@ function createMonitor(options: MonitorOptions) {
   }
   // Set before mount: writes inside onMount would let refresh join a read the api effect then discards.
   const [mode, setMode] = createSignal<"bearer" | "ssh" | undefined>(
-    ENDPOINT && !options.client ? "bearer" : undefined,
+    ENDPOINT && !connection ? "bearer" : undefined,
   );
   const [credential, setCredential] = createSignal(
     mode() ? (sessionStorage.getItem(KEY) ?? "") : "",
   );
   // Reads change the snapshot in place, so unchanged requests and settings keep their identity.
   const [store, setStore] = createStore<{ snapshot?: owner.Snapshot }>({
-    snapshot: options.snapshot,
+    snapshot: connection?.snapshot,
   });
   const snapshot = () => store.snapshot;
   const setSnapshot = (next?: owner.Snapshot) =>
@@ -81,11 +72,6 @@ function createMonitor(options: MonitorOptions) {
     path === undefined || notice()?.path === path ? (notice()?.text ?? "") : "";
   const [now, setNow] = createSignal(Date.now());
   const [icons, setIcons] = createSignal<owner.IconManifest>({});
-  // The sandbox whose shell is open beside the page.
-  const [shell, setShell] = createSignal<string>();
-  const [accepting, setAccepting] = createSignal<string>();
-  // Sandboxes whose automatic accept failed; they wait for an explicit one.
-  const [stalled, setStalled] = createSignal<string[]>([]);
   const [deviceSignIn, setDeviceSignIn] = createSignal<
     owner.DeviceSignIn & {
       title: string;
@@ -155,7 +141,7 @@ function createMonitor(options: MonitorOptions) {
   };
   const api = createMemo(
     () =>
-      options.client ??
+      connection?.client ??
       (!mode() || !credential()
         ? undefined
         : mode() === "ssh"
@@ -207,14 +193,16 @@ function createMonitor(options: MonitorOptions) {
     pendingCount,
   } = createRequestLog(requests, now);
   const proposals = createMemo(() =>
-    records().filter((r) => r.state === "pending" && owner.isConnectionProposalRecord(r)),
+    records().filter(
+      (r) => r.state === "pending" && owner.isConnectionProposalRecord(r),
+    ),
   );
   const remember = (
     next: owner.View,
     requests = snapshot()?.requests ?? [],
   ) => {
     setLocked(false);
-    if (!options.client)
+    if (!connection)
       localStorage.setItem(
         GENERATION,
         String(
@@ -351,15 +339,11 @@ function createMonitor(options: MonitorOptions) {
       audience: view.labels[name]?.audience ?? "anyone",
       ...change,
     });
-    return perform(
-      (client) => client.label(name, next(snapshot()!.view)),
-      "",
-      {
-        update: (state) => {
-          state.view.labels[name] = next(state.view);
-        },
+    return perform((client) => client.label(name, next(snapshot()!.view)), "", {
+      update: (state) => {
+        state.view.labels[name] = next(state.view);
       },
-    );
+    });
   };
   const decide = (record: owner.RequestRecord, decision: owner.Decision) =>
     perform(
@@ -473,7 +457,7 @@ function createMonitor(options: MonitorOptions) {
   });
   onMount(async () => {
     try {
-      if (!options.client && !ENDPOINT) {
+      if (!connection && !ENDPOINT) {
         const response = await fetch("/app/auth.json", {
           cache: "no-store",
           credentials: "omit",
@@ -556,34 +540,7 @@ function createMonitor(options: MonitorOptions) {
     lifetime.abort();
     clearTimeout(toastTimer);
   });
-  const waiting = () => {
-    const keys = Object.values(view()?.config.identities ?? {}).map(
-      (identity) => identity.key,
-    );
-    return (options.candidates?.() ?? [])
-      .filter((candidate) => !keys.includes(candidate.key))
-      .map((candidate) => candidate.name);
-  };
-  const accept = async (name: string, restore = true) => {
-    if (accepting()) return;
-    setAccepting(name);
-    try {
-      await options.accept!(name, restore);
-      await refresh();
-    } catch (cause) {
-      if (restore) report(cause);
-      else setStalled((names) => [...names, name]);
-    } finally {
-      setAccepting();
-    }
-  };
-  createEffect(() => {
-    const next = view() && waiting().find((name) => !stalled().includes(name));
-    if (next && !accepting()) void accept(next, false);
-  });
-
   return {
-    options,
     mode,
     credential,
     view,
@@ -616,28 +573,19 @@ function createMonitor(options: MonitorOptions) {
     decide,
     signIn,
     deviceSignIn,
-    shell,
-    setShell,
-    shellFor: (name: string) => options.shell?.(name),
-    sandboxesLoading: () => options.sandboxesLoading?.() ?? false,
-    waiting,
-    accepting,
-    stalled,
-    accept,
     cancelSignIn: () => setDeviceSignIn(undefined),
     unlock: () =>
-      perform(
-        (client) =>
-          // Rollback floor: never unlock a state older than the newest
-          // generation this browser has seen. Local dev wipes its store,
-          // which looks identical to a rollback, so the floor is off there.
-          client.unlock(
-            options.client
-              ? undefined
-              : import.meta.env.DEV
-                ? 0
-                : Number(localStorage.getItem(GENERATION)) || 0,
-          ),
+      perform((client) =>
+        // Rollback floor: never unlock a state older than the newest
+        // generation this browser has seen. Local dev wipes its store,
+        // which looks identical to a rollback, so the floor is off there.
+        client.unlock(
+          connection
+            ? undefined
+            : import.meta.env.DEV
+              ? 0
+              : Number(localStorage.getItem(GENERATION)) || 0,
+        ),
       ),
     login: (value: string) => {
       try {
@@ -652,9 +600,11 @@ function createMonitor(options: MonitorOptions) {
 }
 
 const MonitorContext = createContext<ReturnType<typeof createMonitor>>();
-export function MonitorProvider(props: ParentProps<MonitorOptions>) {
+export function MonitorProvider(
+  props: ParentProps<{ connection?: MonitorConnection }>,
+) {
   return (
-    <MonitorContext.Provider value={createMonitor(props)}>
+    <MonitorContext.Provider value={createMonitor(props.connection)}>
       {props.children}
     </MonitorContext.Provider>
   );

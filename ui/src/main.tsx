@@ -1,6 +1,6 @@
 import { render } from "solid-js/web";
-import "./dashboard.css";
-import "./shell.css";
+import "./monitor/dashboard.css";
+import "./styles.css";
 
 // Apply the saved palette before either the welcome screen or app first renders.
 let theme = "system";
@@ -15,8 +15,10 @@ document.documentElement.dataset.theme =
     : theme;
 
 // Each build only includes its own entry point and dependencies.
-if (import.meta.env.MODE === "hosted") void import("./hosted/main");
+if (import.meta.env.DEV && import.meta.env.MODE === "dev-console")
+  void import("../dev/main");
+else if (import.meta.env.MODE === "hosted") void import("./terminal/main");
 else
-  void import("./App").then(({ default: App }) =>
+  void import("./monitor/App").then(({ default: App }) =>
     render(() => <App />, document.getElementById("root")!),
   );

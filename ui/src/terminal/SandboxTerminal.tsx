@@ -3,8 +3,9 @@ import { FitAddon } from "@xterm/addon-fit";
 import { WebglAddon } from "@xterm/addon-webgl";
 import { Terminal } from "@xterm/xterm";
 import "@xterm/xterm/css/xterm.css";
-import { Icon, drag } from "./components";
-import * as owner from "./owner.js";
+import { Icon } from "../monitor/components";
+import { drag } from "./ShellSplit";
+import * as owner from "../monitor/owner.js";
 import "./terminal.css";
 
 export default function SandboxTerminal(props: {
