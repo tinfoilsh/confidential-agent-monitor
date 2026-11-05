@@ -31,6 +31,8 @@ export default function MonitorPage(props: {
   session: Session;
   manager?: PasskeyKeyManager;
   attest?: AttestMonitor;
+  // Only the local serve entry supplies a fixture opener; builds ignore it.
+  open?: typeof openMonitor;
 }) {
   const manager = props.manager ?? keys.passkeys();
   const id = decodeURIComponent(useParams().id ?? "");
@@ -128,7 +130,10 @@ export default function MonitorPage(props: {
     setError("");
     setCancelled(false);
     try {
-      const opened = await openMonitor({
+      const opener = import.meta.env.DEV
+        ? (props.open ?? openMonitor)
+        : openMonitor;
+      const opened = await opener({
         scope: props.session.bind(),
         id,
         signal: current.signal,

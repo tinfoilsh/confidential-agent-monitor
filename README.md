@@ -95,6 +95,24 @@ Open [the UI](http://127.0.0.1:8080/app/) and initialize an owner key or passphr
 SSH listens on `127.0.0.1:2223`. See [Dockerfile](Dockerfile) and
 [tinfoil-config.yml](tinfoil-config.yml) for deployment configuration.
 
+### UI development previews
+
+```sh
+(cd ui && bun install --frozen-lockfile)
+bun dev/console.ts
+```
+
+Open [Terminal](http://127.0.0.1:5176/) or the
+[standalone Monitor](http://127.0.0.1:5176/standalone). Append
+`?preview=onboarding` to preview setup. Terminal's `/monitor/<id>` route also
+supports `preview=full-flow`, `keys-loading`, `inventory-loading`,
+`sandboxes-loading`, `monitor-booting`, `monitor-startup`, `monitor-locked`,
+`monitor-opening`, `monitor-stopped`, and `monitor-error`.
+
+This uses a real local Monitor with fake account/passkey fixtures, not cloud
+resources. State stays in `.dev/console/`; ports 5176, 8083, and 2226 must be free.
+Sandbox VMs and shells are not started. This preview mode cannot be built for deployment.
+
 ## Access control
 
 In **Agents**, set each sandbox's access to each connection.

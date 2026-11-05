@@ -15,7 +15,9 @@ document.documentElement.dataset.theme =
     : theme;
 
 // Each build only includes its own entry point and dependencies.
-if (import.meta.env.MODE === "hosted") void import("./terminal/main");
+if (import.meta.env.DEV && import.meta.env.MODE === "dev-console")
+  void import("../dev/main");
+else if (import.meta.env.MODE === "hosted") void import("./terminal/main");
 else
   void import("./monitor/App").then(({ default: App }) =>
     render(() => <App />, document.getElementById("root")!),
