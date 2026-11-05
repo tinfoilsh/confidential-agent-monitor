@@ -18,11 +18,25 @@
   font-weight: 700;
   font-display: swap;
 }
+/* Aeonik sets titles and the line under them, as on the dashboard and in Chat. */
+@font-face {
+  font-family: "Aeonik";
+  src: url("/fonts/aeonik-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("/fonts/aeonik-semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
 :root {
   color-scheme: light;
   --control-height: 32px;
   --control-padding: 5px 12px;
   --compact-height: var(--control-height);
+  --font-display: "Aeonik", ui-sans-serif, system-ui, sans-serif;
   --font-section: 16px;
   --font-body: 14px;
   --font-detail: 12px;
@@ -329,6 +343,7 @@ h3 {
 }
 h1 {
   margin: 0;
+  font-family: var(--font-display);
   font-size: 24px;
   line-height: 1.15;
   letter-spacing: -0.025em;
@@ -501,6 +516,7 @@ summary + * {
 .page-heading p {
   margin: 6px 0 0;
   color: var(--dim);
+  font-family: var(--font-display);
   font-size: 16px;
 }
 .header-actions {
@@ -2471,13 +2487,14 @@ td {
   text-align: center;
 }
 .auth > h1 {
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.3;
   text-wrap: balance;
 }
 .auth-description {
   margin: -8px 0 0;
   color: var(--muted);
+  font-family: var(--font-display);
   line-height: 1.65;
   text-wrap: balance;
 }
@@ -2842,6 +2859,7 @@ td {
 .dialog-header p {
   margin: 6px 0 0;
   color: var(--muted);
+  font-family: var(--font-display);
 }
 .dialog-close,
 .open-shell {
