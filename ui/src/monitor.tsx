@@ -406,7 +406,7 @@ function createMonitor(options: MonitorOptions) {
         });
         return;
       }
-      sessionStorage.setItem(RETURN, location.hash);
+      sessionStorage.setItem(RETURN, location.search + location.hash);
       location.assign(result.url);
     }, "");
 
