@@ -79,10 +79,9 @@ func (m *monitor) newOwnerAPI() http.Handler {
 
 func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 	mux.Handle("GET /healthz", JSONHandler(0, func(r *http.Request, _ struct{}) (any, error) {
-		health := struct {
-			Locked bool   `json:"locked"`
-			State  string `json:"state,omitempty"`
-		}{Locked: m.settings.Load() == nil}
+		var health struct {
+			State string `json:"state,omitempty"`
+		}
 		// Only owners learn whether state exists; the probe reads storage.
 		if _, owner := ownerauth.FromContext(r.Context()); owner {
 			m.mu.Lock()
