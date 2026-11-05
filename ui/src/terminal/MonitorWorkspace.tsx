@@ -163,14 +163,7 @@ export default function MonitorWorkspace(props: {
                   </span>
                 }
               >
-                <a
-                  class="button"
-                  href="https://dash.tinfoil.sh/?tab=sandboxes"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Create sandbox
-                </a>
+                <span class="muted">No sandboxes available for SSH</span>
               </Show>
             }
           >
@@ -190,15 +183,19 @@ export default function MonitorWorkspace(props: {
             >
               {busy() ? "Connecting…" : "Connect sandbox"}
             </button>
-            <button
-              disabled={unavailable()}
-              onClick={openShell}
-              title="Connect this sandbox and open its shell"
-            >
-              <Icon name="integrations" />
-              Open shell
-            </button>
           </Show>
+          <button
+            disabled={unavailable()}
+            onClick={openShell}
+            title={
+              name()
+                ? `Open ${name()}'s shell over the verified sandbox connection`
+                : "Requires a running sandbox with owner keys saved in Terminal"
+            }
+          >
+            <Icon name="integrations" />
+            SSH
+          </button>
           <details class="monitor-host-keys">
             <summary>API key</summary>
             <div class="monitor-host-key-panel">
