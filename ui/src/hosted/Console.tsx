@@ -34,6 +34,7 @@ import {
   SetupKeys,
   UnlockKeys,
 } from "./KeyPanel";
+import { PRODUCT } from "./product";
 import {
   MONITOR_REPO,
   SANDBOX_REPO,
@@ -213,7 +214,7 @@ function Start(props: {
           ? "Add your CLI keys"
           : file()
             ? "Save your recovery key"
-            : "Welcome to Terminal"
+            : "Finish your setup"
       }
       description={
         r.mode === "umk"
@@ -531,8 +532,8 @@ export function Header(props: { session: Session }) {
       <a href="/" class="start-brand" aria-label="Tinfoil Terminal home" link>
         <img src="/icons/tinfoil.svg" alt="" />
         <span class="start-brand-name">
-          Terminal
-          <small>Secure browser console</small>
+          {PRODUCT.name}
+          <small>{PRODUCT.tagline}</small>
         </span>
       </a>
       <Show
@@ -669,7 +670,9 @@ export default function Console(props: {
           </AuthScreen>
         </Match>
         <Match when={!props.session.user()}>
-          <AuthScreen title="Welcome to Terminal">
+          <AuthScreen
+            title={start ? "Finish your setup" : `Welcome to ${PRODUCT.name}`}
+          >
             <AuthCard icon={<Icon name="terminal" />}>
               <p>
                 {start

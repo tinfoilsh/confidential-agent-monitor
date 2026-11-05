@@ -203,6 +203,14 @@ function Shell() {
                   src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
                   alt="Tinfoil"
                 />
+                <Show when={m.options.product}>
+                  {(product) => (
+                    <span class="brand-name">
+                      {product().name}
+                      <small>{product().tagline}</small>
+                    </span>
+                  )}
+                </Show>
               </a>
               <button
                 class="mobile-toggle"

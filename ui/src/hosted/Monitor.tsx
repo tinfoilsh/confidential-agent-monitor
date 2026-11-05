@@ -19,6 +19,7 @@ import {
   type AttestMonitor,
   type OpenedMonitor,
 } from "./monitors";
+import { PRODUCT } from "./product";
 import {
   RestoreRequired,
   acceptSandbox,
@@ -131,7 +132,6 @@ export default function Monitor(props: {
         attest: props.attest,
       });
       if (!current.signal.aborted && opened.scope.live()) {
-        document.title = `${opened.row.name} · Monitor`;
         setSession(opened);
         // Restarted sandboxes are re-linked while the Monitor is already showing.
         setLinking(true);
@@ -326,7 +326,7 @@ export default function Monitor(props: {
               </p>
             </Show>
             <App
-              monitorInfo={{ name: opened.row.name }}
+              product={PRODUCT}
               backTo={back()}
               header={<Header session={props.session} />}
               client={opened.client}

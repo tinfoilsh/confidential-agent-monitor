@@ -438,6 +438,26 @@ summary + * {
   object-fit: contain;
   filter: invert(1);
 }
+/* As in the hosted header, so "Secure browser console" fits the sidebar. */
+.brand:has(> .brand-name) {
+  gap: 8px;
+}
+@media (min-width: 1024px) {
+  .brand:has(> .brand-name) {
+    padding-inline: 20px;
+  }
+}
+.brand-name {
+  display: grid;
+  min-width: 0;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.brand-name small {
+  color: var(--nav-muted);
+  font-weight: 400;
+}
 .monitor-footer {
   flex: none;
   margin-top: auto;
