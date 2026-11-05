@@ -1,0 +1,176 @@
+{
+  "title": "Slack Socket Mode",
+  "catalog": {
+    "group": "api",
+    "actions": {
+      "connect": { "title": "Open event connections", "effects": ["session"] },
+      "receive": { "title": "Receive app events", "effects": ["read"] },
+      "respond": {
+        "title": "Acknowledge events and send interactive responses",
+        "effects": ["send"]
+      }
+    },
+    "defaults": { "contents": "team", "sends": "team", "strangers": true },
+    "connections": {
+      "": {
+        "http": {
+          "hosts": [
+            "wss.slack.com",
+            "wss-primary.slack.com",
+            "wss-backup.slack.com"
+          ],
+          "slots": [
+            {
+              "value": "token",
+              "origin": "https://slack.com",
+              "path": "/api/apps.connections.open",
+              "header": "Authorization",
+              "prefix": "Bearer "
+            }
+          ]
+        }
+      }
+    },
+    "fields": [
+      {
+        "key": "token",
+        "label": "App-level token (xapp-, connections:write)",
+        "secret": true,
+        "path": ["connections", "", "http", "secrets", "token"]
+      }
+    ]
+  },
+  "http": {
+    "sensitive_query": ["ticket"],
+    "operations": {
+      "apps.connections.open": {
+        "action": "connect",
+        "effects": ["session"],
+        "method": "POST",
+        "origin": "https://slack.com",
+        "path": "/api/apps.connections.open",
+        "body": "none",
+        "scope": {}
+      },
+      "apps.connections.open.form": {
+        "action": "connect",
+        "effects": ["session"],
+        "method": "POST",
+        "origin": "https://slack.com",
+        "path": "/api/apps.connections.open",
+        "body": "form",
+        "fields": { "token": null },
+        "scope": { "request": { "from": "form", "at": "", "type": "object" } }
+      },
+      "apps.connections.open.json": {
+        "action": "connect",
+        "effects": ["session"],
+        "method": "POST",
+        "origin": "https://slack.com",
+        "path": "/api/apps.connections.open",
+        "body": "json",
+        "fields": { "/token": null },
+        "scope": { "request": { "from": "body", "at": "", "type": "object" } }
+      },
+      "socket.handshake": {
+        "websocket": true,
+        "action": "connect",
+        "effects": ["session"],
+        "method": "GET",
+        "origin": "https://wss.slack.com",
+        "path": "/link/",
+        "body": "none",
+        "params": ["ticket", "app_id", "debug_reconnects"],
+        "scope": {
+          "ticket": { "from": "query", "at": "ticket" },
+          "app_id": { "from": "query", "at": "app_id", "optional": true },
+          "debug_reconnects": {
+            "from": "query",
+            "at": "debug_reconnects",
+            "optional": true
+          }
+        }
+      },
+      "socket.primary.handshake": {
+        "websocket": true,
+        "action": "connect",
+        "effects": ["session"],
+        "method": "GET",
+        "origin": "https://wss-primary.slack.com",
+        "path": "/link/",
+        "body": "none",
+        "params": ["ticket", "app_id", "debug_reconnects"],
+        "scope": {
+          "ticket": { "from": "query", "at": "ticket" },
+          "app_id": { "from": "query", "at": "app_id", "optional": true },
+          "debug_reconnects": {
+            "from": "query",
+            "at": "debug_reconnects",
+            "optional": true
+          }
+        }
+      },
+      "socket.backup.handshake": {
+        "websocket": true,
+        "action": "connect",
+        "effects": ["session"],
+        "method": "GET",
+        "origin": "https://wss-backup.slack.com",
+        "path": "/link/",
+        "body": "none",
+        "params": ["ticket", "app_id", "debug_reconnects"],
+        "scope": {
+          "ticket": { "from": "query", "at": "ticket" },
+          "app_id": { "from": "query", "at": "app_id", "optional": true },
+          "debug_reconnects": {
+            "from": "query",
+            "at": "debug_reconnects",
+            "optional": true
+          }
+        }
+      },
+      "socket.response": {
+        "websocket": true,
+        "action": "respond",
+        "effects": ["send"],
+        "method": "GET",
+        "origin": "https://wss.slack.com",
+        "path": "/link/",
+        "body": "json",
+        "params": ["ticket", "app_id", "debug_reconnects"],
+        "scope": {
+          "envelope_id": { "from": "body", "at": "/envelope_id" },
+          "response": { "from": "body", "at": "", "type": "object" }
+        }
+      },
+      "socket.primary.response": {
+        "websocket": true,
+        "action": "respond",
+        "effects": ["send"],
+        "method": "GET",
+        "origin": "https://wss-primary.slack.com",
+        "path": "/link/",
+        "body": "json",
+        "params": ["ticket", "app_id", "debug_reconnects"],
+        "scope": {
+          "envelope_id": { "from": "body", "at": "/envelope_id" },
+          "response": { "from": "body", "at": "", "type": "object" }
+        }
+      },
+      "socket.backup.response": {
+        "websocket": true,
+        "action": "respond",
+        "effects": ["send"],
+        "method": "GET",
+        "origin": "https://wss-backup.slack.com",
+        "path": "/link/",
+        "body": "json",
+        "params": ["ticket", "app_id", "debug_reconnects"],
+        "scope": {
+          "envelope_id": { "from": "body", "at": "/envelope_id" },
+          "response": { "from": "body", "at": "", "type": "object" }
+        }
+      }
+    }
+  }
+}

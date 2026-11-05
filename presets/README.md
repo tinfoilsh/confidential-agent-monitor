@@ -1,11 +1,56 @@
 Each shipped preset has a `<name>.json` record. Accounts select it with
 `"preset": "<name>"`. Monitor accepts only these shipped definitions.
 
+For the authoring and test workflow, see [adding protocol presets](../dev/presets/README.md#adding-protocol-presets).
+
+## Slack Socket Mode
+
+`slack_socket_mode.json` adds a separate **Slack Socket Mode** connection using
+the shared HTTP/WebSocket connector. Enable Socket Mode in the Slack app and set
+an app-level `xapp-` token with `connections:write`. The normal **Slack** connection
+uses a separate bot/user token for Web API calls.
+
+The app token is substituted only in the Authorization header for
+[`apps.connections.open`](https://docs.slack.dev/reference/methods/apps.connections.open),
+which returns a temporary WebSocket URL. The client SDK manages the session and
+reconnection, following [Slack's protocol](https://docs.slack.dev/apis/events-api/using-socket-mode).
+
+The opening POST accepts an empty body, JSON or form. WebSocket handshakes use
+port 443, `/link/`, and `ticket`, `app_id` and `debug_reconnects` query parameters.
+Supported hosts are `wss.slack.com`, `wss-primary.slack.com` and
+`wss-backup.slack.com`; other returned hosts require a reviewed preset update.
+
+Permissions are `connect` (session), `receive` (read) and `respond` (send).
+All acknowledgements count as send because they can contain interactive responses.
+The whole response is bound to approval scope, not just its envelope ID; read-only
+access therefore cannot acknowledge events.
+
+Incoming deliveries use the account's contents/trust labels and remain opaque to
+policy. Monitor does not filter them by channel or correlate acknowledgement IDs
+with received envelopes. These descriptors authorize traffic, not validate the
+complete Slack message schema.
+
+The temporary `ticket` is a bearer credential. `http.sensitive_query` replaces it
+with a SHA-256 fingerprint before description, so policy, approval scope and audit
+see the fingerprint while the upstream request keeps the real value.
+
+## Grafana
+
+Set the Grafana origin to `https://host` (or its configured HTTPS port), without an
+`/api` suffix, and configure the API key separately. Operation paths include the
+`/api` base declared by the pinned vendor specification. Correcting a path changes
+its approval definition; saved approvals for the old path do not apply to the new one.
+See the [manual tests](../dev/manual_tests/README.md) for health and read-only
+search checks. Public health does not prove authenticated dashboard access.
+
+## Preset format and authorization
+
 The catalog contains setup fields, connections, defaults, and permission actions.
 Protocol definitions have their own sections:
 
 - `http.operations` maps operation IDs to reviewed HTTP operations, including GraphQL matchers. IDs also determine candidate evaluation order; ambiguous matches are rejected.
 - `http.slots` requires requests to stay within the connection's configured API addresses.
+- `http.sensitive_query` lists high-entropy bearer query values to fingerprint before capture, including unknown or invalid requests. Extracted parameters see the same fingerprints, preserving approval distinctions without retaining the credentials. Literal query-value matchers cannot use these fields.
 - `mcp.scope` selects service resource identifiers from MCP tool arguments.
 - `public_scope` names the extracted parameters that identify public or private resources across protocols.
 

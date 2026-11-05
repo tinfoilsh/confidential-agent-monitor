@@ -2,6 +2,38 @@
 
 This tool inventories API requests and proposes monitor actions, effect sets, resource scopes, and saved-approval grants. It does not generate full request/response schemas. Run `generate` to create a local coverage index at `coverage/README.md` with the current results and remaining gaps.
 
+## Adding protocol presets
+
+Not every shipped preset comes from this generator. Protocols described in prose
+can use a reviewed, handwritten definition with SDK fixtures. For example,
+`generate slack` covers Web API requests, not the separate
+[Slack Socket Mode preset](../../presets/README.md#slack-socket-mode).
+
+1. Identify the workflow and vendor references, credential types, destinations,
+   and SDK version. State which capabilities the sources actually cover.
+2. Capture the SDK with synthetic credentials and keep versioned request/message
+   fixtures, including control and error messages.
+3. Define setup, actions, effects and approval scope using the existing connector
+   where possible. Review credential placement and content-bearing responses.
+4. Test recognition and refusal cases through the real parser and gate: origins,
+   encodings, malformed messages, credential placement, permissions and reconnects.
+5. Test an authorized live session. Distinguish endpoint reachability from event
+   delivery and record the tested workflow, not a claim of complete API coverage.
+   Repeat the checks when SDKs or definitions change.
+
+The [manual test tools](../manual_tests/README.md) share connector setup across
+Slack and Grafana. Slack includes a synthetic SDK fixture and capture mode for
+inspecting changes. These are not automatic freshness checks.
+Keep live tokens and temporary connection tickets out of fixtures and shared logs.
+
+OpenAPI server base paths belong in operation paths, not in a configurable
+origin. For example, Grafana's pinned spec declares `servers: [{url: /api}]`, so
+its health operation is `/api/health`, not `/health`. Its `sources.json` entry maps
+to the shipped `grafana` preset. Check routes against the vendor input as well as
+the preserved baseline: a `shipped_override` can preserve an old mistake.
+
+## Generation commands
+
 Run commands from `dev/presets`. This directory is a separate Go module, so use `GOWORK=off`.
 
 `generate` is the single candidate pipeline. The old `draft` command and its

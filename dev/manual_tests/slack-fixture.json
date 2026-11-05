@@ -1,0 +1,51 @@
+{
+  "sdk": "slack_sdk",
+  "version": "3.38.0",
+  "requests": [
+    {
+      "method": "POST",
+      "url": "https://slack.com/api/apps.connections.open",
+      "authorization": "Bearer tfm_socket_SYNTHETIC",
+      "content_type": "application/json;charset=utf-8",
+      "body": ""
+    }
+  ],
+  "responses": [
+    {
+      "envelope_id": "SYNTHETIC-envelope"
+    },
+    {
+      "envelope_id": "SYNTHETIC-envelope",
+      "payload": {}
+    },
+    {
+      "envelope_id": "SYNTHETIC-envelope",
+      "payload": {
+        "text": "SYNTHETIC reply"
+      }
+    },
+    {
+      "envelope_id": "SYNTHETIC-envelope",
+      "payload": {
+        "response_action": "update",
+        "view": {
+          "type": "modal"
+        }
+      }
+    },
+    {
+      "envelope_id": "SYNTHETIC-envelope",
+      "payload": {
+        "options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "SYNTHETIC"
+            },
+            "value": "1"
+          }
+        ]
+      }
+    }
+  ]
+}
