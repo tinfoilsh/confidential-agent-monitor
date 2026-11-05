@@ -778,8 +778,9 @@ export function ShellSplit(props: {
   children: JSX.Element;
 }) {
   const [width, setWidth] = createSignal("50%");
+  let split!: HTMLDivElement;
   return (
-    <div class="shell-split">
+    <div class="shell-split" ref={split}>
       {props.children}
       <Show when={props.shell} keyed>
         {(current) => (
@@ -791,11 +792,12 @@ export function ShellSplit(props: {
             <div
               class="shell-pane-resize"
               onPointerDown={(event) =>
-                drag(event, (move) =>
+                drag(event, (move) => {
+                  const box = split.getBoundingClientRect();
                   setWidth(
-                    `${Math.max(SHELL_MIN_WIDTH, Math.min(innerWidth - move.clientX, innerWidth - SHELL_MIN_WIDTH))}px`,
-                  ),
-                )
+                    `${Math.max(SHELL_MIN_WIDTH, Math.min(box.right - move.clientX, box.width - SHELL_MIN_WIDTH))}px`,
+                  );
+                })
               }
             />
             <Show
