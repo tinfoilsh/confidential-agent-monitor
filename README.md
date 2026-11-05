@@ -111,7 +111,9 @@ supports `preview=full-flow`, `keys-loading`, `inventory-loading`,
 
 This uses a real local Monitor with fake account/passkey fixtures, not cloud
 resources. State stays in `.dev/console/`; ports 5176, 8083, and 2226 must be free.
-Sandbox VMs and shells are not started. This preview mode cannot be built for deployment.
+Sandbox VMs and shells are not started. The fixture account is always signed in;
+sign-out reloads the preview rather than simulating authentication flows.
+This preview mode cannot be built for deployment.
 
 ## Access control
 

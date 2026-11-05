@@ -18,6 +18,7 @@ export function devClerk(): Clerk {
     },
     organization: undefined,
     addListener: () => () => {},
+    // This UI fixture is always signed in; sign-out resets the preview, not auth.
     signOut: async () => location.reload(),
     redirectToSignIn: () => location.reload(),
     setActive: async () => {},

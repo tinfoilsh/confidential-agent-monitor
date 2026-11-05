@@ -1,4 +1,12 @@
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
+import {
+  mkdirSync,
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  renameSync,
+  rmSync,
+} from "node:fs";
+import { randomUUID } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import type { IncomingMessage } from "node:http";
 import type { Plugin } from "vite";
@@ -23,6 +31,19 @@ export function localRequestAllowed(req: Pick<IncomingMessage, "headers">) {
     (!req.headers["sec-fetch-site"] ||
       ["same-origin", "none"].includes(String(req.headers["sec-fetch-site"])))
   );
+}
+
+export function persistKeyState(path: string, state: KeyState) {
+  const temporary = `${path}.${randomUUID()}.tmp`;
+  try {
+    writeFileSync(temporary, JSON.stringify(state), {
+      mode: 0o600,
+      flag: "wx",
+    });
+    renameSync(temporary, path);
+  } finally {
+    rmSync(temporary, { force: true });
+  }
 }
 
 // This plugin is only installed by `vite --mode dev-console` while serving loopback.
@@ -75,8 +96,9 @@ export default function localConsole(): Plugin {
           const change = JSON.parse(body);
           if (change.expected_revision !== state.revision)
             return reply(409, { error: "stale_revision" });
+          let candidate: KeyState;
           if (req.method === "DELETE")
-            state = { ...empty(), revision: state.revision + 1 };
+            candidate = { ...empty(), revision: state.revision + 1 };
           else {
             if (
               typeof change.dek_id !== "string" ||
@@ -84,14 +106,15 @@ export default function localConsole(): Plugin {
               !Array.isArray(change.recovery)
             )
               return reply(400, { error: "invalid_key_state" });
-            state = {
+            candidate = {
               revision: state.revision + 1,
               dek_id: change.dek_id,
               encrypted_mk: change.encrypted_mk,
               recovery: change.recovery,
             };
           }
-          writeFileSync(file, JSON.stringify(state), { mode: 0o600 });
+          persistKeyState(file, candidate);
+          state = candidate;
           return reply(200, { revision: state.revision });
         } catch (cause) {
           reply(400, {

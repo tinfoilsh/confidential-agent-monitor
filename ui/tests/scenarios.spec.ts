@@ -35,17 +35,27 @@ test("booting/stopped scenarios change only the rendered Monitor row", () => {
 
 test("the locked preview opens only after the real unlock action completes", async () => {
   let completed = false;
+  let finish!: () => void;
+  const pending = new Promise<void>((resolve) => {
+    finish = resolve;
+  });
   const source = {
     ...base,
     bind: () => ({
       setUnlocked: async () => {
+        await pending;
         completed = true;
       },
     }),
   } as unknown as Session;
   const locked = previewSession(source, "monitor-locked");
   expect(locked.unlocked()).toBeUndefined();
-  await locked.bind().setUnlocked(base.unlocked());
+  const unlocking = locked.bind().setUnlocked(base.unlocked());
+  await Promise.resolve();
+  expect(completed).toBe(false);
+  expect(locked.unlocked()).toBeUndefined();
+  finish();
+  await unlocking;
   expect(completed).toBe(true);
   expect(locked.unlocked()).toBe(base.unlocked());
 });
