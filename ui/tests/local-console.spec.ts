@@ -38,7 +38,8 @@ test("local key-state replacement leaves one private, complete file", () => {
     };
     persistKeyState(file, next);
     expect(JSON.parse(readFileSync(file, "utf8"))).toEqual(next);
-    expect(statSync(file).mode & 0o777).toBe(0o600);
+    if (process.platform !== "win32")
+      expect(statSync(file).mode & 0o777).toBe(0o600);
     expect(readdirSync(directory)).toEqual(["keys.json"]);
   } finally {
     rmSync(directory, { recursive: true, force: true });
