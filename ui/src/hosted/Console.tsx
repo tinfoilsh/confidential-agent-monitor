@@ -6,6 +6,7 @@ import {
   Switch,
   createEffect,
   createSignal,
+  createUniqueId,
   on,
 } from "solid-js";
 import {
@@ -65,6 +66,7 @@ const BUSY_STATUSES = [
 ];
 const OPENED_FROM = "from";
 const HOME = "home";
+const ACCOUNT_MENU_GAP = 8;
 
 // A Monitor opened from this page goes back here; one opened elsewhere, such
 // as from the dashboard, goes back to the dashboard.
@@ -521,6 +523,9 @@ export function Header(props: { session: Session }) {
     setLeaving(undefined);
     if (offer?.live()) await signOut();
   };
+  const menuId = createUniqueId();
+  let trigger!: HTMLButtonElement;
+  let menu!: HTMLDivElement;
   return (
     <header class="start-header">
       <a href="/" class="start-brand" aria-label="Tinfoil Terminal home" link>
@@ -537,14 +542,36 @@ export function Header(props: { session: Session }) {
       >
         {(user) => (
           <span>
-            {user().label}{" "}
             <button
-              class="link"
-              disabled={busy()}
-              onClick={() => void signOut()}
+              ref={trigger}
+              class="account-trigger"
+              popovertarget={menuId}
             >
-              Sign out
+              {user().label}
+              <Icon name="arrow" />
             </button>
+            <div
+              ref={menu}
+              id={menuId}
+              class="account-menu"
+              popover
+              onBeforeToggle={(event) => {
+                if (event.newState !== "open") return;
+                const anchor = trigger.getBoundingClientRect();
+                menu.style.top = `${anchor.bottom + ACCOUNT_MENU_GAP}px`;
+                menu.style.right = `${innerWidth - anchor.right}px`;
+              }}
+            >
+              <button
+                disabled={busy()}
+                onClick={() => {
+                  menu.hidePopover();
+                  void signOut();
+                }}
+              >
+                Sign out
+              </button>
+            </div>
             <Show when={failed()}>
               <span class="start-notice" role="alert">
                 {failed()}

@@ -290,3 +290,44 @@ dialog.start-dialog {
   align-items: center;
   gap: 16px;
 }
+.account-trigger {
+  min-height: auto;
+  padding: 4px 8px;
+  border-color: transparent;
+  background: none;
+  box-shadow: none;
+  font-size: inherit;
+  font-weight: 400;
+}
+.account-trigger:hover:not(:disabled),
+.start-header:has(.account-menu:popover-open) .account-trigger {
+  background: var(--hover);
+}
+.account-trigger > .icon {
+  width: 12px;
+  height: 12px;
+  color: var(--muted);
+  transform: rotate(90deg);
+}
+.account-menu {
+  inset: auto;
+  min-width: 160px;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--edge);
+  border-radius: var(--card-radius);
+  background: var(--card);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+}
+.account-menu > button {
+  width: 100%;
+  justify-content: flex-start;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  font-weight: 400;
+}
+.account-menu > button:hover:not(:disabled) {
+  background: var(--hover);
+}
