@@ -222,7 +222,7 @@ function Start(props: {
             ? "Save your recovery key before you head to your sandboxes."
             : `First, we'll create keys for your ${r.roles.join(" and ")}. They're encrypted with your account, and your dashboard only sees their public keys.`
       }
-      account={props.session.user()?.label}
+      account={props.session.user()}
     >
       <Show when={r.mode === "tmk" && !file()}>
         <ol class="start-steps" aria-label="Getting started">
@@ -530,7 +530,10 @@ export function Header(props: { session: Session }) {
     <header class="start-header">
       <a href="/" class="start-brand" aria-label="Tinfoil Terminal home" link>
         <img src="/icons/tinfoil.svg" alt="" />
-        <span>Terminal</span>
+        <span class="start-brand-name">
+          Terminal
+          <small>Secure browser console</small>
+        </span>
       </a>
       <Show
         when={props.session.user()}

@@ -7,25 +7,6 @@
   background: var(--bg);
   color: var(--text);
 }
-.sandbox-terminal.floating {
-  --width: min(720px, calc(100vw - 48px));
-  --height: min(440px, calc(100dvh - 48px));
-  position: fixed;
-  z-index: 50;
-  left: calc(100vw - var(--width) - 24px);
-  top: calc(100dvh - var(--height) - 24px);
-  width: var(--width);
-  height: var(--height);
-  min-width: 320px;
-  border: 1px solid var(--subtle);
-  border-radius: var(--card-radius);
-  box-shadow: var(--shadow-lg);
-  resize: both;
-}
-.sandbox-terminal.floating > header {
-  cursor: move;
-  touch-action: none;
-}
 .sandbox-terminal > header {
   display: flex;
   align-items: center;
