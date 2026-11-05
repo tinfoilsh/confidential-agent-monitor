@@ -69,19 +69,21 @@ async function start() {
 void start().catch((cause) =>
   render(
     () => (
-      <main id="gate" class="auth">
-        <h1>Could not load Tinfoil</h1>
-        <section class="auth-card">
-          <p role="alert">
-            {cause instanceof Error
-              ? cause.message
-              : "Reload the page to try again."}
-          </p>
-          <button class="primary" onClick={() => location.reload()}>
-            Reload
-          </button>
-        </section>
-      </main>
+      <div class="start-page">
+        <main id="gate" class="auth">
+          <h1>Could not load Tinfoil</h1>
+          <section class="auth-card">
+            <p role="alert">
+              {cause instanceof Error
+                ? cause.message
+                : "Reload the page to try again."}
+            </p>
+            <button class="primary" onClick={() => location.reload()}>
+              Reload
+            </button>
+          </section>
+        </main>
+      </div>
     ),
     root,
   ),

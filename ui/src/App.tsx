@@ -63,14 +63,16 @@ export default function App(props: MonitorOptions) {
   return (
     <ErrorBoundary
       fallback={(error) => (
-        <AuthScreen id="gate" title="Could not show Monitor">
-          <AuthCard icon={<Icon name="warning" />}>
-            <p role="alert">{String(error)}</p>
-            <button class="primary" onClick={() => location.reload()}>
-              Reload
-            </button>
-          </AuthCard>
-        </AuthScreen>
+        <div class="start-page">
+          <AuthScreen id="gate" title="Could not show Monitor">
+            <AuthCard icon={<Icon name="warning" />}>
+              <p role="alert">{String(error)}</p>
+              <button class="primary" onClick={() => location.reload()}>
+                Reload
+              </button>
+            </AuthCard>
+          </AuthScreen>
+        </div>
       )}
     >
       <MonitorProvider {...props}>
@@ -355,10 +357,10 @@ function ApprovalBar() {
 function MonitorFooter() {
   const m = useMonitor();
   return (
-    <Show when={m.options.terminalHome}>
-      {(home) => (
+    <Show when={m.options.backTo}>
+      {(back) => (
         <footer class="monitor-footer">
-          <a class="nav-item back-terminal" href={home()} link>
+          <a class="nav-item back-terminal" href={back()} link>
             <Icon name="arrow" />
             <span>Back</span>
           </a>
@@ -508,7 +510,7 @@ function Gate() {
     </Show>
   );
   return (
-    <>
+    <div class="start-page">
       {m.options.header}
       <Switch
         fallback={
@@ -597,7 +599,7 @@ function Gate() {
           </AuthScreen>
         </Match>
       </Switch>
-    </>
+    </div>
   );
 }
 function Onboarding(props: {

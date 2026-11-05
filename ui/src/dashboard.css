@@ -53,6 +53,10 @@
   --confirm-hover: #065f46;
   --destructive: #b91c1c;
   --destructive-hover: #991b1b;
+  --frame: #000;
+  --frame-inset: 30px;
+  --frame-radius: 12px;
+  --page-height: 100dvh;
   --tinfoil-dark: #061820;
   --backdrop: #06182099;
   --shadow: 0 1px 2px #0000000d;
@@ -2446,8 +2450,12 @@ td {
   border-bottom: 1px solid var(--line);
   vertical-align: top;
 }
-body:has(#gate) {
+.start-page {
+  min-height: var(--page-height);
+  display: flex;
+  flex-direction: column;
   background: var(--surface) var(--grid) repeat center;
+  color: var(--text);
 }
 .auth {
   --primary: var(--confirm);
@@ -2851,7 +2859,7 @@ body:has(#gate) {
 }
 .shell-split {
   display: flex;
-  height: 100dvh;
+  height: var(--page-height);
 }
 .shell-split > * {
   flex: 1 1 0;
@@ -2879,6 +2887,30 @@ body:has(#gate) {
 @media (min-width: 1024px) {
   .shell-split > .shell-pane {
     flex: 0 0 var(--shell-width);
+  }
+  /* Desktop pages float on a black frame. */
+  :root {
+    --page-height: calc(100dvh - 2 * var(--frame-inset));
+  }
+  body {
+    padding: var(--frame-inset);
+    background: var(--frame);
+  }
+  .start-page,
+  .shell-split {
+    border: 1px solid var(--nav-line);
+    border-radius: var(--frame-radius);
+    overflow: hidden;
+  }
+  #app {
+    position: relative;
+  }
+  #navigation {
+    position: absolute;
+  }
+  #workspace {
+    border-width: 0 0 0 1px;
+    border-radius: 0;
   }
 }
 .shell-split > .shell-pane:has(> .sandbox-terminal.floating) {

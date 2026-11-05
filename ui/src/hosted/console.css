@@ -1,12 +1,5 @@
-.start-page {
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  background: var(--surface) var(--grid) repeat center;
-  color: var(--text);
-}
 .hosted-monitor {
-  min-height: 100dvh;
+  min-height: var(--page-height);
 }
 .start-header {
   display: flex;
