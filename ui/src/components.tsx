@@ -13,6 +13,7 @@ import {
   type JSX,
 } from "solid-js";
 import { Dynamic } from "solid-js/web";
+import boring from "boring-avatars-vanilla";
 import * as owner from "./owner.js";
 import { icons } from "./dashboard-icons.js";
 import { useMonitor } from "./monitor";
@@ -41,7 +42,7 @@ export function AuthScreen(props: {
   id?: string;
   title?: JSX.Element;
   description?: JSX.Element;
-  account?: string;
+  account?: { id: string; label: string };
   children: JSX.Element;
 }) {
   const titleId = createUniqueId();
@@ -60,15 +61,39 @@ export function AuthScreen(props: {
       <Show when={props.account}>
         {(account) => (
           <p class="auth-account">
-            <Icon name="person" />
+            <UserAvatar id={account().id} size={32} />
             <span>
-              Signed in as <strong>{account()}</strong>
+              Signed in as <strong>{account().label}</strong>
             </span>
           </p>
         )}
       </Show>
       {props.children}
     </main>
+  );
+}
+
+// The dashboard's avatar for an account without a picture: same variant,
+// palette, and seed, so a person looks the same in both places.
+const AVATAR_COLORS = ["#004444", "#F9F8F6"];
+export function UserAvatar(props: { id: string; size: number }) {
+  const src = () =>
+    `data:image/svg+xml,${encodeURIComponent(
+      boring({
+        name: props.id,
+        variant: "pixel",
+        colors: AVATAR_COLORS,
+        size: props.size,
+      }),
+    )}`;
+  return (
+    <img
+      class="user-avatar"
+      src={src()}
+      alt=""
+      width={props.size}
+      height={props.size}
+    />
   );
 }
 

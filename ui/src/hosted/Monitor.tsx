@@ -226,10 +226,7 @@ export default function Monitor(props: {
                 manager={manager}
                 purpose={`open ${row()?.name ?? "your Monitor"}`}
               >
-                <AuthScreen
-                  title={title()}
-                  account={props.session.user()?.label}
-                >
+                <AuthScreen title={title()} account={props.session.user()}>
                   <AuthCard icon={<Icon name="rules" />}>
                     <Show when={error()}>
                       <p role="alert">{error()}</p>

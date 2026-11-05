@@ -2636,14 +2636,11 @@ td {
   text-align: left;
   overflow-wrap: anywhere;
 }
-.auth-account > .icon {
-  width: 32px;
-  height: 32px;
-  padding: 7px;
-  border: 1px solid var(--edge);
+.auth-account > .user-avatar {
+  flex: none;
   border-radius: 50%;
-  background: var(--subtle);
-  color: var(--muted);
+  /* The palette's light cells would otherwise vanish on a light card. */
+  box-shadow: 0 0 0 1px var(--line);
 }
 .auth-card {
   display: flex;

@@ -196,7 +196,7 @@ export default function Cli(props: {
   const page = () => (
     <AuthScreen
       title={done() ? "Sync successful" : "Sync your CLI"}
-      account={props.session.user()?.label}
+      account={props.session.user()}
     >
       <AuthCard icon={<Icon name={done() ? "check" : "devices"} />}>
         <Show when={error()}>

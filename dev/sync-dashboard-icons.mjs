@@ -46,7 +46,6 @@ const components = {
   key: 'TfKey',
   lock: 'TfLockLocked',
   warning: 'TfWarning',
-  person: 'TfPerson',
 };
 const icons = Object.fromEntries(Object.entries(components).map(([name, component]) => [
   name, renderToStaticMarkup(createElement(tinfoil[component], { className: 'ui-icon', 'aria-hidden': true })),
