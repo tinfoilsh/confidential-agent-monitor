@@ -8,9 +8,11 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"crypto/sha256"
+	"crypto/subtle"
 	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
 	"errors"
@@ -25,6 +27,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -127,6 +130,15 @@ func prepare(name, secret, placeholder string) (*liveConnection, error) {
 	return &liveConnection{name, server, prepared.Value.(*web.Setup), fmt.Sprintf("%x", sha256.Sum256(p.Source))}, nil
 }
 
+func proxyAuthenticated(r *http.Request, expected string) bool {
+	values := r.Header.Values("Proxy-Authorization")
+	return len(values) == 1 && subtle.ConstantTimeCompare([]byte(values[0]), []byte(expected)) == 1
+}
+
+func testAuthOperation(id string) bool {
+	return id == "auth.test" || id == "auth.test.form" || id == "auth_test"
+}
+
 func main() {
 	// Connector and HTTP errors can contain user input. Emit only our own fixed status.
 	log.SetOutput(io.Discard)
@@ -172,12 +184,24 @@ func run() error {
 	var output sync.Mutex
 	status := func(text string) { output.Lock(); defer output.Unlock(); fmt.Fprintln(os.Stderr, text) }
 	var active sync.WaitGroup
+	var posted atomic.Bool
 	start := func(connection *liveConnection) (string, error) {
+		var nonce [32]byte
+		if _, err := rand.Read(nonce[:]); err != nil {
+			return "", err
+		}
+		password := base64.RawURLEncoding.EncodeToString(nonce[:])
+		expected := "Basic " + base64.StdEncoding.EncodeToString([]byte("monitor:"+password))
 		listener, err := net.Listen("tcp4", "127.0.0.1:0")
 		if err != nil {
 			return "", err
 		}
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if !proxyAuthenticated(r, expected) {
+				w.Header().Set("Proxy-Authenticate", `Basic realm="monitor-slack-test"`)
+				http.Error(w, "proxy authentication required", http.StatusProxyAuthRequired)
+				return
+			}
 			host, port, err := net.SplitHostPort(r.Host)
 			if r.Method != "CONNECT" || err != nil || port != "443" || connection.setup.Claim(host, 443) < 0 {
 				http.Error(w, "destination refused", http.StatusForbidden)
@@ -211,9 +235,9 @@ func run() error {
 				if connection.preset == "slack_socket_mode" {
 					allowed = f.Operation.Action == "connect" || f.Operation.Action == "receive" || f.Operation.Action == "respond"
 				} else {
-					allowed = f.Operation.Action == "auth.read"
-					if in.PostTest && f.Operation.Action == "chat.message.send" && f.Parameters["channel"] == in.Channel {
-						allowed = true
+					allowed = testAuthOperation(f.Operation.ID)
+					if in.PostTest && f.Operation.ID == "chat.postMessage" && f.Parameters["channel"] == in.Channel {
+						allowed = posted.CompareAndSwap(false, true)
 					}
 				}
 				if !allowed {
@@ -230,7 +254,8 @@ func run() error {
 		server := &http.Server{Handler: handler, ReadHeaderTimeout: 5 * time.Second, IdleTimeout: time.Minute, ErrorLog: log.New(io.Discard, "", 0)}
 		go func() { <-ctx.Done(); server.Close() }()
 		go server.Serve(listener)
-		return "http://" + listener.Addr().String(), nil
+		// Delivered only over the supervisor's private pipe, never printed in status.
+		return "http://monitor:" + password + "@" + listener.Addr().String(), nil
 	}
 	botProxy, err := start(bot)
 	if err != nil {

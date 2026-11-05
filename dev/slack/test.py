@@ -114,43 +114,66 @@ def sdk_client():
         if config["post_test"]:
             bot.chat_postMessage(channel=config["channel"], text="[Monitor Socket Mode test] Local connector HTTP test; no agent workload started.")
             print("PASS: explicitly requested test message posted through Slack HTTP connector", flush=True)
-        client = SocketModeClient(app_token="tfm_live_slack_socket", web_client=opener,
-                                  proxy=config["socket_proxy"], trace_enabled=False,
-                                  all_message_trace_enabled=False, ping_pong_trace_enabled=False)
-        count = 0
+        counts = [0, 0]
+        count_lock = threading.Lock()
         errors = threading.Event()
 
-        def event(socket, request):
-            nonlocal count
+        def new_session(phase):
+            socket = SocketModeClient(app_token="tfm_live_slack_socket", web_client=opener,
+                                      proxy=config["socket_proxy"], trace_enabled=False,
+                                      all_message_trace_enabled=False, ping_pong_trace_enabled=False)
+
+            def event(source, request):
+                try:
+                    source.send_socket_mode_response(SocketModeResponse(envelope_id=request.envelope_id))
+                    with count_lock:
+                        counts[phase] += 1
+                        count = counts[phase]
+                    kind = request.type if request.type in ("events_api", "interactive", "slash_commands") else "other"
+                    print(f"RECEIVED {kind}; acknowledgement queued; session={phase + 1} events={count} (content withheld)", flush=True)
+                except Exception as error:  # noqa: BLE001 -- SDK error text can contain credentials
+                    print("FAIL: acknowledgement: " + safe_error(error), flush=True)
+                    errors.set()
+
+            def socket_error(_error):
+                print("NOTICE: SDK socket error (details withheld)", flush=True)
+
+            socket.socket_mode_request_listeners.append(event)
+            socket.on_error_listeners.append(socket_error)
             try:
-                socket.send_socket_mode_response(SocketModeResponse(envelope_id=request.envelope_id))
-                count += 1
-                kind = request.type if request.type in ("events_api", "interactive", "slash_commands") else "other"
-                print(f"RECEIVED {kind}; acknowledgement queued; event count={count} (content withheld)", flush=True)
-            except Exception as error:  # noqa: BLE001 -- SDK error text can contain credentials
-                print("FAIL: acknowledgement: " + safe_error(error), flush=True)
-                errors.set()
+                socket.connect()
+                if not socket.is_connected():
+                    raise SetupError("Socket Mode session did not connect.")
+            except BaseException:
+                socket.close()
+                raise
+            return socket
 
-        def socket_error(_error):
-            print("NOTICE: SDK socket error (details withheld); reconnect behavior is being observed", flush=True)
-
-        client.socket_mode_request_listeners.append(event)
-        client.on_error_listeners.append(socket_error)
-        client.connect()
+        client = new_session(0)
         print("PASS: Socket Mode connected through real HTTP/WebSocket connector", flush=True)
         print("Mention your test app in its test channel now. No event text or connection URLs will be printed.", flush=True)
         started = time.monotonic()
         reconnected = False
         while time.monotonic() - started < config["duration"] and not errors.is_set():
             if config["reconnect_after"] and not reconnected and time.monotonic() - started >= config["reconnect_after"]:
-                # SDK refreshes the URL through the same gated opening method.
-                client.wss_uri = None
-                client.connect()
+                # Join the old client's callbacks; they cannot count toward the new session.
+                client.close()
+                client = None
+                client = new_session(1)
                 reconnected = True
-                print("PASS: requested a fresh URL and reconnected; send another test mention", flush=True)
+                print("CONNECTED: fresh session; send another mention to verify post-reconnect delivery", flush=True)
             time.sleep(0.2)
-        print(f"Finished: {count} event(s) received; zero events does not prove event subscriptions work.", flush=True)
-        return 1 if errors.is_set() or count == 0 else 0
+        client.close()
+        client = None
+        with count_lock:
+            initial, after_reconnect = counts
+        print(f"Finished: initial-session events={initial}, fresh-session events={after_reconnect}.", flush=True)
+        if config["reconnect_after"] and (not reconnected or after_reconnect == 0):
+            print("INCOMPLETE: no event received on the fresh session; reconnect delivery was not verified.", flush=True)
+            return 1
+        if config["reconnect_after"]:
+            print("PASS: event received and acknowledgement queued on the fresh session", flush=True)
+        return 1 if errors.is_set() or initial + after_reconnect == 0 else 0
     except Exception as error:  # noqa: BLE001 -- sanitize errors at the process boundary
         print("FAIL: live SDK test: " + safe_error(error) + " (raw details withheld)", flush=True)
         return 1

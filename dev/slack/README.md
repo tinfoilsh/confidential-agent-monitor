@@ -13,8 +13,10 @@ python dev/slack/test.py --env-file /private/path/to/.env --duration 180 --recon
 The private `0600` file supplies `SLACK_BOT_TOKEN` and `SLACK_APP_TOKEN` from the
 same dedicated test app. Without `--env-file`, use the hidden terminal prompts.
 Default behavior authenticates, receives events and acknowledges them. Mention
-the app before and after reconnection. `--post-test --channel CHANNEL_ID` explicitly
-permits one labelled test post. See `--help` for options.
+the app before and after reconnection; an event from the original session does
+not satisfy the fresh-session delivery check. `--post-test --channel CHANNEL_ID`
+explicitly permits one labelled test post. Only the exact `auth.test` operations
+are otherwise allowed on the HTTP connection. See `--help` for options.
 
 `main.go` is the local connector helper. `fixture.json` records synthetic SDK wire
 shapes; inspect changes manually with `python dev/slack/test.py --capture`. No
