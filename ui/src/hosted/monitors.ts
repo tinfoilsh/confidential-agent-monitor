@@ -68,7 +68,7 @@ export const attestMonitor: AttestMonitor = async (
     enclaveURL: url,
     configRepo: reference,
     attestationRelayURL: relay,
-    verification: { configScopes: [registry] },
+    verification: { configRegistryIDs: [registry] },
   });
   await client.ready({ signal });
   signal.throwIfAborted();
