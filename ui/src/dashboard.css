@@ -3096,10 +3096,6 @@ body:has(#gate) {
   .detail-bar > span {
     margin-left: 0;
   }
-  #gate {
-    margin: 10vh 16px;
-    padding: 24px;
-  }
 }
 @media (prefers-reduced-motion: no-preference) {
   button,
