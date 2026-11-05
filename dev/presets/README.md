@@ -2,6 +2,14 @@
 
 This tool inventories API requests and proposes monitor actions, effect sets, resource scopes, and saved-approval grants. It does not generate full request/response schemas. Run `generate` to create a local coverage index at `coverage/README.md` with the current results and remaining gaps.
 
+Not every shipped connection is generated. The separately shipped Slack Socket
+Mode preset is a reviewed protocol definition with pinned SDK fixtures; it has no
+source mapping in this HTTP-request candidate pipeline. Generating `slack` does
+not reproduce or claim coverage of Socket Mode. See [adding a named protocol
+connection](../../presets/README.md#adding-a-named-protocol-connection) for source,
+fixture, permission-review and online-test conventions. Do not add an empty or
+invented specification merely to make a hand-authored preset appear generated.
+
 Run commands from `dev/presets`. This directory is a separate Go module, so use `GOWORK=off`.
 
 `generate` is the single candidate pipeline. The old `draft` command and its
