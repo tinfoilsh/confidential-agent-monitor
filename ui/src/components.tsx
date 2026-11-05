@@ -36,6 +36,77 @@ export function Loading(props: { label: string }) {
   );
 }
 
+// Sign-in style screens: a title over stacked cards, with any options and tip below.
+export function AuthScreen(props: {
+  id?: string;
+  title?: JSX.Element;
+  description?: JSX.Element;
+  account?: string;
+  children: JSX.Element;
+}) {
+  const titleId = createUniqueId();
+  return (
+    <main
+      id={props.id}
+      class="auth"
+      aria-labelledby={props.title ? titleId : undefined}
+    >
+      <Show when={props.title}>
+        <h1 id={titleId}>{props.title}</h1>
+      </Show>
+      <Show when={props.description}>
+        <p class="auth-description">{props.description}</p>
+      </Show>
+      <Show when={props.account}>
+        {(account) => (
+          <p class="auth-account">
+            <Icon name="person" />
+            <span>
+              Signed in as <strong>{account()}</strong>
+            </span>
+          </p>
+        )}
+      </Show>
+      {props.children}
+    </main>
+  );
+}
+
+export function AuthCard(props: {
+  icon?: JSX.Element;
+  title?: JSX.Element;
+  children: JSX.Element;
+}) {
+  return (
+    <section class="auth-card">
+      <Show when={props.icon}>
+        <span class="auth-icon">{props.icon}</span>
+      </Show>
+      <Show when={props.title}>
+        <h2>{props.title}</h2>
+      </Show>
+      {props.children}
+    </section>
+  );
+}
+
+export function AuthOptions(props: { title?: string; children: JSX.Element }) {
+  return (
+    <section class="auth-card auth-options">
+      <h2>{props.title ?? "Having problems?"}</h2>
+      <ul>{props.children}</ul>
+    </section>
+  );
+}
+
+export function AuthTip(props: { children: JSX.Element }) {
+  return (
+    <p class="auth-tip">
+      <strong>Tip:</strong> {props.children}
+    </p>
+  );
+}
+
 export function SkeletonRows(props: { label: string; cards?: boolean }) {
   return (
     <div
