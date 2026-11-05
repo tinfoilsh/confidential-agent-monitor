@@ -1,72 +1,11 @@
 Each shipped preset has a `<name>.json` record. Accounts select it with
 `"preset": "<name>"`. Monitor accepts only these shipped definitions.
 
-For the authoring and test workflow, see [adding protocol presets](../dev/presets/README.md#adding-protocol-presets).
-
-## Slack Web API
-
-History and thread replies support both GET/query and SDK POST/form requests.
-Both variants retain their read actions and extract the channel from the matching
-encoding. POST/form approvals also bind the complete submitted form.
-
-`views.open`, `views.update`, `views.push` and `views.publish` use JSON POST, not
-the archived specification's GET definitions. They have `send` and `write`
-effects and use `views.open.write`, `views.push.write` or `views.write` actions.
-The complete JSON request, view object and available target identifiers are
-extracted; modal requests do not supply a verified channel restriction. Form
-modal variants are not described yet. Legacy view read actions remain in the
-catalog for configuration compatibility, but no operation selects them and their
-overrides are not transferred to the new write actions. Changed definitions
-invalidate saved approvals; review view permissions before enabling clients.
-
-## Slack Socket Mode
-
-`slack_socket_mode.json` adds a separate **Slack Socket Mode** connection using
-the shared HTTP/WebSocket connector. Enable Socket Mode in the Slack app and set
-an app-level `xapp-` token with `connections:write`. The normal **Slack** connection
-uses a separate bot/user token for Web API calls.
-
-The app token is substituted only in the Authorization header for
-[`apps.connections.open`](https://docs.slack.dev/reference/methods/apps.connections.open),
-which returns a temporary WebSocket URL. The client SDK manages the session and
-reconnection, following [Slack's protocol](https://docs.slack.dev/apis/events-api/using-socket-mode).
-
-The opening POST accepts an empty body, JSON or form. WebSocket handshakes use
-port 443, `/link/`, and `ticket`, `app_id` and `debug_reconnects` query parameters.
-Supported hosts are `wss.slack.com`, `wss-primary.slack.com` and
-`wss-backup.slack.com`; other returned hosts require a reviewed preset update.
-
-Permissions are `connect` (session), `receive` (read) and `respond` (send).
-All acknowledgements count as send because they can contain interactive responses.
-The whole response is bound to approval scope, not just its envelope ID; read-only
-access therefore cannot acknowledge events.
-
-Incoming deliveries use the account's contents/trust labels and remain opaque to
-policy. Monitor does not filter them by channel or correlate acknowledgement IDs
-with received envelopes. These descriptors authorize traffic, not validate the
-complete Slack message schema.
-
-The temporary `ticket` is a bearer credential. `http.sensitive_query` replaces it
-with a SHA-256 fingerprint before description, so policy, approval scope and audit
-see the fingerprint while the upstream request keeps the real value.
-
-## Grafana
-
-Set the Grafana origin to `https://host` (or its configured HTTPS port), without an
-`/api` suffix, and configure the API key separately. Operation paths include the
-`/api` base declared by the pinned vendor specification. Correcting a path changes
-its approval definition; saved approvals for the old path do not apply to the new one.
-See the [manual tests](../dev/manual_tests/README.md) for health and read-only
-search checks. Public health does not prove authenticated dashboard access.
-
-The preset also describes specific Loki proxy and Prometheus resource reads used
-by MCP clients: label names/values, Loki index statistics/patterns and Prometheus
-metadata. Prometheus label names accept GET/query or POST/form. These definitions
-bind the datasource UID, any label, and the complete query/form; they do not make
-arbitrary nested proxy/resource paths read-only. Frontend settings and dashboard
-API-group discovery are separate exact GET operations, not wildcard API access.
-A captured discovery request does not establish coverage of every subsequent
-version-specific dashboard API.
+For authoring, see [adding protocol presets](../dev/presets/README.md#adding-protocol-presets).
+Provider request definitions live in the JSON files; SDK scenarios and coverage
+live in [tf-test's use cases](https://github.com/tinfoilsh/tf-test/tree/eaf007c2890ca041df40a2cf3bc79c23507bb8cf/services/connections-flywheel/usecases).
+For local live smoke checks and service setup, see the
+[manual connector tests](../dev/manual_tests/README.md).
 
 ## Preset format and authorization
 
@@ -85,19 +24,21 @@ For example:
 ```json
 {
   "title": "Example",
-  "catalog": {"actions": {"items.read": {"title": "Read items"}}},
+  "catalog": { "actions": { "items.read": { "title": "Read items" } } },
   "http": {
-    "operations": {"items.get": {
-      "action": "items.read",
-      "effects": ["read"],
-      "method": "GET",
-      "origin": "https://api.example.com",
-      "path": "/items/{id}",
-      "scope": {"id": {"from": "path", "at": "id"}}
-    }}
+    "operations": {
+      "items.get": {
+        "action": "items.read",
+        "effects": ["read"],
+        "method": "GET",
+        "origin": "https://api.example.com",
+        "path": "/items/{id}",
+        "scope": { "id": { "from": "path", "at": "id" } }
+      }
+    }
   },
   "mcp": {
-    "scope": {"id": {"at": "/id", "optional": true}}
+    "scope": { "id": { "at": "/id", "optional": true } }
   }
 }
 ```
