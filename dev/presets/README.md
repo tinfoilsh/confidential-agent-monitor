@@ -2,13 +2,30 @@
 
 This tool inventories API requests and proposes monitor actions, effect sets, resource scopes, and saved-approval grants. It does not generate full request/response schemas. Run `generate` to create a local coverage index at `coverage/README.md` with the current results and remaining gaps.
 
-Not every shipped connection is generated. The separately shipped Slack Socket
-Mode preset is a reviewed protocol definition with pinned SDK fixtures; it has no
-source mapping in this HTTP-request candidate pipeline. Generating `slack` does
-not reproduce or claim coverage of Socket Mode. See [adding a named protocol
-connection](../../presets/README.md#adding-a-named-protocol-connection) for source,
-fixture, permission-review and online-test conventions. Do not add an empty or
-invented specification merely to make a hand-authored preset appear generated.
+## Adding protocol presets
+
+Not every shipped preset comes from this generator. Protocols described in prose
+can use a reviewed, handwritten definition with SDK fixtures. For example,
+`generate slack` covers Web API requests, not the separate
+[Slack Socket Mode preset](../../presets/README.md#slack-socket-mode).
+
+1. Identify the workflow and vendor references, credential types, destinations,
+   and SDK version. State which capabilities the sources actually cover.
+2. Capture the SDK with synthetic credentials and keep versioned request/message
+   fixtures, including control and error messages.
+3. Define setup, actions, effects and approval scope using the existing connector
+   where possible. Review credential placement and content-bearing responses.
+4. Test recognition and refusal cases through the real parser and gate: origins,
+   encodings, malformed messages, credential placement, permissions and reconnects.
+5. Test an authorized live session. Distinguish endpoint reachability from event
+   delivery and record the tested workflow, not a claim of complete API coverage.
+   Repeat the checks when SDKs or definitions change.
+
+Slack's [fixture](../fixtures/slack-socket-mode.json) pins the SDK version;
+[`check-slack-socket-mode.py`](../check-slack-socket-mode.py) reproduces it. Keep
+live tokens and temporary connection tickets out of fixtures and shared logs.
+
+## Generation commands
 
 Run commands from `dev/presets`. This directory is a separate Go module, so use `GOWORK=off`.
 
