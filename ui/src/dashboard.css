@@ -74,6 +74,7 @@
   --nav-width: 224px;
   --nav-height: 64px;
   --tinfoil-dark: #061820;
+  --tinfoil-accent-dark: #004444;
   --backdrop: #06182099;
   --shadow: 0 1px 2px #0000000d;
   --shadow-lg: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a;
@@ -613,23 +614,7 @@ summary + * {
   display: none;
 }
 .page-tabs {
-  display: flex;
-  gap: 24px;
   margin-bottom: 16px;
-  border-bottom: 1px solid var(--line);
-}
-.page-tabs a {
-  padding: 10px 0;
-  border-bottom: 2px solid transparent;
-  color: var(--muted);
-  font-weight: 500;
-}
-.page-tabs a:hover,
-.page-tabs a[aria-current="page"] {
-  color: var(--text);
-}
-.page-tabs a[aria-current="page"] {
-  border-bottom-color: var(--link);
 }
 .activity-context {
   display: flex;
@@ -1534,7 +1519,7 @@ details[open] > summary > .collection-chevron {
     justify-self: start;
     max-width: 100%;
   }
-  .agent-inline .access-action > .seg {
+  .agent-inline .access-action > .tab-bar {
     justify-self: start;
   }
   .agent-inline .access-level > button {
@@ -1893,29 +1878,68 @@ details[open] > summary > .collection-chevron {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.seg {
+/* The dashboard's AnimatedTabBar (packages/ui/src/animated-tabs.tsx). */
+.tab-bar {
+  position: relative;
   display: inline-flex;
   flex-shrink: 0;
+  max-width: 100%;
+  padding: 4px;
+  border: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
+  border-radius: var(--card-radius);
+  background: var(--card);
+  overflow-x: auto;
+  scrollbar-width: none;
 }
-.seg > button {
-  padding: var(--control-padding);
-  min-height: var(--control-height);
-  border-radius: 0;
+.tab-bar::-webkit-scrollbar {
+  display: none;
 }
-.seg > button + button {
-  margin-left: -1px;
+.tab-bar-pill {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  border-radius: var(--card-radius);
+  background: var(--tinfoil-accent-dark);
+  box-shadow: var(--shadow);
+  pointer-events: none;
 }
-.seg > button.inherited {
+.tab-bar.inherited .tab-bar-pill {
+  opacity: 0.35;
+}
+.tab-bar > :is(a, button) {
+  position: relative;
   z-index: 1;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 0;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--card-radius);
+  background: transparent;
+  box-shadow: none;
+  color: var(--gray-600);
+  font-size: var(--font-detail);
+  font-weight: 600;
+  line-height: 16px;
+  white-space: nowrap;
 }
-.seg > button:focus-visible {
-  z-index: 2;
+.tab-bar > :is(a, button):hover:not(:disabled) {
+  background: transparent;
+  color: var(--text);
 }
-.seg > button:first-child {
-  border-radius: 4px 0 0 4px;
+.tab-bar > :is([aria-current="page"], [aria-pressed="true"]),
+.tab-bar > :is([aria-current="page"], [aria-pressed="true"]):hover {
+  color: #fff;
 }
-.seg > button:last-child {
-  border-radius: 0 4px 4px 0;
+.tab-bar.inherited > .shown {
+  color: var(--text);
+}
+.tab-bar > :is(a, button):focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: -2px;
 }
 .acct {
   padding: 12px 0;
@@ -3097,7 +3121,7 @@ td {
     grid-template-columns: minmax(0, 1fr);
     gap: 8px;
   }
-  .data-permission > .seg {
+  .data-permission > .tab-bar {
     justify-self: start;
   }
 
@@ -3108,7 +3132,7 @@ td {
     grid-template-columns: minmax(0, 1fr);
     gap: 6px;
   }
-  .access-action .seg {
+  .access-action .tab-bar {
     justify-self: start;
   }
   .section-heading {
@@ -3151,6 +3175,15 @@ td {
   }
   input[role="switch"]::before {
     transition: transform 0.15s ease;
+  }
+  .tab-bar > :is(a, button) {
+    transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .tab-bar.ready .tab-bar-pill {
+    transition:
+      left 0.3s cubic-bezier(0, 0, 0.2, 1),
+      width 0.3s cubic-bezier(0, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0, 0, 0.2, 1);
   }
   .access-disclosure {
     transition: grid-template-rows 0.12s ease-out;
@@ -3324,13 +3357,15 @@ td {
 
 /* Action rows: one filled value per row; nested rows get smaller controls
    so the indent reads on both sides. A mixed group shows nothing filled. */
-.seg.small > button {
-  padding: 2px 8px;
-  min-height: 24px;
-  font-size: var(--font-detail);
+.tab-bar.small {
+  padding: 2px;
 }
-.seg.mixed > button {
-  color: var(--muted);
+.tab-bar.small .tab-bar-pill {
+  top: 2px;
+  bottom: 2px;
+}
+.tab-bar.small > :is(a, button) {
+  padding: 4px 10px;
 }
 .access-action-single > .access-action > .access-action-title::before {
   display: none;

@@ -11,6 +11,7 @@ import {
   ResourceDisclosure,
   SkeletonRows,
   href,
+  TabBar,
 } from "./components";
 import { useMonitor } from "./monitor";
 
@@ -330,34 +331,25 @@ function Actions(props: {
               {node().title}
             </span>
             <Show when={!props.readOnly && !single()}>
-              <span
-                class="seg access-mode"
-                classList={{ small: !!props.nested, mixed: value() === null }}
-                role="group"
-                aria-label={`${node().title} permission`}
-              >
-                <For each={Object.keys(owner.MODES) as owner.Mode[]}>
-                  {(mode) => (
-                    <button
-                      type="button"
-                      classList={{ primary: value() === mode }}
-                      aria-pressed={value() === mode}
-                      title={
-                        value() === null && node().children.length
-                          ? "Children differ. Click to set them all."
-                          : owner.MODES[mode]
-                      }
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (value() !== mode) set(node(), mode);
-                      }}
-                    >
-                      {owner.MODES[mode]}
-                    </button>
-                  )}
-                </For>
-              </span>
+              <TabBar
+                class="access-mode"
+                small={!!props.nested}
+                label={`${node().title} permission`}
+                value={value()}
+                options={(Object.keys(owner.MODES) as owner.Mode[]).map(
+                  (mode) => ({
+                    value: mode,
+                    label: owner.MODES[mode],
+                    title:
+                      value() === null && node().children.length
+                        ? "Children differ. Click to set them all."
+                        : owner.MODES[mode],
+                  }),
+                )}
+                onChange={(mode) => {
+                  if (value() !== mode) set(node(), mode);
+                }}
+              />
             </Show>
           </>
         );
@@ -469,40 +461,32 @@ export function AgentConnectionAccess(props: {
             </small>
           </Show>
         </button>
-        <span
-          class="seg access-level"
-          role="group"
-          aria-label={
+        <TabBar
+          class="access-level"
+          label={
             props.title
               ? `Access for ${props.title}`
               : `Default access for ${props.account}`
           }
-        >
-          <For each={entry().levels.map(([value]) => value)}>
-            {(value) => (
-              <button
-                type="button"
-                classList={{ primary: entry().level === value }}
-                aria-pressed={entry().level === value}
-                onClick={() => {
-                  setExpanded(value !== "off");
-                  const own =
-                    m.view()!.config.identities?.[props.name]?.accounts?.[
-                      props.account
-                    ]?.level;
-                  if (own !== value)
-                    void m.edit(
-                      owner.edits.setAccess(props.name, props.account, {
-                        level: value,
-                      }),
-                    );
-                }}
-              >
-                {owner.LEVELS[value]}
-              </button>
-            )}
-          </For>
-        </span>
+          value={entry().level}
+          options={entry().levels.map(([value]) => ({
+            value,
+            label: owner.LEVELS[value],
+          }))}
+          onChange={(value) => {
+            setExpanded(value !== "off");
+            const own =
+              m.view()!.config.identities?.[props.name]?.accounts?.[
+                props.account
+              ]?.level;
+            if (own !== value)
+              void m.edit(
+                owner.edits.setAccess(props.name, props.account, {
+                  level: value,
+                }),
+              );
+          }}
+        />
       </div>
       <div
         id={id}
