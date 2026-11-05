@@ -1,6 +1,15 @@
 import { expect, test } from "bun:test";
-import { existsSync, readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 
 const src = fileURLToPath(new URL("../src/", import.meta.url));
@@ -28,8 +37,16 @@ function dependencies(entry: string) {
         dirname(file),
         path.split("?")[0].replace(/\.js$/, ""),
       );
-      const next = [base, base + ".ts", base + ".tsx", base + ".js"].find(
-        existsSync,
+      const next = [
+        base,
+        base + ".ts",
+        base + ".tsx",
+        base + ".js",
+        join(base, "index.ts"),
+        join(base, "index.tsx"),
+        join(base, "index.js"),
+      ].find(
+        (candidate) => existsSync(candidate) && statSync(candidate).isFile(),
       );
       if (!next) throw new Error(`Unresolved import ${path} from ${file}`);
       visit(next);
@@ -38,6 +55,30 @@ function dependencies(entry: string) {
   visit(resolve(src, entry));
   return { files, packages };
 }
+
+test("dependency traversal follows directory indexes and their transitive imports", () => {
+  const directory = mkdtempSync(join(tmpdir(), "monitor-boundary-"));
+  try {
+    mkdirSync(join(directory, "terminal"));
+    writeFileSync(join(directory, "entry.ts"), 'import "./terminal";');
+    writeFileSync(
+      join(directory, "terminal/index.ts"),
+      'import "./implementation";',
+    );
+    writeFileSync(
+      join(directory, "terminal/implementation.ts"),
+      "export const value = 1;",
+    );
+    const graph = dependencies(join(directory, "entry.ts"));
+    expect(graph.files.has(join(directory, "terminal/index.ts"))).toBe(true);
+    expect(graph.files.has(join(directory, "terminal/implementation.ts"))).toBe(
+      true,
+    );
+    expect(graph.files.has(join(directory, "terminal"))).toBe(false);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
 
 test("shared Monitor UI has no Terminal, account, attestation or shell dependencies", () => {
   const graph = dependencies("monitor/App.tsx");
