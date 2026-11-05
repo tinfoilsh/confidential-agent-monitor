@@ -214,7 +214,7 @@ function Start(props: {
           ? "Add your CLI keys"
           : file()
             ? "Save your recovery key"
-            : "Welcome to Terminal"
+            : "Finish your setup"
       }
       description={
         r.mode === "umk"
@@ -670,7 +670,9 @@ export default function Console(props: {
           </AuthScreen>
         </Match>
         <Match when={!props.session.user()}>
-          <AuthScreen title="Welcome to Terminal">
+          <AuthScreen
+            title={start ? "Finish your setup" : `Welcome to ${PRODUCT.name}`}
+          >
             <AuthCard icon={<Icon name="terminal" />}>
               <p>
                 {start
