@@ -1,4 +1,4 @@
-// Local live-Slack harness. Service credentials arrive only through stdin.
+// Local manual connector tests. Service credentials arrive only through stdin.
 // This runs the shipped presets and real connector, not Monitor's policy engine.
 package main
 
@@ -25,6 +25,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -39,10 +40,13 @@ import (
 )
 
 type input struct {
-	BotToken string `json:"bot_token"`
-	AppToken string `json:"app_token"`
-	Channel  string `json:"channel"`
-	PostTest bool   `json:"post_test"`
+	Service      string `json:"service"`
+	BotToken     string `json:"bot_token"`
+	AppToken     string `json:"app_token"`
+	Channel      string `json:"channel"`
+	PostTest     bool   `json:"post_test"`
+	GrafanaURL   string `json:"grafana_url"`
+	GrafanaToken string `json:"grafana_token"`
 }
 
 type bufferedConn struct {
@@ -64,7 +68,7 @@ func newAuthority() (*authority, error) {
 		return nil, err
 	}
 	now := time.Now()
-	root := &x509.Certificate{SerialNumber: big.NewInt(now.UnixNano()), Subject: pkix.Name{CommonName: "Monitor local Socket Mode test only"}, NotBefore: now.Add(-time.Minute), NotAfter: now.Add(2 * time.Hour), IsCA: true, BasicConstraintsValid: true, KeyUsage: x509.KeyUsageCertSign | x509.KeyUsageDigitalSignature}
+	root := &x509.Certificate{SerialNumber: big.NewInt(now.UnixNano()), Subject: pkix.Name{CommonName: "Monitor local manual test only"}, NotBefore: now.Add(-time.Minute), NotAfter: now.Add(2 * time.Hour), IsCA: true, BasicConstraintsValid: true, KeyUsage: x509.KeyUsageCertSign | x509.KeyUsageDigitalSignature}
 	der, err := x509.CreateCertificate(rand.Reader, root, root, public, private)
 	if err != nil {
 		return nil, err
@@ -96,7 +100,7 @@ type liveConnection struct {
 	hash   string
 }
 
-func prepare(name, secret, placeholder string) (*liveConnection, error) {
+func prepare(name, credentialName, secret, placeholder, origin string) (*liveConnection, error) {
 	shipped, err := presets.Shipped()
 	if err != nil {
 		return nil, err
@@ -109,22 +113,57 @@ func prepare(name, secret, placeholder string) (*liveConnection, error) {
 	if err := json.Unmarshal(p.Catalog.Connections[""], &kinds); err != nil {
 		return nil, err
 	}
-	prepared, err := web.Parse(connector.Setup{Config: kinds["http"], Definition: p.Source})
+	source := connector.Setup{Config: kinds["http"], Definition: p.Source}
+	if origin != "" {
+		if !web.ValidOrigin(origin) {
+			return nil, errors.New("test destination must be an HTTPS origin")
+		}
+		// Apply the same origin setup as the catalog form; keep definitions intact.
+		var config map[string]json.RawMessage
+		if err := json.Unmarshal(source.Config, &config); err != nil {
+			return nil, err
+		}
+		var slots []web.Slot
+		if err := json.Unmarshal(config["slots"], &slots); err != nil {
+			return nil, err
+		}
+		if len(slots) != 1 || slots[0].Value != credentialName {
+			return nil, errors.New("unexpected origin setup")
+		}
+		slots[0].Origin = origin
+		config["slots"], err = json.Marshal(slots)
+		if err != nil {
+			return nil, err
+		}
+		source.Config, err = json.Marshal(config)
+		if err != nil {
+			return nil, err
+		}
+		source.Options, err = json.Marshal(map[string]string{"Origin": origin})
+		if err != nil {
+			return nil, err
+		}
+	}
+	prepared, err := web.Parse(source)
 	if err != nil {
 		return nil, err
 	}
-	raw, err := json.Marshal(secret)
-	if err != nil {
-		return nil, err
+	values := map[string]*credential.Value{}
+	if secret != "" {
+		raw, err := json.Marshal(secret)
+		if err != nil {
+			return nil, err
+		}
+		defer clear(raw)
+		v := new(credential.Value)
+		if err := json.Unmarshal(raw, v); err != nil {
+			return nil, err
+		}
+		v.Placeholder = placeholder
+		values[credentialName] = v
 	}
-	defer clear(raw)
-	v := new(credential.Value)
-	if err := json.Unmarshal(raw, v); err != nil {
-		return nil, err
-	}
-	v.Placeholder = placeholder
 	server := new(web.Server)
-	if err := server.Update(context.Background(), prepared, map[string]*credential.Value{"token": v}, nil); err != nil {
+	if err := server.Update(context.Background(), prepared, values, nil); err != nil {
 		return nil, err
 	}
 	return &liveConnection{name, server, prepared.Value.(*web.Setup), fmt.Sprintf("%x", sha256.Sum256(p.Source))}, nil
@@ -154,23 +193,36 @@ func run() error {
 	if err := decoder.Decode(&in); err != nil {
 		return err
 	}
-	if !strings.HasPrefix(in.BotToken, "xoxb-") || !strings.HasPrefix(in.AppToken, "xapp-") {
-		return errors.New("wrong token types")
+	var bot, socket, grafana *liveConnection
+	var err error
+	switch in.Service {
+	case "", "slack":
+		if !strings.HasPrefix(in.BotToken, "xoxb-") || !strings.HasPrefix(in.AppToken, "xapp-") {
+			return errors.New("wrong token types")
+		}
+		bot, err = prepare("slack", "token", in.BotToken, "tfm_live_slack_bot", "")
+		if err != nil {
+			return err
+		}
+		socket, err = prepare("slack_socket_mode", "token", in.AppToken, "tfm_live_slack_socket", "")
+	case "grafana":
+		if !web.ValidOrigin(in.GrafanaURL) {
+			return errors.New("Grafana requires an HTTPS origin")
+		}
+		grafana, err = prepare("grafana", "api_key", in.GrafanaToken, "tfm_manual_grafana", in.GrafanaURL)
+	default:
+		return errors.New("unknown manual test service")
 	}
-	bot, err := prepare("slack", in.BotToken, "tfm_live_slack_bot")
 	if err != nil {
 		return err
 	}
-	socket, err := prepare("slack_socket_mode", in.AppToken, "tfm_live_slack_socket")
-	if err != nil {
-		return err
-	}
-	in.BotToken, in.AppToken = "", ""
+	grafanaConfigured := in.GrafanaToken != ""
+	in.BotToken, in.AppToken, in.GrafanaToken = "", "", ""
 	ca, err := newAuthority()
 	if err != nil {
 		return err
 	}
-	dir, err := os.MkdirTemp("", "monitor-slack-live-")
+	dir, err := os.MkdirTemp("", "monitor-manual-test-")
 	if err != nil {
 		return err
 	}
@@ -203,7 +255,8 @@ func run() error {
 				return
 			}
 			host, port, err := net.SplitHostPort(r.Host)
-			if r.Method != "CONNECT" || err != nil || port != "443" || connection.setup.Claim(host, 443) < 0 {
+			number, portErr := strconv.ParseUint(port, 10, 16)
+			if r.Method != "CONNECT" || err != nil || portErr != nil || number == 0 || number == 80 || strconv.FormatUint(number, 10) != port || connection.setup.Claim(host, uint32(number)) < 0 {
 				http.Error(w, "destination refused", http.StatusForbidden)
 				status("BLOCKED: unrecognized CONNECT destination")
 				return
@@ -224,7 +277,7 @@ func run() error {
 			if _, err := io.WriteString(raw, "HTTP/1.1 200 Connection Established\r\n\r\n"); err != nil {
 				return
 			}
-			stream.Host, stream.Port = host, 443
+			stream.Host, stream.Port = host, uint32(number)
 			stream.Gate = func(_ context.Context, event facts.Event) error {
 				f, err := event.Facts()
 				if err != nil || f.Operation == nil {
@@ -234,6 +287,8 @@ func run() error {
 				allowed := false
 				if connection.preset == "slack_socket_mode" {
 					allowed = f.Operation.Action == "connect" || f.Operation.Action == "receive" || f.Operation.Action == "respond"
+				} else if connection.preset == "grafana" {
+					allowed = f.Operation.ID == "getHealth" || f.Operation.ID == "search"
 				} else {
 					allowed = testAuthOperation(f.Operation.ID)
 					if in.PostTest && f.Operation.ID == "chat.postMessage" && f.Parameters["channel"] == in.Channel {
@@ -257,16 +312,29 @@ func run() error {
 		// Delivered only over the supervisor's private pipe, never printed in status.
 		return "http://monitor:" + password + "@" + listener.Addr().String(), nil
 	}
-	botProxy, err := start(bot)
-	if err != nil {
-		return err
+	ready := map[string]any{"service": in.Service, "ca_file": certFile}
+	if grafana != nil {
+		proxy, err := start(grafana)
+		if err != nil {
+			stop()
+			return err
+		}
+		ready["grafana_proxy"], ready["grafana_origin"] = proxy, in.GrafanaURL
+		ready["grafana_sha256"], ready["grafana_configured"] = grafana.hash, grafanaConfigured
+	} else {
+		botProxy, err := start(bot)
+		if err != nil {
+			stop()
+			return err
+		}
+		socketProxy, err := start(socket)
+		if err != nil {
+			stop()
+			return err
+		}
+		ready["bot_proxy"], ready["socket_proxy"] = botProxy, socketProxy
+		ready["slack_sha256"], ready["socket_sha256"] = bot.hash, socket.hash
 	}
-	socketProxy, err := start(socket)
-	if err != nil {
-		stop()
-		return err
-	}
-	ready := map[string]string{"bot_proxy": botProxy, "socket_proxy": socketProxy, "ca_file": certFile, "slack_sha256": bot.hash, "socket_sha256": socket.hash}
 	if err := json.NewEncoder(os.Stdout).Encode(ready); err != nil {
 		stop()
 		return err

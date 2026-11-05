@@ -1351,6 +1351,7 @@
   "note": "App token for sending messages, client token for management."
  },
  "grafana": {
+  "preset": "grafana",
   "specs": [
    {
     "format": "openapi",

@@ -21,9 +21,16 @@ can use a reviewed, handwritten definition with SDK fixtures. For example,
    delivery and record the tested workflow, not a claim of complete API coverage.
    Repeat the checks when SDKs or definitions change.
 
-Slack's [manual test tool](../slack/README.md) includes a synthetic SDK fixture
-and a capture mode for inspecting changes. It is not an automatic freshness check.
+The [manual test tools](../manual_tests/README.md) share connector setup across
+Slack and Grafana. Slack includes a synthetic SDK fixture and capture mode for
+inspecting changes. These are not automatic freshness checks.
 Keep live tokens and temporary connection tickets out of fixtures and shared logs.
+
+OpenAPI server base paths belong in operation paths, not in a configurable
+origin. For example, Grafana's pinned spec declares `servers: [{url: /api}]`, so
+its health operation is `/api/health`, not `/health`. Its `sources.json` entry maps
+to the shipped `grafana` preset. Check routes against the vendor input as well as
+the preserved baseline: a `shipped_override` can preserve an old mistake.
 
 ## Generation commands
 

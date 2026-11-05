@@ -34,6 +34,15 @@ The temporary `ticket` is a bearer credential. `http.sensitive_query` replaces i
 with a SHA-256 fingerprint before description, so policy, approval scope and audit
 see the fingerprint while the upstream request keeps the real value.
 
+## Grafana
+
+Set the Grafana origin to `https://host` (or its configured HTTPS port), without an
+`/api` suffix, and configure the API key separately. Operation paths include the
+`/api` base declared by the pinned vendor specification. Correcting a path changes
+its approval definition; saved approvals for the old path do not apply to the new one.
+See the [manual tests](../dev/manual_tests/README.md) for health and read-only
+search checks. Public health does not prove authenticated dashboard access.
+
 ## Preset format and authorization
 
 The catalog contains setup fields, connections, defaults, and permission actions.
