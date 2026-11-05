@@ -94,6 +94,7 @@ export default function Monitor(props: {
       return `${name} is ${row()!.status}`;
     if (inventory().value && !inventory().loading && !row())
       return "Monitor not found";
+    return "Connecting to sandbox…";
   };
   // Unlocking opens the Monitor once its boot is ready; a failed open needs a retry.
   createEffect(
