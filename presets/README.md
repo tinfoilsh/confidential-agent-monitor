@@ -3,6 +3,22 @@ Each shipped preset has a `<name>.json` record. Accounts select it with
 
 For the authoring and test workflow, see [adding protocol presets](../dev/presets/README.md#adding-protocol-presets).
 
+## Slack Web API
+
+History and thread replies support both GET/query and SDK POST/form requests.
+Both variants retain their read actions and extract the channel from the matching
+encoding. POST/form approvals also bind the complete submitted form.
+
+`views.open`, `views.update`, `views.push` and `views.publish` use JSON POST, not
+the archived specification's GET definitions. They have `send` and `write`
+effects and use `views.open.write`, `views.push.write` or `views.write` actions.
+The complete JSON request, view object and available target identifiers are
+extracted; modal requests do not supply a verified channel restriction. Form
+modal variants are not described yet. Legacy view read actions remain in the
+catalog for configuration compatibility, but no operation selects them and their
+overrides are not transferred to the new write actions. Changed definitions
+invalidate saved approvals; review view permissions before enabling clients.
+
 ## Slack Socket Mode
 
 `slack_socket_mode.json` adds a separate **Slack Socket Mode** connection using
@@ -43,12 +59,22 @@ its approval definition; saved approvals for the old path do not apply to the ne
 See the [manual tests](../dev/manual_tests/README.md) for health and read-only
 search checks. Public health does not prove authenticated dashboard access.
 
+The preset also describes specific Loki proxy and Prometheus resource reads used
+by MCP clients: label names/values, Loki index statistics/patterns and Prometheus
+metadata. Prometheus label names accept GET/query or POST/form. These definitions
+bind the datasource UID, any label, and the complete query/form; they do not make
+arbitrary nested proxy/resource paths read-only. Frontend settings and dashboard
+API-group discovery are separate exact GET operations, not wildcard API access.
+A captured discovery request does not establish coverage of every subsequent
+version-specific dashboard API.
+
 ## Preset format and authorization
 
 The catalog contains setup fields, connections, defaults, and permission actions.
 Protocol definitions have their own sections:
 
 - `http.operations` maps operation IDs to reviewed HTTP operations, including GraphQL matchers. IDs also determine candidate evaluation order; ambiguous matches are rejected.
+- An operation's optional `path_patterns` maps capture names to Go regular expressions. Each expression must match the entire captured value and is checked before ambiguity detection. Unknown capture names and invalid expressions fail compilation. For example, `"path_patterns": {"release_id": "[0-9]+"}` keeps GitHub release-by-ID requests distinct from `/releases/latest`. This is a matching constraint, not a scope type conversion; extracted IDs remain strings. Literal routes do not automatically outrank parameter routes. Constraints participate in the approval definition hash and require a Monitor version supporting this field.
 - `http.slots` requires requests to stay within the connection's configured API addresses.
 - `http.sensitive_query` lists high-entropy bearer query values to fingerprint before capture, including unknown or invalid requests. Extracted parameters see the same fingerprints, preserving approval distinctions without retaining the credentials. Literal query-value matchers cannot use these fields.
 - `mcp.scope` selects service resource identifiers from MCP tool arguments.

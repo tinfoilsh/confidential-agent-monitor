@@ -853,14 +853,23 @@
       "views.open.read": {
         "title": "Read"
       },
+      "views.open.write": {
+        "title": "Write"
+      },
       "views.push": {
         "title": "Push commits"
       },
       "views.push.read": {
         "title": "Read"
       },
+      "views.push.write": {
+        "title": "Write"
+      },
       "views.read": {
         "title": "Read"
+      },
+      "views.write": {
+        "title": "Write"
       },
       "workflows": {
         "title": "Workflows"
@@ -1106,12 +1115,14 @@
       "conversations.archive": {"action":"conversations.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://slack.com","path":"/api/conversations.archive","scope":{"channel":{"at":"/channel","from":"body"}}},
       "conversations.create": {"action":"conversations.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://slack.com","path":"/api/conversations.create","scope":{"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
       "conversations.history": {"action":"conversations.history.read","effects":["read"],"method":"GET","origin":"https://slack.com","params":["channel","cursor","include_all_metadata","inclusive","latest","limit","oldest"],"path":"/api/conversations.history","scope":{"channel":{"at":"channel","from":"query"}}},
+      "conversations.history.form": {"action":"conversations.history.read","effects":["read"],"method":"POST","body":"form","origin":"https://slack.com","path":"/api/conversations.history","scope":{"channel":{"at":"channel","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
       "conversations.info": {"action":"conversations.info.read","effects":["read"],"method":"GET","origin":"https://slack.com","params":["channel","include_locale","include_num_members"],"path":"/api/conversations.info","scope":{"channel":{"at":"channel","from":"query"}}},
       "conversations.invite": {"action":"conversations.share","body":"json","effects":["share"],"method":"POST","origin":"https://slack.com","path":"/api/conversations.invite","scope":{"channel":{"at":"/channel","from":"body"},"users":{"at":"/users","from":"body"}}},
       "conversations.list": {"action":"conversations.read","effects":["read"],"method":"GET","origin":"https://slack.com","params":["cursor","exclude_archived","limit","team_id","types"],"path":"/api/conversations.list","scope":{}},
       "conversations.members": {"action":"conversations.members.read","effects":["read"],"method":"GET","origin":"https://slack.com","params":["channel","cursor","limit"],"path":"/api/conversations.members","scope":{"channel":{"at":"channel","from":"query"}}},
       "conversations.rename": {"action":"conversations.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://slack.com","path":"/api/conversations.rename","scope":{"channel":{"at":"/channel","from":"body"},"name":{"at":"/name","from":"body"}}},
       "conversations.replies": {"action":"conversations.replies.read","effects":["read"],"method":"GET","origin":"https://slack.com","params":["channel","ts","cursor","include_all_metadata","inclusive","latest","limit","oldest"],"path":"/api/conversations.replies","scope":{"channel":{"at":"channel","from":"query"}}},
+      "conversations.replies.form": {"action":"conversations.replies.read","effects":["read"],"method":"POST","body":"form","origin":"https://slack.com","path":"/api/conversations.replies","scope":{"channel":{"at":"channel","from":"form"},"ts":{"at":"ts","from":"form"},"request":{"at":"","from":"form","type":"object"}}},
       "conversations_archive": {"action":"conversations.write","effects":["write"],"method":"POST","origin":"https://slack.com","path":"/api/conversations.archive","scope":{}},
       "conversations_archive.form.9a0515ba85e4": {"action":"conversations.write","body":"form","effects":["write"],"method":"POST","origin":"https://slack.com","path":"/api/conversations.archive","scope":{"channel":{"at":"channel","from":"form","optional":true},"request":{"at":"","from":"form","type":"object"}}},
       "conversations_close": {"action":"conversations.write","effects":["write"],"method":"POST","origin":"https://slack.com","path":"/api/conversations.close","scope":{}},
@@ -1259,10 +1270,10 @@
       "users_setPresence": {"action":"users.presence.admin","effects":["admin"],"method":"POST","origin":"https://slack.com","path":"/api/users.setPresence","scope":{}},
       "users_setPresence.form.d7463951d0fa": {"action":"users.presence.admin","body":"form","effects":["admin"],"method":"POST","origin":"https://slack.com","path":"/api/users.setPresence","scope":{"request":{"at":"","from":"form","type":"object"}}},
       "users_setPresence.json.78f505c9a7a2": {"action":"users.presence.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://slack.com","path":"/api/users.setPresence","scope":{"request":{"at":"","from":"body","type":"object"}}},
-      "views_open": {"action":"views.open.read","effects":["read"],"method":"GET","origin":"https://slack.com","params":["trigger_id","view"],"path":"/api/views.open","scope":{"query":{"at":"","from":"query","type":"object"},"trigger_id":{"at":"trigger_id","from":"query"}}},
-      "views_publish": {"action":"views.read","effects":["read"],"method":"GET","origin":"https://slack.com","params":["user_id","view","hash"],"path":"/api/views.publish","scope":{"query":{"at":"","from":"query","type":"object"},"user_id":{"at":"user_id","from":"query"}}},
-      "views_push": {"action":"views.push.read","effects":["read"],"method":"GET","origin":"https://slack.com","params":["trigger_id","view"],"path":"/api/views.push","scope":{"query":{"at":"","from":"query","type":"object"},"trigger_id":{"at":"trigger_id","from":"query"}}},
-      "views_update": {"action":"views.read","effects":["read"],"method":"GET","origin":"https://slack.com","params":["view_id","external_id","view","hash"],"path":"/api/views.update","scope":{"external_id":{"at":"external_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"view_id":{"at":"view_id","from":"query","optional":true}}},
+      "views_open": {"action":"views.open.write","effects":["send","write"],"body":"json","method":"POST","origin":"https://slack.com","path":"/api/views.open","scope":{"request":{"at":"","from":"body","type":"object"},"trigger_id":{"at":"/trigger_id","from":"body"},"view":{"at":"/view","from":"body","type":"object"}}},
+      "views_publish": {"action":"views.write","effects":["send","write"],"body":"json","method":"POST","origin":"https://slack.com","path":"/api/views.publish","scope":{"request":{"at":"","from":"body","type":"object"},"user_id":{"at":"/user_id","from":"body"},"view":{"at":"/view","from":"body","type":"object"}}},
+      "views_push": {"action":"views.push.write","effects":["send","write"],"body":"json","method":"POST","origin":"https://slack.com","path":"/api/views.push","scope":{"request":{"at":"","from":"body","type":"object"},"trigger_id":{"at":"/trigger_id","from":"body"},"view":{"at":"/view","from":"body","type":"object"}}},
+      "views_update": {"action":"views.write","effects":["send","write"],"body":"json","method":"POST","origin":"https://slack.com","path":"/api/views.update","scope":{"external_id":{"at":"/external_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"view":{"at":"/view","from":"body","type":"object"},"view_id":{"at":"/view_id","from":"body","optional":true}}},
       "workflows_stepCompleted": {"action":"workflows.step_completed.read","effects":["read"],"method":"GET","origin":"https://slack.com","params":["workflow_step_execute_id","outputs"],"path":"/api/workflows.stepCompleted","scope":{"query":{"at":"","from":"query","type":"object"},"workflow_step_execute_id":{"at":"workflow_step_execute_id","from":"query"}}},
       "workflows_stepFailed": {"action":"workflows.step_failed.read","effects":["read"],"method":"GET","origin":"https://slack.com","params":["workflow_step_execute_id","error"],"path":"/api/workflows.stepFailed","scope":{"query":{"at":"","from":"query","type":"object"},"workflow_step_execute_id":{"at":"workflow_step_execute_id","from":"query"}}},
       "workflows_updateStep": {"action":"workflows.step.read","effects":["read"],"method":"GET","origin":"https://slack.com","params":["workflow_step_edit_id","inputs","outputs","step_name","step_image_url"],"path":"/api/workflows.updateStep","scope":{"query":{"at":"","from":"query","type":"object"},"step_image_url":{"at":"step_image_url","from":"query","optional":true},"step_name":{"at":"step_name","from":"query","optional":true},"workflow_step_edit_id":{"at":"workflow_step_edit_id","from":"query"}}}

@@ -11,6 +11,8 @@
 
 *.test.*
 *_test.go
+!connector/web/preset_test.go
+!connector/web/preset_compatibility_test.go
 __pycache__/
 *.md
 !README.md
