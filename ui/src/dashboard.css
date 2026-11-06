@@ -2221,56 +2221,123 @@ td {
   border-radius: var(--card-radius);
   background: var(--hover);
 }
-.onboarding fieldset {
+/* First setup: a grid of services to pick, their keys, then network access. */
+.service-grid {
   display: grid;
-  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.service-tile {
+  position: relative;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 88px;
+  padding: 12px 8px;
+  border-color: var(--line);
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 16px;
+}
+.service-tile > .connector-icon {
+  width: 24px;
+  height: 24px;
   margin: 0;
-  padding: 0;
-  border: 0;
+}
+.service-tile:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: transparent;
+}
+.service-tile[aria-pressed="true"] {
+  border-color: var(--tinfoil-accent-light);
+  background: rgb(104 199 172 / 10%);
+}
+.service-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: none;
+  color: var(--tinfoil-accent-light);
+}
+.service-check > .icon {
+  width: 14px;
+  height: 14px;
+}
+.service-tile[aria-pressed="true"] > .service-check {
+  display: flex;
+}
+.onboarding-service {
+  display: grid;
+  gap: 8px;
   text-align: start;
 }
-.onboarding legend {
-  margin-bottom: 10px;
-  font-weight: 500;
+.onboarding-service + .onboarding-service {
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
 }
-.onboarding-key-label {
+.onboarding-service > header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
 }
-.onboarding-key label {
+.onboarding-service h2 {
+  flex: 1;
   margin: 0;
+  font-size: var(--font-body);
   font-weight: 500;
 }
-.onboarding-key-label a {
+.onboarding-service .connector-icon {
+  margin: 0;
+}
+.onboarding-service > header > a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: var(--font-detail);
 }
-.onboarding-key input {
-  min-height: 48px;
-  border-radius: var(--card-radius);
+.onboarding-service > header > a > .icon {
+  width: 12px;
+  height: 12px;
 }
-.onboarding-key input::placeholder {
-  color: var(--muted);
-  opacity: 0.8;
+.onboarding-service .loading-status {
+  margin: 0;
 }
-.onboarding-key-help {
+.network-options {
+  display: grid;
+  gap: 8px;
+  text-align: start;
+}
+.network-option {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 12px;
   margin: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  cursor: pointer;
+}
+.network-option:has(input:checked) {
+  border-color: var(--tinfoil-accent-light);
+  background: rgb(104 199 172 / 10%);
+}
+.network-option > input {
+  flex-shrink: 0;
+  width: auto;
+  margin: 3px 0 0;
+  accent-color: var(--tinfoil-accent-light);
+}
+.network-option strong {
+  display: block;
+  font-weight: 500;
+}
+.network-option small {
+  display: block;
+  margin-top: 2px;
   color: var(--muted);
   font-size: var(--font-detail);
-}
-.onboarding-key-help .icon {
-  margin-top: 2px;
-}
-.onboarding-key .icon {
-  width: 14px;
-  height: 14px;
+  line-height: 1.5;
 }
 #notices {
   position: sticky;

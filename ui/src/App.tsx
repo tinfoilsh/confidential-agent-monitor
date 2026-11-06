@@ -18,6 +18,7 @@ import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
 import { Activity, RequestDetail } from "./Activity";
 import { Agents, AddAgent } from "./Agents";
 import { Connections, DeviceSignInDialog } from "./Connections";
+import { Onboarding } from "./Onboarding";
 import {
   AuthCard,
   AuthScreen,
@@ -484,11 +485,26 @@ function Gate() {
     // Local dev (bun run dev) only: a prefilled passphrase so the dev
     // server unlocks with one click. Stripped from production builds.
     [key, setKey] = createSignal(import.meta.env.DEV ? "testtesttesttest" : "");
-  const finish = (tinfoilApiKey?: () => Promise<string> | string) =>
-    m.busy() ||
-    m.perform(async (client) =>
-      client.onboard(m.view()!, await tinfoilApiKey?.()),
-    );
+  const finish = async (
+    choices: owner.OnboardingChoices,
+    signIns: string[],
+  ) => {
+    if (
+      m.busy() ||
+      !(await m.perform((client) => client.onboard(m.view()!, choices)))
+    )
+      return;
+    // Setup continues into the first sign-in; any others wait in Permissions.
+    const view = m.view()!;
+    for (const preset of signIns) {
+      const name = Object.keys(view.config.connections ?? {}).find(
+        (name) => view.config.connections![name].preset === preset,
+      );
+      const field =
+        name && owner.credentialFields(view, name).find((f) => f.signIn);
+      if (field) return void m.signIn(name, field);
+    }
+  };
   const error = () => (
     <Show when={m.error()}>
       <p role="alert">{m.error()}</p>
@@ -570,107 +586,9 @@ function Gate() {
           </AuthScreen>
         </Match>
         <Match when={m.view() && !owner.onboarded(m.view()!)}>
-          <AuthScreen
-            id="gate"
-            title="Connect Tinfoil to your bunker"
-            description="Use Tinfoil models in your bunker for end-to-end confidential workloads."
-          >
-            <Onboarding
-              busy={m.busy()}
-              generate={m.options.tinfoilApiKey}
-              error={error()}
-              onFinish={finish}
-            />
-          </AuthScreen>
+          <Onboarding busy={m.busy()} error={error()} onFinish={finish} />
         </Match>
       </Switch>
     </div>
-  );
-}
-function Onboarding(props: {
-  busy: boolean;
-  generate?: () => Promise<string>;
-  error: JSX.Element;
-  onFinish(tinfoilApiKey?: () => Promise<string> | string): void;
-}) {
-  const [tinfoilKey, setTinfoilKey] = createSignal("");
-  return (
-    <>
-      <form
-        class="auth-card onboarding"
-        onSubmit={(e) => {
-          e.preventDefault();
-          props.onFinish(props.generate ?? tinfoilKey);
-        }}
-      >
-        <span class="auth-icon">
-          <span class="connector-icon" aria-hidden="true">
-            <img
-              class="dark-icon"
-              src={import.meta.env.BASE_URL + "icons/tinfoil.dark.svg"}
-              alt=""
-            />
-            <img
-              class="light-icon"
-              src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
-              alt=""
-            />
-          </span>
-        </span>
-        <h2>Tinfoil API key</h2>
-        <Show
-          when={!props.generate}
-          fallback={<p>Your key stays in Monitor, hidden from your bunkers.</p>}
-        >
-          <fieldset class="onboarding-key" disabled={props.busy}>
-            <div class="onboarding-key-label">
-              <label for="tinfoil-api-key">API key</label>
-              <a
-                href="https://dash.tinfoil.sh/?tab=api-keys"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Get an API key
-                <Icon name="external" />
-              </a>
-            </div>
-            <input
-              id="tinfoil-api-key"
-              type="password"
-              required
-              autofocus
-              pattern={".*\\S.*"}
-              title="Enter your Tinfoil API key"
-              placeholder="tk-…"
-              autocomplete="off"
-              spellcheck={false}
-              aria-describedby="tinfoil-key-help"
-              value={tinfoilKey()}
-              onInput={(e) => setTinfoilKey(e.currentTarget.value)}
-            />
-            <p id="tinfoil-key-help" class="onboarding-key-help">
-              <Icon name="rules" />
-              Your key stays in Monitor, hidden from your bunkers.
-            </p>
-          </fieldset>
-        </Show>
-        {props.error}
-        <button class="primary" disabled={props.busy}>
-          {props.busy
-            ? "Saving…"
-            : props.generate
-              ? "Generate an API key automatically"
-              : "Add Tinfoil"}
-        </button>
-      </form>
-      <button
-        type="button"
-        class="link auth-link"
-        disabled={props.busy}
-        onClick={() => props.onFinish()}
-      >
-        Skip for now
-      </button>
-    </>
   );
 }

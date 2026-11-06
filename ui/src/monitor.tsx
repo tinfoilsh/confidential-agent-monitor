@@ -42,9 +42,10 @@ export type MonitorOptions = {
   candidates?: () => { name: string; key: string }[];
   sandboxesLoading?: () => boolean;
   accept?: (name: string, restore: boolean) => Promise<void>;
-  // Hosted builds mint a Tinfoil API key for the signed-in account.
-  tinfoilApiKey?: () => Promise<string>;
+  // Hosted builds list the signed-in account's Tinfoil API keys.
+  tinfoilApiKeys?: () => Promise<TinfoilApiKey[]>;
 };
+export type TinfoilApiKey = { name: string; key: string };
 
 function createMonitor(options: MonitorOptions) {
   const lifetime = new AbortController();

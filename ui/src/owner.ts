@@ -186,7 +186,7 @@ export type OwnerApi = {
   unlock(generation?: number, signal?: AbortSignal): Promise<View>;
   onboard(
     view: View,
-    tinfoilApiKey?: string,
+    choices: OnboardingChoices,
     signal?: AbortSignal,
   ): Promise<View>;
   edit(
@@ -292,6 +292,12 @@ export type ConnectionAnswers = {
   contents: Audience;
   strangers: boolean;
   sends: Audience;
+};
+// What the owner picked at first setup: services with their credential, if
+// they take one, and how bunkers reach hosts outside those services.
+export type OnboardingChoices = {
+  services: { preset: string; level: Level; credential?: string }[];
+  network: Exclude<Level, "read">;
 };
 
 export const LEVELS: { [L in Level]: string } = {
@@ -514,9 +520,9 @@ export function ownerApi(
         signal,
       ),
     unlock,
-    async onboard(view, tinfoilApiKey, signal) {
+    async onboard(view, choices, signal) {
       if (onboarded(view)) return view;
-      const { changes, credentials } = onboardingChanges(view, tinfoilApiKey);
+      const { changes, credentials } = onboardingChanges(view, choices);
       return snapshot(
         "POST",
         "/policy/edits",
@@ -1391,13 +1397,22 @@ export function tinfoilSetup(view: View, name: string) {
   return { mcp, url: `https://${name}.monitor/${mcp ? "mcp" : "v1"}` };
 }
 
+const unusedName = (view: View, base: string, suffixes: string[] = [""]) => {
+  let name = base;
+  for (
+    let i = 2;
+    suffixes.some((suffix) => Object.hasOwn(connections(view), name + suffix));
+    i++
+  )
+    name = `${base}-${i}`;
+  return name;
+};
+
 function onboardingChanges(
   view: View,
-  tinfoilApiKey?: string,
+  choices: OnboardingChoices,
 ): { changes: Change[]; credentials: { [connection: string]: Credentials } } {
-  let network = "network";
-  for (let i = 2; Object.hasOwn(connections(view), network); i++)
-    network = `network-${i}`;
+  const network = unusedName(view, "network");
   let policy = "network-default";
   for (let i = 2; Object.hasOwn(view.config.policies ?? {}, policy); i++)
     policy = `network-default-${i}`;
@@ -1417,34 +1432,44 @@ function onboardingChanges(
     },
     policies: { [policy]: KNOWN_ONLY_RULE },
   });
-  changes.push({ path: ["default_access", network], value: { level: "off" } });
+  changes.push({
+    path: ["default_access", network],
+    value: { level: choices.network },
+  });
   const credentials: { [connection: string]: Credentials } = {};
-  if (tinfoilApiKey !== undefined) {
-    const key = tinfoilApiKey.trim();
-    if (!key) throw new Error("Enter your Tinfoil API key, or skip this step.");
-    let name = "tinfoil";
-    for (
-      let i = 2;
-      Object.hasOwn(connections(view), name) ||
-      Object.hasOwn(connections(view), `${name}-websearch`);
-      i++
-    )
-      name = `tinfoil-${i}`;
-    for (const [connection, tinfoil, credential] of [
-      [name, "tinfoil", "TINFOIL_API_KEY"],
-      [`${name}-websearch`, "tinfoil_websearch", "token"],
-    ]) {
-      const added = edits.addConnection(view, tinfoil, {
-        name: connection,
-        values: { [credential]: key },
-        answers: view.presets[tinfoil].defaults,
-      });
-      changes.push(...added.changes, {
-        path: ["default_access", connection],
-        value: { level: "allow" },
-      });
-      credentials[connection] = added.credentials;
+  const add = (
+    connection: string,
+    preset: string,
+    level: Level,
+    credential?: string,
+  ) => {
+    const fields = setupFields(view, preset);
+    const key = fields.find((f) => f.credential && !f.oauth)?.key;
+    const values = Object.fromEntries(
+      fields.map((f) => [f.key, readField(f, fieldText(f, f.default))]),
+    );
+    if (key && credential !== undefined) values[key] = credential;
+    const added = edits.addConnection(view, preset, {
+      name: connection,
+      values,
+      answers: view.presets[preset].defaults,
+    });
+    changes.push(...added.changes, {
+      path: ["default_access", connection],
+      value: { level },
+    });
+    credentials[connection] = added.credentials;
+  };
+  for (const { preset, level, credential } of choices.services) {
+    if (preset !== "tinfoil") {
+      add(unusedName(view, preset), preset, level, credential);
+      continue;
     }
+    const key = credential?.trim();
+    if (!key) throw new Error("Choose a Tinfoil API key.");
+    const name = unusedName(view, "tinfoil", ["", "-websearch"]);
+    add(name, "tinfoil", level, key);
+    add(`${name}-websearch`, "tinfoil_websearch", level, key);
   }
   return { changes, credentials };
 }
@@ -1633,9 +1658,7 @@ export const edits = {
   ): { changes: Change[]; credentials: Credentials } {
     name = name.trim();
     if (!/^[a-zA-Z0-9][a-zA-Z0-9-]*$/.test(name))
-      throw new Error(
-        "Name this service using letters, numbers, and hyphens.",
-      );
+      throw new Error("Name this service using letters, numbers, and hyphens.");
     if (Object.hasOwn(connections(view), name))
       throw new Error(
         "A service with that name already exists. Choose another name.",

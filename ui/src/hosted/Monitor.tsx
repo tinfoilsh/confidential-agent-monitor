@@ -10,6 +10,7 @@ import {
 } from "solid-js";
 import App from "../App";
 import { AuthCard, AuthScreen, Icon, Loading, askConfirm } from "../components";
+import type { TinfoilApiKey } from "../monitor";
 import { UUID } from "./contract";
 import { Header, openedFromHome } from "./Header";
 import * as keys from "./keys";
@@ -27,6 +28,26 @@ import { MONITOR_REPO, STARTING, type Session } from "./session";
 import "./console.css";
 
 // A Monitor link names only its resource; inventory and saved keys supply the rest.
+// The signed-in user's own inference keys that still work. In an organization,
+// other members' keys are listed masked and are left out.
+function usableApiKeys(value: unknown): TinfoilApiKey[] {
+  if (!Array.isArray(value))
+    throw new Error("Your API keys could not be read.");
+  return value.flatMap((row) =>
+    typeof row?.key === "string" &&
+    !row.chat &&
+    !row.disabled &&
+    !row.is_admin &&
+    row.is_owner !== false &&
+    !(
+      typeof row.expires_at === "string" &&
+      Date.parse(row.expires_at) <= Date.now()
+    )
+      ? [{ key: row.key, name: typeof row.name === "string" ? row.name : "" }]
+      : [],
+  );
+}
+
 export default function Monitor(props: { session: Session }) {
   document.title = PRODUCT.name;
   const manager = keys.passkeys();
@@ -332,13 +353,9 @@ export default function Monitor(props: { session: Session }) {
                   restore,
                 )
               }
-              tinfoilApiKey={async () => {
-                const { key } = (await opened.scope.api("/api/keys/", {
-                  method: "POST",
-                  body: { name: opened.row.name },
-                })) as { key: string };
-                return key;
-              }}
+              tinfoilApiKeys={async () =>
+                usableApiKeys(await opened.scope.api("/api/keys/"))
+              }
             />
           </>
         )}
