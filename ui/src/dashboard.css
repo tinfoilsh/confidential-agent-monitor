@@ -1750,9 +1750,19 @@ details[open] > summary > .collection-chevron {
   font-size: var(--font-body);
   font-weight: 600;
 }
-.access-block > p.muted {
+.access-block p.muted {
   margin: 0 0 8px;
   font-size: var(--font-detail);
+}
+.access-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.access-heading .search-field {
+  flex: 0 1 260px;
+  min-width: 0;
 }
 .access-rule {
   display: flex;
@@ -2873,8 +2883,6 @@ td {
   padding: 2px;
 }
 
-/* Action rows: one filled value per row; nested rows get smaller controls
-   so the indent reads on both sides. A mixed group shows nothing filled. */
 .tab-bar.small {
   padding: 2px;
 }
@@ -2884,7 +2892,4 @@ td {
 }
 .tab-bar.small > :is(a, button) {
   padding: 4px 10px;
-}
-.access-action-single > .access-action > .access-action-title::before {
-  display: none;
 }

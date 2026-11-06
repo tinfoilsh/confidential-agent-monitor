@@ -11,6 +11,7 @@ import {
   RemoveRule,
   ResourceDisclosure,
   RuleText,
+  Search,
   SkeletonRows,
   href,
   TabBar,
@@ -267,7 +268,6 @@ function Actions(props: {
   connection: string;
   nodes: owner.AccessNode[];
   readOnly?: boolean;
-  nested?: boolean;
 }) {
   const m = useMonitor();
   const leaves = (node: owner.AccessNode): owner.Mode[] =>
@@ -289,15 +289,24 @@ function Actions(props: {
       owner.edits.setAccess(props.name, props.connection, { actions }),
     );
   };
+  // A chain of single children is one row, set at its deepest action.
+  const merge = (node: owner.AccessNode): owner.AccessNode =>
+    node.children.length === 1
+      ? merge({
+          ...node.children[0],
+          title: `${node.title} · ${node.children[0].title}`,
+        })
+      : node;
   // Keyed by action name: node objects are rebuilt on every view update,
   // and keying by them would recreate (and close) the rows.
-  const byKey = createMemo(() => new Map(props.nodes.map((n) => [n.key, n])));
+  const byKey = createMemo(
+    () => new Map(props.nodes.map(merge).map((n) => [n.key, n])),
+  );
   return (
     <For each={[...byKey().keys()]}>
       {(key) => {
         const node = () => byKey().get(key)!;
         const value = () => display(node());
-        const single = () => node().children.length === 1;
         const controls = () => (
           <>
             <span
@@ -305,11 +314,14 @@ function Actions(props: {
               classList={{ "access-group-title": !!node().children.length }}
             >
               {node().title}
+              <Show when={value() === null}>
+                {" "}
+                <small class="muted">Mixed</small>
+              </Show>
             </span>
-            <Show when={!props.readOnly && !single()}>
+            <Show when={!props.readOnly}>
               <TabBar
                 class="access-mode"
-                small={!!props.nested}
                 label={`${node().title} permission`}
                 value={value()}
                 options={(Object.keys(owner.MODES) as owner.Mode[]).map(
@@ -335,7 +347,6 @@ function Actions(props: {
               name={props.name}
               connection={props.connection}
               nodes={node().children}
-              nested
             />
           </div>
         );
@@ -344,24 +355,14 @@ function Actions(props: {
             when={node().children.length}
             fallback={<div class="access-action">{controls()}</div>}
           >
-            <Show
-              when={!single()}
-              fallback={
-                <div class="access-action-group access-action-single">
-                  <div class="access-action">{controls()}</div>
-                  {children()}
-                </div>
-              }
+            <LazyDetails
+              class="access-action-group"
+              summaryClass="access-action"
+              label={node().title}
+              summary={controls()}
             >
-              <LazyDetails
-                class="access-action-group"
-                summaryClass="access-action"
-                label={node().title}
-                summary={controls()}
-              >
-                {children}
-              </LazyDetails>
-            </Show>
+              {children}
+            </LazyDetails>
           </Show>
         );
       }}
@@ -385,6 +386,15 @@ export function AgentConnectionAccess(props: {
   const expandable = () => entry().level !== "off";
   const open = () => expanded() && expandable();
   const id = createUniqueId();
+  const [query, setQuery] = createSignal("");
+  const matches = (node: owner.AccessNode, q: string): boolean =>
+    node.title.toLowerCase().includes(q) ||
+    node.children.some((child) => matches(child, q));
+  // Whole top-level groups match, so setting a group still covers every action in it.
+  const shown = createMemo(() => {
+    const q = query().trim().toLowerCase();
+    return entry().actions.filter((node) => matches(node, q));
+  });
   const rules = createMemo(() =>
     Object.entries(
       m.view()!.config.identities?.[props.name]?.rules ?? {},
@@ -463,15 +473,29 @@ export function AgentConnectionAccess(props: {
         <div>
           <Show when={open()}>
             <div class="access-block">
-              <h4>Actions</h4>
-              <p class="muted">What can be done through the connection</p>
+              <div class="access-heading">
+                <div>
+                  <h4>Actions</h4>
+                  <p class="muted">What can be done through the connection</p>
+                </div>
+                <Show when={!singleAction()}>
+                  <Search
+                    label="Search actions"
+                    value={query()}
+                    onInput={setQuery}
+                  />
+                </Show>
+              </div>
               <div class="access-actions">
                 <Actions
                   name={props.name}
                   connection={props.connection}
-                  nodes={entry().actions}
+                  nodes={shown()}
                   readOnly={singleAction()}
                 />
+                <Show when={!shown().length}>
+                  <p class="muted">No matching actions.</p>
+                </Show>
               </div>
             </div>
             <Show when={rules().length}>
