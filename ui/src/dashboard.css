@@ -1096,21 +1096,27 @@ details[open] > summary > .collection-chevron {
 }
 .request-context {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px 32px;
+  gap: 10px;
   margin: 0;
 }
 .request-context > div {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 16px;
   min-width: 0;
 }
 .request-context dt {
-  margin-bottom: 4px;
   color: var(--muted);
   font-size: var(--font-detail);
+  line-height: 20px;
 }
 .request-context dd {
   margin: 0;
+  line-height: 20px;
   overflow-wrap: anywhere;
+}
+.request-context dd > p {
+  margin: 0;
 }
 .request-context-link {
   display: inline-flex;
@@ -1124,20 +1130,6 @@ details[open] > summary > .collection-chevron {
   width: 12px;
   height: 12px;
 }
-.request-detail .request-time-left {
-  margin: 0;
-}
-.request-reasons h3 {
-  margin: 0 0 8px;
-  font-weight: 500;
-}
-.request-reasons ul {
-  margin: 0;
-  padding-left: 20px;
-}
-.request-reasons li + li {
-  margin-top: 4px;
-}
 .request-detail > .decisions {
   margin: 0;
 }
@@ -1146,18 +1138,27 @@ details[open] > summary > .collection-chevron {
 }
 
 .request-access {
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 .request-access > p {
-  margin: 8px 0 0;
+  margin: 0;
   font-size: var(--font-detail);
+}
+.request-access > .button {
+  flex-shrink: 0;
 }
 
 @media (max-width: 560px) {
-  .request-context {
+  .request-context > div {
     grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+    gap: 2px;
+  }
+  .request-access {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 .resource-disclosure {

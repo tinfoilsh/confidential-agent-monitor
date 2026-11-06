@@ -395,62 +395,74 @@ export function RequestDetail(props: {
                     <time dateTime={r().time}>
                       {requestDate.format(new Date(r().time))}
                     </time>
+                    <Show when={state() === "pending"}>
+                      <span class="muted">
+                        {" "}
+                        · {owner.timeLeft(r(), m.now())} left to respond
+                      </span>
+                    </Show>
                   </dd>
                 </div>
-              </dl>
-              <Show when={state() === "pending"}>
-                <p class="muted request-time-left">
-                  {owner.timeLeft(r(), m.now())} left to respond
-                </p>
-              </Show>
-              <div class="request-reasons">
-                <h3>Review</h3>
-                <Show
-                  when={r().reviews?.length}
-                  fallback={
-                    <p>
-                      {state() === "pending"
-                        ? "Waiting for you."
-                        : state() === "refused"
-                          ? "Blocked by policy. No one was asked."
-                          : state() === "expired"
-                            ? "Nobody answered in time."
-                            : state() === "outdated"
-                              ? "Settings affecting this connection changed before review."
-                              : state() === "allowed" || state() === "approved"
+                <div>
+                  <dt>Review</dt>
+                  <dd>
+                    <Show
+                      when={r().reviews?.length}
+                      fallback={
+                        state() === "pending"
+                          ? "Waiting for you."
+                          : state() === "refused"
+                            ? "Blocked by policy. No one was asked."
+                            : state() === "expired"
+                              ? "Nobody answered in time."
+                              : state() === "outdated"
+                                ? "Settings affecting this connection changed before review."
+                                : state() === "allowed" || state() === "approved"
+                                  ? owner.isProposal(r())
+                                    ? "Proposal approved."
+                                    : "Allowed by policy."
+                                  : state() === "denied" && owner.isProposal(r())
+                                    ? "Proposal rejected."
+                                    : "Blocked."
+                      }
+                    >
+                      <For each={r().reviews}>
+                        {(answer) => (
+                          <p>
+                            You
+                            {answer.decision === "once"
+                              ? " approved it once"
+                              : answer.decision === "deny"
                                 ? owner.isProposal(r())
-                                  ? "Proposal approved."
-                                  : "Allowed by policy."
-                                : state() === "denied" && owner.isProposal(r())
-                                  ? "Proposal rejected."
-                                  : "Blocked."}
-                    </p>
-                  }
-                >
-                  <For each={r().reviews}>
-                    {(answer) => (
-                      <p>
-                        <strong>You</strong>
-                        {answer.decision === "once"
-                          ? " approved it once"
-                          : answer.decision === "deny"
-                            ? owner.isProposal(r())
-                              ? " rejected it"
-                              : " denied it"
-                            : " approved it and saved a rule"}
-                        <Show when={answer.reason}>: {answer.reason}</Show>
-                      </p>
-                    )}
-                  </For>
-                </Show>
-              </div>
-              <Show when={reasons().length}>
-                <div class="request-reasons">
-                  <h3>Details</h3>
-                  <ul>
-                    <For each={reasons()}>{(reason) => <li>{reason}</li>}</For>
-                  </ul>
+                                  ? " rejected it"
+                                  : " denied it"
+                                : " approved it and saved a rule"}
+                            <Show when={answer.reason}>: {answer.reason}</Show>
+                          </p>
+                        )}
+                      </For>
+                    </Show>
+                  </dd>
                 </div>
+                <Show when={reasons().length}>
+                  <div>
+                    <dt>Reason</dt>
+                    <dd>
+                      <For each={reasons()}>{(reason) => <p>{reason}</p>}</For>
+                    </dd>
+                  </div>
+                </Show>
+              </dl>
+              <Show when={full.loading}>
+                <p class="muted">Loading request details…</p>
+              </Show>
+              <Show when={r().facts.details?.policy}>
+                {(policy) => (
+                  <>
+                    <h3>Source changes</h3>
+                    <TechnicalDiff text={policy().source_diff} />
+                  </>
+                )}
               </Show>
               <Show
                 when={
@@ -462,6 +474,11 @@ export function RequestDetail(props: {
                 }
               >
                 <div class="request-access">
+                  <p class="muted">
+                    {r().invalid
+                      ? "Fix the request or client configuration using the error above, then retry."
+                      : "Update this bunker’s connection access, then retry the request from your bunker."}
+                  </p>
                   <a
                     class="button"
                     href={href("connection", r().facts.connection)}
@@ -469,23 +486,7 @@ export function RequestDetail(props: {
                     {r().invalid ? "View connection setup" : "Change access"}
                     <Icon name="arrow" />
                   </a>
-                  <p class="muted">
-                    {r().invalid
-                      ? "Fix the request or client configuration using the error above, then retry."
-                      : "Update this bunker’s connection access, then retry the request from your bunker."}
-                  </p>
                 </div>
-              </Show>
-              <Show when={full.loading}>
-                <p class="muted">Loading request details…</p>
-              </Show>
-              <Show when={r().facts.details?.policy}>
-                {(policy) => (
-                  <>
-                    <h3>Source changes</h3>
-                    <TechnicalDiff text={policy().source_diff} />
-                  </>
-                )}
               </Show>
               <div class="decisions">
                 <Show when={owner.decisions(r(), m.now()).dismiss}>
