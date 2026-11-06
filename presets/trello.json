@@ -1064,24 +1064,22 @@
         "title": "Read"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "origin": "https://api.trello.com",
-              "path": "/1",
-              "query": "key",
-              "value": "key"
-            },
-            {
-              "origin": "https://api.trello.com",
-              "path": "/1",
-              "query": "token",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://api.trello.com",
+            "path": "/1",
+            "query": "key",
+            "value": "key"
+          },
+          {
+            "origin": "https://api.trello.com",
+            "path": "/1",
+            "query": "token",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -1093,25 +1091,13 @@
       {
         "key": "key",
         "label": "API key",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "key"
-        ],
+        "credential": true,
         "secret": true
       },
       {
         "key": "token",
         "label": "API token",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

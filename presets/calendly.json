@@ -5,9 +5,9 @@
     "fields": [
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "secret": true, "paths": []},
-      {"key": "token", "label": "Calendly account", "secret": true, "path": ["connections", "", "http", "secrets", "token"], "oauth": {"auth_url": "https://auth.calendly.com/oauth/authorize", "token_url": "https://auth.calendly.com/oauth/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "users:read webhooks:read webhooks:write scheduled_events:read"}}
+      {"key": "token", "label": "Calendly account", "secret": true, "credential": true, "oauth": {"auth_url": "https://auth.calendly.com/oauth/authorize", "token_url": "https://auth.calendly.com/oauth/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "users:read webhooks:read webhooks:write scheduled_events:read"}}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.calendly.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://api.calendly.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "delete.contacts": {"title": "Delete: contacts"},

@@ -17,6 +17,7 @@ import (
 const (
 	ownerSSHChannel        = "tinfoil-owner-http-v1"
 	ownerGenerationRequest = "tinfoil-owner-generation-v1"
+	ownerHost              = "owner" + connector.Domain
 )
 
 // This metadata is supplied by the authenticated owner CLI, never the browser.
@@ -74,7 +75,7 @@ func (o channelOptions) valid() bool {
 	if err != nil || len(token) != 32 {
 		return false
 	}
-	if o.Host == "owner.monitor" {
+	if o.Host == ownerHost {
 		return true
 	}
 	host, port, err := net.SplitHostPort(o.Host)
@@ -109,7 +110,7 @@ func panel(api http.Handler, options channelOptions, acknowledge func() error) h
 		}
 		// Only the CLI channel can send the storage key; the browser cannot unlock.
 		path := strings.TrimPrefix(r.URL.Path, "/api")
-		if (path == "/unlock" && options.Host != "owner.monitor") || strings.HasPrefix(path, "/owner/") || strings.HasPrefix(path, "/app/") || strings.Contains(path, "..") || strings.Contains(path, "\\") {
+		if (path == "/unlock" && options.Host != ownerHost) || strings.HasPrefix(path, "/owner/") || strings.HasPrefix(path, "/app/") || strings.Contains(path, "..") || strings.Contains(path, "\\") {
 			http.NotFound(w, r)
 			return
 		}

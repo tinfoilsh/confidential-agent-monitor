@@ -20,17 +20,15 @@ import (
 //go:embed lib.rego
 var library string
 
-// Requirement IDs bind approval waivers; messages explain them without granting authority.
-type Requirement = facts.Requirement
-
 type Decision struct {
-	Deny         []string      `json:"deny"`
-	Requirements []Requirement `json:"requirements"`
-	Sends        string        `json:"sends"`
-	Next         facts.Label   `json:"next"`
+	Deny         []string            `json:"deny"`
+	Requirements []facts.Requirement `json:"requirements"`
+	Sends        string              `json:"sends"`
+	Next         facts.Label         `json:"next"`
 }
 
-// Engine is a prepared policy. Program hashes everything the policy's meaning depends on.
+// Engine is a prepared policy. Program hashes the facts version, library, policies and data;
+// lattices and facts levels are not in it, so callers that persist decisions add them.
 type Engine struct {
 	Program string
 	query   rego.PreparedEvalQuery

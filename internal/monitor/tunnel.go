@@ -1,6 +1,7 @@
 package monitor
 
 import (
+	"bytes"
 	"context"
 	"crypto/ed25519"
 	"fmt"
@@ -16,7 +17,7 @@ import (
 )
 
 const fingerprintExtension = "fingerprint"
-const agentHost = config.AgentConnection + ".monitor"
+const agentHost = config.AgentConnection + connector.Domain
 const agentPort = 80
 
 func (m *monitor) ServeSSH(ln net.Listener) {
@@ -44,7 +45,6 @@ func (m *monitor) ServeSSH(ln net.Listener) {
 		c.AddHostKey(host)
 		return c
 	}, func(conn *ssh.ServerConn, chans <-chan ssh.NewChannel, reqs <-chan *ssh.Request) {
-		// Grant SSH-authenticated access to the control API to owners
 		if conn.Permissions.Extensions["owner"] == "true" {
 			go ssh.DiscardRequests(reqs)
 			for nc := range chans {
@@ -56,8 +56,7 @@ func (m *monitor) ServeSSH(ln net.Listener) {
 		fingerprint := conn.Permissions.Extensions[fingerprintExtension]
 		if conn.Permissions.Extensions[sandbox.RouteExtension] != "" {
 			known, _ := m.keyAccess(fingerprint)
-			// A sandbox registers a reverse-ssh route that principals can connect to
-			m.forwards.ServePublisher(conn, chans, reqs, frontdoor.Publisher{
+			m.forwards.ServePublisher(conn, chans, reqs, sandbox.Publisher{
 				Name:    conn.Permissions.Extensions[sandbox.RouteExtension],
 				Alias:   conn.Permissions.Extensions[sandbox.BootstrapExtension],
 				Trusted: known,
@@ -77,12 +76,10 @@ func (m *monitor) ServeSSH(ln net.Listener) {
 				continue
 			}
 			if sandbox.ReservedRoute(target.Host) {
-				// Forward to a registered reverse-ssh route
 				go m.forwardSandbox(fingerprint, nc, target)
 			} else if target.Host == agentHost {
 				go m.serveAgentAPI(fingerprint, nc, target)
 			} else {
-				// Forward to a connector
 				go m.forwardConnection(fingerprint, nc, target)
 			}
 		}
@@ -99,7 +96,7 @@ func (m *monitor) forwardSandbox(key string, nc ssh.NewChannel, target frontdoor
 		nc.Reject(ssh.Prohibited, "identity cannot open sandbox routes")
 		return
 	}
-	upstream, err := sandbox.Dial(m.forwards, target.Host, target.Port)
+	upstream, err := m.forwards.Dial(target.Host, target.Port)
 	if err != nil {
 		nc.Reject(ssh.ConnectionFailed, "route unavailable")
 		return
@@ -148,7 +145,7 @@ func (m *monitor) forwardConnection(key string, nc ssh.NewChannel, target frontd
 	m.mu.Lock()
 	var candidates []frontdoor.Candidate
 	for name, c := range m.connections {
-		if st.Reaches(p.Name, c.Account) && c.Status().State == statusReady {
+		if st.Reaches(p.Name, c.Name) && c.Status().State == statusReady {
 			route := frontdoor.Candidate{Name: name}
 			route.Claim = c.prepared.Claim
 			candidates = append(candidates, route)
@@ -179,7 +176,6 @@ func (m *monitor) forwardConnection(key string, nc ssh.NewChannel, target frontd
 	s := connector.NewStream(ctx, conn)
 	s.Name, s.Host, s.Port = name, host, target.Port
 	defer s.Close()
-	// Disconnects cancel pending operations.
 	go func() { <-conn.Closed(); s.Close() }()
 	release, ok := m.admitStream(s, st, admitted)
 	if !ok {
@@ -207,19 +203,18 @@ func (m *monitor) stillAdmitted(old *settings, admitted admission) bool {
 		return st.Identities[p.Name].Routes
 	}
 	c := admitted.connection
-	if !m.usable(c, admitted.prepared) || !st.Reaches(p.Name, c.Account) {
+	if !m.usable(c, admitted.prepared) || !st.Reaches(p.Name, c.Name) {
 		return false
 	}
 	if st == old {
 		return true
 	}
-	// Unrelated settings edits preserve this principal's authority on the account.
-	return st.Engine.Program == old.Engine.Program && st.Config.SameAuthority(old.Config, admitted.fingerprint, c.Account)
+	previous, _ := old.Principal(admitted.fingerprint)
+	return previous == p && st.Engine.Program == old.Engine.Program && bytes.Equal(old.Authority(p.Name, c.Name), st.Authority(p.Name, c.Name))
 }
 
 // admitStream registers s for revocation and pins its connector until release.
 func (m *monitor) admitStream(s *connector.Stream, st *settings, admitted admission) (release func(), ok bool) {
-	// Prevent admission racing with revocation.
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if !m.stillAdmitted(st, admitted) {

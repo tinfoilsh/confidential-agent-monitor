@@ -3,7 +3,9 @@ package config
 
 import (
 	"encoding/json"
+	"maps"
 	"net/netip"
+	"slices"
 
 	"github.com/tinfoilsh/monitor/facts"
 )
@@ -12,29 +14,30 @@ const AgentConnection = "agent"
 
 // ConnectionSpec supplies one connector's setup and opaque semantic definition.
 type ConnectionSpec struct {
-	Name, Protocol, Account, Key string
-	Config, Definition, Options  json.RawMessage
-	PublicScope, CredentialNames []string
+	Name, Protocol              string
+	Config, Definition, Options json.RawMessage
+	PublicScope                 []string
 }
 
-func ConnectionName(account, key string) string {
-	if key != "" {
-		return account + "-" + key
-	}
-	return account
-}
-
-type Principal struct {
-	Fingerprint, Name string
-}
+type Principal = facts.Principal
 
 type Identity struct {
-	Routes   bool              `json:"routes,omitempty"`
-	Key      string            `json:"key"`
-	Sandbox  json.RawMessage   `json:"sandbox,omitzero"`
-	Effects  map[string]string `json:"effects,omitempty"`
-	Accounts map[string]Access `json:"accounts"`
-	Rules    map[string]Rule   `json:"rules,omitempty"`
+	Routes      bool              `json:"routes,omitempty"`
+	Key         string            `json:"key"`
+	Sandbox     json.RawMessage   `json:"sandbox,omitzero"`
+	Effects     map[string]string `json:"effects,omitempty"`
+	Connections map[string]Access `json:"connections"`
+	Rules       map[string]Rule   `json:"rules,omitempty"`
+}
+
+func (id Identity) rulesFor(connection string) map[string]Rule {
+	rules := map[string]Rule{}
+	for name, rule := range id.Rules {
+		if rule.Connection == connection {
+			rules[name] = rule
+		}
+	}
+	return rules
 }
 
 type Access struct {
@@ -46,7 +49,7 @@ type Access struct {
 // A rule waives requirements for one operation under the definition the owner approved.
 type Rule struct {
 	Enabled      *bool               `json:"enabled,omitempty"`
-	Account      string              `json:"account"`
+	Connection   string              `json:"connection"`
 	Action       string              `json:"action"`
 	Operation    string              `json:"operation,omitempty"`
 	ApprovalKey  string              `json:"definition,omitempty"`
@@ -61,14 +64,48 @@ type PolicyOptions struct {
 	Origin  string   `json:"origin,omitempty"`
 }
 
-type Account struct {
-	Preset        string                                `json:"preset"`
-	Effects       map[string]string                     `json:"effects,omitempty"`
-	PolicyOptions PolicyOptions                         `json:"policy_options"`
-	Contents      string                                `json:"contents"`
-	Strangers     bool                                  `json:"strangers"`
-	Sends         string                                `json:"sends"`
-	Connections   map[string]map[string]json.RawMessage `json:"connections,omitempty"`
+// Connection holds one connector's settings, and its setup under the connector's kind.
+type Connection struct {
+	Preset        string                     `json:"preset"`
+	Effects       map[string]string          `json:"effects,omitempty"`
+	PolicyOptions PolicyOptions              `json:"policy_options"`
+	Contents      string                     `json:"contents"`
+	Strangers     bool                       `json:"strangers"`
+	Sends         string                     `json:"sends"`
+	Setup         map[string]json.RawMessage `json:"-"`
+}
+
+type connectionSettings Connection
+
+// settingKeys name a connection's settings; its other key is its connector's kind.
+var settingKeys = []string{"preset", "effects", "policy_options", "contents", "strangers", "sends"}
+
+func (c *Connection) UnmarshalJSON(raw []byte) error {
+	var setup map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &setup); err != nil {
+		return err
+	}
+	var settings connectionSettings
+	if err := json.Unmarshal(raw, &settings); err != nil {
+		return err
+	}
+	maps.DeleteFunc(setup, func(key string, _ json.RawMessage) bool { return slices.Contains(settingKeys, key) })
+	*c = Connection(settings)
+	c.Setup = setup
+	return nil
+}
+
+func (c Connection) MarshalJSON() ([]byte, error) {
+	raw, err := json.Marshal(connectionSettings(c))
+	if err != nil || len(c.Setup) == 0 {
+		return raw, err
+	}
+	var fields map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &fields); err != nil {
+		return nil, err
+	}
+	maps.Copy(fields, c.Setup)
+	return json.Marshal(fields)
 }
 
 type Lattices struct {
@@ -79,14 +116,14 @@ type Lattices struct {
 // Config is immutable declared settings. Inheritance and setup defaults are
 // projected for their consumers, never written back into these declarations.
 type Config struct {
-	AllowPaidInference bool                `json:"allow_paid_inference,omitempty"`
-	Effects            map[string]string   `json:"effects,omitempty"`
-	DefaultAccess      map[string]Access   `json:"default_access,omitempty"`
-	Lattices           Lattices            `json:"lattices"`
-	AllowNetworks      []netip.Prefix      `json:"allow_networks"`
-	Accounts           map[string]Account  `json:"accounts"`
-	Identities         map[string]Identity `json:"identities"`
-	Policies           map[string]string   `json:"policies"`
-	Data               map[string]any      `json:"data"`
-	Principals         map[string]string   `json:"-"`
+	AllowPaidInference bool                  `json:"allow_paid_inference,omitempty"`
+	Effects            map[string]string     `json:"effects,omitempty"`
+	DefaultAccess      map[string]Access     `json:"default_access,omitempty"`
+	Lattices           Lattices              `json:"lattices"`
+	AllowNetworks      []netip.Prefix        `json:"allow_networks"`
+	Connections        map[string]Connection `json:"connections"`
+	Identities         map[string]Identity   `json:"identities"`
+	Policies           map[string]string     `json:"policies"`
+	Data               map[string]any        `json:"data"`
+	Principals         map[string]string     `json:"-"`
 }

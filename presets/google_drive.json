@@ -203,26 +203,24 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "Authorization",
-              "origin": "https://www.googleapis.com",
-              "path": "/drive/v3",
-              "prefix": "Bearer ",
-              "value": "token"
-            },
-            {
-              "header": "Authorization",
-              "origin": "https://www.googleapis.com",
-              "path": "/upload/drive/v3",
-              "prefix": "Bearer ",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://www.googleapis.com",
+            "path": "/drive/v3",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://www.googleapis.com",
+            "path": "/upload/drive/v3",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -253,13 +251,7 @@
           "scope": "https://www.googleapis.com/auth/drive",
           "token_url": "https://oauth2.googleapis.com/token"
         },
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

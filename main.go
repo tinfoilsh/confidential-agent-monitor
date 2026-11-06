@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"maps"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -127,8 +128,7 @@ func main() {
 		log.Fatal("production and owner SSH require -ssh-host-key")
 	}
 	if !dev {
-		delete(connectorKinds, "cli")
-		delete(connectorKinds, "gpg-agent")
+		maps.DeleteFunc(connectorKinds, func(_ string, kind connector.Kind) bool { return kind.Host })
 	}
 	bucket := must(blob.OpenBucket(context.Background(), *bucketURL))
 	defer bucket.Close()
@@ -151,9 +151,6 @@ func main() {
 	defer m.Close()
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	// SSH acts as a frontdoor for traffic.
-	// Access control is applied based on the keypair identity identified during the handshake
-	// Owners can connect to the API using either SSH or the HTTP listener
 	go m.ServeSSH(ln)
 	go func() {
 		log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.HTTPHandler(devFiles)), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
@@ -161,7 +158,6 @@ func main() {
 	m.RunAudit(ctx)
 }
 
-// Startup cannot serve a partially configured application.
 func must[T any](value T, err error) T {
 	if err != nil {
 		log.Fatal(err)
@@ -187,7 +183,6 @@ func uiDevProxy(address string, development bool) (http.Handler, error) {
 	return proxy, nil
 }
 
-// ownerOrigins parses a comma-separated list of exact browser origins, such as https://dash.tinfoil.sh.
 func ownerOrigins(list string) ([]string, error) {
 	var origins []string
 	for _, origin := range strings.Split(list, ",") {

@@ -3,11 +3,11 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "origin", "label": "Your Elastic Security origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
-      {"key": "username", "label": "Username", "secret": true, "path": ["connections", "", "http", "secrets", "username"]},
-      {"key": "password", "label": "Password", "secret": true, "path": ["connections", "", "http", "secrets", "password"]}
+      {"key": "origin", "label": "Your Elastic Security origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"], ["http", "slots", 1, "origin"]]},
+      {"key": "username", "label": "Username", "secret": true, "credential": true},
+      {"key": "password", "label": "Password", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "username", "origin": "https://example.com", "path": "/api", "basic": "user"}, {"value": "password", "origin": "https://example.com", "path": "/api", "basic": "password"}]}}},
+    "connection": {"http": {"slots": [{"value": "username", "origin": "https://example.com", "path": "/api", "basic": "user"}, {"value": "password", "origin": "https://example.com", "path": "/api", "basic": "password"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "delete.cases": {"title": "Delete: cases"},

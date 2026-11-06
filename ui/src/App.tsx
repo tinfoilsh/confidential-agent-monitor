@@ -17,23 +17,24 @@ import * as owner from "./owner.js";
 import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
 import { Activity, RequestDetail } from "./Activity";
 import { Agents, AddAgent } from "./Agents";
-import { AddConnection, Connections, DeviceSignInDialog } from "./Connections";
+import { Connections, DeviceSignInDialog } from "./Connections";
 import {
   AuthCard,
   AuthScreen,
-  ConnectorIcon,
   Empty,
   Icon,
+  type IconName,
   Loading,
   Modal,
   href,
 } from "./components";
+import { THEME, applyTheme, savedTheme } from "./theme";
 
 const Settings = lazy(() =>
   import("./Settings").then((m) => ({ default: m.Settings })),
 );
 const SandboxTerminal = lazy(() => import("./SandboxTerminal"));
-const sections: Record<string, [string, string]> = {
+const headings: Record<string, [title: string, description: string]> = {
   activity: ["Activity", "Review requests and manage saved approval rules."],
   agents: [
     "Sandboxes",
@@ -44,11 +45,11 @@ const sections: Record<string, [string, string]> = {
     "Connect services and control how sandboxes use their data.",
   ],
   settings: ["Settings", "Manage policy and preferences."],
-  integrations: [
-    "Integrations",
-    "Connect commands, shells, and MCP clients through Monitor.",
-  ],
-  policy: ["Policy", "Validate and review changes to your monitor's policy."],
+  request: ["Request", ""],
+};
+const SECTION_OF: Record<string, string> = {
+  connection: "connections",
+  request: "activity",
 };
 const parse = (path: string) => {
   try {
@@ -57,7 +58,6 @@ const parse = (path: string) => {
     return ["connections"];
   }
 };
-const isDialog = (path: string) => ["pair", "add"].includes(parse(path)[0]);
 
 export default function App(props: MonitorOptions) {
   return (
@@ -85,44 +85,15 @@ function Shell() {
   const m = useMonitor();
   const initial = location.hash.slice(1) || "agents";
   const [route, setRoute] = createSignal(initial),
-    [page, setPage] = createSignal(
-      isDialog(initial)
-        ? initial === "pair"
-          ? "agents"
-          : "connections/catalog"
-        : initial,
-    );
+    [page, setPage] = createSignal(initial === "pair" ? "agents" : initial);
   const [mobile, setMobile] = createSignal(false),
-    [theme, setTheme] = createSignal(
-      localStorage.getItem("monitor-theme") || "system",
-    );
+    [theme, setTheme] = createSignal(savedTheme());
   const media = matchMedia("(prefers-color-scheme: dark)"),
     [dark, setDark] = createSignal(media.matches);
-  const dialogRoute = createMemo(() => (isDialog(route()) ? route() : ""));
-  const kind = () => parse(page())[0],
-    args = () => parse(page()).slice(1);
-  const section = () =>
-    ({
-      agent: "agents",
-      "agent-settings": "agents",
-      accounts: "connections",
-      account: "connections",
-      connection: "connections",
-      catalog: "connections",
-      request: "activity",
-      rules: "activity",
-      policy: "settings",
-    })[kind()] ?? kind();
-  const title = () =>
-    sections[
-      ["agent", "agent-settings"].includes(kind())
-        ? "agents"
-        : kind() === "rules"
-          ? "activity"
-          : ["account", "accounts", "connection", "catalog"].includes(kind())
-            ? "connections"
-            : kind()
-    ]?.[0] ?? (kind() === "request" ? "Request" : args()[0] || "Monitor");
+  const pairing = () => route() === "pair";
+  const kind = () => parse(page())[0];
+  const section = () => SECTION_OF[kind()] ?? kind();
+  const heading = () => headings[kind()] ?? headings[section()];
   const count = (section: string) =>
     section === "activity"
       ? m.pendingCount()
@@ -130,7 +101,7 @@ function Shell() {
           (section === "agents"
             ? m.view()?.config.identities
             : section === "connections"
-              ? m.view()?.config.accounts
+              ? m.view()?.config.connections
               : {}) ?? {},
         ).length;
   // The open shell is a sidebar tab; other pages keep its session running.
@@ -143,7 +114,7 @@ function Shell() {
     m.setShell();
     if (shown) location.hash = "agents";
   };
-  const NavItem = (props: { key: string }) => (
+  const NavItem = (props: { key: IconName }) => (
     <a
       class="nav-item"
       classList={{ on: section() === props.key && !shellShown() }}
@@ -153,7 +124,7 @@ function Shell() {
       href={href(props.key)}
     >
       <Icon name={props.key} />
-      <span>{sections[props.key][0]}</span>
+      <span>{headings[props.key][0]}</span>
       <Show when={count(props.key)}>
         <small class="nav-count">{count(props.key)}</small>
       </Show>
@@ -171,7 +142,7 @@ function Shell() {
       }
       const next = location.hash.slice(1) || "agents";
       setRoute(next);
-      if (!isDialog(next)) setPage(next);
+      if (next !== "pair") setPage(next);
       setMobile(false);
     };
     const changed = (event: MediaQueryListEvent) => setDark(event.matches);
@@ -188,9 +159,8 @@ function Shell() {
   });
   const ready = () => m.view() && !m.locked() && owner.onboarded(m.view()!);
   createEffect(() => {
-    document.documentElement.dataset.theme =
-      theme() === "system" ? (dark() ? "dark" : "light") : theme();
-    localStorage.setItem("monitor-theme", theme());
+    applyTheme(theme(), dark());
+    localStorage.setItem(THEME, theme());
   });
   return (
     <>
@@ -222,7 +192,11 @@ function Shell() {
                 Menu
               </button>
               <nav id="tree" aria-label="Management">
-                <For each={["agents", "activity", "connections", "settings"]}>
+                <For
+                  each={
+                    ["agents", "activity", "connections", "settings"] as const
+                  }
+                >
                   {(key) => <NavItem key={key} />}
                 </For>
                 <Show when={m.shell()}>
@@ -263,25 +237,8 @@ function Shell() {
                 <header id="page-header">
                   <div class="page-heading">
                     <div>
-                      <h1>{title()}</h1>
-                      <p>
-                        {
-                          sections[
-                            ["agent", "agent-settings"].includes(kind())
-                              ? "agents"
-                              : kind() === "rules"
-                                ? "activity"
-                                : [
-                                      "account",
-                                      "accounts",
-                                      "connection",
-                                      "catalog",
-                                    ].includes(kind())
-                                  ? "connections"
-                                  : kind()
-                          ]?.[1]
-                        }
-                      </p>
+                      <h1>{heading()?.[0] ?? "Monitor"}</h1>
+                      <p>{heading()?.[1]}</p>
                     </div>
                     <div class="header-actions">
                       <button
@@ -307,7 +264,7 @@ function Shell() {
                   </Show>
                   <div id="notices">
                     <ApprovalBar />
-                    <Show when={m.message() && !dialogRoute()}>
+                    <Show when={m.message() && !pairing()}>
                       <div id="toast" role="status">
                         {m.message()}
                       </div>
@@ -338,7 +295,7 @@ function Shell() {
                 )}
               </Show>
             </main>
-            <CreationDialog path={dialogRoute()} close={close} />
+            <PairDialog open={pairing()} close={close} />
             <DeviceSignInDialog attempt={m.deviceSignIn()} />
           </div>
         </div>
@@ -353,16 +310,8 @@ function Shell() {
 }
 function ApprovalBar() {
   const m = useMonitor();
-  const pending = createMemo(() =>
-    owner.pendingSoonest(
-      m
-        .records()
-        .filter(
-          (r) => owner.needsOwner(r) && !owner.isConnectionProposalRecord(r),
-        ),
-    ),
-  );
-  const proposals = m.proposals;
+  const pending = m.pendingRequests;
+  const proposals = m.pendingProposals;
   const total = m.pendingCount;
   return (
     <Show when={total()}>
@@ -386,7 +335,7 @@ function ApprovalBar() {
               class="button"
               href={
                 proposals().length === 1
-                  ? `#connections/pending/${encodeURIComponent(proposals()[0].id)}`
+                  ? href("connections", "pending", proposals()[0].id)
                   : "#connections/pending"
               }
             >
@@ -397,7 +346,7 @@ function ApprovalBar() {
           <Show when={pending().length}>
             <a
               class="button"
-              onClick={() => m.setActivity({ scope: "", page: 0, anchor: 0 })}
+              onClick={() => m.setActivity({ page: 0, anchor: 0 })}
               href={
                 pending().length === 1
                   ? href("activity", "request", pending()[0].id)
@@ -444,29 +393,19 @@ function Page(props: {
         </Empty>
       }
     >
-      <Match when={kind === "activity" || kind === "rules"}>
-        <Activity scope={kind === "rules" ? "rules" : name} name={request} />
+      <Match when={kind === "activity"}>
+        <Activity scope={name} name={request} />
       </Match>
-      <Match
-        when={
-          kind === "agents" || kind === "agent" || kind === "agent-settings"
-        }
-      >
+      <Match when={kind === "agents"}>
         <Agents expanded={name} />
       </Match>
-      <Match
-        when={
-          kind === "connections" || kind === "accounts" || kind === "catalog"
-        }
-      >
+      <Match when={kind === "connections"}>
         <Connections
-          catalog={kind === "catalog" || name === "catalog"}
-          proposal={
-            kind === "connections" && name === "pending" ? request : undefined
-          }
+          catalog={name === "catalog"}
+          proposal={name === "pending" ? request : undefined}
         />
       </Match>
-      <Match when={kind === "connection" || kind === "account"}>
+      <Match when={kind === "connection"}>
         <Connections expanded={name} />
       </Match>
       <Match when={kind === "request"}>
@@ -475,54 +414,31 @@ function Page(props: {
       <Match when={kind === "settings"}>
         <Settings theme={props.theme} onThemeChange={props.onThemeChange} />
       </Match>
-      {/* #integrations (Monitor client on your own machine) and #policy (raw
-          document editor) are not part of this release: no route, no link. */}
     </Switch>
   );
 }
-function CreationDialog(props: { path: string; close: () => void }) {
+function PairDialog(props: { open: boolean; close: () => void }) {
   const m = useMonitor();
   // Keep the contents mounted through the native dialog's exit transition.
-  const path = createMemo((previous: string) => props.path || previous, "");
-  const kind = () => parse(path())[0],
-    preset = () => parse(path())[1] ?? "";
+  const opened = createMemo(
+    (previous: boolean) => props.open || previous,
+    false,
+  );
   return (
     <Modal
       id="creation-dialog"
       aria-labelledby="creation-title"
-      aria-describedby={kind() === "pair" ? "creation-description" : undefined}
-      open={!!props.path}
+      aria-describedby="creation-description"
+      open={props.open}
       onClose={props.close}
     >
       <header class="dialog-header">
-        <Show when={kind() === "add"}>
-          <button
-            type="button"
-            class="icon-button dialog-back"
-            aria-label="Choose another service"
-            title="Choose another service"
-            onClick={() => {
-              location.hash = "#connections/catalog";
-            }}
-          >
-            <Icon name="arrow" />
-          </button>
-        </Show>
         <div>
-          <h1 id="creation-title">
-            <Show when={kind() === "add"}>
-              <ConnectorIcon preset={preset()} />
-            </Show>
-            {kind() === "pair"
-              ? "Add a trusted device"
-              : "Add " + (m.view()!.presets[preset()]?.title ?? "connection")}
-          </h1>
-          <Show when={kind() === "pair"}>
-            <p id="creation-description">
-              Paste the SSH public key of a computer that may reach your
-              sandboxes.
-            </p>
-          </Show>
+          <h1 id="creation-title">Add a trusted device</h1>
+          <p id="creation-description">
+            Paste the SSH public key of a computer that may reach your
+            sandboxes.
+          </p>
         </div>
         <button
           class="dialog-close icon-button"
@@ -533,19 +449,13 @@ function CreationDialog(props: { path: string; close: () => void }) {
         </button>
       </header>
       <div class="dialog-body">
-        <Show when={path()} keyed>
-          {(path) =>
-            parse(path)[0] === "pair" ? (
-              <AddAgent />
-            ) : (
-              <AddConnection preset={parse(path)[1]} />
-            )
-          }
+        <Show when={opened()}>
+          <AddAgent />
         </Show>
       </div>
-      <Show when={m.message("#" + path())}>
+      <Show when={m.message("#pair")}>
         <p class="dialog-notice" role="status">
-          {m.message("#" + path())}
+          {m.message("#pair")}
         </p>
       </Show>
     </Modal>
@@ -559,10 +469,7 @@ function Gate() {
   const finish = (tinfoilApiKey?: () => Promise<string> | string) =>
     m.busy() ||
     m.perform(async (client) =>
-      client.onboard(m.view()!, "known_only", undefined, {
-        allowPaidInference: true,
-        tinfoilApiKey: await tinfoilApiKey?.(),
-      }),
+      client.onboard(m.view()!, await tinfoilApiKey?.()),
     );
   const error = () => (
     <Show when={m.error()}>

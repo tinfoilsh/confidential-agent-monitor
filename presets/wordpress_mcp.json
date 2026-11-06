@@ -6,11 +6,11 @@
       "read": {"title": "Use read-only tools", "effects": ["read"]},
       "use": {"title": "Use tools that change things", "effects": ["write"]}
     },
-    "connections": {"": {"mcp": {"url": "{url}"}}},
+    "connection": {"mcp": {"url": "{url}"}},
     "defaults": {"contents": "team", "sends": "me", "strangers": true},
     "fields": [
-      {"key": "url", "label": "Server URL", "default": "https://{site}/wp-json/mosmcp/v1/mcp", "path": ["connections", "", "mcp", "url"]},
-      {"key": "token", "label": "Token", "path": ["connections", "", "mcp", "secrets", "token"], "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "{url}"}}
+      {"key": "url", "label": "Server URL", "default": "https://{site}/wp-json/mosmcp/v1/mcp", "path": ["mcp", "url"]},
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "{url}"}}
     ]
   }
 }

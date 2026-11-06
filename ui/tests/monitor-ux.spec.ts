@@ -16,7 +16,7 @@ const view = (): owner.View => ({
   vocabulary: {},
   status: {},
   config: {
-    accounts: {
+    connections: {
       network: { preset: "tcp", contents: "anyone", sends: "anyone" },
     },
   },
@@ -25,7 +25,7 @@ const view = (): owner.View => ({
 
 test("missing preset metadata has a display fallback, not a raw Custom connection", () => {
   const v = view();
-  v.config.accounts!.network.preset = "removed";
+  v.config.connections!.network.preset = "removed";
   expect(owner.presetOf(v, "network").title).toBe("Connection");
   expect(owner.connectorIcon({}, "", "/app/").src).toContain("custom.svg");
   expect(Object.hasOwn(v.presets, "custom")).toBe(false);
@@ -51,7 +51,7 @@ describe("raw TCP setup and access", () => {
   test("does not offer read-only; existing stored settings remain unchanged", () => {
     const v = view();
     v.config.identities = {
-      sandbox: { key: "key", accounts: { network: { level: "read" } } },
+      sandbox: { key: "key", connections: { network: { level: "read" } } },
     };
     const access = owner.agentAccess(v, "sandbox", "network")[0];
     expect(access.levels.map(([level]) => level)).toEqual([
@@ -62,7 +62,7 @@ describe("raw TCP setup and access", () => {
     expect(access.level).toBe("read");
     expect(
       owner
-        .levelsOf({ ...v.config.accounts!.network, preset: "github" })
+        .levelsOf({ ...v.config.connections!.network, preset: "github" })
         .map(([l]) => l),
     ).toContain("read");
   });
@@ -79,22 +79,22 @@ describe("raw TCP setup and access", () => {
     expect(hosts).toEqual(["example.com", "*.example.com"]);
     owner.applyChanges(
       v.config,
-      owner.edits.addAccount(v, "tcp", {
+      owner.edits.addConnection(v, "tcp", {
         name: "restricted",
         values: { hosts },
         answers: tcp.catalog.defaults,
-      }),
+      }).changes,
     );
-    expect(v.config.accounts!.restricted.connections![""].tcp.hosts).toEqual(
-      hosts,
+    expect(v.config.connections!.restricted.tcp).toEqual({ hosts });
+    expect(v.config.connections!.restricted).toMatchObject(
+      tcp.catalog.defaults,
     );
-    expect(v.config.accounts!.restricted).toMatchObject(tcp.catalog.defaults);
   });
 });
 
 test("Custom API can be created before its credential is configured", () => {
   const v = view();
-  const changes = owner.edits.addCustomApi(v, {
+  const { changes, credentials } = owner.edits.addCustomApi(v, {
     name: "example-api",
     api: {
       url: "https://api.example.com/v1",
@@ -106,22 +106,18 @@ test("Custom API can be created before its credential is configured", () => {
     token: "",
     answers: { contents: "me", sends: "me", strangers: true },
   });
-  expect(changes.some((change) => change.path.includes("secrets"))).toBe(false);
+  expect(credentials).toEqual({});
   owner.applyChanges(v.config, changes);
-  expect(v.config.accounts!["example-api"]).toMatchObject({
+  expect(v.config.connections!["example-api"]).toMatchObject({
     preset: "custom_api",
-    connections: {
-      "": {
-        http: {
-          slots: [{
-            value: "token",
-            origin: "https://api.example.com",
-            path: "/v1",
-            header: "Authorization",
-            prefix: "Bearer ",
-          }],
-        },
-      },
+    http: {
+      slots: [{
+        value: "token",
+        origin: "https://api.example.com",
+        path: "/v1",
+        header: "Authorization",
+        prefix: "Bearer ",
+      }],
     },
   });
 });
@@ -172,22 +168,21 @@ describe("MCP review uses saved pins without approving them", () => {
   });
   test("review wording distinguishes first-use tools from changed server instructions", () => {
     const v = view();
-    v.config.accounts!.network.connections = { "": { mcp: {} } };
+    v.config.connections!.network.mcp = {};
     v.status.network = {
       state: "ready",
       details: { blocked: 1, changes: ["+ search"], pin: { tools: [after] } },
     };
-    const first = owner.reviews(v, "network")[0];
+    const first = owner.review(v, "network")!;
     expect(first.previouslyApproved).toBe(false);
     expect(owner.toolReviewDescription(first)).toBe(
       "network advertises 1 MCP tool you haven’t approved yet. Review their definitions before using them.",
     );
-    v.config.accounts!.network.connections[""].mcp.pin = {
-      tools: [],
-      instructions: "Old",
+    v.config.connections!.network.mcp = {
+      pin: { tools: [], instructions: "Old" },
     };
     v.status.network.details!.changes = ["~ instructions:\nNew"];
-    const changed = owner.reviews(v, "network")[0];
+    const changed = owner.review(v, "network")!;
     expect(changed.previouslyApproved).toBe(true);
     expect(owner.toolReviewDescription(changed)).toContain(
       "Server instructions advertised by network differ from those you last approved.",
@@ -195,24 +190,23 @@ describe("MCP review uses saved pins without approving them", () => {
   });
   test("reviews read the prior pin from config and leave approval an explicit edit", () => {
     const v = view();
-    v.config.accounts!.network.connections = {
-      "": { mcp: { pin: { tools: [before] } } },
-    };
+    v.config.connections!.network.mcp = { pin: { tools: [before] } };
     v.status.network = {
       state: "ready",
       details: { blocked: 1, changes: ["~ search"], pin: { tools: [after] } },
     };
     const original = JSON.stringify(v);
-    const review = owner.reviews(v, "network")[0];
+    const review = owner.review(v, "network")!;
     expect(review.previouslyApproved).toBe(true);
     expect(owner.toolReviewDescription(review)).toContain(
       "Tool definitions advertised by network differ from those you last approved.",
     );
-    expect(review.previousTools).toEqual([before]);
-    expect(review.tools).toEqual([after]);
+    expect(review.changes[0]).toMatchObject({ kind: "Changed", tool: after });
+    expect(review.changes[0].changedFields).toContainEqual({
+      name: "description",
+      kind: "Changed",
+    });
     expect(JSON.stringify(v)).toBe(original);
-    expect(owner.edits.approveTools(v, "network", "").length).toBeGreaterThan(
-      0,
-    );
+    expect(owner.edits.approveTools(v, "network").length).toBeGreaterThan(0);
   });
 });

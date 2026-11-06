@@ -5,9 +5,9 @@
     "fields": [
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "secret": true, "paths": []},
-      {"key": "token", "label": "Keap account", "secret": true, "path": ["connections", "", "http", "secrets", "token"], "oauth": {"auth_url": "https://signin.infusionsoft.com/app/oauth/authorize", "token_url": "https://api.infusionsoft.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "full"}}
+      {"key": "token", "label": "Keap account", "secret": true, "credential": true, "oauth": {"auth_url": "https://signin.infusionsoft.com/app/oauth/authorize", "token_url": "https://api.infusionsoft.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "full"}}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.infusionsoft.com", "path": "/crm/rest/v2", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://api.infusionsoft.com", "path": "/crm/rest/v2", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.groups": {"title": "Admin: groups"},

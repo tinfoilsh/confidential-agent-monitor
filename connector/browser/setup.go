@@ -2,7 +2,6 @@ package browser
 
 import (
 	"context"
-	"maps"
 	"net/http"
 	"slices"
 	"sync"
@@ -14,21 +13,18 @@ import (
 func Kind(extension string, sandboxed bool) connector.Kind {
 	return connector.Kind{Settings: &extension, New: func() connector.Server { return new(Browser) }, Parse: func(source connector.Setup) (connector.Prepared, error) {
 		c := &setup{Extension: extension, NoSandbox: sandboxed}
-		if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+		if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 			return connector.Prepared{}, err
 		}
 		if err := c.Validate(true); err != nil {
 			return connector.Prepared{}, err
 		}
-		names, err := c.Declarations()
-		if err != nil {
-			return connector.Prepared{}, err
-		}
+		names := []string{}
 		for _, slot := range c.Slots {
 			names = append(names, slot.Value)
 		}
 		slices.Sort(names)
-		return connector.Prepared{Source: source, Value: c, SecretNames: slices.Compact(names)}, nil
+		return connector.Prepared{Value: c, SecretNames: slices.Compact(names)}, nil
 	}}
 }
 
@@ -44,7 +40,7 @@ func (b *Browser) Update(ctx context.Context, prepared connector.Prepared, secre
 	defer b.mu.Unlock()
 	b.close()
 	c := *prepared.Value.(*setup)
-	c.Secrets = maps.Clone(secrets)
+	c.Bind(secrets)
 	life, cancel := context.WithCancel(context.Background())
 	next := &session{setup: c, cancel: cancel}
 	stop := context.AfterFunc(ctx, cancel)

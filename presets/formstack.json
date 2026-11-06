@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "access_token", "label": "Access Token", "secret": true, "path": ["connections", "", "http", "secrets", "access_token"]}
+      {"key": "access_token", "label": "Access Token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "access_token", "origin": "https://www.formstack.com", "path": "/api/v2025", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "access_token", "origin": "https://www.formstack.com", "path": "/api/v2025", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.user": {"title": "Admin: user"},

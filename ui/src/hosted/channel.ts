@@ -1,13 +1,8 @@
 import { ed25519 } from "@noble/curves/ed25519.js";
 import { concatBytes, utf8ToBytes } from "@noble/hashes/utils.js";
 import { Handshake, type Transport } from "@tinfoilsh/noise";
-import {
-  OwnerError,
-  fromBase64,
-  toBase64,
-  type OwnerChannel,
-  type OwnerRpc,
-} from "../owner";
+import { OwnerError, type Shell, type ShellHandlers } from "../owner";
+import { fromBase64, toBase64 } from "./contract";
 
 const PROTOCOL = "Noise_NK_25519_ChaChaPoly_BLAKE2s";
 const SESSION_CONTEXT = "tinfoil owner session v1\0";
@@ -15,7 +10,22 @@ const SESSION_CONTEXT = "tinfoil owner session v1\0";
 const FRAME_BYTES = 65518,
   FRAME_MORE = 0,
   FRAME_LAST = 1;
+const SHELL_INPUT_BYTES = 16384;
 const decoder = new TextDecoder();
+
+/** An authenticated owner socket that carries whole messages. */
+export type OwnerChannel = {
+  send(message: Uint8Array): void;
+  receive(): Promise<Uint8Array>;
+  close(): void;
+};
+export type OwnerRpc = (
+  method: "GET" | "POST",
+  path: string,
+  body: unknown,
+  generation: number,
+  signal?: AbortSignal,
+) => Promise<unknown>;
 
 /** An NK handshake to an attested key, then a hello signed by the owner over its hash. */
 export type Session = {
@@ -160,5 +170,31 @@ export function rpcChannel(
         reply.status,
       );
     return text ? JSON.parse(text) : null;
+  };
+}
+
+// One sandbox shell for as long as its socket: input and resizes go out as they happen,
+// output streams back until the exit code.
+export function openShell(
+  channel: OwnerChannel,
+  { output, exit, error }: ShellHandlers,
+  signal: AbortSignal,
+): Shell {
+  const send = (message: object) =>
+    channel.send(new TextEncoder().encode(JSON.stringify(message)));
+  signal.addEventListener("abort", () => channel.close(), { once: true });
+  void (async () => {
+    for (;;) {
+      const message = JSON.parse(decoder.decode(await channel.receive()));
+      if ("exit" in message) return exit(message.exit ?? undefined);
+      output(fromBase64(message.output));
+    }
+  })().catch((cause) => signal.aborted || error(cause));
+  return {
+    input(bytes) {
+      for (let at = 0; at < bytes.length; at += SHELL_INPUT_BYTES)
+        send({ input: toBase64(bytes.subarray(at, at + SHELL_INPUT_BYTES)) });
+    },
+    resize: (cols, rows) => send({ resize: { cols, rows } }),
   };
 }

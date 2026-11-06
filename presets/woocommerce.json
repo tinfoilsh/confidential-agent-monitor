@@ -35,24 +35,22 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "basic": "user",
-              "origin": "https://example.com",
-              "path": "/wp-json/wc/v3",
-              "value": "consumer_key"
-            },
-            {
-              "basic": "password",
-              "origin": "https://example.com",
-              "path": "/wp-json/wc/v3",
-              "value": "consumer_secret"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "basic": "user",
+            "origin": "https://example.com",
+            "path": "/wp-json/wc/v3",
+            "value": "consumer_key"
+          },
+          {
+            "basic": "password",
+            "origin": "https://example.com",
+            "path": "/wp-json/wc/v3",
+            "value": "consumer_secret"
+          }
+        ]
       }
     },
     "defaults": {
@@ -70,16 +68,12 @@
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             0,
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             1,
@@ -90,25 +84,13 @@
       {
         "key": "consumer_key",
         "label": "Consumer key",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "consumer_key"
-        ],
+        "credential": true,
         "secret": true
       },
       {
         "key": "consumer_secret",
         "label": "Consumer secret",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "consumer_secret"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

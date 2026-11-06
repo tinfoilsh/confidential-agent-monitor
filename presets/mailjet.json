@@ -3,10 +3,10 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "secrets", "api_key"]},
-      {"key": "secret_key", "label": "Secret Key", "secret": true, "path": ["connections", "", "http", "secrets", "secret_key"]}
+      {"key": "api_key", "label": "API Key", "secret": true, "credential": true},
+      {"key": "secret_key", "label": "Secret Key", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://api.mailjet.com", "path": "/", "basic": "user"}, {"value": "secret_key", "origin": "https://api.mailjet.com", "path": "/", "basic": "password"}]}}},
+    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.mailjet.com", "path": "/", "basic": "user"}, {"value": "secret_key", "origin": "https://api.mailjet.com", "path": "/", "basic": "password"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.user": {"title": "Admin: user"},

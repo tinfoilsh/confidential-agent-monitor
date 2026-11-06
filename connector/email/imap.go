@@ -19,17 +19,15 @@ var IMAPKind = connector.Kind{Parse: parseIMAP, New: func() connector.Server { r
 
 func parseIMAP(source connector.Setup) (connector.Prepared, error) {
 	c := new(imapSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
 	if err := c.validate(); err != nil {
 		return connector.Prepared{}, err
 	}
-	names, err := c.Declarations("password")
-	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
+	return connector.Prepared{Value: c, SecretNames: []string{"password"}}, nil
 }
 
-// IMAP keeps one immutable setup for each admitted stream.
 type IMAP struct{ connector.Slot[imapSetup] }
 
 const (
@@ -51,12 +49,10 @@ func (r *imapSetup) validate() error {
 }
 
 func (owner *IMAP) Serve(s *connector.Stream, e *connector.Env) {
-	captured := owner.Load()
-	if captured == nil {
+	r, ok := owner.Load()
+	if !ok {
 		return
 	}
-	r := captured.Value
-	r.Secrets = captured.Secrets
 
 	u := &r.URL
 	up, err := connector.DialURL(s.Context, e.Dialer, u, "imaps", "143", "993")
@@ -118,7 +114,7 @@ func (owner *IMAP) Serve(s *connector.Stream, e *connector.Env) {
 			mailbox = strings.Trim(args, `"`)
 		}
 		dst := io.Writer(up)
-		if err := s.Gate(s.Context, r.Capture((&IMAPRequest{Command: command, Args: args, Mailbox: mailbox}).Describe())); err != nil {
+		if err := s.Gate(s.Context, r.Capture((&IMAPFacts{Command: command, Args: args, Mailbox: mailbox}).Describe())); err != nil {
 			fmt.Fprintf(s, "%s NO %v\r\n", tag, err)
 			dst = io.Discard
 		}
@@ -149,10 +145,8 @@ func forwardIMAP(dst io.Writer, src *bufio.Reader, line string) error {
 	}
 }
 
-type IMAPRequest IMAPFacts
-
-func (v *IMAPRequest) Describe() (facts.Facts, error) {
-	details := Details{IMAP: (*IMAPFacts)(v)}
+func (v *IMAPFacts) Describe() facts.Facts {
+	details := Details{IMAP: v}
 	action := ""
 	if slices.Contains(strings.Fields("CAPABILITY CHECK ENABLE EXAMINE FETCH ID IDLE LIST LOGOUT LSUB NAMESPACE NOOP SEARCH SELECT STATUS UNSELECT"), v.Command) {
 		action = "read"
@@ -161,5 +155,5 @@ func (v *IMAPRequest) Describe() (facts.Facts, error) {
 		action = "organize"
 	}
 	op := &facts.Operation{Action: action}
-	return facts.Facts{Operation: op, Title: v.Command + " " + v.Mailbox, Parameters: map[string]any{"mailbox": v.Mailbox, "args": v.Args}, Details: details}, nil
+	return facts.Facts{Operation: op, Title: v.Command + " " + v.Mailbox, Parameters: map[string]any{"mailbox": v.Mailbox, "args": v.Args}, Details: details}
 }

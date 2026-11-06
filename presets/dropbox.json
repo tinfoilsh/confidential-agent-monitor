@@ -44,26 +44,24 @@
         "title": "Share"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "Authorization",
-              "origin": "https://api.dropboxapi.com",
-              "path": "/2",
-              "prefix": "Bearer ",
-              "value": "token"
-            },
-            {
-              "header": "Authorization",
-              "origin": "https://content.dropboxapi.com",
-              "path": "/2",
-              "prefix": "Bearer ",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.dropboxapi.com",
+            "path": "/2",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://content.dropboxapi.com",
+            "path": "/2",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -75,13 +73,7 @@
       {
         "key": "token",
         "label": "OAuth2 access token",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

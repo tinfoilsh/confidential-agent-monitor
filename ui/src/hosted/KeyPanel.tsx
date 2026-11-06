@@ -146,7 +146,6 @@ export function SetupKeys(props: {
   );
 }
 
-// Leads with a passkey; the alternative goes on without one.
 function PasskeyChoice(props: {
   action: ReturnType<typeof useAction>;
   onPasskey: () => void;
@@ -214,7 +213,6 @@ const addPasskey = (
     onAdded?.();
   });
 
-// Offers a passkey to keys that open only with a recovery key, then continues either way.
 export function AddPasskey(props: {
   session: Session;
   manager: PasskeyKeyManager;

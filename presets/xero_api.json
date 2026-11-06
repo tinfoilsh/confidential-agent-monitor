@@ -5,9 +5,9 @@
     "fields": [
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "secret": true, "paths": []},
-      {"key": "token", "label": "Xero account", "secret": true, "path": ["connections", "", "http", "secrets", "token"], "oauth": {"auth_url": "https://login.xero.com/identity/connect/authorize", "token_url": "https://identity.xero.com/connect/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "offline_access accounting.invoices accounting.payments accounting.banktransactions accounting.manualjournals accounting.attachments accounting.settings accounting.contacts"}}
+      {"key": "token", "label": "Xero account", "secret": true, "credential": true, "oauth": {"auth_url": "https://login.xero.com/identity/connect/authorize", "token_url": "https://identity.xero.com/connect/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "offline_access accounting.invoices accounting.payments accounting.banktransactions accounting.manualjournals accounting.attachments accounting.settings accounting.contacts"}}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.xero.com", "path": "/api.xro/2.0", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://api.xero.com", "path": "/api.xro/2.0", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.accounts": {"title": "Admin: accounts"},

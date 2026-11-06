@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"net/http"
 	"reflect"
 	"slices"
 	"strings"
@@ -16,66 +17,50 @@ import (
 	"github.com/tinfoilsh/monitor/internal/config"
 	"github.com/tinfoilsh/monitor/internal/policy"
 	"github.com/tinfoilsh/monitor/internal/store"
-	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
 	"golang.org/x/crypto/ssh"
 )
 
+// settingsWrite replaces the policy source, or edits it with changes, and stages
+// credentials, nil clearing one. check runs under mu before validation and again
+// before persistence. A saved approval is answered atomically with the durable change.
+type settingsWrite struct {
+	source      *string
+	changes     []config.Change
+	credentials store.Secrets
+	check       func() error
+	saved       *savedAnswer
+}
+
+func (w settingsWrite) checked() error {
+	if w.check == nil {
+		return nil
+	}
+	return w.check()
+}
+
 // writeSettings is the single ordered settings path; writes is held, mu is not.
-// check runs under mu before validation and again before persistence. A saved
-// approval is answered atomically with the durable settings change.
-func (m *monitor) writeSettings(ctx context.Context, source *string, changes []config.Change, check func() error, saved *savedAnswer) error {
+func (m *monitor) writeSettings(ctx context.Context, w settingsWrite) error {
 	m.mu.Lock()
-	if check != nil {
-		if err := check(); err != nil {
-			m.mu.Unlock()
-			return err
-		}
-	}
-	base, env := m.store.Doc, m.settings.Load().Env
+	base, env, err := m.store.Doc, m.settings.Load().Env, w.checked()
 	m.mu.Unlock()
-	next := base
-	next.Secrets = base.Secrets.Clone()
-	var edits []config.Change
-	for _, change := range changes {
-		if change.Delete && change.Value != nil {
-			return errors.New("a deletion cannot have a value")
-		}
-		if id, ok := credentialID(change.Path); ok {
-			var raw json.RawMessage
-			if change.Value != nil {
-				var err error
-				if raw, err = json.Marshal(change.Value); err != nil {
-					return err
-				}
-			}
-			next.Secrets.Set(id, raw)
-		} else {
-			edits = append(edits, change)
-		}
-	}
-	var err error
-	if source != nil {
-		next.Policy = *source
-	} else if next.Policy, err = config.EditSource(base.Policy, edits); err != nil {
-		return err
-	}
-	plan, err := m.prepareSettings(ctx, base, next, env)
 	if err != nil {
 		return err
 	}
-	for _, change := range changes {
-		if id, ok := credentialID(change.Path); ok && next.Secrets.Get(id) != nil && plan.secrets.Get(id) == nil {
-			return fmt.Errorf("credential %v has no connection", id)
-		}
+	next := base
+	if w.source != nil {
+		next.Policy = *w.source
+	} else if next.Policy, err = config.EditSource(base.Policy, w.changes); err != nil {
+		return err
+	}
+	plan, err := m.prepareSettings(ctx, base, next, w.credentials, env)
+	if err != nil {
+		return err
 	}
 	m.mu.Lock()
-	if check != nil {
-		if err := check(); err != nil {
-			m.mu.Unlock()
-			return err
-		}
+	var install, retired []*connection
+	if err = w.checked(); err == nil {
+		install, retired, err = m.commitSettings(ctx, plan, w.saved)
 	}
-	install, retired, err := m.commitSettings(ctx, base, plan, saved)
 	m.mu.Unlock()
 	if err == nil {
 		m.installConnections(install, retired)
@@ -85,11 +70,26 @@ func (m *monitor) writeSettings(ctx context.Context, source *string, changes []c
 
 var errPolicyConflict = errors.New("policy changed; reload it and review a new diff before applying")
 
-// previewPolicy runs under writes and prepares source against base without committing it.
-func (m *monitor) previewPolicy(ctx context.Context, base store.Document, before *settings, source string) (*facts.PolicyDiff, error) {
+// policyDiff compares the owner source and its expanded settings.
+type policyDiff struct {
+	SourceDiff    string `json:"source_diff"`
+	EffectiveDiff string `json:"effective_diff"`
+}
+
+func sourceDiff(a, b string) string {
+	text, _ := difflib.GetUnifiedDiffString(difflib.UnifiedDiff{A: difflib.SplitLines(a), B: difflib.SplitLines(b), FromFile: "active/policy.toml", ToFile: "proposed/policy.toml", Context: 3})
+	return text
+}
+
+// prepareSource runs under writes and prepares source against base without committing it.
+func (m *monitor) prepareSource(ctx context.Context, base store.Document, before *settings, source string) (*settingsPlan, error) {
 	next := base
 	next.Policy = source
-	plan, err := m.prepareSettings(ctx, base, next, before.Env)
+	return m.prepareSettings(ctx, base, next, nil, before.Env)
+}
+
+func (m *monitor) previewPolicy(ctx context.Context, base store.Document, before *settings, source string) (*policyDiff, error) {
+	plan, err := m.prepareSource(ctx, base, before, source)
 	if err != nil {
 		return nil, err
 	}
@@ -101,15 +101,10 @@ func (m *monitor) previewPolicy(ctx context.Context, base store.Document, before
 	if err != nil {
 		return nil, err
 	}
-	diff := func(a, b string) string {
-		text, _ := difflib.GetUnifiedDiffString(difflib.UnifiedDiff{A: difflib.SplitLines(a), B: difflib.SplitLines(b), FromFile: "active/policy.toml", ToFile: "proposed/policy.toml", Context: 3})
-		return text
-	}
-	return &facts.PolicyDiff{SourceDiff: diff(base.Policy, source), EffectiveDiff: diff(beforeText, afterText)}, nil
+	return &policyDiff{SourceDiff: sourceDiff(base.Policy, source), EffectiveDiff: sourceDiff(beforeText, afterText)}, nil
 }
 
 const (
-	maxProposalReason  = 4096
 	maxProposalChanges = 256
 	maxPolicyProposals = 32
 )
@@ -128,15 +123,15 @@ type proposalReceipt struct {
 }
 
 func (r *record) receipt() proposalReceipt {
-	return proposalReceipt{ID: r.ID, State: r.State, Connection: r.summary().Facts.Account}
+	return proposalReceipt{ID: r.ID, State: r.State, Connection: r.summary().Facts.Connection}
 }
 
 // proposePolicy publishes one pending record per connection, or none if any fails.
 // The owner answers it like a request; approval writes its changes.
 func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalInput) ([]proposalReceipt, error) {
 	reason := strings.TrimSpace(input.Reason)
-	if reason == "" || len(reason) > maxProposalReason {
-		return nil, fmt.Errorf("proposal needs a reason of 1-%d bytes", maxProposalReason)
+	if reason == "" || len(reason) > maxReason {
+		return nil, fmt.Errorf("proposal needs a reason of 1-%d bytes", maxReason)
 	}
 	if (input.Source != "" || input.Delete != nil) == (input.Changes != nil) {
 		return nil, errors.New("proposal requires exactly one of a TOML fragment or structured changes")
@@ -165,28 +160,26 @@ func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalI
 	if err != nil {
 		return nil, err
 	}
-	proposer := facts.Principal{Key: p.Fingerprint, Name: p.Name}
 	var proposals []*record
 	for _, target := range slices.Sorted(maps.Keys(groups)) {
 		candidate, normalized, err := config.EditSourceNormalized(base.Policy, groups[target])
 		if err == nil && candidate == base.Policy {
 			err = errors.New("proposal does not change policy")
 		}
-		var diff *facts.PolicyDiff
 		if err == nil {
-			diff, err = m.previewPolicy(ctx, base, before, candidate)
+			_, err = m.prepareSource(ctx, base, before, candidate)
 		}
 		var raw json.RawMessage
 		if err == nil {
-			raw, _, err = facts.Encode(facts.Facts{Version: facts.Version, Principal: proposer, Account: target, Connection: target,
+			raw, _, err = facts.Encode(facts.Facts{Version: facts.Version, Principal: p, Connection: target,
 				Service: "policy-proposal", Title: reason, Parameters: map[string]any{},
-				Details: map[string]any{"policy": facts.PolicyDiff{SourceDiff: diff.SourceDiff}}})
+				Details: map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(base.Policy, candidate)}}})
 		}
 		if err != nil {
 			return nil, fmt.Errorf("connection %s: %w", target, err)
 		}
 		proposals = append(proposals, &record{Facts: raw, Changes: normalized, scope: before.ProposalScope(p.Name, normalized),
-			Decision: policy.Decision{Requirements: []policy.Requirement{{ID: "policy", Message: reason}}}})
+			Decision: policy.Decision{Requirements: []facts.Requirement{{ID: "policy", Message: reason}}}})
 	}
 
 	m.mu.Lock()
@@ -198,9 +191,8 @@ func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalI
 		}
 	}
 	for i, proposal := range proposals {
-		// A retried submission receives its pending record.
 		if j := slices.IndexFunc(m.records, func(r *record) bool {
-			return r.State == statePending && reflect.DeepEqual(r.Changes, proposal.Changes) && r.summary().Facts.Principal == proposer
+			return r.State == statePending && reflect.DeepEqual(r.Changes, proposal.Changes) && r.summary().Facts.Principal == p
 		}); j >= 0 {
 			proposals[i] = m.records[j]
 		} else {
@@ -234,14 +226,10 @@ type identityEnrollment struct {
 func (m *monitor) enrollmentChanges(input map[string]identityEnrollment) ([]config.Change, error) {
 	var changes []config.Change
 	for name, id := range input {
-		if err := sandbox.ValidateMetadata(id.Sandbox); err != nil {
-			return nil, err
-		}
-		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(id.Key))
+		fingerprint, err := config.Fingerprint(id.Key)
 		if err != nil {
 			return nil, err
 		}
-		fingerprint := ssh.FingerprintSHA256(key)
 		metadata, err := facts.JSON[any](id.Sandbox)
 		if err != nil {
 			return nil, err
@@ -296,15 +284,15 @@ func (m *monitor) enroll(ctx context.Context, identities map[string]identityEnro
 	if err != nil {
 		return err
 	}
-	return m.writeSettings(ctx, nil, changes, nil, nil)
+	return m.writeSettings(ctx, settingsWrite{changes: changes})
 }
 
 // viewAfter renders the owner view once an action that ran without mu succeeds.
-func (m *monitor) viewAfter(err error) (any, error) {
+func (m *monitor) viewAfter(r *http.Request, err error) (ownerView, error) {
 	if err != nil {
-		return nil, err
+		return ownerView{}, err
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	return m.view()
+	return m.view(r)
 }

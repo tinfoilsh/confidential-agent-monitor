@@ -16,7 +16,7 @@ import (
 
 const maxPolicyBytes = 2 << 20
 
-func readSource(source string) (map[string]any, error) {
+func ReadSource(source string) (map[string]any, error) {
 	if len(source) > maxPolicyBytes {
 		return nil, errors.New("policy source is too large")
 	}
@@ -157,7 +157,7 @@ func EditSource(source string, changes []Change) (string, error) {
 // It preserves the current source text when the editor only changes formatting.
 func EditSourceNormalized(source string, changes []Change) (string, []Change, error) {
 	parse := func(source string) (map[string]any, error) {
-		value, err := readSource(source)
+		value, err := ReadSource(source)
 		if err != nil {
 			return nil, err
 		}
@@ -189,7 +189,7 @@ func EditSourceNormalized(source string, changes []Change) (string, []Change, er
 
 // Fragment converts a TOML proposal into the same JSON-valued edits as owner calls.
 func Fragment(source string) ([]Change, error) {
-	v, err := readSource(source)
+	v, err := ReadSource(source)
 	if err != nil {
 		return nil, err
 	}

@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "access_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "secrets", "access_key"]}
+      {"key": "access_key", "label": "API Key", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "access_key", "origin": "https://rest.messagebird.com", "path": "/messages", "header": "Authorization", "prefix": "AccessKey "}]}}},
+    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://rest.messagebird.com", "path": "/messages", "header": "Authorization", "prefix": "AccessKey "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "delete.messages": {"title": "Delete: messages"},

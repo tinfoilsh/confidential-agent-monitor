@@ -9,123 +9,66 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"slices"
 	"strings"
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector/credential"
-	"github.com/tinfoilsh/monitor/internal/config"
 	"github.com/tinfoilsh/monitor/internal/store"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
-	"github.com/tinfoilsh/monitor/presets"
 )
 
 // Derive references from the existing persisted private key so restarts and
 // credential refreshes keep them stable, without storing another set of tokens.
+// The empty element keeps the references derived from version 1 state.
 func placeholder(k store.Keys, id store.SecretID) string {
 	mac := hmac.New(sha256.New, []byte(k.CAKey))
 	mac.Write([]byte("monitor credential placeholder v1\x00"))
-	raw, _ := json.Marshal([]string{id.Account, id.Connection, id.Name})
+	raw, _ := json.Marshal([]string{id.Connection, "", id.Name})
 	mac.Write(raw)
 	suffix := strings.ToLower(base32.StdEncoding.EncodeToString(mac.Sum(nil))[:9])
-	return "tfm_" + config.ConnectionName(id.Account, id.Connection) + "_" + suffix
+	return "tfm_" + id.Connection + "_" + suffix
 }
 
 // Provider writes preserve the connector and publish only after persistence.
 func (m *monitor) replaceValue(ctx context.Context, id store.SecretID, value *credential.Value, before, after json.RawMessage) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	c := m.connections[config.ConnectionName(id.Account, id.Connection)]
-	// Reject stale credential refreshes.
-	if c == nil || c.Credentials[id.Name] != value || !bytes.Equal(m.store.Doc.Secrets.Get(id), before) {
+	c := m.connections[id.Connection]
+	if c == nil || c.Credentials[id.Name] != value || !bytes.Equal(m.store.Doc.Credentials.Get(id), before) {
 		return errors.New("credential changed; start again")
 	}
 	next := m.store.Doc
-	next.Secrets = next.Secrets.Clone()
-	next.Secrets.Set(id, bytes.Clone(after))
+	next.Credentials = next.Credentials.Clone()
+	next.Credentials.Set(id, bytes.Clone(after))
 	return m.store.Commit(ctx, next)
 }
 
-// credentialID interprets an owner edit path; credential storage only sees its ID.
-func credentialID(path []string) (store.SecretID, bool) {
-	if len(path) < 2 || path[0] != "accounts" {
-		return store.SecretID{}, false
-	}
-	p, ok := presets.ParseCredentialPath(path[2:])
-	return store.SecretID{Account: path[1], Connection: p.Connection, Name: p.Secret}, ok
-}
-
-// One catalog field can feed several connections. Capture all destinations so
-// a completed sign-in updates them together, without overwriting a newer edit.
-func (m *monitor) signInCredential(account string, path []string) (json.RawMessage, func(context.Context, json.RawMessage) error, error) {
-	requested, ok := presets.ParseCredentialPath(path)
-	if !ok {
-		return nil, nil, errors.New("invalid credential path")
-	}
+// signInCredential captures the record a sign-in replaces, so completing it cannot
+// overwrite a newer edit.
+func (m *monitor) signInCredential(connection, name string) (json.RawMessage, func(context.Context, json.RawMessage) error, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	s := m.settings.Load()
-	c := m.connections[config.ConnectionName(account, requested.Connection)]
-	if c == nil || c.Account != account || c.Protocol != requested.Protocol || c.Credentials[requested.Secret] == nil {
-		return nil, nil, errors.New("connection does not exist")
+	c := m.connections[connection]
+	if c == nil || c.Credentials[name] == nil {
+		return nil, nil, errors.New("credential does not exist")
 	}
-	paths := []presets.CredentialPath{requested}
-	preset, err := s.Config.Preset(s.Config.Accounts[account].Preset)
-	if err != nil {
-		return nil, nil, err
-	}
-	fields, err := preset.Catalog.CredentialFields()
-	if err != nil {
-		return nil, nil, err
-	}
-	for _, field := range fields {
-		if slices.Contains(field, requested) {
-			paths = field
-			break
-		}
-	}
-	type destination struct {
-		connection *connection
-		value      *credential.Value
-		path       []string
-		id         store.SecretID
-		before     json.RawMessage
-	}
-	var destinations []destination
-	for _, p := range paths {
-		target := m.connections[config.ConnectionName(account, p.Connection)]
-		// An account may disable one of the preset's connections.
-		if target == nil {
-			continue
-		}
-		if target.Account != account || target.Protocol != p.Protocol || target.Credentials[p.Secret] == nil {
-			return nil, nil, errors.New("credential connection does not exist")
-		}
-		destinationID := store.SecretID{Account: account, Connection: p.Connection, Name: p.Secret}
-		path := append([]string{"accounts", account}, p.Path()...)
-		destinations = append(destinations, destination{target, target.Credentials[p.Secret], path, destinationID, bytes.Clone(m.store.Doc.Secrets.Get(destinationID))})
-	}
-	return bytes.Clone(m.store.Doc.Secrets.Get(store.SecretID{Account: account, Connection: requested.Connection, Name: requested.Secret})), func(ctx context.Context, raw json.RawMessage) error {
+	id := store.SecretID{Connection: connection, Name: name}
+	value, before := c.Credentials[name], bytes.Clone(m.store.Doc.Credentials.Get(id))
+	return before, func(ctx context.Context, raw json.RawMessage) error {
 		m.writes.Lock()
 		defer m.writes.Unlock()
-		var changes []config.Change
-		for _, d := range destinations {
-			changes = append(changes, config.Change{Path: d.path, Value: raw})
-		}
-		return m.writeSettings(ctx, nil, changes, func() error {
-			for _, d := range destinations {
-				if m.connections[d.connection.Name] != d.connection || d.connection.Credentials[d.id.Name] != d.value || !bytes.Equal(m.store.Doc.Secrets.Get(d.id), d.before) {
-					return errors.New("credential changed; start again")
-				}
+		return m.writeSettings(ctx, settingsWrite{credentials: store.Secrets{connection: {name: raw}}, check: func() error {
+			if m.connections[connection] != c || c.Credentials[name] != value || !bytes.Equal(m.store.Doc.Credentials.Get(id), before) {
+				return errors.New("credential changed; start again")
 			}
 			return nil
-		}, nil)
+		}})
 	}, nil
 }
 
 type signInInput struct {
 	Redirect   string          `json:"redirect"`
-	Path       []string        `json:"path"`
+	Name       string          `json:"name"`
 	Credential json.RawMessage `json:"credential"`
 }
 
@@ -145,7 +88,7 @@ type pendingSignIn struct {
 }
 
 func (m *monitor) startSignIn(r *http.Request, req signInInput) (any, error) {
-	previous, save, err := m.signInCredential(r.PathValue("account"), req.Path)
+	previous, save, err := m.signInCredential(r.PathValue("name"), req.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -221,5 +164,5 @@ func (m *monitor) finishSignIn(r *http.Request, req finishSignInInput) (any, err
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
 	defer cancel()
-	return m.viewAfter(pending.finish(ctx, req))
+	return m.viewAfter(r, pending.finish(ctx, req))
 }

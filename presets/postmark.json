@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "server_token", "label": "Server API Token", "secret": true, "path": ["connections", "", "http", "secrets", "server_token"]}
+      {"key": "server_token", "label": "Server API Token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "server_token", "origin": "https://api.postmarkapp.com", "path": "/", "header": "X-Postmark-Server-Token"}]}}},
+    "connection": {"http": {"slots": [{"value": "server_token", "origin": "https://api.postmarkapp.com", "path": "/", "header": "X-Postmark-Server-Token"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.domains": {"title": "Admin: domains"},

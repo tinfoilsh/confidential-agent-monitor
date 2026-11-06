@@ -20,24 +20,22 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "basic": "user",
-              "origin": "https://example.com",
-              "path": "/wp-json/wp/v2",
-              "value": "username"
-            },
-            {
-              "basic": "password",
-              "origin": "https://example.com",
-              "path": "/wp-json/wp/v2",
-              "value": "apppassword"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "basic": "user",
+            "origin": "https://example.com",
+            "path": "/wp-json/wp/v2",
+            "value": "username"
+          },
+          {
+            "basic": "password",
+            "origin": "https://example.com",
+            "path": "/wp-json/wp/v2",
+            "value": "apppassword"
+          }
+        ]
       }
     },
     "defaults": {
@@ -55,16 +53,12 @@
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             0,
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             1,
@@ -75,25 +69,13 @@
       {
         "key": "username",
         "label": "Username",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "username"
-        ],
+        "credential": true,
         "secret": true
       },
       {
         "key": "apppassword",
         "label": "Application password",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "apppassword"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

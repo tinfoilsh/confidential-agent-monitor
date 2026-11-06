@@ -7,20 +7,20 @@
       "read": { "title": "Use read-only tools", "effects": ["read"] },
       "use": { "title": "Use tools that change things", "effects": ["write"] }
     },
-    "connections": { "": { "mcp": { "url": "{url}" } } },
+    "connection": { "mcp": { "url": "{url}" } },
     "defaults": { "contents": "team", "sends": "me", "strangers": true },
     "fields": [
       {
         "key": "url",
         "label": "Server URL",
-        "path": ["connections", "", "mcp", "url"]
+        "path": ["mcp", "url"]
       },
       {
         "hint": "Leave empty to sign in",
         "key": "token",
         "label": "Token",
         "oauth": { "resource": "{url}" },
-        "path": ["connections", "", "mcp", "secrets", "token"],
+        "credential": true,
         "secret": true
       }
     ]

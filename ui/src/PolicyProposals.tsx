@@ -1,10 +1,11 @@
-import { For, Show, createMemo, createResource, onMount } from "solid-js";
+import { For, Show, createMemo, onMount } from "solid-js";
 import * as owner from "./owner.js";
 import {
   ConnectorIcon,
   Empty,
   Icon,
   ResourceDisclosure,
+  createRecord,
   href,
 } from "./components";
 import { useMonitor } from "./monitor";
@@ -49,32 +50,58 @@ const pathLabel = (proposal: owner.RequestRecord, path: string[]) => {
     return [`Sandbox ${path[1]}`, ...path.slice(4)].join(" › ");
   if (path[0] === "default_access")
     return ["Default access", ...path.slice(2)].join(" › ");
-  if (path[0] === "accounts" && path[1] === proposal.facts.account)
+  if (path[0] === "connections" && path[1] === proposal.facts.connection)
     return ["Connection", ...path.slice(2)].join(" › ");
   return path.join(" › ");
 };
 const proposalPreset = (proposal: owner.RequestRecord, view: owner.View) => {
   for (const change of proposal.changes ?? []) {
     if (
-      change.path.join("/") === `accounts/${proposal.facts.account}/preset` &&
+      change.path.join("/") ===
+        `connections/${proposal.facts.connection}/preset` &&
       typeof change.value === "string"
     )
       return change.value;
     if (
       change.path.length === 2 &&
-      change.path[0] === "accounts" &&
-      change.path[1] === proposal.facts.account
+      change.path[0] === "connections" &&
+      change.path[1] === proposal.facts.connection
     ) {
-      const account = change.value as { preset?: owner.Json } | undefined;
-      if (typeof account?.preset === "string") return account.preset;
+      const connection = change.value as { preset?: owner.Json } | undefined;
+      if (typeof connection?.preset === "string") return connection.preset;
     }
   }
-  return view.config.accounts?.[proposal.facts.account]?.preset ?? "";
+  return view.config.connections?.[proposal.facts.connection]?.preset ?? "";
 };
-const proposalBadge = (proposal: owner.RequestRecord, view: owner.View) =>
-  view.config.accounts?.[proposal.facts.account]
-    ? { label: "Update", class: "status-pending" }
-    : { label: "New", class: "status-new" };
+function ProposalSummary(props: {
+  proposal: owner.RequestRecord;
+  class?: string;
+}) {
+  const m = useMonitor();
+  return (
+    <>
+      <ConnectorIcon preset={proposalPreset(props.proposal, m.view()!)} />
+      <span class={props.class}>
+        <strong>{reasonPreview(props.proposal.facts.title ?? "")}</strong>
+        <small>
+          {props.proposal.facts.connection} ·{" "}
+          {props.proposal.facts.principal.name}
+        </small>
+      </span>
+    </>
+  );
+}
+function ProposalBadge(props: { proposal: owner.RequestRecord }) {
+  const m = useMonitor();
+  return (
+    <Show
+      when={m.view()!.config.connections?.[props.proposal.facts.connection]}
+      fallback={<span class="badge proposal-kind status-new">New</span>}
+    >
+      <span class="badge proposal-kind status-pending">Update</span>
+    </Show>
+  );
+}
 
 export function TechnicalDiff(props: { text: string }) {
   const lines = () =>
@@ -133,17 +160,15 @@ function Change(props: {
   );
 }
 
-/** Activity lists pending proposals and links settled outcomes to their audit details. */
 export function PolicyProposals() {
   const m = useMonitor();
   const history = createMemo(() =>
     m
-      .records()
-      .filter(owner.isConnectionProposalRecord)
+      .proposals()
       .filter((record) => record.state !== "pending")
       .sort((a, b) => Date.parse(b.time) - Date.parse(a.time)),
   );
-  const total = () => m.proposals().length + history().length;
+  const total = () => m.pendingProposals().length + history().length;
   return (
     <div id="list" class="resource-list proposal-list">
       <div class="resource-heading">
@@ -167,35 +192,21 @@ export function PolicyProposals() {
           </Empty>
         }
       >
-        <For each={m.proposals().map((proposal) => proposal.id)}>
+        <For each={m.pendingProposals().map((proposal) => proposal.id)}>
           {(id) => {
             const proposal = () =>
-              m.proposals().find((record) => record.id === id)!;
-            const badge = () => proposalBadge(proposal(), m.view()!);
+              m.pendingProposals().find((record) => record.id === id)!;
             return (
               <article class="resource-row activity-row">
                 <span class="resource-link">
-                  <ConnectorIcon
-                    preset={proposalPreset(proposal(), m.view()!)}
-                  />
-                  <span>
-                    <strong>{reasonPreview(proposal().facts.title ?? "")}</strong>
-                    <small>
-                      {proposal().facts.account} · {proposal().facts.principal.name}
-                    </small>
-                  </span>
+                  <ProposalSummary proposal={proposal()} />
                 </span>
                 <span class="resource-meta">
                   <time datetime={proposal().time}>
                     {date(proposal().time)}
                   </time>
-                  <span class={`badge proposal-kind ${badge().class}`}>
-                    {badge().label}
-                  </span>
-                  <a
-                    class="button"
-                    href={`#connections/pending/${encodeURIComponent(id)}`}
-                  >
+                  <ProposalBadge proposal={proposal()} />
+                  <a class="button" href={href("connections", "pending", id)}>
                     Review in Connections <Icon name="arrow" />
                   </a>
                 </span>
@@ -207,18 +218,13 @@ export function PolicyProposals() {
           {(record) => (
             <article class="resource-row activity-row proposal-history-row">
               <a class="resource-link" href={href("request", record.id)}>
-                <ConnectorIcon
-                  preset={
-                    m.view()!.config.accounts?.[record.facts.account]?.preset ??
-                    ""
-                  }
-                />
+                <ConnectorIcon connection={record.facts.connection} />
                 <span>
                   <strong>
                     {reasonPreview(record.facts.title || "Connection proposal")}
                   </strong>
                   <small>
-                    {record.facts.account || "Policy"} ·{" "}
+                    {record.facts.connection || "Policy"} ·{" "}
                     {record.facts.principal.key
                       ? record.facts.principal.name
                       : "Owner API"}
@@ -239,7 +245,6 @@ export function PolicyProposals() {
   );
 }
 
-/** Connections → Proposals, with each proposal expanding in place. */
 export function ConnectionProposals(props: { id?: string }) {
   const m = useMonitor();
   let list!: HTMLDivElement;
@@ -257,14 +262,13 @@ export function ConnectionProposals(props: { id?: string }) {
     <div ref={list} class="resource-list collection-list proposal-list">
       <div class="resource-heading">
         <h2>
-          Proposals <span class="count">{m.proposals().length}</span>
+          Proposals <span class="count">{m.pendingProposals().length}</span>
         </h2>
       </div>
-      <For each={m.proposals().map((proposal) => proposal.id)}>
+      <For each={m.pendingProposals().map((proposal) => proposal.id)}>
         {(id) => {
           const proposal = () =>
-            m.proposals().find((record) => record.id === id)!;
-          const badge = () => proposalBadge(proposal(), m.view()!);
+            m.pendingProposals().find((record) => record.id === id)!;
           return (
             <ResourceDisclosure
               class="proposal-connection-item"
@@ -272,21 +276,12 @@ export function ConnectionProposals(props: { id?: string }) {
               open={props.id === id}
               summary={
                 <>
-                  <ConnectorIcon
-                    preset={proposalPreset(proposal(), m.view()!)}
+                  <ProposalSummary
+                    proposal={proposal()}
+                    class="proposal-summary"
                   />
-                  <span class="proposal-summary">
-                    <strong class="proposal-reason-preview">
-                      {reasonPreview(proposal().facts.title ?? "")}
-                    </strong>
-                    <small>
-                      {proposal().facts.account} · {proposal().facts.principal.name}
-                    </small>
-                  </span>
                   <span class="resource-meta">
-                    <span class={`badge proposal-kind ${badge().class}`}>
-                      {badge().label}
-                    </span>
+                    <ProposalBadge proposal={proposal()} />
                   </span>
                   <span class="collection-chevron">
                     <Icon name="arrow" />
@@ -309,7 +304,11 @@ export function ConnectionProposals(props: { id?: string }) {
 
 function ConnectionProposalDetail(props: { proposal: owner.RequestRecord }) {
   const m = useMonitor();
-  const [full] = createResource(() => props.proposal.id, (id) => m.api()!.request(id));
+  const [full] = createRecord(() => ({
+    api: m.api()!,
+    id: props.proposal.id,
+    segment: props.proposal.segment,
+  }));
   const loaded = () => (full.error ? undefined : full());
   const decide = async (decision: "once" | "deny") => {
     if (m.busy() || !loaded()) return;

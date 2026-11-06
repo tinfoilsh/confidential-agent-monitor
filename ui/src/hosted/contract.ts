@@ -33,9 +33,12 @@ const MANUAL_WRAPPED_CHARS = 86;
 const MAX_KEY_SYNC_PAYLOAD = 8192;
 const CONFIRM_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ";
 export const CONFIRMATION_CODE_LENGTH = 6;
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+export const UUID =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+// The account of a user outside any organization.
+export const PERSONAL = "personal";
 const USER = /^user_[A-Za-z0-9]{1,64}$/;
-const ACCOUNT = /^(personal|org_[A-Za-z0-9]{1,64})$/;
+const ACCOUNT = new RegExp(`^(${PERSONAL}|org_[A-Za-z0-9]{1,64})$`);
 
 function fail(
   message = "This record is damaged or uses an unsupported format.",
@@ -43,10 +46,16 @@ function fail(
   throw new Error(message);
 }
 
+export const toBase64 = (bytes: Uint8Array) => {
+  let text = "";
+  for (const byte of bytes) text += String.fromCharCode(byte);
+  return btoa(text);
+};
+export const fromBase64 = (text: string) =>
+  Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
+
 export function b64u(bytes: Uint8Array): string {
-  let binary = "";
-  for (const byte of bytes) binary += String.fromCharCode(byte);
-  return btoa(binary)
+  return toBase64(bytes)
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "");
@@ -62,15 +71,21 @@ export function unb64u(text: unknown, length?: number): Uint8Array {
   const padded =
     text.replace(/-/g, "+").replace(/_/g, "/") +
     "=".repeat((4 - (text.length % 4)) % 4);
-  const bytes = Uint8Array.from(atob(padded), (c) => c.charCodeAt(0));
+  const bytes = fromBase64(padded);
   if (b64u(bytes) !== text || (length !== undefined && bytes.length !== length))
     fail();
   return bytes;
 }
 
-const std64 = (bytes: Uint8Array) => btoa(String.fromCharCode(...bytes));
+// SSH wire header of an Ed25519 key: its type name, then the key length.
+export const SSH_ED25519 = new Uint8Array([
+  0, 0, 0, 11, 115, 115, 104, 45, 101, 100, 50, 53, 53, 49, 57, 0, 0, 0, 32,
+]);
+// authorized_keys form of a 32-byte Ed25519 public key.
+export const sshPublicKey = (raw: Uint8Array) =>
+  "ssh-ed25519 " + toBase64(new Uint8Array([...SSH_ED25519, ...raw]));
 export const ownerPublicKey = (seed: Uint8Array) =>
-  "ed25519:" + std64(ed25519.getPublicKey(seed));
+  "ed25519:" + toBase64(ed25519.getPublicKey(seed));
 export const isID16 = (value: unknown) => {
   try {
     return unb64u(value, 16).length === 16;

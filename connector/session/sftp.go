@@ -28,19 +28,17 @@ type sftpSetup struct {
 
 const maxSFTPPacket = 1 << 20
 
-// SFTP v3 packet types and status codes, from draft-ietf-secsh-filexfer-02.
 func parseSFTP(source connector.Setup) (connector.Prepared, error) {
 	c := new(sftpSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
-	names, err := c.Declarations("key")
-	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
+	return connector.Prepared{Value: c, SecretNames: []string{"key"}}, nil
 }
 
-// SFTP keeps one immutable setup for each admitted stream.
 type SFTP struct{ connector.Slot[sftpSetup] }
 
+// SFTP v3 packet types and status codes, from draft-ietf-secsh-filexfer-02.
 const (
 	sftpVersion = 3
 
@@ -77,18 +75,12 @@ const (
 )
 
 func (owner *SFTP) Serve(s *connector.Stream, e *connector.Env) {
-	captured := owner.Load()
-	if captured == nil {
+	t, ok := owner.Load()
+	if !ok {
 		return
 	}
-	t := captured.Value
-	t.Secrets = captured.Secrets
 
 	t.serve(s, e, func(up *ssh.Client, nc ssh.NewChannel) {
-		if nc.ChannelType() != channelSession {
-			nc.Reject(ssh.Prohibited, "only SFTP sessions are supported")
-			return
-		}
 		ch, requests, err := nc.Accept()
 		if err != nil {
 			return
@@ -126,7 +118,7 @@ func (owner *SFTP) Serve(s *connector.Stream, e *connector.Env) {
 				r.Reply(true, nil)
 			}
 			go ssh.DiscardRequests(requests)
-			p := sftpProxy{up: reader, out: writer, check: func(r *SFTPRequest) error { return s.Gate(s.Context, t.Capture((r).Describe())) }, handles: map[string]*sftpHandle{}}
+			p := sftpProxy{up: reader, out: writer, check: func(r *SFTPFacts) error { return s.Gate(s.Context, t.Capture(r.Describe())) }, handles: map[string]*sftpHandle{}}
 			p.serve(ch, cmp.Or(t.Root, "/"))
 			return
 		}
@@ -142,7 +134,7 @@ type sftpHandle struct {
 type sftpProxy struct {
 	up      io.Reader
 	out     io.Writer
-	check   func(*SFTPRequest) error
+	check   func(*SFTPFacts) error
 	root    string
 	handles map[string]*sftpHandle
 	next    uint64
@@ -413,7 +405,7 @@ func (p *sftpProxy) virtual(name string) string {
 func (p *sftpProxy) request(b []byte) ([]byte, error) {
 	id := binary.BigEndian.Uint32(b[1:5])
 	d := sftpDecoder{b: b[5:]}
-	e := SFTPRequest{}
+	e := SFTPFacts{}
 	var h *sftpHandle
 	var handle, name, target string
 	var tail []byte
@@ -556,13 +548,11 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 	return r, nil
 }
 
-type SFTPRequest SFTPFacts
-
-func (v *SFTPRequest) Describe() (facts.Facts, error) {
-	details := Details{SFTP: (*SFTPFacts)(v)}
+func (v *SFTPFacts) Describe() facts.Facts {
+	details := Details{SFTP: v}
 	action := map[string]string{
-		"read": "read", "stat": "read", "lstat": "read", "fstat": "read", "opendir": "read", "readdir": "read", "realpath": "read", "readlink": "read",
-		"write": "write", "mkdir": "write", "remove": "delete", "rmdir": "delete", "rename": "rename", "setstat": "metadata", "fsetstat": "metadata", "close": "session",
+		"read": "read", "stat": "read", "lstat": "read", "fstat": "read", "opendir": "read", "readdir": "read", "realpath": "read",
+		"write": "write", "mkdir": "write", "remove": "delete", "rmdir": "delete", "rename": "rename", "setstat": "metadata", "fsetstat": "metadata",
 	}[v.Command]
 	if v.Command == "open" {
 		switch {
@@ -578,10 +568,6 @@ func (v *SFTPRequest) Describe() (facts.Facts, error) {
 	delete(scope, "command")
 	delete(scope, "offset")
 	delete(scope, "size")
-	var effects []string
-	if action == "session" {
-		effects = []string{"session"}
-	}
-	op := &facts.Operation{ID: v.Command, Action: action, Effects: effects}
-	return facts.Facts{Operation: op, Title: "SFTP " + v.Command + " " + v.Path, Parameters: scope, Details: details}, nil
+	op := &facts.Operation{ID: v.Command, Action: action}
+	return facts.Facts{Operation: op, Title: "SFTP " + v.Command + " " + v.Path, Parameters: scope, Details: details}
 }

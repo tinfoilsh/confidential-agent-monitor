@@ -5,13 +5,11 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"maps"
 	"net"
 	"net/http"
 	"net/url"
-	"slices"
 	"sync"
 	"sync/atomic"
 
@@ -49,7 +47,7 @@ func ParseSetup(source connector.Setup, config any, setup *Setup) (connector.Pre
 		*connector.Semantics
 		MCP *Preset `json:"mcp"`
 	}{Semantics: &setup.Semantics}
-	if err := connector.ParseSetup(source, config, &preset, &setup.Semantics); err != nil {
+	if err := connector.ParseSetup(source, config, &preset); err != nil {
 		return connector.Prepared{}, err
 	}
 	u, err := connector.ParseURL(setup.URL)
@@ -57,8 +55,7 @@ func ParseSetup(source connector.Setup, config any, setup *Setup) (connector.Pre
 		return connector.Prepared{}, errors.New("MCP requires an http:// or https:// server URL")
 	}
 	setup.preset = preset.MCP
-	names, err := setup.Declarations("token")
-	return connector.Prepared{Source: source, Value: setup, SecretNames: names}, err
+	return connector.Prepared{Value: setup, SecretNames: []string{"token"}}, nil
 }
 
 func Parse(source connector.Setup) (connector.Prepared, error) {
@@ -74,7 +71,7 @@ type Server struct {
 
 func (s *Server) Update(ctx context.Context, prepared connector.Prepared, secrets map[string]*credential.Value, env *connector.Env) error {
 	setup := *prepared.Value.(*Setup)
-	setup.Secrets = maps.Clone(secrets)
+	setup.Bind(secrets)
 	client := env.Client()
 	return s.UpdateWithClient(ctx, setup, client, client.Transport.(*http.Transport).CloseIdleConnections)
 }
@@ -159,10 +156,10 @@ func (m *session) serve(s *connector.Stream, e *connector.Env) {
 		c = tls.Server(s, e.TLS)
 	}
 	connector.ServeHTTP(s, c, sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server {
-		server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: Version}, &sdk.ServerOptions{Instructions: m.instructions})
+		server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: version}, &sdk.ServerOptions{Instructions: m.instructions})
 		for _, t := range m.tools {
 			server.AddTool(t, func(ctx context.Context, req *sdk.CallToolRequest) (*sdk.CallToolResult, error) {
-				if err := s.Gate(ctx, m.Capture((&Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}).Describe(m.preset))); err != nil {
+				if err := s.Gate(ctx, m.CaptureResult((&Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}).Describe(m.preset))); err != nil {
 					log.Printf("%s: blocked %s: %v", m.URL, t.Name, err)
 					return &sdk.CallToolResult{IsError: true, Content: []sdk.Content{&sdk.TextContent{Text: "blocked by policy: " + err.Error()}}}, nil
 				}
@@ -176,18 +173,18 @@ func (m *session) serve(s *connector.Stream, e *connector.Env) {
 func (m *session) connect(ctx context.Context, client *http.Client) error {
 	ctx, cancel := context.WithTimeout(ctx, connector.DialTimeout)
 	defer cancel()
-	if token := m.Secrets["token"]; token != nil && len(token.Raw()) > 0 {
+	if token := m.Secrets["token"]; token.Configured() {
 		if u, err := url.Parse(m.URL); err != nil || u.Scheme != "https" {
 			return errors.New("an MCP token needs an https server URL")
 		}
 		client.Transport = bearer{token, client.Transport}
 	}
-	session, err := sdk.NewClient(&sdk.Implementation{Name: "monitor", Version: Version}, nil).
+	session, err := sdk.NewClient(&sdk.Implementation{Name: "monitor", Version: version}, nil).
 		Connect(ctx, &sdk.StreamableClientTransport{Endpoint: m.URL, HTTPClient: client}, nil)
 	if err != nil {
 		return err
 	}
-	cur, err := Inspect(ctx, session)
+	cur, err := inspect(ctx, session)
 	if err != nil {
 		session.Close()
 		return err
@@ -245,7 +242,7 @@ func (r *Request) Describe(p *Preset) (facts.Facts, error) {
 	f.Details.(Details).MCP.Arguments = args
 	f.Operation = &facts.Operation{Action: action}
 	if p != nil {
-		scope, err := p.scope.Select(args)
+		scope, err := jsonsel.Select(p.scope, args)
 		maps.Copy(f.Parameters, scope)
 		f.Definition = p.definition
 		f.Context.Sends = p.Sends
@@ -262,7 +259,7 @@ type Preset struct {
 	Scope      map[string]jsonsel.Selector `json:"scope,omitempty"`
 	Sends      string                      `json:"sends,omitempty"`
 	Observes   *facts.Label                `json:"observes,omitempty"`
-	scope      selectors
+	scope      []jsonsel.Compiled
 	definition json.RawMessage
 }
 
@@ -273,49 +270,10 @@ func (p *Preset) UnmarshalJSON(raw []byte) error {
 		return errors.New("invalid MCP data-flow settings")
 	}
 	if err == nil {
-		p.scope, err = compileSelectors(p.Scope)
+		p.scope, err = jsonsel.Compile(p.Scope)
 	}
 	if err == nil {
 		p.definition, err = json.Marshal((*plain)(p))
 	}
 	return err
-}
-
-type compiledSelector struct {
-	name string
-	jsonsel.Selector
-	read func(any) (any, bool)
-}
-
-// selectors keeps compiled MCP scope entries in name order.
-type selectors []compiledSelector
-
-func compileSelectors(specs map[string]jsonsel.Selector) (selectors, error) {
-	out := make(selectors, 0, len(specs))
-	for _, name := range slices.Sorted(maps.Keys(specs)) {
-		spec := specs[name]
-		if !spec.Valid() {
-			return nil, fmt.Errorf("invalid selector type %q", spec.Type)
-		}
-		read, err := jsonsel.CompilePointer(spec.At)
-		if err != nil {
-			return nil, err
-		}
-		out = append(out, compiledSelector{name: name, Selector: spec, read: read})
-	}
-	return out, nil
-}
-
-func (scope selectors) Select(doc any) (map[string]any, error) {
-	out := make(map[string]any, len(scope))
-	var errs []error
-	for _, spec := range scope {
-		value, present := spec.read(doc)
-		if err := spec.Check(spec.name, value, present); err != nil {
-			errs = append(errs, err)
-		} else if present {
-			out[spec.name] = value
-		}
-	}
-	return out, errors.Join(errs...)
 }

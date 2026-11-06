@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "API Token (of a Base)", "secret": true, "path": ["connections", "", "http", "secrets", "token"]}
+      {"key": "token", "label": "API Token (of a Base)", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://cloud.seatable.io", "path": "/", "header": "Authorization", "prefix": "Token "}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://cloud.seatable.io", "path": "/", "header": "Authorization", "prefix": "Token "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "delete.api_tokens": {"title": "Delete: api tokens"},

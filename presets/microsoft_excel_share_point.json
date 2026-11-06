@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "Microsoft Excel (SharePoint) access token", "secret": true, "path": ["connections", "", "http", "secrets", "token"]}
+      {"key": "token", "label": "Microsoft Excel (SharePoint) access token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://graph.microsoft.com", "path": "/v1.0", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://graph.microsoft.com", "path": "/v1.0", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "delete.application": {"title": "Delete: application"},

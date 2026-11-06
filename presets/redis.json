@@ -6,11 +6,11 @@
       "read": {"title": "Read keys", "effects": ["read"]},
       "write": {"title": "Change keys and the server", "effects": ["write"]}
     },
-    "connections": {"": {"redis": {"url": "{url}"}}},
+    "connection": {"redis": {"url": "{url}"}},
     "defaults": {"contents": "me", "sends": "me", "strangers": true},
     "fields": [
-      {"hint": "rediss://user@host:6379", "key": "url", "label": "Connection URL", "path": ["connections", "", "redis", "url"]},
-      {"default": "", "key": "password", "label": "Password", "path": ["connections", "", "redis", "secrets", "password"], "secret": true}
+      {"hint": "rediss://user@host:6379", "key": "url", "label": "Connection URL", "path": ["redis", "url"]},
+      {"default": "", "key": "password", "label": "Password", "credential": true, "secret": true}
     ]
   }
 }

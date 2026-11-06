@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "team_secret", "label": "Team Secret", "secret": true, "path": ["connections", "", "http", "secrets", "team_secret"]}
+      {"key": "team_secret", "label": "Team Secret", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "team_secret", "origin": "https://connect.signl4.com", "path": "/api/v2", "header": "x-s4-api-key"}]}}},
+    "connection": {"http": {"slots": [{"value": "team_secret", "origin": "https://connect.signl4.com", "path": "/api/v2", "header": "x-s4-api-key"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.memberships": {"title": "Admin: memberships"},

@@ -321,7 +321,7 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 	}
 	r.Warnings = append(r.Warnings, p.Warnings...)
 	if len(r.Presets) > 1 {
-		r.Warnings = append(r.Warnings, "source spans multiple account presets; candidate catalog needs provider-specific connection review")
+		r.Warnings = append(r.Warnings, "source spans multiple presets; candidate catalog needs provider-specific connection review")
 	}
 	operations := slices.Clone(baseline)
 	ids := map[string]bool{}

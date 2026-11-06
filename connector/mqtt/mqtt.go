@@ -23,17 +23,15 @@ var Kind = connector.Kind{PerMessage: true, Parse: parseMQTT, New: func() connec
 
 func parseMQTT(source connector.Setup) (connector.Prepared, error) {
 	c := new(mqttSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
 	if err := c.validate(); err != nil {
 		return connector.Prepared{}, err
 	}
-	names, err := c.Declarations("password")
-	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
+	return connector.Prepared{Value: c, SecretNames: []string{"password"}}, nil
 }
 
-// MQTT keeps one immutable setup for each admitted stream.
 type MQTT struct{ connector.Slot[mqttSetup] }
 
 const maxPacket = 1 << 20
@@ -52,12 +50,10 @@ func (m *mqttSetup) validate() error {
 }
 
 func (owner *MQTT) Serve(s *connector.Stream, e *connector.Env) {
-	captured := owner.Load()
-	if captured == nil {
+	m, ok := owner.Load()
+	if !ok {
 		return
 	}
-	m := captured.Value
-	m.Secrets = captured.Secrets
 
 	reader := bufio.NewReader(s)
 	packet, err := readPacket(reader)
@@ -87,7 +83,7 @@ func (owner *MQTT) Serve(s *connector.Stream, e *connector.Env) {
 		refuse(5)
 		return
 	}
-	if err := s.Gate(s.Context, m.Capture((&Request{Command: "connect"}).Describe())); err != nil {
+	if err := s.Gate(s.Context, m.Capture((&MQTTFacts{Command: "connect"}).Describe())); err != nil {
 		refuse(5)
 		return
 	}
@@ -154,7 +150,7 @@ type proxy struct {
 }
 
 func (p *proxy) publish(command string, v *packets.PublishPacket) error {
-	return p.s.Gate(p.s.Context, p.owner.Capture((&Request{Command: command, Topic: v.TopicName, QoS: v.Qos, Retain: v.Retain, Payload: v.Payload}).Describe()))
+	return p.s.Gate(p.s.Context, p.owner.Capture((&MQTTFacts{Command: command, Topic: v.TopicName, QoS: v.Qos, Retain: v.Retain, Payload: v.Payload}).Describe()))
 }
 
 func (p *proxy) request(packet packets.ControlPacket) error {
@@ -189,7 +185,7 @@ func (p *proxy) request(packet packets.ControlPacket) error {
 		return p.publish("publish", publish)
 	case *packets.SubscribePacket:
 		for i, topic := range v.Topics {
-			if err := p.s.Gate(p.s.Context, p.owner.Capture((&Request{Command: "subscribe", Topic: topic, QoS: v.Qoss[i]}).Describe())); err != nil {
+			if err := p.s.Gate(p.s.Context, p.owner.Capture((&MQTTFacts{Command: "subscribe", Topic: topic, QoS: v.Qoss[i]}).Describe())); err != nil {
 				return err
 			}
 		}
@@ -375,10 +371,8 @@ func topicValid(s string, filter bool) bool {
 	return true
 }
 
-type Request MQTTFacts
-
-func (v *Request) Describe() (facts.Facts, error) {
-	details := Details{MQTT: (*MQTTFacts)(v)}
+func (v *MQTTFacts) Describe() facts.Facts {
+	details := Details{MQTT: v}
 	action := ""
 	if slices.Contains([]string{"connect", "subscribe", "receive", "publish"}, v.Command) {
 		action = v.Command
@@ -388,5 +382,5 @@ func (v *Request) Describe() (facts.Facts, error) {
 	}
 	op := &facts.Operation{ID: v.Command, Action: action}
 	parameters, _ := facts.JSON[map[string]any](v)
-	return facts.Facts{Operation: op, Title: "MQTT " + v.Command + " " + v.Topic, Parameters: parameters, Details: details, Context: facts.Context{Sends: "account"}}, nil
+	return facts.Facts{Operation: op, Title: "MQTT " + v.Command + " " + v.Topic, Parameters: parameters, Details: details, Context: facts.Context{Sends: facts.SendsConnection}}
 }

@@ -37,32 +37,25 @@ type Endpoint struct {
 	Close   func()
 }
 
-// Start uses its context for installation. A returned Endpoint owns its lifetime
-// independently; canceling installation after success must not stop the process.
-type Launcher interface {
-	Start(context.Context, []byte, http.Handler) (Endpoint, error)
-}
-
 // Proxy is stable across setup changes. Update and Close are serialized by its
 // owner; calls already handed off retain their original process capabilities.
 type Proxy struct {
 	Protocol string
 	Kind     connector.Kind
-	Launcher Launcher
+	Launcher *Local
 	mu       sync.Mutex
 	current  *process
 }
 
 type process struct {
 	Endpoint
-	env         *connector.Env
-	usesHostKey bool
-	secrets     map[string]*credential.Value
-	transport   *http.Transport
-	details     json.RawMessage
-	mu          sync.Mutex
-	next        uint64
-	streams     map[string]*connector.Stream
+	env       *connector.Env
+	secrets   map[string]*credential.Value
+	transport *http.Transport
+	details   json.RawMessage
+	mu        sync.Mutex
+	next      uint64
+	streams   map[string]*connector.Stream
 }
 
 func (p *Proxy) Update(ctx context.Context, prepared connector.Prepared, secrets map[string]*credential.Value, env *connector.Env) error {
@@ -74,11 +67,11 @@ func (p *Proxy) Update(ctx context.Context, prepared connector.Prepared, secrets
 	if err != nil {
 		return err
 	}
-	boot := bootstrap{Setup: prepared.Source, Version: protocolVersion, Protocol: p.Protocol, Settings: settings, Secrets: map[string]secretHandle{}}
+	boot := bootstrap{Setup: prepared.Source, Protocol: p.Protocol, Settings: settings, Secrets: map[string]secretHandle{}}
 	for name, value := range secrets {
-		boot.Secrets[name] = secretHandle{len(value.Raw()) > 0, value.Placeholder}
+		boot.Secrets[name] = secretHandle{value.Configured(), value.Placeholder}
 	}
-	if p.Kind.UsesHostKey && env.HostKey != nil {
+	if env.HostKey != nil {
 		boot.HostKey = env.HostKey.PublicKey().Marshal()
 	}
 	raw, err := json.Marshal(boot)
@@ -88,7 +81,7 @@ func (p *Proxy) Update(ctx context.Context, prepared connector.Prepared, secrets
 	if len(raw) > maxMessage {
 		return errors.New("worker configuration exceeds size limit")
 	}
-	running := &process{env: env, usesHostKey: p.Kind.UsesHostKey, secrets: maps.Clone(secrets), streams: map[string]*connector.Stream{}}
+	running := &process{env: env, secrets: maps.Clone(secrets), streams: map[string]*connector.Stream{}}
 	running.Endpoint, err = p.Launcher.Start(ctx, raw, running.broker())
 	if err != nil {
 		return err
@@ -159,7 +152,7 @@ func (p *Proxy) Serve(s *connector.Stream, _ *connector.Env) {
 	running.mu.Unlock()
 	defer func() { running.mu.Lock(); delete(running.streams, id); running.mu.Unlock() }()
 	raw, _ := json.Marshal(streamInfo{id, s.Name, s.Host, s.Port})
-	header := http.Header{streamHeader: {base64.RawStdEncoding.EncodeToString(raw)}, "Connection": {"Upgrade"}, "Upgrade": {"monitor-connector"}}
+	header := http.Header{streamHeader: {base64.RawStdEncoding.EncodeToString(raw)}, "Connection": {"Upgrade"}, "Upgrade": {upgradeProtocol}}
 	request := &http.Request{Method: "GET", URL: &url.URL{Path: "/stream"}, Host: "worker", Header: header}
 	upstream, err := connect(ctx, running.Dial, request, http.StatusSwitchingProtocols)
 	if err != nil {
@@ -255,7 +248,7 @@ func (p *process) credential(ctx context.Context, name string) (string, error) {
 }
 
 func (p *process) signHost(raw []byte) (*ssh.Signature, error) {
-	if !p.usesHostKey || p.env.HostKey == nil {
+	if p.env.HostKey == nil {
 		return nil, errors.New("host identity is not granted")
 	}
 	var in signing

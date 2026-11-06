@@ -1,7 +1,6 @@
 package config
 
 import (
-	"bytes"
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
@@ -17,21 +16,18 @@ import (
 // No caller uses this presentation as settings or connector authority.
 func (c *Config) View() (map[string]any, error) {
 	v := *c
-	v.Identities, v.Accounts = maps.Clone(c.Identities), maps.Clone(c.Accounts)
+	v.Identities, v.Connections = maps.Clone(c.Identities), maps.Clone(c.Connections)
 	for name, id := range v.Identities {
-		id.Accounts = c.Accesses(name)
+		id.Connections = c.Accesses(name)
 		v.Identities[name] = id
 	}
-	for name, account := range v.Accounts {
-		specs, err := c.Connections(name)
+	for name, connection := range v.Connections {
+		spec, err := c.Spec(name)
 		if err != nil {
 			return nil, err
 		}
-		account.Connections = map[string]map[string]json.RawMessage{}
-		for _, spec := range specs {
-			account.Connections[spec.Key] = map[string]json.RawMessage{spec.Protocol: spec.Config}
-		}
-		v.Accounts[name] = account
+		connection.Setup = map[string]json.RawMessage{spec.Protocol: spec.Config}
+		v.Connections[name] = connection
 	}
 	return facts.JSON[map[string]any](v)
 }
@@ -43,12 +39,12 @@ func (c *Config) Effective() (string, error) {
 		return "", err
 	}
 	ps := map[string]any{}
-	for _, acc := range c.Accounts {
-		p, err := c.Preset(acc.Preset)
+	for _, connection := range c.Connections {
+		p, err := presets.Lookup(connection.Preset)
 		if err != nil {
 			return "", err
 		}
-		if ps[acc.Preset], err = facts.JSON[map[string]any](p); err != nil {
+		if ps[connection.Preset], err = facts.JSON[map[string]any](p); err != nil {
 			return "", err
 		}
 	}
@@ -56,67 +52,38 @@ func (c *Config) Effective() (string, error) {
 	return RenderTOML(v)
 }
 
-// agentFields defines the restricted configuration view returned to an agent.
-// Proposals may request broader changes, but never reveal owner-only state.
-func (c *Config) agentFields(p Principal) ([]Change, error) {
-	if name, ok := c.Principals[p.Fingerprint]; !ok || name != p.Name {
+// AgentView is the restricted configuration returned to an agent. Proposals may
+// request broader changes, but never reveal owner-only state.
+func (c *Config) AgentView(p Principal) (map[string]any, error) {
+	if name, ok := c.Principals[p.Key]; !ok || name != p.Name {
 		return nil, errors.New("agent identity changed")
 	}
-	var rules any
-	if len(c.Identities[p.Name].Rules) != 0 {
-		rules = c.Identities[p.Name].Rules
+	identity := map[string]any{"connections": c.Accesses(p.Name)}
+	if rules := c.Identities[p.Name].Rules; len(rules) != 0 {
+		identity["rules"] = rules
 	}
-	fields := []Change{{Path: []string{"lattices"}, Value: c.Lattices},
-		{Path: []string{"identities", p.Name, "accounts"}, Value: c.Accesses(p.Name)},
-		{Path: []string{"identities", p.Name, "rules"}, Value: rules}}
-	for name, a := range c.Accounts {
+	connections := map[string]any{}
+	for name, connection := range c.Connections {
 		if c.Reaches(p.Name, name) {
-			for field, value := range map[string]any{"contents": a.Contents, "strangers": a.Strangers, "sends": a.Sends, "policy_options": a.PolicyOptions} {
-				fields = append(fields, Change{Path: []string{"accounts", name, field}, Value: value})
-			}
+			connections[name] = map[string]any{"contents": connection.Contents, "strangers": connection.Strangers, "sends": connection.Sends, "policy_options": connection.PolicyOptions}
 		}
 	}
-	return fields, nil
-}
-
-func (c *Config) AgentView(p Principal) (map[string]any, error) {
-	fields, err := c.agentFields(p)
-	if err != nil {
-		return nil, err
-	}
-	view := map[string]any{"accounts": map[string]any{}}
-	for _, field := range fields {
-		if field.Value == nil {
-			continue
-		}
-		at := view
-		for _, key := range field.Path[:len(field.Path)-1] {
-			if at[key] == nil {
-				at[key] = map[string]any{}
-			}
-			at = at[key].(map[string]any)
-		}
-		at[field.Path[len(field.Path)-1]] = field.Value
-	}
-	return facts.JSON[map[string]any](view)
+	return facts.JSON[map[string]any](map[string]any{"lattices": c.Lattices, "identities": map[string]any{p.Name: identity}, "connections": connections})
 }
 
 // ProposalTarget names the connection whose setup or access path changes.
 func ProposalTarget(path []string) (string, bool) {
 	switch {
-	case len(path) >= 2 && (path[0] == "accounts" || path[0] == "default_access") && path[1] != "":
+	case len(path) >= 2 && (path[0] == "connections" || path[0] == "default_access") && path[1] != "":
 		return path[1], true
-	case len(path) >= 4 && path[0] == "identities" && path[1] != "" && path[2] == "accounts" && path[3] != "":
+	case len(path) >= 4 && path[0] == "identities" && path[1] != "" && path[2] == "connections" && path[3] != "":
 		return path[3], true
 	}
 	return "", false
 }
 
-// ProposalChanges groups p's edits by connection. Credentials are refused because
-// approval stores them as secrets, unlike the source edit the owner previews.
 func (c *Config) ProposalChanges(p Principal, changes []Change) (map[string][]Change, error) {
 	groups := map[string][]Change{}
-	var leaves []Change
 	for _, change := range changes {
 		target, ok := ProposalTarget(change.Path)
 		if !ok {
@@ -126,16 +93,6 @@ func (c *Config) ProposalChanges(p Principal, changes []Change) (map[string][]Ch
 			return nil, errors.New("a sandbox may propose only connection setup and its own access")
 		}
 		groups[target] = append(groups[target], change)
-		if table, ok := change.Value.(map[string]any); ok && len(table) > 0 && table["$json"] == nil {
-			leaves = append(leaves, fragmentChanges(table, change.Path)...)
-		} else {
-			leaves = append(leaves, change)
-		}
-	}
-	for _, leaf := range leaves {
-		if _, credential := presets.ParseCredentialPath(leaf.Path[2:]); credential && leaf.Path[0] == "accounts" {
-			return nil, fmt.Errorf("proposals cannot change %v; only the owner sets credentials", leaf.Path)
-		}
 	}
 	return groups, nil
 }
@@ -153,26 +110,17 @@ func (c *Config) ProposalScope(proposer string, changes []Change) string {
 	}
 	identities := map[string]any{}
 	for name, identity := range c.Identities {
-		access := c.Access(name, connection)
-		rules := map[string]Rule{}
-		for id, rule := range identity.Rules {
-			if rule.Account == connection {
-				rules[id] = rule
-			}
-		}
-		if access.Level != "" || len(rules) != 0 || targeted[name] {
+		if c.Access(name, connection).Level != "" || len(identity.rulesFor(connection)) != 0 || targeted[name] {
 			key := ""
 			if targeted[name] {
 				key = identity.Key
 			}
-			identities[name] = []any{key, identity.Routes, access, identity.Effects, rules}
+			identities[name] = []any{key, identity.Routes, c.Authority(name, connection)}
 		}
 	}
-	account, accountExists := c.Accounts[connection]
+	settings, exists := c.Connections[connection]
 	fallback, fallbackExists := c.DefaultAccess[connection]
-	// Global settings change this connection's effective behavior too.
-	raw, _ := json.Marshal([]any{accountExists, account, fallbackExists, fallback, identities,
-		c.Effects, c.AllowPaidInference, c.Lattices, c.AllowNetworks, c.Policies, c.Data})
+	raw, _ := json.Marshal([]any{exists, settings.Setup, fallbackExists, fallback, identities, c.AllowNetworks, c.Policies, c.Data})
 	return fmt.Sprintf("%x", sha256.Sum256(raw))
 }
 
@@ -182,19 +130,12 @@ func (c *Config) Catalog() (map[string]presets.Entry, string, error) {
 	if err != nil {
 		return nil, "", err
 	}
-	used, names := map[string]bool{}, map[string]bool{}
-	for name := range shipped {
-		names[name] = true
-	}
-	for _, a := range c.Accounts {
-		used[a.Preset] = true
+	used := map[string]bool{}
+	for _, connection := range c.Connections {
+		used[connection.Preset] = true
 	}
 	entries := map[string]presets.Entry{}
-	for name := range names {
-		p, err := c.Preset(name)
-		if err != nil {
-			return nil, "", err
-		}
+	for name, p := range shipped {
 		if entries[name], err = p.Entry(used[name]); err != nil {
 			return nil, "", err
 		}
@@ -205,7 +146,7 @@ func (c *Config) Catalog() (map[string]presets.Entry, string, error) {
 
 // More specific effect settings override broader ones. Access levels and action
 // permissions remain independent restrictions on the request.
-func (c *Config) EffectModes(agent, acct string, op *facts.Operation) map[string]string {
+func (c *Config) EffectModes(agent, connection string, op *facts.Operation) map[string]string {
 	modes := make(map[string]string, len(facts.Effects))
 	for effect, obligations := range facts.Effects {
 		modes[effect] = "allow"
@@ -219,30 +160,19 @@ func (c *Config) EffectModes(agent, acct string, op *facts.Operation) map[string
 		modes["pay"] = "allow"
 	}
 	id := c.Identities[agent]
-	for _, overrides := range []map[string]string{c.Effects, c.Accounts[acct].Effects, id.Effects, c.Access(agent, acct).Effects} {
+	for _, overrides := range []map[string]string{c.Effects, c.Connections[connection].Effects, id.Effects, c.Access(agent, connection).Effects} {
 		maps.Copy(modes, overrides)
 	}
 	return modes
 }
 
-// SameAuthority compares the settings relevant to one admitted account stream.
-// The caller must first compare prepared policy programs and connector setup;
-// setup equality already covers preset protocol data, action effects and public scope.
-func (c *Config) SameAuthority(old *Config, key, account string) bool {
-	var authority [2][]byte
-	for i, cfg := range []*Config{old, c} {
-		name, a := cfg.Principals[key], cfg.Accounts[account]
-		rules := map[string]Rule{}
-		for ruleName, rule := range cfg.Identities[name].Rules {
-			if rule.Account == account {
-				rules[ruleName] = rule
-			}
-		}
-		access := cfg.Access(name, account)
-		// Compare current policy input; connector setup is checked by the caller.
-		a.Effects, a.Connections, access.Effects = nil, nil, nil
-		authority[i], _ = json.Marshal([]any{name, cfg.Lattices, cfg.AllowPaidInference, access,
-			cfg.EffectModes(name, account, nil), rules, a})
-	}
-	return bytes.Equal(authority[0], authority[1])
+// Authority encodes the settings an agent's requests on a connection are decided with,
+// apart from the request, the prepared policy program and the connector setup. Setup
+// equality already covers preset protocol data, action effects and public scope;
+// effect settings appear only as resolved modes.
+func (c *Config) Authority(agent, connection string) json.RawMessage {
+	settings, access := c.Connections[connection], c.Access(agent, connection)
+	settings.Effects, settings.Setup, access.Effects = nil, nil, nil
+	raw, _ := json.Marshal([]any{c.Lattices, c.AllowPaidInference, access, c.EffectModes(agent, connection, nil), c.Identities[agent].rulesFor(connection), settings})
+	return raw
 }

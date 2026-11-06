@@ -14,9 +14,9 @@
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "Google Translate account", "secret": true, "path": ["connections", "", "http", "secrets", "token"], "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/cloud-translation"}}
+      {"key": "token", "label": "Google Translate account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/cloud-translation"}}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://translation.googleapis.com", "path": "/v3", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://translation.googleapis.com", "path": "/v3", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "delete.adaptive_mt_datasets": {"title": "Delete: adaptive mt datasets"},

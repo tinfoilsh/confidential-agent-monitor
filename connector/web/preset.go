@@ -22,7 +22,7 @@ type Request struct {
 }
 
 func (r *Request) Describe(config *Setup) (facts.Facts, error) {
-	if r.HTTP != nil && config != nil && config.Preset != nil && len(config.Preset.SensitiveQuery) != 0 {
+	if r.HTTP != nil && config.Preset != nil && len(config.Preset.SensitiveQuery) != 0 {
 		// Describe a private copy; the admitted upstream request keeps its real values.
 		described, layer := *r, *r.HTTP
 		layer.Query = maps.Clone(r.HTTP.Query)
@@ -94,9 +94,6 @@ func (p *Preset) validate() error {
 		}
 	}
 	for id, o := range p.Operations {
-		if o.Enabled != nil && !*o.Enabled {
-			continue
-		}
 		if id == "" || o.Action == "" || !facts.ValidEffects(o.Effects) {
 			return fmt.Errorf("invalid operation %q", id)
 		}
@@ -108,7 +105,7 @@ func (p *Preset) validate() error {
 				return fmt.Errorf("operation %s cannot match a literal sensitive query value", id)
 			}
 		}
-		if o.WebSocket && (o.Method != "GET" || !slices.Contains([]string{"", "none", "json"}, o.Body)) {
+		if o.WebSocket && (o.Method != "GET" || !slices.Contains([]string{"", bodyNone, BodyJSON}, o.Body)) {
 			return fmt.Errorf("WebSocket operation %s needs GET and a none or json body", id)
 		}
 		for _, name := range o.Grant {
@@ -116,14 +113,14 @@ func (p *Preset) validate() error {
 				return fmt.Errorf("grant names missing scope %s", name)
 			}
 		}
-		if !facts.ValidSends(o.Sends) || !slices.Contains([]string{"", "none", "json", "form", "any", "graphql"}, o.Body) {
+		if !facts.ValidSends(o.Sends) || !slices.Contains([]string{"", bodyNone, BodyJSON, bodyForm, bodyAny, bodyGraphQL}, o.Body) {
 			return fmt.Errorf("invalid audience or body kind for %s", id)
 		}
 		if g := o.GraphQL; g != nil {
-			if o.Body != "graphql" || (g.Field == "") == (len(g.Fields) == 0) || !slices.Contains([]string{"query", "mutation", "subscription"}, g.Operation) {
+			if o.Body != bodyGraphQL || (g.Field == "") == (len(g.Fields) == 0) || !slices.Contains([]string{"query", "mutation", "subscription"}, g.Operation) {
 				return fmt.Errorf("invalid graphql matcher for %s", id)
 			}
-		} else if o.Body == "graphql" {
+		} else if o.Body == bodyGraphQL {
 			return fmt.Errorf("missing graphql matcher for %s", id)
 		}
 	}
@@ -133,7 +130,6 @@ func (p *Preset) validate() error {
 
 type Operation struct {
 	WebSocket    bool                `json:"websocket,omitempty"`
-	Enabled      *bool               `json:"enabled,omitempty"`
 	ID           string              `json:"-"`
 	Action       string              `json:"action"`
 	Effects      []string            `json:"effects"`
@@ -166,10 +162,22 @@ type Selector struct {
 	jsonsel.Selector
 }
 
-type compiledSelector struct {
-	Selector
-	name    string
-	pointer func(any) (any, bool)
+var selectorSources = map[string]struct{ json, optional bool }{
+	"path": {}, "query": {optional: true}, "form": {optional: true}, "body": {json: true, optional: true},
+	"header_json": {json: true}, "argument": {json: true, optional: true}, "http": {json: true},
+}
+
+type selection struct {
+	*Request
+	captures map[string]string
+	fields   map[string]any
+}
+
+func (s *selection) httpFields() map[string]any {
+	if s.fields == nil {
+		s.fields, _ = facts.JSON[map[string]any](s.HTTP)
+	}
+	return s.fields
 }
 
 func (compiled *compiledOperation) matches(r *Request, headers map[string][]string) (bool, error) {
@@ -195,15 +203,15 @@ func (compiled *compiledOperation) matches(r *Request, headers map[string][]stri
 	}
 	body := o.Body
 	if body == "" {
-		body = "none"
+		body = bodyNone
 	}
 	for k, v := range o.Fields {
 		switch body {
-		case "form":
+		case bodyForm:
 			if !condition(h.Form, k, v) {
 				return false, nil
 			}
-		case "json":
+		case BodyJSON:
 			got, present := compiled.fields[k](h.Body)
 			if v == nil {
 				if present {
@@ -216,15 +224,15 @@ func (compiled *compiledOperation) matches(r *Request, headers map[string][]stri
 			return false, nil
 		}
 	}
-	if body == "any" {
+	if body == bodyAny {
 		return true, nil
 	}
-	if body == "graphql" {
+	if body == bodyGraphQL {
 		g, spec := r.GraphQL, o.GraphQL
 		if g == nil {
 			return false, fmt.Errorf("the GraphQL document could not be decoded")
 		}
-		if h.BodyKind != "json" || g.Kind != spec.Operation || len(g.Fields) == 0 {
+		if h.BodyKind != BodyJSON || g.Kind != spec.Operation || len(g.Fields) == 0 {
 			return false, nil
 		}
 		if spec.Field != "" {
@@ -244,42 +252,42 @@ func condition(values map[string][]string, key string, want any) bool {
 	return ok && len(got) == 1 && got[0] == s
 }
 
-func compileSelector(raw Selector) (compiledSelector, error) {
-	spec := compiledSelector{Selector: raw}
-	if !slices.Contains([]string{"path", "query", "form", "body", "header", "header_json", "argument", "http"}, spec.From) || !spec.Valid() {
-		return spec, fmt.Errorf("invalid selector source %q or type %q", spec.From, spec.Type)
+func (spec Selector) Compile() (jsonsel.Selector, func(any) (any, bool), error) {
+	source, ok := selectorSources[spec.From]
+	if !ok || !spec.Valid() {
+		return spec.Selector, nil, fmt.Errorf("invalid selector source %q or type %q", spec.From, spec.Type)
 	}
-	if slices.Contains([]string{"body", "header_json", "argument", "http"}, spec.From) {
-		at := spec.At
+	var pointer func(any) (any, bool)
+	if source.json {
 		var err error
-		spec.pointer, err = jsonsel.CompilePointer(at)
-		if err != nil {
-			return spec, err
+		if pointer, err = jsonsel.CompilePointer(spec.At); err != nil {
+			return spec.Selector, nil, err
 		}
 	}
-	spec.Optional = spec.Optional && slices.Contains([]string{"query", "form", "body", "argument"}, spec.From)
-	return spec, nil
+	checked := spec.Selector
+	checked.Optional = checked.Optional && source.optional
+	return checked, func(doc any) (any, bool) { return spec.value(doc.(*selection), pointer) }, nil
 }
 
-func (spec compiledSelector) value(r *Request, caps map[string]string, httpFields map[string]any) (any, bool) {
+func (spec Selector) value(r *selection, pointer func(any) (any, bool)) (any, bool) {
 	h, at := r.HTTP, spec.At
 	switch spec.From {
 	case "path":
-		v, ok := caps[at]
+		v, ok := r.captures[at]
 		return strings.TrimSuffix(v, spec.TrimSuffix), ok
 	case "http":
-		return spec.pointer(httpFields)
+		return pointer(r.httpFields())
 	case "body":
-		return spec.pointer(h.Body)
+		return pointer(h.Body)
 	case "header_json":
 		value, present := h.HeaderJSON[spec.Header]
 		if !present {
 			return nil, false
 		}
-		return spec.pointer(value)
+		return pointer(value)
 	case "argument":
 		if r.GraphQL != nil && len(r.GraphQL.Fields) == 1 {
-			return spec.pointer(r.GraphQL.Fields[0].Arguments)
+			return pointer(r.GraphQL.Fields[0].Arguments)
 		}
 		return nil, false
 	default:
@@ -287,14 +295,12 @@ func (spec compiledSelector) value(r *Request, caps map[string]string, httpField
 		if spec.From == "form" {
 			values = h.Form
 		}
-		if spec.From == "header" {
-			values = h.Headers
-		}
-		if at == "" && spec.From != "header" {
-			if values == nil {
-				values = map[string][]string{}
+		if at == "" {
+			object := map[string]any{}
+			for key, entries := range values {
+				object[key] = entries
 			}
-			return values, true
+			return object, true
 		}
 		v, ok := values[at]
 		if len(v) != 1 {
@@ -385,7 +391,7 @@ type compiledOperation struct {
 	operation    *Operation
 	path         []pathPart
 	pathPatterns map[string]*regexp.Regexp
-	selectors    []compiledSelector
+	selectors    []jsonsel.Compiled
 	params       map[string]bool
 	fields       map[string]func(any) (any, bool)
 	headers      []headerCondition
@@ -406,9 +412,6 @@ func (p *Preset) compile() error {
 	}
 	p.routes = map[routeKey]*routeNode{}
 	for id, operation := range p.Operations {
-		if operation.Enabled != nil && !*operation.Enabled {
-			continue
-		}
 		operation.ID = id
 		o := &operation
 		parts, err := compilePath(o.Path)
@@ -437,14 +440,9 @@ func (p *Preset) compile() error {
 			}
 			pathPatterns[name] = compiled
 		}
-		var selectors []compiledSelector
-		for _, name := range slices.Sorted(maps.Keys(o.Scope)) {
-			spec, err := compileSelector(o.Scope[name])
-			if err != nil {
-				return err
-			}
-			spec.name = name
-			selectors = append(selectors, spec)
+		selectors, err := jsonsel.Compile(o.Scope)
+		if err != nil {
+			return err
 		}
 		definition, err := json.Marshal([]any{o, p.Slots, p.SensitiveQuery})
 		if err != nil {
@@ -458,7 +456,7 @@ func (p *Preset) compile() error {
 		for key, value := range o.Headers {
 			op.headers = append(op.headers, headerCondition{strings.ToLower(key), value})
 		}
-		if o.Body == "json" {
+		if o.Body == BodyJSON {
 			for at := range o.Fields {
 				op.fields[at], err = jsonsel.CompilePointer(at)
 				if err != nil {
@@ -526,9 +524,9 @@ func (node *routeNode) candidates(path []string, out []*compiledOperation) []*co
 func (p *Preset) Match(r *Request, config *Setup, f facts.Facts) (facts.Facts, error) {
 	h := r.HTTP
 	f.Title = fmt.Sprintf("%s: %s %s", config.Title, h.Method, h.Path)
-	if p.Slots && (config == nil || !slices.ContainsFunc(config.Slots, func(slot Slot) bool {
+	if p.Slots && !slices.ContainsFunc(config.Slots, func(slot Slot) bool {
 		return h.Origin == slot.Origin && under(h.Path, slot.Path)
-	})) {
+	}) {
 		return f, errors.New("the request is outside this API's address")
 	}
 	parts := strings.Split(h.Path, "/")
@@ -578,27 +576,14 @@ func (p *Preset) Match(r *Request, config *Setup, f facts.Facts) (facts.Facts, e
 		return f, nil
 	}
 	o := matched.operation
-	parameters := make(map[string]any, len(matched.selectors))
-	var errs []error
-	var httpFields map[string]any
-	for _, spec := range matched.selectors {
-		if spec.From == "http" && httpFields == nil {
-			httpFields, _ = facts.JSON[map[string]any](h)
-		}
-		value, present := spec.value(r, captures, httpFields)
-		if err := spec.Check(spec.name, value, present); err != nil {
-			errs = append(errs, err)
-		} else if present {
-			parameters[spec.name] = value
-		}
-	}
+	parameters, err := jsonsel.Select(matched.selectors, &selection{Request: r, captures: captures})
 	grant := project(parameters, o.Grant)
 	f.Operation = &facts.Operation{ID: o.ID, Action: o.Action, Effects: o.Effects}
 	f.Title = fmt.Sprintf("%s: %s", config.Title, o.ID)
 	f.Parameters = parameters
 	f.Context.Sends = o.Sends
 	f.Scope, f.Definition = grant, matched.definition
-	return f, errors.Join(errs...)
+	return f, err
 }
 
 // project selects the parameter values bound to a saved approval. Nil means

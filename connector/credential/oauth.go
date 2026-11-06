@@ -410,10 +410,10 @@ func (t resourceTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 }
 
 func (o *oauth) refresh(ctx context.Context, client *http.Client, token *oauth2.Token) (*oauth2.Token, error) {
+	if client == nil {
+		return nil, errors.New("no client can refresh this grant")
+	}
 	if o.Resource != "" {
-		if client == nil {
-			client = http.DefaultClient
-		}
 		copy := *client
 		transport := copy.Transport
 		if transport == nil {

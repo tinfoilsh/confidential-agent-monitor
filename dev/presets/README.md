@@ -99,7 +99,7 @@ use the same tree UI. Repeated grouping produces the same result. This is a
 breaking action-name change: update agent overrides and custom policies to use
 the new names. No aliases or permission migration are generated.
 
-Accept additions in the corresponding `../../presets/<name>.json`, preserving its account setup and existing operations. Source names can differ from preset names; use the `preset` mapping in `sources.json`. The Confluence source group includes Jira, so divide its operations between the Confluence and Jira presets instead of copying the combined candidate into either one. Regenerate after accepting changes so the next proposal uses the updated shipped definitions.
+Accept additions in the corresponding `../../presets/<name>.json`, preserving its connection setup and existing operations. Source names can differ from preset names; use the `preset` mapping in `sources.json`. The Confluence source group includes Jira, so divide its operations between the Confluence and Jira presets instead of copying the combined candidate into either one. Regenerate after accepting changes so the next proposal uses the updated shipped definitions.
 
 Each source variant receives a status:
 
@@ -154,13 +154,3 @@ access. The current inventory has 152 request variants and 149 descriptors.
 Multipart file upload and multipart audio transcription are reported as
 unsupported; JSON audio transcription is supported. Consequently,
 `check --reviewed open_router` still reports those two encoding gaps.
-
-```sh
-# Importer and accounting regressions, from this directory.
-GOWORK=off go test ./...
-
-# Policy validation and request-contract tests, from the monitor root.
-go test . -run 'Test(Preset|Optional|GeneratedCandidate)' -count=1
-```
-
-The policy tests validate all candidate records structurally and exercise selected Slack, Anthropic, and Airtable requests. They do not claim exhaustive semantic tests for every generated operation. No provider accounts are called by these tests.

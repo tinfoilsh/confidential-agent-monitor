@@ -242,11 +242,11 @@ func (b *session) handle(stream *connector.Stream, command string, do func(conte
 			return
 		}
 		u, _ := url.Parse(page)
-		layer := &Request{Command: command, URL: u.String(), Host: strings.ToLower(u.Hostname()), Text: req.Text}
+		layer := &BrowserFacts{Command: command, URL: u.String(), Host: strings.ToLower(u.Hostname()), Text: req.Text}
 		if req.slot != nil {
 			layer.Secrets = []string{req.slot.Value}
 		}
-		if err := stream.Gate(r.Context(), b.Capture((layer).Describe(len(b.Slots) != 0))); err != nil {
+		if err := stream.Gate(r.Context(), b.Capture(layer.Describe(len(b.Slots) != 0))); err != nil {
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
 		}
@@ -465,7 +465,6 @@ func attach(ctx, root context.Context, id target.ID) (context.Context, error) {
 	return tab, nil
 }
 
-// pages lists the browser's tabs.
 func (b *session) pages(ctx context.Context) ([]*target.Info, error) {
 	targets, err := chromedp.Targets(ctx)
 	return slices.DeleteFunc(targets, func(t *target.Info) bool { return t.Type != pageType || t.Subtype != "" }), err
@@ -634,7 +633,6 @@ func (b *session) fill(ctx context.Context, req request) ([]byte, string, error)
 	return nil, "", err
 }
 
-// typeText presses keys in the ref's element.
 func (b *session) typeText(ctx context.Context, req request) ([]byte, string, error) {
 	id := req.node
 	if _, err := chromedp.Call(ctx, dom.Focus, dom.FocusParams{BackendNodeID: id}); err != nil {
@@ -672,10 +670,8 @@ func (b *session) call(ctx context.Context, function string) (string, error) {
 	return chromedp.Run(worker, chromedp.Evaluate[string](fmt.Sprintf("%s(%q)", function, id), chromedp.EvalAwaitPromise))
 }
 
-type Request BrowserFacts
-
-func (v *Request) Describe(hasLogins bool) (facts.Facts, error) {
-	details := Details{Browser: (*BrowserFacts)(v)}
+func (v *BrowserFacts) Describe(hasLogins bool) facts.Facts {
+	details := Details{Browser: v}
 	action := map[string]string{"navigate": "browse", "snapshot": "browse", "text": "browse", "screenshot": "browse", "click": "submit", "type": "submit", "fill": "submit"}[v.Command]
 	scope := map[string]any{"host": v.Host}
 	if len(v.Secrets) > 0 {
@@ -687,5 +683,5 @@ func (v *Request) Describe(hasLogins bool) (facts.Facts, error) {
 		observes.Audience = "anyone"
 	}
 	op := &facts.Operation{Action: action}
-	return facts.Facts{Operation: op, Title: v.Command + " " + v.URL, Parameters: scope, Details: details, Context: facts.Context{Observes: observes}}, nil
+	return facts.Facts{Operation: op, Title: v.Command + " " + v.URL, Parameters: scope, Details: details, Context: facts.Context{Observes: observes}}
 }

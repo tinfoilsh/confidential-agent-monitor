@@ -338,19 +338,17 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "origin": "https://api.telegram.org",
-              "path": "/",
-              "prefix": "bot",
-              "segment": 1,
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://api.telegram.org",
+            "path": "/",
+            "prefix": "bot",
+            "segment": 1,
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -362,13 +360,7 @@
       {
         "key": "token",
         "label": "Bot token",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

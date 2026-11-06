@@ -1,7 +1,7 @@
 import { SecureClient } from "tinfoil";
-import { sealedOwnerClient, type Snapshot } from "../owner";
+import { ownerApi, type OwnerApi, type Request, type Snapshot } from "../owner";
 import { openChannel, rpcChannel, type Session } from "./channel";
-import { unb64u, type MKBinding } from "./contract";
+import { sshPublicKey, toBase64, unb64u, type MKBinding } from "./contract";
 import * as keys from "./keys";
 import { MONITOR_REPO, type Container, type Scope } from "./session";
 import { TEMPLATES } from "./templates";
@@ -19,17 +19,9 @@ const PROTOCOL = "monitor-owner-v1";
 const ED25519_SPKI = /^302a300506032b6570032100([0-9a-f]{64})$/;
 const X25519_SPKI = /^302a300506032b656e032100([0-9a-f]{64})$/;
 const CREDENTIALS_PATH = "/api/deployments/storage-credentials";
-const SSH_ED25519 = new Uint8Array([
-  0, 0, 0, 11, 115, 115, 104, 45, 101, 100, 50, 53, 53, 49, 57, 0, 0, 0, 32,
-]);
 
-const std64 = (bytes: Uint8Array) => btoa(String.fromCharCode(...bytes));
 const hex = (text: string) =>
   Uint8Array.from(text.match(/../g)!, (byte) => parseInt(byte, 16));
-
-// authorized_keys form of a 32-byte Ed25519 public key.
-export const sshPublicKey = (raw: Uint8Array) =>
-  "ssh-ed25519 " + std64(new Uint8Array([...SSH_ED25519, ...raw]));
 
 // An attested key's raw bytes, read from the SDK's current verification, which
 // follows a newly verified boot.
@@ -46,20 +38,11 @@ export function attestedKey(
   return hex(key);
 }
 
-export type AttestMonitor = (
-  target: RegistryTarget,
-  signal: AbortSignal,
-) => Promise<{
-  hostKey: () => string;
-  sessionKey: (signal?: AbortSignal) => Promise<Uint8Array>;
-  refresh: () => Promise<void>;
-}>;
-
 // The SDK owns attestation and its refresh; owner sessions use the attested owner-session key.
-export const attestMonitor: AttestMonitor = async (
-  { url, reference, registry },
-  signal,
-) => {
+export async function attestMonitor(
+  { url, reference, registry }: RegistryTarget,
+  signal: AbortSignal,
+) {
   const relay =
     import.meta.env.DEV && location.origin === "https://local.tinfoil.sh"
       ? location.origin
@@ -81,7 +64,7 @@ export const attestMonitor: AttestMonitor = async (
   hostKey();
   await sessionKey();
   return { hostKey, sessionKey, refresh: () => client.refresh({ signal }) };
-};
+}
 
 // The saved key of a TMK Monitor, re-resolved from a fresh, successful read of
 // the operation's own account; the existing binding must still match it.
@@ -138,13 +121,11 @@ export async function openMonitor({
   id,
   signal,
   onCheckpoint,
-  attest = attestMonitor,
 }: {
   scope: Scope;
   id: string;
   signal: AbortSignal;
   onCheckpoint: (error?: string) => void;
-  attest?: AttestMonitor;
 }) {
   signal = AbortSignal.any([signal, scope.signal]);
   const { row, resource, bucket } = await resolve(scope, id);
@@ -164,7 +145,7 @@ export async function openMonitor({
   };
   signal.throwIfAborted();
   const target = registryTarget(row, config, account.scope);
-  const { hostKey, sessionKey, refresh } = await attest(target, signal);
+  const { hostKey, sessionKey, refresh } = await attestMonitor(target, signal);
   const url = `wss://${row.domain}/owner/ws`;
   const session = async (hello: object, at = signal): Promise<Session> => ({
     serverKey: await sessionKey(at),
@@ -179,15 +160,27 @@ export async function openMonitor({
       [await session({ open: "relay", instance_id }, at), inner],
       AbortSignal.any(at ? [signal, at] : [signal]),
     );
+  let floor = resource.min_generation!;
+  const call = rpcChannel(
+    async () => openChannel(url, [await session({ open: "rpc" })], signal),
+    refresh,
+  );
+  const storageKey = toBase64(unb64u(resource.storage_key, 32));
+  // Each call carries the newest generation seen.
+  const request: Request = (method, path, body = null, at) =>
+    call(
+      method,
+      path,
+      path.split("?")[0] === "/unlock"
+        ? { ...(body as object), storage_key: storageKey }
+        : body,
+      floor,
+      at,
+    );
   let checkpoints: Promise<unknown> = Promise.resolve();
-  const client = sealedOwnerClient({
-    call: rpcChannel(
-      async () => openChannel(url, [await session({ open: "rpc" })], signal),
-      refresh,
-    ),
-    generation: resource.min_generation!,
-    storageKey: std64(unb64u(resource.storage_key, 32)),
-    remember: (generation) => {
+  const client: OwnerApi & { call: Request } = {
+    ...ownerApi(request, floor, (generation) => {
+      floor = generation;
       checkpoints = checkpoints
         .then(() => scope.update(keys.checkpoint(resource.key_id, generation)))
         .then(
@@ -197,8 +190,10 @@ export async function openMonitor({
               `The Monitor's newest state was not saved with your keys: ${cause instanceof Error ? cause.message : cause}`,
             ),
         );
-    },
-  });
+    }),
+    // Hosted callers also reach owner routes outside the shared management API.
+    call: request,
+  };
   // The Monitor refuses saved state that is missing or older than the recovered generation.
   await client.unlock(undefined, signal);
   const snapshot: Snapshot = await client.read(signal);

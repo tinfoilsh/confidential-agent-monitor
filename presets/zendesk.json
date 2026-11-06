@@ -2600,24 +2600,22 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "basic": "user",
-              "origin": "https://example.zendesk.com",
-              "path": "/api/v2",
-              "value": "login"
-            },
-            {
-              "basic": "password",
-              "origin": "https://example.zendesk.com",
-              "path": "/api/v2",
-              "value": "apitoken"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "basic": "user",
+            "origin": "https://example.zendesk.com",
+            "path": "/api/v2",
+            "value": "login"
+          },
+          {
+            "basic": "password",
+            "origin": "https://example.zendesk.com",
+            "path": "/api/v2",
+            "value": "apitoken"
+          }
+        ]
       }
     },
     "defaults": {
@@ -2635,16 +2633,12 @@
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             0,
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             1,
@@ -2655,25 +2649,13 @@
       {
         "key": "login",
         "label": "Login (your-email@example.com/token)",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "login"
-        ],
+        "credential": true,
         "secret": true
       },
       {
         "key": "apitoken",
         "label": "API token",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "apitoken"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

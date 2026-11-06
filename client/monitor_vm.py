@@ -24,6 +24,9 @@ import urllib.request
 import zipfile
 
 
+ASSETS = ('Dockerfile', 'guest.py', 'init.sh', 'assets.json')
+
+
 class Error(ValueError):
     pass
 
@@ -47,7 +50,7 @@ def bundle(source):
     with zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr('__main__.py', source.read_bytes())
         archive.writestr('monitor_vm.py', Path(__file__).read_bytes())
-        for name in ('Dockerfile', 'guest.py', 'init.sh', 'assets.json'):
+        for name in ASSETS:
             archive.writestr('vm/' + name, asset(name))
     return output.getvalue()
 
@@ -167,7 +170,7 @@ def build_image(args):
                     with source.extractfile(member) as binary, (output / name).open('wb') as target:
                         shutil.copyfileobj(binary, target)
         (output / 'firecracker').chmod(0o700)
-        for name in ('Dockerfile', 'guest.py', 'init.sh'):
+        for name in ASSETS:
             (context / name).write_bytes(asset(name))
         if args.claude_binary:
             binary = Path(args.claude_binary).expanduser().resolve()

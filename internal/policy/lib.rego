@@ -1,6 +1,6 @@
 package monitor
 
-import input.account as acct
+import input.connection as conn
 import input.authorization as a
 import input.facts as f
 import input.facts.operation as op
@@ -34,15 +34,15 @@ else := "off" if a.access.level == "read"
 else := a.access.level
 
 # A request names a resource when every public scope parameter is a nonempty string.
-scope := [v | some key in acct.public_scope; v := f.parameters[key]; is_string(v); v != ""]
+scope := [v | some key in conn.public_scope; v := f.parameters[key]; is_string(v); v != ""]
 
 scoped if {
-	some _ in acct.public_scope
-	count(scope) == count(acct.public_scope)
+	some _ in conn.public_scope
+	count(scope) == count(conn.public_scope)
 }
 
 private if {
-	some pattern in acct.private
+	some pattern in conn.private
 	glob.match(pattern, ["/"], concat("/", scope))
 }
 
@@ -51,8 +51,8 @@ public if {
 	not private
 }
 
-observation := {"audience": acct.contents, "trust": "untrusted"} if acct.strangers
-else := {"audience": acct.contents, "trust": "trusted"}
+observation := {"audience": conn.contents, "trust": "untrusted"} if conn.strangers
+else := {"audience": conn.contents, "trust": "trusted"}
 
 hinted := object.union(observation, {k: v | some k in {"audience", "trust"}; v := f.context.observes[k]; v != ""})
 
@@ -63,14 +63,14 @@ else := hinted
 sends := "anyone" if {
 	public
 	obligation("change")
-} else := acct.sends if {
+} else := conn.sends if {
 	scoped
 	obligation("change")
 	f.context.sends == ""
 } else := "anyone" if {
 	f.context.sends == ""
 	obligation("discloses")
-} else := acct.sends if f.context.sends in {"", "account"}
+} else := conn.sends if f.context.sends in {"", "connection"}
 else := f.context.sends
 
 # The label keeps each axis's provenance unless this request makes it more restrictive.
@@ -85,7 +85,7 @@ else := f.context.label[axis]
 next := {
 	"audience": level("audience"),
 	"trust": level("trust"),
-	"because": object.union(because, {axis: f.account | some axis in lowered}),
+	"because": object.union(because, {axis: f.connection | some axis in lowered}),
 }
 
 default owner_deny := []
@@ -100,7 +100,7 @@ deny contains "owner policy deny must be a set or array of strings" if {
 
 deny contains msg if some msg in owner_deny
 
-deny contains "this agent may not do this on the account" if mode == "off"
+deny contains "this agent may not do this on the connection" if mode == "off"
 
 deny contains sprintf("The %s effect is set to Deny.", [effect]) if {
 	some effect in op.effects
@@ -126,7 +126,7 @@ gap contains "trust" if {
 waived contains w if {
 	some r in a.rules
 	object.get(r, "enabled", true)
-	r.account == f.account
+	r.connection == f.connection
 	r.definition == a.definition
 	r.scope == a.grant
 	some requirement in r.requirements
@@ -156,8 +156,8 @@ valid_owner_approvals if {
 
 deny contains "owner policy approvals must be a set or array of {id, message} objects with unique owner.* IDs and nonempty messages" if not valid_owner_approvals
 
-ask_message := sprintf("This request has no recognized operation on %s.", [f.account]) if op == null
-else := sprintf("This request needs your approval on %s.", [f.account])
+ask_message := sprintf("This request has no recognized operation on %s.", [f.connection]) if op == null
+else := sprintf("This request needs your approval on %s.", [f.connection])
 
 because := object.get(f.context.label, "because", {})
 recipients := {"me": "you", "team": "your team", "anyone": "anyone"}

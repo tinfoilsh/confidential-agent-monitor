@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "Token", "secret": true, "path": ["connections", "", "http", "secrets", "token"]}
+      {"key": "token", "label": "Token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://sentry.io", "path": "/api/0", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://sentry.io", "path": "/api/0", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.groups": {"title": "Admin: groups"},

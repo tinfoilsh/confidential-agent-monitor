@@ -1139,18 +1139,16 @@
         "title": "Read"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "X-Api-Token",
-              "origin": "https://api.pipedrive.com",
-              "path": "/api/v2",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "X-Api-Token",
+            "origin": "https://api.pipedrive.com",
+            "path": "/api/v2",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -1162,13 +1160,7 @@
       {
         "key": "token",
         "label": "API token (Personal preferences \u003e API)",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

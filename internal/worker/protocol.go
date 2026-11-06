@@ -15,8 +15,7 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-// DialFunc opens a private connection. Remote implementations must authenticate
-// and encrypt it in both directions.
+// DialFunc opens a private connection between the host and one worker process.
 type DialFunc func(context.Context) (net.Conn, error)
 
 func (dial DialFunc) Transport() *http.Transport {
@@ -33,12 +32,10 @@ const (
 	rpcReadTimeout        = 10 * time.Second
 )
 
-const protocolVersion = 9
 const readyPath = "/_monitor/ready"
 
 type bootstrap struct {
 	connector.Setup
-	Version  int                     `json:"version"`
 	Protocol string                  `json:"kind"`
 	Settings json.RawMessage         `json:"settings,omitempty"`
 	Secrets  map[string]secretHandle `json:"secrets,omitempty"`
@@ -50,7 +47,10 @@ type secretHandle struct {
 	Placeholder string `json:"placeholder"`
 }
 
-const streamHeader = "X-Monitor-Session"
+const (
+	streamHeader    = "X-Monitor-Session"
+	upgradeProtocol = "monitor-connector"
+)
 
 type streamInfo struct {
 	ID   string `json:"id"`
@@ -175,7 +175,7 @@ func connect(ctx context.Context, dial DialFunc, r *http.Request, status int) (n
 	}
 	reader := bufio.NewReader(conn)
 	resp, err := http.ReadResponse(reader, r)
-	if err != nil || resp.StatusCode != status || status == http.StatusSwitchingProtocols && resp.Header.Get("Upgrade") != "monitor-connector" {
+	if err != nil || resp.StatusCode != status || status == http.StatusSwitchingProtocols && resp.Header.Get("Upgrade") != upgradeProtocol {
 		conn.Close()
 		return nil, errors.New("connector connection refused")
 	}
@@ -187,14 +187,14 @@ func connect(ctx context.Context, dial DialFunc, r *http.Request, status int) (n
 }
 
 func Accept(w http.ResponseWriter, r *http.Request) (net.Conn, error) {
-	if r.Header.Get("Upgrade") != "monitor-connector" {
+	if r.Header.Get("Upgrade") != upgradeProtocol {
 		return nil, errors.New("connector upgrade required")
 	}
 	c, rw, err := w.(http.Hijacker).Hijack()
 	if err != nil {
 		return nil, err
 	}
-	if _, err := rw.WriteString("HTTP/1.1 101 Switching Protocols\r\nConnection: Upgrade\r\nUpgrade: monitor-connector\r\n\r\n"); err != nil {
+	if _, err := rw.WriteString("HTTP/1.1 101 Switching Protocols\r\nConnection: Upgrade\r\nUpgrade: " + upgradeProtocol + "\r\n\r\n"); err != nil {
 		c.Close()
 		return nil, err
 	}

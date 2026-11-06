@@ -3,6 +3,7 @@ import {
   Show,
   createEffect,
   createMemo,
+  createResource,
   createSignal,
   createUniqueId,
   on,
@@ -19,14 +20,10 @@ import { icons } from "./dashboard-icons.js";
 import { useMonitor } from "./monitor";
 
 // The only HTML insertion is our checked-in SVG icon set, never server data.
-export function Icon(props: { name: string }) {
-  return (
-    <span
-      class="icon"
-      aria-hidden="true"
-      innerHTML={icons[props.name as keyof typeof icons] ?? icons.accounts}
-    />
-  );
+export type IconName = keyof typeof icons;
+
+export function Icon(props: { name: IconName }) {
+  return <span class="icon" aria-hidden="true" innerHTML={icons[props.name]} />;
 }
 export function Loading(props: { label: string }) {
   return (
@@ -37,7 +34,6 @@ export function Loading(props: { label: string }) {
   );
 }
 
-// Sign-in style screens: a title over stacked cards, with any options and tip below.
 export function AuthScreen(props: {
   id?: string;
   title?: JSX.Element;
@@ -156,10 +152,16 @@ export function SkeletonRows(props: { label: string; cards?: boolean }) {
   );
 }
 
-export function ConnectorIcon(props: { preset: string }) {
+export function ConnectorIcon(props: { preset?: string; connection?: string }) {
   const m = useMonitor();
   const icon = createMemo(() =>
-    owner.connectorIcon(m.icons(), props.preset, "", import.meta.env.BASE_URL),
+    owner.connectorIcon(
+      m.icons(),
+      props.preset ??
+        m.view()?.config.connections?.[props.connection!]?.preset ??
+        "",
+      import.meta.env.BASE_URL,
+    ),
   );
   return (
     <span class="connector-icon" aria-hidden="true">
@@ -192,16 +194,10 @@ export const href = (kind: string, ...args: string[]) =>
 export function SectionHeading(props: {
   title: string;
   description?: JSX.Element;
-  small?: boolean;
 }) {
   return (
-    <header class="heading-text" classList={{ "heading-small": props.small }}>
-      <Show
-        when={props.small}
-        fallback={<h3 class="section-title">{props.title}</h3>}
-      >
-        <h4 class="section-title">{props.title}</h4>
-      </Show>
+    <header class="heading-text">
+      <h3 class="section-title">{props.title}</h3>
       <Show when={props.description}>
         <p class="section-description">{props.description}</p>
       </Show>
@@ -212,7 +208,6 @@ export function SectionHeading(props: {
 export function DisclosureHeading(props: {
   title: string;
   description?: string;
-  count?: number;
   small?: boolean;
 }) {
   return (
@@ -220,9 +215,6 @@ export function DisclosureHeading(props: {
       <span class="heading-text" classList={{ "heading-small": props.small }}>
         <span class="heading-row">
           <strong class="section-title">{props.title}</strong>
-          <Show when={props.count !== undefined}>
-            <span class="count">{props.count}</span>
-          </Show>
         </span>
         <Show when={props.description}>
           <small class="section-description">{props.description}</small>
@@ -337,8 +329,6 @@ export function ResourceDisclosure(props: {
   const [visited, setVisited] = createSignal(!!props.open);
   let element!: HTMLDetailsElement, summary!: HTMLElement;
   let animation: Animation | undefined;
-  // A route may deep-link an already-mounted list item. Track only the route
-  // input so the user can still collapse the item while that route stays active.
   createEffect(
     on(
       () => props.open,
@@ -367,7 +357,6 @@ export function ResourceDisclosure(props: {
       setVisited(true);
       element.open = true;
     }
-    // The lazy contents must be mounted before measuring their natural height.
     queueMicrotask(() => {
       if (!element.isConnected) return;
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
@@ -416,12 +405,10 @@ export function ResourceDisclosure(props: {
     </details>
   );
 }
-// Native nested disclosures mount their potentially large contents on first open.
 export function LazyDetails(props: {
   class?: string;
   summaryClass?: string;
   label?: string;
-  "data-disclosure"?: string;
   summary: JSX.Element;
   children: () => JSX.Element;
 }) {
@@ -429,7 +416,6 @@ export function LazyDetails(props: {
   return (
     <details
       class={props.class}
-      data-disclosure={props["data-disclosure"]}
       onToggle={(event) => {
         if (event.currentTarget.open) setVisited(true);
       }}
@@ -443,7 +429,7 @@ export function LazyDetails(props: {
 }
 export function Empty(props: {
   title: string;
-  icon?: string;
+  icon?: IconName;
   children?: JSX.Element;
   action?: JSX.Element;
 }) {
@@ -468,20 +454,17 @@ export function Search(props: {
   label: string;
   value: string;
   onInput: (value: string) => void;
-  autofocus?: boolean;
   onEnter?: () => void;
 }) {
   let input!: HTMLInputElement;
-  onMount(() => {
-    if (props.autofocus) input.focus();
-  });
+  onMount(() => input.focus());
   return (
     <div class="search-field">
       <Icon name="search" />
       <input
         ref={input}
         type="search"
-        autofocus={props.autofocus}
+        autofocus
         aria-label={props.label}
         placeholder={`${props.label}…`}
         value={props.value}
@@ -609,109 +592,10 @@ export function TabBar<T extends string>(props: {
     </Dynamic>
   );
 }
-export function Permission(props: {
-  label: string;
-  value: owner.Mode | null;
-  inherited: owner.Mode;
-  onChange: (value: owner.Mode | null) => void;
-}) {
-  return (
-    <TabBar
-      label={`${props.label} permission`}
-      value={props.value}
-      inherited={props.inherited}
-      options={(Object.keys(owner.MODES) as owner.Mode[]).map((mode) => ({
-        value: mode,
-        label: owner.MODES[mode],
-        ariaLabel: `${owner.MODES[mode]} ${props.label}`,
-        title:
-          props.value === mode
-            ? "Click to use the inherited setting"
-            : !props.value && props.inherited === mode
-              ? "Inherited setting"
-              : owner.MODES[mode],
-      }))}
-      onChange={(mode) => props.onChange(props.value === mode ? null : mode)}
-    />
-  );
-}
-export function Effects(props: { scope?: owner.EffectScope }) {
-  const m = useMonitor();
-  const settings = createMemo(() => {
-    const view = m.view()!;
-    const accounts = props.scope?.account
-      ? [props.scope.account]
-      : Object.keys(view.config.accounts ?? {});
-    // A root's effects already include all of its descendants.
-    const used = new Set(
-      accounts.flatMap((account) =>
-        [
-          ...new Set(
-            Object.keys(owner.actionsOf(view, account)).map(
-              (action) => action.split(".")[0],
-            ),
-          ),
-        ].flatMap((action) => owner.effectsOf(view, account, action)),
-      ),
-    );
-    // Keep this order independent of checked and inherited permission values.
-    return owner
-      .effectSettings(view, props.scope)
-      .filter((setting) => used.has(setting.effect))
-      .sort(
-        (a, b) =>
-          Number(["pay", "publish"].includes(b.effect)) -
-          Number(["pay", "publish"].includes(a.effect)),
-      );
-  });
-  const byEffect = createMemo(
-    () => new Map(settings().map((setting) => [setting.effect, setting])),
-  );
-  const rows = () => (
-    <For each={[...byEffect().keys()]}>
-      {(effect) => {
-        const setting = () => byEffect().get(effect)!;
-        const title =
-          effect === "pay"
-            ? "Payments"
-            : effect === "publish"
-              ? "Publishing"
-              : effect.charAt(0).toUpperCase() + effect.slice(1);
-        return (
-          <div class="access-action">
-            <span
-              title={`${owner.MODES[setting().mode]} · ${setting().source}`}
-            >
-              {title}
-            </span>
-            <Permission
-              label={title}
-              value={setting().own}
-              inherited={setting().inherited}
-              onChange={(value) =>
-                void m.edit(owner.edits.setEffect(props.scope, effect, value))
-              }
-            />
-          </div>
-        );
-      }}
-    </For>
-  );
-  return (
-    <Show
-      when={settings().length}
-      fallback={<p class="muted">No effects used by these actions.</p>}
-    >
-      <div class="access-actions effect-permissions">{rows()}</div>
-    </Show>
-  );
-}
-
 export function Field(props: {
   field: owner.PresetField;
   value: string;
   onInput: (value: string) => void;
-  disabled?: boolean;
   help?: JSX.Element;
 }) {
   const id = createUniqueId(),
@@ -739,7 +623,6 @@ export function Field(props: {
                 (props.field.secret ? "Paste your secret here" : undefined)
               }
               autocapitalize="off"
-              disabled={props.disabled}
               value={props.value}
               onInput={(e) => props.onInput(e.currentTarget.value)}
             />
@@ -761,7 +644,6 @@ export function Field(props: {
           id={id}
           aria-describedby={help() ? `${id}-help` : undefined}
           rows={6}
-          disabled={props.disabled}
           value={props.value}
           onInput={(e) => props.onInput(e.currentTarget.value)}
         />
@@ -772,53 +654,6 @@ export function Field(props: {
         </p>
       </Show>
     </div>
-  );
-}
-export function DataPermissions(props: {
-  value: owner.AccountAnswers;
-  onChange: (value: owner.AccountAnswers) => void;
-}) {
-  return (
-    <>
-      <For
-        each={
-          [
-            ["contents", "Confidentiality"],
-            ["sends", "Visibility"],
-          ] as const
-        }
-      >
-        {([key, title]) => (
-          <div class="setting-row data-permission">
-            <span>{title}</span>
-            <TabBar
-              label={title}
-              value={props.value[key]}
-              options={(Object.keys(owner.AUDIENCES) as owner.Audience[]).map(
-                (value) => ({ value, label: owner.AUDIENCES[value] }),
-              )}
-              onChange={(value) =>
-                props.onChange({ ...props.value, [key]: value })
-              }
-            />
-          </div>
-        )}
-      </For>
-      <label class="setting-row">
-        Untrusted data source
-        <input
-          type="checkbox"
-          role="switch"
-          checked={props.value.strangers}
-          onChange={(e) =>
-            props.onChange({
-              ...props.value,
-              strangers: e.currentTarget.checked,
-            })
-          }
-        />
-      </label>
-    </>
   );
 }
 export function Copy(props: {
@@ -862,6 +697,60 @@ export function Copy(props: {
         <Icon name="copy" />
       </Show>
     </button>
+  );
+}
+export function RuleText(props: { rule: owner.Rule; children?: JSX.Element }) {
+  const m = useMonitor();
+  const scope = () =>
+    owner.scopeText(m.view()!, props.rule.connection, props.rule.scope);
+  return (
+    <span>
+      <strong>{owner.ruleTitle(m.view()!, props.rule)}</strong>
+      <small class="rule-scope">
+        {(() => {
+          const text = scope();
+          return typeof text === "string" ? (
+            <code title={text}>{text}</code>
+          ) : (
+            <For each={text} fallback="Any request">
+              {(t) => <code title={t}>{t}</code>}
+            </For>
+          );
+        })()}
+      </small>
+      {props.children}
+    </span>
+  );
+}
+export function RemoveRule(props: { agent: string; id: string }) {
+  const m = useMonitor();
+  return (
+    <button
+      disabled={m.busy()}
+      onClick={(e) => {
+        e.preventDefault();
+        void m.edit(owner.edits.removeRule(props.agent, props.id));
+      }}
+    >
+      Remove
+    </button>
+  );
+}
+export function createRecord<
+  S extends { api: owner.OwnerApi; id: string; segment?: string },
+>(source: Accessor<S | undefined>) {
+  const lifetime = new AbortController();
+  onCleanup(() => lifetime.abort());
+  const key = createMemo(source, undefined, {
+    equals: (a, b) =>
+      !!a &&
+      !!b &&
+      (Object.keys(b) as (keyof S)[]).every((field) => a[field] === b[field]),
+  });
+  return createResource(key, (s) =>
+    s.segment
+      ? s.api.archived(s.segment, s.id, lifetime.signal)
+      : s.api.request(s.id, lifetime.signal),
   );
 }
 export function download(text: string, name: string, type: string) {

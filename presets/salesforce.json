@@ -62,19 +62,17 @@
         "title": "Read"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "Authorization",
-              "origin": "https://example.my.salesforce.com",
-              "path": "/services/data/v62.0",
-              "prefix": "Bearer ",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://example.my.salesforce.com",
+            "path": "/services/data/v62.0",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -92,8 +90,6 @@
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             0,
@@ -104,13 +100,7 @@
       {
         "key": "token",
         "label": "OAuth2 access token",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

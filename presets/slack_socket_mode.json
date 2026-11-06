@@ -11,24 +11,22 @@
       }
     },
     "defaults": { "contents": "team", "sends": "team", "strangers": true },
-    "connections": {
-      "": {
-        "http": {
-          "hosts": [
-            "wss.slack.com",
-            "wss-primary.slack.com",
-            "wss-backup.slack.com"
-          ],
-          "slots": [
-            {
-              "value": "token",
-              "origin": "https://slack.com",
-              "path": "/api/apps.connections.open",
-              "header": "Authorization",
-              "prefix": "Bearer "
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "hosts": [
+          "wss.slack.com",
+          "wss-primary.slack.com",
+          "wss-backup.slack.com"
+        ],
+        "slots": [
+          {
+            "value": "token",
+            "origin": "https://slack.com",
+            "path": "/api/apps.connections.open",
+            "header": "Authorization",
+            "prefix": "Bearer "
+          }
+        ]
       }
     },
     "fields": [
@@ -36,7 +34,7 @@
         "key": "token",
         "label": "App-level token (xapp-, connections:write)",
         "secret": true,
-        "path": ["connections", "", "http", "secrets", "token"]
+        "credential": true
       }
     ]
   },

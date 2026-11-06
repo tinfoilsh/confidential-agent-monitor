@@ -29,18 +29,16 @@
         "title": "Read"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "X-Shopify-Access-Token",
-              "origin": "https://example.myshopify.com",
-              "path": "/admin/api/2026-10",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "X-Shopify-Access-Token",
+            "origin": "https://example.myshopify.com",
+            "path": "/admin/api/2026-10",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -58,8 +56,6 @@
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             0,
@@ -70,13 +66,7 @@
       {
         "key": "token",
         "label": "Admin API access token",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

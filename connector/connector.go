@@ -5,7 +5,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	"errors"
+	"maps"
 	"net"
 	"net/http"
 	"net/url"
@@ -24,8 +24,8 @@ type Server interface {
 	Update(context.Context, Prepared, map[string]*credential.Value, *Env) error
 }
 
-// Prepared is a pure parser result. Source is sent to isolated execution; Value
-// belongs to the concrete protocol. A nil Secrets slice means no credential scope.
+// Prepared is a pure parser result. The host records Source for isolated
+// execution; Value belongs to the concrete protocol.
 type Prepared struct {
 	Source      Setup
 	Value       any
@@ -43,9 +43,13 @@ type Kind struct {
 	// Opaque sessions keep the default: close when another operation changes the label.
 	PerMessage  bool
 	UsesHostKey bool
-	Parse       func(Setup) (Prepared, error)
-	New         func() Server
-	Settings    any // Optional pointer to deployment settings, filled before Parse in a worker.
+	// Placeholders lists credential placeholders for agents to send in place of secrets.
+	Placeholders bool
+	// Host reaches host resources outside Env, so only local development registers it.
+	Host     bool
+	Parse    func(Setup) (Prepared, error)
+	New      func() Server
+	Settings any // Optional pointer to deployment settings, filled before Parse in a worker.
 }
 
 // Control handles private host HTTP after owner authentication.
@@ -76,20 +80,19 @@ type Setup struct {
 }
 
 type Discovery struct {
-	Hosts        []string
-	Slots        any
-	Placeholders map[string]string
+	Hosts []string
+	Slots any
 }
 
 type Endpoint struct {
 	SecretConfig
-	url.URL `json:"-"`
-	Address string `json:"url"`
-	User    string `json:"user"`
+	URL    url.URL `json:"-"`
+	RawURL string  `json:"url"`
+	User   string  `json:"user"`
 }
 
 func (e *Endpoint) Parse() error {
-	u, err := ParseURL(e.Address)
+	u, err := ParseURL(e.RawURL)
 	if err != nil {
 		return err
 	}
@@ -103,7 +106,7 @@ func (e *Endpoint) Parse() error {
 // SecretConfig owns the credential handles shared with the connection runtime.
 type SecretConfig struct {
 	Semantics `json:"-"`
-	Secrets   map[string]*credential.Value `json:"secrets,omitempty"`
+	Secrets   map[string]*credential.Value `json:"-"`
 }
 
 // Semantics is the connector's immutable, connection-scoped preset projection.
@@ -114,9 +117,13 @@ type Semantics struct {
 	Address, Origin string
 }
 
+type semantic interface{ semantics() *Semantics }
+
+func (c *Semantics) semantics() *Semantics { return c }
+
 // ParseSetup decodes the protocol configuration, its selected preset fields and
 // local semantic options once each, without opening resources or reading secrets.
-func ParseSetup(setup Setup, config, preset any, semantics *Semantics) error {
+func ParseSetup(setup Setup, config any, preset semantic) error {
 	if err := facts.DecodeNumbers(setup.Config, config); err != nil {
 		return err
 	}
@@ -131,34 +138,23 @@ func ParseSetup(setup Setup, config, preset any, semantics *Semantics) error {
 			return err
 		}
 	}
+	semantics := preset.semantics()
 	semantics.Address, semantics.Origin = options.Address, options.Origin
 	return nil
 }
 
-// Declarations accepts empty source slots, never source-embedded credential values.
-func (c *SecretConfig) Declarations(required ...string) ([]string, error) {
-	names := append(make([]string, 0, len(c.Secrets)+len(required)), required...)
-	for name, value := range c.Secrets {
-		if value != nil && value.Raw() != nil {
-			return nil, errors.New("set credentials through account settings")
-		}
-		names = append(names, name)
-	}
-	c.Secrets = nil
-	return names, nil
-}
+func (c *Semantics) Capture(f facts.Facts) facts.Event { return c.CaptureResult(f, nil) }
 
-func (c *Semantics) Capture(f facts.Facts, err error) facts.Event {
+func (c *Semantics) CaptureResult(f facts.Facts, invalid error) facts.Event {
 	if f.Operation != nil {
 		f.Operation = f.Operation.Resolve(c.Catalog.Actions)
 	}
-	return facts.Capture(f, err)
+	return facts.Capture(f, invalid)
 }
 
-// Secret returns an empty value for optional, unconfigured authentication.
+// Secret returns an empty value for a declared but unconfigured credential.
 func (c *SecretConfig) Secret(ctx context.Context, name string) (string, error) {
-	if value := c.Secrets[name]; value != nil {
-		return value.Value(ctx)
-	}
-	return "", nil
+	return c.Secrets[name].Value(ctx)
 }
+
+func (c *SecretConfig) Bind(secrets map[string]*credential.Value) { c.Secrets = maps.Clone(secrets) }

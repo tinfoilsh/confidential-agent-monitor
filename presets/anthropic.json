@@ -770,19 +770,17 @@
         "title": "Read"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "hosts": ["platform.claude.com"],
-          "slots": [
-            {
-              "header": "X-Api-Key",
-              "origin": "https://api.anthropic.com",
-              "path": "/v1",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "hosts": ["platform.claude.com"],
+        "slots": [
+          {
+            "header": "X-Api-Key",
+            "origin": "https://api.anthropic.com",
+            "path": "/v1",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -794,13 +792,7 @@
       {
         "key": "token",
         "label": "API key",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

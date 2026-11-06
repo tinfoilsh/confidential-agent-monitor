@@ -13,14 +13,12 @@ var SSHAgentKind = connector.Kind{Parse: parseSSHAgent, New: func() connector.Se
 
 func parseSSHAgent(source connector.Setup) (connector.Prepared, error) {
 	c := new(sshAgentSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
-	names, err := c.Declarations()
-	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
+	return connector.Prepared{Value: c, SecretNames: c.Credentials}, nil
 }
 
-// SSHAgent keeps one immutable setup for each admitted stream.
 type SSHAgent struct{ connector.Slot[sshAgentSetup] }
 
 const (
@@ -31,6 +29,7 @@ var errAgentSignsOnly = errors.New("the monitor's agent only signs")
 
 type sshAgentSetup struct {
 	connector.SecretConfig
+	Credentials []string `json:"credentials"`
 }
 
 type gatedAgent struct {
@@ -40,12 +39,10 @@ type gatedAgent struct {
 }
 
 func (owner *SSHAgent) Serve(s *connector.Stream, _ *connector.Env) {
-	captured := owner.Load()
-	if captured == nil {
+	keys, ok := owner.Load()
+	if !ok {
 		return
 	}
-	keys := captured.Value
-	keys.Secrets = captured.Secrets
 
 	keyring := agent.NewKeyring().(agent.ExtendedAgent)
 	for _, value := range keys.Secrets {
@@ -65,7 +62,7 @@ func (owner *SSHAgent) Serve(s *connector.Stream, _ *connector.Env) {
 }
 
 func (a gatedAgent) SignWithFlags(key ssh.PublicKey, data []byte, flags agent.SignatureFlags) (*ssh.Signature, error) {
-	if err := a.s.Gate(a.s.Context, a.semantics.Capture((signEvent(key, data)).Describe())); err != nil {
+	if err := a.s.Gate(a.s.Context, a.semantics.Capture(signEvent(key, data).Describe())); err != nil {
 		return nil, err
 	}
 	return a.ExtendedAgent.SignWithFlags(key, data, flags)
@@ -76,8 +73,8 @@ func (gatedAgent) Remove(ssh.PublicKey) error { return errAgentSignsOnly }
 func (gatedAgent) RemoveAll() error           { return errAgentSignsOnly }
 func (gatedAgent) Lock([]byte) error          { return errAgentSignsOnly }
 func (gatedAgent) Unlock([]byte) error        { return errAgentSignsOnly }
-func signEvent(key ssh.PublicKey, data []byte) *Request {
-	sign := &Request{Agent: "ssh", Key: ssh.FingerprintSHA256(key), Purpose: "other"}
+func signEvent(key ssh.PublicKey, data []byte) *SignFacts {
+	sign := &SignFacts{Agent: "ssh", Key: ssh.FingerprintSHA256(key), Purpose: "other"}
 	var sig struct {
 		Magic     [6]byte
 		Namespace string

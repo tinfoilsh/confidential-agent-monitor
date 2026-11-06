@@ -74,6 +74,9 @@ func (l *listener) Close() error { return l.s.Close() }
 
 func (*listener) Addr() net.Addr { return &net.TCPAddr{} }
 
+// Domain suffixes the names agents use to address Monitor services directly.
+const Domain = ".monitor"
+
 // Stream carries an authenticated connection and its blocking authorization gate.
 type Stream struct {
 	Context context.Context
@@ -81,6 +84,7 @@ type Stream struct {
 	stop    func() bool
 	net.Conn
 	Name string
+	// Host is empty when the agent addressed the connection by name under Domain.
 	Host string
 	Port uint32
 	// Gate waits for authorization, including any owner approval, and persists
@@ -177,11 +181,6 @@ func PumpReplies(s *Stream, pump func()) func() {
 	go func() { defer close(done); pump(); s.Close() }()
 	return func() { s.Close(); <-done }
 }
-
-// CloseFunc adapts a library's close function to stream lifetime management.
-type CloseFunc func()
-
-func (close CloseFunc) Close() error { close(); return nil }
 
 type ChannelConn struct {
 	ssh.Channel

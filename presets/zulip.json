@@ -3,11 +3,11 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "origin", "label": "Your Zulip origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
-      {"key": "email", "label": "Email", "secret": true, "path": ["connections", "", "http", "secrets", "email"]},
-      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "secrets", "api_key"]}
+      {"key": "origin", "label": "Your Zulip origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"], ["http", "slots", 1, "origin"]]},
+      {"key": "email", "label": "Email", "secret": true, "credential": true},
+      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "email", "origin": "https://example.com", "path": "/", "basic": "user"}, {"value": "api_key", "origin": "https://example.com", "path": "/", "basic": "password"}]}}},
+    "connection": {"http": {"slots": [{"value": "email", "origin": "https://example.com", "path": "/", "basic": "user"}, {"value": "api_key", "origin": "https://example.com", "path": "/", "basic": "password"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.domains": {"title": "Admin: domains"},

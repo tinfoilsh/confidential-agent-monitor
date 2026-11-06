@@ -17,9 +17,6 @@
   "anthropic": {
     "src": "anthropic.svg"
   },
-  "api": {
-    "src": "api.svg"
-  },
   "asana": {
     "src": "asana.svg"
   },
@@ -128,6 +125,10 @@
   "coda": {
     "src": "coda.svg"
   },
+  "codex": {
+    "dark": "openai.dark.svg",
+    "src": "openai.svg"
+  },
   "cohere": {
     "src": "cohere.svg"
   },
@@ -176,6 +177,9 @@
   "email": {
     "src": "email.svg"
   },
+  "email_send": {
+    "src": "email.svg"
+  },
   "figma": {
     "src": "figma.svg"
   },
@@ -198,7 +202,7 @@
     "dark": "github_api.dark.svg",
     "src": "github_api.svg"
   },
-  "github_api": {
+  "github_mcp": {
     "dark": "github_api.dark.svg",
     "src": "github_api.svg"
   },
@@ -414,6 +418,9 @@
     "dark": "openai.dark.svg",
     "src": "openai.svg"
   },
+  "openrouter": {
+    "src": "open_router.svg"
+  },
   "orbit": {
     "src": "orbit.svg"
   },
@@ -532,6 +539,10 @@
     "src": "the_hive_project.svg"
   },
   "tinfoil": {
+    "dark": "tinfoil.dark.svg",
+    "src": "tinfoil.svg"
+  },
+  "tinfoil_websearch": {
     "dark": "tinfoil.dark.svg",
     "src": "tinfoil.svg"
   },

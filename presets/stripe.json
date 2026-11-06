@@ -2069,18 +2069,16 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "basic": "user",
-              "origin": "https://api.stripe.com",
-              "path": "/v1",
-              "value": "key"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "basic": "user",
+            "origin": "https://api.stripe.com",
+            "path": "/v1",
+            "value": "key"
+          }
+        ]
       }
     },
     "defaults": {
@@ -2092,13 +2090,7 @@
       {
         "key": "key",
         "label": "Restricted or secret API key",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "key"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

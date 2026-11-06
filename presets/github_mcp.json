@@ -1,0 +1,37 @@
+{
+  "title": "GitHub",
+  "public_scope": ["owner", "repo"],
+  "catalog": {
+    "group": "mcp",
+    "actions": {
+      "read": {"title": "Read code, issues and pull requests", "effects": ["read"]},
+      "use": {"title": "Use tools that change things", "effects": ["write"]}
+    },
+    "connection": {"mcp": {"url": "https://api.githubcopilot.com/mcp/"}},
+    "defaults": {"contents": "team", "sends": "me", "strangers": true},
+    "fields": [
+      {
+        "key": "token",
+        "label": "GitHub account",
+        "hint": "GitHub will ask you to authorize GitHub CLI.",
+        "oauth": {
+          "device_auth_url": "https://github.com/login/device/code",
+          "token_url": "https://github.com/login/oauth/access_token",
+          "client_id": "178c6fc778ccc68e1d6a",
+          "auth_style": "params",
+          "scope": "repo read:org gist",
+          "required_scopes": ["repo", "read:org", "gist"]
+        },
+        "credential": true,
+        "secret": true
+      },
+      {"key": "private", "label": "Private orgs and repos", "hint": "owner/* or owner/repo", "list": true, "path": ["policy_options", "private"]}
+    ]
+  },
+  "mcp": {
+    "scope": {
+      "owner": {"at": "/owner", "optional": true},
+      "repo": {"at": "/repo", "optional": true}
+    }
+  }
+}

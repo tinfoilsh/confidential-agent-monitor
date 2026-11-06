@@ -23,7 +23,7 @@ type TCP struct {
 
 func Parse(source connector.Setup) (connector.Prepared, error) {
 	c := new(TCP)
-	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
 	if len(c.Hosts) == 0 {
@@ -34,7 +34,7 @@ func Parse(source connector.Setup) (connector.Prepared, error) {
 			return connector.Prepared{}, fmt.Errorf("invalid TCP host pattern %q", host)
 		}
 	}
-	return connector.Prepared{Source: source, Value: c, Claim: c.Claim}, nil
+	return connector.Prepared{Value: c, Claim: c.Claim}, nil
 }
 
 type Server struct{ connector.Slot[TCP] }
@@ -56,24 +56,21 @@ func (c *TCP) Claim(host string, port uint32) int {
 	return score
 }
 
-type TCPRequest TCPFacts
-
-func (r *TCPRequest) Describe() (facts.Facts, error) {
+func (r *TCPFacts) Describe() facts.Facts {
 	return facts.Facts{Title: "Connect to " + net.JoinHostPort(r.Host, strconv.Itoa(int(r.Port))),
-		Operation:  &facts.Operation{Action: "connect", Effects: []string{"read", "send"}},
-		Parameters: map[string]any{"host": r.Host, "port": r.Port}, Details: Details{TCP: (*TCPFacts)(r)},
-		Context: facts.Context{Sends: "anyone", Observes: facts.Label{Audience: "me", Trust: "untrusted"}}}, nil
+		Operation:  &facts.Operation{Action: "connect"},
+		Parameters: map[string]any{"host": r.Host, "port": r.Port}, Details: Details{TCP: r},
+		Context: facts.Context{Sends: "anyone", Observes: facts.Label{Audience: "me", Trust: "untrusted"}}}
 }
 
 func (owner *Server) Serve(s *connector.Stream, e *connector.Env) {
-	captured := owner.Load()
-	if captured == nil {
+	c, ok := owner.Load()
+	if !ok {
 		return
 	}
-	c := captured.Value
 
 	host, port := s.Host, s.Port
-	if c.Claim(host, port) < 0 || s.Gate(s.Context, c.Capture((&TCPRequest{Host: host, Port: port}).Describe())) != nil {
+	if c.Claim(host, port) < 0 || s.Gate(s.Context, c.Capture((&TCPFacts{Host: host, Port: port}).Describe())) != nil {
 		return
 	}
 	upstream, err := e.Dialer.DialContext(s.Context, "tcp", net.JoinHostPort(host, strconv.Itoa(int(port))))

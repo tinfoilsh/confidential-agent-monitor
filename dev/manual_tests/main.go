@@ -109,11 +109,7 @@ func prepare(name, credentialName, secret, placeholder, origin string) (*liveCon
 	if p == nil {
 		return nil, errors.New("missing shipped preset")
 	}
-	var kinds map[string]json.RawMessage
-	if err := json.Unmarshal(p.Catalog.Connections[""], &kinds); err != nil {
-		return nil, err
-	}
-	source := connector.Setup{Config: kinds["http"], Definition: p.Source}
+	source := connector.Setup{Config: p.Catalog.Connection["http"], Definition: p.Source}
 	if origin != "" {
 		if !web.ValidOrigin(origin) {
 			return nil, errors.New("test destination must be an HTTPS origin")

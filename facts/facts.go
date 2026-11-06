@@ -14,7 +14,7 @@ import (
 // Version identifies the facts schema and approval semantics. Bump it when
 // parsing, description, normalization, label, or approval semantics change.
 // This invalidates saved approvals; display-only edits do not need a bump.
-const Version = 12
+const Version = 13
 
 // Label levels are ordered from most restrictive to least restrictive.
 // Policy derives its rank tables from these same lists.
@@ -45,8 +45,11 @@ func (l Label) Valid() bool {
 	return slices.Contains(Audiences, l.Audience) && slices.Contains(Trusts, l.Trust)
 }
 
+// SendsConnection resolves to the connection's configured audience; lib.rego matches the same value.
+const SendsConnection = "connection"
+
 func ValidSends(sends string) bool {
-	return sends == "" || sends == "account" || slices.Contains(Audiences, sends)
+	return sends == "" || sends == SendsConnection || slices.Contains(Audiences, sends)
 }
 
 type Operation struct {
@@ -61,6 +64,7 @@ type Action struct {
 	Effects []string `json:"effects,omitempty"`
 }
 
+// Requirement IDs bind approval waivers; messages explain them without granting authority.
 type Requirement struct {
 	ID      string `json:"id"`
 	Message string `json:"message"`
@@ -88,7 +92,7 @@ func (op Operation) Resolve(actions map[string]Action) *Operation {
 	return &op
 }
 
-// Sends and Observes are connector hints; policy resolves them with account settings.
+// Sends and Observes are connector hints; policy resolves them with connection settings.
 type Context struct {
 	Label    Label  `json:"label"`
 	Sends    string `json:"sends"`
@@ -103,7 +107,6 @@ type Facts struct {
 	Version    int            `json:"version"`
 	Kind       Kind           `json:"kind"`
 	Principal  Principal      `json:"principal"`
-	Account    string         `json:"account"`
 	Service    string         `json:"service"`
 	Connection string         `json:"connection"`
 	Operation  *Operation     `json:"operation"`
@@ -111,12 +114,6 @@ type Facts struct {
 	Context    Context        `json:"context"`
 	Title      string         `json:"title"`
 	Details    any            `json:"details"`
-}
-
-// PolicyDiff is an agent proposal to change the owner source.
-type PolicyDiff struct {
-	SourceDiff    string `json:"source_diff"`
-	EffectiveDiff string `json:"effective_diff"`
 }
 
 // Obligations describes the requirements carried by an effect.

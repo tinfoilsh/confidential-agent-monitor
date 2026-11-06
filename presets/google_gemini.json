@@ -194,18 +194,16 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "X-Goog-Api-Key",
-              "origin": "https://generativelanguage.googleapis.com",
-              "path": "/v1beta",
-              "value": "api_key"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "X-Goog-Api-Key",
+            "origin": "https://generativelanguage.googleapis.com",
+            "path": "/v1beta",
+            "value": "api_key"
+          }
+        ]
       }
     },
     "defaults": {
@@ -217,13 +215,7 @@
       {
         "key": "api_key",
         "label": "Gemini API key (Google AI Studio)",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "api_key"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

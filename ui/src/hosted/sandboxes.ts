@@ -1,15 +1,17 @@
 import { ed25519 } from "@noble/curves/ed25519.js";
 import { SecureClient } from "tinfoil";
-import { openShell, type ShellOpen, type ShellOpener } from "../owner";
-import { rpcChannel } from "./channel";
-import { ownerPublicKey, unb64u, type MKBinding } from "./contract";
-import * as keys from "./keys";
+import type { ShellOpen, ShellOpener } from "../owner";
+import { openShell, rpcChannel } from "./channel";
 import {
-  attestedKey,
-  checkHostKey,
+  UUID,
+  ownerPublicKey,
   sshPublicKey,
-  type OpenedMonitor,
-} from "./monitors";
+  unb64u,
+  type MKBinding,
+  type MKResource,
+} from "./contract";
+import * as keys from "./keys";
+import { attestedKey, checkHostKey, type OpenedMonitor } from "./monitors";
 import { SANDBOX_REPO, monitorOf, type Container } from "./session";
 import { TEMPLATES } from "./templates";
 import {
@@ -23,7 +25,6 @@ import {
 const PROTOCOL = "sandbox-owner-v1";
 const ATTESTATION = "/.well-known/tinfoil-attestation";
 const VOLUMES = "/api/volumes";
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const HOST = /^[a-z0-9.-]+$/;
 
 export type SandboxStatus = {
@@ -38,18 +39,27 @@ type RelayReply = { status: number; body: string };
 // Sandbox identity that is not on its Monitor; only an explicit restore re-adds it.
 export class RestoreRequired extends Error {}
 
+const routed = (monitor: OpenedMonitor, row: Container) =>
+  row.repo === SANDBOX_REPO &&
+  monitorOf(row) === monitor.row.id &&
+  row.owner_key_mode === "tmk";
+const agentKey = (resource: MKResource) =>
+  sshPublicKey(
+    ed25519.getPublicKey(unb64u(resource.monitor_identity_seed, 32)),
+  );
+
 // One sandbox reached through its Monitor's relay. Its sessions handshake with
 // the attested owner-session key and are signed by the sandbox owner key, so
 // Monitor carries only ciphertext.
 export async function sandboxClient(
   monitor: OpenedMonitor,
   row: Container,
-  owner_seed: string,
+  resource: MKResource,
   binding: MKBinding,
   size: string,
   signal: AbortSignal,
 ) {
-  const seed = unb64u(owner_seed, 32);
+  const seed = unb64u(resource.owner_seed, 32);
   const owner = ownerPublicKey(seed);
   const instance_id = binding.instance_id!;
   if (!HOST.test(row.domain)) throw new Error("This sandbox has no address.");
@@ -112,8 +122,23 @@ export async function sandboxClient(
         throw new Error("The sandbox answered for a different instance.");
       return status;
     },
-    enroll: (body: unknown, signal?: AbortSignal) =>
-      call("POST", "/enroll", body, 0, signal) as Promise<SandboxStatus>,
+    enroll: (
+      monitor_host_key: string,
+      allow_initialize: boolean,
+      signal?: AbortSignal,
+    ) =>
+      call(
+        "POST",
+        "/enroll",
+        {
+          monitor_identity_seed: resource.monitor_identity_seed,
+          monitor_host_key,
+          disk_key: resource.storage_key,
+          allow_initialize,
+        },
+        0,
+        signal,
+      ) as Promise<SandboxStatus>,
     shell: (size: ShellOpen, signal: AbortSignal) =>
       connect({ open: "shell", ...size }, signal),
   };
@@ -223,7 +248,6 @@ export function connectPlan(
   };
 }
 
-// Opens a sandbox for its owner after reconciling its actual state.
 export async function connectSandbox({
   monitor,
   id,
@@ -242,15 +266,13 @@ export async function connectSandbox({
   const sandbox = await sandboxClient(
     monitor,
     row,
-    resource.owner_seed,
+    resource,
     binding,
     size,
     signal,
   );
   const status = await sandbox.status(signal);
-  const agent = sshPublicKey(
-    ed25519.getPublicKey(unb64u(resource.monitor_identity_seed, 32)),
-  );
+  const agent = agentKey(resource);
   const hostKey = monitor.hostKey();
   const { view } = await monitor.client.read(signal);
   checkHostKey(view.host_key, hostKey);
@@ -259,23 +281,12 @@ export async function connectSandbox({
   );
   const steps = connectPlan(status, agent, hostKey, known, restore);
   if (steps.monitor)
-    await monitor.client.call(
-      "POST",
-      "/enroll",
+    await monitor.client.enroll(
       { [row.name]: { key: agent, routes: false, restore } },
       signal,
     );
-  if (steps.sandbox)
-    await sandbox.enroll(
-      {
-        monitor_identity_seed: resource.monitor_identity_seed,
-        monitor_host_key: hostKey,
-        disk_key: resource.storage_key,
-        // The volume worker formats only a blank workspace and otherwise unlocks it.
-        allow_initialize: true,
-      },
-      signal,
-    );
+  // The volume worker formats only a blank workspace and otherwise unlocks it.
+  if (steps.sandbox) await sandbox.enroll(hostKey, true, signal);
   return sandbox;
 }
 
@@ -289,11 +300,7 @@ export async function relinkSandboxes(monitor: OpenedMonitor) {
     monitor.snapshot.view.config.identities ?? {},
   );
   const rows = (await monitor.scope.fresh()).filter(
-    (row) =>
-      row.repo === SANDBOX_REPO &&
-      monitorOf(row) === monitor.row.id &&
-      row.owner_key_mode === "tmk" &&
-      row.status === "running",
+    (row) => routed(monitor, row) && row.status === "running",
   );
   let volumes: Promise<unknown> | undefined;
   const readVolumes = () => (volumes ??= monitor.scope.api(VOLUMES));
@@ -303,14 +310,12 @@ export async function relinkSandboxes(monitor: OpenedMonitor) {
         const resolved = await resolve(monitor, row.id, false, readVolumes);
         if (!resolved) return;
         const { resource, binding } = resolved;
-        const agent = sshPublicKey(
-          ed25519.getPublicKey(unb64u(resource.monitor_identity_seed, 32)),
-        );
+        const agent = agentKey(resource);
         if (!identities.some((identity) => identity.key === agent)) return;
         const sandbox = await sandboxClient(
           monitor,
           resolved.row,
-          resource.owner_seed,
+          resource,
           binding,
           resolved.size,
           monitor.scope.signal,
@@ -320,15 +325,7 @@ export async function relinkSandboxes(monitor: OpenedMonitor) {
           status.monitor_identity === agent &&
           status.monitor_host_key !== hostKey
         )
-          await sandbox.enroll(
-            {
-              monitor_identity_seed: resource.monitor_identity_seed,
-              monitor_host_key: hostKey,
-              disk_key: resource.storage_key,
-              allow_initialize: false,
-            },
-            monitor.scope.signal,
-          );
+          await sandbox.enroll(hostKey, false, monitor.scope.signal);
       } catch (cause) {
         failures.push(
           `${row.name}: ${cause instanceof Error ? cause.message : cause}`,
@@ -339,8 +336,6 @@ export async function relinkSandboxes(monitor: OpenedMonitor) {
   return failures;
 }
 
-// Sandboxes routed through this Monitor whose keys this terminal holds, with
-// the Monitor identity each would enroll.
 export function sandboxCandidates(monitor: OpenedMonitor, rows: Container[]) {
   const resources = monitor.scope.unlocked()?.payload.resources ?? [];
   return rows.flatMap((row) => {
@@ -348,19 +343,10 @@ export function sandboxCandidates(monitor: OpenedMonitor, rows: Container[]) {
       (r) =>
         r.kind === "sandbox" && r.owner_public_key === row.owner_public_key,
     );
-    return row.repo === SANDBOX_REPO &&
-      monitorOf(row) === monitor.row.id &&
-      row.owner_key_mode === "tmk" &&
+    return routed(monitor, row) &&
       row.status === "running" &&
       resource?.monitor_identity_seed
-      ? [
-          {
-            name: row.name,
-            key: sshPublicKey(
-              ed25519.getPublicKey(unb64u(resource.monitor_identity_seed, 32)),
-            ),
-          },
-        ]
+      ? [{ name: row.name, key: agentKey(resource) }]
       : [];
   });
 }
@@ -378,7 +364,6 @@ export async function acceptSandbox(
   await connectSandbox({ monitor, id: row.id, restore });
 }
 
-// The hosted shell capability: opening a shell first connects the sandbox.
 export function shellOpener(
   monitor: OpenedMonitor,
   rows: Container[],
@@ -386,8 +371,7 @@ export function shellOpener(
   restore = false,
 ): ShellOpener | undefined {
   const row = rows.find((r) => r.name === name && r.repo === SANDBOX_REPO);
-  if (!row || monitorOf(row) !== monitor.row.id || row.owner_key_mode !== "tmk")
-    return undefined;
+  if (!row || !routed(monitor, row)) return undefined;
   return async (size, handlers, signal) => {
     const sandbox = await connectSandbox({
       monitor,

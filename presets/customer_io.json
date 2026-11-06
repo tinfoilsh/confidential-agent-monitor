@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "tracking_api_key", "label": "Tracking API Key", "secret": true, "path": ["connections", "", "http", "secrets", "tracking_api_key"]}
+      {"key": "tracking_api_key", "label": "Tracking API Key", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "tracking_api_key", "origin": "https://track.customer.io", "path": "/", "basic": "password"}, {"value": "tracking_api_key", "origin": "https://api.customer.io", "path": "/v1", "basic": "password"}]}}},
+    "connection": {"http": {"slots": [{"value": "tracking_api_key", "origin": "https://track.customer.io", "path": "/", "basic": "password"}, {"value": "tracking_api_key", "origin": "https://api.customer.io", "path": "/v1", "basic": "password"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "delete.collections": {"title": "Delete: collections"},

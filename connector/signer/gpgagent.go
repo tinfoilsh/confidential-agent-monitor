@@ -12,17 +12,16 @@ import (
 	"github.com/tinfoilsh/monitor/connector"
 )
 
-var GPGAgentKind = connector.Kind{Parse: parseGPGAgent, New: func() connector.Server { return new(GPGAgent) }}
+var GPGAgentKind = connector.Kind{Host: true, Parse: parseGPGAgent, New: func() connector.Server { return new(GPGAgent) }}
 
 func parseGPGAgent(source connector.Setup) (connector.Prepared, error) {
 	c := new(gpgAgentSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Source: source, Value: c}, nil
+	return connector.Prepared{Value: c}, nil
 }
 
-// GPGAgent keeps one immutable setup for each admitted stream.
 type GPGAgent struct{ connector.Slot[gpgAgentSetup] }
 
 const (
@@ -45,11 +44,10 @@ type gpgAgentSetup struct {
 func (s *gpgAgentSetup) UnmarshalJSON(raw []byte) error { return json.Unmarshal(raw, &s.socket) }
 
 func (owner *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
-	captured := owner.Load()
-	if captured == nil {
+	socket, ok := owner.Load()
+	if !ok {
 		return
 	}
-	socket := captured.Value
 
 	up, err := (&net.Dialer{Timeout: connector.DialTimeout}).DialContext(s.Context, "unix", socket.socket)
 	if err != nil {
@@ -58,7 +56,7 @@ func (owner *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
 	}
 	defer s.Interrupt(up)()
 	defer connector.PumpReplies(s, func() { io.Copy(s, up) })()
-	sign := Request{Agent: agentGPG}
+	sign := SignFacts{Agent: agentGPG}
 	lines := bufio.NewScanner(s)
 	for lines.Scan() {
 		line := lines.Text()
@@ -70,14 +68,14 @@ func (owner *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
 			fmt.Fprintf(s, "ERR %d Not supported <Monitor>\n", assuanNotSupported)
 			continue
 		case command == "RESET":
-			sign = Request{Agent: agentGPG}
+			sign = SignFacts{Agent: agentGPG}
 		case command == "SIGKEY" || command == "SETKEY":
 			sign.Key = rest
 		case command == "SETHASH":
 			sign.Hash = rest
 		case command == "PKSIGN" || command == "PKDECRYPT":
 			sign.Op = strings.ToLower(command)
-			if err := s.Gate(s.Context, socket.Capture((&sign).Describe())); err != nil {
+			if err := s.Gate(s.Context, socket.Capture(sign.Describe())); err != nil {
 				fmt.Fprintf(s, "ERR %d %v <Monitor>\n", assuanNotSupported, err)
 				continue
 			}
