@@ -3,13 +3,13 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
-      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["connections", "", "http", "slots", 0, "sigv4", "region"]},
-      {"key": "access_key", "label": "Access key ID", "secret": true, "path": ["connections", "", "http", "secrets", "access_key"]},
-      {"key": "secret_key", "label": "Secret access key", "secret": true, "path": ["connections", "", "http", "secrets", "secret_key"]},
-      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "path": ["connections", "", "http", "secrets", "session_token"]}
+      {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
+      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["http", "slots", 0, "sigv4", "region"]},
+      {"key": "access_key", "label": "Access key ID", "secret": true, "credential": true},
+      {"key": "secret_key", "label": "Secret access key", "secret": true, "credential": true},
+      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "sigv4": {"service": "comprehend", "region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}}},
+    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "sigv4": {"service": "comprehend", "region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "generate.comprehend": {"title": "Generate: comprehend"},

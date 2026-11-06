@@ -27,8 +27,7 @@ func parseSMTP(source connector.Setup) (connector.Prepared, error) {
 	if err := c.Endpoint.Parse(); err != nil {
 		return connector.Prepared{}, err
 	}
-	names, err := c.Declarations("password")
-	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: []string{"password"}}, nil
 }
 
 // SMTP keeps one immutable setup for each admitted stream.
@@ -182,7 +181,7 @@ func (r *SMTPRequest) Describe(address string) (facts.Facts, error) {
 	}
 	to := slices.Clone(v.To)
 	slices.Sort(to)
-	sends := "account"
+	sends := "connection"
 	for _, to := range v.To {
 		if !strings.EqualFold(to, address) {
 			sends = "anyone"

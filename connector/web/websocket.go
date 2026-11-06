@@ -85,7 +85,7 @@ func (h *Setup) serveWebSocket(w http.ResponseWriter, r *http.Request, handshake
 			if err != nil {
 				return
 			}
-			// Classify the whole delivery using the account's contents and trust.
+			// Classify the whole delivery using the connection's contents and trust.
 			// Its payload is opaque to policy and can stream after admission,
 			// including large images, without an unbounded allocation.
 			if err := s.Gate(s.Context, h.Capture((&WebSocketReceive{Origin: handshake.HTTP.Origin, Host: handshake.HTTP.Host, Path: handshake.HTTP.Path}).Describe())); err != nil {
@@ -122,7 +122,7 @@ func (h *Setup) serveWebSocket(w http.ResponseWriter, r *http.Request, handshake
 
 // WebSocketReceive admits one upstream message. Receiving does not repeat the
 // request's effects (such as paying for inference) or send data to the upstream.
-// The account supplies a conservative label for the entire opaque payload.
+// The connection supplies a conservative label for the entire opaque payload.
 type WebSocketReceive struct {
 	Origin string `json:"origin"`
 	Host   string `json:"host"`

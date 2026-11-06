@@ -105,8 +105,6 @@ function Shell() {
     ({
       agent: "agents",
       "agent-settings": "agents",
-      accounts: "connections",
-      account: "connections",
       connection: "connections",
       catalog: "connections",
       request: "activity",
@@ -119,7 +117,7 @@ function Shell() {
         ? "agents"
         : kind() === "rules"
           ? "activity"
-          : ["account", "accounts", "connection", "catalog"].includes(kind())
+          : ["connection", "catalog"].includes(kind())
             ? "connections"
             : kind()
     ]?.[0] ?? (kind() === "request" ? "Request" : args()[0] || "Monitor");
@@ -130,7 +128,7 @@ function Shell() {
           (section === "agents"
             ? m.view()?.config.identities
             : section === "connections"
-              ? m.view()?.config.accounts
+              ? m.view()?.config.connections
               : {}) ?? {},
         ).length;
   const NavItem = (props: { key: string }) => (
@@ -234,12 +232,7 @@ function Shell() {
                             ? "agents"
                             : kind() === "rules"
                               ? "activity"
-                              : [
-                                    "account",
-                                    "accounts",
-                                    "connection",
-                                    "catalog",
-                                  ].includes(kind())
+                              : ["connection", "catalog"].includes(kind())
                                 ? "connections"
                                 : kind()
                         ]?.[1]
@@ -394,11 +387,7 @@ function Page(props: {
       >
         <Agents expanded={name} />
       </Match>
-      <Match
-        when={
-          kind === "connections" || kind === "accounts" || kind === "catalog"
-        }
-      >
+      <Match when={kind === "connections" || kind === "catalog"}>
         <Connections
           catalog={kind === "catalog" || name === "catalog"}
           proposal={
@@ -406,7 +395,7 @@ function Page(props: {
           }
         />
       </Match>
-      <Match when={kind === "connection" || kind === "account"}>
+      <Match when={kind === "connection"}>
         <Connections expanded={name} />
       </Match>
       <Match when={kind === "request"}>

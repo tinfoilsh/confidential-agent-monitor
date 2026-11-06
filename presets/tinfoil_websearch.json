@@ -1,0 +1,21 @@
+{
+  "title": "Tinfoil web search",
+  "catalog": {
+    "group": "mcp",
+    "actions": {
+      "use.search": {"title": "Search the web", "effects": ["read", "pay", "send"]},
+      "use.fetch": {"title": "Fetch web pages", "effects": ["read", "pay", "send"]}
+    },
+    "connection": {"tinfoil-mcp": {"url": "https://websearch.tinfoil.sh/mcp", "repo": "tinfoilsh/confidential-websearch"}},
+    "defaults": {"contents": "me", "sends": "me", "strangers": true},
+    "fields": [{"key": "token", "label": "Tinfoil API key", "credential": true, "secret": true}]
+  },
+  "mcp": {
+    "sends": "anyone",
+    "observes": {"audience": "anyone", "trust": "untrusted"},
+    "scope": {
+      "query": {"at": "/query", "optional": true},
+      "urls": {"at": "/urls", "type": "array", "optional": true}
+    }
+  }
+}

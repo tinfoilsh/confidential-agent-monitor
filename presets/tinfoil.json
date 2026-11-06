@@ -14,28 +14,12 @@
       },
       "models.read": {
         "title": "List models"
-      },
-      "use.search": {
-        "title": "Search the web",
-        "effects": ["read", "pay", "send"]
-      },
-      "use.fetch": {
-        "title": "Fetch web pages",
-        "effects": ["read", "pay", "send"]
       }
     },
-    "connections": {
-      "": {
-        "tinfoil": {
-          "enclave": "inference.tinfoil.sh",
-          "repo": "tinfoilsh/confidential-model-router"
-        }
-      },
-      "websearch": {
-        "tinfoil-mcp": {
-          "url": "https://websearch.tinfoil.sh/mcp",
-          "repo": "tinfoilsh/confidential-websearch"
-        }
+    "connection": {
+      "tinfoil": {
+        "enclave": "inference.tinfoil.sh",
+        "repo": "tinfoilsh/confidential-model-router"
       }
     },
     "defaults": {
@@ -47,21 +31,10 @@
       {
         "key": "TINFOIL_API_KEY",
         "label": "Tinfoil API key",
-        "paths": [
-          ["connections", "", "tinfoil", "secrets", "TINFOIL_API_KEY"],
-          ["connections", "websearch", "tinfoil-mcp", "secrets", "token"]
-        ],
+        "credential": true,
         "secret": true
       }
     ]
-  },
-  "mcp": {
-    "sends": "anyone",
-    "observes": {"audience": "anyone", "trust": "untrusted"},
-    "scope": {
-      "query": {"at": "/query", "optional": true},
-      "urls": {"at": "/urls", "type": "array", "optional": true}
-    }
   },
   "http": {
     "slots": true,
@@ -94,7 +67,7 @@
         "grant": [
           "model"
         ],
-        "sends": "account"
+        "sends": "connection"
       },
       "responses": {
         "action": "inference.generate",
@@ -124,7 +97,7 @@
         "grant": [
           "model"
         ],
-        "sends": "account"
+        "sends": "connection"
       },
       "messages": {
         "action": "inference.generate",
@@ -154,7 +127,7 @@
         "grant": [
           "model"
         ],
-        "sends": "account"
+        "sends": "connection"
       },
       "messages.count_tokens": {
         "action": "inference.count_tokens",
@@ -182,7 +155,7 @@
         "grant": [
           "model"
         ],
-        "sends": "account"
+        "sends": "connection"
       },
       "models.list": {
         "action": "models.read",

@@ -27,8 +27,7 @@ func parsePostgres(source connector.Setup) (connector.Prepared, error) {
 	if err := c.Endpoint.Parse(); err != nil {
 		return connector.Prepared{}, err
 	}
-	names, err := c.Declarations("password")
-	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: []string{"password"}}, nil
 }
 
 // Postgres keeps one immutable setup for each admitted stream.

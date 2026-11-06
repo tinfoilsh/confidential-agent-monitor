@@ -11,7 +11,7 @@
         "path": "*",
         "open_params": true,
         "body": "any",
-        "sends": "account",
+        "sends": "connection",
         "scope": {
           "origin": { "from": "http", "at": "/origin" },
           "method": { "from": "http", "at": "/method" },
@@ -33,7 +33,7 @@
         "key": "token",
         "label": "API key",
         "secret": true,
-        "path": ["connections", "", "http", "secrets", "token"]
+        "credential": true
       }
     ]
   }

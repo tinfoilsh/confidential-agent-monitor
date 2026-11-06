@@ -55,8 +55,8 @@ monitor policy show --json
 ```
 
 A sandbox sees only its own identity, its own access and rules, and semantics
-for accounts it can reach. A trusted device sees a credential-free, expanded
-configuration projection, including accounts, identities, public keys, routes,
+for connections it can reach. A trusted device sees a credential-free, expanded
+configuration projection, including connections, identities, public keys, routes,
 sandbox access and global settings. Inherited access and resolved connections are
 materialized, so this projection is not source TOML and must not be round-tripped.
 Neither view includes values from Monitor's credential store.
@@ -78,7 +78,7 @@ monitor policy propose --changes changes.json \
 ```json
 [
   {
-    "path": ["identities", "my-sandbox", "accounts", "github", "level"],
+    "path": ["identities", "my-sandbox", "connections", "github", "level"],
     "value": "ask"
   }
 ]
@@ -94,11 +94,11 @@ monitor policy propose change.toml \
 
 Trusted-device proposals may change only:
 
-- `accounts.<connection>...`
+- `connections.<connection>...`
 - `default_access.<connection>...`
-- `identities.<sandbox>.accounts.<connection>...`
+- `identities.<sandbox>.connections.<connection>...`
 
-A sandbox may propose shared connection setup under `accounts`, but may change
+A sandbox may propose shared connection setup under `connections`, but may change
 access only for its own identity and cannot change `default_access`. No proposal
 may change credentials, MCP tool pins, identity keys or routes, global policies,
 data, global effect defaults, lattice settings, or unrelated owner configuration.
@@ -180,7 +180,7 @@ A structured request body has `reason` and `changes`:
   "reason": "Grant this sandbox GitHub access for issue triage",
   "changes": [
     {
-      "path": ["identities", "my-sandbox", "accounts", "github", "level"],
+      "path": ["identities", "my-sandbox", "connections", "github", "level"],
       "value": "ask"
     }
   ]

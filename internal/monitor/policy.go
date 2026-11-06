@@ -22,8 +22,9 @@ import (
 
 // writeSettings is the single ordered settings path; writes is held, mu is not.
 // check runs under mu before validation and again before persistence. A saved
-// approval is answered atomically with the durable settings change.
-func (m *monitor) writeSettings(ctx context.Context, source *string, changes []config.Change, check func() error, saved *savedAnswer) error {
+// approval is answered atomically with the durable settings change, and staged
+// credentials, nil clearing one, persist with it.
+func (m *monitor) writeSettings(ctx context.Context, source *string, changes []config.Change, credentials store.Secrets, check func() error, saved *savedAnswer) error {
 	m.mu.Lock()
 	if check != nil {
 		if err := check(); err != nil {
@@ -34,39 +35,15 @@ func (m *monitor) writeSettings(ctx context.Context, source *string, changes []c
 	base, env := m.store.Doc, m.settings.Load().Env
 	m.mu.Unlock()
 	next := base
-	next.Secrets = base.Secrets.Clone()
-	var edits []config.Change
-	for _, change := range changes {
-		if change.Delete && change.Value != nil {
-			return errors.New("a deletion cannot have a value")
-		}
-		if id, ok := credentialID(change.Path); ok {
-			var raw json.RawMessage
-			if change.Value != nil {
-				var err error
-				if raw, err = json.Marshal(change.Value); err != nil {
-					return err
-				}
-			}
-			next.Secrets.Set(id, raw)
-		} else {
-			edits = append(edits, change)
-		}
-	}
 	var err error
 	if source != nil {
 		next.Policy = *source
-	} else if next.Policy, err = config.EditSource(base.Policy, edits); err != nil {
+	} else if next.Policy, err = config.EditSource(base.Policy, changes); err != nil {
 		return err
 	}
-	plan, err := m.prepareSettings(ctx, base, next, env)
+	plan, err := m.prepareSettings(ctx, base, next, credentials, env)
 	if err != nil {
 		return err
-	}
-	for _, change := range changes {
-		if id, ok := credentialID(change.Path); ok && next.Secrets.Get(id) != nil && plan.secrets.Get(id) == nil {
-			return fmt.Errorf("credential %v has no connection", id)
-		}
 	}
 	m.mu.Lock()
 	if check != nil {
@@ -75,7 +52,7 @@ func (m *monitor) writeSettings(ctx context.Context, source *string, changes []c
 			return err
 		}
 	}
-	install, retired, err := m.commitSettings(ctx, base, plan, saved)
+	install, retired, err := m.commitSettings(ctx, plan, saved)
 	m.mu.Unlock()
 	if err == nil {
 		m.installConnections(install, retired)
@@ -89,7 +66,7 @@ var errPolicyConflict = errors.New("policy changed; reload it and review a new d
 func (m *monitor) previewPolicy(ctx context.Context, base store.Document, before *settings, source string) (*facts.PolicyDiff, error) {
 	next := base
 	next.Policy = source
-	plan, err := m.prepareSettings(ctx, base, next, before.Env)
+	plan, err := m.prepareSettings(ctx, base, next, nil, before.Env)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +105,7 @@ type proposalReceipt struct {
 }
 
 func (r *record) receipt() proposalReceipt {
-	return proposalReceipt{ID: r.ID, State: r.State, Connection: r.summary().Facts.Account}
+	return proposalReceipt{ID: r.ID, State: r.State, Connection: r.summary().Facts.Connection}
 }
 
 // proposePolicy publishes one pending record per connection, or none if any fails.
@@ -178,7 +155,7 @@ func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalI
 		}
 		var raw json.RawMessage
 		if err == nil {
-			raw, _, err = facts.Encode(facts.Facts{Version: facts.Version, Principal: proposer, Account: target, Connection: target,
+			raw, _, err = facts.Encode(facts.Facts{Version: facts.Version, Principal: proposer, Connection: target,
 				Service: "policy-proposal", Title: reason, Parameters: map[string]any{},
 				Details: map[string]any{"policy": facts.PolicyDiff{SourceDiff: diff.SourceDiff}}})
 		}
@@ -296,7 +273,7 @@ func (m *monitor) enroll(ctx context.Context, identities map[string]identityEnro
 	if err != nil {
 		return err
 	}
-	return m.writeSettings(ctx, nil, changes, nil, nil)
+	return m.writeSettings(ctx, nil, changes, nil, nil, nil)
 }
 
 // viewAfter renders the owner view once an action that ran without mu succeeds.

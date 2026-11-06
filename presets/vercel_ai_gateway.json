@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "api_key", "label": "API Key or OIDC Token", "secret": true, "path": ["connections", "", "http", "secrets", "api_key"]}
+      {"key": "api_key", "label": "API Key or OIDC Token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://ai-gateway.vercel.sh", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://ai-gateway.vercel.sh", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "delete.completions": {"title": "Delete: completions"},

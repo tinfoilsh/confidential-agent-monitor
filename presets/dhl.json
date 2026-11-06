@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "secrets", "api_key"]}
+      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://api-eu.dhl.com", "path": "/track", "header": "DHL-API-Key"}]}}},
+    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api-eu.dhl.com", "path": "/track", "header": "DHL-API-Key"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "read": {"title": "Read everything the account can see"}

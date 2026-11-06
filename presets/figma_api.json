@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "access_token", "label": "Access Token", "secret": true, "path": ["connections", "", "http", "secrets", "access_token"]}
+      {"key": "access_token", "label": "Access Token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "access_token", "origin": "https://api.figma.com", "path": "/", "header": "X-Figma-Token"}]}}},
+    "connection": {"http": {"slots": [{"value": "access_token", "origin": "https://api.figma.com", "path": "/", "header": "X-Figma-Token"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.webhooks": {"title": "Admin: webhooks"},

@@ -99,7 +99,7 @@ use the same tree UI. Repeated grouping produces the same result. This is a
 breaking action-name change: update agent overrides and custom policies to use
 the new names. No aliases or permission migration are generated.
 
-Accept additions in the corresponding `../../presets/<name>.json`, preserving its account setup and existing operations. Source names can differ from preset names; use the `preset` mapping in `sources.json`. The Confluence source group includes Jira, so divide its operations between the Confluence and Jira presets instead of copying the combined candidate into either one. Regenerate after accepting changes so the next proposal uses the updated shipped definitions.
+Accept additions in the corresponding `../../presets/<name>.json`, preserving its connection setup and existing operations. Source names can differ from preset names; use the `preset` mapping in `sources.json`. The Confluence source group includes Jira, so divide its operations between the Confluence and Jira presets instead of copying the combined candidate into either one. Regenerate after accepting changes so the next proposal uses the updated shipped definitions.
 
 Each source variant receives a status:
 

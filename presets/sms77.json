@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "secrets", "api_key"]}
+      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://gateway.seven.io", "path": "/api", "header": "X-Api-Key"}]}}},
+    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://gateway.seven.io", "path": "/api", "header": "X-Api-Key"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.groups": {"title": "Admin: groups"},

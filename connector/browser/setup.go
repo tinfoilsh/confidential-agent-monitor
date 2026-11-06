@@ -20,10 +20,7 @@ func Kind(extension string, sandboxed bool) connector.Kind {
 		if err := c.Validate(true); err != nil {
 			return connector.Prepared{}, err
 		}
-		names, err := c.Declarations()
-		if err != nil {
-			return connector.Prepared{}, err
-		}
+		names := []string{}
 		for _, slot := range c.Slots {
 			names = append(names, slot.Value)
 		}

@@ -34,10 +34,10 @@ func inheritModes(defaults, overrides map[string]string) map[string]string {
 	return merged
 }
 
-// Load validates declared settings without retaining expanded accounts or identities.
+// Load validates declared settings without retaining expanded connections or identities.
 // Protocol decoding and credential binding remain at the connector boundary.
 func Load(text string) (*Config, error) {
-	decoded, err := readSource(text)
+	decoded, err := ReadSource(text)
 	if err != nil {
 		return nil, err
 	}
@@ -52,31 +52,26 @@ func Load(text string) (*Config, error) {
 	if err := validateEffects("global settings", cfg.Effects); err != nil {
 		return nil, err
 	}
-	connections := map[string]string{}
-	for acct, a := range cfg.Accounts {
-		if err := validateEffects("account "+acct, a.Effects); err != nil {
+	for name, c := range cfg.Connections {
+		if err := validateEffects("connection "+name, c.Effects); err != nil {
 			return nil, err
 		}
-		if !slices.Contains(facts.Audiences, a.Contents) || !slices.Contains(facts.Audiences, a.Sends) {
-			return nil, fmt.Errorf("account %s: contents and sends must be one of %v", acct, facts.Audiences)
+		if !slices.Contains(facts.Audiences, c.Contents) || !slices.Contains(facts.Audiences, c.Sends) {
+			return nil, fmt.Errorf("connection %s: contents and sends must be one of %v", name, facts.Audiences)
 		}
-		specs, err := cfg.Connections(acct)
-		if err != nil {
+		if name == AgentConnection {
+			return nil, fmt.Errorf("connection name %s is reserved", name)
+		}
+		if _, err := cfg.Spec(name); err != nil {
 			return nil, err
-		}
-		for _, spec := range specs {
-			if _, exists := connections[spec.Name]; exists || spec.Name == AgentConnection {
-				return nil, fmt.Errorf("connection name %s is taken or reserved", spec.Name)
-			}
-			connections[spec.Name] = spec.Protocol
 		}
 	}
-	validateAccess := func(name string, accounts map[string]Access) error {
-		for acct, a := range accounts {
-			if _, ok := cfg.Accounts[acct]; !ok || !slices.Contains(levels, a.Level) {
-				return fmt.Errorf("%s: account %s must exist and have a level in %v", name, acct, levels)
+	validateAccess := func(name string, connections map[string]Access) error {
+		for connection, a := range connections {
+			if _, ok := cfg.Connections[connection]; !ok || !slices.Contains(levels, a.Level) {
+				return fmt.Errorf("%s: connection %s must exist and have a level in %v", name, connection, levels)
 			}
-			if err := validateEffects(name+" on "+acct, a.Effects); err != nil {
+			if err := validateEffects(name+" on "+connection, a.Effects); err != nil {
 				return err
 			}
 			for action, level := range a.Actions {
@@ -117,14 +112,14 @@ func (c *Config) Principal(key string) (Principal, bool) {
 }
 
 // An explicit level replaces defaults; an omitted level inherits and overlays them.
-func (c *Config) Access(agent, account string) Access {
+func (c *Config) Access(agent, connection string) Access {
 	id, ok := c.Identities[agent]
 	if !ok {
 		return Access{}
 	}
-	a := id.Accounts[account]
+	a := id.Connections[connection]
 	if a.Level == "" {
-		base := c.DefaultAccess[account]
+		base := c.DefaultAccess[connection]
 		a.Level = base.Level
 		a.Actions = inheritModes(base.Actions, a.Actions)
 		a.Effects = inheritModes(base.Effects, a.Effects)
@@ -133,17 +128,17 @@ func (c *Config) Access(agent, account string) Access {
 }
 
 func (c *Config) Accesses(agent string) map[string]Access {
-	accounts := map[string]Access{}
-	maps.Copy(accounts, c.DefaultAccess)
-	maps.Copy(accounts, c.Identities[agent].Accounts)
-	for account := range accounts {
-		accounts[account] = c.Access(agent, account)
+	connections := map[string]Access{}
+	maps.Copy(connections, c.DefaultAccess)
+	maps.Copy(connections, c.Identities[agent].Connections)
+	for connection := range connections {
+		connections[connection] = c.Access(agent, connection)
 	}
-	return accounts
+	return connections
 }
 
-func (c *Config) Reaches(agent, account string) bool {
-	level := c.Access(agent, account).Level
+func (c *Config) Reaches(agent, connection string) bool {
+	level := c.Access(agent, connection).Level
 	return level != "" && level != "off"
 }
 
@@ -152,19 +147,19 @@ func (c *Config) SameProgram(old *Config) bool {
 	return old != nil && c.Lattices == old.Lattices && reflect.DeepEqual(c.Data, old.Data) && reflect.DeepEqual(c.Policies, old.Policies)
 }
 
-// Connections projects only this account's setup; the returned definitions remain opaque.
-func (c *Config) Connections(account string) ([]ConnectionSpec, error) {
-	a := c.Accounts[account]
-	preset, err := c.Preset(a.Preset)
+// Spec projects only this connection's setup; the returned definition remains opaque.
+func (c *Config) Spec(name string) (ConnectionSpec, error) {
+	connection := c.Connections[name]
+	preset, err := c.Preset(connection.Preset)
 	if err != nil {
-		return nil, fmt.Errorf("account %s: %w", account, err)
+		return ConnectionSpec{}, fmt.Errorf("connection %s: %w", name, err)
 	}
 	// Parsers consume title, action effects and their opaque protocol roots.
 	// Keep those roots as RawMessages so grant encodings retain their inner order;
 	// catalog labels/defaults are control data, while title remains facts input.
 	var definition map[string]json.RawMessage
 	if err := json.Unmarshal(preset.Source, &definition); err != nil {
-		return nil, err
+		return ConnectionSpec{}, err
 	}
 	actions := map[string]map[string][]string{}
 	for name, action := range preset.Catalog.Actions {
@@ -174,47 +169,32 @@ func (c *Config) Connections(account string) ([]ConnectionSpec, error) {
 	}
 	definition["catalog"], _ = json.Marshal(map[string]any{"actions": actions})
 	semantic, _ := json.Marshal(definition)
-	fields, err := preset.Catalog.CredentialFields()
-	if err != nil {
-		return nil, err
-	}
-	raw, _ := json.Marshal(preset.Catalog.Connections)
-	if preset.Catalog.Connections == nil {
+	raw, _ := json.Marshal(preset.Catalog.Connection)
+	if preset.Catalog.Connection == nil {
 		raw = []byte(`{}`)
 	}
-	if a.Connections != nil {
-		patch, _ := json.Marshal(a.Connections)
+	if connection.Setup != nil {
+		patch, _ := json.Marshal(connection.Setup)
 		if raw, err = jsonpatch.MergePatch(raw, patch); err != nil {
-			return nil, err
+			return ConnectionSpec{}, err
 		}
 	}
-	var connections map[string]map[string]any
-	if err := facts.DecodeNumbers(raw, &connections); err != nil {
-		return nil, err
+	var kinds map[string]any
+	if err := facts.DecodeNumbers(raw, &kinds); err != nil {
+		return ConnectionSpec{}, err
 	}
-	local := a.PolicyOptions
+	if len(kinds) != 1 {
+		return ConnectionSpec{}, fmt.Errorf("connection %s must have one kind", name)
+	}
+	local := connection.PolicyOptions
 	local.Private = nil // Private patterns affect Gate, not connector interpretation.
 	options, _ := json.Marshal(local)
-	var specs []ConnectionSpec
-	for key, kinds := range connections {
-		if len(kinds) != 1 {
-			return nil, fmt.Errorf("connection %s must have one kind", ConnectionName(account, key))
-		}
-		for kind, value := range kinds {
-			var credentials []string
-			for _, paths := range fields {
-				for _, path := range paths {
-					if path.Connection == key && path.Protocol == kind {
-						credentials = append(credentials, path.Secret)
-					}
-				}
-			}
-			raw, _ := json.Marshal(value) // Setup bytes retain the deployed canonical grant encoding.
-			specs = append(specs, ConnectionSpec{Name: ConnectionName(account, key), Protocol: kind, Account: account, Key: key,
-				Config: raw, Definition: semantic, Options: options, PublicScope: preset.PublicScope, CredentialNames: slices.Compact(slices.Sorted(slices.Values(credentials)))})
-		}
+	spec := ConnectionSpec{Name: name, Definition: semantic, Options: options, PublicScope: preset.PublicScope}
+	for kind, value := range kinds {
+		spec.Protocol = kind
+		spec.Config, _ = json.Marshal(value) // Setup bytes retain the deployed canonical grant encoding.
 	}
-	return specs, nil
+	return spec, nil
 }
 
 // Preset resolves one shipped definition.

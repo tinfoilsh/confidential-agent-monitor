@@ -53,7 +53,7 @@ monitor policy show --json
 ```
 
 The sandbox view contains this identity's access and saved rules plus semantics
-for accounts it can reach. It does not reveal other sandboxes, owner-only policy,
+for connections it can reach. It does not reveal other sandboxes, owner-only policy,
 or credentials.
 
 ## Request a connection or access change
@@ -70,7 +70,7 @@ Example `changes.json`:
 ```json
 [
   {
-    "path": ["identities", "my-sandbox", "accounts", "github", "level"],
+    "path": ["identities", "my-sandbox", "connections", "github", "level"],
     "value": "ask"
   }
 ]

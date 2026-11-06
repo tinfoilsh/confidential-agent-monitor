@@ -5,9 +5,9 @@
     "fields": [
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "secret": true, "paths": []},
-      {"key": "token", "label": "Webex by Cisco account", "secret": true, "path": ["connections", "", "http", "secrets", "token"], "oauth": {"auth_url": "https://webexapis.com/v1/authorize", "token_url": "https://webexapis.com/v1/access_token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "spark:memberships_read meeting:recordings_read spark:kms meeting:schedules_read spark:rooms_read spark:messages_write spark:memberships_write meeting:recordings_write meeting:preferences_read spark:messages_read meeting:schedules_write"}}
+      {"key": "token", "label": "Webex by Cisco account", "secret": true, "credential": true, "oauth": {"auth_url": "https://webexapis.com/v1/authorize", "token_url": "https://webexapis.com/v1/access_token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "spark:memberships_read meeting:recordings_read spark:kms meeting:schedules_read spark:rooms_read spark:messages_write spark:memberships_write meeting:recordings_write meeting:preferences_read spark:messages_read meeting:schedules_write"}}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://webexapis.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://webexapis.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.memberships": {"title": "Admin: memberships"},

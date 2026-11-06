@@ -12,34 +12,32 @@
       },
       "shell": { "title": "Open interactive shells", "effects": ["execute"] }
     },
-    "connections": {
-      "": {
-        "ssh": { "host": "{host}", "host_key": "{host_key}", "user": "{user}" }
-      }
+    "connection": {
+      "ssh": { "host": "{host}", "host_key": "{host_key}", "user": "{user}" }
     },
     "defaults": { "contents": "me", "sends": "me", "strangers": true },
     "fields": [
       {
         "key": "host",
         "label": "Host",
-        "path": ["connections", "", "ssh", "host"]
+        "path": ["ssh", "host"]
       },
       {
         "key": "user",
         "label": "User",
-        "path": ["connections", "", "ssh", "user"]
+        "path": ["ssh", "user"]
       },
       {
         "hint": "a line of ssh-keyscan <host>",
         "key": "host_key",
         "label": "Host key",
-        "path": ["connections", "", "ssh", "host_key"]
+        "path": ["ssh", "host_key"]
       },
       {
         "key": "key",
         "label": "Private key",
         "multiline": true,
-        "path": ["connections", "", "ssh", "secrets", "key"],
+        "credential": true,
         "secret": true
       }
     ]

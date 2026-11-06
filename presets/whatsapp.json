@@ -503,19 +503,17 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "Authorization",
-              "origin": "https://graph.facebook.com",
-              "path": "/v25.0",
-              "prefix": "Bearer ",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://graph.facebook.com",
+            "path": "/v25.0",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -527,13 +525,7 @@
       {
         "key": "token",
         "label": "Meta access token",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

@@ -3,10 +3,10 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "origin", "label": "Your Invoice Ninja origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
-      {"key": "api_token", "label": "API Token", "secret": true, "path": ["connections", "", "http", "secrets", "api_token"]}
+      {"key": "origin", "label": "Your Invoice Ninja origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
+      {"key": "api_token", "label": "API Token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "api_token", "origin": "https://example.com", "path": "/api/v1", "header": "X-API-TOKEN"}]}}},
+    "connection": {"http": {"slots": [{"value": "api_token", "origin": "https://example.com", "path": "/api/v1", "header": "X-API-TOKEN"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.subscriptions": {"title": "Admin: subscriptions"},

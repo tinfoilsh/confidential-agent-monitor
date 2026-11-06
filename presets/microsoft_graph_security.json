@@ -6,9 +6,9 @@
       {"key": "tenant", "label": "Microsoft Entra tenant (ID, domain, organizations or consumers)", "default": "organizations", "paths": []},
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "secret": true, "paths": []},
-      {"key": "token", "label": "Microsoft Graph Security account", "secret": true, "path": ["connections", "", "http", "secrets", "token"], "oauth": {"auth_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize", "token_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "SecurityEvents.ReadWrite.All offline_access"}}
+      {"key": "token", "label": "Microsoft Graph Security account", "secret": true, "credential": true, "oauth": {"auth_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize", "token_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "SecurityEvents.ReadWrite.All offline_access"}}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://graph.microsoft.com", "path": "/v1.0", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://graph.microsoft.com", "path": "/v1.0", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.settings": {"title": "Admin: settings"},

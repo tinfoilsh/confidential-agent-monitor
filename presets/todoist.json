@@ -371,19 +371,17 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "Authorization",
-              "origin": "https://api.todoist.com",
-              "path": "/api/v1",
-              "prefix": "Bearer ",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.todoist.com",
+            "path": "/api/v1",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -395,13 +393,7 @@
       {
         "key": "token",
         "label": "API token",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

@@ -5291,18 +5291,16 @@
         "title": "Read"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "Private-Token",
-              "origin": "https://gitlab.com",
-              "path": "/api/v4",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Private-Token",
+            "origin": "https://gitlab.com",
+            "path": "/api/v4",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -5321,8 +5319,6 @@
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             0,
@@ -5333,13 +5329,7 @@
       {
         "key": "token",
         "label": "Personal access token",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

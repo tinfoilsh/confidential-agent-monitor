@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "api_key", "label": "Personal API Token", "secret": true, "path": ["connections", "", "http", "secrets", "api_key"]}
+      {"key": "api_key", "label": "Personal API Token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://circleci.com", "path": "/api/v2", "header": "Circle-Token"}]}}},
+    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://circleci.com", "path": "/api/v2", "header": "Circle-Token"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.groups": {"title": "Admin: groups"},

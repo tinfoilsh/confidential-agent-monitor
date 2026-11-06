@@ -341,8 +341,12 @@ function createMonitor(options: MonitorOptions) {
       void refresh();
     }
   }
-  const edit = (changes: owner.Change[], to?: string) =>
-    perform((client) => client.edit(changes), "", {
+  const edit = (
+    changes: owner.Change[],
+    to?: string,
+    credentials?: { [connection: string]: owner.Credentials },
+  ) =>
+    perform((client) => client.edit(changes, credentials), "", {
       update: (state) => {
         owner.previewChanges(state.view, changes);
       },
@@ -388,21 +392,21 @@ function createMonitor(options: MonitorOptions) {
         },
       },
     );
-  const signIn = (account: string, field: owner.CredentialField) =>
+  const signIn = (connection: string, field: owner.CredentialField) =>
     perform(async (client) => {
       setDeviceSignIn(undefined);
       const result = await client.signIn(
-        account,
-        field.path,
+        connection,
+        field.key,
         location.origin + location.pathname,
-        field.credential,
+        field.grant,
       );
       if ("user_code" in result) {
         setDeviceSignIn({
           ...result,
           source: client,
-          title: owner.presetOf(view()!, account).title,
-          preset: view()!.config.accounts![account].preset,
+          title: owner.presetOf(view()!, connection).title,
+          preset: view()!.config.connections![connection].preset,
         });
         return;
       }

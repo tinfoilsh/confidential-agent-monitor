@@ -44,19 +44,17 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "Authorization",
-              "origin": "https://tasks.googleapis.com",
-              "path": "/tasks/v1",
-              "prefix": "Bearer ",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://tasks.googleapis.com",
+            "path": "/tasks/v1",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -87,13 +85,7 @@
           "scope": "https://www.googleapis.com/auth/tasks",
           "token_url": "https://oauth2.googleapis.com/token"
         },
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

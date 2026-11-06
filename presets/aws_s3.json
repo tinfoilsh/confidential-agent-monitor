@@ -17,23 +17,21 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "origin": "https://example-bucket.s3.us-east-1.amazonaws.com",
-              "path": "/",
-              "sigv4": {
-                "region": "us-east-1",
-                "secret": "secret_key",
-                "service": "s3",
-                "session": "session_token"
-              },
-              "value": "access_key"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://example-bucket.s3.us-east-1.amazonaws.com",
+            "path": "/",
+            "sigv4": {
+              "region": "us-east-1",
+              "secret": "secret_key",
+              "service": "s3",
+              "session": "session_token"
+            },
+            "value": "access_key"
+          }
+        ]
       }
     },
     "defaults": {
@@ -51,8 +49,6 @@
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             0,
@@ -64,8 +60,6 @@
         "key": "region",
         "label": "Bucket region (e.g. us-east-1)",
         "path": [
-          "connections",
-          "",
           "http",
           "slots",
           0,
@@ -76,37 +70,19 @@
       {
         "key": "access_key",
         "label": "Access key ID",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "access_key"
-        ],
+        "credential": true,
         "secret": true
       },
       {
         "key": "secret_key",
         "label": "Secret access key",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "secret_key"
-        ],
+        "credential": true,
         "secret": true
       },
       {
         "key": "session_token",
         "label": "Session token (temporary credentials only)",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "session_token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

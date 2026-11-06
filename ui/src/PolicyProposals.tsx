@@ -49,30 +49,31 @@ const pathLabel = (proposal: owner.RequestRecord, path: string[]) => {
     return [`Sandbox ${path[1]}`, ...path.slice(4)].join(" › ");
   if (path[0] === "default_access")
     return ["Default access", ...path.slice(2)].join(" › ");
-  if (path[0] === "accounts" && path[1] === proposal.facts.account)
+  if (path[0] === "connections" && path[1] === proposal.facts.connection)
     return ["Connection", ...path.slice(2)].join(" › ");
   return path.join(" › ");
 };
 const proposalPreset = (proposal: owner.RequestRecord, view: owner.View) => {
   for (const change of proposal.changes ?? []) {
     if (
-      change.path.join("/") === `accounts/${proposal.facts.account}/preset` &&
+      change.path.join("/") ===
+        `connections/${proposal.facts.connection}/preset` &&
       typeof change.value === "string"
     )
       return change.value;
     if (
       change.path.length === 2 &&
-      change.path[0] === "accounts" &&
-      change.path[1] === proposal.facts.account
+      change.path[0] === "connections" &&
+      change.path[1] === proposal.facts.connection
     ) {
-      const account = change.value as { preset?: owner.Json } | undefined;
-      if (typeof account?.preset === "string") return account.preset;
+      const connection = change.value as { preset?: owner.Json } | undefined;
+      if (typeof connection?.preset === "string") return connection.preset;
     }
   }
-  return view.config.accounts?.[proposal.facts.account]?.preset ?? "";
+  return view.config.connections?.[proposal.facts.connection]?.preset ?? "";
 };
 const proposalBadge = (proposal: owner.RequestRecord, view: owner.View) =>
-  view.config.accounts?.[proposal.facts.account]
+  view.config.connections?.[proposal.facts.connection]
     ? { label: "Update", class: "status-pending" }
     : { label: "New", class: "status-new" };
 
@@ -181,7 +182,7 @@ export function PolicyProposals() {
                   <span>
                     <strong>{reasonPreview(proposal().facts.title ?? "")}</strong>
                     <small>
-                      {proposal().facts.account} · {proposal().facts.principal.name}
+                      {proposal().facts.connection} · {proposal().facts.principal.name}
                     </small>
                   </span>
                 </span>
@@ -209,8 +210,8 @@ export function PolicyProposals() {
               <a class="resource-link" href={href("request", record.id)}>
                 <ConnectorIcon
                   preset={
-                    m.view()!.config.accounts?.[record.facts.account]?.preset ??
-                    ""
+                    m.view()!.config.connections?.[record.facts.connection]
+                      ?.preset ?? ""
                   }
                 />
                 <span>
@@ -218,7 +219,7 @@ export function PolicyProposals() {
                     {reasonPreview(record.facts.title || "Connection proposal")}
                   </strong>
                   <small>
-                    {record.facts.account || "Policy"} ·{" "}
+                    {record.facts.connection || "Policy"} ·{" "}
                     {record.facts.principal.key
                       ? record.facts.principal.name
                       : "Owner API"}
@@ -280,7 +281,7 @@ export function ConnectionProposals(props: { id?: string }) {
                       {reasonPreview(proposal().facts.title ?? "")}
                     </strong>
                     <small>
-                      {proposal().facts.account} · {proposal().facts.principal.name}
+                      {proposal().facts.connection} · {proposal().facts.principal.name}
                     </small>
                   </span>
                   <span class="resource-meta">

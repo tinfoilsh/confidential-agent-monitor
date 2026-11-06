@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "session_token", "label": "Session Token", "secret": true, "path": ["connections", "", "http", "secrets", "session_token"]}
+      {"key": "session_token", "label": "Session Token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "session_token", "origin": "https://apis.salesmate.io", "path": "/", "header": "accessToken"}]}}},
+    "connection": {"http": {"slots": [{"value": "session_token", "origin": "https://apis.salesmate.io", "path": "/", "header": "accessToken"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "delete.v1": {"title": "Delete: v1"},

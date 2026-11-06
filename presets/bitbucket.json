@@ -3,10 +3,10 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "email", "label": "Email", "secret": true, "path": ["connections", "", "http", "secrets", "email"]},
-      {"key": "access_token", "label": "Access Token", "secret": true, "path": ["connections", "", "http", "secrets", "access_token"]}
+      {"key": "email", "label": "Email", "secret": true, "credential": true},
+      {"key": "access_token", "label": "Access Token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "email", "origin": "https://api.bitbucket.org", "path": "/2.0", "basic": "user"}, {"value": "access_token", "origin": "https://api.bitbucket.org", "path": "/2.0", "basic": "password"}]}}},
+    "connection": {"http": {"slots": [{"value": "email", "origin": "https://api.bitbucket.org", "path": "/2.0", "basic": "user"}, {"value": "access_token", "origin": "https://api.bitbucket.org", "path": "/2.0", "basic": "password"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.groups": {"title": "Admin: groups"},

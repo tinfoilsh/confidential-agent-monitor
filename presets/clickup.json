@@ -584,18 +584,16 @@
         "title": "Delete"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "Authorization",
-              "origin": "https://api.clickup.com",
-              "path": "/api/v2",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.clickup.com",
+            "path": "/api/v2",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -607,13 +605,7 @@
       {
         "key": "token",
         "label": "API token",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

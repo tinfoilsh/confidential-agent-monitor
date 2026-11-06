@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "secret", "label": "Secret", "secret": true, "path": ["connections", "", "http", "secrets", "secret"]}
+      {"key": "secret", "label": "Secret", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "secret", "origin": "https://api-m.paypal.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "secret", "origin": "https://api-m.paypal.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.webhooks": {"title": "Admin: webhooks"},

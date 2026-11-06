@@ -34,8 +34,7 @@ func parseSFTP(source connector.Setup) (connector.Prepared, error) {
 	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
-	names, err := c.Declarations("key")
-	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: []string{"key"}}, nil
 }
 
 // SFTP keeps one immutable setup for each admitted stream.

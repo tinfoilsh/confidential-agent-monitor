@@ -22,7 +22,7 @@ type Candidate struct {
 	Claim func(string, uint32) int
 }
 
-// Select resolves only supplied candidates, so inaccessible accounts cannot tie.
+// Select resolves only supplied candidates, so inaccessible connections cannot tie.
 func Select(host string, port uint32, candidates []Candidate) (name string, explicit bool) {
 	// Explicit names bypass inference.
 	if name, ok := strings.CutSuffix(host, ".monitor"); ok {

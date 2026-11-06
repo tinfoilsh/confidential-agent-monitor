@@ -104,19 +104,17 @@
         "title": "Read"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "Authorization",
-              "origin": "https://api.sendgrid.com",
-              "path": "/v3",
-              "prefix": "Bearer ",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.sendgrid.com",
+            "path": "/v3",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -128,13 +126,7 @@
       {
         "key": "token",
         "label": "API key",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

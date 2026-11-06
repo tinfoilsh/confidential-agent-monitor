@@ -79,7 +79,7 @@ monitor launch claude
 
 This requires x86_64 Linux, writable `/dev/kvm`, bubblewrap, unprivileged user
 namespaces, OpenSSH, GNU tar, and `mke2fs`. Image builds need Podman or Docker.
-Setup asks for your Monitor endpoint, owner credentials, and account permissions.
+Setup asks for your Monitor endpoint, owner credentials, and connection permissions.
 See `monitor --help` for stopping, exporting, and deleting VMs.
 
 ### Run Monitor locally

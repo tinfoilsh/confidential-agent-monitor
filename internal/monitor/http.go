@@ -1,6 +1,7 @@
 package monitor
 
 import (
+	"bytes"
 	"cmp"
 	"context"
 	"crypto"
@@ -48,8 +49,9 @@ type sourceInput struct {
 }
 
 type editsInput struct {
-	Generation *uint64         `json:"generation,omitempty"`
-	Changes    []config.Change `json:"changes"`
+	Generation  *uint64         `json:"generation,omitempty"`
+	Changes     []config.Change `json:"changes"`
+	Credentials store.Secrets   `json:"credentials,omitempty"`
 }
 
 // HTTPHandler serves the owner API on the local listener; nil devFiles uses embedded assets.
@@ -155,7 +157,7 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 		}
 		return m.view()
 	}))
-	mux.Handle("POST /accounts/{account}/sign-in", m.ownerOnly(JSONHandler(maxDocumentBytes, m.startSignIn)))
+	mux.Handle("POST /connections/{name}/sign-in", m.ownerOnly(JSONHandler(maxDocumentBytes, m.startSignIn)))
 	mux.Handle("POST /sign-in/{state}", m.ownerOnly(JSONHandler(maxDocumentBytes, m.finishSignIn)))
 	mux.Handle("/connections/{name}/{control...}", m.ownerOnly(m.connectionControl))
 	mux.Handle("GET /requests", ownerTx(m, func(*http.Request, struct{}) (any, error) {
@@ -197,12 +199,19 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 	mux.Handle("POST /policy", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input sourceInput) (any, error) {
 		m.writes.Lock()
 		defer m.writes.Unlock()
-		return m.viewAfter(m.writeSettings(r.Context(), &input.Source, nil, nil, nil))
+		return m.viewAfter(m.writeSettings(r.Context(), &input.Source, nil, nil, nil, nil))
 	})))
 	mux.Handle("POST /policy/edits", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input editsInput) (any, error) {
+		for _, values := range input.Credentials {
+			for name, raw := range values {
+				if bytes.Equal(raw, []byte("null")) {
+					values[name] = nil
+				}
+			}
+		}
 		m.writes.Lock()
 		defer m.writes.Unlock()
-		err := m.writeSettings(r.Context(), nil, input.Changes, func() error {
+		err := m.writeSettings(r.Context(), nil, input.Changes, input.Credentials, func() error {
 			if input.Generation != nil && *input.Generation != m.store.Doc.Generation {
 				return errPolicyConflict
 			}
@@ -426,10 +435,10 @@ type unavailable struct{ error }
 func (unavailable) HTTPStatus() int { return http.StatusServiceUnavailable }
 
 type fieldMetadata struct {
-	Path        []string `json:"path"`
-	Kind        string   `json:"kind"`
-	Placeholder string   `json:"placeholder,omitempty"`
-	Account     string   `json:"account,omitempty"`
+	Name        string `json:"name"`
+	Kind        string `json:"kind"`
+	Placeholder string `json:"placeholder,omitempty"`
+	Account     string `json:"account,omitempty"`
 }
 
 // ownerView exposes credential status without credential values.
@@ -479,13 +488,12 @@ func (m *monitor) view() (any, error) {
 	for _, c := range m.connections {
 		v.Status[c.Name] = c.Status()
 		for name, value := range c.Credentials {
-			path := presets.CredentialPath{Connection: c.Key, Protocol: c.Protocol, Secret: name}.Path()
-			kind, account := credential.Describe(m.store.Doc.Secrets.Get(store.SecretID{Account: c.Account, Connection: c.Key, Name: name}))
-			v.Fields[c.Account] = append(v.Fields[c.Account], fieldMetadata{Path: path, Kind: kind, Placeholder: value.Placeholder, Account: account})
+			kind, account := credential.Describe(m.store.Doc.Credentials.Get(store.SecretID{Connection: c.Name, Name: name}))
+			v.Fields[c.Name] = append(v.Fields[c.Name], fieldMetadata{Name: name, Kind: kind, Placeholder: value.Placeholder, Account: account})
 		}
 	}
 	for _, fields := range v.Fields {
-		slices.SortFunc(fields, func(a, b fieldMetadata) int { return slices.Compare(a.Path, b.Path) })
+		slices.SortFunc(fields, func(a, b fieldMetadata) int { return strings.Compare(a.Name, b.Name) })
 	}
 	for key, name := range s.Principals {
 		v.Labels[name] = m.currentLabel(key)
@@ -497,7 +505,6 @@ func (m *monitor) view() (any, error) {
 // HTTP connections add public routing and placeholder data, never credentials.
 type connectionListing struct {
 	Name         string            `json:"name"`
-	Account      string            `json:"account"`
 	Protocol     string            `json:"kind"`
 	Host         string            `json:"host"`
 	State        string            `json:"state"`
@@ -517,17 +524,17 @@ func (m *monitor) listing(p config.Principal) any {
 	}{p.Name, m.store.Doc.Keys.CACert, []connectionListing{}}
 	for _, name := range slices.Sorted(maps.Keys(m.connections)) {
 		c := m.connections[name]
-		if !m.settings.Load().Reaches(p.Name, c.Account) {
+		if !m.settings.Load().Reaches(p.Name, c.Name) {
 			continue
 		}
-		l := connectionListing{Name: name, Account: c.Account, Protocol: c.Protocol, Host: name + ".monitor",
-			State: c.Status().State, Access: m.settings.Load().Access(p.Name, c.Account)}
+		l := connectionListing{Name: name, Protocol: c.Protocol, Host: name + ".monitor",
+			State: c.Status().State, Access: m.settings.Load().Access(p.Name, c.Name)}
 		l.Hosts, l.Slots, l.Placeholders = c.prepared.Discovery.Hosts, c.prepared.Discovery.Slots, c.prepared.Discovery.Placeholders
 		if len(c.Credentials) != 0 {
 			l.Credentials = map[string]string{}
 			for name := range c.Credentials {
-				id := store.SecretID{Account: c.Account, Connection: c.Key, Name: name}
-				l.Credentials[name], _ = credential.Describe(m.store.Doc.Secrets.Get(id))
+				id := store.SecretID{Connection: c.Name, Name: name}
+				l.Credentials[name], _ = credential.Describe(m.store.Doc.Credentials.Get(id))
 			}
 		}
 		result.Connections = append(result.Connections, l)

@@ -2,10 +2,10 @@
   "title": "Codex (ChatGPT)",
   "catalog": {
     "group": "api",
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://api.openai.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://api.openai.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "sends": "anyone", "strangers": true},
     "fields": [
-      {"key": "token", "label": "ChatGPT account", "path": ["connections", "", "http", "secrets", "token"], "secret": true,
+      {"key": "token", "label": "ChatGPT account", "credential": true, "secret": true,
         "oauth": {
           "auth_url": "https://auth.openai.com/api/accounts/authorize",
           "token_url": "https://auth.openai.com/api/accounts/oauth/token",

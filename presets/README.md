@@ -1,4 +1,4 @@
-Each shipped preset has a `<name>.json` record. Accounts select it with
+Each shipped preset has a `<name>.json` record. Connections select it with
 `"preset": "<name>"`. Monitor accepts only these shipped definitions.
 
 For the authoring and test workflow, see [adding protocol presets](../dev/presets/README.md#adding-protocol-presets).
@@ -25,7 +25,7 @@ All acknowledgements count as send because they can contain interactive response
 The whole response is bound to approval scope, not just its envelope ID; read-only
 access therefore cannot acknowledge events.
 
-Incoming deliveries use the account's contents/trust labels and remain opaque to
+Incoming deliveries use the connection's contents/trust labels and remain opaque to
 policy. Monitor does not filter them by channel or correlate acknowledgement IDs
 with received envelopes. These descriptors authorize traffic, not validate the
 complete Slack message schema.
@@ -45,7 +45,9 @@ search checks. Public health does not prove authenticated dashboard access.
 
 ## Preset format and authorization
 
-The catalog contains setup fields, connections, defaults, and permission actions.
+The catalog contains setup fields, the connection's default setup under its kind,
+defaults, and permission actions. Field paths are relative to the connection. A
+`credential` field sets the connection's credential its key names.
 Protocol definitions have their own sections:
 
 - `http.operations` maps operation IDs to reviewed HTTP operations, including GraphQL matchers. IDs also determine candidate evaluation order; ambiguous matches are rejected.
@@ -103,7 +105,7 @@ supplies the live connector, typed policy options, and protocol preset on every
 evaluation, including after
 an owner approves a waiting request.
 
-`policy.go` finalizes every description by resolving catalog effects, account
+`policy.go` finalizes every description by resolving catalog effects, connection
 labels, and public/private resource settings. Effects and configured labels are
 validated when loaded or compiled. Connectors supply request kinds, which default
 to `operation`. The monitor treats an empty action or one without configured
@@ -130,7 +132,7 @@ and the corresponding names for other connectors. For example:
 package sentinel
 
 deny contains "restricted host" if {
-    input.facts.account == "web"
+    input.facts.connection == "web"
     input.facts.details.http.host == "restricted.example"
 }
 ```
@@ -142,7 +144,7 @@ Unknown requests have a null operation and require approval; malformed or
 ambiguous matches are refused. Approval grants and definition hashes stay
 outside the facts snapshot. Decisions contain `facts`, `deny`, `requirements`, `next`,
 `grant`, and `definition`; the app reads operation, title, parameters, principal,
-account, and the current label from `facts`. Audit records add lifecycle fields
+connection, and the current label from `facts`. Audit records add lifecycle fields
 without duplicating those facts.
 
 The Rego rules in `../internal/policy/` compute access restrictions, label-flow checks, and
@@ -162,7 +164,7 @@ array of strings; malformed output and evaluation errors refuse the request.
 package sentinel
 
 approvals contains {"id": "owner.payment_limit", "message": "Payments above $500 need approval."} if {
-    input.facts.account == "payments"
+    input.facts.connection == "payments"
     "pay" in input.facts.operation.effects
     input.facts.parameters.amount > 500
 }
@@ -196,7 +198,7 @@ which also includes custom requirements. An approval rule that depends on the
 final gaps or reasons is recursive and is rejected when the policy is compiled.
 Custom requirements can pause operations and connection admission.
 
-Configuration publication requires compiled accounts, presets, selectors, and
+Configuration publication requires compiled connections, presets, selectors, and
 Rego. Request handlers accept those compiled types and never compile on demand.
 `facts.Facts.Snapshot` encodes facts with `encoding/json` and decodes independent
 audit and policy views with `facts.DecodeNumbers`. The audit view retains the original
@@ -236,18 +238,18 @@ normalization, label, or approval semantics change, even if the facts schema and
 Rego sources stay the same. Display-only changes do not require a bump. A version
 change invalidates earlier saved approvals.
 
-GitHub's HTTP section covers REST, Git smart HTTP, and GraphQL. Its MCP section
-extracts repository identifiers. The common `public_scope` setting applies the
-account's private repository patterns to both protocols. Unlisted API requests
+GitHub's HTTP section covers REST, Git smart HTTP, and GraphQL. The GitHub MCP
+preset's section extracts repository identifiers. Both presets' `public_scope`
+applies the connection's private repository patterns. Unlisted API requests
 remain unknown.
 
-For an API without a preset, choose **Add account → API → Custom API**. Its API
+For an API without a preset, choose **Add connection → API → Custom API**. Its API
 address limits requests to the configured origin and path. Permissions cover all
 requests within that address, including changes and deletions. There is no
 read-only access option. Saved approvals bind the origin and connection settings.
 
 API catalogs use resource parents and capability leaves. The most specific
-permission override wins. The account and agent views display the same hierarchy.
+permission override wins. The connection and agent views display the same hierarchy.
 The [preset generator](../dev/presets/README.md) reads these files as its baseline
 and writes proposals under `dev/presets/`. Edit accepted definitions here.
 Authorization rules live in `../internal/policy/`; owner Rego policies live in
@@ -261,6 +263,6 @@ IMAP and Redis destinations require `imaps://` and `rediss://` URLs. Configurati
 validation rejects plaintext and unknown schemes before a connection starts.
 
 `dev/setup`, also called by `dev/sandbox`, seeds a fresh store with only the
-credential-free Web account. Set `MONITOR_CONFIG=/path/to/config.json` to import
-an initial config. Later runs keep stored accounts, credentials, and permissions.
+credential-free Web connection. Set `MONITOR_CONFIG=/path/to/config.json` to import
+an initial config. Later runs keep stored connections, credentials, and permissions.
 `monitor.example.json` contains placeholders and is never imported automatically.

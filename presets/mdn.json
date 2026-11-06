@@ -6,7 +6,7 @@
       "read": {"title": "Use read-only tools", "effects": ["read"]},
       "use": {"title": "Use tools that change things", "effects": ["write"]}
     },
-    "connections": {"": {"mcp": {"url": "https://mcp.mdn.mozilla.net/"}}},
+    "connection": {"mcp": {"url": "https://mcp.mdn.mozilla.net/"}},
     "defaults": {"contents": "team", "sends": "me", "strangers": true},
     "fields": []
   }

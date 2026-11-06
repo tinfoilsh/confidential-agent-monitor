@@ -5,9 +5,9 @@
     "fields": [
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "secret": true, "paths": []},
-      {"key": "token", "label": "Zoho CRM account", "secret": true, "path": ["connections", "", "http", "secrets", "token"], "oauth": {"auth_url": "https://accounts.zoho.com/oauth/v2/auth", "token_url": "https://accounts.zoho.com/oauth/v2/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "ZohoCRM.modules.ALL ZohoCRM.settings.all ZohoCRM.users.all"}}
+      {"key": "token", "label": "Zoho CRM account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.zoho.com/oauth/v2/auth", "token_url": "https://accounts.zoho.com/oauth/v2/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "ZohoCRM.modules.ALL ZohoCRM.settings.all ZohoCRM.users.all"}}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://www.zohoapis.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://www.zohoapis.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "delete.fields": {"title": "Delete: fields"},

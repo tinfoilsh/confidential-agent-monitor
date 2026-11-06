@@ -3,10 +3,10 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "username", "label": "Email Address", "secret": true, "path": ["connections", "", "http", "secrets", "username"]},
-      {"key": "password", "label": "Password", "secret": true, "path": ["connections", "", "http", "secrets", "password"]}
+      {"key": "username", "label": "Email Address", "secret": true, "credential": true},
+      {"key": "password", "label": "Password", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "username", "origin": "https://api.track.toggl.com", "path": "/api/v9", "basic": "user"}, {"value": "password", "origin": "https://api.track.toggl.com", "path": "/api/v9", "basic": "password"}]}}},
+    "connection": {"http": {"slots": [{"value": "username", "origin": "https://api.track.toggl.com", "path": "/api/v9", "basic": "user"}, {"value": "password", "origin": "https://api.track.toggl.com", "path": "/api/v9", "basic": "password"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.groups": {"title": "Admin: groups"},

@@ -701,30 +701,28 @@
         "title": "Read"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "basic": "user",
-              "origin": "https://api.twilio.com",
-              "path": "/2010-04-01",
-              "value": "sid"
-            },
-            {
-              "basic": "password",
-              "origin": "https://api.twilio.com",
-              "path": "/2010-04-01",
-              "value": "token"
-            },
-            {
-              "origin": "https://api.twilio.com",
-              "path": "/2010-04-01/Accounts",
-              "segment": 3,
-              "value": "sid"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "basic": "user",
+            "origin": "https://api.twilio.com",
+            "path": "/2010-04-01",
+            "value": "sid"
+          },
+          {
+            "basic": "password",
+            "origin": "https://api.twilio.com",
+            "path": "/2010-04-01",
+            "value": "token"
+          },
+          {
+            "origin": "https://api.twilio.com",
+            "path": "/2010-04-01/Accounts",
+            "segment": 3,
+            "value": "sid"
+          }
+        ]
       }
     },
     "defaults": {
@@ -736,25 +734,13 @@
       {
         "key": "sid",
         "label": "Account SID",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "sid"
-        ],
+        "credential": true,
         "secret": true
       },
       {
         "key": "token",
         "label": "Auth token",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

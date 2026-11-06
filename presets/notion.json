@@ -71,19 +71,17 @@
         "title": "Read"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "Authorization",
-              "origin": "https://api.notion.com",
-              "path": "/v1",
-              "prefix": "Bearer ",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.notion.com",
+            "path": "/v1",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -95,13 +93,7 @@
       {
         "key": "token",
         "label": "Internal integration secret",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

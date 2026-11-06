@@ -260,7 +260,7 @@ export function AddAgent() {
 // children disagree shows no value.
 function Actions(props: {
   name: string;
-  account: string;
+  connection: string;
   nodes: owner.AccessNode[];
   level: string;
   actions: Record<string, owner.Mode | undefined>;
@@ -302,7 +302,9 @@ function Actions(props: {
       descendants(node).map((k) => [k, null]),
     );
     actions[node.key] = value;
-    void m.edit(owner.edits.setAccess(props.name, props.account, { actions }));
+    void m.edit(
+      owner.edits.setAccess(props.name, props.connection, { actions }),
+    );
   };
   // Keyed by action name: node objects are rebuilt on every view update,
   // and keying by them would recreate (and close) the rows.
@@ -359,7 +361,7 @@ function Actions(props: {
           <div class="access-children">
             <Actions
               name={props.name}
-              account={props.account}
+              connection={props.connection}
               nodes={node().children}
               level={props.level}
               actions={props.actions}
@@ -399,12 +401,12 @@ function Actions(props: {
 // The same action editor is used from both the agent and connection lists.
 export function AgentConnectionAccess(props: {
   name: string;
-  account: string;
+  connection: string;
   title?: string;
 }) {
   const m = useMonitor();
   const entry = createMemo(
-    () => owner.agentAccess(m.view()!, props.name, props.account)[0],
+    () => owner.agentAccess(m.view()!, props.name, props.connection)[0],
   );
   const [expanded, setExpanded] = createSignal(false);
   // A single action is the same dial as the access level: it is named but
@@ -421,7 +423,7 @@ export function AgentConnectionAccess(props: {
   const rules = createMemo(() =>
     Object.entries(
       m.view()!.config.identities?.[props.name]?.rules ?? {},
-    ).filter(([, rule]) => rule.account === props.account),
+    ).filter(([, rule]) => rule.connection === props.connection),
   );
   return (
     <div class="acct">
@@ -429,7 +431,7 @@ export function AgentConnectionAccess(props: {
         <button
           class="access-toggle"
           type="button"
-          aria-label={`Actions for ${props.title ?? props.account}`}
+          aria-label={`Actions for ${props.title ?? props.connection}`}
           aria-expanded={open()}
           aria-controls={id}
           disabled={!expandable()}
@@ -441,8 +443,8 @@ export function AgentConnectionAccess(props: {
           >
             <Icon name="agents" />
           </Show>
-          <b title={props.title ?? props.account}>
-            {props.title ?? props.account}
+          <b title={props.title ?? props.connection}>
+            {props.title ?? props.connection}
           </b>
           <span
             class="access-caret"
@@ -469,7 +471,7 @@ export function AgentConnectionAccess(props: {
           aria-label={
             props.title
               ? `Access for ${props.title}`
-              : `Default access for ${props.account}`
+              : `Default access for ${props.connection}`
           }
         >
           <For each={entry().levels.map(([value]) => value)}>
@@ -481,12 +483,12 @@ export function AgentConnectionAccess(props: {
                 onClick={() => {
                   setExpanded(value !== "off");
                   const own =
-                    m.view()!.config.identities?.[props.name]?.accounts?.[
-                      props.account
+                    m.view()!.config.identities?.[props.name]?.connections?.[
+                      props.connection
                     ]?.level;
                   if (own !== value)
                     void m.edit(
-                      owner.edits.setAccess(props.name, props.account, {
+                      owner.edits.setAccess(props.name, props.connection, {
                         level: value,
                       }),
                     );
@@ -520,12 +522,12 @@ export function AgentConnectionAccess(props: {
               <div class="access-actions">
                 <Actions
                   name={props.name}
-                  account={props.account}
+                  connection={props.connection}
                   nodes={entry().actions}
                   level={entry().level}
                   actions={
-                    m.view()!.config.identities?.[props.name]?.accounts?.[
-                      props.account
+                    m.view()!.config.identities?.[props.name]?.connections?.[
+                      props.connection
                     ]?.actions ?? {}
                   }
                   readOnly={singleAction()}
@@ -581,7 +583,7 @@ function AgentAccess(props: { name: string }) {
   return (
     <div class="agent-access">
       <For
-        each={Object.keys(m.view()!.config.accounts ?? {})}
+        each={Object.keys(m.view()!.config.connections ?? {})}
         fallback={
           <p>
             No connections yet.{" "}
@@ -589,8 +591,8 @@ function AgentAccess(props: { name: string }) {
           </p>
         }
       >
-        {(account) => (
-          <AgentConnectionAccess name={props.name} account={account} />
+        {(connection) => (
+          <AgentConnectionAccess name={props.name} connection={connection} />
         )}
       </For>
     </div>

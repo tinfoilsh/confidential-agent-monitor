@@ -35,12 +35,12 @@ owner /unlock -d '{"generation": 0}' > "$dev/state.next.json" || {
 }
 mv "$dev/state.next.json" "$dev/state.json"
 # Seed a fresh store with just Web. Import a custom config only when explicitly
-# requested; subsequent runs keep the accounts and credentials edited in the app.
-if jq -e '.generation == 1 and ((.config.accounts // {}) | length == 0) and ((.config.identities // {}) | length == 0)' "$dev/state.json" > /dev/null; then
+# requested; subsequent runs keep the connections and credentials edited in the app.
+if jq -e '.generation == 1 and ((.config.connections // {}) | length == 0) and ((.config.identities // {}) | length == 0)' "$dev/state.json" > /dev/null; then
   if [[ -n ${MONITOR_CONFIG:-} ]]; then
     cp "$MONITOR_CONFIG" "$dev/seed.json"
   else
-    jq '{accounts: {web: ({preset: "web"} + .catalog.defaults)}}' \
+    jq '{connections: {web: ({preset: "web"} + .catalog.defaults)}}' \
       presets/web.json > "$dev/seed.json"
   fi
   jq '{changes: [to_entries[] | {path: [.key], value: .value}]}' "$dev/seed.json" | owner /policy/edits -d @- > "$dev/state.json"
@@ -48,7 +48,7 @@ fi
 jq --arg key "$(<"$dev/id.pub")" \
   '.config as $config | ($config.identities.dev // {}) as $dev |
    {identities: {dev: ($dev + {key: $key,
-     accounts: (($config.accounts // {}) | with_entries(.value = ($dev.accounts[.key] // {level: "allow"})))})}}' "$dev/state.json" |
+     connections: (($config.connections // {}) | with_entries(.value = ($dev.connections[.key] // {level: "allow"})))})}}' "$dev/state.json" |
   jq '{changes: [{path: ["identities", "dev"], value: .identities.dev}]}' | owner /policy/edits -d @- > "$dev/state.next.json"
 mv "$dev/state.next.json" "$dev/state.json"
 echo "monitor,*.monitor,[$host]:$port $(jq -r .host_key "$dev/state.json")" > "$dev/known_hosts"

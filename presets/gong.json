@@ -3,11 +3,11 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "origin", "label": "Your Gong origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
-      {"key": "access_key", "label": "Access Key", "secret": true, "path": ["connections", "", "http", "secrets", "access_key"]},
-      {"key": "access_key_secret", "label": "Access Key Secret", "secret": true, "path": ["connections", "", "http", "secrets", "access_key_secret"]}
+      {"key": "origin", "label": "Your Gong origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"], ["http", "slots", 1, "origin"]]},
+      {"key": "access_key", "label": "Access Key", "secret": true, "credential": true},
+      {"key": "access_key_secret", "label": "Access Key Secret", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/v2", "basic": "user"}, {"value": "access_key_secret", "origin": "https://example.com", "path": "/v2", "basic": "password"}]}}},
+    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/v2", "basic": "user"}, {"value": "access_key_secret", "origin": "https://example.com", "path": "/v2", "basic": "password"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.integrations": {"title": "Admin: integrations"},

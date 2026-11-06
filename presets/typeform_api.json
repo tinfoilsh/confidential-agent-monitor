@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "access_token", "label": "Access Token", "secret": true, "path": ["connections", "", "http", "secrets", "access_token"]}
+      {"key": "access_token", "label": "Access Token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "access_token", "origin": "https://api.typeform.com", "path": "/", "header": "Authorization", "prefix": "bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "access_token", "origin": "https://api.typeform.com", "path": "/", "header": "Authorization", "prefix": "bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.webhooks": {"title": "Admin: webhooks"},

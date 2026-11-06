@@ -16,8 +16,7 @@ func parseSSHAgent(source connector.Setup) (connector.Prepared, error) {
 	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
-	names, err := c.Declarations()
-	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: append([]string{}, c.Credentials...)}, nil
 }
 
 // SSHAgent keeps one immutable setup for each admitted stream.
@@ -31,6 +30,7 @@ var errAgentSignsOnly = errors.New("the monitor's agent only signs")
 
 type sshAgentSetup struct {
 	connector.SecretConfig
+	Credentials []string `json:"credentials"`
 }
 
 type gatedAgent struct {

@@ -17,22 +17,20 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "origin": "https://example.com",
-              "path": "/example-bucket",
-              "sigv4": {
-                "region": "auto",
-                "secret": "secret_key",
-                "service": "s3"
-              },
-              "value": "access_key"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "origin": "https://example.com",
+            "path": "/example-bucket",
+            "sigv4": {
+              "region": "auto",
+              "secret": "secret_key",
+              "service": "s3"
+            },
+            "value": "access_key"
+          }
+        ]
       }
     },
     "defaults": {
@@ -50,8 +48,6 @@
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             0,
@@ -63,8 +59,6 @@
         "key": "bucket_path",
         "label": "Bucket path prefix this credential may sign (e.g. /mybucket)",
         "path": [
-          "connections",
-          "",
           "http",
           "slots",
           0,
@@ -75,8 +69,6 @@
         "key": "region",
         "label": "Region (as required by your provider; use \"auto\" if none applies)",
         "path": [
-          "connections",
-          "",
           "http",
           "slots",
           0,
@@ -87,25 +79,13 @@
       {
         "key": "access_key",
         "label": "Access key ID",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "access_key"
-        ],
+        "credential": true,
         "secret": true
       },
       {
         "key": "secret_key",
         "label": "Secret access key",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "secret_key"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

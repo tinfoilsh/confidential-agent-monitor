@@ -1001,19 +1001,17 @@
         "title": "Run"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "Authorization",
-              "origin": "https://discord.com",
-              "path": "/api/v10",
-              "prefix": "Bot ",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://discord.com",
+            "path": "/api/v10",
+            "prefix": "Bot ",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -1025,13 +1023,7 @@
       {
         "key": "token",
         "label": "Bot token",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

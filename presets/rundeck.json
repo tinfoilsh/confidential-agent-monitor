@@ -3,10 +3,10 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "origin", "label": "Your Rundeck origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
-      {"key": "token", "label": "Token", "secret": true, "path": ["connections", "", "http", "secrets", "token"]}
+      {"key": "origin", "label": "Your Rundeck origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
+      {"key": "token", "label": "Token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://example.com", "path": "/", "header": "X-Rundeck-Auth-Token"}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://example.com", "path": "/", "header": "X-Rundeck-Auth-Token"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.config": {"title": "Admin: config"},

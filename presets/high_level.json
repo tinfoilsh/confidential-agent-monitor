@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "token", "label": "HighLevel access token", "secret": true, "path": ["connections", "", "http", "secrets", "token"]}
+      {"key": "token", "label": "HighLevel access token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://services.leadconnectorhq.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://services.leadconnectorhq.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.groups": {"title": "Admin: groups"},

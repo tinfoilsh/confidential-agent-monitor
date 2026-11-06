@@ -91,7 +91,7 @@ export function Activity(props: { scope?: string; name?: string }) {
 function Requests(props: { scope?: string; name?: string; expanded?: string }) {
   const m = useMonitor();
   const scope = () =>
-    props.scope === "agent" || props.scope === "account" ? props.scope : "";
+    props.scope === "agent" || props.scope === "connection" ? props.scope : "";
   const key = scope() ? `${scope()}/${props.name ?? ""}` : "";
   if (m.activity.scope !== key)
     m.setActivity({ scope: key, page: 0, anchor: 0 });
@@ -105,8 +105,8 @@ function Requests(props: { scope?: string; name?: string; expanded?: string }) {
       .filter((r) =>
         scope() === "agent"
           ? r.facts.principal.name === props.name
-          : scope() === "account"
-            ? r.facts.account === props.name
+          : scope() === "connection"
+            ? r.facts.connection === props.name
             : true,
       ),
   );
@@ -206,15 +206,16 @@ function Requests(props: { scope?: string; name?: string; expanded?: string }) {
                     <span class="resource-link">
                       <ConnectorIcon
                         preset={
-                          m.view()!.config.accounts?.[record().facts.account]
-                            ?.preset ?? ""
+                          m.view()!.config.connections?.[
+                            record().facts.connection
+                          ]?.preset ?? ""
                         }
                       />
                       <span>
                         <strong>{owner.requestTitle(record())}</strong>
                         <small>
                           {record().facts.principal.name} ·{" "}
-                          {record().facts.account || "Policy"}
+                          {record().facts.connection || "Policy"}
                         </small>
                       </span>
                     </span>
@@ -363,7 +364,7 @@ export function RequestDetail(props: {
           const reasons = createMemo(() =>
             [...new Set([...(r().deny ?? []), ...owner.reasons(r())])].map(
               (reason) =>
-                reason === "this agent may not do this on the account"
+                reason === "this agent may not do this on the connection"
                   ? "This sandbox does not have permission for this action."
                   : reason,
             ),
@@ -393,16 +394,18 @@ export function RequestDetail(props: {
                   <dt>Connection</dt>
                   <dd>
                     <Show
-                      when={m.view()!.config.accounts?.[r().facts.account]}
-                      fallback={r().facts.account || "Policy"}
+                      when={
+                        m.view()!.config.connections?.[r().facts.connection]
+                      }
+                      fallback={r().facts.connection || "Policy"}
                     >
-                      {(account) => (
+                      {(connection) => (
                         <a
                           class="request-context-link"
-                          href={href("connection", r().facts.account)}
+                          href={href("connection", r().facts.connection)}
                         >
-                          <ConnectorIcon preset={account().preset} />
-                          {r().facts.account}
+                          <ConnectorIcon preset={connection().preset} />
+                          {r().facts.connection}
                           <Icon name="arrow" />
                         </a>
                       )}
@@ -475,7 +478,7 @@ export function RequestDetail(props: {
               <Show
                 when={
                   (state() === "refused" || state() === "denied") &&
-                  m.view()!.config.accounts?.[r().facts.account] &&
+                  m.view()!.config.connections?.[r().facts.connection] &&
                   (r().invalid ||
                     (!owner.isDevice(r().facts.principal.name) &&
                       m.view()!.config.identities?.[r().facts.principal.name]))
@@ -484,7 +487,7 @@ export function RequestDetail(props: {
                 <div class="request-access">
                   <a
                     class="button"
-                    href={href("connection", r().facts.account)}
+                    href={href("connection", r().facts.connection)}
                   >
                     {r().invalid ? "View connection setup" : "Change access"}
                     <Icon name="arrow" />

@@ -5,7 +5,6 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
-	"errors"
 	"net"
 	"net/http"
 	"net/url"
@@ -103,7 +102,7 @@ func (e *Endpoint) Parse() error {
 // SecretConfig owns the credential handles shared with the connection runtime.
 type SecretConfig struct {
 	Semantics `json:"-"`
-	Secrets   map[string]*credential.Value `json:"secrets,omitempty"`
+	Secrets   map[string]*credential.Value `json:"-"`
 }
 
 // Semantics is the connector's immutable, connection-scoped preset projection.
@@ -133,19 +132,6 @@ func ParseSetup(setup Setup, config, preset any, semantics *Semantics) error {
 	}
 	semantics.Address, semantics.Origin = options.Address, options.Origin
 	return nil
-}
-
-// Declarations accepts empty source slots, never source-embedded credential values.
-func (c *SecretConfig) Declarations(required ...string) ([]string, error) {
-	names := append(make([]string, 0, len(c.Secrets)+len(required)), required...)
-	for name, value := range c.Secrets {
-		if value != nil && value.Raw() != nil {
-			return nil, errors.New("set credentials through account settings")
-		}
-		names = append(names, name)
-	}
-	c.Secrets = nil
-	return names, nil
 }
 
 func (c *Semantics) Capture(f facts.Facts, err error) facts.Event {

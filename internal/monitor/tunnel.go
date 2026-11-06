@@ -148,7 +148,7 @@ func (m *monitor) forwardConnection(key string, nc ssh.NewChannel, target frontd
 	m.mu.Lock()
 	var candidates []frontdoor.Candidate
 	for name, c := range m.connections {
-		if st.Reaches(p.Name, c.Account) && c.Status().State == statusReady {
+		if st.Reaches(p.Name, c.Name) && c.Status().State == statusReady {
 			route := frontdoor.Candidate{Name: name}
 			route.Claim = c.prepared.Claim
 			candidates = append(candidates, route)
@@ -207,14 +207,14 @@ func (m *monitor) stillAdmitted(old *settings, admitted admission) bool {
 		return st.Identities[p.Name].Routes
 	}
 	c := admitted.connection
-	if !m.usable(c, admitted.prepared) || !st.Reaches(p.Name, c.Account) {
+	if !m.usable(c, admitted.prepared) || !st.Reaches(p.Name, c.Name) {
 		return false
 	}
 	if st == old {
 		return true
 	}
-	// Unrelated settings edits preserve this principal's authority on the account.
-	return st.Engine.Program == old.Engine.Program && st.Config.SameAuthority(old.Config, admitted.fingerprint, c.Account)
+	// Unrelated settings edits preserve this principal's authority on the connection.
+	return st.Engine.Program == old.Engine.Program && st.Config.SameAuthority(old.Config, admitted.fingerprint, c.Name)
 }
 
 // admitStream registers s for revocation and pins its connector until release.

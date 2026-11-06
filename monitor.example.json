@@ -1,72 +1,82 @@
 {
   "lattices": { "confidentiality": true, "integrity": false },
   "allow_networks": ["100.64.0.0/10"],
-  "accounts": {
+  "connections": {
     "github": {
       "preset": "github",
       "policy_options": { "private": ["tinfoilsh/*"] },
       "contents": "team", "strangers": true, "sends": "me",
-      "connections": {
-        "": { "http": {
-          "hosts": ["api.github.com", "github.com", "*.githubusercontent.com"],
-          "slots": [
-            {"value": "GITHUB_TOKEN", "origin": "https://api.github.com", "header": "Authorization", "prefix": "Bearer "},
-            {"value": "GITHUB_TOKEN", "origin": "https://github.com", "basic": "password"}
-          ],
-          "secrets": {"GITHUB_TOKEN": "ghp_REAL"}
-        } },
-        "mcp": { "mcp": { "url": "https://api.githubcopilot.com/mcp/", "secrets": {"token": "ghp_REAL"} } }
+      "http": {
+        "hosts": ["api.github.com", "github.com", "*.githubusercontent.com"],
+        "slots": [
+          {"value": "GITHUB_TOKEN", "origin": "https://api.github.com", "header": "Authorization", "prefix": "Bearer "},
+          {"value": "GITHUB_TOKEN", "origin": "https://github.com", "basic": "password"}
+        ]
       }
+    },
+    "github-mcp": {
+      "preset": "github_mcp",
+      "policy_options": { "private": ["tinfoilsh/*"] },
+      "contents": "team", "strangers": true, "sends": "me"
     },
     "gmail": {
       "preset": "email",
       "policy_options": { "address": "me@gmail.com" },
       "contents": "me", "strangers": true, "sends": "me",
-      "connections": {
-        "imap": { "imap": { "url": "imaps://imap.gmail.com", "user": "me@gmail.com", "secrets": {"password": "APP_PASSWORD"} } },
-        "smtp": { "smtp": { "url": "smtps://smtp.gmail.com", "user": "me@gmail.com", "secrets": {"password": "APP_PASSWORD"} } }
-      }
+      "imap": { "url": "imaps://imap.gmail.com", "user": "me@gmail.com" }
+    },
+    "gmail-send": {
+      "preset": "email_send",
+      "policy_options": { "address": "me@gmail.com" },
+      "contents": "me", "strangers": true, "sends": "me",
+      "smtp": { "url": "smtps://smtp.gmail.com", "user": "me@gmail.com" }
     },
     "slack": {
       "preset": "slack",
       "contents": "team", "strangers": true, "sends": "me",
-      "connections": { "": { "http": {
-        "slots": [{"value": "token", "origin": "https://slack.com", "path": "/api", "header": "Authorization", "prefix": "Bearer "}],
-        "secrets": {"token": "xoxb-REAL"}
-      } } }
+      "http": {
+        "slots": [{"value": "token", "origin": "https://slack.com", "path": "/api", "header": "Authorization", "prefix": "Bearer "}]
+      }
     },
     "backups": {
       "preset": "aws_s3", "policy_options": { "origin": "https://my-backups.s3.us-east-1.amazonaws.com" },
       "contents": "me", "strangers": false, "sends": "me",
-      "connections": { "": { "http": {
+      "http": {
         "slots": [{"value": "access_key", "origin": "https://my-backups.s3.us-east-1.amazonaws.com", "path": "/",
-                   "sigv4": {"service": "s3", "region": "us-east-1", "secret": "secret_key"}}],
-        "secrets": {"access_key": "AKIA_REAL", "secret_key": "SECRET_REAL"}
-      } } }
+                   "sigv4": {"service": "s3", "region": "us-east-1", "secret": "secret_key"}}]
+      }
     },
     "web": {
       "preset": "web", "contents": "anyone", "strangers": true, "sends": "anyone",
-      "connections": { "": { "http": { "hosts": ["*"] } } }
+      "http": { "hosts": ["*"] }
     },
     "box2": {
       "preset": "custom", "contents": "team", "strangers": false, "sends": "me",
-      "connections": { "": { "ssh": {"host": "box2.example.com", "user": "deploy", "host_key": "ssh-ed25519 AAAA...", "secrets": {"key": "-----BEGIN OPENSSH PRIVATE KEY-----\n..."}} } }
+      "ssh": {"host": "box2.example.com", "user": "deploy", "host_key": "ssh-ed25519 AAAA..."}
     },
-    "local": {
+    "local-gh": {
       "preset": "custom", "contents": "me", "strangers": false, "sends": "me",
-      "connections": {
-        "gh": { "cli": {"path": "/usr/bin/gh", "secrets": {"HOME": "/var/lib/monitor", "GH_TOKEN": "ghp_REAL"}} },
-        "gpg": { "cli": { "path": "/usr/bin/gpg", "secrets": { "GNUPGHOME": "/var/lib/monitor/gnupg" }, "stdin": "git" } },
-        "gpgagent": { "gpg-agent": "/var/lib/monitor/gnupg/S.gpg-agent" },
-        "sshkey": { "ssh-agent": {"secrets": {"0": "-----BEGIN OPENSSH PRIVATE KEY-----\n..."}} }
-      }
+      "cli": {"path": "/usr/bin/gh", "credentials": ["GH_TOKEN"]}
+    },
+    "local-gpg": {
+      "preset": "custom", "contents": "me", "strangers": false, "sends": "me",
+      "cli": { "path": "/usr/bin/gpg", "stdin": "git" }
+    },
+    "local-gpgagent": {
+      "preset": "custom", "contents": "me", "strangers": false, "sends": "me",
+      "gpg-agent": "/var/lib/monitor/gnupg/S.gpg-agent"
+    },
+    "local-sshkey": {
+      "preset": "custom", "contents": "me", "strangers": false, "sends": "me",
+      "ssh-agent": {"credentials": ["0"]}
     },
     "db": {
       "preset": "custom", "contents": "team", "strangers": false, "sends": "me",
-      "connections": {
-        "": { "postgres": {"url": "postgres://app@db.example.com/app?sslmode=verify-full", "secrets": {"password": "REAL"}} },
-        "cache": { "redis": {"url": "rediss://default@cache.example.com:6380", "secrets": {"password": "REAL"}} }
-      }
+      "postgres": {"url": "postgres://app@db.example.com/app?sslmode=verify-full"}
+    },
+    "cache": {
+      "preset": "custom", "contents": "team", "strangers": false, "sends": "me",
+      "redis": {"url": "rediss://default@cache.example.com:6380"}
     }
   }
 }

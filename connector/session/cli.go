@@ -23,8 +23,7 @@ func parseCLI(source connector.Setup) (connector.Prepared, error) {
 	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
-	names, err := c.Declarations()
-	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: append([]string{}, c.Credentials...)}, nil
 }
 
 // CLI keeps one immutable setup for each admitted stream.
@@ -37,8 +36,9 @@ const (
 
 type cliSetup struct {
 	connector.SecretConfig
-	Path  string `json:"path"`
-	Stdin string `json:"stdin"`
+	Path        string   `json:"path"`
+	Stdin       string   `json:"stdin"`
+	Credentials []string `json:"credentials"`
 }
 
 func (owner *CLI) Serve(s *connector.Stream, e *connector.Env) {

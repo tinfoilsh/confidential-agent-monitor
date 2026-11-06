@@ -392,19 +392,17 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "Authorization",
-              "origin": "https://graph.microsoft.com",
-              "path": "/v1.0",
-              "prefix": "Bearer ",
-              "value": "token"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://graph.microsoft.com",
+            "path": "/v1.0",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
       }
     },
     "defaults": {
@@ -440,13 +438,7 @@
           "scope": "offline_access Tasks.ReadWrite",
           "token_url": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token"
         },
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "token"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

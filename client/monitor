@@ -704,7 +704,7 @@ def mcp_probe(host, port, timeout):
 def mcp_servers(session, address=("127.0.0.1", 0)):
     connections = [c for c in session.client.connections() if c["kind"] in ("mcp", "tinfoil-mcp")]
     if not connections:
-        raise MonitorError("no reachable MCP connections; an HTTP API account alone does not provide MCP tools")
+        raise MonitorError("no reachable MCP connections; an HTTP API connection alone does not provide MCP tools")
     servers, tools = {}, 0
     for connection in connections:
         name = connection["name"]
@@ -737,7 +737,7 @@ def managed_command(client, args):
         if args.command == "mcp":
             _, count = mcp_servers(session, address)
             if not count:
-                print("monitor: no tools are visible; check account access and tool review in the web app", file=sys.stderr)
+                print("monitor: no tools are visible; check connection access and tool review in the web app", file=sys.stderr)
             while True:
                 session.check()
                 time.sleep(0.1)
@@ -921,36 +921,31 @@ def setup_launch(args):
             raise MonitorError("pass --owner-key-file pointing to an owner-only file")
         owner = OwnerClient(owner_url, key)
         view = owner.request()
-        accounts = view["config"].get("accounts", {})
-        candidates = []
-        for account, settings in accounts.items():
-            if settings.get("preset") == "anthropic":
-                candidates.extend(account + ("-" + suffix if suffix else "")
-                                  for suffix, kinds in settings.get("connections", {}).items() if "http" in kinds)
+        connections = view["config"].get("connections", {})
+        # A connection's kind is its key naming a connector, such as "http".
+        candidates = [name for name, settings in connections.items()
+                      if settings.get("preset") == "anthropic" and "http" in settings]
         connection = setup_value(args.connection, "Anthropic HTTP connection", candidates[0] if len(candidates) == 1 else None)
-        matching = [account for account, settings in accounts.items()
-                    for suffix, kinds in settings.get("connections", {}).items()
-                    if "http" in kinds and account + ("-" + suffix if suffix else "") == connection]
-        if len(matching) != 1:
+        if "http" not in connections.get(connection, {}):
             raise MonitorError("choose an existing HTTP connection for the Anthropic API")
-        access_spec = args.account or [item.strip() for item in setup_value(
-            None, "Account access, comma-separated name=read|ask|allow", matching[0] + "=allow").split(",")]
+        access_spec = args.access or [item.strip() for item in setup_value(
+            None, "Connection access, comma-separated name=read|ask|allow", connection + "=allow").split(",")]
         access = {}
         for item in access_spec:
-            account, sep, level = item.partition("=")
-            if not sep or account not in accounts or level not in ("read", "ask", "allow"):
-                raise MonitorError(f"invalid account access {item!r}; use an existing account and read, ask or allow")
-            access[account] = {"level": level}
-        if matching[0] not in access:
-            raise MonitorError("the model account must be included in --account")
+            name, sep, level = item.partition("=")
+            if not sep or name not in connections or level not in ("read", "ask", "allow"):
+                raise MonitorError(f"invalid connection access {item!r}; use an existing connection and read, ask or allow")
+            access[name] = {"level": level}
+        if connection not in access:
+            raise MonitorError("the Anthropic connection must be included in --access")
         host_key = view["host_key"].strip()
         if "\n" in host_key or not host_key.startswith(("ssh-", "ecdsa-")):
             raise MonitorError("owner API returned an invalid SSH host key")
         private_write(root / "owner.key", key)
         private_write(root / "host_key", host_key + "\n")
-        profile = {"version": 2, "id": uuid.uuid4().hex, "owner_url": owner_url, "endpoint": endpoint,
+        profile = {"version": 3, "id": uuid.uuid4().hex, "owner_url": owner_url, "endpoint": endpoint,
                    "root": str(root), "image": image, "cpus": args.cpus, "memory": args.memory,
-                   "connection": connection, "accounts": access, "mcp": args.mcp}
+                   "connection": connection, "access": access, "mcp": args.mcp}
         config.setdefault("launch_profiles", {})[name] = profile
         private_write(config_path, json.dumps(config, indent=2) + "\n")
         print(f"Saved launch profile {name!r}. Owner key stays in {root / 'owner.key'}.")
@@ -959,7 +954,7 @@ def setup_launch(args):
     return 0
 
 
-def enroll_identity(owner, state, state_path, public_key, accounts):
+def enroll_identity(owner, state, state_path, public_key, access):
     view = owner.request()
     existing = view["config"].get("identities", {}).get(state["name"])
     if existing:
@@ -973,7 +968,7 @@ def enroll_identity(owner, state, state_path, public_key, accounts):
         # must not cause a later launch to restore the initial grant.
         state["enrolled"] = True
         private_write(state_path, json.dumps(state, indent=2) + "\n")
-        owner.edit([{"path": ["identities", state["name"]], "value": {"key": public_key, "accounts": accounts}}])
+        owner.edit([{"path": ["identities", state["name"]], "value": {"key": public_key, "connections": access}}])
     state["enrolled"] = True
     private_write(state_path, json.dumps(state, indent=2) + "\n")
 
@@ -996,8 +991,8 @@ def launch_vm(args):
         profile = json.loads(private_read(config_path))["launch_profiles"][name]
     except (FileNotFoundError, KeyError) as error:
         raise MonitorError("run monitor setup first for this profile") from error
-    if profile["version"] != 2:
-        raise MonitorError("this launch profile uses an older VM backend; run monitor setup with a new --profile")
+    if profile["version"] != 3:
+        raise MonitorError("this launch profile is from an older monitor; run monitor setup with a new --profile")
     root = Path(profile["root"])
     workspace = Path(args.workspace).expanduser().resolve()
     if workspace == Path.home().resolve() or workspace.parent == workspace:
@@ -1049,7 +1044,7 @@ def launch_vm(args):
         driver = vm_module()
         driver.preflight(profile["image"])
         if args.command == "launch":
-            enroll_identity(owner, state, state_path, public_key, profile["accounts"])
+            enroll_identity(owner, state, state_path, public_key, profile["access"])
         elif not (directory / "initialized").exists():
             raise MonitorError("this VM has no initialized workspace to export")
         endpoint = None
@@ -1087,7 +1082,7 @@ def guest_agent(client, args):
         if args.mcp:
             servers, count = mcp_servers(session)
             if not count:
-                raise MonitorError("no MCP tools are available; review account access and tools in Monitor")
+                raise MonitorError("no MCP tools are available; review connection access and tools in Monitor")
             mcp_config = session.directory / "mcp.json"
             mcp_config.write_text(json.dumps({"mcpServers": servers}))
             # These endpoints live in the guest. Sending them through the HTTP
@@ -1166,7 +1161,7 @@ def policy_command(client, args):
             deletions = []
             for pointer in args.delete:
                 if not pointer.startswith("/") or re.search(r"~(?![01])", pointer):
-                    raise MonitorError("--delete requires a JSON Pointer, for example /accounts/github")
+                    raise MonitorError("--delete requires a JSON Pointer, for example /connections/github")
                 deletions.append([part.replace("~1", "/").replace("~0", "~") for part in pointer[1:].split("/")])
             body = {"source": source, "reason": args.reason, "delete": deletions}
         result = json.loads(client.request("agent.monitor", "POST", "/policy/proposals", body))
@@ -1222,7 +1217,7 @@ def parser():
     setup.add_argument("--cpus", type=int, default=2, help="VM CPU count (default: 2)")
     setup.add_argument("--memory", type=int, default=4096, help="VM memory in MiB (default: 4096)")
     setup.add_argument("--connection", help="Anthropic HTTP connection name")
-    setup.add_argument("--account", action="append", help="initial account access NAME=read|ask|allow; repeat for several")
+    setup.add_argument("--access", action="append", help="initial connection access NAME=read|ask|allow; repeat for several")
     setup.add_argument("--mcp", action="store_true", help="also connect Claude to Monitor's MCP connections")
     launch = commands.add_parser("launch", help="launch an agent in a Monitor-connected Linux VM")
     launch.add_argument("--workspace", default=".", help="project directory (default: current directory)")
@@ -1260,7 +1255,7 @@ def parser():
     serve = mcp.add_subparsers(dest="action", required=True).add_parser("serve", help="serve each ready MCP connection on loopback")
     serve.add_argument("--listen", default="127.0.0.1:8400", help="loopback IP:first port; uses consecutive ports, or free ports with port 0")
     connections = commands.add_parser("connections", help="list reachable connections and their current status")
-    connections.add_argument("--json", action="store_true", help="include account, host and access settings as JSON")
+    connections.add_argument("--json", action="store_true", help="include host and access settings as JSON")
     catalog = commands.add_parser("catalog", help="list connection types available for owner-reviewed setup")
     catalog.add_argument("--json", action="store_true", help="show complete safe catalog metadata as JSON")
     commands.metavar = "{" + ",".join(name for name in commands.choices if not name.startswith("_")) + "}"

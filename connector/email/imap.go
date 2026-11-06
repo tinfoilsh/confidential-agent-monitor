@@ -25,8 +25,7 @@ func parseIMAP(source connector.Setup) (connector.Prepared, error) {
 	if err := c.validate(); err != nil {
 		return connector.Prepared{}, err
 	}
-	names, err := c.Declarations("password")
-	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: []string{"password"}}, nil
 }
 
 // IMAP keeps one immutable setup for each admitted stream.

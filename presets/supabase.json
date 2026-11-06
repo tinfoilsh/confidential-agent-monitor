@@ -29,25 +29,23 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "header": "Apikey",
-              "origin": "https://example.supabase.co",
-              "path": "/",
-              "value": "apikey"
-            },
-            {
-              "header": "Authorization",
-              "origin": "https://example.supabase.co",
-              "path": "/",
-              "prefix": "Bearer ",
-              "value": "jwt"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Apikey",
+            "origin": "https://example.supabase.co",
+            "path": "/",
+            "value": "apikey"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://example.supabase.co",
+            "path": "/",
+            "prefix": "Bearer ",
+            "value": "jwt"
+          }
+        ]
       }
     },
     "defaults": {
@@ -65,16 +63,12 @@
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             0,
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             1,
@@ -85,25 +79,13 @@
       {
         "key": "apikey",
         "label": "Anon or publishable API key (avoid service_role; prefer a user JWT for the Authorization field below under RLS)",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "apikey"
-        ],
+        "credential": true,
         "secret": true
       },
       {
         "key": "jwt",
         "label": "User access token (JWT), so row level security applies",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "jwt"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

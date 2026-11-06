@@ -116,11 +116,11 @@ type connectionPlan struct {
 
 // settingsPlan contains parsed settings, never candidate runtime instances.
 type settingsPlan struct {
-	next    *settings
-	source  string
-	secrets store.Secrets
-	updates []connectionPlan
-	remove  []string
+	next        *settings
+	source      string
+	credentials store.Secrets
+	updates     []connectionPlan
+	remove      []string
 }
 
 type Options struct {
@@ -232,13 +232,13 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (bool,
 			return false, err
 		}
 	}
-	plan, err := m.prepareSettings(ctx, next.Doc, next.Doc, env)
+	plan, err := m.prepareSettings(ctx, next.Doc, next.Doc, nil, env)
 	if err != nil {
 		return false, err
 	}
 	m.mu.Lock()
 	m.store = next
-	install, retired, err := m.commitSettings(ctx, next.Doc, plan, nil)
+	install, retired, err := m.commitSettings(ctx, plan, nil)
 	if err != nil {
 		m.store = base
 	} else {
@@ -255,7 +255,7 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (bool,
 // prepareSettings validates settings and parses connector setups under writes, without
 // mu. It creates no runtime instances. Stored maps and settings snapshots are
 // immutable; credential refreshes can still commit while validation runs.
-func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Document, env connector.Env) (*settingsPlan, error) {
+func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Document, credentials store.Secrets, env connector.Env) (*settingsPlan, error) {
 	current := m.settings.Load()
 	next := current
 	if current == nil || proposed.Policy != base.Policy {
@@ -283,75 +283,64 @@ func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Docu
 			}
 		}
 	}
-	plan := &settingsPlan{next: next, source: proposed.Policy, secrets: store.Secrets{}}
+	plan := &settingsPlan{next: next, source: proposed.Policy, credentials: credentials}
 	sameNetworks := current != nil && slices.Equal(current.AllowNetworks, next.AllowNetworks)
 	present := map[string]bool{}
-	for _, account := range slices.Sorted(maps.Keys(next.Accounts)) {
-		specs, err := next.Connections(account)
+	for _, name := range slices.Sorted(maps.Keys(next.Connections)) {
+		spec, err := next.Spec(name)
 		if err != nil {
 			return nil, err
 		}
-		for _, spec := range specs {
-			present[spec.Name] = true
-			kind := m.kinds[spec.Protocol]
-			if kind.Parse == nil || kind.New == nil {
-				return nil, fmt.Errorf("connection %s has unknown kind %s", spec.Name, spec.Protocol)
+		present[spec.Name] = true
+		kind := m.kinds[spec.Protocol]
+		if kind.Parse == nil || kind.New == nil {
+			return nil, fmt.Errorf("connection %s has unknown kind %s", spec.Name, spec.Protocol)
+		}
+		c := m.connections[spec.Name]
+		if c != nil && c.Protocol != spec.Protocol {
+			plan.remove = append(plan.remove, spec.Name)
+		}
+		sameConnection := c != nil && c.Protocol == spec.Protocol
+		reusable := sameConnection && sameNetworks
+		unchanged := reusable &&
+			bytes.Equal(c.Config, spec.Config) &&
+			bytes.Equal(c.Definition, spec.Definition) &&
+			bytes.Equal(c.Options, spec.Options) &&
+			len(credentials[spec.Name]) == 0
+		if unchanged {
+			// Retry unavailable, unchanged connections.
+			if c.Status().State != statusReady {
+				plan.updates = append(plan.updates, connectionPlan{spec, c.prepared, c.Credentials})
 			}
-			c, values := m.connections[spec.Name], proposed.Secrets.Connection(spec.Account, spec.Key)
-			if c != nil && c.Protocol != spec.Protocol {
-				plan.remove = append(plan.remove, spec.Name)
+			continue
+		}
+		parsed, err := kind.Parse(connector.Setup{Config: spec.Config, Definition: spec.Definition, Options: spec.Options})
+		if err != nil {
+			return nil, fmt.Errorf("connection %s: %w", spec.Name, err)
+		}
+		var handles map[string]*credential.Value
+		if parsed.SecretNames != nil {
+			handles = map[string]*credential.Value{}
+			for _, name := range parsed.SecretNames {
+				handles[name] = nil
 			}
-			sameConnection := c != nil && c.Protocol == spec.Protocol && c.Account == spec.Account && c.Key == spec.Key
-			reusable := sameConnection && sameNetworks
-			unchanged := reusable &&
-				bytes.Equal(c.Config, spec.Config) &&
-				bytes.Equal(c.Definition, spec.Definition) &&
-				bytes.Equal(c.Options, spec.Options) &&
-				slices.Equal(c.CredentialNames, spec.CredentialNames)
-			var parsed connector.Prepared
-			if unchanged {
-				parsed = *c.prepared
-			} else if parsed, err = kind.Parse(connector.Setup{Config: spec.Config, Definition: spec.Definition, Options: spec.Options}); err != nil {
-				return nil, fmt.Errorf("connection %s: %w", spec.Name, err)
+		}
+		for name, raw := range credentials[spec.Name] {
+			if _, uses := handles[name]; raw != nil && !uses {
+				return nil, fmt.Errorf("connection %s does not use credential %s", spec.Name, name)
 			}
-			if parsed.SecretNames != nil {
-				for name, raw := range values {
-					plan.secrets.Set(store.SecretID{Account: spec.Account, Connection: spec.Key, Name: name}, raw)
-				}
+		}
+		parsed.Discovery.Placeholders = maps.Clone(parsed.Discovery.Placeholders)
+		if parsed.Discovery.Placeholders != nil {
+			for name := range handles {
+				parsed.Discovery.Placeholders[name] = placeholder(proposed.Keys, store.SecretID{Connection: spec.Name, Name: name})
 			}
-			if unchanged && maps.EqualFunc(base.Secrets.Connection(spec.Account, spec.Key), values, slices.Equal[json.RawMessage]) {
-				// Retry unavailable, unchanged connections.
-				if c.Status().State != statusReady {
-					plan.updates = append(plan.updates, connectionPlan{spec, c.prepared, c.Credentials})
-				}
-				continue
-			}
-			var handles map[string]*credential.Value
-			if parsed.SecretNames != nil {
-				handles = map[string]*credential.Value{}
-				for _, name := range parsed.SecretNames {
-					handles[name] = nil
-				}
-				for _, name := range spec.CredentialNames {
-					handles[name] = nil
-				}
-				for name := range values {
-					handles[name] = nil
-				}
-				for name := range handles {
-					id := store.SecretID{Account: spec.Account, Connection: spec.Key, Name: name}
-					if reusable && c.Credentials[name] != nil && bytes.Equal(base.Secrets.Get(id), values[name]) {
-						handles[name] = c.Credentials[name]
-					}
-				}
-			}
-			parsed.Discovery.Placeholders = maps.Clone(parsed.Discovery.Placeholders)
-			if parsed.Discovery.Placeholders != nil {
-				for name := range handles {
-					parsed.Discovery.Placeholders[name] = placeholder(proposed.Keys, store.SecretID{Account: spec.Account, Connection: spec.Key, Name: name})
-				}
-			}
-			plan.updates = append(plan.updates, connectionPlan{spec, &parsed, handles})
+		}
+		plan.updates = append(plan.updates, connectionPlan{spec, &parsed, handles})
+	}
+	for name := range credentials {
+		if !present[name] {
+			return nil, fmt.Errorf("connection %s does not exist", name)
 		}
 	}
 
@@ -367,21 +356,19 @@ func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Docu
 // publish the settings and revoke lost authority. Changed connectors remain
 // unavailable until installation. A saved approval is answered after persistence
 // and before general settings invalidation.
-func (m *monitor) commitSettings(ctx context.Context, base store.Document, plan *settingsPlan, saved *savedAnswer) (install, retired []*connection, err error) {
+func (m *monitor) commitSettings(ctx context.Context, plan *settingsPlan, saved *savedAnswer) (install, retired []*connection, err error) {
 	next := m.store.Doc
-	next.Policy, next.Secrets = plan.source, store.Secrets{}
-	for account, connections := range plan.secrets {
-		for connection, fields := range connections {
-			for name, raw := range fields {
-				id := store.SecretID{Account: account, Connection: connection, Name: name}
-				// Preserve concurrent credential refreshes.
-				if bytes.Equal(raw, base.Secrets.Get(id)) {
-					raw = m.store.Doc.Secrets.Get(id)
-				}
-				next.Secrets.Set(id, raw)
-			}
+	next.Policy = plan.source
+	next.Credentials = next.Credentials.Clone()
+	for connection, values := range plan.credentials {
+		for name, raw := range values {
+			next.Credentials.Set(store.SecretID{Connection: connection, Name: name}, raw)
 		}
 	}
+	maps.DeleteFunc(next.Credentials, func(connection string, _ map[string]json.RawMessage) bool {
+		_, ok := plan.next.Connections[connection]
+		return !ok
+	})
 	// Bind new handles to the latest durable record exactly once, before commit.
 	// This is pure credential validation; it takes no Value lock or network call.
 	client := plan.next.Client()
@@ -390,9 +377,8 @@ func (m *monitor) commitSettings(ctx context.Context, base store.Document, plan 
 			if value != nil {
 				continue
 			}
-			id := store.SecretID{Account: update.Account, Connection: update.Key, Name: name}
-			v := new(credential.Value)
-			if raw := next.Secrets.Get(id); raw != nil {
+			id, v := store.SecretID{Connection: update.Name, Name: name}, new(credential.Value)
+			if raw := next.Credentials.Get(id); raw != nil {
 				if err := v.UnmarshalJSON(raw); err != nil {
 					return nil, nil, fmt.Errorf("credential %s/%s: %w", update.Name, name, err)
 				}

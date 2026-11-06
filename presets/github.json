@@ -5090,39 +5090,32 @@
         "title": "Read"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "hosts": [
-            "api.github.com",
-            "github.com",
-            "*.githubusercontent.com"
-          ],
-          "slots": [
-            {
-              "header": "Authorization",
-              "origin": "https://api.github.com",
-              "prefix": "Bearer ",
-              "value": "GITHUB_TOKEN"
-            },
-            {
-              "header": "Authorization",
-              "origin": "https://api.github.com",
-              "prefix": "token ",
-              "value": "GITHUB_TOKEN"
-            },
-            {
-              "basic": "password",
-              "origin": "https://github.com",
-              "value": "GITHUB_TOKEN"
-            }
-          ]
-        }
-      },
-      "mcp": {
-        "mcp": {
-          "url": "https://api.githubcopilot.com/mcp/"
-        }
+    "connection": {
+      "http": {
+        "hosts": [
+          "api.github.com",
+          "github.com",
+          "*.githubusercontent.com"
+        ],
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.github.com",
+            "prefix": "Bearer ",
+            "value": "GITHUB_TOKEN"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://api.github.com",
+            "prefix": "token ",
+            "value": "GITHUB_TOKEN"
+          },
+          {
+            "basic": "password",
+            "origin": "https://github.com",
+            "value": "GITHUB_TOKEN"
+          }
+        ]
       }
     },
     "defaults": {
@@ -5132,7 +5125,7 @@
     },
     "fields": [
       {
-        "key": "token",
+        "key": "GITHUB_TOKEN",
         "label": "GitHub account",
         "hint": "GitHub will ask you to authorize GitHub CLI.",
         "oauth": {
@@ -5143,22 +5136,7 @@
           "scope": "repo read:org gist",
           "required_scopes": ["repo", "read:org", "gist"]
         },
-        "paths": [
-          [
-            "connections",
-            "",
-            "http",
-            "secrets",
-            "GITHUB_TOKEN"
-          ],
-          [
-            "connections",
-            "mcp",
-            "mcp",
-            "secrets",
-            "token"
-          ]
-        ],
+        "credential": true,
         "secret": true
       },
       {
@@ -5176,18 +5154,6 @@
   },
   "title": "GitHub",
   "public_scope": ["owner", "repo"],
-  "mcp": {
-    "scope": {
-      "owner": {
-        "at": "/owner",
-        "optional": true
-      },
-      "repo": {
-        "at": "/repo",
-        "optional": true
-      }
-    }
-  },
   "http": {
     "operations": {
       "actions/add-custom-labels-to-self-hosted-runner-for-org": {"action":"orgs.actions.runners.labels.write","body":"json","effects":["write"],"method":"POST","origin":"https://api.github.com","path":"/orgs/{org}/actions/runners/{runner_id}/labels","scope":{"org":{"at":"org","from":"path"},"request":{"at":"","from":"body","type":"object"},"runner_id":{"at":"runner_id","from":"path"}}},

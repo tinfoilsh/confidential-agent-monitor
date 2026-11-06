@@ -3,10 +3,10 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "origin", "label": "Your Metabase origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
-      {"key": "session_token", "label": "", "secret": true, "path": ["connections", "", "http", "secrets", "session_token"]}
+      {"key": "origin", "label": "Your Metabase origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
+      {"key": "session_token", "label": "", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "session_token", "origin": "https://example.com", "path": "/api", "header": "X-Metabase-Session"}]}}},
+    "connection": {"http": {"slots": [{"value": "session_token", "origin": "https://example.com", "path": "/api", "header": "X-Metabase-Session"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.group": {"title": "Admin: group"},

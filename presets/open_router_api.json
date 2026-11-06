@@ -4,9 +4,9 @@
     "replaced_by": "open_router",
     "group": "api",
     "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "path": ["connections", "", "http", "secrets", "api_key"]}
+      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "api_key", "origin": "https://openrouter.ai", "path": "/api", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://openrouter.ai", "path": "/api", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.keys": {"title": "Admin: keys"},

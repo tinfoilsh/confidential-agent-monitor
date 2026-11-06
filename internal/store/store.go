@@ -15,6 +15,7 @@ import (
 	"maps"
 
 	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/monitor/internal/store/migrations"
 	"gocloud.dev/blob"
 	"gocloud.dev/gcerrors"
 	"golang.org/x/crypto/argon2"
@@ -22,7 +23,7 @@ import (
 
 const (
 	stateObject  = "monitor.enc"
-	stateVersion = 1 // JSON format version, independent of encryption and Generation.
+	stateVersion = migrations.Version // JSON format version, independent of encryption and Generation.
 )
 
 var ErrOwner = errors.New("invalid owner secret")
@@ -30,24 +31,24 @@ var ErrOwner = errors.New("invalid owner secret")
 // Document is the state encrypted in storage.
 // Labels are shared by all streams authenticated with the same SSH fingerprint.
 type Document struct {
-	Version    int                    `json:"version"`
-	Generation uint64                 `json:"generation"`
-	Keys       Keys                   `json:"keys"`
-	Labels     map[string]facts.Label `json:"labels"`
-	Policy     string                 `json:"policy"`
-	Secrets    Secrets                `json:"secrets,omitempty"`
-	Enrolled   map[string]bool        `json:"enrolled,omitempty"`
+	Version     int                    `json:"version"`
+	Generation  uint64                 `json:"generation"`
+	Keys        Keys                   `json:"keys"`
+	Labels      map[string]facts.Label `json:"labels"`
+	Policy      string                 `json:"policy"`
+	Credentials Secrets                `json:"credentials,omitempty"`
+	Enrolled    map[string]bool        `json:"enrolled,omitempty"`
 }
 
-// decodeState reads documents written before versioning as version 1, which names
-// their layout. A new version needs its migration here before it is accepted.
+// decodeState reads earlier versions through their migration before accepting a document.
 func decodeState(plain []byte) (Document, error) {
+	plain, err := migrations.Upgrade(plain)
+	if err != nil {
+		return Document{}, fmt.Errorf("stored state: %w", err)
+	}
 	var sl Document
 	if err := json.Unmarshal(plain, &sl); err != nil {
 		return Document{}, fmt.Errorf("stored state: %w", err)
-	}
-	if sl.Version == 0 {
-		sl.Version = 1
 	}
 	if sl.Version != stateVersion {
 		return Document{}, fmt.Errorf("unsupported stored state version %d (latest supported: %d)", sl.Version, stateVersion)
@@ -177,48 +178,35 @@ func (s *Store) Commit(ctx context.Context, next Document) error {
 	return nil
 }
 
-type SecretID struct{ Account, Connection, Name string }
+type SecretID struct{ Connection, Name string }
 
-// Secrets uses the deployed document layout: account, connection and name.
-type Secrets map[string]map[string]map[string]json.RawMessage
+// Secrets maps each connection to its named credential records.
+type Secrets map[string]map[string]json.RawMessage
 
-func (s Secrets) Get(id SecretID) json.RawMessage { return s[id.Account][id.Connection][id.Name] }
+func (s Secrets) Get(id SecretID) json.RawMessage { return s[id.Connection][id.Name] }
 
-// Set removes empty parents with the last value, preserving the stored layout.
+// Set removes a connection with its last value.
 func (s Secrets) Set(id SecretID, raw json.RawMessage) {
 	if raw != nil {
-		if s[id.Account] == nil {
-			s[id.Account] = map[string]map[string]json.RawMessage{}
+		if s[id.Connection] == nil {
+			s[id.Connection] = map[string]json.RawMessage{}
 		}
-		if s[id.Account][id.Connection] == nil {
-			s[id.Account][id.Connection] = map[string]json.RawMessage{}
-		}
-		s[id.Account][id.Connection][id.Name] = raw
+		s[id.Connection][id.Name] = raw
 		return
 	}
-	delete(s[id.Account][id.Connection], id.Name)
-	if len(s[id.Account][id.Connection]) == 0 {
-		delete(s[id.Account], id.Connection)
-	}
-	if len(s[id.Account]) == 0 {
-		delete(s, id.Account)
+	delete(s[id.Connection], id.Name)
+	if len(s[id.Connection]) == 0 {
+		delete(s, id.Connection)
 	}
 }
 
 // Clone isolates edits at every map level; credential records are immutable bytes.
 func (s Secrets) Clone() Secrets {
 	out := Secrets{}
-	for account, connections := range s {
-		out[account] = maps.Clone(connections)
-		for connection, values := range connections {
-			out[account][connection] = maps.Clone(values)
-		}
+	for connection, values := range s {
+		out[connection] = maps.Clone(values)
 	}
 	return out
-}
-
-func (s Secrets) Connection(account, connection string) map[string]json.RawMessage {
-	return s[account][connection]
 }
 
 const (

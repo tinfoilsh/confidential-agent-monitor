@@ -3,10 +3,10 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "origin", "label": "Your Gotify origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
-      {"key": "app_api_token", "label": "App API Token", "secret": true, "path": ["connections", "", "http", "secrets", "app_api_token"]}
+      {"key": "origin", "label": "Your Gotify origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
+      {"key": "app_api_token", "label": "App API Token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "app_api_token", "origin": "https://example.com", "path": "/", "header": "X-Gotify-Key"}]}}},
+    "connection": {"http": {"slots": [{"value": "app_api_token", "origin": "https://example.com", "path": "/", "header": "X-Gotify-Key"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.config": {"title": "Admin: config"},

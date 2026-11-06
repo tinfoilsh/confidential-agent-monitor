@@ -57,8 +57,7 @@ func ParseSetup(source connector.Setup, config any, setup *Setup) (connector.Pre
 		return connector.Prepared{}, errors.New("MCP requires an http:// or https:// server URL")
 	}
 	setup.preset = preset.MCP
-	names, err := setup.Declarations("token")
-	return connector.Prepared{Source: source, Value: setup, SecretNames: names}, err
+	return connector.Prepared{Source: source, Value: setup, SecretNames: []string{"token"}}, nil
 }
 
 func Parse(source connector.Setup) (connector.Prepared, error) {

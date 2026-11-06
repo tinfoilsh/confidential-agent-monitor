@@ -3,11 +3,11 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "origin", "label": "Your RocketChat origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"], ["connections", "", "http", "slots", 1, "origin"]]},
-      {"key": "auth_key", "label": "Auth Key", "secret": true, "path": ["connections", "", "http", "secrets", "auth_key"]},
-      {"key": "user_id", "label": "User ID", "secret": true, "path": ["connections", "", "http", "secrets", "user_id"]}
+      {"key": "origin", "label": "Your RocketChat origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"], ["http", "slots", 1, "origin"]]},
+      {"key": "auth_key", "label": "Auth Key", "secret": true, "credential": true},
+      {"key": "user_id", "label": "User ID", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "auth_key", "origin": "https://example.com", "path": "/api/v1", "header": "X-Auth-Token"}, {"value": "user_id", "origin": "https://example.com", "path": "/api/v1", "header": "X-User-Id"}]}}},
+    "connection": {"http": {"slots": [{"value": "auth_key", "origin": "https://example.com", "path": "/api/v1", "header": "X-Auth-Token"}, {"value": "user_id", "origin": "https://example.com", "path": "/api/v1", "header": "X-User-Id"}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.groups": {"title": "Admin: groups"},

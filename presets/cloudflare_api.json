@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "api_token", "label": "API Token", "secret": true, "path": ["connections", "", "http", "secrets", "api_token"]}
+      {"key": "api_token", "label": "API Token", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "api_token", "origin": "https://api.cloudflare.com", "path": "/client/v4", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "api_token", "origin": "https://api.cloudflare.com", "path": "/client/v4", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.accounts": {"title": "Admin: accounts"},

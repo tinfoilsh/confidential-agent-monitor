@@ -14,9 +14,9 @@
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "YouTube account", "secret": true, "path": ["connections", "", "http", "secrets", "token"], "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtubepartner-channel-audit"}}
+      {"key": "token", "label": "YouTube account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtubepartner-channel-audit"}}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://youtube.googleapis.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://youtube.googleapis.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.subscriptions": {"title": "Admin: subscriptions"},

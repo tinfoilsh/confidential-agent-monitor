@@ -1511,24 +1511,22 @@
         "title": "Create and edit"
       }
     },
-    "connections": {
-      "": {
-        "http": {
-          "slots": [
-            {
-              "basic": "user",
-              "origin": "https://example.atlassian.net",
-              "path": "/wiki/api/v2",
-              "value": "email"
-            },
-            {
-              "basic": "password",
-              "origin": "https://example.atlassian.net",
-              "path": "/wiki/api/v2",
-              "value": "apitoken"
-            }
-          ]
-        }
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "basic": "user",
+            "origin": "https://example.atlassian.net",
+            "path": "/wiki/api/v2",
+            "value": "email"
+          },
+          {
+            "basic": "password",
+            "origin": "https://example.atlassian.net",
+            "path": "/wiki/api/v2",
+            "value": "apitoken"
+          }
+        ]
       }
     },
     "defaults": {
@@ -1546,16 +1544,12 @@
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             0,
             "origin"
           ],
           [
-            "connections",
-            "",
             "http",
             "slots",
             1,
@@ -1566,25 +1560,13 @@
       {
         "key": "email",
         "label": "Atlassian account email",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "email"
-        ],
+        "credential": true,
         "secret": true
       },
       {
         "key": "apitoken",
         "label": "Atlassian API token",
-        "path": [
-          "connections",
-          "",
-          "http",
-          "secrets",
-          "apitoken"
-        ],
+        "credential": true,
         "secret": true
       }
     ],

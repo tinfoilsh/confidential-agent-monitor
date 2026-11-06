@@ -3,10 +3,10 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "origin", "label": "Your Weaviate Vector Store origin (https://host)", "paths": [["policy_options", "origin"], ["connections", "", "http", "slots", 0, "origin"]]},
-      {"key": "weaviate_api_key", "label": "Weaviate Api Key", "secret": true, "path": ["connections", "", "http", "secrets", "weaviate_api_key"]}
+      {"key": "origin", "label": "Your Weaviate Vector Store origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
+      {"key": "weaviate_api_key", "label": "Weaviate Api Key", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "weaviate_api_key", "origin": "https://example.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "weaviate_api_key", "origin": "https://example.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.groups": {"title": "Admin: groups"},

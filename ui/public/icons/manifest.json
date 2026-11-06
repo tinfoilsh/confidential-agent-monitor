@@ -176,6 +176,9 @@
   "email": {
     "src": "email.svg"
   },
+  "email_send": {
+    "src": "email.svg"
+  },
   "figma": {
     "src": "figma.svg"
   },
@@ -199,6 +202,10 @@
     "src": "github_api.svg"
   },
   "github_api": {
+    "dark": "github_api.dark.svg",
+    "src": "github_api.svg"
+  },
+  "github_mcp": {
     "dark": "github_api.dark.svg",
     "src": "github_api.svg"
   },
@@ -532,6 +539,10 @@
     "src": "the_hive_project.svg"
   },
   "tinfoil": {
+    "dark": "tinfoil.dark.svg",
+    "src": "tinfoil.svg"
+  },
+  "tinfoil_websearch": {
     "dark": "tinfoil.dark.svg",
     "src": "tinfoil.svg"
   },

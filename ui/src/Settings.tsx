@@ -158,10 +158,11 @@ export function Rules() {
           const rule = () => m.view()!.config.identities![name].rules![id];
           return (
             <div class="resource-row">
-              <a class="resource-link" href={href("connection", rule().account)}>
+              <a class="resource-link" href={href("connection", rule().connection)}>
                 <ConnectorIcon
                   preset={
-                    m.view()!.config.accounts?.[rule().account]?.preset ?? ""
+                    m.view()!.config.connections?.[rule().connection]?.preset ??
+                    ""
                   }
                 />
                 <span>
@@ -170,7 +171,7 @@ export function Rules() {
                     {(() => {
                       const text = owner.scopeText(
                         m.view()!,
-                        rule().account,
+                        rule().connection,
                         rule().scope ?? {},
                       );
                       return typeof text === "string" ? (
@@ -183,7 +184,7 @@ export function Rules() {
                     })()}
                   </small>
                   <small>
-                    {name} · {rule().account}
+                    {name} · {rule().connection}
                     {rule().operation
                       ? ""
                       : " · Inactive: saved before approvals named an operation"}

@@ -20,10 +20,7 @@ func Parse(source connector.Setup) (connector.Prepared, error) {
 	if err := h.Validate(false); err != nil {
 		return connector.Prepared{}, err
 	}
-	names, err := h.Declarations()
-	if err != nil {
-		return connector.Prepared{}, err
-	}
+	names := []string{}
 	for _, slot := range h.Slots {
 		names = append(names, slot.Value)
 		if slot.SigV4 != nil {

@@ -37,10 +37,6 @@ func parseHTTP(source connector.Setup) (connector.Prepared, error) {
 	if err := validateEnclave(setup.Enclave, setup.Repo); err != nil {
 		return connector.Prepared{}, err
 	}
-	names, err := setup.Declarations("TINFOIL_API_KEY")
-	if err != nil {
-		return connector.Prepared{}, err
-	}
 	setup.http = &web.Setup{Preset: preset.HTTP, Credentials: web.Credentials{
 		SecretConfig: setup.SecretConfig,
 		Slots:        []web.Slot{{Value: "TINFOIL_API_KEY", Origin: "https://" + setup.Enclave, Path: "/v1", Header: "Authorization", Prefix: "Bearer "}},
@@ -49,7 +45,7 @@ func parseHTTP(source connector.Setup) (connector.Prepared, error) {
 		return connector.Prepared{}, err
 	}
 	route := &web.Setup{Credentials: web.Credentials{Slots: setup.http.Slots}}
-	return connector.Prepared{Source: source, Value: setup, SecretNames: names, Claim: route.Claim,
+	return connector.Prepared{Source: source, Value: setup, SecretNames: []string{"TINFOIL_API_KEY"}, Claim: route.Claim,
 		Discovery: connector.Discovery{Slots: setup.http.Slots, Placeholders: map[string]string{}}}, nil
 }
 

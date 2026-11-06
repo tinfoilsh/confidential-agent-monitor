@@ -14,7 +14,7 @@ import (
 // Version identifies the facts schema and approval semantics. Bump it when
 // parsing, description, normalization, label, or approval semantics change.
 // This invalidates saved approvals; display-only edits do not need a bump.
-const Version = 12
+const Version = 13
 
 // Label levels are ordered from most restrictive to least restrictive.
 // Policy derives its rank tables from these same lists.
@@ -46,7 +46,7 @@ func (l Label) Valid() bool {
 }
 
 func ValidSends(sends string) bool {
-	return sends == "" || sends == "account" || slices.Contains(Audiences, sends)
+	return sends == "" || sends == "connection" || slices.Contains(Audiences, sends)
 }
 
 type Operation struct {
@@ -88,7 +88,7 @@ func (op Operation) Resolve(actions map[string]Action) *Operation {
 	return &op
 }
 
-// Sends and Observes are connector hints; policy resolves them with account settings.
+// Sends and Observes are connector hints; policy resolves them with connection settings.
 type Context struct {
 	Label    Label  `json:"label"`
 	Sends    string `json:"sends"`
@@ -103,7 +103,6 @@ type Facts struct {
 	Version    int            `json:"version"`
 	Kind       Kind           `json:"kind"`
 	Principal  Principal      `json:"principal"`
-	Account    string         `json:"account"`
 	Service    string         `json:"service"`
 	Connection string         `json:"connection"`
 	Operation  *Operation     `json:"operation"`

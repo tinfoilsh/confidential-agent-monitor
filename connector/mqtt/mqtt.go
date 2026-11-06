@@ -29,8 +29,7 @@ func parseMQTT(source connector.Setup) (connector.Prepared, error) {
 	if err := c.validate(); err != nil {
 		return connector.Prepared{}, err
 	}
-	names, err := c.Declarations("password")
-	return connector.Prepared{Source: source, Value: c, SecretNames: names}, err
+	return connector.Prepared{Source: source, Value: c, SecretNames: []string{"password"}}, nil
 }
 
 // MQTT keeps one immutable setup for each admitted stream.
@@ -388,5 +387,5 @@ func (v *Request) Describe() (facts.Facts, error) {
 	}
 	op := &facts.Operation{ID: v.Command, Action: action}
 	parameters, _ := facts.JSON[map[string]any](v)
-	return facts.Facts{Operation: op, Title: "MQTT " + v.Command + " " + v.Topic, Parameters: parameters, Details: details, Context: facts.Context{Sends: "account"}}, nil
+	return facts.Facts{Operation: op, Title: "MQTT " + v.Command + " " + v.Topic, Parameters: parameters, Details: details, Context: facts.Context{Sends: "connection"}}, nil
 }

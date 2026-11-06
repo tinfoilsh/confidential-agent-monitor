@@ -1,4 +1,4 @@
-// The owner API client and the request, permission and account semantics shared by
+// The owner API client and the request, permission and connection semantics shared by
 // Monitor's own app and embedding dashboards. The server remains the authority: these
 // functions shape edits and describe its answers.
 
@@ -23,10 +23,10 @@ export type Access = {
   actions?: Record<string, Mode>;
   effects?: Record<string, Mode>;
 };
-export type EffectScope = { agent?: string; account?: string };
+export type EffectScope = { agent?: string; connection?: string };
 export type Requirement = { id?: string; message: string };
 export type Rule = {
-  account: string;
+  connection: string;
   action: string;
   operation?: string;
   definition?: string;
@@ -38,17 +38,25 @@ export type Identity = {
   sandbox?: { source: string; instance_id: string };
   effects?: Record<string, Mode>;
   routes?: boolean;
-  accounts?: Record<string, Access>;
+  connections?: Record<string, Access>;
   rules?: Record<string, Rule>;
 };
-export type Account = {
+// A connection's one key that is not a setting is its connector's kind, holding the setup.
+const SETTINGS = [
+  "preset",
+  "effects",
+  "policy_options",
+  "contents",
+  "strangers",
+  "sends",
+];
+export type Connection = {
   preset: string;
   effects?: Record<string, Mode>;
   contents: Audience;
   sends: Audience;
   strangers?: boolean;
-  connections?: Record<string, Record<string, { [key: string]: Json }>>;
-};
+} & { [kind: string]: Json | undefined };
 export type PresetField = {
   key: string;
   label: string;
@@ -62,6 +70,7 @@ export type PresetField = {
   default?: Json;
   path?: string[];
   paths?: string[][];
+  credential?: boolean;
   oauth?: Json;
 };
 export type PresetAction = { title: string; effects?: string[] };
@@ -72,7 +81,7 @@ export type Preset = {
   replaced_by?: string;
   defaults?: { contents?: Audience; sends?: Audience; strangers?: boolean };
   fields?: PresetField[];
-  connections?: Json;
+  connection?: { [kind: string]: Json };
   actions?: Record<string, PresetAction>;
   operations?: Record<string, { action: string; effects?: string[] }>;
 };
@@ -98,7 +107,7 @@ export type View = {
     default_access?: Record<string, Access>;
     data?: { [key: string]: Json };
     identities?: Record<string, Identity> | null;
-    accounts?: Record<string, Account> | null;
+    connections?: Record<string, Connection> | null;
     policies?: Record<string, string> | null;
     lattices?: { confidentiality?: boolean; integrity?: boolean };
     allow_networks?: string[] | null;
@@ -107,7 +116,12 @@ export type View = {
   status: Record<string, ConnectionStatus>;
   fields: Record<
     string,
-    { path: string[]; kind: string; placeholder?: string; account?: string }[]
+    {
+      name: string;
+      kind: string;
+      placeholder?: string;
+      account?: string;
+    }[]
   >;
   presets: Record<string, Preset>;
   vocabulary: Record<string, { change?: boolean; ask?: boolean }>;
@@ -138,7 +152,7 @@ export type RequestRecord = {
   facts: {
     title?: string;
     principal: { key?: string; name: string };
-    account: string;
+    connection: string;
     service?: string;
     operation?: { id: string; action: string; effects?: string[] };
     parameters?: { [key: string]: Json };
@@ -179,7 +193,11 @@ export type OwnerApi = {
     signal?: AbortSignal,
     options?: { allowPaidInference?: boolean; tinfoilApiKey?: string },
   ): Promise<View>;
-  edit(changes: Change[], signal?: AbortSignal): Promise<View>;
+  edit(
+    changes: Change[],
+    credentials?: { [connection: string]: Credentials },
+    signal?: AbortSignal,
+  ): Promise<View>;
   decide(id: string, decision: Decision, signal?: AbortSignal): Promise<null>;
   label(
     name: string,
@@ -193,8 +211,8 @@ export type OwnerApi = {
   previewPolicy(source: string, signal?: AbortSignal): Promise<PolicyDiff>;
   applyPolicy(source: string, signal?: AbortSignal): Promise<View>;
   signIn(
-    account: string,
-    path: string[],
+    connection: string,
+    name: string,
     redirect: string,
     credential?: Json,
     signal?: AbortSignal,
@@ -258,7 +276,6 @@ export type AccessNode = Omit<ActionNode, "children"> & {
   children: AccessNode[];
 };
 export type Review = {
-  key: string;
   name: string;
   state?: string;
   error?: string;
@@ -283,13 +300,14 @@ export type McpTool = {
   };
   annotations?: { readOnlyHint?: boolean; destructiveHint?: boolean };
 };
+// Credentials maps a connection's credential names to values; null clears one.
+export type Credentials = { [name: string]: Json | null };
 export type CredentialField = PresetField & {
-  path: string[];
   kind: string;
   account?: string;
   status: string;
   signIn: boolean;
-  credential?: { oauth: Json };
+  grant?: { oauth: Json };
 };
 export type ApiSettings = {
   url: string;
@@ -298,7 +316,7 @@ export type ApiSettings = {
   prefix: string;
   query: string;
 };
-export type AccountAnswers = {
+export type ConnectionAnswers = {
   contents: Audience;
   strangers: boolean;
   sends: Audience;
@@ -564,28 +582,31 @@ export function ownerApi(
         signal,
       ),
     unlock,
-    onboard: (
+    async onboard(
       view,
       preset,
       signal,
       { allowPaidInference = true, tinfoilApiKey } = {},
-    ) =>
-      onboarded(view)
-        ? Promise.resolve(view)
-        : snapshot(
-            "POST",
-            "/policy/edits",
-            {
-              changes: [
-                ...onboardingChanges(view, preset, tinfoilApiKey),
-                ...edits.setPaidInference(allowPaidInference),
-              ],
-              generation: view.generation,
-            },
-            signal,
-          ),
-    edit: (changes, signal) =>
-      snapshot("POST", "/policy/edits", { changes }, signal),
+    ) {
+      if (onboarded(view)) return view;
+      const { changes, credentials } = onboardingChanges(
+        view,
+        preset,
+        tinfoilApiKey,
+      );
+      return snapshot(
+        "POST",
+        "/policy/edits",
+        {
+          changes: [...changes, ...edits.setPaidInference(allowPaidInference)],
+          credentials,
+          generation: view.generation,
+        },
+        signal,
+      );
+    },
+    edit: (changes, credentials, signal) =>
+      snapshot("POST", "/policy/edits", { changes, credentials }, signal),
     decide: (id, decision, signal) =>
       post(`/requests/${encodeURIComponent(id)}`, { decision }, signal),
     label: (name, label, signal) =>
@@ -596,10 +617,10 @@ export function ownerApi(
       post("/policy/preview", { source }, signal),
     applyPolicy: (source, signal) =>
       snapshot("POST", "/policy", { source }, signal),
-    signIn: (account, path, redirect, credential, signal) =>
+    signIn: (connection, name, redirect, credential, signal) =>
       post(
-        `/accounts/${encodeURIComponent(account)}/sign-in`,
-        { path, redirect, credential },
+        `/connections/${encodeURIComponent(connection)}/sign-in`,
+        { name, redirect, credential },
         signal,
       ),
     finishSignIn: (state, result, signal) =>
@@ -733,16 +754,18 @@ export const isDevice = (name: string) => /^device-[0-9a-f]{16}$/.test(name);
 export const onboarded = (view: View) =>
   (view.config.data?.onboarding as { completed?: Json } | undefined)
     ?.completed === true;
-const accounts = (view: View) => view.config.accounts ?? {};
+const connections = (view: View) => view.config.connections ?? {};
+const kindOf = (c?: Connection) =>
+  Object.keys(c ?? {}).find((key) => !SETTINGS.includes(key));
+export const setupOf = (c?: Connection) =>
+  c?.[kindOf(c)!] as { [key: string]: Json } | undefined;
 export const lattices = (view: View) => ({
   confidentiality: view.config.lattices?.confidentiality ?? true,
   integrity: view.config.lattices?.integrity ?? false,
 });
 const UNKNOWN_PRESET: Preset = { title: "Connection" };
-export const presetOf = (view: View, account: string): Preset =>
-  view.presets[accounts(view)[account]?.preset] ?? UNKNOWN_PRESET;
-export const connectionName = (account: string, key: string) =>
-  key ? `${account}-${key}` : account;
+export const presetOf = (view: View, name: string): Preset =>
+  view.presets[connections(view)[name]?.preset] ?? UNKNOWN_PRESET;
 const fill = (text: string, scope?: { [key: string]: any }) =>
   text.replace(/\{(\w+)\}/g, (m, k) => scope?.[k] ?? m);
 const filled = <T>(c: T, values?: { [key: string]: any }): T =>
@@ -801,7 +824,7 @@ export const requestTitle = (r: RequestRecord): string =>
   r.facts?.title ||
   summary(r.facts?.details) ||
   r.facts?.operation?.id ||
-  r.facts?.account;
+  r.facts?.connection;
 // Requirements worth showing. "ask" is what pending already means, and the
 // audience/trust label gates are a data-flow feature nobody set up on
 // purpose; what remains is effect overrides and unrecognised operations.
@@ -904,7 +927,7 @@ const WAIVED: { [id: string]: string } = {
 };
 const EFFECT_REQUIREMENT = "effect.";
 export function ruleTitle(view: View, r: Rule) {
-  const actions = actionsOf(view, r.account);
+  const actions = actionsOf(view, r.connection);
   return (
     r.action
       .split(".")
@@ -925,38 +948,35 @@ export const ruleWaives = (r: Rule) =>
 // Each pinned MCP tool is an action under read or use, by the hint the owner approved with the pin.
 export const actionsOf = (
   view: View,
-  account: string,
+  name: string,
 ): { [action: string]: PresetAction } => ({
-  ...groupsOf(view, account),
-  ...presetOf(view, account).actions,
+  ...groupsOf(view, name),
+  ...presetOf(view, name).actions,
   ...Object.fromEntries(
-    Object.values(accounts(view)[account]?.connections ?? {})
-      .flatMap(
-        (c) =>
-          (
-            (c.mcp ?? c["tinfoil-mcp"])?.pin as
-              | {
-                  tools?: {
-                    name: string;
-                    title?: string;
-                    annotations?: { readOnlyHint?: boolean };
-                  }[];
-                }
-              | undefined
-          )?.tools ?? [],
-      )
-      .map((t) => [
-        `${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`,
-        { title: t.title || t.name },
-      ]),
+    (
+      (
+        setupOf(connections(view)[name])?.pin as
+          | {
+              tools?: {
+                name: string;
+                title?: string;
+                annotations?: { readOnlyHint?: boolean };
+              }[];
+            }
+          | undefined
+      )?.tools ?? []
+    ).map((t) => [
+      `${t.annotations?.readOnlyHint ? "read" : "use"}.${t.name}`,
+      { title: t.title || t.name },
+    ]),
   ),
 });
 // Record operations also contribute permission groups to their preset.
-const operationsOf = (view: View, account: string) =>
-  Object.values(presetOf(view, account).operations ?? {});
-const groupsOf = (view: View, account: string) =>
+const operationsOf = (view: View, name: string) =>
+  Object.values(presetOf(view, name).operations ?? {});
+const groupsOf = (view: View, name: string) =>
   Object.fromEntries(
-    operationsOf(view, account).map((o) => [o.action, { title: o.action }]),
+    operationsOf(view, name).map((o) => [o.action, { title: o.action }]),
   );
 // effectsOf unions the effects of every operation under an action, so a group shows its strictest obligations.
 // A preset keeps its identity when a read changes it in place; a new catalog marks the change.
@@ -967,8 +987,8 @@ const effectGroups = new WeakMap<
     groups: Map<string, { effects: Set<string>; otherPayments: boolean }>;
   }
 >();
-const effectGroupsOf = (view: View, account: string) => {
-  const preset = presetOf(view, account),
+const effectGroupsOf = (view: View, name: string) => {
+  const preset = presetOf(view, name),
     actions = preset.actions ?? {};
   const cached = effectGroups.get(preset);
   let groups = cached?.catalog === view.catalog_id ? cached?.groups : undefined;
@@ -992,9 +1012,9 @@ const effectGroupsOf = (view: View, account: string) => {
   }
   return groups;
 };
-export const effectsOf = (view: View, account: string, k: string) => {
-  const actions = presetOf(view, account).actions ?? {},
-    groups = effectGroupsOf(view, account);
+export const effectsOf = (view: View, name: string, k: string) => {
+  const actions = presetOf(view, name).actions ?? {},
+    groups = effectGroupsOf(view, name);
   const lineage = k
     .split(".")
     .map((_, i, parts) => parts.slice(0, i + 1).join("."))
@@ -1012,20 +1032,23 @@ export const effectsOf = (view: View, account: string, k: string) => {
 // inherited value lets editors remove an override without copying a default.
 export function effectSettings(
   view: View,
-  { agent, account }: EffectScope = {},
+  { agent, connection }: EffectScope = {},
   effects: string[] = [],
 ) {
   const id: Partial<Identity> = identities(view)[agent!] ?? {};
   const pair =
-    id.accounts?.[account!] ?? view.config.default_access?.[account!];
+    id.connections?.[connection!] ?? view.config.default_access?.[connection!];
   const layers: [string, Record<string, Mode> | undefined][] = [
     ["Global settings", view.config.effects],
   ];
-  if (account)
-    layers.push([`Connection ${account}`, accounts(view)[account]?.effects]);
+  if (connection)
+    layers.push([
+      `Connection ${connection}`,
+      connections(view)[connection]?.effects,
+    ]);
   if (agent) layers.push([`Sandbox ${agent}`, id.effects]);
-  if (agent && account)
-    layers.push([`Sandbox ${agent} on ${account}`, pair?.effects]);
+  if (agent && connection)
+    layers.push([`Sandbox ${agent} on ${connection}`, pair?.effects]);
   return Object.entries(view.vocabulary)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([effect, metadata]) => {
@@ -1096,10 +1119,10 @@ export function mode(
 }
 
 // actionTree nests dotted actions under titled groups, each with its effects and number of descendant actions.
-export function actionTree(view: View, account: string): ActionNode[] {
+export function actionTree(view: View, name: string): ActionNode[] {
   const roots: ActionNode[] = [],
     nodes = new Map<string, ActionNode>();
-  for (const [key, action] of Object.entries(actionsOf(view, account)).sort(
+  for (const [key, action] of Object.entries(actionsOf(view, name)).sort(
     ([a], [b]) => a.localeCompare(b),
   )) {
     let children = roots;
@@ -1125,37 +1148,36 @@ export function actionTree(view: View, account: string): ActionNode[] {
   const finish = (node: ActionNode): ActionNode => {
     node.children.forEach(finish);
     return Object.assign(node, {
-      effects: effectsOf(view, account, node.key),
+      effects: effectsOf(view, name, node.key),
       total: node.children.reduce((n, c) => n + Number(c.action) + c.total, 0),
     });
   };
   return roots.map(finish);
 }
 
-export const levelsOf = (account?: Account) =>
+export const levelsOf = (c?: Connection) =>
   (Object.entries(LEVELS) as [Level, string][]).filter(
-    ([l]) =>
-      !["custom_api", "tcp"].includes(account?.preset ?? "") || l !== "read",
+    ([l]) => !["custom_api", "tcp"].includes(c?.preset ?? "") || l !== "read",
   );
 
-// agentAccess describes an agent's level for every account and, below it, each action's own and inherited mode.
-export function agentAccess(view: View, name: string, onlyAccount?: string) {
+// agentAccess describes an agent's level for every connection and, below it, each action's own and inherited mode.
+export function agentAccess(view: View, name: string, only?: string) {
   const id: Partial<Identity> = identities(view)[name] ?? {};
-  const entries: [string, Account][] =
-    onlyAccount === undefined
-      ? Object.entries(accounts(view))
-      : accounts(view)[onlyAccount]
-        ? [[onlyAccount, accounts(view)[onlyAccount]]]
+  const entries: [string, Connection][] =
+    only === undefined
+      ? Object.entries(connections(view))
+      : connections(view)[only]
+        ? [[only, connections(view)[only]]]
         : [];
-  return entries.map(([account, acc]) => {
-    const access: Access = id.accounts?.[account] ??
-      view.config.default_access?.[account] ?? { level: "off" };
+  return entries.map(([connection, c]) => {
+    const access: Access = id.connections?.[connection] ??
+      view.config.default_access?.[connection] ?? { level: "off" };
     let actions: AccessNode[] | undefined;
     return {
-      account,
-      preset: acc.preset,
+      connection,
+      preset: c.preset,
       level: access.level,
-      levels: levelsOf(acc),
+      levels: levelsOf(c),
       overrides: Object.values(access.actions ?? {}).filter(Boolean).length,
       // Summaries and collapsed editors need levels, not an entire permission tree.
       get actions(): AccessNode[] {
@@ -1174,7 +1196,7 @@ export function agentAccess(view: View, name: string, onlyAccount?: string) {
         const describe = (node: ActionNode): AccessNode => {
           // Only paid inference changes effect defaults based on the action's effects.
           const inference =
-            !effectGroupsOf(view, account).get(node.key)?.otherPayments &&
+            !effectGroupsOf(view, connection).get(node.key)?.otherPayments &&
             node.effects.includes("generate") &&
             node.effects.includes("pay");
           if (!settings.has(inference))
@@ -1183,7 +1205,7 @@ export function agentAccess(view: View, name: string, onlyAccount?: string) {
               Object.fromEntries(
                 effectSettings(
                   view,
-                  { agent: name, account },
+                  { agent: name, connection },
                   inference ? ["generate", "pay"] : [],
                 ).map(({ effect, mode }) => [effect, mode]),
               ),
@@ -1203,7 +1225,7 @@ export function agentAccess(view: View, name: string, onlyAccount?: string) {
             children: node.children.map(describe),
           };
         };
-        return (actions = actionTree(view, account).map(describe));
+        return (actions = actionTree(view, connection).map(describe));
       },
     };
   });
@@ -1211,14 +1233,14 @@ export function agentAccess(view: View, name: string, onlyAccount?: string) {
 
 export function browsingHint(view: View, name: string) {
   const id: Partial<Identity> = identities(view)[name] ?? {};
-  const reaches = (pred: (acc: Account) => boolean) =>
-    Object.entries(accounts(view)).some(
-      ([a, acc]) => (id.accounts?.[a]?.level ?? "off") !== "off" && pred(acc),
+  const reaches = (pred: (c: Connection) => boolean) =>
+    Object.entries(connections(view)).some(
+      ([n, c]) => (id.connections?.[n]?.level ?? "off") !== "off" && pred(c),
     );
   return (
     lattices(view).confidentiality &&
-    reaches((acc) => acc.preset === "web") &&
-    reaches((acc) => acc.contents !== "anyone")
+    reaches((c) => c.preset === "web") &&
+    reaches((c) => c.contents !== "anyone")
   );
 }
 
@@ -1236,10 +1258,10 @@ export function labelStatus(view: View, l?: Label) {
   return lines.filter(Boolean).join(" · ");
 }
 
-export const accountUsers = (view: View, account: string) =>
+export const connectionUsers = (view: View, connection: string) =>
   Object.entries(identities(view)).flatMap(([name, id]) => {
     const access =
-      id.accounts?.[account] ?? view.config.default_access?.[account];
+      id.connections?.[connection] ?? view.config.default_access?.[connection];
     return (access?.level ?? "off") === "off"
       ? []
       : [
@@ -1252,36 +1274,29 @@ export const accountUsers = (view: View, account: string) =>
         ];
   });
 
-// Report every connection's progress and errors, plus MCP tool changes awaiting the owner.
-export const reviews = (view: View, account: string): Review[] =>
-  Object.keys(accounts(view)[account]?.connections ?? {}).map((key) => {
-    const name = connectionName(account, key),
-      status = view.status[name] ?? {},
-      s = status.details ?? {};
-    const count = (sign: string) =>
-      (s.changes ?? []).filter((x) => x.startsWith(sign)).length;
-    return {
-      key,
-      name,
-      state: status.state,
-      error: status.error,
-      blocked: s.blocked ?? 0,
-      added: count("+"),
-      changed: count("~"),
-      removed: count("-"),
-      changes: s.changes ?? [],
-      tools: (s.pin as { tools?: McpTool[] } | undefined)?.tools ?? [],
-      previouslyApproved: Object.values(
-        accounts(view)[account].connections![key],
-      ).some((connection) => connection.pin != null),
-      previousTools: Object.values(
-        accounts(view)[account].connections![key],
-      ).flatMap(
-        (connection) =>
-          (connection.pin as { tools?: McpTool[] } | undefined)?.tools ?? [],
-      ),
-    };
-  });
+// Report the connection's progress and errors, plus MCP tool changes awaiting the owner.
+export function review(view: View, name: string): Review | undefined {
+  const c = connections(view)[name];
+  if (!c) return;
+  const status = view.status[name] ?? {},
+    s = status.details ?? {},
+    pin = setupOf(c)?.pin as { tools?: McpTool[] } | null | undefined;
+  const count = (sign: string) =>
+    (s.changes ?? []).filter((x) => x.startsWith(sign)).length;
+  return {
+    name,
+    state: status.state,
+    error: status.error,
+    blocked: s.blocked ?? 0,
+    added: count("+"),
+    changed: count("~"),
+    removed: count("-"),
+    changes: s.changes ?? [],
+    tools: (s.pin as { tools?: McpTool[] } | undefined)?.tools ?? [],
+    previouslyApproved: pin != null,
+    previousTools: pin?.tools ?? [],
+  };
+}
 
 export function toolReviewDescription(review: Review): string {
   if (!review.previouslyApproved)
@@ -1346,32 +1361,30 @@ export function toolChange(
   };
 }
 
-export function accountStatus(
+export function connectionStatus(
   view: View,
-  account: string,
+  name: string,
 ): { state: "error" | "connecting" | "review" | null; blocked: number } {
-  const states = reviews(view, account);
-  if (states.some((s) => s.error)) return { state: "error", blocked: 0 };
-  if (states.some((s) => s.state === "connecting"))
-    return { state: "connecting", blocked: 0 };
-  const blocked = states.reduce((n, s) => n + s.blocked, 0);
-  return { state: blocked ? "review" : null, blocked };
+  const r = review(view, name);
+  if (r?.error) return { state: "error", blocked: 0 };
+  if (r?.state === "connecting") return { state: "connecting", blocked: 0 };
+  return { state: r?.blocked ? "review" : null, blocked: r?.blocked ?? 0 };
 }
 
 export const fieldPaths = (f: PresetField) => f.paths ?? [f.path!];
 const paths = fieldPaths;
 const fieldsOf = (c?: Preset) => c?.fields ?? [];
-// A field with no paths, such as an OAuth client ID, only fills the account's templates when it is created.
+// A field with no paths, such as an OAuth client ID, only fills the connection's templates when it is created.
 const plain = (c: Preset) =>
   fieldsOf(c).filter((f) => !f.secret && paths(f).length);
-const fieldValue = (acc: Account | undefined, f: PresetField): Json =>
-  atPath(acc, f.path ?? paths(f)[0]) ?? (f.list ? [] : f.json ? {} : "");
+const fieldValue = (c: Connection | undefined, f: PresetField): Json =>
+  atPath(c, f.path ?? paths(f)[0]) ?? (f.list ? [] : f.json ? {} : "");
 export const setupFields = (view: View, preset: string) =>
   fieldsOf(view.presets[preset]).filter((f) => !f.edit_only);
-export const plainFields = (view: View, account: string) =>
-  plain(presetOf(view, account)).map((f) => ({
+export const plainFields = (view: View, name: string) =>
+  plain(presetOf(view, name)).map((f) => ({
     ...f,
-    value: fieldValue(accounts(view)[account], f),
+    value: fieldValue(connections(view)[name], f),
   }));
 export const fieldText = (f: PresetField, value?: Json): string =>
   f.json
@@ -1387,72 +1400,48 @@ export function readField(f: PresetField, raw: string): Json {
   return f.list ? v.split(/[\s,]+/).filter(Boolean) : v;
 }
 
-// A grant template fills from the account's plain settings; one that needs a setup-only value, such as an OAuth client, cannot.
+// A grant template fills from the connection's plain settings; one that needs a setup-only value, such as an OAuth client, cannot.
 export function grantTemplate(
   view: View,
-  account: string,
+  name: string,
   f?: PresetField,
 ): Json | undefined {
   if (!f?.oauth) return;
   const values = Object.fromEntries(
-    plainFields(view, account).map((p) => [p.key, p.value]),
+    plainFields(view, name).map((p) => [p.key, p.value]),
   );
   const grant =
     f?.oauth && filled(f.oauth, { ...values, monitor_host_id: view.host_id });
   return grant && !/\{\w+\}/.test(JSON.stringify(grant)) ? grant : undefined;
 }
 
-// One control per preset field, including all of its active credential destinations.
+// One control per connection credential.
 // A stored grant keeps its client and endpoints for sign-in; unset or static values use the template.
-export function credentialFields(
-  view: View,
-  account: string,
-): CredentialField[] {
-  const byPath = new Map<string, PresetField>();
-  for (const field of fieldsOf(presetOf(view, account)))
-    for (const path of paths(field)) {
-      const key = JSON.stringify(path);
-      if (!byPath.has(key)) byPath.set(key, field);
-    }
-  const groups = new Map<
-    object,
-    { field?: PresetField; members: View["fields"][string] }
-  >();
-  for (const meta of view.fields?.[account] ?? []) {
-    const field = byPath.get(JSON.stringify(meta.path));
-    const key = field ?? meta;
-    if (!groups.has(key)) groups.set(key, { field, members: [] });
-    groups.get(key)!.members.push(meta);
-  }
-  return [...groups.values()]
-    .map(({ field: f, members }) => {
-      const meta =
-        members.find((m) => m.kind.startsWith("oauth")) ?? members[0];
+export function credentialFields(view: View, name: string): CredentialField[] {
+  const byName = new Map(
+    fieldsOf(presetOf(view, name))
+      .filter((f) => f.credential)
+      .map((f) => [f.key, f]),
+  );
+  return (view.fields?.[name] ?? [])
+    .map((meta) => {
+      const f = byName.get(meta.name);
       const field = {
         ...f,
         ...meta,
-        key: members[0].path.map(encodeURIComponent).join("/"),
-        paths: members.map((m) => m.path),
-        label:
-          f?.label ??
-          `${meta.path[1] ? meta.path[1] + ": " : ""}${meta.path.at(-1)}`,
+        key: meta.name,
+        label: f?.label ?? meta.name,
         secret: true,
         multiline: f ? !!f.multiline : true,
       };
-      const configured = members.filter((m) => !CREDENTIAL_STATUS[m.kind]);
       const grant = meta.kind.startsWith("oauth")
         ? undefined
-        : grantTemplate(view, account, field);
+        : grantTemplate(view, name, field);
       return {
         ...field,
-        status:
-          configured.length === members.length
-            ? "Configured"
-            : configured.length
-              ? "Partially configured"
-              : (CREDENTIAL_STATUS[meta.kind] ?? "Not configured"),
+        status: CREDENTIAL_STATUS[meta.kind] ?? "Configured",
         signIn: meta.kind.startsWith("oauth") || !!grant,
-        credential: grant ? { oauth: grant } : undefined,
+        grant: grant ? { oauth: grant } : undefined,
       };
     })
     .sort((a, b) => a.key.localeCompare(b.key));
@@ -1465,10 +1454,10 @@ export const signInLabel = (view: View, preset: string) =>
 
 export function catalog(view: View) {
   const counts = new Map<string, number>();
-  for (const acc of Object.values(accounts(view))) {
-    const replacement = view.presets[acc.preset]?.replaced_by;
+  for (const c of Object.values(connections(view))) {
+    const replacement = view.presets[c.preset]?.replaced_by;
     const preset =
-      replacement && view.presets[replacement] ? replacement : acc.preset;
+      replacement && view.presets[replacement] ? replacement : c.preset;
     counts.set(preset, (counts.get(preset) ?? 0) + 1);
   }
   const groups = new Map(
@@ -1483,7 +1472,7 @@ export function catalog(view: View) {
     if (!groups.has(group)) groups.set(group, []);
     groups
       .get(group)!
-      .push({ name, title: preset.title, accounts: counts.get(name) ?? 0 });
+      .push({ name, title: preset.title, connections: counts.get(name) ?? 0 });
   }
   // The ones most people add first lead as "Common"; broad Generic fallbacks
   // remain together in their explicit, final catalog group.
@@ -1517,17 +1506,16 @@ export function catalog(view: View) {
   ];
 }
 
-type CatalogEntry = { name: string; title: string; accounts: number };
+type CatalogEntry = { name: string; title: string; connections: number };
 type Slot = { value: string } & { [key: string]: string | undefined };
 
-// apiSettings describes a custom API account's slot as form settings; without an account, the defaults for a new one.
-export function apiSettings(view: View, account?: string): ApiSettings {
+// apiSettings describes a custom API connection's slot as form settings; without a name, the defaults for a new one.
+export function apiSettings(view: View, name?: string): ApiSettings {
   const slot: Partial<Slot> =
-    account === undefined
+    name === undefined
       ? {}
-      : ((
-          accounts(view)[account]?.connections?.[""]?.http?.slots as Slot[]
-        )?.[0] ?? {});
+      : ((setupOf(connections(view)[name])?.slots as Slot[] | undefined)?.[0] ??
+        {});
   const auth = slot.query
     ? "query"
     : slot.header &&
@@ -1606,14 +1594,13 @@ export function apiSlot(
 }
 
 // The agent sends this placeholder; Monitor substitutes the real key at the slot's address.
-export function apiSetup(view: View, account: string, key = "", index = 0) {
-  const [kind, config] =
-    Object.entries(accounts(view)[account]?.connections?.[key] ?? {})[0] ?? [];
-  const slot = (config?.slots as Slot[] | undefined)?.[index];
+export function apiSetup(view: View, name: string, index = 0) {
+  const slot = (
+    setupOf(connections(view)[name])?.slots as Slot[] | undefined
+  )?.[index];
   if (!slot) return null;
-  const path = ["connections", key, kind, "secrets", slot.value];
-  const placeholder = view.fields?.[account]?.find((f) =>
-    same(f.path, path),
+  const placeholder = view.fields?.[name]?.find(
+    (f) => f.name === slot.value,
   )?.placeholder;
   if (!placeholder) return null;
   const value = (slot.prefix ?? "") + placeholder;
@@ -1631,7 +1618,7 @@ export function apiSetup(view: View, account: string, key = "", index = 0) {
               ? `AWS SigV4 access key: ${value}`
               : "";
   return {
-    connection: connectionName(account, key),
+    connection: name,
     credential: slot.value,
     placeholder,
     address: slot.origin + (slot.path === "/" ? "" : (slot.path ?? "")),
@@ -1642,9 +1629,9 @@ export function apiSetup(view: View, account: string, key = "", index = 0) {
   };
 }
 
-export function codexSetup(view: View, account: string): string | null {
-  if (accounts(view)[account]?.preset !== "codex") return null;
-  const setup = apiSetup(view, account);
+export function codexSetup(view: View, name: string): string | null {
+  if (connections(view)[name]?.preset !== "codex") return null;
+  const setup = apiSetup(view, name);
   if (!setup) return null;
   return `model = "gpt-6.1-sol"
 model_provider = "monitor_chatgpt"
@@ -1658,21 +1645,11 @@ requires_openai_auth = false
 supports_websockets = false`;
 }
 
-export function tinfoilSetup(view: View, account: string) {
-  return Object.entries(accounts(view)[account]?.connections ?? {}).flatMap(
-    ([key, config]) => {
-      const mcp = !!config["tinfoil-mcp"];
-      if (!mcp && !config.tinfoil) return [];
-      const connection = connectionName(account, key);
-      return [
-        {
-          connection,
-          mcp,
-          url: `https://${connection}.monitor/${mcp ? "mcp" : "v1"}`,
-        },
-      ];
-    },
-  );
+export function tinfoilSetup(view: View, name: string) {
+  const kind = kindOf(connections(view)[name]);
+  if (kind !== "tinfoil" && kind !== "tinfoil-mcp") return;
+  const mcp = kind === "tinfoil-mcp";
+  return { mcp, url: `https://${name}.monitor/${mcp ? "mcp" : "v1"}` };
 }
 
 // The starting choice only produces the initial policy. Persist completion and
@@ -1681,35 +1658,24 @@ function onboardingChanges(
   view: View,
   preset: PolicyPreset,
   tinfoilApiKey?: string,
-): Change[] {
+): { changes: Change[]; credentials: { [connection: string]: Credentials } } {
   if (!Object.hasOwn(POLICY_PRESETS, preset))
     throw new Error("Choose a policy preset.");
-  const connections = new Set(
-    Object.entries(accounts(view)).flatMap(([name, acc]) =>
-      Object.keys(acc.connections ?? {}).map((key) =>
-        connectionName(name, key),
-      ),
-    ),
-  );
-  let account = "network";
-  for (
-    let i = 2;
-    Object.hasOwn(accounts(view), account) || connections.has(account);
-    i++
-  )
-    account = `network-${i}`;
+  let network = "network";
+  for (let i = 2; Object.hasOwn(connections(view), network); i++)
+    network = `network-${i}`;
   const changes = sourceChanges({
     data: { onboarding: { completed: true } },
     // Label guardrails are recorded but never enforced in this release.
     lattices: { confidentiality: false, integrity: false },
     allow_networks: preset === "open" ? ["0.0.0.0/0", "::/0"] : [],
-    accounts: {
-      [account]: {
+    connections: {
+      [network]: {
         preset: "tcp",
         contents: "anyone",
         strangers: true,
         sends: "anyone",
-        connections: { "": { tcp: { hosts: ["*"] } } },
+        tcp: { hosts: ["*"] },
       },
     },
   });
@@ -1731,39 +1697,41 @@ function onboardingChanges(
   const access = { level: preset === "open" ? "allow" : "off" };
   changes.push(
     preset === "offline"
-      ? { path: ["default_access"], value: { [account]: access } }
-      : { path: ["default_access", account], value: access },
+      ? { path: ["default_access"], value: { [network]: access } }
+      : { path: ["default_access", network], value: access },
   );
   // "Offline" means ONLY that sandboxes cannot send anything out (the deny
   // rule above). Trusted devices keep their sandbox routes and identities
   // keep their grants, so turning networking back on restores everything.
+  const credentials: { [connection: string]: Credentials } = {};
   if (tinfoilApiKey !== undefined) {
     const key = tinfoilApiKey.trim();
     if (!key) throw new Error("Enter your Tinfoil API key, or skip this step.");
-    const catalog = view.presets.tinfoil;
     let name = "tinfoil";
     for (
       let i = 2;
-      Object.hasOwn(accounts(view), name) ||
-      Object.keys(catalog.connections!).some((key) =>
-        connections.has(connectionName(name, key)),
-      );
+      Object.hasOwn(connections(view), name) ||
+      Object.hasOwn(connections(view), `${name}-websearch`);
       i++
     )
       name = `tinfoil-${i}`;
-    changes.push(
-      ...edits.addAccount(view, "tinfoil", {
-        name,
-        values: { TINFOIL_API_KEY: key },
-        answers: catalog.defaults as AccountAnswers,
-      }),
-      {
-        path: ["default_access", name],
+    for (const [connection, tinfoil, credential] of [
+      [name, "tinfoil", "TINFOIL_API_KEY"],
+      [`${name}-websearch`, "tinfoil_websearch", "token"],
+    ]) {
+      const added = edits.addConnection(view, tinfoil, {
+        name: connection,
+        values: { [credential]: key },
+        answers: view.presets[tinfoil].defaults as ConnectionAnswers,
+      });
+      changes.push(...added.changes, {
+        path: ["default_access", connection],
         value: { level: preset === "offline" ? "off" : "allow" },
-      },
-    );
+      });
+      credentials[connection] = added.credentials;
+    }
   }
-  return changes;
+  return { changes, credentials };
 }
 
 const KNOWN_ONLY_RULE =
@@ -1775,15 +1743,15 @@ const networkRuleName = (view: View) =>
     ),
   ) ?? "network-default";
 // Raw TCP: the Monitor only sees host and port, never what is sent.
-export const isRawNetwork = (view: View, account: string) =>
-  view.config.accounts?.[account]?.preset === "tcp";
+export const isRawNetwork = (view: View, name: string) =>
+  connections(view)[name]?.preset === "tcp";
 // "api.github.com:443" for a raw-network scope, else "key: value" pairs.
 export const scopeText = (
   view: View,
-  account: string,
+  name: string,
   scope: Record<string, unknown> = {},
 ) =>
-  isRawNetwork(view, account) && scope.host
+  isRawNetwork(view, name) && scope.host
     ? `${scope.host}${scope.port ? `:${scope.port}` : ""}`
     : Object.entries(scope).map(
         ([k, v]) => `${k}: ${typeof v === "string" ? v : JSON.stringify(v)}`,
@@ -1799,15 +1767,15 @@ export const networkingOpen = (view: View) =>
 // Each edit returns the source changes for POST /policy/edits.
 export const edits = {
   setNetworkingOpen: (view: View, open: boolean): Change[] => {
-    const tcpAccounts = Object.entries(accounts(view))
-      .filter(([, a]) => a.preset === "tcp")
+    const tcp = Object.entries(connections(view))
+      .filter(([, c]) => c.preset === "tcp")
       .map(([name]) => name);
     return [
       { path: ["allow_networks"], value: open ? ["0.0.0.0/0", "::/0"] : [] },
       open
         ? { path: ["policies", networkRuleName(view)], delete: true }
         : { path: ["policies", networkRuleName(view)], value: KNOWN_ONLY_RULE },
-      ...tcpAccounts.map((name) => ({
+      ...tcp.map((name) => ({
         path: ["default_access", name],
         value: { level: open ? "allow" : "off" },
       })),
@@ -1815,11 +1783,13 @@ export const edits = {
   },
   pairAgent: (name: string, key: string) =>
     sourceChanges({
-      identities: { [name.trim()]: { key: key.trim(), accounts: {} } },
+      identities: { [name.trim()]: { key: key.trim(), connections: {} } },
     }),
   pairDevice: (name: string, key: string) =>
     sourceChanges({
-      identities: { [name]: { key: key.trim(), routes: true, accounts: {} } },
+      identities: {
+        [name]: { key: key.trim(), routes: true, connections: {} },
+      },
     }),
   removeAgent: (name: string): Change[] => [
     { path: ["identities", name], delete: true },
@@ -1833,7 +1803,7 @@ export const edits = {
   // An action set to null inherits again.
   setAccess: (
     name: string,
-    account: string,
+    connection: string,
     access: {
       level?: Level;
       actions?: { [action: string]: Mode | null };
@@ -1841,19 +1811,23 @@ export const edits = {
     },
   ) =>
     sourceChanges({
-      identities: { [name]: { accounts: { [account]: access } } },
+      identities: { [name]: { connections: { [connection]: access } } },
     }),
   setEffect: (
-    { agent, account }: EffectScope = {},
+    { agent, connection }: EffectScope = {},
     effect: string,
     mode: Mode | null,
   ): Change[] => [
     {
       path: [
         ...(agent
-          ? ["identities", agent, ...(account ? ["accounts", account] : [])]
-          : account
-            ? ["accounts", account]
+          ? [
+              "identities",
+              agent,
+              ...(connection ? ["connections", connection] : []),
+            ]
+          : connection
+            ? ["connections", connection]
             : []),
         "effects",
         effect,
@@ -1862,7 +1836,7 @@ export const edits = {
     },
   ],
   copySettings: (view: View, from: string, name: string): Change[] =>
-    ["accounts", "rules", "effects"].map((key) => ({
+    ["connections", "rules", "effects"].map((key) => ({
       path: ["identities", name, key],
       value: clone(identities(view)[from]?.[key as keyof Identity] ?? {}),
     })),
@@ -1879,37 +1853,33 @@ export const edits = {
   setPaidInference: (allow: boolean): Change[] => [
     { path: ["allow_paid_inference"], value: allow },
   ],
-  setAccountPolicy: (account: string, source: string) =>
-    sourceChanges({ policies: { [account]: source.trim() || null } }),
-  approveTools: (view: View, account: string, key: string) =>
+  setConnectionPolicy: (name: string, source: string) =>
+    sourceChanges({ policies: { [name]: source.trim() || null } }),
+  approveTools: (view: View, name: string) =>
     sourceChanges({
-      accounts: {
-        [account]: {
-          connections: {
-            [key]: {
-              [Object.keys(accounts(view)[account].connections![key])[0]]: {
-                pin: view.status[connectionName(account, key)].details!.pin,
-              },
-            },
+      connections: {
+        [name]: {
+          [kindOf(connections(view)[name])!]: {
+            pin: view.status[name].details!.pin,
           },
         },
       },
     }),
-  // Identities may not name a missing account, so removing one also clears it from every agent.
-  removeAccount: (view: View, account: string) =>
+  // Identities may not name a missing connection, so removing one also clears it from every agent.
+  removeConnection: (view: View, connection: string) =>
     sourceChanges({
-      accounts: { [account]: null },
-      policies: { [account]: null },
-      default_access: { [account]: null },
+      connections: { [connection]: null },
+      policies: { [connection]: null },
+      default_access: { [connection]: null },
       identities: Object.fromEntries(
         Object.keys(identities(view)).map((name) => [
           name,
-          { accounts: { [account]: null } },
+          { connections: { [connection]: null } },
         ]),
       ),
     }),
   // values holds every setup field read with readField; oauth names the fields that sign in instead of taking a token.
-  addAccount(
+  addConnection(
     view: View,
     preset: string,
     {
@@ -1920,32 +1890,29 @@ export const edits = {
     }: {
       name: string;
       values: { [key: string]: Json };
-      answers: AccountAnswers;
+      answers: ConnectionAnswers;
       oauth?: string[];
     },
-  ): Change[] {
+  ): { changes: Change[]; credentials: Credentials } {
     const c = view.presets[preset];
     name = name.trim();
-    if (!name) throw new Error("Name this account.");
-    if (Object.hasOwn(accounts(view), name))
+    if (!name) throw new Error("Name this connection.");
+    if (Object.hasOwn(connections(view), name))
       throw new Error(
-        "An account with that name already exists. Choose another name.",
+        "A connection with that name already exists. Choose another name.",
       );
     const fields = setupFields(view, preset);
-    // Only the non-secret values fill a preset's connections; secrets go to their fields' paths.
+    // Only the non-secret values fill a preset's setup; credentials are stored apart from the connection.
     const plainValues = Object.fromEntries(
       fields.filter((f) => !f.secret).map((f) => [f.key, values[f.key]]),
     );
-    const connections = c.connections
-      ? filled(c.connections, plainValues)
-      : values.connections;
-    const acc = {
+    const setup = c.connection && filled(c.connection, plainValues);
+    const connection = {
       preset,
       ...answers,
-      ...(JSON.stringify(connections) !== JSON.stringify(c.connections) && {
-        connections,
-      }),
+      ...(JSON.stringify(setup) !== JSON.stringify(c.connection) && setup),
     };
+    const credentials: Credentials = {};
     for (const f of fields) {
       const value =
         f.oauth && oauth.includes(f.key)
@@ -1958,9 +1925,14 @@ export const edits = {
           : f.secret && values[f.key] === ""
             ? null
             : values[f.key];
-      for (const path of paths(f)) putPath(acc, path, value, { connections });
+      if (!f.credential)
+        for (const path of paths(f)) putPath(connection, path, value, setup);
+      else if (value !== null) credentials[f.key] = value;
     }
-    return sourceChanges({ accounts: { [name]: acc } });
+    return {
+      changes: sourceChanges({ connections: { [name]: connection } }),
+      credentials,
+    };
   },
   addCustomApi(
     view: View,
@@ -1977,58 +1949,55 @@ export const edits = {
       token: string;
       agent?: string;
       level?: Level;
-      answers: AccountAnswers;
+      answers: ConnectionAnswers;
     },
-  ): Change[] {
+  ): { changes: Change[]; credentials: Credentials } {
     name = name.trim();
     if (!/^[a-zA-Z0-9][a-zA-Z0-9-]*$/.test(name))
-      throw new Error("Name this account using letters, numbers, and hyphens.");
-    if (Object.hasOwn(accounts(view), name))
       throw new Error(
-        "An account with that name already exists. Choose another name.",
+        "Name this connection using letters, numbers, and hyphens.",
       );
-    const http: {
-      slots: { [key: string]: string }[];
-      secrets?: { token: string };
-    } = { slots: [apiSlot(api)] };
-    if (token.trim()) http.secrets = { token };
+    if (Object.hasOwn(connections(view), name))
+      throw new Error(
+        "A connection with that name already exists. Choose another name.",
+      );
+    const http = { slots: [apiSlot(api)] };
     const body: { [key: string]: unknown } = {
-      accounts: {
-        [name]: {
-          preset: "custom_api",
-          ...answers,
-          connections: { "": { http } },
-        },
+      connections: {
+        [name]: { preset: "custom_api", ...answers, http },
       },
     };
     if (agent)
-      body.identities = { [agent]: { accounts: { [name]: { level } } } };
-    return sourceChanges(body);
+      body.identities = { [agent]: { connections: { [name]: { level } } } };
+    return {
+      changes: sourceChanges(body),
+      credentials: token.trim() ? { token } : {},
+    };
   },
   // credentials maps a credential field key to keep, replace with a value, or clear; unchanged settings send nothing.
-  saveAccount(
+  saveConnection(
     view: View,
-    account: string,
+    name: string,
     {
       answers = {},
       api,
       values = {},
       credentials = {},
     }: {
-      answers?: Partial<AccountAnswers>;
+      answers?: Partial<ConnectionAnswers>;
       api?: Partial<ApiSettings>;
       values?: { [key: string]: Json };
       credentials?: {
         [key: string]: { mode: "keep" | "replace" | "clear"; value?: Json };
       };
     },
-  ): Change[] {
-    const acc = accounts(view)[account],
-      updated = clone(acc),
+  ): { changes: Change[]; credentials: Credentials } {
+    const c = connections(view)[name],
+      updated = clone(c),
       changed = new Set<string>(),
-      removals: Change[] = [];
+      stored: Credentials = {};
     const set = (path: string[], value: unknown) => {
-      if (same(atPath(acc, path), value)) return;
+      if (same(atPath(c, path), value)) return;
       putPath(updated, path, value);
       // Several controls can edit the same array; submit its final value once.
       const n = path.findIndex(
@@ -2037,47 +2006,35 @@ export const edits = {
       changed.add(JSON.stringify(n < 0 ? path : path.slice(0, n)));
     };
     for (const [key, value] of Object.entries(answers)) set([key], value);
-    if (
-      acc.preset === "custom_api" &&
-      api &&
-      !same(api, apiSettings(view, account))
-    )
+    if (c.preset === "custom_api" && api && !same(api, apiSettings(view, name)))
       set(
-        ["connections", "", "http", "slots"],
-        [
-          apiSlot(
-            api,
-            (acc.connections?.[""]?.http?.slots as Slot[] | undefined)?.[0]
-              ?.value,
-          ),
-        ],
+        ["http", "slots"],
+        [apiSlot(api, (setupOf(c)?.slots as Slot[] | undefined)?.[0]?.value)],
       );
-    for (const f of plainFields(view, account))
+    for (const f of plainFields(view, name))
       if (Object.hasOwn(values, f.key) && !same(f.value, values[f.key]))
         for (const path of paths(f)) set(path, values[f.key]);
-    for (const f of credentialFields(view, account)) {
+    for (const f of credentialFields(view, name)) {
       const { mode, value } = credentials[f.key] ?? {};
       if (mode === "replace") {
         if (value === "")
           throw new Error(
             `Enter a value for ${f.label}, or cancel the replacement.`,
           );
-        for (const path of paths(f)) set(path, value);
+        stored[f.key] = value!;
       }
-      if (mode === "clear")
-        for (const path of paths(f))
-          removals.push({ path: ["accounts", account, ...path], delete: true });
+      if (mode === "clear") stored[f.key] = null;
     }
-    return [
-      ...[...changed].map((key) => {
+    return {
+      changes: [...changed].map((key) => {
         const path = JSON.parse(key);
         return {
-          path: ["accounts", account, ...path],
+          path: ["connections", name, ...path],
           value: atPath(updated, path),
         };
       }),
-      ...removals,
-    ];
+      credentials: stored,
+    };
   },
 };
 

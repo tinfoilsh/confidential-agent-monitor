@@ -14,9 +14,9 @@
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "Google Business Profile account", "secret": true, "path": ["connections", "", "http", "secrets", "token"], "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/business.manage"}}
+      {"key": "token", "label": "Google Business Profile account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/business.manage"}}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "token", "origin": "https://mybusinessbusinessinformation.googleapis.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}, {"value": "token", "origin": "https://mybusinessaccountmanagement.googleapis.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}}},
+    "connection": {"http": {"slots": [{"value": "token", "origin": "https://mybusinessbusinessinformation.googleapis.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}, {"value": "token", "origin": "https://mybusinessaccountmanagement.googleapis.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.accounts": {"title": "Admin: accounts"},

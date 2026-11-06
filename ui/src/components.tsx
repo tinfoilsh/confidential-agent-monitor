@@ -526,19 +526,19 @@ export function Effects(props: { scope?: owner.EffectScope }) {
   const m = useMonitor();
   const settings = createMemo(() => {
     const view = m.view()!;
-    const accounts = props.scope?.account
-      ? [props.scope.account]
-      : Object.keys(view.config.accounts ?? {});
+    const connections = props.scope?.connection
+      ? [props.scope.connection]
+      : Object.keys(view.config.connections ?? {});
     // A root's effects already include all of its descendants.
     const used = new Set(
-      accounts.flatMap((account) =>
+      connections.flatMap((connection) =>
         [
           ...new Set(
-            Object.keys(owner.actionsOf(view, account)).map(
+            Object.keys(owner.actionsOf(view, connection)).map(
               (action) => action.split(".")[0],
             ),
           ),
-        ].flatMap((action) => owner.effectsOf(view, account, action)),
+        ].flatMap((action) => owner.effectsOf(view, connection, action)),
       ),
     );
     // Keep this order independent of checked and inherited permission values.
@@ -662,8 +662,8 @@ export function Field(props: {
   );
 }
 export function DataPermissions(props: {
-  value: owner.AccountAnswers;
-  onChange: (value: owner.AccountAnswers) => void;
+  value: owner.ConnectionAnswers;
+  onChange: (value: owner.ConnectionAnswers) => void;
 }) {
   return (
     <>

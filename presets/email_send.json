@@ -1,0 +1,17 @@
+{
+  "title": "Email sending",
+  "catalog": {
+    "group": "protocol",
+    "actions": {
+      "send": {"title": "Send mail", "effects": ["send"]}
+    },
+    "connection": {"smtp": {"url": "{smtp_url}", "user": "{address}"}},
+    "defaults": {"contents": "me", "sends": "me", "strangers": true},
+    "fields": [
+      {"key": "address", "label": "Own email address, for policy", "path": ["policy_options", "address"]},
+      {"key": "password", "label": "App password", "credential": true, "secret": true},
+      {"default": "smtps://smtp.gmail.com", "key": "smtp_url", "label": "SMTP URL", "path": ["smtp", "url"]},
+      {"edit_only": true, "key": "smtp_user", "label": "SMTP user", "path": ["smtp", "user"]}
+    ]
+  }
+}

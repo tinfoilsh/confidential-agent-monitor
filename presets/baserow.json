@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "jwt_token", "label": "", "secret": true, "path": ["connections", "", "http", "secrets", "jwt_token"]}
+      {"key": "jwt_token", "label": "", "secret": true, "credential": true}
     ],
-    "connections": {"": {"http": {"slots": [{"value": "jwt_token", "origin": "https://api.baserow.io", "path": "/", "header": "Authorization", "prefix": "JWT "}]}}},
+    "connection": {"http": {"slots": [{"value": "jwt_token", "origin": "https://api.baserow.io", "path": "/", "header": "Authorization", "prefix": "JWT "}]}},
     "defaults": {"contents": "team", "strangers": true, "sends": "anyone"},
     "actions": {
       "admin.account": {"title": "Admin: account"},
