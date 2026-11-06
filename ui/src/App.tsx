@@ -410,7 +410,7 @@ function Page(props: { path: string }) {
     <Switch
       fallback={
         <Empty title="Page not found">
-          <a href="#connections">Open connections</a>
+          <a href="#connections">Open permissions</a>
         </Empty>
       }
     >
@@ -660,7 +660,7 @@ function Onboarding(props: {
             ? "Saving…"
             : props.generate
               ? "Generate an API key automatically"
-              : "Add the Tinfoil connection"}
+              : "Add Tinfoil"}
         </button>
       </form>
       <button

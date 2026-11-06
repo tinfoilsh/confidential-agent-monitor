@@ -187,11 +187,11 @@ function Requests(props: { expanded?: string }) {
               action={
                 <a class="button primary" href="#connections/catalog">
                   <Icon name="plus" />
-                  Add connection
+                  Add a service
                 </a>
               }
             >
-              Requests appear here when a bunker uses a connection.
+              Requests appear here when a bunker uses a service.
             </Empty>
           }
         >
@@ -368,7 +368,7 @@ export function RequestDetail(props: {
                   </dd>
                 </div>
                 <div>
-                  <dt>Connection</dt>
+                  <dt>Service</dt>
                   <dd>
                     <Show
                       when={
@@ -416,7 +416,7 @@ export function RequestDetail(props: {
                             : state() === "expired"
                               ? "Nobody answered in time."
                               : state() === "outdated"
-                                ? "Settings affecting this connection changed before review."
+                                ? "Settings for this service changed before review."
                                 : state() === "allowed" || state() === "approved"
                                   ? owner.isProposal(r())
                                     ? "Proposal approved."
@@ -477,13 +477,13 @@ export function RequestDetail(props: {
                   <p class="muted">
                     {r().invalid
                       ? "Fix the request or client configuration using the error above, then retry."
-                      : "Update this bunker’s connection access, then retry the request from your bunker."}
+                      : "Update this bunker’s access, then retry the request from your bunker."}
                   </p>
                   <a
                     class="button"
                     href={href("connection", r().facts.connection)}
                   >
-                    {r().invalid ? "View connection setup" : "Change access"}
+                    {r().invalid ? "View service setup" : "Change access"}
                     <Icon name="arrow" />
                   </a>
                 </div>

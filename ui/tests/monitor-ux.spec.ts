@@ -23,10 +23,10 @@ const view = (): owner.View => ({
   presets: { tcp: { title: tcp.title, ...tcp.catalog } },
 });
 
-test("missing preset metadata has a display fallback, not a raw Custom connection", () => {
+test("missing preset metadata has a display fallback, not a raw Custom service", () => {
   const v = view();
   v.config.connections!.network.preset = "removed";
-  expect(owner.presetOf(v, "network").title).toBe("Connection");
+  expect(owner.presetOf(v, "network").title).toBe("Service");
   expect(owner.connectorIcon({}, "", "/app/").src).toContain("custom.svg");
   expect(Object.hasOwn(v.presets, "custom")).toBe(false);
   expect(owner.catalog(v).flatMap((group) => group.presets).some((p) => p.name === "custom" || p.name === "browser")).toBe(false);

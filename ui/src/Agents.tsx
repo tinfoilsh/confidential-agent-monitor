@@ -37,7 +37,7 @@ export function Agents(props: { expanded?: string }) {
             ? view.config.identities![name].routes
               ? "Can reach bunkers"
               : "Bunker access off"
-            : `${owner.agentAccess(view, name).filter((access) => access.level !== "off").length} connections`;
+            : `${owner.agentAccess(view, name).filter((access) => access.level !== "off").length} services`;
           return [name, { description }];
         }),
     );
@@ -480,7 +480,7 @@ export function AgentConnectionAccess(props: {
               <div class="access-heading">
                 <div>
                   <h4>Actions</h4>
-                  <p class="muted">What can be done through the connection</p>
+                  <p class="muted">What can be done with this service</p>
                 </div>
                 <Show when={!singleAction()}>
                   <Search
@@ -533,8 +533,8 @@ function AgentAccess(props: { name: string }) {
         each={Object.keys(m.view()!.config.connections ?? {})}
         fallback={
           <p>
-            No connections yet.{" "}
-            <a href="#connections/catalog">Add connection</a>
+            No services yet.{" "}
+            <a href="#connections/catalog">Add a service</a>
           </p>
         }
       >
@@ -628,7 +628,7 @@ function AgentSettings(props: { name: string }) {
                   <span>
                     Copy bunker profile
                     <small>
-                      Takes its connection access, actions and rules.
+                      Takes its service access, actions and rules.
                     </small>
                   </span>
                   <span class="agent-advanced-actions">
@@ -664,7 +664,7 @@ function AgentSettings(props: { name: string }) {
                   Remove bunker
                   <small>
                     Forget this bunker from the Monitor, along with its
-                    connections and rules.
+                    access and rules.
                   </small>
                 </span>
                 <button
@@ -675,7 +675,7 @@ function AgentSettings(props: { name: string }) {
                       (await askConfirm({
                         title: `Remove ${props.name}?`,
                         description:
-                          "The Monitor forgets this bunker, along with its connections and rules.",
+                          "The Monitor forgets this bunker, along with its access and rules.",
                         confirmLabel: "Remove bunker",
                         destructive: true,
                       })) &&

@@ -667,7 +667,7 @@ const kindOf = (c?: Connection) =>
   Object.keys(c ?? {}).find((key) => !SETTINGS.includes(key));
 export const setupOf = (c?: Connection) =>
   c?.[kindOf(c)!] as { [key: string]: Json } | undefined;
-const UNKNOWN_PRESET = { title: "Connection" };
+const UNKNOWN_PRESET = { title: "Service" };
 export const presetOf = (view: View, name: string): Omit<Preset, "defaults"> =>
   view.presets[connections(view)[name]?.preset] ?? UNKNOWN_PRESET;
 const fill = (text: string, scope?: { [key: string]: any }) =>
@@ -1097,7 +1097,7 @@ export function toolChange(
 export function connectionStatus(
   r?: Review,
 ): { state: "error" | "connecting" | "review"; text: string } | undefined {
-  if (r?.error) return { state: "error", text: "Connection error" };
+  if (r?.error) return { state: "error", text: "Can't connect" };
   if (r?.state === "connecting")
     return { state: "connecting", text: "Connecting…" };
   if (r?.blocked)
@@ -1575,10 +1575,10 @@ export const edits = {
   ): { changes: Change[]; credentials: Credentials } {
     const c = view.presets[preset];
     name = name.trim();
-    if (!name) throw new Error("Name this connection.");
+    if (!name) throw new Error("Name this service.");
     if (Object.hasOwn(connections(view), name))
       throw new Error(
-        "A connection with that name already exists. Choose another name.",
+        "A service with that name already exists. Choose another name.",
       );
     const fields = setupFields(view, preset);
     // Only the non-secret values fill a preset's setup; credentials are stored apart from the connection.
@@ -1634,11 +1634,11 @@ export const edits = {
     name = name.trim();
     if (!/^[a-zA-Z0-9][a-zA-Z0-9-]*$/.test(name))
       throw new Error(
-        "Name this connection using letters, numbers, and hyphens.",
+        "Name this service using letters, numbers, and hyphens.",
       );
     if (Object.hasOwn(connections(view), name))
       throw new Error(
-        "A connection with that name already exists. Choose another name.",
+        "A service with that name already exists. Choose another name.",
       );
     const http = { slots: [apiSlot(api)] };
     const body: { [key: string]: unknown } = {

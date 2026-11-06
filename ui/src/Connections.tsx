@@ -113,7 +113,7 @@ export function Connections(props: { catalog?: boolean; expanded?: string; propo
     <>
       <TabBar
         class="page-tabs"
-        label="Connection views"
+        label="Permission views"
         value={props.catalog ? "catalog" : "mine"}
         options={[
           { value: "mine", label: "Mine", href: "#connections" },
@@ -174,25 +174,25 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
       <div class="resource-list collection-list">
         <div class="resource-heading">
           <h2>
-            Connections <span class="count">{names().length}</span>
+            Services <span class="count">{names().length}</span>
           </h2>
         </div>
         <For
           each={names()}
           fallback={
             <Empty
-              title={query() ? "None match" : "No connections yet"}
+              title={query() ? "None match" : "No services yet"}
               action={
                 <Show when={!query()}>
                   <a class="button primary" href="#connections/catalog">
                     <Icon name="plus" />
-                    Add connection
+                    Add a service
                   </a>
                 </Show>
               }
             >
               <Show when={!query()}>
-                Add a connection to give your bunkers access to a service.
+                Add a service from the catalog to let your bunkers use it.
               </Show>
             </Empty>
           }
@@ -418,7 +418,7 @@ function CatalogDialog(props: { preset?: string; onClose: () => void }) {
               <div>
                 <h1 id="catalog-dialog-title">
                   <ConnectorIcon preset={preset} />
-                  New {m.view()!.presets[preset].title} connection
+                  Add {m.view()!.presets[preset].title}
                 </h1>
               </div>
               <button
@@ -758,7 +758,7 @@ export function AddConnection(props: { preset: string }) {
             classList={{ primary: !signIns().length }}
             disabled={m.busy()}
           >
-            {signIns().length ? "Add without signing in" : "Add connection"}
+            {signIns().length ? "Add without signing in" : "Add service"}
           </button>
           <For each={signIns()}>
             {(field) => (
@@ -1058,7 +1058,7 @@ function Connection(props: { name: string }) {
     <div class="connection-detail">
       <Show
         when={connection()}
-        fallback={<Empty title="Connection not found" />}
+        fallback={<Empty title="Service not found" />}
       >
         <Show when={owner.presetOf(m.view()!, props.name).warning}>
           {(warning) => <section class="connection-section">
@@ -1141,13 +1141,13 @@ function Connection(props: { name: string }) {
         <section class="connection-section">
           <SectionHeading
             title="Bunker access"
-            description="Who can use this connection"
+            description="Who can use this service"
           />
           <div class="connection-access">
             <For
               each={owner.sandboxNames(m.view()!)}
               fallback={
-                <p class="muted">Enrol a bunker to use this connection.</p>
+                <p class="muted">Enrol a bunker to use this service.</p>
               }
             >
               {(name) => (
@@ -1267,7 +1267,7 @@ function Connection(props: { name: string }) {
                           run Codex in your Monitor-connected bunker or with{" "}
                           <code>monitor run -- codex</code>. Choose a model
                           available to your ChatGPT account. Grant your bunker
-                          access to this connection and review pending requests
+                          access to this service and review pending requests
                           in Activity.
                         </p>
                         <pre ref={code}>{text()}</pre>
@@ -1300,7 +1300,7 @@ function Connection(props: { name: string }) {
                   title: `Remove ${props.name}?`,
                   description:
                     "Bunkers lose access to this service, and its saved credentials are deleted.",
-                  confirmLabel: "Remove connection",
+                  confirmLabel: "Remove service",
                   destructive: true,
                 })) &&
                 (await m.edit(
@@ -1310,7 +1310,7 @@ function Connection(props: { name: string }) {
                 location.hash = "#connections";
             }}
           >
-            Remove connection
+            Remove service
           </button>
         </div>
       </Show>

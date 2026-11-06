@@ -51,7 +51,7 @@ const pathLabel = (proposal: owner.RequestRecord, path: string[]) => {
   if (path[0] === "default_access")
     return ["Default access", ...path.slice(2)].join(" › ");
   if (path[0] === "connections" && path[1] === proposal.facts.connection)
-    return ["Connection", ...path.slice(2)].join(" › ");
+    return ["Service", ...path.slice(2)].join(" › ");
   return path.join(" › ");
 };
 const proposalPreset = (proposal: owner.RequestRecord, view: owner.View) => {
@@ -207,7 +207,7 @@ export function PolicyProposals() {
                   </time>
                   <ProposalBadge proposal={proposal()} />
                   <a class="button" href={href("connections", "pending", id)}>
-                    Review in Connections <Icon name="arrow" />
+                    Review in Permissions <Icon name="arrow" />
                   </a>
                 </span>
               </article>
@@ -221,7 +221,7 @@ export function PolicyProposals() {
                 <ConnectorIcon connection={record.facts.connection} />
                 <span>
                   <strong>
-                    {reasonPreview(record.facts.title || "Connection proposal")}
+                    {reasonPreview(record.facts.title || "Proposed change")}
                   </strong>
                   <small>
                     {record.facts.connection || "Policy"} ·{" "}
