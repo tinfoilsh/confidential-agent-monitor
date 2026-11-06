@@ -581,7 +581,6 @@ function createMonitor(options: MonitorOptions) {
     api,
     notify,
     report,
-    refresh,
     perform,
     edit,
     decide,

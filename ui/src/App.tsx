@@ -240,16 +240,6 @@ function Shell() {
                       <h1>{heading()?.[0] ?? "Monitor"}</h1>
                       <p>{heading()?.[1]}</p>
                     </div>
-                    <div class="header-actions">
-                      <button
-                        aria-label="Refresh monitor"
-                        aria-busy={m.loading()}
-                        onClick={() => void m.refresh()}
-                      >
-                        <Icon name="refresh" />
-                        Refresh
-                      </button>
-                    </div>
                   </div>
                 </header>
                 <div id="page-content">

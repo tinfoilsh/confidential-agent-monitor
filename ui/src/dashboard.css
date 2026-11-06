@@ -554,17 +554,6 @@ summary + * {
   font-family: var(--font-display);
   font-size: 16px;
 }
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-.header-actions > :is(button, .button) {
-  height: 36px;
-  padding-block: 0;
-  white-space: nowrap;
-}
 .approval-bar {
   display: flex;
   align-items: center;
