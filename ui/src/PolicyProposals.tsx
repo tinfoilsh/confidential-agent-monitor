@@ -233,7 +233,7 @@ export function PolicyProposals() {
               </a>
               <span class="resource-meta">
                 <time datetime={record.time}>{date(record.time)}</time>
-                <span class={`badge status-${record.state}`}>
+                <span class="request-state" data-state={record.state}>
                   {owner.reviewStatus(record)}
                 </span>
               </span>

@@ -32,7 +32,7 @@ const requestDate = new Intl.DateTimeFormat(undefined, {
 export function Badge(props: { state: string; record: owner.RequestRecord }) {
   return (
     <Show when={props.state !== "pending"}>
-      <span class={`badge status-${props.state}`}>
+      <span class="request-state" data-state={props.state}>
         {owner.reviewStatus({
           ...props.record,
           state: props.state as owner.RequestState,
