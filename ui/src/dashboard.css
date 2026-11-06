@@ -63,8 +63,6 @@
   --warn: #92400e;
   --bad: #b91c1c;
   --primary-hover: #426381;
-  --confirm: #047857;
-  --confirm-hover: #065f46;
   --destructive: #b91c1c;
   --destructive-hover: #991b1b;
   --frame: #000;
@@ -75,6 +73,7 @@
   --nav-height: 64px;
   --tinfoil-dark: #061820;
   --tinfoil-accent-dark: #004444;
+  --tinfoil-accent-dark-darker: #003333;
   --tinfoil-accent-light: #68c7ac;
   --text-secondary: #292f3d;
   --border-strong: #374151;
@@ -2113,9 +2112,10 @@ td {
   background: var(--surface) var(--grid) repeat center;
   color: var(--text);
 }
+/* Tinfoil Chat's solid button. */
 .auth {
-  --primary: var(--confirm);
-  --primary-hover: var(--confirm-hover);
+  --primary: var(--tinfoil-accent-dark-darker);
+  --primary-hover: var(--tinfoil-accent-dark);
   display: flex;
   flex-direction: column;
   gap: 16px;
