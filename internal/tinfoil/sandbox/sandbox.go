@@ -6,19 +6,16 @@ import (
 	"encoding/base64"
 	"errors"
 	"io"
-	"net"
 	"net/http"
 	"regexp"
 	"time"
 
 	"github.com/coder/websocket"
-	"github.com/tinfoilsh/monitor/internal/frontdoor"
 )
 
 const (
 	// BootstrapUser prefixes the SSH user a sandbox boot publishes its bootstrap route as.
 	BootstrapUser = "sandbox-v2:"
-	// MaxRelayBytes bounds a relay request.
 	MaxRelayBytes = 1 << 20
 
 	maxRelayAttestationBytes = 32 << 20
@@ -48,7 +45,7 @@ type RelayReply struct {
 
 // Relay fetches one attestation over a sandbox's bootstrap route and returns the response
 // bytes unchanged. That route is unverified and grants no agent access.
-func Relay(ctx context.Context, relays http.RoundTripper, in RelayInput) (RelayReply, error) {
+func (f *Forwarder) Relay(ctx context.Context, in RelayInput) (RelayReply, error) {
 	if !instancePattern.MatchString(in.InstanceID) || !hex32Pattern.MatchString(in.Nonce) {
 		return RelayReply{}, errRelayInput
 	}
@@ -62,7 +59,7 @@ func Relay(ctx context.Context, relays http.RoundTripper, in RelayInput) (RelayR
 	request.URL.Host = bootstrapRoute(BootstrapUser + in.InstanceID)
 	ctx, cancel := context.WithTimeout(ctx, relayHopTimeout)
 	defer cancel()
-	response, err := relays.RoundTrip(request.WithContext(ctx))
+	response, err := f.relays.RoundTrip(request.WithContext(ctx))
 	if err != nil {
 		return RelayReply{}, responseError{"sandbox relay: " + err.Error(), http.StatusBadGateway}
 	}
@@ -78,24 +75,11 @@ func Relay(ctx context.Context, relays http.RoundTripper, in RelayInput) (RelayR
 }
 
 // DialOwner opens a sandbox boot's owner socket over its bootstrap route.
-func DialOwner(ctx context.Context, relays http.RoundTripper, instance string) (*websocket.Conn, error) {
+func (f *Forwarder) DialOwner(ctx context.Context, instance string) (*websocket.Conn, error) {
 	if !instancePattern.MatchString(instance) {
 		return nil, errRelayInput
 	}
-	client := &http.Client{Transport: relays, Timeout: relayHopTimeout}
+	client := &http.Client{Transport: f.relays, Timeout: relayHopTimeout}
 	conn, _, err := websocket.Dial(ctx, "ws://"+bootstrapRoute(BootstrapUser+instance)+sandboxOwnerPath, &websocket.DialOptions{HTTPClient: client})
 	return conn, err
-}
-
-// Relays keeps each sandbox's bootstrap connections open between relayed requests, so a
-// request does not wait for a new forwarded channel.
-func Relays(forwards *frontdoor.Forwarder) http.RoundTripper {
-	return &http.Transport{DisableCompression: true, MaxIdleConnsPerHost: relayIdleConns, IdleConnTimeout: relayIdleTimeout,
-		DialContext: func(_ context.Context, _, address string) (net.Conn, error) {
-			host, _, err := net.SplitHostPort(address)
-			if err != nil {
-				return nil, err
-			}
-			return Dial(forwards, host, 443)
-		}}
 }

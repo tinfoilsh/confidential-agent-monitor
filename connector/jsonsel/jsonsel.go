@@ -3,7 +3,9 @@ package jsonsel
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"maps"
 	"math/big"
 	"reflect"
 	"slices"
@@ -32,6 +34,50 @@ func (s Selector) Check(name string, value any, present bool) error {
 		return nil
 	}
 	return fmt.Errorf("the request has no %s of the expected type", name)
+}
+
+type Source interface {
+	Compile() (Selector, func(any) (any, bool), error)
+}
+
+func (s Selector) Compile() (Selector, func(any) (any, bool), error) {
+	if !s.Valid() {
+		return s, nil, fmt.Errorf("invalid selector type %q", s.Type)
+	}
+	read, err := CompilePointer(s.At)
+	return s, read, err
+}
+
+type Compiled struct {
+	Selector
+	name string
+	read func(any) (any, bool)
+}
+
+func Compile[S Source](specs map[string]S) ([]Compiled, error) {
+	out := make([]Compiled, 0, len(specs))
+	for _, name := range slices.Sorted(maps.Keys(specs)) {
+		selector, read, err := specs[name].Compile()
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, Compiled{selector, name, read})
+	}
+	return out, nil
+}
+
+func Select(selectors []Compiled, doc any) (map[string]any, error) {
+	out := make(map[string]any, len(selectors))
+	var errs []error
+	for _, s := range selectors {
+		value, present := s.read(doc)
+		if err := s.Check(s.name, value, present); err != nil {
+			errs = append(errs, err)
+		} else if present {
+			out[s.name] = value
+		}
+	}
+	return out, errors.Join(errs...)
 }
 
 // validJSONPointer checks the supported pointer syntax, which excludes escapes.
@@ -84,7 +130,7 @@ func jsonType(v any) string {
 		return "number"
 	case []any:
 		return "array"
-	case map[string]any, map[string][]string:
+	case map[string]any:
 		return "object"
 	}
 	return ""

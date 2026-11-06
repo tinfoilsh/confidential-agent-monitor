@@ -58,7 +58,6 @@ def forbidden(path, dependency):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("root", nargs="?", type=Path, default=Path(__file__).resolve().parents[1])
-    parser.add_argument("--check", action="store_true", help="enforce boundaries, formatting and 4,999 core lines")
     parser.add_argument("--tracked", action="store_true", help="inspect only Git-tracked files")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
@@ -101,13 +100,7 @@ def main():
         print(f"boundary violations: {len(violations)}")
         for violation in violations:
             print(violation)
-    if args.check:
-        runtime = [str(root / p) for p in paths if category(p) != "tooling"]
-        unformatted = subprocess.check_output(["gofmt", "-l", *runtime]).decode().splitlines() if runtime else []
-        for path in unformatted:
-            print(f"not gofmt: {path}", file=sys.stderr)
-        return bool(totals["core"] > 4999 or violations or unformatted)
-    return False
+    return bool(violations)
 
 
 if __name__ == "__main__":

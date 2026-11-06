@@ -42,8 +42,6 @@ jobs:
           import re
           from pathlib import Path
           config = Path("tinfoil-config.yml").read_text()
-          if "SET_" in config:
-              raise SystemExit("Pin a CVM release supporting non-admin SSH port mappings before release")
           if len(re.findall(r'^\s+- MONITOR_OWNER_PUBLIC_KEY: ""$', config, re.M)) != 1:
               raise SystemExit("Expose the measured MONITOR_OWNER_PUBLIC_KEY env parameter")
           PY

@@ -1,17 +1,17 @@
 import { Route, Router } from "@solidjs/router";
-import { lazy } from "solid-js";
+import { lazy, type JSX } from "solid-js";
 import { render } from "solid-js/web";
 import { TARGETS, profileError } from "./keys";
+import type { Session } from "./session";
 
-const PAGES = {
+type Page = {
+  default: (props: { session: Session }) => JSX.Element;
+  capture?: () => void;
+};
+const PAGES: Record<"monitor" | "cli" | "console", () => Promise<Page>> = {
   monitor: () => import("./Monitor"),
   cli: () => import("./Cli"),
   console: () => import("./Console"),
-};
-const TITLES = {
-  monitor: "Monitor",
-  cli: "CLI key sync · Terminal",
-  console: "Get started · Terminal",
 };
 const routeOf = (pathname: string): keyof typeof PAGES => {
   const path = pathname.replace(/\/+$/, "");
@@ -38,7 +38,7 @@ async function start() {
   if (problem) throw new Error(problem);
   const page = await PAGES[route]();
   // Launch fragments leave the URL before sign-in can redirect.
-  page.capture();
+  page.capture?.();
   const [{ Clerk }, { createSession }] = await Promise.all([
     import("@clerk/clerk-js/no-rhc"),
     import("./session"),
@@ -48,10 +48,7 @@ async function start() {
   const session = createSession(clerk);
   const view = (name: keyof typeof PAGES) => {
     const Page = lazy(PAGES[name]);
-    return () => {
-      document.title = TITLES[name];
-      return <Page session={session} />;
-    };
+    return () => <Page session={session} />;
   };
   // Only links marked `link` navigate in place; a Monitor's fragment links stay native.
   render(

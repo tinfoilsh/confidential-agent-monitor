@@ -41,8 +41,8 @@ func Decode(raw []byte) (*Preset, error) {
 	if err := json.Unmarshal(raw, &p); err != nil {
 		return nil, err
 	}
-	if p.Catalog == nil {
-		return nil, fmt.Errorf("catalog must be an object")
+	if p.Catalog == nil || p.Catalog.Defaults == nil {
+		return nil, fmt.Errorf("catalog must be an object with defaults")
 	}
 	for name, a := range p.Catalog.Actions {
 		if a.Effects != nil && !facts.ValidEffects(a.Effects) {
@@ -50,6 +50,17 @@ func Decode(raw []byte) (*Preset, error) {
 		}
 	}
 	return &p, nil
+}
+
+func Lookup(name string) (*Preset, error) {
+	shipped, err := Shipped()
+	if err != nil {
+		return nil, err
+	}
+	if preset := shipped[name]; preset != nil {
+		return preset, nil
+	}
+	return nil, fmt.Errorf("unknown preset %s", name)
 }
 
 var Shipped = sync.OnceValues(func() (map[string]*Preset, error) {

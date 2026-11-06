@@ -10,11 +10,11 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"net/url"
 	"slices"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 	"unicode"
 	"unicode/utf8"
 
@@ -27,44 +27,36 @@ var Kind = connector.Kind{PerMessage: true, Parse: parseNATS, New: func() connec
 
 func parseNATS(source connector.Setup) (connector.Prepared, error) {
 	c := new(natsSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
 	if err := c.validate(); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Source: source, Value: c, SecretNames: []string{"password", "token"}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"password", "token"}}, nil
 }
 
-// NATS keeps one immutable setup for each admitted stream.
 type NATS struct{ connector.Slot[natsSetup] }
 
 const (
-	maxPayload = 1 << 20
-	maxLine    = 8192
+	maxPayload      = 1 << 20
+	maxLine         = 8192
+	upstreamTimeout = 30 * time.Second
 )
 
-type natsSetup struct {
-	connector.SecretConfig
-	Address string `json:"url"`
-	User    string `json:"user"`
-	url     *url.URL
-}
+type natsSetup struct{ connector.Endpoint }
 
 func (n *natsSetup) validate() error {
-	u, err := connector.ParseURL(n.Address)
-	if err != nil {
+	if err := n.Endpoint.Parse(); err != nil {
 		return err
 	}
+	u := &n.URL
 	if u.Scheme != "nats" && u.Scheme != "tls" || u.Path != "" && u.Path != "/" || u.RawQuery != "" || u.Fragment != "" || strings.Contains(u.Host, ",") {
 		return errors.New("NATS requires a nats:// or tls:// host URL without a path, query or fragment")
 	}
-	if n.User == "" {
-		n.User = u.User.Username()
-	}
+	n.User = u.User.Username()
 	u.User = nil // Authentication is always supplied separately to the client.
 	u.Path = ""
-	n.url = u
 	return nil
 }
 
@@ -95,17 +87,15 @@ type client struct {
 }
 
 func (owner *NATS) Serve(s *connector.Stream, e *connector.Env) {
-	captured := owner.Load()
-	if captured == nil {
+	n, ok := owner.Load()
+	if !ok {
 		return
 	}
-	n := captured.Value
-	n.Secrets = captured.Secrets
 
 	c := &client{owner: &n, s: s, subs: map[string]*nats.Subscription{}}
 	// Cluster addresses, upstream names and authentication details never leave
 	// the connector. Clients reconnect through the monitor's own address.
-	if err := c.write([]byte(`INFO {"server_id":"monitor","server_name":"monitor","version":"2.10.0","proto":1,"headers":true,"max_payload":1048576,"auth_required":false,"tls_required":false}` + "\r\n")); err != nil {
+	if err := c.write([]byte(`INFO {"server_id":"monitor","server_name":"monitor","version":"2.10.0","proto":1,"headers":true,"max_payload":` + strconv.Itoa(maxPayload) + `,"auth_required":false,"tls_required":false}` + "\r\n")); err != nil {
 		return
 	}
 	r := bufio.NewReaderSize(s, maxLine)
@@ -123,7 +113,7 @@ func (owner *NATS) Serve(s *connector.Stream, e *connector.Env) {
 		c.fail("invalid CONNECT")
 		return
 	}
-	if err := c.s.Gate(c.s.Context, c.owner.Capture((&Request{Command: "connect"}).Describe())); err != nil {
+	if err := c.s.Gate(c.s.Context, c.owner.Capture((&NATSFacts{Command: "connect"}).Describe())); err != nil {
 		c.fail("connection refused")
 		return
 	}
@@ -138,7 +128,7 @@ func (owner *NATS) Serve(s *connector.Stream, e *connector.Env) {
 		return
 	}
 	opts := []nats.Option{
-		nats.SetCustomDialer(dialer{s.Context, e.Dialer}), nats.NoReconnect(), nats.Timeout(connector.DialTimeout),
+		nats.SetCustomDialer(dialer{s.Context, e.Dialer}), nats.NoReconnect(), nats.Timeout(upstreamTimeout),
 		nats.SkipHostLookup(),
 		nats.Name("monitor"), nats.ClosedHandler(func(*nats.Conn) { s.Close() }),
 		// Error text can contain provider details or subjects; expose a fixed error.
@@ -152,13 +142,14 @@ func (owner *NATS) Serve(s *connector.Stream, e *connector.Env) {
 	if !c.options.Echo {
 		opts = append(opts, nats.NoEcho())
 	}
-	up, err := nats.Connect(n.url.String(), opts...)
+	up, err := nats.Connect(n.URL.String(), opts...)
 	if err != nil {
 		c.fail("upstream connection failed")
 		return
 	}
 	c.up = up
-	defer s.Interrupt(connector.CloseFunc(up.Close))()
+	stop := context.AfterFunc(s.Context, up.Close)
+	defer func() { stop(); up.Close() }()
 	if err := c.ok(); err != nil {
 		return
 	}
@@ -213,7 +204,7 @@ func (c *client) command(line string, r *bufio.Reader) error {
 		if m.Header != nil && !c.options.Headers {
 			return errors.New("headers were not negotiated")
 		}
-		if err := c.s.Gate(c.s.Context, c.owner.Capture((&Request{Command: "publish", Subject: m.Subject, Reply: m.Reply, Headers: m.Header, Payload: m.Data}).Describe())); err != nil {
+		if err := c.s.Gate(c.s.Context, c.owner.Capture((&NATSFacts{Command: "publish", Subject: m.Subject, Reply: m.Reply, Headers: m.Header, Payload: m.Data}).Describe())); err != nil {
 			return err
 		}
 		if err := c.up.PublishMsg(m); err != nil {
@@ -241,7 +232,7 @@ func (c *client) command(line string, r *bufio.Reader) error {
 				return errors.New("invalid queue")
 			}
 		}
-		if err := c.s.Gate(c.s.Context, c.owner.Capture((&Request{Command: "subscribe", Subject: subject, Queue: queue}).Describe())); err != nil {
+		if err := c.s.Gate(c.s.Context, c.owner.Capture((&NATSFacts{Command: "subscribe", Subject: subject, Queue: queue}).Describe())); err != nil {
 			return err
 		}
 		callback := func(m *nats.Msg) { c.deliver(sid, queue, m) }
@@ -287,7 +278,7 @@ func (c *client) command(line string, r *bufio.Reader) error {
 			return errors.New("invalid ping")
 		}
 		// PONG is also a barrier for preceding publishes and subscriptions.
-		if err := c.up.FlushTimeout(connector.DialTimeout); err != nil {
+		if err := c.up.FlushTimeout(upstreamTimeout); err != nil {
 			return err
 		}
 		return c.write([]byte("PONG\r\n"))
@@ -310,7 +301,7 @@ func (c *client) deliver(sid, queue string, m *nats.Msg) {
 		c.s.Close()
 		return
 	}
-	if err := c.s.Gate(c.s.Context, c.owner.Capture((&Request{Command: "receive", Subject: m.Subject, Reply: m.Reply, Queue: queue, Headers: m.Header, Payload: m.Data}).Describe())); err != nil {
+	if err := c.s.Gate(c.s.Context, c.owner.Capture((&NATSFacts{Command: "receive", Subject: m.Subject, Reply: m.Reply, Queue: queue, Headers: m.Header, Payload: m.Data}).Describe())); err != nil {
 		c.s.Close()
 		return
 	}
@@ -463,10 +454,8 @@ func subjectValid(s string, filter bool) bool {
 	return true
 }
 
-type Request NATSFacts
-
-func (v *Request) Describe() (facts.Facts, error) {
-	details := Details{NATS: (*NATSFacts)(v)}
+func (v *NATSFacts) Describe() facts.Facts {
+	details := Details{NATS: v}
 	action := ""
 	if slices.Contains([]string{"connect", "subscribe", "receive", "publish"}, v.Command) {
 		action = v.Command
@@ -483,5 +472,5 @@ func (v *Request) Describe() (facts.Facts, error) {
 	}
 	op := &facts.Operation{ID: v.Command, Action: action}
 	parameters, _ := facts.JSON[map[string]any](v)
-	return facts.Facts{Operation: op, Title: "NATS " + v.Command + " " + v.Subject, Parameters: parameters, Details: details, Context: facts.Context{Sends: "connection"}}, nil
+	return facts.Facts{Operation: op, Title: "NATS " + v.Command + " " + v.Subject, Parameters: parameters, Details: details, Context: facts.Context{Sends: facts.SendsConnection}}
 }

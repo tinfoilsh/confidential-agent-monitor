@@ -201,8 +201,11 @@ describe("MCP review uses saved pins without approving them", () => {
     expect(owner.toolReviewDescription(review)).toContain(
       "Tool definitions advertised by network differ from those you last approved.",
     );
-    expect(review.previousTools).toEqual([before]);
-    expect(review.tools).toEqual([after]);
+    expect(review.changes[0]).toMatchObject({ kind: "Changed", tool: after });
+    expect(review.changes[0].changedFields).toContainEqual({
+      name: "description",
+      kind: "Changed",
+    });
     expect(JSON.stringify(v)).toBe(original);
     expect(owner.edits.approveTools(v, "network").length).toBeGreaterThan(0);
   });

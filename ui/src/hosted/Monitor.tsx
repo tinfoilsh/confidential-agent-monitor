@@ -1,4 +1,3 @@
-import type { PasskeyKeyManager } from "@tinfoilsh/passkey-kit";
 import { useParams } from "@solidjs/router";
 import {
   Match,
@@ -11,14 +10,11 @@ import {
 } from "solid-js";
 import App from "../App";
 import { AuthCard, AuthScreen, Icon, Loading } from "../components";
-import { Header, openedFromHome } from "./Console";
+import { UUID } from "./contract";
+import { Header, openedFromHome } from "./Header";
 import * as keys from "./keys";
 import { KeyGate } from "./KeyPanel";
-import {
-  openMonitor,
-  type AttestMonitor,
-  type OpenedMonitor,
-} from "./monitors";
+import { openMonitor, type OpenedMonitor } from "./monitors";
 import {
   RestoreRequired,
   acceptSandbox,
@@ -26,19 +22,13 @@ import {
   sandboxCandidates,
   shellOpener,
 } from "./sandboxes";
-import { MONITOR_REPO, type Session } from "./session";
+import { MONITOR_REPO, STARTING, type Session } from "./session";
 import "./console.css";
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
-export const capture = () => {};
-
 // A Monitor link names only its resource; inventory and saved keys supply the rest.
-export default function Monitor(props: {
-  session: Session;
-  manager?: PasskeyKeyManager;
-  attest?: AttestMonitor;
-}) {
-  const manager = props.manager ?? keys.passkeys();
+export default function Monitor(props: { session: Session }) {
+  document.title = "Monitor";
+  const manager = keys.passkeys();
   const id = decodeURIComponent(useParams().id ?? "");
   // An OAuth sign-in returns without the marker, then restores it in the URL.
   const [fromHome, setFromHome] = createSignal(openedFromHome());
@@ -77,10 +67,7 @@ export default function Monitor(props: {
       .inventory()
       .value?.find((r) => r.id === id && r.repo === MONITOR_REPO);
   const inventory = () => props.session.inventory();
-  const booting = () =>
-    ["created", "pending", "deploying", "started"].includes(
-      row()?.status ?? "",
-    );
+  const booting = () => STARTING.includes(row()?.status ?? "");
   const title = () => {
     if (!UUID.test(id)) return "Choose a Monitor";
     if (!props.session.user()) return "Sign in to open your Monitor";
@@ -96,7 +83,6 @@ export default function Monitor(props: {
       return "Monitor not found";
     return `Opening ${name}…`;
   };
-  // Unlocking opens the Monitor once its boot is ready; a failed open needs a retry.
   createEffect(
     on(
       [props.session.unlocked, () => row()?.status, () => inventory().error],
@@ -128,12 +114,10 @@ export default function Monitor(props: {
         id,
         signal: current.signal,
         onCheckpoint: (problem) => setNotice(problem ?? ""),
-        attest: props.attest,
       });
       if (!current.signal.aborted && opened.scope.live()) {
         document.title = `${opened.row.name} · Monitor`;
         setSession(opened);
-        // Restarted sandboxes are re-linked while the Monitor is already showing.
         setLinking(true);
         void relinkSandboxes(opened)
           .then(

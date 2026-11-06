@@ -25,20 +25,27 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 )
 
-var Kind = connector.Kind{PerMessage: true, Parse: Parse, New: func() connector.Server { return new(Server) }}
+var Kind = connector.Kind{PerMessage: true, Placeholders: true, Parse: Parse, New: func() connector.Server { return new(Server) }}
 
 const (
 	httpsPort    = 443
 	httpPort     = 80
-	maxBodyBytes = 8 << 20
+	MaxBodyBytes = 8 << 20
+
+	bodyNone    = "none"
+	bodyOpaque  = "opaque"
+	BodyJSON    = "json"
+	bodyForm    = "form"
+	bodyAny     = "any"
+	bodyGraphQL = "graphql"
 
 	placeholderPrefix = "tfm_"
 	authorization     = "Authorization"
-	hostChars         = "abcdefghijklmnopqrstuvwxyz0123456789.-:"
+	HostChars         = "abcdefghijklmnopqrstuvwxyz0123456789.-:"
 )
 
 var (
-	Methods = []string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions}
+	methods = []string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions}
 	// Some servers let these replace the method the policy saw.
 	methodOverrides = []string{"X-Http-Method-Override", "X-Http-Method", "X-Method-Override"}
 )
@@ -83,7 +90,7 @@ func (h *Setup) ServeWithTransport(s *connector.Stream, e *connector.Env, transp
 				}
 			}
 		}
-		if err := s.Gate(r.Context(), h.Capture(request.Describe(h))); err != nil {
+		if err := s.Gate(r.Context(), h.CaptureResult(request.Describe(h))); err != nil {
 			log.Printf("refused %s %s%s: %v", r.Method, r.Host, r.URL.Path, err)
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
@@ -156,7 +163,7 @@ func (request *Request) capture(h *Setup, r *http.Request) error {
 	switch {
 	case h.Claim(host, port) < 0:
 		return fmt.Errorf("this connection does not serve %s:%d", host, port)
-	case !slices.Contains(Methods, r.Method):
+	case !slices.Contains(methods, r.Method):
 		return fmt.Errorf("method %s is refused", r.Method)
 	case len(r.Trailer) > 0:
 		return errors.New("trailers are refused")
@@ -191,7 +198,7 @@ func (request *Request) capture(h *Setup, r *http.Request) error {
 	if err := inspect(r, layer); err != nil {
 		return err
 	}
-	if upgrade && layer.BodyKind != "none" {
+	if upgrade && layer.BodyKind != bodyNone {
 		return errors.New("WebSocket handshakes cannot carry a body")
 	}
 	// Binding uses the stream's immutable settings. Replacing them cancels the stream.
@@ -256,7 +263,7 @@ func canonicalAuthority(scheme, authority string) (string, uint32, error) {
 		port, spelled = uint32(n), spelled+":"+text
 	}
 	switch {
-	case host == "" || strings.Trim(host, hostChars) != "" || !strings.EqualFold(authority, spelled):
+	case host == "" || strings.Trim(host, HostChars) != "" || !strings.EqualFold(authority, spelled):
 		return "", 0, fmt.Errorf("noncanonical host %q", authority)
 	case (scheme == "http") != (port == httpPort):
 		return "", 0, fmt.Errorf("%s cannot use port %d", scheme, port)
@@ -309,23 +316,23 @@ func encodeQuery(q url.Values) string {
 	return strings.ReplaceAll(q.Encode(), "+", "%20")
 }
 
-// inspect decodes a complete body of at most maxBodyBytes without repeated names; anything else is opaque and still forwarded.
+// inspect decodes a complete body of at most MaxBodyBytes without repeated names; anything else is opaque and still forwarded.
 func inspect(r *http.Request, layer *HTTPFacts) error {
-	body, err := io.ReadAll(io.LimitReader(r.Body, maxBodyBytes+1))
+	body, err := io.ReadAll(io.LimitReader(r.Body, MaxBodyBytes+1))
 	if err != nil {
 		return err
 	}
 	r.Body = io.NopCloser(io.MultiReader(bytes.NewReader(body), r.Body))
-	if len(body) <= maxBodyBytes {
+	if len(body) <= MaxBodyBytes {
 		r.GetBody = func() (io.ReadCloser, error) { return io.NopCloser(bytes.NewReader(body)), nil }
 	}
-	layer.BodyKind = "opaque"
+	layer.BodyKind = bodyOpaque
 	types := r.Header.Values("Content-Type")
 	switch {
 	case len(body) == 0:
-		layer.BodyKind = "none"
+		layer.BodyKind = bodyNone
 		return nil
-	case len(body) > maxBodyBytes || len(r.Header.Values("Content-Encoding")) > 0 || len(types) != 1 || !utf8.Valid(body):
+	case len(body) > MaxBodyBytes || len(r.Header.Values("Content-Encoding")) > 0 || len(types) != 1 || !utf8.Valid(body):
 		return nil
 	}
 	mediaType, params, err := mime.ParseMediaType(types[0])
@@ -335,7 +342,7 @@ func inspect(r *http.Request, layer *HTTPFacts) error {
 	switch {
 	case mediaType == "application/json" || strings.HasSuffix(mediaType, "+json"):
 		if layer.Body, err = decodeJSON(body); err == nil {
-			layer.BodyKind = "json"
+			layer.BodyKind = BodyJSON
 		}
 	case mediaType == "application/x-www-form-urlencoded":
 		form, err := url.ParseQuery(string(body))
@@ -348,7 +355,7 @@ func inspect(r *http.Request, layer *HTTPFacts) error {
 				}
 				seen[name] = true
 			}
-			layer.Form, layer.BodyKind = form, "form"
+			layer.Form, layer.BodyKind = form, bodyForm
 		}
 	}
 	return nil

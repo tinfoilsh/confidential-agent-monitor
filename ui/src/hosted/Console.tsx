@@ -6,7 +6,6 @@ import {
   Switch,
   createEffect,
   createSignal,
-  createUniqueId,
   on,
 } from "solid-js";
 import {
@@ -14,17 +13,20 @@ import {
   AuthScreen,
   Icon,
   Loading,
-  Modal,
   SkeletonRows,
 } from "../components";
 import {
+  SSH_ED25519,
+  fromBase64,
   parseStartRequest,
   startErrorURL,
   startReturnURL,
+  toBase64,
   type MKResource,
   type StartRequest,
   type StartRole,
 } from "./contract";
+import { Header, monitorURL } from "./Header";
 import * as keys from "./keys";
 import {
   AddPasskey,
@@ -37,6 +39,7 @@ import {
 import {
   MONITOR_REPO,
   SANDBOX_REPO,
+  STARTING,
   monitorOf,
   type Container,
   type Scope,
@@ -45,7 +48,6 @@ import {
 import "./console.css";
 
 const START = "tinfoil.start";
-const SSH_ED25519_PREFIX = "AAAAC3NzaC1lZDI1NTE5AAAAI";
 // Mirrors the dashboard's container state labels.
 const STATUS_LABELS: Record<string, string> = {
   created: "Provisioning",
@@ -57,23 +59,7 @@ const STATUS_LABELS: Record<string, string> = {
   stopped: "Stopped",
   failed: "Failed",
 };
-const BUSY_STATUSES = [
-  "created",
-  "pending",
-  "deploying",
-  "started",
-  "stopping",
-];
-const OPENED_FROM = "from";
-const HOME = "home";
-const ACCOUNT_MENU_GAP = 8;
-
-// A Monitor opened from this page goes back here; one opened elsewhere, such
-// as from the dashboard, goes back to the dashboard.
-const monitorURL = (id: string) =>
-  `/monitor/${id}?${new URLSearchParams({ [OPENED_FROM]: HOME })}`;
-export const openedFromHome = () =>
-  new URLSearchParams(location.search).get(OPENED_FROM) === HOME;
+const BUSY_STATUSES = [...STARTING, "stopping"];
 
 // The /start fragment is read once, kept for this tab across sign-in and removed from the URL.
 export function capture() {
@@ -97,13 +83,13 @@ function startRequest(): StartRequest | "invalid" | undefined {
 function ownerKeyFromSSH(line: string): string {
   const [type, blob] = line.trim().split(/\s+/);
   try {
-    const wire = Uint8Array.from(atob(blob), (c) => c.charCodeAt(0));
+    const wire = fromBase64(blob);
     if (
       type === "ssh-ed25519" &&
-      blob.startsWith(SSH_ED25519_PREFIX) &&
-      wire.length === 51
+      wire.length === SSH_ED25519.length + 32 &&
+      SSH_ED25519.every((byte, i) => wire[i] === byte)
     )
-      return "ed25519:" + btoa(String.fromCharCode(...wire.subarray(19)));
+      return "ed25519:" + toBase64(wire.subarray(SSH_ED25519.length));
   } catch {}
   throw new Error("Paste an ssh-ed25519 public key.");
 }
@@ -121,7 +107,6 @@ function Start(props: {
   session: Session;
   manager: PasskeyKeyManager;
   request: StartRequest;
-  navigate: (url: string) => void;
 }) {
   const r = props.request;
   const dashboard = keys.TARGETS.dashboard!;
@@ -143,7 +128,7 @@ function Start(props: {
   ) => {
     finished = true;
     sessionStorage.removeItem(START);
-    props.navigate(startReturnURL(dashboard, r, roleKeys(resources)));
+    location.assign(startReturnURL(dashboard, r, roleKeys(resources)));
   };
   const finishTMK = (resources: MKResource[]) =>
     finish(
@@ -155,7 +140,7 @@ function Start(props: {
     );
   const leave = (reason: "cancelled" | "account_mismatch" | "unsupported") => {
     sessionStorage.removeItem(START);
-    props.navigate(startErrorURL(dashboard, r.state, reason));
+    location.assign(startErrorURL(dashboard, r.state, reason));
   };
   // Bound to the user and account it started in; a switch discards the result.
   const act = async (task: (scope: Scope) => Promise<void>) => {
@@ -476,159 +461,9 @@ function Cleanup(props: { session: Session }) {
   );
 }
 
-export function Header(props: { session: Session }) {
-  // Recovery keys settled at sign-out, offered once before they are deleted.
-  const [leaving, setLeaving] =
-    createSignal<Awaited<ReturnType<Session["prepareLogout"]>>>();
-  const [busy, setBusy] = createSignal(false);
-  createEffect(
-    on(
-      [() => props.session.user()?.id, props.session.account],
-      () => setLeaving(undefined),
-      { defer: true },
-    ),
-  );
-  const stay = () => {
-    setLeaving(undefined);
-    props.session.cancelLogout();
-  };
-  const [failed, setFailed] = createSignal("");
-  const signOut = async () => {
-    if (busy()) return;
-    setBusy(true);
-    setFailed("");
-    try {
-      // An account change at any point offers and deletes nothing; records
-      // changed by another tab are settled and offered again.
-      for (;;) {
-        const settled = await props.session.prepareLogout();
-        if (!settled.live()) return;
-        if (settled.files.length || settled.unresolved)
-          return setLeaving(settled);
-        if ((await props.session.logout(settled)) || !settled.live()) return;
-      }
-    } catch (cause) {
-      setFailed(cause instanceof Error ? cause.message : String(cause));
-    } finally {
-      setBusy(false);
-    }
-  };
-  const confirm = async () => {
-    const offer = leaving();
-    try {
-      if (await props.session.logout(offer)) return;
-    } catch (cause) {
-      return setFailed(cause instanceof Error ? cause.message : String(cause));
-    }
-    setLeaving(undefined);
-    if (offer?.live()) await signOut();
-  };
-  const menuId = createUniqueId();
-  let trigger!: HTMLButtonElement;
-  let menu!: HTMLDivElement;
-  return (
-    <header class="start-header">
-      <a href="/" class="start-brand" aria-label="Tinfoil Terminal home" link>
-        <img src="/icons/tinfoil.svg" alt="" />
-        <span>Terminal</span>
-      </a>
-      <Show
-        when={props.session.user()}
-        fallback={
-          <a href={keys.TARGETS.dashboard}>
-            Open dashboard <Icon name="external" />
-          </a>
-        }
-      >
-        {(user) => (
-          <span>
-            <button
-              ref={trigger}
-              class="account-trigger"
-              popovertarget={menuId}
-            >
-              {user().label}
-              <Icon name="arrow" />
-            </button>
-            <div
-              ref={menu}
-              id={menuId}
-              class="account-menu"
-              popover
-              onBeforeToggle={(event) => {
-                if (event.newState !== "open") return;
-                const anchor = trigger.getBoundingClientRect();
-                menu.style.top = `${anchor.bottom + ACCOUNT_MENU_GAP}px`;
-                menu.style.right = `${innerWidth - anchor.right}px`;
-              }}
-            >
-              <button
-                disabled={busy()}
-                onClick={() => {
-                  menu.hidePopover();
-                  void signOut();
-                }}
-              >
-                Sign out
-              </button>
-            </div>
-            <Show when={failed()}>
-              <span class="start-notice" role="alert">
-                {failed()}
-              </span>
-            </Show>
-          </span>
-        )}
-      </Show>
-      <Modal
-        class="start-dialog"
-        open={!!leaving()}
-        onClose={stay}
-        aria-labelledby="leave-title"
-      >
-        <button
-          class="dialog-close icon-button start-close"
-          aria-label="Stay signed in"
-          onClick={stay}
-        >
-          <Icon name="close" />
-        </button>
-        <div class="start-dialog-body">
-          <h1 id="leave-title">Save your recovery key first</h1>
-          <Show when={failed()}>
-            <p class="start-notice" role="alert">
-              {failed()}
-            </p>
-          </Show>
-          <Show when={leaving()?.unresolved}>
-            <p class="start-notice" role="alert">
-              A recovery key in this browser could not be confirmed. If your
-              setup finished, it may be the only way to open your keys, and
-              signing out deletes it. Stay signed in to try again later.
-            </p>
-          </Show>
-          <For each={leaving()?.files ?? []}>
-            {(file) => <RecoveryDownload file={file} />}
-          </For>
-          <p class="start-help">
-            Signing out removes the recovery keys saved in this browser.
-          </p>
-          <button class="primary start-continue" onClick={() => void confirm()}>
-            {leaving()?.unresolved ? "Sign out anyway" : "Sign out"}
-          </button>
-        </div>
-      </Modal>
-    </header>
-  );
-}
-
-export default function Console(props: {
-  session: Session;
-  manager?: PasskeyKeyManager;
-  navigate?: (url: string) => void;
-}) {
-  const manager = props.manager ?? keys.passkeys();
-  const navigate = props.navigate ?? ((url: string) => location.assign(url));
+export default function Console(props: { session: Session }) {
+  document.title = "Get started · Terminal";
+  const manager = keys.passkeys();
   const start = startRequest();
   return (
     <div class="start-page">
@@ -688,7 +523,6 @@ export default function Console(props: {
               session={props.session}
               manager={manager}
               request={request()}
-              navigate={navigate}
             />
           )}
         </Match>

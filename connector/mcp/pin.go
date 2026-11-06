@@ -10,14 +10,14 @@ import (
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-const Version = "0.1.0"
+const version = "0.1.0"
 
 type Snapshot struct {
 	Instructions string      `json:"instructions,omitempty"`
 	Tools        []*sdk.Tool `json:"tools"`
 }
 
-func Inspect(ctx context.Context, session *sdk.ClientSession) (*Snapshot, error) {
+func inspect(ctx context.Context, session *sdk.ClientSession) (*Snapshot, error) {
 	snap := &Snapshot{Instructions: session.InitializeResult().Instructions}
 	for tool, err := range session.Tools(ctx, nil) {
 		if err != nil {
@@ -45,7 +45,6 @@ func (pin *Snapshot) pinned() (instructions string, tools map[string]string) {
 	return pin.Instructions, tools
 }
 
-// approved splits the current tools into those matching the pin exactly and the names of the rest.
 func (pin *Snapshot) approved(cur *Snapshot) (ok []*sdk.Tool, blocked []string) {
 	instructions, tools := pin.pinned()
 	for _, t := range cur.Tools {

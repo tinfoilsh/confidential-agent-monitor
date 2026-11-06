@@ -19,9 +19,7 @@ type ConnectionSpec struct {
 	PublicScope                 []string
 }
 
-type Principal struct {
-	Fingerprint, Name string
-}
+type Principal = facts.Principal
 
 type Identity struct {
 	Routes      bool              `json:"routes,omitempty"`
@@ -30,6 +28,16 @@ type Identity struct {
 	Effects     map[string]string `json:"effects,omitempty"`
 	Connections map[string]Access `json:"connections"`
 	Rules       map[string]Rule   `json:"rules,omitempty"`
+}
+
+func (id Identity) rulesFor(connection string) map[string]Rule {
+	rules := map[string]Rule{}
+	for name, rule := range id.Rules {
+		if rule.Connection == connection {
+			rules[name] = rule
+		}
+	}
+	return rules
 }
 
 type Access struct {

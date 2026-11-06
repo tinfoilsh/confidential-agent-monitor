@@ -52,14 +52,12 @@ function createMonitor(options: MonitorOptions) {
     sessionStorage.setItem(SESSION, fragment.get("session")!);
     history.replaceState(null, "", location.pathname + location.search);
   }
-  // Set before mount: writes inside onMount would let refresh join a read the api effect then discards.
   const [mode, setMode] = createSignal<"bearer" | "ssh" | undefined>(
     ENDPOINT && !options.client ? "bearer" : undefined,
   );
   const [credential, setCredential] = createSignal(
     mode() ? (sessionStorage.getItem(KEY) ?? "") : "",
   );
-  // Reads change the snapshot in place, so unchanged requests and settings keep their identity.
   const [store, setStore] = createStore<{ snapshot?: owner.Snapshot }>({
     snapshot: options.snapshot,
   });
@@ -85,10 +83,8 @@ function createMonitor(options: MonitorOptions) {
     path === undefined || notice()?.path === path ? (notice()?.text ?? "") : "";
   const [now, setNow] = createSignal(Date.now());
   const [icons, setIcons] = createSignal<owner.IconManifest>({});
-  // The sandbox whose shell is open beside the page.
   const [shell, setShell] = createSignal<string>();
   const [accepting, setAccepting] = createSignal<string>();
-  // Sandboxes whose automatic accept failed; they wait for an explicit one.
   const [stalled, setStalled] = createSignal<string[]>([]);
   const [deviceSignIn, setDeviceSignIn] = createSignal<
     owner.DeviceSignIn & {
@@ -97,12 +93,7 @@ function createMonitor(options: MonitorOptions) {
       source: owner.OwnerApi;
     }
   >();
-  // Keep request pagination when opening a request or switching Activity tabs.
-  const [activity, setActivity] = createStore({
-    scope: "",
-    page: 0,
-    anchor: 0,
-  });
+  const [activity, setActivity] = createStore({ page: 0, anchor: 0 });
   const [searches, setSearches] = createStore<Record<string, string>>({});
   const search = (section: string) =>
     [
@@ -172,9 +163,8 @@ function createMonitor(options: MonitorOptions) {
   );
   const copySnapshot = (state: owner.Snapshot): owner.Snapshot => ({
     ...state,
-    view: { ...state.view, labels: { ...state.view.labels } },
+    view: { ...state.view },
   });
-  // Reapply pending edits over the confirmed snapshot, including after a failure.
   const projected = createMemo(() => {
     const confirmed = snapshot();
     if (!confirmed || !pending().length) return confirmed;
@@ -205,16 +195,7 @@ function createMonitor(options: MonitorOptions) {
     ...(projected()?.requests ?? []),
     ...archived(),
   ]);
-  const {
-    records,
-    byId: recordsById,
-    pendingCount,
-  } = createRequestLog(requests, now);
-  const proposals = createMemo(() =>
-    records().filter(
-      (r) => r.state === "pending" && owner.isConnectionProposalRecord(r),
-    ),
-  );
+  const log = createRequestLog(requests, now);
   const remember = (
     next: owner.View,
     requests = snapshot()?.requests ?? [],
@@ -234,7 +215,6 @@ function createMonitor(options: MonitorOptions) {
     if (older() === "" && !loadingOlder()) void loadOlder();
   };
 
-  // Polling and manual refresh share one read. An edit invalidates any older read.
   function refresh(): Promise<void> {
     if (busy() || !api()) return Promise.resolve();
     if (!refreshing) {
@@ -267,7 +247,6 @@ function createMonitor(options: MonitorOptions) {
     const source = api();
     if (!source || lifetime.signal.aborted) return Promise.resolve(false);
     return new Promise((resolve) => {
-      // Validate the projection before putting it into reactive state.
       try {
         const current = projected();
         if (current) options.update?.(copySnapshot(current));
@@ -336,7 +315,6 @@ function createMonitor(options: MonitorOptions) {
     // Writes return the authoritative view. Only decisions and uncertain failures
     // need another read; ordinary saves should not trigger a loading cycle.
     if (needsRefresh) {
-      // A decision still needs a read after any older, invalidated poll settles.
       await refreshing;
       void refresh();
     }
@@ -352,21 +330,6 @@ function createMonitor(options: MonitorOptions) {
       },
       to,
     });
-  const label = (
-    name: string,
-    change: Partial<Pick<owner.Label, "trust" | "audience">>,
-  ) => {
-    const next = (view: owner.View): owner.Label => ({
-      trust: view.labels[name]?.trust ?? "trusted",
-      audience: view.labels[name]?.audience ?? "anyone",
-      ...change,
-    });
-    return perform((client) => client.label(name, next(snapshot()!.view)), "", {
-      update: (state) => {
-        state.view.labels[name] = next(state.view);
-      },
-    });
-  };
   const decide = (record: owner.RequestRecord, decision: owner.Decision) =>
     perform(
       (client) => client.decide(record.id, decision),
@@ -439,7 +402,6 @@ function createMonitor(options: MonitorOptions) {
           completed = true;
           version++;
           setDeviceSignIn(undefined);
-          // Fetch a fresh view; other owner edits may have completed while waiting.
           await refreshing;
           void refresh();
         } catch (cause) {
@@ -474,7 +436,7 @@ function createMonitor(options: MonitorOptions) {
     ),
   );
   createEffect(() => {
-    const count = pendingCount();
+    const count = log.pendingCount();
     document.title = count ? `(${count}) Monitor` : "Monitor";
   });
   onMount(async () => {
@@ -593,10 +555,12 @@ function createMonitor(options: MonitorOptions) {
     mode,
     credential,
     view,
-    records,
-    recordsById,
-    pendingCount,
-    proposals,
+    requests: log.requests,
+    proposals: log.proposals,
+    pendingRequests: log.pendingRequests,
+    pendingProposals: log.pendingProposals,
+    recordsById: log.byId,
+    pendingCount: log.pendingCount,
     older,
     loadingOlder,
     loadOlder,
@@ -618,7 +582,6 @@ function createMonitor(options: MonitorOptions) {
     refresh,
     perform,
     edit,
-    label,
     decide,
     signIn,
     deviceSignIn,

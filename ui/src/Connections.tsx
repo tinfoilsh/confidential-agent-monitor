@@ -1,4 +1,11 @@
-import { For, Show, createMemo, createSignal, createUniqueId } from "solid-js";
+import {
+  For,
+  Index,
+  Show,
+  createMemo,
+  createSignal,
+  createUniqueId,
+} from "solid-js";
 import { createStore } from "solid-js/store";
 import * as owner from "./owner.js";
 import {
@@ -17,6 +24,11 @@ import {
 import { useMonitor } from "./monitor";
 import { AgentConnectionAccess } from "./Agents";
 import { ConnectionProposals } from "./PolicyProposals";
+
+const inCatalog =
+  (search: string, group: { title: string }) =>
+  (p: { name: string; title: string }) =>
+    `${p.name} ${p.title} ${group.title}`.toLowerCase().includes(search);
 
 export function DeviceSignInDialog(props: {
   attempt: (owner.DeviceSignIn & { title: string; preset: string }) | undefined;
@@ -117,7 +129,6 @@ export function Connections(props: { catalog?: boolean; expanded?: string; propo
 }
 function MyConnections(props: { expanded?: string; proposal?: string }) {
   const m = useMonitor(),
-    // Mine and Catalog share one search: switching tabs keeps the term.
     [query, setQuery] = m.search("connections");
   if (props.expanded) setQuery("");
   const searchable = createMemo(() =>
@@ -135,22 +146,13 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
       .filter((entry) => entry.search.includes(search))
       .map((entry) => entry.name);
   });
-  // The search also peeks into the catalog, so typing a service you do not
-  // have yet points at the Catalog tab instead of a dead end. Best matches
-  // first (title starts with the query), top three only; adding happens on
-  // the Catalog tab, which opens with the same search.
   const CATALOG_MATCH_LIMIT = 3;
   const catalogMatches = createMemo(() => {
     const search = query().trim().toLowerCase();
     if (!search) return { shown: [], total: 0 };
     const all = owner
       .catalog(m.view()!)
-      .flatMap((group) =>
-        group.presets.map((p) => ({ ...p, groupTitle: group.title })),
-      )
-      .filter((p) =>
-        `${p.name} ${p.title} ${p.groupTitle}`.toLowerCase().includes(search),
-      );
+      .flatMap((group) => group.presets.filter(inCatalog(search, group)));
     const rank = (p: (typeof all)[number]) =>
       p.title.toLowerCase().startsWith(search)
         ? 0
@@ -165,7 +167,6 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
       <div id="toolbar">
         <Search
           label="Search connections and services"
-          autofocus
           value={query()}
           onInput={setQuery}
         />
@@ -197,16 +198,16 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
           }
         >
           {(name) => {
-            const status = createMemo(() => owner.connectionStatus(m.view()!, name));
+            const status = createMemo(() =>
+              owner.connectionStatus(owner.review(m.view()!, name)),
+            );
             return (
               <ResourceDisclosure
                 class="connection-item"
                 open={props.expanded === name}
                 summary={
                   <>
-                    <ConnectorIcon
-                      preset={m.view()!.config.connections![name].preset}
-                    />
+                    <ConnectorIcon connection={name} />
                     <strong class="collection-name" title={name}>
                       {name}
                     </strong>
@@ -214,16 +215,14 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
                       {owner.presetOf(m.view()!, name).title}
                     </span>
                     <span class="resource-meta">
-                      <Show when={status().state}>
-                        <span
-                          class={`badge${status().state === "connecting" ? "" : ` status-${status().state === "error" ? "denied" : "pending"}`}`}
-                        >
-                          {status().blocked
-                            ? `${status().blocked} MCP ${status().blocked === 1 ? "tool needs" : "tools need"} review`
-                            : status().state === "error"
-                              ? "Connection error"
-                              : "Connecting…"}
-                        </span>
+                      <Show when={status()}>
+                        {(status) => (
+                          <span
+                            class={`badge${status().state === "connecting" ? "" : ` status-${status().state === "error" ? "denied" : "pending"}`}`}
+                          >
+                            {status().text}
+                          </span>
+                        )}
                       </Show>
                     </span>
                     <span class="collection-chevron">
@@ -232,9 +231,9 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
                   </>
                 }
               >
-                {(expanded) => (
+                {() => (
                   <div class="connection-inline">
-                    <Connection name={name} active={expanded()} />
+                    <Connection name={name} />
                   </div>
                 )}
               </ResourceDisclosure>
@@ -242,7 +241,7 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
           }}
         </For>
       </div>
-      <Show when={props.proposal && !m.proposals().some((proposal) => proposal.id === props.proposal)}>
+      <Show when={props.proposal && !m.pendingProposals().some((proposal) => proposal.id === props.proposal)}>
         <div class="resource-list">
           <Empty
             title="Proposal no longer pending"
@@ -253,7 +252,7 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
           </Empty>
         </div>
       </Show>
-      <Show when={m.proposals().length}>
+      <Show when={m.pendingProposals().length}>
         <ConnectionProposals id={props.proposal} />
       </Show>
       <Show when={catalogMatches().shown.length}>
@@ -281,7 +280,6 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
     </>
   );
 }
-// One catalog service: expands in place to its add form.
 function CatalogRow(props: { name: string; added?: number }) {
   const m = useMonitor();
   return (
@@ -333,11 +331,7 @@ function Catalog() {
         group.group,
         {
           ...group,
-          presets: group.presets.filter((p) =>
-            `${p.name} ${p.title} ${group.title}`
-              .toLowerCase()
-              .includes(search),
-          ),
+          presets: group.presets.filter(inCatalog(search, group)),
         },
       ]),
     );
@@ -347,7 +341,6 @@ function Catalog() {
       <div class="catalog-toolbar">
         <Search
           label="Search services"
-          autofocus
           value={query()}
           onInput={setQuery}
           onEnter={() =>
@@ -405,13 +398,6 @@ function ConnectionWarning(props: { warning?: string }) {
   </Show>;
 }
 
-const answers = (
-  a?: Partial<owner.ConnectionAnswers>,
-): owner.ConnectionAnswers => ({
-  contents: a?.contents ?? "me",
-  sends: a?.sends ?? "me",
-  strangers: !!a?.strangers,
-});
 function ApiFields(props: {
   value: owner.ApiSettings;
   onChange: (value: owner.ApiSettings) => void;
@@ -488,14 +474,9 @@ export function AddConnection(props: { preset: string }) {
   );
   const [tokens, setTokens] = createStore<Record<string, boolean>>({});
   const signIns = () => fields.filter((f) => f.oauth && !tokens[f.key]);
-  // Keep the preset's data-flow defaults even though this editor is hidden.
-  const sharing = () => answers(preset?.defaults);
   const [api, setApi] = createSignal(owner.apiSettings(m.view()!)),
     [token, setToken] = createSignal("");
-  const names = () =>
-    Object.keys(m.view()!.config.identities ?? {}).filter(
-      (name) => !owner.isDevice(name),
-    );
+  const names = () => owner.sandboxNames(m.view()!);
   const [agent, setAgent] = createSignal(
       names().length === 1 ? names()[0] : "",
     ),
@@ -511,11 +492,11 @@ export function AddConnection(props: { preset: string }) {
               token: token(),
               agent: agent(),
               level: level(),
-              answers: sharing(),
+              answers: preset.defaults,
             })
           : owner.edits.addConnection(m.view()!, props.preset, {
               name: connection,
-              answers: sharing(),
+              answers: preset.defaults,
               values: Object.fromEntries(
                 fields.map((f) => [f.key, owner.readField(f, values[f.key])]),
               ),
@@ -716,7 +697,6 @@ function ConnectionForm(props: { name: string }) {
         !(await m.edit(changes, undefined, { [props.name]: stored }))
       )
         return;
-      // A completed save must not clear a newer credential draft.
       for (const [key, text] of Object.entries(entered))
         if (drafts[key] === text) setDrafts(key, undefined);
     } catch (cause) {
@@ -766,8 +746,7 @@ function ConnectionForm(props: { name: string }) {
             {(key) => {
               const field = () => credentials().get(key)!;
               const collapsed = () =>
-                drafts[key] === undefined &&
-                (field().signIn || field().kind !== "unset");
+                drafts[key] === undefined && (field().signIn || field().stored);
               const status = () =>
                 field().status +
                 (field().account ? ` · ${field().account}` : "");
@@ -798,10 +777,7 @@ function ConnectionForm(props: { name: string }) {
                             type="button"
                             onClick={() => setDrafts(key, "")}
                           >
-                            {field().kind === "unset" ||
-                            field().kind === "oauth-required"
-                              ? "Enter credential"
-                              : "Replace"}
+                            {field().ready ? "Replace" : "Enter credential"}
                           </button>
                         </div>
                       </div>
@@ -810,10 +786,9 @@ function ConnectionForm(props: { name: string }) {
                     <Field
                       field={{
                         ...field(),
-                        hint:
-                          field().kind === "unset"
-                            ? field().hint
-                            : "Leave blank to keep the current credential",
+                        hint: field().stored
+                          ? "Leave blank to keep the current credential"
+                          : field().hint,
                       }}
                       value={drafts[key] ?? ""}
                       onInput={(text) => setDrafts(key, text)}
@@ -833,11 +808,6 @@ function ConnectionForm(props: { name: string }) {
   );
 }
 
-const TOOL_CHANGES: Record<string, string> = {
-  "+": "New",
-  "~": "Changed",
-  "-": "Removed",
-};
 function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
   return (
     <li class="tool-change">
@@ -845,12 +815,12 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
         <span
           class="badge"
           classList={{
-            "status-approved": props.change.sign === "+",
-            "status-pending": props.change.sign === "~",
-            "status-denied": props.change.sign === "-",
+            "status-approved": props.change.kind === "New",
+            "status-pending": props.change.kind === "Changed",
+            "status-denied": props.change.kind === "Removed",
           }}
         >
-          {TOOL_CHANGES[props.change.sign]}
+          {props.change.kind}
         </span>
         <code>{props.change.name}</code>
         <Show when={props.change.tool}>
@@ -930,13 +900,9 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
   );
 }
 
-function Connection(props: { name: string; active: boolean }) {
+function Connection(props: { name: string }) {
   const m = useMonitor(),
     connection = () => m.view()!.config.connections?.[props.name];
-  const agents = () =>
-    Object.keys(m.view()!.config.identities ?? {}).filter(
-      (name) => !owner.isDevice(name),
-    );
   const setups = createMemo(() => {
     const groups = new Map<
       string,
@@ -956,9 +922,7 @@ function Connection(props: { name: string; active: boolean }) {
   const tinfoil = createMemo(() => owner.tinfoilSetup(m.view()!, props.name));
   const review = createMemo(() => {
     const review = owner.review(m.view()!, props.name);
-    return review?.error || review?.blocked || review?.state === "connecting"
-      ? review
-      : undefined;
+    return owner.connectionStatus(review) && review;
   });
   return (
     <div class="connection-detail">
@@ -984,7 +948,7 @@ function Connection(props: { name: string; active: boolean }) {
                         class="badge"
                         classList={{ "status-denied": !!review().error }}
                       >
-                        {review().error ? "Connection error" : "Connecting…"}
+                        {owner.connectionStatus(review())!.text}
                       </span>
                     </div>
                   }
@@ -1019,17 +983,9 @@ function Connection(props: { name: string; active: boolean }) {
                     >
                       {() => (
                         <ul class="section-content tool-changes">
-                          <For each={review().changes}>
-                            {(change) => (
-                              <ToolChange
-                                change={owner.toolChange(
-                                  change,
-                                  review().tools,
-                                  review().previousTools,
-                                )}
-                              />
-                            )}
-                          </For>
+                          <Index each={review().changes}>
+                            {(change) => <ToolChange change={change()} />}
+                          </Index>
                         </ul>
                       )}
                     </ResourceDisclosure>
@@ -1059,7 +1015,7 @@ function Connection(props: { name: string; active: boolean }) {
           />
           <div class="connection-access">
             <For
-              each={agents()}
+              each={owner.sandboxNames(m.view()!)}
               fallback={
                 <p class="muted">Enrol a sandbox to use this connection.</p>
               }

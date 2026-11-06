@@ -17,6 +17,7 @@ import { parseDocument } from "yaml";
 // Sigstore public-good trusted root, as compiled into tinfoil-js verifier c7f0a57.
 import SIGSTORE_ROOT from "./sigstore-root.json";
 import { parseReference } from "@tinfoilsh/verifier";
+import { PERSONAL, UUID } from "./contract";
 import type { Container } from "./session";
 
 export type Workload = "monitor" | "sandbox";
@@ -33,7 +34,6 @@ const SLSA_V1 = "https://slsa.dev/provenance/v1";
 const MAX_PROOF_BYTES = 4 << 20;
 const MAX_BUNDLES = 16;
 const OWNER_KEY = /^ed25519:[A-Za-z0-9+/]{43}=$/;
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
 const BUCKET =
   /^s3:\/\/[a-z0-9.-]+\?prefix=containers%2F([0-9a-f]{64})%2F[A-Za-z0-9-]+%2F&region=[a-z0-9-]+$/;
 const PRIVATE_REGISTRY =
@@ -217,7 +217,7 @@ export const volumeSize = (bytes: number) =>
 
 // A Monitor bucket names the storage owner it belongs to by hash.
 export function bucketOwnedBy(bucket: string, account: string, user: string) {
-  const owner = account === "personal" ? `user:${user}` : `org:${account}`;
+  const owner = account === PERSONAL ? `user:${user}` : `org:${account}`;
   return BUCKET.exec(bucket)?.[1] === bytesToHex(sha256(utf8ToBytes(owner)));
 }
 

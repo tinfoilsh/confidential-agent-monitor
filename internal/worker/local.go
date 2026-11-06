@@ -21,10 +21,9 @@ const maxWorkers = 32
 // Local uses a deployment-owned, read-only filesystem. The running executable
 // is mounted separately, so a single Monitor build includes every connector.
 type Local struct {
-	Root       string
-	Executable string // Defaults to os.Executable.
-	mu         sync.Mutex
-	active     int
+	Root   string
+	mu     sync.Mutex
+	active int
 }
 
 func (m *Local) acquire() (func(), error) {
@@ -54,7 +53,8 @@ func ServeInherited(kinds map[string]connector.Kind) error {
 	return Serve(context.Background(), kinds, os.Stdin, ln, unixDial("/broker.sock"))
 }
 
-// Start runs the same binary in the prepared root. It never decodes config.
+// Start runs the same binary in the prepared root. It never decodes config. Its context
+// covers installation only; the returned Endpoint owns the process lifetime.
 func (m *Local) Start(ctx context.Context, config []byte, broker http.Handler) (Endpoint, error) {
 	if err := ctx.Err(); err != nil {
 		return Endpoint{}, err
@@ -84,12 +84,9 @@ func (m *Local) Start(ctx context.Context, config []byte, broker http.Handler) (
 			release()
 		}
 	}()
-	executable := m.Executable
-	if executable == "" {
-		executable, err = os.Executable()
-		if err != nil {
-			return Endpoint{}, err
-		}
+	executable, err := os.Executable()
+	if err != nil {
+		return Endpoint{}, err
 	}
 	executable, err = filepath.Abs(executable)
 	if err != nil {

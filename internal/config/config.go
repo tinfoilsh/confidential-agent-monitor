@@ -13,14 +13,17 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-var levels = []string{"off", "read", "ask", "allow"}
+var (
+	levels = []string{"off", "read", "ask", "allow"}
+	modes  = []string{"off", "ask", "allow"}
+)
 
 func validateEffects(name string, effects map[string]string) error {
 	for effect, mode := range effects {
 		if _, ok := facts.Effects[effect]; !ok {
 			return fmt.Errorf("%s: unknown effect %q", name, effect)
 		}
-		if !slices.Contains([]string{"off", "ask", "allow"}, mode) {
+		if !slices.Contains(modes, mode) {
 			return fmt.Errorf("%s: effect %s must be off, ask or allow", name, effect)
 		}
 	}
@@ -75,7 +78,7 @@ func Load(text string) (*Config, error) {
 				return err
 			}
 			for action, level := range a.Actions {
-				if level == "read" || !slices.Contains(levels, level) {
+				if !slices.Contains(modes, level) {
 					return fmt.Errorf("%s: action %s must be off, ask or allow", name, action)
 				}
 			}
@@ -93,11 +96,10 @@ func Load(text string) (*Config, error) {
 		if err := validateAccess("identity "+name, cfg.Accesses(name)); err != nil {
 			return nil, err
 		}
-		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(id.Key))
+		fingerprint, err := Fingerprint(id.Key)
 		if err != nil {
 			return nil, fmt.Errorf("identity %s: %w", name, err)
 		}
-		fingerprint := ssh.FingerprintSHA256(key)
 		if _, exists := cfg.Principals[fingerprint]; exists {
 			return nil, fmt.Errorf("identity %s shares another identity's public key", name)
 		}
@@ -106,9 +108,18 @@ func Load(text string) (*Config, error) {
 	return cfg, nil
 }
 
+// Fingerprint names the principal an identity's authorized key authenticates.
+func Fingerprint(authorizedKey string) (string, error) {
+	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(authorizedKey))
+	if err != nil {
+		return "", err
+	}
+	return ssh.FingerprintSHA256(key), nil
+}
+
 func (c *Config) Principal(key string) (Principal, bool) {
 	name, ok := c.Principals[key]
-	return Principal{Fingerprint: key, Name: name}, ok
+	return Principal{Key: key, Name: name}, ok
 }
 
 // An explicit level replaces defaults; an omitted level inherits and overlays them.
@@ -150,7 +161,7 @@ func (c *Config) SameProgram(old *Config) bool {
 // Spec projects only this connection's setup; the returned definition remains opaque.
 func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	connection := c.Connections[name]
-	preset, err := c.Preset(connection.Preset)
+	preset, err := presets.Lookup(connection.Preset)
 	if err != nil {
 		return ConnectionSpec{}, fmt.Errorf("connection %s: %w", name, err)
 	}
@@ -195,17 +206,4 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 		spec.Config, _ = json.Marshal(value) // Setup bytes retain the deployed canonical grant encoding.
 	}
 	return spec, nil
-}
-
-// Preset resolves one shipped definition.
-func (c *Config) Preset(name string) (*presets.Preset, error) {
-	shipped, err := presets.Shipped()
-	if err != nil {
-		return nil, err
-	}
-	preset := shipped[name]
-	if preset == nil {
-		return nil, fmt.Errorf("unknown preset %s", name)
-	}
-	return preset, nil
 }

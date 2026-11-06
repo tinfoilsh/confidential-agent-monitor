@@ -3,7 +3,7 @@ package tinfoil
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -45,8 +45,8 @@ func prepareAPIRequest(r *http.Request, original *web.HTTPFacts, transport http.
 		return nil, nil
 	}
 	body, ok := original.Body.(map[string]any)
-	if original.BodyKind != "json" || !ok {
-		return nil, errors.New("inference requests require an unambiguous JSON object of at most 8 MiB")
+	if original.BodyKind != web.BodyJSON || !ok {
+		return nil, fmt.Errorf("inference requests require an unambiguous JSON object of at most %d MiB", web.MaxBodyBytes>>20)
 	}
 	response := apiTransport{RoundTripper: transport}
 	if r.URL.Path == "/v1/responses" {

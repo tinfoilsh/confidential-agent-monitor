@@ -45,8 +45,11 @@ func (l Label) Valid() bool {
 	return slices.Contains(Audiences, l.Audience) && slices.Contains(Trusts, l.Trust)
 }
 
+// SendsConnection resolves to the connection's configured audience; lib.rego matches the same value.
+const SendsConnection = "connection"
+
 func ValidSends(sends string) bool {
-	return sends == "" || sends == "connection" || slices.Contains(Audiences, sends)
+	return sends == "" || sends == SendsConnection || slices.Contains(Audiences, sends)
 }
 
 type Operation struct {
@@ -61,6 +64,7 @@ type Action struct {
 	Effects []string `json:"effects,omitempty"`
 }
 
+// Requirement IDs bind approval waivers; messages explain them without granting authority.
 type Requirement struct {
 	ID      string `json:"id"`
 	Message string `json:"message"`
@@ -110,12 +114,6 @@ type Facts struct {
 	Context    Context        `json:"context"`
 	Title      string         `json:"title"`
 	Details    any            `json:"details"`
-}
-
-// PolicyDiff is an agent proposal to change the owner source.
-type PolicyDiff struct {
-	SourceDiff    string `json:"source_diff"`
-	EffectiveDiff string `json:"effective_diff"`
 }
 
 // Obligations describes the requirements carried by an effect.

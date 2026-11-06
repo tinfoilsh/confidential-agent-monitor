@@ -1,13 +1,16 @@
-package frontdoor
+package sandbox
 
 import (
+	"context"
 	"errors"
 	"net"
-	"strconv"
+	"net/http"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/internal/frontdoor"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -17,7 +20,7 @@ const (
 	forwardOpenTimeout     = 10 * time.Second
 )
 
-var ErrForwardUnavailable = errors.New("forward unavailable")
+var errRouteUnavailable = errors.New("route unavailable")
 
 // Publisher names an authenticated peer and an optional discovery alias.
 // Trusted publishers are exempt from the limit on untrusted connections.
@@ -40,8 +43,24 @@ type forwardPeer struct {
 // Forwarder serves virtual TCP forwards without binding sockets on the server.
 // Each authenticated name owns one connection; aliases must resolve uniquely.
 type Forwarder struct {
-	mu    sync.Mutex
-	peers map[string]*forwardPeer
+	mu     sync.Mutex
+	peers  map[string]*forwardPeer
+	relays http.RoundTripper
+}
+
+// NewForwarder keeps each sandbox's bootstrap connections open between relayed
+// requests, so a request does not wait for a new forwarded channel.
+func NewForwarder() *Forwarder {
+	f := new(Forwarder)
+	f.relays = &http.Transport{DisableCompression: true, MaxIdleConnsPerHost: relayIdleConns, IdleConnTimeout: relayIdleTimeout,
+		DialContext: func(_ context.Context, _, address string) (net.Conn, error) {
+			host, _, err := net.SplitHostPort(address)
+			if err != nil {
+				return nil, err
+			}
+			return f.Dial(host, 443)
+		}}
+	return f
 }
 
 // ServePublisher replaces a peer's previous connection immediately and owns its
@@ -104,18 +123,15 @@ func (f *Forwarder) ServePublisher(conn *ssh.ServerConn, channels <-chan ssh.New
 	}
 }
 
-// Dial opens an exact published host:port for a peer name or unambiguous alias.
-// Addresses are scoped to the publisher, so peers can publish the same ports.
-func (f *Forwarder) Dial(name, address string) (net.Conn, error) {
-	host, portText, err := net.SplitHostPort(address)
-	if err != nil {
-		return nil, ErrForwardUnavailable
+// Dial opens a sandbox destination's virtual loopback forward for a peer name or
+// unambiguous alias. Addresses are scoped to the publisher, so peers can publish the
+// same ports. Bootstrap aliases expose only port 443; key-derived names may use any port.
+func (f *Forwarder) Dial(name string, port uint32) (net.Conn, error) {
+	name = strings.TrimSuffix(strings.ToLower(name), ".")
+	if port == 0 || port > 65535 || strings.HasPrefix(name, "bootstrap-") && port != 443 {
+		return nil, errRouteUnavailable
 	}
-	port, err := strconv.ParseUint(portText, 10, 16)
-	if err != nil || port == 0 {
-		return nil, ErrForwardUnavailable
-	}
-	endpoint := forwardAddress{host, uint32(port)}
+	endpoint := forwardAddress{"127.0.0.1", port}
 	f.mu.Lock()
 	peer := f.peers[name]
 	if peer == nil && name != "" {
@@ -123,7 +139,7 @@ func (f *Forwarder) Dial(name, address string) (net.Conn, error) {
 			if candidate.Alias == name && candidate.addresses[endpoint] {
 				if peer != nil {
 					f.mu.Unlock()
-					return nil, ErrForwardUnavailable
+					return nil, errRouteUnavailable
 				}
 				peer = candidate
 			}
@@ -132,14 +148,14 @@ func (f *Forwarder) Dial(name, address string) (net.Conn, error) {
 	available := peer != nil && peer.addresses[endpoint]
 	f.mu.Unlock()
 	if !available {
-		return nil, ErrForwardUnavailable
+		return nil, errRouteUnavailable
 	}
 	// OpenChannel cannot be canceled, so a peer that stalls it is closed.
 	stalled := time.AfterFunc(forwardOpenTimeout, func() { peer.conn.Close() })
 	defer stalled.Stop()
-	channel, requests, err := peer.conn.OpenChannel("forwarded-tcpip", ssh.Marshal(Target{Host: host, Port: uint32(port), Origin: "127.0.0.1", OriginPort: uint32(port)}))
+	channel, requests, err := peer.conn.OpenChannel("forwarded-tcpip", ssh.Marshal(frontdoor.Target{Host: endpoint.Host, Port: port, Origin: endpoint.Host, OriginPort: port}))
 	if err != nil {
-		return nil, ErrForwardUnavailable
+		return nil, errRouteUnavailable
 	}
 	return connector.NewChannelConn(channel, requests), nil
 }

@@ -17,16 +17,15 @@ var Kind = connector.Kind{Parse: parseRedis, New: func() connector.Server { retu
 
 func parseRedis(source connector.Setup) (connector.Prepared, error) {
 	c := new(redisSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
 	if err := c.validate(); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Source: source, Value: c, SecretNames: []string{"password"}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"password"}}, nil
 }
 
-// Redis keeps one immutable setup for each admitted stream.
 type Redis struct{ connector.Slot[redisSetup] }
 
 const (
@@ -51,12 +50,10 @@ func (r *redisSetup) validate() error {
 }
 
 func (owner *Redis) Serve(s *connector.Stream, e *connector.Env) {
-	captured := owner.Load()
-	if captured == nil {
+	r, ok := owner.Load()
+	if !ok {
 		return
 	}
-	r := captured.Value
-	r.Secrets = captured.Secrets
 
 	u := &r.URL
 	up, err := connector.DialURL(s.Context, e.Dialer, u, "rediss", redisPort, redisPort)
@@ -93,7 +90,7 @@ func (owner *Redis) Serve(s *connector.Stream, e *connector.Env) {
 		for i, arg := range cmd.Args {
 			args[i] = string(arg)
 		}
-		if err := s.Gate(s.Context, r.Capture((&Request{Command: commandName(args), Argv: args}).Describe())); err != nil {
+		if err := s.Gate(s.Context, r.Capture((&RedisFacts{Command: commandName(args), Argv: args}).Describe())); err != nil {
 			if _, err := s.Write(redcon.AppendError(nil, "ERR "+err.Error())); err != nil {
 				return
 			}
@@ -152,15 +149,13 @@ func encode(args [][]byte) []byte {
 	return out
 }
 
-type Request RedisFacts
-
-func (v *Request) Describe() (facts.Facts, error) {
-	details := Details{Redis: (*RedisFacts)(v)}
+func (v *RedisFacts) Describe() facts.Facts {
+	details := Details{Redis: v}
 	action := "write"
 	if slices.Contains(redisReads, v.Command) {
 		action = "read"
 	}
-	return facts.Facts{Operation: &facts.Operation{Action: action}, Title: strings.Join(v.Argv[:min(2, len(v.Argv))], " "), Parameters: map[string]any{"command": v.Command, "argv": v.Argv}, Details: details}, nil
+	return facts.Facts{Operation: &facts.Operation{Action: action}, Title: strings.Join(v.Argv[:min(2, len(v.Argv))], " "), Parameters: map[string]any{"command": v.Command, "argv": v.Argv}, Details: details}
 }
 
 var redisReads = strings.Fields(`

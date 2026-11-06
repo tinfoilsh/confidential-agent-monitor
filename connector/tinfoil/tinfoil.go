@@ -4,7 +4,6 @@ package tinfoil
 import (
 	"context"
 	"errors"
-	"maps"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -16,13 +15,14 @@ import (
 	"github.com/tinfoilsh/monitor/connector/web"
 )
 
-var Kind = connector.Kind{PerMessage: true, Parse: parseHTTP, New: func() connector.Server { return new(Server) }}
+var Kind = connector.Kind{PerMessage: true, Placeholders: true, Parse: parseHTTP, New: func() connector.Server { return new(Server) }}
+
+const apiKeyName = "TINFOIL_API_KEY"
 
 type httpSetup struct {
-	connector.SecretConfig
 	Enclave string `json:"enclave"`
 	Repo    string `json:"repo"`
-	http    *web.Setup
+	http    web.Setup
 }
 
 func parseHTTP(source connector.Setup) (connector.Prepared, error) {
@@ -30,23 +30,24 @@ func parseHTTP(source connector.Setup) (connector.Prepared, error) {
 	preset := struct {
 		*connector.Semantics
 		HTTP *web.Preset `json:"http"`
-	}{Semantics: &setup.Semantics}
-	if err := connector.ParseSetup(source, setup, &preset, &setup.Semantics); err != nil {
+	}{Semantics: &setup.http.Semantics}
+	if err := connector.ParseSetup(source, setup, &preset); err != nil {
 		return connector.Prepared{}, err
 	}
 	if err := validateEnclave(setup.Enclave, setup.Repo); err != nil {
 		return connector.Prepared{}, err
 	}
-	setup.http = &web.Setup{Preset: preset.HTTP, Credentials: web.Credentials{
-		SecretConfig: setup.SecretConfig,
-		Slots:        []web.Slot{{Value: "TINFOIL_API_KEY", Origin: "https://" + setup.Enclave, Path: "/v1", Header: "Authorization", Prefix: "Bearer "}},
-	}}
+	setup.http.Preset = preset.HTTP
+	setup.http.Slots = []web.Slot{apiKeySlot(setup.Enclave)}
 	if err := setup.http.Validate(false); err != nil {
 		return connector.Prepared{}, err
 	}
-	route := &web.Setup{Credentials: web.Credentials{Slots: setup.http.Slots}}
-	return connector.Prepared{Source: source, Value: setup, SecretNames: []string{"TINFOIL_API_KEY"}, Claim: route.Claim,
-		Discovery: connector.Discovery{Slots: setup.http.Slots, Placeholders: map[string]string{}}}, nil
+	return connector.Prepared{Value: setup, SecretNames: []string{apiKeyName}, Claim: setup.http.Claim,
+		Discovery: connector.Discovery{Slots: setup.http.Slots}}, nil
+}
+
+func apiKeySlot(enclave string) web.Slot {
+	return web.Slot{Value: apiKeyName, Origin: "https://" + enclave, Path: "/v1", Header: "Authorization", Prefix: "Bearer "}
 }
 
 type httpState struct {
@@ -67,12 +68,9 @@ func (s *Server) Update(ctx context.Context, prepared connector.Prepared, secret
 	defer s.mu.Unlock()
 	s.close()
 	setup := *prepared.Value.(*httpSetup)
-	setup.Secrets = maps.Clone(secrets)
-	h := *setup.http
-	h.Secrets = setup.Secrets
-	setup.http = &h
+	setup.http.Bind(secrets)
 	base := env.Transport()
-	transport, err := newAttestedTransport(ctx, setup.Secrets["TINFOIL_API_KEY"], setup.Enclave, setup.Repo, base)
+	transport, err := newAttestedTransport(ctx, setup.http.Secrets[apiKeyName], setup.Enclave, setup.Repo, base)
 	if err != nil {
 		base.CloseIdleConnections()
 		return err
@@ -105,26 +103,27 @@ func (s *Server) Serve(stream *connector.Stream, env *connector.Env) {
 }
 
 func (s *httpState) serve(stream *connector.Stream, e *connector.Env) {
-	h := *s.http
+	h := s.http
 	privateHost := ""
 	if stream.Host == "" {
-		privateHost = stream.Name + ".monitor"
+		privateHost = stream.Name + connector.Domain
 		h.Hosts = []string{privateHost}
 	}
 	prepare := func(r *http.Request, original *web.HTTPFacts) (http.RoundTripper, error) {
 		if privateHost != "" && r.URL.Host == privateHost {
-			if r.URL.Path != "/v1" && !strings.HasPrefix(r.URL.Path, "/v1/") {
-				return nil, errors.New("Tinfoil API requests must use a /v1 path")
+			slot := apiKeySlot(s.Enclave)
+			if r.URL.Path != slot.Path && !strings.HasPrefix(r.URL.Path, slot.Path+"/") {
+				return nil, errors.New("Tinfoil API requests must use a " + slot.Path + " path")
 			}
 			// Put a public placeholder in the normal slot. The shared HTTP path
 			// captures the enclave target and resolves the key only after the gate.
-			placeholder := h.Placeholder("TINFOIL_API_KEY")
+			placeholder := h.Placeholder(apiKeyName)
 			if placeholder == "" {
 				return nil, errors.New("Tinfoil credential is unavailable")
 			}
 			r.URL.Scheme, r.URL.Host, r.Host = "https", s.Enclave, s.Enclave
 			r.Header.Del("X-Api-Key")
-			r.Header.Set("Authorization", "Bearer "+placeholder)
+			r.Header.Set(slot.Header, slot.Prefix+placeholder)
 		}
 		return prepareAPIRequest(r, original, s.transport)
 	}
@@ -146,7 +145,7 @@ func (s *Server) Control() http.Handler {
 func (s *httpState) control() http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("POST /chat/completions", &httputil.ReverseProxy{Transport: s.transport, Rewrite: func(r *httputil.ProxyRequest) {
-		key, _ := s.Secrets["TINFOIL_API_KEY"].Value(r.In.Context())
+		key, _ := s.http.Secrets[apiKeyName].Value(r.In.Context())
 		r.Out.URL, r.Out.Host = &url.URL{Scheme: "https", Host: s.Enclave, Path: "/v1/chat/completions"}, ""
 		r.Out.Header = http.Header{"Authorization": {"Bearer " + key}, "Content-Type": {"application/json"}}
 	}})

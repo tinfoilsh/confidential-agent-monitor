@@ -14,7 +14,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-var ErrNotConfigured = errors.New("credential is not configured")
+var errNotConfigured = errors.New("credential is not configured")
 
 // Value is a string or an OAuth grant. Disclosure is controlled by field metadata.
 // Client is the guarded client that refreshes the grant; without one, a grant cannot refresh.
@@ -79,16 +79,19 @@ func (v *Value) lock(ctx context.Context) error {
 	}
 }
 
-// Raw waits for a refresh in progress, which may rotate the record.
-func (v *Value) Raw() json.RawMessage {
+// Configured waits for a refresh in progress, which may rotate the record.
+func (v *Value) Configured() bool {
+	if v == nil {
+		return false
+	}
 	v.lock(context.Background())
 	defer func() { <-v.gate }()
-	return v.raw
+	return len(v.raw) > 0
 }
 
 func (v *Value) Value(ctx context.Context) (string, error) {
 	if v == nil {
-		return "", ErrNotConfigured
+		return "", errNotConfigured
 	}
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
@@ -106,7 +109,7 @@ func (v *Value) Value(ctx context.Context) (string, error) {
 	t := v.token
 	if !t.Valid() {
 		if t.RefreshToken == "" {
-			return "", ErrNotConfigured
+			return "", errNotConfigured
 		}
 		var err error
 		t, err = grant.refresh(ctx, v.Client, t)

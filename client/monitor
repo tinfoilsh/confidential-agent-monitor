@@ -36,6 +36,9 @@ import uuid
 from urllib.parse import urlsplit
 
 
+AGENT_HOST = "agent.monitor"
+
+
 class MonitorError(Exception):
     pass
 
@@ -82,7 +85,7 @@ class Client:
         command += ["-S", self.control or "none", "-o", "ControlMaster=no"]
         return command
 
-    def exchange(self, command, request, host):
+    def exchange(self, command, request):
         # communicate(input=...) closes stdin before the reply. ssh forwards that
         # EOF, and Go's HTTP server cancels the browser request when it reads it.
         timed_out = threading.Event()
@@ -122,23 +125,21 @@ class Client:
             stderr.seek(0)
             detail = ssh_failure(stderr.read().decode(errors="replace").strip())
             if failure:
-                raise MonitorError(f"request to {host} failed: {detail or failure}") from failure
+                raise MonitorError(f"request to {AGENT_HOST} failed: {detail or failure}") from failure
             if process.returncode:
                 raise MonitorError(f"SSH connection failed: {detail or process.returncode}. Check the {self.ssh_host!r} SSH configuration")
             return response.status, content
 
-    def request(self, host, method, path, body=None):
-        if not re.fullmatch(r"[A-Za-z0-9_][A-Za-z0-9_.-]*\.monitor", host):
-            raise MonitorError(f"invalid connection host: {host!r}")
+    def request(self, method, path, body=None):
         data = json.dumps(body, ensure_ascii=False).encode() if body is not None else b""
         request = (
-            f"{method} {path} HTTP/1.1\r\nHost: {host}\r\n"
+            f"{method} {path} HTTP/1.1\r\nHost: {AGENT_HOST}\r\n"
             f"Connection: close\r\nContent-Type: application/json\r\n"
             f"Content-Length: {len(data)}\r\n\r\n"
         ).encode() + data
         command = self.ssh() + ["-o", "ClearAllForwardings=yes"]
-        command += ["-W", f"{host}:80", "--", self.ssh_host]
-        status, content = self.exchange(command, request, host)
+        command += ["-W", f"{AGENT_HOST}:80", "--", self.ssh_host]
+        status, content = self.exchange(command, request)
         if status >= 300:
             detail = content.decode(errors="replace").strip()
             raise MonitorError(f"HTTP {status}: {detail}")
@@ -146,13 +147,16 @@ class Client:
 
     def connections(self):
         try:
-            return json.loads(self.request("agent.monitor", "GET", "/connections"))["connections"]
+            listing = json.loads(self.request("GET", "/connections"))
+            if not isinstance(listing["connections"], list) or not isinstance(listing["ca"], str) or not listing["ca"]:
+                raise ValueError()
+            return listing
         except (ValueError, KeyError, TypeError) as error:
             raise MonitorError("invalid connection catalog from the monitor") from error
 
     def catalog(self):
         try:
-            value = json.loads(self.request("agent.monitor", "GET", "/catalog"))
+            value = json.loads(self.request("GET", "/catalog"))
             if (not isinstance(value, dict)
                     or not isinstance(value.get("catalog_id"), str)
                     or not isinstance(value.get("presets"), dict)
@@ -180,7 +184,6 @@ def receive(sock, size):
 
 
 def relay(left, right):
-    # Keep the opposite direction alive after EOF, including streamed responses.
     readable = [left, right]
     while readable:
         ready, _, _ = select.select(readable, [], [])
@@ -256,7 +259,7 @@ class ForwardHandler(socketserver.BaseRequestHandler):
 
     def handle(self):
         try:
-            with self.server.session.stream(self.host, 80, route=False) as upstream:
+            with self.server.session.stream(self.host, 80) as upstream:
                 relay(self.request, upstream)
         except (OSError, MonitorError):
             pass  # EOF tells the MCP client that its request did not complete.
@@ -338,9 +341,10 @@ class Session:
             raise MonitorError(f"SSH tunnel stopped: {detail or self.master.returncode}")
 
     @contextlib.contextmanager
-    def stream(self, host, port, route=True):
+    def stream(self, host, port):
         self.check()
-        if route:
+        if self.routes and not host.lower().endswith(".monitor"):
+            host = host.lower()
             matches, best = [], -1
             for connection in self.routes:
                 origins = [urlsplit(slot["origin"]) for slot in connection["slots"] or []]
@@ -369,7 +373,7 @@ class Session:
             connection.sendall(b"\x05\x01\x00\x03" + bytes([len(encoded)]) + encoded + struct.pack("!H", port))
             version, status, _, kind = receive(connection, 4)
             if version != 5 or status != 0:
-                raise MonitorError(f"Monitor refused {host}:{port}; check connection access and readiness")
+                raise MonitorError(f"Monitor refused {host}:{port}; check connection access and readiness, or select one with --connection NAME")
             size = {1: 4, 4: 16}.get(kind)
             if kind == 3:
                 size = receive(connection, 1)[0]
@@ -419,14 +423,8 @@ class Session:
             self.temporary.cleanup()
 
     def environment(self, selected, profile):
-        try:
-            setup = json.loads(self.client.request("agent.monitor", "GET", "/connections"))
-            connections = [c for c in setup["connections"] if c["placeholders"] is not None]
-            ca = setup["ca"]
-            if not isinstance(ca, str) or not ca:
-                raise ValueError()
-        except (ValueError, KeyError, TypeError) as error:
-            raise MonitorError("invalid connection catalog from the monitor") from error
+        listing = self.client.connections()
+        connections = [c for c in listing["connections"] if c["placeholders"] is not None]
         credential_names = {name for c in connections for name in c["placeholders"]}
         if selected:
             missing = set(selected) - {c["name"] for c in connections}
@@ -442,13 +440,15 @@ class Session:
         placeholders, shared = credential_environment(connections)
         for variable, names in shared.items():
             print(f"monitor: {variable} is shared; use " + ", ".join("$" + name for name in names), file=sys.stderr)
-        self.routes = connections
+        self.connections = connections
+        # Without --connection, the server chooses among every connection this identity reaches.
+        self.routes = connections if selected else []
         # Validate the CA without modifying either the system or user trust store.
         trust = ssl.create_default_context()
         public_roots = "".join(ssl.DER_cert_to_PEM_cert(c) for c in trust.get_ca_certs(binary_form=True))
-        trust.load_verify_locations(cadata=ca)
+        trust.load_verify_locations(cadata=listing["ca"])
         bundle = self.directory / "ca.pem"
-        bundle.write_text(public_roots + ca)
+        bundle.write_text(public_roots + listing["ca"])
         bundle.chmod(0o600)
         port = self.listen(("127.0.0.1", 0), ProxyHandler, http=True)
         proxy = f"http://127.0.0.1:{port}"
@@ -532,7 +532,6 @@ def credential_environment(connections):
     env, qualified_names = {}, {}
     for name, variable, value, qualified in credentials:
         if len(by_name[qualified]) > 1:
-            # Case folding and punctuation can make different names look alike.
             suffix = hashlib.sha256(json.dumps([name, variable]).encode()).hexdigest()[:12].upper()
             qualified += "_" + suffix
             while qualified in by_name or qualified in env:
@@ -542,7 +541,6 @@ def credential_environment(connections):
 
     shared = {}
     for variable, entries in by_variable.items():
-        # A credential called PATH is still usable through its qualified name.
         if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", variable) or variable in RESERVED_ENV or variable.startswith(("MONITOR_", "GIT_CONFIG_", "LD_", "DYLD_")):
             continue
         if len(entries) == 1:
@@ -621,7 +619,7 @@ def shell_command(session, env, shell):
         raise MonitorError("monitor shell supports bash and zsh; use --shell /path/to/bash")
     label = re.sub(r"[^a-zA-Z0-9_.-]", "_", env["MONITOR_CLIENT_PROFILE"])
     # User startup files are deliberately skipped so they cannot silently change
-    # account selection or routing. zsh always reads its system zshenv first.
+    # connection selection or routing. zsh always reads its system zshenv first.
     exports = "\n".join(f"export {key}={shlex.quote(value)}" for key, value in env.items()
                         if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", key))
     if name == "bash":
@@ -702,7 +700,7 @@ def mcp_probe(host, port, timeout):
 
 
 def mcp_servers(session, address=("127.0.0.1", 0)):
-    connections = [c for c in session.client.connections() if c["kind"] in ("mcp", "tinfoil-mcp")]
+    connections = [c for c in session.client.connections()["connections"] if c["kind"] in ("mcp", "tinfoil-mcp")]
     if not connections:
         raise MonitorError("no reachable MCP connections; an HTTP API connection alone does not provide MCP tools")
     servers, tools = {}, 0
@@ -755,21 +753,6 @@ def private_read(path):
         if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid() or info.st_mode & 0o077:
             raise MonitorError(f"{path} must be an owner-only regular file (chmod 600)")
         return source.read()
-
-
-def private_write(path, text):
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    fd, temporary = tempfile.mkstemp(prefix=".monitor-", dir=path.parent)
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8", newline="") as output:
-            output.write(text)
-            output.flush()
-            os.fsync(output.fileno())
-        os.replace(temporary, path)
-    finally:
-        with contextlib.suppress(FileNotFoundError):
-            os.unlink(temporary)
 
 
 @contextlib.contextmanager
@@ -878,11 +861,6 @@ def endpoint_address(value):
     return f"[{address}]:{parsed.port}" if ":" in address else f"{address}:{parsed.port}"
 
 
-def safe_host_environment():
-    return {name: value for name, value in os.environ.items()
-            if name in {"PATH", "HOME", "USER", "LOGNAME", "TERM", "LANG", "TMPDIR", "TZ"} or name.startswith("LC_")}
-
-
 def vm_module():
     if "monitor_vm" not in sys.modules:
         path = Path(__file__).with_name("monitor_vm.py")
@@ -941,13 +919,13 @@ def setup_launch(args):
         host_key = view["host_key"].strip()
         if "\n" in host_key or not host_key.startswith(("ssh-", "ecdsa-")):
             raise MonitorError("owner API returned an invalid SSH host key")
-        private_write(root / "owner.key", key)
-        private_write(root / "host_key", host_key + "\n")
+        vm_module().private(root / "owner.key", key.encode())
+        vm_module().private(root / "host_key", host_key.encode() + b"\n")
         profile = {"version": 3, "id": uuid.uuid4().hex, "owner_url": owner_url, "endpoint": endpoint,
                    "root": str(root), "image": image, "cpus": args.cpus, "memory": args.memory,
                    "connection": connection, "access": access, "mcp": args.mcp}
         config.setdefault("launch_profiles", {})[name] = profile
-        private_write(config_path, json.dumps(config, indent=2) + "\n")
+        vm_module().private(config_path, json.dumps(config, indent=2).encode() + b"\n")
         print(f"Saved launch profile {name!r}. Owner key stays in {root / 'owner.key'}.")
         prefix = "monitor" + (" --profile " + name if name != "default" else "")
         print(f"From a project directory, run: {prefix} launch claude")
@@ -967,10 +945,10 @@ def enroll_identity(owner, state, state_path, public_key, access):
         # Record the attempt first. A lost response followed by owner revocation
         # must not cause a later launch to restore the initial grant.
         state["enrolled"] = True
-        private_write(state_path, json.dumps(state, indent=2) + "\n")
+        vm_module().private(state_path, json.dumps(state, indent=2).encode() + b"\n")
         owner.edit([{"path": ["identities", state["name"]], "value": {"key": public_key, "connections": access}}])
     state["enrolled"] = True
-    private_write(state_path, json.dumps(state, indent=2) + "\n")
+    vm_module().private(state_path, json.dumps(state, indent=2).encode() + b"\n")
 
 
 def revoke_identity(owner, name, public_key):
@@ -1017,25 +995,16 @@ def launch_vm(args):
             raise MonitorError("no Monitor VM is recorded for this project")
         else:
             directory.mkdir(parents=True, exist_ok=True, mode=0o700)
-            if not (directory / "id").exists():
-                result = subprocess.run(["ssh-keygen", "-q", "-t", "ed25519", "-N", "", "-C", "monitor-vm", "-f", str(directory / "id")],
-                                        env=safe_host_environment(), capture_output=True, timeout=15)
-                if result.returncode:
-                    raise MonitorError("could not generate the VM's SSH identity")
             state = {"name": identity, "workspace": str(workspace), "enrolled": False, "revoked": False}
-            private_write(state_path, json.dumps(state) + "\n")
-        private_read(directory / "id")
-        public = subprocess.run(["ssh-keygen", "-y", "-f", str(directory / "id")], capture_output=True, timeout=15)
-        if public.returncode:
-            raise MonitorError("cannot read the VM's SSH public key")
-        public_key = public.stdout.decode().strip() + "\n"
+            vm_module().private(state_path, json.dumps(state).encode() + b"\n")
+        public_key = vm_module().keypair(directory / "id").decode() + "\n"
         if args.command in ("launch", "destroy"):
             owner = OwnerClient(profile["owner_url"], private_read(root / "owner.key"))
         if args.command == "destroy":
             vm_module().ensure_stopped(directory)
             revoke_identity(owner, identity, public_key)
             state["revoked"] = True
-            private_write(state_path, json.dumps(state) + "\n")
+            vm_module().private(state_path, json.dumps(state).encode() + b"\n")
             shutil.rmtree(directory)
             print("Revoked the Monitor identity and destroyed the VM.")
             return 0
@@ -1057,17 +1026,17 @@ def launch_vm(args):
                 print(f"Saved workspace archive to {args.output}")
                 return 0
             arguments = args.argv[1:] if args.argv[:1] == ["--"] else args.argv
-            return run_child(vm, vm.agent(arguments, profile.get("mcp", False)), safe_host_environment())
+            return run_child(vm, vm.agent(arguments, profile.get("mcp", False)), driver.environment())
 
 
 def guest_agent(client, args):
     with Session(client) as session:
         env = session.environment([], None)
-        if not any(c["name"] == args.connection and c["state"] == "ready" for c in client.connections()):
-            raise MonitorError("the model connection is not ready; check its access and status in Monitor")
-        connection = next((c for c in session.routes if c["name"] == args.connection), None)
+        connection = next((c for c in session.connections if c["name"] == args.connection), None)
         if connection is None:
             raise MonitorError("the model connection is not accessible to this VM")
+        if connection["state"] != "ready":
+            raise MonitorError("the model connection is not ready; check its access and status in Monitor")
         values = connection["placeholders"]
         variable = next((key for key in ("ANTHROPIC_API_KEY", "token") if key in values), None)
         if variable is None:
@@ -1127,7 +1096,7 @@ def policy_command(client, args):
     if args.policy_action == "show":
         if args.effective and owner is None:
             raise MonitorError("the complete effective policy requires owner authentication")
-        result = owner.request(path="/policy?effective" if args.effective else "/policy") if owner else json.loads(client.request("agent.monitor", "GET", "/policy"))
+        result = owner.request(path="/policy?effective" if args.effective else "/policy") if owner else json.loads(client.request("GET", "/policy"))
         if args.json:
             print(json.dumps(result, indent=2))
         else:
@@ -1136,35 +1105,27 @@ def policy_command(client, args):
     if args.policy_action == "status":
         if not re.fullmatch(r"[A-Z2-7]{26,}", args.id):
             raise MonitorError("proposal ID must be at least 26 base32 characters")
-        result = json.loads(client.request("agent.monitor", "GET", f"/policy/proposals/{args.id}"))
+        result = json.loads(client.request("GET", f"/policy/proposals/{args.id}"))
         if (not isinstance(result, dict) or result.get("id") != args.id
                 or result.get("state") not in ("pending", "approved", "denied", "outdated")):
             raise MonitorError("invalid proposal status from the monitor")
         print(json.dumps(result, indent=2))
         return 0
     if args.policy_action == "propose":
-        if bool(args.file) == bool(args.changes):
-            raise MonitorError("provide exactly one TOML file or --changes JSON file")
+        body = {"reason": args.reason}
         if args.changes:
-            if args.delete:
-                raise MonitorError("put deletions in the structured changes file, not --delete")
             raw = sys.stdin.read() if args.changes == "-" else Path(args.changes).read_text()
             try:
-                changes = json.loads(raw)
+                body["changes"] = json.loads(raw)
             except json.JSONDecodeError as err:
                 raise MonitorError(f"invalid structured changes JSON: {err}") from err
-            if not isinstance(changes, list) or not changes:
-                raise MonitorError("structured changes must be a non-empty JSON array")
-            body = {"reason": args.reason, "changes": changes}
-        else:
-            source = sys.stdin.read() if args.file == "-" else Path(args.file).read_text()
-            deletions = []
-            for pointer in args.delete:
-                if not pointer.startswith("/") or re.search(r"~(?![01])", pointer):
-                    raise MonitorError("--delete requires a JSON Pointer, for example /connections/github")
-                deletions.append([part.replace("~1", "/").replace("~0", "~") for part in pointer[1:].split("/")])
-            body = {"source": source, "reason": args.reason, "delete": deletions}
-        result = json.loads(client.request("agent.monitor", "POST", "/policy/proposals", body))
+        if args.file:
+            body["source"] = sys.stdin.read() if args.file == "-" else Path(args.file).read_text()
+        for pointer in args.delete:
+            if not pointer.startswith("/") or re.search(r"~(?![01])", pointer):
+                raise MonitorError("--delete requires a JSON Pointer, for example /connections/github")
+            body.setdefault("delete", []).append([part.replace("~1", "/").replace("~0", "~") for part in pointer[1:].split("/")])
+        result = json.loads(client.request("POST", "/policy/proposals", body))
         print(json.dumps(result, indent=2))
         return 0
     else:
@@ -1300,7 +1261,7 @@ def main(argv=None):
                 previous[signum] = signal.signal(signum, interrupted)
             return guest_agent(client, args) if args.command == "_agent" else managed_command(client, args)
         if args.command == "connections":
-            connections = client.connections()
+            connections = client.connections()["connections"]
             if args.json:
                 print(json.dumps({"connections": connections}, indent=2))
             elif connections:

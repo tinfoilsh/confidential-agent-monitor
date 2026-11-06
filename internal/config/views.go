@@ -1,7 +1,6 @@
 package config
 
 import (
-	"bytes"
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
@@ -41,7 +40,7 @@ func (c *Config) Effective() (string, error) {
 	}
 	ps := map[string]any{}
 	for _, connection := range c.Connections {
-		p, err := c.Preset(connection.Preset)
+		p, err := presets.Lookup(connection.Preset)
 		if err != nil {
 			return "", err
 		}
@@ -53,49 +52,23 @@ func (c *Config) Effective() (string, error) {
 	return RenderTOML(v)
 }
 
-// agentFields defines the restricted configuration view returned to an agent.
-// Proposals may request broader changes, but never reveal owner-only state.
-func (c *Config) agentFields(p Principal) ([]Change, error) {
-	if name, ok := c.Principals[p.Fingerprint]; !ok || name != p.Name {
+// AgentView is the restricted configuration returned to an agent. Proposals may
+// request broader changes, but never reveal owner-only state.
+func (c *Config) AgentView(p Principal) (map[string]any, error) {
+	if name, ok := c.Principals[p.Key]; !ok || name != p.Name {
 		return nil, errors.New("agent identity changed")
 	}
-	var rules any
-	if len(c.Identities[p.Name].Rules) != 0 {
-		rules = c.Identities[p.Name].Rules
+	identity := map[string]any{"connections": c.Accesses(p.Name)}
+	if rules := c.Identities[p.Name].Rules; len(rules) != 0 {
+		identity["rules"] = rules
 	}
-	fields := []Change{{Path: []string{"lattices"}, Value: c.Lattices},
-		{Path: []string{"identities", p.Name, "connections"}, Value: c.Accesses(p.Name)},
-		{Path: []string{"identities", p.Name, "rules"}, Value: rules}}
+	connections := map[string]any{}
 	for name, connection := range c.Connections {
 		if c.Reaches(p.Name, name) {
-			for field, value := range map[string]any{"contents": connection.Contents, "strangers": connection.Strangers, "sends": connection.Sends, "policy_options": connection.PolicyOptions} {
-				fields = append(fields, Change{Path: []string{"connections", name, field}, Value: value})
-			}
+			connections[name] = map[string]any{"contents": connection.Contents, "strangers": connection.Strangers, "sends": connection.Sends, "policy_options": connection.PolicyOptions}
 		}
 	}
-	return fields, nil
-}
-
-func (c *Config) AgentView(p Principal) (map[string]any, error) {
-	fields, err := c.agentFields(p)
-	if err != nil {
-		return nil, err
-	}
-	view := map[string]any{"connections": map[string]any{}}
-	for _, field := range fields {
-		if field.Value == nil {
-			continue
-		}
-		at := view
-		for _, key := range field.Path[:len(field.Path)-1] {
-			if at[key] == nil {
-				at[key] = map[string]any{}
-			}
-			at = at[key].(map[string]any)
-		}
-		at[field.Path[len(field.Path)-1]] = field.Value
-	}
-	return facts.JSON[map[string]any](view)
+	return facts.JSON[map[string]any](map[string]any{"lattices": c.Lattices, "identities": map[string]any{p.Name: identity}, "connections": connections})
 }
 
 // ProposalTarget names the connection whose setup or access path changes.
@@ -109,7 +82,6 @@ func ProposalTarget(path []string) (string, bool) {
 	return "", false
 }
 
-// ProposalChanges groups p's edits by connection.
 func (c *Config) ProposalChanges(p Principal, changes []Change) (map[string][]Change, error) {
 	groups := map[string][]Change{}
 	for _, change := range changes {
@@ -138,26 +110,17 @@ func (c *Config) ProposalScope(proposer string, changes []Change) string {
 	}
 	identities := map[string]any{}
 	for name, identity := range c.Identities {
-		access := c.Access(name, connection)
-		rules := map[string]Rule{}
-		for id, rule := range identity.Rules {
-			if rule.Connection == connection {
-				rules[id] = rule
-			}
-		}
-		if access.Level != "" || len(rules) != 0 || targeted[name] {
+		if c.Access(name, connection).Level != "" || len(identity.rulesFor(connection)) != 0 || targeted[name] {
 			key := ""
 			if targeted[name] {
 				key = identity.Key
 			}
-			identities[name] = []any{key, identity.Routes, access, identity.Effects, rules}
+			identities[name] = []any{key, identity.Routes, c.Authority(name, connection)}
 		}
 	}
 	settings, exists := c.Connections[connection]
 	fallback, fallbackExists := c.DefaultAccess[connection]
-	// Global settings change this connection's effective behavior too.
-	raw, _ := json.Marshal([]any{exists, settings, fallbackExists, fallback, identities,
-		c.Effects, c.AllowPaidInference, c.Lattices, c.AllowNetworks, c.Policies, c.Data})
+	raw, _ := json.Marshal([]any{exists, settings.Setup, fallbackExists, fallback, identities, c.AllowNetworks, c.Policies, c.Data})
 	return fmt.Sprintf("%x", sha256.Sum256(raw))
 }
 
@@ -167,19 +130,12 @@ func (c *Config) Catalog() (map[string]presets.Entry, string, error) {
 	if err != nil {
 		return nil, "", err
 	}
-	used, names := map[string]bool{}, map[string]bool{}
-	for name := range shipped {
-		names[name] = true
-	}
+	used := map[string]bool{}
 	for _, connection := range c.Connections {
 		used[connection.Preset] = true
 	}
 	entries := map[string]presets.Entry{}
-	for name := range names {
-		p, err := c.Preset(name)
-		if err != nil {
-			return nil, "", err
-		}
+	for name, p := range shipped {
 		if entries[name], err = p.Entry(used[name]); err != nil {
 			return nil, "", err
 		}
@@ -210,24 +166,13 @@ func (c *Config) EffectModes(agent, connection string, op *facts.Operation) map[
 	return modes
 }
 
-// SameAuthority compares the settings relevant to one admitted connection stream.
-// The caller must first compare prepared policy programs and connector setup;
-// setup equality already covers preset protocol data, action effects and public scope.
-func (c *Config) SameAuthority(old *Config, key, connection string) bool {
-	var authority [2][]byte
-	for i, cfg := range []*Config{old, c} {
-		name, settings := cfg.Principals[key], cfg.Connections[connection]
-		rules := map[string]Rule{}
-		for ruleName, rule := range cfg.Identities[name].Rules {
-			if rule.Connection == connection {
-				rules[ruleName] = rule
-			}
-		}
-		access := cfg.Access(name, connection)
-		// Compare current policy input; connector setup is checked by the caller.
-		settings.Effects, settings.Setup, access.Effects = nil, nil, nil
-		authority[i], _ = json.Marshal([]any{name, cfg.Lattices, cfg.AllowPaidInference, access,
-			cfg.EffectModes(name, connection, nil), rules, settings})
-	}
-	return bytes.Equal(authority[0], authority[1])
+// Authority encodes the settings an agent's requests on a connection are decided with,
+// apart from the request, the prepared policy program and the connector setup. Setup
+// equality already covers preset protocol data, action effects and public scope;
+// effect settings appear only as resolved modes.
+func (c *Config) Authority(agent, connection string) json.RawMessage {
+	settings, access := c.Connections[connection], c.Access(agent, connection)
+	settings.Effects, settings.Setup, access.Effects = nil, nil, nil
+	raw, _ := json.Marshal([]any{c.Lattices, c.AllowPaidInference, access, c.EffectModes(agent, connection, nil), c.Identities[agent].rulesFor(connection), settings})
+	return raw
 }

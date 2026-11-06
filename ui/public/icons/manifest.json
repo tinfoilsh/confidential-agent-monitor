@@ -17,9 +17,6 @@
   "anthropic": {
     "src": "anthropic.svg"
   },
-  "api": {
-    "src": "api.svg"
-  },
   "asana": {
     "src": "asana.svg"
   },
@@ -128,6 +125,10 @@
   "coda": {
     "src": "coda.svg"
   },
+  "codex": {
+    "dark": "openai.dark.svg",
+    "src": "openai.svg"
+  },
   "cohere": {
     "src": "cohere.svg"
   },
@@ -198,10 +199,6 @@
     "src": "get_response.png"
   },
   "github": {
-    "dark": "github_api.dark.svg",
-    "src": "github_api.svg"
-  },
-  "github_api": {
     "dark": "github_api.dark.svg",
     "src": "github_api.svg"
   },
@@ -420,6 +417,9 @@
   "openai": {
     "dark": "openai.dark.svg",
     "src": "openai.svg"
+  },
+  "openrouter": {
+    "src": "open_router.svg"
   },
   "orbit": {
     "src": "orbit.svg"

@@ -1,6 +1,7 @@
 import type { Clerk } from "@clerk/clerk-js/no-rhc";
 import { createSignal } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
+import { PERSONAL, UUID } from "./contract";
 import * as keys from "./keys";
 
 export const MONITOR_REPO = "tinfoilsh/confidential-agent-monitor";
@@ -8,7 +9,8 @@ export const SANDBOX_REPO = "tinfoilsh/confidential-agent-sandbox";
 const REFRESH_MS = 30_000;
 const FOCUS_REFRESH_MS = 5_000;
 const SIGN_OUT_CHANNEL = "tinfoil.manual-kek";
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+
+export const STARTING = ["created", "pending", "deploying", "started"];
 
 export type Container = {
   id: string;
@@ -71,7 +73,6 @@ export function createSession(clerk: Clerk) {
   const [user, setUser] = createSignal<{ id: string; label: string }>();
   const [account, setAccount] = createSignal("");
   const [keyState, setKeyState] = createSignal<Read<keys.KeyState>>({});
-  // Reads change rows in place, so unchanged rows keep their identity.
   const [rows, setRows] = createStore<Read<Container[]>>({});
   const inventory = () => rows;
   const [unlocked, setUnlocked] = createSignal<keys.Unlocked>();
@@ -101,7 +102,7 @@ export function createSession(clerk: Clerk) {
     if (
       !token ||
       clerk.user?.id !== who.user ||
-      (clerk.organization?.id ?? "personal") !== who.account
+      (clerk.organization?.id ?? PERSONAL) !== who.account
     )
       throw new keys.ApiError(401, {
         error: "Your account changed. Try again.",
@@ -144,7 +145,7 @@ export function createSession(clerk: Clerk) {
   // A new Clerk session is a new sign-in even for the same user and account.
   function sync() {
     const id = clerk.user?.id;
-    const next = clerk.organization?.id ?? "personal";
+    const next = clerk.organization?.id ?? PERSONAL;
     const session = clerk.session?.id ?? "";
     if (id === user()?.id && next === account() && session === sid) return;
     scope.abort();
@@ -225,7 +226,6 @@ export function createSession(clerk: Clerk) {
     ]);
   }
 
-  // Joins a read already running for the same account.
   function refresh() {
     if (inflight?.scope !== scope) {
       lastRead = Date.now();
@@ -316,7 +316,6 @@ export function createSession(clerk: Clerk) {
   // Only a hint to check sooner; storage alone decides.
   const channel = new BroadcastChannel(SIGN_OUT_CHANNEL);
   channel.onmessage = () => void checkEnded().catch(() => {});
-  // Staying signed in resumes normal operation with a fresh scope.
   function cancelLogout() {
     if (!signingOut) return;
     signingOut = undefined;
@@ -347,7 +346,7 @@ export function createSession(clerk: Clerk) {
       clerk.redirectToSignIn({ signInForceRedirectUrl: location.href }),
     // The CLI's validated grant selects this account explicitly.
     activate: (next: string) =>
-      clerk.setActive({ organization: next === "personal" ? null : next }),
+      clerk.setActive({ organization: next === PERSONAL ? null : next }),
     // Cancels running key actions and admits none, then settles this user's
     // pending recovery commits and gathers the recovery files to offer. The
     // result stays valid only for this sign-out; logout() then deletes every

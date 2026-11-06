@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tinfoilsh/monitor/connector"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -24,8 +25,7 @@ type Candidate struct {
 
 // Select resolves only supplied candidates, so inaccessible connections cannot tie.
 func Select(host string, port uint32, candidates []Candidate) (name string, explicit bool) {
-	// Explicit names bypass inference.
-	if name, ok := strings.CutSuffix(host, ".monitor"); ok {
+	if name, ok := strings.CutSuffix(host, connector.Domain); ok {
 		for _, c := range candidates {
 			if c.Name == name {
 				return name, true
@@ -48,7 +48,6 @@ func Select(host string, port uint32, candidates []Candidate) (name string, expl
 			tied = true
 		}
 	}
-	// Refuse ambiguous routing claims.
 	if tied {
 		return "", false
 	}
@@ -67,7 +66,6 @@ func Parse(nc ssh.NewChannel) (Target, error) {
 }
 
 func Serve(ln net.Listener, config func() *ssh.ServerConfig, session func(*ssh.ServerConn, <-chan ssh.NewChannel, <-chan *ssh.Request)) {
-	// Bound concurrent authentication work.
 	handshakes := make(chan struct{}, 64)
 	for {
 		nc, err := ln.Accept()

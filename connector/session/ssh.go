@@ -23,13 +23,12 @@ var SSHKind = connector.Kind{UsesHostKey: true, Parse: parseSSH, New: func() con
 
 func parseSSH(source connector.Setup) (connector.Prepared, error) {
 	c := new(sshSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Source: source, Value: c, SecretNames: []string{"key"}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"key"}}, nil
 }
 
-// SSH keeps one immutable setup for each admitted stream.
 type SSH struct{ connector.Slot[sshSetup] }
 
 const (
@@ -85,45 +84,52 @@ func (t *sshSetup) dial(s *connector.Stream, e *connector.Env) (*ssh.Client, err
 }
 
 func (owner *SSH) Serve(s *connector.Stream, e *connector.Env) {
-	captured := owner.Load()
-	if captured == nil {
+	t, ok := owner.Load()
+	if !ok {
 		return
 	}
-	t := captured.Value
-	t.Secrets = captured.Secrets
 
 	t.serve(s, e, func(up *ssh.Client, nc ssh.NewChannel) {
-		relayChannel(up, nc, func(r *ssh.Request) error { return s.Gate(s.Context, t.Capture((eventForSSH(r)).Describe(t.Host))) })
+		relayChannel(up, nc, func(r *ssh.Request) error { return s.Gate(s.Context, t.Capture(eventForSSH(r).Describe(t.Host))) })
 	})
 }
 
 func (t *sshSetup) serve(s *connector.Stream, e *connector.Env, pump func(*ssh.Client, ssh.NewChannel)) {
-	chans, err := innerSSH(s, e.HostKey)
+	serveSessions(s, e.HostKey, func(workers *sync.WaitGroup) func(ssh.NewChannel) {
+		up, err := t.dial(s, e)
+		if err != nil {
+			log.Printf("%s: %v", t.Host, err)
+			return nil
+		}
+		workers.Go(func() {
+			up.Wait()
+			s.Close()
+		})
+		return func(nc ssh.NewChannel) { pump(up, nc) }
+	})
+}
+
+func serveSessions(s *connector.Stream, hostKey ssh.Signer, start func(*sync.WaitGroup) func(ssh.NewChannel)) {
+	chans, err := innerSSH(s, hostKey)
 	if err != nil {
 		return
 	}
 	var workers sync.WaitGroup
 	defer func() { s.Close(); workers.Wait() }()
-	up, err := t.dial(s, e)
-	if err != nil {
-		log.Printf("%s: %v", t.Host, err)
+	serve := start(&workers)
+	if serve == nil {
 		return
 	}
-	defer s.Interrupt(up)()
-	workers.Go(func() {
-		up.Wait()
-		s.Close()
-	})
 	for nc := range chans {
-		workers.Go(func() { pump(up, nc) })
+		if nc.ChannelType() != channelSession {
+			nc.Reject(ssh.Prohibited, "only session channels are supported")
+			continue
+		}
+		workers.Go(func() { serve(nc) })
 	}
 }
 
 func relayChannel(up *ssh.Client, nc ssh.NewChannel, check func(*ssh.Request) error) {
-	if nc.ChannelType() != channelSession {
-		nc.Reject(ssh.Prohibited, "only session channels are relayed")
-		return
-	}
 	upCh, upReqs, err := up.OpenChannel(channelSession, nc.ExtraData())
 	if err != nil {
 		nc.Reject(ssh.ConnectionFailed, err.Error())
@@ -259,12 +265,8 @@ func innerSSH(s *connector.Stream, hostKey ssh.Signer) (<-chan ssh.NewChannel, e
 
 type SSHRequest Details
 
-func (r *SSHRequest) Describe(host string) (facts.Facts, error) {
-	details := Details(*r)
+func (r *SSHRequest) Describe(host string) facts.Facts {
 	v := r.SSH
-	if v == nil {
-		return facts.Facts{Details: details}, nil
-	}
 	action := map[string]string{"pty-req": "session", "env": "session", "window-change": "session", "signal": "session", "break": "session", "exec": "run", "shell": "shell"}[v.Request]
 	if v.Request == "subsystem" && v.Subsystem == "sftp" {
 		action = "files"
@@ -278,5 +280,5 @@ func (r *SSHRequest) Describe(host string) (facts.Facts, error) {
 		title = "SSH " + v.Request
 	}
 	op := &facts.Operation{Action: action}
-	return facts.Facts{Operation: op, Title: title, Parameters: scope, Details: details}, nil
+	return facts.Facts{Operation: op, Title: title, Parameters: scope, Details: Details(*r)}
 }

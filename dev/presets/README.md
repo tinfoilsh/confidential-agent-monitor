@@ -154,13 +154,3 @@ access. The current inventory has 152 request variants and 149 descriptors.
 Multipart file upload and multipart audio transcription are reported as
 unsupported; JSON audio transcription is supported. Consequently,
 `check --reviewed open_router` still reports those two encoding gaps.
-
-```sh
-# Importer and accounting regressions, from this directory.
-GOWORK=off go test ./...
-
-# Policy validation and request-contract tests, from the monitor root.
-go test . -run 'Test(Preset|Optional|GeneratedCandidate)' -count=1
-```
-
-The policy tests validate all candidate records structurally and exercise selected Slack, Anthropic, and Airtable requests. They do not claim exhaustive semantic tests for every generated operation. No provider accounts are called by these tests.

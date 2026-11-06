@@ -1,5 +1,4 @@
 import { sha256 } from "@noble/hashes/sha2.js";
-import type { PasskeyKeyManager } from "@tinfoilsh/passkey-kit";
 import { For, Match, Show, Switch, createSignal, onMount } from "solid-js";
 import { AuthCard, AuthScreen, Icon, Loading } from "../components";
 import {
@@ -14,7 +13,7 @@ import {
   sealKeySyncEnvelope,
   type KeySyncRequest,
 } from "./contract";
-import { Header } from "./Console";
+import { Header } from "./Header";
 import * as keys from "./keys";
 import { KeyGate } from "./KeyPanel";
 import type { Session } from "./session";
@@ -60,13 +59,9 @@ function stored(): KeySyncRequest | undefined {
   }
 }
 
-export default function Cli(props: {
-  session: Session;
-  manager?: PasskeyKeyManager;
-  navigate?: (url: string) => void;
-}) {
-  const manager = props.manager ?? keys.passkeys();
-  const navigate = props.navigate ?? ((url: string) => location.assign(url));
+export default function Cli(props: { session: Session }) {
+  document.title = "CLI key sync · Terminal";
+  const manager = keys.passkeys();
   const [error, setError] = createSignal(launchError);
   const [typed, setTyped] = createSignal("");
   const [confirmed, setConfirmed] = createSignal("");
@@ -150,7 +145,7 @@ export default function Cli(props: {
         }),
       );
       sessionStorage.removeItem(LAUNCH);
-      navigate(keySyncCallbackURL(profile, payload));
+      location.assign(keySyncCallbackURL(profile, payload));
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : String(cause));
       setBusy(false);

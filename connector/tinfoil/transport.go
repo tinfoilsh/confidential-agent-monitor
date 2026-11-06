@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 
@@ -34,24 +33,19 @@ type attestedTransport struct {
 	expires time.Time
 }
 
-// validateEnclave checks the origin and release reference before configuring a connection.
 func validateEnclave(enclave, repo string) error {
-	u, err := url.Parse("https://" + enclave)
-	if err != nil || !web.ValidOrigin("https://"+enclave) || u.Host != enclave || u.Port() != "" || strings.Trim(enclave, "abcdefghijklmnopqrstuvwxyz0123456789.-") != "" {
+	if !web.ValidOrigin("https://"+enclave) || strings.Trim(enclave, web.HostChars) != "" || strings.Contains(enclave, ":") {
 		return errors.New("Tinfoil enclave must be a lowercase HTTPS hostname without a port")
 	}
-	_, _, _, err = verify.ParseReference(repo)
+	_, _, _, err := verify.ParseReference(repo)
 	return err
 }
 
 // newAttestedTransport verifies the enclave before callers can send credentials or MCP discovery.
 // Inference and MCP share the same attestation, renewal, and TLS key binding.
 func newAttestedTransport(ctx context.Context, key *credential.Value, enclave, repo string, base *http.Transport) (*attestedTransport, error) {
-	if key == nil || key.Raw() == nil {
+	if !key.Configured() {
 		return nil, errors.New("Tinfoil API key is not configured")
-	}
-	if err := validateEnclave(enclave, repo); err != nil {
-		return nil, err
 	}
 	v, err := verify.NewVerifier()
 	if err != nil {

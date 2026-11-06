@@ -3,6 +3,7 @@ package web
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -76,7 +77,7 @@ func (h *Setup) serveWebSocket(w http.ResponseWriter, r *http.Request, handshake
 	// A hijacked HTTP connection no longer triggers http.Server's closed state.
 	defer s.Close()
 	defer client.CloseNow()
-	client.SetReadLimit(maxBodyBytes)
+	client.SetReadLimit(MaxBodyBytes)
 	// Responses may include large images; copy replies without buffering them.
 	upstream.SetReadLimit(-1)
 	defer connector.PumpReplies(s, func() {
@@ -110,7 +111,7 @@ func (h *Setup) serveWebSocket(w http.ResponseWriter, r *http.Request, handshake
 			return
 		}
 		request := websocketMessage(handshake, kind, body)
-		if err := s.Gate(s.Context, h.Capture((request).Describe(h))); err != nil {
+		if err := s.Gate(s.Context, h.CaptureResult((request).Describe(h))); err != nil {
 			client.Close(websocket.StatusPolicyViolation, "request refused by monitor; see activity")
 			return
 		}
@@ -129,14 +130,14 @@ type WebSocketReceive struct {
 	Path   string `json:"path"`
 }
 
-func (r *WebSocketReceive) Describe() (facts.Facts, error) {
+func (r *WebSocketReceive) Describe() facts.Facts {
 	return facts.Facts{
 		Operation:  &facts.Operation{ID: "websocket.receive", Action: "receive", Effects: []string{"read"}},
 		Title:      "Receive WebSocket message from " + r.Host + r.Path,
 		Parameters: map[string]any{"origin": r.Origin, "path": r.Path},
-		Details:    Details{HTTP: &HTTPFacts{WebSocket: true, Origin: r.Origin, Host: r.Host, Path: r.Path, BodyKind: "opaque"}},
+		Details:    Details{HTTP: &HTTPFacts{WebSocket: true, Origin: r.Origin, Host: r.Host, Path: r.Path, BodyKind: bodyOpaque}},
 		Context:    facts.Context{Sends: "me"},
-	}, nil
+	}
 }
 
 func websocketHeaders(header http.Header) http.Header {
@@ -152,13 +153,13 @@ func websocketHeaders(header http.Header) http.Header {
 
 func websocketMessage(handshake *Request, kind websocket.MessageType, body []byte) *Request {
 	layer := *handshake.HTTP
-	layer.BodyKind = "json"
+	layer.BodyKind = BodyJSON
 	request := &Request{HTTP: &layer}
 	var err error
 	layer.Body, err = decodeJSON(body)
-	if _, object := layer.Body.(map[string]any); kind != websocket.MessageText || len(body) > maxBodyBytes || err != nil || !object {
-		layer.Body, layer.BodyKind = nil, "opaque"
-		request.Invalid = "WebSocket messages must be unambiguous JSON objects of at most 8 MiB"
+	if _, object := layer.Body.(map[string]any); kind != websocket.MessageText || len(body) > MaxBodyBytes || err != nil || !object {
+		layer.Body, layer.BodyKind = nil, bodyOpaque
+		request.Invalid = fmt.Sprintf("WebSocket messages must be unambiguous JSON objects of at most %d MiB", MaxBodyBytes>>20)
 	}
 	return request
 }

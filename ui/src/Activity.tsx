@@ -1,26 +1,17 @@
-import {
-  For,
-  Show,
-  createMemo,
-  createResource,
-  lazy,
-  onCleanup,
-  onMount,
-} from "solid-js";
+import { For, Show, createMemo, onCleanup, onMount } from "solid-js";
 import * as owner from "./owner.js";
 import {
   ConnectorIcon,
   Empty,
   Icon,
+  RemoveRule,
   ResourceDisclosure,
+  RuleText,
+  createRecord,
   href,
 } from "./components";
 import { useMonitor } from "./monitor";
-import { PolicyProposals } from "./PolicyProposals";
-
-const Rules = lazy(() =>
-  import("./Settings").then((m) => ({ default: m.Rules })),
-);
+import { PolicyProposals, TechnicalDiff } from "./PolicyProposals";
 
 const PAGE = 50;
 const HOLD_SCROLL_PX = 100;
@@ -75,10 +66,7 @@ export function Activity(props: { scope?: string; name?: string }) {
       <Show
         when={proposals()}
         fallback={
-          <Show
-            when={rules()}
-            fallback={<Requests scope={props.scope} name={props.name} expanded={request()} />}
-          >
+          <Show when={rules()} fallback={<Requests expanded={request()} />}>
             <Rules />
           </Show>
         }
@@ -88,29 +76,62 @@ export function Activity(props: { scope?: string; name?: string }) {
     </>
   );
 }
-function Requests(props: { scope?: string; name?: string; expanded?: string }) {
+function Rules() {
+  const m = useMonitor(),
+    rules = () =>
+      Object.entries(m.view()!.config.identities ?? {}).flatMap(
+        ([name, identity]) =>
+          Object.keys(identity.rules ?? {}).map((id) => [name, id] as const),
+      );
+  return (
+    <div class="resource-list">
+      <div class="resource-heading">
+        <h2>
+          Saved rules <span class="count">{rules().length}</span>
+        </h2>
+        <span>Updates every 5 seconds</span>
+      </div>
+      <For
+        each={rules()}
+        fallback={
+          <Empty title="No saved rules yet" icon="rules">
+            Save an approval rule from a request to allow matching requests in
+            the future.
+          </Empty>
+        }
+      >
+        {([name, id]) => {
+          const rule = () => m.view()!.config.identities![name].rules![id];
+          return (
+            <div class="resource-row">
+              <a
+                class="resource-link"
+                href={href("connection", rule().connection)}
+              >
+                <ConnectorIcon connection={rule().connection} />
+                <RuleText rule={rule()}>
+                  <small>
+                    {name} · {rule().connection}
+                    {rule().operation
+                      ? ""
+                      : " · Inactive: saved before approvals named an operation"}
+                  </small>
+                </RuleText>
+              </a>
+              <RemoveRule agent={name} id={id} />
+            </div>
+          );
+        }}
+      </For>
+    </div>
+  );
+}
+function Requests(props: { expanded?: string }) {
   const m = useMonitor();
-  const scope = () =>
-    props.scope === "agent" || props.scope === "connection" ? props.scope : "";
-  const key = scope() ? `${scope()}/${props.name ?? ""}` : "";
-  if (m.activity.scope !== key)
-    m.setActivity({ scope: key, page: 0, anchor: 0 });
   const page = () => m.activity.page,
     setPage = (value: number) => m.setActivity("page", value),
     anchor = () => m.activity.anchor;
-  const filtered = createMemo(() =>
-    owner
-      .ordered(m.records(), m.dismissed())
-      .filter((r) => !owner.isConnectionProposalRecord(r))
-      .filter((r) =>
-        scope() === "agent"
-          ? r.facts.principal.name === props.name
-          : scope() === "connection"
-            ? r.facts.connection === props.name
-            : true,
-      ),
-  );
-  // Paging back holds the list at its newest request, so arrivals do not shift the rows being read.
+  const filtered = createMemo(() => owner.ordered(m.requests(), m.dismissed()));
   const held = createMemo(() =>
     anchor()
       ? filtered().filter((r) => Date.parse(r.time) <= anchor())
@@ -132,7 +153,7 @@ function Requests(props: { scope?: string; name?: string; expanded?: string }) {
     anchor() ||
     m.setActivity(
       "anchor",
-      Date.parse(m.records()[0]?.time ?? "") || Date.now(),
+      Date.parse(m.requests()[0]?.time ?? "") || Date.now(),
     );
   onMount(() => {
     const workspace = document.getElementById("workspace")!;
@@ -149,12 +170,6 @@ function Requests(props: { scope?: string; name?: string; expanded?: string }) {
   };
   return (
     <>
-      <Show when={scope()}>
-        <p class="activity-context">
-          Requests for <strong>{props.name}</strong>{" "}
-          <a href="#activity">All requests</a>
-        </p>
-      </Show>
       <div id="list" class="resource-list">
         <div class="resource-heading">
           <h2>
@@ -170,25 +185,15 @@ function Requests(props: { scope?: string; name?: string; expanded?: string }) {
           each={visible()}
           fallback={
             <Empty
-              title={
-                m.records().length ? "No matching requests" : "No requests yet"
-              }
+              title="No requests yet"
               action={
-                <Show when={!m.records().length}>
-                  <a class="button primary" href="#connections/catalog">
-                    <Icon name="plus" />
-                    Add connection
-                  </a>
-                </Show>
+                <a class="button primary" href="#connections/catalog">
+                  <Icon name="plus" />
+                  Add connection
+                </a>
               }
             >
-              <Show
-                when={m.records().length}
-                fallback="Requests appear here when a sandbox uses a connection."
-              >
-                No requests for this{" "}
-                {scope() === "agent" ? "agent" : "connection"} yet.
-              </Show>
+              Requests appear here when a sandbox uses a connection.
             </Empty>
           }
         >
@@ -204,13 +209,7 @@ function Requests(props: { scope?: string; name?: string; expanded?: string }) {
                 summary={
                   <>
                     <span class="resource-link">
-                      <ConnectorIcon
-                        preset={
-                          m.view()!.config.connections?.[
-                            record().facts.connection
-                          ]?.preset ?? ""
-                        }
-                      />
+                      <ConnectorIcon connection={record().facts.connection} />
                       <span>
                         <strong>{owner.requestTitle(record())}</strong>
                         <small>
@@ -299,39 +298,19 @@ export function RequestDetail(props: {
 }) {
   const m = useMonitor();
   const listed = createMemo(() => m.recordsById().get(props.id));
-  const source = createMemo(
-    () => ({
-      api: m.api()!,
-      id: props.id,
-      segment: listed()?.segment,
-      state: listed()?.state,
-      reviews: listed()?.reviews?.length ?? 0,
-      saving: !!listed()?.savingDecision,
-    }),
-    undefined,
-    {
-      equals: (a, b) =>
-        !!a &&
-        a.api === b.api &&
-        a.id === b.id &&
-        a.state === b.state &&
-        a.reviews === b.reviews &&
-        a.saving === b.saving,
-    },
-  );
-  // Closing a disclosure pauses updates while retaining the loaded request.
-  // Reopening unchanged details should not fetch the same large body again.
+  const source = createMemo(() => ({
+    api: m.api()!,
+    id: props.id,
+    segment: listed()?.segment,
+    state: listed()?.state,
+    reviews: listed()?.reviews?.length ?? 0,
+    saving: !!listed()?.savingDecision,
+  }));
   const selected = createMemo(
     (previous: ReturnType<typeof source> | undefined) =>
       props.active === false || listed()?.savingDecision ? previous : source(),
   );
-  const lifetime = new AbortController();
-  onCleanup(() => lifetime.abort());
-  const [full, { refetch }] = createResource(selected, (s) =>
-    s.segment
-      ? s.api.archived(s.segment, s.id, lifetime.signal)
-      : s.api.request(s.id, lifetime.signal),
-  );
+  const [full, { refetch }] = createRecord(selected);
   const record = createMemo(() => {
     if (full.error) return;
     const current = full() ?? listed();
@@ -441,10 +420,10 @@ export function RequestDetail(props: {
                             : state() === "outdated"
                               ? "Settings affecting this connection changed before review."
                               : state() === "allowed" || state() === "approved"
-                                ? owner.isConnectionProposalRecord(r())
+                                ? owner.isProposal(r())
                                   ? "Proposal approved."
                                   : "Allowed by policy."
-                                : state() === "denied" && owner.isConnectionProposalRecord(r())
+                                : state() === "denied" && owner.isProposal(r())
                                   ? "Proposal rejected."
                                   : "Blocked."}
                     </p>
@@ -457,7 +436,7 @@ export function RequestDetail(props: {
                         {answer.decision === "once"
                           ? " approved it once"
                           : answer.decision === "deny"
-                            ? owner.isConnectionProposalRecord(r())
+                            ? owner.isProposal(r())
                               ? " rejected it"
                               : " denied it"
                             : " approved it and saved a rule"}
@@ -506,10 +485,7 @@ export function RequestDetail(props: {
                 {(policy) => (
                   <>
                     <h3>Source changes</h3>
-                    <pre>{policy().source_diff}</pre>
-                    <Show when={!owner.isConnectionProposalRecord(r()) && policy().effective_diff}>
-                      {(effective) => <><h3>Expanded configuration changes</h3><pre>{effective()}</pre></>}
-                    </Show>
+                    <TechnicalDiff text={policy().source_diff} />
                   </>
                 )}
               </Show>

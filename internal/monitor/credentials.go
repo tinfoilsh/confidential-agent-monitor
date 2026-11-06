@@ -34,7 +34,6 @@ func (m *monitor) replaceValue(ctx context.Context, id store.SecretID, value *cr
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	c := m.connections[id.Connection]
-	// Reject stale credential refreshes.
 	if c == nil || c.Credentials[id.Name] != value || !bytes.Equal(m.store.Doc.Credentials.Get(id), before) {
 		return errors.New("credential changed; start again")
 	}
@@ -58,12 +57,12 @@ func (m *monitor) signInCredential(connection, name string) (json.RawMessage, fu
 	return before, func(ctx context.Context, raw json.RawMessage) error {
 		m.writes.Lock()
 		defer m.writes.Unlock()
-		return m.writeSettings(ctx, nil, nil, store.Secrets{connection: {name: raw}}, func() error {
+		return m.writeSettings(ctx, settingsWrite{credentials: store.Secrets{connection: {name: raw}}, check: func() error {
 			if m.connections[connection] != c || c.Credentials[name] != value || !bytes.Equal(m.store.Doc.Credentials.Get(id), before) {
 				return errors.New("credential changed; start again")
 			}
 			return nil
-		}, nil)
+		}})
 	}, nil
 }
 
@@ -165,5 +164,5 @@ func (m *monitor) finishSignIn(r *http.Request, req finishSignInInput) (any, err
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
 	defer cancel()
-	return m.viewAfter(pending.finish(ctx, req))
+	return m.viewAfter(r, pending.finish(ctx, req))
 }

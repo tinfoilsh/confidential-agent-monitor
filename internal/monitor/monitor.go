@@ -23,7 +23,6 @@ import (
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/facts"
 	"github.com/tinfoilsh/monitor/internal/config"
-	"github.com/tinfoilsh/monitor/internal/frontdoor"
 	"github.com/tinfoilsh/monitor/internal/policy"
 	"github.com/tinfoilsh/monitor/internal/store"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
@@ -101,7 +100,6 @@ func (m *monitor) acquire(c *connection, prepared *connector.Prepared) (release 
 	return c.active.Done, nil
 }
 func (c *connection) close() {
-	// Drain work before teardown.
 	c.active.Wait()
 	if closer, ok := c.Server.(io.Closer); ok {
 		_ = closer.Close()
@@ -129,7 +127,7 @@ type Options struct {
 	SessionKey     noise.DHKey
 	HostKey        ssh.Signer
 	Connectors     map[string]connector.Kind
-	Workers        worker.Launcher
+	Workers        *worker.Local
 	EmbeddedFiles  http.Handler
 }
 type admission struct {
@@ -144,7 +142,7 @@ type admission struct {
 // When both are needed, take writes before mu. Connection-map membership changes
 // require both locks, so a reader may hold either; gate only needs mu.
 type monitor struct {
-	workers                 worker.Launcher
+	workers                 *worker.Local
 	kinds                   map[string]connector.Kind
 	settings                atomic.Pointer[settings]
 	mu                      sync.Mutex
@@ -156,17 +154,13 @@ type monitor struct {
 	sessionKey              noise.DHKey
 	sshHostKey              ssh.Signer
 	embeddedFiles, ownerAPI http.Handler
-	forwards                *frontdoor.Forwarder
-	relays                  http.RoundTripper
+	forwards                *sandbox.Forwarder
 	streams                 map[*connector.Stream]admission
 	records                 []*record
 	signIns                 sync.Map
 }
 
 func New(o Options) *monitor {
-	if o.EmbeddedFiles == nil {
-		o.EmbeddedFiles = http.NotFoundHandler()
-	}
 	m := &monitor{
 		store:          store.Store{Bucket: o.Bucket},
 		audit:          store.AuditLog[*record]{Bucket: o.Bucket},
@@ -176,11 +170,10 @@ func New(o Options) *monitor {
 		kinds:          o.Connectors,
 		workers:        o.Workers,
 		embeddedFiles:  o.EmbeddedFiles,
-		forwards:       new(frontdoor.Forwarder),
+		forwards:       sandbox.NewForwarder(),
 		connections:    map[string]*connection{},
 		streams:        map[*connector.Stream]admission{},
 	}
-	m.relays = sandbox.Relays(m.forwards)
 	m.ownerAPI = m.newOwnerAPI()
 	return m
 }
@@ -190,7 +183,6 @@ func (m *monitor) generation() (uint64, bool) {
 	return m.store.Doc.Generation, m.settings.Load() != nil
 }
 
-// snapshot returns the committed document and the settings published from it.
 func (m *monitor) snapshot() (store.Document, *settings) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -308,32 +300,24 @@ func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Docu
 			bytes.Equal(c.Options, spec.Options) &&
 			len(credentials[spec.Name]) == 0
 		if unchanged {
-			// Retry unavailable, unchanged connections.
 			if c.Status().State != statusReady {
 				plan.updates = append(plan.updates, connectionPlan{spec, c.prepared, c.Credentials})
 			}
 			continue
 		}
-		parsed, err := kind.Parse(connector.Setup{Config: spec.Config, Definition: spec.Definition, Options: spec.Options})
+		setup := connector.Setup{Config: spec.Config, Definition: spec.Definition, Options: spec.Options}
+		parsed, err := kind.Parse(setup)
 		if err != nil {
 			return nil, fmt.Errorf("connection %s: %w", spec.Name, err)
 		}
-		var handles map[string]*credential.Value
-		if parsed.SecretNames != nil {
-			handles = map[string]*credential.Value{}
-			for _, name := range parsed.SecretNames {
-				handles[name] = nil
-			}
+		parsed.Source = setup
+		handles := map[string]*credential.Value{}
+		for _, name := range parsed.SecretNames {
+			handles[name] = nil
 		}
 		for name, raw := range credentials[spec.Name] {
 			if _, uses := handles[name]; raw != nil && !uses {
 				return nil, fmt.Errorf("connection %s does not use credential %s", spec.Name, name)
-			}
-		}
-		parsed.Discovery.Placeholders = maps.Clone(parsed.Discovery.Placeholders)
-		if parsed.Discovery.Placeholders != nil {
-			for name := range handles {
-				parsed.Discovery.Placeholders[name] = placeholder(proposed.Keys, store.SecretID{Connection: spec.Name, Name: name})
 			}
 		}
 		plan.updates = append(plan.updates, connectionPlan{spec, &parsed, handles})
@@ -394,7 +378,6 @@ func (m *monitor) commitSettings(ctx context.Context, plan *settingsPlan, saved 
 	if next.Enrolled == nil {
 		next.Enrolled = map[string]bool{}
 	}
-	// Remember previously enrolled keys.
 	for key := range plan.next.Principals {
 		next.Enrolled[key] = true
 	}
@@ -444,7 +427,6 @@ func (m *monitor) commitSettings(ctx context.Context, plan *settingsPlan, saved 
 		install = append(install, c)
 	}
 	m.settings.Store(plan.next)
-	// Close streams losing authority.
 	for stream, a := range m.streams {
 		if !m.stillAdmitted(old, a) {
 			stream.Close()

@@ -8,7 +8,9 @@ import {
   DisclosureHeading,
   Icon,
   LazyDetails,
+  RemoveRule,
   ResourceDisclosure,
+  RuleText,
   SkeletonRows,
   href,
 } from "./components";
@@ -56,12 +58,14 @@ export function Agents(props: { expanded?: string }) {
         </div>
       </Show>
       <For
-        each={[
-          ["sandboxes", "Sandboxes", ""],
-          ["devices", "Trusted devices", ""],
-        ]}
+        each={
+          [
+            ["sandboxes", "Sandboxes"],
+            ["devices", "Trusted devices"],
+          ] as const
+        }
       >
-        {([kind, title, blurb]) => {
+        {([kind, title]) => {
           const members = createMemo(() =>
             names().filter((name) => type(name) === kind),
           );
@@ -81,9 +85,6 @@ export function Agents(props: { expanded?: string }) {
                       {loading() ? "…" : members().length + waiting().length}
                     </span>
                   </h2>
-                  <Show when={blurb}>
-                    <span class="muted">{blurb}</span>
-                  </Show>
                   <Show
                     when={kind === "devices"}
                     fallback={
@@ -253,43 +254,19 @@ export function AddAgent() {
     </form>
   );
 }
-// Action rows show the action setting and nothing else: the sandbox-level
-// access is the default for anything unset, and the Payments switches act
-// under the hood without appearing here. A group (Inference, Use…) sets all
-// of its children when clicked; a child sets only itself, and a group whose
-// children disagree shows no value.
+// Rows show action settings only; effects such as Payments apply separately.
 function Actions(props: {
   name: string;
   connection: string;
   nodes: owner.AccessNode[];
-  level: string;
-  actions: Record<string, owner.Mode | undefined>;
   readOnly?: boolean;
   nested?: boolean;
 }) {
   const m = useMonitor();
-  // Effective action mode, ignoring effects: own entry, nearest ancestor's
-  // entry, else what the sandbox-level access implies for actions.
-  const fromLevel = (): owner.Mode =>
-    props.level === "allow" || props.level === "read"
-      ? "allow"
-      : props.level === "ask"
-        ? "ask"
-        : "off";
-  const resolve = (key: string): owner.Mode => {
-    const parts = key.split(".");
-    for (let i = parts.length; i > 0; i--) {
-      const own = props.actions[parts.slice(0, i).join(".")];
-      if (own) return own;
-    }
-    return fromLevel();
-  };
-  const leaves = (node: owner.AccessNode): string[] =>
-    node.children.length ? node.children.flatMap(leaves) : [node.key];
-  // A group's value is its children's, when they agree.
+  const leaves = (node: owner.AccessNode): owner.Mode[] =>
+    node.children.length ? node.children.flatMap(leaves) : [node.mode];
   const display = (node: owner.AccessNode): owner.Mode | null => {
-    if (!node.children.length) return resolve(node.key);
-    const values = new Set(leaves(node).map(resolve));
+    const values = new Set(leaves(node));
     return values.size === 1 ? [...values][0] : null;
   };
   const descendants = (node: owner.AccessNode): string[] => [
@@ -297,7 +274,6 @@ function Actions(props: {
     ...node.children.flatMap(descendants),
   ];
   const set = (node: owner.AccessNode, value: owner.Mode) => {
-    // Clear below, set here: children follow their group again.
     const actions: Record<string, owner.Mode | null> = Object.fromEntries(
       descendants(node).map((k) => [k, null]),
     );
@@ -314,8 +290,6 @@ function Actions(props: {
       {(key) => {
         const node = () => byKey().get(key)!;
         const value = () => display(node());
-        // A group with a single child is shown open, with the child's
-        // control only: there is nothing to set at the group.
         const single = () => node().children.length === 1;
         const controls = () => (
           <>
@@ -363,8 +337,6 @@ function Actions(props: {
               name={props.name}
               connection={props.connection}
               nodes={node().children}
-              level={props.level}
-              actions={props.actions}
               nested
             />
           </div>
@@ -398,7 +370,6 @@ function Actions(props: {
     </For>
   );
 }
-// The same action editor is used from both the agent and connection lists.
 export function AgentConnectionAccess(props: {
   name: string;
   connection: string;
@@ -409,8 +380,6 @@ export function AgentConnectionAccess(props: {
     () => owner.agentAccess(m.view()!, props.name, props.connection)[0],
   );
   const [expanded, setExpanded] = createSignal(false);
-  // A single action is the same dial as the access level: it is named but
-  // not set separately.
   const singleAction = () => {
     const nodes = entry().actions;
     return nodes.length === 1 && !nodes[0].children.length;
@@ -418,8 +387,6 @@ export function AgentConnectionAccess(props: {
   const expandable = () => entry().level !== "off";
   const open = () => expanded() && expandable();
   const id = createUniqueId();
-  // Rules: saved approvals for THIS agent on THIS connection — an action
-  // plus specific parameters, narrower than the per-action settings below.
   const rules = createMemo(() =>
     Object.entries(
       m.view()!.config.identities?.[props.name]?.rules ?? {},
@@ -468,11 +435,7 @@ export function AgentConnectionAccess(props: {
         <span
           class="seg access-level"
           role="group"
-          aria-label={
-            props.title
-              ? `Access for ${props.title}`
-              : `Default access for ${props.connection}`
-          }
+          aria-label={`Access for ${props.title ?? props.connection}`}
         >
           <For each={entry().levels.map(([value]) => value)}>
             {(value) => (
@@ -511,25 +474,12 @@ export function AgentConnectionAccess(props: {
           <Show when={open()}>
             <div class="access-block">
               <h4>Actions</h4>
-              <p class="muted">
-                <Show
-                  when={singleAction()}
-                  fallback="What can be done through the connection"
-                >
-                  What can be done through the connection
-                </Show>
-              </p>
+              <p class="muted">What can be done through the connection</p>
               <div class="access-actions">
                 <Actions
                   name={props.name}
                   connection={props.connection}
                   nodes={entry().actions}
-                  level={entry().level}
-                  actions={
-                    m.view()!.config.identities?.[props.name]?.connections?.[
-                      props.connection
-                    ]?.actions ?? {}
-                  }
                   readOnly={singleAction()}
                 />
               </div>
@@ -543,29 +493,8 @@ export function AgentConnectionAccess(props: {
                 <For each={rules()}>
                   {([id, rule]) => (
                     <a class="access-rule" href="#activity/rules">
-                      <span>
-                        <strong>{owner.ruleTitle(m.view()!, rule)}</strong>
-                        <small>
-                          <For
-                            each={Object.entries(rule.scope ?? {})}
-                            fallback="Any request"
-                          >
-                            {([key, value]) => {
-                              const text = `${key}: ${typeof value === "string" ? value : JSON.stringify(value)}`;
-                              return <code title={text}>{text}</code>;
-                            }}
-                          </For>
-                        </small>
-                      </span>
-                      <button
-                        disabled={m.busy()}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          void m.edit(owner.edits.removeRule(props.name, id));
-                        }}
-                      >
-                        Remove
-                      </button>
+                      <RuleText rule={rule} />
+                      <RemoveRule agent={props.name} id={id} />
                       <Icon name="arrow" />
                     </a>
                   )}
@@ -635,9 +564,7 @@ function AgentSettings(props: { name: string }) {
     [copyFrom, setCopyFrom] = createSignal("");
   const identity = () => m.view()!.config.identities?.[props.name];
   const copySources = () =>
-    Object.keys(m.view()!.config.identities ?? {}).filter(
-      (name) => name !== props.name && !owner.isDevice(name),
-    );
+    owner.sandboxNames(m.view()!).filter((name) => name !== props.name);
   return (
     <div class="agent-settings">
       <Show when={identity()}>

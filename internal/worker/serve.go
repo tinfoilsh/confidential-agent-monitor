@@ -31,9 +31,6 @@ func Serve(ctx context.Context, kinds map[string]connector.Kind, config io.Reade
 	if err := readJSON(config, &boot); err != nil {
 		return err
 	}
-	if boot.Version != protocolVersion {
-		return errors.New("unsupported worker protocol")
-	}
 	kind := kinds[boot.Protocol]
 	if kind.New == nil || kind.Parse == nil {
 		return errors.New("unknown connector")

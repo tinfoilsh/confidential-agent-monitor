@@ -21,16 +21,15 @@ var Kind = connector.Kind{Parse: parsePostgres, New: func() connector.Server { r
 
 func parsePostgres(source connector.Setup) (connector.Prepared, error) {
 	c := new(postgresSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
 	if err := c.Endpoint.Parse(); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Source: source, Value: c, SecretNames: []string{"password"}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"password"}}, nil
 }
 
-// Postgres keeps one immutable setup for each admitted stream.
 type Postgres struct{ connector.Slot[postgresSetup] }
 
 const (
@@ -41,14 +40,12 @@ const (
 type postgresSetup struct{ connector.Endpoint }
 
 func (owner *Postgres) Serve(s *connector.Stream, e *connector.Env) {
-	captured := owner.Load()
-	if captured == nil {
+	r, ok := owner.Load()
+	if !ok {
 		return
 	}
-	r := captured.Value
-	r.Secrets = captured.Secrets
 
-	_, backend, startup, err := startup(s, e.TLS)
+	backend, startup, err := startup(s, e.TLS)
 	if err != nil {
 		log.Printf("postgres startup: %v", err)
 		return
@@ -73,28 +70,28 @@ func (owner *Postgres) Serve(s *connector.Stream, e *connector.Env) {
 	r.relayQueries(s, backend, up)
 }
 
-func startup(s *connector.Stream, config *tls.Config) (net.Conn, *pgproto3.Backend, *pgproto3.StartupMessage, error) {
+func startup(s *connector.Stream, config *tls.Config) (*pgproto3.Backend, *pgproto3.StartupMessage, error) {
 	conn := net.Conn(s)
 	for {
 		backend := pgproto3.NewBackend(conn, conn)
 		msg, err := backend.ReceiveStartupMessage()
 		if err != nil {
-			return nil, nil, nil, err
+			return nil, nil, err
 		}
 		switch msg := msg.(type) {
 		case *pgproto3.StartupMessage:
-			return conn, backend, msg, nil
+			return backend, msg, nil
 		case *pgproto3.SSLRequest:
 			if _, err := conn.Write([]byte{sslAccepted}); err != nil {
-				return nil, nil, nil, err
+				return nil, nil, err
 			}
 			conn = tls.Server(conn, config)
 		case *pgproto3.GSSEncRequest:
 			if _, err := conn.Write([]byte{gssRefused}); err != nil {
-				return nil, nil, nil, err
+				return nil, nil, err
 			}
 		default:
-			return nil, nil, nil, fmt.Errorf("unsupported startup message %T", msg)
+			return nil, nil, fmt.Errorf("unsupported startup message %T", msg)
 		}
 	}
 }
@@ -157,7 +154,7 @@ func (r *postgresSetup) relayQueries(s *connector.Stream, backend *pgproto3.Back
 			sql = msg.Query
 		}
 		if sql != "" {
-			if err := s.Gate(s.Context, r.Capture((&Request{SQL: sql}).Describe())); err != nil {
+			if err := s.Gate(s.Context, r.Capture((&PostgresFacts{SQL: sql}).Describe())); err != nil {
 				backend.Send(&pgproto3.ErrorResponse{Severity: "ERROR", Code: "42501", Message: err.Error()})
 				if _, simple := msg.(*pgproto3.Query); simple {
 					backend.Send(&pgproto3.ReadyForQuery{TxStatus: byte(status.Load())})
@@ -175,15 +172,13 @@ func (r *postgresSetup) relayQueries(s *connector.Stream, backend *pgproto3.Back
 	}
 }
 
-type Request PostgresFacts
-
-func (v *Request) Describe() (facts.Facts, error) {
-	details := Details{Postgres: (*PostgresFacts)(v)}
+func (v *PostgresFacts) Describe() facts.Facts {
+	details := Details{Postgres: v}
 	action := "write"
 	if plainRead(v.SQL) {
 		action = "read"
 	}
-	return facts.Facts{Operation: &facts.Operation{Action: action}, Title: "Run " + v.SQL, Parameters: map[string]any{"sql": v.SQL}, Details: details}, nil
+	return facts.Facts{Operation: &facts.Operation{Action: action}, Title: "Run " + v.SQL, Parameters: map[string]any{"sql": v.SQL}, Details: details}
 }
 
 var sqlFirst = regexp.MustCompile(`^\w+`)

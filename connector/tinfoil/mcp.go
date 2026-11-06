@@ -3,7 +3,6 @@ package tinfoil
 import (
 	"context"
 	"errors"
-	"maps"
 	"net/http"
 	"net/url"
 
@@ -42,7 +41,7 @@ type MCP struct{ mcp.Server }
 func (m *MCP) Update(ctx context.Context, prepared connector.Prepared, secrets map[string]*credential.Value, env *connector.Env) error {
 	m.Server.Close()
 	setup := *prepared.Value.(*mcpSetup)
-	setup.Secrets = maps.Clone(secrets)
+	setup.Bind(secrets)
 	client := env.Client()
 	base := client.Transport.(*http.Transport)
 	u, _ := url.Parse(setup.URL)

@@ -16,17 +16,16 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-var CLIKind = connector.Kind{UsesHostKey: true, Parse: parseCLI, New: func() connector.Server { return new(CLI) }}
+var CLIKind = connector.Kind{UsesHostKey: true, Host: true, Parse: parseCLI, New: func() connector.Server { return new(CLI) }}
 
 func parseCLI(source connector.Setup) (connector.Prepared, error) {
 	c := new(cliSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Source: source, Value: c, SecretNames: append([]string{}, c.Credentials...)}, nil
+	return connector.Prepared{Value: c, SecretNames: c.Credentials}, nil
 }
 
-// CLI keeps one immutable setup for each admitted stream.
 type CLI struct{ connector.Slot[cliSetup] }
 
 const (
@@ -42,33 +41,21 @@ type cliSetup struct {
 }
 
 func (owner *CLI) Serve(s *connector.Stream, e *connector.Env) {
-	captured := owner.Load()
-	if captured == nil {
+	t, ok := owner.Load()
+	if !ok {
 		return
 	}
-	t := captured.Value
-	t.Secrets = captured.Secrets
 
-	chans, err := innerSSH(s, e.HostKey)
+	serveSessions(s, e.HostKey, func(*sync.WaitGroup) func(ssh.NewChannel) {
+		return func(nc ssh.NewChannel) { t.session(s, nc) }
+	})
+}
+
+func (t *cliSetup) session(s *connector.Stream, nc ssh.NewChannel) {
+	ch, reqs, err := nc.Accept()
 	if err != nil {
 		return
 	}
-	var workers sync.WaitGroup
-	defer func() { s.Close(); workers.Wait() }()
-	for nc := range chans {
-		if nc.ChannelType() != channelSession {
-			nc.Reject(ssh.Prohibited, "only session channels are served")
-			continue
-		}
-		ch, reqs, err := nc.Accept()
-		if err != nil {
-			return
-		}
-		workers.Go(func() { t.session(s, ch, reqs) })
-	}
-}
-
-func (t *cliSetup) session(s *connector.Stream, ch ssh.Channel, reqs <-chan *ssh.Request) {
 	defer ch.Close()
 	for r := range reqs {
 		e := eventForSSH(r)
@@ -83,7 +70,7 @@ func (t *cliSetup) session(s *connector.Stream, ch ssh.Channel, reqs <-chan *ssh
 			e.Payload = gitObject(stdin)
 		}
 		status := exitRefused
-		if err := s.Gate(s.Context, t.Capture((e).Describe(""))); err != nil {
+		if err := s.Gate(s.Context, t.Capture(e.Describe(""))); err != nil {
 			fmt.Fprintf(ch.Stderr(), "monitor: %v\n", err)
 		} else {
 			status = t.execute(s.Context, e.Command.Argv, io.MultiReader(bytes.NewReader(stdin), ch), ch)

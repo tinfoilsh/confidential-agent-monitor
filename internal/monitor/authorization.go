@@ -22,8 +22,10 @@ import (
 )
 
 const (
-	approvalWait = 2 * time.Minute
-	maxRecords   = 1000
+	approvalWait    = 2 * time.Minute
+	maxRecords      = 1000
+	maxReason       = 4096
+	maxSummaryTitle = 512
 
 	statePending  = "pending"
 	stateExpired  = "expired"
@@ -151,7 +153,6 @@ func (m *monitor) authorizeLocked(ctx context.Context, admitted admission, kind 
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	// Refuse work without audit capacity.
 	if m.audit.Backlogged() {
 		return nil, errAuditBacklog
 	}
@@ -164,7 +165,7 @@ func (m *monitor) authorizeLocked(ctx context.Context, admitted admission, kind 
 	if !m.usable(c, admitted.prepared) {
 		return nil, errChanged
 	}
-	f, describeErr := st.bindFacts(c, p, m.currentLabel(p.Fingerprint), kind, event)
+	f, describeErr := st.bindFacts(c, p, m.currentLabel(p.Key), kind, event)
 	if describeErr != nil {
 		f.Operation = nil
 		raw, _, err := facts.Encode(f)
@@ -191,7 +192,7 @@ func (m *monitor) authorizeLocked(ctx context.Context, admitted admission, kind 
 		if m.settings.Load() != st || !m.usable(c, admitted.prepared) {
 			return r, errChanged
 		}
-		label := m.currentLabel(p.Fingerprint)
+		label := m.currentLabel(p.Key)
 		if label.Audience != f.Context.Label.Audience || label.Trust != f.Context.Label.Trust {
 			return r, errLabelChanged
 		}
@@ -203,7 +204,7 @@ func (st *settings) bindFacts(c *connection, p config.Principal, label facts.Lab
 	f, err := event.Facts()
 	f.Version, f.Kind = facts.Version, kind
 	f.Service, f.Connection = st.Connections[c.Name].Preset, c.Name
-	f.Principal, f.Context.Label = facts.Principal{Key: p.Fingerprint, Name: p.Name}, label
+	f.Principal, f.Context.Label = p, label
 	if f.Parameters == nil {
 		f.Parameters = map[string]any{}
 	}
@@ -215,14 +216,12 @@ func (st *settings) bindFacts(c *connection, p config.Principal, label facts.Lab
 
 // policyInput builds the engine input and the record its decision will fill.
 func (st *settings) policyInput(c *connection, p config.Principal, f facts.Facts) (map[string]any, *record, error) {
-	// Bind saved approvals to the operation's meaning under these settings.
 	modes := st.Config.EffectModes(p.Name, c.Name, f.Operation)
 	key, err := approvalKey(st, c, f, modes)
 	if err != nil {
 		return nil, nil, err
 	}
 	grant := f.Scope
-	// Policy and audit share one snapshot, independent of connector buffers.
 	encoded, policyFacts, err := facts.Encode(f)
 	if err != nil {
 		return nil, nil, err
@@ -347,8 +346,8 @@ func (r *record) summary() recordSummary {
 	}
 	_ = json.Unmarshal(r.Facts, &v.Facts)
 	// SQL and other protocol titles can contain the entire request.
-	if len(v.Facts.Title) > 512 {
-		v.Facts.Title = strings.ToValidUTF8(v.Facts.Title[:512], "") + "…"
+	if len(v.Facts.Title) > maxSummaryTitle {
+		v.Facts.Title = strings.ToValidUTF8(v.Facts.Title[:maxSummaryTitle], "") + "…"
 	}
 	return v
 }
@@ -442,8 +441,8 @@ func (m *monitor) answerable(id string, input answerInput) (*record, error) {
 	if !slices.Contains(choices, input.Choice) {
 		return nil, fmt.Errorf("decision must be one of %s", strings.Join(choices, ", "))
 	}
-	if len(input.Reason) > 4096 {
-		return nil, errors.New("a reason must be at most 4096 bytes")
+	if len(input.Reason) > maxReason {
+		return nil, fmt.Errorf("a reason must be at most %d bytes", maxReason)
 	}
 	r := m.findRecord(id)
 	if r == nil {
@@ -453,7 +452,6 @@ func (m *monitor) answerable(id string, input answerInput) (*record, error) {
 		r.State = stateExpired
 		close(r.answered)
 	}
-	// Expired requests can save rules.
 	if r.State != statePending && !(r.State == stateExpired && input.Choice == answerSave) {
 		return nil, fmt.Errorf("request %s is %s", id, r.State)
 	}
@@ -483,16 +481,16 @@ func (m *monitor) answerRequest(ctx context.Context, id string, input answerInpu
 		if input.Choice == answerSave {
 			changes = []config.Change{change}
 		}
-		err = m.writeSettings(ctx, nil, changes, nil, func() error {
+		err = m.writeSettings(ctx, settingsWrite{changes: changes, check: func() error {
 			current, err := m.answerable(id, input)
 			if err == nil && current != r {
 				return errRecordGone
 			}
 			return err
-		}, &savedAnswer{
+		}, saved: &savedAnswer{
 			record: r,
 			answer: reviewAnswer{By: "owner", answerInput: input},
-		})
+		}})
 		if err == nil && r.Changes != nil {
 			m.mu.Lock()
 			m.settleRecord(r, nil)
@@ -522,7 +520,6 @@ func (r *record) committed(answer reviewAnswer) {
 	if r.State == statePending {
 		close(r.answered)
 	}
-	// Retry evaluates the operation under the newly committed rule.
 	r.State, r.Deny = stateRefused, []string{errRuleSaved.Error()}
 	if r.Changes != nil {
 		r.State, r.Deny = stateApproved, nil
@@ -565,7 +562,6 @@ func (m *monitor) readAuditPage(ctx context.Context, before string) (auditPage, 
 	return page, err
 }
 
-// readAuditRecord reads one record from a segment.
 func (m *monitor) readAuditRecord(ctx context.Context, segment, id string) (*record, error) {
 	records, err := m.audit.Read(ctx, segment)
 	if err != nil {

@@ -21,16 +21,15 @@ var SMTPKind = connector.Kind{Parse: parseSMTP, New: func() connector.Server { r
 
 func parseSMTP(source connector.Setup) (connector.Prepared, error) {
 	c := new(smtpSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics, &c.Semantics); err != nil {
+	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
 	if err := c.Endpoint.Parse(); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Source: source, Value: c, SecretNames: []string{"password"}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"password"}}, nil
 }
 
-// SMTP keeps one immutable setup for each admitted stream.
 type SMTP struct{ connector.Slot[smtpSetup] }
 
 const (
@@ -43,12 +42,10 @@ const (
 type smtpSetup struct{ connector.Endpoint }
 
 func (owner *SMTP) Serve(s *connector.Stream, e *connector.Env) {
-	captured := owner.Load()
-	if captured == nil {
+	r, ok := owner.Load()
+	if !ok {
 		return
 	}
-	r := captured.Value
-	r.Secrets = captured.Secrets
 
 	server := smtp.NewServer(smtp.BackendFunc(func(*smtp.Conn) (smtp.Session, error) {
 		return &smtpSession{stream: s, relay: &r, env: e}, nil
@@ -165,27 +162,17 @@ func attachments(msg *mail.Message) []string {
 	}
 }
 
-type SMTPRequest struct {
-	SMTP *SMTPFacts `json:"smtp"`
-	Mail *MailFacts `json:"mail,omitempty"`
-}
+type SMTPRequest Details
 
-func (r *SMTPRequest) Describe(address string) (facts.Facts, error) {
-	details := Details{SMTP: r.SMTP}
-	if r.Mail != nil {
-		details.Mail = r.Mail
-	}
+func (r *SMTPRequest) Describe(address string) facts.Facts {
 	v := r.SMTP
-	if v == nil {
-		return facts.Facts{Details: details}, nil
-	}
 	to := slices.Clone(v.To)
 	slices.Sort(to)
-	sends := "connection"
+	sends := facts.SendsConnection
 	for _, to := range v.To {
 		if !strings.EqualFold(to, address) {
 			sends = "anyone"
 		}
 	}
-	return facts.Facts{Operation: &facts.Operation{Action: "send"}, Title: "Send mail to " + strings.Join(v.To, ", "), Parameters: map[string]any{"to": to}, Details: details, Context: facts.Context{Sends: sends}}, nil
+	return facts.Facts{Operation: &facts.Operation{Action: "send"}, Title: "Send mail to " + strings.Join(v.To, ", "), Parameters: map[string]any{"to": to}, Details: Details(*r), Context: facts.Context{Sends: sends}}
 }

@@ -58,7 +58,6 @@ const isOrigin = (value: string | undefined) => {
   }
 };
 
-// Why this build cannot run on this page, if it cannot.
 export function profileError(origin = location.origin): string | undefined {
   if (origin !== TARGETS.terminal)
     return `This build only runs at ${TARGETS.terminal}.`;
@@ -129,7 +128,6 @@ type KeyChange = {
   encrypted_mk: string;
   recovery: RecoveryInput[];
 };
-// A whole state write and the revision it replaces.
 type KeyWrite = KeyChange & { expected_revision: number };
 
 const KEY_STATE = "/api/sandboxes/owner-key";
