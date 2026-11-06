@@ -489,6 +489,7 @@ function Gate() {
     choices: owner.OnboardingChoices,
     signIns: string[],
   ) => {
+    const existing = new Set(Object.keys(m.view()!.config.connections ?? {}));
     if (
       m.busy() ||
       !(await m.perform((client) => client.onboard(m.view()!, choices)))
@@ -498,7 +499,9 @@ function Gate() {
     const view = m.view()!;
     for (const preset of signIns) {
       const name = Object.keys(view.config.connections ?? {}).find(
-        (name) => view.config.connections![name].preset === preset,
+        (name) =>
+          !existing.has(name) &&
+          view.config.connections![name].preset === preset,
       );
       const field =
         name && owner.credentialFields(view, name).find((f) => f.signIn);
