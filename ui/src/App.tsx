@@ -37,12 +37,12 @@ const SandboxTerminal = lazy(() => import("./SandboxTerminal"));
 const headings: Record<string, [title: string, description: string]> = {
   activity: ["Activity", "Review requests and manage saved approval rules."],
   agents: [
-    "Sandboxes",
-    "Your sandboxes and the devices that may reach them. The monitor can always be accessed by you.",
+    "Bunkers",
+    "Your bunkers and the devices that may reach them. The monitor can always be accessed by you.",
   ],
   connections: [
     "Connections",
-    "Connect services and control how sandboxes use their data.",
+    "Connect services and control how bunkers use their data.",
   ],
   settings: ["Settings", "Manage policy and preferences."],
   request: ["Request", ""],
@@ -459,8 +459,7 @@ function PairDialog(props: { open: boolean; close: () => void }) {
         <div>
           <h1 id="creation-title">Add a trusted device</h1>
           <p id="creation-description">
-            Paste the SSH public key of a computer that may reach your
-            sandboxes.
+            Paste the SSH public key of a computer that may reach your bunkers.
           </p>
         </div>
         <button
@@ -577,8 +576,8 @@ function Gate() {
         <Match when={m.view() && !owner.onboarded(m.view()!)}>
           <AuthScreen
             id="gate"
-            title="Connect Tinfoil to your sandbox"
-            description="Use Tinfoil models in your sandbox for end-to-end confidential workloads."
+            title="Connect Tinfoil to your bunker"
+            description="Use Tinfoil models in your bunker for end-to-end confidential workloads."
           >
             <Onboarding
               busy={m.busy()}
@@ -625,9 +624,7 @@ function Onboarding(props: {
         <h2>Tinfoil API key</h2>
         <Show
           when={!props.generate}
-          fallback={
-            <p>Your key stays in Monitor, hidden from your sandboxes.</p>
-          }
+          fallback={<p>Your key stays in Monitor, hidden from your bunkers.</p>}
         >
           <fieldset class="onboarding-key" disabled={props.busy}>
             <div class="onboarding-key-label">
@@ -657,7 +654,7 @@ function Onboarding(props: {
             />
             <p id="tinfoil-key-help" class="onboarding-key-help">
               <Icon name="rules" />
-              Your key stays in Monitor, hidden from your sandboxes.
+              Your key stays in Monitor, hidden from your bunkers.
             </p>
           </fieldset>
         </Show>

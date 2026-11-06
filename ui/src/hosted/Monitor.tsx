@@ -82,7 +82,7 @@ export default function Monitor(props: { session: Session }) {
       return `${name} is ${row()!.status}`;
     if (inventory().value && !inventory().loading && !row())
       return "Monitor not found";
-    return "Connecting to sandbox…";
+    return "Connecting to bunker…";
   };
   createEffect(
     on(
@@ -124,13 +124,13 @@ export default function Monitor(props: { session: Session }) {
             (failures) => {
               if (opened.scope.live() && failures.length)
                 setNotice(
-                  `Some sandboxes could not be re-linked: ${failures.join("; ")}`,
+                  `Some bunkers could not be re-linked: ${failures.join("; ")}`,
                 );
             },
             (cause) => {
               if (opened.scope.live())
                 setNotice(
-                  `Sandboxes could not be re-linked: ${cause instanceof Error ? cause.message : cause}`,
+                  `Bunkers could not be re-linked: ${cause instanceof Error ? cause.message : cause}`,
                 );
             },
           )

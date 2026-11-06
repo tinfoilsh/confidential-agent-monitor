@@ -691,8 +691,8 @@ async function recoveryInput(
     // A fresh handle keeps authenticators from replacing an earlier credential.
     user: {
       id: randomBytes(32),
-      name: "Tinfoil sandbox keys",
-      displayName: "Your Tinfoil sandboxes",
+      name: "Tinfoil bunker keys",
+      displayName: "Your Tinfoil bunkers",
     },
     key: dek,
     signal,

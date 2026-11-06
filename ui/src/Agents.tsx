@@ -34,8 +34,8 @@ export function Agents(props: { expanded?: string }) {
         .map((name) => {
           const description = owner.isDevice(name)
             ? view.config.identities![name].routes
-              ? "Can reach sandboxes"
-              : "Sandbox access off"
+              ? "Can reach bunkers"
+              : "Bunker access off"
             : `${owner.agentAccess(view, name).filter((access) => access.level !== "off").length} connections`;
           return [name, { description }];
         }),
@@ -50,19 +50,19 @@ export function Agents(props: { expanded?: string }) {
         <div class="resource-list">
           <Empty
             icon="sandboxes"
-            title="Create your first sandbox"
+            title="Create your first bunker"
             action={<AddSandbox class="button primary" />}
           >
-            A sandbox runs your agent in an isolated environment. This monitor
+            A bunker runs your agent in an isolated environment. This monitor
             guards what it can reach and holds its credentials. If yours is
-            missing, run <code>tinfoil attest-ssh &lt;sandbox-name&gt;</code>.
+            missing, run <code>tinfoil attest-ssh &lt;bunker-name&gt;</code>.
           </Empty>
         </div>
       </Show>
       <For
         each={
           [
-            ["sandboxes", "Sandboxes"],
+            ["sandboxes", "Bunkers"],
             ["devices", "Trusted devices"],
           ] as const
         }
@@ -102,7 +102,7 @@ export function Agents(props: { expanded?: string }) {
                   </Show>
                 </div>
                 <Show when={loading()}>
-                  <SkeletonRows label="Loading your sandboxes…" />
+                  <SkeletonRows label="Loading your bunkers…" />
                 </Show>
                 <For each={waiting()}>
                   {(name) => {
@@ -206,7 +206,7 @@ function AddSandbox(props: { class: string; children?: JSX.Element }) {
       rel="noopener noreferrer"
     >
       <Icon name="plus" />
-      Create sandbox
+      Create bunker
       {props.children}
     </a>
   );
@@ -254,7 +254,7 @@ export function AddAgent() {
         />
       </label>
       <p class="muted">
-        This key will be able to SSH into your sandboxes through the Monitor.
+        This key will be able to SSH into your bunkers through the Monitor.
       </p>
       <button class="primary" disabled={m.busy()}>
         Add trusted device
@@ -549,7 +549,7 @@ function SandboxAccess(props: { name: string }) {
     id = createUniqueId();
   return (
     <div class="setting-row agent-connectivity">
-      <label for={id}>Sandbox access</label>
+      <label for={id}>Bunker access</label>
       <input
         id={id}
         type="checkbox"
@@ -625,7 +625,7 @@ function AgentSettings(props: { name: string }) {
               <Show when={copySources().length}>
                 <div class="setting-row">
                   <span>
-                    Copy sandbox profile
+                    Copy bunker profile
                     <small>
                       Takes its connection access, actions and rules.
                     </small>
@@ -636,7 +636,7 @@ function AgentSettings(props: { name: string }) {
                       value={copyFrom()}
                       onChange={(e) => setCopyFrom(e.currentTarget.value)}
                     >
-                      <option value="">Choose sandbox</option>
+                      <option value="">Choose bunker</option>
                       <For each={copySources()}>
                         {(name) => <option>{name}</option>}
                       </For>
@@ -660,9 +660,9 @@ function AgentSettings(props: { name: string }) {
               </Show>
               <div class="setting-row">
                 <span>
-                  Remove sandbox
+                  Remove bunker
                   <small>
-                    Forget this sandbox from the Monitor, along with its
+                    Forget this bunker from the Monitor, along with its
                     connections and rules.
                   </small>
                 </span>
@@ -671,13 +671,13 @@ function AgentSettings(props: { name: string }) {
                   disabled={m.busy()}
                   onClick={async () => {
                     if (
-                      confirm(`Remove sandbox ${props.name}?`) &&
+                      confirm(`Remove bunker ${props.name}?`) &&
                       (await m.edit(owner.edits.removeAgent(props.name)))
                     )
                       location.hash = "#agents";
                   }}
                 >
-                  Remove sandbox
+                  Remove bunker
                 </button>
               </div>
             </div>

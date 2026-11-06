@@ -63,7 +63,7 @@ export async function sandboxClient(
   const seed = unb64u(resource.owner_seed, 32);
   const owner = ownerPublicKey(seed);
   const instance_id = binding.instance_id!;
-  if (!HOST.test(row.domain)) throw new Error("This sandbox has no address.");
+  if (!HOST.test(row.domain)) throw new Error("This bunker has no address.");
   const config = new TextEncoder().encode(row.config ?? "");
   const digest = sandboxDigest(TEMPLATES.sandbox, config, {
     owner,
@@ -79,7 +79,7 @@ export async function sandboxClient(
       const url = new URL(String(input));
       const nonce = url.searchParams.get("nonce") ?? "";
       if (url.pathname !== ATTESTATION || !/^[0-9a-f]{64}$/.test(nonce))
-        throw new Error("Refused sandbox attestation request.");
+        throw new Error("Refused bunker attestation request.");
       const reply = (await monitor.client.call(
         "POST",
         "/sandboxes/relay",
@@ -116,7 +116,7 @@ export async function sandboxClient(
         signal,
       )) as SandboxStatus;
       if (status?.protocol !== PROTOCOL || status.instance_id !== instance_id)
-        throw new Error("The sandbox answered for a different instance.");
+        throw new Error("The bunker answered for a different instance.");
       return status;
     },
     enroll: (
@@ -160,11 +160,11 @@ async function resolve(
     monitorOf(detail) !== monitor.row.id
   )
     throw new Error(
-      "This sandbox changed or is not routed through this Monitor.",
+      "This bunker changed or is not routed through this Monitor.",
     );
   if (detail.owner_key_mode !== "tmk")
     throw new Error(
-      "This sandbox's keys stay with the CLI. Connect with `tinfoil attest-ssh`.",
+      "This bunker's keys stay with the CLI. Connect with `tinfoil attest-ssh`.",
     );
   const resource = scope
     .unlocked()
@@ -173,7 +173,7 @@ async function resolve(
         r.kind === "sandbox" && r.owner_public_key === detail.owner_public_key,
     );
   if (!resource)
-    throw new Error("Your saved keys do not include this sandbox's owner key.");
+    throw new Error("Your saved keys do not include this bunker's owner key.");
   const instance_id = measuredEnv(detail.config).SANDBOX_INSTANCE_ID ?? "";
   const volume_id = detail.volumes?.workspace ?? "";
   const volumes = (await readVolumes()) as {
@@ -195,7 +195,7 @@ async function resolve(
     volume.size_bytes <= 0
   )
     throw new Error(
-      "This sandbox's instance or workspace could not be confirmed.",
+      "This bunker's instance or workspace could not be confirmed.",
     );
   const binding: MKBinding = {
     account: scope.account,
@@ -207,7 +207,7 @@ async function resolve(
   if (resource.binding) {
     if (JSON.stringify(resource.binding) !== JSON.stringify(binding))
       throw new Error(
-        "This sandbox's instance or workspace no longer matches its saved key.",
+        "This bunker's instance or workspace no longer matches its saved key.",
       );
   } else if (bind)
     await scope.update(keys.bindResource(resource.key_id, binding));
@@ -231,10 +231,10 @@ export function connectPlan(
   restore: boolean,
 ): { monitor: boolean; sandbox: boolean } {
   if (status.monitor_identity && status.monitor_identity !== agent)
-    throw new Error("This sandbox holds a different Monitor identity.");
+    throw new Error("This bunker holds a different Monitor identity.");
   if (!known && !restore && status.monitor_identity)
     throw new RestoreRequired(
-      "This sandbox's identity is not on its Monitor. Restore it to reconnect.",
+      "This bunker's identity is not on its Monitor. Restore it to reconnect.",
     );
   return {
     monitor: !known,

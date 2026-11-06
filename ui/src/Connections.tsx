@@ -189,7 +189,7 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
               }
             >
               <Show when={!query()}>
-                Add a connection to give your sandboxes access to a service.
+                Add a connection to give your bunkers access to a service.
               </Show>
             </Empty>
           }
@@ -601,7 +601,7 @@ export function AddConnection(props: { preset: string }) {
             help="Leave blank to configure later."
           />
           <label>
-            Sandbox
+            Bunker
             <select
               value={agent()}
               onChange={(e) => setAgent(e.currentTarget.value)}
@@ -1008,14 +1008,14 @@ function Connection(props: { name: string }) {
         </Show>
         <section class="connection-section">
           <SectionHeading
-            title="Sandbox access"
+            title="Bunker access"
             description="Who can use this connection"
           />
           <div class="connection-access">
             <For
               each={owner.sandboxNames(m.view()!)}
               fallback={
-                <p class="muted">Enrol a sandbox to use this connection.</p>
+                <p class="muted">Enrol a bunker to use this connection.</p>
               }
             >
               {(name) => (
@@ -1032,7 +1032,7 @@ function Connection(props: { name: string }) {
           <section class="connection-section connection-setup">
             <SectionHeading
               title="Details"
-              description="URLs, sandbox placeholders, and setup instructions"
+              description="URLs, bunker placeholders, and setup instructions"
             />
             <Show when={tinfoil()}>
               {(setup) => (
@@ -1063,7 +1063,7 @@ function Connection(props: { name: string }) {
                             {setup.connection} · {setup.credential}
                           </h3>
                         </Show>
-                        <label for={id}>Sandbox placeholder</label>
+                        <label for={id}>Bunker placeholder</label>
                         <div class="secret-input">
                           <input
                             ref={input}
@@ -1132,9 +1132,9 @@ function Connection(props: { name: string }) {
                       <div class="agent-setup-body">
                         <p>
                           Save this in <code>~/.codex/config.toml</code>, then
-                          run Codex in your Monitor-connected sandbox or with{" "}
+                          run Codex in your Monitor-connected bunker or with{" "}
                           <code>monitor run -- codex</code>. Choose a model
-                          available to your ChatGPT account. Grant your sandbox
+                          available to your ChatGPT account. Grant your bunker
                           access to this connection and review pending requests
                           in Activity.
                         </p>

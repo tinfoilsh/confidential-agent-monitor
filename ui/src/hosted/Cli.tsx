@@ -220,7 +220,7 @@ export default function Cli(props: { session: Session }) {
               </button>
             </Show>
             <a class="button" href="/" link>
-              Open your sandboxes
+              Open your bunkers
             </a>
           </Match>
           <Match when={profile && live() && !sameUser()}>
@@ -301,7 +301,7 @@ export default function Cli(props: { session: Session }) {
         <KeyGate
           session={props.session}
           manager={manager}
-          purpose="let the CLI open your sandboxes"
+          purpose="let the CLI open your bunkers"
         >
           {page()}
         </KeyGate>

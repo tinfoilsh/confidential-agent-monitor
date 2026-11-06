@@ -46,7 +46,7 @@ export function Settings(props: {
           <span>
             <span class="setting-title">Ask before any payment</span>
             <small>
-              A sandbox must get your approval for anything that spends
+              A bunker must get your approval for anything that spends
               money.
             </small>
           </span>
@@ -88,7 +88,7 @@ export function Settings(props: {
           <span>
             <span class="setting-title">Allow everything</span>
             <small>
-              Ignore connections. Every sandbox can reach any host on any
+              Ignore connections. Every bunker can reach any host on any
               port, and nothing asks.
             </small>
           </span>
@@ -101,7 +101,7 @@ export function Settings(props: {
               if (
                 open &&
                 !confirm(
-                  "Allow everything? Sandboxes will be able to reach any host without asking.",
+                  "Allow everything? Bunkers will be able to reach any host without asking.",
                 )
               ) {
                 e.currentTarget.checked = false;

@@ -24,7 +24,7 @@ const date = (value: string) => {
 function ProposerByline(props: { proposal: owner.RequestRecord }) {
   return (
     <>
-      <strong>By {owner.isDevice(props.proposal.facts.principal.name) ? "Trusted Device" : "Sandbox"}:</strong>{" "}
+      <strong>By {owner.isDevice(props.proposal.facts.principal.name) ? "Trusted Device" : "Bunker"}:</strong>{" "}
       {props.proposal.facts.principal.name}
     </>
   );
@@ -47,7 +47,7 @@ const valueText = (value: owner.Json | undefined) => {
 };
 const pathLabel = (proposal: owner.RequestRecord, path: string[]) => {
   if (path[0] === "identities")
-    return [`Sandbox ${path[1]}`, ...path.slice(4)].join(" › ");
+    return [`Bunker ${path[1]}`, ...path.slice(4)].join(" › ");
   if (path[0] === "default_access")
     return ["Default access", ...path.slice(2)].join(" › ");
   if (path[0] === "connections" && path[1] === proposal.facts.connection)
@@ -188,7 +188,7 @@ export function PolicyProposals() {
             }
             icon="policy"
           >
-            Changes proposed by sandboxes or trusted devices will appear here.
+            Changes proposed by bunkers or trusted devices will appear here.
           </Empty>
         }
       >

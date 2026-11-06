@@ -191,7 +191,7 @@ function Requests(props: { expanded?: string }) {
                 </a>
               }
             >
-              Requests appear here when a sandbox uses a connection.
+              Requests appear here when a bunker uses a connection.
             </Empty>
           }
         >
@@ -342,7 +342,7 @@ export function RequestDetail(props: {
             [...new Set([...(r().deny ?? []), ...owner.reasons(r())])].map(
               (reason) =>
                 reason === "this agent may not do this on the connection"
-                  ? "This sandbox does not have permission for this action."
+                  ? "This bunker does not have permission for this action."
                   : reason,
             ),
           );
@@ -356,7 +356,7 @@ export function RequestDetail(props: {
               </Show>
               <dl class="request-context">
                 <div>
-                  <dt>Sandbox</dt>
+                  <dt>Bunker</dt>
                   <dd>
                     <a
                       class="request-context-link"
@@ -472,7 +472,7 @@ export function RequestDetail(props: {
                   <p class="muted">
                     {r().invalid
                       ? "Fix the request or client configuration using the error above, then retry."
-                      : "Update this sandbox’s connection access, then retry the request from your sandbox."}
+                      : "Update this bunker’s connection access, then retry the request from your bunker."}
                   </p>
                 </div>
               </Show>

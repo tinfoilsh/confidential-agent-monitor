@@ -61,6 +61,10 @@ const STATUS_LABELS: Record<string, string> = {
   failed: "Failed",
 };
 const BUSY_STATUSES = [...STARTING, "stopping"];
+const ROLE_NAMES: Record<StartRole, string> = {
+  monitor: "Monitor",
+  sandbox: "bunker",
+};
 
 // The /start fragment is read once, kept for this tab across sign-in and removed from the URL.
 export function capture() {
@@ -203,9 +207,9 @@ function Start(props: {
       }
       description={
         r.mode === "umk"
-          ? "Paste the public keys made by the Tinfoil CLI. Their private keys stay on your computer, so this sandbox is reached with the CLI only."
+          ? "Paste the public keys made by the Tinfoil CLI. Their private keys stay on your computer, so this bunker is reached with the CLI only."
           : file()
-            ? "Save your recovery key before you head to your sandboxes."
+            ? "Save your recovery key before you head to your bunkers."
             : undefined
       }
     >
@@ -231,7 +235,7 @@ function Start(props: {
             <For each={r.roles}>
               {(role) => (
                 <label class="start-field">
-                  {role === "monitor" ? "Monitor" : "Sandbox"} owner public key
+                  {role === "monitor" ? "Monitor" : "Bunker"} owner public key
                   <textarea
                     rows={2}
                     disabled={busy()}
@@ -298,10 +302,11 @@ function Start(props: {
               />
             }
           >
-            <AuthCard icon={<Icon name="key" />} title="Sandbox keys">
+            <AuthCard icon={<Icon name="key" />} title="Bunker keys">
               <p>
                 Your keys are unlocked. Create keys for your{" "}
-                {r.roles.join(" and ")} to continue.
+                {r.roles.map((role) => ROLE_NAMES[role]).join(" and ")} to
+                continue.
               </p>
               <button
                 class="primary"
@@ -340,7 +345,7 @@ function Inventory(props: { session: Session }) {
     <nav class="start-monitors" aria-label="Your monitors">
       <p class="start-eyebrow">Your monitors</p>
       <Show when={read().loading && !read().value}>
-        <SkeletonRows cards label="Loading your Monitors and sandboxes…" />
+        <SkeletonRows cards label="Loading your Monitors and bunkers…" />
       </Show>
       <Show when={read().error}>
         <p class="start-notice" role="alert">
@@ -498,7 +503,7 @@ export default function Console(props: { session: Session }) {
               <p>
                 {start
                   ? "Sign in with the account that started this setup."
-                  : "Sign in to open your Monitors and set up sandbox keys."}
+                  : "Sign in to open your Monitors and set up bunker keys."}
               </p>
               <button
                 class="primary"

@@ -67,7 +67,7 @@ export function RecoveryDownload(props: {
   return (
     <AuthCard icon={<Icon name="key" />} title="Recovery key">
       <p>
-        It opens your sandboxes after you sign out or switch browsers. This
+        It opens your bunkers after you sign out or switch browsers. This
         browser keeps a copy only until you sign out.
       </p>
       <button
@@ -144,7 +144,7 @@ function PasskeyChoice(props: {
     <AuthCard icon={<Icon name="fingerprint" />} title="Passkey">
       <p>
         Use your fingerprint, face, screen lock, or a security key to open your
-        sandbox keys on any device.
+        bunker keys on any device.
       </p>
       <Show when={props.action.error()}>
         <p role="alert">{props.action.error()}</p>
@@ -290,8 +290,8 @@ export function UnlockKeys(props: {
       fallback={
         <AuthCard icon={<Icon name="warning" />} title="Start over?">
           <p>
-            <strong>You will lose your sandboxes.</strong> Starting over makes
-            new keys. Sandboxes and Monitors that use your current keys can't be
+            <strong>You will lose your bunkers.</strong> Starting over makes new
+            keys. Bunkers and Monitors that use your current keys can't be
             opened again, and their data can't be recovered. CLI keys you added
             stay.
           </p>
@@ -502,7 +502,7 @@ export function KeyGate(props: {
 }) {
   const [file, setFile] = createSignal<keys.RecoveryFile>();
   const read = () => props.session.keyState();
-  const purpose = () => props.purpose ?? "open your sandboxes";
+  const purpose = () => props.purpose ?? "open your bunkers";
   return (
     <Show
       when={props.session.unlocked() && !file()}

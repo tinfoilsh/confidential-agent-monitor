@@ -335,7 +335,7 @@ function createMonitor(options: MonitorOptions) {
     perform(
       (client) => client.decide(record.id, decision),
       decision === "save"
-        ? "Rule saved. Retry the request from your sandbox."
+        ? "Rule saved. Retry the request from your bunker."
         : "",
       {
         update: (state) => {
