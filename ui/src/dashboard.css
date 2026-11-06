@@ -2516,6 +2516,14 @@ td {
   z-index: 20;
   max-width: 420px;
 }
+.shell-notices > .approval-bar {
+  padding-right: 44px;
+}
+.shell-notices > .dialog-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
 .shell-view {
   height: 100%;
 }

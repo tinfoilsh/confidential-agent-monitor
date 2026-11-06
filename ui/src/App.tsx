@@ -294,10 +294,28 @@ function Shell() {
                   </section>
                 )}
               </Show>
-              <Show when={shellShown()}>
-                <div class="shell-notices">
-                  <ApprovalBar />
-                </div>
+              <Show when={m.shell()} keyed>
+                {(name) => {
+                  const [dismissed, setDismissed] = createSignal(false);
+                  return (
+                    <Show
+                      when={shellShown() && m.pendingCount() && !dismissed()}
+                    >
+                      <div class="shell-notices">
+                        <ApprovalBar />
+                        <button
+                          type="button"
+                          class="icon-button dialog-close"
+                          aria-label={`Dismiss approvals in ${name}`}
+                          title="Dismiss"
+                          onClick={() => setDismissed(true)}
+                        >
+                          <Icon name="close" />
+                        </button>
+                      </div>
+                    </Show>
+                  );
+                }}
               </Show>
             </main>
             <PairDialog open={pairing()} close={close} />
