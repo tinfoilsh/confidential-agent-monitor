@@ -438,9 +438,36 @@ summary + * {
 }
 .monitor-footer {
   flex: none;
+  display: grid;
+  gap: 8px;
   margin-top: auto;
   padding: 12px;
   border-top: 1px solid var(--nav-line);
+}
+.theme-switch {
+  display: flex;
+  gap: 2px;
+  justify-self: start;
+  padding: 2px;
+  border: 1px solid var(--nav-line);
+  border-radius: var(--card-radius);
+}
+.theme-switch > button {
+  width: 28px;
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--nav-muted);
+}
+.theme-switch > button:hover:not(:disabled) {
+  background: var(--nav-hover);
+  color: var(--nav-text);
+}
+.theme-switch > button[aria-pressed="true"] {
+  background: var(--nav-line);
+  color: var(--nav-text);
 }
 .back-terminal .icon {
   transform: rotate(180deg);
@@ -1851,23 +1878,14 @@ details[open] > summary > .collection-chevron {
   content: "▾";
 }
 /* Settings follow Tinfoil Chat: titled sections of one card per setting. */
-#pane.settings {
+.settings {
   display: grid;
   gap: 24px;
+  margin-top: 32px;
 }
-.settings-note {
-  margin: 0;
-  color: var(--muted);
-  font-size: var(--font-detail);
-}
-#pane > .settings-section {
+.settings-section {
   display: grid;
   gap: 12px;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  box-shadow: none;
 }
 .settings-section > h2 {
   margin: 0;
@@ -1904,40 +1922,6 @@ details[open] > summary > .collection-chevron {
   display: block;
   color: var(--muted);
   line-height: 16px;
-}
-.theme-options {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 12px;
-}
-.theme-option {
-  flex-direction: column;
-  gap: 4px;
-  min-height: 0;
-  padding: 12px;
-  border-color: var(--line);
-  background: transparent;
-  box-shadow: none;
-  color: var(--text-secondary);
-  font-family: var(--font-display);
-  font-size: var(--font-detail);
-  font-weight: 400;
-  line-height: 16px;
-}
-.theme-option > .icon {
-  width: 20px;
-  height: 20px;
-  color: var(--text);
-}
-.theme-option:hover:not(:disabled) {
-  border-color: var(--border-strong);
-  background: transparent;
-}
-.theme-option[aria-pressed="true"],
-.theme-option[aria-pressed="true"]:hover {
-  border-color: var(--tinfoil-accent-light);
-  background: rgb(104 199 172 / 10%);
 }
 .setting-row {
   display: grid;
@@ -2630,7 +2614,7 @@ td {
     grid-template-rows: 64px minmax(0, 1fr) auto;
   }
   .navigation-open #navigation .monitor-footer {
-    display: block;
+    display: grid;
     grid-column: 1 / -1;
     align-self: stretch;
   }

@@ -31,9 +31,6 @@ import {
 } from "./components";
 import { THEME, applyTheme, savedTheme } from "./theme";
 
-const Settings = lazy(() =>
-  import("./Settings").then((m) => ({ default: m.Settings })),
-);
 const SandboxTerminal = lazy(() => import("./SandboxTerminal"));
 const headings: Record<string, [title: string, description: string]> = {
   activity: ["Activity", "Review requests and manage saved approval rules."],
@@ -42,10 +39,9 @@ const headings: Record<string, [title: string, description: string]> = {
     "Your bunkers and the devices that may reach them. The monitor can always be accessed by you.",
   ],
   connections: [
-    "Connections",
-    "Connect services and control how bunkers use their data.",
+    "Permissions",
+    "Choose what your bunkers can reach and what needs your approval.",
   ],
-  settings: ["Settings", "Manage policy and preferences."],
   request: ["Request", ""],
 };
 const SECTION_OF: Record<string, string> = {
@@ -193,11 +189,7 @@ function Shell() {
                 Menu
               </button>
               <nav id="tree" aria-label="Management">
-                <For
-                  each={
-                    ["agents", "activity", "connections", "settings"] as const
-                  }
-                >
+                <For each={["agents", "activity", "connections"] as const}>
                   {(key) => <NavItem key={key} />}
                 </For>
                 <Show when={m.shell()}>
@@ -227,7 +219,7 @@ function Shell() {
                   )}
                 </Show>
               </nav>
-              <MonitorFooter />
+              <MonitorFooter theme={theme()} onThemeChange={setTheme} />
             </aside>
             <main
               id="workspace"
@@ -245,13 +237,7 @@ function Shell() {
                 </header>
                 <div id="page-content">
                   <Show when={page()} keyed>
-                    {(path) => (
-                      <Page
-                        path={path}
-                        theme={theme()}
-                        onThemeChange={setTheme}
-                      />
-                    )}
+                    {(path) => <Page path={path} />}
                   </Show>
                   <div id="notices">
                     <ApprovalBar />
@@ -378,27 +364,47 @@ function ApprovalBar() {
   );
 }
 
-function MonitorFooter() {
+const THEMES = [
+  ["system", "System theme", "devices"],
+  ["light", "Light theme", "sun"],
+  ["dark", "Dark theme", "moon"],
+] as const;
+
+function MonitorFooter(props: {
+  theme: string;
+  onThemeChange: (theme: string) => void;
+}) {
   const m = useMonitor();
   return (
-    <Show when={m.options.backTo}>
-      {(back) => (
-        <footer class="monitor-footer">
+    <footer class="monitor-footer">
+      <Show when={m.options.backTo}>
+        {(back) => (
           <a class="nav-item back-terminal" href={back()} link>
             <Icon name="arrow" />
             <span>Back</span>
           </a>
-        </footer>
-      )}
-    </Show>
+        )}
+      </Show>
+      <div class="theme-switch" role="group" aria-label="Color theme">
+        <For each={THEMES}>
+          {([theme, label, icon]) => (
+            <button
+              type="button"
+              aria-label={label}
+              title={label}
+              aria-pressed={props.theme === theme}
+              onClick={() => props.onThemeChange(theme)}
+            >
+              <Icon name={icon} />
+            </button>
+          )}
+        </For>
+      </div>
+    </footer>
   );
 }
 
-function Page(props: {
-  path: string;
-  theme: string;
-  onThemeChange: (theme: string) => void;
-}) {
+function Page(props: { path: string }) {
   const [kind, name = "", request] = parse(props.path);
   return (
     <Switch
@@ -425,9 +431,6 @@ function Page(props: {
       </Match>
       <Match when={kind === "request"}>
         <RequestDetail id={name} />
-      </Match>
-      <Match when={kind === "settings"}>
-        <Settings theme={props.theme} onThemeChange={props.onThemeChange} />
       </Match>
     </Switch>
   );
