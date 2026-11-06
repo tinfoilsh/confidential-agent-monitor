@@ -529,6 +529,10 @@
   "syncro_msp": {
     "src": "syncro_msp.png"
   },
+  "tcp": {
+    "src": "tcp.svg",
+    "dark": "tcp.dark.svg"
+  },
   "telegram": {
     "src": "telegram.svg"
   },
