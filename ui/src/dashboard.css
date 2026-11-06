@@ -1006,6 +1006,10 @@ summary + * {
   background: var(--subtle);
 }
 
+.catalog-row .collection-name,
+.catalog-peek-row .collection-name {
+  font-family: var(--font-display);
+}
 .catalog-row .collection-name {
   flex: 1;
 }
