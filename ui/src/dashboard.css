@@ -2214,23 +2214,6 @@ td {
   height: 40px;
   margin: 0;
 }
-.auth-options {
-  gap: 10px;
-  text-align: left;
-}
-.auth-options > h2 {
-  margin: 0;
-  font-size: var(--font-body);
-}
-.auth-options ul {
-  display: grid;
-  gap: 6px;
-  margin: 0;
-  padding-left: 20px;
-}
-.auth-options button.link {
-  text-align: left;
-}
 .auth-tip,
 .auth > .auth-link {
   margin: 0;

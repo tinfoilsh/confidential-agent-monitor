@@ -111,15 +111,6 @@ export function AuthCard(props: {
   );
 }
 
-export function AuthOptions(props: { title?: string; children: JSX.Element }) {
-  return (
-    <section class="auth-card auth-options">
-      <h2>{props.title ?? "Having problems?"}</h2>
-      <ul>{props.children}</ul>
-    </section>
-  );
-}
-
 export function AuthTip(props: { children: JSX.Element }) {
   return (
     <p class="auth-tip">
