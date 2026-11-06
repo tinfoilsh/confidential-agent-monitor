@@ -206,20 +206,10 @@ function Start(props: {
           ? "Paste the public keys made by the Tinfoil CLI. Their private keys stay on your computer, so this sandbox is reached with the CLI only."
           : file()
             ? "Save your recovery key before you head to your sandboxes."
-            : `First, we'll create keys for your ${r.roles.join(" and ")}. They're encrypted with your account, and your dashboard only sees their public keys.`
+            : undefined
       }
       account={props.session.user()}
     >
-      <Show when={r.mode === "tmk" && !file()}>
-        <ol class="start-steps" aria-label="Getting started">
-          <li aria-current="step">
-            <span>1</span> Set up your keys
-          </li>
-          <li>
-            <span>2</span> Create your sandbox
-          </li>
-        </ol>
-      </Show>
       <Show when={error()}>
         <p class="start-notice" role="alert">
           {error()}
