@@ -315,13 +315,15 @@ function Actions(props: {
             >
               {node().title}
               <Show when={value() === null}>
-                {" "}
-                <small class="muted">Mixed</small>
+                <span class="access-modified" title="Actions inside differ">
+                  *
+                </span>
               </Show>
             </span>
             <Show when={!props.readOnly}>
               <TabBar
                 class="access-mode"
+                small
                 label={`${node().title} permission`}
                 value={value()}
                 options={(Object.keys(owner.MODES) as owner.Mode[]).map(

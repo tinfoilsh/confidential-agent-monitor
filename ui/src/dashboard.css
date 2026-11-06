@@ -1833,6 +1833,10 @@ details[open] > summary > .collection-chevron {
   display: inline-block;
   width: 16px;
 }
+.access-modified {
+  color: #f59e0b;
+  font-weight: 600;
+}
 .access-group-title::before {
   content: "▸";
   color: var(--muted);

@@ -163,6 +163,7 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
       <div id="toolbar">
         <Search
           label="Search connections and services"
+          autofocus
           value={query()}
           onInput={setQuery}
         />
@@ -337,6 +338,7 @@ function Catalog() {
       <div class="catalog-toolbar">
         <Search
           label="Search services"
+          autofocus
           value={query()}
           onInput={setQuery}
           onEnter={() =>
