@@ -1670,16 +1670,13 @@ details[open] > summary > .collection-chevron {
   line-height: 16px;
   white-space: nowrap;
 }
-.tab-bar
-  > :is(a, button):hover:not(
-    :disabled,
-    [aria-current="page"],
-    [aria-pressed="true"]
-  ) {
+.tab-bar > :is(a, button):hover:not(:disabled) {
   background: transparent;
   color: var(--text);
 }
-.tab-bar > :is([aria-current="page"], [aria-pressed="true"]) {
+.tab-bar > :is([aria-current="page"], [aria-pressed="true"]),
+.tab-bar
+  > :is([aria-current="page"], [aria-pressed="true"]):hover:not(:disabled) {
   color: #fff;
 }
 .tab-bar.inherited > .shown {
