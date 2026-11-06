@@ -1670,12 +1670,16 @@ details[open] > summary > .collection-chevron {
   line-height: 16px;
   white-space: nowrap;
 }
-.tab-bar > :is(a, button):hover:not(:disabled) {
+.tab-bar
+  > :is(a, button):hover:not(
+    :disabled,
+    [aria-current="page"],
+    [aria-pressed="true"]
+  ) {
   background: transparent;
   color: var(--text);
 }
-.tab-bar > :is([aria-current="page"], [aria-pressed="true"]),
-.tab-bar > :is([aria-current="page"], [aria-pressed="true"]):hover {
+.tab-bar > :is([aria-current="page"], [aria-pressed="true"]) {
   color: #fff;
 }
 .tab-bar.inherited > .shown {
@@ -2492,6 +2496,14 @@ td {
 /* The open shell fills the workspace while its sidebar tab is shown. */
 #workspace.shell-shown {
   overflow: hidden;
+  border: 0;
+}
+.shell-notices {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 20;
+  max-width: 420px;
 }
 .shell-view {
   height: 100%;

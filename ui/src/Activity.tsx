@@ -511,7 +511,7 @@ export function RequestDetail(props: {
                     title={owner.saveText(r())}
                     onClick={() => void m.decide(r(), "save")}
                   >
-                    Save rule and retry
+                    Allow always
                   </button>
                 </Show>
                 <Show when={owner.decisions(r(), m.now()).deny}>

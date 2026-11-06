@@ -294,6 +294,11 @@ function Shell() {
                   </section>
                 )}
               </Show>
+              <Show when={shellShown()}>
+                <div class="shell-notices">
+                  <ApprovalBar />
+                </div>
+              </Show>
             </main>
             <PairDialog open={pairing()} close={close} />
             <DeviceSignInDialog attempt={m.deviceSignIn()} />
