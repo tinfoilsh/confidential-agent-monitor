@@ -16,6 +16,7 @@ import {
   SectionHeading,
   Field,
   Icon,
+  Modal,
   ResourceDisclosure,
   Search,
   createDialogMotion,
@@ -48,6 +49,7 @@ export function DeviceSignInDialog(props: {
     <dialog
       ref={dialog}
       id="device-sign-in-dialog"
+      class="dialog-panel"
       aria-labelledby="device-sign-in-title"
       aria-describedby="device-sign-in-description"
       onCancel={(event) => {
@@ -277,49 +279,89 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
     </>
   );
 }
-function CatalogRow(props: { name: string; added?: number }) {
+function CatalogRow(props: {
+  name: string;
+  added?: number;
+  onOpen: () => void;
+}) {
   const m = useMonitor();
   return (
-    <ResourceDisclosure
-      class="catalog-item"
-      summaryClass="resource-row collection-row catalog-row"
-      summary={
-        <>
-          <ConnectorIcon preset={props.name} />
-          <strong
-            class="collection-name"
-            title={m.view()!.presets[props.name].title}
-          >
-            {m.view()!.presets[props.name].title}
-          </strong>
-          <span class="resource-meta">
-            <Show when={props.added}>
-              {(count) => <span class="muted">added ({count()})</span>}
-            </Show>
-          </span>
-          <span class="collection-chevron">
-            <Icon name="arrow" />
-          </span>
-        </>
-      }
+    <button
+      type="button"
+      class="resource-row collection-row catalog-row"
+      onClick={() => props.onOpen()}
     >
-      {(active) => (
-        <Show when={active()}>
-          <div class="catalog-entry">
-            <h3 class="catalog-add-title">
-              New {m.view()!.presets[props.name].title} connection
-            </h3>
-            <AddConnection preset={props.name} />
-          </div>
+      <ConnectorIcon preset={props.name} />
+      <strong
+        class="collection-name"
+        title={m.view()!.presets[props.name].title}
+      >
+        {m.view()!.presets[props.name].title}
+      </strong>
+      <span class="resource-meta">
+        <Show when={props.added}>
+          {(count) => <span class="muted">added ({count()})</span>}
         </Show>
-      )}
-    </ResourceDisclosure>
+      </span>
+      <span class="collection-chevron">
+        <Icon name="arrow" />
+      </span>
+    </button>
+  );
+}
+function CatalogDialog(props: { preset?: string; onClose: () => void }) {
+  const m = useMonitor();
+  // Keep the chosen service while the dialog fades out.
+  const shown = createMemo<string | undefined>(
+    (previous) => props.preset ?? previous,
+  );
+  return (
+    <Modal
+      id="catalog-dialog"
+      class="dialog-panel"
+      aria-labelledby="catalog-dialog-title"
+      open={!!props.preset}
+      onClose={props.onClose}
+    >
+      <Show when={shown()} keyed>
+        {(preset) => (
+          <>
+            <header class="dialog-header">
+              <div>
+                <h1 id="catalog-dialog-title">
+                  <ConnectorIcon preset={preset} />
+                  New {m.view()!.presets[preset].title} connection
+                </h1>
+              </div>
+              <button
+                class="dialog-close icon-button"
+                aria-label="Close dialog"
+                onClick={props.onClose}
+              >
+                <Icon name="close" />
+              </button>
+            </header>
+            <div class="dialog-body">
+              <AddConnection preset={preset} />
+            </div>
+            <Show when={m.message(location.hash)}>
+              {(text) => (
+                <p class="dialog-notice" role="status">
+                  {text()}
+                </p>
+              )}
+            </Show>
+          </>
+        )}
+      </Show>
+    </Modal>
   );
 }
 function Catalog() {
   let catalog!: HTMLDivElement;
   const m = useMonitor(),
     [query, setQuery] = m.search("connections");
+  const [chosen, setChosen] = createSignal<string>();
   const groups = createMemo(() => owner.catalog(m.view()!));
   const filtered = createMemo(() => {
     const search = query().toLowerCase();
@@ -343,7 +385,7 @@ function Catalog() {
           onInput={setQuery}
           onEnter={() =>
             catalog
-              .querySelector<HTMLAnchorElement>("details[open] .collection-row")
+              .querySelector<HTMLButtonElement>("details[open] .collection-row")
               ?.click()
           }
         />
@@ -375,6 +417,7 @@ function Catalog() {
                       <CatalogRow
                         name={name}
                         added={presets().get(name)?.connections}
+                        onOpen={() => setChosen(name)}
                       />
                     )}
                   </For>
@@ -387,6 +430,7 @@ function Catalog() {
       <Show when={![...filtered().values()].some((g) => g.presets.length)}>
         <Empty title="No matching services">Try a different search.</Empty>
       </Show>
+      <CatalogDialog preset={chosen()} onClose={() => setChosen()} />
     </div>
   );
 }

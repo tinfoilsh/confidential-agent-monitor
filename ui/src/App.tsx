@@ -450,6 +450,7 @@ function PairDialog(props: { open: boolean; close: () => void }) {
   return (
     <Modal
       id="creation-dialog"
+      class="dialog-panel"
       aria-labelledby="creation-title"
       aria-describedby="creation-description"
       open={props.open}

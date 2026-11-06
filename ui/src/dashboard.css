@@ -987,11 +987,23 @@ summary + * {
 .catalog-row {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 10px;
+  width: 100%;
+  min-height: auto;
+  border: 0;
   border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  font-weight: inherit;
+  text-align: left;
 }
 .catalog-row:last-child {
   border-bottom: 0;
+}
+.catalog-row:hover:not(:disabled) {
+  background: var(--subtle);
 }
 
 .catalog-row .collection-name {
@@ -1015,29 +1027,14 @@ summary + * {
 /* An open item is tinted, not outlined: its header goes a shade darker and
    slightly blue, its body the same step darker than the plain card. Both
    are one step; the header stays the darker of the two. */
-.catalog-item[open] > summary,
 .connection-item[open] > summary {
   background: var(--open-head);
 }
-.catalog-item[open] > summary:hover,
 .connection-item[open] > summary:hover {
   background: var(--open-head);
 }
-.catalog-item[open] .catalog-entry,
 .connection-item[open] .connection-inline {
   background: var(--open-body);
-}
-.catalog-entry {
-  border-top: 1px solid var(--edge);
-}
-
-.catalog-add-title {
-  margin: 20px 16px 16px;
-  font-size: var(--font-section);
-  font-weight: 400;
-}
-.catalog-entry > form {
-  padding: 0 16px 16px;
 }
 
 .agent-item + .agent-item,
@@ -2335,8 +2332,7 @@ td {
     opacity: 1;
   }
 }
-#creation-dialog,
-#device-sign-in-dialog {
+.dialog-panel {
   width: min(680px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
   padding: 0;
@@ -2347,13 +2343,11 @@ td {
   color: var(--text);
   box-shadow: var(--shadow-lg);
 }
-#creation-dialog[open],
-#device-sign-in-dialog[open] {
+.dialog-panel[open] {
   display: flex;
   flex-direction: column;
 }
-#creation-dialog::backdrop,
-#device-sign-in-dialog::backdrop {
+.dialog-panel::backdrop {
   background: var(--backdrop);
 }
 #device-sign-in-dialog {
@@ -2753,17 +2747,14 @@ td {
       height: auto;
     }
   }
-  #creation-dialog::backdrop,
-  #device-sign-in-dialog::backdrop {
+  .dialog-panel::backdrop {
     transition: background-color 0.12s ease-out;
   }
-  #creation-dialog[data-closing]::backdrop,
-  #device-sign-in-dialog[data-closing]::backdrop {
+  .dialog-panel[data-closing]::backdrop {
     background: transparent;
   }
   @starting-style {
-    #creation-dialog[open]::backdrop,
-    #device-sign-in-dialog[open]::backdrop {
+    .dialog-panel[open]::backdrop {
       background: transparent;
     }
   }
