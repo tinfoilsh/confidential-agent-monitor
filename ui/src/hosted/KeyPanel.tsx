@@ -565,7 +565,7 @@ export function KeyGate(props: {
                 {(recovery) => (
                   <AuthScreen
                     title="Save your recovery key"
-                    account={props.session.user()?.label}
+                    account={props.session.user()}
                   >
                     <RecoveryDownload
                       file={recovery()}
@@ -578,7 +578,7 @@ export function KeyGate(props: {
                 <AuthScreen
                   title="Set up your keys"
                   description={`Your keys ${purpose()}. They're encrypted with your account, so only you can open them.`}
-                  account={props.session.user()?.label}
+                  account={props.session.user()}
                 >
                   <SetupKeys
                     session={props.session}
@@ -591,7 +591,7 @@ export function KeyGate(props: {
                 <AuthScreen
                   title="Unlock your keys"
                   description={`You need them to ${purpose()}.`}
-                  account={props.session.user()?.label}
+                  account={props.session.user()}
                 >
                   <UnlockKeys session={props.session} manager={props.manager} />
                 </AuthScreen>

@@ -7,7 +7,7 @@ This tool inventories API requests and proposes monitor actions, effect sets, re
 Not every shipped preset comes from this generator. Protocols described in prose
 can use a reviewed, handwritten definition with SDK fixtures. For example,
 `generate slack` covers Web API requests, not the separate
-[Slack Socket Mode preset](../../presets/README.md#slack-socket-mode).
+[Slack Socket Mode definition](../../presets/slack_socket_mode.json).
 
 1. Identify the workflow and vendor references, credential types, destinations,
    and SDK version. State which capabilities the sources actually cover.

@@ -9,6 +9,7 @@ import {
   RuleText,
   createRecord,
   href,
+  TabBar,
 } from "./components";
 import { useMonitor } from "./monitor";
 import { PolicyProposals, TechnicalDiff } from "./PolicyProposals";
@@ -46,23 +47,20 @@ export function Activity(props: { scope?: string; name?: string }) {
   const request = () => props.scope === "request" ? props.name : undefined;
   return (
     <>
-      <nav class="page-tabs" aria-label="Activity views">
-        <a
-          href="#activity"
-          aria-current={!rules() && !proposals() ? "page" : undefined}
-        >
-          Requests
-        </a>
-        <a
-          href="#activity/proposals"
-          aria-current={proposals() ? "page" : undefined}
-        >
-          Config proposals
-        </a>
-        <a href="#activity/rules" aria-current={rules() ? "page" : undefined}>
-          Saved Rules
-        </a>
-      </nav>
+      <TabBar
+        class="page-tabs"
+        label="Activity views"
+        value={proposals() ? "proposals" : rules() ? "rules" : "requests"}
+        options={[
+          { value: "requests", label: "Requests", href: "#activity" },
+          {
+            value: "proposals",
+            label: "Config proposals",
+            href: "#activity/proposals",
+          },
+          { value: "rules", label: "Saved rules", href: "#activity/rules" },
+        ]}
+      />
       <Show
         when={proposals()}
         fallback={

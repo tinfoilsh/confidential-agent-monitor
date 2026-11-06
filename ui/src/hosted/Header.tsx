@@ -9,6 +9,7 @@ import {
 import { Icon, Modal } from "../components";
 import * as keys from "./keys";
 import { RecoveryDownload } from "./KeyPanel";
+import { PRODUCT } from "./product";
 import type { Session } from "./session";
 
 const OPENED_FROM = "from";
@@ -76,7 +77,10 @@ export function Header(props: { session: Session }) {
     <header class="start-header">
       <a href="/" class="start-brand" aria-label="Tinfoil Terminal home" link>
         <img src="/icons/tinfoil.svg" alt="" />
-        <span>Terminal</span>
+        <span class="start-brand-name">
+          {PRODUCT.name}
+          <small>{PRODUCT.tagline}</small>
+        </span>
       </a>
       <Show
         when={props.session.user()}

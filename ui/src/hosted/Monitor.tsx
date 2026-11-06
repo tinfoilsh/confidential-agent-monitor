@@ -15,6 +15,7 @@ import { Header, openedFromHome } from "./Header";
 import * as keys from "./keys";
 import { KeyGate } from "./KeyPanel";
 import { openMonitor, type OpenedMonitor } from "./monitors";
+import { PRODUCT } from "./product";
 import {
   RestoreRequired,
   acceptSandbox,
@@ -27,7 +28,7 @@ import "./console.css";
 
 // A Monitor link names only its resource; inventory and saved keys supply the rest.
 export default function Monitor(props: { session: Session }) {
-  document.title = "Monitor";
+  document.title = PRODUCT.name;
   const manager = keys.passkeys();
   const id = decodeURIComponent(useParams().id ?? "");
   // An OAuth sign-in returns without the marker, then restores it in the URL.
@@ -81,7 +82,7 @@ export default function Monitor(props: { session: Session }) {
       return `${name} is ${row()!.status}`;
     if (inventory().value && !inventory().loading && !row())
       return "Monitor not found";
-    return `Opening ${name}…`;
+    return "Connecting to sandbox…";
   };
   createEffect(
     on(
@@ -116,7 +117,6 @@ export default function Monitor(props: { session: Session }) {
         onCheckpoint: (problem) => setNotice(problem ?? ""),
       });
       if (!current.signal.aborted && opened.scope.live()) {
-        document.title = `${opened.row.name} · Monitor`;
         setSession(opened);
         setLinking(true);
         void relinkSandboxes(opened)
@@ -210,10 +210,7 @@ export default function Monitor(props: { session: Session }) {
                 manager={manager}
                 purpose={`open ${row()?.name ?? "your Monitor"}`}
               >
-                <AuthScreen
-                  title={title()}
-                  account={props.session.user()?.label}
-                >
+                <AuthScreen title={title()} account={props.session.user()}>
                   <AuthCard icon={<Icon name="rules" />}>
                     <Show when={error()}>
                       <p role="alert">{error()}</p>
@@ -313,7 +310,7 @@ export default function Monitor(props: { session: Session }) {
               </p>
             </Show>
             <App
-              monitorInfo={{ name: opened.row.name }}
+              product={PRODUCT}
               backTo={back()}
               header={<Header session={props.session} />}
               client={opened.client}

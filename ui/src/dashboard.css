@@ -18,11 +18,25 @@
   font-weight: 700;
   font-display: swap;
 }
+/* Aeonik sets titles and the line under them, as on the dashboard and in Chat. */
+@font-face {
+  font-family: "Aeonik";
+  src: url("/fonts/aeonik-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Aeonik";
+  src: url("/fonts/aeonik-semibold.woff2") format("woff2");
+  font-weight: 600;
+  font-display: swap;
+}
 :root {
   color-scheme: light;
   --control-height: 32px;
   --control-padding: 5px 12px;
   --compact-height: var(--control-height);
+  --font-display: "Aeonik", ui-sans-serif, system-ui, sans-serif;
   --font-section: 16px;
   --font-body: 14px;
   --font-detail: 12px;
@@ -57,7 +71,13 @@
   --frame-inset: 30px;
   --frame-radius: 12px;
   --page-height: 100dvh;
+  --nav-width: 224px;
+  --nav-height: 64px;
   --tinfoil-dark: #061820;
+  --tinfoil-accent-dark: #004444;
+  --tinfoil-accent-light: #68c7ac;
+  --text-secondary: #292f3d;
+  --border-strong: #374151;
   --backdrop: #06182099;
   --shadow: 0 1px 2px #0000000d;
   --shadow-lg: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a;
@@ -93,6 +113,8 @@
   --surface: #121212;
   --subtle: #2c2c2e;
   --text: #fafafa;
+  --text-secondary: #d5d8dd;
+  --border-strong: #62626a;
   --muted: #b0b8c0;
   --dim: #b0b5c0;
   --input: #62626a;
@@ -246,34 +268,41 @@ input[type="checkbox"] {
   vertical-align: -3px;
   accent-color: var(--primary);
 }
+/* Tinfoil Chat's settings toggle. */
 input[type="checkbox"][role="switch"] {
   appearance: none;
   position: relative;
   flex-shrink: 0;
-  width: 32px;
-  height: 18px;
-  border: 1px solid var(--input);
-  border-radius: 10px;
-  background: var(--input);
+  width: 36px;
+  height: 20px;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--muted) 40%, transparent);
   cursor: pointer;
-  vertical-align: -4px;
+  vertical-align: -5px;
 }
 input[type="checkbox"][role="switch"]::before {
   content: "";
   position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 12px;
-  height: 12px;
+  top: 1px;
+  left: 1px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: var(--on-primary);
+  background: color-mix(in srgb, var(--muted) 70%, transparent);
+  box-shadow: var(--shadow);
 }
 input[type="checkbox"][role="switch"]:checked {
-  border-color: var(--primary);
-  background: var(--primary);
+  background: var(--tinfoil-accent-light);
 }
 input[type="checkbox"][role="switch"]:checked::before {
-  transform: translateX(14px);
+  transform: translateX(16px);
+  background: #fff;
+}
+input[type="checkbox"][role="switch"]:focus-visible {
+  outline: 2px solid var(--border-strong);
+  outline-offset: 0;
 }
 textarea {
   resize: vertical;
@@ -318,6 +347,7 @@ h3 {
 }
 h1 {
   margin: 0;
+  font-family: var(--font-display);
   font-size: 24px;
   line-height: 1.15;
   letter-spacing: -0.025em;
@@ -360,7 +390,7 @@ summary + * {
 #app {
   height: 100vh;
   height: 100dvh;
-  padding-left: 224px;
+  padding-left: var(--nav-width);
 }
 #navigation {
   position: fixed;
@@ -368,7 +398,7 @@ summary + * {
   inset: 0 auto 0 0;
   display: flex;
   flex-direction: column;
-  width: 224px;
+  width: var(--nav-width);
   color: var(--nav-text);
   background: var(--tinfoil-dark) url("/icons/dashboard-grain.svg") repeat;
 }
@@ -389,17 +419,25 @@ summary + * {
   object-fit: contain;
   filter: invert(1);
 }
-.brand-context {
+/* As in the hosted header, so "Secure browser console" fits the sidebar. */
+.brand:has(> .brand-name) {
+  gap: 8px;
+}
+@media (min-width: 1024px) {
+  .brand:has(> .brand-name) {
+    padding-inline: 20px;
+  }
+}
+.brand-name {
   display: grid;
   min-width: 0;
-  gap: 2px;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
 }
-.brand-context small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.brand-name small {
   color: var(--nav-muted);
-  font-size: var(--font-detail);
+  font-weight: 400;
 }
 .monitor-footer {
   flex: none;
@@ -438,6 +476,42 @@ summary + * {
 .nav-count {
   margin-left: auto;
   color: inherit;
+}
+.nav-shell {
+  position: relative;
+  margin-top: 8px;
+  padding: 0 4px 0 0;
+}
+.nav-shell::before {
+  content: "";
+  position: absolute;
+  inset: -6px 0 auto;
+  border-top: 1px solid var(--nav-line);
+}
+.nav-shell > a {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 0 8px 12px;
+  color: inherit;
+}
+.nav-shell > a > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nav-shell-close {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  color: var(--nav-muted);
+}
+.nav-shell-close:hover:not(:disabled) {
+  background: var(--nav-hover);
+  color: var(--nav-text);
 }
 .mobile-toggle {
   display: none;
@@ -480,6 +554,7 @@ summary + * {
 .page-heading p {
   margin: 6px 0 0;
   color: var(--dim);
+  font-family: var(--font-display);
   font-size: 16px;
 }
 .header-actions {
@@ -552,23 +627,7 @@ summary + * {
   display: none;
 }
 .page-tabs {
-  display: flex;
-  gap: 24px;
   margin-bottom: 16px;
-  border-bottom: 1px solid var(--line);
-}
-.page-tabs a {
-  padding: 10px 0;
-  border-bottom: 2px solid transparent;
-  color: var(--muted);
-  font-weight: 500;
-}
-.page-tabs a:hover,
-.page-tabs a[aria-current="page"] {
-  color: var(--text);
-}
-.page-tabs a[aria-current="page"] {
-  border-bottom-color: var(--link);
 }
 #toolbar,
 .catalog-toolbar {
@@ -1404,7 +1463,7 @@ details[open] > summary > .collection-chevron {
     justify-self: start;
     max-width: 100%;
   }
-  .agent-inline .access-action > .seg {
+  .agent-inline .access-action > .tab-bar {
     justify-self: start;
   }
   .agent-inline .access-level > button {
@@ -1563,26 +1622,68 @@ details[open] > summary > .collection-chevron {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.seg {
+/* The dashboard's AnimatedTabBar (packages/ui/src/animated-tabs.tsx). */
+.tab-bar {
+  position: relative;
   display: inline-flex;
   flex-shrink: 0;
+  max-width: 100%;
+  padding: 4px;
+  border: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
+  border-radius: var(--card-radius);
+  background: var(--card);
+  overflow-x: auto;
+  scrollbar-width: none;
 }
-.seg > button {
-  padding: var(--control-padding);
-  min-height: var(--control-height);
-  border-radius: 0;
+.tab-bar::-webkit-scrollbar {
+  display: none;
 }
-.seg > button + button {
-  margin-left: -1px;
+.tab-bar-pill {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  border-radius: var(--card-radius);
+  background: var(--tinfoil-accent-dark);
+  box-shadow: var(--shadow);
+  pointer-events: none;
 }
-.seg > button:focus-visible {
-  z-index: 2;
+.tab-bar.inherited .tab-bar-pill {
+  opacity: 0.35;
 }
-.seg > button:first-child {
-  border-radius: 4px 0 0 4px;
+.tab-bar > :is(a, button) {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 0;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--card-radius);
+  background: transparent;
+  box-shadow: none;
+  color: var(--gray-600);
+  font-size: var(--font-detail);
+  font-weight: 600;
+  line-height: 16px;
+  white-space: nowrap;
 }
-.seg > button:last-child {
-  border-radius: 0 4px 4px 0;
+.tab-bar > :is(a, button):hover:not(:disabled) {
+  background: transparent;
+  color: var(--text);
+}
+.tab-bar > :is([aria-current="page"], [aria-pressed="true"]),
+.tab-bar > :is([aria-current="page"], [aria-pressed="true"]):hover {
+  color: #fff;
+}
+.tab-bar.inherited > .shown {
+  color: var(--text);
+}
+.tab-bar > :is(a, button):focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: -2px;
 }
 .acct {
   padding: 12px 0;
@@ -1728,24 +1829,94 @@ details[open] > summary > .collection-chevron {
 .access-action-group[open] > summary .access-group-title::before {
   content: "▾";
 }
-#pane:has(> .settings-section) {
-  padding: var(--card-inset) var(--card-inset) 0;
-  border-radius: var(--card-radius);
-  background: var(--card);
+/* Settings follow Tinfoil Chat: titled sections of one card per setting. */
+#pane.settings {
+  display: grid;
+  gap: 24px;
+}
+.settings-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--font-detail);
 }
 #pane > .settings-section {
+  display: grid;
+  gap: 12px;
   margin: 0;
-  padding: var(--card-inset) 0;
+  padding: 0;
   border: 0;
-  border-radius: 0;
   background: none;
   box-shadow: none;
 }
-#pane > .settings-section + .settings-section {
-  border-top: 1px solid var(--line);
+.settings-section > h2 {
+  margin: 0;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: var(--font-body);
+  line-height: 20px;
+  font-weight: 400;
 }
-.settings-section h2 {
-  margin-bottom: 8px;
+.settings-card {
+  display: block;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--card);
+  overflow-wrap: anywhere;
+}
+.setting-title {
+  display: block;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: var(--font-body);
+  line-height: 20px;
+}
+.setting-toggle {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+}
+.setting-toggle small {
+  display: block;
+  color: var(--muted);
+  line-height: 16px;
+}
+.theme-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.theme-option {
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+  padding: 12px;
+  border-color: var(--line);
+  background: transparent;
+  box-shadow: none;
+  color: var(--text-secondary);
+  font-family: var(--font-display);
+  font-size: var(--font-detail);
+  font-weight: 400;
+  line-height: 16px;
+}
+.theme-option > .icon {
+  width: 20px;
+  height: 20px;
+  color: var(--text);
+}
+.theme-option:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: transparent;
+}
+.theme-option[aria-pressed="true"],
+.theme-option[aria-pressed="true"]:hover {
+  border-color: var(--tinfoil-accent-light);
+  background: rgb(104 199 172 / 10%);
 }
 .setting-row {
   display: grid;
@@ -1778,10 +1949,7 @@ details[open] > summary > .collection-chevron {
 .setting-row input[type="checkbox"] {
   margin: 0;
 }
-.settings-danger {
-  border-color: var(--bad);
-}
-.settings-danger h2 {
+.settings-danger > h2 {
   color: var(--bad);
 }
 
@@ -1942,13 +2110,14 @@ td {
   text-align: center;
 }
 .auth > h1 {
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.3;
   text-wrap: balance;
 }
 .auth-description {
   margin: -8px 0 0;
   color: var(--muted);
+  font-family: var(--font-display);
   line-height: 1.65;
   text-wrap: balance;
 }
@@ -1967,14 +2136,11 @@ td {
   text-align: left;
   overflow-wrap: anywhere;
 }
-.auth-account > .icon {
-  width: 32px;
-  height: 32px;
-  padding: 7px;
-  border: 1px solid var(--edge);
+.auth-account > .user-avatar {
+  flex: none;
   border-radius: 50%;
-  background: var(--subtle);
-  color: var(--muted);
+  /* The palette's light cells would otherwise vanish on a light card. */
+  box-shadow: 0 0 0 1px var(--line);
 }
 .auth-card {
   display: flex;
@@ -2298,6 +2464,7 @@ td {
 .dialog-header p {
   margin: 6px 0 0;
   color: var(--muted);
+  font-family: var(--font-display);
 }
 .dialog-close,
 .open-shell {
@@ -2315,37 +2482,21 @@ td {
   width: 20px;
   height: 20px;
 }
-.shell-split {
-  display: flex;
+.app-frame {
+  position: relative;
   height: var(--page-height);
 }
-.shell-split > * {
-  flex: 1 1 0;
-  min-width: 0;
-  min-height: 0;
-}
-.shell-split #app {
+.app-frame #app {
   height: 100%;
 }
-.shell-pane {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  border-left: 1px solid var(--line);
-  background: var(--card);
+/* The open shell fills the workspace while its sidebar tab is shown. */
+#workspace.shell-shown {
+  overflow: hidden;
 }
-.shell-pane-resize {
-  position: absolute;
-  z-index: 1;
-  inset: 0 auto 0 -3px;
-  width: 6px;
-  cursor: col-resize;
-  touch-action: none;
+.shell-view {
+  height: 100%;
 }
 @media (min-width: 1024px) {
-  .shell-split > .shell-pane {
-    flex: 0 0 var(--shell-width);
-  }
   /* Desktop pages float on a black frame. */
   :root {
     --page-height: calc(100dvh - 2 * var(--frame-inset));
@@ -2355,7 +2506,7 @@ td {
     background: var(--frame);
   }
   .start-page,
-  .shell-split {
+  .app-frame {
     border: 1px solid var(--nav-line);
     border-radius: var(--frame-radius);
     overflow: hidden;
@@ -2369,25 +2520,6 @@ td {
   #workspace {
     border-width: 0 0 0 1px;
     border-radius: 0;
-  }
-}
-.shell-split > .shell-pane:has(> .sandbox-terminal.floating) {
-  flex: 0 0 0;
-  border: 0;
-}
-.shell-pane:has(> .sandbox-terminal.floating) > .shell-pane-resize {
-  display: none;
-}
-@media (max-width: 1023px) {
-  .shell-split {
-    flex-direction: column;
-  }
-  .shell-pane {
-    border-left: 0;
-    border-top: 1px solid var(--line);
-  }
-  .shell-pane-resize {
-    display: none;
   }
 }
 .icon-button {
@@ -2419,7 +2551,7 @@ td {
 }
 @media (max-width: 1023px) {
   #app {
-    padding: 64px 0 0;
+    padding: var(--nav-height) 0 0;
   }
   #navigation {
     inset: 0 0 auto;
@@ -2427,7 +2559,7 @@ td {
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-rows: 64px minmax(0, 1fr);
     width: auto;
-    height: 64px;
+    height: var(--nav-height);
     align-items: center;
   }
   .brand {
@@ -2550,7 +2682,7 @@ td {
     grid-template-columns: minmax(0, 1fr);
     gap: 6px;
   }
-  .access-action .seg {
+  .access-action .tab-bar {
     justify-self: start;
   }
   .agent-setup-details {
@@ -2575,11 +2707,23 @@ td {
   input[role="switch"]::before {
     transition: transform 0.15s ease;
   }
+  .tab-bar > :is(a, button) {
+    transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .tab-bar.ready .tab-bar-pill {
+    transition:
+      left 0.3s cubic-bezier(0, 0, 0.2, 1),
+      width 0.3s cubic-bezier(0, 0, 0.2, 1),
+      opacity 0.3s cubic-bezier(0, 0, 0.2, 1);
+  }
   .access-disclosure {
     transition: grid-template-rows 0.12s ease-out;
   }
   .collection-chevron {
     transition: transform 0.12s ease-out;
+  }
+  #navigation {
+    transition: transform 0.15s ease-out;
   }
   @supports (interpolate-size: allow-keywords) {
     details {
@@ -2722,13 +2866,15 @@ td {
 
 /* Action rows: one filled value per row; nested rows get smaller controls
    so the indent reads on both sides. A mixed group shows nothing filled. */
-.seg.small > button {
-  padding: 2px 8px;
-  min-height: 24px;
-  font-size: var(--font-detail);
+.tab-bar.small {
+  padding: 2px;
 }
-.seg.mixed > button {
-  color: var(--muted);
+.tab-bar.small .tab-bar-pill {
+  top: 2px;
+  bottom: 2px;
+}
+.tab-bar.small > :is(a, button) {
+  padding: 4px 10px;
 }
 .access-action-single > .access-action > .access-action-title::before {
   display: none;

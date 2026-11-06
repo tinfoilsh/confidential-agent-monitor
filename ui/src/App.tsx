@@ -26,7 +26,6 @@ import {
   type IconName,
   Loading,
   Modal,
-  ShellSplit,
   href,
 } from "./components";
 import { THEME, applyTheme, savedTheme } from "./theme";
@@ -34,6 +33,7 @@ import { THEME, applyTheme, savedTheme } from "./theme";
 const Settings = lazy(() =>
   import("./Settings").then((m) => ({ default: m.Settings })),
 );
+const SandboxTerminal = lazy(() => import("./SandboxTerminal"));
 const headings: Record<string, [title: string, description: string]> = {
   activity: ["Activity", "Review requests and manage saved approval rules."],
   agents: [
@@ -104,11 +104,23 @@ function Shell() {
               ? m.view()?.config.connections
               : {}) ?? {},
         ).length;
+  // The open shell is a sidebar tab; other pages keep its session running.
+  const shellShown = () => {
+    const [kind, name, view] = parse(page());
+    return kind === "agents" && view === "terminal" && name === m.shell();
+  };
+  const closeShell = () => {
+    const shown = shellShown();
+    m.setShell();
+    if (shown) location.hash = "agents";
+  };
   const NavItem = (props: { key: IconName }) => (
     <a
       class="nav-item"
-      classList={{ on: section() === props.key }}
-      aria-current={section() === props.key ? "page" : undefined}
+      classList={{ on: section() === props.key && !shellShown() }}
+      aria-current={
+        section() === props.key && !shellShown() ? "page" : undefined
+      }
       href={href(props.key)}
     >
       <Icon name={props.key} />
@@ -141,6 +153,10 @@ function Shell() {
       media.removeEventListener("change", changed);
     });
   });
+  createEffect(() => {
+    const [kind, name, view] = parse(page());
+    if (kind === "agents" && view === "terminal") m.setShell(name);
+  });
   const ready = () => m.view() && !m.locked() && owner.onboarded(m.view()!);
   createEffect(() => {
     applyTheme(theme(), dark());
@@ -149,17 +165,7 @@ function Shell() {
   return (
     <>
       <Show when={ready()} fallback={<Gate />}>
-        <ShellSplit
-          shell={
-            m.shell()
-              ? {
-                  name: m.shell()!,
-                  open: untrack(() => m.shellFor(m.shell()!)),
-                }
-              : undefined
-          }
-          onClose={() => m.setShell()}
-        >
+        <div class="app-frame">
           <div id="app" classList={{ "navigation-open": mobile() }}>
             <aside id="navigation" aria-label="Monitor navigation">
               <a class="brand" href="#activity">
@@ -167,12 +173,14 @@ function Shell() {
                   src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
                   alt="Tinfoil"
                 />
-                <span class="brand-context">
-                  <span>Monitor</span>
-                  <Show when={m.options.monitorInfo}>
-                    {(info) => <small title={info().name}>{info().name}</small>}
-                  </Show>
-                </span>
+                <Show when={m.options.product}>
+                  {(product) => (
+                    <span class="brand-name">
+                      {product().name}
+                      <small>{product().tagline}</small>
+                    </span>
+                  )}
+                </Show>
               </a>
               <button
                 class="mobile-toggle"
@@ -191,52 +199,106 @@ function Shell() {
                 >
                   {(key) => <NavItem key={key} />}
                 </For>
+                <Show when={m.shell()}>
+                  {(name) => (
+                    <div
+                      class="nav-item nav-shell"
+                      classList={{ on: shellShown() }}
+                    >
+                      <a
+                        href={href("agents", name(), "terminal")}
+                        aria-current={shellShown() ? "page" : undefined}
+                        title={name()}
+                      >
+                        <Icon name="terminal" />
+                        <span>{name()}</span>
+                      </a>
+                      <button
+                        type="button"
+                        class="icon-button nav-shell-close"
+                        aria-label={`Close shell in ${name()}`}
+                        title="Close shell"
+                        onClick={closeShell}
+                      >
+                        <Icon name="close" />
+                      </button>
+                    </div>
+                  )}
+                </Show>
               </nav>
               <MonitorFooter />
             </aside>
-            <main id="workspace" tabIndex={-1}>
-              <header id="page-header">
-                <div class="page-heading">
-                  <div>
-                    <h1>{heading()?.[0] ?? "Monitor"}</h1>
-                    <p>{heading()?.[1]}</p>
-                  </div>
-                  <div class="header-actions">
-                    <button
-                      aria-label="Refresh monitor"
-                      aria-busy={m.loading()}
-                      onClick={() => void m.refresh()}
-                    >
-                      <Icon name="refresh" />
-                      Refresh
-                    </button>
-                  </div>
-                </div>
-              </header>
-              <div id="page-content">
-                <Show when={page()} keyed>
-                  {(path) => (
-                    <Page
-                      path={path}
-                      theme={theme()}
-                      onThemeChange={setTheme}
-                    />
-                  )}
-                </Show>
-                <div id="notices">
-                  <ApprovalBar />
-                  <Show when={m.message() && !pairing()}>
-                    <div id="toast" role="status">
-                      {m.message()}
+            <main
+              id="workspace"
+              tabIndex={-1}
+              classList={{ "shell-shown": shellShown() }}
+            >
+              <Show when={!shellShown()}>
+                <header id="page-header">
+                  <div class="page-heading">
+                    <div>
+                      <h1>{heading()?.[0] ?? "Monitor"}</h1>
+                      <p>{heading()?.[1]}</p>
                     </div>
+                    <div class="header-actions">
+                      <button
+                        aria-label="Refresh monitor"
+                        aria-busy={m.loading()}
+                        onClick={() => void m.refresh()}
+                      >
+                        <Icon name="refresh" />
+                        Refresh
+                      </button>
+                    </div>
+                  </div>
+                </header>
+                <div id="page-content">
+                  <Show when={page()} keyed>
+                    {(path) => (
+                      <Page
+                        path={path}
+                        theme={theme()}
+                        onThemeChange={setTheme}
+                      />
+                    )}
                   </Show>
+                  <div id="notices">
+                    <ApprovalBar />
+                    <Show when={m.message() && !pairing()}>
+                      <div id="toast" role="status">
+                        {m.message()}
+                      </div>
+                    </Show>
+                  </div>
                 </div>
-              </div>
+              </Show>
+              <Show when={m.shell()} keyed>
+                {(name) => (
+                  <section class="shell-view" hidden={!shellShown()}>
+                    <Show
+                      when={untrack(() => m.shellFor(name))}
+                      fallback={
+                        <Empty title="Shell unavailable">
+                          This Monitor cannot open a shell in {name}.
+                        </Empty>
+                      }
+                    >
+                      {(open) => (
+                        <SandboxTerminal
+                          open={open()}
+                          name={name}
+                          active={shellShown()}
+                        />
+                      )}
+                    </Show>
+                  </section>
+                )}
+              </Show>
             </main>
             <PairDialog open={pairing()} close={close} />
             <DeviceSignInDialog attempt={m.deviceSignIn()} />
           </div>
-        </ShellSplit>
+        </div>
       </Show>
       <Show when={m.busy()}>
         <div id="saving" role="status">

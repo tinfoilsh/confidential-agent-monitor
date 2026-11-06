@@ -27,7 +27,8 @@ const KEY = "monitor-owner-key",
     import.meta.env.VITE_MONITOR_ENDPOINT || undefined;
 
 export type MonitorOptions = {
-  monitorInfo?: { name: string };
+  // Hosted builds name the product in the sidebar and the browser tab.
+  product?: { name: string; tagline: string };
   // Where the hosted Back link returns: the Terminal home or the dashboard.
   backTo?: string;
   // Hosted builds show their site header above the setup screens.
@@ -437,7 +438,8 @@ function createMonitor(options: MonitorOptions) {
   );
   createEffect(() => {
     const count = log.pendingCount();
-    document.title = count ? `(${count}) Monitor` : "Monitor";
+    const name = options.product?.name ?? "Monitor";
+    document.title = count ? `(${count}) ${name}` : name;
   });
   onMount(async () => {
     try {

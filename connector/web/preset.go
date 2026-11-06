@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -128,23 +129,24 @@ func (p *Preset) validate() error {
 }
 
 type Operation struct {
-	WebSocket  bool                `json:"websocket,omitempty"`
-	ID         string              `json:"-"`
-	Action     string              `json:"action"`
-	Effects    []string            `json:"effects"`
-	Method     string              `json:"method"`
-	Origin     string              `json:"origin"`
-	Path       string              `json:"path"`
-	Query      map[string]any      `json:"query,omitempty"`
-	Headers    map[string]any      `json:"headers,omitempty"`
-	Fields     map[string]any      `json:"fields,omitempty"`
-	Params     []string            `json:"params,omitempty"`
-	OpenParams bool                `json:"open_params,omitempty"`
-	Body       string              `json:"body,omitempty"`
-	GraphQL    *GraphQLMatch       `json:"graphql,omitempty"`
-	Scope      map[string]Selector `json:"scope"`
-	Grant      []string            `json:"grant,omitempty"`
-	Sends      string              `json:"sends,omitempty"`
+	WebSocket    bool                `json:"websocket,omitempty"`
+	ID           string              `json:"-"`
+	Action       string              `json:"action"`
+	Effects      []string            `json:"effects"`
+	Method       string              `json:"method"`
+	Origin       string              `json:"origin"`
+	Path         string              `json:"path"`
+	PathPatterns map[string]string   `json:"path_patterns,omitempty"`
+	Query        map[string]any      `json:"query,omitempty"`
+	Headers      map[string]any      `json:"headers,omitempty"`
+	Fields       map[string]any      `json:"fields,omitempty"`
+	Params       []string            `json:"params,omitempty"`
+	OpenParams   bool                `json:"open_params,omitempty"`
+	Body         string              `json:"body,omitempty"`
+	GraphQL      *GraphQLMatch       `json:"graphql,omitempty"`
+	Scope        map[string]Selector `json:"scope"`
+	Grant        []string            `json:"grant,omitempty"`
+	Sends        string              `json:"sends,omitempty"`
 }
 
 type GraphQLMatch struct {
@@ -386,13 +388,14 @@ type headerCondition struct {
 }
 
 type compiledOperation struct {
-	operation  *Operation
-	path       []pathPart
-	selectors  []jsonsel.Compiled
-	params     map[string]bool
-	fields     map[string]func(any) (any, bool)
-	headers    []headerCondition
-	definition json.RawMessage
+	operation    *Operation
+	path         []pathPart
+	pathPatterns map[string]*regexp.Regexp
+	selectors    []jsonsel.Compiled
+	params       map[string]bool
+	fields       map[string]func(any) (any, bool)
+	headers      []headerCondition
+	definition   json.RawMessage
 }
 
 type routeKey struct{ origin, method string }
@@ -415,6 +418,28 @@ func (p *Preset) compile() error {
 		if err != nil {
 			return err
 		}
+		pathPatterns := map[string]*regexp.Regexp{}
+		for name, pattern := range o.PathPatterns {
+			count := 0
+			for _, part := range parts {
+				if part.name == name {
+					count++
+				}
+			}
+			if name == "" || count != 1 {
+				return fmt.Errorf("operation %s needs exactly one path capture named %q", id, name)
+			}
+			// Validate the expression on its own so unbalanced groups cannot
+			// escape the wrapper, then anchor independently of embedded flags.
+			compiled, err := regexp.Compile(pattern)
+			if err == nil {
+				compiled, err = regexp.Compile(`\A(?:` + pattern + `)\z`)
+			}
+			if err != nil {
+				return fmt.Errorf("operation %s has an invalid path pattern for %s: %w", id, name, err)
+			}
+			pathPatterns[name] = compiled
+		}
 		selectors, err := jsonsel.Compile(o.Scope)
 		if err != nil {
 			return err
@@ -423,7 +448,7 @@ func (p *Preset) compile() error {
 		if err != nil {
 			return err
 		}
-		op := &compiledOperation{operation: o, path: parts, selectors: selectors, definition: definition,
+		op := &compiledOperation{operation: o, path: parts, pathPatterns: pathPatterns, selectors: selectors, definition: definition,
 			params: map[string]bool{}, fields: map[string]func(any) (any, bool){}}
 		for _, key := range o.Params {
 			op.params[key] = true
@@ -524,6 +549,15 @@ func (p *Preset) Match(r *Request, config *Setup, f facts.Facts) (facts.Facts, e
 	var captures map[string]string
 	for _, candidate := range candidates {
 		caps, matches := pathCaptures(candidate.path, parts)
+		if !matches {
+			continue
+		}
+		for name, pattern := range candidate.pathPatterns {
+			if !pattern.MatchString(caps[name]) {
+				matches = false
+				break
+			}
+		}
 		if !matches {
 			continue
 		}

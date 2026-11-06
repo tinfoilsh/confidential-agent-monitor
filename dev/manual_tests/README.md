@@ -16,7 +16,9 @@ python dev/manual_tests/test.py slack --env-file /private/path/to/.env --duratio
 
 The explicitly supplied private `0600` file accepts these literal settings:
 
-- Slack: `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN`, from the same dedicated test app.
+- Slack: `SLACK_BOT_TOKEN` for Web API calls and `SLACK_APP_TOKEN` for Socket Mode,
+  from the same dedicated test app. Enable Socket Mode and give the app-level
+  `xapp-` token `connections:write`; do not reuse the bot token for that connection.
 - Grafana: `GRAFANA_URL` (HTTPS origin, no `/api` suffix), optional `GRAFANA_API_KEY`.
 
 Without a Grafana key, search is skipped: health success alone does not establish
@@ -28,6 +30,16 @@ explicitly permits one labelled post. Otherwise the HTTP side permits only exact
 `auth.test` operations. Concurrent Socket Mode clients can take events from each
 other, so do not use a production bot. `slack-fixture.json` contains synthetic SDK
 examples; `python dev/manual_tests/test.py slack --capture` inspects them offline.
+See [Slack's protocol](https://docs.slack.dev/apis/events-api/using-socket-mode)
+for app setup and session/reconnection behavior.
+
+Receiving a test mention does not prove channel filtering: incoming events are
+opaque to Monitor, which neither filters them by channel nor correlates acknowledgement
+IDs with received envelopes. In Monitor policy, acknowledgements count as sends
+because they can contain interactive responses; read-only access cannot acknowledge.
+These tests do not verify the full event schema or deployed policy. Supported hosts,
+paths, encodings and approval selectors are defined in
+[`slack_socket_mode.json`](../../presets/slack_socket_mode.json), not enumerated here.
 
 `slack.py` and `grafana.py` contain the service scenarios. `test.py` owns the
 shared CLI and process lifecycle; `common.py` handles private settings and safe

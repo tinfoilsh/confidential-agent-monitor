@@ -9,13 +9,13 @@ export function Settings(props: {
 }) {
   const m = useMonitor();
   return (
-    <div id="pane">
-      <p>Permissions save automatically.</p>
+    <div id="pane" class="settings">
+      <p class="settings-note">Permissions save automatically.</p>
       <section class="settings-section">
         <h2>Appearance</h2>
-        <div class="setting-row">
-          <span>Color theme</span>
-          <span class="seg" role="group" aria-label="Color theme">
+        <div class="settings-card">
+          <span class="setting-title">Color theme</span>
+          <div class="theme-options" role="group" aria-label="Color theme">
             <For
               each={
                 [
@@ -28,24 +28,23 @@ export function Settings(props: {
               {([theme, title, icon]) => (
                 <button
                   type="button"
-                  classList={{ primary: props.theme === theme }}
-                  aria-label={`${title} theme`}
+                  class="theme-option"
                   aria-pressed={props.theme === theme}
-                  title={`${title} theme`}
                   onClick={() => props.onThemeChange(theme)}
                 >
                   <Icon name={icon} />
+                  {title}
                 </button>
               )}
             </For>
-          </span>
+          </div>
         </div>
       </section>
       <section class="settings-section">
         <h2>Payments</h2>
-        <label class="setting-row">
+        <label class="settings-card setting-toggle">
           <span>
-            Ask before any payment
+            <span class="setting-title">Ask before any payment</span>
             <small>
               A sandbox must get your approval for anything that spends
               money.
@@ -65,9 +64,9 @@ export function Settings(props: {
             }
           />
         </label>
-        <label class="setting-row">
+        <label class="settings-card setting-toggle">
           <span>
-            Allow AI inference without asking
+            <span class="setting-title">Allow AI inference without asking</span>
             <small>
               Paid model calls (Tinfoil, OpenAI, …) go through without
               approval. Other payments still ask.
@@ -85,9 +84,9 @@ export function Settings(props: {
       </section>
       <section class="settings-section settings-danger">
         <h2>Dangerous</h2>
-        <label class="setting-row">
+        <label class="settings-card setting-toggle">
           <span>
-            Allow everything
+            <span class="setting-title">Allow everything</span>
             <small>
               Ignore connections. Every sandbox can reach any host on any
               port, and nothing asks.

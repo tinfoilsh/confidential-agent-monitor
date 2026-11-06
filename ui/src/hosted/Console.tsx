@@ -36,6 +36,7 @@ import {
   SetupKeys,
   UnlockKeys,
 } from "./KeyPanel";
+import { PRODUCT } from "./product";
 import {
   MONITOR_REPO,
   SANDBOX_REPO,
@@ -198,7 +199,7 @@ function Start(props: {
           ? "Add your CLI keys"
           : file()
             ? "Save your recovery key"
-            : "Welcome to Terminal"
+            : "Finish your setup"
       }
       description={
         r.mode === "umk"
@@ -207,7 +208,7 @@ function Start(props: {
             ? "Save your recovery key before you head to your sandboxes."
             : `First, we'll create keys for your ${r.roles.join(" and ")}. They're encrypted with your account, and your dashboard only sees their public keys.`
       }
-      account={props.session.user()?.label}
+      account={props.session.user()}
     >
       <Show when={r.mode === "tmk" && !file()}>
         <ol class="start-steps" aria-label="Getting started">
@@ -462,7 +463,7 @@ function Cleanup(props: { session: Session }) {
 }
 
 export default function Console(props: { session: Session }) {
-  document.title = "Get started · Terminal";
+  document.title = `Get started · ${PRODUCT.name}`;
   const manager = keys.passkeys();
   const start = startRequest();
   return (
@@ -501,7 +502,9 @@ export default function Console(props: { session: Session }) {
           </AuthScreen>
         </Match>
         <Match when={!props.session.user()}>
-          <AuthScreen title="Welcome to Terminal">
+          <AuthScreen
+            title={start ? "Finish your setup" : `Welcome to ${PRODUCT.name}`}
+          >
             <AuthCard icon={<Icon name="terminal" />}>
               <p>
                 {start

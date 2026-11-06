@@ -6,7 +6,6 @@ import {
   createResource,
   createSignal,
   createUniqueId,
-  lazy,
   on,
   onMount,
   onCleanup,
@@ -14,6 +13,8 @@ import {
   type Accessor,
   type JSX,
 } from "solid-js";
+import { Dynamic } from "solid-js/web";
+import boring from "boring-avatars-vanilla";
 import * as owner from "./owner.js";
 import { icons } from "./dashboard-icons.js";
 import { useMonitor } from "./monitor";
@@ -37,7 +38,7 @@ export function AuthScreen(props: {
   id?: string;
   title?: JSX.Element;
   description?: JSX.Element;
-  account?: string;
+  account?: { id: string; label: string };
   children: JSX.Element;
 }) {
   const titleId = createUniqueId();
@@ -56,15 +57,39 @@ export function AuthScreen(props: {
       <Show when={props.account}>
         {(account) => (
           <p class="auth-account">
-            <Icon name="person" />
+            <UserAvatar id={account().id} size={32} />
             <span>
-              Signed in as <strong>{account()}</strong>
+              Signed in as <strong>{account().label}</strong>
             </span>
           </p>
         )}
       </Show>
       {props.children}
     </main>
+  );
+}
+
+// The dashboard's avatar for an account without a picture: same variant,
+// palette, and seed, so a person looks the same in both places.
+const AVATAR_COLORS = ["#004444", "#F9F8F6"];
+export function UserAvatar(props: { id: string; size: number }) {
+  const src = () =>
+    `data:image/svg+xml,${encodeURIComponent(
+      boring({
+        name: props.id,
+        variant: "pixel",
+        colors: AVATAR_COLORS,
+        size: props.size,
+      }),
+    )}`;
+  return (
+    <img
+      class="user-avatar"
+      src={src()}
+      alt=""
+      width={props.size}
+      height={props.size}
+    />
   );
 }
 
@@ -467,6 +492,106 @@ export function Search(props: {
     </div>
   );
 }
+export type TabOption<T extends string> = {
+  value: T;
+  label: JSX.Element;
+  // Page tabs link to their view; options without one are buttons.
+  href?: string;
+  title?: string;
+  ariaLabel?: string;
+};
+
+// The dashboard's AnimatedTabBar, used for page tabs and for picking a value:
+// a bordered track with an accent pill that slides to the selected option. An
+// inherited value shows a faint pill; no value (a mixed group) shows none.
+export function TabBar<T extends string>(props: {
+  label: string;
+  options: TabOption<T>[];
+  value: T | null | undefined;
+  inherited?: T;
+  small?: boolean;
+  class?: string;
+  onChange?: (value: T) => void;
+}) {
+  const tabs = new Map<T, HTMLElement>();
+  const [pill, setPill] = createSignal<{ left: number; width: number }>();
+  const [ready, setReady] = createSignal(false);
+  let track!: HTMLElement;
+  const shown = () => props.value ?? props.inherited;
+  const place = () => {
+    const value = shown();
+    const tab = value == null ? undefined : tabs.get(value);
+    setPill(
+      tab?.offsetWidth
+        ? { left: tab.offsetLeft, width: tab.offsetWidth }
+        : undefined,
+    );
+  };
+  createEffect(on([shown, () => props.options.length], place));
+  onMount(() => {
+    const resized = new ResizeObserver(place);
+    resized.observe(track);
+    onCleanup(() => resized.disconnect());
+    // The pill appears in place, then slides between options.
+    requestAnimationFrame(() => setReady(true));
+  });
+  const links = () => props.options.some((option) => option.href);
+  return (
+    <Dynamic
+      component={links() ? "nav" : "span"}
+      ref={track}
+      class={`tab-bar ${props.class ?? ""}`}
+      classList={{
+        small: props.small,
+        ready: ready(),
+        inherited: props.value == null && props.inherited != null,
+      }}
+      role={links() ? undefined : "group"}
+      aria-label={props.label}
+    >
+      <Show when={pill()}>
+        {(at) => (
+          <span
+            class="tab-bar-pill"
+            aria-hidden="true"
+            style={{ left: `${at().left}px`, width: `${at().width}px` }}
+          />
+        )}
+      </Show>
+      <For each={props.options}>
+        {(option) =>
+          option.href ? (
+            <a
+              ref={(el) => tabs.set(option.value, el)}
+              href={option.href}
+              classList={{ shown: shown() === option.value }}
+              aria-current={props.value === option.value ? "page" : undefined}
+              title={option.title}
+            >
+              {option.label}
+            </a>
+          ) : (
+            <button
+              ref={(el) => tabs.set(option.value, el)}
+              type="button"
+              classList={{ shown: shown() === option.value }}
+              aria-pressed={props.value === option.value}
+              aria-label={option.ariaLabel}
+              title={option.title}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                props.onChange?.(option.value);
+              }}
+            >
+              {option.label}
+            </button>
+          )
+        }
+      </For>
+    </Dynamic>
+  );
+}
 export function Field(props: {
   field: owner.PresetField;
   value: string;
@@ -635,70 +760,4 @@ export function download(text: string, name: string, type: string) {
   link.download = name;
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-const SandboxTerminal = /* @__PURE__ */ lazy(() => import("./SandboxTerminal"));
-const SHELL_MIN_WIDTH = 320;
-export type ShellTarget = {
-  name: string;
-  open?: owner.ShellOpener;
-};
-export function ShellSplit(props: {
-  shell?: ShellTarget;
-  onClose: () => void;
-  children: JSX.Element;
-}) {
-  const [width, setWidth] = createSignal("50%");
-  let split!: HTMLDivElement;
-  return (
-    <div class="shell-split" ref={split}>
-      {props.children}
-      <Show when={props.shell} keyed>
-        {(current) => (
-          <aside
-            class="shell-pane"
-            aria-label="Sandbox shell"
-            style={{ "--shell-width": width() }}
-          >
-            <div
-              class="shell-pane-resize"
-              onPointerDown={(event) =>
-                drag(event, (move) => {
-                  const box = split.getBoundingClientRect();
-                  setWidth(
-                    `${Math.max(SHELL_MIN_WIDTH, Math.min(box.right - move.clientX, box.width - SHELL_MIN_WIDTH))}px`,
-                  );
-                })
-              }
-            />
-            <Show
-              when={current.open}
-              fallback={
-                <div class="dialog-body">
-                  <h1>{current.name}</h1>
-                  <button onClick={props.onClose}>Close</button>
-                </div>
-              }
-            >
-              <SandboxTerminal
-                open={current.open!}
-                name={current.name}
-                onClose={props.onClose}
-              />
-            </Show>
-          </aside>
-        )}
-      </Show>
-    </div>
-  );
-}
-export function drag(event: PointerEvent, move: (event: PointerEvent) => void) {
-  const target = event.currentTarget as HTMLElement;
-  event.preventDefault();
-  target.setPointerCapture(event.pointerId);
-  target.addEventListener("pointermove", move);
-  target.addEventListener(
-    "lostpointercapture",
-    () => target.removeEventListener("pointermove", move),
-    { once: true },
-  );
 }

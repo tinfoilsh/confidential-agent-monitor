@@ -16,6 +16,7 @@ import {
 import { Header } from "./Header";
 import * as keys from "./keys";
 import { KeyGate } from "./KeyPanel";
+import { PRODUCT } from "./product";
 import type { Session } from "./session";
 import "./console.css";
 
@@ -60,7 +61,7 @@ function stored(): KeySyncRequest | undefined {
 }
 
 export default function Cli(props: { session: Session }) {
-  document.title = "CLI key sync · Terminal";
+  document.title = `CLI key sync · ${PRODUCT.name}`;
   const manager = keys.passkeys();
   const [error, setError] = createSignal(launchError);
   const [typed, setTyped] = createSignal("");
@@ -191,7 +192,7 @@ export default function Cli(props: { session: Session }) {
   const page = () => (
     <AuthScreen
       title={done() ? "Sync successful" : "Sync your CLI"}
-      account={props.session.user()?.label}
+      account={props.session.user()}
     >
       <AuthCard icon={<Icon name={done() ? "check" : "devices"} />}>
         <Show when={error()}>

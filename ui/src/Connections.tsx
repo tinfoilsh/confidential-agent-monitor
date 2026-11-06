@@ -20,6 +20,7 @@ import {
   Search,
   createDialogMotion,
   href,
+  TabBar,
 } from "./components";
 import { useMonitor } from "./monitor";
 import { AgentConnectionAccess } from "./Agents";
@@ -107,20 +108,15 @@ export function DeviceSignInDialog(props: {
 export function Connections(props: { catalog?: boolean; expanded?: string; proposal?: string }) {
   return (
     <>
-      <nav class="page-tabs" aria-label="Connection views">
-        <a
-          href="#connections"
-          aria-current={!props.catalog ? "page" : undefined}
-        >
-          Mine
-        </a>
-        <a
-          href="#connections/catalog"
-          aria-current={props.catalog ? "page" : undefined}
-        >
-          Catalog
-        </a>
-      </nav>
+      <TabBar
+        class="page-tabs"
+        label="Connection views"
+        value={props.catalog ? "catalog" : "mine"}
+        options={[
+          { value: "mine", label: "Mine", href: "#connections" },
+          { value: "catalog", label: "Catalog", href: "#connections/catalog" },
+        ]}
+      />
       <Show when={props.catalog} fallback={<MyConnections expanded={props.expanded} proposal={props.proposal} />}>
         <Catalog />
       </Show>
