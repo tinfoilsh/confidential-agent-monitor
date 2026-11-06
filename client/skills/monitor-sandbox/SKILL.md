@@ -104,7 +104,12 @@ proposal as Outdated; submit a new proposal if it is still needed.
 
 ## Use connections
 
-Run HTTP clients and other tools through Monitor:
+HTTP and HTTPS traffic already goes through Monitor system-wide, and its CA is
+in the system trust store. Direct internet egress is closed; the owner must keep
+the Monitor reverse forward connected. Transparent routing also covers tools
+that ignore proxy settings.
+
+Use the wrapper when you need credential placeholders or a specific connection:
 
 ```sh
 monitor run --connection CONNECTION -- curl -fsS https://example.com
