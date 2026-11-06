@@ -1,6 +1,6 @@
 import { For } from "solid-js";
 import * as owner from "./owner.js";
-import { Icon } from "./components";
+import { Icon, askConfirm } from "./components";
 import { useMonitor } from "./monitor";
 
 export function Settings(props: {
@@ -96,15 +96,20 @@ export function Settings(props: {
             type="checkbox"
             role="switch"
             checked={owner.networkingOpen(m.view()!)}
-            onChange={(e) => {
-              const open = e.currentTarget.checked;
+            onChange={async (e) => {
+              const toggle = e.currentTarget,
+                open = toggle.checked;
               if (
                 open &&
-                !confirm(
-                  "Allow everything? Bunkers will be able to reach any host without asking.",
-                )
+                !(await askConfirm({
+                  title: "Allow everything?",
+                  description:
+                    "Bunkers will be able to reach any host without asking.",
+                  confirmLabel: "Allow everything",
+                  destructive: true,
+                }))
               ) {
-                e.currentTarget.checked = false;
+                toggle.checked = false;
                 return;
               }
               void m.edit(owner.edits.setNetworkingOpen(m.view()!, open));

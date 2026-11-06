@@ -3,6 +3,7 @@ import type { JSX } from "solid-js";
 import * as owner from "./owner.js";
 import {
   Copy,
+  askConfirm,
   ConnectorIcon,
   Empty,
   DisclosureHeading,
@@ -671,7 +672,13 @@ function AgentSettings(props: { name: string }) {
                   disabled={m.busy()}
                   onClick={async () => {
                     if (
-                      confirm(`Remove bunker ${props.name}?`) &&
+                      (await askConfirm({
+                        title: `Remove ${props.name}?`,
+                        description:
+                          "The Monitor forgets this bunker, along with its connections and rules.",
+                        confirmLabel: "Remove bunker",
+                        destructive: true,
+                      })) &&
                       (await m.edit(owner.edits.removeAgent(props.name)))
                     )
                       location.hash = "#agents";

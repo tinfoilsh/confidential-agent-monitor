@@ -21,6 +21,7 @@ import { Connections, DeviceSignInDialog } from "./Connections";
 import {
   AuthCard,
   AuthScreen,
+  ConfirmDialog,
   Empty,
   Icon,
   type IconName,
@@ -310,6 +311,7 @@ function Shell() {
             </main>
             <PairDialog open={pairing()} close={close} />
             <DeviceSignInDialog attempt={m.deviceSignIn()} />
+            <ConfirmDialog />
           </div>
         </div>
       </Show>

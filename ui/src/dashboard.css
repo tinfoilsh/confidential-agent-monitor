@@ -2346,6 +2346,43 @@ td {
 #device-sign-in-dialog {
   width: min(400px, calc(100vw - 32px));
 }
+/* The dashboard's confirmation dialog: title, question, then Cancel beside confirm. */
+.confirm-dialog {
+  width: min(420px, calc(100vw - 32px));
+}
+.confirm-dialog h1 {
+  margin: 0;
+  padding: 20px 56px;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--font-section);
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.confirm-dialog p {
+  margin: 0;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  line-height: 1.6;
+  text-align: center;
+  text-wrap: pretty;
+}
+.confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 16px 24px;
+}
+.confirm-actions > button.danger {
+  border-color: transparent;
+  background: var(--destructive);
+  color: var(--on-primary);
+}
+.confirm-actions > button.danger:hover:not(:disabled) {
+  background: var(--destructive-hover);
+}
 .device-sign-in-heading {
   position: relative;
   display: grid;

@@ -9,7 +9,7 @@ import {
   onCleanup,
 } from "solid-js";
 import App from "../App";
-import { AuthCard, AuthScreen, Icon, Loading } from "../components";
+import { AuthCard, AuthScreen, Icon, Loading, askConfirm } from "../components";
 import { UUID } from "./contract";
 import { Header, openedFromHome } from "./Header";
 import * as keys from "./keys";
@@ -162,9 +162,11 @@ export default function Monitor(props: { session: Session }) {
       } catch (cause) {
         if (
           !(cause instanceof RestoreRequired) ||
-          !confirm(
-            `${cause.message}\n\nRestore ${name}'s access to this Monitor?`,
-          )
+          !(await askConfirm({
+            title: `Restore ${name}'s access to this Monitor?`,
+            description: cause.message,
+            confirmLabel: "Restore access",
+          }))
         )
           throw cause;
         return shellOpener(opened, rows, name, true)!(size, handlers, signal);

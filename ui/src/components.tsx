@@ -271,6 +271,72 @@ export function Modal(
   );
 }
 
+type ConfirmRequest = {
+  title: string;
+  description: string;
+  confirmLabel: string;
+  destructive?: boolean;
+};
+const [confirming, setConfirming] = createSignal<
+  ConfirmRequest & { resolve: (confirmed: boolean) => void }
+>();
+
+// Asks in the app's own dialog, which ConfirmDialog shows; resolves true only on confirm.
+export function askConfirm(request: ConfirmRequest): Promise<boolean> {
+  confirming()?.resolve(false);
+  return new Promise((resolve) => setConfirming({ ...request, resolve }));
+}
+
+export function ConfirmDialog() {
+  // Keep the question while the dialog fades out.
+  const shown = createMemo<ConfirmRequest | undefined>(
+    (previous) => confirming() ?? previous,
+  );
+  const answer = (confirmed: boolean) => {
+    const current = confirming();
+    setConfirming(undefined);
+    current?.resolve(confirmed);
+  };
+  const titleId = createUniqueId(),
+    descriptionId = createUniqueId();
+  return (
+    <Modal
+      class="dialog-panel confirm-dialog"
+      aria-labelledby={titleId}
+      aria-describedby={descriptionId}
+      open={!!confirming()}
+      onClose={() => answer(false)}
+    >
+      <Show when={shown()}>
+        {(request) => (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              answer(true);
+            }}
+          >
+            <h1 id={titleId}>{request().title}</h1>
+            <p id={descriptionId}>{request().description}</p>
+            <div class="confirm-actions">
+              <button type="button" onClick={() => answer(false)}>
+                Cancel
+              </button>
+              <button
+                classList={{
+                  primary: !request().destructive,
+                  danger: request().destructive,
+                }}
+              >
+                {request().confirmLabel}
+              </button>
+            </div>
+          </form>
+        )}
+      </Show>
+    </Modal>
+  );
+}
+
 // Keep native keyboard disclosure behavior while animating the full row in
 // browsers that cannot interpolate details-content from zero to auto.
 export function ResourceDisclosure(props: {

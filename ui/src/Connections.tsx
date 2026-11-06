@@ -9,6 +9,7 @@ import {
 import { createStore } from "solid-js/store";
 import * as owner from "./owner.js";
 import {
+  askConfirm,
   ConnectorIcon,
   Copy,
   Empty,
@@ -1208,7 +1209,13 @@ function Connection(props: { name: string }) {
             disabled={m.busy()}
             onClick={async () => {
               if (
-                confirm(`Remove connection ${props.name}?`) &&
+                (await askConfirm({
+                  title: `Remove ${props.name}?`,
+                  description:
+                    "Bunkers lose access to this service, and its saved credentials are deleted.",
+                  confirmLabel: "Remove connection",
+                  destructive: true,
+                })) &&
                 (await m.edit(
                   owner.edits.removeConnection(m.view()!, props.name),
                 ))
