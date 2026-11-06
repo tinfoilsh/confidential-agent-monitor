@@ -58,7 +58,7 @@ export function Settings(props: {
               void m.edit(
                 owner.edits.setEffect(
                   "pay",
-                  e.currentTarget.checked ? "ask" : "allow",
+                  e.currentTarget.checked ? undefined : "allow",
                 ),
               )
             }

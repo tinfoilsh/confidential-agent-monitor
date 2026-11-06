@@ -1518,8 +1518,11 @@ export const edits = {
     sourceChanges({
       identities: { [name]: { connections: { [connection]: access } } },
     }),
-  setEffect: (effect: string, mode: Mode): Change[] => [
-    { path: ["effects", effect], value: mode },
+  setEffect: (effect: string, mode?: Mode): Change[] => [
+    {
+      path: ["effects", effect],
+      ...(mode ? { value: mode } : { delete: true }),
+    },
   ],
   copySettings: (view: View, from: string, name: string): Change[] =>
     ["connections", "rules", "effects"].map((key) => ({
