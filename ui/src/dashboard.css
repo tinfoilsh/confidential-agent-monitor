@@ -890,6 +890,7 @@ summary + * {
 }
 .resource-link > .ui-icon,
 .resource-link > .connector-icon {
+  align-self: flex-start;
   width: 20px;
   height: 20px;
   color: var(--muted);
