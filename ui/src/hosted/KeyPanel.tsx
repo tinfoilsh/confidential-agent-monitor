@@ -536,10 +536,7 @@ export function KeyGate(props: {
             <Switch>
               <Match when={file()}>
                 {(recovery) => (
-                  <AuthScreen
-                    title="Save your recovery key"
-                    account={props.session.user()}
-                  >
+                  <AuthScreen title="Save your recovery key">
                     <RecoveryDownload
                       file={recovery()}
                       onContinue={() => setFile()}
@@ -551,7 +548,6 @@ export function KeyGate(props: {
                 <AuthScreen
                   title="Set up your keys"
                   description={`Your keys ${purpose()}. They're encrypted with your account, so only you can open them.`}
-                  account={props.session.user()}
                 >
                   <SetupKeys
                     session={props.session}
@@ -564,7 +560,6 @@ export function KeyGate(props: {
                 <AuthScreen
                   title="Unlock your keys"
                   description={`You need them to ${purpose()}.`}
-                  account={props.session.user()}
                 >
                   <UnlockKeys session={props.session} manager={props.manager} />
                 </AuthScreen>

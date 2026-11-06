@@ -208,7 +208,6 @@ function Start(props: {
             ? "Save your recovery key before you head to your sandboxes."
             : undefined
       }
-      account={props.session.user()}
     >
       <Show when={error()}>
         <p class="start-notice" role="alert">

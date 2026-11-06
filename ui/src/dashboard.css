@@ -2139,24 +2139,6 @@ td {
 .auth > h1 + :not(.auth-description) {
   margin-top: 8px;
 }
-.auth-account {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0;
-  padding: 12px 16px;
-  border: 1px solid var(--edge);
-  border-radius: var(--card-radius);
-  background: var(--card);
-  text-align: left;
-  overflow-wrap: anywhere;
-}
-.auth-account > .user-avatar {
-  flex: none;
-  border-radius: 50%;
-  /* The palette's light cells would otherwise vanish on a light card. */
-  box-shadow: 0 0 0 1px var(--line);
-}
 .auth-card {
   display: flex;
   flex-direction: column;
