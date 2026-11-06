@@ -444,6 +444,7 @@ export function AgentConnectionAccess(props: {
         </button>
         <TabBar
           class="access-level"
+          small
           label={`Access for ${props.title ?? props.connection}`}
           value={entry().level}
           options={entry().levels.map(([value]) => ({
