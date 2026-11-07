@@ -16,6 +16,7 @@ import {
 import * as owner from "./owner.js";
 import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
 import { Activity, RequestDetail } from "./Activity";
+import { ApprovalToasts } from "./Approvals";
 import { Agents, AddAgent } from "./Agents";
 import { Connections, DeviceSignInDialog } from "./Connections";
 import { Onboarding } from "./Onboarding";
@@ -34,7 +35,10 @@ import { THEME, applyTheme, savedTheme } from "./theme";
 
 const SandboxTerminal = lazy(() => import("./SandboxTerminal"));
 const headings: Record<string, [title: string, description: string]> = {
-  activity: ["Activity", "Review requests and manage saved approval rules."],
+  activity: [
+    "Activity",
+    "Requests from your bunkers and how each was answered.",
+  ],
   agents: [
     "Bunkers",
     "Your bunkers and the devices that may reach them. The Perimeter can always be accessed by you.",
@@ -92,20 +96,27 @@ function Shell() {
   const kind = () => parse(page())[0];
   const section = () => SECTION_OF[kind()] ?? kind();
   const heading = () => headings[kind()] ?? headings[section()];
+  const approvals = () =>
+    m.pendingCount() + (m.view() ? owner.toolReviews(m.view()!).length : 0);
   const count = (section: string) =>
-    section === "activity"
-      ? m.pendingCount()
-      : Object.keys(
-          (section === "agents"
-            ? m.view()?.config.identities
-            : section === "connections"
-              ? m.view()?.config.connections
-              : {}) ?? {},
-        ).length;
+    section === "connections"
+      ? approvals()
+      : section === "agents"
+        ? Object.keys(m.view()?.config.identities ?? {}).length
+        : 0;
   // The open shell is a sidebar tab; other pages keep its session running.
   const shellShown = () => {
     const [kind, name, view] = parse(page());
     return kind === "agents" && view === "terminal" && name === m.shell();
+  };
+  // The Permissions list shows the same approvals the notices would.
+  const approvalsListed = () => {
+    const [kind, view] = parse(page());
+    return (
+      !shellShown() &&
+      (kind === "connection" ||
+        (kind === "connections" && view !== "catalog" && view !== "rules"))
+    );
   };
   const closeShell = () => {
     const shown = shellShown();
@@ -124,7 +135,15 @@ function Shell() {
       <Icon name={props.key} />
       <span>{headings[props.key][0]}</span>
       <Show when={count(props.key)}>
-        <small class="nav-count">{count(props.key)}</small>
+        <small
+          class="nav-count"
+          classList={{ "nav-attention": props.key === "connections" }}
+        >
+          {count(props.key)}
+          <Show when={props.key === "connections"}>
+            <span class="sr-only"> waiting for approval</span>
+          </Show>
+        </small>
       </Show>
     </a>
   );
@@ -250,7 +269,6 @@ function Shell() {
                     {(path) => <Page path={path} />}
                   </Show>
                   <div id="notices">
-                    <ApprovalBar />
                     <Show when={m.message() && !pairing()}>
                       <div id="toast" role="status">
                         {m.message()}
@@ -281,30 +299,8 @@ function Shell() {
                   </section>
                 )}
               </Show>
-              <Show when={m.shell()} keyed>
-                {(name) => {
-                  const [dismissed, setDismissed] = createSignal(false);
-                  return (
-                    <Show
-                      when={shellShown() && m.pendingCount() && !dismissed()}
-                    >
-                      <div class="shell-notices">
-                        <ApprovalBar />
-                        <button
-                          type="button"
-                          class="icon-button dialog-close"
-                          aria-label={`Dismiss approvals in ${name}`}
-                          title="Dismiss"
-                          onClick={() => setDismissed(true)}
-                        >
-                          <Icon name="close" />
-                        </button>
-                      </div>
-                    </Show>
-                  );
-                }}
-              </Show>
             </main>
+            <ApprovalToasts hidden={approvalsListed()} />
             <PairDialog open={pairing()} close={close} />
             <DeviceSignInDialog attempt={m.deviceSignIn()} />
             <ConfirmDialog />
@@ -319,61 +315,6 @@ function Shell() {
     </>
   );
 }
-function ApprovalBar() {
-  const m = useMonitor();
-  const pending = m.pendingRequests;
-  const proposals = m.pendingProposals;
-  const total = m.pendingCount;
-  return (
-    <Show when={total()}>
-      <div class="approval-bar" role="status" aria-label="Pending approvals">
-        <Icon name="activity" />
-        <div class="approval-copy">
-          <strong>
-            {total() === 1
-              ? "1 item needs your approval"
-              : `${total()} items need your approval`}
-          </strong>
-          <p>
-            {proposals().length
-              ? `${proposals().length} proposed change${proposals().length === 1 ? "" : "s"}${pending().length ? ` · ${pending().length} request${pending().length === 1 ? "" : "s"}` : ""}`
-              : `${pending()[0].facts.principal.name} · ${owner.requestTitle(pending()[0])}`}
-          </p>
-        </div>
-        <div class="approval-actions">
-          <Show when={proposals().length}>
-            <a
-              class="button"
-              href={
-                proposals().length === 1
-                  ? href("connections", "pending", proposals()[0].id)
-                  : "#connections/pending"
-              }
-            >
-              {proposals().length === 1 ? "Review change" : "Review changes"}{" "}
-              <Icon name="arrow" />
-            </a>
-          </Show>
-          <Show when={pending().length}>
-            <a
-              class="button"
-              onClick={() => m.setActivity({ page: 0, anchor: 0 })}
-              href={
-                pending().length === 1
-                  ? href("activity", "request", pending()[0].id)
-                  : "#activity"
-              }
-            >
-              {pending().length === 1 ? "Review request" : "Review requests"}{" "}
-              <Icon name="arrow" />
-            </a>
-          </Show>
-        </div>
-      </div>
-    </Show>
-  );
-}
-
 const THEMES = [
   ["system", "System theme", "devices"],
   ["light", "Light theme", "sun"],
@@ -432,7 +373,7 @@ function Page(props: { path: string }) {
       </Match>
       <Match when={kind === "connections"}>
         <Connections
-          catalog={name === "catalog"}
+          view={name === "catalog" || name === "rules" ? name : undefined}
           proposal={name === "pending" ? request : undefined}
         />
       </Match>

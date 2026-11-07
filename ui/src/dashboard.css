@@ -595,40 +595,142 @@ summary + * {
   font-family: var(--font-display);
   font-size: 16px;
 }
-.approval-bar {
+/* The sidebar is dark in both themes, so the badge keeps one palette. */
+.nav-count.nav-attention {
+  min-width: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #f59e0b;
+  color: #1c1917;
+  font-weight: 600;
+  text-align: center;
+}
+/* Allow once and Deny sit together; Allow always stands apart on the right. */
+.decision-buttons {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 8px;
+}
+.decision-buttons > .primary {
+  margin-left: auto;
+}
+button.allow,
+.button.allow {
+  border-color: transparent;
+  background: var(--tinfoil-accent-dark-darker);
+  color: #fff;
+}
+button.allow:hover:not(:disabled),
+.button.allow:hover {
+  background: var(--tinfoil-accent-dark);
+}
+:root[data-theme="dark"] :is(button, .button).allow {
+  border-color: rgb(104 199 172 / 35%);
+}
+.approval-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  column-gap: 12px;
+  row-gap: 2px;
+  align-items: start;
+  min-width: 0;
+  padding: var(--card-row-inset) var(--card-inset);
+  color: var(--text);
+  text-align: start;
+}
+.approval-card > :not(.icon, .connector-icon, .approval-close) {
+  grid-column: 2;
+}
+/* Centered on the title's first line. */
+.approval-card > :is(.icon, .connector-icon) {
+  grid-row: 1;
+  width: 16px;
+  height: 16px;
+  margin: 2px 0 0;
+}
+.approval-card > .icon {
+  color: var(--warn);
+}
+.approval-title {
+  display: -webkit-box;
+  overflow: hidden;
+  font-weight: 500;
+  line-height: 20px;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.approval-meta,
+.approval-reason {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--font-detail);
+  line-height: 18px;
+  overflow-wrap: anywhere;
+}
+.approval-time {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.approval-card > .decision-buttons {
+  margin-top: 10px;
+}
+.icon-button.approval-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-color: transparent;
+  background: none;
+  box-shadow: none;
+  color: var(--muted);
+}
+.approval-card:has(> .approval-close) > .approval-title {
+  padding-right: 24px;
+}
+.approval-list > .approval-card {
+  border-bottom: 1px solid var(--line);
+}
+.approval-list > :last-child,
+.approval-list > :last-child > summary {
+  border-bottom: 0;
+}
+.approval-list > details[open] > summary {
+  background: var(--open-head);
+}
+.approval-tools-body {
+  display: grid;
   gap: 12px;
-  padding: 12px 16px;
+  padding: 16px var(--card-inset);
+  border-top: 1px solid var(--line);
+  background: var(--open-body);
+}
+.approval-tools-body > p {
+  margin: 0;
+  font-size: var(--font-detail);
+}
+/* Approval toasts: Sonner positions and stacks them; the card is ours. */
+html [data-sonner-toaster] {
+  --width: 380px !important;
+  font-family: inherit;
+}
+[data-sonner-toast].approval-toast {
+  width: var(--width);
+  overflow: hidden;
   border: 1px solid var(--edge);
   border-radius: var(--card-radius);
   background: var(--card);
   box-shadow: var(--shadow-lg);
-  animation: notice-enter 0.15s ease-out;
 }
-.approval-bar > .icon {
-  flex: none;
-  color: var(--warn);
+[data-sonner-toast].approval-toast[data-expanded="false"][data-front="false"]
+  > * {
+  opacity: 0;
 }
-.approval-copy {
-  flex: 1;
-  min-width: 0;
-  font-size: var(--font-body);
-}
-.approval-copy strong {
-  font-weight: 500;
-}
-.approval-copy p {
-  margin: 4px 0 0;
-  color: var(--muted);
-  font-size: var(--font-detail);
-  overflow-wrap: anywhere;
-}
-.approval-actions {
-  display: flex;
-  flex: none;
-  flex-wrap: wrap;
-  gap: 8px;
+.approval-toast .approval-card {
+  padding: 14px 16px;
 }
 @keyframes notice-enter {
   from {
@@ -638,11 +740,6 @@ summary + * {
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .approval-bar {
-    animation: none;
   }
 }
 #page-content {
@@ -935,9 +1032,14 @@ summary + * {
   color: var(--muted);
   white-space: nowrap;
 }
-.row-actions {
-  display: flex;
-  gap: 8px;
+.review-link {
+  color: var(--link);
+  font-size: var(--font-detail);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.review-link:hover {
+  text-decoration: underline;
 }
 .collection-list > .resource-heading {
   justify-content: flex-start;
@@ -1161,12 +1263,6 @@ details[open] > summary > .collection-chevron {
   width: 12px;
   height: 12px;
 }
-.request-detail > .decisions {
-  margin: 0;
-}
-.request-detail > .decisions:empty {
-  display: none;
-}
 
 .request-access {
   display: flex;
@@ -1287,53 +1383,6 @@ details[open] > summary > .collection-chevron {
 .section-disclosure > summary::-webkit-details-marker {
   display: none;
 }
-.mcp-review-panel {
-  --review-border: var(--amber-200);
-  --review-bg: var(--amber-50);
-  --review-text: var(--amber-800);
-  border: 1px solid var(--review-border);
-  border-radius: var(--card-radius);
-  overflow: hidden;
-}
-.mcp-review-panel .mcp-review-changes > summary {
-  padding: 12px 16px;
-  border-radius: var(--card-radius) var(--card-radius) 0 0;
-  background: var(--review-bg);
-  color: var(--review-text);
-}
-.mcp-review-panel .mcp-review-changes > summary:hover {
-  background: color-mix(in srgb, var(--review-bg), var(--review-text) 10%);
-  color: var(--review-text);
-}
-.mcp-review-changes > div > .tool-changes {
-  padding: 16px;
-  border: 0;
-  background: var(--card);
-  color: var(--text);
-}
-.mcp-review-changes
-  > summary
-  :is(.section-title, .section-description, .collection-chevron) {
-  color: var(--review-text);
-}
-.mcp-review-panel > .form-actions {
-  border-top: 1px solid var(--review-border);
-  margin-top: 0;
-  padding: 12px 16px;
-  border-radius: 0 0 var(--card-radius) var(--card-radius);
-  background: var(--review-bg);
-  color: var(--review-text);
-}
-.mcp-review-panel button.mcp-review-approve {
-  border-color: var(--review-border);
-  background: var(--review-bg);
-  color: var(--review-text);
-}
-.mcp-review-panel button.mcp-review-approve:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--review-bg), var(--review-text) 10%);
-  border-color: var(--review-text);
-  color: var(--review-text);
-}
 .section-content {
   padding: 0 0 16px;
 }
@@ -1342,43 +1391,140 @@ details[open] > summary > .collection-chevron {
   padding-top: 16px;
   border-top: 1px solid var(--line);
 }
-.tool-changes {
+.tool-review {
   display: grid;
   gap: 16px;
+}
+.tool-list {
   margin: 0;
-  padding-left: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--card);
   list-style: none;
 }
-.tool-change + .tool-change {
-  padding-top: 16px;
+.tool-list > li + li {
   border-top: 1px solid var(--line);
 }
-.tool-change header {
+.tool-item-summary {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 12px;
+  cursor: pointer;
+  list-style: none;
 }
-.tool-change :is(.tool-description, dl, details) {
-  margin: 8px 0 0;
+.tool-item-summary::-webkit-details-marker {
+  display: none;
 }
-.tool-field-changes {
-  margin: 8px 0 0;
-  padding-left: 20px;
+.tool-item-summary:hover {
+  background: var(--subtle);
+}
+.tool-item[open] > .tool-item-summary {
+  background: var(--open-head);
+}
+.tool-item[open] > .tool-item-summary > .collection-chevron {
+  transform: rotate(90deg);
+}
+.tool-item-summary > .collection-chevron .icon {
+  width: 14px;
+  height: 14px;
+}
+.tool-item-text {
+  display: flex;
+  flex: 1;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+.tool-name,
+.tool-item-text > strong {
+  flex: none;
+  max-width: 50%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--font-body);
+  font-weight: 500;
+}
+.tool-summary {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--muted);
-  overflow-wrap: anywhere;
+  font-size: var(--font-detail);
+}
+.tool-badges {
+  display: flex;
+  flex: none;
+  gap: 6px;
+}
+.tool-badges > .badge {
+  padding: 0 6px;
+}
+.tool-item-body {
+  display: grid;
+  gap: 16px;
+  padding: 12px 16px 16px 36px;
+  border-top: 1px solid var(--line);
+  background: var(--subtle);
+  font-size: var(--font-detail);
+}
+.tool-item-body pre {
+  margin: 0;
+  background: var(--card);
 }
 .tool-description {
+  margin: 0;
+  line-height: 1.6;
   white-space: pre-wrap;
 }
-.tool-change dt {
+.tool-detail > h4 {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: var(--font-detail);
+  font-weight: 500;
+}
+.tool-field-changes {
+  margin: 0;
+  padding-left: 18px;
+  overflow-wrap: anywhere;
+}
+.tool-parameters {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+.tool-parameters dt {
   display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
   gap: 8px;
 }
-.tool-change dd {
-  margin: 2px 0 6px;
+.tool-parameters dd {
+  margin: 2px 0 0;
   color: var(--muted);
   white-space: pre-wrap;
+}
+.tool-definition > summary {
+  color: var(--link);
+  cursor: pointer;
+}
+.tool-definition > pre {
+  margin-top: 8px;
+}
+@media (max-width: 640px) {
+  .tool-item-text {
+    flex-direction: column;
+    gap: 2px;
+  }
+  .tool-name,
+  .tool-item-text > strong {
+    max-width: 100%;
+  }
 }
 .settings-group,
 .form-fields {
@@ -2103,16 +2249,6 @@ details[open] > summary > .collection-chevron {
   line-height: 18px;
 }
 
-.decisions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 20px;
-}
-.decisions > button {
-  white-space: normal;
-  text-align: left;
-}
 .live {
   margin-bottom: 16px;
 }
@@ -2672,21 +2808,6 @@ td {
   overflow: hidden;
   border: 0;
 }
-.shell-notices {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  z-index: 20;
-  max-width: 420px;
-}
-.shell-notices > .approval-bar {
-  padding-right: 44px;
-}
-.shell-notices > .dialog-close {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-}
 .shell-view {
   height: 100%;
 }
@@ -2826,15 +2947,6 @@ td {
   .header-actions {
     flex-wrap: wrap;
   }
-  .approval-bar {
-    flex-wrap: wrap;
-  }
-  .approval-copy {
-    flex-basis: calc(100% - 28px);
-  }
-  .approval-actions {
-    margin-left: 28px;
-  }
   #toolbar > select {
     max-width: none;
     width: calc(50% - 6px);
@@ -2853,9 +2965,6 @@ td {
   }
   .activity-row .resource-link {
     flex-basis: 100%;
-  }
-  .row-actions {
-    margin-left: auto;
   }
   .resource-heading > span {
     max-width: 130px;

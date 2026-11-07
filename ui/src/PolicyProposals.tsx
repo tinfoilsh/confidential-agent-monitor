@@ -245,60 +245,53 @@ export function PolicyProposals() {
   );
 }
 
+// Rows for the pending proposals, inside a list that the caller provides.
 export function ConnectionProposals(props: { id?: string }) {
   const m = useMonitor();
-  let list!: HTMLDivElement;
   onMount(() => {
     if (props.id)
       queueMicrotask(() => {
-        const summary = list.querySelector<HTMLElement>(
-          "details[open] > summary",
+        const summary = document.querySelector<HTMLElement>(
+          ".proposal-connection-item[open] > summary",
         );
-        (summary ?? list).scrollIntoView({ block: "start" });
+        summary?.scrollIntoView({ block: "start" });
         summary?.focus();
       });
   });
   return (
-    <div ref={list} class="resource-list collection-list proposal-list">
-      <div class="resource-heading">
-        <h2>
-          Proposals <span class="count">{m.pendingProposals().length}</span>
-        </h2>
-      </div>
-      <For each={m.pendingProposals().map((proposal) => proposal.id)}>
-        {(id) => {
-          const proposal = () =>
-            m.pendingProposals().find((record) => record.id === id)!;
-          return (
-            <ResourceDisclosure
-              class="proposal-connection-item"
-              summaryClass="collection-row proposal-connection-row"
-              open={props.id === id}
-              summary={
-                <>
-                  <ProposalSummary
-                    proposal={proposal()}
-                    class="proposal-summary"
-                  />
-                  <span class="resource-meta">
-                    <ProposalBadge proposal={proposal()} />
-                  </span>
-                  <span class="collection-chevron">
-                    <Icon name="arrow" />
-                  </span>
-                </>
-              }
-            >
-              {(active) => (
-                <Show when={active()}>
-                  <ConnectionProposalDetail proposal={proposal()} />
-                </Show>
-              )}
-            </ResourceDisclosure>
-          );
-        }}
-      </For>
-    </div>
+    <For each={m.pendingProposals().map((proposal) => proposal.id)}>
+      {(id) => {
+        const proposal = () =>
+          m.pendingProposals().find((record) => record.id === id)!;
+        return (
+          <ResourceDisclosure
+            class="proposal-connection-item"
+            summaryClass="collection-row proposal-connection-row"
+            open={props.id === id}
+            summary={
+              <>
+                <ProposalSummary
+                  proposal={proposal()}
+                  class="proposal-summary"
+                />
+                <span class="resource-meta">
+                  <ProposalBadge proposal={proposal()} />
+                </span>
+                <span class="collection-chevron">
+                  <Icon name="arrow" />
+                </span>
+              </>
+            }
+          >
+            {(active) => (
+              <Show when={active()}>
+                <ConnectionProposalDetail proposal={proposal()} />
+              </Show>
+            )}
+          </ResourceDisclosure>
+        );
+      }}
+    </For>
   );
 }
 
@@ -354,23 +347,21 @@ function ConnectionProposalDetail(props: { proposal: owner.RequestRecord }) {
           )}
         </Show>
       </div>
-      <footer class="proposal-decision">
-        <strong>Approve changes?</strong>
-        <div class="form-actions">
-          <button
-            disabled={m.busy() || !loaded()}
-            onClick={() => void decide("deny")}
-          >
-            Reject
-          </button>
-          <button
-            class="primary"
-            disabled={m.busy() || !loaded()}
-            onClick={() => void decide("once")}
-          >
-            Approve changes
-          </button>
-        </div>
+      <footer class="proposal-decision decision-buttons">
+        <button
+          class="allow"
+          disabled={m.busy() || !loaded()}
+          onClick={() => void decide("once")}
+        >
+          Approve changes
+        </button>
+        <button
+          class="danger"
+          disabled={m.busy() || !loaded()}
+          onClick={() => void decide("deny")}
+        >
+          Reject
+        </button>
       </footer>
     </div>
   );

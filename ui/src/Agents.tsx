@@ -528,7 +528,7 @@ export function AgentConnectionAccess(props: {
                 </p>
                 <For each={rules()}>
                   {([id, rule]) => (
-                    <a class="access-rule" href="#activity/rules">
+                    <a class="access-rule" href="#connections/rules">
                       <RuleText rule={rule} />
                       <RemoveRule agent={props.name} id={id} />
                       <Icon name="arrow" />

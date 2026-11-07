@@ -1,11 +1,4 @@
-import {
-  For,
-  Index,
-  Show,
-  createMemo,
-  createSignal,
-  createUniqueId,
-} from "solid-js";
+import { For, Show, createMemo, createSignal, createUniqueId } from "solid-js";
 import { createStore } from "solid-js/store";
 import * as owner from "./owner.js";
 import {
@@ -26,7 +19,7 @@ import {
 } from "./components";
 import { useMonitor } from "./monitor";
 import { AgentConnectionAccess } from "./Agents";
-import { ConnectionProposals } from "./PolicyProposals";
+import { NeedsApproval, SavedRules, ToolReview } from "./Approvals";
 
 const inCatalog =
   (search: string, group: { title: string }) =>
@@ -108,20 +101,32 @@ export function DeviceSignInDialog(props: {
   );
 }
 
-export function Connections(props: { catalog?: boolean; expanded?: string; proposal?: string }) {
+export function Connections(props: {
+  view?: "catalog" | "rules";
+  expanded?: string;
+  proposal?: string;
+}) {
   return (
     <>
       <TabBar
         class="page-tabs"
         label="Permission views"
-        value={props.catalog ? "catalog" : "mine"}
+        value={props.view ?? "mine"}
         options={[
           { value: "mine", label: "Mine", href: "#connections" },
           { value: "catalog", label: "Catalog", href: "#connections/catalog" },
+          { value: "rules", label: "Saved rules", href: "#connections/rules" },
         ]}
       />
-      <Show when={props.catalog} fallback={<MyConnections expanded={props.expanded} proposal={props.proposal} />}>
-        <Catalog />
+      <Show
+        when={props.view}
+        fallback={
+          <MyConnections expanded={props.expanded} proposal={props.proposal} />
+        }
+      >
+        <Show when={props.view === "catalog"} fallback={<SavedRules />}>
+          <Catalog />
+        </Show>
       </Show>
     </>
   );
@@ -163,6 +168,7 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
   });
   return (
     <>
+      <NeedsApproval proposal={props.proposal} />
       <div id="toolbar">
         <Search
           label="Search connections and services"
@@ -241,20 +247,6 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
           }}
         </For>
       </div>
-      <Show when={props.proposal && !m.pendingProposals().some((proposal) => proposal.id === props.proposal)}>
-        <div class="resource-list">
-          <Empty
-            title="Proposal no longer pending"
-            icon="policy"
-            action={<a class="button" href="#activity/proposals">View proposal history</a>}
-          >
-            It may have been reviewed, become outdated, or been discarded when the Perimeter restarted.
-          </Empty>
-        </div>
-      </Show>
-      <Show when={m.pendingProposals().length}>
-        <ConnectionProposals id={props.proposal} />
-      </Show>
       <Show when={catalogMatches().shown.length}>
         <div class="resource-list collection-list catalog-peek">
           <div class="resource-heading">
@@ -938,98 +930,6 @@ function ConnectionForm(props: { name: string }) {
   );
 }
 
-function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
-  return (
-    <li class="tool-change">
-      <header>
-        <span
-          class="badge"
-          classList={{
-            "status-approved": props.change.kind === "New",
-            "status-pending": props.change.kind === "Changed",
-            "status-denied": props.change.kind === "Removed",
-          }}
-        >
-          {props.change.kind}
-        </span>
-        <code>{props.change.name}</code>
-        <Show when={props.change.tool}>
-          <span class="muted">{props.change.parameters.length} parameters</span>
-        </Show>
-        <Show when={props.change.tool?.annotations?.readOnlyHint}>
-          <span
-            class="badge effect-read"
-            title="The MCP server advertises readOnlyHint. The Perimeter uses it for permission classification; it does not verify that the implementation cannot change data."
-          >
-            Server marks read-only
-          </span>
-        </Show>
-        <Show when={props.change.tool?.annotations?.destructiveHint}>
-          <span class="badge effect-delete">Marked destructive</span>
-        </Show>
-      </header>
-      <Show
-        when={props.change.tool}
-        fallback={
-          <Show when={props.change.text}>
-            <details>
-              <summary>View details</summary>
-              <pre>{props.change.text}</pre>
-            </details>
-          </Show>
-        }
-      >
-        {(tool) => (
-          <>
-            <Show when={tool().description}>
-              <p class="tool-description">{tool().description}</p>
-            </Show>
-            <Show when={props.change.changedFields.length}>
-              <ul class="tool-field-changes">
-                <For each={props.change.changedFields}>
-                  {(field) => (
-                    <li>
-                      {field.kind}: <code>{field.name}</code>
-                    </li>
-                  )}
-                </For>
-              </ul>
-            </Show>
-            <Show when={props.change.parameters.length}>
-              <dl>
-                <For each={props.change.parameters}>
-                  {(parameter) => (
-                    <div>
-                      <dt>
-                        <code>{parameter.name}</code>
-                        <span class="muted">
-                          {[
-                            parameter.type,
-                            parameter.required ? "required" : "optional",
-                          ]
-                            .filter(Boolean)
-                            .join(" · ")}
-                        </span>
-                      </dt>
-                      <Show when={parameter.description}>
-                        <dd>{parameter.description}</dd>
-                      </Show>
-                    </div>
-                  )}
-                </For>
-              </dl>
-            </Show>
-            <details>
-              <summary>Full definition</summary>
-              <pre>{props.change.text || JSON.stringify(tool(), null, 2)}</pre>
-            </details>
-          </>
-        )}
-      </Show>
-    </li>
-  );
-}
-
 function Connection(props: { name: string }) {
   const m = useMonitor(),
     connection = () => m.view()!.config.connections?.[props.name];
@@ -1084,7 +984,7 @@ function Connection(props: { name: string }) {
                   }
                 >
                   <SectionHeading
-                    title="Review MCP tool definitions"
+                    title="MCP tools to review"
                     description={owner.toolReviewDescription(review())}
                   />
                 </Show>
@@ -1094,45 +994,7 @@ function Connection(props: { name: string }) {
                   </p>
                 </Show>
                 <Show when={review().blocked}>
-                  <div class="mcp-review-panel">
-                    <ResourceDisclosure
-                      class="section-disclosure mcp-review-changes"
-                      summary={
-                        <DisclosureHeading
-                          title="View changes"
-                          description={[
-                            review().added && `${review().added} new`,
-                            review().changed && `${review().changed} changed`,
-                            review().removed && `${review().removed} removed`,
-                          ]
-                            .filter(Boolean)
-                            .join(", ")}
-                          small
-                        />
-                      }
-                    >
-                      {() => (
-                        <ul class="section-content tool-changes">
-                          <Index each={review().changes}>
-                            {(change) => <ToolChange change={change()} />}
-                          </Index>
-                        </ul>
-                      )}
-                    </ResourceDisclosure>
-                    <div class="form-actions">
-                      <button
-                        class="mcp-review-approve"
-                        disabled={m.busy()}
-                        onClick={() =>
-                          void m.edit(
-                            owner.edits.approveTools(m.view()!, props.name),
-                          )
-                        }
-                      >
-                        Approve changes
-                      </button>
-                    </div>
-                  </div>
+                  <ToolReview name={props.name} review={review()} />
                 </Show>
               </div>
             </section>
@@ -1267,8 +1129,8 @@ function Connection(props: { name: string }) {
                           run Codex in your Perimeter-connected bunker or with{" "}
                           <code>monitor run -- codex</code>. Choose a model
                           available to your ChatGPT account. Grant your bunker
-                          access to this service and review pending requests
-                          in Activity.
+                          access to this service, then approve its requests when
+                          asked.
                         </p>
                         <pre ref={code}>{text()}</pre>
                         <Copy text={text()} target={() => code} />
