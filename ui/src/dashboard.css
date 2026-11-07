@@ -663,7 +663,7 @@ button.allow:hover:not(:disabled),
 .approval-card > .decision-buttons {
   margin-top: 10px;
 }
-.approval-close {
+.icon-button.approval-close {
   position: absolute;
   top: 8px;
   right: 8px;

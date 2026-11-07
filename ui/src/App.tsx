@@ -138,13 +138,11 @@ function Shell() {
         <small
           class="nav-count"
           classList={{ "nav-attention": props.key === "connections" }}
-          aria-label={
-            props.key === "connections"
-              ? `${count(props.key)} waiting for approval`
-              : undefined
-          }
         >
           {count(props.key)}
+          <Show when={props.key === "connections"}>
+            <span class="sr-only"> waiting for approval</span>
+          </Show>
         </small>
       </Show>
     </a>
