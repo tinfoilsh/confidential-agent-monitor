@@ -552,6 +552,17 @@ function createMonitor(options: MonitorOptions) {
     const next = view() && waiting().find((name) => !stalled().includes(name));
     if (next && !accepting()) void accept(next, false);
   });
+  // Each first approval is tried once, so a failing save is not retried on every refresh.
+  const triedApprovals = new Set<string>();
+  createEffect(() => {
+    const current = view();
+    if (!current || busy() || locked()) return;
+    const changes = owner.setupToolApprovals(current);
+    const key = JSON.stringify(changes);
+    if (!changes.length || triedApprovals.has(key)) return;
+    triedApprovals.add(key);
+    void edit(changes);
+  });
 
   return {
     options,
