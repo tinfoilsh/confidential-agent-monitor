@@ -23,7 +23,7 @@
   },
   "catalog": {
     "group": "generic",
-    "warning": "Allows requests to the HTTPS API address you configure. Adds a broad action and cannot infer endpoint-specific effects; prefer a named connection when one exists.",
+    "warning": "Allows requests to the HTTPS API address you configure. Adds a broad action and cannot infer endpoint-specific effects.",
     "actions": {
       "request": { "title": "Use API", "effects": ["execute", "send"] }
     },

@@ -2,7 +2,7 @@
   "title": "General network access",
   "catalog": {
     "group": "generic",
-    "warning": "Monitor can see where a sandbox connects (host and port) but not what it sends. Prefer a named connection when one exists.",
+    "warning": "The Perimeter can see where a bunker connects (host and port) but not what it sends.",
     "actions": {
       "connect": {
         "title": "Connect and exchange data",
