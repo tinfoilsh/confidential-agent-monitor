@@ -1679,6 +1679,16 @@
       "bytes": 8317513
     }
   ],
+  "superlinked": [
+    {
+      "source": "github:superlinked/sie@main:packages/sie_gateway/openapi.json",
+      "url": "https://raw.githubusercontent.com/superlinked/sie/b85d08348fb3545b37021b3d30c9fee4d409de36/packages/sie_gateway/openapi.json",
+      "commit": "b85d08348fb3545b37021b3d30c9fee4d409de36",
+      "sha256": "f05ea56dfefb63d4f0e2eb9e5fb25ee5e18d1a271cf541fdd272b90cfb413985",
+      "bytes": 313618,
+      "checked_at": "2026-11-07T14:29:39Z"
+    }
+  ],
   "survey_monkey": [
     {
       "source": "github:microsoft/PowerPlatformConnectors@dev:certified-connectors/SurveyMonkey/apiDefinition.swagger.json",

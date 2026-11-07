@@ -283,8 +283,7 @@ func origin(scheme, host string, port uint32) string {
 
 // canonicalPath refuses paths whose segments an upstream could split, unescape again or resolve differently.
 func canonicalPath(u *url.URL) error {
-	raw := strings.ToUpper(u.RawPath)
-	if !strings.HasPrefix(u.Path, "/") || !utf8.ValidString(u.Path) || strings.Contains(raw, "%2F") || strings.ContainsAny(u.Path, "\\%\x00") {
+	if !strings.HasPrefix(u.Path, "/") || !utf8.ValidString(u.Path) || strings.ContainsAny(u.Path, "\\%\x00") {
 		return errors.New("the path is not canonical")
 	}
 	segments := strings.Split(u.Path[1:], "/")

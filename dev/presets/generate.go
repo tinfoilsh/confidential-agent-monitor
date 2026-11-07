@@ -234,6 +234,20 @@ func normalizeProvider(name string, o specOp) specOp {
 			o.Effects = []string{"send"}
 		}
 	}
+	if name == "superlinked" {
+		// The gateway routes {*model}, so model ids keep their slashes, as in /v1/encode/BAAI/bge-m3.
+		o.Path = strings.Replace(o.Path, "{model}", "{model*}", 1)
+		if slices.Contains(o.Tags, "inference") {
+			o.Effects = []string{"generate", "pay", "send"}
+		}
+		// The gateway requires its admin token for these mutations.
+		if o.Method != "GET" && (strings.HasPrefix(o.Path, "/v1/config") || strings.HasPrefix(o.Path, "/v1/pools")) {
+			o.Effects = []string{"admin"}
+			if o.Method == "DELETE" {
+				o.Effects = append(o.Effects, "delete")
+			}
+		}
+	}
 	if name == "open_router" {
 		// The model catalog and job status routes are both reads. Use one
 		// descriptor for their union, binding the requested segment in scope,
