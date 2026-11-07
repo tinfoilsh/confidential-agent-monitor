@@ -518,7 +518,7 @@ export function AgentConnectionAccess(props: {
         <div>
           <Show when={open()}>
             <div class="access-block">
-              <Show when={searchable()}>
+              <Show when={searchable() || query()}>
                 <Search
                   label="Search actions"
                   value={query()}

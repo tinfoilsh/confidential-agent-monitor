@@ -975,7 +975,10 @@ function TinfoilKeySelect(props: {
   const known = () =>
     !!listed()?.some((k) => owner.keyFingerprint(k.key) === current());
   return (
-    <Show when={!keys.error} fallback={props.fallback()}>
+    <Show
+      when={!keys.error && (keys.loading || !!listed()?.length)}
+      fallback={props.fallback()}
+    >
       <div class="setting-row">
         <label for={id}>{props.field.label}</label>
         <select

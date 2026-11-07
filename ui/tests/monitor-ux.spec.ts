@@ -261,6 +261,14 @@ describe("Tinfoil API keys", () => {
   test("a chosen key is saved as the credential and shown by its fingerprint", () => {
     const v = view();
     v.config.connections!.tinfoil = { preset: "tinfoil", tinfoil: {} };
+    owner.applyChanges(
+      v.config,
+      owner.edits.setTinfoilKey("tinfoil", "TINFOIL_API_KEY", "tk_first")
+        .changes,
+    );
+    expect(owner.tinfoilKeyOf(v, "tinfoil")).toBe(
+      owner.keyFingerprint("tk_first"),
+    );
     const { changes, credentials } = owner.edits.setTinfoilKey(
       "tinfoil",
       "TINFOIL_API_KEY",
