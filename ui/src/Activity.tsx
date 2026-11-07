@@ -338,14 +338,9 @@ export function RequestDetail(props: {
       >
         {(r) => {
           const state = createMemo(() => owner.stateAt(r(), m.now()));
-          const reasons = createMemo(() =>
-            [...new Set([...(r().deny ?? []), ...owner.reasons(r())])].map(
-              (reason) =>
-                reason === "this agent may not do this on the connection"
-                  ? "This bunker does not have permission for this action."
-                  : reason,
-            ),
-          );
+          const reasons = createMemo(() => [
+            ...new Set([...(r().deny ?? []), ...owner.reasons(r())]),
+          ]);
           return (
             <section class="request-detail">
               <Show when={!props.inline}>
