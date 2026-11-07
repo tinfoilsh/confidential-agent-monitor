@@ -53,7 +53,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "relay":
 		sandbox, err := h.Relay(r.Context(), open.InstanceID)
 		if err != nil {
-			c.Conn.Close(websocket.StatusInternalError, "sandbox unavailable")
+			c.Conn.Close(websocket.StatusInternalError, "bunker unavailable")
 			return
 		}
 		sandbox.SetReadLimit(noise.MaxMsgLen)
@@ -145,7 +145,7 @@ func ParseOwnerKey(value string) (ed25519.PublicKey, error) {
 	return nil, errors.New("owner public key must be ed25519: followed by the base64 of a valid Ed25519 public key")
 }
 
-var ErrStaleGeneration = errors.New("Monitor state is older than the saved generation")
+var ErrStaleGeneration = errors.New("Perimeter state is older than the saved generation")
 
 // Generation reports the live generation, and false while the Monitor is locked.
 type Generation func() (uint64, bool)

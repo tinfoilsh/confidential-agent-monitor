@@ -12,7 +12,7 @@ import (
 func Authenticate(conn ssh.ConnMetadata, key ssh.PublicKey, identity func(string) (bool, bool)) (map[string]string, error) {
 	if instance, publisher := strings.CutPrefix(conn.User(), BootstrapUser); publisher {
 		if instance == "" {
-			return nil, errors.New("sandbox instance is required")
+			return nil, errors.New("bunker instance is required")
 		}
 		return map[string]string{RouteExtension: RouteName(key), BootstrapExtension: bootstrapRoute(conn.User())}, nil
 	}
@@ -22,10 +22,10 @@ func Authenticate(conn ssh.ConnMetadata, key ssh.PublicKey, identity func(string
 	}
 	if fingerprint, required := strings.CutPrefix(conn.User(), "device+sandbox:"); required {
 		if !routes {
-			return nil, errors.New("device has no sandbox route access")
+			return nil, errors.New("device has no bunker route access")
 		}
 		if known, _ := identity(fingerprint); !known {
-			return nil, errors.New("sandbox is not enrolled")
+			return nil, errors.New("bunker is not enrolled")
 		}
 	}
 	return map[string]string{}, nil

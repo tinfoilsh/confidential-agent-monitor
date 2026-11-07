@@ -25,7 +25,7 @@ const (
 	msgUserAuthRequest = 50
 )
 
-var errAgentSignsOnly = errors.New("the monitor's agent only signs")
+var errAgentSignsOnly = errors.New("the Perimeter's agent only signs")
 
 type sshAgentSetup struct {
 	connector.SecretConfig

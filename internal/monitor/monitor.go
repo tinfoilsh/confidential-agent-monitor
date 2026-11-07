@@ -286,7 +286,7 @@ func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Docu
 		present[spec.Name] = true
 		kind := m.kinds[spec.Protocol]
 		if kind.Parse == nil || kind.New == nil {
-			return nil, fmt.Errorf("connection %s has unknown kind %s", spec.Name, spec.Protocol)
+			return nil, fmt.Errorf("service %s has unknown kind %s", spec.Name, spec.Protocol)
 		}
 		c := m.connections[spec.Name]
 		if c != nil && c.Protocol != spec.Protocol {
@@ -308,7 +308,7 @@ func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Docu
 		setup := connector.Setup{Config: spec.Config, Definition: spec.Definition, Options: spec.Options}
 		parsed, err := kind.Parse(setup)
 		if err != nil {
-			return nil, fmt.Errorf("connection %s: %w", spec.Name, err)
+			return nil, fmt.Errorf("service %s: %w", spec.Name, err)
 		}
 		parsed.Source = setup
 		handles := map[string]*credential.Value{}
@@ -317,14 +317,14 @@ func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Docu
 		}
 		for name, raw := range credentials[spec.Name] {
 			if _, uses := handles[name]; raw != nil && !uses {
-				return nil, fmt.Errorf("connection %s does not use credential %s", spec.Name, name)
+				return nil, fmt.Errorf("service %s does not use credential %s", spec.Name, name)
 			}
 		}
 		plan.updates = append(plan.updates, connectionPlan{spec, &parsed, handles})
 	}
 	for name := range credentials {
 		if !present[name] {
-			return nil, fmt.Errorf("connection %s does not exist", name)
+			return nil, fmt.Errorf("service %s does not exist", name)
 		}
 	}
 

@@ -90,7 +90,7 @@ func (h *Setup) serveWebSocket(w http.ResponseWriter, r *http.Request, handshake
 			// Its payload is opaque to policy and can stream after admission,
 			// including large images, without an unbounded allocation.
 			if err := s.Gate(s.Context, h.Capture((&WebSocketReceive{Origin: handshake.HTTP.Origin, Host: handshake.HTTP.Host, Path: handshake.HTTP.Path}).Describe())); err != nil {
-				client.Close(websocket.StatusPolicyViolation, "delivery refused by monitor; see activity")
+				client.Close(websocket.StatusPolicyViolation, "delivery refused by the Perimeter; see Activity")
 				return
 			}
 			writer, err := client.Writer(s.Context, kind)
@@ -112,7 +112,7 @@ func (h *Setup) serveWebSocket(w http.ResponseWriter, r *http.Request, handshake
 		}
 		request := websocketMessage(handshake, kind, body)
 		if err := s.Gate(s.Context, h.CaptureResult((request).Describe(h))); err != nil {
-			client.Close(websocket.StatusPolicyViolation, "request refused by monitor; see activity")
+			client.Close(websocket.StatusPolicyViolation, "request refused by the Perimeter; see Activity")
 			return
 		}
 		if err := upstream.Write(s.Context, kind, body); err != nil {

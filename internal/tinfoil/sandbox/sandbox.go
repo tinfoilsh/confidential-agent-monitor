@@ -29,7 +29,7 @@ const (
 var (
 	instancePattern = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
 	hex32Pattern    = regexp.MustCompile(`^[0-9a-fA-F]{64}$`)
-	errRelayInput   = errors.New("a relay needs a sandbox instance_id and an attestation nonce")
+	errRelayInput   = errors.New("a relay needs a bunker instance_id and an attestation nonce")
 )
 
 // RelayInput selects a sandbox boot by its measured instance.
@@ -61,7 +61,7 @@ func (f *Forwarder) Relay(ctx context.Context, in RelayInput) (RelayReply, error
 	defer cancel()
 	response, err := f.relays.RoundTrip(request.WithContext(ctx))
 	if err != nil {
-		return RelayReply{}, responseError{"sandbox relay: " + err.Error(), http.StatusBadGateway}
+		return RelayReply{}, responseError{"bunker relay: " + err.Error(), http.StatusBadGateway}
 	}
 	defer response.Body.Close()
 	body, err := io.ReadAll(io.LimitReader(response.Body, maxRelayAttestationBytes+1))
@@ -69,7 +69,7 @@ func (f *Forwarder) Relay(ctx context.Context, in RelayInput) (RelayReply, error
 		err = errors.New("the response is too large")
 	}
 	if err != nil {
-		return RelayReply{}, responseError{"sandbox relay: " + err.Error(), http.StatusBadGateway}
+		return RelayReply{}, responseError{"bunker relay: " + err.Error(), http.StatusBadGateway}
 	}
 	return RelayReply{Status: response.StatusCode, Body: base64.RawURLEncoding.EncodeToString(body)}, nil
 }

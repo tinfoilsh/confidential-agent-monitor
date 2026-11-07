@@ -49,7 +49,7 @@ func (c *Credentials) Validate(form bool) error {
 			return err
 		}
 		if (c.Slots[i].Form != "") != form {
-			return fmt.Errorf("slot for %s does not fit this kind of connection", c.Slots[i].Value)
+			return fmt.Errorf("slot for %s does not fit this kind of service", c.Slots[i].Value)
 		}
 	}
 	return nil
@@ -65,7 +65,7 @@ func (c *Credentials) Form(origin, text string) (*Slot, error) {
 			return s, nil
 		}
 	}
-	return nil, errors.New("a secret placeholder is outside this connection's declared slots")
+	return nil, errors.New("a secret placeholder is outside this service's declared slots")
 }
 
 // A Slot is the one header, query key, Basic field, path segment, SigV4 signature or form field where a value's placeholder may appear.
@@ -178,7 +178,7 @@ func (h *Setup) bind(r *http.Request, origin string) ([]*Slot, error) {
 		used = append(used, s)
 	}
 	if signed && (header.Get(authorization) != "" || presigned(query)) {
-		return nil, errors.New("this SigV4 origin accepts only the monitor's signature")
+		return nil, errors.New("this SigV4 origin accepts only the Perimeter's signature")
 	}
 	// Diagnose only values left after every allowed placement has been tried.
 	// In particular, an alternate prefix for the same header may have matched.

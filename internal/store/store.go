@@ -83,7 +83,7 @@ func (s Store) Load(ctx context.Context, key []byte, minimum uint64) (Store, boo
 		}
 	}
 	if missing && minimum != 0 {
-		return s, false, fmt.Errorf("the Monitor has no saved state, but generation %d was saved", minimum)
+		return s, false, fmt.Errorf("the Perimeter has no saved state, but generation %d was saved", minimum)
 	}
 	storageKey, header, keyErr := stateEncryptionKey(key, raw, missing)
 	if keyErr != nil {

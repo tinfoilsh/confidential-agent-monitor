@@ -56,14 +56,14 @@ func Load(text string) (*Config, error) {
 		return nil, err
 	}
 	for name, c := range cfg.Connections {
-		if err := validateEffects("connection "+name, c.Effects); err != nil {
+		if err := validateEffects("service "+name, c.Effects); err != nil {
 			return nil, err
 		}
 		if !slices.Contains(facts.Audiences, c.Contents) || !slices.Contains(facts.Audiences, c.Sends) {
-			return nil, fmt.Errorf("connection %s: contents and sends must be one of %v", name, facts.Audiences)
+			return nil, fmt.Errorf("service %s: contents and sends must be one of %v", name, facts.Audiences)
 		}
 		if name == AgentConnection {
-			return nil, fmt.Errorf("connection name %s is reserved", name)
+			return nil, fmt.Errorf("service name %s is reserved", name)
 		}
 		if _, err := cfg.Spec(name); err != nil {
 			return nil, err
@@ -72,7 +72,7 @@ func Load(text string) (*Config, error) {
 	validateAccess := func(name string, connections map[string]Access) error {
 		for connection, a := range connections {
 			if _, ok := cfg.Connections[connection]; !ok || !slices.Contains(levels, a.Level) {
-				return fmt.Errorf("%s: connection %s must exist and have a level in %v", name, connection, levels)
+				return fmt.Errorf("%s: service %s must exist and have a level in %v", name, connection, levels)
 			}
 			if err := validateEffects(name+" on "+connection, a.Effects); err != nil {
 				return err
@@ -163,7 +163,7 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	connection := c.Connections[name]
 	preset, err := presets.Lookup(connection.Preset)
 	if err != nil {
-		return ConnectionSpec{}, fmt.Errorf("connection %s: %w", name, err)
+		return ConnectionSpec{}, fmt.Errorf("service %s: %w", name, err)
 	}
 	// Parsers consume title, action effects and their opaque protocol roots.
 	// Keep those roots as RawMessages so grant encodings retain their inner order;
@@ -195,7 +195,7 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 		return ConnectionSpec{}, err
 	}
 	if len(kinds) != 1 {
-		return ConnectionSpec{}, fmt.Errorf("connection %s must have one kind", name)
+		return ConnectionSpec{}, fmt.Errorf("service %s must have one kind", name)
 	}
 	local := connection.PolicyOptions
 	local.Private = nil // Private patterns affect Gate, not connector interpretation.

@@ -93,7 +93,7 @@ func (m *monitor) forwardSandbox(key string, nc ssh.NewChannel, target frontdoor
 		return
 	}
 	if !routes {
-		nc.Reject(ssh.Prohibited, "identity cannot open sandbox routes")
+		nc.Reject(ssh.Prohibited, "identity cannot open bunker routes")
 		return
 	}
 	upstream, err := m.forwards.Dial(target.Host, target.Port)
