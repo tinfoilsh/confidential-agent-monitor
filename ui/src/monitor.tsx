@@ -556,7 +556,7 @@ function createMonitor(options: MonitorOptions) {
   const triedApprovals = new Set<string>();
   createEffect(() => {
     const current = view();
-    if (!current || busy() || locked()) return;
+    if (!current || !api() || busy() || locked()) return;
     const changes = owner.setupToolApprovals(current);
     const key = JSON.stringify(changes);
     if (!changes.length || triedApprovals.has(key)) return;
