@@ -323,6 +323,9 @@
   "linear": {
     "src": "linear.svg"
   },
+  "linear_mcp": {
+    "src": "linear.svg"
+  },
   "mailchimp": {
     "src": "mailchimp.svg"
   },
@@ -409,17 +412,20 @@
     "src": "ollama.svg"
   },
   "open_router": {
-    "src": "open_router.svg"
+    "src": "open_router.svg",
+    "dark": "open_router.dark.svg"
   },
   "open_router_api": {
-    "src": "open_router.svg"
+    "src": "open_router.svg",
+    "dark": "open_router.dark.svg"
   },
   "openai": {
     "dark": "openai.dark.svg",
     "src": "openai.svg"
   },
   "openrouter": {
-    "src": "open_router.svg"
+    "src": "open_router.svg",
+    "dark": "open_router.dark.svg"
   },
   "orbit": {
     "src": "orbit.svg"
@@ -500,6 +506,9 @@
     "src": "signl4.png"
   },
   "slack": {
+    "src": "slack.svg"
+  },
+  "slack_mcp": {
     "src": "slack.svg"
   },
   "slack_socket_mode": {
