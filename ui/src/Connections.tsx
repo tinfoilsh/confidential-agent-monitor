@@ -1,10 +1,18 @@
-import { For, Show, createMemo, createSignal, createUniqueId } from "solid-js";
+import {
+  For,
+  Show,
+  createMemo,
+  createSignal,
+  createUniqueId,
+  onCleanup,
+} from "solid-js";
 import { createStore } from "solid-js/store";
 import * as owner from "./owner.js";
 import {
   askConfirm,
   ConnectorIcon,
   Copy,
+  CopyField,
   Empty,
   DisclosureHeading,
   SectionHeading,
@@ -1022,6 +1030,7 @@ function Connection(props: { name: string }) {
                   name={name}
                   connection={props.name}
                   title={name}
+                  alwaysOpen
                 />
               )}
             </For>
@@ -1029,23 +1038,13 @@ function Connection(props: { name: string }) {
         </section>
         <Show when={tinfoil() || setups().length || codex()}>
           <section class="connection-section connection-setup">
-            <SectionHeading
-              title="Details"
-              description="URLs, bunker placeholders, and setup instructions"
-            />
             <Show when={tinfoil()}>
               {(setup) => (
-                <div class="settings-group">
-                  <div class="setting-row">
-                    <div>
-                      <span>
-                        {setup().mcp ? "Web search (MCP)" : "Inference API"}
-                      </span>
-                      <p class="mono">{setup().url}</p>
-                    </div>
-                    <Copy text={setup().url} label={`Copy ${props.name} URL`} />
-                  </div>
-                </div>
+                <CopyField
+                  label={setup().mcp ? "Web search (MCP)" : "Inference API"}
+                  value={setup().url}
+                  copyLabel={`Copy ${props.name} URL`}
+                />
               )}
             </Show>
             <Show when={setups().length}>
@@ -1053,8 +1052,6 @@ function Connection(props: { name: string }) {
                 <For each={setups()}>
                   {(group) => {
                     const setup = group[0];
-                    let input!: HTMLInputElement;
-                    const id = createUniqueId();
                     return (
                       <div class="agent-setup-item">
                         <Show when={setups().length > 1}>
@@ -1062,22 +1059,11 @@ function Connection(props: { name: string }) {
                             {setup.connection} · {setup.credential}
                           </h3>
                         </Show>
-                        <label for={id}>Bunker placeholder</label>
-                        <div class="secret-input">
-                          <input
-                            ref={input}
-                            id={id}
-                            class="mono"
-                            readonly
-                            value={setup.placeholder}
-                            onClick={(e) => e.currentTarget.select()}
-                          />
-                          <Copy
-                            text={setup.placeholder}
-                            label={`Copy placeholder for ${setup.connection} ${setup.credential}`}
-                            target={() => input}
-                          />
-                        </div>
+                        <CopyField
+                          label="Bunker placeholder"
+                          value={setup.placeholder}
+                          copyLabel={`Copy placeholder for ${setup.connection} ${setup.credential}`}
+                        />
                         <details class="agent-setup-usage">
                           <summary>Where this placeholder is used</summary>
                           <Show when={group.length > 1}>
@@ -1157,30 +1143,72 @@ function Connection(props: { name: string }) {
           </section>
         </Show>
         <ConnectionForm name={props.name} />
-        <div class="connection-footer">
-          <button
-            class="danger"
-            disabled={m.busy()}
-            onClick={async () => {
-              if (
-                (await askConfirm({
-                  title: `Remove ${props.name}?`,
-                  description:
-                    "Bunkers lose access to this service, and its saved credentials are deleted.",
-                  confirmLabel: "Remove service",
-                  destructive: true,
-                })) &&
-                (await m.edit(
-                  owner.edits.removeConnection(m.view()!, props.name),
-                ))
-              )
-                location.hash = "#connections";
-            }}
-          >
-            Remove service
-          </button>
-        </div>
+        <ServiceMenu name={props.name} />
       </Show>
+    </div>
+  );
+}
+// Rarely used actions stay in a menu on the open service's header row.
+const MENU_GAP = 4;
+function ServiceMenu(props: { name: string }) {
+  const m = useMonitor();
+  const id = createUniqueId();
+  let trigger!: HTMLButtonElement, menu!: HTMLDivElement;
+  // A menu placed in the viewport would drift from its button on scroll.
+  const close = () => menu.hidePopover();
+  onCleanup(() => removeEventListener("scroll", close, true));
+  return (
+    <div class="connection-menu">
+      <button
+        ref={trigger}
+        type="button"
+        class="icon-button"
+        aria-label={`More actions for ${props.name}`}
+        title="More actions"
+        popovertarget={id}
+      >
+        <Icon name="more" />
+      </button>
+      <div
+        ref={menu}
+        id={id}
+        class="popover-menu"
+        popover
+        onBeforeToggle={(event) => {
+          if (event.newState !== "open") return;
+          const anchor = trigger.getBoundingClientRect();
+          menu.style.top = `${anchor.bottom + MENU_GAP}px`;
+          menu.style.right = `${innerWidth - anchor.right}px`;
+        }}
+        onToggle={(event) => {
+          if (event.newState === "open")
+            addEventListener("scroll", close, true);
+          else removeEventListener("scroll", close, true);
+        }}
+      >
+        <button
+          class="danger"
+          disabled={m.busy()}
+          onClick={async () => {
+            close();
+            if (
+              (await askConfirm({
+                title: `Remove ${props.name}?`,
+                description:
+                  "Bunkers lose access to this service, and its saved credentials are deleted.",
+                confirmLabel: "Remove service",
+                destructive: true,
+              })) &&
+              (await m.edit(
+                owner.edits.removeConnection(m.view()!, props.name),
+              ))
+            )
+              location.hash = "#connections";
+          }}
+        >
+          Remove service
+        </button>
+      </div>
     </div>
   );
 }

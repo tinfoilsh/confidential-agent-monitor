@@ -732,6 +732,36 @@ export function Copy(props: {
     </button>
   );
 }
+// A read-only value in a box, copied with the icon inside it.
+export function CopyField(props: {
+  label: string;
+  value: string;
+  copyLabel: string;
+}) {
+  let input!: HTMLInputElement;
+  const id = createUniqueId();
+  return (
+    <div class="copy-field">
+      <label for={id}>{props.label}</label>
+      <div class="copy-field-box">
+        <input
+          ref={input}
+          id={id}
+          class="mono"
+          readonly
+          value={props.value}
+          onClick={(e) => e.currentTarget.select()}
+        />
+        <Copy
+          icon
+          text={props.value}
+          label={props.copyLabel}
+          target={() => input}
+        />
+      </div>
+    </div>
+  );
+}
 export function RuleText(props: { rule: owner.Rule; children?: JSX.Element }) {
   const m = useMonitor();
   const scope = () =>
