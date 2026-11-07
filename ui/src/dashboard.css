@@ -2139,6 +2139,47 @@ td {
   border-radius: var(--card-radius);
   background: var(--card);
   box-shadow: var(--shadow);
+  animation: notice-enter 0.18s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-card {
+    animation: none;
+  }
+}
+/* Shaped like a passkey card: icon, title, two lines, a button, and a link. */
+.auth-skeleton {
+  align-items: center;
+}
+.auth-skeleton-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+}
+.auth-skeleton-title {
+  width: 30%;
+  height: 16px;
+  margin: 0 0 -4px;
+}
+.auth-skeleton-text {
+  display: grid;
+  justify-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 6px 0;
+}
+.auth-skeleton-text > :first-child {
+  width: 85%;
+}
+.auth-skeleton-text > :last-child {
+  width: 60%;
+}
+.auth-skeleton-button {
+  width: 100%;
+  height: 40px;
+}
+.auth-skeleton-link {
+  width: 35%;
+  margin: -4px 0 4px;
 }
 .auth-card > h2 {
   margin: -4px 0 -8px;
@@ -2187,17 +2228,12 @@ td {
   height: 40px;
   margin: 0;
 }
-.auth-tip,
 .auth > .auth-link {
   margin: 0;
   color: var(--muted);
   font-size: var(--font-detail);
   line-height: 1.65;
   text-wrap: balance;
-}
-.auth-tip strong {
-  color: var(--text);
-  font-weight: 500;
 }
 .auth > .auth-link {
   align-self: center;
