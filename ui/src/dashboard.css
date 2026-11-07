@@ -506,16 +506,24 @@ summary + * {
   margin-left: auto;
   color: inherit;
 }
-.nav-shell {
-  position: relative;
+/* A labeled section, like the dashboard sidebar's. */
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   margin-top: 8px;
-  padding: 0 4px 0 0;
-}
-.nav-shell::before {
-  content: "";
-  position: absolute;
-  inset: -6px 0 auto;
+  padding-top: 12px;
   border-top: 1px solid var(--nav-line);
+}
+.nav-section {
+  padding: 0 12px 4px;
+  color: rgb(255 255 255 / 40%);
+  font-size: var(--font-detail);
+  font-weight: 500;
+  line-height: 16px;
+}
+.nav-shell {
+  padding: 0 4px 0 0;
 }
 .nav-shell > a {
   display: flex;

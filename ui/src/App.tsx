@@ -196,26 +196,35 @@ function Shell() {
                 <Show when={m.shell()}>
                   {(name) => (
                     <div
-                      class="nav-item nav-shell"
-                      classList={{ on: shellShown() }}
+                      class="nav-group"
+                      role="group"
+                      aria-labelledby="open-bunkers"
                     >
-                      <a
-                        href={href("agents", name(), "terminal")}
-                        aria-current={shellShown() ? "page" : undefined}
-                        title={name()}
+                      <span id="open-bunkers" class="nav-section">
+                        Open bunkers
+                      </span>
+                      <div
+                        class="nav-item nav-shell"
+                        classList={{ on: shellShown() }}
                       >
-                        <Icon name="terminal" />
-                        <span>{name()}</span>
-                      </a>
-                      <button
-                        type="button"
-                        class="icon-button nav-shell-close"
-                        aria-label={`Close shell in ${name()}`}
-                        title="Close shell"
-                        onClick={closeShell}
-                      >
-                        <Icon name="close" />
-                      </button>
+                        <a
+                          href={href("agents", name(), "terminal")}
+                          aria-current={shellShown() ? "page" : undefined}
+                          title={name()}
+                        >
+                          <Icon name="terminal" />
+                          <span>{name()}</span>
+                        </a>
+                        <button
+                          type="button"
+                          class="icon-button nav-shell-close"
+                          aria-label={`Close shell in ${name()}`}
+                          title="Close shell"
+                          onClick={closeShell}
+                        >
+                          <Icon name="close" />
+                        </button>
+                      </div>
                     </div>
                   )}
                 </Show>
