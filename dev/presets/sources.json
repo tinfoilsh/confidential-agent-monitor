@@ -3038,6 +3038,19 @@
   "note": "PostgREST spec is generated per project at /rest/v1/ and needs the apikey; the Management API spec (api.supabase.com/api/v1-json) is not what n8n uses",
   "preset": "supabase"
  },
+ "superlinked": {
+  "specs": [
+   {
+    "format": "openapi",
+    "github": "superlinked/sie",
+    "ref": "main",
+    "file": "packages/sie_gateway/openapi.json",
+    "kind": "vendor",
+    "origin": "{origin}"
+   }
+  ],
+  "preset": "superlinked"
+ },
  "survey_monkey": {
   "specs": [
    {
