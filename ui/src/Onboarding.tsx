@@ -81,7 +81,7 @@ const SERVICES: Service[] = [
   },
 ];
 const NETWORK = [
-  ["ask", "Ask", "Approve each new host from Activity."],
+  ["ask", "Ask", "Approve each new host when a bunker asks."],
   [
     "allow",
     "Allow always",
