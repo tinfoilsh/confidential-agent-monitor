@@ -40,28 +40,31 @@ export function Badge(props: { state: string; record: owner.RequestRecord }) {
     </Show>
   );
 }
+// Shown in the page header, so the views stay in reach while the page scrolls.
+export function ActivityTabs(props: { scope?: string }) {
+  return (
+    <TabBar
+      class="page-tabs"
+      label="Activity views"
+      value={props.scope === "proposals" ? "proposals" : "requests"}
+      options={[
+        { value: "requests", label: "Requests", href: "#activity" },
+        {
+          value: "proposals",
+          label: "Config proposals",
+          href: "#activity/proposals",
+        },
+      ]}
+    />
+  );
+}
 export function Activity(props: { scope?: string; name?: string }) {
   const proposals = () => props.scope === "proposals";
   const request = () => props.scope === "request" ? props.name : undefined;
   return (
-    <>
-      <TabBar
-        class="page-tabs"
-        label="Activity views"
-        value={proposals() ? "proposals" : "requests"}
-        options={[
-          { value: "requests", label: "Requests", href: "#activity" },
-          {
-            value: "proposals",
-            label: "Config proposals",
-            href: "#activity/proposals",
-          },
-        ]}
-      />
-      <Show when={proposals()} fallback={<Requests expanded={request()} />}>
-        <PolicyProposals />
-      </Show>
-    </>
+    <Show when={proposals()} fallback={<Requests expanded={request()} />}>
+      <PolicyProposals />
+    </Show>
   );
 }
 function Requests(props: { expanded?: string }) {

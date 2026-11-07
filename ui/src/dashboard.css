@@ -402,7 +402,7 @@ summary + * {
   flex-direction: column;
   width: var(--nav-width);
   color: var(--nav-text);
-  background: var(--tinfoil-dark) url("/icons/dashboard-grain.svg") repeat;
+  background: var(--tinfoil-dark);
 }
 .brand {
   display: flex;
@@ -575,8 +575,14 @@ summary + * {
   background: var(--surface) var(--grid) repeat center;
 }
 #page-header.pinned {
-  background: var(--card);
   border-bottom-color: var(--line);
+}
+#page-header:has(.page-header-tabs) {
+  padding-bottom: 16px;
+}
+.page-header-tabs {
+  max-width: calc(var(--page-width) - 48px);
+  margin: 16px auto 0;
 }
 .page-heading {
   max-width: calc(var(--page-width) - 48px);
@@ -750,9 +756,6 @@ html [data-sonner-toaster] {
 #toolbar:empty {
   display: none;
 }
-.page-tabs {
-  margin-bottom: 16px;
-}
 #toolbar,
 .catalog-toolbar {
   padding-top: 8px;
@@ -828,7 +831,8 @@ html [data-sonner-toaster] {
 }
 #list,
 .resource-list {
-  overflow: hidden;
+  /* Clips the corners without becoming a scroll box, so headings can stick. */
+  overflow: clip;
   border: 1px solid var(--line);
   border-radius: var(--card-radius);
   background: var(--card);
@@ -938,6 +942,9 @@ html [data-sonner-toaster] {
   }
 }
 .resource-heading {
+  position: sticky;
+  top: var(--page-header-height, 0px);
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1171,6 +1178,54 @@ html [data-sonner-toaster] {
 }
 .connection-item[open] .connection-inline {
   background: var(--open-body);
+}
+.connection-item {
+  position: relative;
+}
+.connection-item[open] > summary > .collection-chevron {
+  margin-left: 36px;
+}
+.connection-menu {
+  position: absolute;
+  top: 10px;
+  right: calc(var(--card-inset) + 24px);
+}
+.connection-detail > .connection-menu {
+  border-top: 0;
+}
+.connection-menu > .icon-button {
+  width: 28px;
+  height: 28px;
+  border-color: transparent;
+  background: none;
+  box-shadow: none;
+  color: var(--muted);
+}
+.connection-menu > .icon-button:hover:not(:disabled) {
+  background: var(--hover);
+  color: var(--text);
+}
+.popover-menu {
+  inset: auto;
+  min-width: 160px;
+  margin: 0;
+  padding: 4px;
+  border: 1px solid var(--edge);
+  border-radius: var(--card-radius);
+  background: var(--card);
+  color: var(--text);
+  box-shadow: var(--shadow-lg);
+}
+.popover-menu > button {
+  width: 100%;
+  justify-content: flex-start;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  font-weight: 400;
+}
+.popover-menu > button:hover:not(:disabled) {
+  background: var(--hover);
 }
 
 .agent-item + .agent-item,
@@ -1558,13 +1613,6 @@ details[open] > summary > .collection-chevron {
   gap: 6px;
   min-width: 0;
 }
-.connection-footer {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 16px 0 20px;
-}
 .agent-inline {
   container: agent / inline-size;
   margin-top: 0;
@@ -1915,6 +1963,9 @@ details[open] > summary > .collection-chevron {
   color: var(--muted);
 }
 .access-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex: 1 1 auto;
   justify-content: flex-start;
   min-width: 0;
@@ -1924,7 +1975,7 @@ details[open] > summary > .collection-chevron {
   box-shadow: none;
   text-align: left;
 }
-.access-toggle:hover:not(:disabled) {
+button.access-toggle:hover:not(:disabled) {
   background: none;
   color: var(--link);
 }
@@ -1954,16 +2005,17 @@ details[open] > summary > .collection-chevron {
 .access-caret.expanded > .icon {
   transform: rotate(90deg);
 }
-/* Inset under the service name, so its actions read as part of that row. */
+/* Indented under the name, so its actions read as part of that row. */
 .access-block {
-  margin: 4px 0 4px 28px;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--card-radius);
-  background: var(--subtle);
+  display: grid;
+  gap: 10px;
+  margin: 10px 0 0 28px;
+}
+.access-block > .search-field {
+  max-width: 260px;
 }
 .access-block + .access-block {
-  margin-top: 8px;
+  margin-top: 16px;
 }
 .access-block h4 {
   margin: 0 0 2px;
@@ -1973,16 +2025,6 @@ details[open] > summary > .collection-chevron {
 .access-block p.muted {
   margin: 0 0 8px;
   font-size: var(--font-detail);
-}
-.access-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.access-heading .search-field {
-  flex: 0 1 260px;
-  min-width: 0;
 }
 .access-rule {
   display: flex;
@@ -2016,7 +2058,6 @@ details[open] > summary > .collection-chevron {
 .access-actions {
   display: grid;
   gap: 10px;
-  padding: 16px 0 0;
 }
 .access-disclosure {
   display: grid;
@@ -2127,6 +2168,10 @@ details[open] > summary > .collection-chevron {
 }
 .setting-row > select {
   width: auto;
+}
+.setting-row > .key-select {
+  width: 280px;
+  max-width: 100%;
 }
 .setting-row p {
   max-width: 58ch;
@@ -2242,6 +2287,34 @@ details[open] > summary > .collection-chevron {
 .secret-input button {
   flex-shrink: 0;
   align-self: stretch;
+}
+.copy-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.copy-field-box {
+  position: relative;
+}
+.copy-field-box > input {
+  padding-right: calc(var(--control-height) + 4px);
+  text-overflow: ellipsis;
+}
+.copy-field-box > .icon-button {
+  position: absolute;
+  top: 50%;
+  right: 2px;
+  width: 28px;
+  height: 28px;
+  transform: translateY(-50%);
+  border-color: transparent;
+  background: none;
+  box-shadow: none;
+  color: var(--muted);
+}
+.copy-field-box > .icon-button:hover:not(:disabled) {
+  background: var(--hover);
+  color: var(--text);
 }
 .field-help {
   margin: 0;
@@ -2926,6 +2999,10 @@ td {
   #page-header {
     padding: 20px 16px;
     position: relative;
+  }
+  /* The page header scrolls away on phones, so headings stick at the top. */
+  .resource-heading {
+    top: 0;
   }
   #page-content {
     padding: 0 16px 48px;

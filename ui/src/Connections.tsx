@@ -1,10 +1,20 @@
-import { For, Show, createMemo, createSignal, createUniqueId } from "solid-js";
+import {
+  For,
+  Show,
+  createMemo,
+  createResource,
+  createSignal,
+  createUniqueId,
+  onCleanup,
+  type JSX,
+} from "solid-js";
 import { createStore } from "solid-js/store";
 import * as owner from "./owner.js";
 import {
   askConfirm,
   ConnectorIcon,
   Copy,
+  CopyField,
   Empty,
   DisclosureHeading,
   SectionHeading,
@@ -101,6 +111,21 @@ export function DeviceSignInDialog(props: {
   );
 }
 
+// Shown in the page header, so the views stay in reach while the page scrolls.
+export function PermissionTabs(props: { view?: "catalog" | "rules" }) {
+  return (
+    <TabBar
+      class="page-tabs"
+      label="Permission views"
+      value={props.view ?? "mine"}
+      options={[
+        { value: "mine", label: "Mine", href: "#connections" },
+        { value: "catalog", label: "Catalog", href: "#connections/catalog" },
+        { value: "rules", label: "Saved rules", href: "#connections/rules" },
+      ]}
+    />
+  );
+}
 export function Connections(props: {
   view?: "catalog" | "rules";
   expanded?: string;
@@ -108,16 +133,6 @@ export function Connections(props: {
 }) {
   return (
     <>
-      <TabBar
-        class="page-tabs"
-        label="Permission views"
-        value={props.view ?? "mine"}
-        options={[
-          { value: "mine", label: "Mine", href: "#connections" },
-          { value: "catalog", label: "Catalog", href: "#connections/catalog" },
-          { value: "rules", label: "Saved rules", href: "#connections/rules" },
-        ]}
-      />
       <Show
         when={props.view}
         fallback={
@@ -883,7 +898,7 @@ function ConnectionForm(props: { name: string }) {
                   </button>
                 </Show>
               );
-              return (
+              const entry = () => (
                 <div class="credential">
                   <Show
                     when={!collapsed()}
@@ -922,10 +937,92 @@ function ConnectionForm(props: { name: string }) {
                   </Show>
                 </div>
               );
+              return (
+                <Show
+                  when={
+                    m.options.tinfoilApiKeys &&
+                    !field().signIn &&
+                    owner.tinfoilSetup(m.view()!, props.name)
+                  }
+                  fallback={entry()}
+                >
+                  <TinfoilKeySelect
+                    name={props.name}
+                    field={field()}
+                    fallback={entry}
+                  />
+                </Show>
+              );
             }}
           </For>
         </form>
       </section>
+    </Show>
+  );
+}
+
+// A Tinfoil service uses one of the owner's API keys; choosing one saves it.
+function TinfoilKeySelect(props: {
+  name: string;
+  field: owner.CredentialField;
+  fallback: () => JSX.Element;
+}) {
+  const m = useMonitor();
+  const id = createUniqueId();
+  const [keys] = createResource(() => m.options.tinfoilApiKeys!());
+  const current = () => owner.tinfoilKeyOf(m.view()!, props.name);
+  const listed = () => (keys.error ? undefined : keys());
+  const known = () =>
+    !!listed()?.some((k) => owner.keyFingerprint(k.key) === current());
+  return (
+    <Show
+      when={!keys.error && (keys.loading || !!listed()?.length)}
+      fallback={props.fallback()}
+    >
+      <div class="setting-row">
+        <label for={id}>{props.field.label}</label>
+        <select
+          id={id}
+          class="key-select"
+          disabled={!listed() || m.busy()}
+          onChange={(event) => {
+            // The form saves on change too; this choice saves itself.
+            event.stopPropagation();
+            const chosen = listed()?.find(
+              (k) => owner.keyFingerprint(k.key) === event.currentTarget.value,
+            );
+            if (!chosen) return;
+            const { changes, credentials } = owner.edits.setTinfoilKey(
+              props.name,
+              props.field.key,
+              chosen.key,
+            );
+            void m.edit(changes, undefined, credentials);
+          }}
+        >
+          {/* Each option carries its own selection, so options that arrive
+              after the list loads still show the chosen key. */}
+          <Show when={!known()}>
+            <option value="" disabled selected>
+              {keys.loading
+                ? "Loading keys…"
+                : props.field.stored
+                  ? "Current key"
+                  : "Choose an API key"}
+            </option>
+          </Show>
+          <For each={listed()}>
+            {(k) => (
+              <option
+                value={owner.keyFingerprint(k.key)}
+                selected={owner.keyFingerprint(k.key) === current()}
+              >
+                {owner.apiKeyLabel(k)}
+              </option>
+            )}
+          </For>
+        </select>
+      </div>
     </Show>
   );
 }
@@ -1017,6 +1114,7 @@ function Connection(props: { name: string }) {
                   name={name}
                   connection={props.name}
                   title={name}
+                  alwaysOpen
                 />
               )}
             </For>
@@ -1024,23 +1122,13 @@ function Connection(props: { name: string }) {
         </section>
         <Show when={tinfoil() || setups().length || codex()}>
           <section class="connection-section connection-setup">
-            <SectionHeading
-              title="Details"
-              description="URLs, bunker placeholders, and setup instructions"
-            />
             <Show when={tinfoil()}>
               {(setup) => (
-                <div class="settings-group">
-                  <div class="setting-row">
-                    <div>
-                      <span>
-                        {setup().mcp ? "Web search (MCP)" : "Inference API"}
-                      </span>
-                      <p class="mono">{setup().url}</p>
-                    </div>
-                    <Copy text={setup().url} label={`Copy ${props.name} URL`} />
-                  </div>
-                </div>
+                <CopyField
+                  label={setup().mcp ? "Web search (MCP)" : "Inference API"}
+                  value={setup().url}
+                  copyLabel={`Copy ${props.name} URL`}
+                />
               )}
             </Show>
             <Show when={setups().length}>
@@ -1048,8 +1136,6 @@ function Connection(props: { name: string }) {
                 <For each={setups()}>
                   {(group) => {
                     const setup = group[0];
-                    let input!: HTMLInputElement;
-                    const id = createUniqueId();
                     return (
                       <div class="agent-setup-item">
                         <Show when={setups().length > 1}>
@@ -1057,22 +1143,11 @@ function Connection(props: { name: string }) {
                             {setup.connection} · {setup.credential}
                           </h3>
                         </Show>
-                        <label for={id}>Bunker placeholder</label>
-                        <div class="secret-input">
-                          <input
-                            ref={input}
-                            id={id}
-                            class="mono"
-                            readonly
-                            value={setup.placeholder}
-                            onClick={(e) => e.currentTarget.select()}
-                          />
-                          <Copy
-                            text={setup.placeholder}
-                            label={`Copy placeholder for ${setup.connection} ${setup.credential}`}
-                            target={() => input}
-                          />
-                        </div>
+                        <CopyField
+                          label="Bunker placeholder"
+                          value={setup.placeholder}
+                          copyLabel={`Copy placeholder for ${setup.connection} ${setup.credential}`}
+                        />
                         <details class="agent-setup-usage">
                           <summary>Where this placeholder is used</summary>
                           <Show when={group.length > 1}>
@@ -1152,30 +1227,72 @@ function Connection(props: { name: string }) {
           </section>
         </Show>
         <ConnectionForm name={props.name} />
-        <div class="connection-footer">
-          <button
-            class="danger"
-            disabled={m.busy()}
-            onClick={async () => {
-              if (
-                (await askConfirm({
-                  title: `Remove ${props.name}?`,
-                  description:
-                    "Bunkers lose access to this service, and its saved credentials are deleted.",
-                  confirmLabel: "Remove service",
-                  destructive: true,
-                })) &&
-                (await m.edit(
-                  owner.edits.removeConnection(m.view()!, props.name),
-                ))
-              )
-                location.hash = "#connections";
-            }}
-          >
-            Remove service
-          </button>
-        </div>
+        <ServiceMenu name={props.name} />
       </Show>
+    </div>
+  );
+}
+// Rarely used actions stay in a menu on the open service's header row.
+const MENU_GAP = 4;
+function ServiceMenu(props: { name: string }) {
+  const m = useMonitor();
+  const id = createUniqueId();
+  let trigger!: HTMLButtonElement, menu!: HTMLDivElement;
+  // A menu placed in the viewport would drift from its button on scroll.
+  const close = () => menu.hidePopover();
+  onCleanup(() => removeEventListener("scroll", close, true));
+  return (
+    <div class="connection-menu">
+      <button
+        ref={trigger}
+        type="button"
+        class="icon-button"
+        aria-label={`More actions for ${props.name}`}
+        title="More actions"
+        popovertarget={id}
+      >
+        <Icon name="more" />
+      </button>
+      <div
+        ref={menu}
+        id={id}
+        class="popover-menu"
+        popover
+        onBeforeToggle={(event) => {
+          if (event.newState !== "open") return;
+          const anchor = trigger.getBoundingClientRect();
+          menu.style.top = `${anchor.bottom + MENU_GAP}px`;
+          menu.style.right = `${innerWidth - anchor.right}px`;
+        }}
+        onToggle={(event) => {
+          if (event.newState === "open")
+            addEventListener("scroll", close, true);
+          else removeEventListener("scroll", close, true);
+        }}
+      >
+        <button
+          class="danger"
+          disabled={m.busy()}
+          onClick={async () => {
+            close();
+            if (
+              (await askConfirm({
+                title: `Remove ${props.name}?`,
+                description:
+                  "Bunkers lose access to this service, and its saved credentials are deleted.",
+                confirmLabel: "Remove service",
+                destructive: true,
+              })) &&
+              (await m.edit(
+                owner.edits.removeConnection(m.view()!, props.name),
+              ))
+            )
+              location.hash = "#connections";
+          }}
+        >
+          Remove service
+        </button>
+      </div>
     </div>
   );
 }

@@ -395,10 +395,14 @@ function Actions(props: {
     </For>
   );
 }
+// Short lists are scanned by eye; past this many actions a search helps.
+const ACTION_SEARCH_THRESHOLD = 20;
 export function AgentConnectionAccess(props: {
   name: string;
   connection: string;
   title?: string;
+  // Lists this row's actions without a toggle, for short lists of rows.
+  alwaysOpen?: boolean;
 }) {
   const m = useMonitor();
   const entry = createMemo(
@@ -409,8 +413,14 @@ export function AgentConnectionAccess(props: {
     const nodes = entry().actions;
     return nodes.length === 1 && !nodes[0].children.length;
   };
+  const leaves = (nodes: owner.AccessNode[]): number =>
+    nodes.reduce(
+      (sum, node) => sum + (node.children.length ? leaves(node.children) : 1),
+      0,
+    );
+  const searchable = () => leaves(entry().actions) > ACTION_SEARCH_THRESHOLD;
   const expandable = () => entry().level !== "off";
-  const open = () => expanded() && expandable();
+  const open = () => (props.alwaysOpen || expanded()) && expandable();
   const id = createUniqueId();
   const [query, setQuery] = createSignal("");
   const matches = (node: owner.AccessNode, q: string): boolean =>
@@ -426,46 +436,58 @@ export function AgentConnectionAccess(props: {
       m.view()!.config.identities?.[props.name]?.rules ?? {},
     ).filter(([, rule]) => rule.connection === props.connection),
   );
+  const title = () => (
+    <>
+      <Show
+        when={props.title}
+        fallback={<ConnectorIcon preset={entry().preset} />}
+      >
+        <Icon name="agents" />
+      </Show>
+      <b title={props.title ?? props.connection}>
+        {props.title ?? props.connection}
+      </b>
+      <Show when={!props.alwaysOpen}>
+        <span
+          class="access-caret"
+          aria-hidden="true"
+          classList={{ hidden: !expandable(), expanded: open() }}
+        >
+          <Icon name="arrow" />
+        </span>
+      </Show>
+      <Show when={entry().level !== "off" && entry().overrides}>
+        <small class="muted">
+          {entry().overrides}{" "}
+          {entry().overrides === 1 ? "action set" : "actions set"}
+        </small>
+      </Show>
+      <Show when={rules().length}>
+        <small class="muted">
+          {rules().length} {rules().length === 1 ? "rule" : "rules"}
+        </small>
+      </Show>
+    </>
+  );
   return (
     <div class="acct">
       <div class="row">
-        <button
-          class="access-toggle"
-          type="button"
-          aria-label={`Actions for ${props.title ?? props.connection}`}
-          aria-expanded={open()}
-          aria-controls={id}
-          disabled={!expandable()}
-          onClick={() => setExpanded(!expanded())}
+        <Show
+          when={!props.alwaysOpen}
+          fallback={<span class="access-toggle">{title()}</span>}
         >
-          <Show
-            when={props.title}
-            fallback={<ConnectorIcon preset={entry().preset} />}
+          <button
+            class="access-toggle"
+            type="button"
+            aria-label={`Actions for ${props.title ?? props.connection}`}
+            aria-expanded={open()}
+            aria-controls={id}
+            disabled={!expandable()}
+            onClick={() => setExpanded(!expanded())}
           >
-            <Icon name="agents" />
-          </Show>
-          <b title={props.title ?? props.connection}>
-            {props.title ?? props.connection}
-          </b>
-          <span
-            class="access-caret"
-            aria-hidden="true"
-            classList={{ hidden: !expandable(), expanded: open() }}
-          >
-            <Icon name="arrow" />
-          </span>
-          <Show when={entry().level !== "off" && entry().overrides}>
-            <small class="muted">
-              {entry().overrides}{" "}
-              {entry().overrides === 1 ? "action set" : "actions set"}
-            </small>
-          </Show>
-          <Show when={rules().length}>
-            <small class="muted">
-              {rules().length} {rules().length === 1 ? "rule" : "rules"}
-            </small>
-          </Show>
-        </button>
+            {title()}
+          </button>
+        </Show>
         <AccessSelect
           kind="level"
           label={`Access for ${props.title ?? props.connection}`}
@@ -496,19 +518,13 @@ export function AgentConnectionAccess(props: {
         <div>
           <Show when={open()}>
             <div class="access-block">
-              <div class="access-heading">
-                <div>
-                  <h4>Actions</h4>
-                  <p class="muted">What can be done with this service</p>
-                </div>
-                <Show when={!singleAction()}>
-                  <Search
-                    label="Search actions"
-                    value={query()}
-                    onInput={setQuery}
-                  />
-                </Show>
-              </div>
+              <Show when={searchable() || query()}>
+                <Search
+                  label="Search actions"
+                  value={query()}
+                  onInput={setQuery}
+                />
+              </Show>
               <div class="access-actions">
                 <Actions
                   name={props.name}
@@ -516,7 +532,7 @@ export function AgentConnectionAccess(props: {
                   nodes={shown()}
                   readOnly={singleAction()}
                 />
-                <Show when={!shown().length}>
+                <Show when={query() && !shown().length}>
                   <p class="muted">No matching actions.</p>
                 </Show>
               </div>
