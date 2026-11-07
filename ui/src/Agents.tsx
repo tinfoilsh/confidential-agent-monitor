@@ -347,6 +347,9 @@ function Actions(props: {
               class="access-action-title"
               classList={{ "access-group-title": !!node().children.length }}
             >
+              <Show when={node().children.length}>
+                <Icon name="arrow" />
+              </Show>
               {node().title}
               <Show when={value() === null}>
                 <span class="access-modified" title="Actions inside differ">

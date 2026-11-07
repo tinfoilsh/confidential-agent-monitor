@@ -393,7 +393,7 @@ export function ToolReview(props: { name: string; review: owner.Review }) {
           )}
         </Index>
       </ul>
-      <div class="decision-buttons">
+      <div class="tool-review-actions">
         <button
           class="allow"
           disabled={m.busy()}
@@ -427,9 +427,6 @@ function ToolItem(props: { change: ToolChange; showKind: boolean }) {
         summaryClass="tool-item-summary"
         summary={
           <>
-            <span class="collection-chevron">
-              <Icon name="arrow" />
-            </span>
             <span class="tool-item-text">
               <Show
                 when={!props.change.instructions}
@@ -461,6 +458,9 @@ function ToolItem(props: { change: ToolChange; showKind: boolean }) {
                 </span>
               </Show>
             </span>
+            <span class="collection-chevron">
+              <Icon name="arrow" />
+            </span>
           </>
         }
       >
@@ -484,6 +484,7 @@ function ToolDetails(props: { change: ToolChange }) {
         {(tool) => (
           <>
             <Show when={tool().description}>
+              <p class="tool-source">Description from the service</p>
               <p class="tool-description">{tool().description}</p>
             </Show>
             <Show when={props.change.changedFields.length}>
@@ -501,8 +502,11 @@ function ToolDetails(props: { change: ToolChange }) {
               </div>
             </Show>
             <Show when={props.change.parameters.length}>
-              <div class="tool-detail">
-                <h4>Parameters</h4>
+              <details class="tool-inputs">
+                <summary>
+                  Parameters{" "}
+                  <span class="count">{props.change.parameters.length}</span>
+                </summary>
                 <dl class="tool-parameters">
                   <For each={props.change.parameters}>
                     {(parameter) => (
@@ -525,7 +529,7 @@ function ToolDetails(props: { change: ToolChange }) {
                     )}
                   </For>
                 </dl>
-              </div>
+              </details>
             </Show>
             <details class="tool-definition">
               <summary>Full definition</summary>
