@@ -212,6 +212,51 @@ describe("MCP review uses saved pins without approving them", () => {
   });
 });
 
+describe("tools of services chosen in setup", () => {
+  const tools = { tools: [{ name: "search", inputSchema: { type: "object" } }] };
+  const setupView = (names: string[]) => {
+    const v = view();
+    v.config.data = { onboarding: { completed: true, approve_tools: names } };
+    for (const name of ["websearch", "linear"])
+      v.config.connections![name] = { preset: "mcp", mcp: {} };
+    return v;
+  };
+  const listed = (changes: owner.Change[]) =>
+    changes.find((c) => c.path.join("/") === "data/onboarding/approve_tools");
+
+  test("wait until their server first reports its tools", () => {
+    const v = setupView(["websearch"]);
+    expect(owner.setupToolApprovals(v)).toEqual([]);
+    v.status.websearch = { state: "starting" };
+    expect(owner.setupToolApprovals(v)).toEqual([]);
+  });
+
+  test("approve the reported tools and leave services that have not reported", () => {
+    const v = setupView(["websearch", "linear"]);
+    v.status.websearch = {
+      state: "ready",
+      details: { blocked: 1, changes: ["+ search"], pin: tools },
+    };
+    const changes = owner.setupToolApprovals(v);
+    owner.applyChanges(v.config, changes);
+    expect(v.config.connections!.websearch.mcp).toEqual({ pin: tools });
+    expect(v.config.connections!.linear.mcp).toEqual({});
+    expect(listed(changes)?.value).toEqual(["linear"]);
+  });
+
+  test("never approve a change to tools that were already approved", () => {
+    const v = setupView(["websearch", "removed"]);
+    v.config.connections!.websearch.mcp = { pin: { tools: [] } };
+    v.status.websearch = {
+      state: "ready",
+      details: { blocked: 1, changes: ["+ search"], pin: tools },
+    };
+    const changes = owner.setupToolApprovals(v);
+    expect(changes).toEqual([listed(changes)!]);
+    expect(listed(changes)?.delete).toBe(true);
+  });
+});
+
 describe("first setup", () => {
   const setupView = () => {
     const v = view();
@@ -264,6 +309,13 @@ describe("first setup", () => {
     expect(access(body, "tinfoil-websearch")).toEqual({ level: "allow" });
     expect(access(body, "anthropic")).toEqual({ level: "allow" });
     expect(access(body, "github")).toEqual({ level: "ask" });
+    // Only the MCP server waits for its first tools to be approved.
+    expect(
+      body.changes.find(
+        (change: owner.Change) =>
+          change.path.join("/") === "data/onboarding/approve_tools",
+      )?.value,
+    ).toEqual(["tinfoil-websearch"]);
   });
 
   test("refuses Tinfoil without a key", async () => {

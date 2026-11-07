@@ -1442,6 +1442,7 @@ function onboardingChanges(
     value: { level: choices.network },
   });
   const credentials: { [connection: string]: Credentials } = {};
+  const approveTools: string[] = [];
   const add = (
     connection: string,
     preset: string,
@@ -1464,6 +1465,8 @@ function onboardingChanges(
       value: { level },
     });
     credentials[connection] = added.credentials;
+    const kind = Object.keys(view.presets[preset].connection ?? {})[0];
+    if (PINNED_KINDS.includes(kind)) approveTools.push(connection);
   };
   for (const { preset, level, credential } of choices.services) {
     if (preset !== "tinfoil") {
@@ -1476,7 +1479,40 @@ function onboardingChanges(
     add(name, "tinfoil", level, key);
     add(`${name}-websearch`, "tinfoil_websearch", level, key);
   }
+  if (approveTools.length)
+    changes.push({ path: SETUP_TOOLS, value: approveTools });
   return { changes, credentials };
+}
+
+// MCP services chosen during setup have their first reported tools approved
+// without a review; later changes to those tools still wait for the owner.
+const SETUP_TOOLS = ["data", "onboarding", "approve_tools"];
+const PINNED_KINDS = ["mcp", "tinfoil-mcp"];
+export function setupToolApprovals(view: View): Change[] {
+  const listed = (view.config.data?.onboarding as { approve_tools?: Json })
+    ?.approve_tools;
+  const names = Array.isArray(listed)
+    ? listed.filter((name): name is string => typeof name === "string")
+    : [];
+  const approved = (name: string) =>
+    setupOf(connections(view)[name])?.pin != null;
+  const ready = names.filter(
+    (name) => view.status[name]?.details?.pin != null && !approved(name),
+  );
+  // A removed or already approved service needs no first approval.
+  const settled = names.filter(
+    (name) => !connections(view)[name] || approved(name),
+  );
+  if (!ready.length && !settled.length) return [];
+  const waiting = names.filter(
+    (name) => !ready.includes(name) && !settled.includes(name),
+  );
+  return [
+    ...ready.flatMap((name) => edits.approveTools(view, name)),
+    waiting.length
+      ? { path: SETUP_TOOLS, value: waiting }
+      : { path: SETUP_TOOLS, delete: true },
+  ];
 }
 
 const KNOWN_ONLY_RULE =
