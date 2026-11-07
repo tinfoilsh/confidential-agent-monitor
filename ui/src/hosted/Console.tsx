@@ -10,9 +10,9 @@ import {
 } from "solid-js";
 import {
   AuthCard,
+  AuthCardSkeleton,
   AuthScreen,
   Icon,
-  Loading,
   SkeletonRows,
 } from "../components";
 import {
@@ -31,6 +31,7 @@ import * as keys from "./keys";
 import {
   AddPasskey,
   KeyGate,
+  OfferRecovery,
   RecoveryDownload,
   RecoveryMethods,
   SetupKeys,
@@ -107,6 +108,12 @@ function roleKeys(
   return out;
 }
 
+// A setup that makes a bunker is named for it; one for a Perimeter alone is not.
+const setupTitle = (request: StartRequest) =>
+  request.roles.includes("sandbox")
+    ? "Finish your bunker setup"
+    : "Finish your Perimeter setup";
+
 // Key-only handoff: persists the requested keys, then returns only public keys.
 function Start(props: {
   session: Session;
@@ -116,6 +123,8 @@ function Start(props: {
   const r = props.request;
   const dashboard = keys.TARGETS.dashboard!;
   const [file, setFile] = createSignal<keys.RecoveryFile>();
+  // After a first passkey, the recovery key offer comes before the return.
+  const [offer, setOffer] = createSignal(false);
   const [error, setError] = createSignal("");
   const [busy, setBusy] = createSignal(false);
   const [entries, setEntries] = createSignal<Record<string, string>>({});
@@ -188,6 +197,7 @@ function Start(props: {
       () =>
         r.mode === "tmk" &&
         !file() &&
+        !offer() &&
         props.session.user()?.id === r.user &&
         !!props.session.unlocked() &&
         hasPasskey(),
@@ -203,7 +213,9 @@ function Start(props: {
           ? "Add your CLI keys"
           : file()
             ? "Save your recovery key"
-            : "Finish your setup"
+            : offer()
+              ? "Save a recovery key"
+              : setupTitle(r)
       }
       description={
         r.mode === "umk"
@@ -268,24 +280,31 @@ function Start(props: {
             />
           )}
         </Match>
+        <Match when={offer()}>
+          <OfferRecovery
+            session={props.session}
+            manager={props.manager}
+            onDone={() => finishTMK(created!)}
+          />
+        </Match>
         <Match when={!state()}>
-          <AuthCard>
-            <Show
-              when={props.session.keyState().error}
-              fallback={<Loading label="Loading your keys…" />}
-            >
+          <Show
+            when={props.session.keyState().error}
+            fallback={<AuthCardSkeleton label="Loading your keys…" />}
+          >
+            <AuthCard>
               <p role="alert">
                 Your keys could not be loaded: {props.session.keyState().error}
               </p>
-            </Show>
-          </AuthCard>
+            </AuthCard>
+          </Show>
         </Match>
         <Match when={state() && !state()!.dek_id}>
           <SetupKeys
             session={props.session}
             manager={props.manager}
             resources={generate}
-            onDone={(saved) => (saved ? setFile(saved) : finishTMK(created!))}
+            onDone={(saved) => (saved ? setFile(saved) : setOffer(true))}
           />
         </Match>
         <Match when={state() && !props.session.unlocked()}>
@@ -497,7 +516,11 @@ export default function Console(props: { session: Session }) {
         </Match>
         <Match when={!props.session.user()}>
           <AuthScreen
-            title={start ? "Finish your setup" : `Welcome to ${PRODUCT.name}`}
+            title={
+              start && start !== "invalid"
+                ? setupTitle(start)
+                : `Welcome to ${PRODUCT.name}`
+            }
           >
             <AuthCard icon={<Icon name="terminal" />}>
               <p>

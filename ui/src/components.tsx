@@ -75,11 +75,24 @@ export function AuthCard(props: {
   );
 }
 
-export function AuthTip(props: { children: JSX.Element }) {
+// Holds a card's place while it loads, shaped like the passkey cards that replace it.
+export function AuthCardSkeleton(props: { label: string }) {
   return (
-    <p class="auth-tip">
-      <strong>Tip:</strong> {props.children}
-    </p>
+    <section
+      class="auth-card auth-skeleton"
+      role="status"
+      aria-label={props.label}
+    >
+      <span class="sr-only">{props.label}</span>
+      <span class="loading-skeleton auth-skeleton-icon" aria-hidden="true" />
+      <span class="loading-skeleton auth-skeleton-title" aria-hidden="true" />
+      <span class="auth-skeleton-text" aria-hidden="true">
+        <span class="loading-skeleton" />
+        <span class="loading-skeleton" />
+      </span>
+      <span class="loading-skeleton auth-skeleton-button" aria-hidden="true" />
+      <span class="loading-skeleton auth-skeleton-link" aria-hidden="true" />
+    </section>
   );
 }
 
