@@ -98,6 +98,10 @@
   --blue-50: #eff6ff;
   --blue-200: #bfdbfe;
   --blue-800: #1e40af;
+  /* The dashboard's info notice: a sky tint with a low-contrast border. */
+  --info-edge: rgb(14 165 233 / 20%);
+  --info-bg: rgb(14 165 233 / 10%);
+  --info-text: #082f49;
   --open-head: #eef2f6;
   --open-body: #f6f8fa;
   --grid: url("/icons/dashboard-grid.svg");
@@ -139,6 +143,8 @@
   --blue-50: #172554;
   --blue-200: #1e40af;
   --blue-800: #bfdbfe;
+  --info-bg: rgb(14 165 233 / 15%);
+  --info-text: #e0f2fe;
   --open-head: #2a3038;
   --open-body: #222529;
   --grid: url("/icons/dashboard-grid-dark.svg");
@@ -1199,7 +1205,15 @@ details[open] > summary > .collection-chevron {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-.connection-warning,
+.connection-warning {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--info-edge);
+  border-radius: 4px;
+  background: var(--info-bg);
+  color: var(--info-text);
+  font-size: var(--font-detail);
+}
 .start-notice {
   margin: 0;
   padding: 10px 14px;
