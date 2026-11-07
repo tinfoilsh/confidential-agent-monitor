@@ -107,8 +107,7 @@
   --grid: url("/icons/dashboard-grid.svg");
   --chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 }
-:root[data-theme="dark"],
-.sandbox-terminal {
+:root[data-theme="dark"] {
   color-scheme: dark;
   --bg: #121212;
   --card: #1c1c1e;
@@ -507,16 +506,25 @@ summary + * {
   margin-left: auto;
   color: inherit;
 }
-.nav-shell {
-  position: relative;
+/* A labeled section, like the dashboard sidebar's. */
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   margin-top: 8px;
-  padding: 0 4px 0 0;
-}
-.nav-shell::before {
-  content: "";
-  position: absolute;
-  inset: -6px 0 auto;
+  padding-top: 12px;
   border-top: 1px solid var(--nav-line);
+}
+.nav-section {
+  padding: 0 12px 4px;
+  /* Dimmer than the items, yet above 4.5:1 on the sidebar. */
+  color: rgb(255 255 255 / 55%);
+  font-size: var(--font-detail);
+  font-weight: 500;
+  line-height: 16px;
+}
+.nav-shell {
+  padding: 0 4px 0 0;
 }
 .nav-shell > a {
   display: flex;
@@ -1053,10 +1061,10 @@ summary + * {
 /* An open item is tinted, not outlined: its header goes a shade darker and
    slightly blue, its body the same step darker than the plain card. Both
    are one step; the header stays the darker of the two. */
-.connection-item[open] > summary {
+:is(.connection-item, .agent-item)[open] > summary {
   background: var(--open-head);
 }
-.connection-item[open] > summary:hover {
+:is(.connection-item, .agent-item)[open] > summary:hover {
   background: var(--open-head);
 }
 .connection-item[open] .connection-inline {
@@ -1411,30 +1419,31 @@ details[open] > summary > .collection-chevron {
   gap: 8px;
   padding: 16px 0 20px;
 }
-@media (max-width: 560px) {
-  .connection-access .access-toggle {
-    flex-basis: 100%;
-  }
-  .connection-access .access-level {
-    margin-left: 0;
-    max-width: 100%;
-  }
-  .connection-access .access-level > button {
-    padding-inline: 8px;
-  }
-}
 .agent-inline {
   container: agent / inline-size;
   margin-top: 0;
   padding: var(--card-inset);
   border-top: 1px solid var(--line);
-  background: var(--subtle);
+  background: var(--open-body);
 }
-.agent-inline:has(> .agent-access) {
-  padding-block: 0;
+/* A bunker's open body: its service access, then Advanced, each in a box. */
+.agent-access-section {
+  display: grid;
+  gap: 12px;
 }
 .agent-access {
   min-width: 0;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--card);
+}
+.agent-inline .agent-maintenance {
+  margin-top: 16px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--card);
 }
 .agent-settings {
   min-width: 0;
@@ -1453,10 +1462,6 @@ details[open] > summary > .collection-chevron {
   margin-top: 0;
   padding-top: 0;
   border-top: 0;
-}
-.agent-access + .agent-settings > section {
-  margin-top: 0;
-  padding-block: var(--card-row-inset);
 }
 .agent-inline .acct {
   padding-block: 8px;
@@ -1482,24 +1487,6 @@ details[open] > summary > .collection-chevron {
   margin: 0;
 }
 @container agent (max-width: 620px) {
-  .agent-inline .acct > .row,
-  .agent-inline .access-action {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: 8px;
-  }
-  .agent-inline .acct .access-level {
-    margin-left: 0;
-    justify-self: start;
-    max-width: 100%;
-  }
-  .agent-inline .access-action > .tab-bar {
-    justify-self: start;
-  }
-  .agent-inline .access-level > button {
-    flex: 1;
-    min-width: 0;
-  }
   .agent-inline .agent-connectivity {
     grid-template-columns: minmax(0, 1fr) 36px;
   }
@@ -1742,10 +1729,44 @@ details[open] > summary > .collection-chevron {
 }
 .acct > .row {
   margin: 0;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
-.acct .access-level {
-  margin-left: 0;
+.access-select {
+  --dot: var(--dim);
+  flex: none;
+  width: 124px;
+  margin: 0;
+  padding: 4px 28px 4px 26px;
+  border-color: var(--edge);
+  background:
+    radial-gradient(circle at 13px 50%, var(--dot) 3.5px, transparent 4px)
+      no-repeat,
+    var(--chevron) right 8px center / 14px no-repeat,
+    var(--card);
+  color: var(--text);
+  font-size: var(--font-detail);
+  font-weight: 500;
+  line-height: 18px;
+  cursor: pointer;
+}
+.access-select:hover {
+  border-color: var(--border-strong);
+}
+.access-select[data-value="read"] {
+  --dot: var(--link);
+}
+.access-select[data-value="ask"] {
+  --dot: #f59e0b;
+}
+.access-select[data-value="allow"] {
+  --dot: var(--ok);
+}
+.access-select.mode[data-value="off"] {
+  --dot: var(--bad);
+}
+.access-select[data-value="mixed"] {
+  --dot: transparent;
+  color: var(--muted);
 }
 .access-toggle {
   flex: 1 1 auto;
@@ -1787,10 +1808,16 @@ details[open] > summary > .collection-chevron {
 .access-caret.expanded > .icon {
   transform: rotate(90deg);
 }
+/* Inset under the service name, so its actions read as part of that row. */
 .access-block {
-  margin: 12px 0 0;
-  padding-top: 12px;
-  border-top: 1px solid var(--edge);
+  margin: 4px 0 4px 28px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--subtle);
+}
+.access-block + .access-block {
+  margin-top: 8px;
 }
 .access-block h4 {
   margin: 0 0 2px;
@@ -2845,13 +2872,6 @@ td {
   .row {
     flex-wrap: wrap;
   }
-  .access-action {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 6px;
-  }
-  .access-action .tab-bar {
-    justify-self: start;
-  }
   .agent-setup-details {
     grid-template-columns: minmax(0, 1fr);
     gap: 4px;
@@ -3026,15 +3046,4 @@ td {
 }
 .key-pill .icon-button {
   padding: 2px;
-}
-
-.tab-bar.small {
-  padding: 2px;
-}
-.tab-bar.small .tab-bar-pill {
-  top: 2px;
-  bottom: 2px;
-}
-.tab-bar.small > :is(a, button) {
-  padding: 4px 10px;
 }

@@ -4,7 +4,37 @@ import { WebglAddon } from "@xterm/addon-webgl";
 import { Terminal } from "@xterm/xterm";
 import "@xterm/xterm/css/xterm.css";
 import * as owner from "./owner.js";
+import { colorScheme } from "./theme";
 import "./terminal.css";
+
+// Matches the page background; light mode uses GitHub Light's ANSI colors,
+// since xterm's defaults are made for a dark background.
+const THEMES = {
+  dark: { background: "#121212", foreground: "#fafafa" },
+  light: {
+    background: "#ffffff",
+    foreground: "#24292f",
+    cursor: "#24292f",
+    cursorAccent: "#ffffff",
+    selectionBackground: "#0969da33",
+    black: "#24292f",
+    red: "#cf222e",
+    green: "#116329",
+    yellow: "#4d2d00",
+    blue: "#0969da",
+    magenta: "#8250df",
+    cyan: "#1b7c83",
+    white: "#6e7781",
+    brightBlack: "#57606a",
+    brightRed: "#a40e26",
+    brightGreen: "#1a7f37",
+    brightYellow: "#633c01",
+    brightBlue: "#218bff",
+    brightMagenta: "#a475f9",
+    brightCyan: "#3192aa",
+    brightWhite: "#8c959f",
+  },
+};
 
 export default function SandboxTerminal(props: {
   open: owner.ShellOpener;
@@ -20,7 +50,7 @@ export default function SandboxTerminal(props: {
     cursorBlink: true,
     fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
     fontSize: 13,
-    theme: { background: "#121212", foreground: "#fafafa" },
+    theme: THEMES[colorScheme()],
   });
   const fit = new FitAddon();
   terminal.loadAddon(fit);
@@ -89,6 +119,9 @@ export default function SandboxTerminal(props: {
   });
   createEffect(() => {
     if (props.active) terminal.focus();
+  });
+  createEffect(() => {
+    terminal.options.theme = THEMES[colorScheme()];
   });
   onCleanup(() => {
     session?.abort();
