@@ -402,7 +402,7 @@ summary + * {
   flex-direction: column;
   width: var(--nav-width);
   color: var(--nav-text);
-  background: var(--tinfoil-dark) url("/icons/dashboard-grain.svg") repeat;
+  background: var(--tinfoil-dark);
 }
 .brand {
   display: flex;
