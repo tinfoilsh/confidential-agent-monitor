@@ -4,15 +4,14 @@ import {
   ConnectorIcon,
   Empty,
   Icon,
-  RemoveRule,
   ResourceDisclosure,
-  RuleText,
   createRecord,
   href,
   TabBar,
 } from "./components";
 import { useMonitor } from "./monitor";
 import { PolicyProposals, TechnicalDiff } from "./PolicyProposals";
+import { ApprovalActions } from "./Approvals";
 
 const PAGE = 50;
 const HOLD_SCROLL_PX = 100;
@@ -42,7 +41,6 @@ export function Badge(props: { state: string; record: owner.RequestRecord }) {
   );
 }
 export function Activity(props: { scope?: string; name?: string }) {
-  const rules = () => props.scope === "rules";
   const proposals = () => props.scope === "proposals";
   const request = () => props.scope === "request" ? props.name : undefined;
   return (
@@ -50,7 +48,7 @@ export function Activity(props: { scope?: string; name?: string }) {
       <TabBar
         class="page-tabs"
         label="Activity views"
-        value={proposals() ? "proposals" : rules() ? "rules" : "requests"}
+        value={proposals() ? "proposals" : "requests"}
         options={[
           { value: "requests", label: "Requests", href: "#activity" },
           {
@@ -58,70 +56,12 @@ export function Activity(props: { scope?: string; name?: string }) {
             label: "Config proposals",
             href: "#activity/proposals",
           },
-          { value: "rules", label: "Saved rules", href: "#activity/rules" },
         ]}
       />
-      <Show
-        when={proposals()}
-        fallback={
-          <Show when={rules()} fallback={<Requests expanded={request()} />}>
-            <Rules />
-          </Show>
-        }
-      >
+      <Show when={proposals()} fallback={<Requests expanded={request()} />}>
         <PolicyProposals />
       </Show>
     </>
-  );
-}
-function Rules() {
-  const m = useMonitor(),
-    rules = () =>
-      Object.entries(m.view()!.config.identities ?? {}).flatMap(
-        ([name, identity]) =>
-          Object.keys(identity.rules ?? {}).map((id) => [name, id] as const),
-      );
-  return (
-    <div class="resource-list">
-      <div class="resource-heading">
-        <h2>
-          Saved rules <span class="count">{rules().length}</span>
-        </h2>
-        <span>Updates every 5 seconds</span>
-      </div>
-      <For
-        each={rules()}
-        fallback={
-          <Empty title="No saved rules yet" icon="rules">
-            Save an approval rule from a request to allow matching requests in
-            the future.
-          </Empty>
-        }
-      >
-        {([name, id]) => {
-          const rule = () => m.view()!.config.identities![name].rules![id];
-          return (
-            <div class="resource-row">
-              <a
-                class="resource-link"
-                href={href("connection", rule().connection)}
-              >
-                <ConnectorIcon connection={rule().connection} />
-                <RuleText rule={rule()}>
-                  <small>
-                    {name} · {rule().connection}
-                    {rule().operation
-                      ? ""
-                      : " · Inactive: saved before approvals named an operation"}
-                  </small>
-                </RuleText>
-              </a>
-              <RemoveRule agent={name} id={id} />
-            </div>
-          );
-        }}
-      </For>
-    </div>
   );
 }
 function Requests(props: { expanded?: string }) {
@@ -227,22 +167,11 @@ function Requests(props: { expanded?: string }) {
                         {requestTime.format(time())}
                       </time>
                     </div>
-                    <div class="row-actions">
-                      <Show when={owner.decisions(record()).once}>
-                        <button
-                          class="danger"
-                          onClick={() => void m.decide(record(), "deny")}
-                        >
-                          Deny request
-                        </button>
-                        <button
-                          class="primary"
-                          onClick={() => void m.decide(record(), "once")}
-                        >
-                          Allow once
-                        </button>
-                      </Show>
-                    </div>
+                    <Show when={record().state === "pending"}>
+                      <a class="review-link" href="#connections">
+                        Review in Permissions
+                      </a>
+                    </Show>
                     <span class="collection-chevron">
                       <Icon name="arrow" />
                     </span>
@@ -437,6 +366,10 @@ export function RequestDetail(props: {
                         )}
                       </For>
                     </Show>
+                    <Show when={state() === "pending"}>
+                      {" "}
+                      <a href="#connections">Answer in Permissions</a>
+                    </Show>
                   </dd>
                 </div>
                 <Show when={reasons().length}>
@@ -483,42 +416,16 @@ export function RequestDetail(props: {
                   </a>
                 </div>
               </Show>
-              <div class="decisions">
-                <Show when={owner.decisions(r(), m.now()).dismiss}>
-                  <button
-                    onClick={() => {
-                      m.dismiss(r().id);
-                      location.hash = "#activity";
-                    }}
-                  >
-                    Dismiss
-                  </button>
-                </Show>
-                <Show when={owner.decisions(r(), m.now()).once}>
-                  <button
-                    class="primary"
-                    onClick={() => void m.decide(r(), "once")}
-                  >
-                    Allow once
-                  </button>
-                </Show>
-                <Show when={owner.decisions(r(), m.now()).save}>
-                  <button
-                    title={owner.saveText(r())}
-                    onClick={() => void m.decide(r(), "save")}
-                  >
-                    Allow always
-                  </button>
-                </Show>
-                <Show when={owner.decisions(r(), m.now()).deny}>
-                  <button
-                    class="danger"
-                    onClick={() => void m.decide(r(), "deny")}
-                  >
-                    Deny
-                  </button>
-                </Show>
-              </div>
+              <Show when={state() === "expired"}>
+                <ApprovalActions
+                  record={r()}
+                  saveTitle={owner.saveText(r())}
+                  onDismiss={() => {
+                    m.dismiss(r().id);
+                    location.hash = "#activity";
+                  }}
+                />
+              </Show>
             </section>
           );
         }}

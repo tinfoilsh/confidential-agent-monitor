@@ -1033,11 +1033,16 @@ export function review(view: View, name: string): Review | undefined {
 
 export function toolReviewDescription(review: Review): string {
   if (!review.previouslyApproved)
-    return `${review.name} advertises ${review.blocked} MCP ${review.blocked === 1 ? "tool you haven’t" : "tools you haven’t"} approved yet. Review their definitions before using them.`;
+    return `Bunkers can use ${review.blocked === 1 ? "this tool" : "these tools"} once you approve.`;
   if (review.changes.some((change) => change.instructions))
-    return `Server instructions advertised by ${review.name} differ from those you last approved. Review the instructions and any tool-definition changes before using the affected tools.`;
-  return `Tool definitions advertised by ${review.name} differ from those you last approved. Review and approve the changes before using the affected tools.`;
+    return "The server's instructions changed since you approved them. Bunkers can use the affected tools again once you approve.";
+  return "These tools changed since you approved them. Bunkers can use them again once you approve.";
 }
+// Services whose MCP tools wait for the owner's approval.
+export const toolReviews = (view: View) =>
+  Object.keys(connections(view))
+    .filter((name) => (view.status[name]?.details?.blocked ?? 0) > 0)
+    .sort();
 
 // A pin change is "+ name", "~ name" or "- name" and then the tool's definition,
 // or "~ instructions:" and then the server's instructions.

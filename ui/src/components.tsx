@@ -479,14 +479,13 @@ export function Search(props: {
   autofocus?: boolean;
 }) {
   let input!: HTMLInputElement;
-  onMount(() => props.autofocus && input.focus());
+  onMount(() => props.autofocus && input.focus({ preventScroll: true }));
   return (
     <div class="search-field">
       <Icon name="search" />
       <input
         ref={input}
         type="search"
-        autofocus={props.autofocus}
         aria-label={props.label}
         placeholder={`${props.label}…`}
         value={props.value}

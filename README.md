@@ -108,8 +108,8 @@ In **Bunkers**, set each bunker's access to each service.
 
 Expand a service to override individual actions. Action and effect overrides
 use `off`, `ask`, and `allow`; `off` means Deny. Other policy checks still apply,
-and an approval cannot override an explicit denial. Review pending requests in
-**Activity**.
+and an approval cannot override an explicit denial. Pending requests appear at
+the top of **Permissions** and as notices on other pages.
 
 Payments and publishing default to Ask. Onboarding enables **Allow paid AI
 inference**, which skips payment approval for model generation unless an explicit
