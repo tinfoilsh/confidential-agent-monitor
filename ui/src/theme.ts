@@ -1,4 +1,10 @@
+import { createSignal } from "solid-js";
+
 export const THEME = "monitor-theme";
+
+// The scheme applyTheme last chose, for widgets that draw their own colors.
+const [scheme, setScheme] = createSignal<"light" | "dark">("light");
+export const colorScheme = scheme;
 
 export function savedTheme() {
   try {
@@ -11,6 +17,7 @@ export function applyTheme(
   theme: string,
   dark = matchMedia("(prefers-color-scheme: dark)").matches,
 ) {
-  document.documentElement.dataset.theme =
-    theme === "system" ? (dark ? "dark" : "light") : theme;
+  const resolved = theme === "system" ? (dark ? "dark" : "light") : theme;
+  document.documentElement.dataset.theme = resolved;
+  setScheme(resolved === "dark" ? "dark" : "light");
 }
