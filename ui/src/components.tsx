@@ -35,6 +35,7 @@ export function Loading(props: { label: string }) {
 
 export function AuthScreen(props: {
   id?: string;
+  class?: string;
   title?: JSX.Element;
   description?: JSX.Element;
   children: JSX.Element;
@@ -43,7 +44,7 @@ export function AuthScreen(props: {
   return (
     <main
       id={props.id}
-      class="auth"
+      class={`auth ${props.class ?? ""}`}
       aria-labelledby={props.title ? titleId : undefined}
     >
       <Show when={props.title}>
