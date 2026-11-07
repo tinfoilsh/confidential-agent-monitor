@@ -291,7 +291,7 @@ export function UnlockKeys(props: {
         <AuthCard icon={<Icon name="warning" />} title="Start over?">
           <p>
             <strong>You will lose your bunkers.</strong> Starting over makes new
-            keys. Bunkers and Monitors that use your current keys can't be
+            keys. Bunkers and Perimeters that use your current keys can't be
             opened again, and their data can't be recovered. CLI keys you added
             stay.
           </p>

@@ -78,7 +78,7 @@ const NETWORK = [
   [
     "allow",
     "Allow always",
-    "Bunkers reach any host. Monitor still records where they connect.",
+    "Bunkers reach any host. The Perimeter still records where they connect.",
   ],
   ["off", "Reject", "Bunkers reach only the services you added."],
 ] as const;
@@ -183,7 +183,7 @@ export function Onboarding(props: {
         <AuthScreen
           id="gate"
           title="Add your keys"
-          description="Monitor keeps your keys. Your bunkers never see them."
+          description="The Perimeter keeps your keys. Your bunkers never see them."
         >
           <form
             class="auth-card"

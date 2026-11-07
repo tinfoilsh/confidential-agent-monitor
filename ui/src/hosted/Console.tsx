@@ -62,7 +62,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 const BUSY_STATUSES = [...STARTING, "stopping"];
 const ROLE_NAMES: Record<StartRole, string> = {
-  monitor: "Monitor",
+  monitor: "Perimeter",
   sandbox: "bunker",
 };
 
@@ -342,10 +342,10 @@ function Inventory(props: { session: Session }) {
       (r) => r.repo === SANDBOX_REPO && monitorOf(r) === monitor.id,
     );
   return (
-    <nav class="start-monitors" aria-label="Your monitors">
-      <p class="start-eyebrow">Your monitors</p>
+    <nav class="start-monitors" aria-label="Your Perimeters">
+      <p class="start-eyebrow">Your Perimeters</p>
       <Show when={read().loading && !read().value}>
-        <SkeletonRows cards label="Loading your Monitors and bunkers…" />
+        <SkeletonRows cards label="Loading your Perimeters and bunkers…" />
       </Show>
       <Show when={read().error}>
         <p class="start-notice" role="alert">
@@ -360,7 +360,7 @@ function Inventory(props: { session: Session }) {
         }
       >
         <p class="start-help">
-          No Monitors in this account yet. Create one from your dashboard.
+          No Perimeters in this account yet. Create one from your dashboard.
         </p>
       </Show>
       <For each={monitors()}>
@@ -503,7 +503,7 @@ export default function Console(props: { session: Session }) {
               <p>
                 {start
                   ? "Sign in with the account that started this setup."
-                  : "Sign in to open your Monitors and set up bunker keys."}
+                  : "Sign in to open your Perimeters and set up bunker keys."}
               </p>
               <button
                 class="primary"

@@ -439,7 +439,7 @@ function createMonitor(options: MonitorOptions) {
   );
   createEffect(() => {
     const count = log.pendingCount();
-    const name = options.product?.name ?? "Monitor";
+    const name = options.product?.name ?? "Perimeter";
     document.title = count ? `(${count}) ${name}` : name;
   });
   onMount(async () => {
@@ -453,11 +453,11 @@ function createMonitor(options: MonitorOptions) {
         });
         if (!response.ok)
           throw new Error(
-            "Could not load Monitor sign-in options. Reload to retry.",
+            "Could not load Perimeter sign-in options. Reload to retry.",
           );
         const { mode } = await response.json();
         if (mode !== "bearer" && mode !== "ssh")
-          throw new Error("Unknown Monitor sign-in method.");
+          throw new Error("Unknown Perimeter sign-in method.");
         sessionStorage.removeItem(mode === "ssh" ? KEY : SESSION);
         setMode(mode);
         setCredential(

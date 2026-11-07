@@ -411,15 +411,15 @@ function endpointBase(endpoint: string) {
   try {
     url = new URL(endpoint);
   } catch {
-    throw new Error("Invalid monitor endpoint.");
+    throw new Error("Invalid Perimeter endpoint.");
   }
   if (
     url.protocol !== "https:" &&
     !(url.protocol === "http:" && LOOPBACK.includes(url.hostname))
   )
-    throw new Error("The monitor endpoint must use HTTPS.");
+    throw new Error("The Perimeter endpoint must use HTTPS.");
   if (url.username || url.password || url.search || url.hash)
-    throw new Error("Invalid monitor endpoint.");
+    throw new Error("Invalid Perimeter endpoint.");
   return url.href.replace(/\/$/, "");
 }
 
@@ -446,7 +446,7 @@ export function ownerClient({
 }
 
 const ROLLBACK =
-  "The monitor state is older than the last state you saw. Restore the latest monitor state before continuing.";
+  "The Perimeter state is older than the last state you saw. Restore the latest Perimeter state before continuing.";
 
 // With a known generation, an older view is a rollback, and a locked monitor unlocks at that minimum.
 export function ownerApi(
@@ -488,7 +488,7 @@ export function ownerApi(
       else if (known?.id === view.catalog_id) view.presets = known.presets;
       else
         throw new OwnerError(
-          "Monitor returned an unknown preset catalog. Reload the page.",
+          "The Perimeter returned an unknown preset catalog. Reload the page.",
           409,
         );
     }
@@ -1382,7 +1382,7 @@ export function codexSetup(view: View, name: string): string | null {
 model_provider = "monitor_chatgpt"
 
 [model_providers.monitor_chatgpt]
-name = "ChatGPT through Monitor"
+name = "ChatGPT through Perimeter"
 base_url = "https://api.openai.com/v1"
 experimental_bearer_token = ${JSON.stringify(setup.placeholder)}
 wire_api = "responses"

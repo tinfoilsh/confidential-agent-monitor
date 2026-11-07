@@ -248,7 +248,7 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
             icon="policy"
             action={<a class="button" href="#activity/proposals">View proposal history</a>}
           >
-            It may have been reviewed, become outdated, or been discarded when Monitor restarted.
+            It may have been reviewed, become outdated, or been discarded when the Perimeter restarted.
           </Empty>
         </div>
       </Show>
@@ -959,7 +959,7 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
         <Show when={props.change.tool?.annotations?.readOnlyHint}>
           <span
             class="badge effect-read"
-            title="The MCP server advertises readOnlyHint. Monitor uses it for permission classification; it does not verify that the implementation cannot change data."
+            title="The MCP server advertises readOnlyHint. The Perimeter uses it for permission classification; it does not verify that the implementation cannot change data."
           >
             Server marks read-only
           </span>
@@ -1264,7 +1264,7 @@ function Connection(props: { name: string }) {
                       <div class="agent-setup-body">
                         <p>
                           Save this in <code>~/.codex/config.toml</code>, then
-                          run Codex in your Monitor-connected bunker or with{" "}
+                          run Codex in your Perimeter-connected bunker or with{" "}
                           <code>monitor run -- codex</code>. Choose a model
                           available to your ChatGPT account. Grant your bunker
                           access to this service and review pending requests

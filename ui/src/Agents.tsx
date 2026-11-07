@@ -54,7 +54,7 @@ export function Agents(props: { expanded?: string }) {
             title="Create your first bunker"
             action={<AddSandbox class="button primary" />}
           >
-            A bunker runs your agent in an isolated environment. This monitor
+            A bunker runs your agent in an isolated environment. This Perimeter
             guards what it can reach and holds its credentials. If yours is
             missing, run <code>tinfoil attest-ssh &lt;bunker-name&gt;</code>.
           </Empty>
@@ -122,7 +122,7 @@ export function Agents(props: { expanded?: string }) {
                           }
                         >
                           <span class="collection-description">
-                            Accepting adds it to this Monitor and unlocks its
+                            Accepting adds it to this Perimeter and unlocks its
                             workspace
                           </span>
                           <button
@@ -255,7 +255,7 @@ export function AddAgent() {
         />
       </label>
       <p class="muted">
-        This key will be able to SSH into your bunkers through the Monitor.
+        This key will be able to SSH into your bunkers through the Perimeter.
       </p>
       <button class="primary" disabled={m.busy()}>
         Add trusted device
@@ -591,7 +591,7 @@ function AgentSettings(props: { name: string }) {
           summary={
             <DisclosureHeading
               title="Advanced"
-              description="Monitor keys, profile and removal"
+              description="Perimeter keys, profile and removal"
               small
             />
           }
@@ -600,7 +600,7 @@ function AgentSettings(props: { name: string }) {
             <div class="section-content agent-advanced">
               <div class="setting-row">
                 <span>
-                  Monitor keys
+                  Perimeter keys
                   <small>Only needed if you set up SSH by hand.</small>
                 </span>
                 <span class="agent-advanced-actions">
@@ -663,7 +663,7 @@ function AgentSettings(props: { name: string }) {
                 <span>
                   Remove bunker
                   <small>
-                    Forget this bunker from the Monitor, along with its
+                    Forget this bunker from the Perimeter, along with its
                     access and rules.
                   </small>
                 </span>
@@ -675,7 +675,7 @@ function AgentSettings(props: { name: string }) {
                       (await askConfirm({
                         title: `Remove ${props.name}?`,
                         description:
-                          "The Monitor forgets this bunker, along with its access and rules.",
+                          "The Perimeter forgets this bunker, along with its access and rules.",
                         confirmLabel: "Remove bunker",
                         destructive: true,
                       })) &&

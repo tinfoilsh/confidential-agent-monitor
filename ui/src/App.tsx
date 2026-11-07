@@ -37,7 +37,7 @@ const headings: Record<string, [title: string, description: string]> = {
   activity: ["Activity", "Review requests and manage saved approval rules."],
   agents: [
     "Bunkers",
-    "Your bunkers and the devices that may reach them. The monitor can always be accessed by you.",
+    "Your bunkers and the devices that may reach them. The Perimeter can always be accessed by you.",
   ],
   connections: [
     "Permissions",
@@ -62,7 +62,7 @@ export default function App(props: MonitorOptions) {
     <ErrorBoundary
       fallback={(error) => (
         <div class="start-page">
-          <AuthScreen id="gate" title="Could not show Monitor">
+          <AuthScreen id="gate" title="Could not show Perimeter">
             <AuthCard icon={<Icon name="warning" />}>
               <p role="alert">{String(error)}</p>
               <button class="primary" onClick={() => location.reload()}>
@@ -165,7 +165,7 @@ function Shell() {
       <Show when={ready()} fallback={<Gate />}>
         <div class="app-frame">
           <div id="app" classList={{ "navigation-open": mobile() }}>
-            <aside id="navigation" aria-label="Monitor navigation">
+            <aside id="navigation" aria-label="Perimeter navigation">
               <a class="brand" href="#activity">
                 <img
                   src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
@@ -231,7 +231,7 @@ function Shell() {
                 <header id="page-header">
                   <div class="page-heading">
                     <div>
-                      <h1>{heading()?.[0] ?? "Monitor"}</h1>
+                      <h1>{heading()?.[0] ?? "Perimeter"}</h1>
                       <p>{heading()?.[1]}</p>
                     </div>
                   </div>
@@ -257,7 +257,7 @@ function Shell() {
                       when={untrack(() => m.shellFor(name))}
                       fallback={
                         <Empty title="Shell unavailable">
-                          This Monitor cannot open a shell in {name}.
+                          This Perimeter cannot open a shell in {name}.
                         </Empty>
                       }
                     >
@@ -520,11 +520,11 @@ function Gate() {
         fallback={
           <AuthScreen
             id="gate"
-            title={m.error() ? "Could not load Monitor" : undefined}
+            title={m.error() ? "Could not load Perimeter" : undefined}
           >
             <Show
               when={m.error()}
-              fallback={<Loading label="Loading Monitor…" />}
+              fallback={<Loading label="Loading Perimeter…" />}
             >
               <AuthCard icon={<Icon name="warning" />}>
                 {error()}
@@ -537,9 +537,9 @@ function Gate() {
         }
       >
         <Match when={m.locked()}>
-          <AuthScreen id="gate" title="Monitor is locked">
+          <AuthScreen id="gate" title="Perimeter is locked">
             <AuthCard icon={<Icon name="lock" />}>
-              <p>Unlock the monitor to continue.</p>
+              <p>Unlock the Perimeter to continue.</p>
               <button
                 class="primary"
                 disabled={m.busy()}
@@ -551,7 +551,7 @@ function Gate() {
           </AuthScreen>
         </Match>
         <Match when={m.mode() && !m.credential()}>
-          <AuthScreen id="gate" title="Open Monitor">
+          <AuthScreen id="gate" title="Open Perimeter">
             <AuthCard
               icon={<Icon name={m.mode() === "ssh" ? "terminal" : "key"} />}
             >
@@ -580,7 +580,7 @@ function Gate() {
                 }
               >
                 <p>
-                  Open this monitor through the attested owner SSH connection.
+                  Open this Perimeter through the attested owner SSH connection.
                 </p>
                 <pre>tinfoil monitor</pre>
               </Show>

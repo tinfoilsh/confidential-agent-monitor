@@ -91,18 +91,18 @@ export default function Monitor(props: { session: Session }) {
   const inventory = () => props.session.inventory();
   const booting = () => STARTING.includes(row()?.status ?? "");
   const title = () => {
-    if (!UUID.test(id)) return "Choose a Monitor";
-    if (!props.session.user()) return "Sign in to open your Monitor";
-    const name = row()?.name ?? "your Monitor";
+    if (!UUID.test(id)) return "Choose a Perimeter";
+    if (!props.session.user()) return "Sign in to open your Perimeter";
+    const name = row()?.name ?? "your Perimeter";
     if (props.session.keyState().error) return "Could not load your keys";
-    if (inventory().error) return "Could not load your Monitor";
+    if (inventory().error) return "Could not load your Perimeter";
     if (error()) return `Could not open ${name}`;
     if (cancelled()) return `Open ${name}`;
     if (booting()) return `Waiting for ${name} to start…`;
     if (row() && row()!.status !== "running")
       return `${name} is ${row()!.status}`;
     if (inventory().value && !inventory().loading && !row())
-      return "Monitor not found";
+      return "Perimeter not found";
     return "Connecting to bunker…";
   };
   createEffect(
@@ -164,7 +164,7 @@ export default function Monitor(props: { session: Session }) {
         setError(
           cause instanceof Error
             ? cause.message
-            : "Could not open the monitor.",
+            : "Could not open the Perimeter.",
         );
       current.abort();
     } finally {
@@ -184,7 +184,7 @@ export default function Monitor(props: { session: Session }) {
         if (
           !(cause instanceof RestoreRequired) ||
           !(await askConfirm({
-            title: `Restore ${name}'s access to this Monitor?`,
+            title: `Restore ${name}'s access to this Perimeter?`,
             description: cause.message,
             confirmLabel: "Restore access",
           }))
@@ -212,11 +212,11 @@ export default function Monitor(props: { session: Session }) {
                       when={UUID.test(id)}
                       fallback={
                         <a class="button primary" href="/" link>
-                          Choose a Monitor
+                          Choose a Perimeter
                         </a>
                       }
                     >
-                      <p>Use the account that owns this Monitor.</p>
+                      <p>Use the account that owns this Perimeter.</p>
                       <button
                         class="primary"
                         onClick={() => void props.session.signIn()}
@@ -231,7 +231,7 @@ export default function Monitor(props: { session: Session }) {
               <KeyGate
                 session={props.session}
                 manager={manager}
-                purpose={`open ${row()?.name ?? "your Monitor"}`}
+                purpose={`open ${row()?.name ?? "your Perimeter"}`}
               >
                 <AuthScreen title={title()}>
                   <AuthCard icon={<Icon name="rules" />}>
@@ -240,11 +240,11 @@ export default function Monitor(props: { session: Session }) {
                     </Show>
                     <Switch>
                       <Match when={inventory().loading && !inventory().value}>
-                        <Loading label="Loading your Monitor…" />
+                        <Loading label="Loading your Perimeter…" />
                       </Match>
                       <Match when={inventory().error}>
                         <p role="alert">
-                          Could not load your Monitor: {inventory().error}
+                          Could not load your Perimeter: {inventory().error}
                         </p>
                         <button
                           class="primary"
@@ -259,17 +259,17 @@ export default function Monitor(props: { session: Session }) {
                         }
                       >
                         <p role="alert">
-                          This Monitor is not in the selected account. Switch
-                          accounts or choose another Monitor.
+                          This Perimeter is not in the selected account. Switch
+                          accounts or choose another Perimeter.
                         </p>
                       </Match>
                       <Match when={booting()}>
-                        <Loading label="Your Monitor will open automatically when it is ready." />
+                        <Loading label="Your Perimeter will open automatically when it is ready." />
                       </Match>
                       <Match when={row() && row()!.status !== "running"}>
                         <p>
-                          Open the dashboard to start this Monitor or check its
-                          status.
+                          Open the dashboard to start this Perimeter or check
+                          its status.
                         </p>
                         <a class="button primary" href={keys.TARGETS.dashboard}>
                           Open dashboard
@@ -283,7 +283,7 @@ export default function Monitor(props: { session: Session }) {
                             row()?.status === "running")
                         }
                       >
-                        <Loading label="Verifying and connecting to your Monitor…" />
+                        <Loading label="Verifying and connecting to your Perimeter…" />
                         <Show when={busy()}>
                           <button
                             class="link"
@@ -303,7 +303,7 @@ export default function Monitor(props: { session: Session }) {
                         }
                       >
                         <button class="primary" onClick={() => void open()}>
-                          {error() ? "Try again" : "Open Monitor"}
+                          {error() ? "Try again" : "Open Perimeter"}
                         </button>
                       </Match>
                     </Switch>
@@ -317,7 +317,9 @@ export default function Monitor(props: { session: Session }) {
                     </button>
                   </Show>
                   <a class="auth-link" href={back()} link>
-                    {fromHome() ? "Back to your Monitors" : "Back to dashboard"}
+                    {fromHome()
+                      ? "Back to your Perimeters"
+                      : "Back to dashboard"}
                   </a>
                 </AuthScreen>
               </KeyGate>

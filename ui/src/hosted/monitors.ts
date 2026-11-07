@@ -73,7 +73,7 @@ export async function attestMonitor(
 async function resolve(scope: Scope, id: string) {
   const detail = (await scope.api(`/api/containers/${id}`).catch((cause) => {
     throw cause instanceof keys.ApiError && cause.status === 404
-      ? new Error("This Monitor is not in the selected account.")
+      ? new Error("This Perimeter is not in the selected account.")
       : cause;
   })) as Container;
   if (
@@ -81,10 +81,10 @@ async function resolve(scope: Scope, id: string) {
     detail.repo !== MONITOR_REPO ||
     detail.clerk_user_id !== scope.user
   )
-    throw new Error("This Monitor changed. Refresh and try again.");
+    throw new Error("This Perimeter changed. Refresh and try again.");
   if (detail.owner_key_mode !== "tmk")
     throw new Error(
-      "This Monitor's keys stay with the CLI. Open it with `tinfoil monitor open`.",
+      "This Perimeter's keys stay with the CLI. Open it with `tinfoil monitor open`.",
     );
   const resource = scope
     .unlocked()
@@ -93,10 +93,12 @@ async function resolve(scope: Scope, id: string) {
         r.kind === "monitor" && r.owner_public_key === detail.owner_public_key,
     );
   if (!resource)
-    throw new Error("Your saved keys do not include this Monitor's owner key.");
+    throw new Error(
+      "Your saved keys do not include this Perimeter's owner key.",
+    );
   const bucket = measuredEnv(detail.config).TINFOIL_STORAGE_BUCKET ?? "";
   if (!bucketOwnedBy(bucket, scope.account, scope.user))
-    throw new Error("This Monitor's storage belongs to another account.");
+    throw new Error("This Perimeter's storage belongs to another account.");
   const binding: MKBinding = {
     account: scope.account,
     container_id: id,
@@ -108,7 +110,7 @@ async function resolve(scope: Scope, id: string) {
     await scope.update(keys.bindResource(resource.key_id, binding));
   else if (JSON.stringify(resource.binding) !== JSON.stringify(binding))
     throw new Error(
-      "This Monitor does not match the resource its key was made for.",
+      "This Perimeter does not match the resource its key was made for.",
     );
   return { row: detail, resource, bucket };
 }
@@ -189,7 +191,7 @@ export async function openMonitor({
           () => onCheckpoint(),
           (cause) =>
             onCheckpoint(
-              `The Monitor's newest state was not saved with your keys: ${cause instanceof Error ? cause.message : cause}`,
+              `The Perimeter's newest state was not saved with your keys: ${cause instanceof Error ? cause.message : cause}`,
             ),
         );
     }),
@@ -217,5 +219,5 @@ export async function openMonitor({
 // The Monitor's own view must name the host key its attestation verified.
 export function checkHostKey(reported: string, verified: string) {
   if (reported?.trim() !== verified)
-    throw new Error("The Monitor restarted while opening. Open it again.");
+    throw new Error("The Perimeter restarted while opening. Open it again.");
 }

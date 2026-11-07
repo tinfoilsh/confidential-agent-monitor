@@ -160,7 +160,7 @@ async function resolve(
     monitorOf(detail) !== monitor.row.id
   )
     throw new Error(
-      "This bunker changed or is not routed through this Monitor.",
+      "This bunker changed or is not routed through this Perimeter.",
     );
   if (detail.owner_key_mode !== "tmk")
     throw new Error(
@@ -231,10 +231,10 @@ export function connectPlan(
   restore: boolean,
 ): { monitor: boolean; sandbox: boolean } {
   if (status.monitor_identity && status.monitor_identity !== agent)
-    throw new Error("This bunker holds a different Monitor identity.");
+    throw new Error("This bunker holds a different Perimeter identity.");
   if (!known && !restore && status.monitor_identity)
     throw new RestoreRequired(
-      "This bunker's identity is not on its Monitor. Restore it to reconnect.",
+      "This bunker's identity is not on its Perimeter. Restore it to reconnect.",
     );
   return {
     monitor: !known,

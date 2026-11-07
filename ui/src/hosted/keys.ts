@@ -337,7 +337,7 @@ export const bindResource = (key_id: string, binding: MKBinding): Delta =>
 export const checkpoint = (key_id: string, generation: number): Delta =>
   updateResource(key_id, (r) => {
     if (r.min_generation === null)
-      throw new Error("Only a Monitor key has a generation checkpoint.");
+      throw new Error("Only a Perimeter key has a generation checkpoint.");
     return { ...r, min_generation: Math.max(r.min_generation, generation) };
   });
 
