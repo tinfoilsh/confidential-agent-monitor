@@ -2,7 +2,7 @@
   "title": "SSH server",
   "catalog": {
     "group": "generic",
-    "warning": "Allows file transfer, commands, terminals, and interactive shells on the configured server. Prefer a narrower connection when possible.",
+    "warning": "Allows file transfer, commands, terminals, and interactive shells on the configured server. Prefer a narrower service when possible.",
     "actions": {
       "files": { "title": "Transfer files", "effects": ["read", "write"] },
       "run": { "title": "Run commands", "effects": ["execute"] },

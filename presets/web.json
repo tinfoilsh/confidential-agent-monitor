@@ -2,7 +2,7 @@
   "title": "Web",
   "catalog": {
     "group": "generic",
-    "warning": "Allows requests to websites that do not have a dedicated connection. This can be used to exfiltrate arbitrary information; be careful.",
+    "warning": "Allows requests to websites that do not have a dedicated service. This can be used to exfiltrate arbitrary information; be careful.",
     "actions": {
       "browse": { "title": "Browse", "effects": ["read"] },
       "submit": { "title": "Submit forms and post", "effects": ["send"] }
