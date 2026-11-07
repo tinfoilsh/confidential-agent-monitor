@@ -1117,7 +1117,7 @@ export function connectionStatus(
   if (r?.blocked)
     return {
       state: "review",
-      text: `${r.blocked} MCP ${r.blocked === 1 ? "tool needs" : "tools need"} review`,
+      text: `${r.blocked} ${r.blocked === 1 ? "tool" : "tools"} to review`,
     };
 }
 

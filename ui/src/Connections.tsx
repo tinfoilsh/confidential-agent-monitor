@@ -1,6 +1,7 @@
 import {
   For,
   Show,
+  children,
   createMemo,
   createResource,
   createSignal,
@@ -223,41 +224,53 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
               owner.connectionStatus(owner.review(m.view()!, name)),
             );
             return (
-              <ResourceDisclosure
-                class="connection-item"
-                open={props.expanded === name}
-                summary={
-                  <>
-                    <ConnectorIcon connection={name} />
-                    <strong class="collection-name" title={name}>
-                      {name}
-                    </strong>
-                    <span class="collection-description">
-                      {owner.presetOf(m.view()!, name).title}
-                    </span>
-                    <span class="resource-meta">
-                      <Show when={status()}>
-                        {(status) => (
-                          <span
-                            class={`badge${status().state === "connecting" ? "" : ` status-${status().state === "error" ? "denied" : "pending"}`}`}
-                          >
-                            {status().text}
-                          </span>
-                        )}
+              <div class="connection-row">
+                <ResourceDisclosure
+                  class="connection-item"
+                  open={props.expanded === name}
+                  summary={
+                    <>
+                      <ConnectorIcon connection={name} />
+                      <strong class="collection-name" title={name}>
+                        {name}
+                      </strong>
+                      <Show
+                        when={
+                          owner
+                            .presetOf(m.view()!, name)
+                            .title.toLowerCase() !== name.toLowerCase()
+                        }
+                      >
+                        <span class="collection-description">
+                          {owner.presetOf(m.view()!, name).title}
+                        </span>
                       </Show>
-                    </span>
-                    <span class="collection-chevron">
-                      <Icon name="arrow" />
-                    </span>
-                  </>
-                }
-              >
-                {() => (
-                  <div class="connection-inline">
-                    <Connection name={name} />
-                  </div>
-                )}
-              </ResourceDisclosure>
+                      <span class="resource-meta">
+                        <Show when={status()}>
+                          {(status) => (
+                            <span
+                              class="service-status"
+                              data-state={status().state}
+                            >
+                              {status().text}
+                            </span>
+                          )}
+                        </Show>
+                      </span>
+                      <span class="collection-chevron">
+                        <Icon name="arrow" />
+                      </span>
+                    </>
+                  }
+                >
+                  {() => (
+                    <div class="connection-inline">
+                      <Connection name={name} />
+                    </div>
+                  )}
+                </ResourceDisclosure>
+                <ServiceMenu name={name} />
+              </div>
             );
           }}
         </For>
@@ -784,9 +797,10 @@ export function AddConnection(props: { preset: string }) {
     </Show>
   );
 }
-function ConnectionForm(props: { name: string }) {
+function ConnectionForm(props: { name: string; setup?: JSX.Element }) {
   const m = useMonitor(),
     initial = m.view()!.config.connections![props.name];
+  const setup = children(() => props.setup);
   let form!: HTMLFormElement;
   const fields = owner.plainFields(m.view()!, props.name);
   const [values, setValues] = createStore<Record<string, string>>(
@@ -804,6 +818,8 @@ function ConnectionForm(props: { name: string }) {
       ),
   );
   const [api, setApi] = createSignal(owner.apiSettings(m.view()!, props.name));
+  const configurable = () =>
+    fields.length || credentials().size || initial.preset === "custom_api";
   const save = async () => {
     if (!form.reportValidity()) return;
     const entered = { ...drafts };
@@ -841,121 +857,123 @@ function ConnectionForm(props: { name: string }) {
     }
   };
   return (
-    <Show
-      when={
-        fields.length || credentials().size || initial.preset === "custom_api"
-      }
-    >
+    <Show when={setup() || configurable()}>
       <section class="connection-section connection-config">
-        <SectionHeading title="Configuration" />
-        <form
-          ref={form}
-          class="form-fields"
-          onSubmit={(event) => {
-            event.preventDefault();
-            void save();
-          }}
-          onFocusOut={(event) => {
-            if (
-              event.target instanceof HTMLInputElement ||
-              event.target instanceof HTMLTextAreaElement ||
-              event.target instanceof HTMLSelectElement
-            )
-              void save();
-          }}
-          onChange={(event) => {
-            if (event.target instanceof HTMLSelectElement) void save();
-          }}
-        >
-          <Show when={initial.preset === "custom_api"}>
-            <ApiFields value={api()} onChange={setApi} />
-          </Show>
-          <For each={fields}>
-            {(field) => (
-              <Field
-                field={field}
-                value={values[field.key]}
-                onInput={(value) => setValues(field.key, value)}
-              />
-            )}
-          </For>
-          <For each={[...credentials().keys()]}>
-            {(key) => {
-              const field = () => credentials().get(key)!;
-              const collapsed = () =>
-                drafts[key] === undefined && (field().signIn || field().stored);
-              const status = () =>
-                field().status +
-                (field().account ? ` · ${field().account}` : "");
-              const signIn = () => (
-                <Show when={field().signIn}>
-                  <button
-                    type="button"
-                    disabled={m.busy()}
-                    onClick={() => void m.signIn(props.name, field())}
-                  >
-                    {owner.signInLabel(m.view()!, initial.preset)}
-                  </button>
-                </Show>
-              );
-              const entry = () => (
-                <div class="credential">
-                  <Show
-                    when={!collapsed()}
-                    fallback={
-                      <div class="setting-row">
-                        <div>
-                          <span>{field().label}</span>
-                          <p>{status()}</p>
-                        </div>
-                        <div class="form-actions">
-                          {signIn()}
-                          <button
-                            type="button"
-                            onClick={() => setDrafts(key, "")}
-                          >
-                            {field().ready ? "Replace" : "Enter credential"}
-                          </button>
-                        </div>
-                      </div>
-                    }
-                  >
-                    <Field
-                      field={{
-                        ...field(),
-                        hint: field().stored
-                          ? "Leave blank to keep the current credential"
-                          : field().hint,
-                      }}
-                      value={drafts[key] ?? ""}
-                      onInput={(text) => setDrafts(key, text)}
-                    />
-                    <div class="credential-header">
-                      <p class="muted field-help">{status()}</p>
-                      <div class="form-actions">{signIn()}</div>
-                    </div>
-                  </Show>
-                </div>
-              );
-              return (
-                <Show
-                  when={
-                    m.options.tinfoilApiKeys &&
-                    !field().signIn &&
-                    owner.tinfoilSetup(m.view()!, props.name)
-                  }
-                  fallback={entry()}
-                >
-                  <TinfoilKeySelect
-                    name={props.name}
-                    field={field()}
-                    fallback={entry}
+        <SectionHeading title="Service settings" />
+        <div class="connection-settings">
+          {setup()}
+          <Show when={configurable()}>
+            <form
+              ref={form}
+              class="form-fields"
+              onSubmit={(event) => {
+                event.preventDefault();
+                void save();
+              }}
+              onFocusOut={(event) => {
+                if (
+                  event.target instanceof HTMLInputElement ||
+                  event.target instanceof HTMLTextAreaElement ||
+                  event.target instanceof HTMLSelectElement
+                )
+                  void save();
+              }}
+              onChange={(event) => {
+                if (event.target instanceof HTMLSelectElement) void save();
+              }}
+            >
+              <Show when={initial.preset === "custom_api"}>
+                <ApiFields value={api()} onChange={setApi} />
+              </Show>
+              <For each={fields}>
+                {(field) => (
+                  <Field
+                    field={field}
+                    value={values[field.key]}
+                    onInput={(value) => setValues(field.key, value)}
                   />
-                </Show>
-              );
-            }}
-          </For>
-        </form>
+                )}
+              </For>
+              <For each={[...credentials().keys()]}>
+                {(key) => {
+                  const field = () => credentials().get(key)!;
+                  const collapsed = () =>
+                    drafts[key] === undefined &&
+                    (field().signIn || field().stored);
+                  const status = () =>
+                    field().status +
+                    (field().account ? ` · ${field().account}` : "");
+                  const signIn = () => (
+                    <Show when={field().signIn}>
+                      <button
+                        type="button"
+                        disabled={m.busy()}
+                        onClick={() => void m.signIn(props.name, field())}
+                      >
+                        {owner.signInLabel(m.view()!, initial.preset)}
+                      </button>
+                    </Show>
+                  );
+                  const entry = () => (
+                    <div class="credential">
+                      <Show
+                        when={!collapsed()}
+                        fallback={
+                          <div class="setting-row">
+                            <div>
+                              <span>{field().label}</span>
+                              <p>{status()}</p>
+                            </div>
+                            <div class="form-actions">
+                              {signIn()}
+                              <button
+                                type="button"
+                                onClick={() => setDrafts(key, "")}
+                              >
+                                {field().ready ? "Replace" : "Enter credential"}
+                              </button>
+                            </div>
+                          </div>
+                        }
+                      >
+                        <Field
+                          field={{
+                            ...field(),
+                            hint: field().stored
+                              ? "Leave blank to keep the current credential"
+                              : field().hint,
+                          }}
+                          value={drafts[key] ?? ""}
+                          onInput={(text) => setDrafts(key, text)}
+                        />
+                        <div class="credential-header">
+                          <p class="muted field-help">{status()}</p>
+                          <div class="form-actions">{signIn()}</div>
+                        </div>
+                      </Show>
+                    </div>
+                  );
+                  return (
+                    <Show
+                      when={
+                        m.options.tinfoilApiKeys &&
+                        !field().signIn &&
+                        owner.tinfoilSetup(m.view()!, props.name)
+                      }
+                      fallback={entry()}
+                    >
+                      <TinfoilKeySelect
+                        name={props.name}
+                        field={field()}
+                        fallback={entry}
+                      />
+                    </Show>
+                  );
+                }}
+              </For>
+            </form>
+          </Show>
+        </div>
       </section>
     </Show>
   );
@@ -979,11 +997,10 @@ function TinfoilKeySelect(props: {
       when={!keys.error && (keys.loading || !!listed()?.length)}
       fallback={props.fallback()}
     >
-      <div class="setting-row">
+      <div class="field">
         <label for={id}>{props.field.label}</label>
         <select
           id={id}
-          class="key-select"
           disabled={!listed() || m.busy()}
           onChange={(event) => {
             // The form saves on change too; this choice saves itself.
@@ -1053,37 +1070,34 @@ function Connection(props: { name: string }) {
   });
   return (
     <div class="connection-detail">
-      <Show
-        when={connection()}
-        fallback={<Empty title="Service not found" />}
-      >
+      <Show when={connection()} fallback={<Empty title="Service not found" />}>
         <Show when={owner.presetOf(m.view()!, props.name).warning}>
-          {(warning) => <section class="connection-section">
-            <ConnectionWarning warning={warning()} />
-          </section>}
+          {(warning) => (
+            <section class="connection-section">
+              <ConnectionWarning warning={warning()} />
+            </section>
+          )}
         </Show>
         <Show when={review()}>
           {(review) => (
-            <section class="connection-section" aria-label="Connection status">
+            <section class="connection-section" aria-label="Service status">
+              <SectionHeading
+                title={review().blocked ? "Review tools" : "Service status"}
+                description={
+                  review().blocked
+                    ? owner.toolReviewDescription(review())
+                    : undefined
+                }
+              />
               <div class="settings-group">
-                <Show
-                  when={review().blocked}
-                  fallback={
-                    <div class="setting-row" role="status">
-                      <span>{review().name}</span>
-                      <span
-                        class="badge"
-                        classList={{ "status-denied": !!review().error }}
-                      >
-                        {owner.connectionStatus(review())!.text}
-                      </span>
-                    </div>
-                  }
-                >
-                  <SectionHeading
-                    title="MCP tools to review"
-                    description={owner.toolReviewDescription(review())}
-                  />
+                <Show when={!review().blocked}>
+                  <span
+                    class="service-status"
+                    data-state={owner.connectionStatus(review())!.state}
+                    role="status"
+                  >
+                    {owner.connectionStatus(review())!.text}
+                  </span>
                 </Show>
                 <Show when={review().error}>
                   <p class="muted" role="alert">
@@ -1098,10 +1112,7 @@ function Connection(props: { name: string }) {
           )}
         </Show>
         <section class="connection-section">
-          <SectionHeading
-            title="Bunker access"
-            description="Who can use this service"
-          />
+          <SectionHeading title="Bunker access" />
           <div class="connection-access">
             <For
               each={owner.sandboxNames(m.view()!)}
@@ -1120,119 +1131,124 @@ function Connection(props: { name: string }) {
             </For>
           </div>
         </section>
-        <Show when={tinfoil() || setups().length || codex()}>
-          <section class="connection-section connection-setup">
-            <Show when={tinfoil()}>
-              {(setup) => (
-                <CopyField
-                  label={setup().mcp ? "Web search (MCP)" : "Inference API"}
-                  value={setup().url}
-                  copyLabel={`Copy ${props.name} URL`}
-                />
-              )}
-            </Show>
-            <Show when={setups().length}>
-              <div class="agent-setup-body">
-                <For each={setups()}>
-                  {(group) => {
-                    const setup = group[0];
+        <ConnectionForm
+          name={props.name}
+          setup={
+            <Show when={tinfoil() || setups().length || codex()}>
+              <div class="connection-setup">
+                <Show when={tinfoil()}>
+                  {(setup) => (
+                    <CopyField
+                      label={setup().mcp ? "Web search (MCP)" : "Inference API"}
+                      value={setup().url}
+                      copyLabel={`Copy ${props.name} URL`}
+                    />
+                  )}
+                </Show>
+                <Show when={setups().length}>
+                  <div class="agent-setup-body">
+                    <For each={setups()}>
+                      {(group) => {
+                        const setup = group[0];
+                        return (
+                          <div class="agent-setup-item">
+                            <Show when={setups().length > 1}>
+                              <h3>
+                                {setup.connection} · {setup.credential}
+                              </h3>
+                            </Show>
+                            <CopyField
+                              label="Bunker placeholder"
+                              value={setup.placeholder}
+                              copyLabel={`Copy placeholder for ${setup.connection} ${setup.credential}`}
+                            />
+                            <details class="agent-setup-usage">
+                              <summary>Where this placeholder is used</summary>
+                              <Show when={group.length > 1}>
+                                <p>
+                                  The same placeholder works in each of these
+                                  formats. Use the format your tool expects.
+                                </p>
+                              </Show>
+                              <For each={group}>
+                                {(use) => (
+                                  <dl class="agent-setup-details">
+                                    <dt>Address</dt>
+                                    <dd>
+                                      <code>{use.address}</code>
+                                    </dd>
+                                    <dt>
+                                      {use.header
+                                        ? "Header"
+                                        : use.query
+                                          ? "Query parameter"
+                                          : "Authentication"}
+                                    </dt>
+                                    <dd>
+                                      <code>
+                                        {use.header
+                                          ? `${use.header}: ${use.value}`
+                                          : use.query
+                                            ? `${use.query}=${use.value}`
+                                            : use.placement}
+                                      </code>
+                                    </dd>
+                                  </dl>
+                                )}
+                              </For>
+                            </details>
+                          </div>
+                        );
+                      }}
+                    </For>
+                  </div>
+                </Show>
+                <Show when={codex()}>
+                  {(text) => {
+                    let code!: HTMLPreElement;
                     return (
-                      <div class="agent-setup-item">
-                        <Show when={setups().length > 1}>
-                          <h3>
-                            {setup.connection} · {setup.credential}
-                          </h3>
-                        </Show>
-                        <CopyField
-                          label="Bunker placeholder"
-                          value={setup.placeholder}
-                          copyLabel={`Copy placeholder for ${setup.connection} ${setup.credential}`}
-                        />
-                        <details class="agent-setup-usage">
-                          <summary>Where this placeholder is used</summary>
-                          <Show when={group.length > 1}>
+                      <ResourceDisclosure
+                        class="section-disclosure setup-disclosure"
+                        summary={
+                          <DisclosureHeading title="Codex setup" small />
+                        }
+                      >
+                        {() => (
+                          <div class="agent-setup-body">
                             <p>
-                              The same placeholder works in each of these
-                              formats. Use the format your tool expects.
+                              Save this in <code>~/.codex/config.toml</code>,
+                              then run Codex in your Perimeter-connected bunker
+                              or with <code>monitor run -- codex</code>. Choose
+                              a model available to your ChatGPT account. Grant
+                              your bunker access to this service, then approve
+                              its requests when asked.
                             </p>
-                          </Show>
-                          <For each={group}>
-                            {(use) => (
-                              <dl class="agent-setup-details">
-                                <dt>Address</dt>
-                                <dd>
-                                  <code>{use.address}</code>
-                                </dd>
-                                <dt>
-                                  {use.header
-                                    ? "Header"
-                                    : use.query
-                                      ? "Query parameter"
-                                      : "Authentication"}
-                                </dt>
-                                <dd>
-                                  <code>
-                                    {use.header
-                                      ? `${use.header}: ${use.value}`
-                                      : use.query
-                                        ? `${use.query}=${use.value}`
-                                        : use.placement}
-                                  </code>
-                                </dd>
-                              </dl>
-                            )}
-                          </For>
-                        </details>
-                      </div>
+                            <pre ref={code}>{text()}</pre>
+                            <Copy text={text()} target={() => code} />
+                            <p>
+                              <a
+                                href="https://chatgpt.com/#settings/Usage"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                Manage ChatGPT usage
+                              </a>
+                            </p>
+                          </div>
+                        )}
+                      </ResourceDisclosure>
                     );
                   }}
-                </For>
+                </Show>
               </div>
             </Show>
-            <Show when={codex()}>
-              {(text) => {
-                let code!: HTMLPreElement;
-                return (
-                  <ResourceDisclosure
-                    class="section-disclosure setup-disclosure"
-                    summary={<DisclosureHeading title="Codex setup" small />}
-                  >
-                    {() => (
-                      <div class="agent-setup-body">
-                        <p>
-                          Save this in <code>~/.codex/config.toml</code>, then
-                          run Codex in your Perimeter-connected bunker or with{" "}
-                          <code>monitor run -- codex</code>. Choose a model
-                          available to your ChatGPT account. Grant your bunker
-                          access to this service, then approve its requests when
-                          asked.
-                        </p>
-                        <pre ref={code}>{text()}</pre>
-                        <Copy text={text()} target={() => code} />
-                        <p>
-                          <a
-                            href="https://chatgpt.com/#settings/Usage"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            Manage ChatGPT usage
-                          </a>
-                        </p>
-                      </div>
-                    )}
-                  </ResourceDisclosure>
-                );
-              }}
-            </Show>
-          </section>
-        </Show>
-        <ConnectionForm name={props.name} />
-        <ServiceMenu name={props.name} />
+          }
+        />
       </Show>
     </div>
   );
 }
-// Rarely used actions stay in a menu on the open service's header row.
+// Row actions stay outside the disclosure so they are available when it is closed.
 const MENU_GAP = 4;
 function ServiceMenu(props: { name: string }) {
   const m = useMonitor();
