@@ -235,7 +235,7 @@ function Start(props: {
             <For each={r.roles}>
               {(role) => (
                 <label class="start-field">
-                  {role === "monitor" ? "Monitor" : "Bunker"} owner public key
+                  {role === "monitor" ? "Perimeter" : "Bunker"} owner public key
                   <textarea
                     rows={2}
                     disabled={busy()}
