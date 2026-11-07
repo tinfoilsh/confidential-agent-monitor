@@ -61,7 +61,7 @@ function stored(): KeySyncRequest | undefined {
 }
 
 export default function Cli(props: { session: Session }) {
-  document.title = `CLI key sync · ${PRODUCT.name}`;
+  document.title = `CLI key sync · ${PRODUCT.title}`;
   const manager = keys.passkeys();
   const [error, setError] = createSignal(launchError);
   const [typed, setTyped] = createSignal("");

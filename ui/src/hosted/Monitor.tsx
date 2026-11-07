@@ -49,7 +49,7 @@ function usableApiKeys(value: unknown): TinfoilApiKey[] {
 }
 
 export default function Monitor(props: { session: Session }) {
-  document.title = PRODUCT.name;
+  document.title = PRODUCT.title;
   const manager = keys.passkeys();
   const id = decodeURIComponent(useParams().id ?? "");
   // An OAuth sign-in returns without the marker, then restores it in the URL.

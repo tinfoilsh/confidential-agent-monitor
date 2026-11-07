@@ -2,4 +2,5 @@
 export const PRODUCT = {
   name: "Terminal",
   tagline: "Secure browser console",
+  title: "Tinfoil Terminal",
 };

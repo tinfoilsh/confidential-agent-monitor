@@ -28,7 +28,7 @@ const KEY = "monitor-owner-key",
 
 export type MonitorOptions = {
   // Hosted builds name the product in the sidebar and the browser tab.
-  product?: { name: string; tagline: string };
+  product?: { name: string; tagline: string; title: string };
   // Where the hosted Back link returns: the Terminal home or the dashboard.
   backTo?: string;
   // Hosted builds show their site header above the setup screens.
@@ -439,7 +439,7 @@ function createMonitor(options: MonitorOptions) {
   );
   createEffect(() => {
     const count = log.pendingCount();
-    const name = options.product?.name ?? "Perimeter";
+    const name = options.product?.title ?? "Perimeter";
     document.title = count ? `(${count}) ${name}` : name;
   });
   onMount(async () => {

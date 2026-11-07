@@ -457,7 +457,7 @@ function Cleanup(props: { session: Session }) {
 }
 
 export default function Console(props: { session: Session }) {
-  document.title = `Get started · ${PRODUCT.name}`;
+  document.title = `Get started · ${PRODUCT.title}`;
   const manager = keys.passkeys();
   const start = startRequest();
   return (
