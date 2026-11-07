@@ -2240,16 +2240,48 @@ td {
   font-weight: 400;
   line-height: 16px;
 }
-.service-tile > .connector-icon {
+.service-mark {
+  display: block;
+  flex: none;
   width: 24px;
   height: 24px;
-  margin: 0;
+  background: currentColor;
+  mask: var(--mark) center / contain no-repeat;
+}
+.onboarding-service .service-mark {
+  width: 16px;
+  height: 16px;
+}
+/* Each step slides in from the side it was reached from. */
+.onboarding-step {
+  animation: onboarding-forward 0.22s ease-out both;
+}
+.onboarding-step.back {
+  animation-name: onboarding-back;
+}
+@keyframes onboarding-forward {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+@keyframes onboarding-back {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .onboarding-step {
+    animation: none;
+  }
 }
 .service-tile:hover:not(:disabled) {
   border-color: var(--border-strong);
   background: transparent;
 }
-.service-tile[aria-pressed="true"] {
+.service-tile[aria-pressed="true"],
+.service-tile[aria-pressed="true"]:hover:not(:disabled) {
   border-color: var(--tinfoil-accent-light);
   background: rgb(104 199 172 / 10%);
 }
@@ -2286,9 +2318,6 @@ td {
   margin: 0;
   font-size: var(--font-body);
   font-weight: 500;
-}
-.onboarding-service .connector-icon {
-  margin: 0;
 }
 .onboarding-service > header > a {
   display: inline-flex;

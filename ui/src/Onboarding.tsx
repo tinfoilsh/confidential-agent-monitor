@@ -1,6 +1,7 @@
 import {
   For,
   Match,
+  batch,
   Show,
   Switch,
   createResource,
@@ -9,14 +10,7 @@ import {
 } from "solid-js";
 import { createStore } from "solid-js/store";
 import * as owner from "./owner.js";
-import {
-  AuthCard,
-  AuthScreen,
-  ConnectorIcon,
-  Field,
-  Icon,
-  Loading,
-} from "./components";
+import { AuthCard, AuthScreen, Field, Icon, Loading } from "./components";
 import { useMonitor } from "./monitor";
 
 type Service = {
@@ -27,7 +21,8 @@ type Service = {
   signIn?: boolean;
   keyUrl?: string;
 };
-// The agents and model providers offered at first setup, in the order shown.
+// The agents, model providers, and work tools offered at first setup, in the
+// order shown: three rows of three.
 const SERVICES: Service[] = [
   {
     preset: "tinfoil",
@@ -53,13 +48,6 @@ const SERVICES: Service[] = [
     level: "allow",
     keyUrl: "https://platform.openai.com/api-keys",
   },
-  // Reads go through; changes such as pushes ask first.
-  {
-    preset: "github",
-    title: "GitHub",
-    level: "ask",
-    signIn: true,
-  },
   {
     preset: "google_gemini",
     title: "Gemini",
@@ -71,6 +59,25 @@ const SERVICES: Service[] = [
     title: "OpenRouter",
     level: "allow",
     keyUrl: "https://openrouter.ai/settings/keys",
+  },
+  // Work tools: reads go through; changes such as pushes or posts ask first.
+  {
+    preset: "github",
+    title: "GitHub",
+    level: "ask",
+    signIn: true,
+  },
+  {
+    preset: "linear_mcp",
+    title: "Linear",
+    level: "ask",
+    signIn: true,
+  },
+  {
+    preset: "slack_mcp",
+    title: "Slack",
+    level: "ask",
+    signIn: true,
   },
 ];
 const NETWORK = [
@@ -94,6 +101,14 @@ export function Onboarding(props: {
   const [step, setStep] = createSignal<"services" | "keys" | "network">(
     "services",
   );
+  // Steps slide in from the side they are reached from.
+  const [back, setBack] = createSignal(false);
+  const go = (next: ReturnType<typeof step>, backward = false) =>
+    batch(() => {
+      setBack(backward);
+      setStep(next);
+    });
+  const stepClass = () => `onboarding-step${back() ? " back" : ""}`;
   const [picked, setPicked] = createSignal<string[]>([]);
   const [keys, setKeys] = createStore<Record<string, string>>({});
   const [network, setNetwork] =
@@ -127,7 +142,7 @@ export function Onboarding(props: {
         ? `Add a key for ${without.title}, or go back and unselect it.`
         : "",
     );
-    if (!without) setStep("network");
+    if (!without) go("network");
   };
   const finish = () =>
     props.onFinish(
@@ -148,6 +163,7 @@ export function Onboarding(props: {
       <Match when={step() === "services"}>
         <AuthScreen
           id="gate"
+          class={stepClass()}
           title="What will your bunkers use?"
           description="Pick the services your agents need. You can add more from Permissions later."
         >
@@ -161,7 +177,7 @@ export function Onboarding(props: {
                     aria-pressed={picked().includes(s.preset)}
                     onClick={() => toggle(s.preset)}
                   >
-                    <ConnectorIcon preset={s.preset} />
+                    <ServiceMark preset={s.preset} />
                     {s.title}
                     <span class="service-check" aria-hidden="true">
                       <Icon name="check" />
@@ -172,7 +188,7 @@ export function Onboarding(props: {
             </div>
             <button
               class="primary"
-              onClick={() => setStep(picked().length ? "keys" : "network")}
+              onClick={() => go(picked().length ? "keys" : "network")}
             >
               Continue
             </button>
@@ -182,6 +198,7 @@ export function Onboarding(props: {
       <Match when={step() === "keys"}>
         <AuthScreen
           id="gate"
+          class={stepClass()}
           title="Add your keys"
           description="The Perimeter keeps your keys. Your bunkers never see them."
         >
@@ -192,11 +209,14 @@ export function Onboarding(props: {
               checkKeys();
             }}
           >
+            <span class="auth-icon">
+              <Icon name="key" />
+            </span>
             <For each={chosen()}>
               {(s) => (
                 <section class="onboarding-service">
                   <header>
-                    <ConnectorIcon preset={s.preset} />
+                    <ServiceMark preset={s.preset} />
                     <h2>{s.title}</h2>
                     <Show when={s.keyUrl}>
                       {(url) => (
@@ -305,7 +325,7 @@ export function Onboarding(props: {
               class="link"
               onClick={() => {
                 setMissing("");
-                setStep("services");
+                go("services", true);
               }}
             >
               Back
@@ -316,6 +336,7 @@ export function Onboarding(props: {
       <Match when={step() === "network"}>
         <AuthScreen
           id="gate"
+          class={stepClass()}
           title="Network access"
           description="When a bunker connects to a host that isn't one of your services:"
         >
@@ -326,6 +347,9 @@ export function Onboarding(props: {
               finish();
             }}
           >
+            <span class="auth-icon">
+              <Icon name={network() === "off" ? "globe-x" : "globe"} />
+            </span>
             <div
               class="network-options"
               role="radiogroup"
@@ -357,7 +381,7 @@ export function Onboarding(props: {
               type="button"
               class="link"
               disabled={props.busy}
-              onClick={() => setStep(picked().length ? "keys" : "services")}
+              onClick={() => go(picked().length ? "keys" : "services", true)}
             >
               Back
             </button>
@@ -365,5 +389,19 @@ export function Onboarding(props: {
         </AuthScreen>
       </Match>
     </Switch>
+  );
+}
+
+// Logos as one-color silhouettes, so the set reads evenly in either theme.
+function ServiceMark(props: { preset: string }) {
+  const m = useMonitor();
+  const src = () =>
+    owner.connectorIcon(m.icons(), props.preset, import.meta.env.BASE_URL).src;
+  return (
+    <span
+      class="service-mark"
+      aria-hidden="true"
+      style={{ "--mark": `url("${src()}")` }}
+    />
   );
 }
