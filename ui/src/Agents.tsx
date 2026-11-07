@@ -33,11 +33,14 @@ export function Agents(props: { expanded?: string }) {
       Object.keys(view.config.identities ?? {})
         .sort()
         .map((name) => {
+          const services = owner
+            .agentAccess(view, name)
+            .filter((access) => access.level !== "off").length;
           const description = owner.isDevice(name)
             ? view.config.identities![name].routes
               ? "Can reach bunkers"
               : "Bunker access off"
-            : `${owner.agentAccess(view, name).filter((access) => access.level !== "off").length} services`;
+            : `${services} ${services === 1 ? "service" : "services"}`;
           return [name, { description }];
         }),
     );
@@ -533,8 +536,7 @@ function AgentAccess(props: { name: string }) {
         each={Object.keys(m.view()!.config.connections ?? {})}
         fallback={
           <p>
-            No services yet.{" "}
-            <a href="#connections/catalog">Add a service</a>
+            No services yet. <a href="#connections/catalog">Add a service</a>
           </p>
         }
       >
@@ -627,9 +629,7 @@ function AgentSettings(props: { name: string }) {
                 <div class="setting-row">
                   <span>
                     Copy bunker profile
-                    <small>
-                      Takes its service access, actions and rules.
-                    </small>
+                    <small>Takes its service access, actions and rules.</small>
                   </span>
                   <span class="agent-advanced-actions">
                     <select
@@ -663,8 +663,8 @@ function AgentSettings(props: { name: string }) {
                 <span>
                   Remove bunker
                   <small>
-                    Forget this bunker from the Perimeter, along with its
-                    access and rules.
+                    Forget this bunker from the Perimeter, along with its access
+                    and rules.
                   </small>
                 </span>
                 <button
