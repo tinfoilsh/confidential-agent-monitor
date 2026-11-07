@@ -89,8 +89,6 @@ const NETWORK = [
   ],
   ["off", "Reject", "Bunkers reach only the services you added."],
 ] as const;
-// Enough of a key to tell keys apart without showing it.
-const KEY_PREFIX_LENGTH = 8;
 
 export function Onboarding(props: {
   busy: boolean;
@@ -302,8 +300,7 @@ export function Onboarding(props: {
                               <For each={list()}>
                                 {(k) => (
                                   <option value={k.key}>
-                                    {k.name || "Unnamed key"} ·{" "}
-                                    {k.key.slice(0, KEY_PREFIX_LENGTH)}…
+                                    {owner.apiKeyLabel(k)}
                                   </option>
                                 )}
                               </For>

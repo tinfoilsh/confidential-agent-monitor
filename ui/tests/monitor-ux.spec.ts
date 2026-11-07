@@ -257,6 +257,28 @@ describe("tools of services chosen in setup", () => {
   });
 });
 
+describe("Tinfoil API keys", () => {
+  test("a chosen key is saved as the credential and shown by its fingerprint", () => {
+    const v = view();
+    v.config.connections!.tinfoil = { preset: "tinfoil", tinfoil: {} };
+    const { changes, credentials } = owner.edits.setTinfoilKey(
+      "tinfoil",
+      "TINFOIL_API_KEY",
+      "tk_second",
+    );
+    expect(credentials).toEqual({ tinfoil: { TINFOIL_API_KEY: "tk_second" } });
+    owner.applyChanges(v.config, changes);
+    expect(owner.tinfoilKeyOf(v, "tinfoil")).toBe(
+      owner.keyFingerprint("tk_second"),
+    );
+    expect(owner.tinfoilKeyOf(v, "tinfoil")).not.toBe(
+      owner.keyFingerprint("tk_first"),
+    );
+    owner.applyChanges(v.config, owner.edits.removeConnection(v, "tinfoil"));
+    expect(owner.tinfoilKeyOf(v, "tinfoil")).toBeUndefined();
+  });
+});
+
 describe("first setup", () => {
   const setupView = () => {
     const v = view();
@@ -316,6 +338,15 @@ describe("first setup", () => {
           change.path.join("/") === "data/onboarding/approve_tools",
       )?.value,
     ).toEqual(["tinfoil-websearch"]);
+    // Both Tinfoil services record which key they use, never the key itself.
+    const recorded = (connection: string) =>
+      body.changes.find(
+        (change: owner.Change) =>
+          change.path.join("/") === `data/tinfoil_keys/${connection}`,
+      )?.value;
+    expect(recorded("tinfoil")).toBe(owner.keyFingerprint("tk_live"));
+    expect(recorded("tinfoil-websearch")).toBe(owner.keyFingerprint("tk_live"));
+    expect(JSON.stringify(body.changes)).not.toContain("tk_live");
   });
 
   test("refuses Tinfoil without a key", async () => {

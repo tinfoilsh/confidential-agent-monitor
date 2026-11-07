@@ -2,6 +2,9 @@
 // Monitor's app. The server remains the authority: these functions shape edits
 // and describe its answers.
 
+import { sha256 } from "@noble/hashes/sha2.js";
+import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils.js";
+
 export type Json =
   null | boolean | number | string | Json[] | { [key: string]: Json };
 export type Level = "off" | "read" | "ask" | "allow";
@@ -1395,6 +1398,26 @@ requires_openai_auth = false
 supports_websockets = false`;
 }
 
+// Enough of a key to tell keys apart without showing it.
+const KEY_PREFIX_LENGTH = 8;
+export const apiKeyLabel = (key: { name: string; key: string }) =>
+  `${key.name || "Unnamed key"} · ${key.key.slice(0, KEY_PREFIX_LENGTH)}…`;
+// Which of the owner's Tinfoil API keys a service uses is kept as a short hash
+// in owner-only data, so the key can be shown without storing it again.
+const TINFOIL_KEYS = ["data", "tinfoil_keys"];
+const FINGERPRINT_LENGTH = 16;
+export const keyFingerprint = (key: string) =>
+  bytesToHex(sha256(utf8ToBytes(key))).slice(0, FINGERPRINT_LENGTH);
+export const tinfoilKeyOf = (view: View, connection: string) => {
+  const keys = view.config.data?.tinfoil_keys as { [name: string]: Json };
+  const value = keys?.[connection];
+  return typeof value === "string" ? value : undefined;
+};
+const tinfoilKeyChange = (connection: string, key: string): Change => ({
+  path: [...TINFOIL_KEYS, connection],
+  value: keyFingerprint(key),
+});
+
 export function tinfoilSetup(view: View, name: string) {
   const kind = kindOf(connections(view)[name]);
   if (kind !== "tinfoil" && kind !== "tinfoil-mcp") return;
@@ -1478,6 +1501,10 @@ function onboardingChanges(
     const name = unusedName(view, "tinfoil", ["", "-websearch"]);
     add(name, "tinfoil", level, key);
     add(`${name}-websearch`, "tinfoil_websearch", level, key);
+    changes.push(
+      tinfoilKeyChange(name, key),
+      tinfoilKeyChange(`${name}-websearch`, key),
+    );
   }
   if (approveTools.length)
     changes.push({ path: SETUP_TOOLS, value: approveTools });
@@ -1612,11 +1639,17 @@ export const edits = {
       },
     }),
   // Identities may not name a missing connection, so removing one also clears it from every agent.
+  // Replaces a Tinfoil service's key with another of the owner's keys.
+  setTinfoilKey: (connection: string, field: string, key: string) => ({
+    changes: [tinfoilKeyChange(connection, key)],
+    credentials: { [connection]: { [field]: key } },
+  }),
   removeConnection: (view: View, connection: string) =>
     sourceChanges({
       connections: { [connection]: null },
       policies: { [connection]: null },
       default_access: { [connection]: null },
+      data: { tinfoil_keys: { [connection]: null } },
       identities: Object.fromEntries(
         Object.keys(identities(view)).map((name) => [
           name,

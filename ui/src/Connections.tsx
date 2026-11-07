@@ -2,9 +2,11 @@ import {
   For,
   Show,
   createMemo,
+  createResource,
   createSignal,
   createUniqueId,
   onCleanup,
+  type JSX,
 } from "solid-js";
 import { createStore } from "solid-js/store";
 import * as owner from "./owner.js";
@@ -896,7 +898,7 @@ function ConnectionForm(props: { name: string }) {
                   </button>
                 </Show>
               );
-              return (
+              const entry = () => (
                 <div class="credential">
                   <Show
                     when={!collapsed()}
@@ -935,10 +937,89 @@ function ConnectionForm(props: { name: string }) {
                   </Show>
                 </div>
               );
+              return (
+                <Show
+                  when={
+                    m.options.tinfoilApiKeys &&
+                    !field().signIn &&
+                    owner.tinfoilSetup(m.view()!, props.name)
+                  }
+                  fallback={entry()}
+                >
+                  <TinfoilKeySelect
+                    name={props.name}
+                    field={field()}
+                    fallback={entry}
+                  />
+                </Show>
+              );
             }}
           </For>
         </form>
       </section>
+    </Show>
+  );
+}
+
+// A Tinfoil service uses one of the owner's API keys; choosing one saves it.
+function TinfoilKeySelect(props: {
+  name: string;
+  field: owner.CredentialField;
+  fallback: () => JSX.Element;
+}) {
+  const m = useMonitor();
+  const id = createUniqueId();
+  const [keys] = createResource(() => m.options.tinfoilApiKeys!());
+  const current = () => owner.tinfoilKeyOf(m.view()!, props.name);
+  const listed = () => (keys.error ? undefined : keys());
+  const known = () =>
+    !!listed()?.some((k) => owner.keyFingerprint(k.key) === current());
+  return (
+    <Show when={!keys.error} fallback={props.fallback()}>
+      <div class="setting-row">
+        <label for={id}>{props.field.label}</label>
+        <select
+          id={id}
+          class="key-select"
+          disabled={!listed() || m.busy()}
+          onChange={(event) => {
+            // The form saves on change too; this choice saves itself.
+            event.stopPropagation();
+            const chosen = listed()?.find(
+              (k) => owner.keyFingerprint(k.key) === event.currentTarget.value,
+            );
+            if (!chosen) return;
+            const { changes, credentials } = owner.edits.setTinfoilKey(
+              props.name,
+              props.field.key,
+              chosen.key,
+            );
+            void m.edit(changes, undefined, credentials);
+          }}
+        >
+          {/* Each option carries its own selection, so options that arrive
+              after the list loads still show the chosen key. */}
+          <Show when={!known()}>
+            <option value="" disabled selected>
+              {keys.loading
+                ? "Loading keys…"
+                : props.field.stored
+                  ? "Current key"
+                  : "Choose an API key"}
+            </option>
+          </Show>
+          <For each={listed()}>
+            {(k) => (
+              <option
+                value={owner.keyFingerprint(k.key)}
+                selected={owner.keyFingerprint(k.key) === current()}
+              >
+                {owner.apiKeyLabel(k)}
+              </option>
+            )}
+          </For>
+        </select>
+      </div>
     </Show>
   );
 }

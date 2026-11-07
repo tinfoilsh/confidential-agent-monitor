@@ -2169,6 +2169,10 @@ details[open] > summary > .collection-chevron {
 .setting-row > select {
   width: auto;
 }
+.setting-row > .key-select {
+  width: 280px;
+  max-width: 100%;
+}
 .setting-row p {
   max-width: 58ch;
   margin: 4px 0 0;
