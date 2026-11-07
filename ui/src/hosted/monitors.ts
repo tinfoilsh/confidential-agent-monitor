@@ -84,7 +84,7 @@ async function resolve(scope: Scope, id: string) {
     throw new Error("This Perimeter changed. Refresh and try again.");
   if (detail.owner_key_mode !== "tmk")
     throw new Error(
-      "This Perimeter's keys stay with the CLI. Open it with `tinfoil monitor open`.",
+      "This Perimeter's keys stay with the CLI. Open it with `tinfoil perimeter open`.",
     );
   const resource = scope
     .unlocked()

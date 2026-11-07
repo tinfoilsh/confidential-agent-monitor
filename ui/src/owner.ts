@@ -333,7 +333,7 @@ const LOOPBACK = ["localhost", "127.0.0.1", "[::1]"];
 export function encodeOwnerKey(input: string): string {
   if (typeof input === "string" && input.trim().startsWith("{"))
     throw new Error(
-      "Use tinfoil monitor open. Do not load private credential files into a remote web page.",
+      "Use tinfoil perimeter open. Do not load private credential files into a remote web page.",
     );
   if (typeof input !== "string")
     throw new Error("Enter your owner key or passphrase.");
@@ -436,7 +436,7 @@ export function ownerClient({
 }): OwnerApi {
   if (typeof key === "string" && key.trim().startsWith("{"))
     throw new Error(
-      "Signing credentials require tinfoil monitor open and its attested connection.",
+      "Signing credentials require tinfoil perimeter open and its attested connection.",
     );
   return ownerApi(
     ownerJSON(fetch, endpoint === undefined ? "" : endpointBase(endpoint), {
@@ -1747,7 +1747,7 @@ export function localOwnerClient({
   return ownerApi(async (method, path, body, signal) => {
     if (path.split("?")[0] === "/unlock")
       throw new OwnerError(
-        "Run tinfoil monitor open NAME again to unlock over attested SSH.",
+        "Run tinfoil perimeter open NAME again to unlock over attested SSH.",
         423,
       );
     return json(method, path, body, signal);

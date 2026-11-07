@@ -582,7 +582,7 @@ function Gate() {
                 <p>
                   Open this Perimeter through the attested owner SSH connection.
                 </p>
-                <pre>tinfoil monitor</pre>
+                <pre>tinfoil perimeter</pre>
               </Show>
               {error()}
             </AuthCard>

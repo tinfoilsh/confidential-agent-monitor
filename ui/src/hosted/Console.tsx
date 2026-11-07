@@ -394,7 +394,7 @@ function Inventory(props: { session: Session }) {
               <Show when={monitor.owner_key_mode !== "tmk"}>
                 <p>
                   Open with the CLI:{" "}
-                  <code>tinfoil monitor open {monitor.name}</code>
+                  <code>tinfoil perimeter open {monitor.name}</code>
                 </p>
               </Show>
             </div>
