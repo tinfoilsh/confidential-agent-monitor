@@ -28,7 +28,7 @@ const KEY = "monitor-owner-key",
 
 export type MonitorOptions = {
   // Hosted builds name the product in the sidebar and the browser tab.
-  product?: { name: string; tagline: string };
+  product?: { name: string; tagline: string; title: string };
   // Where the hosted Back link returns: the Terminal home or the dashboard.
   backTo?: string;
   // Hosted builds show their site header above the setup screens.
@@ -42,9 +42,10 @@ export type MonitorOptions = {
   candidates?: () => { name: string; key: string }[];
   sandboxesLoading?: () => boolean;
   accept?: (name: string, restore: boolean) => Promise<void>;
-  // Hosted builds mint a Tinfoil API key for the signed-in account.
-  tinfoilApiKey?: () => Promise<string>;
+  // Hosted builds list the signed-in account's Tinfoil API keys.
+  tinfoilApiKeys?: () => Promise<TinfoilApiKey[]>;
 };
+export type TinfoilApiKey = { name: string; key: string };
 
 function createMonitor(options: MonitorOptions) {
   const lifetime = new AbortController();
@@ -335,7 +336,7 @@ function createMonitor(options: MonitorOptions) {
     perform(
       (client) => client.decide(record.id, decision),
       decision === "save"
-        ? "Rule saved. Retry the request from your sandbox."
+        ? "Rule saved. Retry the request from your bunker."
         : "",
       {
         update: (state) => {
@@ -438,7 +439,7 @@ function createMonitor(options: MonitorOptions) {
   );
   createEffect(() => {
     const count = log.pendingCount();
-    const name = options.product?.name ?? "Monitor";
+    const name = options.product?.title ?? "Perimeter";
     document.title = count ? `(${count}) ${name}` : name;
   });
   onMount(async () => {
@@ -452,11 +453,11 @@ function createMonitor(options: MonitorOptions) {
         });
         if (!response.ok)
           throw new Error(
-            "Could not load Monitor sign-in options. Reload to retry.",
+            "Could not load Perimeter sign-in options. Reload to retry.",
           );
         const { mode } = await response.json();
         if (mode !== "bearer" && mode !== "ssh")
-          throw new Error("Unknown Monitor sign-in method.");
+          throw new Error("Unknown Perimeter sign-in method.");
         sessionStorage.removeItem(mode === "ssh" ? KEY : SESSION);
         setMode(mode);
         setCredential(
@@ -581,7 +582,6 @@ function createMonitor(options: MonitorOptions) {
     api,
     notify,
     report,
-    refresh,
     perform,
     edit,
     decide,

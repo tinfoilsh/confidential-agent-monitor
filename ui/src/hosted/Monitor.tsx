@@ -9,7 +9,8 @@ import {
   onCleanup,
 } from "solid-js";
 import App from "../App";
-import { AuthCard, AuthScreen, Icon, Loading } from "../components";
+import { AuthCard, AuthScreen, Icon, Loading, askConfirm } from "../components";
+import type { TinfoilApiKey } from "../monitor";
 import { UUID } from "./contract";
 import { Header, openedFromHome } from "./Header";
 import * as keys from "./keys";
@@ -27,8 +28,28 @@ import { MONITOR_REPO, STARTING, type Session } from "./session";
 import "./console.css";
 
 // A Monitor link names only its resource; inventory and saved keys supply the rest.
+// The signed-in user's own inference keys that still work. In an organization,
+// other members' keys are listed masked and are left out.
+function usableApiKeys(value: unknown): TinfoilApiKey[] {
+  if (!Array.isArray(value))
+    throw new Error("Your API keys could not be read.");
+  return value.flatMap((row) =>
+    typeof row?.key === "string" &&
+    !row.chat &&
+    !row.disabled &&
+    !row.is_admin &&
+    row.is_owner !== false &&
+    !(
+      typeof row.expires_at === "string" &&
+      Date.parse(row.expires_at) <= Date.now()
+    )
+      ? [{ key: row.key, name: typeof row.name === "string" ? row.name : "" }]
+      : [],
+  );
+}
+
 export default function Monitor(props: { session: Session }) {
-  document.title = PRODUCT.name;
+  document.title = PRODUCT.title;
   const manager = keys.passkeys();
   const id = decodeURIComponent(useParams().id ?? "");
   // An OAuth sign-in returns without the marker, then restores it in the URL.
@@ -70,19 +91,19 @@ export default function Monitor(props: { session: Session }) {
   const inventory = () => props.session.inventory();
   const booting = () => STARTING.includes(row()?.status ?? "");
   const title = () => {
-    if (!UUID.test(id)) return "Choose a Monitor";
-    if (!props.session.user()) return "Sign in to open your Monitor";
-    const name = row()?.name ?? "your Monitor";
+    if (!UUID.test(id)) return "Choose a Perimeter";
+    if (!props.session.user()) return "Sign in to open your Perimeter";
+    const name = row()?.name ?? "your Perimeter";
     if (props.session.keyState().error) return "Could not load your keys";
-    if (inventory().error) return "Could not load your Monitor";
+    if (inventory().error) return "Could not load your Perimeter";
     if (error()) return `Could not open ${name}`;
     if (cancelled()) return `Open ${name}`;
     if (booting()) return `Waiting for ${name} to start…`;
     if (row() && row()!.status !== "running")
       return `${name} is ${row()!.status}`;
     if (inventory().value && !inventory().loading && !row())
-      return "Monitor not found";
-    return "Connecting to sandbox…";
+      return "Perimeter not found";
+    return "Connecting to bunker…";
   };
   createEffect(
     on(
@@ -124,13 +145,13 @@ export default function Monitor(props: { session: Session }) {
             (failures) => {
               if (opened.scope.live() && failures.length)
                 setNotice(
-                  `Some sandboxes could not be re-linked: ${failures.join("; ")}`,
+                  `Some bunkers could not be re-linked: ${failures.join("; ")}`,
                 );
             },
             (cause) => {
               if (opened.scope.live())
                 setNotice(
-                  `Sandboxes could not be re-linked: ${cause instanceof Error ? cause.message : cause}`,
+                  `Bunkers could not be re-linked: ${cause instanceof Error ? cause.message : cause}`,
                 );
             },
           )
@@ -143,7 +164,7 @@ export default function Monitor(props: { session: Session }) {
         setError(
           cause instanceof Error
             ? cause.message
-            : "Could not open the monitor.",
+            : "Could not open the Perimeter.",
         );
       current.abort();
     } finally {
@@ -162,9 +183,11 @@ export default function Monitor(props: { session: Session }) {
       } catch (cause) {
         if (
           !(cause instanceof RestoreRequired) ||
-          !confirm(
-            `${cause.message}\n\nRestore ${name}'s access to this Monitor?`,
-          )
+          !(await askConfirm({
+            title: `Restore ${name}'s access to this Perimeter?`,
+            description: cause.message,
+            confirmLabel: "Restore access",
+          }))
         )
           throw cause;
         return shellOpener(opened, rows, name, true)!(size, handlers, signal);
@@ -189,11 +212,11 @@ export default function Monitor(props: { session: Session }) {
                       when={UUID.test(id)}
                       fallback={
                         <a class="button primary" href="/" link>
-                          Choose a Monitor
+                          Choose a Perimeter
                         </a>
                       }
                     >
-                      <p>Use the account that owns this Monitor.</p>
+                      <p>Use the account that owns this Perimeter.</p>
                       <button
                         class="primary"
                         onClick={() => void props.session.signIn()}
@@ -208,20 +231,20 @@ export default function Monitor(props: { session: Session }) {
               <KeyGate
                 session={props.session}
                 manager={manager}
-                purpose={`open ${row()?.name ?? "your Monitor"}`}
+                purpose={`open ${row()?.name ?? "your Perimeter"}`}
               >
-                <AuthScreen title={title()} account={props.session.user()}>
+                <AuthScreen title={title()}>
                   <AuthCard icon={<Icon name="rules" />}>
                     <Show when={error()}>
                       <p role="alert">{error()}</p>
                     </Show>
                     <Switch>
                       <Match when={inventory().loading && !inventory().value}>
-                        <Loading label="Loading your Monitor…" />
+                        <Loading label="Loading your Perimeter…" />
                       </Match>
                       <Match when={inventory().error}>
                         <p role="alert">
-                          Could not load your Monitor: {inventory().error}
+                          Could not load your Perimeter: {inventory().error}
                         </p>
                         <button
                           class="primary"
@@ -236,17 +259,17 @@ export default function Monitor(props: { session: Session }) {
                         }
                       >
                         <p role="alert">
-                          This Monitor is not in the selected account. Switch
-                          accounts or choose another Monitor.
+                          This Perimeter is not in the selected account. Switch
+                          accounts or choose another Perimeter.
                         </p>
                       </Match>
                       <Match when={booting()}>
-                        <Loading label="Your Monitor will open automatically when it is ready." />
+                        <Loading label="Your Perimeter will open automatically when it is ready." />
                       </Match>
                       <Match when={row() && row()!.status !== "running"}>
                         <p>
-                          Open the dashboard to start this Monitor or check its
-                          status.
+                          Open the dashboard to start this Perimeter or check
+                          its status.
                         </p>
                         <a class="button primary" href={keys.TARGETS.dashboard}>
                           Open dashboard
@@ -260,7 +283,7 @@ export default function Monitor(props: { session: Session }) {
                             row()?.status === "running")
                         }
                       >
-                        <Loading label="Verifying and connecting to your Monitor…" />
+                        <Loading label="Verifying and connecting to your Perimeter…" />
                         <Show when={busy()}>
                           <button
                             class="link"
@@ -280,7 +303,7 @@ export default function Monitor(props: { session: Session }) {
                         }
                       >
                         <button class="primary" onClick={() => void open()}>
-                          {error() ? "Try again" : "Open Monitor"}
+                          {error() ? "Try again" : "Open Perimeter"}
                         </button>
                       </Match>
                     </Switch>
@@ -294,7 +317,9 @@ export default function Monitor(props: { session: Session }) {
                     </button>
                   </Show>
                   <a class="auth-link" href={back()} link>
-                    {fromHome() ? "Back to your Monitors" : "Back to dashboard"}
+                    {fromHome()
+                      ? "Back to your Perimeters"
+                      : "Back to dashboard"}
                   </a>
                 </AuthScreen>
               </KeyGate>
@@ -330,13 +355,9 @@ export default function Monitor(props: { session: Session }) {
                   restore,
                 )
               }
-              tinfoilApiKey={async () => {
-                const { key } = (await opened.scope.api("/api/keys/", {
-                  method: "POST",
-                  body: { name: opened.row.name },
-                })) as { key: string };
-                return key;
-              }}
+              tinfoilApiKeys={async () =>
+                usableApiKeys(await opened.scope.api("/api/keys/"))
+              }
             />
           </>
         )}

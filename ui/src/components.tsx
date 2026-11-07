@@ -14,7 +14,6 @@ import {
   type JSX,
 } from "solid-js";
 import { Dynamic } from "solid-js/web";
-import boring from "boring-avatars-vanilla";
 import * as owner from "./owner.js";
 import { icons } from "./dashboard-icons.js";
 import { useMonitor } from "./monitor";
@@ -38,7 +37,6 @@ export function AuthScreen(props: {
   id?: string;
   title?: JSX.Element;
   description?: JSX.Element;
-  account?: { id: string; label: string };
   children: JSX.Element;
 }) {
   const titleId = createUniqueId();
@@ -54,42 +52,8 @@ export function AuthScreen(props: {
       <Show when={props.description}>
         <p class="auth-description">{props.description}</p>
       </Show>
-      <Show when={props.account}>
-        {(account) => (
-          <p class="auth-account">
-            <UserAvatar id={account().id} size={32} />
-            <span>
-              Signed in as <strong>{account().label}</strong>
-            </span>
-          </p>
-        )}
-      </Show>
       {props.children}
     </main>
-  );
-}
-
-// The dashboard's avatar for an account without a picture: same variant,
-// palette, and seed, so a person looks the same in both places.
-const AVATAR_COLORS = ["#004444", "#F9F8F6"];
-export function UserAvatar(props: { id: string; size: number }) {
-  const src = () =>
-    `data:image/svg+xml,${encodeURIComponent(
-      boring({
-        name: props.id,
-        variant: "pixel",
-        colors: AVATAR_COLORS,
-        size: props.size,
-      }),
-    )}`;
-  return (
-    <img
-      class="user-avatar"
-      src={src()}
-      alt=""
-      width={props.size}
-      height={props.size}
-    />
   );
 }
 
@@ -107,15 +71,6 @@ export function AuthCard(props: {
         <h2>{props.title}</h2>
       </Show>
       {props.children}
-    </section>
-  );
-}
-
-export function AuthOptions(props: { title?: string; children: JSX.Element }) {
-  return (
-    <section class="auth-card auth-options">
-      <h2>{props.title ?? "Having problems?"}</h2>
-      <ul>{props.children}</ul>
     </section>
   );
 }
@@ -313,6 +268,72 @@ export function Modal(
           own.onClose?.();
       }}
     />
+  );
+}
+
+type ConfirmRequest = {
+  title: string;
+  description: string;
+  confirmLabel: string;
+  destructive?: boolean;
+};
+const [confirming, setConfirming] = createSignal<
+  ConfirmRequest & { resolve: (confirmed: boolean) => void }
+>();
+
+// Asks in the app's own dialog, which ConfirmDialog shows; resolves true only on confirm.
+export function askConfirm(request: ConfirmRequest): Promise<boolean> {
+  confirming()?.resolve(false);
+  return new Promise((resolve) => setConfirming({ ...request, resolve }));
+}
+
+export function ConfirmDialog() {
+  // Keep the question while the dialog fades out.
+  const shown = createMemo<ConfirmRequest | undefined>(
+    (previous) => confirming() ?? previous,
+  );
+  const answer = (confirmed: boolean) => {
+    const current = confirming();
+    setConfirming(undefined);
+    current?.resolve(confirmed);
+  };
+  const titleId = createUniqueId(),
+    descriptionId = createUniqueId();
+  return (
+    <Modal
+      class="dialog-panel confirm-dialog"
+      aria-labelledby={titleId}
+      aria-describedby={descriptionId}
+      open={!!confirming()}
+      onClose={() => answer(false)}
+    >
+      <Show when={shown()}>
+        {(request) => (
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              answer(true);
+            }}
+          >
+            <h1 id={titleId}>{request().title}</h1>
+            <p id={descriptionId}>{request().description}</p>
+            <div class="confirm-actions">
+              <button type="button" onClick={() => answer(false)}>
+                Cancel
+              </button>
+              <button
+                classList={{
+                  primary: !request().destructive,
+                  danger: request().destructive,
+                }}
+              >
+                {request().confirmLabel}
+              </button>
+            </div>
+          </form>
+        )}
+      </Show>
+    </Modal>
   );
 }
 

@@ -61,7 +61,7 @@ function stored(): KeySyncRequest | undefined {
 }
 
 export default function Cli(props: { session: Session }) {
-  document.title = `CLI key sync · ${PRODUCT.name}`;
+  document.title = `CLI key sync · ${PRODUCT.title}`;
   const manager = keys.passkeys();
   const [error, setError] = createSignal(launchError);
   const [typed, setTyped] = createSignal("");
@@ -190,10 +190,7 @@ export default function Cli(props: { session: Session }) {
   };
 
   const page = () => (
-    <AuthScreen
-      title={done() ? "Sync successful" : "Sync your CLI"}
-      account={props.session.user()}
-    >
+    <AuthScreen title={done() ? "Sync successful" : "Sync your CLI"}>
       <AuthCard icon={<Icon name={done() ? "check" : "devices"} />}>
         <Show when={error()}>
           <p role="alert">{error()}</p>
@@ -223,7 +220,7 @@ export default function Cli(props: { session: Session }) {
               </button>
             </Show>
             <a class="button" href="/" link>
-              Open your sandboxes
+              Open your bunkers
             </a>
           </Match>
           <Match when={profile && live() && !sameUser()}>
@@ -304,7 +301,7 @@ export default function Cli(props: { session: Session }) {
         <KeyGate
           session={props.session}
           manager={manager}
-          purpose="let the CLI open your sandboxes"
+          purpose="let the CLI open your bunkers"
         >
           {page()}
         </KeyGate>

@@ -109,42 +109,6 @@ dialog.start-dialog {
   background: var(--subtle);
   box-shadow: none;
 }
-.start-steps {
-  display: flex;
-  gap: 16px;
-  margin: 0 0 24px;
-  padding: 0;
-  list-style: none;
-  color: var(--muted);
-  font-size: var(--font-detail);
-}
-.start-steps li {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.start-steps span {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  border: 1px solid var(--edge);
-  border-radius: 50%;
-}
-.start-steps [aria-current] {
-  color: var(--text);
-}
-.start-steps [aria-current] span {
-  border-color: var(--primary);
-  background: var(--primary);
-  color: var(--on-primary);
-}
-.auth .start-steps {
-  justify-content: center;
-  margin: 0;
-}
 .start-key-choice {
   display: flex;
   text-align: left;
@@ -254,9 +218,6 @@ dialog.start-dialog {
   }
   .start-dialog-body {
     padding: 28px 20px;
-  }
-  .start-steps {
-    gap: 12px;
   }
 }
 .start-home {

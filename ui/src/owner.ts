@@ -186,7 +186,7 @@ export type OwnerApi = {
   unlock(generation?: number, signal?: AbortSignal): Promise<View>;
   onboard(
     view: View,
-    tinfoilApiKey?: string,
+    choices: OnboardingChoices,
     signal?: AbortSignal,
   ): Promise<View>;
   edit(
@@ -293,6 +293,12 @@ export type ConnectionAnswers = {
   strangers: boolean;
   sends: Audience;
 };
+// What the owner picked at first setup: services with their credential, if
+// they take one, and how bunkers reach hosts outside those services.
+export type OnboardingChoices = {
+  services: { preset: string; level: Level; credential?: string }[];
+  network: Exclude<Level, "read">;
+};
 
 export const LEVELS: { [L in Level]: string } = {
   off: "No access",
@@ -327,7 +333,7 @@ const LOOPBACK = ["localhost", "127.0.0.1", "[::1]"];
 export function encodeOwnerKey(input: string): string {
   if (typeof input === "string" && input.trim().startsWith("{"))
     throw new Error(
-      "Use tinfoil monitor open. Do not load private credential files into a remote web page.",
+      "Use tinfoil perimeter open. Do not load private credential files into a remote web page.",
     );
   if (typeof input !== "string")
     throw new Error("Enter your owner key or passphrase.");
@@ -405,15 +411,15 @@ function endpointBase(endpoint: string) {
   try {
     url = new URL(endpoint);
   } catch {
-    throw new Error("Invalid monitor endpoint.");
+    throw new Error("Invalid Perimeter endpoint.");
   }
   if (
     url.protocol !== "https:" &&
     !(url.protocol === "http:" && LOOPBACK.includes(url.hostname))
   )
-    throw new Error("The monitor endpoint must use HTTPS.");
+    throw new Error("The Perimeter endpoint must use HTTPS.");
   if (url.username || url.password || url.search || url.hash)
-    throw new Error("Invalid monitor endpoint.");
+    throw new Error("Invalid Perimeter endpoint.");
   return url.href.replace(/\/$/, "");
 }
 
@@ -430,7 +436,7 @@ export function ownerClient({
 }): OwnerApi {
   if (typeof key === "string" && key.trim().startsWith("{"))
     throw new Error(
-      "Signing credentials require tinfoil monitor open and its attested connection.",
+      "Signing credentials require tinfoil perimeter open and its attested connection.",
     );
   return ownerApi(
     ownerJSON(fetch, endpoint === undefined ? "" : endpointBase(endpoint), {
@@ -440,7 +446,7 @@ export function ownerClient({
 }
 
 const ROLLBACK =
-  "The monitor state is older than the last state you saw. Restore the latest monitor state before continuing.";
+  "The Perimeter state is older than the last state you saw. Restore the latest Perimeter state before continuing.";
 
 // With a known generation, an older view is a rollback, and a locked monitor unlocks at that minimum.
 export function ownerApi(
@@ -482,7 +488,7 @@ export function ownerApi(
       else if (known?.id === view.catalog_id) view.presets = known.presets;
       else
         throw new OwnerError(
-          "Monitor returned an unknown preset catalog. Reload the page.",
+          "The Perimeter returned an unknown preset catalog. Reload the page.",
           409,
         );
     }
@@ -514,9 +520,9 @@ export function ownerApi(
         signal,
       ),
     unlock,
-    async onboard(view, tinfoilApiKey, signal) {
+    async onboard(view, choices, signal) {
       if (onboarded(view)) return view;
-      const { changes, credentials } = onboardingChanges(view, tinfoilApiKey);
+      const { changes, credentials } = onboardingChanges(view, choices);
       return snapshot(
         "POST",
         "/policy/edits",
@@ -667,7 +673,7 @@ const kindOf = (c?: Connection) =>
   Object.keys(c ?? {}).find((key) => !SETTINGS.includes(key));
 export const setupOf = (c?: Connection) =>
   c?.[kindOf(c)!] as { [key: string]: Json } | undefined;
-const UNKNOWN_PRESET = { title: "Connection" };
+const UNKNOWN_PRESET = { title: "Service" };
 export const presetOf = (view: View, name: string): Omit<Preset, "defaults"> =>
   view.presets[connections(view)[name]?.preset] ?? UNKNOWN_PRESET;
 const fill = (text: string, scope?: { [key: string]: any }) =>
@@ -1097,7 +1103,7 @@ export function toolChange(
 export function connectionStatus(
   r?: Review,
 ): { state: "error" | "connecting" | "review"; text: string } | undefined {
-  if (r?.error) return { state: "error", text: "Connection error" };
+  if (r?.error) return { state: "error", text: "Can't connect" };
   if (r?.state === "connecting")
     return { state: "connecting", text: "Connecting…" };
   if (r?.blocked)
@@ -1376,7 +1382,7 @@ export function codexSetup(view: View, name: string): string | null {
 model_provider = "monitor_chatgpt"
 
 [model_providers.monitor_chatgpt]
-name = "ChatGPT through Monitor"
+name = "ChatGPT through Perimeter"
 base_url = "https://api.openai.com/v1"
 experimental_bearer_token = ${JSON.stringify(setup.placeholder)}
 wire_api = "responses"
@@ -1391,13 +1397,22 @@ export function tinfoilSetup(view: View, name: string) {
   return { mcp, url: `https://${name}.monitor/${mcp ? "mcp" : "v1"}` };
 }
 
+const unusedName = (view: View, base: string, suffixes: string[] = [""]) => {
+  let name = base;
+  for (
+    let i = 2;
+    suffixes.some((suffix) => Object.hasOwn(connections(view), name + suffix));
+    i++
+  )
+    name = `${base}-${i}`;
+  return name;
+};
+
 function onboardingChanges(
   view: View,
-  tinfoilApiKey?: string,
+  choices: OnboardingChoices,
 ): { changes: Change[]; credentials: { [connection: string]: Credentials } } {
-  let network = "network";
-  for (let i = 2; Object.hasOwn(connections(view), network); i++)
-    network = `network-${i}`;
+  const network = unusedName(view, "network");
   let policy = "network-default";
   for (let i = 2; Object.hasOwn(view.config.policies ?? {}, policy); i++)
     policy = `network-default-${i}`;
@@ -1417,34 +1432,44 @@ function onboardingChanges(
     },
     policies: { [policy]: KNOWN_ONLY_RULE },
   });
-  changes.push({ path: ["default_access", network], value: { level: "off" } });
+  changes.push({
+    path: ["default_access", network],
+    value: { level: choices.network },
+  });
   const credentials: { [connection: string]: Credentials } = {};
-  if (tinfoilApiKey !== undefined) {
-    const key = tinfoilApiKey.trim();
-    if (!key) throw new Error("Enter your Tinfoil API key, or skip this step.");
-    let name = "tinfoil";
-    for (
-      let i = 2;
-      Object.hasOwn(connections(view), name) ||
-      Object.hasOwn(connections(view), `${name}-websearch`);
-      i++
-    )
-      name = `tinfoil-${i}`;
-    for (const [connection, tinfoil, credential] of [
-      [name, "tinfoil", "TINFOIL_API_KEY"],
-      [`${name}-websearch`, "tinfoil_websearch", "token"],
-    ]) {
-      const added = edits.addConnection(view, tinfoil, {
-        name: connection,
-        values: { [credential]: key },
-        answers: view.presets[tinfoil].defaults,
-      });
-      changes.push(...added.changes, {
-        path: ["default_access", connection],
-        value: { level: "allow" },
-      });
-      credentials[connection] = added.credentials;
+  const add = (
+    connection: string,
+    preset: string,
+    level: Level,
+    credential?: string,
+  ) => {
+    const fields = setupFields(view, preset);
+    const key = fields.find((f) => f.credential && !f.oauth)?.key;
+    const values = Object.fromEntries(
+      fields.map((f) => [f.key, readField(f, fieldText(f, f.default))]),
+    );
+    if (key && credential !== undefined) values[key] = credential;
+    const added = edits.addConnection(view, preset, {
+      name: connection,
+      values,
+      answers: view.presets[preset].defaults,
+    });
+    changes.push(...added.changes, {
+      path: ["default_access", connection],
+      value: { level },
+    });
+    credentials[connection] = added.credentials;
+  };
+  for (const { preset, level, credential } of choices.services) {
+    if (preset !== "tinfoil") {
+      add(unusedName(view, preset), preset, level, credential);
+      continue;
     }
+    const key = credential?.trim();
+    if (!key) throw new Error("Choose a Tinfoil API key.");
+    const name = unusedName(view, "tinfoil", ["", "-websearch"]);
+    add(name, "tinfoil", level, key);
+    add(`${name}-websearch`, "tinfoil_websearch", level, key);
   }
   return { changes, credentials };
 }
@@ -1575,10 +1600,10 @@ export const edits = {
   ): { changes: Change[]; credentials: Credentials } {
     const c = view.presets[preset];
     name = name.trim();
-    if (!name) throw new Error("Name this connection.");
+    if (!name) throw new Error("Name this service.");
     if (Object.hasOwn(connections(view), name))
       throw new Error(
-        "A connection with that name already exists. Choose another name.",
+        "A service with that name already exists. Choose another name.",
       );
     const fields = setupFields(view, preset);
     // Only the non-secret values fill a preset's setup; credentials are stored apart from the connection.
@@ -1633,12 +1658,10 @@ export const edits = {
   ): { changes: Change[]; credentials: Credentials } {
     name = name.trim();
     if (!/^[a-zA-Z0-9][a-zA-Z0-9-]*$/.test(name))
-      throw new Error(
-        "Name this connection using letters, numbers, and hyphens.",
-      );
+      throw new Error("Name this service using letters, numbers, and hyphens.");
     if (Object.hasOwn(connections(view), name))
       throw new Error(
-        "A connection with that name already exists. Choose another name.",
+        "A service with that name already exists. Choose another name.",
       );
     const http = { slots: [apiSlot(api)] };
     const body: { [key: string]: unknown } = {
@@ -1724,7 +1747,7 @@ export function localOwnerClient({
   return ownerApi(async (method, path, body, signal) => {
     if (path.split("?")[0] === "/unlock")
       throw new OwnerError(
-        "Run tinfoil monitor open NAME again to unlock over attested SSH.",
+        "Run tinfoil perimeter open NAME again to unlock over attested SSH.",
         423,
       );
     return json(method, path, body, signal);

@@ -24,7 +24,7 @@ const date = (value: string) => {
 function ProposerByline(props: { proposal: owner.RequestRecord }) {
   return (
     <>
-      <strong>By {owner.isDevice(props.proposal.facts.principal.name) ? "Trusted Device" : "Sandbox"}:</strong>{" "}
+      <strong>By {owner.isDevice(props.proposal.facts.principal.name) ? "Trusted Device" : "Bunker"}:</strong>{" "}
       {props.proposal.facts.principal.name}
     </>
   );
@@ -47,11 +47,11 @@ const valueText = (value: owner.Json | undefined) => {
 };
 const pathLabel = (proposal: owner.RequestRecord, path: string[]) => {
   if (path[0] === "identities")
-    return [`Sandbox ${path[1]}`, ...path.slice(4)].join(" › ");
+    return [`Bunker ${path[1]}`, ...path.slice(4)].join(" › ");
   if (path[0] === "default_access")
     return ["Default access", ...path.slice(2)].join(" › ");
   if (path[0] === "connections" && path[1] === proposal.facts.connection)
-    return ["Connection", ...path.slice(2)].join(" › ");
+    return ["Service", ...path.slice(2)].join(" › ");
   return path.join(" › ");
 };
 const proposalPreset = (proposal: owner.RequestRecord, view: owner.View) => {
@@ -188,7 +188,7 @@ export function PolicyProposals() {
             }
             icon="policy"
           >
-            Changes proposed by sandboxes or trusted devices will appear here.
+            Changes proposed by bunkers or trusted devices will appear here.
           </Empty>
         }
       >
@@ -207,7 +207,7 @@ export function PolicyProposals() {
                   </time>
                   <ProposalBadge proposal={proposal()} />
                   <a class="button" href={href("connections", "pending", id)}>
-                    Review in Connections <Icon name="arrow" />
+                    Review in Permissions <Icon name="arrow" />
                   </a>
                 </span>
               </article>
@@ -221,7 +221,7 @@ export function PolicyProposals() {
                 <ConnectorIcon connection={record.facts.connection} />
                 <span>
                   <strong>
-                    {reasonPreview(record.facts.title || "Connection proposal")}
+                    {reasonPreview(record.facts.title || "Proposed change")}
                   </strong>
                   <small>
                     {record.facts.connection || "Policy"} ·{" "}
@@ -233,7 +233,7 @@ export function PolicyProposals() {
               </a>
               <span class="resource-meta">
                 <time datetime={record.time}>{date(record.time)}</time>
-                <span class={`badge status-${record.state}`}>
+                <span class="request-state" data-state={record.state}>
                   {owner.reviewStatus(record)}
                 </span>
               </span>

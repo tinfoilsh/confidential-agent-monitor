@@ -63,8 +63,6 @@
   --warn: #92400e;
   --bad: #b91c1c;
   --primary-hover: #426381;
-  --confirm: #047857;
-  --confirm-hover: #065f46;
   --destructive: #b91c1c;
   --destructive-hover: #991b1b;
   --frame: #000;
@@ -75,6 +73,7 @@
   --nav-height: 64px;
   --tinfoil-dark: #061820;
   --tinfoil-accent-dark: #004444;
+  --tinfoil-accent-dark-darker: #003333;
   --tinfoil-accent-light: #68c7ac;
   --text-secondary: #292f3d;
   --border-strong: #374151;
@@ -95,7 +94,6 @@
   --red-50: #fef2f2;
   --red-200: #fecaca;
   --red-800: #991b1b;
-  --gray-100: #f3f4f6;
   --gray-600: #4b5563;
   --blue-50: #eff6ff;
   --blue-200: #bfdbfe;
@@ -137,7 +135,6 @@
   --red-50: #450a0a;
   --red-200: #991b1b;
   --red-800: #fecaca;
-  --gray-100: #373739;
   --gray-600: #b0b5c0;
   --blue-50: #172554;
   --blue-200: #1e40af;
@@ -441,9 +438,36 @@ summary + * {
 }
 .monitor-footer {
   flex: none;
+  display: grid;
+  gap: 8px;
   margin-top: auto;
   padding: 12px;
   border-top: 1px solid var(--nav-line);
+}
+.theme-switch {
+  display: flex;
+  gap: 2px;
+  justify-self: start;
+  padding: 2px;
+  border: 1px solid var(--nav-line);
+  border-radius: var(--card-radius);
+}
+.theme-switch > button {
+  width: 28px;
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--nav-muted);
+}
+.theme-switch > button:hover:not(:disabled) {
+  background: var(--nav-hover);
+  color: var(--nav-text);
+}
+.theme-switch > button[aria-pressed="true"] {
+  background: var(--nav-line);
+  color: var(--nav-text);
 }
 .back-terminal .icon {
   transform: rotate(180deg);
@@ -556,17 +580,6 @@ summary + * {
   color: var(--dim);
   font-family: var(--font-display);
   font-size: 16px;
-}
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
-.header-actions > :is(button, .button) {
-  height: 36px;
-  padding-block: 0;
-  white-space: nowrap;
 }
 .approval-bar {
   display: flex;
@@ -891,6 +904,7 @@ summary + * {
 }
 .resource-link > .ui-icon,
 .resource-link > .connector-icon {
+  align-self: flex-start;
   width: 20px;
   height: 20px;
   color: var(--muted);
@@ -989,13 +1003,29 @@ summary + * {
 .catalog-row {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 10px;
+  width: 100%;
+  min-height: auto;
+  border: 0;
   border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  font-weight: inherit;
+  text-align: left;
 }
 .catalog-row:last-child {
   border-bottom: 0;
 }
+.catalog-row:hover:not(:disabled) {
+  background: var(--subtle);
+}
 
+.catalog-row .collection-name,
+.catalog-peek-row .collection-name {
+  font-family: var(--font-display);
+}
 .catalog-row .collection-name {
   flex: 1;
 }
@@ -1017,29 +1047,14 @@ summary + * {
 /* An open item is tinted, not outlined: its header goes a shade darker and
    slightly blue, its body the same step darker than the plain card. Both
    are one step; the header stays the darker of the two. */
-.catalog-item[open] > summary,
 .connection-item[open] > summary {
   background: var(--open-head);
 }
-.catalog-item[open] > summary:hover,
 .connection-item[open] > summary:hover {
   background: var(--open-head);
 }
-.catalog-item[open] .catalog-entry,
 .connection-item[open] .connection-inline {
   background: var(--open-body);
-}
-.catalog-entry {
-  border-top: 1px solid var(--edge);
-}
-
-.catalog-add-title {
-  margin: 20px 16px 16px;
-  font-size: var(--font-section);
-  font-weight: 400;
-}
-.catalog-entry > form {
-  padding: 0 16px 16px;
 }
 
 .agent-item + .agent-item,
@@ -1098,21 +1113,27 @@ details[open] > summary > .collection-chevron {
 }
 .request-context {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px 32px;
+  gap: 10px;
   margin: 0;
 }
 .request-context > div {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 16px;
   min-width: 0;
 }
 .request-context dt {
-  margin-bottom: 4px;
   color: var(--muted);
   font-size: var(--font-detail);
+  line-height: 20px;
 }
 .request-context dd {
   margin: 0;
+  line-height: 20px;
   overflow-wrap: anywhere;
+}
+.request-context dd > p {
+  margin: 0;
 }
 .request-context-link {
   display: inline-flex;
@@ -1126,20 +1147,6 @@ details[open] > summary > .collection-chevron {
   width: 12px;
   height: 12px;
 }
-.request-detail .request-time-left {
-  margin: 0;
-}
-.request-reasons h3 {
-  margin: 0 0 8px;
-  font-weight: 500;
-}
-.request-reasons ul {
-  margin: 0;
-  padding-left: 20px;
-}
-.request-reasons li + li {
-  margin-top: 4px;
-}
 .request-detail > .decisions {
   margin: 0;
 }
@@ -1148,18 +1155,27 @@ details[open] > summary > .collection-chevron {
 }
 
 .request-access {
-  padding-top: 16px;
-  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 .request-access > p {
-  margin: 8px 0 0;
+  margin: 0;
   font-size: var(--font-detail);
+}
+.request-access > .button {
+  flex-shrink: 0;
 }
 
 @media (max-width: 560px) {
-  .request-context {
+  .request-context > div {
     grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
+    gap: 2px;
+  }
+  .request-access {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 .resource-disclosure {
@@ -1562,25 +1578,17 @@ details[open] > summary > .collection-chevron {
   color: var(--amber-800);
 }
 .status-approved,
-.status-allowed,
 .status-running {
   border-color: var(--emerald-200);
   background: var(--emerald-50);
   color: var(--emerald-800);
 }
 .status-denied,
-.status-refused,
 .effect-delete,
 .status-failed {
   border-color: var(--red-200);
   background: var(--red-50);
   color: var(--red-800);
-}
-.status-expired,
-.status-outdated {
-  border-color: var(--line);
-  background: var(--gray-100);
-  color: var(--gray-600);
 }
 .status-new,
 .effect-read,
@@ -1588,6 +1596,31 @@ details[open] > summary > .collection-chevron {
   border-color: var(--blue-200);
   background: var(--blue-50);
   color: var(--blue-800);
+}
+.request-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: var(--font-detail);
+  white-space: nowrap;
+}
+.request-state::before {
+  content: "";
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dim);
+}
+.request-state:is([data-state="approved"], [data-state="allowed"])::before {
+  background: var(--ok);
+}
+.request-state:is([data-state="denied"], [data-state="refused"])::before {
+  background: var(--bad);
+}
+.request-state[data-state="pending"]::before {
+  background: var(--warn);
 }
 #pane {
   min-width: 0;
@@ -1845,23 +1878,14 @@ details[open] > summary > .collection-chevron {
   content: "▾";
 }
 /* Settings follow Tinfoil Chat: titled sections of one card per setting. */
-#pane.settings {
+.settings {
   display: grid;
   gap: 24px;
+  margin-top: 32px;
 }
-.settings-note {
-  margin: 0;
-  color: var(--muted);
-  font-size: var(--font-detail);
-}
-#pane > .settings-section {
+.settings-section {
   display: grid;
   gap: 12px;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  box-shadow: none;
 }
 .settings-section > h2 {
   margin: 0;
@@ -1898,40 +1922,6 @@ details[open] > summary > .collection-chevron {
   display: block;
   color: var(--muted);
   line-height: 16px;
-}
-.theme-options {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 12px;
-}
-.theme-option {
-  flex-direction: column;
-  gap: 4px;
-  min-height: 0;
-  padding: 12px;
-  border-color: var(--line);
-  background: transparent;
-  box-shadow: none;
-  color: var(--text-secondary);
-  font-family: var(--font-display);
-  font-size: var(--font-detail);
-  font-weight: 400;
-  line-height: 16px;
-}
-.theme-option > .icon {
-  width: 20px;
-  height: 20px;
-  color: var(--text);
-}
-.theme-option:hover:not(:disabled) {
-  border-color: var(--border-strong);
-  background: transparent;
-}
-.theme-option[aria-pressed="true"],
-.theme-option[aria-pressed="true"]:hover {
-  border-color: var(--tinfoil-accent-light);
-  background: rgb(104 199 172 / 10%);
 }
 .setting-row {
   display: grid;
@@ -2113,9 +2103,10 @@ td {
   background: var(--surface) var(--grid) repeat center;
   color: var(--text);
 }
+/* Tinfoil Chat's solid button. */
 .auth {
-  --primary: var(--confirm);
-  --primary-hover: var(--confirm-hover);
+  --primary: var(--tinfoil-accent-dark-darker);
+  --primary-hover: var(--tinfoil-accent-dark);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -2138,24 +2129,6 @@ td {
 }
 .auth > h1 + :not(.auth-description) {
   margin-top: 8px;
-}
-.auth-account {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 0;
-  padding: 12px 16px;
-  border: 1px solid var(--edge);
-  border-radius: var(--card-radius);
-  background: var(--card);
-  text-align: left;
-  overflow-wrap: anywhere;
-}
-.auth-account > .user-avatar {
-  flex: none;
-  border-radius: 50%;
-  /* The palette's light cells would otherwise vanish on a light card. */
-  box-shadow: 0 0 0 1px var(--line);
 }
 .auth-card {
   display: flex;
@@ -2214,23 +2187,6 @@ td {
   height: 40px;
   margin: 0;
 }
-.auth-options {
-  gap: 10px;
-  text-align: left;
-}
-.auth-options > h2 {
-  margin: 0;
-  font-size: var(--font-body);
-}
-.auth-options ul {
-  display: grid;
-  gap: 6px;
-  margin: 0;
-  padding-left: 20px;
-}
-.auth-options button.link {
-  text-align: left;
-}
 .auth-tip,
 .auth > .auth-link {
   margin: 0;
@@ -2265,56 +2221,123 @@ td {
   border-radius: var(--card-radius);
   background: var(--hover);
 }
-.onboarding fieldset {
+/* First setup: a grid of services to pick, their keys, then network access. */
+.service-grid {
   display: grid;
-  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.service-tile {
+  position: relative;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 88px;
+  padding: 12px 8px;
+  border-color: var(--line);
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 16px;
+}
+.service-tile > .connector-icon {
+  width: 24px;
+  height: 24px;
   margin: 0;
-  padding: 0;
-  border: 0;
+}
+.service-tile:hover:not(:disabled) {
+  border-color: var(--border-strong);
+  background: transparent;
+}
+.service-tile[aria-pressed="true"] {
+  border-color: var(--tinfoil-accent-light);
+  background: rgb(104 199 172 / 10%);
+}
+.service-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: none;
+  color: var(--tinfoil-accent-light);
+}
+.service-check > .icon {
+  width: 14px;
+  height: 14px;
+}
+.service-tile[aria-pressed="true"] > .service-check {
+  display: flex;
+}
+.onboarding-service {
+  display: grid;
+  gap: 8px;
   text-align: start;
 }
-.onboarding legend {
-  margin-bottom: 10px;
-  font-weight: 500;
+.onboarding-service + .onboarding-service {
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
 }
-.onboarding-key-label {
+.onboarding-service > header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 8px;
 }
-.onboarding-key label {
+.onboarding-service h2 {
+  flex: 1;
   margin: 0;
+  font-size: var(--font-body);
   font-weight: 500;
 }
-.onboarding-key-label a {
+.onboarding-service .connector-icon {
+  margin: 0;
+}
+.onboarding-service > header > a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: var(--font-detail);
 }
-.onboarding-key input {
-  min-height: 48px;
-  border-radius: var(--card-radius);
+.onboarding-service > header > a > .icon {
+  width: 12px;
+  height: 12px;
 }
-.onboarding-key input::placeholder {
-  color: var(--muted);
-  opacity: 0.8;
+.onboarding-service .loading-status {
+  margin: 0;
 }
-.onboarding-key-help {
+.network-options {
+  display: grid;
+  gap: 8px;
+  text-align: start;
+}
+.network-option {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 12px;
   margin: 0;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  cursor: pointer;
+}
+.network-option:has(input:checked) {
+  border-color: var(--tinfoil-accent-light);
+  background: rgb(104 199 172 / 10%);
+}
+.network-option > input {
+  flex-shrink: 0;
+  width: auto;
+  margin: 3px 0 0;
+  accent-color: var(--tinfoil-accent-light);
+}
+.network-option strong {
+  display: block;
+  font-weight: 500;
+}
+.network-option small {
+  display: block;
+  margin-top: 2px;
   color: var(--muted);
   font-size: var(--font-detail);
-}
-.onboarding-key-help .icon {
-  margin-top: 2px;
-}
-.onboarding-key .icon {
-  width: 14px;
-  height: 14px;
+  line-height: 1.5;
 }
 #notices {
   position: sticky;
@@ -2353,8 +2376,7 @@ td {
     opacity: 1;
   }
 }
-#creation-dialog,
-#device-sign-in-dialog {
+.dialog-panel {
   width: min(680px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
   padding: 0;
@@ -2365,17 +2387,52 @@ td {
   color: var(--text);
   box-shadow: var(--shadow-lg);
 }
-#creation-dialog[open],
-#device-sign-in-dialog[open] {
+.dialog-panel[open] {
   display: flex;
   flex-direction: column;
 }
-#creation-dialog::backdrop,
-#device-sign-in-dialog::backdrop {
+.dialog-panel::backdrop {
   background: var(--backdrop);
 }
 #device-sign-in-dialog {
   width: min(400px, calc(100vw - 32px));
+}
+/* The dashboard's confirmation dialog: title, question, then Cancel beside confirm. */
+.confirm-dialog {
+  width: min(420px, calc(100vw - 32px));
+}
+.confirm-dialog h1 {
+  margin: 0;
+  padding: 20px 56px;
+  border-bottom: 1px solid var(--line);
+  font-size: var(--font-section);
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.confirm-dialog p {
+  margin: 0;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  line-height: 1.6;
+  text-align: center;
+  text-wrap: pretty;
+}
+.confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 16px 24px;
+}
+.confirm-actions > button.danger {
+  border-color: transparent;
+  background: var(--destructive);
+  color: var(--on-primary);
+}
+.confirm-actions > button.danger:hover:not(:disabled) {
+  background: var(--destructive-hover);
 }
 .device-sign-in-heading {
   position: relative;
@@ -2624,7 +2681,7 @@ td {
     grid-template-rows: 64px minmax(0, 1fr) auto;
   }
   .navigation-open #navigation .monitor-footer {
-    display: block;
+    display: grid;
     grid-column: 1 / -1;
     align-self: stretch;
   }
@@ -2771,17 +2828,14 @@ td {
       height: auto;
     }
   }
-  #creation-dialog::backdrop,
-  #device-sign-in-dialog::backdrop {
+  .dialog-panel::backdrop {
     transition: background-color 0.12s ease-out;
   }
-  #creation-dialog[data-closing]::backdrop,
-  #device-sign-in-dialog[data-closing]::backdrop {
+  .dialog-panel[data-closing]::backdrop {
     background: transparent;
   }
   @starting-style {
-    #creation-dialog[open]::backdrop,
-    #device-sign-in-dialog[open]::backdrop {
+    .dialog-panel[open]::backdrop {
       background: transparent;
     }
   }

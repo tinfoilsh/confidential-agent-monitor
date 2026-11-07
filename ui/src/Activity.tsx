@@ -32,7 +32,7 @@ const requestDate = new Intl.DateTimeFormat(undefined, {
 export function Badge(props: { state: string; record: owner.RequestRecord }) {
   return (
     <Show when={props.state !== "pending"}>
-      <span class={`badge status-${props.state}`}>
+      <span class="request-state" data-state={props.state}>
         {owner.reviewStatus({
           ...props.record,
           state: props.state as owner.RequestState,
@@ -187,11 +187,11 @@ function Requests(props: { expanded?: string }) {
               action={
                 <a class="button primary" href="#connections/catalog">
                   <Icon name="plus" />
-                  Add connection
+                  Add a service
                 </a>
               }
             >
-              Requests appear here when a sandbox uses a connection.
+              Requests appear here when a bunker uses a service.
             </Empty>
           }
         >
@@ -338,14 +338,9 @@ export function RequestDetail(props: {
       >
         {(r) => {
           const state = createMemo(() => owner.stateAt(r(), m.now()));
-          const reasons = createMemo(() =>
-            [...new Set([...(r().deny ?? []), ...owner.reasons(r())])].map(
-              (reason) =>
-                reason === "this agent may not do this on the connection"
-                  ? "This sandbox does not have permission for this action."
-                  : reason,
-            ),
-          );
+          const reasons = createMemo(() => [
+            ...new Set([...(r().deny ?? []), ...owner.reasons(r())]),
+          ]);
           return (
             <section class="request-detail">
               <Show when={!props.inline}>
@@ -356,7 +351,7 @@ export function RequestDetail(props: {
               </Show>
               <dl class="request-context">
                 <div>
-                  <dt>Sandbox</dt>
+                  <dt>Bunker</dt>
                   <dd>
                     <a
                       class="request-context-link"
@@ -368,7 +363,7 @@ export function RequestDetail(props: {
                   </dd>
                 </div>
                 <div>
-                  <dt>Connection</dt>
+                  <dt>Service</dt>
                   <dd>
                     <Show
                       when={
@@ -395,62 +390,74 @@ export function RequestDetail(props: {
                     <time dateTime={r().time}>
                       {requestDate.format(new Date(r().time))}
                     </time>
+                    <Show when={state() === "pending"}>
+                      <span class="muted">
+                        {" "}
+                        · {owner.timeLeft(r(), m.now())} left to respond
+                      </span>
+                    </Show>
                   </dd>
                 </div>
-              </dl>
-              <Show when={state() === "pending"}>
-                <p class="muted request-time-left">
-                  {owner.timeLeft(r(), m.now())} left to respond
-                </p>
-              </Show>
-              <div class="request-reasons">
-                <h3>Review</h3>
-                <Show
-                  when={r().reviews?.length}
-                  fallback={
-                    <p>
-                      {state() === "pending"
-                        ? "Waiting for you."
-                        : state() === "refused"
-                          ? "Blocked by policy. No one was asked."
-                          : state() === "expired"
-                            ? "Nobody answered in time."
-                            : state() === "outdated"
-                              ? "Settings affecting this connection changed before review."
-                              : state() === "allowed" || state() === "approved"
+                <div>
+                  <dt>Review</dt>
+                  <dd>
+                    <Show
+                      when={r().reviews?.length}
+                      fallback={
+                        state() === "pending"
+                          ? "Waiting for you."
+                          : state() === "refused"
+                            ? "Blocked by policy. No one was asked."
+                            : state() === "expired"
+                              ? "Nobody answered in time."
+                              : state() === "outdated"
+                                ? "Settings for this service changed before review."
+                                : state() === "allowed" || state() === "approved"
+                                  ? owner.isProposal(r())
+                                    ? "Proposal approved."
+                                    : "Allowed by policy."
+                                  : state() === "denied" && owner.isProposal(r())
+                                    ? "Proposal rejected."
+                                    : "Blocked."
+                      }
+                    >
+                      <For each={r().reviews}>
+                        {(answer) => (
+                          <p>
+                            You
+                            {answer.decision === "once"
+                              ? " approved it once"
+                              : answer.decision === "deny"
                                 ? owner.isProposal(r())
-                                  ? "Proposal approved."
-                                  : "Allowed by policy."
-                                : state() === "denied" && owner.isProposal(r())
-                                  ? "Proposal rejected."
-                                  : "Blocked."}
-                    </p>
-                  }
-                >
-                  <For each={r().reviews}>
-                    {(answer) => (
-                      <p>
-                        <strong>You</strong>
-                        {answer.decision === "once"
-                          ? " approved it once"
-                          : answer.decision === "deny"
-                            ? owner.isProposal(r())
-                              ? " rejected it"
-                              : " denied it"
-                            : " approved it and saved a rule"}
-                        <Show when={answer.reason}>: {answer.reason}</Show>
-                      </p>
-                    )}
-                  </For>
-                </Show>
-              </div>
-              <Show when={reasons().length}>
-                <div class="request-reasons">
-                  <h3>Details</h3>
-                  <ul>
-                    <For each={reasons()}>{(reason) => <li>{reason}</li>}</For>
-                  </ul>
+                                  ? " rejected it"
+                                  : " denied it"
+                                : " approved it and saved a rule"}
+                            <Show when={answer.reason}>: {answer.reason}</Show>
+                          </p>
+                        )}
+                      </For>
+                    </Show>
+                  </dd>
                 </div>
+                <Show when={reasons().length}>
+                  <div>
+                    <dt>Reason</dt>
+                    <dd>
+                      <For each={reasons()}>{(reason) => <p>{reason}</p>}</For>
+                    </dd>
+                  </div>
+                </Show>
+              </dl>
+              <Show when={full.loading}>
+                <p class="muted">Loading request details…</p>
+              </Show>
+              <Show when={r().facts.details?.policy}>
+                {(policy) => (
+                  <>
+                    <h3>Source changes</h3>
+                    <TechnicalDiff text={policy().source_diff} />
+                  </>
+                )}
               </Show>
               <Show
                 when={
@@ -462,30 +469,19 @@ export function RequestDetail(props: {
                 }
               >
                 <div class="request-access">
+                  <p class="muted">
+                    {r().invalid
+                      ? "Fix the request or client configuration using the error above, then retry."
+                      : "Update this bunker’s access, then retry the request from your bunker."}
+                  </p>
                   <a
                     class="button"
                     href={href("connection", r().facts.connection)}
                   >
-                    {r().invalid ? "View connection setup" : "Change access"}
+                    {r().invalid ? "View service setup" : "Change access"}
                     <Icon name="arrow" />
                   </a>
-                  <p class="muted">
-                    {r().invalid
-                      ? "Fix the request or client configuration using the error above, then retry."
-                      : "Update this sandbox’s connection access, then retry the request from your sandbox."}
-                  </p>
                 </div>
-              </Show>
-              <Show when={full.loading}>
-                <p class="muted">Loading request details…</p>
-              </Show>
-              <Show when={r().facts.details?.policy}>
-                {(policy) => (
-                  <>
-                    <h3>Source changes</h3>
-                    <TechnicalDiff text={policy().source_diff} />
-                  </>
-                )}
               </Show>
               <div class="decisions">
                 <Show when={owner.decisions(r(), m.now()).dismiss}>

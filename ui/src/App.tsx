@@ -18,9 +18,11 @@ import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
 import { Activity, RequestDetail } from "./Activity";
 import { Agents, AddAgent } from "./Agents";
 import { Connections, DeviceSignInDialog } from "./Connections";
+import { Onboarding } from "./Onboarding";
 import {
   AuthCard,
   AuthScreen,
+  ConfirmDialog,
   Empty,
   Icon,
   type IconName,
@@ -30,21 +32,17 @@ import {
 } from "./components";
 import { THEME, applyTheme, savedTheme } from "./theme";
 
-const Settings = lazy(() =>
-  import("./Settings").then((m) => ({ default: m.Settings })),
-);
 const SandboxTerminal = lazy(() => import("./SandboxTerminal"));
 const headings: Record<string, [title: string, description: string]> = {
   activity: ["Activity", "Review requests and manage saved approval rules."],
   agents: [
-    "Sandboxes",
-    "Your sandboxes and the devices that may reach them. The monitor can always be accessed by you.",
+    "Bunkers",
+    "Your bunkers and the devices that may reach them. The Perimeter can always be accessed by you.",
   ],
   connections: [
-    "Connections",
-    "Connect services and control how sandboxes use their data.",
+    "Permissions",
+    "Choose what your bunkers can reach and what needs your approval.",
   ],
-  settings: ["Settings", "Manage policy and preferences."],
   request: ["Request", ""],
 };
 const SECTION_OF: Record<string, string> = {
@@ -64,7 +62,7 @@ export default function App(props: MonitorOptions) {
     <ErrorBoundary
       fallback={(error) => (
         <div class="start-page">
-          <AuthScreen id="gate" title="Could not show Monitor">
+          <AuthScreen id="gate" title="Could not show Perimeter">
             <AuthCard icon={<Icon name="warning" />}>
               <p role="alert">{String(error)}</p>
               <button class="primary" onClick={() => location.reload()}>
@@ -167,7 +165,7 @@ function Shell() {
       <Show when={ready()} fallback={<Gate />}>
         <div class="app-frame">
           <div id="app" classList={{ "navigation-open": mobile() }}>
-            <aside id="navigation" aria-label="Monitor navigation">
+            <aside id="navigation" aria-label="Perimeter navigation">
               <a class="brand" href="#activity">
                 <img
                   src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
@@ -192,11 +190,7 @@ function Shell() {
                 Menu
               </button>
               <nav id="tree" aria-label="Management">
-                <For
-                  each={
-                    ["agents", "activity", "connections", "settings"] as const
-                  }
-                >
+                <For each={["agents", "activity", "connections"] as const}>
                   {(key) => <NavItem key={key} />}
                 </For>
                 <Show when={m.shell()}>
@@ -226,7 +220,7 @@ function Shell() {
                   )}
                 </Show>
               </nav>
-              <MonitorFooter />
+              <MonitorFooter theme={theme()} onThemeChange={setTheme} />
             </aside>
             <main
               id="workspace"
@@ -237,30 +231,14 @@ function Shell() {
                 <header id="page-header">
                   <div class="page-heading">
                     <div>
-                      <h1>{heading()?.[0] ?? "Monitor"}</h1>
+                      <h1>{heading()?.[0] ?? "Perimeter"}</h1>
                       <p>{heading()?.[1]}</p>
-                    </div>
-                    <div class="header-actions">
-                      <button
-                        aria-label="Refresh monitor"
-                        aria-busy={m.loading()}
-                        onClick={() => void m.refresh()}
-                      >
-                        <Icon name="refresh" />
-                        Refresh
-                      </button>
                     </div>
                   </div>
                 </header>
                 <div id="page-content">
                   <Show when={page()} keyed>
-                    {(path) => (
-                      <Page
-                        path={path}
-                        theme={theme()}
-                        onThemeChange={setTheme}
-                      />
-                    )}
+                    {(path) => <Page path={path} />}
                   </Show>
                   <div id="notices">
                     <ApprovalBar />
@@ -279,7 +257,7 @@ function Shell() {
                       when={untrack(() => m.shellFor(name))}
                       fallback={
                         <Empty title="Shell unavailable">
-                          This Monitor cannot open a shell in {name}.
+                          This Perimeter cannot open a shell in {name}.
                         </Empty>
                       }
                     >
@@ -320,6 +298,7 @@ function Shell() {
             </main>
             <PairDialog open={pairing()} close={close} />
             <DeviceSignInDialog attempt={m.deviceSignIn()} />
+            <ConfirmDialog />
           </div>
         </div>
       </Show>
@@ -386,33 +365,53 @@ function ApprovalBar() {
   );
 }
 
-function MonitorFooter() {
+const THEMES = [
+  ["system", "System theme", "devices"],
+  ["light", "Light theme", "sun"],
+  ["dark", "Dark theme", "moon"],
+] as const;
+
+function MonitorFooter(props: {
+  theme: string;
+  onThemeChange: (theme: string) => void;
+}) {
   const m = useMonitor();
   return (
-    <Show when={m.options.backTo}>
-      {(back) => (
-        <footer class="monitor-footer">
+    <footer class="monitor-footer">
+      <Show when={m.options.backTo}>
+        {(back) => (
           <a class="nav-item back-terminal" href={back()} link>
             <Icon name="arrow" />
             <span>Back</span>
           </a>
-        </footer>
-      )}
-    </Show>
+        )}
+      </Show>
+      <div class="theme-switch" role="group" aria-label="Color theme">
+        <For each={THEMES}>
+          {([theme, label, icon]) => (
+            <button
+              type="button"
+              aria-label={label}
+              title={label}
+              aria-pressed={props.theme === theme}
+              onClick={() => props.onThemeChange(theme)}
+            >
+              <Icon name={icon} />
+            </button>
+          )}
+        </For>
+      </div>
+    </footer>
   );
 }
 
-function Page(props: {
-  path: string;
-  theme: string;
-  onThemeChange: (theme: string) => void;
-}) {
+function Page(props: { path: string }) {
   const [kind, name = "", request] = parse(props.path);
   return (
     <Switch
       fallback={
         <Empty title="Page not found">
-          <a href="#connections">Open connections</a>
+          <a href="#connections">Open permissions</a>
         </Empty>
       }
     >
@@ -434,9 +433,6 @@ function Page(props: {
       <Match when={kind === "request"}>
         <RequestDetail id={name} />
       </Match>
-      <Match when={kind === "settings"}>
-        <Settings theme={props.theme} onThemeChange={props.onThemeChange} />
-      </Match>
     </Switch>
   );
 }
@@ -450,6 +446,7 @@ function PairDialog(props: { open: boolean; close: () => void }) {
   return (
     <Modal
       id="creation-dialog"
+      class="dialog-panel"
       aria-labelledby="creation-title"
       aria-describedby="creation-description"
       open={props.open}
@@ -459,8 +456,7 @@ function PairDialog(props: { open: boolean; close: () => void }) {
         <div>
           <h1 id="creation-title">Add a trusted device</h1>
           <p id="creation-description">
-            Paste the SSH public key of a computer that may reach your
-            sandboxes.
+            Paste the SSH public key of a computer that may reach your bunkers.
           </p>
         </div>
         <button
@@ -489,11 +485,29 @@ function Gate() {
     // Local dev (bun run dev) only: a prefilled passphrase so the dev
     // server unlocks with one click. Stripped from production builds.
     [key, setKey] = createSignal(import.meta.env.DEV ? "testtesttesttest" : "");
-  const finish = (tinfoilApiKey?: () => Promise<string> | string) =>
-    m.busy() ||
-    m.perform(async (client) =>
-      client.onboard(m.view()!, await tinfoilApiKey?.()),
-    );
+  const finish = async (
+    choices: owner.OnboardingChoices,
+    signIns: string[],
+  ) => {
+    const existing = new Set(Object.keys(m.view()!.config.connections ?? {}));
+    if (
+      m.busy() ||
+      !(await m.perform((client) => client.onboard(m.view()!, choices)))
+    )
+      return;
+    // Setup continues into the first sign-in; any others wait in Permissions.
+    const view = m.view()!;
+    for (const preset of signIns) {
+      const name = Object.keys(view.config.connections ?? {}).find(
+        (name) =>
+          !existing.has(name) &&
+          view.config.connections![name].preset === preset,
+      );
+      const field =
+        name && owner.credentialFields(view, name).find((f) => f.signIn);
+      if (field) return void m.signIn(name, field);
+    }
+  };
   const error = () => (
     <Show when={m.error()}>
       <p role="alert">{m.error()}</p>
@@ -506,11 +520,11 @@ function Gate() {
         fallback={
           <AuthScreen
             id="gate"
-            title={m.error() ? "Could not load Monitor" : undefined}
+            title={m.error() ? "Could not load Perimeter" : undefined}
           >
             <Show
               when={m.error()}
-              fallback={<Loading label="Loading Monitor…" />}
+              fallback={<Loading label="Loading Perimeter…" />}
             >
               <AuthCard icon={<Icon name="warning" />}>
                 {error()}
@@ -523,9 +537,9 @@ function Gate() {
         }
       >
         <Match when={m.locked()}>
-          <AuthScreen id="gate" title="Monitor is locked">
+          <AuthScreen id="gate" title="Perimeter is locked">
             <AuthCard icon={<Icon name="lock" />}>
-              <p>Unlock the monitor to continue.</p>
+              <p>Unlock the Perimeter to continue.</p>
               <button
                 class="primary"
                 disabled={m.busy()}
@@ -537,7 +551,7 @@ function Gate() {
           </AuthScreen>
         </Match>
         <Match when={m.mode() && !m.credential()}>
-          <AuthScreen id="gate" title="Open Monitor">
+          <AuthScreen id="gate" title="Open Perimeter">
             <AuthCard
               icon={<Icon name={m.mode() === "ssh" ? "terminal" : "key"} />}
             >
@@ -566,118 +580,18 @@ function Gate() {
                 }
               >
                 <p>
-                  Open this monitor through the attested owner SSH connection.
+                  Open this Perimeter through the attested owner SSH connection.
                 </p>
-                <pre>tinfoil monitor</pre>
+                <pre>tinfoil perimeter open NAME</pre>
               </Show>
               {error()}
             </AuthCard>
           </AuthScreen>
         </Match>
         <Match when={m.view() && !owner.onboarded(m.view()!)}>
-          <AuthScreen
-            id="gate"
-            title="Connect Tinfoil to your sandbox"
-            description="Use Tinfoil models in your sandbox for end-to-end confidential workloads."
-          >
-            <Onboarding
-              busy={m.busy()}
-              generate={m.options.tinfoilApiKey}
-              error={error()}
-              onFinish={finish}
-            />
-          </AuthScreen>
+          <Onboarding busy={m.busy()} error={error()} onFinish={finish} />
         </Match>
       </Switch>
     </div>
-  );
-}
-function Onboarding(props: {
-  busy: boolean;
-  generate?: () => Promise<string>;
-  error: JSX.Element;
-  onFinish(tinfoilApiKey?: () => Promise<string> | string): void;
-}) {
-  const [tinfoilKey, setTinfoilKey] = createSignal("");
-  return (
-    <>
-      <form
-        class="auth-card onboarding"
-        onSubmit={(e) => {
-          e.preventDefault();
-          props.onFinish(props.generate ?? tinfoilKey);
-        }}
-      >
-        <span class="auth-icon">
-          <span class="connector-icon" aria-hidden="true">
-            <img
-              class="dark-icon"
-              src={import.meta.env.BASE_URL + "icons/tinfoil.dark.svg"}
-              alt=""
-            />
-            <img
-              class="light-icon"
-              src={import.meta.env.BASE_URL + "icons/tinfoil.svg"}
-              alt=""
-            />
-          </span>
-        </span>
-        <h2>Tinfoil API key</h2>
-        <Show
-          when={!props.generate}
-          fallback={
-            <p>Your key stays in Monitor, hidden from your sandboxes.</p>
-          }
-        >
-          <fieldset class="onboarding-key" disabled={props.busy}>
-            <div class="onboarding-key-label">
-              <label for="tinfoil-api-key">API key</label>
-              <a
-                href="https://dash.tinfoil.sh/?tab=api-keys"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Get an API key
-                <Icon name="external" />
-              </a>
-            </div>
-            <input
-              id="tinfoil-api-key"
-              type="password"
-              required
-              autofocus
-              pattern={".*\\S.*"}
-              title="Enter your Tinfoil API key"
-              placeholder="tk-…"
-              autocomplete="off"
-              spellcheck={false}
-              aria-describedby="tinfoil-key-help"
-              value={tinfoilKey()}
-              onInput={(e) => setTinfoilKey(e.currentTarget.value)}
-            />
-            <p id="tinfoil-key-help" class="onboarding-key-help">
-              <Icon name="rules" />
-              Your key stays in Monitor, hidden from your sandboxes.
-            </p>
-          </fieldset>
-        </Show>
-        {props.error}
-        <button class="primary" disabled={props.busy}>
-          {props.busy
-            ? "Saving…"
-            : props.generate
-              ? "Generate an API key automatically"
-              : "Add the Tinfoil connection"}
-        </button>
-      </form>
-      <button
-        type="button"
-        class="link auth-link"
-        disabled={props.busy}
-        onClick={() => props.onFinish()}
-      >
-        Skip for now
-      </button>
-    </>
   );
 }

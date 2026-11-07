@@ -11,7 +11,6 @@ import {
 } from "solid-js";
 import {
   AuthCard,
-  AuthOptions,
   AuthScreen,
   AuthTip,
   download,
@@ -66,46 +65,36 @@ export function RecoveryDownload(props: {
 }) {
   const [saved, setSaved] = createSignal(false);
   return (
-    <>
-      <AuthCard icon={<Icon name="key" />} title="Recovery key">
-        <p>
-          It opens your sandboxes after you sign out or switch browsers. This
-          browser keeps a copy only until you sign out.
-        </p>
-        <button
-          classList={{ primary: !saved() }}
-          onClick={() => {
-            download(props.file.text, props.file.filename, "text/plain");
-            setSaved(true);
-          }}
-        >
-          <Icon name="download" />{" "}
-          {saved() ? "Download recovery key again" : "Download recovery key"}
-        </button>
-        <Show when={props.onContinue}>
-          {(next) => (
-            <button
-              class="primary"
-              disabled={!saved()}
-              onClick={() => next()()}
-            >
-              Continue
-            </button>
-          )}
-        </Show>
-      </AuthCard>
-      <Show when={props.onBack}>
-        {(back) => (
-          <AuthOptions title="Rather use a passkey?">
-            <li>
-              <button class="link" onClick={() => back()()}>
-                Use a passkey instead
-              </button>
-            </li>
-          </AuthOptions>
+    <AuthCard icon={<Icon name="key" />} title="Recovery key">
+      <p>
+        It opens your bunkers after you sign out or switch browsers. This
+        browser keeps a copy only until you sign out.
+      </p>
+      <button
+        classList={{ primary: !saved() }}
+        onClick={() => {
+          download(props.file.text, props.file.filename, "text/plain");
+          setSaved(true);
+        }}
+      >
+        <Icon name="download" />{" "}
+        {saved() ? "Download recovery key again" : "Download recovery key"}
+      </button>
+      <Show when={props.onContinue}>
+        {(next) => (
+          <button class="primary" disabled={!saved()} onClick={() => next()()}>
+            Continue
+          </button>
         )}
       </Show>
-    </>
+      <Show when={props.onBack}>
+        {(back) => (
+          <button class="link" onClick={() => back()()}>
+            Use a passkey instead
+          </button>
+        )}
+      </Show>
+    </AuthCard>
   );
 }
 
@@ -152,44 +141,38 @@ function PasskeyChoice(props: {
   onSkip: () => void;
 }) {
   return (
-    <>
-      <AuthCard icon={<Icon name="fingerprint" />} title="Passkey">
-        <p>
-          Use your fingerprint, face, screen lock, or a security key to open
-          your sandbox keys on any device.
+    <AuthCard icon={<Icon name="fingerprint" />} title="Passkey">
+      <p>
+        Use your fingerprint, face, screen lock, or a security key to open your
+        bunker keys on any device.
+      </p>
+      <Show when={props.action.error()}>
+        <p role="alert">{props.action.error()}</p>
+      </Show>
+      <button
+        class="primary"
+        disabled={props.action.busy()}
+        aria-busy={props.action.busy()}
+        onClick={() => props.onPasskey()}
+      >
+        {props.action.busy()
+          ? "Follow your device's prompt…"
+          : "Create a passkey"}
+      </button>
+      <Show when={props.action.busy()}>
+        <p class="auth-help" role="status">
+          Your browser may ask you to confirm twice. A security key needs a
+          second touch.
         </p>
-        <Show when={props.action.error()}>
-          <p role="alert">{props.action.error()}</p>
-        </Show>
-        <button
-          class="primary"
-          disabled={props.action.busy()}
-          aria-busy={props.action.busy()}
-          onClick={() => props.onPasskey()}
-        >
-          {props.action.busy()
-            ? "Follow your device's prompt…"
-            : "Create a passkey"}
-        </button>
-        <Show when={props.action.busy()}>
-          <p class="auth-help" role="status">
-            Your browser may ask you to confirm twice. A security key needs a
-            second touch.
-          </p>
-        </Show>
-      </AuthCard>
-      <AuthOptions title="Don't have a passkey?">
-        <li>
-          <button
-            class="link"
-            disabled={props.action.busy()}
-            onClick={() => props.onSkip()}
-          >
-            Save a recovery key file instead
-          </button>
-        </li>
-      </AuthOptions>
-    </>
+      </Show>
+      <button
+        class="link"
+        disabled={props.action.busy()}
+        onClick={() => props.onSkip()}
+      >
+        Save a recovery key file instead
+      </button>
+    </AuthCard>
   );
 }
 
@@ -307,8 +290,8 @@ export function UnlockKeys(props: {
       fallback={
         <AuthCard icon={<Icon name="warning" />} title="Start over?">
           <p>
-            <strong>You will lose your sandboxes.</strong> Starting over makes
-            new keys. Sandboxes and Monitors that use your current keys can't be
+            <strong>You will lose your bunkers.</strong> Starting over makes new
+            keys. Bunkers and Perimeters that use your current keys can't be
             opened again, and their data can't be recovered. CLI keys you added
             stay.
           </p>
@@ -363,29 +346,23 @@ export function UnlockKeys(props: {
               >
                 {action.busy() ? "Unlocking…" : "Choose recovery key file"}
               </button>
-            </AuthCard>
-            <AuthOptions>
               <Show when={hasPasskey()}>
-                <li>
-                  <button
-                    class="link"
-                    disabled={action.busy()}
-                    onClick={() => setNoPasskey(false)}
-                  >
-                    Use a passkey instead
-                  </button>
-                </li>
-              </Show>
-              <li>
                 <button
                   class="link"
                   disabled={action.busy()}
-                  onClick={() => setConfirming(true)}
+                  onClick={() => setNoPasskey(false)}
                 >
-                  I lost my recovery key
+                  Use a passkey instead
                 </button>
-              </li>
-            </AuthOptions>
+              </Show>
+              <button
+                class="link"
+                disabled={action.busy()}
+                onClick={() => setConfirming(true)}
+              >
+                I lost my recovery key
+              </button>
+            </AuthCard>
           </>
         }
       >
@@ -407,18 +384,14 @@ export function UnlockKeys(props: {
           >
             {action.busy() ? "Unlocking…" : "Unlock with passkey"}
           </button>
+          <button
+            class="link"
+            disabled={action.busy()}
+            onClick={() => setNoPasskey(true)}
+          >
+            Use your recovery key file
+          </button>
         </AuthCard>
-        <AuthOptions>
-          <li>
-            <button
-              class="link"
-              disabled={action.busy()}
-              onClick={() => setNoPasskey(true)}
-            >
-              Use your recovery key file
-            </button>
-          </li>
-        </AuthOptions>
         <AuthTip>
           Your keys stay unlocked while this page is open. Reopening or
           reloading terminal.tinfoil.sh asks for your passkey again.
@@ -529,7 +502,7 @@ export function KeyGate(props: {
 }) {
   const [file, setFile] = createSignal<keys.RecoveryFile>();
   const read = () => props.session.keyState();
-  const purpose = () => props.purpose ?? "open your sandboxes";
+  const purpose = () => props.purpose ?? "open your bunkers";
   return (
     <Show
       when={props.session.unlocked() && !file()}
@@ -563,10 +536,7 @@ export function KeyGate(props: {
             <Switch>
               <Match when={file()}>
                 {(recovery) => (
-                  <AuthScreen
-                    title="Save your recovery key"
-                    account={props.session.user()}
-                  >
+                  <AuthScreen title="Save your recovery key">
                     <RecoveryDownload
                       file={recovery()}
                       onContinue={() => setFile()}
@@ -578,7 +548,6 @@ export function KeyGate(props: {
                 <AuthScreen
                   title="Set up your keys"
                   description={`Your keys ${purpose()}. They're encrypted with your account, so only you can open them.`}
-                  account={props.session.user()}
                 >
                   <SetupKeys
                     session={props.session}
@@ -591,7 +560,6 @@ export function KeyGate(props: {
                 <AuthScreen
                   title="Unlock your keys"
                   description={`You need them to ${purpose()}.`}
-                  account={props.session.user()}
                 >
                   <UnlockKeys session={props.session} manager={props.manager} />
                 </AuthScreen>

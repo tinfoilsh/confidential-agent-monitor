@@ -61,6 +61,10 @@ const STATUS_LABELS: Record<string, string> = {
   failed: "Failed",
 };
 const BUSY_STATUSES = [...STARTING, "stopping"];
+const ROLE_NAMES: Record<StartRole, string> = {
+  monitor: "Perimeter",
+  sandbox: "bunker",
+};
 
 // The /start fragment is read once, kept for this tab across sign-in and removed from the URL.
 export function capture() {
@@ -203,23 +207,12 @@ function Start(props: {
       }
       description={
         r.mode === "umk"
-          ? "Paste the public keys made by the Tinfoil CLI. Their private keys stay on your computer, so this sandbox is reached with the CLI only."
+          ? "Paste the public keys made by the Tinfoil CLI. Their private keys stay on your computer, so this bunker is reached with the CLI only."
           : file()
-            ? "Save your recovery key before you head to your sandboxes."
-            : `First, we'll create keys for your ${r.roles.join(" and ")}. They're encrypted with your account, and your dashboard only sees their public keys.`
+            ? "Save your recovery key before you head to your bunkers."
+            : undefined
       }
-      account={props.session.user()}
     >
-      <Show when={r.mode === "tmk" && !file()}>
-        <ol class="start-steps" aria-label="Getting started">
-          <li aria-current="step">
-            <span>1</span> Set up your keys
-          </li>
-          <li>
-            <span>2</span> Create your sandbox
-          </li>
-        </ol>
-      </Show>
       <Show when={error()}>
         <p class="start-notice" role="alert">
           {error()}
@@ -242,7 +235,7 @@ function Start(props: {
             <For each={r.roles}>
               {(role) => (
                 <label class="start-field">
-                  {role === "monitor" ? "Monitor" : "Sandbox"} owner public key
+                  {role === "monitor" ? "Perimeter" : "Bunker"} owner public key
                   <textarea
                     rows={2}
                     disabled={busy()}
@@ -309,10 +302,11 @@ function Start(props: {
               />
             }
           >
-            <AuthCard icon={<Icon name="key" />} title="Sandbox keys">
+            <AuthCard icon={<Icon name="key" />} title="Bunker keys">
               <p>
                 Your keys are unlocked. Create keys for your{" "}
-                {r.roles.join(" and ")} to continue.
+                {r.roles.map((role) => ROLE_NAMES[role]).join(" and ")} to
+                continue.
               </p>
               <button
                 class="primary"
@@ -348,10 +342,10 @@ function Inventory(props: { session: Session }) {
       (r) => r.repo === SANDBOX_REPO && monitorOf(r) === monitor.id,
     );
   return (
-    <nav class="start-monitors" aria-label="Your monitors">
-      <p class="start-eyebrow">Your monitors</p>
+    <nav class="start-monitors" aria-label="Your Perimeters">
+      <p class="start-eyebrow">Your Perimeters</p>
       <Show when={read().loading && !read().value}>
-        <SkeletonRows cards label="Loading your Monitors and sandboxes…" />
+        <SkeletonRows cards label="Loading your Perimeters and bunkers…" />
       </Show>
       <Show when={read().error}>
         <p class="start-notice" role="alert">
@@ -366,7 +360,7 @@ function Inventory(props: { session: Session }) {
         }
       >
         <p class="start-help">
-          No Monitors in this account yet. Create one from your dashboard.
+          No Perimeters in this account yet. Create one from your dashboard.
         </p>
       </Show>
       <For each={monitors()}>
@@ -400,7 +394,7 @@ function Inventory(props: { session: Session }) {
               <Show when={monitor.owner_key_mode !== "tmk"}>
                 <p>
                   Open with the CLI:{" "}
-                  <code>tinfoil monitor open {monitor.name}</code>
+                  <code>tinfoil perimeter open {monitor.name}</code>
                 </p>
               </Show>
             </div>
@@ -463,7 +457,7 @@ function Cleanup(props: { session: Session }) {
 }
 
 export default function Console(props: { session: Session }) {
-  document.title = `Get started · ${PRODUCT.name}`;
+  document.title = `Get started · ${PRODUCT.title}`;
   const manager = keys.passkeys();
   const start = startRequest();
   return (
@@ -509,7 +503,7 @@ export default function Console(props: { session: Session }) {
               <p>
                 {start
                   ? "Sign in with the account that started this setup."
-                  : "Sign in to open your Monitors and set up sandbox keys."}
+                  : "Sign in to open your Perimeters and set up bunker keys."}
               </p>
               <button
                 class="primary"

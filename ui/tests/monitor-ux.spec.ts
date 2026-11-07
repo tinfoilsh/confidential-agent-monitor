@@ -23,10 +23,10 @@ const view = (): owner.View => ({
   presets: { tcp: { title: tcp.title, ...tcp.catalog } },
 });
 
-test("missing preset metadata has a display fallback, not a raw Custom connection", () => {
+test("missing preset metadata has a display fallback, not a raw Custom service", () => {
   const v = view();
   v.config.connections!.network.preset = "removed";
-  expect(owner.presetOf(v, "network").title).toBe("Connection");
+  expect(owner.presetOf(v, "network").title).toBe("Service");
   expect(owner.connectorIcon({}, "", "/app/").src).toContain("custom.svg");
   expect(Object.hasOwn(v.presets, "custom")).toBe(false);
   expect(owner.catalog(v).flatMap((group) => group.presets).some((p) => p.name === "custom" || p.name === "browser")).toBe(false);
@@ -208,5 +208,69 @@ describe("MCP review uses saved pins without approving them", () => {
     });
     expect(JSON.stringify(v)).toBe(original);
     expect(owner.edits.approveTools(v, "network").length).toBeGreaterThan(0);
+  });
+});
+
+describe("first setup", () => {
+  const setupView = () => {
+    const v = view();
+    v.config.connections = {};
+    v.presets = Object.fromEntries(
+      ["tcp", "tinfoil", "tinfoil_websearch", "anthropic", "github"].map(
+        (name) => {
+          const value = preset(name);
+          return [name, { title: value.title, ...value.catalog }];
+        },
+      ),
+    );
+    return v;
+  };
+  const onboard = async (choices: owner.OnboardingChoices) => {
+    const v = setupView();
+    const sent: { method: string; path: string; body: any }[] = [];
+    await owner
+      .ownerApi(async (method, path, body) => {
+        sent.push({ method, path, body });
+        return v;
+      })
+      .onboard(v, choices);
+    return sent;
+  };
+  const access = (body: any, connection: string) =>
+    body.changes.find(
+      (change: owner.Change) =>
+        change.path.join("/") === `default_access/${connection}`,
+    )?.value;
+
+  test("adds the picked services with their keys and the chosen network access", async () => {
+    const [{ method, path, body }] = await onboard({
+      services: [
+        { preset: "tinfoil", level: "allow", credential: "tk_live" },
+        { preset: "anthropic", level: "allow", credential: "sk-ant" },
+        { preset: "github", level: "ask" },
+      ],
+      network: "ask",
+    });
+    expect([method, path]).toEqual(["POST", "/policy/edits"]);
+    expect(body.credentials).toEqual({
+      tinfoil: { TINFOIL_API_KEY: "tk_live" },
+      "tinfoil-websearch": { token: "tk_live" },
+      anthropic: { token: "sk-ant" },
+      github: {},
+    });
+    expect(access(body, "network")).toEqual({ level: "ask" });
+    expect(access(body, "tinfoil")).toEqual({ level: "allow" });
+    expect(access(body, "tinfoil-websearch")).toEqual({ level: "allow" });
+    expect(access(body, "anthropic")).toEqual({ level: "allow" });
+    expect(access(body, "github")).toEqual({ level: "ask" });
+  });
+
+  test("refuses Tinfoil without a key", async () => {
+    await expect(
+      onboard({
+        services: [{ preset: "tinfoil", level: "allow", credential: " " }],
+        network: "off",
+      }),
+    ).rejects.toThrow("Choose a Tinfoil API key.");
   });
 });

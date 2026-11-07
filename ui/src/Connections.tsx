@@ -9,6 +9,7 @@ import {
 import { createStore } from "solid-js/store";
 import * as owner from "./owner.js";
 import {
+  askConfirm,
   ConnectorIcon,
   Copy,
   Empty,
@@ -16,6 +17,7 @@ import {
   SectionHeading,
   Field,
   Icon,
+  Modal,
   ResourceDisclosure,
   Search,
   createDialogMotion,
@@ -48,6 +50,7 @@ export function DeviceSignInDialog(props: {
     <dialog
       ref={dialog}
       id="device-sign-in-dialog"
+      class="dialog-panel"
       aria-labelledby="device-sign-in-title"
       aria-describedby="device-sign-in-description"
       onCancel={(event) => {
@@ -110,7 +113,7 @@ export function Connections(props: { catalog?: boolean; expanded?: string; propo
     <>
       <TabBar
         class="page-tabs"
-        label="Connection views"
+        label="Permission views"
         value={props.catalog ? "catalog" : "mine"}
         options={[
           { value: "mine", label: "Mine", href: "#connections" },
@@ -171,25 +174,25 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
       <div class="resource-list collection-list">
         <div class="resource-heading">
           <h2>
-            Connections <span class="count">{names().length}</span>
+            Services <span class="count">{names().length}</span>
           </h2>
         </div>
         <For
           each={names()}
           fallback={
             <Empty
-              title={query() ? "None match" : "No connections yet"}
+              title={query() ? "None match" : "No services yet"}
               action={
                 <Show when={!query()}>
                   <a class="button primary" href="#connections/catalog">
                     <Icon name="plus" />
-                    Add connection
+                    Add a service
                   </a>
                 </Show>
               }
             >
               <Show when={!query()}>
-                Add a connection to give your sandboxes access to a service.
+                Add a service from the catalog to let your bunkers use it.
               </Show>
             </Empty>
           }
@@ -245,7 +248,7 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
             icon="policy"
             action={<a class="button" href="#activity/proposals">View proposal history</a>}
           >
-            It may have been reviewed, become outdated, or been discarded when Monitor restarted.
+            It may have been reviewed, become outdated, or been discarded when the Perimeter restarted.
           </Empty>
         </div>
       </Show>
@@ -274,52 +277,179 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
           </For>
         </div>
       </Show>
+      <Show when={!query()}>
+        <GlobalPermissions />
+      </Show>
     </>
   );
 }
-function CatalogRow(props: { name: string; added?: number }) {
+// Account-wide rules that apply to every bunker and service.
+function GlobalPermissions() {
   const m = useMonitor();
   return (
-    <ResourceDisclosure
-      class="catalog-item"
-      summaryClass="resource-row collection-row catalog-row"
-      summary={
-        <>
-          <ConnectorIcon preset={props.name} />
-          <strong
-            class="collection-name"
-            title={m.view()!.presets[props.name].title}
-          >
-            {m.view()!.presets[props.name].title}
-          </strong>
-          <span class="resource-meta">
-            <Show when={props.added}>
-              {(count) => <span class="muted">added ({count()})</span>}
-            </Show>
+    <div class="settings">
+      <section class="settings-section">
+        <h2>Payments</h2>
+        <label class="settings-card setting-toggle">
+          <span>
+            <span class="setting-title">Ask before any payment</span>
+            <small>
+              A bunker must get your approval for anything that spends money.
+            </small>
           </span>
-          <span class="collection-chevron">
-            <Icon name="arrow" />
+          <input
+            type="checkbox"
+            role="switch"
+            checked={owner.effectMode(m.view()!, "pay") !== "allow"}
+            onChange={(e) =>
+              void m.edit(
+                owner.edits.setEffect(
+                  "pay",
+                  e.currentTarget.checked ? undefined : "allow",
+                ),
+              )
+            }
+          />
+        </label>
+        <label class="settings-card setting-toggle">
+          <span>
+            <span class="setting-title">Allow AI inference without asking</span>
+            <small>
+              Paid model calls (Tinfoil, OpenAI, …) go through without
+              approval. Other payments still ask.
+            </small>
           </span>
-        </>
-      }
+          <input
+            type="checkbox"
+            role="switch"
+            checked={m.view()!.config.allow_paid_inference}
+            onChange={(e) =>
+              void m.edit(owner.edits.setPaidInference(e.currentTarget.checked))
+            }
+          />
+        </label>
+      </section>
+      <section class="settings-section settings-danger">
+        <h2>Dangerous</h2>
+        <label class="settings-card setting-toggle">
+          <span>
+            <span class="setting-title">Allow everything</span>
+            <small>
+              Ignore these permissions. Every bunker can reach any host on any
+              port, and nothing asks.
+            </small>
+          </span>
+          <input
+            type="checkbox"
+            role="switch"
+            checked={owner.networkingOpen(m.view()!)}
+            onChange={async (e) => {
+              const toggle = e.currentTarget,
+                open = toggle.checked;
+              if (
+                open &&
+                !(await askConfirm({
+                  title: "Allow everything?",
+                  description:
+                    "Bunkers will be able to reach any host without asking.",
+                  confirmLabel: "Allow everything",
+                  destructive: true,
+                }))
+              ) {
+                toggle.checked = false;
+                return;
+              }
+              void m.edit(owner.edits.setNetworkingOpen(m.view()!, open));
+            }}
+          />
+        </label>
+      </section>
+    </div>
+  );
+}
+function CatalogRow(props: {
+  name: string;
+  added?: number;
+  onOpen: () => void;
+}) {
+  const m = useMonitor();
+  return (
+    <button
+      type="button"
+      class="resource-row collection-row catalog-row"
+      onClick={() => props.onOpen()}
     >
-      {(active) => (
-        <Show when={active()}>
-          <div class="catalog-entry">
-            <h3 class="catalog-add-title">
-              New {m.view()!.presets[props.name].title} connection
-            </h3>
-            <AddConnection preset={props.name} />
-          </div>
+      <ConnectorIcon preset={props.name} />
+      <strong
+        class="collection-name"
+        title={m.view()!.presets[props.name].title}
+      >
+        {m.view()!.presets[props.name].title}
+      </strong>
+      <span class="resource-meta">
+        <Show when={props.added}>
+          {(count) => <span class="muted">added ({count()})</span>}
         </Show>
-      )}
-    </ResourceDisclosure>
+      </span>
+      <span class="collection-chevron">
+        <Icon name="arrow" />
+      </span>
+    </button>
+  );
+}
+function CatalogDialog(props: { preset?: string; onClose: () => void }) {
+  const m = useMonitor();
+  // Keep the chosen service while the dialog fades out.
+  const shown = createMemo<string | undefined>(
+    (previous) => props.preset ?? previous,
+  );
+  return (
+    <Modal
+      id="catalog-dialog"
+      class="dialog-panel"
+      aria-labelledby="catalog-dialog-title"
+      open={!!props.preset}
+      onClose={props.onClose}
+    >
+      <Show when={shown()} keyed>
+        {(preset) => (
+          <>
+            <header class="dialog-header">
+              <div>
+                <h1 id="catalog-dialog-title">
+                  <ConnectorIcon preset={preset} />
+                  Add {m.view()!.presets[preset].title}
+                </h1>
+              </div>
+              <button
+                class="dialog-close icon-button"
+                aria-label="Close dialog"
+                onClick={props.onClose}
+              >
+                <Icon name="close" />
+              </button>
+            </header>
+            <div class="dialog-body">
+              <AddConnection preset={preset} />
+            </div>
+            <Show when={m.message(location.hash)}>
+              {(text) => (
+                <p class="dialog-notice" role="status">
+                  {text()}
+                </p>
+              )}
+            </Show>
+          </>
+        )}
+      </Show>
+    </Modal>
   );
 }
 function Catalog() {
   let catalog!: HTMLDivElement;
   const m = useMonitor(),
     [query, setQuery] = m.search("connections");
+  const [chosen, setChosen] = createSignal<string>();
   const groups = createMemo(() => owner.catalog(m.view()!));
   const filtered = createMemo(() => {
     const search = query().toLowerCase();
@@ -343,7 +473,7 @@ function Catalog() {
           onInput={setQuery}
           onEnter={() =>
             catalog
-              .querySelector<HTMLAnchorElement>("details[open] .collection-row")
+              .querySelector<HTMLButtonElement>("details[open] .collection-row")
               ?.click()
           }
         />
@@ -375,6 +505,7 @@ function Catalog() {
                       <CatalogRow
                         name={name}
                         added={presets().get(name)?.connections}
+                        onOpen={() => setChosen(name)}
                       />
                     )}
                   </For>
@@ -387,6 +518,7 @@ function Catalog() {
       <Show when={![...filtered().values()].some((g) => g.presets.length)}>
         <Empty title="No matching services">Try a different search.</Empty>
       </Show>
+      <CatalogDialog preset={chosen()} onClose={() => setChosen()} />
     </div>
   );
 }
@@ -601,7 +733,7 @@ export function AddConnection(props: { preset: string }) {
             help="Leave blank to configure later."
           />
           <label>
-            Sandbox
+            Bunker
             <select
               value={agent()}
               onChange={(e) => setAgent(e.currentTarget.value)}
@@ -626,7 +758,7 @@ export function AddConnection(props: { preset: string }) {
             classList={{ primary: !signIns().length }}
             disabled={m.busy()}
           >
-            {signIns().length ? "Add without signing in" : "Add connection"}
+            {signIns().length ? "Add without signing in" : "Add service"}
           </button>
           <For each={signIns()}>
             {(field) => (
@@ -827,7 +959,7 @@ function ToolChange(props: { change: ReturnType<typeof owner.toolChange> }) {
         <Show when={props.change.tool?.annotations?.readOnlyHint}>
           <span
             class="badge effect-read"
-            title="The MCP server advertises readOnlyHint. Monitor uses it for permission classification; it does not verify that the implementation cannot change data."
+            title="The MCP server advertises readOnlyHint. The Perimeter uses it for permission classification; it does not verify that the implementation cannot change data."
           >
             Server marks read-only
           </span>
@@ -926,7 +1058,7 @@ function Connection(props: { name: string }) {
     <div class="connection-detail">
       <Show
         when={connection()}
-        fallback={<Empty title="Connection not found" />}
+        fallback={<Empty title="Service not found" />}
       >
         <Show when={owner.presetOf(m.view()!, props.name).warning}>
           {(warning) => <section class="connection-section">
@@ -1008,14 +1140,14 @@ function Connection(props: { name: string }) {
         </Show>
         <section class="connection-section">
           <SectionHeading
-            title="Sandbox access"
-            description="Who can use this connection"
+            title="Bunker access"
+            description="Who can use this service"
           />
           <div class="connection-access">
             <For
               each={owner.sandboxNames(m.view()!)}
               fallback={
-                <p class="muted">Enrol a sandbox to use this connection.</p>
+                <p class="muted">Enrol a bunker to use this service.</p>
               }
             >
               {(name) => (
@@ -1032,7 +1164,7 @@ function Connection(props: { name: string }) {
           <section class="connection-section connection-setup">
             <SectionHeading
               title="Details"
-              description="URLs, sandbox placeholders, and setup instructions"
+              description="URLs, bunker placeholders, and setup instructions"
             />
             <Show when={tinfoil()}>
               {(setup) => (
@@ -1063,7 +1195,7 @@ function Connection(props: { name: string }) {
                             {setup.connection} · {setup.credential}
                           </h3>
                         </Show>
-                        <label for={id}>Sandbox placeholder</label>
+                        <label for={id}>Bunker placeholder</label>
                         <div class="secret-input">
                           <input
                             ref={input}
@@ -1132,10 +1264,10 @@ function Connection(props: { name: string }) {
                       <div class="agent-setup-body">
                         <p>
                           Save this in <code>~/.codex/config.toml</code>, then
-                          run Codex in your Monitor-connected sandbox or with{" "}
+                          run Codex in your Perimeter-connected bunker or with{" "}
                           <code>monitor run -- codex</code>. Choose a model
-                          available to your ChatGPT account. Grant your sandbox
-                          access to this connection and review pending requests
+                          available to your ChatGPT account. Grant your bunker
+                          access to this service and review pending requests
                           in Activity.
                         </p>
                         <pre ref={code}>{text()}</pre>
@@ -1164,7 +1296,13 @@ function Connection(props: { name: string }) {
             disabled={m.busy()}
             onClick={async () => {
               if (
-                confirm(`Remove connection ${props.name}?`) &&
+                (await askConfirm({
+                  title: `Remove ${props.name}?`,
+                  description:
+                    "Bunkers lose access to this service, and its saved credentials are deleted.",
+                  confirmLabel: "Remove service",
+                  destructive: true,
+                })) &&
                 (await m.edit(
                   owner.edits.removeConnection(m.view()!, props.name),
                 ))
@@ -1172,7 +1310,7 @@ function Connection(props: { name: string }) {
                 location.hash = "#connections";
             }}
           >
-            Remove connection
+            Remove service
           </button>
         </div>
       </Show>
