@@ -101,6 +101,21 @@ export function DeviceSignInDialog(props: {
   );
 }
 
+// Shown in the page header, so the views stay in reach while the page scrolls.
+export function PermissionTabs(props: { view?: "catalog" | "rules" }) {
+  return (
+    <TabBar
+      class="page-tabs"
+      label="Permission views"
+      value={props.view ?? "mine"}
+      options={[
+        { value: "mine", label: "Mine", href: "#connections" },
+        { value: "catalog", label: "Catalog", href: "#connections/catalog" },
+        { value: "rules", label: "Saved rules", href: "#connections/rules" },
+      ]}
+    />
+  );
+}
 export function Connections(props: {
   view?: "catalog" | "rules";
   expanded?: string;
@@ -108,16 +123,6 @@ export function Connections(props: {
 }) {
   return (
     <>
-      <TabBar
-        class="page-tabs"
-        label="Permission views"
-        value={props.view ?? "mine"}
-        options={[
-          { value: "mine", label: "Mine", href: "#connections" },
-          { value: "catalog", label: "Catalog", href: "#connections/catalog" },
-          { value: "rules", label: "Saved rules", href: "#connections/rules" },
-        ]}
-      />
       <Show
         when={props.view}
         fallback={

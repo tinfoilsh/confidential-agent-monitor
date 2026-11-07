@@ -15,10 +15,10 @@ import {
 } from "solid-js";
 import * as owner from "./owner.js";
 import { MonitorProvider, useMonitor, type MonitorOptions } from "./monitor";
-import { Activity, RequestDetail } from "./Activity";
+import { Activity, ActivityTabs, RequestDetail } from "./Activity";
 import { ApprovalToasts } from "./Approvals";
 import { Agents, AddAgent } from "./Agents";
-import { Connections, DeviceSignInDialog } from "./Connections";
+import { Connections, DeviceSignInDialog, PermissionTabs } from "./Connections";
 import { Onboarding } from "./Onboarding";
 import {
   AuthCard,
@@ -96,6 +96,26 @@ function Shell() {
   const kind = () => parse(page())[0];
   const section = () => SECTION_OF[kind()] ?? kind();
   const heading = () => headings[kind()] ?? headings[section()];
+  const permissionView = () => {
+    const [kind, view] = parse(page());
+    return kind === "connections" && (view === "catalog" || view === "rules")
+      ? view
+      : undefined;
+  };
+  // Sections stick below the page header, which shows a divider once content
+  // scrolls beneath it.
+  let workspace!: HTMLElement;
+  const [pinned, setPinned] = createSignal(false);
+  const measureHeader = (header: HTMLElement) => {
+    const resized = new ResizeObserver(() =>
+      workspace.style.setProperty(
+        "--page-header-height",
+        `${header.offsetHeight}px`,
+      ),
+    );
+    resized.observe(header);
+    onCleanup(() => resized.disconnect());
+  };
   const approvals = () =>
     m.pendingCount() + (m.view() ? owner.toolReviews(m.view()!).length : 0);
   const count = (section: string) =>
@@ -251,18 +271,36 @@ function Shell() {
               <MonitorFooter theme={theme()} onThemeChange={setTheme} />
             </aside>
             <main
+              ref={workspace}
               id="workspace"
               tabIndex={-1}
               classList={{ "shell-shown": shellShown() }}
+              onScroll={(event) => setPinned(event.currentTarget.scrollTop > 0)}
             >
               <Show when={!shellShown()}>
-                <header id="page-header">
+                <header
+                  ref={measureHeader}
+                  id="page-header"
+                  classList={{ pinned: pinned() }}
+                >
                   <div class="page-heading">
                     <div>
                       <h1>{heading()?.[0] ?? "Perimeter"}</h1>
                       <p>{heading()?.[1]}</p>
                     </div>
                   </div>
+                  <Switch>
+                    <Match when={kind() === "activity"}>
+                      <div class="page-header-tabs">
+                        <ActivityTabs scope={parse(page())[1]} />
+                      </div>
+                    </Match>
+                    <Match when={section() === "connections"}>
+                      <div class="page-header-tabs">
+                        <PermissionTabs view={permissionView()} />
+                      </div>
+                    </Match>
+                  </Switch>
                 </header>
                 <div id="page-content">
                   <Show when={page()} keyed>

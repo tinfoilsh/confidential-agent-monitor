@@ -575,8 +575,14 @@ summary + * {
   background: var(--surface) var(--grid) repeat center;
 }
 #page-header.pinned {
-  background: var(--card);
   border-bottom-color: var(--line);
+}
+#page-header:has(.page-header-tabs) {
+  padding-bottom: 16px;
+}
+.page-header-tabs {
+  max-width: calc(var(--page-width) - 48px);
+  margin: 16px auto 0;
 }
 .page-heading {
   max-width: calc(var(--page-width) - 48px);
@@ -750,9 +756,6 @@ html [data-sonner-toaster] {
 #toolbar:empty {
   display: none;
 }
-.page-tabs {
-  margin-bottom: 16px;
-}
 #toolbar,
 .catalog-toolbar {
   padding-top: 8px;
@@ -828,7 +831,8 @@ html [data-sonner-toaster] {
 }
 #list,
 .resource-list {
-  overflow: hidden;
+  /* Clips the corners without becoming a scroll box, so headings can stick. */
+  overflow: clip;
   border: 1px solid var(--line);
   border-radius: var(--card-radius);
   background: var(--card);
@@ -938,6 +942,9 @@ html [data-sonner-toaster] {
   }
 }
 .resource-heading {
+  position: sticky;
+  top: var(--page-header-height, 0px);
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2926,6 +2933,10 @@ td {
   #page-header {
     padding: 20px 16px;
     position: relative;
+  }
+  /* The page header scrolls away on phones, so headings stick at the top. */
+  .resource-heading {
+    top: 0;
   }
   #page-content {
     padding: 0 16px 48px;
