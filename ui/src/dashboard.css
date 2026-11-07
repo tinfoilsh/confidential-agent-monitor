@@ -1975,7 +1975,7 @@ details[open] > summary > .collection-chevron {
   box-shadow: none;
   text-align: left;
 }
-.access-toggle:hover:not(:disabled) {
+button.access-toggle:hover:not(:disabled) {
   background: none;
   color: var(--link);
 }

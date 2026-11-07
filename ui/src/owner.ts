@@ -1638,12 +1638,12 @@ export const edits = {
         },
       },
     }),
-  // Identities may not name a missing connection, so removing one also clears it from every agent.
   // Replaces a Tinfoil service's key with another of the owner's keys.
   setTinfoilKey: (connection: string, field: string, key: string) => ({
     changes: [tinfoilKeyChange(connection, key)],
     credentials: { [connection]: { [field]: key } },
   }),
+  // Identities may not name a missing connection, so removing one also clears it from every agent.
   removeConnection: (view: View, connection: string) =>
     sourceChanges({
       connections: { [connection]: null },
