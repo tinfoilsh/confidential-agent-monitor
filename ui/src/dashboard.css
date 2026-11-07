@@ -517,7 +517,8 @@ summary + * {
 }
 .nav-section {
   padding: 0 12px 4px;
-  color: rgb(255 255 255 / 40%);
+  /* Dimmer than the items, yet above 4.5:1 on the sidebar. */
+  color: rgb(255 255 255 / 55%);
   font-size: var(--font-detail);
   font-weight: 500;
   line-height: 16px;
