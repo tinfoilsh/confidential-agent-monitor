@@ -190,7 +190,7 @@ def build_image(args):
         tag = 'localhost/monitor-image:' + build.name.removeprefix('.')
         container = None
         try:
-            print('Building the Monitor guest image...', file=sys.stderr, flush=True)
+            print('Building the Perimeter guest image...', file=sys.stderr, flush=True)
             run([engine, 'build', '--tag', tag, '--build-arg', 'CLAUDE_VERSION=' + args.claude_version,
                  str(context)], timeout=1800)
             container = run([engine, 'create', tag, '/bin/true'], capture_output=True, timeout=30).stdout.decode().strip()
@@ -253,7 +253,7 @@ def sandbox(binary, mounts=()):
 
 def preflight(image):
     if sys.platform != 'linux' or platform.machine() != 'x86_64':
-        raise Error('Monitor VMs currently require x86_64 Linux with KVM')
+        raise Error('Perimeter VMs currently require x86_64 Linux with KVM')
     if sys.version_info < (3, 11):
         raise Error('VM launch requires Python 3.11 or newer')
     for executable in ('ssh', 'ssh-keygen', 'mke2fs', 'tar', 'cp'):
@@ -650,7 +650,7 @@ def launch_lock(path):
         try:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as error:
-            raise Error("another Monitor setup or launch is using this state") from error
+            raise Error("another Perimeter setup or launch is using this state") from error
         yield
 
 
@@ -661,7 +661,7 @@ def owner_token(value):
     except (ValueError, TypeError):
         record = None
     if isinstance(record, dict) and record.get("version") == 2:
-        raise Error("owner signing requires an attested client; use tinfoil monitor open")
+        raise Error("owner signing requires an attested client; use tinfoil perimeter open")
     if isinstance(record, dict) and {"version", "key"} <= record.keys():
         if record.get("version") != 1 or not isinstance(record.get("key"), str):
             raise Error("invalid owner key record")
@@ -749,7 +749,7 @@ def endpoint_address(value):
 
 def setup_launch(args):
     if sys.platform != "linux":
-        raise Error("Monitor VM launch currently requires Linux/Firecracker")
+        raise Error("Perimeter VM launch currently requires Linux/Firecracker")
     name = profile_name(args)
     config_path = Path(args.client_config).expanduser().resolve()
     with launch_lock(config_path.with_suffix(".lock")):
@@ -767,7 +767,7 @@ def setup_launch(args):
         if args.owner_key_file:
             key = private_read(Path(args.owner_key_file).expanduser())
         elif sys.stdin.isatty():
-            key = getpass.getpass("Monitor owner key or passphrase (saved only on this host): ")
+            key = getpass.getpass("Perimeter owner key or passphrase (saved only on this host): ")
         else:
             raise Error("pass --owner-key-file pointing to an owner-only file")
         owner = OwnerClient(owner_url, key)
@@ -776,19 +776,19 @@ def setup_launch(args):
         # A connection's kind is its key naming a connector, such as "http".
         candidates = [name for name, settings in connections.items()
                       if settings.get("preset") == "anthropic" and "http" in settings]
-        connection = setup_value(args.connection, "Anthropic HTTP connection", candidates[0] if len(candidates) == 1 else None)
+        connection = setup_value(args.service, "Anthropic HTTP service", candidates[0] if len(candidates) == 1 else None)
         if "http" not in connections.get(connection, {}):
-            raise Error("choose an existing HTTP connection for the Anthropic API")
+            raise Error("choose an existing HTTP service for the Anthropic API")
         access_spec = args.access or [item.strip() for item in setup_value(
-            None, "Connection access, comma-separated name=read|ask|allow", connection + "=allow").split(",")]
+            None, "Service access, comma-separated name=read|ask|allow", connection + "=allow").split(",")]
         access = {}
         for item in access_spec:
             name, sep, level = item.partition("=")
             if not sep or name not in connections or level not in ("read", "ask", "allow"):
-                raise Error(f"invalid connection access {item!r}; use an existing connection and read, ask or allow")
+                raise Error(f"invalid service access {item!r}; use an existing service and read, ask or allow")
             access[name] = {"level": level}
         if connection not in access:
-            raise Error("the Anthropic connection must be included in --access")
+            raise Error("the Anthropic service must be included in --access")
         host_key = view["host_key"].strip()
         if "\n" in host_key or not host_key.startswith(("ssh-", "ecdsa-")):
             raise Error("owner API returned an invalid SSH host key")
@@ -810,10 +810,10 @@ def enroll_identity(owner, state, state_path, public_key, access):
     existing = view["config"].get("identities", {}).get(state["name"])
     if existing:
         if existing["key"].strip() != public_key.strip():
-            raise Error("this VM's Monitor identity has a different key; refusing to replace it")
+            raise Error("this VM's Perimeter identity has a different key; refusing to replace it")
         # Never replay initial access over permissions edited in the web app.
     elif state["enrolled"]:
-        raise Error("this VM's Monitor identity was revoked; destroy the VM before creating a new identity")
+        raise Error("this VM's Perimeter identity was revoked; destroy the VM before creating a new identity")
     else:
         # Record the attempt first. A lost response followed by owner revocation
         # must not cause a later launch to restore the initial grant.
@@ -829,13 +829,13 @@ def revoke_identity(owner, name, public_key):
     if name not in ids:
         return
     if ids[name]["key"].strip() != public_key.strip():
-        raise Error("this VM's Monitor identity has a different key; refusing to revoke it")
+        raise Error("this VM's Perimeter identity has a different key; refusing to revoke it")
     owner.edit([{"path": ["identities", name], "delete": True}])
 
 
 def launch_vm(args, cli):
     if sys.platform != "linux":
-        raise Error("Monitor VM launch currently requires Linux/Firecracker")
+        raise Error("Perimeter VM launch currently requires Linux/Firecracker")
     name = profile_name(args)
     config_path = Path(args.client_config).expanduser().resolve()
     try:
@@ -851,7 +851,7 @@ def launch_vm(args, cli):
     if args.command == "launch" and not workspace.is_dir():
         raise Error("choose an existing project directory")
     if workspace == root.resolve() or workspace in root.resolve().parents:
-        raise Error("the project contains Monitor's host credentials; choose a project outside the launch configuration directory")
+        raise Error("the project contains the Perimeter's host credentials; choose a project outside the launch configuration directory")
     identity = "vm-" + hashlib.sha256((profile["id"] + "\0" + str(workspace)).encode()).hexdigest()[:32]
     directory = root / "instances" / identity
     if args.command == "stop":
@@ -865,7 +865,7 @@ def launch_vm(args, cli):
             if state["workspace"] != str(workspace) or state["name"] != identity:
                 raise Error("VM state does not match this project")
         elif args.command != "launch":
-            raise Error("no Monitor VM is recorded for this project")
+            raise Error("no Perimeter VM is recorded for this project")
         else:
             directory.mkdir(parents=True, exist_ok=True, mode=0o700)
             state = {"name": identity, "workspace": str(workspace), "enrolled": False, "revoked": False}
@@ -879,7 +879,7 @@ def launch_vm(args, cli):
             state["revoked"] = True
             private(state_path, json.dumps(state).encode() + b"\n")
             shutil.rmtree(directory)
-            print("Revoked the Monitor identity and destroyed the VM.")
+            print("Revoked the Perimeter identity and destroyed the VM.")
             return 0
         if args.command == "launch" and state.get("revoked"):
             raise Error("this VM is being destroyed; retry monitor destroy")
@@ -906,13 +906,13 @@ def guest_agent(cli, client, args):
         env = session.environment([], None)
         connection = next((c for c in session.connections if c["name"] == args.connection), None)
         if connection is None:
-            raise Error("the model connection is not accessible to this VM")
+            raise Error("the model service is not accessible to this VM")
         if connection["state"] != "ready":
-            raise Error("the model connection is not ready; check its access and status in Monitor")
+            raise Error("the model service is not ready; check its access and status in the Perimeter")
         values = connection["placeholders"]
         variable = next((key for key in ("ANTHROPIC_API_KEY", "token") if key in values), None)
         if variable is None:
-            raise Error("model connection needs a token or ANTHROPIC_API_KEY credential slot")
+            raise Error("model service needs a token or ANTHROPIC_API_KEY credential slot")
         for name in ("ANTHROPIC_AUTH_TOKEN", "CLAUDE_CODE_OAUTH_TOKEN", "ANTHROPIC_BASE_URL"):
             env.pop(name, None)
         env["ANTHROPIC_API_KEY"] = values[variable]
@@ -923,7 +923,7 @@ def guest_agent(cli, client, args):
         if args.mcp:
             servers, count = cli.mcp_servers(session)
             if not count:
-                raise Error("no MCP tools are available; review connection access and tools in Monitor")
+                raise Error("no MCP tools are available; review service access and tools in the Perimeter")
             mcp_config = session.directory / "mcp.json"
             mcp_config.write_text(json.dumps({"mcpServers": servers}))
             # These endpoints live in the guest. Sending them through the HTTP
@@ -970,20 +970,20 @@ def add_commands(commands, policy_commands):
         command = policy_commands.add_parser(action, help={"diff": "validate and preview a replacement policy", "apply": "apply a replacement policy"}[action])
         command.add_argument("file", help="TOML file, or - for stdin")
     setup = commands.add_parser("setup", help="configure one-command Linux VM launch")
-    setup.add_argument("--owner-url", help="unlocked Monitor owner API URL")
+    setup.add_argument("--owner-url", help="unlocked Perimeter owner API URL")
     setup.add_argument("--owner-key-file", help="owner-only file containing a key or passphrase; otherwise prompt privately")
-    setup.add_argument("--endpoint", help="Monitor SSH HOST:PORT as reached by this host")
+    setup.add_argument("--endpoint", help="Perimeter SSH HOST:PORT as reached by this host")
     setup.add_argument("--image", default=str(Path.home() / ".local/share/monitor/images/default"), help="prepared VM image directory")
     setup.add_argument("--cpus", type=int, default=2, help="VM CPU count (default: 2)")
     setup.add_argument("--memory", type=int, default=4096, help="VM memory in MiB (default: 4096)")
-    setup.add_argument("--connection", help="Anthropic HTTP connection name")
-    setup.add_argument("--access", action="append", help="initial connection access NAME=read|ask|allow; repeat for several")
-    setup.add_argument("--mcp", action="store_true", help="also connect Claude to Monitor's MCP connections")
-    launch = commands.add_parser("launch", help="launch an agent in a Monitor-connected Linux VM")
+    setup.add_argument("--service", help="Anthropic HTTP service name")
+    setup.add_argument("--access", action="append", help="initial service access NAME=read|ask|allow; repeat for several")
+    setup.add_argument("--mcp", action="store_true", help="also connect Claude to the Perimeter's MCP services")
+    launch = commands.add_parser("launch", help="launch an agent in a Perimeter-connected Linux VM")
     launch.add_argument("--workspace", default=".", help="project directory (default: current directory)")
     launch.add_argument("agent", choices=["claude"])
     launch.add_argument("argv", nargs=argparse.REMAINDER, help="-- ARGUMENTS passed to Claude")
-    destroy = commands.add_parser("destroy", help="revoke the project's Monitor identity and destroy its VM")
+    destroy = commands.add_parser("destroy", help="revoke the project's Perimeter identity and destroy its VM")
     destroy.add_argument("--workspace", default=".", help="project directory (default: current directory)")
     stop = commands.add_parser("stop", help="stop the project's running VM and retain its disk")
     stop.add_argument("--workspace", default=".", help="project directory (default: current directory)")

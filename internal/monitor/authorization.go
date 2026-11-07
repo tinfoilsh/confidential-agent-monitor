@@ -110,7 +110,7 @@ func (m *monitor) authorizeAdmission(ctx context.Context, admitted admission, ta
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if admitted.connection == nil {
-		return errors.New("connection removed")
+		return errors.New("service removed")
 	}
 	f := facts.Facts{
 		Operation:  &facts.Operation{Action: "session.admit", Effects: []string{"session"}},

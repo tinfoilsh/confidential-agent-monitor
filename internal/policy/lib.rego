@@ -100,7 +100,7 @@ deny contains "owner policy deny must be a set or array of strings" if {
 
 deny contains msg if some msg in owner_deny
 
-deny contains "this agent may not do this on the connection" if mode == "off"
+deny contains "This bunker does not have permission for this action." if mode == "off"
 
 deny contains sprintf("The %s effect is set to Deny.", [effect]) if {
 	some effect in op.effects

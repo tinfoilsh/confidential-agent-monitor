@@ -176,7 +176,7 @@ func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalI
 				Details: map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(base.Policy, candidate)}}})
 		}
 		if err != nil {
-			return nil, fmt.Errorf("connection %s: %w", target, err)
+			return nil, fmt.Errorf("service %s: %w", target, err)
 		}
 		proposals = append(proposals, &record{Facts: raw, Changes: normalized, scope: before.ProposalScope(p.Name, normalized),
 			Decision: policy.Decision{Requirements: []facts.Requirement{{ID: "policy", Message: reason}}}})

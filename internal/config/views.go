@@ -87,10 +87,10 @@ func (c *Config) ProposalChanges(p Principal, changes []Change) (map[string][]Ch
 	for _, change := range changes {
 		target, ok := ProposalTarget(change.Path)
 		if !ok {
-			return nil, errors.New("proposals may change only connection setup and access")
+			return nil, errors.New("proposals may change only service setup and access")
 		}
 		if !c.Identities[p.Name].Routes && (change.Path[0] == "default_access" || change.Path[0] == "identities" && change.Path[1] != p.Name) {
-			return nil, errors.New("a sandbox may propose only connection setup and its own access")
+			return nil, errors.New("a bunker may propose only service setup and its own access")
 		}
 		groups[target] = append(groups[target], change)
 	}

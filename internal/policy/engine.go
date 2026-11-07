@@ -38,7 +38,7 @@ func Prepare(ctx context.Context, data map[string]any, policies map[string]strin
 	reserved := []string{"monitor", "lattices", "levels"}
 	for _, name := range reserved {
 		if _, ok := data[name]; ok {
-			return nil, fmt.Errorf("data.%s is reserved for the monitor", name)
+			return nil, fmt.Errorf("data.%s is reserved for the Perimeter", name)
 		}
 	}
 	store := maps.Clone(data)
@@ -59,7 +59,7 @@ func Prepare(ctx context.Context, data map[string]any, policies map[string]strin
 		}
 		for _, r := range reserved {
 			if module.Package.Path.HasPrefix(ast.MustParseRef("data." + r)) {
-				return nil, fmt.Errorf("policy %s: data.%s is reserved for the monitor", name, r)
+				return nil, fmt.Errorf("policy %s: data.%s is reserved for the Perimeter", name, r)
 			}
 		}
 		fmt.Fprintf(h, "%q%q", filename, policies[name])

@@ -162,7 +162,7 @@ func (request *Request) capture(h *Setup, r *http.Request) error {
 	}
 	switch {
 	case h.Claim(host, port) < 0:
-		return fmt.Errorf("this connection does not serve %s:%d", host, port)
+		return fmt.Errorf("this service does not serve %s:%d", host, port)
 	case !slices.Contains(methods, r.Method):
 		return fmt.Errorf("method %s is refused", r.Method)
 	case len(r.Trailer) > 0:
