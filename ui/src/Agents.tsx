@@ -289,8 +289,9 @@ function AccessSelect<T extends string>(props: {
           Mixed
         </option>
       </Show>
-      <For each={Object.entries(props.options) as [T, string][]}>
-        {([value, label]) => <option value={value}>{label}</option>}
+      {/* Keyed by value, so a refreshed list keeps the chosen option in place. */}
+      <For each={Object.keys(props.options) as T[]}>
+        {(value) => <option value={value}>{props.options[value]}</option>}
       </For>
     </select>
   );
