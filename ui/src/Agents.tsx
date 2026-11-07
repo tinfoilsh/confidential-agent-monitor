@@ -13,9 +13,9 @@ import {
   ResourceDisclosure,
   RuleText,
   Search,
+  SectionHeading,
   SkeletonRows,
   href,
-  TabBar,
 } from "./components";
 import { useMonitor } from "./monitor";
 
@@ -266,6 +266,35 @@ export function AddAgent() {
     </form>
   );
 }
+// One compact choice per row, the same width in every row so they line up;
+// a dot marks the level. A mixed group has no single value until one is chosen.
+function AccessSelect<T extends string>(props: {
+  label: string;
+  value: T | null;
+  options: { [K in T]?: string };
+  kind: "level" | "mode";
+  onChange: (value: T) => void;
+}) {
+  return (
+    <select
+      class={`access-select ${props.kind}`}
+      data-value={props.value ?? "mixed"}
+      aria-label={props.label}
+      value={props.value ?? ""}
+      onClick={(event) => event.stopPropagation()}
+      onChange={(event) => props.onChange(event.currentTarget.value as T)}
+    >
+      <Show when={props.value === null}>
+        <option value="" disabled>
+          Mixed
+        </option>
+      </Show>
+      <For each={Object.entries(props.options) as [T, string][]}>
+        {([value, label]) => <option value={value}>{label}</option>}
+      </For>
+    </select>
+  );
+}
 // Rows show action settings only; effects such as Payments apply separately.
 function Actions(props: {
   name: string;
@@ -325,21 +354,11 @@ function Actions(props: {
               </Show>
             </span>
             <Show when={!props.readOnly}>
-              <TabBar
-                class="access-mode"
-                small
+              <AccessSelect
+                kind="mode"
                 label={`${node().title} permission`}
                 value={value()}
-                options={(Object.keys(owner.MODES) as owner.Mode[]).map(
-                  (mode) => ({
-                    value: mode,
-                    label: owner.MODES[mode],
-                    title:
-                      value() === null && node().children.length
-                        ? "Children differ. Click to set them all."
-                        : owner.MODES[mode],
-                  }),
-                )}
+                options={owner.MODES}
                 onChange={(mode) => {
                   if (value() !== mode) set(node(), mode);
                 }}
@@ -446,15 +465,11 @@ export function AgentConnectionAccess(props: {
             </small>
           </Show>
         </button>
-        <TabBar
-          class="access-level"
-          small
+        <AccessSelect
+          kind="level"
           label={`Access for ${props.title ?? props.connection}`}
           value={entry().level}
-          options={entry().levels.map(([value]) => ({
-            value,
-            label: owner.LEVELS[value],
-          }))}
+          options={Object.fromEntries(entry().levels)}
           onChange={(value) => {
             setExpanded(value !== "off");
             const own =
@@ -528,23 +543,33 @@ export function AgentConnectionAccess(props: {
     </div>
   );
 }
+// Named for its bunker, so the rows below read as that bunker's settings.
 function AgentAccess(props: { name: string }) {
   const m = useMonitor();
   return (
-    <div class="agent-access">
-      <For
-        each={Object.keys(m.view()!.config.connections ?? {})}
-        fallback={
-          <p>
-            No services yet. <a href="#connections/catalog">Add a service</a>
-          </p>
-        }
-      >
-        {(connection) => (
-          <AgentConnectionAccess name={props.name} connection={connection} />
-        )}
-      </For>
-    </div>
+    <section
+      class="agent-access-section"
+      aria-label={`Service access for ${props.name}`}
+    >
+      <SectionHeading
+        title="Service access"
+        description={`What ${props.name} can reach through the Perimeter, and what asks you first.`}
+      />
+      <div class="agent-access">
+        <For
+          each={Object.keys(m.view()!.config.connections ?? {})}
+          fallback={
+            <p>
+              No services yet. <a href="#connections/catalog">Add a service</a>
+            </p>
+          }
+        >
+          {(connection) => (
+            <AgentConnectionAccess name={props.name} connection={connection} />
+          )}
+        </For>
+      </div>
+    </section>
   );
 }
 function SandboxAccess(props: { name: string }) {

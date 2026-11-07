@@ -531,7 +531,6 @@ export function TabBar<T extends string>(props: {
   options: TabOption<T>[];
   value: T | null | undefined;
   inherited?: T;
-  small?: boolean;
   class?: string;
   onChange?: (value: T) => void;
 }) {
@@ -564,7 +563,6 @@ export function TabBar<T extends string>(props: {
       ref={track}
       class={`tab-bar ${props.class ?? ""}`}
       classList={{
-        small: props.small,
         ready: ready(),
         inherited: props.value == null && props.inherited != null,
       }}
