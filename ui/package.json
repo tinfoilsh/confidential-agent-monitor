@@ -20,16 +20,16 @@
     "@noble/hashes": "2.4.0",
     "@panva/hpke-noble": "1.1.7",
     "@solidjs/router": "1.0.1",
-    "@tinfoilsh/noise": "file:vendor/tinfoilsh-noise-27953447ce2308993f5d6b5386795f6f015bb4f1.tgz",
+    "@tinfoilsh/noise": "https://github.com/tinfoilsh/noise/releases/download/v0.1.0-rc.1/tinfoilsh-noise-0.1.0-rc.1.tgz",
     "@tinfoilsh/passkey-kit": "0.2.4",
-    "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-sha256-1c09c4905c08fc6ef23b56a5950263769f43dac6fa3b1df74be67f30e1ebe1fe.tgz",
+    "@tinfoilsh/verifier": "2.0.0-rc.1",
     "@xterm/addon-fit": "0.11.0",
     "@xterm/addon-webgl": "0.19.0",
     "@xterm/xterm": "6.0.0",
     "boring-avatars-vanilla": "1.0.2",
     "hpke": "1.1.7",
     "solid-js": "1.9.17",
-    "tinfoil": "file:vendor/tinfoil-sha256-fc71db681039d3d78c7f2a93235695239f0314fcca93ca43fbd0eea87a444d6f.tgz",
+    "tinfoil": "2.0.0-rc.1",
     "yaml": "2.9.1"
   },
   "devDependencies": {
@@ -40,7 +40,7 @@
     "vite-plugin-solid": "2.11.14",
     "vite-plugin-sri-gen": "1.7.5"
   },
-  "overrides": {
-    "@tinfoilsh/verifier": "file:vendor/tinfoilsh-verifier-sha256-1c09c4905c08fc6ef23b56a5950263769f43dac6fa3b1df74be67f30e1ebe1fe.tgz"
+  "patchedDependencies": {
+    "tinfoil@2.0.0-rc.1": "patches/tinfoil@2.0.0-rc.1.patch"
   }
 }

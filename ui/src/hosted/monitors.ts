@@ -1,4 +1,5 @@
-import { SecureClient } from "tinfoil";
+import { Verifier } from "@tinfoilsh/verifier";
+import { EnclaveHTTPClient } from "tinfoil";
 import { ownerApi, type OwnerApi, type Request, type Snapshot } from "../owner";
 import { openChannel, rpcChannel, type Session } from "./channel";
 import { sshPublicKey, toBase64, unb64u, type MKBinding } from "./contract";
@@ -26,14 +27,11 @@ const hex = (text: string) =>
 // An attested key's raw bytes, read from the SDK's current verification, which
 // follows a newly verified boot.
 export function attestedKey(
-  client: SecureClient,
+  client: EnclaveHTTPClient,
   id: string,
   spki = X25519_SPKI,
 ) {
-  const key = client
-    .inspect()
-    ?.verification.cryptoMaterialData(id, SPKI)
-    ?.match(spki)?.[1];
+  const key = client.current?.cryptoMaterialData(id, SPKI)?.match(spki)?.[1];
   if (!key) throw new Error(`The enclave did not attest its ${id} key.`);
   return hex(key);
 }
@@ -47,23 +45,27 @@ export async function attestMonitor(
     import.meta.env.DEV && location.origin === "https://local.tinfoil.sh"
       ? location.origin
       : undefined;
-  const client = new SecureClient({
-    enclaveURL: url,
-    configRepo: reference,
-    attestationRelayURL: relay,
-    verification: { configRegistryIDs: [registry] },
+  const client = await EnclaveHTTPClient.create(new URL(url).host, reference, {
+    verifier: await Verifier.create({ configRegistryIDs: [registry] }),
+    attestationFetch: relay
+      ? (input, init) => {
+          const doc = new URL(String(input));
+          doc.searchParams.set("enclave", doc.host);
+          return fetch(relay + doc.pathname + doc.search, init);
+        }
+      : undefined,
+    signal,
   });
-  await client.ready({ signal });
   signal.throwIfAborted();
   const hostKey = () =>
     sshPublicKey(attestedKey(client, "host-ssh", ED25519_SPKI));
   const sessionKey = async (at = signal) => {
-    await client.ready({ signal: AbortSignal.any([signal, at]) });
+    await client.ensureVerified({ signal: AbortSignal.any([signal, at]) });
     return attestedKey(client, "owner-session");
   };
   hostKey();
   await sessionKey();
-  return { hostKey, sessionKey, refresh: () => client.refresh({ signal }) };
+  return { hostKey, sessionKey, refresh: () => client.reverify({ signal }) };
 }
 
 // The saved key of a TMK Monitor, re-resolved from a fresh, successful read of

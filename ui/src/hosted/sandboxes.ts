@@ -1,5 +1,6 @@
 import { ed25519 } from "@noble/curves/ed25519.js";
-import { SecureClient } from "tinfoil";
+import { Verifier } from "@tinfoilsh/verifier";
+import { EnclaveHTTPClient } from "tinfoil";
 import type { ShellOpen, ShellOpener } from "../owner";
 import { openShell, rpcChannel } from "./channel";
 import {
@@ -63,7 +64,6 @@ export async function sandboxClient(
   const owner = ownerPublicKey(seed);
   const instance_id = binding.instance_id!;
   if (!HOST.test(row.domain)) throw new Error("This sandbox has no address.");
-  const host = `https://${row.domain}`;
   const config = new TextEncoder().encode(row.config ?? "");
   const digest = sandboxDigest(TEMPLATES.sandbox, config, {
     owner,
@@ -73,30 +73,27 @@ export async function sandboxClient(
   const target = registryTarget(row, config, monitor.registry);
   await verifyImage("sandbox", digest, { signal });
   signal.throwIfAborted();
-  const secure = new SecureClient({
-    enclaveURL: host,
-    configRepo: target.reference,
-    verification: { configRegistryIDs: [target.registry] },
-    acquisition: {
-      fetch: async (input, init) => {
-        const url = new URL(String(input));
-        const nonce = url.searchParams.get("nonce") ?? "";
-        if (url.pathname !== ATTESTATION || !/^[0-9a-f]{64}$/.test(nonce))
-          throw new Error("Refused sandbox attestation request.");
-        const reply = (await monitor.client.call(
-          "POST",
-          "/sandboxes/relay",
-          { instance_id, nonce },
-          init?.signal ?? undefined,
-        )) as RelayReply;
-        return new Response(new Uint8Array(unb64u(reply.body)), {
-          status: reply.status,
-        });
-      },
+  const secure = await EnclaveHTTPClient.create(row.domain, target.reference, {
+    verifier: await Verifier.create({ configRegistryIDs: [target.registry] }),
+    attestationFetch: async (input, init) => {
+      const url = new URL(String(input));
+      const nonce = url.searchParams.get("nonce") ?? "";
+      if (url.pathname !== ATTESTATION || !/^[0-9a-f]{64}$/.test(nonce))
+        throw new Error("Refused sandbox attestation request.");
+      const reply = (await monitor.client.call(
+        "POST",
+        "/sandboxes/relay",
+        { instance_id, nonce },
+        init?.signal ?? undefined,
+      )) as RelayReply;
+      return new Response(new Uint8Array(unb64u(reply.body)), {
+        status: reply.status,
+      });
     },
+    signal,
   });
   const connect = async (hello: object, signal?: AbortSignal) => {
-    await secure.ready({ signal });
+    await secure.ensureVerified({ signal });
     const serverKey = attestedKey(secure, "owner-session");
     return monitor.relay(
       instance_id,
@@ -106,7 +103,7 @@ export async function sandboxClient(
   };
   const call = rpcChannel(
     () => connect({ open: "rpc" }),
-    async () => (await monitor.refresh(), secure.refresh()),
+    async () => (await monitor.refresh(), secure.reverify()),
   );
 
   return {

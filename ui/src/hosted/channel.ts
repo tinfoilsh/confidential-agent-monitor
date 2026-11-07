@@ -116,7 +116,7 @@ type Reply = { id: number; status: number; body: string };
 // failed open refreshes attestation and retries once, since a new boot has a new key.
 export function rpcChannel(
   open: () => Promise<OwnerChannel>,
-  refresh: () => Promise<void>,
+  refresh: () => Promise<unknown>,
 ): OwnerRpc {
   let current: ReturnType<typeof connect> | undefined;
   async function connect() {

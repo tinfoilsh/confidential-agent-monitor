@@ -1,26 +1,27 @@
-import { afterEach, expect, mock, test } from "bun:test";
+import { afterEach, expect, mock, spyOn, test } from "bun:test";
+import { Verifier } from "@tinfoilsh/verifier";
 
-let options: Record<string, unknown>;
+const create = spyOn(Verifier, "create");
+let created: string[];
 let allowed = true;
 let ownerKey = "01".repeat(32);
 mock.module("tinfoil", () => ({
-  SecureClient: class {
-    constructor(value: Record<string, unknown>) {
-      options = value;
+  EnclaveHTTPClient: class {
+    static async create(host: string, repo: string) {
+      created = [host, repo];
+      return new this();
     }
-    async ready({ signal }: { signal?: AbortSignal } = {}) {
+    async ensureVerified({ signal }: { signal?: AbortSignal } = {}) {
       signal?.throwIfAborted();
       if (!allowed) throw new Error("fresh verification required");
     }
-    async refresh() {}
-    inspect() {
+    async reverify() {}
+    get current() {
       return {
-        verification: {
-          cryptoMaterialData: (id: string) =>
-            id === "host-ssh"
-              ? "302a300506032b6570032100" + "02".repeat(32)
-              : "302a300506032b656e032100" + ownerKey,
-        },
+        cryptoMaterialData: (id: string) =>
+          id === "host-ssh"
+            ? "302a300506032b6570032100" + "02".repeat(32)
+            : "302a300506032b656e032100" + ownerKey,
       };
     }
   },
@@ -39,8 +40,8 @@ afterEach(() => {
 
 test("uses registry trust and exact config pins for Monitor attestation", async () => {
   await attestMonitor(target, new AbortController().signal);
-  expect(options.configRepo).toBe(target.reference);
-  expect(options.verification).toEqual({ configRegistryIDs: [target.registry] });
+  expect(created).toEqual(["monitor.example", target.reference]);
+  expect(create).toHaveBeenCalledWith({ configRegistryIDs: [target.registry] });
 });
 
 test("requires fresh admission before returning a key for another owner session", async () => {

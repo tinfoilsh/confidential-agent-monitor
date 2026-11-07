@@ -1,0 +1,26 @@
+diff --git a/dist/enclave-client.js b/dist/enclave-client.js
+index 744d22f2b6899d62ade795bbdf2b5269e2db52c3..51d0844aa7ff249d83d2c9e14af783788bbdbae2 100644
+--- a/dist/enclave-client.js
++++ b/dist/enclave-client.js
+@@ -104,7 +104,7 @@ export async function createEnclaveHTTPClient(host, repo, options, seams) {
+         repo,
+         verifier: options.verifier,
+         verificationCheck: options.verificationCheck,
+-        fetch: seams.documentFetch,
++        fetch: options.attestationFetch ?? seams.documentFetch,
+         clock: seams.clock,
+         nonce: seams.nonce,
+         sleep: seams.sleep,
+diff --git a/dist/options.d.ts b/dist/options.d.ts
+index ee498166a5872cdd71ffb46f0c85ddab0d8b6039..2056ed48dcb23a484d4eeffabc1a523553cee40b 100644
+--- a/dist/options.d.ts
++++ b/dist/options.d.ts
+@@ -173,6 +173,8 @@ export interface EnclaveOptions {
+      * connection itself and sends nothing through a caller's fetch.
+      */
+     readonly fetch?: Fetch;
++    /** Fetches attestation documents, such as through a relay; undefined selects the runtime's fetch. */
++    readonly attestationFetch?: Fetch;
+     /** Aborts the verification the factory performs before it returns. */
+     readonly signal?: AbortSignal;
+ }
