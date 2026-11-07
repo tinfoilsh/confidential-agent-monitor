@@ -121,9 +121,11 @@ export function SetupKeys(props: {
         signal,
         fence: await scope.fence,
       });
+      // The next step is chosen before the keys open, so nothing that waits
+      // on open keys shows in between.
+      props.onDone(file);
       await scope.setUnlocked(unlocked);
       void props.session.refresh();
-      props.onDone(file);
     });
   return (
     <PasskeyChoice
