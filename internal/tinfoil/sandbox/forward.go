@@ -174,7 +174,7 @@ func (f *Forwarder) DialKey(key ssh.PublicKey, port uint32) (net.Conn, error) {
 type RouteDialer struct {
 	Routes *Forwarder
 	Next   connector.Dialer
-	// Key returns the key of the enrolled identity a route host names, as NAME.sandbox.invalid.
+	// Key returns the key of the enrolled identity a route host names, as NAME.sandbox.
 	Key func(name string) (ssh.PublicKey, bool)
 }
 
@@ -183,7 +183,7 @@ func (d RouteDialer) DialContext(ctx context.Context, network, address string) (
 	if err != nil || !ReservedRoute(host) {
 		return d.Next.DialContext(ctx, network, address)
 	}
-	name, named := strings.CutSuffix(strings.TrimSuffix(strings.ToLower(host), "."), routeSuffix)
+	name, named := strings.CutSuffix(strings.TrimSuffix(strings.ToLower(host), "."), bunkerSuffix)
 	key, enrolled := d.Key(name)
 	if !named || !enrolled {
 		return nil, errRouteUnavailable

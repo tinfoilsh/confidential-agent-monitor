@@ -1,0 +1,14 @@
+{
+  "title": "Other bunkers",
+  "catalog": {
+    "group": "generic",
+    "actions": {
+      "connect": {
+        "title": "Connect and exchange data",
+        "effects": ["read", "send"]
+      }
+    },
+    "connection": { "tcp": { "hosts": ["*.sandbox"] } },
+    "defaults": { "contents": "me", "sends": "me", "strangers": true }
+  }
+}
