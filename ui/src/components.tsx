@@ -14,6 +14,8 @@ import {
   type JSX,
 } from "solid-js";
 import { Dynamic } from "solid-js/web";
+import { normalizeProps, useMachine } from "@zag-js/solid";
+import * as tagsInput from "@zag-js/tags-input";
 import * as owner from "./owner.js";
 import { icons } from "./dashboard-icons.js";
 import { useMonitor } from "./monitor";
@@ -627,7 +629,7 @@ export function Field(props: {
     <div class="field">
       <label for={id}>{props.field.label}</label>
       <Show
-        when={props.field.multiline || props.field.json}
+        when={props.field.list || props.field.multiline || props.field.json}
         fallback={
           <div class="secret-input">
             <input
@@ -662,17 +664,103 @@ export function Field(props: {
           </div>
         }
       >
-        <textarea
-          id={id}
-          aria-describedby={help() ? `${id}-help` : undefined}
-          rows={6}
-          value={props.value}
-          onInput={(e) => props.onInput(e.currentTarget.value)}
-        />
+        {props.field.list ? (
+          <ListInput
+            id={id}
+            field={props.field}
+            value={props.value}
+            onInput={props.onInput}
+            describedBy={help() ? `${id}-help` : undefined}
+          />
+        ) : (
+          <textarea
+            id={id}
+            aria-describedby={help() ? `${id}-help` : undefined}
+            rows={6}
+            value={props.value}
+            onInput={(e) => props.onInput(e.currentTarget.value)}
+          />
+        )}
       </Show>
       <Show when={help()}>
         <p id={`${id}-help`} class="muted field-help">
           {help()}
+        </p>
+      </Show>
+    </div>
+  );
+}
+// The form keeps list fields as text, so tags round-trip through owner.listItems.
+function ListInput(props: {
+  id: string;
+  field: owner.PresetField;
+  value: string;
+  onInput: (value: string) => void;
+  describedBy?: string;
+}) {
+  const [draft, setDraft] = createSignal("");
+  const invalid = (text: string) =>
+    owner
+      .listItems(text)
+      .map((item) => owner.fieldError(props.field, item))
+      .find(Boolean);
+  const error = () => invalid(`${props.value} ${draft()}`);
+  const value = createMemo(() => owner.listItems(props.value));
+  // Zag clears the input even when validate rejects a tag, so invalid tags are kept and marked instead.
+  const service = useMachine(tagsInput.machine, () => ({
+    id: props.id,
+    ids: { input: props.id },
+    value: value(),
+    invalid: !!error(),
+    placeholder: props.field.hint,
+    delimiter: owner.listDelimiter,
+    blurBehavior: "add" as const,
+    onInputValueChange: ({ inputValue }) => setDraft(inputValue),
+    onValueChange: ({ value }) =>
+      props.onInput([...new Set(owner.listItems(value.join(" ")))].join(", ")),
+  }));
+  const api = createMemo(() => tagsInput.connect(service, normalizeProps));
+  let input!: HTMLInputElement;
+  createEffect(() => input.setCustomValidity(error() ?? ""));
+  return (
+    <div class="list-input" {...api().getRootProps()}>
+      <div class="list-input-control" {...api().getControlProps()}>
+        <For each={api().value}>
+          {(value, index) => (
+            <span {...api().getItemProps({ index: index(), value })}>
+              <span
+                class="list-input-tag"
+                {...api().getItemPreviewProps({ index: index(), value })}
+                data-invalid={
+                  owner.fieldError(props.field, value) ? "" : undefined
+                }
+              >
+                <span {...api().getItemTextProps({ index: index(), value })}>
+                  {value}
+                </span>
+                <button
+                  class="icon-button"
+                  {...api().getItemDeleteTriggerProps({
+                    index: index(),
+                    value,
+                  })}
+                >
+                  <Icon name="close" />
+                </button>
+              </span>
+              <input {...api().getItemInputProps({ index: index(), value })} />
+            </span>
+          )}
+        </For>
+        <input
+          ref={input}
+          {...api().getInputProps()}
+          aria-describedby={props.describedBy}
+        />
+      </div>
+      <Show when={error()}>
+        <p class="field-help field-error" role="alert">
+          {error()}
         </p>
       </Show>
     </div>

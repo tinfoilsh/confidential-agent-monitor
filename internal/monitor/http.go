@@ -547,7 +547,7 @@ func (m *monitor) agentPolicy(p config.Principal) (any, error) {
 	st := m.settings.Load()
 	var visible map[string]any
 	var err error
-	if st.Identities[p.Name].Routes {
+	if st.Identities[p.Name].Operator {
 		// Credential values live outside Config.
 		visible, err = st.Config.View()
 	} else {

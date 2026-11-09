@@ -79,8 +79,16 @@ monitor launch claude
 
 This requires x86_64 Linux, writable `/dev/kvm`, bubblewrap, unprivileged user
 namespaces, OpenSSH, GNU tar, and `mke2fs`. Image builds need Podman or Docker.
-Setup asks for your Perimeter endpoint, owner credentials, and service permissions.
+Setup asks for your Perimeter endpoint, owner credentials, and service permissions;
+its defaults reach a local Perimeter, and the passphrase you enter claims a fresh one.
 See `monitor --help` for stopping, exporting, and deleting VMs.
+
+Each VM network is restricted to the Perimeter.
+
+```sh
+monitor launch shell --name a           # prints a: <route>.sandbox.invalid
+monitor launch shell --name b -- python3 -m http.server 8080 --bind 0.0.0.0
+```
 
 ### Run a Perimeter locally
 

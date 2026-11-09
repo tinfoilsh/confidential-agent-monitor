@@ -5,20 +5,23 @@ import (
 	"fmt"
 	"net"
 	"path"
+	"slices"
 	"strconv"
 	"strings"
 
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
 )
 
-var Kind = connector.Kind{Parse: Parse, New: func() connector.Server { return new(Server) }}
+var Kind = connector.Kind{Routes: true, Parse: Parse, New: func() connector.Server { return new(Server) }}
 
 const maxPort = 65535
 
 type TCP struct {
 	connector.Semantics `json:"-"`
 	Hosts               []string `json:"hosts"`
+	Ports               []uint16 `json:"ports,omitempty"`
 }
 
 func Parse(source connector.Setup) (connector.Prepared, error) {
@@ -39,13 +42,18 @@ func Parse(source connector.Setup) (connector.Prepared, error) {
 
 type Server struct{ connector.Slot[TCP] }
 
+// A sandbox route matches only a route pattern, never *, and only on a listed port.
 func (c *TCP) Claim(host string, port uint32) int {
 	if port == 0 || port > maxPort || host == "" {
 		return -1
 	}
+	route := sandbox.ReservedRoute(host)
+	if (route || len(c.Ports) > 0) && !slices.Contains(c.Ports, uint16(port)) {
+		return -1
+	}
 	score := -1
 	for _, pattern := range c.Hosts {
-		if ok, _ := path.Match(strings.ToLower(pattern), strings.ToLower(host)); ok {
+		if ok, _ := path.Match(strings.ToLower(pattern), strings.ToLower(host)); ok && (!route || sandbox.ReservedRoute(pattern)) {
 			if pattern == "*" {
 				score = max(score, 0)
 			} else {

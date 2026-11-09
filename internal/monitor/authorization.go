@@ -325,7 +325,7 @@ func (m *monitor) relabel(ctx context.Context, fingerprint string, l facts.Label
 	}
 	// An opaque source may finish the session it just admitted. Other opaque
 	// sessions cannot recheck their bytes, so revoke them. Sandbox routes carry
-	// end-to-end traffic under Routes alone.
+	// end-to-end traffic under Operator alone.
 	for s, a := range m.streams {
 		if a.fingerprint == fingerprint && s != source && !a.route {
 			c := a.connection
