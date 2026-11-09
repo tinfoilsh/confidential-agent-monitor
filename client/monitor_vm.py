@@ -438,6 +438,8 @@ def proxy(path):
 
 def relay(left, right):
     with left, right:
+        for stream in (left, right):
+            stream.settimeout(None)
         streams = {left: right, right: left}
         while streams:
             ready, _, _ = select.select(list(streams), [], [], 1)
@@ -906,12 +908,6 @@ def revoke_identity(owner, name, public_key):
     owner.edit([{"path": ["identities", name], "delete": True}])
 
 
-def route_name(public_key):
-    """Mirror sandbox.RouteName, which names a route by its publisher's key."""
-    digest = hashlib.sha256(base64.b64decode(public_key.split()[1])).digest()
-    return base64.b32encode(digest).decode().rstrip("=").lower() + ".sandbox.invalid"
-
-
 def launch_vm(args, cli):
     if sys.platform != "linux":
         raise Error("Perimeter VM launch currently requires Linux/Firecracker")
@@ -970,7 +966,6 @@ def launch_vm(args, cli):
         preflight(profile["image"])
         if args.command == "launch":
             enroll_identity(owner, state, state_path, public_key, profile["access"])
-            print(f"{identity}: {route_name(public_key)}", file=sys.stderr)
         elif not (directory / "initialized").exists():
             raise Error("this VM has no initialized workspace to export")
         endpoint = None

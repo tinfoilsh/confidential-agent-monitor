@@ -70,7 +70,7 @@ describe("raw TCP setup and access", () => {
     const v = view();
     const field = owner.setupFields(v, "tcp").find((f) => f.key === "hosts")!;
     expect(field.label).toBe("Hosts");
-    expect(field.help).toBe("Hostnames or wildcard patterns.");
+    expect(field.help).toBe("Hostnames or wildcard patterns. Bunkers are reachable as NAME.sandbox.invalid");
     expect(field.hint).toBe("example.com, *.example.com, or * for all hosts");
     expect(owner.fieldText(field, field.default)).toBe("*");
     const hosts = owner.readField(field, "example.com, *.example.com");

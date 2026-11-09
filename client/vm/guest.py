@@ -27,6 +27,8 @@ def copy(source, destination, mode=0o600, agent=False):
 
 def relay(left, right):
     with left, right:
+        for stream in (left, right):
+            stream.settimeout(None)
         streams = {left: right, right: left}
         while streams:
             ready, _, _ = select.select(list(streams), [], [], 1)

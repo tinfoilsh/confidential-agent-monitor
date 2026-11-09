@@ -21,7 +21,7 @@ const maxPort = 65535
 type TCP struct {
 	connector.Semantics `json:"-"`
 	Hosts               []string `json:"hosts"`
-	Ports               []uint16 `json:"ports,omitempty"`
+	Ports               []uint32 `json:"ports,omitempty"`
 }
 
 func Parse(source connector.Setup) (connector.Prepared, error) {
@@ -37,6 +37,11 @@ func Parse(source connector.Setup) (connector.Prepared, error) {
 			return connector.Prepared{}, fmt.Errorf("invalid TCP host pattern %q", host)
 		}
 	}
+	for _, port := range c.Ports {
+		if port == 0 || port > maxPort {
+			return connector.Prepared{}, fmt.Errorf("invalid TCP port %d; use 1 to %d", port, maxPort)
+		}
+	}
 	return connector.Prepared{Value: c, Claim: c.Claim}, nil
 }
 
@@ -48,7 +53,7 @@ func (c *TCP) Claim(host string, port uint32) int {
 		return -1
 	}
 	route := sandbox.ReservedRoute(host)
-	if (route || len(c.Ports) > 0) && !slices.Contains(c.Ports, uint16(port)) {
+	if (route || len(c.Ports) > 0) && !slices.Contains(c.Ports, port) {
 		return -1
 	}
 	score := -1

@@ -239,6 +239,19 @@ func (m *monitor) keyAccess(key string) (known, operator bool) {
 	p, known := s.Principal(key)
 	return known, s.Identities[p.Name].Operator
 }
+
+func (m *monitor) identityKey(name string) (ssh.PublicKey, bool) {
+	s := m.settings.Load()
+	if s == nil {
+		return nil, false
+	}
+	id, ok := s.Identities[name]
+	if !ok {
+		return nil, false
+	}
+	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(id.Key))
+	return key, err == nil
+}
 func (m *monitor) HostKey() ssh.Signer {
 	if s := m.settings.Load(); s != nil {
 		return s.HostKey
