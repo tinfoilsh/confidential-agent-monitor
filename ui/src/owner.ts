@@ -19,7 +19,13 @@ export type ApprovalAnswer = {
   time: string;
 };
 export type RequestState =
-  "pending" | "allowed" | "approved" | "refused" | "denied" | "expired" | "outdated";
+  | "pending"
+  | "allowed"
+  | "approved"
+  | "refused"
+  | "denied"
+  | "expired"
+  | "outdated";
 export type Access = {
   level: Level;
   actions?: Record<string, Mode>;
@@ -67,6 +73,7 @@ export type PresetField = {
   multiline?: boolean;
   json?: boolean;
   list?: boolean;
+  number?: boolean;
   edit_only?: boolean;
   default?: Json;
   path?: string[];
@@ -1143,10 +1150,22 @@ export const fieldText = (f: PresetField, value?: Json): string =>
     : f.list
       ? ((value ?? []) as string[]).join(", ")
       : ((value ?? "") as string);
+export const listDelimiter = /[\s,]+/;
+export const listItems = (text: string) =>
+  text.split(listDelimiter).filter(Boolean);
+export const fieldError = (f: PresetField, s: string) =>
+  f.number && !/^\d+$/.test(s)
+    ? `${f.label} takes whole numbers, not "${s}".`
+    : undefined;
 export function readField(f: PresetField, raw: string): Json {
   const v = f.secret ? raw : raw.trim();
   if (f.json) return v ? JSON.parse(v) : {};
-  return f.list ? v.split(/[\s,]+/).filter(Boolean) : v;
+  const read = (s: string) => {
+    const error = fieldError(f, s);
+    if (error) throw new Error(error);
+    return f.number ? Number(s) : s;
+  };
+  return f.list ? listItems(v).map(read) : read(v);
 }
 
 // A grant template fills from the connection's plain settings; one that needs a setup-only value, such as an OAuth client, cannot.

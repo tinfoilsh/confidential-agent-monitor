@@ -18,8 +18,17 @@
         "list": true,
         "default": ["*"],
         "hint": "example.com, *.example.com, or * for all hosts",
-        "help": "Hostnames or wildcard patterns. Matches all TCP ports.",
+        "help": "Hostnames or wildcard patterns. Bunkers are reachable as NAME.sandbox.invalid",
         "path": ["tcp", "hosts"]
+      },
+      {
+        "key": "ports",
+        "label": "Ports",
+        "list": true,
+        "number": true,
+        "hint": "22, 8080",
+        "help": "Leave empty to allow all ports (does not apply to Bunker routes)",
+        "path": ["tcp", "ports"]
       }
     ]
   }

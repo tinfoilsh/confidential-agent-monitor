@@ -214,9 +214,9 @@ func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalI
 }
 
 type identityEnrollment struct {
-	Key     string `json:"key"`
-	Routes  bool   `json:"routes"`
-	Restore bool   `json:"restore"`
+	Key      string `json:"key"`
+	Operator bool   `json:"routes"`
+	Restore  bool   `json:"restore"`
 	// Sandbox names the sandbox boot an identity belongs to.
 	Sandbox json.RawMessage `json:"sandbox,omitzero"`
 }
@@ -236,7 +236,7 @@ func (m *monitor) enrollmentChanges(input map[string]identityEnrollment) ([]conf
 		}
 		if principal, ok := m.settings.Load().Principal(fingerprint); ok {
 			existing := m.settings.Load().Identities[principal.Name]
-			if id.Routes && !existing.Routes {
+			if id.Operator && !existing.Operator {
 				if !id.Restore {
 					return nil, errors.New("device route access was revoked")
 				}
@@ -254,7 +254,7 @@ func (m *monitor) enrollmentChanges(input map[string]identityEnrollment) ([]conf
 		if _, exists := m.settings.Load().Config.Identities[name]; exists {
 			return nil, errors.New("identity name belongs to another key")
 		}
-		value := map[string]any{"key": id.Key, "routes": id.Routes}
+		value := map[string]any{"key": id.Key, "routes": id.Operator}
 		if metadata != nil {
 			value["sandbox"] = metadata
 		}
@@ -272,7 +272,7 @@ func (m *monitor) restoreDevice(ctx context.Context, public string) error {
 	}
 	public = strings.TrimSpace(string(ssh.MarshalAuthorizedKey(key)))
 	digest := sha256.Sum256([]byte(public))
-	return m.enroll(ctx, map[string]identityEnrollment{fmt.Sprintf("device-%x", digest[:8]): {Key: public, Routes: true, Restore: true}})
+	return m.enroll(ctx, map[string]identityEnrollment{fmt.Sprintf("device-%x", digest[:8]): {Key: public, Operator: true, Restore: true}})
 }
 
 func (m *monitor) enroll(ctx context.Context, identities map[string]identityEnrollment) error {

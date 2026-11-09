@@ -11,6 +11,9 @@ import subprocess
 import threading
 import time
 
+# Mirrors monitor_vm.LINK_PORT: the host relays this vsock port to the Perimeter.
+LINK_PORT = 2223
+
 
 def copy(source, destination, mode=0o600, agent=False):
     destination = Path(destination)
@@ -24,6 +27,8 @@ def copy(source, destination, mode=0o600, agent=False):
 
 def relay(left, right):
     with left, right:
+        for stream in (left, right):
+            stream.settimeout(None)
         streams = {left: right, right: left}
         while streams:
             ready, _, _ = select.select(list(streams), [], [], 1)
@@ -64,6 +69,21 @@ def listen(family, address, connect):
     threading.Thread(target=accept, daemon=True).start()
 
 
+def host(port):
+    stream = socket.socket(socket.AF_VSOCK, socket.SOCK_STREAM)
+    stream.settimeout(10)
+    stream.connect((socket.VMADDR_CID_HOST, port))
+    return stream
+
+
+def publish():
+    # Each Perimeter link reconnection republishes this VM's wildcard listeners.
+    while True:
+        subprocess.run(['ssh', '-F', '/home/agent/.config/monitor/ssh_config', '-NT', 'monitor-route'],
+                       user=1000, group=1000, extra_groups=[], stdin=subprocess.DEVNULL, check=False)
+        time.sleep(2)
+
+
 def main():
     seed = Path('/run/seed')
     for directory in ('/run/sshd', '/opt/monitor', '/workspace', '/var/lib/monitor'):
@@ -84,6 +104,8 @@ def main():
         os.sync()
     sshd = subprocess.Popen(['/usr/sbin/sshd', '-D', '-e', '-f', '/etc/ssh/sshd_config.monitor'])
     listen(socket.AF_VSOCK, (socket.VMADDR_CID_ANY, 22), lambda: socket.create_connection(('127.0.0.1', 22), 10))
+    listen(socket.AF_INET, ('127.0.0.1', LINK_PORT), lambda: host(LINK_PORT))
+    threading.Thread(target=publish, daemon=True).start()
     stopping = threading.Event()
     for signum in (signal.SIGINT, signal.SIGTERM, signal.SIGPWR):
         signal.signal(signum, lambda *_: stopping.set())

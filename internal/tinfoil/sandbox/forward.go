@@ -12,12 +12,17 @@ import (
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/internal/frontdoor"
 	"golang.org/x/crypto/ssh"
+	"golang.org/x/net/proxy"
 )
 
 const (
 	maxUntrustedPublishers = 128
 	maxForwardAddresses    = 128
 	forwardOpenTimeout     = 10 * time.Second
+	// A sandbox publishes an OpenSSH SOCKS RemoteForward on this loopback port.
+	socksPort = 1080
+	// Listeners on 127.0.0.1 do not accept this loopback alias; wildcard listeners do.
+	wildcardHost = "127.0.0.2"
 )
 
 var errRouteUnavailable = errors.New("route unavailable")
@@ -159,3 +164,39 @@ func (f *Forwarder) Dial(name string, port uint32) (net.Conn, error) {
 	}
 	return connector.NewChannelConn(channel, requests), nil
 }
+
+// DialKey opens the forward that the peer authenticated with key published on port.
+func (f *Forwarder) DialKey(key ssh.PublicKey, port uint32) (net.Conn, error) {
+	return f.Dial(RouteName(key), port)
+}
+
+// RouteDialer dials sandbox routes through Routes and every other address through Next.
+type RouteDialer struct {
+	Routes *Forwarder
+	Next   connector.Dialer
+	// Key returns the key of the enrolled identity a route host names, as NAME.sandbox.invalid.
+	Key func(name string) (ssh.PublicKey, bool)
+}
+
+func (d RouteDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
+	host, port, err := net.SplitHostPort(address)
+	if err != nil || !ReservedRoute(host) {
+		return d.Next.DialContext(ctx, network, address)
+	}
+	name, named := strings.CutSuffix(strings.TrimSuffix(strings.ToLower(host), "."), routeSuffix)
+	key, enrolled := d.Key(name)
+	if !named || !enrolled {
+		return nil, errRouteUnavailable
+	}
+	// The SOCKS server is the sandbox's own ssh client, reached over an SSH channel, not a socket.
+	server := channelDialer(func() (net.Conn, error) { return d.Routes.DialKey(key, socksPort) })
+	socks, err := proxy.SOCKS5(network, "", nil, server)
+	if err != nil {
+		return nil, err
+	}
+	return socks.(proxy.ContextDialer).DialContext(ctx, network, net.JoinHostPort(wildcardHost, port))
+}
+
+type channelDialer func() (net.Conn, error)
+
+func (c channelDialer) Dial(string, string) (net.Conn, error) { return c() }

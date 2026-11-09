@@ -89,7 +89,7 @@ func (c *Config) ProposalChanges(p Principal, changes []Change) (map[string][]Ch
 		if !ok {
 			return nil, errors.New("proposals may change only service setup and access")
 		}
-		if !c.Identities[p.Name].Routes && (change.Path[0] == "default_access" || change.Path[0] == "identities" && change.Path[1] != p.Name) {
+		if !c.Identities[p.Name].Operator && (change.Path[0] == "default_access" || change.Path[0] == "identities" && change.Path[1] != p.Name) {
 			return nil, errors.New("a bunker may propose only service setup and its own access")
 		}
 		groups[target] = append(groups[target], change)
@@ -115,7 +115,7 @@ func (c *Config) ProposalScope(proposer string, changes []Change) string {
 			if targeted[name] {
 				key = identity.Key
 			}
-			identities[name] = []any{key, identity.Routes, c.Authority(name, connection)}
+			identities[name] = []any{key, identity.Operator, c.Authority(name, connection)}
 		}
 	}
 	settings, exists := c.Connections[connection]

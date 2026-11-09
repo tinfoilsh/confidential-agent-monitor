@@ -87,13 +87,13 @@ func (m *monitor) ServeSSH(ln net.Listener) {
 }
 
 func (m *monitor) forwardSandbox(key string, nc ssh.NewChannel, target frontdoor.Target) {
-	known, routes := m.keyAccess(key)
+	known, operator := m.keyAccess(key)
 	if !known {
 		nc.Reject(ssh.Prohibited, "key has no agent access")
 		return
 	}
-	if !routes {
-		nc.Reject(ssh.Prohibited, "identity cannot open bunker routes")
+	if !operator {
+		m.forwardConnection(key, nc, target)
 		return
 	}
 	upstream, err := m.forwards.Dial(target.Host, target.Port)
@@ -200,7 +200,7 @@ func (m *monitor) stillAdmitted(old *settings, admitted admission) bool {
 		return false
 	}
 	if admitted.route {
-		return st.Identities[p.Name].Routes
+		return st.Identities[p.Name].Operator
 	}
 	c := admitted.connection
 	if !m.usable(c, admitted.prepared) || !st.Reaches(p.Name, c.Name) {
@@ -231,13 +231,26 @@ func (m *monitor) admitStream(s *connector.Stream, st *settings, admitted admiss
 	return release, true
 }
 
-func (m *monitor) keyAccess(key string) (known, routes bool) {
+func (m *monitor) keyAccess(key string) (known, operator bool) {
 	s := m.settings.Load()
 	if s == nil {
 		return false, false
 	}
 	p, known := s.Principal(key)
-	return known, s.Identities[p.Name].Routes
+	return known, s.Identities[p.Name].Operator
+}
+
+func (m *monitor) identityKey(name string) (ssh.PublicKey, bool) {
+	s := m.settings.Load()
+	if s == nil {
+		return nil, false
+	}
+	id, ok := s.Identities[name]
+	if !ok {
+		return nil, false
+	}
+	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(id.Key))
+	return key, err == nil
 }
 func (m *monitor) HostKey() ssh.Signer {
 	if s := m.settings.Load(); s != nil {

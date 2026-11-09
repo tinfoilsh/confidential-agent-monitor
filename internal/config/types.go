@@ -22,7 +22,8 @@ type ConnectionSpec struct {
 type Principal = facts.Principal
 
 type Identity struct {
-	Routes      bool              `json:"routes,omitempty"`
+	// Stored configs and enrollment clients name this "routes".
+	Operator    bool              `json:"routes,omitempty"`
 	Key         string            `json:"key"`
 	Sandbox     json.RawMessage   `json:"sandbox,omitzero"`
 	Effects     map[string]string `json:"effects,omitempty"`

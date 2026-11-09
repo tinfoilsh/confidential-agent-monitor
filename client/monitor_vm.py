@@ -32,6 +32,12 @@ import zipfile
 
 
 ASSETS = ('Dockerfile', 'guest.py', 'init.sh', 'assets.json')
+# Bump when guest.py, init.sh or the Dockerfile change what a launch relies on.
+IMAGE_VERSION = 2
+# The guest's 127.0.0.1 port and host vsock port that carry its Perimeter link.
+LINK_PORT = 2223
+# These mirror sandbox.BootstrapUser and the Perimeter's wildcard route forward.
+ROUTE_USER, WILDCARD_FORWARD, WILDCARD_OPEN = "sandbox-v2:", "127.0.0.1:1080", "127.0.0.2:*"
 
 
 class Error(ValueError):
@@ -153,7 +159,12 @@ def build_image(args):
     if not engine:
         raise Error('image building requires Podman or Docker')
     destination = Path(args.output).expanduser().resolve()
-    if destination.exists():
+    try:
+        # Only an image in an older format is replaced, and only once the new one is built.
+        outdated = json.loads((destination / 'image.json').read_text())['version'] < IMAGE_VERSION
+    except (OSError, ValueError, KeyError, TypeError):
+        outdated = False
+    if destination.exists() and not outdated:
         raise Error('image destination already exists; build into a new directory to update it')
     destination.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     with tempfile.TemporaryDirectory(prefix='.monitor-build-', dir=destination.parent) as temporary:
@@ -213,11 +224,13 @@ def build_image(args):
                 producer.wait()
             run(['cp', '--reflink=auto', '--sparse=always', str(disks / 'rootfs.ext4'), str(output / 'rootfs.ext4')], timeout=300)
             (output / 'rootfs.ext4').chmod(0o600)
-            info = {'version': 1, 'architecture': platform.machine(),
+            info = {'version': IMAGE_VERSION, 'architecture': platform.machine(),
                     'claude_version': 'local' if args.claude_binary else args.claude_version,
                     'sha256': {name: digest(output / name) for name in ('firecracker', 'vmlinux', 'rootfs.ext4')}}
             private(output / 'image.json', json.dumps(info, indent=2).encode() + b'\n')
             preflight(output)
+            if outdated:
+                shutil.rmtree(destination)
             os.rename(output, destination)
         finally:
             if container:
@@ -233,8 +246,8 @@ def image_info(directory):
         info = json.loads((directory / 'image.json').read_text())
     except (OSError, ValueError) as error:
         raise Error(f'no valid VM image at {directory}; run monitor image build') from error
-    if info.get('version') != 1 or info.get('architecture') != platform.machine():
-        raise Error('VM image version or architecture is unsupported')
+    if info.get('version') != IMAGE_VERSION or info.get('architecture') != platform.machine():
+        raise Error(f'VM image at {directory} is outdated or for another architecture; run monitor image build --output {directory}')
     for name in ('firecracker', 'vmlinux', 'rootfs.ext4'):
         if not (directory / name).is_file() or not re.fullmatch('[0-9a-f]{64}', info.get('sha256', {}).get(name, '')):
             raise Error(f'VM image is missing {name} or its checksum')
@@ -342,9 +355,15 @@ def seed_image(directory, runtime, profile, workspace, source, fresh):
         private(seed / 'id', (directory / 'id').read_bytes())
         private(seed / 'known_hosts', b'monitor-server ' + (Path(profile['root']) / 'host_key').read_bytes().strip() + b'\n')
         private(seed / 'monitor', bundle(source))
-        private(seed / 'ssh_config', b'''Host monitor
+        # launch_vm names each instance directory after its identity.
+        private(seed / 'ssh_config', f'''Host monitor-route
+  User {ROUTE_USER}{directory.name}
+  RemoteForward {WILDCARD_FORWARD}
+  PermitRemoteOpen {WILDCARD_OPEN}
+  ExitOnForwardFailure yes
+Host monitor monitor-route
   HostName 127.0.0.1
-  Port 2223
+  Port {LINK_PORT}
   User monitor
   HostKeyAlias monitor-server
   StrictHostKeyChecking yes
@@ -355,7 +374,7 @@ def seed_image(directory, runtime, profile, workspace, source, fresh):
   IdentityFile /home/agent/.config/monitor/id
   UserKnownHostsFile /home/agent/.config/monitor/known_hosts
   GlobalKnownHostsFile /dev/null
-''')
+'''.encode())
         archive = seed / 'workspace.tar'
         if fresh:
             # GNU tar preserves symlinks without following them. Project files
@@ -417,13 +436,30 @@ def proxy(path):
     return 0
 
 
+def relay(left, right):
+    with left, right:
+        for stream in (left, right):
+            stream.settimeout(None)
+        streams = {left: right, right: left}
+        while streams:
+            ready, _, _ = select.select(list(streams), [], [], 1)
+            for source in ready:
+                data = source.recv(65536)
+                if data:
+                    streams[source].sendall(data)
+                else:
+                    with contextlib.suppress(OSError):
+                        streams[source].shutdown(socket.SHUT_WR)
+                    del streams[source]
+
+
 class VM:
     def __init__(self, profile, directory, workspace, source, endpoint):
         self.profile, self.directory = profile, Path(directory)
         self.workspace, self.source = Path(workspace), program(source)
         self.endpoint = endpoint
-        self.process = self.control = self.temporary = None
-        self.control_thread = self.log_thread = None
+        self.process = self.control = self.link = self.temporary = None
+        self.control_thread = self.link_thread = self.log_thread = None
         self.boot_log = bytearray()
         self.stopping = threading.Event()
 
@@ -460,6 +496,14 @@ class VM:
             self.control.settimeout(0.2)
             self.control_thread = threading.Thread(target=self.control_loop, daemon=True)
             self.control_thread.start()
+            if self.endpoint:
+                # Firecracker delivers guest connections to host vsock port LINK_PORT here.
+                self.link = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                self.link.bind(str(self.runtime / f'vsock_{LINK_PORT}'))
+                self.link.listen(32)
+                self.link.settimeout(0.2)
+                self.link_thread = threading.Thread(target=self.link_loop, daemon=True)
+                self.link_thread.start()
             self.process = subprocess.Popen(sandbox(image / 'firecracker', mounts) + [
                 '--api-sock', '/run/monitor/api.sock', '--config-file', '/run/monitor/firecracker.json'],
                 env=environment(), stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -495,6 +539,29 @@ class VM:
                         self.stopping.set()
                         client.sendall(b'ok\n')
 
+    def link_loop(self):
+        slots = threading.BoundedSemaphore(64)
+        while not self.stopping.is_set():
+            try:
+                client, _ = self.link.accept()
+            except TimeoutError:
+                continue
+            except OSError:
+                return
+            if not slots.acquire(blocking=False):
+                client.close()
+                continue
+            threading.Thread(target=self.forward, args=(client, slots), daemon=True).start()
+
+    def forward(self, client, slots):
+        try:
+            with client:
+                relay(client, socket.create_connection(self.endpoint, timeout=10))
+        except OSError:
+            pass
+        finally:
+            slots.release()
+
     def check(self):
         if self.stopping.is_set():
             raise Error('VM stopped by monitor stop')
@@ -502,16 +569,10 @@ class VM:
             raise Error('Firecracker exited; the VM disk was retained. Boot log: ' +
                         bytes(self.boot_log[-4000:]).decode(errors='replace'))
 
-    def ssh(self, monitor=False):
+    def ssh(self):
         transport = shlex.join([sys.executable, str(self.source), '_vm-connect', str(self.runtime / 'vsock')]).replace('%', '%%')
-        forwards = ['-o', 'ClearAllForwardings=yes']
-        if monitor:
-            host, port = self.endpoint
-            host = f'[{host}]' if ':' in host else host
-            forwards = ['-o', 'ClearAllForwardings=no', '-o', 'ExitOnForwardFailure=yes',
-                        '-R', f'127.0.0.1:2223:{host}:{port}']
         return ['ssh', '-F', '/dev/null', '-o', 'BatchMode=yes', '-o', 'IdentitiesOnly=yes',
-                '-o', 'IdentityAgent=none', '-o', 'ForwardAgent=no', *forwards,
+                '-o', 'IdentityAgent=none', '-o', 'ForwardAgent=no', '-o', 'ClearAllForwardings=yes',
                 '-o', 'StrictHostKeyChecking=yes', '-o', 'GlobalKnownHostsFile=/dev/null',
                 '-o', 'UserKnownHostsFile="' + str(self.directory / 'known_hosts').replace('\\', '\\\\').replace('"', '\\"') + '"',
                 '-o', 'HostKeyAlias=monitor-vm', '-o', 'ConnectTimeout=5', '-o', 'LogLevel=ERROR',
@@ -534,13 +595,13 @@ class VM:
             time.sleep(0.2)
         raise Error('VM boot timed out; disk retained. Boot log: ' + bytes(self.boot_log[-4000:]).decode(errors='replace'))
 
-    def agent(self, arguments, mcp=False):
-        command = ['python3', '/opt/monitor/monitor', '--ssh-config', '/home/agent/.config/monitor/ssh_config',
-                   '_agent', '--connection', self.profile['connection']]
-        if mcp:
-            command.append('--mcp')
-        command += ['--', *arguments]
-        return self.ssh(monitor=True) + (['-t'] if sys.stdin.isatty() else []) + ['agent@monitor-vm', 'cd /workspace && exec ' + shlex.join(command)]
+    def agent(self, name, arguments, mcp=False):
+        command = ['python3', '/opt/monitor/monitor', '--ssh-config', '/home/agent/.config/monitor/ssh_config']
+        if name == 'shell':
+            command += ['run', '--', *arguments] if arguments else ['shell']
+        else:
+            command += ['_agent', '--connection', self.profile['connection'], *(['--mcp'] if mcp else []), '--', *arguments]
+        return self.ssh() + (['-t'] if sys.stdin.isatty() else []) + ['agent@monitor-vm', 'cd /workspace && exec ' + shlex.join(command)]
 
     def close(self):
         self.stopping.set()
@@ -565,6 +626,10 @@ class VM:
             if self.log_thread:
                 self.log_thread.join(timeout=1)
             self.process.stdout.close()
+        if self.link:
+            self.link.close()
+            if self.link_thread:
+                self.link_thread.join(timeout=2)
         if self.control:
             self.control.close()
             if self.control_thread:
@@ -771,23 +836,25 @@ def setup_launch(args):
         else:
             raise Error("pass --owner-key-file pointing to an owner-only file")
         owner = OwnerClient(owner_url, key)
-        view = owner.request()
-        connections = view["config"].get("connections", {})
+        view = unlock(owner, root)
+        connections = view["config"].get("connections") or {}
         # A connection's kind is its key naming a connector, such as "http".
         candidates = [name for name, settings in connections.items()
                       if settings.get("preset") == "anthropic" and "http" in settings]
-        connection = setup_value(args.service, "Anthropic HTTP service", candidates[0] if len(candidates) == 1 else None)
-        if "http" not in connections.get(connection, {}):
+        connection = setup_value(args.service, "Anthropic HTTP service for launch claude (blank to skip)",
+                                 candidates[0] if len(candidates) == 1 else "")
+        if connection and "http" not in connections.get(connection, {}):
             raise Error("choose an existing HTTP service for the Anthropic API")
         access_spec = args.access or [item.strip() for item in setup_value(
-            None, "Service access, comma-separated name=read|ask|allow", connection + "=allow").split(",")]
+            None, "Service access, comma-separated name=read|ask|allow", connection and connection + "=allow").split(",")
+            if item.strip()]
         access = {}
         for item in access_spec:
             name, sep, level = item.partition("=")
             if not sep or name not in connections or level not in ("read", "ask", "allow"):
                 raise Error(f"invalid service access {item!r}; use an existing service and read, ask or allow")
             access[name] = {"level": level}
-        if connection not in access:
+        if connection and connection not in access:
             raise Error("the Anthropic service must be included in --access")
         host_key = view["host_key"].strip()
         if "\n" in host_key or not host_key.startswith(("ssh-", "ecdsa-")):
@@ -801,13 +868,21 @@ def setup_launch(args):
         private(config_path, json.dumps(config, indent=2).encode() + b"\n")
         print(f"Saved launch profile {name!r}. Owner key stays in {root / 'owner.key'}.")
         prefix = "monitor" + (" --profile " + name if name != "default" else "")
-        print(f"From a project directory, run: {prefix} launch claude")
+        print(f"From a project directory, run: {prefix} launch {'claude' if connection else 'shell'}")
     return 0
+
+
+def unlock(owner, root):
+    # Like the web app, never unlock a state older than the newest generation seen from this host.
+    floor = Path(root) / "generation"
+    view = owner.request("POST", {"generation": int(private_read(floor)) if floor.exists() else 0}, path="/unlock")
+    private(floor, str(view["generation"]).encode())
+    return view
 
 
 def enroll_identity(owner, state, state_path, public_key, access):
     view = owner.request()
-    existing = view["config"].get("identities", {}).get(state["name"])
+    existing = (view["config"].get("identities") or {}).get(state["name"])
     if existing:
         if existing["key"].strip() != public_key.strip():
             raise Error("this VM's Perimeter identity has a different key; refusing to replace it")
@@ -825,7 +900,7 @@ def enroll_identity(owner, state, state_path, public_key, access):
 
 
 def revoke_identity(owner, name, public_key):
-    ids = owner.request()["config"].get("identities", {})
+    ids = owner.request()["config"].get("identities") or {}
     if name not in ids:
         return
     if ids[name]["key"].strip() != public_key.strip():
@@ -844,6 +919,10 @@ def launch_vm(args, cli):
         raise Error("run monitor setup first for this profile") from error
     if profile["version"] != 3:
         raise Error("this launch profile is from an older monitor; run monitor setup with a new --profile")
+    if args.command == "launch" and args.agent == "claude" and not profile["connection"]:
+        raise Error("this launch profile has no Anthropic service; use launch shell, or run monitor setup with --service")
+    if args.name and not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,62}", args.name):
+        raise Error("VM name must contain only lowercase letters, digits and hyphens")
     root = Path(profile["root"])
     workspace = Path(args.workspace).expanduser().resolve()
     if workspace == Path.home().resolve() or workspace.parent == workspace:
@@ -852,7 +931,7 @@ def launch_vm(args, cli):
         raise Error("choose an existing project directory")
     if workspace == root.resolve() or workspace in root.resolve().parents:
         raise Error("the project contains the Perimeter's host credentials; choose a project outside the launch configuration directory")
-    identity = "vm-" + hashlib.sha256((profile["id"] + "\0" + str(workspace)).encode()).hexdigest()[:32]
+    identity = args.name or "vm-" + hashlib.sha256((profile["id"] + "\0" + str(workspace)).encode()).hexdigest()[:32]
     directory = root / "instances" / identity
     if args.command == "stop":
         stop(directory)
@@ -873,6 +952,7 @@ def launch_vm(args, cli):
         public_key = keypair(directory / "id").decode() + "\n"
         if args.command in ("launch", "destroy"):
             owner = OwnerClient(profile["owner_url"], private_read(root / "owner.key"))
+            unlock(owner, root)
         if args.command == "destroy":
             ensure_stopped(directory)
             revoke_identity(owner, identity, public_key)
@@ -897,8 +977,7 @@ def launch_vm(args, cli):
                 export(vm, args.output)
                 print(f"Saved workspace archive to {args.output}")
                 return 0
-            arguments = args.argv[1:] if args.argv[:1] == ["--"] else args.argv
-            return cli.run_child(vm, vm.agent(arguments, profile.get("mcp", False)), environment())
+            return cli.run_child(vm, vm.agent(args.agent, args.argv, profile.get("mcp", False)), environment())
 
 
 def guest_agent(cli, client, args):
@@ -981,8 +1060,8 @@ def add_commands(commands, policy_commands):
     setup.add_argument("--mcp", action="store_true", help="also connect Claude to the Perimeter's MCP services")
     launch = commands.add_parser("launch", help="launch an agent in a Perimeter-connected Linux VM")
     launch.add_argument("--workspace", default=".", help="project directory (default: current directory)")
-    launch.add_argument("agent", choices=["claude"])
-    launch.add_argument("argv", nargs=argparse.REMAINDER, help="-- ARGUMENTS passed to Claude")
+    launch.add_argument("agent", choices=["claude", "shell"], help="Claude, or a shell routed through the Perimeter")
+    launch.add_argument("argv", nargs="*", help="-- ARGUMENTS passed to Claude, or a COMMAND to run instead of the shell")
     destroy = commands.add_parser("destroy", help="revoke the project's Perimeter identity and destroy its VM")
     destroy.add_argument("--workspace", default=".", help="project directory (default: current directory)")
     stop = commands.add_parser("stop", help="stop the project's running VM and retain its disk")
@@ -990,6 +1069,8 @@ def add_commands(commands, policy_commands):
     export = commands.add_parser("export", help="save the stopped VM's workspace as a tar archive")
     export.add_argument("--workspace", default=".", help="project directory (default: current directory)")
     export.add_argument("--output", required=True, help="new archive file to create on this host")
+    for command in (launch, destroy, stop, export):
+        command.add_argument("--name", help="VM identity name instead of one derived from the project directory")
     image = commands.add_parser("image", help="prepare a Firecracker guest image")
     build = image.add_subparsers(dest="action", required=True).add_parser("build", help="build the image with Podman or Docker")
     build.add_argument("--output", default=str(Path.home() / ".local/share/monitor/images/default"))
