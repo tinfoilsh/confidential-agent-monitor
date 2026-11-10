@@ -1,5 +1,5 @@
 .tab-bar {
-  --tab-accent: var(--tinfoil-twilight);
+  --tab-accent: var(--tinfoil-rose);
   position: relative;
   display: inline-flex;
   flex-shrink: 1;
@@ -60,7 +60,7 @@
 .tab-bar > :is([aria-current="page"], [aria-pressed="true"]),
 .tab-bar
   > :is([aria-current="page"], [aria-pressed="true"]):hover:not(:disabled) {
-  color: #fff;
+  color: var(--tinfoil-dark);
 }
 .tab-bar.inherited > .shown {
   color: var(--text);
@@ -69,11 +69,11 @@
   background: var(--tab-accent);
 }
 .tab-bar > :is(a, button):focus-visible {
-  outline: 2px solid var(--tab-accent);
+  outline: 2px solid var(--link);
   outline-offset: -2px;
 }
 .tab-bar > :is([aria-current="page"], [aria-pressed="true"]):focus-visible {
-  outline-color: #fff;
+  outline-color: var(--tinfoil-dark);
 }
 @media (prefers-reduced-motion: no-preference) {
   .tab-bar > :is(a, button) {
