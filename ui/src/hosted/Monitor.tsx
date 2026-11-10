@@ -58,6 +58,7 @@ export default function Monitor(props: { session: Session }) {
   addEventListener("hashchange", restored);
   onCleanup(() => removeEventListener("hashchange", restored));
   const back = () => (fromHome() ? "/" : keys.TARGETS.dashboard);
+  const bunker = /^#agents\/([^/]+)/.exec(location.hash)?.[1];
   const [error, setError] = createSignal("");
   const [notice, setNotice] = createSignal("");
   const [busy, setBusy] = createSignal(false);
@@ -231,7 +232,7 @@ export default function Monitor(props: { session: Session }) {
               <KeyGate
                 session={props.session}
                 manager={manager}
-                purpose={`open ${row()?.name ?? "your Perimeter"}`}
+                purpose={`connect to ${bunker ?? "your bunkers"}`}
               >
                 <AuthScreen title={title()}>
                   <AuthCard icon={<Icon name="rules" />}>
@@ -283,7 +284,7 @@ export default function Monitor(props: { session: Session }) {
                             row()?.status === "running")
                         }
                       >
-                        <Loading label="Verifying and connecting to your Perimeter…" />
+                        <Loading label="Verifying and connecting to your bunker…" />
                         <Show when={busy()}>
                           <button
                             class="link"

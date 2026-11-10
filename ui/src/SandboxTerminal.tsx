@@ -50,6 +50,8 @@ export default function SandboxTerminal(props: {
     cursorBlink: true,
     fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
     fontSize: 13,
+    // TUIs that assume a dark background stay readable in the light theme.
+    minimumContrastRatio: 4.5,
     theme: THEMES[colorScheme()],
   });
   const fit = new FitAddon();
