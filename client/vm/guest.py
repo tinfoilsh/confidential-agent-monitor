@@ -79,7 +79,7 @@ def host(port):
 def publish():
     # Each Perimeter link reconnection republishes this VM's wildcard listeners.
     while True:
-        subprocess.run(['ssh', '-F', '/home/agent/.config/monitor/ssh_config', '-NT', 'monitor-route'],
+        subprocess.run(['ssh', '-F', '/home/agent/.config/perimeter/ssh_config', '-NT', 'perimeter-route'],
                        user=1000, group=1000, extra_groups=[], stdin=subprocess.DEVNULL, check=False)
         time.sleep(2)
 
@@ -88,14 +88,14 @@ def main():
     seed = Path('/run/seed')
     for directory in ('/run/sshd', '/opt/monitor', '/workspace', '/var/lib/monitor'):
         Path(directory).mkdir(parents=True, exist_ok=True)
-    for directory in ('/home/agent/.ssh', '/home/agent/.config/monitor'):
+    for directory in ('/home/agent/.ssh', '/home/agent/.config/perimeter'):
         Path(directory).mkdir(parents=True, exist_ok=True, mode=0o700)
         os.chown(directory, 1000, 1000)
     copy(seed / 'authorized_keys', '/home/agent/.ssh/authorized_keys', agent=True)
     copy(seed / 'host_key', '/run/sshd/host_key')
-    copy(seed / 'monitor', '/opt/monitor/monitor', 0o755)
+    copy(seed / 'perimeter', '/opt/monitor/perimeter', 0o755)
     for name in ('id', 'known_hosts', 'ssh_config'):
-        copy(seed / name, '/home/agent/.config/monitor/' + name, agent=True)
+        copy(seed / name, '/home/agent/.config/perimeter/' + name, agent=True)
     marker = Path('/var/lib/monitor/workspace-ready')
     if not marker.exists():
         subprocess.run(['tar', '-xf', str(seed / 'workspace.tar'), '-C', '/workspace', '--no-same-owner'], check=True)

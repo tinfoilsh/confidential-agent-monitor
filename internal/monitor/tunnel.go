@@ -155,7 +155,7 @@ func (m *monitor) forwardConnection(key string, nc ssh.NewChannel, target frontd
 	c := m.connections[selected]
 	if c == nil {
 		m.mu.Unlock()
-		nc.Reject(ssh.Prohibited, "the monitor does not forward this target")
+		nc.Reject(ssh.Prohibited, "the Perimeter does not forward this target")
 		return
 	}
 	ctx, name, admitted, env := c.setupCtx, c.Name, admission{fingerprint: key, connection: c, prepared: c.prepared}, c.env

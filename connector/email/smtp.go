@@ -50,7 +50,7 @@ func (owner *SMTP) Serve(s *connector.Stream, e *connector.Env) {
 	server := smtp.NewServer(smtp.BackendFunc(func(*smtp.Conn) (smtp.Session, error) {
 		return &smtpSession{stream: s, relay: &r, env: e}, nil
 	}))
-	server.Domain = "monitor"
+	server.Domain = "perimeter"
 	server.MaxMessageBytes = maxMessageBytes
 	server.AllowInsecureAuth = true
 	server.TLSConfig = e.TLS

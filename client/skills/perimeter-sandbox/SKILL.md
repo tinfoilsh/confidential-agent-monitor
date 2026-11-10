@@ -1,12 +1,12 @@
 ---
-name: monitor
+name: perimeter
 description: Discover and use services granted to this bunker, inspect its own Perimeter policy, and propose service or access changes for owner review without handling credentials.
 ---
 
 # Perimeter in a bunker
 
 The Perimeter is this bunker's policy and credential boundary for external services.
-Use the installed `monitor` CLI unless directly integrating with the internal
+Use the installed `perimeter` CLI unless directly integrating with the internal
 agent API.
 
 ## Rules
@@ -27,7 +27,7 @@ agent API.
 See the safe service catalog:
 
 ```sh
-monitor catalog --json
+perimeter catalog --json
 ```
 
 Catalog entries describe setup fields, defaults, service templates, and
@@ -37,7 +37,7 @@ actions. The final `generic` group contains broad fallback types.
 See services this bunker can currently use:
 
 ```sh
-monitor services --json
+perimeter services --json
 ```
 
 Discovery includes service names, protocols, readiness, effective access,
@@ -48,8 +48,8 @@ values or verified credential account identifiers.
 See this bunker's own policy projection:
 
 ```sh
-monitor policy show
-monitor policy show --json
+perimeter policy show
+perimeter policy show --json
 ```
 
 The bunker view contains this identity's access and saved rules plus semantics
@@ -61,7 +61,7 @@ or credentials.
 Prefer structured changes for automation:
 
 ```sh
-monitor policy propose --changes changes.json \
+perimeter policy propose --changes changes.json \
   --reason "Grant this bunker GitHub access for issue triage"
 ```
 
@@ -76,11 +76,11 @@ Example `changes.json`:
 ]
 ```
 
-Use the exact bunker identity shown by `monitor policy show`. A deletion uses
+Use the exact bunker identity shown by `perimeter policy show`. A deletion uses
 `"delete": true` and omits `value`. TOML fragments are also accepted:
 
 ```sh
-monitor policy propose change.toml \
+perimeter policy propose change.toml \
   --reason "Grant this bunker GitHub access for issue triage"
 ```
 
@@ -94,7 +94,7 @@ A batch is split into one proposal per service. The owner reviews each
 service independently. Poll the ID from a submitted receipt with:
 
 ```sh
-monitor policy status PROPOSAL_ID
+perimeter policy status PROPOSAL_ID
 ```
 
 Status is limited to this bunker's own proposals and reports `pending`,
@@ -112,9 +112,9 @@ that ignore proxy settings.
 Use the wrapper when you need credential placeholders or a specific service:
 
 ```sh
-monitor run --service SERVICE -- curl -fsS https://example.com
-monitor run -- your-command
-monitor shell
+perimeter run --service SERVICE -- curl -fsS https://example.com
+perimeter run -- your-command
+perimeter shell
 ```
 
 The wrapper configures proxy and certificate settings and exposes safe credential
@@ -124,7 +124,7 @@ placeholder with a real credential.
 For MCP services:
 
 ```sh
-monitor mcp serve --listen 127.0.0.1:8400
+perimeter mcp serve --listen 127.0.0.1:8400
 ```
 
 Keep it running and configure the MCP client with the reported local URL. Only
@@ -136,7 +136,7 @@ timeout, inspect the destination or Activity before retrying.
 ## Direct internal API
 
 Inside the managed bunker, the identity-authenticated API is available at
-`agent.monitor`:
+`agent.perimeter`:
 
 | Method | Path | Purpose |
 | --- | --- | --- |
@@ -147,10 +147,10 @@ Inside the managed bunker, the identity-authenticated API is available at
 | `POST` | `/policy/proposals` | Submit owner-reviewed service changes |
 
 ```sh
-curl -fsS http://agent.monitor/catalog
-curl -fsS http://agent.monitor/connections
-curl -fsS http://agent.monitor/policy
-curl -fsS -X POST http://agent.monitor/policy/proposals \
+curl -fsS http://agent.perimeter/catalog
+curl -fsS http://agent.perimeter/connections
+curl -fsS http://agent.perimeter/policy
+curl -fsS -X POST http://agent.perimeter/policy/proposals \
   -H 'Content-Type: application/json' \
   --data-binary @proposal.json
 ```

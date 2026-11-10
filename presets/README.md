@@ -1,5 +1,5 @@
 Each shipped preset has a `<name>.json` record. Connections select it with
-`"preset": "<name>"`. Monitor accepts only these shipped definitions.
+`"preset": "<name>"`. Perimeter accepts only these shipped definitions.
 
 For authoring, see [adding protocol presets](../dev/presets/README.md#adding-protocol-presets).
 Provider request definitions live in the JSON files; SDK scenarios and coverage
@@ -15,7 +15,7 @@ defaults, and permission actions. Field paths are relative to the connection. A
 Protocol definitions have their own sections:
 
 - `http.operations` maps operation IDs to reviewed HTTP operations, including GraphQL matchers. IDs also determine candidate evaluation order; ambiguous matches are rejected.
-- An operation's optional `path_patterns` maps capture names to Go regular expressions. Each expression must match the entire captured value and is checked before ambiguity detection. Unknown capture names and invalid expressions fail compilation. For example, `"path_patterns": {"release_id": "[0-9]+"}` keeps GitHub release-by-ID requests distinct from `/releases/latest`. This is a matching constraint, not a scope type conversion; extracted IDs remain strings. Literal routes do not automatically outrank parameter routes. Constraints participate in the approval definition hash and require a Monitor version supporting this field.
+- An operation's optional `path_patterns` maps capture names to Go regular expressions. Each expression must match the entire captured value and is checked before ambiguity detection. Unknown capture names and invalid expressions fail compilation. For example, `"path_patterns": {"release_id": "[0-9]+"}` keeps GitHub release-by-ID requests distinct from `/releases/latest`. This is a matching constraint, not a scope type conversion; extracted IDs remain strings. Literal routes do not automatically outrank parameter routes. Constraints participate in the approval definition hash and require a Perimeter version supporting this field.
 - `http.slots` requires requests to stay within the connection's configured API addresses.
 - `http.sensitive_query` lists high-entropy bearer query values to fingerprint before capture, including unknown or invalid requests. Extracted parameters see the same fingerprints, preserving approval distinctions without retaining the credentials. Literal query-value matchers cannot use these fields.
 - `mcp.scope` selects service resource identifiers from MCP tool arguments.
@@ -67,7 +67,7 @@ adds its detail type to `facts`.
 
 A parsed request implements `connector.Request.Describe`. It returns facts,
 with non-serialized approval scope and definition dependencies, and any
-validation error. It must not mutate its input or perform I/O. The monitor
+validation error. It must not mutate its input or perform I/O. The Perimeter
 supplies the live connector, typed policy options, and protocol preset on every
 evaluation, including after
 an owner approves a waiting request.
@@ -75,7 +75,7 @@ an owner approves a waiting request.
 `policy.go` finalizes every description by resolving catalog effects, connection
 labels, and public/private resource settings. Effects and configured labels are
 validated when loaded or compiled. Connectors supply request kinds, which default
-to `operation`. The monitor treats an empty action or one without configured
+to `operation`. The Perimeter treats an empty action or one without configured
 effects as unknown; preset compilation rejects explicit empty effect lists.
 Action effects inherit from the nearest configured ancestor. HTTP
 operations supply their own effects. Renaming a preset does not change how its
@@ -88,7 +88,7 @@ Policy and audit receive independent views of the same JSON snapshot.
 in bodies and service-specific parameters. Common fields live at
 `input.facts.operation`, `input.facts.parameters`, and `input.facts.context`.
 `input.facts.principal.key` and `.name` identify the requesting agent and come from
-the monitor's current identity settings. `input.facts.kind` is `operation`,
+the Perimeter's current identity settings. `input.facts.kind` is `operation`,
 `admission`; omitted kinds from connector descriptions default to
 `operation`. Admission authorization uses this field. Protocol detail
 keys do not select authorization behavior.
@@ -116,12 +116,12 @@ without duplicating those facts.
 
 The Rego rules in `../internal/policy/` compute access restrictions, label-flow checks, and
 saved approval waivers. Every request evaluates the same prepared query,
-`data.monitor.decision`. Owner policies receive `input.facts` and
-`input.authorization`; they can also read `data.monitor.gaps` to inspect remaining
+`data.perimeter.decision`. Owner policies receive `input.facts` and
+`input.authorization`; they can also read `data.perimeter.gaps` to inspect remaining
 approval requirements. Lattice settings are available in `data.lattices`, and
 label levels in `data.levels`. Description errors are appended to denials in Go.
 `data.sentinel.deny` adds owner denial messages. Owner policies cannot define
-rules or data under `monitor`, `lattices`, or `levels`, which the monitor reserves.
+rules or data under `perimeter`, `lattices`, or `levels`, which the Perimeter reserves.
 An undefined deny rule adds no restrictions. A defined rule must return a set or
 array of strings; malformed output and evaluation errors refuse the request.
 
@@ -159,8 +159,8 @@ request waits cannot be covered by an approval of the earlier requirements.
 Policy and data edits invalidate saved approvals through the existing definition
 hash, including edits to literal messages in policy source.
 
-Approval rules can inspect `data.monitor.base_gaps`, the remaining built-in
-requirements after saved waivers. Denial rules can inspect `data.monitor.gaps`,
+Approval rules can inspect `data.perimeter.base_gaps`, the remaining built-in
+requirements after saved waivers. Denial rules can inspect `data.perimeter.gaps`,
 which also includes custom requirements. An approval rule that depends on the
 final gaps or reasons is recursive and is rejected when the policy is compiled.
 Custom requirements can pause operations and connection admission.

@@ -71,7 +71,7 @@ func (t *cliSetup) session(s *connector.Stream, nc ssh.NewChannel) {
 		}
 		status := exitRefused
 		if err := s.Gate(s.Context, t.Capture(e.Describe(""))); err != nil {
-			fmt.Fprintf(ch.Stderr(), "monitor: %v\n", err)
+			fmt.Fprintf(ch.Stderr(), "perimeter: %v\n", err)
 		} else {
 			status = t.execute(s.Context, e.Command.Argv, io.MultiReader(bytes.NewReader(stdin), ch), ch)
 		}

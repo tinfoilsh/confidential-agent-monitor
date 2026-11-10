@@ -1412,9 +1412,9 @@ export function codexSetup(view: View, name: string): string | null {
   const setup = apiSetup(view, name);
   if (!setup) return null;
   return `model = "gpt-6.1-sol"
-model_provider = "monitor_chatgpt"
+model_provider = "perimeter_chatgpt"
 
-[model_providers.monitor_chatgpt]
+[model_providers.perimeter_chatgpt]
 name = "ChatGPT through Perimeter"
 base_url = "https://api.openai.com/v1"
 experimental_bearer_token = ${JSON.stringify(setup.placeholder)}
@@ -1447,7 +1447,7 @@ export function tinfoilSetup(view: View, name: string) {
   const kind = kindOf(connections(view)[name]);
   if (kind !== "tinfoil" && kind !== "tinfoil-mcp") return;
   const mcp = kind === "tinfoil-mcp";
-  return { mcp, url: `https://${name}.monitor/${mcp ? "mcp" : "v1"}` };
+  return { mcp, url: `https://${name}.perimeter/${mcp ? "mcp" : "v1"}` };
 }
 
 const unusedName = (view: View, base: string, suffixes: string[] = [""]) => {

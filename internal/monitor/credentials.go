@@ -141,7 +141,7 @@ func (m *monitor) finishSignIn(r *http.Request, req finishSignInInput) (any, err
 	pending := value.(*pendingSignIn)
 	session, _ := ownerauth.FromContext(r.Context())
 	if pending.session != session.ID {
-		return nil, errors.New("sign-in belongs to a different Monitor session")
+		return nil, errors.New("sign-in belongs to a different Perimeter session")
 	}
 	if !req.Cancel && req.Error == nil && pending.done != nil && time.Now().Before(pending.expires) {
 		select {

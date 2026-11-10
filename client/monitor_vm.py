@@ -33,7 +33,7 @@ import zipfile
 
 ASSETS = ('Dockerfile', 'guest.py', 'init.sh', 'assets.json')
 # Bump when guest.py, init.sh or the Dockerfile change what a launch relies on.
-IMAGE_VERSION = 2
+IMAGE_VERSION = 3
 # The guest's 127.0.0.1 port and host vsock port that carry its Perimeter link.
 LINK_PORT = 2223
 # These mirror sandbox.BootstrapUser and the Perimeter's wildcard route forward.
@@ -84,7 +84,7 @@ def run(command, **kwargs):
 def private(path, data):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    fd, temporary = tempfile.mkstemp(dir=path.parent, prefix='.monitor-')
+    fd, temporary = tempfile.mkstemp(dir=path.parent, prefix='.perimeter-')
     try:
         with os.fdopen(fd, 'wb') as stream:
             stream.write(data)
@@ -167,7 +167,7 @@ def build_image(args):
     if destination.exists() and not outdated:
         raise Error('image destination already exists; build into a new directory to update it')
     destination.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    with tempfile.TemporaryDirectory(prefix='.monitor-build-', dir=destination.parent) as temporary:
+    with tempfile.TemporaryDirectory(prefix='.perimeter-build-', dir=destination.parent) as temporary:
         build = Path(temporary)
         output, context, disks = build / 'image', build / 'context', build / 'disks'
         for path in (output, context, disks):
@@ -198,7 +198,7 @@ def build_image(args):
             shutil.copyfile(binary, context / 'claude-local')
         else:
             (context / 'claude-local').touch()
-        tag = 'localhost/monitor-image:' + build.name.removeprefix('.')
+        tag = 'localhost/perimeter-image:' + build.name.removeprefix('.')
         container = None
         try:
             print('Building the Perimeter guest image...', file=sys.stderr, flush=True)
@@ -245,9 +245,9 @@ def image_info(directory):
     try:
         info = json.loads((directory / 'image.json').read_text())
     except (OSError, ValueError) as error:
-        raise Error(f'no valid VM image at {directory}; run monitor image build') from error
+        raise Error(f'no valid VM image at {directory}; run perimeter image build') from error
     if info.get('version') != IMAGE_VERSION or info.get('architecture') != platform.machine():
-        raise Error(f'VM image at {directory} is outdated or for another architecture; run monitor image build --output {directory}')
+        raise Error(f'VM image at {directory} is outdated or for another architecture; run perimeter image build --output {directory}')
     for name in ('firecracker', 'vmlinux', 'rootfs.ext4'):
         if not (directory / name).is_file() or not re.fullmatch('[0-9a-f]{64}', info.get('sha256', {}).get(name, '')):
             raise Error(f'VM image is missing {name} or its checksum')
@@ -354,14 +354,14 @@ def seed_image(directory, runtime, profile, workspace, source, fresh):
         private(seed / 'host_key', (directory / 'host_key').read_bytes())
         private(seed / 'id', (directory / 'id').read_bytes())
         private(seed / 'known_hosts', b'monitor-server ' + (Path(profile['root']) / 'host_key').read_bytes().strip() + b'\n')
-        private(seed / 'monitor', bundle(source))
+        private(seed / 'perimeter', bundle(source))
         # launch_vm names each instance directory after its identity.
-        private(seed / 'ssh_config', f'''Host monitor-route
+        private(seed / 'ssh_config', f'''Host perimeter-route
   User {ROUTE_USER}{directory.name}
   RemoteForward {WILDCARD_FORWARD}
   PermitRemoteOpen {WILDCARD_OPEN}
   ExitOnForwardFailure yes
-Host monitor monitor-route
+Host perimeter perimeter-route
   HostName 127.0.0.1
   Port {LINK_PORT}
   User monitor
@@ -371,8 +371,8 @@ Host monitor monitor-route
   IdentityAgent none
   ForwardAgent no
   ProxyCommand none
-  IdentityFile /home/agent/.config/monitor/id
-  UserKnownHostsFile /home/agent/.config/monitor/known_hosts
+  IdentityFile /home/agent/.config/perimeter/id
+  UserKnownHostsFile /home/agent/.config/perimeter/known_hosts
   GlobalKnownHostsFile /dev/null
 '''.encode())
         archive = seed / 'workspace.tar'
@@ -467,7 +467,7 @@ class VM:
         try:
             image = preflight(self.profile['image'])
             ensure_stopped(self.directory)
-            self.temporary = tempfile.TemporaryDirectory(prefix='monitor-vm-')
+            self.temporary = tempfile.TemporaryDirectory(prefix='perimeter-vm-')
             self.runtime = Path(self.temporary.name)
             fresh = not (self.directory / 'initialized').exists()
             prepare_disk(self.directory, image)
@@ -564,7 +564,7 @@ class VM:
 
     def check(self):
         if self.stopping.is_set():
-            raise Error('VM stopped by monitor stop')
+            raise Error('VM stopped by perimeter stop')
         if self.process.poll() is not None:
             raise Error('Firecracker exited; the VM disk was retained. Boot log: ' +
                         bytes(self.boot_log[-4000:]).decode(errors='replace'))
@@ -596,7 +596,7 @@ class VM:
         raise Error('VM boot timed out; disk retained. Boot log: ' + bytes(self.boot_log[-4000:]).decode(errors='replace'))
 
     def agent(self, name, arguments, mcp=False):
-        command = ['python3', '/opt/monitor/monitor', '--ssh-config', '/home/agent/.config/monitor/ssh_config']
+        command = ['python3', '/opt/monitor/perimeter', '--ssh-config', '/home/agent/.config/perimeter/ssh_config']
         if name == 'shell':
             command += ['run', '--', *arguments] if arguments else ['shell']
         else:
@@ -663,7 +663,7 @@ def export(vm, destination):
     destination = Path(destination).expanduser().absolute()
     if destination.exists():
         raise Error('export destination already exists; choose a new file')
-    fd, temporary = tempfile.mkstemp(prefix='.monitor-export-', dir=destination.parent)
+    fd, temporary = tempfile.mkstemp(prefix='.perimeter-export-', dir=destination.parent)
     child = None
     try:
         with os.fdopen(fd, 'wb') as output:
@@ -798,7 +798,7 @@ def setup_value(value, prompt, default=None):
     if not sys.stdin.isatty():
         if default is not None:
             return default
-        raise Error(f"{prompt} is required; use monitor setup --help for noninteractive options")
+        raise Error(f"{prompt} is required; use perimeter setup --help for noninteractive options")
     answer = input(prompt + (f" [{default}]" if default else "") + ": ").strip()
     return answer or default
 
@@ -826,8 +826,8 @@ def setup_launch(args):
         if not 1 <= args.cpus <= 32 or not 512 <= args.memory <= 65536:
             raise Error("choose 1–32 CPUs and 512–65536 MiB of memory")
         image = str(preflight(args.image))
-        owner_url = setup_value(args.owner_url, "Monitor owner URL", "http://127.0.0.1:8080")
-        endpoint = setup_value(args.endpoint, "Monitor SSH endpoint as reached by this host", "127.0.0.1:2223")
+        owner_url = setup_value(args.owner_url, "Perimeter owner URL", "http://127.0.0.1:8080")
+        endpoint = setup_value(args.endpoint, "Perimeter SSH endpoint as reached by this host", "127.0.0.1:2223")
         endpoint_address(endpoint)
         if args.owner_key_file:
             key = private_read(Path(args.owner_key_file).expanduser())
@@ -867,7 +867,7 @@ def setup_launch(args):
         config.setdefault("launch_profiles", {})[name] = profile
         private(config_path, json.dumps(config, indent=2).encode() + b"\n")
         print(f"Saved launch profile {name!r}. Owner key stays in {root / 'owner.key'}.")
-        prefix = "monitor" + (" --profile " + name if name != "default" else "")
+        prefix = "perimeter" + (" --profile " + name if name != "default" else "")
         print(f"From a project directory, run: {prefix} launch {'claude' if connection else 'shell'}")
     return 0
 
@@ -916,11 +916,11 @@ def launch_vm(args, cli):
     try:
         profile = json.loads(private_read(config_path))["launch_profiles"][name]
     except (FileNotFoundError, KeyError) as error:
-        raise Error("run monitor setup first for this profile") from error
+        raise Error("run perimeter setup first for this profile") from error
     if profile["version"] != 3:
-        raise Error("this launch profile is from an older monitor; run monitor setup with a new --profile")
+        raise Error("this launch profile is from an older Perimeter; run perimeter setup with a new --profile")
     if args.command == "launch" and args.agent == "claude" and not profile["connection"]:
-        raise Error("this launch profile has no Anthropic service; use launch shell, or run monitor setup with --service")
+        raise Error("this launch profile has no Anthropic service; use launch shell, or run perimeter setup with --service")
     if args.name and not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,62}", args.name):
         raise Error("VM name must contain only lowercase letters, digits and hyphens")
     root = Path(profile["root"])
@@ -962,7 +962,7 @@ def launch_vm(args, cli):
             print("Revoked the Perimeter identity and destroyed the VM.")
             return 0
         if args.command == "launch" and state.get("revoked"):
-            raise Error("this VM is being destroyed; retry monitor destroy")
+            raise Error("this VM is being destroyed; retry perimeter destroy")
         preflight(profile["image"])
         if args.command == "launch":
             enroll_identity(owner, state, state_path, public_key, profile["access"])
@@ -1052,7 +1052,7 @@ def add_commands(commands, policy_commands):
     setup.add_argument("--owner-url", help="unlocked Perimeter owner API URL")
     setup.add_argument("--owner-key-file", help="owner-only file containing a key or passphrase; otherwise prompt privately")
     setup.add_argument("--endpoint", help="Perimeter SSH HOST:PORT as reached by this host")
-    setup.add_argument("--image", default=str(Path.home() / ".local/share/monitor/images/default"), help="prepared VM image directory")
+    setup.add_argument("--image", default=str(Path.home() / ".local/share/perimeter/images/default"), help="prepared VM image directory")
     setup.add_argument("--cpus", type=int, default=2, help="VM CPU count (default: 2)")
     setup.add_argument("--memory", type=int, default=4096, help="VM memory in MiB (default: 4096)")
     setup.add_argument("--service", help="Anthropic HTTP service name")
@@ -1073,7 +1073,7 @@ def add_commands(commands, policy_commands):
         command.add_argument("--name", help="VM identity name instead of one derived from the project directory")
     image = commands.add_parser("image", help="prepare a Firecracker guest image")
     build = image.add_subparsers(dest="action", required=True).add_parser("build", help="build the image with Podman or Docker")
-    build.add_argument("--output", default=str(Path.home() / ".local/share/monitor/images/default"))
+    build.add_argument("--output", default=str(Path.home() / ".local/share/perimeter/images/default"))
     build.add_argument("--engine", help="container engine executable (default: podman or docker)")
     build.add_argument("--firecracker", help="use a local static Firecracker binary")
     build.add_argument("--kernel", help="use a local Firecracker-compatible guest kernel")
@@ -1096,7 +1096,7 @@ def handles(args):
 
 
 def command(args, cli):
-    """Run an owner or VM command. cli is the main monitor module."""
+    """Run an owner or VM command. cli is the main perimeter module."""
     if args.command == "policy":
         return owner_policy(args)
     if args.command == "setup":

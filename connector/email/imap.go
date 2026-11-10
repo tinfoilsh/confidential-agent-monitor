@@ -85,7 +85,7 @@ func (owner *IMAP) Serve(s *connector.Stream, e *connector.Env) {
 			break
 		}
 	}
-	fmt.Fprintf(s, "* PREAUTH monitor\r\n")
+	fmt.Fprintf(s, "* PREAUTH perimeter\r\n")
 	defer connector.PumpReplies(s, func() { io.Copy(s, replies) })()
 	commands := bufio.NewReader(s)
 	mailbox := ""

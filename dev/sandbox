@@ -20,19 +20,19 @@ pkill -f "^$dev/monitor " && pidwait -f "^$dev/monitor " || true
 dev/setup > /dev/null
 printf 'Monitor UI with hot reload: %s/app/\n' "${MONITOR_API:-http://127.0.0.1:8080}"
 # Mount only the agent identity and public configuration, never the owner's key/store.
-sed -e 's|IdentityFile .*|IdentityFile /run/monitor/id|' \
-    -e 's|UserKnownHostsFile .*|UserKnownHostsFile /run/monitor/known_hosts|' \
+sed -e 's|IdentityFile .*|IdentityFile /run/perimeter/id|' \
+    -e 's|UserKnownHostsFile .*|UserKnownHostsFile /run/perimeter/known_hosts|' \
     "$dev/ssh_config" > "$dev/sandbox-ssh.conf"
 # The reverse service publishes the sandbox's SSH for native SSH through Monitor.
-printf 'Host monitor\n  User sandbox-v2:%s\n  ExitOnForwardFailure yes\n  RemoteForward 127.0.0.1:22 127.0.0.1:22\n' "$name" |
+printf 'Host perimeter\n  User sandbox-v2:%s\n  ExitOnForwardFailure yes\n  RemoteForward 127.0.0.1:22 127.0.0.1:22\n' "$name" |
   cat - "$dev/sandbox-ssh.conf" > "$dev/sandbox-reverse.conf"
 podman run -d --name "$name" --hostname workspace --privileged --systemd=always \
   --userns=keep-id --user root --network "pasta:-T,${listen##*:}" --dns 100.127.255.2 \
   -v "$name:/mnt/disk" -v "$name:/nix" -v "$toolchain:/tinfoil/models/nix:ro" \
-  -v "$dev/id:/run/monitor/id:ro" -v "$dev/id.pub:/run/monitor/id.pub:ro" \
-  -v "$dev/known_hosts:/run/monitor/known_hosts:ro" \
-  -v "$dev/sandbox-ssh.conf:/etc/ssh/ssh_config.d/monitor.conf:ro" \
-  -v "$dev/sandbox-reverse.conf:/etc/ssh/monitor-reverse.conf:ro" \
+  -v "$dev/id:/run/perimeter/id:ro" -v "$dev/id.pub:/run/perimeter/id.pub:ro" \
+  -v "$dev/known_hosts:/run/perimeter/known_hosts:ro" \
+  -v "$dev/sandbox-ssh.conf:/etc/ssh/ssh_config.d/perimeter.conf:ro" \
+  -v "$dev/sandbox-reverse.conf:/etc/ssh/perimeter-reverse.conf:ro" \
   --entrypoint bash "$name" -c '
     set -euo pipefail
     # The CVM mounts the writable toolchain overlay and enforces egress outside the guest.
@@ -40,7 +40,7 @@ podman run -d --name "$name" --hostname workspace --privileged --systemd=always 
     mount -t overlay overlay -o lowerdir=/tinfoil/models/nix/nix/store,upperdir=/nix/store.upper,workdir=/nix/store.work /nix/store
     nft -f - <<NFT
 table inet egress {
-  chain output { type filter hook output priority 0; oifname != { "lo", "monitor0" } drop; }
+  chain output { type filter hook output priority 0; oifname != { "lo", "perimeter0" } drop; }
   chain forward { type filter hook forward priority 0; drop; }
 }
 NFT
@@ -48,7 +48,7 @@ NFT
 # Wait for routing, not merely systemd: the shell must have a working Monitor connection.
 deadline=$((SECONDS + 60))
 while ((SECONDS < deadline)); do
-  if podman exec "$name" ip link show monitor0 > /dev/null 2>&1; then
+  if podman exec "$name" ip link show perimeter0 > /dev/null 2>&1; then
     [[ $# != 0 ]] || set -- bash -l
     terminal=()
     [[ ! -t 0 || ! -t 1 ]] || terminal=(-t)
@@ -58,6 +58,6 @@ while ((SECONDS < deadline)); do
   sleep 0.5
 done
 podman logs --tail 30 "$name"
-podman exec "$name" journalctl -b -u monitor-network --no-pager -n 30
+podman exec "$name" journalctl -b -u perimeter-network --no-pager -n 30
 echo 'Sandbox Monitor network did not become ready within 60 seconds' >&2
 exit 1

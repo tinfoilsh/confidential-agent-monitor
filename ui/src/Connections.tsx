@@ -1218,7 +1218,7 @@ function Connection(props: { name: string }) {
                             <p>
                               Save this in <code>~/.codex/config.toml</code>,
                               then run Codex in your Perimeter-connected bunker
-                              or with <code>monitor run -- codex</code>. Choose
+                              or with <code>perimeter run -- codex</code>. Choose
                               a model available to your ChatGPT account. Grant
                               your bunker access to this service, then approve
                               its requests when asked.

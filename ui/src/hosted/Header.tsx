@@ -19,7 +19,7 @@ const ACCOUNT_MENU_GAP = 8;
 // A Monitor opened from the home page goes back there; one opened elsewhere, such
 // as from the dashboard, goes back to the dashboard.
 export const monitorURL = (id: string) =>
-  `/monitor/${id}?${new URLSearchParams({ [OPENED_FROM]: HOME })}`;
+  `/perimeter/${id}?${new URLSearchParams({ [OPENED_FROM]: HOME })}`;
 export const openedFromHome = () =>
   new URLSearchParams(location.search).get(OPENED_FROM) === HOME;
 

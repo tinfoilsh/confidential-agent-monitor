@@ -249,7 +249,7 @@ func (m *monitor) enrollmentChanges(input map[string]identityEnrollment) ([]conf
 			continue
 		}
 		if m.store.Doc.Enrolled[fingerprint] && !id.Restore {
-			return nil, errors.New("identity was revoked; restore access explicitly in Monitor")
+			return nil, errors.New("identity was revoked; restore access explicitly in the Perimeter")
 		}
 		if _, exists := m.settings.Load().Config.Identities[name]; exists {
 			return nil, errors.New("identity name belongs to another key")

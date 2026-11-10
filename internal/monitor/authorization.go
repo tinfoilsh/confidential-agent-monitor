@@ -411,7 +411,7 @@ func (m *monitor) awaitAnswer(ctx context.Context, r *record) error {
 	switch r.State {
 	case statePending, stateExpired:
 		r.State = stateExpired
-		return errors.New("waiting for approval in the monitor timed out")
+		return errors.New("waiting for approval in the Perimeter timed out")
 	case stateDenied:
 		return errors.New("this request was denied")
 	case stateRefused:
@@ -528,7 +528,7 @@ func (r *record) committed(answer reviewAnswer) {
 	r.Reviews = append(r.Reviews, answer)
 }
 
-var errAuditBacklog = errors.New("the monitor cannot write its audit log; requests are refused until storage recovers")
+var errAuditBacklog = errors.New("the Perimeter cannot write its audit log; requests are refused until storage recovers")
 
 // RunAudit flushes on an interval until ctx ends, then once more.
 func (m *monitor) RunAudit(ctx context.Context) { m.audit.Run(ctx) }

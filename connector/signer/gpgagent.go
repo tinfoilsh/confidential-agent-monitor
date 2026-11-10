@@ -65,7 +65,7 @@ func (owner *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
 		switch {
 		case command == "D" || command == "END" || command == "CAN" || strings.HasPrefix(line, "#"):
 		case !agentCommands[command]:
-			fmt.Fprintf(s, "ERR %d Not supported <Monitor>\n", assuanNotSupported)
+			fmt.Fprintf(s, "ERR %d Not supported <Perimeter>\n", assuanNotSupported)
 			continue
 		case command == "RESET":
 			sign = SignFacts{Agent: agentGPG}
@@ -76,7 +76,7 @@ func (owner *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
 		case command == "PKSIGN" || command == "PKDECRYPT":
 			sign.Op = strings.ToLower(command)
 			if err := s.Gate(s.Context, socket.Capture(sign.Describe())); err != nil {
-				fmt.Fprintf(s, "ERR %d %v <Monitor>\n", assuanNotSupported, err)
+				fmt.Fprintf(s, "ERR %d %v <Perimeter>\n", assuanNotSupported, err)
 				continue
 			}
 		}

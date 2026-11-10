@@ -6,8 +6,8 @@ usage() {
     cat <<'EOF'
 Usage: ./install.sh [--bin-dir DIR]
 
-Install or update the Monitor CLI from this checkout.
-The default destination is ~/.local/bin/monitor.
+Install or update the Perimeter CLI from this checkout.
+The default destination is ~/.local/bin/perimeter.
 Requires Python 3.11 or newer and OpenSSH on Linux or macOS.
 Run this command again after pulling changes to update the installed client.
 EOF
@@ -42,7 +42,7 @@ fi
 source_dir=$(CDPATH= cd -P -- "$(dirname -- "$0")" && pwd)
 mkdir -p -- "$bin_dir"
 bin_dir=$(CDPATH= cd -P -- "$bin_dir" && pwd)
-destination=$bin_dir/monitor
+destination=$bin_dir/perimeter
 if [ -d "$destination" ]; then
     printf 'install: destination is a directory: %s\n' "$destination" >&2
     exit 1
@@ -50,7 +50,7 @@ fi
 
 # Stage alongside the destination so replacement is atomic, including updates
 # while a client is running. A failed copy or check leaves the old client intact.
-temporary=$(mktemp "$bin_dir/.monitor.XXXXXXXX")
+temporary=$(mktemp "$bin_dir/.perimeter.XXXXXXXX")
 trap 'rm -f -- "$temporary"' EXIT
 trap 'exit 1' HUP INT TERM
 python3 - "$source_dir/client" "$temporary" <<'PY'
@@ -61,14 +61,14 @@ directory = Path(sys.argv[1])
 spec = importlib.util.spec_from_file_location("monitor_vm", directory / "monitor_vm.py")
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
-Path(sys.argv[2]).write_bytes(module.bundle(directory / "monitor"))
+Path(sys.argv[2]).write_bytes(module.bundle(directory / "perimeter"))
 PY
 chmod 755 "$temporary"
 "$temporary" --help >/dev/null
 mv -f -- "$temporary" "$destination"
 
-printf 'Installed Monitor CLI to %s\n' "$destination"
-active=$(command -v monitor || true)
+printf 'Installed Perimeter CLI to %s\n' "$destination"
+active=$(command -v perimeter || true)
 if [ "$active" != "$destination" ]; then
     printf 'Put %s first on PATH to use this installation.\n' "$bin_dir"
     if [ -n "$active" ]; then
