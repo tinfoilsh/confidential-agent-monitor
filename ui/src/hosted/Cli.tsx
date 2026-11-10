@@ -219,7 +219,7 @@ export default function Cli(props: { session: Session }) {
                 Try again
               </button>
             </Show>
-            <a class="button" href="/" link>
+            <a class="button" href={keys.TARGETS.dashboard}>
               Open your bunkers
             </a>
           </Match>
