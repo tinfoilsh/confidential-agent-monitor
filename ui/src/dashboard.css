@@ -450,29 +450,11 @@ summary + * {
   border-top: 1px solid var(--nav-line);
 }
 .theme-switch {
-  display: flex;
-  gap: 2px;
+  --card: var(--tinfoil-dark);
+  --line: var(--nav-line);
+  --gray-600: var(--nav-muted);
+  --text: var(--nav-text);
   justify-self: start;
-  padding: 2px;
-  border: 1px solid var(--nav-line);
-  border-radius: var(--card-radius);
-}
-.theme-switch > button {
-  width: 28px;
-  min-height: 24px;
-  padding: 0;
-  border: 0;
-  background: none;
-  box-shadow: none;
-  color: var(--nav-muted);
-}
-.theme-switch > button:hover:not(:disabled) {
-  background: var(--nav-hover);
-  color: var(--nav-text);
-}
-.theme-switch > button[aria-pressed="true"] {
-  background: var(--nav-line);
-  color: var(--nav-text);
 }
 .back-terminal .icon {
   transform: rotate(180deg);
@@ -1891,70 +1873,6 @@ details[open] > summary > .collection-chevron {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-/* The dashboard's AnimatedTabBar (packages/ui/src/animated-tabs.tsx). */
-.tab-bar {
-  position: relative;
-  display: inline-flex;
-  flex-shrink: 0;
-  max-width: 100%;
-  padding: 4px;
-  border: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
-  border-radius: var(--card-radius);
-  background: var(--card);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.tab-bar::-webkit-scrollbar {
-  display: none;
-}
-.tab-bar-pill {
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
-  border-radius: var(--card-radius);
-  background: var(--tinfoil-accent-dark);
-  box-shadow: var(--shadow);
-  pointer-events: none;
-}
-.tab-bar.inherited .tab-bar-pill {
-  opacity: 0.35;
-}
-.tab-bar > :is(a, button) {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 0;
-  padding: 10px 16px;
-  border: 1px solid transparent;
-  border-radius: var(--card-radius);
-  background: transparent;
-  box-shadow: none;
-  color: var(--gray-600);
-  font-size: var(--font-detail);
-  font-weight: 600;
-  line-height: 16px;
-  white-space: nowrap;
-}
-.tab-bar > :is(a, button):hover:not(:disabled) {
-  background: transparent;
-  color: var(--text);
-}
-.tab-bar > :is([aria-current="page"], [aria-pressed="true"]),
-.tab-bar
-  > :is([aria-current="page"], [aria-pressed="true"]):hover:not(:disabled) {
-  color: #fff;
-}
-.tab-bar.inherited > .shown {
-  color: var(--text);
-}
-.tab-bar > :is(a, button):focus-visible {
-  outline: 2px solid var(--link);
-  outline-offset: -2px;
-}
 .acct {
   padding: 12px 0;
   border-bottom: 1px solid var(--line);
@@ -3256,15 +3174,6 @@ td {
   }
   input[role="switch"]::before {
     transition: transform 0.15s ease;
-  }
-  .tab-bar > :is(a, button) {
-    transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .tab-bar.ready .tab-bar-pill {
-    transition:
-      left 0.3s cubic-bezier(0, 0, 0.2, 1),
-      width 0.3s cubic-bezier(0, 0, 0.2, 1),
-      opacity 0.3s cubic-bezier(0, 0, 0.2, 1);
   }
   .access-disclosure {
     transition: grid-template-rows 0.12s ease-out;

@@ -29,6 +29,7 @@ import {
   type IconName,
   Loading,
   Modal,
+  TabBar,
   href,
 } from "./components";
 import { THEME, applyTheme, savedTheme } from "./theme";
@@ -374,21 +375,19 @@ function MonitorFooter(props: {
           </a>
         )}
       </Show>
-      <div class="theme-switch" role="group" aria-label="Color theme">
-        <For each={THEMES}>
-          {([theme, label, icon]) => (
-            <button
-              type="button"
-              aria-label={label}
-              title={label}
-              aria-pressed={props.theme === theme}
-              onClick={() => props.onThemeChange(theme)}
-            >
-              <Icon name={icon} />
-            </button>
-          )}
-        </For>
-      </div>
+      <TabBar
+        class="theme-switch"
+        label="Color theme"
+        compact
+        value={props.theme}
+        onChange={props.onThemeChange}
+        options={THEMES.map(([value, label, icon]) => ({
+          value,
+          label: <Icon name={icon} />,
+          ariaLabel: label,
+          title: label,
+        }))}
+      />
     </footer>
   );
 }

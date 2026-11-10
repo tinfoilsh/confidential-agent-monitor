@@ -10,6 +10,7 @@
     "build:hosted": "bun --bun tsc --noEmit && bun --bun vite build --mode hosted",
     "build:static": "bun --bun tsc --noEmit && bun --bun vite build --mode static",
     "check": "bun --bun tsc --noEmit",
+    "test:browser": "playwright test",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -35,6 +36,7 @@
     "yaml": "2.9.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.0",
     "@types/bun": "1.3.13",
     "prettier": "3.9.10",
     "typescript": "7.0.2",

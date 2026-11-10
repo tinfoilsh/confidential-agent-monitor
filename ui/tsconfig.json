@@ -12,5 +12,5 @@
     "skipLibCheck": true,
     "types": ["vite/client"]
   },
-  "include": ["src", "vite.config.ts", "../dev/run.ts"]
+  "include": ["src", "vite.config.ts", "playwright.config.ts", "tests/browser", "../dev/run.ts"]
 }
