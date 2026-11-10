@@ -671,6 +671,7 @@ export function previewChanges(view: View, changes: Change[]): View {
 }
 
 const identities = (view: View) => view.config.identities ?? {};
+export const BUNKERS = "bunkers";
 // Matches the device names assigned by owner enrollment.
 export const isDevice = (name: string) => /^device-[0-9a-f]{16}$/.test(name);
 export const sandboxNames = (view: View) =>
@@ -972,16 +973,21 @@ export function actionTree(view: View, name: string): ActionNode[] {
 
 export const levelsOf = (c?: Connection) =>
   (Object.entries(LEVELS) as [Level, string][]).filter(
-    ([l]) => !["custom_api", "tcp"].includes(c?.preset ?? "") || l !== "read",
+    ([l]) =>
+      !["custom_api", "tcp", BUNKERS].includes(c?.preset ?? "") || l !== "read",
   );
 
 export function agentAccess(view: View, name: string, only?: string) {
   const id: Partial<Identity> = identities(view)[name] ?? {};
+  const known: Record<string, Connection> = {
+    [BUNKERS]: { preset: BUNKERS } as Connection,
+    ...connections(view),
+  };
   const entries: [string, Connection][] =
     only === undefined
       ? Object.entries(connections(view))
-      : connections(view)[only]
-        ? [[only, connections(view)[only]]]
+      : known[only]
+        ? [[only, known[only]]]
         : [];
   return entries.map(([connection, c]) => {
     // Mirrors config.Access: an entry without a level inherits the default access and its actions.
@@ -1616,6 +1622,22 @@ export const edits = {
   ],
   setRoutes: (name: string, routes: boolean): Change[] => [
     { path: ["identities", name, "routes"], value: routes },
+  ],
+  // The bunkers service is added by the first access set to it.
+  setLevel: (
+    view: View,
+    name: string,
+    connection: string,
+    level: Level,
+  ): Change[] => [
+    ...(connection === BUNKERS && !connections(view)[BUNKERS]
+      ? edits.addConnection(view, BUNKERS, {
+          name: BUNKERS,
+          values: {},
+          answers: view.presets[BUNKERS].defaults,
+        }).changes
+      : []),
+    ...edits.setAccess(name, connection, { level }),
   ],
   // An action set to null inherits again.
   setAccess: (

@@ -47,13 +47,13 @@ func Parse(source connector.Setup) (connector.Prepared, error) {
 
 type Server struct{ connector.Slot[TCP] }
 
-// A sandbox route matches only a route pattern, never *, and only on a listed port.
+// A sandbox route matches only a route pattern, never *.
 func (c *TCP) Claim(host string, port uint32) int {
 	if port == 0 || port > maxPort || host == "" {
 		return -1
 	}
 	route := sandbox.ReservedRoute(host)
-	if (route || len(c.Ports) > 0) && !slices.Contains(c.Ports, port) {
+	if len(c.Ports) > 0 && !slices.Contains(c.Ports, port) {
 		return -1
 	}
 	score := -1

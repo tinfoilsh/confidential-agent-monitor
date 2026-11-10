@@ -273,6 +273,7 @@ function AccessSelect<T extends string>(props: {
   value: T | null;
   options: { [K in T]?: string };
   kind: "level" | "mode";
+  disabled?: T[];
   onChange: (value: T) => void;
 }) {
   return (
@@ -291,7 +292,11 @@ function AccessSelect<T extends string>(props: {
       </Show>
       {/* Keyed by value, so a refreshed list keeps the chosen option in place. */}
       <For each={Object.keys(props.options) as T[]}>
-        {(value) => <option value={value}>{props.options[value]}</option>}
+        {(value) => (
+          <option value={value} disabled={props.disabled?.includes(value)}>
+            {props.options[value]}
+          </option>
+        )}
       </For>
     </select>
   );
@@ -301,7 +306,6 @@ function Actions(props: {
   name: string;
   connection: string;
   nodes: owner.AccessNode[];
-  readOnly?: boolean;
 }) {
   const m = useMonitor();
   const leaves = (node: owner.AccessNode): owner.Mode[] =>
@@ -357,17 +361,15 @@ function Actions(props: {
                 </span>
               </Show>
             </span>
-            <Show when={!props.readOnly}>
-              <AccessSelect
-                kind="mode"
-                label={`${node().title} permission`}
-                value={value()}
-                options={owner.MODES}
-                onChange={(mode) => {
-                  if (value() !== mode) set(node(), mode);
-                }}
-              />
-            </Show>
+            <AccessSelect
+              kind="mode"
+              label={`${node().title} permission`}
+              value={value()}
+              options={owner.MODES}
+              onChange={(mode) => {
+                if (value() !== mode) set(node(), mode);
+              }}
+            />
           </>
         );
         const children = () => (
@@ -422,7 +424,8 @@ export function AgentConnectionAccess(props: {
       0,
     );
   const searchable = () => leaves(entry().actions) > ACTION_SEARCH_THRESHOLD;
-  const expandable = () => entry().level !== "off";
+  const expandable = () =>
+    entry().level !== "off" && (!singleAction() || rules().length > 0);
   const open = () => (props.alwaysOpen || expanded()) && expandable();
   const id = createUniqueId();
   const [query, setQuery] = createSignal("");
@@ -481,6 +484,7 @@ export function AgentConnectionAccess(props: {
         >
           <button
             class="access-toggle"
+            classList={{ off: entry().level === "off" }}
             type="button"
             aria-label={`Actions for ${props.title ?? props.connection}`}
             aria-expanded={open()}
@@ -496,6 +500,7 @@ export function AgentConnectionAccess(props: {
           label={`Access for ${props.title ?? props.connection}`}
           value={entry().level}
           options={Object.fromEntries(entry().levels)}
+          disabled={entry().preset === owner.BUNKERS ? ["allow"] : []}
           onChange={(value) => {
             setExpanded(value !== "off");
             const own =
@@ -504,9 +509,12 @@ export function AgentConnectionAccess(props: {
               ]?.level;
             if (own !== value)
               void m.edit(
-                owner.edits.setAccess(props.name, props.connection, {
-                  level: value,
-                }),
+                owner.edits.setLevel(
+                  m.view()!,
+                  props.name,
+                  props.connection,
+                  value,
+                ),
               );
           }}
         />
@@ -520,26 +528,27 @@ export function AgentConnectionAccess(props: {
       >
         <div>
           <Show when={open()}>
-            <div class="access-block">
-              <Show when={searchable() || query()}>
-                <Search
-                  label="Search actions"
-                  value={query()}
-                  onInput={setQuery}
-                />
-              </Show>
-              <div class="access-actions">
-                <Actions
-                  name={props.name}
-                  connection={props.connection}
-                  nodes={shown()}
-                  readOnly={singleAction()}
-                />
-                <Show when={query() && !shown().length}>
-                  <p class="muted">No matching actions.</p>
+            <Show when={!singleAction()}>
+              <div class="access-block">
+                <Show when={searchable() || query()}>
+                  <Search
+                    label="Search actions"
+                    value={query()}
+                    onInput={setQuery}
+                  />
                 </Show>
+                <div class="access-actions">
+                  <Actions
+                    name={props.name}
+                    connection={props.connection}
+                    nodes={shown()}
+                  />
+                  <Show when={query() && !shown().length}>
+                    <p class="muted">No matching actions.</p>
+                  </Show>
+                </div>
               </div>
-            </div>
+            </Show>
             <Show when={rules().length}>
               <div class="access-block access-rules">
                 <h4>Rules</h4>
@@ -576,8 +585,17 @@ function AgentAccess(props: { name: string }) {
         description={`What ${props.name} can reach through the Perimeter, and what asks you first.`}
       />
       <div class="agent-access">
+        <Show when={owner.sandboxNames(m.view()!).length > 1}>
+          <AgentConnectionAccess
+            name={props.name}
+            connection={owner.BUNKERS}
+            title={m.view()!.presets[owner.BUNKERS].title}
+          />
+        </Show>
         <For
-          each={Object.keys(m.view()!.config.connections ?? {})}
+          each={Object.keys(m.view()!.config.connections ?? {}).filter(
+            (connection) => connection !== owner.BUNKERS,
+          )}
           fallback={
             <p>
               No services yet. <a href="#connections/catalog">Add a service</a>
@@ -630,8 +648,21 @@ function AgentSettings(props: { name: string }) {
   const identity = () => m.view()!.config.identities?.[props.name];
   const copySources = () =>
     owner.sandboxNames(m.view()!).filter((name) => name !== props.name);
+  const address = () => `${props.name}.sandbox`;
   return (
     <div class="agent-settings">
+      <section>
+        <div class="setting-row">
+          <span>
+            Address
+            <small>Other bunkers connect to this one here.</small>
+          </span>
+          <span class="key-pill">
+            <code>{address()}</code>
+            <Copy icon text={address()} label="Copy address" />
+          </span>
+        </div>
+      </section>
       <Show when={identity()}>
         <ResourceDisclosure
           class="section-disclosure agent-maintenance"

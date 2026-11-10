@@ -1422,8 +1422,11 @@ details[open] > summary > .collection-chevron {
 .connection-access > p {
   margin-bottom: 0;
 }
-.connection-access .access-toggle:disabled {
+.access-toggle:disabled {
   opacity: 1;
+}
+.agent-inline .access-toggle.off {
+  opacity: 0.5;
 }
 .connection-detail > * + * {
   border-top: 1px solid var(--line);

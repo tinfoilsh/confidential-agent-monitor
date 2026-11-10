@@ -84,13 +84,13 @@ its defaults reach a local Perimeter, and the passphrase you enter claims a fres
 See `monitor --help` for stopping, exporting, and deleting VMs.
 
 Each VM network is restricted to the Perimeter. A bunker reaches another as
-`NAME.sandbox.invalid`, where NAME is that bunker's identity, on the ports a TCP
-service lists; only listeners bound to `0.0.0.0` answer.
+`NAME.sandbox`, where NAME is that bunker's identity; only listeners bound to
+`0.0.0.0` answer. Set Other bunkers to Ask on the dialing bunker, then approve
+each bunker and port the first time it connects.
 
 ```sh
 monitor launch shell --name b -- python3 -m http.server 8080 --bind 0.0.0.0
-# Add a TCP service with host b.sandbox.invalid and port 8080, and give a access to it.
-monitor launch shell --name a           # then: curl http://b.sandbox.invalid:8080
+monitor launch shell --name a           # then: curl http://b.sandbox:8080
 ```
 
 ### Run a Perimeter locally

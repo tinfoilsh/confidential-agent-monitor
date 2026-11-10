@@ -13,6 +13,8 @@ const (
 	RouteExtension     = "route"
 	BootstrapExtension = "bootstrap-route"
 	routeSuffix        = ".sandbox.invalid"
+	// A bunker reaches another as NAME.sandbox, where NAME is an enrolled identity.
+	bunkerSuffix = ".sandbox"
 )
 
 func RouteName(key ssh.PublicKey) string {
@@ -29,6 +31,6 @@ func bootstrapRoute(identity string) string {
 }
 
 func ReservedRoute(host string) bool {
-	host = strings.TrimSuffix(strings.ToLower(host), ".")
-	return host == "sandbox.invalid" || strings.HasSuffix(host, routeSuffix)
+	host = "." + strings.TrimSuffix(strings.ToLower(host), ".")
+	return strings.HasSuffix(host, bunkerSuffix) || strings.HasSuffix(host, routeSuffix)
 }
