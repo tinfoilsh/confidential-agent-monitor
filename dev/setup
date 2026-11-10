@@ -51,15 +51,15 @@ jq --arg key "$(<"$dev/id.pub")" \
      connections: (($config.connections // {}) | with_entries(.value = ($dev.connections[.key] // {level: "allow"})))})}}' "$dev/state.json" |
   jq '{changes: [{path: ["identities", "dev"], value: .identities.dev}]}' | owner /policy/edits -d @- > "$dev/state.next.json"
 mv "$dev/state.next.json" "$dev/state.json"
-echo "monitor,*.monitor,[$host]:$port $(jq -r .host_key "$dev/state.json")" > "$dev/known_hosts"
+echo "perimeter,*.perimeter,[$host]:$port $(jq -r .host_key "$dev/state.json")" > "$dev/known_hosts"
 jq -r .ca "$dev/state.json" > "$dev/ca.pem"
 
 cat > "$dev/ssh_config" <<CONF
-Host monitor
+Host perimeter
   HostName $host
   Port $port
-Host *.monitor
-  ProxyJump monitor
+Host *.perimeter
+  ProxyJump perimeter
 Host *
   User monitor
   IdentityFile $dev/id
@@ -101,11 +101,11 @@ certutil() { nix shell nixpkgs#nss.tools -c certutil "$@"; }
 certutil -A -d "sql:$dev/firefox" -n monitor -t C,, -i "$dev/ca.pem"
 
 cat <<USAGE
-ssh -F .dev/ssh_config -N -D $socks_host:$socks_port monitor &
+ssh -F .dev/ssh_config -N -D $socks_host:$socks_port perimeter &
 source .dev/env
-ssh -F .dev/ssh_config <name>.monitor
-ssh -F .dev/ssh_config <name>.monitor <command>
-ssh -F .dev/ssh_config -N -L /tmp/agent.sock:<name>.monitor:1 monitor &
-nix run nixpkgs#proxychains-ng -- -f .dev/proxychains.conf psql postgres://x:x@<name>.monitor/x
+ssh -F .dev/ssh_config <name>.perimeter
+ssh -F .dev/ssh_config <name>.perimeter <command>
+ssh -F .dev/ssh_config -N -L /tmp/agent.sock:<name>.perimeter:1 perimeter &
+nix run nixpkgs#proxychains-ng -- -f .dev/proxychains.conf psql postgres://x:x@<name>.perimeter/x
 firefox --no-remote --profile .dev/firefox
 USAGE

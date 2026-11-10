@@ -296,7 +296,7 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 		return err
 	}
 	registration := &oauthex.ClientRegistrationMetadata{
-		RedirectURIs: []string{redirect}, ClientName: "Monitor", GrantTypes: []string{"authorization_code"},
+		RedirectURIs: []string{redirect}, ClientName: "Perimeter", GrantTypes: []string{"authorization_code"},
 		ResponseTypes: []string{"code"},
 	}
 	if slices.Contains(asm.GrantTypesSupported, "refresh_token") {

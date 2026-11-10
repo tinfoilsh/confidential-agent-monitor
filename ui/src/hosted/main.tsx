@@ -15,7 +15,7 @@ const PAGES: Record<"monitor" | "cli" | "console", () => Promise<Page>> = {
 };
 const routeOf = (pathname: string): keyof typeof PAGES => {
   const path = pathname.replace(/\/+$/, "");
-  return path.startsWith("/monitor/")
+  return path.startsWith("/perimeter/")
     ? "monitor"
     : path === "/cli" || path.startsWith("/cli/")
       ? "cli"
@@ -54,7 +54,7 @@ async function start() {
   render(
     () => (
       <Router explicitLinks>
-        <Route path="/monitor/:id" component={view("monitor")} />
+        <Route path="/perimeter/:id" component={view("monitor")} />
         <Route path="/cli/*" component={view("cli")} />
         <Route path="*" component={view("console")} />
       </Router>

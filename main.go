@@ -63,7 +63,7 @@ func main() {
 	serveWorker := flag.Bool("serve-connector-worker", false, "serve one connector on inherited descriptors")
 	flag.Parse()
 	if flag.NArg() != 0 {
-		log.Fatal("unexpected server arguments; use the separately installed monitor client")
+		log.Fatal("unexpected server arguments; use the separately installed perimeter client")
 	}
 	// The kind is also the protocol policies see.
 	connectorKinds := map[string]connector.Kind{

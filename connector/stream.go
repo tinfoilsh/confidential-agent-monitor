@@ -75,7 +75,7 @@ func (l *listener) Close() error { return l.s.Close() }
 func (*listener) Addr() net.Addr { return &net.TCPAddr{} }
 
 // Domain suffixes the names agents use to address Monitor services directly.
-const Domain = ".monitor"
+const Domain = ".perimeter"
 
 // Stream carries an authenticated connection and its blocking authorization gate.
 type Stream struct {

@@ -456,7 +456,7 @@ func (m *monitor) view(r *http.Request) (ownerView, error) {
 	// The persisted CA identifies the host across restarts and SSH key rotation.
 	block, _ := pem.Decode([]byte(m.store.Doc.Keys.CACert))
 	if block == nil {
-		return ownerView{}, errors.New("Monitor has no host certificate")
+		return ownerView{}, errors.New("Perimeter has no host certificate")
 	}
 	certificate, err := x509.ParseCertificate(block.Bytes)
 	if err != nil {

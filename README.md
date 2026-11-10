@@ -36,7 +36,7 @@ ssh work
 ```
 
 In the Perimeter, add services under **Permissions** and grant the bunker access
-under **Bunkers**. Run `monitor services` inside the bunker to see what's available.
+under **Bunkers**. Run `perimeter services` inside the bunker to see what's available.
 Repeat attestation after either VM reboots.
 
 ### Local commands
@@ -50,20 +50,20 @@ export PATH="$HOME/.local/bin:$PATH"
 ```
 
 Add your public key under **Bunkers → Trusted devices** and grant it access.
-Configure an SSH alias named `monitor` with that identity and the Perimeter's
+Configure an SSH alias named `perimeter` with that identity and the Perimeter's
 verified host key, or select a configuration with `--ssh-host` and `--ssh-config`.
 
 ```sh
-monitor services
-monitor catalog
-monitor run -- your-command
-monitor shell
+perimeter services
+perimeter catalog
+perimeter run -- your-command
+perimeter shell
 ```
 
-Use `monitor mcp serve` to connect local MCP clients. Trusted-device automation
-should follow the full [Perimeter skill](client/skills/monitor/SKILL.md) for
+Use `perimeter mcp serve` to connect local MCP clients. Trusted-device automation
+should follow the full [Perimeter skill](client/skills/perimeter/SKILL.md) for
 catalog discovery, broad credential-free reads, proposals and direct API calls. Managed bunker
-images should seed the reduced [bunker skill](client/skills/monitor-sandbox/SKILL.md),
+images should seed the reduced [bunker skill](client/skills/perimeter-sandbox/SKILL.md),
 which covers only that bunker's discovery, policy, proposals, credentials boundary
 and service usage.
 
@@ -72,16 +72,16 @@ and service usage.
 The CLI can launch Claude in a Firecracker VM connected to an existing Perimeter.
 
 ```sh
-monitor image build
-monitor setup
-monitor launch claude
+perimeter image build
+perimeter setup
+perimeter launch claude
 ```
 
 This requires x86_64 Linux, writable `/dev/kvm`, bubblewrap, unprivileged user
 namespaces, OpenSSH, GNU tar, and `mke2fs`. Image builds need Podman or Docker.
 Setup asks for your Perimeter endpoint, owner credentials, and service permissions;
 its defaults reach a local Perimeter, and the passphrase you enter claims a fresh one.
-See `monitor --help` for stopping, exporting, and deleting VMs.
+See `perimeter --help` for stopping, exporting, and deleting VMs.
 
 Each VM network is restricted to the Perimeter. A bunker reaches another as
 `NAME.sandbox`, where NAME is that bunker's identity; only listeners bound to
@@ -89,8 +89,8 @@ Each VM network is restricted to the Perimeter. A bunker reaches another as
 each bunker and port the first time it connects.
 
 ```sh
-monitor launch shell --name b -- python3 -m http.server 8080 --bind 0.0.0.0
-monitor launch shell --name a           # then: curl http://b.sandbox:8080
+perimeter launch shell --name b -- python3 -m http.server 8080 --bind 0.0.0.0
+perimeter launch shell --name a           # then: curl http://b.sandbox:8080
 ```
 
 ### Run a Perimeter locally
@@ -132,29 +132,29 @@ payment setting requires it.
   **Bunkers**. Configure credentials through service settings;
   credentials are stored separately from policy.
 - **Agent proposals:** Bunkers and trusted devices can inspect their policy with
-  `monitor policy show` and submit service-scoped changes for owner review with
-  `monitor policy propose`. Trusted devices receive a credential-free, expanded
+  `perimeter policy show` and submit service-scoped changes for owner review with
+  `perimeter policy propose`. Trusted devices receive a credential-free, expanded
   configuration projection, while bunkers see only their own access and reachable
   service semantics. This view materializes inherited settings and is not source
   TOML. Both remain limited to service-scoped proposals. See the full
-  [Perimeter skill](client/skills/monitor/SKILL.md) and reduced
-  [bunker skill](client/skills/monitor-sandbox/SKILL.md) for TOML, structured
+  [Perimeter skill](client/skills/perimeter/SKILL.md) and reduced
+  [bunker skill](client/skills/perimeter-sandbox/SKILL.md) for TOML, structured
   changes, direct API requests, and credential boundaries.
 - **Owner API:** The owner API is root authority and applies full-policy changes
   directly. Use it only for intentional owner operations, preview the TOML diff
   before applying it, and never give owner credentials to a bunker or routine
   automation. Credentials are not part of policy TOML.
 
-With owner authentication, `monitor policy diff FILE` validates a complete TOML
-policy replacement and `monitor policy apply FILE` applies it. By contrast,
-`monitor policy propose FILE --reason …` submits a service-scoped TOML fragment
+With owner authentication, `perimeter policy diff FILE` validates a complete TOML
+policy replacement and `perimeter policy apply FILE` applies it. By contrast,
+`perimeter policy propose FILE --reason …` submits a service-scoped TOML fragment
 for review; `--changes FILE` submits structured path/value/deletion edits instead.
 
 Automation on a paired computer should use its trusted-device identity instead of
 an owner session:
 
 ```sh
-monitor policy propose --changes changes.json \
+perimeter policy propose --changes changes.json \
   --reason "Configure GitHub access"
 ```
 

@@ -35,7 +35,7 @@ type Engine struct {
 }
 
 func Prepare(ctx context.Context, data map[string]any, policies map[string]string, confidentiality, integrity bool) (*Engine, error) {
-	reserved := []string{"monitor", "lattices", "levels"}
+	reserved := []string{"perimeter", "lattices", "levels"}
 	for _, name := range reserved {
 		if _, ok := data[name]; ok {
 			return nil, fmt.Errorf("data.%s is reserved for the Perimeter", name)
@@ -47,10 +47,10 @@ func Prepare(ctx context.Context, data map[string]any, policies map[string]strin
 	}
 	store["levels"] = map[string]any{"audiences": facts.Audiences, "trusts": facts.Trusts, "effects": facts.Effects}
 	store["lattices"] = map[string]any{"confidentiality": confidentiality, "integrity": integrity}
-	opts := []func(*rego.Rego){rego.Query("data.monitor.decision"), rego.Module("monitor/lib.rego", library),
+	opts := []func(*rego.Rego){rego.Query("data.perimeter.decision"), rego.Module("perimeter/lib.rego", library),
 		rego.Store(inmem.NewFromObjectWithOpts(store, inmem.OptReturnASTValuesOnRead(true))), rego.StrictBuiltinErrors(true)}
 	h := sha256.New()
-	fmt.Fprintf(h, "facts-v%d%q%q", facts.Version, "monitor/lib.rego", library)
+	fmt.Fprintf(h, "facts-v%d%q%q", facts.Version, "perimeter/lib.rego", library)
 	for _, name := range slices.Sorted(maps.Keys(policies)) {
 		filename := "policies/" + name
 		module, err := ast.ParseModule(filename, policies[name])

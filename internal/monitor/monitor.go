@@ -494,4 +494,4 @@ func connectionTLS(keys *store.Keys) (*tls.Config, error) {
 	return config, nil
 }
 
-var errLocked = errors.New("the monitor is locked")
+var errLocked = errors.New("the Perimeter is locked")

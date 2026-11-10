@@ -95,7 +95,7 @@ func (owner *NATS) Serve(s *connector.Stream, e *connector.Env) {
 	c := &client{owner: &n, s: s, subs: map[string]*nats.Subscription{}}
 	// Cluster addresses, upstream names and authentication details never leave
 	// the connector. Clients reconnect through the monitor's own address.
-	if err := c.write([]byte(`INFO {"server_id":"monitor","server_name":"monitor","version":"2.10.0","proto":1,"headers":true,"max_payload":` + strconv.Itoa(maxPayload) + `,"auth_required":false,"tls_required":false}` + "\r\n")); err != nil {
+	if err := c.write([]byte(`INFO {"server_id":"perimeter","server_name":"perimeter","version":"2.10.0","proto":1,"headers":true,"max_payload":` + strconv.Itoa(maxPayload) + `,"auth_required":false,"tls_required":false}` + "\r\n")); err != nil {
 		return
 	}
 	r := bufio.NewReaderSize(s, maxLine)
@@ -130,7 +130,7 @@ func (owner *NATS) Serve(s *connector.Stream, e *connector.Env) {
 	opts := []nats.Option{
 		nats.SetCustomDialer(dialer{s.Context, e.Dialer}), nats.NoReconnect(), nats.Timeout(upstreamTimeout),
 		nats.SkipHostLookup(),
-		nats.Name("monitor"), nats.ClosedHandler(func(*nats.Conn) { s.Close() }),
+		nats.Name("perimeter"), nats.ClosedHandler(func(*nats.Conn) { s.Close() }),
 		// Error text can contain provider details or subjects; expose a fixed error.
 		nats.ErrorHandler(func(*nats.Conn, *nats.Subscription, error) { s.Close() }),
 	}

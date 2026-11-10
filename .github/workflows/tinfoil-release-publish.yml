@@ -59,7 +59,7 @@ jobs:
         run: |
           sha256sum tinfoil-config.yml > tinfoil-config.sha256
           cat > release-notes.md <<'NOTES'
-          Create Monitors in the dashboard with an Ed25519 public key. Open the local owner UI with `tinfoil monitor open NAME`. After a reboot, rerun `tinfoil attest-ssh SANDBOX --install` for each sandbox.
+          Create Perimeters in the dashboard with an Ed25519 public key. Open the local owner UI with `tinfoil perimeter open NAME`. After a reboot, rerun `tinfoil attest-ssh SANDBOX --install` for each sandbox.
 
           Requires the matching dashboard-provisioning CLI and sandbox releases, plus access to this repository and its image. The attached template pins the image and runtime and carries provenance attestation. Live CVM provisioning remains untested.
           NOTES

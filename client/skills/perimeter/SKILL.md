@@ -1,12 +1,12 @@
 ---
-name: monitor
+name: perimeter
 description: Discover Perimeter service types and granted services, inspect identity-scoped policy, propose service setup or access changes for owner review, and use HTTP or MCP services without handling credentials.
 ---
 
 # Perimeter
 
 The Perimeter is the policy and credential boundary between an AI agent and external
-services. Use the installed `monitor` CLI unless you are integrating directly
+services. Use the installed `perimeter` CLI unless you are integrating directly
 with the agent HTTP API.
 
 ## Safety rules
@@ -17,7 +17,7 @@ with the agent HTTP API.
 - Treat catalog `warning` text as part of the service definition. Explain it
   to the owner when proposing a Generic service.
 - A submitted proposal is not approval. Do not assume access changed until it
-  appears in `monitor services` or `monitor policy show`.
+  appears in `perimeter services` or `perimeter policy show`.
 - Prefer a named service over Generic Web, SSH, network, API, or MCP
   when one exists.
 - Service approval does not approve MCP tool definitions. The owner reviews
@@ -28,7 +28,7 @@ with the agent HTTP API.
 Inspect safe setup metadata available to every bunker and trusted device:
 
 ```sh
-monitor catalog --json
+perimeter catalog --json
 ```
 
 Each preset can include its name, title, group, defaults, setup fields,
@@ -39,7 +39,7 @@ The final `generic` group is a fallback for broad service types.
 Inspect services this identity may actually use:
 
 ```sh
-monitor services --json
+perimeter services --json
 ```
 
 Service discovery includes routing names, protocol, readiness, effective
@@ -50,8 +50,8 @@ credential values or verified credential account identifiers.
 Inspect policy visible to this identity:
 
 ```sh
-monitor policy show
-monitor policy show --json
+perimeter policy show
+perimeter policy show --json
 ```
 
 A bunker sees only its own identity, its own access and rules, and semantics
@@ -69,7 +69,7 @@ bunker uses that bunker's identity. Do not borrow an owner-panel session.
 Structured changes are preferred for automation:
 
 ```sh
-monitor policy propose --changes changes.json \
+perimeter policy propose --changes changes.json \
   --reason "Grant this bunker GitHub access for issue triage"
 ```
 
@@ -88,7 +88,7 @@ A deletion uses `"delete": true` and omits `value`. TOML fragments are also
 supported:
 
 ```sh
-monitor policy propose change.toml \
+perimeter policy propose change.toml \
   --reason "Grant this bunker GitHub access for issue triage"
 ```
 
@@ -110,7 +110,7 @@ Setup and default/bunker access for the same service stay together. The CLI
 prints one receipt per service; poll a receipt without owner credentials:
 
 ```sh
-monitor policy status PROPOSAL_ID
+perimeter policy status PROPOSAL_ID
 ```
 
 The result is a receipt, `{id, state, connection}`, with state `pending`,
@@ -126,9 +126,9 @@ the latest policy if the request is still needed.
 HTTP and HTTPS tools can run through the Perimeter:
 
 ```sh
-monitor run --service SERVICE -- curl -fsS https://example.com
-monitor run -- your-command
-monitor shell
+perimeter run --service SERVICE -- curl -fsS https://example.com
+perimeter run -- your-command
+perimeter shell
 ```
 
 The wrapper configures proxy and certificate settings and exposes safe credential
@@ -139,7 +139,7 @@ never replace it with a real credential.
 For MCP services:
 
 ```sh
-monitor mcp serve --listen 127.0.0.1:8400
+perimeter mcp serve --listen 127.0.0.1:8400
 ```
 
 Keep the process running and configure the MCP client with the reported local
@@ -150,7 +150,7 @@ write timeout, inspect the target or Activity before retrying.
 
 ## Direct agent HTTP API
 
-Inside a managed bunker, `agent.monitor` exposes the identity-authenticated API.
+Inside a managed bunker, `agent.perimeter` exposes the identity-authenticated API.
 Authentication comes from the bunker or trusted-device SSH identity; do not add
 an owner bearer token.
 
@@ -162,13 +162,13 @@ an owner bearer token.
 | `GET`  | `/policy/proposals/{id}` | Poll one proposal submitted by this identity |
 | `POST` | `/policy/proposals`      | Submit TOML or structured service changes |
 
-Examples from a bunker where `agent.monitor` is directly routable:
+Examples from a bunker where `agent.perimeter` is directly routable:
 
 ```sh
-curl -fsS http://agent.monitor/catalog
-curl -fsS http://agent.monitor/connections
-curl -fsS http://agent.monitor/policy
-curl -fsS -X POST http://agent.monitor/policy/proposals \
+curl -fsS http://agent.perimeter/catalog
+curl -fsS http://agent.perimeter/connections
+curl -fsS http://agent.perimeter/policy
+curl -fsS -X POST http://agent.perimeter/policy/proposals \
   -H 'Content-Type: application/json' \
   --data-binary @proposal.json
 ```
@@ -192,6 +192,6 @@ A TOML request body uses `source`, optional path arrays in `delete`, and
 identical changes returns the pending one; owner-only source diffs and
 configuration are not returned.
 
-On a paired host, use the `monitor` CLI because it carries these requests through
-the authenticated SSH transport. Run `monitor --help` for SSH host, config, and
+On a paired host, use the `perimeter` CLI because it carries these requests through
+the authenticated SSH transport. Run `perimeter --help` for SSH host, config, and
 profile options.

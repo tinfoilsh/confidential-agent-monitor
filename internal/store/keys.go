@@ -50,7 +50,7 @@ func (k *Keys) createCA() error {
 	}
 	now := time.Now()
 	template := &x509.Certificate{
-		Subject:               pkix.Name{CommonName: "monitor dev CA"},
+		Subject:               pkix.Name{CommonName: "perimeter dev CA"},
 		NotBefore:             now,
 		NotAfter:              now.Add(caLifetime),
 		IsCA:                  true,

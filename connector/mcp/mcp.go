@@ -156,7 +156,7 @@ func (m *session) serve(s *connector.Stream, e *connector.Env) {
 		c = tls.Server(s, e.TLS)
 	}
 	connector.ServeHTTP(s, c, sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server {
-		server := sdk.NewServer(&sdk.Implementation{Name: "monitor", Version: version}, &sdk.ServerOptions{Instructions: m.instructions})
+		server := sdk.NewServer(&sdk.Implementation{Name: "perimeter", Version: version}, &sdk.ServerOptions{Instructions: m.instructions})
 		for _, t := range m.tools {
 			server.AddTool(t, func(ctx context.Context, req *sdk.CallToolRequest) (*sdk.CallToolResult, error) {
 				if err := s.Gate(ctx, m.CaptureResult((&Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}).Describe(m.preset))); err != nil {
@@ -179,7 +179,7 @@ func (m *session) connect(ctx context.Context, client *http.Client) error {
 		}
 		client.Transport = bearer{token, client.Transport}
 	}
-	session, err := sdk.NewClient(&sdk.Implementation{Name: "monitor", Version: version}, nil).
+	session, err := sdk.NewClient(&sdk.Implementation{Name: "perimeter", Version: version}, nil).
 		Connect(ctx, &sdk.StreamableClientTransport{Endpoint: m.URL, HTTPClient: client}, nil)
 	if err != nil {
 		return err

@@ -14,7 +14,7 @@
           "scope": "openid profile email offline_access resource.invoke chatgpt.tokens.use.direct",
           "required_scopes": ["resource.invoke", "chatgpt.tokens.use.direct"],
           "authorize_params": {"ext_agent_host_id": "{monitor_host_id}", "access_type": ""},
-          "callback_registration": {"client_id": "dynamic_agent_client", "authorize_params": {"agent_name_hint": "Tinfoil Monitor"}},
+          "callback_registration": {"client_id": "dynamic_agent_client", "authorize_params": {"agent_name_hint": "Tinfoil Perimeter"}},
           "oidc": {"issuer": "https://auth.openai.com", "jwks_url": "https://auth.openai.com/.well-known/jwks.json"}
         }}
     ],

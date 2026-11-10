@@ -14,8 +14,8 @@
 __pycache__/
 *.md
 !README.md
-!client/skills/monitor/SKILL.md
-!client/skills/monitor-sandbox/SKILL.md
+!client/skills/perimeter/SKILL.md
+!client/skills/perimeter-sandbox/SKILL.md
 
 # Local test workflow
 /.github/workflows/routes.yml
