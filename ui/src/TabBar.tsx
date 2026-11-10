@@ -90,11 +90,9 @@ export function TabBar<T extends string>(props: {
     let next: number;
     switch (event.key) {
       case "ArrowRight":
-      case "ArrowDown":
         next = (index + 1) % options.length;
         break;
       case "ArrowLeft":
-      case "ArrowUp":
         next = (index - 1 + options.length) % options.length;
         break;
       case "Home":

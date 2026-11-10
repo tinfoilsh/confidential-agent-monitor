@@ -37,6 +37,13 @@ for (const theme of ["light", "dark"]) {
       const track = page.getByRole("group", { name: "Usage type" });
       await expectAligned(track);
       await track.getByRole("button", { name: "API", exact: true }).focus();
+      for (const key of ["ArrowDown", "ArrowUp"]) {
+        await page.keyboard.press(key);
+        await expect(page.getByRole("status")).toHaveText("api");
+        await expect(
+          track.getByRole("button", { name: "API", exact: true }),
+        ).toBeFocused();
+      }
       await page.keyboard.press("ArrowRight");
       await expect(
         track.getByRole("button", { name: "Containers", exact: true }),

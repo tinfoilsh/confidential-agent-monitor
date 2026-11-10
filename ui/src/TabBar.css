@@ -1,5 +1,5 @@
 .tab-bar {
-  --tab-accent: #6b5b95;
+  --tab-accent: var(--tinfoil-twilight);
   position: relative;
   display: inline-flex;
   flex-shrink: 1;
