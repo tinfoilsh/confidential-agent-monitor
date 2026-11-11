@@ -53,7 +53,11 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "relay":
 		sandbox, err := h.Relay(r.Context(), open.InstanceID)
 		if err != nil {
-			c.Conn.Close(websocket.StatusInternalError, "bunker unavailable")
+			// The innermost cause fits the close frame's 123-byte reason; dial wrappers add the URL.
+			for errors.Unwrap(err) != nil {
+				err = errors.Unwrap(err)
+			}
+			c.Conn.Close(websocket.StatusInternalError, "bunker unavailable: "+err.Error())
 			return
 		}
 		sandbox.SetReadLimit(noise.MaxMsgLen)
