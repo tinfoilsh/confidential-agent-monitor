@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"crypto/ed25519"
+	"encoding/base64"
 	"errors"
 	"flag"
 	"fmt"
@@ -56,6 +57,7 @@ func main() {
 	ownerPublic := flag.String("owner-public-key", os.Getenv("MONITOR_OWNER_PUBLIC_KEY"), "Ed25519 owner public key")
 	hostKey := flag.String("ssh-host-key", "", "runtime attested SSH private key")
 	sessionKey := flag.String("owner-session-key", "", "runtime attested X25519 key for owner sessions")
+	ownerKeyFile := flag.String("owner-key-file", "", "development owner key to unlock with at start")
 	healthcheck := flag.Bool("healthcheck", false, "check the local owner API and exit, including while locked")
 	originList := flag.String("owner-origins", "", "comma-separated browser origins allowed to call the owner API, such as https://dash.tinfoil.sh")
 	isolateConnectors := flag.Bool("connector-workers", false, "run all connectors in isolated worker processes")
@@ -151,6 +153,15 @@ func main() {
 	defer m.Close()
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+	if *ownerKeyFile != "" {
+		if public != nil {
+			log.Fatal("-owner-key-file requires a development file:// bucket without -owner-public-key")
+		}
+		key := must(base64.StdEncoding.Strict().DecodeString(strings.TrimSpace(string(must(os.ReadFile(*ownerKeyFile))))))
+		if err := m.Unlock(ctx, key); err != nil {
+			log.Fatal(err)
+		}
+	}
 	go m.ServeSSH(ln)
 	go func() {
 		log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.HTTPHandler(devFiles)), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())

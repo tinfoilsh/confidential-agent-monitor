@@ -81,7 +81,9 @@ This requires x86_64 Linux, writable `/dev/kvm`, bubblewrap, unprivileged user
 namespaces, OpenSSH, GNU tar, and `mke2fs`. Image builds need Podman or Docker.
 Setup asks for your Perimeter endpoint, owner credentials, and service permissions;
 its defaults reach a local Perimeter, and the passphrase you enter claims a fresh one.
-See `perimeter --help` for stopping, exporting, and deleting VMs.
+The [daemon](#run-a-perimeter-locally) runs setup for you, and `launch claude`
+then uses its Anthropic service. See `perimeter --help` for stopping, exporting,
+and deleting VMs.
 
 Each VM network is restricted to the Perimeter. A bunker reaches another as
 `NAME.sandbox`, where NAME is that bunker's identity; only listeners bound to
@@ -95,7 +97,19 @@ perimeter launch shell --name a           # then: curl http://b.sandbox:8080
 
 ### Run a Perimeter locally
 
-Start a Perimeter using the Go version in [go.mod](go.mod).
+```sh
+./install.sh --daemon
+```
+
+This builds the checkout with Go and Bun and runs it as a user service on
+`127.0.0.1:8081`, with its state and owner key in `~/.local/share/perimeter/server`.
+It also installs the CLI, pairs this computer as a trusted device and, on Linux,
+sets up VM launch. Sign in to [the UI](http://127.0.0.1:8081/app/) with the owner
+key. Run it from another checkout to switch the daemon to that code; the previous
+store is kept in `store.prev`. Logs are in `journalctl --user -u perimeter` on
+Linux and `server.log` on macOS.
+
+To run one in the foreground instead, use the Go version in [go.mod](go.mod).
 
 ```sh
 mkdir -p .dev/store

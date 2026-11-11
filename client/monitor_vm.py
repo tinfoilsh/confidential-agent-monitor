@@ -825,7 +825,7 @@ def setup_launch(args):
         root.mkdir(parents=True, exist_ok=True, mode=0o700)
         if not 1 <= args.cpus <= 32 or not 512 <= args.memory <= 65536:
             raise Error("choose 1–32 CPUs and 512–65536 MiB of memory")
-        image = str(preflight(args.image))
+        image = str(Path(args.image).expanduser().resolve())
         owner_url = setup_value(args.owner_url, "Perimeter owner URL", "http://127.0.0.1:8080")
         endpoint = setup_value(args.endpoint, "Perimeter SSH endpoint as reached by this host", "127.0.0.1:2223")
         endpoint_address(endpoint)
@@ -838,9 +838,7 @@ def setup_launch(args):
         owner = OwnerClient(owner_url, key)
         view = unlock(owner, root)
         connections = view["config"].get("connections") or {}
-        # A connection's kind is its key naming a connector, such as "http".
-        candidates = [name for name, settings in connections.items()
-                      if settings.get("preset") == "anthropic" and "http" in settings]
+        candidates = anthropic_services(view)
         connection = setup_value(args.service, "Anthropic HTTP service for launch claude (blank to skip)",
                                  candidates[0] if len(candidates) == 1 else "")
         if connection and "http" not in connections.get(connection, {}):
@@ -870,6 +868,12 @@ def setup_launch(args):
         prefix = "perimeter" + (" --profile " + name if name != "default" else "")
         print(f"From a project directory, run: {prefix} launch {'claude' if connection else 'shell'}")
     return 0
+
+
+def anthropic_services(view):
+    # A connection's kind is its key naming a connector, such as "http".
+    return [name for name, settings in (view["config"].get("connections") or {}).items()
+            if settings.get("preset") == "anthropic" and "http" in settings]
 
 
 def unlock(owner, root):
@@ -919,8 +923,6 @@ def launch_vm(args, cli):
         raise Error("run perimeter setup first for this profile") from error
     if profile["version"] != 3:
         raise Error("this launch profile is from an older Perimeter; run perimeter setup with a new --profile")
-    if args.command == "launch" and args.agent == "claude" and not profile["connection"]:
-        raise Error("this launch profile has no Anthropic service; use launch shell, or run perimeter setup with --service")
     if args.name and not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,62}", args.name):
         raise Error("VM name must contain only lowercase letters, digits and hyphens")
     root = Path(profile["root"])
@@ -952,7 +954,7 @@ def launch_vm(args, cli):
         public_key = keypair(directory / "id").decode() + "\n"
         if args.command in ("launch", "destroy"):
             owner = OwnerClient(profile["owner_url"], private_read(root / "owner.key"))
-            unlock(owner, root)
+            view = unlock(owner, root)
         if args.command == "destroy":
             ensure_stopped(directory)
             revoke_identity(owner, identity, public_key)
@@ -965,6 +967,12 @@ def launch_vm(args, cli):
             raise Error("this VM is being destroyed; retry perimeter destroy")
         preflight(profile["image"])
         if args.command == "launch":
+            if args.agent == "claude" and not profile["connection"]:
+                services = anthropic_services(view)
+                if len(services) != 1:
+                    raise Error("add one Anthropic service in the Perimeter, or choose one with perimeter setup --service")
+                profile["connection"] = services[0]
+                profile["access"].setdefault(services[0], {"level": "allow"})
             enroll_identity(owner, state, state_path, public_key, profile["access"])
         elif not (directory / "initialized").exists():
             raise Error("this VM has no initialized workspace to export")

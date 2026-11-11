@@ -58,8 +58,19 @@ export function Agents(props: { expanded?: string }) {
             action={<AddSandbox class="button primary" />}
           >
             A bunker runs your agent in an isolated environment. This Perimeter
-            guards what it can reach and holds its credentials. If yours is
-            missing, run <code>tinfoil attest-ssh &lt;bunker-name&gt;</code>.
+            guards what it can reach and holds its credentials.{" "}
+            <Show
+              when={m.mode() !== "bearer"}
+              fallback={
+                <>
+                  Add one by its SSH public key, or run{" "}
+                  <code>perimeter launch shell</code>.
+                </>
+              }
+            >
+              If yours is missing, run{" "}
+              <code>tinfoil attest-ssh &lt;bunker-name&gt;</code>.
+            </Show>
           </Empty>
         </div>
       </Show>
@@ -202,25 +213,39 @@ export function Agents(props: { expanded?: string }) {
   );
 }
 function AddSandbox(props: { class: string; children?: JSX.Element }) {
+  const m = useMonitor();
+  // Only a Tinfoil-deployed Perimeter takes bunkers from the dashboard.
   return (
-    <a
-      class={props.class}
-      href="https://dash.tinfoil.sh/?tab=sandboxes"
-      target="_blank"
-      rel="noopener noreferrer"
+    <Show
+      when={m.mode() !== "bearer"}
+      fallback={
+        <a class={props.class} href="#pair-bunker">
+          <Icon name="plus" />
+          Add bunker
+        </a>
+      }
     >
-      <Icon name="plus" />
-      Create bunker
-      {props.children}
-    </a>
+      <a
+        class={props.class}
+        href="https://dash.tinfoil.sh/?tab=sandboxes"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <Icon name="plus" />
+        Create bunker
+        {props.children}
+      </a>
+    </Show>
   );
 }
 // Adds a TRUSTED DEVICE: your own key, allowed to reach sandboxes through
 // the Monitor. Named like the CLI names them (`device-<hash>`) so it sorts
-// with the others; no connection grid. Sandboxes come from the dashboard.
-export function AddAgent() {
+// with the others; no connection grid. A local Perimeter also adds bunkers
+// here by name; a deployed one gets them from the dashboard.
+export function AddAgent(props: { bunker?: boolean }) {
   const m = useMonitor(),
-    [key, setKey] = createSignal("");
+    [key, setKey] = createSignal(""),
+    [bunkerName, setBunkerName] = createSignal("");
   const submit = async (event: SubmitEvent) => {
     event.preventDefault();
     try {
@@ -233,20 +258,41 @@ export function AddAgent() {
       const digest = new Uint8Array(
         await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pub)),
       );
-      const name =
-        "device-" +
-        [...digest.slice(0, 8)]
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join("");
+      const name = props.bunker
+        ? bunkerName()
+        : "device-" +
+          [...digest.slice(0, 8)]
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("");
       if (m.view()!.config.identities?.[name])
-        throw new Error("This key is already a trusted device.");
-      await m.edit(owner.edits.pairDevice(name, pub), href("agents", name));
+        throw new Error(
+          props.bunker
+            ? "This name is already in use."
+            : "This key is already a trusted device.",
+        );
+      await m.edit(
+        owner.edits.addIdentity(name, pub, !props.bunker),
+        href("agents", name),
+      );
     } catch (cause) {
       m.report(cause);
     }
   };
   return (
     <form onSubmit={submit} class="form-fields">
+      <Show when={props.bunker}>
+        <label>
+          Name
+          <input
+            required
+            pattern="[a-z0-9][a-z0-9\-]{0,62}"
+            title="Lowercase letters, digits and hyphens"
+            value={bunkerName()}
+            onInput={(e) => setBunkerName(e.currentTarget.value)}
+            placeholder="work"
+          />
+        </label>
+      </Show>
       <label>
         SSH public key
         <textarea
@@ -258,10 +304,12 @@ export function AddAgent() {
         />
       </label>
       <p class="muted">
-        This key will be able to SSH into your bunkers through the Perimeter.
+        {props.bunker
+          ? "An agent with this key connects to the Perimeter as this bunker."
+          : "This key will be able to SSH into your bunkers through the Perimeter."}
       </p>
       <button class="primary" disabled={m.busy()}>
-        Add trusted device
+        {props.bunker ? "Add bunker" : "Add trusted device"}
       </button>
     </form>
   );

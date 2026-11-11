@@ -34,6 +34,8 @@ AGENT_HOST = "agent.perimeter"
 # Sandbox images ship these; the enable and network commands appear only there.
 SING_BOX = Path("/usr/local/bin/sing-box")
 SYSTEM_CA = Path("/usr/local/share/ca-certificates/perimeter.crt")
+# Written by ./install.sh --daemon for the local Perimeter.
+DAEMON_SSH_CONFIG = Path.home() / ".local/share/perimeter/server/ssh_config"
 
 
 class MonitorError(Exception):
@@ -786,6 +788,8 @@ def connect(args):
     load_profile(args)
     args.ssh_host = args.ssh_host or os.environ.get("MONITOR_SSH_HOST", "perimeter")
     args.ssh_config = args.ssh_config or os.environ.get("MONITOR_SSH_CONFIG")
+    if not args.ssh_config and args.ssh_host == "perimeter" and DAEMON_SSH_CONFIG.exists():
+        args.ssh_config = str(DAEMON_SSH_CONFIG)
     if args.ssh_config:
         args.ssh_config = os.path.abspath(os.path.expanduser(args.ssh_config))
     return Client(args.ssh_host, args.ssh_config, args.timeout)
