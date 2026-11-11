@@ -95,7 +95,11 @@ function createMonitor(options: MonitorOptions) {
       source: owner.OwnerApi;
     }
   >();
-  const [activity, setActivity] = createStore({ page: 0, anchor: 0 });
+  const [activity, setActivity] = createStore({
+    page: 0,
+    anchor: 0,
+    stacked: true,
+  });
   const [searches, setSearches] = createStore<Record<string, string>>({});
   const search = (section: string) =>
     [

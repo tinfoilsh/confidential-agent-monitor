@@ -995,6 +995,44 @@ html [data-sonner-toaster] {
   flex-shrink: 0;
   margin-left: auto;
 }
+.resource-heading > .icon-button {
+  width: 28px;
+  height: 28px;
+  border-color: transparent;
+  background: none;
+  box-shadow: none;
+  color: var(--muted);
+}
+.resource-heading > h2 + .icon-button {
+  margin-left: auto;
+}
+.resource-heading > .icon-button:hover {
+  background: none;
+  color: var(--text);
+}
+.fold {
+  flex-direction: column;
+  gap: 0;
+}
+.fold > .icon,
+.fold .ui-icon {
+  width: 12px;
+  height: 12px;
+}
+.fold > .icon {
+  transition: rotate 0.15s;
+}
+.fold > .icon + .icon {
+  margin-top: -4px;
+}
+.fold > :first-child,
+.fold[aria-pressed="true"] > :last-child {
+  rotate: -90deg;
+}
+.fold > :last-child,
+.fold[aria-pressed="true"] > :first-child {
+  rotate: 90deg;
+}
 
 .resource-link {
   display: flex;
@@ -1028,6 +1066,31 @@ html [data-sonner-toaster] {
   width: 20px;
   height: 20px;
   color: var(--muted);
+}
+.icon-stack {
+  display: flex;
+  align-self: flex-start;
+  border-radius: 4px;
+}
+.icon-stack > .connector-icon {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+}
+/* Each tile behind is a card-filled shadow over a 1px larger line-colored one. */
+.icon-stack[data-stacked="true"] {
+  padding: 2px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  box-shadow:
+    0 3px 0 -2px var(--card),
+    0 3px 0 -1px var(--line),
+    0 7px 0 -4px var(--card),
+    0 7px 0 -3px var(--line);
+}
+.icon-stack[data-stacked="true"] > .connector-icon {
+  width: 14px;
+  height: 14px;
 }
 .resource-meta {
   display: flex;
@@ -1287,6 +1350,10 @@ details[open] > summary > .collection-chevron {
 }
 .request-item > summary {
   border-bottom: 0;
+}
+.request-stack {
+  padding-left: var(--card-inset);
+  border-top: 1px solid var(--line);
 }
 .request-inline {
   min-width: 0;

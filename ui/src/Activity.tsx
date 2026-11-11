@@ -78,12 +78,26 @@ function Requests(props: { expanded?: string }) {
       ? filtered().filter((r) => Date.parse(r.time) <= anchor())
       : filtered(),
   );
-  const pages = () => Math.max(1, Math.ceil(held().length / PAGE)),
+  const stacks = createMemo(() => {
+    const stacks = new Map<string, string[]>();
+    let head: owner.RequestRecord | undefined;
+    for (const r of held()) {
+      if (
+        m.activity.stacked &&
+        r.id !== props.expanded &&
+        head?.facts.connection === r.facts.connection &&
+        head.facts.principal.name === r.facts.principal.name
+      )
+        stacks.get(head.id)!.push(r.id);
+      else stacks.set((head = r).id, [r.id]);
+    }
+    return stacks;
+  });
+  const rows = createMemo(() => [...stacks().keys()]);
+  const pages = () => Math.max(1, Math.ceil(rows().length / PAGE)),
     current = () => Math.min(page(), pages() - 1);
   const visible = createMemo(() =>
-    held()
-      .slice(current() * PAGE, (current() + 1) * PAGE)
-      .map((r) => r.id),
+    rows().slice(current() * PAGE, (current() + 1) * PAGE),
   );
   const newer = () => filtered().length - held().length;
   const latest = () => {
@@ -105,8 +119,8 @@ function Requests(props: { expanded?: string }) {
   const next = async () => {
     hold();
     const end = (current() + 1) * PAGE,
-      full = held().length >= end;
-    if (held().length <= end) await m.loadOlder();
+      full = rows().length >= end;
+    if (rows().length <= end) await m.loadOlder();
     if (full) setPage(current() + 1);
   };
   return (
@@ -116,9 +130,22 @@ function Requests(props: { expanded?: string }) {
           <h2>
             Requests <span class="count">{filtered().length}</span>
           </h2>
-          <Show when={anchor()} fallback={<span>Updates every 5 seconds</span>}>
-            <button onClick={latest}>
-              {newer() ? `View ${newer()} new` : "Back to latest"}
+          <button
+            class="icon-button fold"
+            title="Stack requests by bunker and service"
+            aria-pressed={m.activity.stacked}
+            onClick={() => m.setActivity("stacked", !m.activity.stacked)}
+          >
+            <Icon name="arrow" />
+            <Icon name="arrow" />
+          </button>
+          <Show when={anchor()}>
+            <button
+              class="icon-button"
+              title={newer() ? `View ${newer()} new` : "Back to latest"}
+              onClick={latest}
+            >
+              <Icon name="arrow-up" />
             </button>
           </Show>
         </div>
@@ -138,60 +165,20 @@ function Requests(props: { expanded?: string }) {
             </Empty>
           }
         >
-          {(id) => {
-            const record = createMemo(() => m.recordsById().get(id)!);
-            const timestamp = createMemo(() => record().time);
-            const time = createMemo(() => new Date(timestamp()));
-            return (
-              <ResourceDisclosure
-                class="request-item"
-                summaryClass="request-row activity-row"
-                open={props.expanded === id}
-                summary={
-                  <>
-                    <span class="resource-link">
-                      <ConnectorIcon connection={record().facts.connection} />
-                      <span>
-                        <strong>{owner.requestTitle(record())}</strong>
-                        <small>
-                          {record().facts.principal.name} ·{" "}
-                          {record().facts.connection || "Policy"}
-                        </small>
-                      </span>
-                    </span>
-                    <div class="resource-meta">
-                      <Badge state={record().state} record={record()} />
-                      <Show when={record().state === "pending"}>
-                        <span class="muted">
-                          {owner.timeLeft(record(), m.now())} left
-                        </span>
-                      </Show>
-                      <time title={requestDate.format(time())}>
-                        {requestTime.format(time())}
-                      </time>
-                    </div>
-                    <Show when={record().state === "pending"}>
-                      <a class="review-link" href="#connections">
-                        Review in Permissions
-                      </a>
-                    </Show>
-                    <span class="collection-chevron">
-                      <Icon name="arrow" />
-                    </span>
-                  </>
-                }
-              >
-                {(active) => <RequestDetail id={id} inline active={active()} />}
-              </ResourceDisclosure>
-            );
-          }}
+          {(id) => (
+            <RequestRow
+              id={id}
+              stack={stacks().get(id)!}
+              open={props.expanded === id}
+            />
+          )}
         </For>
         <Show when={pages() > 1 || m.older() !== null}>
           <div class="pagination">
             <span>
-              {held().length ? current() * PAGE + 1 : 0} to{" "}
-              {Math.min((current() + 1) * PAGE, held().length)} of{" "}
-              {held().length}
+              {rows().length ? current() * PAGE + 1 : 0} to{" "}
+              {Math.min((current() + 1) * PAGE, rows().length)} of{" "}
+              {rows().length}
               {m.older() !== null && "+"} requests
             </span>
             <div>
@@ -219,6 +206,70 @@ function Requests(props: { expanded?: string }) {
         </Show>
       </div>
     </>
+  );
+}
+function RequestRow(props: { id: string; stack: string[]; open?: boolean }) {
+  const m = useMonitor();
+  const record = createMemo(() => m.recordsById().get(props.id)!);
+  const timestamp = createMemo(() => record().time);
+  const time = createMemo(() => new Date(timestamp()));
+  return (
+    <ResourceDisclosure
+      class="request-item"
+      summaryClass="request-row activity-row"
+      open={props.open}
+      summary={
+        <>
+          <span class="resource-link">
+            <span class="icon-stack" data-stacked={props.stack.length > 1}>
+              <ConnectorIcon connection={record().facts.connection} />
+            </span>
+            <span>
+              <strong>{owner.requestTitle(record())}</strong>
+              <small>
+                {record().facts.principal.name} ·{" "}
+                {record().facts.connection || "Policy"}
+              </small>
+            </span>
+          </span>
+          <div class="resource-meta">
+            <Show when={props.stack.length > 1}>
+              <span class="count">×{props.stack.length}</span>
+            </Show>
+            <Badge state={record().state} record={record()} />
+            <Show when={record().state === "pending"}>
+              <span class="muted">
+                {owner.timeLeft(record(), m.now())} left
+              </span>
+            </Show>
+            <time title={requestDate.format(time())}>
+              {requestTime.format(time())}
+            </time>
+          </div>
+          <Show when={record().state === "pending"}>
+            <a class="review-link" href="#connections">
+              Review in Permissions
+            </a>
+          </Show>
+          <span class="collection-chevron">
+            <Icon name="arrow" />
+          </span>
+        </>
+      }
+    >
+      {(active) => (
+        <Show
+          when={props.stack.length > 1}
+          fallback={<RequestDetail id={props.id} inline active={active()} />}
+        >
+          <div class="request-stack">
+            <For each={props.stack}>
+              {(id) => <RequestRow id={id} stack={[id]} />}
+            </For>
+          </div>
+        </Show>
+      )}
+    </ResourceDisclosure>
   );
 }
 export function RequestDetail(props: {
