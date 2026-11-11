@@ -1,4 +1,5 @@
 {
+  "base_url": "https://github.com/tinfoilsh/confidential-agent-monitor/releases/download/vm-artifacts/",
   "firecracker": {
     "url": "https://github.com/firecracker-microvm/firecracker/releases/download/v1.17.0/firecracker-v1.17.0-x86_64.tgz",
     "sha256": "06094a1108ae9e82aa4c23a775aa92758f53f1175d422270d9d6162cb9ade558",
@@ -7,5 +8,31 @@
   "vmlinux": {
     "url": "https://s3.amazonaws.com/spec.ccfc.min/firecracker-ci/v1.15/x86_64/vmlinux-6.1.155",
     "sha256": "e20e46d0c36c55c0d1014eb20576171b3f3d922260d9f792017aeff53af3d4f2"
+  },
+  "base": {
+    "file": "base-775a34d2b5798ab2.tar.gz",
+    "sha256": "775a34d2b5798ab2f50d162b718307619c7c2719093d0b57301fc1b851e07fb0"
+  },
+  "agents": {
+    "claude": {
+      "file": "agent-claude-e280fcf458b4f985.tar.gz",
+      "sha256": "e280fcf458b4f985f8010f4dab487d438b48652c2222f496ec5bf04cc6f8898d",
+      "path": "/nix/store/11ylyzap9r0fpmqncfmxz8kyw4sp1kjk-claude-code-2.1.295"
+    },
+    "codex": {
+      "file": "agent-codex-a0e8ec1788b4350a.tar.gz",
+      "sha256": "a0e8ec1788b4350ac4c58c2b5c4cba1dc91df8b0af04a305dadc777a62a7eda2",
+      "path": "/nix/store/b4q9xhpdkqkbdk9p5kss1mpih0hjkgrs-codex-0.162.1"
+    },
+    "opencode": {
+      "file": "agent-opencode-46e023257627b969.tar.gz",
+      "sha256": "46e023257627b969b86bf4d85311ee8061eb40ba1c80f1b69d219a46f881ee6b",
+      "path": "/nix/store/gs2dij0smmxm5wfy2j8fwihvahb8z48s-opencode-1.18.35"
+    },
+    "pi": {
+      "file": "agent-pi-3b4bb635c9d82254.tar.gz",
+      "sha256": "3b4bb635c9d822540a598c6734d262b14cb13b3d80c94d0119d3c7d52e31c8a1",
+      "path": "/nix/store/yyrq47f5z3rpzax1ka5znmn2fj5kfkha-pi-coding-agent-1.1.0"
+    }
   }
 }

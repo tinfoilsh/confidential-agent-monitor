@@ -586,8 +586,9 @@ def run_child(session, command, env):
                 with contextlib.suppress(ProcessLookupError):
                     os.killpg(child.pid, signum)
             previous[signum] = signal.signal(signum, forward)
-        foreground(child.pid)
+        # A command that already exited has no process group to bring forward.
         with contextlib.suppress(ProcessLookupError):
+            foreground(child.pid)
             os.killpg(child.pid, signal.SIGCONT)
         while child.poll() is None:
             session.check()

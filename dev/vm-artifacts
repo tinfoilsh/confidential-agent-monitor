@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Builds the bunker base and one closure per agent into DIR, then pins them in client/vm/assets.json.
+# Publish DIR's files under base_url; until then, PERIMETER_ARTIFACTS=DIR makes the client use them.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+out=${1:?usage: dev/vm-artifacts DIR}
+mkdir -p "$out"
+out=$(realpath "$out")
+# Agents come from the nixpkgs that the bunker toolchain pins and audits.
+nix_closure=${NIX_CLOSURE:-github:tinfoilsh/nix-closure}
+work=$(mktemp -d)
+tag=localhost/perimeter-base-build
+container=
+trap 'rm -rf "$work"; [[ -z $container ]] || podman rm -f "$container" > /dev/null' EXIT
+
+podman build -q -t "$tag" client/vm > /dev/null
+container=$(podman create "$tag" /bin/true)
+podman export "$container" | gzip -n > "$work/base.tar.gz"
+
+python3 -c 'import json; [print(name, agent["package"]) for name, agent in json.load(open("client/vm/agents.json")).items()]' |
+while read -r name package; do
+  path=$(NIXPKGS_ALLOW_UNFREE=1 nix build --impure --no-link --print-out-paths --inputs-from "$nix_closure" "nixpkgs#$package")
+  nix-store -qR "$path" | sed 's|^/||' |
+    tar -C / --sort=name --owner=0 --group=0 --numeric-owner -cf - -T - | gzip -n > "$work/agent-$name.tar.gz"
+  printf '%s\n' "$path" > "$work/agent-$name.path"
+done
+
+python3 - "$work" "$out" <<'PY'
+import hashlib, json, sys
+from pathlib import Path
+work, out = map(Path, sys.argv[1:])
+manifest_path = Path('client/vm/assets.json')
+manifest = json.loads(manifest_path.read_text())
+
+def pin(name):
+    source = work / name
+    with source.open('rb') as stream:
+        sha = hashlib.file_digest(stream, 'sha256').hexdigest()
+    stem, _, extension = name.partition('.')
+    file = f'{stem}-{sha[:16]}.{extension}'
+    source.replace(out / file)
+    return {'file': file, 'sha256': sha}
+
+manifest['base'] = pin('base.tar.gz')
+manifest['agents'] = {
+    path.name.removeprefix('agent-').removesuffix('.path'): {
+        **pin(path.name.removesuffix('.path') + '.tar.gz'), 'path': path.read_text().strip()}
+    for path in sorted(work.glob('agent-*.path'))}
+manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
+PY

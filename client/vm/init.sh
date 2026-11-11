@@ -15,4 +15,8 @@ mount -t tmpfs -o mode=1777 tmpfs /tmp
 ip link set lo up
 mkdir -p /run/seed
 mount -t ext4 -o ro,nosuid,nodev,noexec /dev/vdb /run/seed
-exec /usr/bin/python3 /usr/local/lib/monitor/guest.py
+if [ -b /dev/vdc ]; then
+    mkdir -p /nix/store
+    mount -t ext4 -o ro,nodev /dev/vdc /nix/store
+fi
+exec /usr/bin/python3 /run/seed/guest.py vm
