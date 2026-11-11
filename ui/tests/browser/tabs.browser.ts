@@ -64,7 +64,7 @@ for (const theme of ["light", "dark"]) {
       expect(overflow).toBeLessThanOrEqual(LAYOUT_TOLERANCE_PX);
       await expect(track.locator(".tab-bar-pill")).toHaveCSS(
         "background-color",
-        "rgb(230, 181, 196)",
+        "rgb(230, 204, 168)",
       );
       await expect(track.locator('[aria-pressed="true"]')).toHaveCSS(
         "color",
