@@ -25,7 +25,7 @@ const (
 	wildcardHost = "127.0.0.2"
 )
 
-var errRouteUnavailable = errors.New("route unavailable")
+var errRouteUnavailable = errors.New("not connected to the Perimeter")
 
 // Publisher names an authenticated peer and an optional discovery alias.
 // Trusted publishers are exempt from the limit on untrusted connections.

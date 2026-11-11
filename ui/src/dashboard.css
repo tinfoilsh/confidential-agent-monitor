@@ -603,8 +603,10 @@ summary + * {
 }
 /* The sidebar is dark in both themes, so the badge keeps one palette. */
 .nav-count.nav-attention {
-  min-width: 20px;
-  padding: 0 6px;
+  min-width: 16px;
+  padding: 0 4px;
+  font-size: var(--font-detail);
+  line-height: 16px;
   border-radius: 999px;
   background: #f59e0b;
   color: #1c1917;
