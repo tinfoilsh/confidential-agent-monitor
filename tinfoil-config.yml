@@ -32,7 +32,7 @@ attested-keys:
 
 containers:
   - name: monitor
-    image: "ghcr.io/tinfoilsh/confidential-agent-monitor@sha256:33943dad72b269408e0a24385ea015ad8649c631d1ff4455c2e8180c59d2b1d5"
+    image: "ghcr.io/tinfoilsh/confidential-agent-monitor@sha256:ba81a72b5124044a0049619630e93f9b2cca1e493c46eec3667067491f8d0a47" # v0.1.57
     # The Monitor holds keys and tokens; root/cvm_admin also lets it launch namespaces.
     cvm_admin: true
     user: "0:0"
