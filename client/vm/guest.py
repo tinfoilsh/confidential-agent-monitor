@@ -1,7 +1,7 @@
 """Guest PID 1 for every backend. Only management and the Perimeter link are exposed.
 
-vm: Firecracker init with sshd on vsock. container: waits for exec and stop.
-process: bubblewrap's init, running one command.
+vm: Firecracker or vfkit init with sshd on vsock. container: setup before the host's sshd -i sessions.
+publish: a container's wildcard listener publisher. process: bubblewrap's init, running one command.
 """
 import contextlib
 import ctypes
@@ -17,12 +17,10 @@ import sys
 import threading
 import time
 
-# Mirrors monitor_vm.LINK_PORT: the host relays this vsock port to the Perimeter.
+# Mirrors monitor_vm.LINK_PORT, the loopback port that carries the Perimeter link.
 LINK_PORT = 2223
 AGENT = 1000
 ROOT = os.getuid() == 0
-# Containers wait for this before their first exec.
-READY = Path('/run/monitor-ready')
 
 
 def copy(source, destination, mode=0o600, agent=False):
@@ -79,13 +77,6 @@ def listen(family, address, connect):
     threading.Thread(target=accept, daemon=True).start()
 
 
-def host(port):
-    stream = socket.socket(socket.AF_VSOCK, socket.SOCK_STREAM)
-    stream.settimeout(10)
-    stream.connect((socket.VMADDR_CID_HOST, port))
-    return stream
-
-
 def unix(path):
     stream = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     stream.settimeout(10)
@@ -102,7 +93,7 @@ def publish():
         time.sleep(2)
 
 
-def setup(seed, link):
+def setup(seed):
     for directory in ('/opt/monitor', '/workspace', '/var/lib/monitor'):
         Path(directory).mkdir(parents=True, exist_ok=True)
     for directory in ('/home/agent/.ssh', '/home/agent/.config', '/home/agent/.config/perimeter'):
@@ -112,6 +103,10 @@ def setup(seed, link):
     copy(seed / 'perimeter', '/opt/monitor/perimeter', 0o755)
     for name in ('id', 'known_hosts', 'ssh_config'):
         copy(seed / name, '/home/agent/.config/perimeter/' + name, agent=True)
+    store = Path('/nix/store')
+    for path in Path('/nix/agents').glob('*/nix/store/*'):
+        if not os.path.lexists(store / path.name):
+            (store / path.name).symlink_to(path)
     programs = Path('/usr/local/bin')
     for program in programs.iterdir():
         if program.is_symlink() and os.readlink(program).startswith('/nix/store/'):
@@ -127,9 +122,6 @@ def setup(seed, link):
             subprocess.run(['chown', '-R', f'{AGENT}:{AGENT}', '/workspace'], check=True)
         marker.touch()
         os.sync()
-    if link:
-        listen(socket.AF_INET, ('127.0.0.1', LINK_PORT), link)
-        threading.Thread(target=publish, daemon=True).start()
 
 
 def run(command):
@@ -146,23 +138,23 @@ def run(command):
 
 def main():
     kind = sys.argv[1]
-    if kind != 'vm':
+    if kind == 'publish':
+        publish()
+    if kind == 'process':
         link = Path('/run/host/link')
-        setup(Path('/run/host/seed'), link.exists() and (lambda: unix(str(link))))
-        if kind == 'process':
-            sys.exit(run(sys.argv[2:]))
-        READY.touch()
-        stopping = threading.Event()
-        for signum in (signal.SIGINT, signal.SIGTERM):
-            signal.signal(signum, lambda *_: stopping.set())
-        while not stopping.wait(0.2):
-            reap()
-        return
+        setup(Path('/run/host/seed'))
+        if link.exists():
+            listen(socket.AF_INET, ('127.0.0.1', LINK_PORT), lambda: unix(str(link)))
+            threading.Thread(target=publish, daemon=True).start()
+        sys.exit(run(sys.argv[2:]))
     seed = Path('/run/seed')
     Path('/run/sshd').mkdir(parents=True, exist_ok=True)
     copy(seed / 'authorized_keys', '/home/agent/.ssh/authorized_keys', agent=True)
     copy(seed / 'host_key', '/run/sshd/host_key')
-    setup(seed, lambda: host(LINK_PORT))
+    setup(seed)
+    if kind == 'container':
+        return
+    threading.Thread(target=publish, daemon=True).start()
     sshd = subprocess.Popen(['/usr/sbin/sshd', '-D', '-e', '-f', '/etc/ssh/sshd_config.monitor'])
     listen(socket.AF_VSOCK, (socket.VMADDR_CID_ANY, 22), lambda: socket.create_connection(('127.0.0.1', 22), 10))
     stopping = threading.Event()

@@ -84,19 +84,22 @@ granted that service. Agents fetched earlier stay available in every bunker.
 `perimeter setup --backend` chooses the isolation. Each bunker's only network is
 its link to the Perimeter.
 
-| Backend                 | Isolation                       | Also requires                                                           |
-| ----------------------- | ------------------------------- | ----------------------------------------------------------------------- |
-| `firecracker` (default) | KVM virtual machine             | writable `/dev/kvm`, bubblewrap, `mke2fs` 1.47.1+ with libarchive       |
-| `podman`, `docker`      | container with `--network none` | the engine                                                              |
-| `bwrap`                 | unprivileged namespaces         | bubblewrap with overlay support, unprivileged user namespaces, `script` |
+| Backend                          | Isolation                       | Also requires                                                                         |
+| -------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------- |
+| `firecracker` (default on Linux) | KVM virtual machine             | x86_64 Linux, writable `/dev/kvm`, bubblewrap, `mke2fs` 1.47.1+ with libarchive       |
+| `vfkit` (default on macOS)       | Virtualization.framework VM     | Apple silicon, `mke2fs` 1.47.1+ with libarchive (nixpkgs `e2fsprogs`, not Homebrew's) |
+| `podman`, `docker`               | container with `--network none` | the engine                                                                            |
+| `bwrap`                          | unprivileged namespaces         | Linux, bubblewrap with overlay support, unprivileged user namespaces, `script`        |
 
-All need x86_64 Linux, OpenSSH and GNU tar. Containers and bwrap share the host
-kernel. Setup asks for your Perimeter endpoint, owner credentials, and service
-permissions; its defaults reach a local Perimeter, and the passphrase you enter
-claims a fresh one. The [daemon](#run-a-perimeter-locally) runs setup for you.
+All need OpenSSH and GNU tar (`gtar` on macOS). Containers share their engine's
+kernel, and bwrap the host's. Setup asks for your Perimeter endpoint, owner
+credentials, and service permissions; its defaults reach a local Perimeter, and
+the passphrase you enter claims a fresh one. The [daemon](#run-a-perimeter-locally)
+runs setup for you.
 See `perimeter --help` for stopping, exporting, and deleting bunkers.
 
-`dev/vm-artifacts DIR` builds the base and agents and pins them in
+`dev/vm-artifacts DIR [ARCH...]` builds the base and agents for x86_64 and
+aarch64 and pins them in
 [client/vm/assets.json](client/vm/assets.json); `PERIMETER_ARTIFACTS=DIR` makes
 the CLI use that directory before the files are published.
 
@@ -117,8 +120,8 @@ perimeter launch shell --name a           # then: curl http://b.sandbox:8080
 
 This builds the checkout with Go and Bun and runs it as a user service on
 `127.0.0.1:8081`, with its state and owner key in `~/.local/share/perimeter/server`.
-It also installs the CLI, pairs this computer as a trusted device and, on Linux,
-sets up bunker launch. Sign in to [the UI](http://127.0.0.1:8081/app/) with the owner
+It also installs the CLI, pairs this computer as a trusted device and sets up
+bunker launch. Sign in to [the UI](http://127.0.0.1:8081/app/) with the owner
 key. Run it from another checkout to switch the daemon to that code; the previous
 store is kept in `store.prev`. Logs are in `journalctl --user -u perimeter` on
 Linux and `server.log` on macOS.

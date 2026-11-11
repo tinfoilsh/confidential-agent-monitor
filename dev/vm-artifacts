@@ -1,28 +1,37 @@
 #!/usr/bin/env bash
-# Builds the bunker base and one closure per agent into DIR, then pins them in client/vm/assets.json.
+# Builds the bunker base and one closure per agent for each ARCH into DIR, then pins them in client/vm/assets.json.
 # Publish DIR's files under base_url; until then, PERIMETER_ARTIFACTS=DIR makes the client use them.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-out=${1:?usage: dev/vm-artifacts DIR}
+out=${1:?usage: dev/vm-artifacts DIR [ARCH...]}
+shift
+arches=("$@")
+(( ${#arches[@]} )) || arches=(x86_64 aarch64)
 mkdir -p "$out"
 out=$(realpath "$out")
-# Agents come from the nixpkgs that the bunker toolchain pins and audits.
-nix_closure=${NIX_CLOSURE:-github:tinfoilsh/nix-closure}
+nixpkgs=github:NixOS/nixpkgs/ca1659429c950a11a565b5764e37a1b704e17ec8
+declare -A oci=([x86_64]=amd64 [aarch64]=arm64)
 work=$(mktemp -d)
 tag=localhost/perimeter-base-build
 container=
 trap 'rm -rf "$work"; [[ -z $container ]] || podman rm -f "$container" > /dev/null' EXIT
 
-podman build -q -t "$tag" client/vm > /dev/null
-container=$(podman create "$tag" /bin/true)
-podman export "$container" | gzip -n > "$work/base.tar.gz"
+for arch in "${arches[@]}"; do
+  mkdir "$work/$arch"
+  podman build -q --platform "linux/${oci[$arch]}" -t "$tag-$arch" client/vm > /dev/null
+  container=$(podman create --platform "linux/${oci[$arch]}" "$tag-$arch" /bin/true)
+  podman export "$container" | gzip -n > "$work/$arch/base.tar.gz"
+  podman rm -f "$container" > /dev/null
+  container=
 
-python3 -c 'import json; [print(name, agent["package"]) for name, agent in json.load(open("client/vm/agents.json")).items()]' |
-while read -r name package; do
-  path=$(NIXPKGS_ALLOW_UNFREE=1 nix build --impure --no-link --print-out-paths --inputs-from "$nix_closure" "nixpkgs#$package")
-  nix-store -qR "$path" | sed 's|^/||' |
-    tar -C / --sort=name --owner=0 --group=0 --numeric-owner -cf - -T - | gzip -n > "$work/agent-$name.tar.gz"
-  printf '%s\n' "$path" > "$work/agent-$name.path"
+  python3 -c 'import json; [print(name, agent["package"]) for name, agent in json.load(open("client/vm/agents.json")).items()]' |
+  while read -r name package; do
+    path=$(NIXPKGS_ALLOW_UNFREE=1 nix build --impure --no-link --print-out-paths "$nixpkgs#legacyPackages.$arch-linux.$package")
+    # mke2fs -d needs each parent directory as an entry, and nix gives every store path mtime 1.
+    { printf '%s\n' --no-recursion nix nix/store --recursion; nix-store -qR "$path" | sed 's|^/||'; } |
+      tar -C / --sort=name --mtime=@1 --owner=0 --group=0 --numeric-owner -cf - -T - | gzip -n > "$work/$arch/agent-$name.tar.gz"
+    printf '%s\n' "$path" > "$work/$arch/agent-$name.path"
+  done
 done
 
 python3 - "$work" "$out" <<'PY'
@@ -32,19 +41,20 @@ work, out = map(Path, sys.argv[1:])
 manifest_path = Path('client/vm/assets.json')
 manifest = json.loads(manifest_path.read_text())
 
-def pin(name):
-    source = work / name
+def pin(source):
     with source.open('rb') as stream:
         sha = hashlib.file_digest(stream, 'sha256').hexdigest()
-    stem, _, extension = name.partition('.')
+    stem, _, extension = source.name.partition('.')
     file = f'{stem}-{sha[:16]}.{extension}'
     source.replace(out / file)
     return {'file': file, 'sha256': sha}
 
-manifest['base'] = pin('base.tar.gz')
-manifest['agents'] = {
-    path.name.removeprefix('agent-').removesuffix('.path'): {
-        **pin(path.name.removesuffix('.path') + '.tar.gz'), 'path': path.read_text().strip()}
-    for path in sorted(work.glob('agent-*.path'))}
+for directory in sorted(work.iterdir()):
+    pins = manifest.setdefault(directory.name, {})
+    pins['base'] = pin(directory / 'base.tar.gz')
+    pins['agents'] = {
+        path.name.removeprefix('agent-').removesuffix('.path'): {
+            **pin(path.with_suffix('.tar.gz')), 'path': path.read_text().strip()}
+        for path in sorted(directory.glob('agent-*.path'))}
 manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
 PY

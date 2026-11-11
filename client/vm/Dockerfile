@@ -18,6 +18,6 @@ RUN chmod 755 /sbin/monitor-init \
        'PidFile /run/sshd/sshd.pid' 'PasswordAuthentication no' \
        'KbdInteractiveAuthentication no' 'PermitEmptyPasswords no' \
        'PermitRootLogin no' 'UsePAM no' 'AllowUsers agent' \
-       'AllowAgentForwarding no' 'AllowTcpForwarding no' 'X11Forwarding no' \
-       'PermitUserEnvironment no' 'PrintMotd no' \
+       'AllowAgentForwarding no' 'AllowTcpForwarding remote' 'PermitListen 127.0.0.1:2223' \
+       'X11Forwarding no' 'PermitUserEnvironment no' 'PrintMotd no' \
        > /etc/ssh/sshd_config.monitor

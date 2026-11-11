@@ -5,34 +5,46 @@
     "sha256": "06094a1108ae9e82aa4c23a775aa92758f53f1175d422270d9d6162cb9ade558",
     "member": "release-v1.17.0-x86_64/firecracker-v1.17.0-x86_64"
   },
-  "vmlinux": {
-    "url": "https://s3.amazonaws.com/spec.ccfc.min/firecracker-ci/v1.15/x86_64/vmlinux-6.1.155",
-    "sha256": "e20e46d0c36c55c0d1014eb20576171b3f3d922260d9f792017aeff53af3d4f2"
+  "vfkit": {
+    "url": "https://github.com/crc-org/vfkit/releases/download/v0.6.4/vfkit",
+    "sha256": "0ed83fc8ca7aa708598835480dba1362406aa7cd1dab3b27464eb76327d9652d"
   },
-  "base": {
-    "file": "base-775a34d2b5798ab2.tar.gz",
-    "sha256": "775a34d2b5798ab2f50d162b718307619c7c2719093d0b57301fc1b851e07fb0"
+  "x86_64": {
+    "kernel": {
+      "url": "https://s3.amazonaws.com/spec.ccfc.min/firecracker-ci/v1.15/x86_64/vmlinux-6.1.155",
+      "sha256": "e20e46d0c36c55c0d1014eb20576171b3f3d922260d9f792017aeff53af3d4f2"
+    },
+    "base": {
+      "file": "base-4216f855940af67a.tar.gz",
+      "sha256": "4216f855940af67af005276d1a08c50c2aef97286bcb2bd564e7cfefd583f953"
+    },
+    "agents": {
+      "claude": {
+        "file": "agent-claude-e1261a14c91caf8c.tar.gz",
+        "sha256": "e1261a14c91caf8c27d3171c15f5a74d10db3689a4e06697db2c481c48388245",
+        "path": "/nix/store/11ylyzap9r0fpmqncfmxz8kyw4sp1kjk-claude-code-2.1.295"
+      },
+      "codex": {
+        "file": "agent-codex-1a3d005a7879bfcc.tar.gz",
+        "sha256": "1a3d005a7879bfcc72c5dd407dfa90f312fe4b1ea1818647790e4cc8b7c1fbac",
+        "path": "/nix/store/b4q9xhpdkqkbdk9p5kss1mpih0hjkgrs-codex-0.162.1"
+      },
+      "opencode": {
+        "file": "agent-opencode-7318aa6abd170897.tar.gz",
+        "sha256": "7318aa6abd17089704c060db22ad8f8c0015ad39d6d7497c6a66d980ecc0ee6f",
+        "path": "/nix/store/gs2dij0smmxm5wfy2j8fwihvahb8z48s-opencode-1.18.35"
+      },
+      "pi": {
+        "file": "agent-pi-c887b334dff73759.tar.gz",
+        "sha256": "c887b334dff737591cd07719f74be36563f2b0936e3d8ca485876f50809e1448",
+        "path": "/nix/store/yyrq47f5z3rpzax1ka5znmn2fj5kfkha-pi-coding-agent-1.1.0"
+      }
+    }
   },
-  "agents": {
-    "claude": {
-      "file": "agent-claude-e280fcf458b4f985.tar.gz",
-      "sha256": "e280fcf458b4f985f8010f4dab487d438b48652c2222f496ec5bf04cc6f8898d",
-      "path": "/nix/store/11ylyzap9r0fpmqncfmxz8kyw4sp1kjk-claude-code-2.1.295"
-    },
-    "codex": {
-      "file": "agent-codex-a0e8ec1788b4350a.tar.gz",
-      "sha256": "a0e8ec1788b4350ac4c58c2b5c4cba1dc91df8b0af04a305dadc777a62a7eda2",
-      "path": "/nix/store/b4q9xhpdkqkbdk9p5kss1mpih0hjkgrs-codex-0.162.1"
-    },
-    "opencode": {
-      "file": "agent-opencode-46e023257627b969.tar.gz",
-      "sha256": "46e023257627b969b86bf4d85311ee8061eb40ba1c80f1b69d219a46f881ee6b",
-      "path": "/nix/store/gs2dij0smmxm5wfy2j8fwihvahb8z48s-opencode-1.18.35"
-    },
-    "pi": {
-      "file": "agent-pi-3b4bb635c9d82254.tar.gz",
-      "sha256": "3b4bb635c9d822540a598c6734d262b14cb13b3d80c94d0119d3c7d52e31c8a1",
-      "path": "/nix/store/yyrq47f5z3rpzax1ka5znmn2fj5kfkha-pi-coding-agent-1.1.0"
+  "aarch64": {
+    "kernel": {
+      "url": "https://s3.amazonaws.com/spec.ccfc.min/firecracker-ci/v1.15/aarch64/vmlinux-6.1.155",
+      "sha256": "e3544b10603acbf3db492cb52e000d22ba202cb4b63b9add027565683e11c591"
     }
   }
 }

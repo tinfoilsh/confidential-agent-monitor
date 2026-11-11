@@ -13,10 +13,12 @@ ln -s /proc/self/fd/2 /dev/stderr
 mount -t tmpfs -o mode=755 tmpfs /run
 mount -t tmpfs -o mode=1777 tmpfs /tmp
 ip link set lo up
-mkdir -p /run/seed
+mkdir -p /run/seed /nix/store
 mount -t ext4 -o ro,nosuid,nodev,noexec /dev/vdb /run/seed
-if [ -b /dev/vdc ]; then
-    mkdir -p /nix/store
-    mount -t ext4 -o ro,nodev /dev/vdc /nix/store
-fi
+mount -t tmpfs -o mode=755 tmpfs /nix/store
+for disk in /dev/vd[c-z]; do
+    [ -b "$disk" ] || continue
+    mkdir -p "/nix/agents/${disk#/dev/}"
+    mount -t ext4 -o ro,nodev "$disk" "/nix/agents/${disk#/dev/}"
+done
 exec /usr/bin/python3 /run/seed/guest.py vm
