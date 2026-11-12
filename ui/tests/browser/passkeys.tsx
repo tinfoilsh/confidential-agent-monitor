@@ -4,13 +4,55 @@ import { Show, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import { AuthScreen } from "../../src/components";
 import { KeyGate } from "../../src/hosted/KeyPanel";
+import Console from "../../src/hosted/Console";
 import { PRF_PROFILES, b64u, sealMK } from "../../src/hosted/contract";
 import * as keys from "../../src/hosted/keys";
-import { createSession } from "../../src/hosted/session";
+import {
+  createSession,
+  MONITOR_REPO,
+  SANDBOX_REPO,
+  type Container,
+} from "../../src/hosted/session";
 import "../../src/dashboard.css";
+import { applyTheme, savedTheme } from "../../src/theme";
+
+applyTheme(savedTheme());
 
 keys.TARGETS.api_origin = "https://api.example.com";
 const USER = "user_first";
+const home = new URLSearchParams(location.search).has("home");
+let releaseKeys!: () => void;
+let releaseInventory!: () => void;
+const keysReady = new Promise<void>((resolve) => {
+  releaseKeys = resolve;
+});
+const inventoryReady = new Promise<void>((resolve) => {
+  releaseInventory = resolve;
+});
+if (!home) {
+  releaseKeys();
+  releaseInventory();
+}
+const perimeters: Container[] = ["first", "second"].map((name, index) => ({
+  id: `${index + 1}`.repeat(8) + "-1111-4111-8111-111111111111",
+  name: `${name}-perimeter`,
+  repo: MONITOR_REPO,
+  domain: `${name}.example.com`,
+  status: "running",
+  clerk_user_id: USER,
+  owner_key_mode: "tmk",
+  owner_public_key: null,
+}));
+const inventory: Container[] = perimeters.flatMap((perimeter, index) => [
+  perimeter,
+  {
+    ...perimeter,
+    id: `${index + 3}`.repeat(8) + "-1111-4111-8111-111111111111",
+    name: `${index + 1}-bunker`,
+    repo: SANDBOX_REPO,
+    network_policy: { egress: [{ container_id: perimeter.id }] },
+  },
+]);
 const PRF = new Uint8Array(32).fill(7);
 const DEK = new Uint8Array(32).fill(8);
 const CREDENTIAL = b64u(new Uint8Array(32).fill(9));
@@ -71,9 +113,14 @@ globalThis.fetch = async (input) => {
   const url = new URL(String(input));
   if (url.origin !== keys.TARGETS.api_origin)
     throw new Error(`Unexpected request: ${url}`);
-  if (url.pathname === "/api/sandboxes/owner-key")
+  if (url.pathname === "/api/sandboxes/owner-key") {
+    await keysReady;
     return Response.json(await stateFor(clerk.user!.id));
-  if (url.pathname === "/api/containers") return Response.json([]);
+  }
+  if (url.pathname === "/api/containers") {
+    await inventoryReady;
+    return Response.json(home ? inventory : []);
+  }
   throw new Error(`Unexpected request: ${url}`);
 };
 
@@ -103,21 +150,30 @@ Object.defineProperty(navigator.credentials, "get", {
 });
 const session = createSession(clerk as unknown as Clerk);
 const manager = keys.passkeys();
+let decrypting: Promise<void>;
+let releaseDecryption: () => void;
 render(
   () => (
     <>
       <output aria-label="Passkey prompts">{prompts()}</output>
       <Show when={session.user()} fallback={<p>Signed out</p>}>
-        <KeyGate session={session} manager={manager}>
-          <AuthScreen title="Keys unlocked">
-            <output aria-label="Key owner">
-              {session.unlocked()?.context.user_id}
-            </output>
-            <output aria-label="Key payload">
-              {JSON.stringify(session.unlocked()?.payload)}
-            </output>
-          </AuthScreen>
-        </KeyGate>
+        <Show
+          when={home}
+          fallback={
+            <KeyGate session={session} manager={manager}>
+              <AuthScreen title="Keys unlocked">
+                <output aria-label="Key owner">
+                  {session.unlocked()?.context.user_id}
+                </output>
+                <output aria-label="Key payload">
+                  {JSON.stringify(session.unlocked()?.payload)}
+                </output>
+              </AuthScreen>
+            </KeyGate>
+          }
+        >
+          <Console session={session} />
+        </Show>
       </Show>
     </>
   ),
@@ -127,6 +183,23 @@ render(
 const fixture = {
   payload,
   prf: b64u(PRF),
+  releaseKeys,
+  releaseInventory,
+  holdDecryption() {
+    const decrypt = crypto.subtle.decrypt.bind(crypto.subtle);
+    const ready = new Promise<void>((resolve) => {
+      releaseDecryption = resolve;
+    });
+    decrypting = new Promise<void>((started) => {
+      crypto.subtle.decrypt = async (...args) => {
+        started();
+        await ready;
+        return decrypt(...args);
+      };
+    });
+  },
+  waitForDecryption: () => decrypting,
+  releaseDecryption: () => releaseDecryption(),
   async signOut() {
     const prepared = await session.prepareLogout();
     return session.logout(prepared);

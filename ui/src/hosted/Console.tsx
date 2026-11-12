@@ -8,13 +8,7 @@ import {
   createSignal,
   on,
 } from "solid-js";
-import {
-  AuthCard,
-  AuthCardSkeleton,
-  AuthScreen,
-  Icon,
-  SkeletonRows,
-} from "../components";
+import { AuthCard, AuthCardSkeleton, AuthScreen, Icon } from "../components";
 import {
   SSH_ED25519,
   fromBase64,
@@ -27,6 +21,7 @@ import {
   type StartRole,
 } from "./contract";
 import { Header, monitorURL } from "./Header";
+import { Home, HomeSkeleton, PerimetersSkeleton } from "./Home";
 import * as keys from "./keys";
 import {
   AddPasskey,
@@ -361,10 +356,9 @@ function Inventory(props: { session: Session }) {
       (r) => r.repo === SANDBOX_REPO && monitorOf(r) === monitor.id,
     );
   return (
-    <nav class="start-monitors" aria-label="Your Perimeters">
-      <p class="start-eyebrow">Your Perimeters</p>
+    <>
       <Show when={read().loading && !read().value}>
-        <SkeletonRows cards label="Loading your Perimeters and bunkers…" />
+        <PerimetersSkeleton />
       </Show>
       <Show when={read().error}>
         <p class="start-notice" role="alert">
@@ -425,7 +419,7 @@ function Inventory(props: { session: Session }) {
           );
         }}
       </For>
-    </nav>
+    </>
   );
 }
 
@@ -486,23 +480,29 @@ export default function Console(props: { session: Session }) {
       <Header session={props.session} />
       <Switch
         fallback={
-          <KeyGate session={props.session} manager={manager}>
-            <main class="start-welcome start-home">
-              <h1>Welcome back</h1>
-              <Inventory session={props.session} />
-              <Show when={props.session.keyState().error}>
-                {(error) => (
-                  <p class="start-notice" role="alert">
-                    Your saved keys could not be refreshed: {error()}
-                  </p>
-                )}
-              </Show>
-              <section class="start-monitors" aria-label="Your keys">
-                <p class="start-eyebrow">Your keys</p>
-                <Cleanup session={props.session} />
-                <RecoveryMethods session={props.session} manager={manager} />
-              </section>
-            </main>
+          <KeyGate
+            session={props.session}
+            manager={manager}
+            loading={<HomeSkeleton />}
+          >
+            <Home
+              perimeters={<Inventory session={props.session} />}
+              notice={
+                <Show when={props.session.keyState().error}>
+                  {(error) => (
+                    <p class="start-notice" role="alert">
+                      Your saved keys could not be refreshed: {error()}
+                    </p>
+                  )}
+                </Show>
+              }
+              keys={
+                <>
+                  <Cleanup session={props.session} />
+                  <RecoveryMethods session={props.session} manager={manager} />
+                </>
+              }
+            />
           </KeyGate>
         }
       >
