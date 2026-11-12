@@ -1,5 +1,4 @@
 import { For, Show, createMemo, createSignal, createUniqueId } from "solid-js";
-import type { JSX } from "solid-js";
 import * as owner from "./owner.js";
 import {
   Copy,
@@ -104,11 +103,7 @@ export function Agents(props: { expanded?: string }) {
                   </h2>
                   <Show
                     when={kind === "devices"}
-                    fallback={
-                      <AddSandbox class="button">
-                        <Icon name="external" />
-                      </AddSandbox>
-                    }
+                    fallback={<AddSandbox class="button" />}
                   >
                     <a class="button" href="#pair">
                       <Icon name="plus" />
@@ -212,7 +207,7 @@ export function Agents(props: { expanded?: string }) {
     </>
   );
 }
-function AddSandbox(props: { class: string; children?: JSX.Element }) {
+function AddSandbox(props: { class: string }) {
   const m = useMonitor();
   // Only a Tinfoil-deployed Perimeter takes bunkers from the dashboard.
   return (
@@ -233,7 +228,6 @@ function AddSandbox(props: { class: string; children?: JSX.Element }) {
       >
         <Icon name="plus" />
         Create bunker
-        {props.children}
       </a>
     </Show>
   );
