@@ -1,0 +1,88 @@
+.tab-bar {
+  --tab-accent: var(--tinfoil-oak);
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 100%;
+  width: fit-content;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
+  background: var(--card);
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-inline: contain;
+}
+.tab-bar::-webkit-scrollbar {
+  display: none;
+}
+.tab-bar-pill {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  border-radius: var(--card-radius);
+  background: var(--tab-accent);
+  pointer-events: none;
+}
+.tab-bar.inherited .tab-bar-pill {
+  opacity: 0.35;
+}
+.tab-bar > :is(a, button) {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 0;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--card-radius);
+  background: transparent;
+  box-shadow: none;
+  color: var(--gray-600);
+  font-size: var(--font-body);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+.tab-bar > :is(a, button):hover:not(:disabled) {
+  background: transparent;
+  color: var(--text);
+}
+.tab-bar.compact > :is(a, button) {
+  padding: 6px 8px;
+}
+.tab-bar > :is([aria-current="page"], [aria-pressed="true"]),
+.tab-bar
+  > :is([aria-current="page"], [aria-pressed="true"]):hover:not(:disabled) {
+  color: var(--tinfoil-dark);
+}
+.tab-bar.inherited > .shown {
+  color: var(--text);
+}
+.tab-bar:not(.ready) > :is([aria-current="page"], [aria-pressed="true"]) {
+  background: var(--tab-accent);
+}
+.tab-bar > :is(a, button):focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: -2px;
+}
+.tab-bar > :is([aria-current="page"], [aria-pressed="true"]):focus-visible {
+  outline-color: var(--tinfoil-dark);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .tab-bar > :is(a, button) {
+    transition: color 0.2s ease-out;
+  }
+  .tab-bar.ready .tab-bar-pill {
+    transition:
+      transform 0.3s ease-out,
+      width 0.3s ease-out,
+      opacity 0.3s ease-out;
+  }
+}

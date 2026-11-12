@@ -45,10 +45,10 @@
   --card-row-inset: 12px;
   --card-radius: 4px;
   --page-width: 1200px;
-  --bg: #fff;
+  --bg: #f9f8f6;
   --card: #fff;
   --surface: #f0f4f4;
-  --subtle: #f9fafb;
+  --subtle: #f0f4f4;
   --text: #030712;
   --muted: #71717a;
   --dim: #6b7280;
@@ -56,13 +56,13 @@
   --line: #e5e7eb;
   --edge: #e4e4e7;
   --hover: #f4f4f5;
-  --link: #4c7091;
-  --primary: #4c7091;
-  --on-primary: #fafafa;
+  --link: #004444;
+  --primary: var(--tinfoil-oak);
+  --on-primary: var(--tinfoil-dark);
   --ok: #047857;
   --warn: #92400e;
   --bad: #b91c1c;
-  --primary-hover: #426381;
+  --primary-hover: #ddbb8c;
   --destructive: #b91c1c;
   --destructive-hover: #991b1b;
   --frame: #000;
@@ -71,13 +71,15 @@
   --page-height: 100dvh;
   --nav-width: 224px;
   --nav-height: 64px;
-  --tinfoil-dark: #061820;
+  --tinfoil-dark: #05252e;
   --tinfoil-accent-dark: #004444;
   --tinfoil-accent-dark-darker: #003333;
-  --tinfoil-accent-light: #68c7ac;
+  --tinfoil-oak: #e6cca8;
+  --tinfoil-twilight: #6b5b95;
+  --tinfoil-accent-light: #a8c7d1;
   --text-secondary: #292f3d;
   --border-strong: #374151;
-  --backdrop: #06182099;
+  --backdrop: #05252e99;
   --shadow: 0 1px 2px #0000000d;
   --shadow-lg: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a;
   --nav-text: #fff;
@@ -122,13 +124,10 @@
   --line: #404045;
   --edge: #404045;
   --hover: #2c2c2e;
-  --link: #60a5fa;
-  --primary: #3474e5;
-  --on-primary: #fff;
+  --link: #a89acb;
   --ok: #6ee7b7;
   --warn: #fcd34d;
   --bad: #fca5a5;
-  --primary-hover: #2f68ce;
   --amber-50: #451a03;
   --amber-200: #92400e;
   --amber-800: #fde68a;
@@ -450,29 +449,11 @@ summary + * {
   border-top: 1px solid var(--nav-line);
 }
 .theme-switch {
-  display: flex;
-  gap: 2px;
+  --card: var(--tinfoil-dark);
+  --line: var(--nav-line);
+  --gray-600: var(--nav-muted);
+  --text: var(--nav-text);
   justify-self: start;
-  padding: 2px;
-  border: 1px solid var(--nav-line);
-  border-radius: var(--card-radius);
-}
-.theme-switch > button {
-  width: 28px;
-  min-height: 24px;
-  padding: 0;
-  border: 0;
-  background: none;
-  box-shadow: none;
-  color: var(--nav-muted);
-}
-.theme-switch > button:hover:not(:disabled) {
-  background: var(--nav-hover);
-  color: var(--nav-text);
-}
-.theme-switch > button[aria-pressed="true"] {
-  background: var(--nav-line);
-  color: var(--nav-text);
 }
 .back-terminal .icon {
   transform: rotate(180deg);
@@ -1960,70 +1941,6 @@ details[open] > summary > .collection-chevron {
   min-width: 0;
   overflow-wrap: anywhere;
 }
-/* The dashboard's AnimatedTabBar (packages/ui/src/animated-tabs.tsx). */
-.tab-bar {
-  position: relative;
-  display: inline-flex;
-  flex-shrink: 0;
-  max-width: 100%;
-  padding: 4px;
-  border: 1px solid color-mix(in srgb, var(--line) 50%, transparent);
-  border-radius: var(--card-radius);
-  background: var(--card);
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.tab-bar::-webkit-scrollbar {
-  display: none;
-}
-.tab-bar-pill {
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
-  border-radius: var(--card-radius);
-  background: var(--tinfoil-accent-dark);
-  box-shadow: var(--shadow);
-  pointer-events: none;
-}
-.tab-bar.inherited .tab-bar-pill {
-  opacity: 0.35;
-}
-.tab-bar > :is(a, button) {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 0;
-  padding: 10px 16px;
-  border: 1px solid transparent;
-  border-radius: var(--card-radius);
-  background: transparent;
-  box-shadow: none;
-  color: var(--gray-600);
-  font-size: var(--font-detail);
-  font-weight: 600;
-  line-height: 16px;
-  white-space: nowrap;
-}
-.tab-bar > :is(a, button):hover:not(:disabled) {
-  background: transparent;
-  color: var(--text);
-}
-.tab-bar > :is([aria-current="page"], [aria-pressed="true"]),
-.tab-bar
-  > :is([aria-current="page"], [aria-pressed="true"]):hover:not(:disabled) {
-  color: #fff;
-}
-.tab-bar.inherited > .shown {
-  color: var(--text);
-}
-.tab-bar > :is(a, button):focus-visible {
-  outline: 2px solid var(--link);
-  outline-offset: -2px;
-}
 .acct {
   padding: 12px 0;
   border-bottom: 1px solid var(--line);
@@ -2601,8 +2518,6 @@ td {
 }
 /* Tinfoil Chat's solid button. */
 .auth {
-  --primary: var(--tinfoil-accent-dark-darker);
-  --primary-hover: var(--tinfoil-accent-dark);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -3325,15 +3240,6 @@ td {
   }
   input[role="switch"]::before {
     transition: transform 0.15s ease;
-  }
-  .tab-bar > :is(a, button) {
-    transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .tab-bar.ready .tab-bar-pill {
-    transition:
-      left 0.3s cubic-bezier(0, 0, 0.2, 1),
-      width 0.3s cubic-bezier(0, 0, 0.2, 1),
-      opacity 0.3s cubic-bezier(0, 0, 0.2, 1);
   }
   .access-disclosure {
     transition: grid-template-rows 0.12s ease-out;

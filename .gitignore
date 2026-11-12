@@ -3,6 +3,8 @@
 /.dev
 /.env
 /ui/node_modules/
+/ui/test-results/
+/ui/playwright-report/
 /ui/dist/
 /ui/dist-hosted/
 /ui/dist-static/
