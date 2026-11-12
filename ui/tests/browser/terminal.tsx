@@ -76,6 +76,8 @@ const requests: owner.RequestRecord[] = Array.from(
     },
   }),
 );
+if (new URLSearchParams(location.search).has("single-tool"))
+  delete view.presets.tinfoil_websearch.actions!["use.fetch"];
 if (new URLSearchParams(location.search).has("review")) {
   view.config.connections!["tinfoil-websearch"]["tinfoil-mcp"] = {
     url: "https://websearch.example/mcp",

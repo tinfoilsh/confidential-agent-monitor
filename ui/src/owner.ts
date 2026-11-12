@@ -1007,8 +1007,8 @@ export function agentAccess(view: View, name: string, only?: string) {
     });
     // A lone top-level group repeats the service's own row, so its actions take its place.
     const ungrouped = (nodes: AccessNode[]): AccessNode[] =>
-      nodes.length === 1 && nodes[0].children.length
-        ? ungrouped(nodes[0].children)
+      nodes.length === 1 && nodes[0].children.length > 1
+        ? nodes[0].children
         : nodes;
     let actions: AccessNode[] | undefined;
     return {

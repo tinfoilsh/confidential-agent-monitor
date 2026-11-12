@@ -5,6 +5,21 @@ const HEIGHT = 900;
 const TOLERANCE = 1;
 const DESKTOP_ROW_HEIGHT = 48;
 
+test("a lone tool still exposes its inherited permission control", async ({
+  page,
+}) => {
+  await page.goto(
+    "/app/tests/browser/terminal.html?single-tool#agents/new-bunker",
+  );
+  await page
+    .getByRole("button", { name: "Actions for tinfoil-websearch" })
+    .click();
+  const permission = page.getByLabel("Use · Search the web permission");
+  await expect(permission).toHaveValue("ask");
+  await permission.selectOption("off");
+  await expect(permission).toHaveValue("off");
+});
+
 test("approval counts include every tool and update after approval", async ({
   page,
 }) => {
