@@ -1611,10 +1611,10 @@ export const edits = {
       })),
     ];
   },
-  pairDevice: (name: string, key: string) =>
+  addIdentity: (name: string, key: string, routes: boolean) =>
     sourceChanges({
       identities: {
-        [name]: { key: key.trim(), routes: true, connections: {} },
+        [name]: { key: key.trim(), routes, connections: {} },
       },
     }),
   removeAgent: (name: string): Change[] => [

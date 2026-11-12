@@ -1,0 +1,101 @@
+name: VM Artifacts
+run-name: VM artifacts from ${{ github.ref_name }}
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: vm-artifacts
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64
+            runner: ubuntu-24.04
+          - arch: aarch64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@3dc140bfc76c49fbd4dd958429132e3746bcb086 # v31.11.5
+      - name: Build the base and agents
+        env:
+          ARCH: ${{ matrix.arch }}
+          OUT: ${{ runner.temp }}/out
+        run: |
+          dev/vm-artifacts "$OUT" "$ARCH"
+          python3 -c 'import json, os, sys; json.dump(json.load(open("client/vm/assets.json"))[os.environ["ARCH"]], sys.stdout)' \
+            > "$OUT/pins-$ARCH.json"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: vm-artifacts-${{ matrix.arch }}
+          path: ${{ runner.temp }}/out
+          retention-days: 1
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: vm-artifacts-*
+          merge-multiple: true
+          path: ${{ runner.temp }}/out
+      - name: Pin the artifacts
+        env:
+          OUT: ${{ runner.temp }}/out
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          path = Path('client/vm/assets.json')
+          manifest = json.loads(path.read_text())
+          for pins in Path(os.environ['OUT']).glob('pins-*.json'):
+              manifest[pins.stem.removeprefix('pins-')].update(json.loads(pins.read_text()))
+          path.write_text(json.dumps(manifest, indent=2) + '\n')
+          PY
+          { echo '```diff'; git diff -- client/vm/assets.json; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Attest the artifacts
+        working-directory: ${{ runner.temp }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm install --no-save --ignore-scripts @actions/attest@3.2.0
+          node --input-type=module -e '
+            import { attestProvenance } from "@actions/attest";
+            import { readdirSync, readFileSync } from "node:fs";
+            const subjects = readdirSync("out").filter(name => name.startsWith("pins-")).flatMap(name => {
+              const pins = JSON.parse(readFileSync("out/" + name, "utf8"));
+              return [pins.base, ...Object.values(pins.agents)];
+            }).map(({ file, sha256 }) => ({ name: file, digest: { sha256 } }));
+            await attestProvenance({ subjects, token: process.env.GH_TOKEN, sigstore: "public-good" });'
+      - name: Upload to the vm-artifacts release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          OUT: ${{ runner.temp }}/out
+        run: |
+          gh release view vm-artifacts > /dev/null 2>&1 ||
+            gh release create vm-artifacts --target "$GITHUB_SHA" --latest=false --title "Bunker artifacts" \
+              --notes "Bunker base and agent closures pinned by client/vm/assets.json, with build provenance attestations."
+          existing=$(gh release view vm-artifacts --json assets -q '.assets[].name')
+          for file in "$OUT"/*.tar.gz; do
+            grep -qxF "${file##*/}" <<< "$existing" || gh release upload vm-artifacts "$file"
+          done
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: assets-json
+          path: client/vm/assets.json

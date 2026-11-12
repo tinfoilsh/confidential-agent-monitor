@@ -49,6 +49,7 @@ const headings: Record<string, [title: string, description: string]> = {
   ],
   request: ["Request", ""],
 };
+const PAIR_ROUTES = ["pair", "pair-bunker"];
 const SECTION_OF: Record<string, string> = {
   connection: "connections",
   request: "activity",
@@ -87,12 +88,14 @@ function Shell() {
   const m = useMonitor();
   const initial = location.hash.slice(1) || "agents";
   const [route, setRoute] = createSignal(initial),
-    [page, setPage] = createSignal(initial === "pair" ? "agents" : initial);
+    [page, setPage] = createSignal(
+      PAIR_ROUTES.includes(initial) ? "agents" : initial,
+    );
   const [mobile, setMobile] = createSignal(false),
     [theme, setTheme] = createSignal(savedTheme());
   const media = matchMedia("(prefers-color-scheme: dark)"),
     [dark, setDark] = createSignal(media.matches);
-  const pairing = () => route() === "pair";
+  const pairing = () => PAIR_ROUTES.includes(route());
   const kind = () => parse(page())[0];
   const section = () => SECTION_OF[kind()] ?? kind();
   const heading = () => headings[kind()] ?? headings[section()];
@@ -179,7 +182,7 @@ function Shell() {
       }
       const next = location.hash.slice(1) || "agents";
       setRoute(next);
-      if (next !== "pair") setPage(next);
+      if (!PAIR_ROUTES.includes(next)) setPage(next);
       setMobile(false);
     };
     const changed = (event: MediaQueryListEvent) => setDark(event.matches);
@@ -339,7 +342,11 @@ function Shell() {
               </Show>
             </main>
             <ApprovalToasts hidden={approvalsListed()} />
-            <PairDialog open={pairing()} close={close} />
+            <PairDialog
+              open={pairing()}
+              bunker={route() === "pair-bunker"}
+              close={close}
+            />
             <DeviceSignInDialog attempt={m.deviceSignIn()} />
             <ConfirmDialog />
           </div>
@@ -424,8 +431,13 @@ function Page(props: { path: string }) {
     </Switch>
   );
 }
-function PairDialog(props: { open: boolean; close: () => void }) {
+function PairDialog(props: {
+  open: boolean;
+  bunker: boolean;
+  close: () => void;
+}) {
   const m = useMonitor();
+  const path = () => (props.bunker ? "#pair-bunker" : "#pair");
   // Keep the contents mounted through the native dialog's exit transition.
   const opened = createMemo(
     (previous: boolean) => props.open || previous,
@@ -442,9 +454,13 @@ function PairDialog(props: { open: boolean; close: () => void }) {
     >
       <header class="dialog-header">
         <div>
-          <h1 id="creation-title">Add a trusted device</h1>
+          <h1 id="creation-title">
+            {props.bunker ? "Add a bunker" : "Add a trusted device"}
+          </h1>
           <p id="creation-description">
-            Paste the SSH public key of a computer that may reach your bunkers.
+            {props.bunker
+              ? "Name the bunker and paste the SSH public key its agent uses."
+              : "Paste the SSH public key of a computer that may reach your bunkers."}
           </p>
         </div>
         <button
@@ -457,12 +473,12 @@ function PairDialog(props: { open: boolean; close: () => void }) {
       </header>
       <div class="dialog-body">
         <Show when={opened()}>
-          <AddAgent />
+          <AddAgent bunker={props.bunker} />
         </Show>
       </div>
-      <Show when={m.message("#pair")}>
+      <Show when={m.message(path())}>
         <p class="dialog-notice" role="status">
-          {m.message("#pair")}
+          {m.message(path())}
         </p>
       </Show>
     </Modal>

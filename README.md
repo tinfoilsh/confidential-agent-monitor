@@ -67,26 +67,45 @@ images should seed the reduced [bunker skill](client/skills/perimeter-sandbox/SK
 which covers only that bunker's discovery, policy, proposals, credentials boundary
 and service usage.
 
-### Local VM
+### Local bunkers
 
-The CLI can launch Claude in a Firecracker VM connected to an existing Perimeter.
+The CLI can launch coding agents in local bunkers connected to an existing Perimeter.
 
 ```sh
-perimeter image build
 perimeter setup
-perimeter launch claude
+perimeter launch claude    # or codex, opencode, pi, shell
 ```
 
-This requires x86_64 Linux, writable `/dev/kvm`, bubblewrap, unprivileged user
-namespaces, OpenSSH, GNU tar, and `mke2fs`. Image builds need Podman or Docker.
-Setup asks for your Perimeter endpoint, owner credentials, and service permissions;
-its defaults reach a local Perimeter, and the passphrase you enter claims a fresh one.
-See `perimeter --help` for stopping, exporting, and deleting VMs.
+Nothing is built locally. The first launch downloads a small base image, and each
+agent downloads the first time it is launched. An agent uses the one Anthropic or
+OpenAI service it supports, or the one named with `--service`; a new bunker is
+granted that service. Agents fetched earlier stay available in every bunker.
 
-Each VM network is restricted to the Perimeter. A bunker reaches another as
-`NAME.sandbox`, where NAME is that bunker's identity; only listeners bound to
-`0.0.0.0` answer. Set Other bunkers to Ask on the dialing bunker, then approve
-each bunker and port the first time it connects.
+`perimeter setup --backend` chooses the isolation. Each bunker's only network is
+its link to the Perimeter.
+
+| Backend                          | Isolation                       | Also requires                                                                         |
+| -------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------- |
+| `firecracker` (default on Linux) | KVM virtual machine             | x86_64 Linux, writable `/dev/kvm`, bubblewrap, `mke2fs` 1.47.1+ with libarchive       |
+| `vfkit` (default on macOS)       | Virtualization.framework VM     | Apple silicon, `mke2fs` 1.47.1+ with libarchive (nixpkgs `e2fsprogs`, not Homebrew's) |
+| `podman`, `docker`               | container with `--network none` | the engine                                                                            |
+| `bwrap`                          | unprivileged namespaces         | Linux, bubblewrap with overlay support, unprivileged user namespaces, `script`        |
+
+All need OpenSSH and GNU tar (`gtar` on macOS). Containers share their engine's
+kernel, and bwrap the host's. Setup asks for your Perimeter endpoint, owner
+credentials, and service permissions; its defaults reach a local Perimeter, and
+the passphrase you enter claims a fresh one. The [daemon](#run-a-perimeter-locally)
+runs setup for you.
+See `perimeter --help` for stopping, exporting, and deleting bunkers.
+
+`dev/vm-artifacts DIR [ARCH...]` builds the base and agents for x86_64 and
+aarch64 and pins them in
+[client/vm/assets.json](client/vm/assets.json); `PERIMETER_ARTIFACTS=DIR` makes
+the CLI use that directory before the files are published.
+
+A bunker reaches another as `NAME.sandbox`, where NAME is that bunker's identity;
+only listeners bound to `0.0.0.0` answer. Set Other bunkers to Ask on the dialing
+bunker, then approve each bunker and port the first time it connects.
 
 ```sh
 perimeter launch shell --name b -- python3 -m http.server 8080 --bind 0.0.0.0
@@ -95,7 +114,19 @@ perimeter launch shell --name a           # then: curl http://b.sandbox:8080
 
 ### Run a Perimeter locally
 
-Start a Perimeter using the Go version in [go.mod](go.mod).
+```sh
+./install.sh --daemon
+```
+
+This builds the checkout with Go and Bun and runs it as a user service on
+`127.0.0.1:8081`, with its state and owner key in `~/.local/share/perimeter/server`.
+It also installs the CLI, pairs this computer as a trusted device and sets up
+bunker launch. Sign in to [the UI](http://127.0.0.1:8081/app/) with the owner
+key. Run it from another checkout to switch the daemon to that code; the previous
+store is kept in `store.prev`. Logs are in `journalctl --user -u perimeter` on
+Linux and `server.log` on macOS.
+
+To run one in the foreground instead, use the Go version in [go.mod](go.mod).
 
 ```sh
 mkdir -p .dev/store

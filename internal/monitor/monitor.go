@@ -189,6 +189,11 @@ func (m *monitor) snapshot() (store.Document, *settings) {
 	return m.store.Doc, m.settings.Load()
 }
 
+func (m *monitor) Unlock(ctx context.Context, key []byte) error {
+	_, err := m.unlock(ctx, key, 0)
+	return err
+}
+
 // unlock reports whether it created the Monitor's state.
 func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (bool, error) {
 	m.writes.Lock()

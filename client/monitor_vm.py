@@ -1,4 +1,4 @@
-"""Linux Firecracker lifecycle. No guest NIC or shared host directories."""
+"""Linux bunkers in Firecracker, vfkit, Podman/Docker or bubblewrap. The Perimeter link is their only network."""
 import argparse
 import base64
 import contextlib
@@ -31,13 +31,31 @@ import uuid
 import zipfile
 
 
-ASSETS = ('Dockerfile', 'guest.py', 'init.sh', 'assets.json')
-# Bump when guest.py, init.sh or the Dockerfile change what a launch relies on.
-IMAGE_VERSION = 3
-# The guest's 127.0.0.1 port and host vsock port that carry its Perimeter link.
+ASSETS = ('guest.py', 'assets.json', 'agents.json')
+BACKENDS = ('firecracker', 'vfkit', 'podman', 'docker', 'bwrap')
+DEFAULT_BACKEND = 'vfkit' if sys.platform == 'darwin' else 'firecracker'
+ARCH = {'arm64': 'aarch64'}.get(platform.machine(), platform.machine())
+TAR = 'gtar' if shutil.which('gtar') else 'tar'
+CACHE = Path.home() / '.local/share/perimeter'
+# A directory of dev/vm-artifacts output to use instead of downloading.
+ARTIFACTS_ENV = 'PERIMETER_ARTIFACTS'
+MAX_ASSET_BYTES = 4 << 30
+DISK_GIB = 8
+# The guest's 127.0.0.1 port that carries its Perimeter link.
 LINK_PORT = 2223
 # These mirror sandbox.BootstrapUser and the Perimeter's wildcard route forward.
 ROUTE_USER, WILDCARD_FORWARD, WILDCARD_OPEN = "sandbox-v2:", "127.0.0.1:1080", "127.0.0.2:*"
+GUEST_CLI = ['python3', '/opt/monitor/perimeter', '--ssh-config', '/home/agent/.config/perimeter/ssh_config']
+GUEST_PATH = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+AGENT_UID = 1000
+READY_SECONDS = 90
+STOP_SECONDS = 10
+# Containers share agents through this engine volume, mounted read-only at /nix.
+AGENT_VOLUME = 'perimeter-agents'
+GUEST_SSHD = ['/usr/sbin/sshd', '-i', '-f', '/etc/ssh/sshd_config.monitor']
+VFKIT_CMDLINE = 'console=hvc0 root=/dev/vda rw init=/sbin/monitor-init panic=1'
+# vfkit requires an initrd; this empty newc archive leaves the kernel to mount root=.
+EMPTY_INITRD = b'070701' + b'00000000' * 4 + b'00000001' + b'00000000' * 6 + b'0000000B' + b'00000000' + b'TRAILER!!!\0\0\0\0'
 
 
 class Error(ValueError):
@@ -106,8 +124,8 @@ def download(url, destination, expected):
     with urllib.request.urlopen(urllib.request.Request(url, method='HEAD'), timeout=20) as response:
         size = int(response.headers.get('Content-Length', '0'))
         ranges = response.headers.get('Accept-Ranges') == 'bytes'
-    if not 0 < size <= 256 << 20:
-        raise Error('VM asset must have a known size of at most 256 MiB')
+    if not 0 < size <= MAX_ASSET_BYTES:
+        raise Error(f'VM asset must have a known size of at most {MAX_ASSET_BYTES >> 30} GiB')
     with destination.open('wb') as output:
         if ranges:
             output.truncate(size)
@@ -148,110 +166,122 @@ def download(url, destination, expected):
         raise Error('VM asset checksum mismatch: ' + destination.name)
 
 
-def build_image(args):
-    if sys.platform != 'linux' or platform.machine() != 'x86_64':
-        raise Error('image building currently requires x86_64 Linux')
-    if not 2 <= args.disk_size <= 128:
-        raise Error('image disk size must be between 2 and 128 GiB')
-    if not re.fullmatch(r'(stable|latest|[0-9]+\.[0-9]+\.[0-9]+)', args.claude_version):
-        raise Error('Claude version must be stable, latest, or a version such as 2.1.0')
-    engine = shutil.which(args.engine) if args.engine else shutil.which('podman') or shutil.which('docker')
-    if not engine:
-        raise Error('image building requires Podman or Docker')
-    destination = Path(args.output).expanduser().resolve()
+def manifest():
+    return json.loads(asset('assets.json'))
+
+
+def fetch(entry):
+    """Return the verified local copy of a pinned asset, fetching it once."""
+    path = CACHE / 'artifacts' / entry['sha256']
+    if path.exists():
+        return path
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    temporary = path.with_name(path.name + '.partial')
+    local = os.environ.get(ARTIFACTS_ENV)
     try:
-        # Only an image in an older format is replaced, and only once the new one is built.
-        outdated = json.loads((destination / 'image.json').read_text())['version'] < IMAGE_VERSION
-    except (OSError, ValueError, KeyError, TypeError):
-        outdated = False
-    if destination.exists() and not outdated:
-        raise Error('image destination already exists; build into a new directory to update it')
-    destination.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    with tempfile.TemporaryDirectory(prefix='.perimeter-build-', dir=destination.parent) as temporary:
-        build = Path(temporary)
-        output, context, disks = build / 'image', build / 'context', build / 'disks'
-        for path in (output, context, disks):
-            path.mkdir(mode=0o700)
-        manifest = json.loads(asset('assets.json'))
-        for name, override in [('vmlinux', args.kernel), ('firecracker', args.firecracker)]:
-            if override:
-                shutil.copyfile(Path(override).expanduser().resolve(), output / name)
-            elif name == 'vmlinux':
-                download(manifest[name]['url'], output / name, manifest[name]['sha256'])
-            else:
-                archive = build / 'firecracker.tgz'
-                download(manifest[name]['url'], archive, manifest[name]['sha256'])
-                with tarfile.open(archive) as source:
-                    member = source.getmember(manifest[name]['member'])
-                    if not member.isfile():
-                        raise Error('Firecracker release member is not a regular file')
-                    with source.extractfile(member) as binary, (output / name).open('wb') as target:
-                        shutil.copyfileobj(binary, target)
-        (output / 'firecracker').chmod(0o700)
-        for name in ASSETS:
-            (context / name).write_bytes(asset(name))
-        if args.claude_binary:
-            binary = Path(args.claude_binary).expanduser().resolve()
-            with binary.open('rb') as stream:
-                if stream.read(4) != b'\x7fELF':
-                    raise Error('--claude-binary must be a native Linux executable')
-            shutil.copyfile(binary, context / 'claude-local')
+        if local and 'file' in entry:
+            shutil.copyfile(Path(local) / entry['file'], temporary)
+            if digest(temporary) != entry['sha256']:
+                raise Error('VM asset checksum mismatch: ' + entry['file'])
         else:
-            (context / 'claude-local').touch()
-        tag = 'localhost/perimeter-image:' + build.name.removeprefix('.')
-        container = None
-        try:
-            print('Building the Perimeter guest image...', file=sys.stderr, flush=True)
-            run([engine, 'build', '--tag', tag, '--build-arg', 'CLAUDE_VERSION=' + args.claude_version,
-                 str(context)], timeout=1800)
-            container = run([engine, 'create', tag, '/bin/true'], capture_output=True, timeout=30).stdout.decode().strip()
-            if not re.fullmatch('[0-9a-f]{12,64}', container):
-                raise Error('container engine returned an invalid container ID')
-            producer = subprocess.Popen([engine, 'export', container], env=environment(), stdout=subprocess.PIPE)
-            try:
-                run([engine, 'run', '--rm', '-i', '--network=none', '-v', str(disks) + ':/out:Z', tag,
-                     'sh', '-ec', 'mkdir /tmp/fs; tar -xpf - -C /tmp/fs; '
-                     'truncate -s "$1"G /out/rootfs.ext4; '
-                     'mke2fs -q -F -t ext4 -O ^orphan_file,^metadata_csum_seed -d /tmp/fs /out/rootfs.ext4; '
-                     'chmod 644 /out/rootfs.ext4', 'sh', str(args.disk_size)], stdin=producer.stdout, timeout=1200)
-                producer.stdout.close()
-                if producer.wait(timeout=10):
-                    raise Error('container export failed')
-            finally:
-                producer.stdout.close()
-                if producer.poll() is None:
-                    producer.kill()
-                producer.wait()
-            run(['cp', '--reflink=auto', '--sparse=always', str(disks / 'rootfs.ext4'), str(output / 'rootfs.ext4')], timeout=300)
-            (output / 'rootfs.ext4').chmod(0o600)
-            info = {'version': IMAGE_VERSION, 'architecture': platform.machine(),
-                    'claude_version': 'local' if args.claude_binary else args.claude_version,
-                    'sha256': {name: digest(output / name) for name in ('firecracker', 'vmlinux', 'rootfs.ext4')}}
-            private(output / 'image.json', json.dumps(info, indent=2).encode() + b'\n')
-            preflight(output)
-            if outdated:
-                shutil.rmtree(destination)
-            os.rename(output, destination)
-        finally:
-            if container:
-                subprocess.run([engine, 'rm', '-f', container], env=environment(), capture_output=True, timeout=30)
-            subprocess.run([engine, 'rmi', tag], env=environment(), capture_output=True, timeout=30)
-    print(f'Built VM image at {destination}')
-    return 0
+            url = entry.get('url') or manifest()['base_url'] + entry['file']
+            print('Downloading ' + url.rsplit('/', 1)[-1] + '...', file=sys.stderr, flush=True)
+            download(url, temporary, entry['sha256'])
+        os.replace(temporary, path)
+    finally:
+        temporary.unlink(missing_ok=True)
+    return path
 
 
-def image_info(directory):
-    directory = Path(directory).expanduser().resolve()
-    try:
-        info = json.loads((directory / 'image.json').read_text())
-    except (OSError, ValueError) as error:
-        raise Error(f'no valid VM image at {directory}; run perimeter image build') from error
-    if info.get('version') != IMAGE_VERSION or info.get('architecture') != platform.machine():
-        raise Error(f'VM image at {directory} is outdated or for another architecture; run perimeter image build --output {directory}')
-    for name in ('firecracker', 'vmlinux', 'rootfs.ext4'):
-        if not (directory / name).is_file() or not re.fullmatch('[0-9a-f]{64}', info.get('sha256', {}).get(name, '')):
-            raise Error(f'VM image is missing {name} or its checksum')
-    return directory, info
+def derived(entry, suffix, build):
+    """Cache build(asset, temporary) beside the pinned asset it comes from."""
+    path = CACHE / 'artifacts' / (entry['sha256'] + suffix)
+    if not path.exists():
+        source = fetch(entry)
+        temporary = path.with_name(path.name + '.partial')
+        shutil.rmtree(temporary, ignore_errors=True)
+        temporary.unlink(missing_ok=True)
+        build(source, temporary)
+        os.rename(temporary, path)
+    return path
+
+
+def extract_firecracker(source, target):
+    with tarfile.open(source) as archive:
+        member = archive.getmember(manifest()['firecracker']['member'])
+        if not member.isfile():
+            raise Error('Firecracker release member is not a regular file')
+        with archive.extractfile(member) as binary:
+            private(target, binary.read())
+    target.chmod(0o700)
+
+
+def untar(source, target):
+    target.mkdir(mode=0o700)
+    run(['tar', '-xzpf', str(source), '-C', str(target)], capture_output=True, timeout=1200)
+
+
+def ext4(source, path):
+    """Write a guest disk holding source's tree, a directory or tarball."""
+    if Path(source).is_dir():
+        sizes = [entry.lstat().st_size for entry in Path(source).rglob('*')]
+    else:
+        with tarfile.open(source) as archive:
+            sizes = [member.size for member in archive]
+    size = sum(-(-length // 4096) * 4096 for length in sizes) * 5 // 4 + (64 << 20)
+    with path.open('wb') as stream:
+        os.fchmod(stream.fileno(), 0o600)
+        stream.truncate(size)
+    run(['mke2fs', '-q', '-t', 'ext4', '-F', '-b', '4096', '-N', str(len(sizes) + 1024),
+         '-O', '^orphan_file,^metadata_csum_seed', '-d', str(source), str(path)], capture_output=True, timeout=1200)
+
+
+def fetch_agents(names):
+    """Fetch the named agents; return the pins of every agent fetched so far."""
+    pins = manifest()[ARCH]['agents']
+    for name in names:
+        fetch(pins[name])
+    return {name: pin for name, pin in pins.items() if (CACHE / 'artifacts' / pin['sha256']).exists()}
+
+
+def agent_store(agents):
+    """Unpack agents into the host store bwrap bunkers mount read-only."""
+    root = CACHE / 'agents'
+    store = root / 'nix/store'
+    store.mkdir(parents=True, exist_ok=True)
+    with launch_lock(root.with_suffix('.lock')):
+        for name, pin in agents.items():
+            marker = root / pin['sha256']
+            if not marker.exists():
+                print(f'Unpacking {name}...', file=sys.stderr, flush=True)
+                run(['tar', '-xzpf', str(fetch(pin)), '-C', str(root), '--skip-old-files'],
+                    capture_output=True, timeout=1200)
+                marker.touch()
+    return store
+
+
+def agent_disks(agents):
+    """Each agent as its own read-only guest disk, mounted under /nix/agents and linked into /nix/store."""
+    with launch_lock(CACHE / 'agents.lock'):
+        return [derived(pin, '.ext4', ext4) for pin in agents.values()]
+
+
+def agent_volume(engine, agents):
+    """Unpack agents into AGENT_VOLUME, recording each in a host marker per engine."""
+    markers = CACHE / 'volumes'
+    markers.mkdir(parents=True, exist_ok=True, mode=0o700)
+    with launch_lock(CACHE / 'agents.lock'):
+        if subprocess.run([engine, 'volume', 'inspect', AGENT_VOLUME], env=environment(), capture_output=True, timeout=30).returncode:
+            for marker in markers.glob(engine + '-*'):
+                marker.unlink()
+        for name, pin in agents.items():
+            marker = markers / f'{engine}-{pin["sha256"]}'
+            if not marker.exists():
+                print(f'Unpacking {name}...', file=sys.stderr, flush=True)
+                with fetch(pin).open('rb') as closure:
+                    run([engine, 'run', '--rm', '-i', '--network', 'none', '-v', f'{AGENT_VOLUME}:/nix', base_image(engine),
+                         'tar', '-xzC', '/'], stdin=closure, capture_output=True, timeout=1200)
+                marker.touch()
 
 
 def sandbox(binary, mounts=()):
@@ -264,31 +294,19 @@ def sandbox(binary, mounts=()):
             *mounts, '--', '/firecracker']
 
 
-def preflight(image):
-    if sys.platform != 'linux' or platform.machine() != 'x86_64':
-        raise Error('Perimeter VMs currently require x86_64 Linux with KVM')
-    if sys.version_info < (3, 11):
-        raise Error('VM launch requires Python 3.11 or newer')
-    for executable in ('ssh', 'ssh-keygen', 'mke2fs', 'tar', 'cp'):
+def require(*executables):
+    for executable in executables:
         if not shutil.which(executable):
-            raise Error(f'{executable} is required for VM launch')
-    import fcntl
-    try:
-        with open('/dev/kvm', 'rb+') as kvm:
-            if fcntl.ioctl(kvm, 0xAE00, 0) != 12:
-                raise Error('unsupported KVM API version')
-    except OSError as error:
-        raise Error('VM launch needs read/write access to /dev/kvm') from error
-    directory, info = image_info(image)
-    for name in ('firecracker', 'vmlinux'):
-        if digest(directory / name) != info['sha256'][name]:
-            raise Error(f'{name} checksum changed; rebuild the VM image')
-    result = subprocess.run(sandbox(directory / 'firecracker') + ['--version'], env=environment(),
-                            capture_output=True, timeout=15)
-    if result.returncode:
-        raise Error('Firecracker sandbox failed; bubblewrap needs unprivileged user namespaces and a static Firecracker binary: '
-                    + result.stderr.decode(errors='replace')[-2000:])
-    return directory
+            raise Error(f'{executable} is required for this bunker backend')
+
+
+def preflight(backend):
+    if sys.version_info < (3, 11):
+        raise Error('bunker launch requires Python 3.11 or newer')
+    if 'base' not in manifest().get(ARCH, {}):
+        raise Error(f'no bunker base is pinned for {ARCH}; build one with dev/vm-artifacts')
+    require('ssh', 'ssh-keygen', TAR, 'cp')
+    BUNKERS[backend].preflight(backend)
 
 
 def keypair(path):
@@ -301,62 +319,53 @@ def keypair(path):
     return run(['ssh-keygen', '-y', '-f', str(path)], capture_output=True, timeout=15).stdout.strip()
 
 
-def prepare_disk(directory, image):
+def prepare_disk(directory, base, gib):
     disk = directory / 'rootfs.ext4'
     if disk.exists():
         info = disk.lstat()
         if not stat.S_ISREG(info.st_mode) or info.st_uid != os.getuid() or info.st_mode & 0o077:
             raise Error('VM disk must be an owner-only regular file')
         return
-    image, info = image_info(image)
-    if digest(image / 'rootfs.ext4') != info['sha256']['rootfs.ext4']:
-        raise Error('rootfs image checksum changed; rebuild the VM image')
     temporary = directory / 'rootfs.partial'
     try:
-        run(['cp', '--reflink=auto', '--sparse=always', str(image / 'rootfs.ext4'), str(temporary)], timeout=300)
-        temporary.chmod(0o600)
+        with temporary.open('wb') as stream:
+            os.fchmod(stream.fileno(), 0o600)
+            stream.truncate(gib << 30)
+        # Reading a tarball keeps its owners; mke2fs gained this in e2fsprogs 1.47.1.
+        run(['mke2fs', '-q', '-t', 'ext4', '-O', '^orphan_file,^metadata_csum_seed', '-d', str(base), str(temporary)],
+            capture_output=True, timeout=300)
         os.replace(temporary, disk)
     finally:
         temporary.unlink(missing_ok=True)
 
 
-def process_identity(pid):
-    try:
-        # comm may contain spaces and parentheses. Fields after the final ')'
-        # start at field 3; starttime is field 22.
-        fields = Path(f'/proc/{pid}/stat').read_text().rsplit(')', 1)[1].split()
-        if fields[0] == 'Z':
-            return None
-        return [Path('/proc/sys/kernel/random/boot_id').read_text().strip(), fields[19]]
-    except (FileNotFoundError, ProcessLookupError):
-        return None
-
-
 def ensure_stopped(directory):
-    try:
-        state = json.loads((Path(directory) / 'runtime.json').read_text())
-    except FileNotFoundError:
-        return
+    """Return the bunker's run lock, which a launch's VMM inherits and holds until it exits."""
+    lock = os.fdopen(os.open(Path(directory) / 'running.lock', os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o600), 'w')
     deadline = time.monotonic() + 5
-    while state.get('process') and process_identity(state['pid']) == state['process']:
-        if time.monotonic() > deadline:
-            raise Error('the previous VM process is still shutting down; retry shortly')
-        time.sleep(0.1)
+    while True:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return lock
+        except BlockingIOError:
+            if time.monotonic() > deadline:
+                lock.close()
+                raise Error('the previous VM process is still shutting down; retry shortly') from None
+            time.sleep(0.1)
 
 
-def seed_image(directory, runtime, profile, workspace, source, fresh):
+def write_seed(directory, seed, profile, workspace, source, fresh, agents):
     admin = keypair(directory / 'admin')
     host = keypair(directory / 'host_key')
     private(directory / 'known_hosts', b'monitor-vm ' + host + b'\n')
-    with tempfile.TemporaryDirectory(prefix='seed-', dir=runtime) as temporary:
-        seed = Path(temporary)
-        private(seed / 'authorized_keys', admin + b'\n')
-        private(seed / 'host_key', (directory / 'host_key').read_bytes())
-        private(seed / 'id', (directory / 'id').read_bytes())
-        private(seed / 'known_hosts', b'monitor-server ' + (Path(profile['root']) / 'host_key').read_bytes().strip() + b'\n')
-        private(seed / 'perimeter', bundle(source))
-        # launch_vm names each instance directory after its identity.
-        private(seed / 'ssh_config', f'''Host perimeter-route
+    seed.mkdir(mode=0o700)
+    private(seed / 'authorized_keys', admin + b'\n')
+    private(seed / 'host_key', (directory / 'host_key').read_bytes())
+    private(seed / 'id', (directory / 'id').read_bytes())
+    private(seed / 'known_hosts', b'monitor-server ' + (Path(profile['root']) / 'host_key').read_bytes().strip() + b'\n')
+    private(seed / 'perimeter', bundle(source))
+    # launch_vm names each instance directory after its identity.
+    private(seed / 'ssh_config', f'''Host perimeter-route
   User {ROUTE_USER}{directory.name}
   RemoteForward {WILDCARD_FORWARD}
   PermitRemoteOpen {WILDCARD_OPEN}
@@ -375,22 +384,17 @@ Host perimeter perimeter-route
   UserKnownHostsFile /home/agent/.config/perimeter/known_hosts
   GlobalKnownHostsFile /dev/null
 '''.encode())
-        archive = seed / 'workspace.tar'
-        if fresh:
-            # GNU tar preserves symlinks without following them. Project files
-            # are data only; nothing from the project runs on the host.
-            run(['tar', '-cf', str(archive), '-C', str(workspace), '--exclude-vcs-ignores',
-                 '--exclude=.env', '--exclude=.env.*', '--exclude=node_modules', '--exclude=.venv', '--', '.'], timeout=300)
-        else:
-            with tarfile.open(archive, 'w'):
-                pass
-        size = max(64 << 20, sum(p.stat().st_size for p in seed.iterdir()) * 2 + (32 << 20))
-        path = runtime / 'seed.ext4'
-        with path.open('wb') as stream:
-            os.fchmod(stream.fileno(), 0o600)
-            stream.truncate((size + 4095) // 4096 * 4096)
-        run(['mke2fs', '-q', '-t', 'ext4', '-F', '-b', '4096', '-O', '^orphan_file,^metadata_csum_seed',
-             '-d', str(seed), str(path)], capture_output=True, timeout=120)
+    archive = seed / 'workspace.tar'
+    if fresh:
+        # GNU tar preserves symlinks without following them. Project files
+        # are data only; nothing from the project runs on the host.
+        run([TAR, '-cf', str(archive), '-C', str(workspace), '--exclude-vcs-ignores',
+             '--exclude=.env', '--exclude=.env.*', '--exclude=node_modules', '--exclude=.venv', '--', '.'], timeout=300)
+    else:
+        with tarfile.open(archive, 'w'):
+            pass
+    private(seed / 'guest.py', asset('guest.py'))
+    private(seed / 'agents.json', json.dumps({name: pin['path'] for name, pin in agents.items()}).encode())
 
 
 def connect_vsock(path, port=22, timeout=5):
@@ -453,193 +457,401 @@ def relay(left, right):
                     del streams[source]
 
 
-class VM:
-    def __init__(self, profile, directory, workspace, source, endpoint):
+def runtime_directory(directory):
+    # Containers bind this fixed path, and a short one fits the Unix socket path limit.
+    parent = Path('/tmp') / f'perimeter-{os.getuid()}'
+    with contextlib.suppress(FileExistsError):
+        parent.mkdir(mode=0o700)
+    info = parent.lstat()
+    if not stat.S_ISDIR(info.st_mode) or info.st_uid != os.getuid() or info.st_mode & 0o077:
+        raise Error(f'{parent} must be an owner-only directory')
+    return parent / hashlib.sha256(str(directory).encode()).hexdigest()[:16]
+
+
+class Bunker:
+    """One launch: the seed, the Perimeter link and the stop control. Backends boot and enter the guest."""
+    link_name = 'link'
+
+    def __init__(self, profile, directory, workspace, source, endpoint, agents):
         self.profile, self.directory = profile, Path(directory)
         self.workspace, self.source = Path(workspace), program(source)
-        self.endpoint = endpoint
-        self.process = self.control = self.link = self.temporary = None
-        self.control_thread = self.link_thread = self.log_thread = None
+        self.endpoint, self.agents = endpoint, agents
+        self.runtime = runtime_directory(self.directory)
+        self.process = self.control = self.link = self.log_thread = self.running = None
+        self.threads = []
         self.boot_log = bytearray()
         self.stopping = threading.Event()
 
     def __enter__(self):
         try:
-            image = preflight(self.profile['image'])
-            ensure_stopped(self.directory)
-            self.temporary = tempfile.TemporaryDirectory(prefix='perimeter-vm-')
-            self.runtime = Path(self.temporary.name)
+            self.running = ensure_stopped(self.directory)
+            shutil.rmtree(self.runtime, ignore_errors=True)
+            self.runtime.mkdir(mode=0o700)
             fresh = not (self.directory / 'initialized').exists()
-            prepare_disk(self.directory, image)
-            seed_image(self.directory, self.runtime, self.profile, self.workspace, self.source, fresh)
-            config = {
-                'boot-source': {'kernel_image_path': '/kernel', 'boot_args':
-                    'console=ttyS0 reboot=k panic=1 pci=off root=/dev/vda rw init=/sbin/monitor-init'},
-                'drives': [
-                    {'drive_id': 'rootfs', 'path_on_host': '/rootfs.ext4', 'is_root_device': True, 'is_read_only': False,
-                     'cache_type': 'Writeback'},
-                    {'drive_id': 'seed', 'path_on_host': '/seed.ext4', 'is_root_device': False, 'is_read_only': True}],
-                'machine-config': {'vcpu_count': self.profile['cpus'], 'mem_size_mib': self.profile['memory']},
-                'network-interfaces': [],
-                'vsock': {'guest_cid': 3, 'uds_path': '/run/monitor/vsock'},
-            }
-            private(self.runtime / 'firecracker.json', json.dumps(config).encode())
-            mounts = ['--ro-bind', str(image / 'vmlinux'), '/kernel',
-                      '--bind', str(self.directory / 'rootfs.ext4'), '/rootfs.ext4',
-                      '--ro-bind', str(self.runtime / 'seed.ext4'), '/seed.ext4',
-                      '--bind', str(self.runtime), '/run/monitor']
+            write_seed(self.directory, self.runtime / 'seed', self.profile, self.workspace, self.source, fresh, self.agents)
             # Socket path is fixed and owned by this launch. No saved PID is ever
             # signaled, and no guest data determines a host command or filename.
-            self.control = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            self.control.bind(str(self.runtime / 'control.sock'))
-            self.control.listen(4)
-            self.control.settimeout(0.2)
-            self.control_thread = threading.Thread(target=self.control_loop, daemon=True)
-            self.control_thread.start()
-            if self.endpoint:
-                # Firecracker delivers guest connections to host vsock port LINK_PORT here.
-                self.link = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-                self.link.bind(str(self.runtime / f'vsock_{LINK_PORT}'))
-                self.link.listen(32)
-                self.link.settimeout(0.2)
-                self.link_thread = threading.Thread(target=self.link_loop, daemon=True)
-                self.link_thread.start()
-            self.process = subprocess.Popen(sandbox(image / 'firecracker', mounts) + [
-                '--api-sock', '/run/monitor/api.sock', '--config-file', '/run/monitor/firecracker.json'],
-                env=environment(), stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            private(self.directory / 'runtime.json', json.dumps({
-                'control': str(self.runtime / 'control.sock'), 'pid': self.process.pid,
-                'process': process_identity(self.process.pid)}).encode())
-            self.log_thread = threading.Thread(target=self.read_log, daemon=True)
-            self.log_thread.start()
-            self.wait_ready()
+            self.control = self.serve('control.sock', 4, self.control_client)
+            if self.endpoint and self.link_name:
+                self.link = self.serve(self.link_name, 32, self.forward)
+            self.boot()
+            if self.process:
+                self.log_thread = threading.Thread(target=self.read_log, daemon=True)
+                self.log_thread.start()
+            private(self.directory / 'runtime.json', json.dumps({'control': str(self.runtime / 'control.sock')}).encode())
+            self.ready()
             private(self.directory / 'initialized', b'1\n')
             return self
         except BaseException:
             self.close()
             raise
 
+    def serve(self, name, limit, handle):
+        server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        server.bind(str(self.runtime / name))
+        server.listen(limit)
+        server.settimeout(0.2)
+        slots = threading.BoundedSemaphore(limit)
+
+        def client(stream):
+            try:
+                with stream:
+                    handle(stream)
+            except OSError:
+                pass
+            finally:
+                slots.release()
+
+        def accept():
+            while not self.stopping.is_set():
+                try:
+                    stream, _ = server.accept()
+                except TimeoutError:
+                    continue
+                except OSError:
+                    return
+                if not slots.acquire(blocking=False):
+                    stream.close()
+                    continue
+                threading.Thread(target=client, args=(stream,), daemon=True).start()
+
+        thread = threading.Thread(target=accept, daemon=True)
+        thread.start()
+        self.threads.append(thread)
+        return server
+
+    def control_client(self, stream):
+        stream.settimeout(1)
+        if stream.recv(16) == b'stop\n':
+            self.stopping.set()
+            stream.sendall(b'ok\n')
+
+    def forward(self, stream):
+        relay(stream, socket.create_connection(self.endpoint, timeout=10))
+
     def read_log(self):
         for block in iter(lambda: self.process.stdout.read(4096), b''):
             self.boot_log.extend(block)
             del self.boot_log[:-65536]
 
-    def control_loop(self):
-        while not self.stopping.is_set():
-            try:
-                client, _ = self.control.accept()
-            except TimeoutError:
-                continue
-            except OSError:
-                return
-            with client:
-                client.settimeout(1)
-                with contextlib.suppress(OSError):
-                    if client.recv(16) == b'stop\n':
-                        self.stopping.set()
-                        client.sendall(b'ok\n')
-
-    def link_loop(self):
-        slots = threading.BoundedSemaphore(64)
-        while not self.stopping.is_set():
-            try:
-                client, _ = self.link.accept()
-            except TimeoutError:
-                continue
-            except OSError:
-                return
-            if not slots.acquire(blocking=False):
-                client.close()
-                continue
-            threading.Thread(target=self.forward, args=(client, slots), daemon=True).start()
-
-    def forward(self, client, slots):
-        try:
-            with client:
-                relay(client, socket.create_connection(self.endpoint, timeout=10))
-        except OSError:
-            pass
-        finally:
-            slots.release()
-
     def check(self):
         if self.stopping.is_set():
-            raise Error('VM stopped by perimeter stop')
-        if self.process.poll() is not None:
-            raise Error('Firecracker exited; the VM disk was retained. Boot log: ' +
-                        bytes(self.boot_log[-4000:]).decode(errors='replace'))
+            raise Error('bunker stopped by perimeter stop')
+        if self.process and self.process.poll() is not None:
+            raise Error(f'the {self.profile.get("backend", "firecracker")} bunker exited; its disk was retained. Log: '
+                        + bytes(self.boot_log[-4000:]).decode(errors='replace'))
 
-    def ssh(self):
-        transport = shlex.join([sys.executable, str(self.source), '_vm-connect', str(self.runtime / 'vsock')]).replace('%', '%%')
-        return ['ssh', '-F', '/dev/null', '-o', 'BatchMode=yes', '-o', 'IdentitiesOnly=yes',
-                '-o', 'IdentityAgent=none', '-o', 'ForwardAgent=no', '-o', 'ClearAllForwardings=yes',
-                '-o', 'StrictHostKeyChecking=yes', '-o', 'GlobalKnownHostsFile=/dev/null',
-                '-o', 'UserKnownHostsFile="' + str(self.directory / 'known_hosts').replace('\\', '\\\\').replace('"', '\\"') + '"',
-                '-o', 'HostKeyAlias=monitor-vm', '-o', 'ConnectTimeout=5', '-o', 'LogLevel=ERROR',
-                '-o', 'ServerAliveInterval=10', '-o', 'ServerAliveCountMax=3',
-                '-o', 'ProxyCommand=' + transport, '-i', str(self.directory / 'admin')]
+    def ready(self):
+        pass
 
-    def wait_ready(self):
-        deadline = time.monotonic() + 90
-        while time.monotonic() < deadline:
-            self.check()
-            try:
-                with connect_vsock(self.runtime / 'vsock', timeout=1):
-                    pass
-                probe = subprocess.run(self.ssh() + ['agent@monitor-vm', 'true'], env=environment(),
-                                       capture_output=True, timeout=7)
-                if probe.returncode == 0:
-                    return
-            except (OSError, Error, subprocess.TimeoutExpired):
-                pass
-            time.sleep(0.2)
-        raise Error('VM boot timed out; disk retained. Boot log: ' + bytes(self.boot_log[-4000:]).decode(errors='replace'))
-
-    def agent(self, name, arguments, mcp=False):
-        command = ['python3', '/opt/monitor/perimeter', '--ssh-config', '/home/agent/.config/perimeter/ssh_config']
-        if name == 'shell':
-            command += ['run', '--', *arguments] if arguments else ['shell']
-        else:
-            command += ['_agent', '--connection', self.profile['connection'], *(['--mcp'] if mcp else []), '--', *arguments]
-        return self.ssh() + (['-t'] if sys.stdin.isatty() else []) + ['agent@monitor-vm', 'cd /workspace && exec ' + shlex.join(command)]
+    def halt(self):
+        pass
 
     def close(self):
         self.stopping.set()
         if self.process:
             if self.process.poll() is None:
-                with contextlib.suppress(OSError, http.client.HTTPException):
-                    with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as stream:
-                        stream.settimeout(2)
-                        stream.connect(str(self.runtime / 'api.sock'))
-                        connection = http.client.HTTPConnection('localhost', timeout=2)
-                        connection.sock = stream
-                        try:
-                            connection.request('PUT', '/actions', json.dumps({'action_type': 'SendCtrlAltDel'}), {'Content-Type': 'application/json'})
-                            connection.getresponse().read()
-                        finally:
-                            connection.close()
+                self.halt()
                 try:
-                    self.process.wait(timeout=10)
+                    self.process.wait(timeout=STOP_SECONDS)
                 except subprocess.TimeoutExpired:
                     self.process.kill()
                     self.process.wait(timeout=5)
             if self.log_thread:
                 self.log_thread.join(timeout=1)
             self.process.stdout.close()
-        if self.link:
-            self.link.close()
-            if self.link_thread:
-                self.link_thread.join(timeout=2)
+        for server in (self.link, self.control):
+            if server:
+                server.close()
+        for thread in self.threads:
+            thread.join(timeout=2)
         if self.control:
-            self.control.close()
-            if self.control_thread:
-                self.control_thread.join(timeout=2)
             (self.directory / 'runtime.json').unlink(missing_ok=True)
-        if self.temporary:
-            self.temporary.cleanup()
+        shutil.rmtree(self.runtime, ignore_errors=True)
+        if self.running:
+            self.running.close()
 
     def __exit__(self, *_):
         self.close()
+
+    @staticmethod
+    def remove(profile, directory):
+        pass
+
+
+class Guest(Bunker):
+    """Reached through the guest's sshd. The master connection carries the Perimeter link as a remote forward."""
+    link_name = None
+
+    def ssh(self):
+        transport = shlex.join(self.transport()).replace('%', '%%')
+        return ['ssh', '-F', '/dev/null', '-o', 'BatchMode=yes', '-o', 'IdentitiesOnly=yes',
+                '-o', 'IdentityAgent=none', '-o', 'ForwardAgent=no',
+                '-o', 'StrictHostKeyChecking=yes', '-o', 'GlobalKnownHostsFile=/dev/null',
+                '-o', 'UserKnownHostsFile="' + str(self.directory / 'known_hosts').replace('\\', '\\\\').replace('"', '\\"') + '"',
+                '-o', 'HostKeyAlias=monitor-vm', '-o', 'ConnectTimeout=5', '-o', 'LogLevel=ERROR',
+                '-o', 'ServerAliveInterval=10', '-o', 'ServerAliveCountMax=3',
+                '-o', 'ProxyCommand=' + transport, '-S', str(self.runtime / 'ssh.ctl'), '-i', str(self.directory / 'admin')]
+
+    def ready(self):
+        master = self.ssh() + ['-M', '-fN']
+        if self.endpoint:
+            host, port = self.endpoint
+            # -f returns only once the guest listens on LINK_PORT.
+            master += ['-o', 'ExitOnForwardFailure=yes', '-R', f'127.0.0.1:{LINK_PORT}:' + (f'[{host}]' if ':' in host else host) + f':{port}']
+        log = self.runtime / 'ssh.log'
+        deadline = time.monotonic() + READY_SECONDS
+        with log.open('ab') as errors:
+            while time.monotonic() < deadline:
+                self.check()
+                with contextlib.suppress(subprocess.TimeoutExpired):
+                    if subprocess.run(master + ['agent@monitor-vm'], env=environment(), stdin=subprocess.DEVNULL,
+                                      stdout=subprocess.DEVNULL, stderr=errors, timeout=15).returncode == 0:
+                        return
+                time.sleep(0.2)
+        raise Error('bunker start timed out; disk retained. Log: '
+                    + (bytes(self.boot_log[-4000:]) + log.read_bytes()[-2000:]).decode(errors='replace'))
+
+    def exec(self, argv, tty):
+        return self.ssh() + ['-o', 'ClearAllForwardings=yes'] + (['-t'] if tty else []) + [
+            'agent@monitor-vm', 'cd /workspace && exec ' + shlex.join(argv)]
+
+
+class Firecracker(Guest):
+    """No guest NIC or shared host directories; the guest's sshd is reached over Firecracker's vsock socket."""
+
+    @staticmethod
+    def preflight(_):
+        if sys.platform != 'linux' or ARCH != 'x86_64':
+            raise Error('Firecracker bunkers require x86_64 Linux')
+        require('bwrap', 'mke2fs')
+        try:
+            with open('/dev/kvm', 'rb+') as kvm:
+                if fcntl.ioctl(kvm, 0xAE00, 0) != 12:
+                    raise Error('unsupported KVM API version')
+        except OSError as error:
+            raise Error('Firecracker bunkers need read/write access to /dev/kvm') from error
+        result = subprocess.run(sandbox(derived(manifest()['firecracker'], '.bin', extract_firecracker)) + ['--version'],
+                                env=environment(), capture_output=True, timeout=15)
+        if result.returncode:
+            raise Error('Firecracker sandbox failed; bubblewrap needs unprivileged user namespaces and a static Firecracker binary: '
+                        + result.stderr.decode(errors='replace')[-2000:])
+
+    def boot(self):
+        assets = manifest()
+        prepare_disk(self.directory, fetch(assets[ARCH]['base']), self.profile.get('disk', DISK_GIB))
+        ext4(self.runtime / 'seed', self.runtime / 'seed.ext4')
+        drives = [
+            {'drive_id': 'rootfs', 'path_on_host': '/rootfs.ext4', 'is_root_device': True, 'is_read_only': False,
+             'cache_type': 'Writeback'},
+            {'drive_id': 'seed', 'path_on_host': '/seed.ext4', 'is_root_device': False, 'is_read_only': True}]
+        mounts = ['--ro-bind', str(fetch(assets[ARCH]['kernel'])), '/kernel',
+                  '--bind', str(self.directory / 'rootfs.ext4'), '/rootfs.ext4',
+                  '--ro-bind', str(self.runtime / 'seed.ext4'), '/seed.ext4',
+                  '--bind', str(self.runtime), '/run/monitor']
+        for index, disk in enumerate(agent_disks(self.agents)):
+            drives.append({'drive_id': f'agent{index}', 'path_on_host': f'/agent{index}.ext4', 'is_root_device': False, 'is_read_only': True})
+            mounts += ['--ro-bind', str(disk), f'/agent{index}.ext4']
+        config = {
+            'boot-source': {'kernel_image_path': '/kernel', 'boot_args':
+                # i8042.nopnp would hide the keyboard that SendCtrlAltDel needs.
+                'console=ttyS0 reboot=k panic=1 pci=off i8042.noaux i8042.nomux i8042.dumbkbd '
+                'root=/dev/vda rw init=/sbin/monitor-init'},
+            'drives': drives,
+            'machine-config': {'vcpu_count': self.profile['cpus'], 'mem_size_mib': self.profile['memory']},
+            'network-interfaces': [],
+            'vsock': {'guest_cid': 3, 'uds_path': '/run/monitor/vsock'},
+        }
+        private(self.runtime / 'firecracker.json', json.dumps(config).encode())
+        self.process = subprocess.Popen(sandbox(derived(assets['firecracker'], '.bin', extract_firecracker), mounts) + [
+            '--api-sock', '/run/monitor/api.sock', '--config-file', '/run/monitor/firecracker.json'],
+            env=environment(), stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            pass_fds=(self.running.fileno(),))
+
+    def transport(self):
+        return [sys.executable, str(self.source), '_vm-connect', str(self.runtime / 'vsock')]
+
+    def halt(self):
+        with contextlib.suppress(OSError, http.client.HTTPException):
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as stream:
+                stream.settimeout(2)
+                stream.connect(str(self.runtime / 'api.sock'))
+                connection = http.client.HTTPConnection('localhost', timeout=2)
+                connection.sock = stream
+                try:
+                    connection.request('PUT', '/actions', json.dumps({'action_type': 'SendCtrlAltDel'}), {'Content-Type': 'application/json'})
+                    connection.getresponse().read()
+                finally:
+                    connection.close()
+
+
+class Container(Guest):
+    """--network none. The container layer is the bunker's disk; the seed, agents and sshd go through the engine."""
+
+    @staticmethod
+    def preflight(backend):
+        require(backend)
+
+    def __init__(self, *args):
+        super().__init__(*args)
+        self.engine = self.profile['backend']
+        self.name = container_name(self.profile, self.directory)
+
+    def inspect(self, field):
+        result = subprocess.run([self.engine, 'inspect', '-f', '{{' + field + '}}', self.name], env=environment(),
+                                capture_output=True, timeout=30)
+        return result.stdout.decode().strip() if result.returncode == 0 else None
+
+    def boot(self):
+        agent_volume(self.engine, self.agents)
+        if self.inspect('.Id') is None:
+            run([self.engine, 'create', '--init', '--name', self.name, '--hostname', self.directory.name, '--network', 'none',
+                 '--tmpfs', '/run', '--tmpfs', '/tmp', '-v', f'{AGENT_VOLUME}:/nix:ro',
+                 base_image(self.engine), 'sleep', 'infinity'], capture_output=True, timeout=120)
+        if self.inspect('.HostConfig.NetworkMode') != 'none':
+            raise Error(f'container {self.name} has a network; destroy this bunker and launch it again')
+        subprocess.run([self.engine, 'stop', '-t', str(STOP_SECONDS), self.name], env=environment(), capture_output=True, timeout=60)
+        self.process = subprocess.Popen([self.engine, 'start', '--attach', self.name], env=environment(),
+                                        stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                        start_new_session=True)
+
+    def ready(self):
+        deadline = time.monotonic() + READY_SECONDS
+        while time.monotonic() < deadline:
+            self.check()
+            if subprocess.run([self.engine, 'exec', self.name, 'true'], env=environment(),
+                              capture_output=True, timeout=30).returncode == 0:
+                break
+            time.sleep(0.2)
+        else:
+            raise Error('container start timed out. Log: ' + bytes(self.boot_log[-4000:]).decode(errors='replace'))
+        with tarfile.open(self.runtime / 'seed.tar', 'w') as archive:
+            archive.add(self.runtime / 'seed', '.')
+        with (self.runtime / 'seed.tar').open('rb') as seed:
+            run([self.engine, 'exec', '-i', '-u', 'root', self.name, 'sh', '-c',
+                 'mkdir /run/seed && tar -xC /run/seed --no-same-owner && exec python3 /run/seed/guest.py container'],
+                stdin=seed, capture_output=True, timeout=300)
+        if self.endpoint:
+            run([self.engine, 'exec', '-d', self.name, 'python3', '/run/seed/guest.py', 'publish'], capture_output=True, timeout=30)
+        super().ready()
+
+    def transport(self):
+        return [self.engine, 'exec', '-i', '-u', 'root', self.name, *GUEST_SSHD]
+
+    def halt(self):
+        subprocess.run([self.engine, 'stop', '-t', str(STOP_SECONDS), self.name], env=environment(), capture_output=True, timeout=60)
+
+    @staticmethod
+    def remove(profile, directory):
+        run([profile['backend'], 'rm', '-f', '--ignore' if profile['backend'] == 'podman' else '--force',
+             container_name(profile, directory)], capture_output=True, timeout=60)
+
+
+def container_name(profile, directory):
+    return f'perimeter-{profile["id"][:8]}-{Path(directory).name}'
+
+
+def base_image(engine):
+    entry = manifest()[ARCH]['base']
+    tag = 'localhost/perimeter-base:' + entry['sha256'][:16]
+    if subprocess.run([engine, 'image', 'inspect', tag], env=environment(), capture_output=True, timeout=30).returncode:
+        print('Importing the bunker base image...', file=sys.stderr, flush=True)
+        run([engine, 'import', str(fetch(entry)), tag], capture_output=True, timeout=600)
+    return tag
+
+
+class Bwrap(Bunker):
+    """Unprivileged namespaces with only loopback. The base tree is a shared lower layer under each bunker's upper."""
+
+    @staticmethod
+    def preflight(_):
+        if sys.platform != 'linux':
+            raise Error('bwrap bunkers require Linux')
+        require('bwrap', 'script')
+
+    def boot(self):
+        self.tree = derived(manifest()[ARCH]['base'], '.tree', untar)
+        self.store = agent_store(self.agents)
+        for name in ('upper', 'work'):
+            (self.directory / name).mkdir(mode=0o700, exist_ok=True)
+
+    def exec(self, argv, tty):
+        command = [shutil.which('bwrap'), '--unshare-all', '--unshare-user', '--die-with-parent', '--cap-drop', 'ALL',
+                   '--uid', str(AGENT_UID), '--gid', str(AGENT_UID), '--hostname', self.directory.name,
+                   '--overlay-src', str(self.tree), '--overlay', str(self.directory / 'upper'), str(self.directory / 'work'), '/',
+                   '--proc', '/proc', '--dev', '/dev', '--tmpfs', '/tmp', '--tmpfs', '/run',
+                   '--ro-bind', str(self.store), '/nix/store', '--ro-bind', str(self.runtime), '/run/host',
+                   '--clearenv', '--setenv', 'HOME', '/home/agent', '--setenv', 'USER', 'agent', '--setenv', 'PATH', GUEST_PATH,
+                   '--setenv', 'TERM', os.environ.get('TERM', 'dumb'), '--chdir', '/workspace',
+                   # Without a terminal of its own, the sandbox could inject input into the host's.
+                   *([] if tty else ['--new-session']),
+                   '--', 'python3', '/run/host/seed/guest.py', 'process', *argv]
+        return ['script', '-qec', shlex.join(command), '/dev/null'] if tty else command
+
+    @staticmethod
+    def remove(profile, directory):
+        # The kernel leaves overlay work directories without permissions.
+        if Path(directory).exists():
+            run(['chmod', '-R', 'u+rwX', str(directory)], capture_output=True, timeout=300)
+
+
+class Vfkit(Guest):
+    """A Virtualization.framework VM with no NIC; vfkit exposes the guest's sshd vsock port as a host Unix socket."""
+
+    @staticmethod
+    def preflight(_):
+        if sys.platform != 'darwin' or ARCH != 'aarch64':
+            raise Error('vfkit bunkers require an Apple silicon Mac')
+        require('mke2fs', 'nc')
+
+    def boot(self):
+        assets = manifest()
+        prepare_disk(self.directory, fetch(assets[ARCH]['base']), self.profile.get('disk', DISK_GIB))
+        ext4(self.runtime / 'seed', self.runtime / 'seed.ext4')
+        private(self.runtime / 'initrd', EMPTY_INITRD)
+        vfkit = fetch(assets['vfkit'])
+        vfkit.chmod(0o700)
+        disks = [f'path={self.directory / "rootfs.ext4"}', f'path={self.runtime / "seed.ext4"},readonly',
+                 *(f'path={disk},readonly' for disk in agent_disks(self.agents))]
+        self.process = subprocess.Popen([
+            str(vfkit), '--cpus', str(self.profile['cpus']), '--memory', str(self.profile['memory']),
+            '--bootloader', f'linux,kernel={fetch(assets[ARCH]["kernel"])},initrd={self.runtime / "initrd"},cmdline="{VFKIT_CMDLINE}"',
+            *(argument for disk in disks for argument in ('--device', 'virtio-blk,' + disk)),
+            '--device', f'virtio-vsock,port=22,socketURL={self.runtime / "vsock"},connect',
+            '--device', f'virtio-serial,logFilePath={self.directory / "console.log"}'],
+            env=environment(), stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            pass_fds=(self.running.fileno(),))
+
+    def transport(self):
+        return ['nc', '-U', str(self.runtime / 'vsock')]
+
+    def halt(self):
+        # guest.py, the guest's PID 1, shuts down on SIGTERM but has no power button handler.
+        with contextlib.suppress(subprocess.TimeoutExpired):
+            subprocess.run(self.ssh() + ['agent@monitor-vm', 'sudo kill -TERM 1'], env=environment(), capture_output=True, timeout=10)
+
+
+BUNKERS = {'firecracker': Firecracker, 'vfkit': Vfkit, 'podman': Container, 'docker': Container, 'bwrap': Bwrap}
 
 
 def stop(directory):
@@ -667,10 +879,10 @@ def export(vm, destination):
     child = None
     try:
         with os.fdopen(fd, 'wb') as output:
-            child = subprocess.Popen(vm.ssh() + ['agent@monitor-vm', 'tar -C /workspace -cf - .'],
+            child = subprocess.Popen(vm.exec(['tar', '-C', '/workspace', '-cf', '-', '.'], False),
                                      env=environment(), stdout=subprocess.PIPE, stdin=subprocess.DEVNULL)
             deadline, count = time.monotonic() + 300, 0
-            limit = (vm.directory / 'rootfs.ext4').stat().st_size * 2
+            limit = vm.profile.get('disk', DISK_GIB) << 31
             while True:
                 vm.check()
                 if time.monotonic() > deadline:
@@ -682,7 +894,7 @@ def export(vm, destination):
                     break
                 count += len(block)
                 if count > limit:
-                    raise Error('workspace export exceeds twice the VM disk size')
+                    raise Error('workspace export exceeds twice the bunker disk size')
                 output.write(block)
             if child.wait(timeout=10):
                 raise Error('guest could not export its workspace')
@@ -813,8 +1025,6 @@ def endpoint_address(value):
 
 
 def setup_launch(args):
-    if sys.platform != "linux":
-        raise Error("Perimeter VM launch currently requires Linux/Firecracker")
     name = profile_name(args)
     config_path = Path(args.client_config).expanduser().resolve()
     with launch_lock(config_path.with_suffix(".lock")):
@@ -823,9 +1033,8 @@ def setup_launch(args):
             raise Error(f"launch profile {name!r} already exists; choose a new --profile to change its server or permissions")
         root = config_path.parent / "launch" / name
         root.mkdir(parents=True, exist_ok=True, mode=0o700)
-        if not 1 <= args.cpus <= 32 or not 512 <= args.memory <= 65536:
-            raise Error("choose 1–32 CPUs and 512–65536 MiB of memory")
-        image = str(preflight(args.image))
+        if not 1 <= args.cpus <= 32 or not 512 <= args.memory <= 65536 or not 2 <= args.disk_size <= 128:
+            raise Error("choose 1–32 CPUs, 512–65536 MiB of memory and a 2–128 GiB disk")
         owner_url = setup_value(args.owner_url, "Perimeter owner URL", "http://127.0.0.1:8080")
         endpoint = setup_value(args.endpoint, "Perimeter SSH endpoint as reached by this host", "127.0.0.1:2223")
         endpoint_address(endpoint)
@@ -838,38 +1047,44 @@ def setup_launch(args):
         owner = OwnerClient(owner_url, key)
         view = unlock(owner, root)
         connections = view["config"].get("connections") or {}
-        # A connection's kind is its key naming a connector, such as "http".
-        candidates = [name for name, settings in connections.items()
-                      if settings.get("preset") == "anthropic" and "http" in settings]
-        connection = setup_value(args.service, "Anthropic HTTP service for launch claude (blank to skip)",
-                                 candidates[0] if len(candidates) == 1 else "")
-        if connection and "http" not in connections.get(connection, {}):
-            raise Error("choose an existing HTTP service for the Anthropic API")
         access_spec = args.access or [item.strip() for item in setup_value(
-            None, "Service access, comma-separated name=read|ask|allow", connection and connection + "=allow").split(",")
-            if item.strip()]
+            None, "Service access, comma-separated name=read|ask|allow", "").split(",") if item.strip()]
         access = {}
         for item in access_spec:
             name, sep, level = item.partition("=")
             if not sep or name not in connections or level not in ("read", "ask", "allow"):
                 raise Error(f"invalid service access {item!r}; use an existing service and read, ask or allow")
             access[name] = {"level": level}
-        if connection and connection not in access:
-            raise Error("the Anthropic service must be included in --access")
         host_key = view["host_key"].strip()
         if "\n" in host_key or not host_key.startswith(("ssh-", "ecdsa-")):
             raise Error("owner API returned an invalid SSH host key")
         private(root / "owner.key", key.encode())
         private(root / "host_key", host_key.encode() + b"\n")
         profile = {"version": 3, "id": uuid.uuid4().hex, "owner_url": owner_url, "endpoint": endpoint,
-                   "root": str(root), "image": image, "cpus": args.cpus, "memory": args.memory,
-                   "connection": connection, "access": access, "mcp": args.mcp}
+                   "root": str(root), "backend": args.backend, "cpus": args.cpus, "memory": args.memory,
+                   "disk": args.disk_size, "access": access, "mcp": args.mcp}
         config.setdefault("launch_profiles", {})[name] = profile
         private(config_path, json.dumps(config, indent=2).encode() + b"\n")
         print(f"Saved launch profile {name!r}. Owner key stays in {root / 'owner.key'}.")
         prefix = "perimeter" + (" --profile " + name if name != "default" else "")
-        print(f"From a project directory, run: {prefix} launch {'claude' if connection else 'shell'}")
+        print(f"From a project directory, run: {prefix} launch AGENT, where AGENT is shell or one of "
+              + ", ".join(json.loads(asset("agents.json"))))
     return 0
+
+
+def agent_service(view, recipe, chosen):
+    """Pick the HTTP service an agent uses: the first of its presets with exactly one candidate."""
+    connections = view["config"].get("connections") or {}
+    for preset in recipe["via"]:
+        # A connection's kind is its key naming a connector, such as "http".
+        names = [name for name, settings in connections.items()
+                 if settings.get("preset") == preset and "http" in settings and chosen in (None, name)]
+        if len(names) > 1:
+            raise Error(f"several {preset} services exist; choose one with --service")
+        if names:
+            return names[0], preset
+    raise Error("add " + " or ".join(recipe["via"]) + " service in the Perimeter"
+                + (f", or choose another than {chosen!r}" if chosen else ""))
 
 
 def unlock(owner, root):
@@ -909,8 +1124,6 @@ def revoke_identity(owner, name, public_key):
 
 
 def launch_vm(args, cli):
-    if sys.platform != "linux":
-        raise Error("Perimeter VM launch currently requires Linux/Firecracker")
     name = profile_name(args)
     config_path = Path(args.client_config).expanduser().resolve()
     try:
@@ -919,10 +1132,8 @@ def launch_vm(args, cli):
         raise Error("run perimeter setup first for this profile") from error
     if profile["version"] != 3:
         raise Error("this launch profile is from an older Perimeter; run perimeter setup with a new --profile")
-    if args.command == "launch" and args.agent == "claude" and not profile["connection"]:
-        raise Error("this launch profile has no Anthropic service; use launch shell, or run perimeter setup with --service")
     if args.name and not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,62}", args.name):
-        raise Error("VM name must contain only lowercase letters, digits and hyphens")
+        raise Error("bunker name must contain only lowercase letters, digits and hyphens")
     root = Path(profile["root"])
     workspace = Path(args.workspace).expanduser().resolve()
     if workspace == Path.home().resolve() or workspace.parent == workspace:
@@ -933,18 +1144,19 @@ def launch_vm(args, cli):
         raise Error("the project contains the Perimeter's host credentials; choose a project outside the launch configuration directory")
     identity = args.name or "vm-" + hashlib.sha256((profile["id"] + "\0" + str(workspace)).encode()).hexdigest()[:32]
     directory = root / "instances" / identity
+    backend = profile.get("backend", "firecracker")
     if args.command == "stop":
         stop(directory)
-        print("Requested VM shutdown; its disk and identity will be retained.")
+        print("Requested bunker shutdown; its disk and identity will be retained.")
         return 0
     with launch_lock(root / "locks" / identity):
         state_path = directory / "state.json"
         if state_path.exists():
             state = json.loads(private_read(state_path))
             if state["workspace"] != str(workspace) or state["name"] != identity:
-                raise Error("VM state does not match this project")
+                raise Error("bunker state does not match this project")
         elif args.command != "launch":
-            raise Error("no Perimeter VM is recorded for this project")
+            raise Error("no Perimeter bunker is recorded for this project")
         else:
             directory.mkdir(parents=True, exist_ok=True, mode=0o700)
             state = {"name": identity, "workspace": str(workspace), "enrolled": False, "revoked": False}
@@ -952,53 +1164,68 @@ def launch_vm(args, cli):
         public_key = keypair(directory / "id").decode() + "\n"
         if args.command in ("launch", "destroy"):
             owner = OwnerClient(profile["owner_url"], private_read(root / "owner.key"))
-            unlock(owner, root)
+            view = unlock(owner, root)
         if args.command == "destroy":
-            ensure_stopped(directory)
+            ensure_stopped(directory).close()
             revoke_identity(owner, identity, public_key)
             state["revoked"] = True
             private(state_path, json.dumps(state).encode() + b"\n")
+            BUNKERS[backend].remove(profile, directory)
             shutil.rmtree(directory)
-            print("Revoked the Perimeter identity and destroyed the VM.")
+            print("Revoked the Perimeter identity and destroyed the bunker.")
             return 0
         if args.command == "launch" and state.get("revoked"):
-            raise Error("this VM is being destroyed; retry perimeter destroy")
-        preflight(profile["image"])
+            raise Error("this bunker is being destroyed; retry perimeter destroy")
+        preflight(backend)
+        agent = args.command == "launch" and args.agent != "shell"
+        if agent:
+            recipe = json.loads(asset("agents.json"))[args.agent]
+            service, via = agent_service(view, recipe, args.service)
+            profile["access"].setdefault(service, {"level": "allow"})
         if args.command == "launch":
             enroll_identity(owner, state, state_path, public_key, profile["access"])
         elif not (directory / "initialized").exists():
-            raise Error("this VM has no initialized workspace to export")
+            raise Error("this bunker has no initialized workspace to export")
+        agents = fetch_agents([args.agent] if agent else [])
         endpoint = None
         if args.command == "launch":
             address = urlsplit("ssh://" + endpoint_address(profile["endpoint"]))
             endpoint = (address.hostname, address.port)
-        with VM(profile, directory, workspace, cli.__file__, endpoint) as vm:
+        with BUNKERS[backend](profile, directory, workspace, cli.__file__, endpoint, agents) as bunker:
             if args.command == "export":
-                export(vm, args.output)
+                export(bunker, args.output)
                 print(f"Saved workspace archive to {args.output}")
                 return 0
-            return cli.run_child(vm, vm.agent(args.agent, args.argv, profile.get("mcp", False)), environment())
+            if agent:
+                mcp = profile.get("mcp", False) and "mcp" in recipe
+                command = GUEST_CLI + ["_agent", "--service", service, "--via", via,
+                                       *(["--mcp"] if mcp else []), args.agent, "--", *args.argv]
+            else:
+                command = GUEST_CLI + (["run", "--", *args.argv] if args.argv else ["shell"])
+            return cli.run_child(bunker, bunker.exec(command, sys.stdin.isatty()), environment())
 
 
 def guest_agent(cli, client, args):
+    recipe = json.loads(asset("agents.json"))[args.agent]
+    via = recipe["via"][args.via]
     with cli.Session(client) as session:
         env = session.environment([], None)
-        connection = next((c for c in session.connections if c["name"] == args.connection), None)
+        connection = next((c for c in session.connections if c["name"] == args.service), None)
         if connection is None:
-            raise Error("the model service is not accessible to this VM")
+            raise Error(f"the {args.service} service is not accessible to this bunker; grant it access in the Perimeter")
         if connection["state"] != "ready":
             raise Error("the model service is not ready; check its access and status in the Perimeter")
-        values = connection["placeholders"]
-        variable = next((key for key in ("ANTHROPIC_API_KEY", "token") if key in values), None)
-        if variable is None:
-            raise Error("model service needs a token or ANTHROPIC_API_KEY credential slot")
-        for name in ("ANTHROPIC_AUTH_TOKEN", "CLAUDE_CODE_OAUTH_TOKEN", "ANTHROPIC_BASE_URL"):
+        values = connection["placeholders"] or {}
+        variable = via["key"]
+        key = values.get(variable) or values.get("token") or (next(iter(values.values())) if len(values) == 1 else None)
+        if key is None:
+            raise Error(f"model service needs a token or {variable} credential slot")
+        for name in recipe.get("unset", []):
             env.pop(name, None)
-        env["ANTHROPIC_API_KEY"] = values[variable]
-        env["DISABLE_AUTOUPDATER"] = "1"
-        env["CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC"] = "1"
+        env.update(recipe.get("env", {}))
+        env[variable] = key
         arguments = args.argv[1:] if args.argv[:1] == ["--"] else args.argv
-        command = ["claude", "--dangerously-skip-permissions"]
+        command = recipe["command"] + via.get("args", [])
         if args.mcp:
             servers, count = cli.mcp_servers(session)
             if not count:
@@ -1008,7 +1235,7 @@ def guest_agent(cli, client, args):
             # These endpoints live in the guest. Sending them through the HTTP
             # proxy would ask the Monitor server to connect to its own loopback.
             env["NO_PROXY"] = env["no_proxy"] = "127.0.0.1,localhost,::1"
-            command += ["--mcp-config", str(mcp_config)]
+            command += [part.replace("{config}", str(mcp_config)) for part in recipe["mcp"]]
         return cli.run_child(session, command + arguments, env)
 
 
@@ -1037,7 +1264,7 @@ def owner_policy(args):
     return 0
 
 
-COMMANDS = ("setup", "launch", "destroy", "stop", "export", "image", "_vm-connect", "_agent")
+COMMANDS = ("setup", "launch", "destroy", "stop", "export", "_vm-connect", "_agent")
 
 
 def add_commands(commands, policy_commands):
@@ -1048,42 +1275,37 @@ def add_commands(commands, policy_commands):
     for action in ("diff", "apply"):
         command = policy_commands.add_parser(action, help={"diff": "validate and preview a replacement policy", "apply": "apply a replacement policy"}[action])
         command.add_argument("file", help="TOML file, or - for stdin")
-    setup = commands.add_parser("setup", help="configure one-command Linux VM launch")
+    setup = commands.add_parser("setup", help="configure one-command Linux bunker launch")
     setup.add_argument("--owner-url", help="unlocked Perimeter owner API URL")
     setup.add_argument("--owner-key-file", help="owner-only file containing a key or passphrase; otherwise prompt privately")
     setup.add_argument("--endpoint", help="Perimeter SSH HOST:PORT as reached by this host")
-    setup.add_argument("--image", default=str(Path.home() / ".local/share/perimeter/images/default"), help="prepared VM image directory")
+    setup.add_argument("--backend", choices=BACKENDS, default=DEFAULT_BACKEND, help=f"isolation for bunkers (default: {DEFAULT_BACKEND})")
     setup.add_argument("--cpus", type=int, default=2, help="VM CPU count (default: 2)")
     setup.add_argument("--memory", type=int, default=4096, help="VM memory in MiB (default: 4096)")
-    setup.add_argument("--service", help="Anthropic HTTP service name")
+    setup.add_argument("--disk-size", type=int, default=DISK_GIB, help=f"VM disk size in GiB (default: {DISK_GIB})")
     setup.add_argument("--access", action="append", help="initial service access NAME=read|ask|allow; repeat for several")
-    setup.add_argument("--mcp", action="store_true", help="also connect Claude to the Perimeter's MCP services")
-    launch = commands.add_parser("launch", help="launch an agent in a Perimeter-connected Linux VM")
+    setup.add_argument("--mcp", action="store_true", help="also connect agents that support it to the Perimeter's MCP services")
+    agents = list(json.loads(asset("agents.json")))
+    launch = commands.add_parser("launch", help="launch an agent in a Perimeter-connected Linux bunker")
     launch.add_argument("--workspace", default=".", help="project directory (default: current directory)")
-    launch.add_argument("agent", choices=["claude", "shell"], help="Claude, or a shell routed through the Perimeter")
-    launch.add_argument("argv", nargs="*", help="-- ARGUMENTS passed to Claude, or a COMMAND to run instead of the shell")
-    destroy = commands.add_parser("destroy", help="revoke the project's Perimeter identity and destroy its VM")
+    launch.add_argument("--service", help="model service for the agent (default: the only one of a kind it supports)")
+    launch.add_argument("agent", choices=agents + ["shell"], help="an agent, or a shell routed through the Perimeter")
+    launch.add_argument("argv", nargs="*", help="-- ARGUMENTS passed to the agent, or a COMMAND to run instead of the shell")
+    destroy = commands.add_parser("destroy", help="revoke the project's Perimeter identity and destroy its bunker")
     destroy.add_argument("--workspace", default=".", help="project directory (default: current directory)")
-    stop = commands.add_parser("stop", help="stop the project's running VM and retain its disk")
+    stop = commands.add_parser("stop", help="stop the project's running bunker and retain its disk")
     stop.add_argument("--workspace", default=".", help="project directory (default: current directory)")
-    export = commands.add_parser("export", help="save the stopped VM's workspace as a tar archive")
+    export = commands.add_parser("export", help="save the bunker's workspace as a tar archive")
     export.add_argument("--workspace", default=".", help="project directory (default: current directory)")
     export.add_argument("--output", required=True, help="new archive file to create on this host")
     for command in (launch, destroy, stop, export):
-        command.add_argument("--name", help="VM identity name instead of one derived from the project directory")
-    image = commands.add_parser("image", help="prepare a Firecracker guest image")
-    build = image.add_subparsers(dest="action", required=True).add_parser("build", help="build the image with Podman or Docker")
-    build.add_argument("--output", default=str(Path.home() / ".local/share/perimeter/images/default"))
-    build.add_argument("--engine", help="container engine executable (default: podman or docker)")
-    build.add_argument("--firecracker", help="use a local static Firecracker binary")
-    build.add_argument("--kernel", help="use a local Firecracker-compatible guest kernel")
-    build.add_argument("--claude-version", default="stable", help="Claude release to install (default: stable)")
-    build.add_argument("--claude-binary", help="use an existing native Linux Claude binary instead of downloading")
-    build.add_argument("--disk-size", type=int, default=8, help="VM disk size in GiB (default: 8)")
+        command.add_argument("--name", help="bunker identity name instead of one derived from the project directory")
     proxy = commands.add_parser("_vm-connect")
     proxy.add_argument("socket")
     agent = commands.add_parser("_agent")
-    agent.add_argument("--connection", required=True)
+    agent.add_argument("agent", choices=agents)
+    agent.add_argument("--service", required=True)
+    agent.add_argument("--via", required=True)
     agent.add_argument("--mcp", action="store_true")
     agent.add_argument("argv", nargs=argparse.REMAINDER)
 
@@ -1101,13 +1323,10 @@ def command(args, cli):
         return owner_policy(args)
     if args.command == "setup":
         return setup_launch(args)
-    if args.command == "image":
-        with launch_lock(Path(args.output).expanduser().resolve().with_suffix(".lock")):
-            return build_image(args)
     if args.command == "_vm-connect":
         return proxy(args.socket)
     if args.command == "_agent":
         if sys.version_info < (3, 11):
-            raise Error("the VM agent requires Python 3.11 or newer")
+            raise Error("the bunker agent requires Python 3.11 or newer")
         return guest_agent(cli, cli.connect(args), args)
     return launch_vm(args, cli)
