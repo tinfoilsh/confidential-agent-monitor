@@ -152,6 +152,7 @@ function Requests(props: { expanded?: string }) {
         <Show when={visible().length}>
           <div class="request-table-heading" aria-hidden="true">
             <span>Request</span>
+            <span class="request-count">Count</span>
             <span>Bunker</span>
             <span>Service</span>
             <span>Status</span>
@@ -238,9 +239,10 @@ function RequestRow(props: { id: string; stack: string[]; open?: boolean }) {
               <span class="sr-only">Request: </span>
               {owner.requestTitle(record())}
             </strong>
-            <Show when={props.stack.length > 1}>
-              <span class="count">×{props.stack.length}</span>
-            </Show>
+          </span>
+          <span class="count request-count">
+            <span class="sr-only">Request count: </span>
+            {props.stack.length}
           </span>
           <span class="request-origin">
             <span title={record().facts.principal.name}>
@@ -399,7 +401,7 @@ export function RequestDetail(props: {
                     </Show>
                   </dd>
                 </div>
-                <div>
+                <div class="request-context-wide">
                   <dt>Review</dt>
                   <dd>
                     <Show
@@ -445,7 +447,7 @@ export function RequestDetail(props: {
                   </dd>
                 </div>
                 <Show when={reasons().length}>
-                  <div>
+                  <div class="request-context-wide">
                     <dt>Reason</dt>
                     <dd>
                       <For each={reasons()}>{(reason) => <p>{reason}</p>}</For>

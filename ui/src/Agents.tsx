@@ -403,6 +403,7 @@ function Actions(props: {
                 </span>
               </Show>
             </span>
+            <span class="access-action-leader" aria-hidden="true" />
             <AccessSelect
               kind="mode"
               label={`${node().title} permission`}
