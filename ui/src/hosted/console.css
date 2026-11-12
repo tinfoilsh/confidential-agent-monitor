@@ -300,9 +300,6 @@ dialog.start-dialog {
   width: 16px;
   height: 16px;
 }
-.start-home .home-skeleton-button {
-  height: var(--control-height);
-}
 .start-home .start-key-choice > :is(button, .icon:last-child) {
   align-self: center;
 }

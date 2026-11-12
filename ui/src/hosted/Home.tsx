@@ -1,4 +1,5 @@
 import { For, type JSX } from "solid-js";
+import { Icon } from "../components";
 
 const PLACEHOLDER_PERIMETERS = 2;
 
@@ -71,9 +72,11 @@ export function HomeSkeleton() {
             Loading your keys…
           </span>
           <RowSkeleton recovery />
-          <div class="monitor-actions" aria-hidden="true">
-            <span class="loading-skeleton home-skeleton-button" />
-            <span class="loading-skeleton home-skeleton-button" />
+          <div class="monitor-actions">
+            <button disabled>Add a passkey</button>
+            <button disabled>
+              <Icon name="download" /> Save recovery key
+            </button>
           </div>
         </>
       }

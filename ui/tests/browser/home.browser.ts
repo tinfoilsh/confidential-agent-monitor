@@ -53,6 +53,12 @@ for (const theme of ["light", "dark"]) {
         page.getByText("Loading your keys…", { exact: true }),
       ).toBeAttached();
       await page.evaluate(() => document.fonts.ready);
+      await expect(
+        page.getByRole("button", { name: "Add a passkey" }),
+      ).toBeDisabled();
+      await expect(
+        page.getByRole("button", { name: "Save recovery key" }),
+      ).toBeDisabled();
       const loading = await layout(page);
       expect(loading).toHaveLength(7);
       await page.evaluate(() => window.passkeyFixture.holdDecryption());
@@ -68,7 +74,7 @@ for (const theme of ["light", "dark"]) {
       await page.evaluate(() => window.passkeyFixture.releaseDecryption());
       await expect(
         page.getByRole("button", { name: "Add a passkey" }),
-      ).toBeVisible();
+      ).toBeEnabled();
       await expect(
         page.getByText("Loading your Perimeters and bunkers…", { exact: true }),
       ).toBeAttached();
