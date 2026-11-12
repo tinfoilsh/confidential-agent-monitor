@@ -90,6 +90,57 @@ describe("raw TCP setup and access", () => {
   });
 });
 
+describe("a service's action list", () => {
+  const withService = (name: string, connection: owner.Connection) => {
+    const v = view();
+    const { title, catalog } = preset(connection.preset);
+    v.presets[connection.preset] = { title, ...catalog };
+    v.config.connections![name] = connection;
+    return v;
+  };
+  const rows = (v: owner.View, connection: string) =>
+    owner
+      .agentAccess(v, "sandbox", connection)[0]
+      .actions.map(({ key, title, mode }) => ({ key, title, mode }));
+  test("a lone group gives way to its actions, which keep the group's setting", () => {
+    const v = withService("search", {
+      preset: "tinfoil_websearch",
+      contents: "me",
+      sends: "me",
+    });
+    v.config.identities = {
+      sandbox: {
+        key: "key",
+        connections: { search: { level: "allow", actions: { use: "ask" } } },
+      },
+    };
+    expect(rows(v, "search")).toEqual([
+      { key: "use.fetch", title: "Fetch web pages", mode: "ask" },
+      { key: "use.search", title: "Search the web", mode: "ask" },
+    ]);
+  });
+  test("several groups stay grouped", () => {
+    const v = withService("tools", {
+      preset: "mcp",
+      contents: "team",
+      sends: "me",
+      mcp: {
+        url: "https://mcp.example.com",
+        pin: {
+          tools: [
+            { name: "lookup", annotations: { readOnlyHint: true } },
+            { name: "send" },
+          ],
+        },
+      },
+    });
+    v.config.identities = {
+      sandbox: { key: "key", connections: { tools: { level: "allow" } } },
+    };
+    expect(rows(v, "tools").map((row) => row.key)).toEqual(["read", "use"]);
+  });
+});
+
 test("Custom API can be created before its credential is configured", () => {
   const v = view();
   const { changes, credentials } = owner.edits.addCustomApi(v, {

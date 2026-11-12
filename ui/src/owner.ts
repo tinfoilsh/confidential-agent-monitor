@@ -1005,6 +1005,11 @@ export function agentAccess(view: View, name: string, only?: string) {
       mode: mode(access, view.vocabulary, node.effects, node.key),
       children: node.children.map(describe),
     });
+    // A lone top-level group repeats the service's own row, so its actions take its place.
+    const ungrouped = (nodes: AccessNode[]): AccessNode[] =>
+      nodes.length === 1 && nodes[0].children.length
+        ? ungrouped(nodes[0].children)
+        : nodes;
     let actions: AccessNode[] | undefined;
     return {
       connection,
@@ -1016,7 +1021,7 @@ export function agentAccess(view: View, name: string, only?: string) {
         return (actions ??=
           access.level === "off"
             ? []
-            : actionTree(view, connection).map(describe));
+            : ungrouped(actionTree(view, connection).map(describe)));
       },
     };
   });
