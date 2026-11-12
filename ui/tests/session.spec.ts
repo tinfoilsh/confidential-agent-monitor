@@ -17,6 +17,7 @@ mock.module("../src/hosted/keys", () => ({
   fenceEnded: async () => false,
   readKeyState: (api: (path: string) => Promise<unknown>) => api("/keys"),
   reconcilePending: async (_api: unknown, _id: string, state: unknown) => state,
+  rememberedPasskey: async () => undefined,
   refreshUnlocked: async (unlocked: unknown) => unlocked,
 }));
 

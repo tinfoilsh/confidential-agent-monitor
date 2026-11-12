@@ -2664,6 +2664,20 @@ td {
   --primary-hover: var(--tinfoil-accent-dark);
   --on-primary: #fff;
 }
+.auth-remember {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: var(--font-detail);
+  cursor: pointer;
+}
+.auth-remember > input {
+  flex: none;
+  margin: 0;
+  accent-color: var(--tinfoil-accent-dark);
+}
 .dialog-header > .icon {
   grid-row: span 2;
   width: 40px;
