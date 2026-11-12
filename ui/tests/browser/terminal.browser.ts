@@ -90,6 +90,7 @@ for (const theme of ["light", "dark"]) {
       const row = list.locator(":scope > .request-item > summary").first();
       await expect(row).toContainText("Connect to registry.npmjs.org:443");
       await expect(row).toContainText("new-bunker");
+      await expect(row.locator(".resource-link strong")).toBeVisible();
       await expect(row.locator(".request-count")).toHaveText(
         "Request count: 2",
       );
@@ -135,11 +136,42 @@ for (const theme of ["light", "dark"]) {
         .locator(".request-stack .request-item > summary")
         .first();
       await expect(child).toBeVisible();
+      await expect(child.locator(".resource-link strong")).toBeVisible();
       await expect(child.locator(".request-count")).toHaveText(
         "Request count: 1",
       );
+      const parentCount = (await row.locator(".request-count").boundingBox())!;
+      const childCount = (await child.locator(".request-count").boundingBox())!;
+      expect(
+        Math.abs(
+          parentCount.x + parentCount.width - childCount.x - childCount.width,
+        ),
+      ).toBeLessThanOrEqual(TOLERANCE);
       await child.click();
       await expect(list.getByText("Nobody answered in time.")).toBeVisible();
+      const detail = list.locator(".request-inline").first();
+      expect(
+        await detail.evaluate((el) => el.scrollWidth - el.clientWidth),
+      ).toBeLessThanOrEqual(TOLERANCE);
+      if (width === WIDTHS.at(-1)) {
+        const bunker = (await detail
+          .getByText("Bunker", { exact: true })
+          .boundingBox())!;
+        const service = (await detail
+          .getByText("Service", { exact: true })
+          .boundingBox())!;
+        const requested = (await detail
+          .getByText("Requested", { exact: true })
+          .boundingBox())!;
+        const review = (await detail
+          .getByText("Review", { exact: true })
+          .boundingBox())!;
+        expect(Math.abs(bunker.y - service.y)).toBeLessThanOrEqual(TOLERANCE);
+        expect(Math.abs(bunker.y - requested.y)).toBeLessThanOrEqual(TOLERANCE);
+        expect(bunker.x).toBeLessThan(service.x);
+        expect(service.x).toBeLessThan(requested.x);
+        expect(review.y).toBeGreaterThan(requested.y + requested.height);
+      }
       await row.click();
       await expect(child).not.toBeVisible();
       await page.evaluate(() => {

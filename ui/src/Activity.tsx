@@ -401,7 +401,7 @@ export function RequestDetail(props: {
                     </Show>
                   </dd>
                 </div>
-                <div>
+                <div class="request-context-wide">
                   <dt>Review</dt>
                   <dd>
                     <Show
@@ -447,7 +447,7 @@ export function RequestDetail(props: {
                   </dd>
                 </div>
                 <Show when={reasons().length}>
-                  <div>
+                  <div class="request-context-wide">
                     <dt>Reason</dt>
                     <dd>
                       <For each={reasons()}>{(reason) => <p>{reason}</p>}</For>
