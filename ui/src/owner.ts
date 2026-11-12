@@ -1005,6 +1005,13 @@ export function agentAccess(view: View, name: string, only?: string) {
       mode: mode(access, view.vocabulary, node.effects, node.key),
       children: node.children.map(describe),
     });
+    // A lone group without an override repeats the service's own row.
+    const ungrouped = (nodes: AccessNode[]): AccessNode[] =>
+      nodes.length === 1 &&
+      nodes[0].children.length > 1 &&
+      !Object.hasOwn(access.actions ?? {}, nodes[0].key)
+        ? nodes[0].children
+        : nodes;
     let actions: AccessNode[] | undefined;
     return {
       connection,
@@ -1016,7 +1023,7 @@ export function agentAccess(view: View, name: string, only?: string) {
         return (actions ??=
           access.level === "off"
             ? []
-            : actionTree(view, connection).map(describe));
+            : ungrouped(actionTree(view, connection).map(describe)));
       },
     };
   });
@@ -1059,6 +1066,11 @@ export const toolReviews = (view: View) =>
   Object.keys(connections(view))
     .filter((name) => (view.status[name]?.details?.blocked ?? 0) > 0)
     .sort();
+export const toolReviewCount = (view: View) =>
+  toolReviews(view).reduce(
+    (count, name) => count + view.status[name].details!.blocked!,
+    0,
+  );
 
 // A pin change is "+ name", "~ name" or "- name" and then the tool's definition,
 // or "~ instructions:" and then the server's instructions.

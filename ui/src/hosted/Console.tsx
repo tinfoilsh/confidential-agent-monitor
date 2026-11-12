@@ -383,45 +383,47 @@ function Inventory(props: { session: Session }) {
         </p>
       </Show>
       <For each={monitors()}>
-        {(monitor) => (
-          <a
-            class="start-key-choice"
-            link
-            href={
-              monitor.owner_key_mode === "tmk"
-                ? monitorURL(monitor.id)
-                : undefined
-            }
-          >
-            <div>
-              <h2>
-                {monitor.name}
-                <span
-                  class={`badge status-${BUSY_STATUSES.includes(monitor.status) ? "busy" : monitor.status}`}
-                >
-                  <Show when={BUSY_STATUSES.includes(monitor.status)}>
-                    <span class="loading-spinner" aria-hidden="true" />
-                  </Show>
-                  {STATUS_LABELS[monitor.status] ?? "Status unavailable"}
-                </span>
-              </h2>
-              <p>
-                {sandboxes(monitor)
-                  .map((s) => s.name)
-                  .join(", ")}
-              </p>
-              <Show when={monitor.owner_key_mode !== "tmk"}>
+        {(monitor) => {
+          const busy = () => BUSY_STATUSES.includes(monitor.status);
+          const bunkers = () =>
+            sandboxes(monitor)
+              .map((s) => s.name)
+              .join(", ");
+          return (
+            <a
+              class="start-key-choice"
+              data-status={busy() ? "busy" : monitor.status}
+              link
+              href={
+                monitor.owner_key_mode === "tmk"
+                  ? monitorURL(monitor.id)
+                  : undefined
+              }
+            >
+              <span class="start-status" aria-hidden="true">
+                <span class={busy() ? "loading-spinner" : "start-status-dot"} />
+              </span>
+              <div>
+                <h2>{monitor.name}</h2>
                 <p>
-                  Open with the CLI:{" "}
-                  <code>tinfoil perimeter open {monitor.name}</code>
+                  <span class="start-status-label">
+                    {STATUS_LABELS[monitor.status] ?? "Status unavailable"}
+                  </span>
+                  <Show when={bunkers()}> · {bunkers()}</Show>
                 </p>
+                <Show when={monitor.owner_key_mode !== "tmk"}>
+                  <p>
+                    Open with the CLI:{" "}
+                    <code>tinfoil perimeter open {monitor.name}</code>
+                  </p>
+                </Show>
+              </div>
+              <Show when={monitor.owner_key_mode === "tmk"}>
+                <Icon name="arrow" />
               </Show>
-            </div>
-            <Show when={monitor.owner_key_mode === "tmk"}>
-              <Icon name="arrow" />
-            </Show>
-          </a>
-        )}
+            </a>
+          );
+        }}
       </For>
     </nav>
   );

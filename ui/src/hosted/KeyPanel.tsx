@@ -32,6 +32,7 @@ function useAction(session: Session, manager: PasskeyKeyManager) {
   onCleanup(() => {
     current?.abort();
     manager.cancelActiveCeremony();
+    manager.clearLocalState();
   });
   const run = async (
     task: (scope: Scope, signal: AbortSignal) => Promise<void>,
@@ -251,19 +252,20 @@ export function UnlockKeys(props: {
   const state = () => props.session.keyState().value!;
   const hasPasskey = () => state().recovery.some((r) => r.type === "passkey");
   const [noPasskey, setNoPasskey] = createSignal(false);
+  const [remember, setRemember] = createSignal(false);
   const [confirming, setConfirming] = createSignal(false);
   let picker!: HTMLInputElement;
   const unlock = (
     task: (
       state: keys.KeyState,
-      user: string,
+      scope: Scope,
       signal: AbortSignal,
     ) => Promise<keys.Unlocked | undefined>,
   ) =>
     action.run(async (scope, signal) => {
       const current = scope.keyState();
       if (!current) throw new Error("Your account is still loading.");
-      const unlocked = await task(current, scope.user, signal);
+      const unlocked = await task(current, scope, signal);
       if (!unlocked)
         throw new Error("No recovery key is saved in this browser.");
       await scope.setUnlocked(unlocked);
@@ -279,9 +281,16 @@ export function UnlockKeys(props: {
   // choices wait until it has been tried.
   const [checking, setChecking] = createSignal(true);
   void action
-    .run(async (scope) => {
+    .run(async (scope, signal) => {
       const current = scope.keyState();
-      const unlocked = current && (await keys.unlockSaved(current, scope.user));
+      const unlocked =
+        current &&
+        (await keys.unlockSaved(
+          current,
+          scope.user,
+          await scope.fence,
+          signal,
+        ));
       if (unlocked) await scope.setUnlocked(unlocked);
     })
     .finally(() => setChecking(false));
@@ -342,7 +351,7 @@ export function UnlockKeys(props: {
                     const file = event.currentTarget.files?.[0];
                     event.currentTarget.value = "";
                     if (file)
-                      void unlock(async (current, user) => {
+                      void unlock(async (current, scope) => {
                         if (file.size > MAX_RECOVERY_FILE_BYTES)
                           throw new Error(
                             "This file is too large to be a recovery key.",
@@ -350,7 +359,7 @@ export function UnlockKeys(props: {
                         return keys.unlockFile(
                           await file.text(),
                           current,
-                          user,
+                          scope.user,
                         );
                       });
                   }}
@@ -390,18 +399,31 @@ export function UnlockKeys(props: {
             </p>
             {error()}
             <button
-              class="primary"
+              class="primary unlock"
               disabled={action.busy()}
               aria-busy={action.busy()}
               onClick={() =>
-                void unlock((current, user, signal) =>
-                  keys.unlockPasskey(props.manager, current, user, signal),
+                void unlock(async (current, scope, signal) =>
+                  keys.unlockPasskey(props.manager, current, scope.user, {
+                    remember: remember(),
+                    fence: await scope.fence,
+                    signal,
+                  }),
                 )
               }
             >
               <Icon name="fingerprint" />
               {action.busy() ? "Unlocking…" : "Unlock with passkey"}
             </button>
+            <label class="auth-remember">
+              <input
+                type="checkbox"
+                checked={remember()}
+                disabled={action.busy()}
+                onChange={(event) => setRemember(event.currentTarget.checked)}
+              />
+              Remember me for {keys.REMEMBER_PASSKEY_DAYS} days
+            </label>
             <button
               class="link"
               disabled={action.busy()}

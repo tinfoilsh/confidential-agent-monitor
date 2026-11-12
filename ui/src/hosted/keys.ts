@@ -1,10 +1,12 @@
 import { randomBytes } from "@noble/hashes/utils.js";
 import {
   PasskeyKeyError,
+  createMemoryPasskeyKeyStorage,
   createPasskeyKeyManager,
   decodeWrappedKeyRecord,
   encodeWrappedKeyRecord,
   type PasskeyKeyManager,
+  type PasskeyKeyStorage,
 } from "@tinfoilsh/passkey-kit";
 import {
   PRF_PROFILES,
@@ -80,12 +82,18 @@ export function keySyncProfile(): KeySyncTargets {
   };
 }
 
-export const passkeys = () =>
-  createPasskeyKeyManager({
+const passkeyStorage = new WeakMap<PasskeyKeyManager, PasskeyKeyStorage>();
+export const passkeys = () => {
+  const storage = createMemoryPasskeyKeyStorage();
+  const manager = createPasskeyKeyManager({
     profile: PRF_PROFILES[PROFILE],
     relyingPartyName: "Tinfoil",
     enrollmentAttachment: "any",
+    storage,
   });
+  passkeyStorage.set(manager, storage);
+  return manager;
+};
 
 // --- controlplane key state -------------------------------------------------
 
@@ -538,7 +546,7 @@ const write = (
   context: { api_origin: string; user_id: string },
   fence: KekFence,
   signal: AbortSignal | undefined,
-  task: (store: IDBObjectStore) => IDBRequest,
+  task: (store: IDBObjectStore) => IDBRequest | void,
 ) =>
   transact("readwrite", async (store) => {
     const epoch = await request<string | undefined>(
@@ -546,7 +554,8 @@ const write = (
     );
     signal?.throwIfAborted();
     if (ended(epoch ?? "", fence)) throw new Error(SIGNED_OUT);
-    await request(task(store));
+    const result = task(store);
+    if (result) await request(result);
   });
 
 // Completes an explicit sign-out in one transaction: while the operation is
@@ -576,6 +585,7 @@ export function forgetManualKEKs(
       epochKey(api_origin, user_id),
     );
     store.delete(userRecords(api_origin, user_id));
+    forgetRememberedPasskey(api_origin, user_id);
     return true;
   });
 }
@@ -914,13 +924,16 @@ export async function removeRecovery(
 
 // A removed recovery's wrapped DEK is gone, so a KEK left behind opens nothing.
 const forgetKEKs = (context: MKContext, recovery_ids: string[]) =>
-  transact("readwrite", (store) =>
-    Promise.all(
+  transact("readwrite", (store) => {
+    const cached = readRememberedPasskey(context.api_origin, context.user_id);
+    if (cached && recovery_ids.includes(cached.recovery_id))
+      forgetRememberedPasskey(context.api_origin, context.user_id);
+    return Promise.all(
       recovery_ids.map((id) =>
         request(store.delete(manualKEKStorageKey(context, id))),
       ),
-    ),
-  ).catch(() => {});
+    );
+  }).catch(() => {});
 
 // Forgets keys that can no longer be opened, as read, so the account can start
 // over; registered CLI keys stay.
@@ -941,12 +954,115 @@ const contextOf = (state: KeyState, user_id: string): MKContext => {
   return { api_origin: TARGETS.api_origin!, user_id, dek_id: state.dek_id };
 };
 
-// A manual KEK saved in this browser for the current DEK, if any.
+export const REMEMBER_PASSKEY_DAYS = 30;
+const REMEMBER_PASSKEY_MS = REMEMBER_PASSKEY_DAYS * 24 * 60 * 60 * 1000;
+const PASSKEY_CACHE_PREFIX = "tinfoil.terminal.passkey.v1";
+const rememberedPasskeyKey = (api_origin: string, user_id: string) =>
+  `${PASSKEY_CACHE_PREFIX}|${PROFILE}|${api_origin}|${user_id}`;
+type RememberedPasskey = {
+  dek_id: string;
+  recovery_id: string;
+  credential_id: string;
+  prf: string;
+  epoch: string;
+  saved_at: number;
+};
+
+function forgetRememberedPasskey(api_origin: string, user_id: string) {
+  try {
+    localStorage.removeItem(rememberedPasskeyKey(api_origin, user_id));
+  } catch {}
+}
+
+function readRememberedPasskey(
+  api_origin: string,
+  user_id: string,
+): RememberedPasskey | undefined {
+  try {
+    const raw = localStorage.getItem(rememberedPasskeyKey(api_origin, user_id));
+    if (!raw) return;
+    const value = JSON.parse(raw);
+    if (
+      !isID16(value.dek_id) ||
+      !isID16(value.recovery_id) ||
+      typeof value.credential_id !== "string" ||
+      typeof value.epoch !== "string" ||
+      !Number.isSafeInteger(value.saved_at) ||
+      value.saved_at > Date.now() ||
+      Date.now() >= value.saved_at + REMEMBER_PASSKEY_MS
+    )
+      throw new Error("Invalid passkey cache.");
+    unb64u(value.prf, 32);
+    return value;
+  } catch {
+    forgetRememberedPasskey(api_origin, user_id);
+  }
+}
+
+// Cache access shares the sign-out fence's transaction, so late unlocks cannot
+// restore a secret after sign-out. Reads never extend the 30-day lifetime.
+export async function rememberedPasskey(
+  state: KeyState,
+  user_id: string,
+  fence: KekFence,
+  signal?: AbortSignal,
+): Promise<RememberedPasskey | undefined> {
+  const context = { api_origin: TARGETS.api_origin!, user_id };
+  let cached: RememberedPasskey | undefined;
+  await write(context, fence, signal, () => {
+    cached = readRememberedPasskey(context.api_origin, user_id);
+    if (
+      cached &&
+      (cached.epoch !== fence.epoch ||
+        cached.dek_id !== state.dek_id ||
+        !state.recovery.some(
+          (r) =>
+            r.type === "passkey" &&
+            r.recovery_id === cached!.recovery_id &&
+            r.credential_id === cached!.credential_id,
+        ))
+    ) {
+      forgetRememberedPasskey(context.api_origin, user_id);
+      cached = undefined;
+    }
+  });
+  return cached;
+}
+
+// A remembered passkey or manual KEK saved for the current user's DEK, if any.
 export async function unlockSaved(
   state: KeyState,
   user_id: string,
+  fence: KekFence,
+  signal?: AbortSignal,
 ): Promise<Unlocked | undefined> {
   const context = contextOf(state, user_id);
+  const cached = await rememberedPasskey(state, user_id, fence, signal);
+  if (cached) {
+    const manager = passkeys();
+    try {
+      passkeyStorage.get(manager)!.saveCachedPRFResult({
+        profile: PRF_PROFILES[PROFILE],
+        credentialId: cached.credential_id,
+        prfOutput: unb64u(cached.prf, 32),
+      });
+      const result = await manager.recoverKeyFromCache({
+        wrappedKeys: passkeyRecords(state),
+      });
+      if (result) return await open(state, result.key, context);
+    } catch {
+      // A corrupt cached secret falls back to an interactive unlock.
+    } finally {
+      manager.clearLocalState();
+    }
+    await write(context, fence, signal, () => {
+      if (
+        JSON.stringify(readRememberedPasskey(context.api_origin, user_id)) ===
+        JSON.stringify(cached)
+      )
+        forgetRememberedPasskey(context.api_origin, user_id);
+    });
+  }
   for (const { dek_id, recovery_id, record } of records(
     (await stored(context.api_origin, user_id)).stored,
   )) {
@@ -1003,13 +1119,7 @@ export async function unlockFile(
   return open(state, dek, context);
 }
 
-export async function unlockPasskey(
-  manager: PasskeyKeyManager,
-  state: KeyState,
-  user_id: string,
-  signal?: AbortSignal,
-): Promise<Unlocked> {
-  const context = contextOf(state, user_id);
+function passkeyRecords(state: KeyState) {
   const wrappedKeys = state.recovery
     .filter((r) => r.type === "passkey")
     .map((r) => {
@@ -1020,8 +1130,55 @@ export async function unlockPasskey(
     });
   if (!wrappedKeys.length)
     throw new Error("No passkey protects these keys. Use your recovery key.");
-  const { key } = await manager.recoverKey({ wrappedKeys, signal });
-  return open(state, key, context);
+  return wrappedKeys;
+}
+
+export async function unlockPasskey(
+  manager: PasskeyKeyManager,
+  state: KeyState,
+  user_id: string,
+  options: { remember: boolean; fence: KekFence; signal?: AbortSignal },
+): Promise<Unlocked> {
+  const context = contextOf(state, user_id);
+  const { remember, fence, signal } = options;
+  try {
+    const { key, credentialId } = await manager.recoverKey({
+      wrappedKeys: passkeyRecords(state),
+      signal,
+    });
+    const unlocked = await open(state, key, context);
+    await write(context, fence, signal, () => {
+      if (!remember)
+        return forgetRememberedPasskey(context.api_origin, user_id);
+      const cached = passkeyStorage.get(manager)?.loadCachedPRFResult();
+      if (!cached || cached.credentialId !== credentialId)
+        throw new Error("Your passkey could not be remembered. Try again.");
+      const recovery = state.recovery.find(
+        (r) => r.type === "passkey" && r.credential_id === credentialId,
+      )!;
+      const record: RememberedPasskey = {
+        dek_id: context.dek_id,
+        recovery_id: recovery.recovery_id,
+        credential_id: credentialId,
+        prf: b64u(cached.prfOutput),
+        epoch: fence.epoch,
+        saved_at: Date.now(),
+      };
+      try {
+        localStorage.setItem(
+          rememberedPasskeyKey(context.api_origin, user_id),
+          JSON.stringify(record),
+        );
+      } catch {
+        throw new Error(
+          "This browser could not remember your passkey. Allow site storage or uncheck Remember me and try again.",
+        );
+      }
+    });
+    return unlocked;
+  } finally {
+    manager.clearLocalState();
+  }
 }
 
 // Re-reads after a refresh; the unlocked DEK is reused only for the same DEK ID.

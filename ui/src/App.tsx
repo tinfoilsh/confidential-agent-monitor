@@ -120,11 +120,9 @@ function Shell() {
     resized.observe(header);
     onCleanup(() => resized.disconnect());
   };
-  const approvals = () =>
-    m.pendingCount() + (m.view() ? owner.toolReviews(m.view()!).length : 0);
   const count = (section: string) =>
     section === "connections"
-      ? approvals()
+      ? m.pendingCount()
       : section === "agents"
         ? Object.keys(m.view()?.config.identities ?? {}).length
         : 0;

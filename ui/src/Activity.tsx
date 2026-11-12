@@ -125,7 +125,7 @@ function Requests(props: { expanded?: string }) {
   };
   return (
     <>
-      <div id="list" class="resource-list">
+      <div id="list" class="resource-list request-list">
         <div class="resource-heading">
           <h2>
             Requests <span class="count">{filtered().length}</span>
@@ -149,6 +149,16 @@ function Requests(props: { expanded?: string }) {
             </button>
           </Show>
         </div>
+        <Show when={visible().length}>
+          <div class="request-table-heading" aria-hidden="true">
+            <span>Request</span>
+            <span>Bunker</span>
+            <span>Service</span>
+            <span>Status</span>
+            <span>Time</span>
+            <span />
+          </div>
+        </Show>
         <For
           each={visible()}
           fallback={
@@ -224,33 +234,41 @@ function RequestRow(props: { id: string; stack: string[]; open?: boolean }) {
             <span class="icon-stack" data-stacked={props.stack.length > 1}>
               <ConnectorIcon connection={record().facts.connection} />
             </span>
-            <span>
-              <strong>{owner.requestTitle(record())}</strong>
-              <small>
-                {record().facts.principal.name} ·{" "}
-                {record().facts.connection || "Policy"}
-              </small>
-            </span>
-          </span>
-          <div class="resource-meta">
+            <strong title={owner.requestTitle(record())}>
+              <span class="sr-only">Request: </span>
+              {owner.requestTitle(record())}
+            </strong>
             <Show when={props.stack.length > 1}>
               <span class="count">×{props.stack.length}</span>
             </Show>
+          </span>
+          <span class="request-origin">
+            <span title={record().facts.principal.name}>
+              <span class="sr-only">Bunker: </span>
+              {record().facts.principal.name}
+            </span>
+            <span title={record().facts.connection || "Policy"}>
+              <span class="sr-only">Service: </span>
+              {record().facts.connection || "Policy"}
+            </span>
+          </span>
+          <span class="request-result">
+            <span class="sr-only">Status: </span>
             <Badge state={record().state} record={record()} />
             <Show when={record().state === "pending"}>
-              <span class="muted">
-                {owner.timeLeft(record(), m.now())} left
-              </span>
+              <a
+                class="review-link"
+                href="#connections"
+                title={`Review in Permissions · ${owner.timeLeft(record(), m.now())} left`}
+              >
+                Review ({owner.timeLeft(record(), m.now())})
+              </a>
             </Show>
-            <time title={requestDate.format(time())}>
-              {requestTime.format(time())}
-            </time>
-          </div>
-          <Show when={record().state === "pending"}>
-            <a class="review-link" href="#connections">
-              Review in Permissions
-            </a>
-          </Show>
+          </span>
+          <time dateTime={timestamp()} title={requestDate.format(time())}>
+            <span class="sr-only">Requested at: </span>
+            {requestTime.format(time())}
+          </time>
           <span class="collection-chevron">
             <Icon name="arrow" />
           </span>

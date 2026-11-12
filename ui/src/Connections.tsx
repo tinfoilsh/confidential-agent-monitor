@@ -185,19 +185,17 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
   return (
     <>
       <NeedsApproval proposal={props.proposal} />
-      <div id="toolbar">
-        <Search
-          label="Search connections and services"
-          autofocus
-          value={query()}
-          onInput={setQuery}
-        />
-      </div>
       <div class="resource-list collection-list">
         <div class="resource-heading">
           <h2>
             Services <span class="count">{names().length}</span>
           </h2>
+          <Search
+            label="Search connections and services"
+            autofocus
+            value={query()}
+            onInput={setQuery}
+          />
         </div>
         <For
           each={names()}

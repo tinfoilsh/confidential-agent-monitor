@@ -202,6 +202,8 @@ function createMonitor(options: MonitorOptions) {
     ...archived(),
   ]);
   const log = createRequestLog(requests, now);
+  const pendingCount = () =>
+    log.pendingCount() + (view() ? owner.toolReviewCount(view()!) : 0);
   const remember = (
     next: owner.View,
     requests = snapshot()?.requests ?? [],
@@ -442,7 +444,7 @@ function createMonitor(options: MonitorOptions) {
     ),
   );
   createEffect(() => {
-    const count = log.pendingCount();
+    const count = pendingCount();
     const name = options.product?.title ?? "Perimeter";
     document.title = count ? `(${count}) ${name}` : name;
   });
@@ -578,7 +580,7 @@ function createMonitor(options: MonitorOptions) {
     pendingRequests: log.pendingRequests,
     pendingProposals: log.pendingProposals,
     recordsById: log.byId,
-    pendingCount: log.pendingCount,
+    pendingCount,
     older,
     loadingOlder,
     loadOlder,

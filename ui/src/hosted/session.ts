@@ -202,6 +202,7 @@ export function createSession(clerk: Clerk) {
           );
         })
         .then(async (state) => {
+          await keys.rememberedPasskey(state, id, await sign_in, current.signal);
           const next = await keys.refreshUnlocked(unlocked(), state);
           if (!live()) return;
           setKeyState({ value: state, loading: false });
