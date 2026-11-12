@@ -8,7 +8,13 @@ function TabsFixture() {
   const [renamed, setRenamed] = createSignal(false);
   return (
     <main
-      style={{ padding: "16px", width: "100%", "box-sizing": "border-box" }}
+      style={{
+        padding: "16px",
+        width: "100%",
+        "box-sizing": "border-box",
+        background: "var(--bg)",
+        "min-height": "100dvh",
+      }}
     >
       <TabBar
         label="Usage type"
@@ -24,7 +30,9 @@ function TabsFixture() {
         ]}
       />
       <p role="status">{value() ?? "No selection"}</p>
-      <button onClick={() => setRenamed(true)}>Expand bunker label</button>
+      <button class="primary" onClick={() => setRenamed(true)}>
+        Expand bunker label
+      </button>
       <button onClick={() => setValue(undefined)}>Clear selection</button>
     </main>
   );

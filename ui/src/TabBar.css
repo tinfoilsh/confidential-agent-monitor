@@ -1,5 +1,6 @@
 .tab-bar {
-  --tab-accent: var(--tinfoil-oak);
+  --tab-accent: var(--card);
+  --tab-selected-border: rgb(5 37 46 / 30%);
   position: relative;
   display: inline-flex;
   flex-shrink: 1;
@@ -9,10 +10,15 @@
   padding: 4px;
   border: 1px solid var(--line);
   border-radius: var(--card-radius);
-  background: var(--card);
+  background: var(--subtle);
   overflow-x: auto;
   scrollbar-width: none;
   overscroll-behavior-inline: contain;
+}
+:root[data-theme="dark"] .tab-bar {
+  --tab-accent: var(--tinfoil-light);
+  --tab-selected-border: var(--tinfoil-light);
+  background: var(--card);
 }
 .tab-bar::-webkit-scrollbar {
   display: none;
@@ -24,6 +30,7 @@
   bottom: 4px;
   border-radius: var(--card-radius);
   background: var(--tab-accent);
+  border: 1px solid var(--tab-selected-border);
   pointer-events: none;
 }
 .tab-bar.inherited .tab-bar-pill {
@@ -67,6 +74,7 @@
 }
 .tab-bar:not(.ready) > :is([aria-current="page"], [aria-pressed="true"]) {
   background: var(--tab-accent);
+  border-color: var(--tab-selected-border);
 }
 .tab-bar > :is(a, button):focus-visible {
   outline: 2px solid var(--link);
