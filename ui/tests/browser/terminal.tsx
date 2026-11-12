@@ -76,6 +76,30 @@ const requests: owner.RequestRecord[] = Array.from(
     },
   }),
 );
+if (new URLSearchParams(location.search).has("review")) {
+  view.config.connections!["tinfoil-websearch"]["tinfoil-mcp"] = {
+    url: "https://websearch.example/mcp",
+  };
+  view.status["tinfoil-websearch"] = {
+    state: "ready",
+    details: {
+      blocked: 2,
+      changes: ["+ search", "+ fetch"],
+      pin: { tools: [{ name: "search" }, { name: "fetch" }] },
+    },
+  };
+  requests.push({
+    id: "pending",
+    state: "pending",
+    time: new Date().toISOString(),
+    expires: new Date(Date.now() + 60_000).toISOString(),
+    facts: {
+      title: "Connect to example.com",
+      principal: { name: "new-bunker" },
+      connection: "network",
+    },
+  });
+}
 const unexpected = async () => {
   throw new Error("Unexpected owner API call");
 };
@@ -96,6 +120,15 @@ const client: owner.OwnerApi = {
   archive: async () => ({ records: [] }),
   edit: async (changes: owner.Change[]) => {
     owner.applyChanges(view.config, changes);
+    const setup = view.config.connections!["tinfoil-websearch"]["tinfoil-mcp"];
+    if (setup && typeof setup === "object" && "pin" in setup) {
+      if (
+        JSON.stringify(setup.pin) !==
+        JSON.stringify(view.status["tinfoil-websearch"].details?.pin)
+      )
+        throw new Error("Approval must save the reported tool definitions");
+      view.status["tinfoil-websearch"] = { state: "ready" };
+    }
     view.generation++;
     return structuredClone(view);
   },

@@ -5,6 +5,29 @@ const HEIGHT = 900;
 const TOLERANCE = 1;
 const DESKTOP_ROW_HEIGHT = 48;
 
+test("approval counts include every tool and update after approval", async ({
+  page,
+}) => {
+  await page.goto("/app/tests/browser/terminal.html?review#connections");
+  const sidebar = page.locator('#tree a[href="#connections"] .nav-count');
+  const needsApproval = page.getByRole("region", { name: "Needs approval" });
+  await expect(sidebar).toHaveText("3 waiting for approval");
+  await expect(
+    needsApproval.getByRole("heading", { name: "Needs approval 3" }),
+  ).toBeVisible();
+  await expect(page).toHaveTitle("(3) Perimeter");
+  await needsApproval.locator(".approval-tools-item > summary").click();
+  await needsApproval
+    .getByRole("button", { name: "Approve tools", exact: true })
+    .click();
+  await expect(sidebar).toHaveText("1 waiting for approval");
+  await expect(
+    needsApproval.getByRole("heading", { name: "Needs approval 1" }),
+  ).toBeVisible();
+  await expect(page).toHaveTitle("(1) Perimeter");
+  await expect(needsApproval.getByText("Connect to example.com")).toBeVisible();
+});
+
 for (const theme of ["light", "dark"]) {
   for (const width of WIDTHS) {
     test(`request rows and shared headers fit at ${width}px in ${theme} mode`, async ({

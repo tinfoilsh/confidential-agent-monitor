@@ -282,8 +282,6 @@ export function ApprovalToasts(props: { hidden: boolean }) {
 export function NeedsApproval(props: { proposal?: string }) {
   const m = useMonitor();
   const tools = createMemo(() => owner.toolReviews(m.view()!));
-  const total = () =>
-    m.pendingRequests().length + m.pendingProposals().length + tools().length;
   return (
     <>
       <Show
@@ -309,14 +307,14 @@ export function NeedsApproval(props: { proposal?: string }) {
           </Empty>
         </div>
       </Show>
-      <Show when={total()}>
+      <Show when={m.pendingCount()}>
         <section
           class="resource-list collection-list approval-list"
           aria-label="Needs approval"
         >
           <div class="resource-heading">
             <h2>
-              Needs approval <span class="count">{total()}</span>
+              Needs approval <span class="count">{m.pendingCount()}</span>
             </h2>
           </div>
           <For each={m.pendingRequests().map((record) => record.id)}>

@@ -1064,6 +1064,11 @@ export const toolReviews = (view: View) =>
   Object.keys(connections(view))
     .filter((name) => (view.status[name]?.details?.blocked ?? 0) > 0)
     .sort();
+export const toolReviewCount = (view: View) =>
+  toolReviews(view).reduce(
+    (count, name) => count + view.status[name].details!.blocked!,
+    0,
+  );
 
 // A pin change is "+ name", "~ name" or "- name" and then the tool's definition,
 // or "~ instructions:" and then the server's instructions.
