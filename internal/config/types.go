@@ -37,13 +37,14 @@ type Access struct {
 	Effects map[string]string `json:"effects,omitempty"`
 }
 
-// A rule waives requirements for one operation under the definition the owner approved.
+// A rule waives the requirements it names for one operation and scope.
 type Rule struct {
 	Enabled      *bool               `json:"enabled,omitempty"`
+	Version      int                 `json:"version"` // facts.Version it was approved under.
 	Connection   string              `json:"connection"`
 	Action       string              `json:"action"`
 	Operation    string              `json:"operation,omitempty"`
-	ApprovalKey  string              `json:"definition,omitempty"`
+	Definition   string              `json:"definition,omitempty"` // Read from rules saved before Version; never matched.
 	Scope        map[string]any      `json:"scope"`
 	Requirements []facts.Requirement `json:"requirements"`
 }

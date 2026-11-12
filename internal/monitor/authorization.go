@@ -3,8 +3,6 @@ package monitor
 import (
 	"context"
 	"crypto/rand"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -71,12 +69,19 @@ type record struct {
 	Expires time.Time       `json:"expires,omitzero"`
 	Facts   json.RawMessage `json:"facts"`
 	policy.Decision
-	ApprovalKey string         `json:"definition"`
-	Grant       map[string]any `json:"grant"`
-	Reviews     []reviewAnswer `json:"reviews,omitempty"`
-	// Changes makes the record a policy proposal; scope is what it was reviewed against.
+	Grant   map[string]any `json:"grant"`
+	Reviews []reviewAnswer `json:"reviews,omitempty"`
+	// Changes makes the record a policy proposal, reviewed against the current policy.
 	Changes []config.Change `json:"changes,omitempty"`
-	scope   string
+}
+
+// A grant is an allowed event a settings write re-decides, with the label it was
+// decided under and the requirements the owner answered for it alone.
+type grant struct {
+	kind     facts.Kind
+	event    facts.Event
+	label    facts.Label
+	approved []string
 }
 
 // Activity never needs request bodies, policy parameters or saved-rule grants.
@@ -104,7 +109,7 @@ var (
 	errNoAgent = errors.New("this agent's identity was removed")
 )
 
-func (m *monitor) authorizeAdmission(ctx context.Context, admitted admission, target frontdoor.Target) error {
+func (m *monitor) authorizeAdmission(ctx context.Context, admitted *admission, target frontdoor.Target) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if admitted.connection == nil {
@@ -117,14 +122,17 @@ func (m *monitor) authorizeAdmission(ctx context.Context, admitted admission, ta
 		Details:    map[string]any{"tcp": map[string]any{"host": target.Host, "port": target.Port}},
 		Context:    facts.Context{Observes: cleanLabel},
 	}
-	r, err := m.authorizeLocked(ctx, admitted, facts.KindAdmission, facts.Capture(f, nil))
+	g := &grant{kind: facts.KindAdmission, event: facts.Capture(f, nil)}
+	r, err := m.authorizeLocked(ctx, admitted, g)
 	if r != nil {
 		m.settleRecord(r, err)
 	}
+	admitted.grants = []*grant{g}
 	return err
 }
 
-func (m *monitor) authorizeOperation(ctx context.Context, stream *connector.Stream, admitted admission, event facts.Event) error {
+// authorizeOperation keeps the latest allowed operation with its stream.
+func (m *monitor) authorizeOperation(ctx context.Context, stream *connector.Stream, admitted *admission, event facts.Event) error {
 	if stream == nil {
 		return errors.New("operation authorization requires a stream")
 	}
@@ -135,21 +143,55 @@ func (m *monitor) authorizeOperation(ctx context.Context, stream *connector.Stre
 	defer cancel()
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	r, err := m.authorizeLocked(ctx, admitted, facts.KindOperation, event)
+	g := &grant{kind: facts.KindOperation, event: event}
+	r, err := m.authorizeLocked(ctx, admitted, g)
 	if r != nil {
 		if err == nil {
 			err = m.relabel(ctx, admitted.fingerprint, r.Next, stream)
 		}
 		m.settleRecord(r, err)
 	}
-	return err
+	if err != nil || m.kinds[admitted.connection.Protocol].PerMessage {
+		return err
+	}
+	admitted.grants = append(admitted.grants[:1], g)
+	return nil
+}
+
+// decide evaluates g under current settings, without waiting or recording.
+// An invalid event yields its record with the error.
+func (m *monitor) decide(ctx context.Context, admitted *admission, g *grant) (*record, error) {
+	st := m.settings.Load()
+	p, ok := st.Principal(admitted.fingerprint)
+	if !ok {
+		return nil, errNoAgent
+	}
+	c := admitted.connection
+	if !m.usable(c, admitted.prepared) {
+		return nil, errChanged
+	}
+	f, describeErr := st.bindFacts(c, p, g.label, g.kind, g.event)
+	if describeErr != nil {
+		f.Operation = nil
+		raw, _, err := facts.Encode(f)
+		if err != nil {
+			return nil, err
+		}
+		return &record{Facts: raw, Invalid: true}, describeErr
+	}
+	input, next, err := st.policyInput(c, p, f, g.approved)
+	if err != nil {
+		return nil, err
+	}
+	next.Decision, err = st.Engine.Decide(ctx, input)
+	return next, err
 }
 
 // authorizeLocked runs under mu, releasing it only around approval waits.
 // Callers settle its record after any label persistence, before execution begins.
-func (m *monitor) authorizeLocked(ctx context.Context, admitted admission, kind facts.Kind, event facts.Event) (*record, error) {
+func (m *monitor) authorizeLocked(ctx context.Context, admitted *admission, g *grant) (*record, error) {
 	var r *record
-	var approvals []config.Rule
+	g.approved = []string{}
 	for {
 		if err := ctx.Err(); err != nil {
 			return r, err
@@ -157,35 +199,18 @@ func (m *monitor) authorizeLocked(ctx context.Context, admitted admission, kind 
 		if m.audit.Backlogged() {
 			return r, errAuditBacklog
 		}
-		st := m.settings.Load()
-		p, ok := st.Principal(admitted.fingerprint)
-		if !ok {
-			return r, errNoAgent
+		g.label = m.currentLabel(admitted.fingerprint)
+		next, err := m.decide(ctx, admitted, g)
+		if next != nil && next.Invalid {
+			return m.addRecord(next), err
 		}
-		c := admitted.connection
-		if !m.usable(c, admitted.prepared) {
-			return r, errChanged
-		}
-		f, describeErr := st.bindFacts(c, p, m.currentLabel(p.Key), kind, event)
-		if describeErr != nil {
-			f.Operation = nil
-			raw, _, err := facts.Encode(f)
-			if err != nil {
-				return nil, err
-			}
-			return m.addRecord(&record{Facts: raw, Invalid: true}), describeErr
-		}
-		input, next, err := st.policyInput(c, p, f, approvals)
 		if err != nil {
-			return r, err
-		}
-		if next.Decision, err = st.Engine.Decide(ctx, input); err != nil {
 			return r, err
 		}
 		if r == nil {
 			r = m.addRecord(next)
 		}
-		r.Facts, r.Decision, r.ApprovalKey, r.Grant = next.Facts, next.Decision, next.ApprovalKey, next.Grant
+		r.Facts, r.Decision, r.Grant = next.Facts, next.Decision, next.Grant
 		if len(r.Deny) != 0 {
 			return r, errors.New(strings.Join(r.Deny, "; "))
 		}
@@ -199,7 +224,9 @@ func (m *monitor) authorizeLocked(ctx context.Context, admitted admission, kind 
 			return r, err
 		}
 		if r.State == stateApproved {
-			approvals = append(approvals, config.Rule{Connection: c.Name, ApprovalKey: r.ApprovalKey, Scope: r.Grant, Requirements: r.Requirements})
+			for _, requirement := range r.Requirements {
+				g.approved = append(g.approved, requirement.ID)
+			}
 		}
 	}
 }
@@ -219,12 +246,8 @@ func (st *settings) bindFacts(c *connection, p config.Principal, label facts.Lab
 }
 
 // policyInput builds the engine input and the record its decision will fill.
-func (st *settings) policyInput(c *connection, p config.Principal, f facts.Facts, approvals []config.Rule) (map[string]any, *record, error) {
-	modes := st.Config.EffectModes(p.Name, c.Name, f.Operation)
-	key, err := approvalKey(st, c, f, modes)
-	if err != nil {
-		return nil, nil, err
-	}
+// approved names the requirements the owner answered for this request alone.
+func (st *settings) policyInput(c *connection, p config.Principal, f facts.Facts, approved []string) (map[string]any, *record, error) {
 	grant := f.Scope
 	encoded, policyFacts, err := facts.Encode(f)
 	if err != nil {
@@ -235,11 +258,11 @@ func (st *settings) policyInput(c *connection, p config.Principal, f facts.Facts
 		return nil, nil, err
 	}
 	authorization := map[string]any{
-		"access":     access,
-		"effects":    modes,
-		"rules":      append(slices.Collect(maps.Values(st.Identities[p.Name].Rules)), approvals...),
-		"definition": key,
-		"grant":      grant,
+		"access":   access,
+		"effects":  st.Config.EffectModes(p.Name, c.Name, f.Operation),
+		"rules":    slices.Collect(maps.Values(st.Identities[p.Name].Rules)),
+		"approved": approved,
+		"grant":    grant,
 	}
 	connection := st.Connections[c.Name]
 	connectionInput := map[string]any{
@@ -253,37 +276,7 @@ func (st *settings) policyInput(c *connection, p config.Principal, f facts.Facts
 		"facts":         policyFacts,
 		"authorization": authorization,
 		"connection":    connectionInput,
-	}, &record{Facts: encoded, Grant: grant, ApprovalKey: key}, nil
-}
-
-// approvalKey binds saved grants to semantics and configuration, excluding
-// display fields and current labels. The positional encoding is persisted in
-// existing grants: preserve its order and representation when refactoring.
-func approvalKey(st *settings, c *connection, f facts.Facts, modes map[string]string) (string, error) {
-	connection := st.Connections[c.Name]
-	raw, err := json.Marshal([]any{
-		st.Engine.Program,
-		st.Lattices,
-		modes,
-		f.Kind,
-		connection.Preset,
-		c.Name,
-		c.Config,
-		connection.PolicyOptions,
-		connection.Contents,
-		connection.Strangers,
-		connection.Sends,
-		c.PublicScope,
-		f.Definition,
-		f.Operation,
-		f.Context.Sends,
-		f.Context.Observes,
-	})
-	if err != nil {
-		return "", fmt.Errorf("encode approval definition: %w", err)
-	}
-	sum := sha256.Sum256(raw)
-	return hex.EncodeToString(sum[:]), nil
+	}, &record{Facts: encoded, Grant: grant}, nil
 }
 
 // ruleChange derives a saved rule only from frozen audit/grant data under mu.
@@ -296,8 +289,8 @@ func (m *monitor) ruleChange(r *record) (config.Change, error) {
 	if !exists || p.Name != f.Principal.Name {
 		return config.Change{}, errors.New("the requesting identity was revoked or replaced")
 	}
-	return config.Change{Path: []string{"identities", p.Name, "rules", r.ID}, Value: config.Rule{Connection: f.Connection, Action: f.Operation.Action, Operation: f.Operation.ID,
-		ApprovalKey: r.ApprovalKey, Scope: r.Grant, Requirements: slices.Clone(r.Requirements)}}, nil
+	return config.Change{Path: []string{"identities", p.Name, "rules", r.ID}, Value: config.Rule{Version: facts.Version, Connection: f.Connection, Action: f.Operation.Action, Operation: f.Operation.ID,
+		Scope: r.Grant, Requirements: slices.Clone(r.Requirements)}}, nil
 }
 
 var cleanLabel = facts.Label{Trust: "trusted", Audience: "anyone"}
@@ -420,7 +413,10 @@ func (m *monitor) settleRecord(r *record, err error) {
 
 // answerable validates an answer under mu; callers recheck it after pure
 // preparation so a concurrent answer cannot be overwritten by a saved rule.
-func (m *monitor) answerable(id string, input answerInput) (*record, error) {
+func (m *monitor) answerable(id string, input answerInput, revision uint64) (*record, error) {
+	if revision != m.store.Doc.Revision {
+		return nil, errPolicyConflict
+	}
 	choices := []string{answerOnce, answerSave, answerDeny}
 	if !slices.Contains(choices, input.Choice) {
 		return nil, fmt.Errorf("decision must be one of %s", strings.Join(choices, ", "))
@@ -438,7 +434,7 @@ func (m *monitor) answerable(id string, input answerInput) (*record, error) {
 	return r, nil
 }
 
-func (m *monitor) answerRequest(ctx context.Context, id string, input answerInput) error {
+func (m *monitor) answerRequest(ctx context.Context, id string, input answerInput, revision uint64) error {
 	input.Reason = strings.TrimSpace(input.Reason)
 	m.mu.Lock()
 	r := m.findRecord(id)
@@ -448,7 +444,7 @@ func (m *monitor) answerRequest(ctx context.Context, id string, input answerInpu
 		m.writes.Lock()
 		defer m.writes.Unlock()
 		m.mu.Lock()
-		r, err := m.answerable(id, input)
+		r, err := m.answerable(id, input, revision)
 		var change config.Change
 		if err == nil && input.Choice == answerSave {
 			change, err = m.ruleChange(r)
@@ -462,7 +458,7 @@ func (m *monitor) answerRequest(ctx context.Context, id string, input answerInpu
 			changes = []config.Change{change}
 		}
 		err = m.writeSettings(ctx, settingsWrite{changes: changes, check: func() error {
-			current, err := m.answerable(id, input)
+			current, err := m.answerable(id, input, revision)
 			if err == nil && current != r {
 				return errRecordGone
 			}
@@ -480,7 +476,7 @@ func (m *monitor) answerRequest(ctx context.Context, id string, input answerInpu
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	r, err := m.answerable(id, input)
+	r, err := m.answerable(id, input, revision)
 	if err != nil {
 		return err
 	}

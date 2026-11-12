@@ -6,6 +6,7 @@ import "../../src/shell.css";
 
 const view: owner.View = {
   generation: 1,
+  revision: 1,
   catalog_id: "test",
   host_key: "ssh-ed25519 test-host",
   host_id: "test-host",

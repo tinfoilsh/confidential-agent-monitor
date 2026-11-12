@@ -99,8 +99,9 @@ perimeter policy status PROPOSAL_ID
 
 Status is limited to this bunker's own proposals and reports `pending`,
 `approved`, `denied`, or `outdated`. It is process-local like the
-pending proposal itself. If a relevant setting changes first, the Perimeter records the
-proposal as Outdated; submit a new proposal if it is still needed.
+pending proposal itself. A proposal stays pending across other policy changes and is
+reviewed against the current policy. The Perimeter records it as Outdated when it
+no longer applies or this bunker proposes again for the same service.
 
 ## Use services
 

@@ -117,9 +117,9 @@ The result is a receipt, `{id, state, connection}`, with state `pending`,
 `approved`, `denied`, or `outdated`. Status is process-local like the pending
 proposal itself, so a Perimeter restart may make an old receipt unavailable.
 
-If relevant configuration changes before review, the Perimeter consumes the proposal
-as Outdated and records that outcome in Activity. Submit a new proposal against
-the latest policy if the request is still needed.
+A proposal stays pending across other policy changes and is reviewed against the
+current policy. The Perimeter records it as Outdated in Activity when it no longer
+applies or you propose again for the same service.
 
 ## Use granted services
 

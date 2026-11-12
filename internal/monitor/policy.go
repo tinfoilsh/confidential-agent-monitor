@@ -41,18 +41,18 @@ func (w settingsWrite) checked() error {
 // writeSettings is the single ordered settings path; writes is held, mu is not.
 func (m *monitor) writeSettings(ctx context.Context, w settingsWrite) error {
 	m.mu.Lock()
-	base, env, err := m.store.Doc, m.settings.Load().Env, w.checked()
+	source, current, err := m.store.Doc.Policy, m.settings.Load(), w.checked()
 	m.mu.Unlock()
 	if err != nil {
 		return err
 	}
-	next := base
+	rebuild := everyConnector
 	if w.source != nil {
-		next.Policy = *w.source
-	} else if next.Policy, err = config.EditSource(base.Policy, w.changes); err != nil {
+		source = *w.source
+	} else if source, rebuild, err = current.Edit(source, w.changes); err != nil {
 		return err
 	}
-	plan, err := m.prepareSettings(ctx, base, next, w.credentials, env)
+	plan, err := m.prepareSettings(ctx, source, rebuild, w.credentials, current.Env)
 	if err != nil {
 		return err
 	}
@@ -70,6 +70,16 @@ func (m *monitor) writeSettings(ctx context.Context, w settingsWrite) error {
 
 var errPolicyConflict = errors.New("policy changed; reload it and review a new diff before applying")
 
+// reviewed checks, under mu, that an owner write naming a revision was made against current settings.
+func (m *monitor) reviewed(revision *uint64) func() error {
+	return func() error {
+		if revision != nil && *revision != m.store.Doc.Revision {
+			return errPolicyConflict
+		}
+		return nil
+	}
+}
+
 // policyDiff compares the owner source and its expanded settings.
 type policyDiff struct {
 	SourceDiff    string `json:"source_diff"`
@@ -81,15 +91,8 @@ func sourceDiff(a, b string) string {
 	return text
 }
 
-// prepareSource runs under writes and prepares source against base without committing it.
-func (m *monitor) prepareSource(ctx context.Context, base store.Document, before *settings, source string) (*settingsPlan, error) {
-	next := base
-	next.Policy = source
-	return m.prepareSettings(ctx, base, next, nil, before.Env)
-}
-
 func (m *monitor) previewPolicy(ctx context.Context, base store.Document, before *settings, source string) (*policyDiff, error) {
-	plan, err := m.prepareSource(ctx, base, before, source)
+	plan, err := m.prepareSettings(ctx, source, everyConnector, nil, before.Env)
 	if err != nil {
 		return nil, err
 	}
@@ -124,6 +127,28 @@ type proposalReceipt struct {
 
 func (r *record) receipt() proposalReceipt {
 	return proposalReceipt{ID: r.ID, State: r.State, Connection: r.summary().Facts.Connection}
+}
+
+// proposal renders p's changes to one connection against source for review. It
+// fails when they no longer apply, change nothing, or p may not propose them.
+func (st *settings) proposal(source string, p config.Principal, target, reason string, changes []config.Change) (string, json.RawMessage, error) {
+	if current, ok := st.Principal(p.Key); !ok || current != p {
+		return "", nil, errNoAgent
+	}
+	if _, err := st.ProposalChanges(p, changes); err != nil {
+		return "", nil, err
+	}
+	candidate, _, err := st.Edit(source, changes)
+	if err == nil && candidate == source {
+		err = errors.New("proposal does not change policy")
+	}
+	if err != nil {
+		return "", nil, err
+	}
+	raw, _, err := facts.Encode(facts.Facts{Version: facts.Version, Principal: p, Connection: target,
+		Service: "policy-proposal", Title: reason, Parameters: map[string]any{},
+		Details: map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(source, candidate)}}})
+	return candidate, raw, err
 }
 
 // proposePolicy publishes one pending record per connection, or none if any fails.
@@ -162,39 +187,29 @@ func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalI
 	}
 	var proposals []*record
 	for _, target := range slices.Sorted(maps.Keys(groups)) {
-		candidate, normalized, err := config.EditSourceNormalized(base.Policy, groups[target])
-		if err == nil && candidate == base.Policy {
-			err = errors.New("proposal does not change policy")
-		}
+		candidate, raw, err := before.proposal(base.Policy, p, target, reason, groups[target])
 		if err == nil {
-			_, err = m.prepareSource(ctx, base, before, candidate)
-		}
-		var raw json.RawMessage
-		if err == nil {
-			raw, _, err = facts.Encode(facts.Facts{Version: facts.Version, Principal: p, Connection: target,
-				Service: "policy-proposal", Title: reason, Parameters: map[string]any{},
-				Details: map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(base.Policy, candidate)}}})
+			_, err = m.prepareSettings(ctx, candidate, everyConnector, nil, before.Env)
 		}
 		if err != nil {
 			return nil, fmt.Errorf("service %s: %w", target, err)
 		}
-		proposals = append(proposals, &record{Facts: raw, Changes: normalized, scope: before.ProposalScope(p.Name, normalized),
+		proposals = append(proposals, &record{Facts: raw, Changes: groups[target],
 			Decision: policy.Decision{Requirements: []facts.Requirement{{ID: "policy", Message: reason}}}})
 	}
 
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	pending := 0
+	// A principal has one pending proposal per connection; a new one replaces it.
+	var replaced []*record
+	pending := len(proposals)
 	for _, r := range m.records {
-		if r.State == statePending && r.Changes != nil {
-			pending++
+		if r.State != statePending || r.Changes == nil {
+			continue
 		}
-	}
-	for i, proposal := range proposals {
-		if j := slices.IndexFunc(m.records, func(r *record) bool {
-			return r.State == statePending && reflect.DeepEqual(r.Changes, proposal.Changes) && r.summary().Facts.Principal == p
-		}); j >= 0 {
-			proposals[i] = m.records[j]
+		f := r.summary().Facts
+		if _, again := groups[f.Connection]; again && f.Principal == p {
+			replaced = append(replaced, r)
 		} else {
 			pending++
 		}
@@ -202,12 +217,14 @@ func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalI
 	if pending > maxPolicyProposals {
 		return nil, errors.New("too many pending policy proposals")
 	}
+	for _, r := range replaced {
+		r.State = stateOutdated
+		m.settleRecord(r, nil)
+	}
 	receipts := make([]proposalReceipt, 0, len(proposals))
 	for _, proposal := range proposals {
-		if proposal.ID == "" {
-			m.addRecord(proposal)
-			proposal.State = statePending
-		}
+		m.addRecord(proposal)
+		proposal.State = statePending
 		receipts = append(receipts, proposal.receipt())
 	}
 	return receipts, nil

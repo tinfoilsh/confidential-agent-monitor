@@ -244,7 +244,6 @@ func (r *Request) Describe(p *Preset) (facts.Facts, error) {
 	if p != nil {
 		scope, err := jsonsel.Select(p.scope, args)
 		maps.Copy(f.Parameters, scope)
-		f.Definition = p.definition
 		f.Context.Sends = p.Sends
 		if p.Observes != nil {
 			f.Context.Observes = *p.Observes
@@ -256,11 +255,10 @@ func (r *Request) Describe(p *Preset) (facts.Facts, error) {
 
 // Preset selects service resource identifiers from tool arguments.
 type Preset struct {
-	Scope      map[string]jsonsel.Selector `json:"scope,omitempty"`
-	Sends      string                      `json:"sends,omitempty"`
-	Observes   *facts.Label                `json:"observes,omitempty"`
-	scope      []jsonsel.Compiled
-	definition json.RawMessage
+	Scope    map[string]jsonsel.Selector `json:"scope,omitempty"`
+	Sends    string                      `json:"sends,omitempty"`
+	Observes *facts.Label                `json:"observes,omitempty"`
+	scope    []jsonsel.Compiled
 }
 
 func (p *Preset) UnmarshalJSON(raw []byte) error {
@@ -271,9 +269,6 @@ func (p *Preset) UnmarshalJSON(raw []byte) error {
 	}
 	if err == nil {
 		p.scope, err = jsonsel.Compile(p.Scope)
-	}
-	if err == nil {
-		p.definition, err = json.Marshal((*plain)(p))
 	}
 	return err
 }

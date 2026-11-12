@@ -10,46 +10,37 @@ import (
 type Event string
 
 type event struct {
-	Operation  *Operation      `json:"operation"`
-	Parameters map[string]any  `json:"parameters"`
-	Sends      string          `json:"sends"`
-	Observes   Label           `json:"observes"`
-	Title      string          `json:"title"`
-	Details    any             `json:"details"`
-	Scope      map[string]any  `json:"scope"`
-	Definition json.RawMessage `json:"definition"`
-	Invalid    string          `json:"invalid,omitempty"`
+	Operation  *Operation     `json:"operation"`
+	Parameters map[string]any `json:"parameters"`
+	Sends      string         `json:"sends"`
+	Observes   Label          `json:"observes"`
+	Title      string         `json:"title"`
+	Details    any            `json:"details"`
+	Scope      map[string]any `json:"scope"`
+	Invalid    string         `json:"invalid,omitempty"`
 }
 
 func Capture(f Facts, invalid error) Event {
-	definition, err := json.Marshal(f.Definition)
 	in := event{Operation: f.Operation, Parameters: f.Parameters, Sends: f.Context.Sends, Observes: f.Context.Observes,
-		Title: f.Title, Details: f.Details, Scope: f.Scope, Definition: definition}
+		Title: f.Title, Details: f.Details, Scope: f.Scope}
 	if invalid != nil {
 		in.Invalid = invalid.Error()
 	}
-	var raw []byte
-	if err == nil {
-		raw, err = json.Marshal(in)
-	}
+	raw, err := json.Marshal(in)
 	if err != nil {
-		return Event(`{"definition":null,"invalid":"invalid captured facts"}`)
+		return Event(`{"invalid":"invalid captured facts"}`)
 	}
 	return Event(raw)
 }
 
-// Facts decodes one private view. Keeping the original definition bytes
-// preserves the ordering used by deployed saved-grant hashes.
+// Facts decodes one private view.
 func (e Event) Facts() (Facts, error) {
 	var in event
 	if err := DecodeNumbers([]byte(e), &in); err != nil {
 		return Facts{}, err
 	}
-	if len(in.Definition) == 0 {
-		return Facts{}, errors.New("incomplete captured facts")
-	}
 	f := Facts{Operation: in.Operation, Parameters: in.Parameters, Context: Context{Sends: in.Sends, Observes: in.Observes},
-		Title: in.Title, Details: in.Details, Scope: in.Scope, Definition: in.Definition}
+		Title: in.Title, Details: in.Details, Scope: in.Scope}
 	if in.Invalid != "" {
 		return f, errors.New(in.Invalid)
 	}

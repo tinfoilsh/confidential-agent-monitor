@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"maps"
-	"reflect"
 	"slices"
 	"time"
 
@@ -153,38 +152,35 @@ func EditSource(source string, changes []Change) (string, error) {
 	return doc.String(), nil
 }
 
-// EditSourceNormalized applies changes in order while omitting semantic no-ops.
-// It preserves the current source text when the editor only changes formatting.
-func EditSourceNormalized(source string, changes []Change) (string, []Change, error) {
-	parse := func(source string) (map[string]any, error) {
-		value, err := ReadSource(source)
-		if err != nil {
-			return nil, err
-		}
-		return facts.JSON[map[string]any](value)
-	}
-	candidate := source
-	current, err := parse(candidate)
-	if err != nil {
-		return "", nil, err
-	}
-	normalized := make([]Change, 0, len(changes))
+// decisionKeys change how requests are decided, never a connector's setup.
+var decisionKeys = []string{"effects", "contents", "strangers", "sends", "lattices", "policies", "data", "allow_paid_inference", "identities", "default_access"}
+
+// Edit applies changes to source and reports, from their paths, which connections'
+// connector setup they change. Rules approved for such a connection are removed
+// in the same edit.
+func (c *Config) Edit(source string, changes []Change) (string, func(connection string) bool, error) {
+	all, setups := false, map[string]bool{}
 	for _, change := range changes {
-		next, err := EditSource(candidate, []Change{change})
-		if err != nil {
-			return "", nil, err
+		switch path := change.Path; {
+		case len(path) >= 2 && path[0] == "connections":
+			if len(path) == 2 || !slices.Contains(decisionKeys, path[2]) {
+				setups[path[1]] = true
+			}
+		case len(path) == 0 || !slices.Contains(decisionKeys, path[0]):
+			all = true
 		}
-		parsed, err := parse(next)
-		if err != nil {
-			return "", nil, err
-		}
-		if reflect.DeepEqual(current, parsed) {
-			continue
-		}
-		normalized = append(normalized, change)
-		candidate, current = next, parsed
 	}
-	return candidate, normalized, nil
+	changes = slices.Clip(changes)
+	for _, name := range slices.Sorted(maps.Keys(c.Identities)) {
+		rules := c.Identities[name].Rules
+		for _, id := range slices.Sorted(maps.Keys(rules)) {
+			if setups[rules[id].Connection] {
+				changes = append(changes, Change{Path: []string{"identities", name, "rules", id}, Delete: true})
+			}
+		}
+	}
+	source, err := EditSource(source, changes)
+	return source, func(connection string) bool { return all || setups[connection] }, err
 }
 
 // Fragment converts a TOML proposal into the same JSON-valued edits as owner calls.

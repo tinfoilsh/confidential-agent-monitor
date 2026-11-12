@@ -103,7 +103,6 @@ type Context struct {
 // Protocol details use typed fields; service parameters remain JSON values.
 type Facts struct {
 	Scope      map[string]any `json:"-"`
-	Definition any            `json:"-"`
 	Version    int            `json:"version"`
 	Kind       Kind           `json:"kind"`
 	Principal  Principal      `json:"principal"`

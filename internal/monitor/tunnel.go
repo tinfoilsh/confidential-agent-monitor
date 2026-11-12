@@ -1,12 +1,10 @@
 package monitor
 
 import (
-	"bytes"
 	"context"
 	"crypto/ed25519"
 	"fmt"
 	"net"
-	"reflect"
 
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/facts"
@@ -110,7 +108,7 @@ func (m *monitor) forwardSandbox(key string, nc ssh.NewChannel, target frontdoor
 	s := connector.NewStream(context.Background(), connector.NewChannelConn(ch, reqs))
 	s.Host, s.Port = target.Host, target.Port
 	defer s.Close()
-	if release, ok := m.admitStream(s, m.settings.Load(), admission{fingerprint: key, route: true}); ok {
+	if release, ok := m.admitStream(s, &admission{fingerprint: key, route: true}); ok {
 		defer release()
 		connector.Relay(s.Context, s.Conn, upstream)
 	}
@@ -159,7 +157,7 @@ func (m *monitor) forwardConnection(key string, nc ssh.NewChannel, target frontd
 		nc.Reject(ssh.Prohibited, "the Perimeter does not forward this target")
 		return
 	}
-	ctx, name, admitted, env := c.setupCtx, c.Name, admission{fingerprint: key, connection: c, prepared: c.prepared}, c.env
+	ctx, name, admitted, env := c.setupCtx, c.Name, &admission{fingerprint: key, connection: c, prepared: c.prepared}, c.env
 	m.mu.Unlock()
 	host := target.Host
 	if explicit {
@@ -178,7 +176,7 @@ func (m *monitor) forwardConnection(key string, nc ssh.NewChannel, target frontd
 	s.Name, s.Host, s.Port = name, host, target.Port
 	defer s.Close()
 	go func() { <-conn.Closed(); s.Close() }()
-	release, ok := m.admitStream(s, st, admitted)
+	release, ok := m.admitStream(s, admitted)
 	if !ok {
 		return
 	}
@@ -191,10 +189,9 @@ func (m *monitor) forwardConnection(key string, nc ssh.NewChannel, target frontd
 	c.Server.Serve(s, &env)
 }
 
-// stillAdmitted runs under mu. Commit compares each surviving stream with
-// the previous settings: preserving authority at every transition preserves the
-// original admission without storing another settings snapshot on the stream.
-func (m *monitor) stillAdmitted(old *settings, admitted admission) bool {
+// recheck runs under mu: the stream's identity, access and connector remain, and
+// its admission and latest operation would be allowed outright under current settings.
+func (m *monitor) recheck(admitted *admission) bool {
 	st := m.settings.Load()
 	p, ok := st.Principal(admitted.fingerprint)
 	if !ok {
@@ -203,28 +200,22 @@ func (m *monitor) stillAdmitted(old *settings, admitted admission) bool {
 	if admitted.route {
 		return st.Identities[p.Name].Operator
 	}
-	c := admitted.connection
-	if !m.usable(c, admitted.prepared) || !st.Reaches(p.Name, c.Name) {
+	if !st.Reaches(p.Name, admitted.connection.Name) {
 		return false
 	}
-	if st == old {
-		return true
-	}
-	previous, _ := old.Principal(admitted.fingerprint)
-	// Saved rules only waive approvals, so only removing or changing one revokes.
-	for name, rule := range old.Identities[p.Name].Rules {
-		if rule.Connection == c.Name && !reflect.DeepEqual(st.Identities[p.Name].Rules[name], rule) {
+	for _, g := range admitted.grants {
+		if d, err := m.decide(context.Background(), admitted, g); err != nil || len(d.Deny) != 0 || len(d.Requirements) != 0 {
 			return false
 		}
 	}
-	return previous == p && st.Engine.Program == old.Engine.Program && bytes.Equal(old.Authority(p.Name, c.Name), st.Authority(p.Name, c.Name))
+	return true
 }
 
 // admitStream registers s for revocation and pins its connector until release.
-func (m *monitor) admitStream(s *connector.Stream, st *settings, admitted admission) (release func(), ok bool) {
+func (m *monitor) admitStream(s *connector.Stream, admitted *admission) (release func(), ok bool) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	if !m.stillAdmitted(st, admitted) {
+	if !m.recheck(admitted) {
 		return nil, false
 	}
 	release = func() {}

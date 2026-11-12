@@ -45,11 +45,12 @@ type unlockInput struct {
 }
 
 type sourceInput struct {
-	Source string `json:"source"`
+	Revision *uint64 `json:"revision,omitempty"`
+	Source   string  `json:"source"`
 }
 
 type editsInput struct {
-	Generation  *uint64         `json:"generation,omitempty"`
+	Revision    *uint64         `json:"revision,omitempty"`
 	Changes     []config.Change `json:"changes"`
 	Credentials store.Secrets   `json:"credentials,omitempty"`
 }
@@ -176,11 +177,14 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 		}
 		return nil, errRecordGone
 	}))
-	mux.Handle("POST /requests/{id}", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, req answerInput) (any, error) {
-		return nil, m.answerRequest(r.Context(), r.PathValue("id"), req)
+	mux.Handle("POST /requests/{id}", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, req struct {
+		answerInput
+		Revision uint64 `json:"revision"`
+	}) (any, error) {
+		return nil, m.answerRequest(r.Context(), r.PathValue("id"), req.answerInput, req.Revision)
 	})))
 	mux.Handle("GET /policy", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) {
-		result := map[string]any{"source": m.store.Doc.Policy}
+		result := map[string]any{"source": m.store.Doc.Policy, "revision": m.store.Doc.Revision}
 		var err error
 		if r.URL.Query().Has("effective") {
 			result["effective"], err = m.settings.Load().Config.Effective()
@@ -196,7 +200,7 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 	mux.Handle("POST /policy", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input sourceInput) (any, error) {
 		m.writes.Lock()
 		defer m.writes.Unlock()
-		return m.viewAfter(r, m.writeSettings(r.Context(), settingsWrite{source: &input.Source}))
+		return m.viewAfter(r, m.writeSettings(r.Context(), settingsWrite{source: &input.Source, check: m.reviewed(input.Revision)}))
 	})))
 	mux.Handle("POST /policy/edits", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input editsInput) (any, error) {
 		for _, values := range input.Credentials {
@@ -208,12 +212,7 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 		}
 		m.writes.Lock()
 		defer m.writes.Unlock()
-		err := m.writeSettings(r.Context(), settingsWrite{changes: input.Changes, credentials: input.Credentials, check: func() error {
-			if input.Generation != nil && *input.Generation != m.store.Doc.Generation {
-				return errPolicyConflict
-			}
-			return nil
-		}})
+		err := m.writeSettings(r.Context(), settingsWrite{changes: input.Changes, credentials: input.Credentials, check: m.reviewed(input.Revision)})
 		return m.viewAfter(r, err)
 	})))
 }
@@ -435,6 +434,7 @@ type fieldMetadata struct {
 // ownerView exposes credential status without credential values.
 type ownerView struct {
 	Generation uint64                       `json:"generation"`
+	Revision   uint64                       `json:"revision"`
 	Config     map[string]any               `json:"config"`
 	HostKey    string                       `json:"host_key"`
 	HostID     string                       `json:"host_id"`
@@ -470,7 +470,7 @@ func (m *monitor) view(r *http.Request) (ownerView, error) {
 	if err != nil {
 		return ownerView{}, err
 	}
-	v := ownerView{Generation: m.store.Doc.Generation, HostKey: string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), CA: m.store.Doc.Keys.CACert,
+	v := ownerView{Generation: m.store.Doc.Generation, Revision: m.store.Doc.Revision, HostKey: string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), CA: m.store.Doc.Keys.CACert,
 		HostID: "urn:ietf:params:oauth:jwk-thumbprint:sha-256:" + base64.RawURLEncoding.EncodeToString(thumbprint),
 		Fields: map[string][]fieldMetadata{}, Status: map[string]status{}, Labels: map[string]facts.Label{},
 		CatalogID: s.CatalogID, Presets: s.Catalog, Vocabulary: facts.Effects}
