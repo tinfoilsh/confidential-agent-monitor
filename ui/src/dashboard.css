@@ -59,12 +59,12 @@
   --edge: #e4e4e7;
   --hover: #f4f4f5;
   --link: #004444;
-  --primary: var(--tinfoil-oak);
-  --on-primary: var(--tinfoil-dark);
+  --primary: var(--tinfoil-dark);
+  --on-primary: var(--tinfoil-light);
   --ok: #047857;
   --warn: #92400e;
   --bad: #b91c1c;
-  --primary-hover: #ddbb8c;
+  --primary-hover: #08333f;
   --destructive: #b91c1c;
   --destructive-hover: #991b1b;
   --frame: #000;
@@ -76,7 +76,8 @@
   --tinfoil-dark: #05252e;
   --tinfoil-accent-dark: #004444;
   --tinfoil-accent-dark-darker: #003333;
-  --tinfoil-oak: #e6cca8;
+  --tinfoil-light: #f9f8f6;
+  --tinfoil-light-cool: #f0f4f4;
   --tinfoil-twilight: #6b5b95;
   --tinfoil-accent-light: #a8c7d1;
   --text-secondary: #292f3d;
@@ -127,6 +128,9 @@
   --edge: #404045;
   --hover: #2c2c2e;
   --link: #a89acb;
+  --primary: var(--tinfoil-light);
+  --on-primary: var(--tinfoil-dark);
+  --primary-hover: var(--tinfoil-light-cool);
   --ok: #6ee7b7;
   --warn: #fcd34d;
   --bad: #fca5a5;

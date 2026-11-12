@@ -3,6 +3,22 @@ import { expect, test, type Locator } from "@playwright/test";
 const WIDTHS = [360, 820, 1440];
 const VIEWPORT_HEIGHT = 900;
 const LAYOUT_TOLERANCE_PX = 1;
+const PETROL = "rgb(5, 37, 46)";
+const BONE = "rgb(249, 248, 246)";
+const COLORS = {
+  light: {
+    background: PETROL,
+    foreground: BONE,
+    hover: "rgb(8, 51, 63)",
+    selection: "rgb(255, 255, 255)",
+  },
+  dark: {
+    background: BONE,
+    foreground: PETROL,
+    hover: "rgb(240, 244, 244)",
+    selection: BONE,
+  },
+};
 
 async function expectAligned(track: Locator) {
   await expect
@@ -23,7 +39,7 @@ async function expectAligned(track: Locator) {
     .toBeLessThanOrEqual(LAYOUT_TOLERANCE_PX);
 }
 
-for (const theme of ["light", "dark"]) {
+for (const theme of ["light", "dark"] as const) {
   for (const width of WIDTHS) {
     test(`animated tabs fit ${width}px in ${theme} mode`, async ({ page }) => {
       await page.setViewportSize({ width, height: VIEWPORT_HEIGHT });
@@ -34,6 +50,14 @@ for (const theme of ["light", "dark"]) {
       await page.evaluate(async () => {
         await document.fonts.ready;
       });
+      const action = page.getByRole("button", { name: "Expand bunker label" });
+      await expect(action).toHaveCSS(
+        "background-color",
+        COLORS[theme].background,
+      );
+      await expect(action).toHaveCSS("color", COLORS[theme].foreground);
+      await action.hover();
+      await expect(action).toHaveCSS("background-color", COLORS[theme].hover);
       const track = page.getByRole("group", { name: "Usage type" });
       await expectAligned(track);
       await track.getByRole("button", { name: "API", exact: true }).focus();
@@ -64,7 +88,7 @@ for (const theme of ["light", "dark"]) {
       expect(overflow).toBeLessThanOrEqual(LAYOUT_TOLERANCE_PX);
       await expect(track.locator(".tab-bar-pill")).toHaveCSS(
         "background-color",
-        "rgb(230, 204, 168)",
+        COLORS[theme].selection,
       );
       await expect(track.locator('[aria-pressed="true"]')).toHaveCSS(
         "color",
