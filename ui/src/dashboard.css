@@ -1028,30 +1028,6 @@ html [data-sonner-toaster] {
   background: none;
   color: var(--text);
 }
-.fold {
-  flex-direction: column;
-  gap: 0;
-}
-.fold > .icon,
-.fold .ui-icon {
-  width: 12px;
-  height: 12px;
-}
-.fold > .icon {
-  transition: rotate 0.15s;
-}
-.fold > .icon + .icon {
-  margin-top: -4px;
-}
-.fold > :first-child,
-.fold[aria-pressed="true"] > :last-child {
-  rotate: -90deg;
-}
-.fold > :last-child,
-.fold[aria-pressed="true"] > :first-child {
-  rotate: 90deg;
-}
-
 .resource-link {
   display: flex;
   align-items: center;

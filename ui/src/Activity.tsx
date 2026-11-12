@@ -83,7 +83,6 @@ function Requests(props: { expanded?: string }) {
     let head: owner.RequestRecord | undefined;
     for (const r of held()) {
       if (
-        m.activity.stacked &&
         r.id !== props.expanded &&
         head?.facts.connection === r.facts.connection &&
         head.facts.principal.name === r.facts.principal.name
@@ -130,15 +129,6 @@ function Requests(props: { expanded?: string }) {
           <h2>
             Requests <span class="count">{filtered().length}</span>
           </h2>
-          <button
-            class="icon-button fold"
-            title="Stack requests by bunker and service"
-            aria-pressed={m.activity.stacked}
-            onClick={() => m.setActivity("stacked", !m.activity.stacked)}
-          >
-            <Icon name="arrow" />
-            <Icon name="arrow" />
-          </button>
           <Show when={anchor()}>
             <button
               class="icon-button"
