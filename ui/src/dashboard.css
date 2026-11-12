@@ -768,6 +768,7 @@ html [data-sonner-toaster] {
 .search-field input {
   padding-left: 40px;
   padding-right: 36px;
+  background: var(--card);
 }
 .search-field input::-webkit-search-cancel-button {
   display: none;
