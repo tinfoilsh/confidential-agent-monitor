@@ -235,6 +235,7 @@ function RequestRow(props: { id: string; stack: string[]; open?: boolean }) {
               <ConnectorIcon connection={record().facts.connection} />
             </span>
             <strong title={owner.requestTitle(record())}>
+              <span class="sr-only">Request: </span>
               {owner.requestTitle(record())}
             </strong>
             <Show when={props.stack.length > 1}>
@@ -243,19 +244,21 @@ function RequestRow(props: { id: string; stack: string[]; open?: boolean }) {
           </span>
           <span class="request-origin">
             <span title={record().facts.principal.name}>
+              <span class="sr-only">Bunker: </span>
               {record().facts.principal.name}
             </span>
             <span title={record().facts.connection || "Policy"}>
+              <span class="sr-only">Service: </span>
               {record().facts.connection || "Policy"}
             </span>
           </span>
           <span class="request-result">
+            <span class="sr-only">Status: </span>
             <Badge state={record().state} record={record()} />
             <Show when={record().state === "pending"}>
               <a
                 class="review-link"
                 href="#connections"
-                aria-label="Review in Permissions"
                 title={`Review in Permissions · ${owner.timeLeft(record(), m.now())} left`}
               >
                 Review ({owner.timeLeft(record(), m.now())})
@@ -263,6 +266,7 @@ function RequestRow(props: { id: string; stack: string[]; open?: boolean }) {
             </Show>
           </span>
           <time dateTime={timestamp()} title={requestDate.format(time())}>
+            <span class="sr-only">Requested at: </span>
             {requestTime.format(time())}
           </time>
           <span class="collection-chevron">

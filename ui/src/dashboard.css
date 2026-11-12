@@ -1370,7 +1370,7 @@ details[open] > summary > .collection-chevron {
   --request-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)) 110px 76px 16px;
 }
 .request-table-heading,
-.activity-row {
+.request-list .activity-row {
   display: grid;
   grid-template-columns: var(--request-columns);
   align-items: center;
@@ -1387,21 +1387,21 @@ details[open] > summary > .collection-chevron {
   font-size: var(--font-detail);
   line-height: 16px;
 }
-.activity-row .resource-link {
+.request-list .activity-row .resource-link {
   min-width: 0;
   gap: 8px;
 }
-.activity-row .resource-link > strong {
+.request-list .activity-row .resource-link > strong {
   flex: 1;
   min-width: 0;
 }
-.activity-row .resource-link > strong,
+.request-list .activity-row .resource-link > strong,
 .request-origin > span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.activity-row .icon-stack {
+.request-list .activity-row .icon-stack {
   flex: none;
   align-self: center;
 }
@@ -1409,11 +1409,11 @@ details[open] > summary > .collection-chevron {
   display: contents;
 }
 .request-origin > span,
-.activity-row > time {
+.request-list .activity-row > time {
   color: var(--muted);
   font-size: var(--font-detail);
 }
-.activity-row > time {
+.request-list .activity-row > time {
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }

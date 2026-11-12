@@ -78,6 +78,22 @@ const requests: owner.RequestRecord[] = Array.from(
 );
 if (new URLSearchParams(location.search).has("single-tool"))
   delete view.presets.tinfoil_websearch.actions!["use.fetch"];
+if (new URLSearchParams(location.search).has("proposals")) {
+  for (const state of ["pending", "approved"] as const)
+    requests.push({
+      id: `proposal-${state}`,
+      state,
+      time: new Date().toISOString(),
+      expires: new Date(Date.now() + 60_000).toISOString(),
+      facts: {
+        title: "Update network access",
+        principal: { name: "new-bunker", key: "test-bunker" },
+        connection: "network",
+        service: "policy-proposal",
+      },
+      changes: [{ path: ["effects", "write"], value: "ask" }],
+    });
+}
 if (new URLSearchParams(location.search).has("review")) {
   view.config.connections!["tinfoil-websearch"]["tinfoil-mcp"] = {
     url: "https://websearch.example/mcp",

@@ -41,6 +41,12 @@ test("approval counts include every tool and update after approval", async ({
   ).toBeVisible();
   await expect(page).toHaveTitle("(1) Perimeter");
   await expect(needsApproval.getByText("Connect to example.com")).toBeVisible();
+  await page.evaluate(() => {
+    location.hash = "#activity";
+  });
+  await expect(
+    page.getByRole("link", { name: /^Review \(\d+:\d{2}\)$/ }),
+  ).toBeVisible();
 });
 
 for (const theme of ["light", "dark"]) {
@@ -61,6 +67,9 @@ for (const theme of ["light", "dark"]) {
       await expect(row).toContainText("Connect to registry.npmjs.org:443");
       await expect(row).toContainText("new-bunker");
       await expect(row).toContainText("×2");
+      await expect(row).toHaveAccessibleName(
+        /Request: .*Bunker: new-bunker.*Service: network.*Status: Expired.*Requested at:/,
+      );
       const header = list.locator(":scope > .resource-heading");
       const box = (await list.boundingBox())!;
       const heading = (await header.boundingBox())!;
@@ -135,6 +144,27 @@ for (const theme of ["light", "dark"]) {
           .evaluate((el) => el.scrollWidth - el.clientWidth),
       ).toBeLessThanOrEqual(TOLERANCE);
       expect(errors).toEqual([]);
+      await page.goto(
+        "/app/tests/browser/terminal.html?proposals#activity/proposals",
+      );
+      const history = page.locator(".proposal-history-row");
+      await expect(
+        history.getByRole("link", { name: /Update network access/ }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("link", { name: "Review in Permissions" }),
+      ).toBeVisible();
+      if (width === WIDTHS.at(-1)) {
+        const title = (await history.locator(".resource-link").boundingBox())!;
+        const meta = (await history.locator(".resource-meta").boundingBox())!;
+        expect(meta.x).toBeGreaterThanOrEqual(title.x + title.width);
+        expect(
+          Math.abs(title.y + title.height / 2 - meta.y - meta.height / 2),
+        ).toBeLessThanOrEqual(TOLERANCE);
+      }
+      expect(
+        await history.evaluate((el) => el.scrollWidth - el.clientWidth),
+      ).toBeLessThanOrEqual(TOLERANCE);
     });
   }
 }
