@@ -89,8 +89,8 @@ its link to the Perimeter.
 | Backend                          | Isolation                       | Also requires                                                                         |
 | -------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------- |
 | `firecracker` (default on Linux) | KVM virtual machine             | x86_64 Linux, writable `/dev/kvm`, bubblewrap, `mke2fs` 1.47.1+ with libarchive       |
-| `vfkit` (default on macOS)       | Virtualization.framework VM     | Apple silicon, `mke2fs` 1.47.1+ with libarchive (nixpkgs `e2fsprogs`, not Homebrew's) |
-| `podman`, `docker`               | container with `--network none` | the engine                                                                            |
+| `docker` (default on macOS)      | container with `--network none` | Docker, or Podman as `docker`                                                         |
+| `vfkit`                          | Virtualization.framework VM     | Apple silicon, `mke2fs` 1.47.1+ with libarchive (nixpkgs `e2fsprogs`, not Homebrew's) |
 | `bwrap`                          | unprivileged namespaces         | Linux, bubblewrap with overlay support, unprivileged user namespaces, `script`        |
 
 All need OpenSSH and GNU tar (`gtar` on macOS). Containers share their engine's
@@ -101,9 +101,10 @@ runs setup for you.
 See `perimeter --help` for stopping, exporting, and deleting bunkers.
 
 `dev/vm-artifacts DIR [ARCH...]` builds the image for x86_64 and aarch64 with
-Podman alone and pins it in
-[client/vm/assets.json](client/vm/assets.json); `PERIMETER_ARTIFACTS=DIR` makes
-the CLI use that directory before the files are published. Each agent is its
+Docker alone and pins it in
+[client/vm/assets.json](client/vm/assets.json). It also caches the image, so this
+checkout's `client/perimeter`, or a CLI installed from it with `./install.sh`,
+launches it without downloading. Each agent is its
 vendor's release binary, pinned by URL and SHA-256 in
 [client/vm/agents.json](client/vm/agents.json).
 

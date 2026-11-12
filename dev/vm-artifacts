@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Builds one bunker image per ARCH, the base system plus every agent, into DIR and pins it in client/vm/assets.json.
-# Publish DIR's files under base_url; until then, PERIMETER_ARTIFACTS=DIR makes the client use them.
+# Publish DIR's files under base_url. The image also goes into the client's cache, so this host launches it right away.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 out=${1:?usage: dev/vm-artifacts DIR [ARCH...]}
@@ -12,7 +12,7 @@ out=$(realpath "$out")
 work=$(mktemp -d)
 tag=localhost/perimeter-base-build
 container=
-trap 'rm -rf "$work"; [[ -z $container ]] || podman rm -f "$container" > /dev/null' EXIT
+trap 'rm -rf "$work"; [[ -z $container ]] || docker rm -f "$container" > /dev/null' EXIT
 
 for arch in "${arches[@]}"; do
   case $arch in
@@ -21,16 +21,18 @@ for arch in "${arches[@]}"; do
     *) echo "dev/vm-artifacts: unknown ARCH $arch" >&2; exit 1 ;;
   esac
   mkdir "$work/$arch"
-  podman build -q --platform "$platform" -t "$tag-$arch" client/vm > /dev/null
-  container=$(podman create --platform "$platform" "$tag-$arch" /bin/true)
-  podman export "$container" | gzip -n > "$work/$arch/image.tar.gz"
-  podman rm -f "$container" > /dev/null
+  docker build -q --platform "$platform" -t "$tag-$arch" client/vm > /dev/null
+  container=$(docker create --platform "$platform" "$tag-$arch" /bin/true)
+  docker export "$container" | gzip -n > "$work/$arch/image.tar.gz"
+  docker rm -f "$container" > /dev/null
   container=
 done
 
 python3 - "$work" "$out" <<'PY'
-import hashlib, json, sys
+import hashlib, json, shutil, sys
 from pathlib import Path
+sys.path.insert(0, 'client')
+from monitor_vm import CACHE
 work, out = map(Path, sys.argv[1:])
 manifest_path = Path('client/vm/assets.json')
 manifest = json.loads(manifest_path.read_text())
@@ -40,6 +42,8 @@ def pin(source):
         sha = hashlib.file_digest(stream, 'sha256').hexdigest()
     stem, _, extension = source.name.partition('.')
     file = f'{stem}-{sha[:16]}.{extension}'
+    (CACHE / 'artifacts').mkdir(parents=True, exist_ok=True, mode=0o700)
+    shutil.copyfile(source, CACHE / 'artifacts' / sha)
     source.replace(out / file)
     return {'file': file, 'sha256': sha}
 
