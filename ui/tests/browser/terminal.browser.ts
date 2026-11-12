@@ -150,6 +150,19 @@ for (const theme of ["light", "dark"]) {
       await child.click();
       await expect(list.getByText("Nobody answered in time.")).toBeVisible();
       const detail = list.locator(".request-inline").first();
+      const detailBox = (await detail.boundingBox())!;
+      const childBox = (await child.boundingBox())!;
+      expect(detailBox.x).toBeGreaterThan(childBox.x);
+      expect(detailBox.x + detailBox.width).toBeLessThan(
+        childBox.x + childBox.width,
+      );
+      expect(
+        Math.abs(
+          detailBox.x -
+            childBox.x -
+            (childBox.x + childBox.width - detailBox.x - detailBox.width),
+        ),
+      ).toBeLessThanOrEqual(TOLERANCE);
       expect(
         await detail.evaluate((el) => el.scrollWidth - el.clientWidth),
       ).toBeLessThanOrEqual(TOLERANCE);
