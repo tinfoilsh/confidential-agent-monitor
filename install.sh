@@ -196,7 +196,7 @@ Host *
 """.encode())
 config = Path.home() / ".config/perimeter/client.json"
 profiles = json.loads(config.read_text()).get("launch_profiles", {}) if config.exists() else {}
-if sys.platform == "linux" and "default" not in profiles:
+if "default" not in profiles:
     subprocess.run([perimeter, "setup", "--owner-url", owner_url, "--endpoint", listen,
                     "--owner-key-file", str(state / "owner.key")], stdin=subprocess.DEVNULL, check=True)
 PY

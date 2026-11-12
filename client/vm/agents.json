@@ -1,0 +1,31 @@
+{
+  "claude": {
+    "package": "claude-code",
+    "command": ["claude", "--dangerously-skip-permissions"],
+    "env": {"DISABLE_AUTOUPDATER": "1", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"},
+    "unset": ["ANTHROPIC_AUTH_TOKEN", "CLAUDE_CODE_OAUTH_TOKEN", "ANTHROPIC_BASE_URL"],
+    "mcp": ["--mcp-config", "{config}"],
+    "via": {"anthropic": {"key": "ANTHROPIC_API_KEY"}}
+  },
+  "codex": {
+    "package": "codex",
+    "command": ["codex"],
+    "via": {
+      "openai": {
+        "key": "OPENAI_API_KEY",
+        "args": ["-c", "model_provider=\"perimeter\"",
+                 "-c", "model_providers.perimeter={name=\"OpenAI\",base_url=\"https://api.openai.com/v1\",env_key=\"OPENAI_API_KEY\"}"]
+      }
+    }
+  },
+  "opencode": {
+    "package": "opencode",
+    "command": ["opencode"],
+    "via": {"anthropic": {"key": "ANTHROPIC_API_KEY"}, "openai": {"key": "OPENAI_API_KEY"}}
+  },
+  "pi": {
+    "package": "pi-coding-agent",
+    "command": ["pi"],
+    "via": {"anthropic": {"key": "ANTHROPIC_API_KEY"}, "openai": {"key": "OPENAI_API_KEY"}}
+  }
+}
