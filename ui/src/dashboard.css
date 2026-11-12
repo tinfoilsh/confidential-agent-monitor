@@ -2230,8 +2230,15 @@ button.access-toggle:hover:not(:disabled) {
   gap: 12px;
 }
 .access-action-leader {
+  --dot-size: 1px;
+  --dot-step: 6px;
   flex: 1 0 12px;
-  border-top: 1px dotted var(--muted);
+  height: var(--dot-size);
+  background: repeating-linear-gradient(
+    to right,
+    var(--muted) 0 var(--dot-size),
+    transparent var(--dot-size) var(--dot-step)
+  );
 }
 @container actions (max-width: 360px) {
   .access-action > .access-select {
