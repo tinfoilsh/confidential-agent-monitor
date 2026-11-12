@@ -100,10 +100,12 @@ the passphrase you enter claims a fresh one. The [daemon](#run-a-perimeter-local
 runs setup for you.
 See `perimeter --help` for stopping, exporting, and deleting bunkers.
 
-`dev/vm-artifacts DIR [ARCH...]` builds the image for x86_64 and aarch64 and
-pins it in
+`dev/vm-artifacts DIR [ARCH...]` builds the image for x86_64 and aarch64 with
+Podman alone and pins it in
 [client/vm/assets.json](client/vm/assets.json); `PERIMETER_ARTIFACTS=DIR` makes
-the CLI use that directory before the files are published.
+the CLI use that directory before the files are published. Each agent is its
+vendor's release binary, pinned by URL and SHA-256 in
+[client/vm/agents.json](client/vm/agents.json).
 
 A bunker reaches another as `NAME.sandbox`, where NAME is that bunker's identity;
 only listeners bound to `0.0.0.0` answer. Set Other bunkers to Ask on the dialing
