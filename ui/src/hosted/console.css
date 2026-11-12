@@ -126,9 +126,6 @@ dialog.start-dialog {
   color: var(--text);
 }
 .start-key-choice h2 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   margin: 0 0 6px;
   font-size: var(--font-body);
   font-weight: 500;
@@ -139,6 +136,38 @@ dialog.start-dialog {
   color: var(--muted);
   font-size: var(--font-detail);
   line-height: 1.65;
+}
+/* A Perimeter's row leads with its status: a dot, or a spinner while it changes. */
+.start-key-choice {
+  --status: var(--dim);
+}
+.start-key-choice[data-status="running"] {
+  --status: var(--ok);
+}
+.start-key-choice[data-status="busy"] {
+  --status: var(--blue-800);
+}
+.start-key-choice[data-status="failed"] {
+  --status: var(--bad);
+}
+.start-status {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: calc(var(--font-body) * 1.5);
+  color: var(--status);
+}
+.start-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.start-status-label {
+  color: var(--status);
+  font-weight: 500;
 }
 .start-continue {
   width: 100%;
