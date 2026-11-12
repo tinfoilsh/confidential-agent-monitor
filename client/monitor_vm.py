@@ -335,15 +335,18 @@ Host perimeter perimeter-route
 '''.encode())
     archive = seed / 'workspace.tar'
     if fresh:
-        files = b'.'
-        if (workspace / '.git').exists():
-            listing = run(['git', '-C', str(workspace), 'ls-files', '-z', '--cached', '--others', '--exclude-standard'],
-                          capture_output=True, timeout=300).stdout.split(b'\0')
-            files = b'\0'.join([b'.git', *(name for name in listing if name and os.path.lexists(workspace / os.fsdecode(name)))])
+        files = [b'.']
+        git = ['git', '-C', str(workspace)]
+        # check-ignore exits 1 only inside a work tree that does not ignore the workspace.
+        if shutil.which('git') and subprocess.run(git + ['check-ignore', '-q', '.'], env=environment(), capture_output=True, timeout=300).returncode == 1:
+            listing = run(git + ['ls-files', '-z', '--cached', '--others', '--exclude-standard'], capture_output=True, timeout=300)
+            files = [name for name in listing.stdout.split(b'\0') if name and os.path.lexists(workspace / os.fsdecode(name))]
+            if (workspace / '.git').exists():
+                files.append(b'.git')
         # GNU tar preserves symlinks without following them. Project files
         # are data only; nothing from the project runs on the host.
-        run([TAR, '-cf', str(archive), '-C', str(workspace), '--exclude=.env', '--exclude=.env.*',
-             '--exclude=node_modules', '--exclude=.venv', '--null', '-T', '-'], input=files, timeout=300)
+        run([TAR, '-cf', str(archive), '-C', str(workspace), '--exclude-vcs-ignores', '--exclude=.env', '--exclude=.env.*',
+             '--exclude=node_modules', '--exclude=.venv', '--null', '-T', '-'], input=b'\0'.join(files), timeout=300)
     else:
         with tarfile.open(archive, 'w'):
             pass
