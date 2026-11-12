@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Builds one bunker image per ARCH, the base system plus every agent, into DIR and pins it in client/vm/assets.json.
-# Publish DIR's files under base_url; until then, PERIMETER_ARTIFACTS=DIR makes the client use them.
+# Publish DIR's files under base_url. The image also goes into the client's cache, so this host launches it right away.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 out=${1:?usage: dev/vm-artifacts DIR [ARCH...]}
@@ -9,37 +9,30 @@ arches=("$@")
 (( ${#arches[@]} )) || arches=(x86_64 aarch64)
 mkdir -p "$out"
 out=$(realpath "$out")
-nixpkgs=github:NixOS/nixpkgs/ca1659429c950a11a565b5764e37a1b704e17ec8
-declare -A oci=([x86_64]=amd64 [aarch64]=arm64)
 work=$(mktemp -d)
 tag=localhost/perimeter-base-build
 container=
-trap 'rm -rf "$work"; [[ -z $container ]] || podman rm -f "$container" > /dev/null' EXIT
+trap 'rm -rf "$work"; [[ -z $container ]] || docker rm -f "$container" > /dev/null' EXIT
 
 for arch in "${arches[@]}"; do
-  mkdir -p "$work/$arch/usr/local/bin"
-  podman build -q --platform "linux/${oci[$arch]}" -t "$tag-$arch" client/vm > /dev/null
-  paths=()
-  while read -r package; do
-    paths+=("$(NIXPKGS_ALLOW_UNFREE=1 nix build --impure --no-link --print-out-paths "$nixpkgs#legacyPackages.$arch-linux.$package")")
-  done < <(python3 -c 'import json; [print(agent["package"]) for agent in json.load(open("client/vm/agents.json")).values()]')
-  for path in "${paths[@]}"; do
-    ln -sf "$path"/bin/* "$work/$arch/usr/local/bin/"
-  done
-  # Buildah's ADD follows hard links to symlinks, which nix's store optimisation makes.
-  { nix-store -qR "${paths[@]}" | sed 's|^/||'; printf '%s\n' "--directory=$work/$arch" usr/local/bin; } |
-    tar -C / --sort=name --mtime=@1 --owner=0 --group=0 --numeric-owner --hard-dereference -cf "$work/$arch/agents.tar" -T -
-  image=$(printf 'FROM %s\nADD agents.tar /\n' "$tag-$arch" | podman build -q --platform "linux/${oci[$arch]}" -f - "$work/$arch")
-  container=$(podman create --platform "linux/${oci[$arch]}" "$image" /bin/true)
-  podman export "$container" | gzip -n > "$work/$arch/image.tar.gz"
-  podman rm -f "$container" > /dev/null
+  case $arch in
+    x86_64) platform=linux/amd64 ;;
+    aarch64) platform=linux/arm64 ;;
+    *) echo "dev/vm-artifacts: unknown ARCH $arch" >&2; exit 1 ;;
+  esac
+  mkdir "$work/$arch"
+  docker build -q --platform "$platform" -t "$tag-$arch" client/vm > /dev/null
+  container=$(docker create --platform "$platform" "$tag-$arch" /bin/true)
+  docker export "$container" | gzip -n > "$work/$arch/image.tar.gz"
+  docker rm -f "$container" > /dev/null
   container=
-  podman rmi -f "$image" > /dev/null
 done
 
 python3 - "$work" "$out" <<'PY'
-import hashlib, json, sys
+import hashlib, json, shutil, sys
 from pathlib import Path
+sys.path.insert(0, 'client')
+from monitor_vm import CACHE
 work, out = map(Path, sys.argv[1:])
 manifest_path = Path('client/vm/assets.json')
 manifest = json.loads(manifest_path.read_text())
@@ -49,6 +42,8 @@ def pin(source):
         sha = hashlib.file_digest(stream, 'sha256').hexdigest()
     stem, _, extension = source.name.partition('.')
     file = f'{stem}-{sha[:16]}.{extension}'
+    (CACHE / 'artifacts').mkdir(parents=True, exist_ok=True, mode=0o700)
+    shutil.copyfile(source, CACHE / 'artifacts' / sha)
     source.replace(out / file)
     return {'file': file, 'sha256': sha}
 

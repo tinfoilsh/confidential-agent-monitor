@@ -1,6 +1,11 @@
 {
   "claude": {
-    "package": "claude-code",
+    "download": {
+      "x86_64": {"url": "https://downloads.claude.ai/claude-code-releases/2.1.295/linux-x64/claude",
+                  "sha256": "4503bfe11a6c7fcc1e0b39b5e0d347c04248f750b03b0977b3ad6b531fe6f358", "binary": "claude"},
+      "aarch64": {"url": "https://downloads.claude.ai/claude-code-releases/2.1.295/linux-arm64/claude",
+                  "sha256": "cfb9dc1332fb6f92a683f835823e91b3179a803398ca7852cd2381a3cb1dea3b", "binary": "claude"}
+    },
     "command": ["claude", "--dangerously-skip-permissions"],
     "env": {"DISABLE_AUTOUPDATER": "1", "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"},
     "unset": ["ANTHROPIC_AUTH_TOKEN", "CLAUDE_CODE_OAUTH_TOKEN", "ANTHROPIC_BASE_URL"],
@@ -8,7 +13,12 @@
     "via": {"anthropic": {"key": "ANTHROPIC_API_KEY"}}
   },
   "codex": {
-    "package": "codex",
+    "download": {
+      "x86_64": {"url": "https://github.com/openai/codex/releases/download/rust-v0.162.1/codex-x86_64-unknown-linux-musl.tar.gz",
+                  "sha256": "86f268d81b898f3e144c5ecff2ad2fda2c5802e042d6195b72538fe0fa125057", "binary": "codex-x86_64-unknown-linux-musl"},
+      "aarch64": {"url": "https://github.com/openai/codex/releases/download/rust-v0.162.1/codex-aarch64-unknown-linux-musl.tar.gz",
+                  "sha256": "bf3ca2719f1143b1440fbd85c149379e696c782c50ad7991f8bfcec60b2600c1", "binary": "codex-aarch64-unknown-linux-musl"}
+    },
     "command": ["codex"],
     "via": {
       "openai": {
@@ -19,12 +29,22 @@
     }
   },
   "opencode": {
-    "package": "opencode",
+    "download": {
+      "x86_64": {"url": "https://github.com/anomalyco/opencode/releases/download/v1.18.35/opencode-linux-x64.tar.gz",
+                  "sha256": "c8f888b451f5494a18f858fffb0e0b68f4e4baa9c241761c5f206884f0fa640d", "binary": "opencode"},
+      "aarch64": {"url": "https://github.com/anomalyco/opencode/releases/download/v1.18.35/opencode-linux-arm64.tar.gz",
+                  "sha256": "f7f2ba59ee8aa94d388f9696575a32d20e71c2ee48def9f80fc693a60fec6c72", "binary": "opencode"}
+    },
     "command": ["opencode"],
     "via": {"anthropic": {"key": "ANTHROPIC_API_KEY"}, "openai": {"key": "OPENAI_API_KEY"}}
   },
   "pi": {
-    "package": "pi-coding-agent",
+    "download": {
+      "x86_64": {"url": "https://github.com/earendil-works/pi/releases/download/v1.1.0/pi-linux-x64.tar.gz",
+                  "sha256": "3faa94666cd3849d37af320ff749407d0271b07a9b94f420c87e30866e10e289", "binary": "pi/pi"},
+      "aarch64": {"url": "https://github.com/earendil-works/pi/releases/download/v1.1.0/pi-linux-arm64.tar.gz",
+                  "sha256": "f3b0cac459f9df5420e4e48b48e95d81bfab57b701dd3fe4b08fda7d11d27dab", "binary": "pi/pi"}
+    },
     "command": ["pi"],
     "via": {"anthropic": {"key": "ANTHROPIC_API_KEY"}, "openai": {"key": "OPENAI_API_KEY"}}
   }

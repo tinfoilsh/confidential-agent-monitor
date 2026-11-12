@@ -21,3 +21,19 @@ RUN chmod 755 /sbin/monitor-init \
        'AllowAgentForwarding no' 'AllowTcpForwarding remote' 'X11Forwarding no' \
        'PermitUserEnvironment no' 'PrintMotd no' \
        > /etc/ssh/sshd_config.monitor
+COPY agents.json /tmp/agents.json
+RUN python3 -c 'import json, platform; [print(name, *map(agent["download"][platform.machine()].get, ("url", "sha256", "binary"))) \
+        for name, agent in json.load(open("/tmp/agents.json")).items()]' > /tmp/agents.list \
+    && while read -r name url sha256 binary; do \
+        mkdir -p "/opt/agents/$name" \
+        && curl -fsSL "$url" -o /tmp/agent \
+        && echo "$sha256  /tmp/agent" | sha256sum -c --quiet \
+        && case $url in \
+             *.tar.gz) tar -xzf /tmp/agent -C "/opt/agents/$name" --no-same-owner && rm /tmp/agent ;; \
+             *) mv /tmp/agent "/opt/agents/$name/$binary" ;; \
+           esac \
+        && chmod 755 "/opt/agents/$name/$binary" \
+        && ln -s "/opt/agents/$name/$binary" "/usr/local/bin/$name" \
+        || exit 1; \
+       done < /tmp/agents.list \
+    && rm /tmp/agents.json /tmp/agents.list

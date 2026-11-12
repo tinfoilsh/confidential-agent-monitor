@@ -1,4 +1,4 @@
-"""Linux bunkers in Firecracker, vfkit, Podman/Docker or bubblewrap. The Perimeter link is their only network."""
+"""Linux bunkers in Firecracker, vfkit, Docker or bubblewrap. The Perimeter link is their only network."""
 import argparse
 import base64
 import contextlib
@@ -32,13 +32,11 @@ import zipfile
 
 
 ASSETS = ('guest.py', 'assets.json', 'agents.json')
-BACKENDS = ('firecracker', 'vfkit', 'podman', 'docker', 'bwrap')
-DEFAULT_BACKEND = 'vfkit' if sys.platform == 'darwin' else 'firecracker'
+BACKENDS = ('firecracker', 'vfkit', 'docker', 'bwrap')
+DEFAULT_BACKEND = 'docker' if sys.platform == 'darwin' else 'firecracker'
 ARCH = {'arm64': 'aarch64'}.get(platform.machine(), platform.machine())
 TAR = 'gtar' if shutil.which('gtar') else 'tar'
 CACHE = Path.home() / '.local/share/perimeter'
-# A directory of dev/vm-artifacts output to use instead of downloading.
-ARTIFACTS_ENV = 'PERIMETER_ARTIFACTS'
 MAX_ASSET_BYTES = 4 << 30
 DISK_GIB = 8
 # The guest's 127.0.0.1 port that carries its Perimeter link.
@@ -177,16 +175,10 @@ def fetch(entry):
         return path
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     temporary = path.with_name(path.name + '.partial')
-    local = os.environ.get(ARTIFACTS_ENV)
     try:
-        if local and 'file' in entry:
-            shutil.copyfile(Path(local) / entry['file'], temporary)
-            if digest(temporary) != entry['sha256']:
-                raise Error('VM asset checksum mismatch: ' + entry['file'])
-        else:
-            url = entry.get('url') or manifest()['base_url'] + entry['file']
-            print('Downloading ' + url.rsplit('/', 1)[-1] + '...', file=sys.stderr, flush=True)
-            download(url, temporary, entry['sha256'])
+        url = entry.get('url') or manifest()['base_url'] + entry['file']
+        print('Downloading ' + url.rsplit('/', 1)[-1] + '...', file=sys.stderr, flush=True)
+        download(url, temporary, entry['sha256'])
         os.replace(temporary, path)
     finally:
         temporary.unlink(missing_ok=True)
@@ -343,10 +335,18 @@ Host perimeter perimeter-route
 '''.encode())
     archive = seed / 'workspace.tar'
     if fresh:
+        files = [b'.']
+        git = ['git', '-C', str(workspace)]
+        # check-ignore exits 1 only inside a work tree that does not ignore the workspace.
+        if shutil.which('git') and subprocess.run(git + ['check-ignore', '-q', '.'], env=environment(), capture_output=True, timeout=300).returncode == 1:
+            listing = run(git + ['ls-files', '-z', '--cached', '--others', '--exclude-standard'], capture_output=True, timeout=300)
+            files = [name for name in listing.stdout.split(b'\0') if name and os.path.lexists(workspace / os.fsdecode(name))]
+            if (workspace / '.git').exists():
+                files.append(b'.git')
         # GNU tar preserves symlinks without following them. Project files
         # are data only; nothing from the project runs on the host.
-        run([TAR, '-cf', str(archive), '-C', str(workspace), '--exclude-vcs-ignores',
-             '--exclude=.env', '--exclude=.env.*', '--exclude=node_modules', '--exclude=.venv', '--', '.'], timeout=300)
+        run([TAR, '-cf', str(archive), '-C', str(workspace), '--exclude-vcs-ignores', '--exclude=.env', '--exclude=.env.*',
+             '--exclude=node_modules', '--exclude=.venv', '--null', '-T', '-'], input=b'\0'.join(files), timeout=300)
     else:
         with tarfile.open(archive, 'w'):
             pass
@@ -722,8 +722,10 @@ class Container(Guest):
     @staticmethod
     def remove(profile, directory):
         name = container_name(profile, directory)
-        run([profile['backend'], 'rm', '-f', '--ignore' if profile['backend'] == 'podman' else '--force', name],
-            capture_output=True, timeout=60)
+        # Podman behind the docker command fails to remove a container that is already gone.
+        subprocess.run([profile['backend'], 'rm', '-f', name], env=environment(), capture_output=True, timeout=60)
+        if subprocess.run([profile['backend'], 'inspect', name], env=environment(), capture_output=True, timeout=30).returncode == 0:
+            raise Error(f'could not remove container {name}')
         subprocess.run([profile['backend'], 'volume', 'rm', '-f', *(f'{name}-{volume}' for volume in CONTAINER_VOLUMES)],
                        env=environment(), capture_output=True, timeout=60)
 
@@ -810,7 +812,7 @@ class Vfkit(Guest):
             subprocess.run(self.ssh() + ['agent@monitor-vm', 'sudo kill -TERM 1'], env=environment(), capture_output=True, timeout=10)
 
 
-BUNKERS = {'firecracker': Firecracker, 'vfkit': Vfkit, 'podman': Container, 'docker': Container, 'bwrap': Bwrap}
+BUNKERS = {'firecracker': Firecracker, 'vfkit': Vfkit, 'docker': Container, 'bwrap': Bwrap}
 
 
 def stop(directory):
