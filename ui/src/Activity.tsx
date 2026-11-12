@@ -255,9 +255,10 @@ function RequestRow(props: { id: string; stack: string[]; open?: boolean }) {
               <a
                 class="review-link"
                 href="#connections"
+                aria-label="Review in Permissions"
                 title={`Review in Permissions · ${owner.timeLeft(record(), m.now())} left`}
               >
-                Needs review
+                Review ({owner.timeLeft(record(), m.now())})
               </a>
             </Show>
           </span>
