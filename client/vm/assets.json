@@ -15,8 +15,8 @@
       "sha256": "e20e46d0c36c55c0d1014eb20576171b3f3d922260d9f792017aeff53af3d4f2"
     },
     "base": {
-      "file": "base-4216f855940af67a.tar.gz",
-      "sha256": "4216f855940af67af005276d1a08c50c2aef97286bcb2bd564e7cfefd583f953"
+      "file": "base-3ac4002cbb5e92fb.tar.gz",
+      "sha256": "3ac4002cbb5e92fb32f3542f4f5e7f4297b95b1073567a7215629b35846a7fc8"
     },
     "agents": {
       "claude": {
