@@ -219,7 +219,8 @@ button.primary:hover:not(:disabled),
 button.danger {
   color: var(--bad);
 }
-button:disabled {
+button:disabled,
+input[type="checkbox"][role="switch"]:disabled {
   opacity: 0.5;
   cursor: default;
 }
@@ -301,11 +302,12 @@ input[type="checkbox"][role="switch"]::before {
   box-shadow: var(--shadow);
 }
 input[type="checkbox"][role="switch"]:checked {
-  background: var(--tinfoil-accent-light);
+  border-color: var(--ok);
+  background: var(--ok);
 }
 input[type="checkbox"][role="switch"]:checked::before {
   transform: translateX(16px);
-  background: #fff;
+  background: var(--card);
 }
 input[type="checkbox"][role="switch"]:focus-visible {
   outline: 2px solid var(--border-strong);
@@ -454,11 +456,14 @@ summary + * {
   padding: 12px;
   border-top: 1px solid var(--nav-line);
 }
-.theme-switch {
+.tab-bar.theme-switch {
+  --tab-accent: var(--tinfoil-light);
+  --tab-selected-border: var(--tinfoil-light);
   --card: var(--tinfoil-dark);
   --line: var(--nav-line);
   --gray-600: var(--nav-muted);
   --text: var(--nav-text);
+  background: var(--card);
   justify-self: start;
 }
 .back-terminal .icon {
@@ -955,7 +960,6 @@ html [data-sonner-toaster] {
   margin: -1px calc(-1 * (var(--section-inset) + 1px)) 0;
 }
 .resource-heading,
-.settings-section > h2,
 .start-home .start-eyebrow {
   padding: var(--card-header-inset);
   border: 1px solid var(--line);
@@ -971,7 +975,6 @@ html [data-sonner-toaster] {
   overflow-wrap: anywhere;
 }
 .resource-heading h2,
-.settings-section > h2,
 .start-home .start-eyebrow {
   color: var(--text);
   font-family: inherit;
@@ -2302,27 +2305,24 @@ button.access-toggle:hover:not(:disabled) {
 .access-action-group[open] > summary .access-group-title > .icon {
   transform: rotate(90deg);
 }
-/* Settings follow Tinfoil Chat: titled sections of one card per setting. */
 .settings {
   display: grid;
   gap: 24px;
   margin-top: 32px;
 }
-.settings-section {
-  display: grid;
-  gap: 12px;
-}
-.settings-section > h2 {
-  margin: 0;
+.settings > .settings-section {
+  margin-top: 0;
 }
 .settings-card {
   display: block;
   margin: 0;
   padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: var(--card-radius);
+  border-bottom: 1px solid var(--line);
   background: var(--card);
   overflow-wrap: anywhere;
+}
+.settings-card:last-child {
+  border-bottom: 0;
 }
 .setting-title {
   display: block;
@@ -2374,7 +2374,7 @@ button.access-toggle:hover:not(:disabled) {
 .setting-row input[type="checkbox"] {
   margin: 0;
 }
-.settings-danger > h2 {
+.settings-danger .resource-heading h2 {
   color: var(--bad);
 }
 

@@ -12,7 +12,7 @@ const view: owner.View = {
   ca: "test-ca",
   fields: {},
   labels: {},
-  vocabulary: { read: {}, write: { change: true } },
+  vocabulary: { read: {}, write: { change: true }, pay: { ask: true } },
   status: {},
   config: {
     data: { onboarding: { completed: true } },

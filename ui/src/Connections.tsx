@@ -306,8 +306,10 @@ function GlobalPermissions() {
   const m = useMonitor();
   return (
     <div class="settings">
-      <section class="settings-section">
-        <h2>Payments</h2>
+      <section class="settings-section resource-list">
+        <div class="resource-heading">
+          <h2>Payments</h2>
+        </div>
         <label class="settings-card setting-toggle">
           <span>
             <span class="setting-title">Ask before any payment</span>
@@ -347,8 +349,10 @@ function GlobalPermissions() {
           />
         </label>
       </section>
-      <section class="settings-section settings-danger">
-        <h2>Dangerous</h2>
+      <section class="settings-section settings-danger resource-list">
+        <div class="resource-heading">
+          <h2>Dangerous</h2>
+        </div>
         <label class="settings-card setting-toggle">
           <span>
             <span class="setting-title">Allow everything</span>
