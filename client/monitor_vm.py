@@ -335,10 +335,15 @@ Host perimeter perimeter-route
 '''.encode())
     archive = seed / 'workspace.tar'
     if fresh:
+        files = b'.'
+        if (workspace / '.git').exists():
+            listing = run(['git', '-C', str(workspace), 'ls-files', '-z', '--cached', '--others', '--exclude-standard'],
+                          capture_output=True, timeout=300).stdout.split(b'\0')
+            files = b'\0'.join([b'.git', *(name for name in listing if name and os.path.lexists(workspace / os.fsdecode(name)))])
         # GNU tar preserves symlinks without following them. Project files
         # are data only; nothing from the project runs on the host.
-        run([TAR, '-cf', str(archive), '-C', str(workspace), '--exclude-vcs-ignores',
-             '--exclude=.env', '--exclude=.env.*', '--exclude=node_modules', '--exclude=.venv', '--', '.'], timeout=300)
+        run([TAR, '-cf', str(archive), '-C', str(workspace), '--exclude=.env', '--exclude=.env.*',
+             '--exclude=node_modules', '--exclude=.venv', '--null', '-T', '-'], input=files, timeout=300)
     else:
         with tarfile.open(archive, 'w'):
             pass
