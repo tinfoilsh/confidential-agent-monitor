@@ -206,7 +206,7 @@ func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalI
 	for _, proposal := range proposals {
 		if proposal.ID == "" {
 			m.addRecord(proposal)
-			proposal.State, proposal.answered = statePending, make(chan struct{})
+			proposal.State = statePending
 		}
 		receipts = append(receipts, proposal.receipt())
 	}

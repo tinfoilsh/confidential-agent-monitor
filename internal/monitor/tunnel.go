@@ -6,6 +6,7 @@ import (
 	"crypto/ed25519"
 	"fmt"
 	"net"
+	"reflect"
 
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/facts"
@@ -210,6 +211,12 @@ func (m *monitor) stillAdmitted(old *settings, admitted admission) bool {
 		return true
 	}
 	previous, _ := old.Principal(admitted.fingerprint)
+	// Saved rules only waive approvals, so only removing or changing one revokes.
+	for name, rule := range old.Identities[p.Name].Rules {
+		if rule.Connection == c.Name && !reflect.DeepEqual(st.Identities[p.Name].Rules[name], rule) {
+			return false
+		}
+	}
 	return previous == p && st.Engine.Program == old.Engine.Program && bytes.Equal(old.Authority(p.Name, c.Name), st.Authority(p.Name, c.Name))
 }
 

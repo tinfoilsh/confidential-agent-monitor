@@ -110,7 +110,7 @@ func (c *Config) ProposalScope(proposer string, changes []Change) string {
 	}
 	identities := map[string]any{}
 	for name, identity := range c.Identities {
-		if c.Access(name, connection).Level != "" || len(identity.rulesFor(connection)) != 0 || targeted[name] {
+		if c.Access(name, connection).Level != "" || targeted[name] {
 			key := ""
 			if targeted[name] {
 				key = identity.Key
@@ -167,12 +167,12 @@ func (c *Config) EffectModes(agent, connection string, op *facts.Operation) map[
 }
 
 // Authority encodes the settings an agent's requests on a connection are decided with,
-// apart from the request, the prepared policy program and the connector setup. Setup
+// apart from the request, saved rules, the prepared policy program and the connector setup. Setup
 // equality already covers preset protocol data, action effects and public scope;
 // effect settings appear only as resolved modes.
 func (c *Config) Authority(agent, connection string) json.RawMessage {
 	settings, access := c.Connections[connection], c.Access(agent, connection)
 	settings.Effects, settings.Setup, access.Effects = nil, nil, nil
-	raw, _ := json.Marshal([]any{c.Lattices, c.AllowPaidInference, access, c.EffectModes(agent, connection, nil), c.Identities[agent].rulesFor(connection), settings})
+	raw, _ := json.Marshal([]any{c.Lattices, c.AllowPaidInference, access, c.EffectModes(agent, connection, nil), settings})
 	return raw
 }

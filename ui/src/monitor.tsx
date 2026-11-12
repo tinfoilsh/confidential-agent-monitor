@@ -341,7 +341,7 @@ function createMonitor(options: MonitorOptions) {
   const decide = (record: owner.RequestRecord, decision: owner.Decision) =>
     perform(
       (client) => client.decide(record.id, decision),
-      decision === "save"
+      decision === "save" && owner.stateAt(record, Date.now()) === "expired"
         ? "Rule saved. Retry the request from your bunker."
         : "",
       {

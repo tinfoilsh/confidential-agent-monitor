@@ -31,16 +31,6 @@ type Identity struct {
 	Rules       map[string]Rule   `json:"rules,omitempty"`
 }
 
-func (id Identity) rulesFor(connection string) map[string]Rule {
-	rules := map[string]Rule{}
-	for name, rule := range id.Rules {
-		if rule.Connection == connection {
-			rules[name] = rule
-		}
-	}
-	return rules
-}
-
 type Access struct {
 	Level   string            `json:"level"`
 	Actions map[string]string `json:"actions,omitempty"`

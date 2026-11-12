@@ -815,8 +815,8 @@ export function grantText(
   );
 }
 export const saveText = (r: RequestRecord) =>
-  `${grantText(r.facts?.operation?.id, r.grant, r.facts?.parameters)} on future attempts. Retry this request after saving.`;
-// Saving a rule never resumes the original call; it also works after a timeout.
+  `${grantText(r.facts?.operation?.id, r.grant, r.facts?.parameters)} on ${stateAt(r, Date.now()) === "expired" ? "future attempts. Retry this request after saving." : "this and future attempts."}`;
+// Saving a rule also works after a timeout.
 export function decisions(
   r: RequestRecord,
   now?: number,

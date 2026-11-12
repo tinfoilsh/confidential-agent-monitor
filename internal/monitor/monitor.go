@@ -157,6 +157,7 @@ type monitor struct {
 	forwards                *sandbox.Forwarder
 	streams                 map[*connector.Stream]admission
 	records                 []*record
+	cond                    sync.Cond
 	signIns                 sync.Map
 }
 
@@ -174,6 +175,7 @@ func New(o Options) *monitor {
 		connections:    map[string]*connection{},
 		streams:        map[*connector.Stream]admission{},
 	}
+	m.cond.L = &m.mu
 	m.ownerAPI = m.newOwnerAPI()
 	return m
 }
@@ -396,13 +398,12 @@ func (m *monitor) commitSettings(ctx context.Context, plan *settingsPlan, saved 
 	if saved != nil {
 		saved.record.committed(saved.answer)
 	}
-	old, changed := m.settings.Load(), false
+	old := m.settings.Load()
 	for _, name := range plan.remove {
 		c := m.connections[name]
 		c.cancelSetup()
 		retired = append(retired, c)
 		delete(m.connections, name)
-		changed = true
 	}
 	for _, update := range plan.updates {
 		c := m.connections[update.Name]
@@ -421,7 +422,6 @@ func (m *monitor) commitSettings(ctx context.Context, plan *settingsPlan, saved 
 				c.cancelSetup()
 			}
 			c.setupCtx, c.cancelSetup = context.WithCancel(context.Background())
-			changed = true
 		}
 		c.ConnectionSpec, c.prepared, c.Credentials = update.ConnectionSpec, update.prepared, update.credentials
 		// Admission requires successful delivery.
@@ -440,9 +440,13 @@ func (m *monitor) commitSettings(ctx context.Context, plan *settingsPlan, saved 
 			stream.Close()
 		}
 	}
-	if old != plan.next || changed {
-		m.refusePending(errChanged)
+	for _, r := range m.records {
+		if r.State == statePending && r.Changes != nil && plan.next.ProposalScope(r.summary().Facts.Principal.Name, r.Changes) != r.scope {
+			r.State = stateOutdated
+			m.settleRecord(r, nil)
+		}
 	}
+	m.cond.Broadcast()
 	return install, retired, nil
 }
 
