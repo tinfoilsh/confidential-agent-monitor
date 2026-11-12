@@ -275,6 +275,31 @@ dialog.start-dialog {
 .start-home .monitor-actions {
   margin-inline: var(--section-inset);
 }
+.start-home .home-skeleton-name,
+.start-home .home-skeleton-meta {
+  display: inline-block;
+  vertical-align: middle;
+  width: 65%;
+  height: var(--font-body);
+}
+.start-home .home-skeleton-meta {
+  width: 45%;
+  height: var(--font-detail);
+}
+.start-home .home-skeleton-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.start-home .home-skeleton-key {
+  flex: none;
+  margin-top: 2px;
+}
+.start-home .home-skeleton-key-icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
 .start-home .start-key-choice > :is(button, .icon:last-child) {
   align-self: center;
 }

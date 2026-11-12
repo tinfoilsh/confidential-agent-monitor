@@ -1032,30 +1032,6 @@ html [data-sonner-toaster] {
   background: none;
   color: var(--text);
 }
-.fold {
-  flex-direction: column;
-  gap: 0;
-}
-.fold > .icon,
-.fold .ui-icon {
-  width: 12px;
-  height: 12px;
-}
-.fold > .icon {
-  transition: rotate 0.15s;
-}
-.fold > .icon + .icon {
-  margin-top: -4px;
-}
-.fold > :first-child,
-.fold[aria-pressed="true"] > :last-child {
-  rotate: -90deg;
-}
-.fold > :last-child,
-.fold[aria-pressed="true"] > :first-child {
-  rotate: 90deg;
-}
-
 .resource-link {
   display: flex;
   align-items: center;
@@ -1472,10 +1448,10 @@ details[open] > summary > .collection-chevron {
 }
 .request-inline {
   min-width: 0;
-  width: 100%;
-  margin-top: 0;
+  margin: 0 var(--section-inset) var(--section-inset);
   padding: var(--card-inset);
-  border-top: 1px solid var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--card-radius);
   background: var(--subtle);
 }
 .request-detail {
@@ -2258,8 +2234,15 @@ button.access-toggle:hover:not(:disabled) {
   gap: 12px;
 }
 .access-action-leader {
+  --dot-size: 1px;
+  --dot-step: 6px;
   flex: 1 0 12px;
-  border-top: 1px dotted var(--muted);
+  height: var(--dot-size);
+  background: repeating-linear-gradient(
+    to right,
+    var(--muted) 0 var(--dot-size),
+    transparent var(--dot-size) var(--dot-step)
+  );
 }
 @container actions (max-width: 360px) {
   .access-action > .access-select {

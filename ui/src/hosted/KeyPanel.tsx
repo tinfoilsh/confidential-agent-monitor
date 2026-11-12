@@ -247,7 +247,10 @@ export function AddPasskey(props: {
 export function UnlockKeys(props: {
   session: Session;
   manager: PasskeyKeyManager;
+  loading?: JSX.Element;
+  frame?: (card: JSX.Element) => JSX.Element;
 }) {
+  const frame = (card: JSX.Element) => (props.frame ? props.frame(card) : card);
   const action = useAction(props.session, props.manager);
   const state = () => props.session.keyState().value!;
   const hasPasskey = () => state().recovery.some((r) => r.type === "passkey");
@@ -302,138 +305,142 @@ export function UnlockKeys(props: {
   return (
     <Show
       when={!checking()}
-      fallback={<AuthCardSkeleton label="Opening your keys…" />}
+      fallback={
+        props.loading ?? frame(<AuthCardSkeleton label="Opening your keys…" />)
+      }
     >
-      <Show
-        when={!confirming()}
-        fallback={
-          <AuthCard icon={<Icon name="warning" />} title="Start over?">
-            <p>
-              <strong>You will lose your bunkers.</strong> Starting over makes
-              new keys. Bunkers and Perimeters that use your current keys can't
-              be opened again, and their data can't be recovered. CLI keys you
-              added stay.
-            </p>
-            {error()}
-            <button
-              class="danger"
-              disabled={action.busy()}
-              aria-busy={action.busy()}
-              onClick={() => void startOver()}
-            >
-              Yes, start over
-            </button>
-            <button
-              disabled={action.busy()}
-              onClick={() => setConfirming(false)}
-            >
-              Go back
-            </button>
-          </AuthCard>
-        }
-      >
+      {frame(
         <Show
-          when={hasPasskey() && !noPasskey()}
+          when={!confirming()}
           fallback={
-            <>
-              <AuthCard icon={<Icon name="document" />} title="Recovery key">
-                <p>
-                  Choose the recovery key file you saved when you set up your
-                  keys.
-                </p>
-                {error()}
-                <input
-                  ref={picker}
-                  class="start-file"
-                  type="file"
-                  accept=".txt,text/plain"
-                  onChange={(event) => {
-                    const file = event.currentTarget.files?.[0];
-                    event.currentTarget.value = "";
-                    if (file)
-                      void unlock(async (current, scope) => {
-                        if (file.size > MAX_RECOVERY_FILE_BYTES)
-                          throw new Error(
-                            "This file is too large to be a recovery key.",
+            <AuthCard icon={<Icon name="warning" />} title="Start over?">
+              <p>
+                <strong>You will lose your bunkers.</strong> Starting over makes
+                new keys. Bunkers and Perimeters that use your current keys
+                can't be opened again, and their data can't be recovered. CLI
+                keys you added stay.
+              </p>
+              {error()}
+              <button
+                class="danger"
+                disabled={action.busy()}
+                aria-busy={action.busy()}
+                onClick={() => void startOver()}
+              >
+                Yes, start over
+              </button>
+              <button
+                disabled={action.busy()}
+                onClick={() => setConfirming(false)}
+              >
+                Go back
+              </button>
+            </AuthCard>
+          }
+        >
+          <Show
+            when={hasPasskey() && !noPasskey()}
+            fallback={
+              <>
+                <AuthCard icon={<Icon name="document" />} title="Recovery key">
+                  <p>
+                    Choose the recovery key file you saved when you set up your
+                    keys.
+                  </p>
+                  {error()}
+                  <input
+                    ref={picker}
+                    class="start-file"
+                    type="file"
+                    accept=".txt,text/plain"
+                    onChange={(event) => {
+                      const file = event.currentTarget.files?.[0];
+                      event.currentTarget.value = "";
+                      if (file)
+                        void unlock(async (current, scope) => {
+                          if (file.size > MAX_RECOVERY_FILE_BYTES)
+                            throw new Error(
+                              "This file is too large to be a recovery key.",
+                            );
+                          return keys.unlockFile(
+                            await file.text(),
+                            current,
+                            scope.user,
                           );
-                        return keys.unlockFile(
-                          await file.text(),
-                          current,
-                          scope.user,
-                        );
-                      });
-                  }}
-                />
-                <button
-                  class="primary"
-                  disabled={action.busy()}
-                  aria-busy={action.busy()}
-                  onClick={() => picker.click()}
-                >
-                  {action.busy() ? "Unlocking…" : "Choose recovery key file"}
-                </button>
-                <Show when={hasPasskey()}>
+                        });
+                    }}
+                  />
+                  <button
+                    class="primary"
+                    disabled={action.busy()}
+                    aria-busy={action.busy()}
+                    onClick={() => picker.click()}
+                  >
+                    {action.busy() ? "Unlocking…" : "Choose recovery key file"}
+                  </button>
+                  <Show when={hasPasskey()}>
+                    <button
+                      class="link"
+                      disabled={action.busy()}
+                      onClick={() => setNoPasskey(false)}
+                    >
+                      Use a passkey instead
+                    </button>
+                  </Show>
                   <button
                     class="link"
                     disabled={action.busy()}
-                    onClick={() => setNoPasskey(false)}
+                    onClick={() => setConfirming(true)}
                   >
-                    Use a passkey instead
+                    I lost my recovery key
                   </button>
-                </Show>
-                <button
-                  class="link"
-                  disabled={action.busy()}
-                  onClick={() => setConfirming(true)}
-                >
-                  I lost my recovery key
-                </button>
-              </AuthCard>
-            </>
-          }
-        >
-          <AuthCard icon={<Icon name="lock" />} title="Passkey">
-            <p>
-              When you're ready, unlock with your fingerprint, face, screen
-              lock, or security key.
-            </p>
-            {error()}
-            <button
-              class="primary unlock"
-              disabled={action.busy()}
-              aria-busy={action.busy()}
-              onClick={() =>
-                void unlock(async (current, scope, signal) =>
-                  keys.unlockPasskey(props.manager, current, scope.user, {
-                    remember: remember(),
-                    fence: await scope.fence,
-                    signal,
-                  }),
-                )
-              }
-            >
-              <Icon name="fingerprint" />
-              {action.busy() ? "Unlocking…" : "Unlock with passkey"}
-            </button>
-            <label class="auth-remember">
-              <input
-                type="checkbox"
-                checked={remember()}
+                </AuthCard>
+              </>
+            }
+          >
+            <AuthCard icon={<Icon name="lock" />} title="Passkey">
+              <p>
+                When you're ready, unlock with your fingerprint, face, screen
+                lock, or security key.
+              </p>
+              {error()}
+              <button
+                class="primary unlock"
                 disabled={action.busy()}
-                onChange={(event) => setRemember(event.currentTarget.checked)}
-              />
-              Remember me for {keys.REMEMBER_PASSKEY_DAYS} days
-            </label>
-            <button
-              class="link"
-              disabled={action.busy()}
-              onClick={() => setNoPasskey(true)}
-            >
-              Use your recovery key file
-            </button>
-          </AuthCard>
-        </Show>
-      </Show>
+                aria-busy={action.busy()}
+                onClick={() =>
+                  void unlock(async (current, scope, signal) =>
+                    keys.unlockPasskey(props.manager, current, scope.user, {
+                      remember: remember(),
+                      fence: await scope.fence,
+                      signal,
+                    }),
+                  )
+                }
+              >
+                <Icon name="fingerprint" />
+                {action.busy() ? "Unlocking…" : "Unlock with passkey"}
+              </button>
+              <label class="auth-remember">
+                <input
+                  type="checkbox"
+                  checked={remember()}
+                  disabled={action.busy()}
+                  onChange={(event) => setRemember(event.currentTarget.checked)}
+                />
+                Remember me for {keys.REMEMBER_PASSKEY_DAYS} days
+              </label>
+              <button
+                class="link"
+                disabled={action.busy()}
+                onClick={() => setNoPasskey(true)}
+              >
+                Use your recovery key file
+              </button>
+            </AuthCard>
+          </Show>
+        </Show>,
+      )}
     </Show>
   );
 }
@@ -601,6 +608,7 @@ export function KeyGate(props: {
   session: Session;
   manager: PasskeyKeyManager;
   purpose?: string;
+  loading?: JSX.Element;
   children: JSX.Element;
 }) {
   const [file, setFile] = createSignal<keys.RecoveryFile>();
@@ -617,9 +625,11 @@ export function KeyGate(props: {
             <Show
               when={read().error}
               fallback={
-                <AuthScreen>
-                  <AuthCardSkeleton label="Loading your keys…" />
-                </AuthScreen>
+                props.loading ?? (
+                  <AuthScreen>
+                    <AuthCardSkeleton label="Loading your keys…" />
+                  </AuthScreen>
+                )
               }
             >
               <AuthScreen title="Could not load your keys">
@@ -672,12 +682,19 @@ export function KeyGate(props: {
                 </AuthScreen>
               </Match>
               <Match when={state().dek_id}>
-                <AuthScreen
-                  title="Unlock your keys"
-                  description={`You need them to ${purpose()}.`}
-                >
-                  <UnlockKeys session={props.session} manager={props.manager} />
-                </AuthScreen>
+                <UnlockKeys
+                  session={props.session}
+                  manager={props.manager}
+                  loading={props.loading}
+                  frame={(card) => (
+                    <AuthScreen
+                      title="Unlock your keys"
+                      description={`You need them to ${purpose()}.`}
+                    >
+                      {card}
+                    </AuthScreen>
+                  )}
+                />
               </Match>
             </Switch>
           )}

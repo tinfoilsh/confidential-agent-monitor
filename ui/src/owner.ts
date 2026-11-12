@@ -1285,7 +1285,7 @@ export function catalog(view: View) {
   });
   return [
     ...(common.length
-      ? [{ group: "common", title: "Common", presets: common }]
+      ? [{ group: "common", title: "Popular", presets: common }]
       : []),
     ...[...groups]
       .filter(([, entries]) => entries.length)
