@@ -5,6 +5,30 @@ const HEIGHT = 900;
 const TOLERANCE = 1;
 const DESKTOP_ROW_HEIGHT = 48;
 
+test("an existing group override can change all tools and clear child exceptions", async ({
+  page,
+}) => {
+  await page.goto(
+    "/app/tests/browser/terminal.html?root-override#agents/new-bunker",
+  );
+  await page
+    .getByRole("button", { name: "Actions for tinfoil-websearch" })
+    .click();
+  const group = page.getByLabel("Use permission", { exact: true });
+  await expect(group).toHaveValue("");
+  await group.selectOption("allow");
+  await expect(group).toHaveValue("allow");
+  await page
+    .locator('.access-action-group > summary[aria-label="Use"]')
+    .click();
+  await expect(page.getByLabel("Search the web permission")).toHaveValue(
+    "allow",
+  );
+  await expect(page.getByLabel("Fetch web pages permission")).toHaveValue(
+    "allow",
+  );
+});
+
 test("a lone tool still exposes its inherited permission control", async ({
   page,
 }) => {

@@ -28,7 +28,10 @@ const view: owner.View = {
       "new-bunker": {
         key: "test-bunker",
         connections: {
-          "tinfoil-websearch": { level: "allow", actions: { use: "ask" } },
+          "tinfoil-websearch": {
+            level: "allow",
+            actions: { "use.fetch": "ask", "use.search": "ask" },
+          },
           network: { level: "allow" },
         },
       },
@@ -78,6 +81,10 @@ const requests: owner.RequestRecord[] = Array.from(
 );
 if (new URLSearchParams(location.search).has("single-tool"))
   delete view.presets.tinfoil_websearch.actions!["use.fetch"];
+if (new URLSearchParams(location.search).has("root-override"))
+  view.config.identities!["new-bunker"].connections![
+    "tinfoil-websearch"
+  ].actions = { use: "ask", "use.search": "off" };
 if (new URLSearchParams(location.search).has("proposals")) {
   for (const state of ["pending", "approved"] as const)
     requests.push({

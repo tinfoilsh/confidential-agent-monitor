@@ -102,7 +102,7 @@ describe("a service's action list", () => {
     owner
       .agentAccess(v, "sandbox", connection)[0]
       .actions.map(({ key, title, mode }) => ({ key, title, mode }));
-  test("a lone group gives way to its actions, which keep the group's setting", () => {
+  test("a lone group without an override exposes its child settings", () => {
     const v = withService("search", {
       preset: "tinfoil_websearch",
       contents: "me",
@@ -111,13 +111,28 @@ describe("a service's action list", () => {
     v.config.identities = {
       sandbox: {
         key: "key",
-        connections: { search: { level: "allow", actions: { use: "ask" } } },
+        connections: { search: { level: "allow", actions: { "use.search": "ask" } } },
       },
     };
     expect(rows(v, "search")).toEqual([
-      { key: "use.fetch", title: "Fetch web pages", mode: "ask" },
+      { key: "use.fetch", title: "Fetch web pages", mode: "allow" },
       { key: "use.search", title: "Search the web", mode: "ask" },
     ]);
+  });
+  test.each(["own", "inherited"])("a %s root override keeps the group editable", (source) => {
+    const v = withService("search", {
+      preset: "tinfoil_websearch", contents: "me", sends: "me",
+    });
+    const access: owner.Access = { level: "allow", actions: { use: "ask" } };
+    v.config.identities = { sandbox: { key: "key", connections: source === "own" ? { search: access } : {} } };
+    if (source === "inherited") v.config.default_access = { search: access };
+    const [group] = owner.agentAccess(v, "sandbox", "search")[0].actions;
+    expect(group).toEqual({
+      key: "use", title: "Use", mode: "ask", children: [
+        { key: "use.fetch", title: "Fetch web pages", mode: "ask", children: [] },
+        { key: "use.search", title: "Search the web", mode: "ask", children: [] },
+      ],
+    });
   });
   test("several groups stay grouped", () => {
     const v = withService("tools", {

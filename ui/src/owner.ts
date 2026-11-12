@@ -1005,9 +1005,11 @@ export function agentAccess(view: View, name: string, only?: string) {
       mode: mode(access, view.vocabulary, node.effects, node.key),
       children: node.children.map(describe),
     });
-    // A lone top-level group repeats the service's own row, so its actions take its place.
+    // A lone group without an override repeats the service's own row.
     const ungrouped = (nodes: AccessNode[]): AccessNode[] =>
-      nodes.length === 1 && nodes[0].children.length > 1
+      nodes.length === 1 &&
+      nodes[0].children.length > 1 &&
+      !Object.hasOwn(access.actions ?? {}, nodes[0].key)
         ? nodes[0].children
         : nodes;
     let actions: AccessNode[] | undefined;
