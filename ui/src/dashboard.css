@@ -1367,7 +1367,8 @@ details[open] > summary > .collection-chevron {
 }
 .request-list {
   container: requests / inline-size;
-  --request-columns: minmax(0, 2fr) 3rem repeat(2, minmax(0, 1fr)) 110px 76px 16px;
+  --request-columns: minmax(0, 2fr) 3rem repeat(2, minmax(0, 1fr)) 110px 76px
+    16px;
 }
 .request-table-heading,
 .request-list .activity-row {
@@ -2208,6 +2209,7 @@ button.access-toggle:hover:not(:disabled) {
 }
 
 .access-actions {
+  container: actions / inline-size;
   display: grid;
   gap: 10px;
 }
@@ -2223,10 +2225,18 @@ button.access-toggle:hover:not(:disabled) {
   overflow: hidden;
 }
 .access-action {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: flex;
   align-items: center;
   gap: 12px;
+}
+.access-action-leader {
+  flex: 1 0 12px;
+  border-top: 1px dotted var(--muted);
+}
+@container actions (max-width: 360px) {
+  .access-action > .access-select {
+    width: 96px;
+  }
 }
 .access-action-group > summary {
   list-style: none;
@@ -2243,9 +2253,11 @@ button.access-toggle:hover:not(:disabled) {
 }
 .access-action-title {
   position: relative;
+  min-width: 0;
   padding-left: 20px;
   color: var(--text-secondary);
   font-weight: 400;
+  overflow-wrap: anywhere;
 }
 .access-action-title > .icon {
   position: absolute;
