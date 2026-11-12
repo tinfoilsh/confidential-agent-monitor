@@ -90,7 +90,9 @@ for (const theme of ["light", "dark"]) {
       const row = list.locator(":scope > .request-item > summary").first();
       await expect(row).toContainText("Connect to registry.npmjs.org:443");
       await expect(row).toContainText("new-bunker");
-      await expect(row).toContainText("×2");
+      await expect(row.locator(".request-count")).toHaveText(
+        "Request count: 2",
+      );
       await expect(row).toHaveAccessibleName(
         /Request: .*Bunker: new-bunker.*Service: network.*Status: Expired.*Requested at:/,
       );
@@ -119,6 +121,13 @@ for (const theme of ["light", "dark"]) {
           DESKTOP_ROW_HEIGHT + TOLERANCE,
         );
         await expect(page.getByText("Status", { exact: true })).toBeVisible();
+        const countHeading = (await header
+          .locator("+ .request-table-heading .request-count")
+          .boundingBox())!;
+        const count = (await row.locator(".request-count").boundingBox())!;
+        expect(
+          Math.abs(countHeading.x + countHeading.width - count.x - count.width),
+        ).toBeLessThanOrEqual(TOLERANCE);
       }
       await row.focus();
       await page.keyboard.press("Enter");
@@ -126,6 +135,9 @@ for (const theme of ["light", "dark"]) {
         .locator(".request-stack .request-item > summary")
         .first();
       await expect(child).toBeVisible();
+      await expect(child.locator(".request-count")).toHaveText(
+        "Request count: 1",
+      );
       await child.click();
       await expect(list.getByText("Nobody answered in time.")).toBeVisible();
       await row.click();

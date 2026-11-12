@@ -1367,7 +1367,7 @@ details[open] > summary > .collection-chevron {
 }
 .request-list {
   container: requests / inline-size;
-  --request-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)) 110px 76px 16px;
+  --request-columns: minmax(0, 2fr) 3rem repeat(2, minmax(0, 1fr)) 110px 76px 16px;
 }
 .request-table-heading,
 .request-list .activity-row {
@@ -1408,6 +1408,9 @@ details[open] > summary > .collection-chevron {
 .request-origin {
   display: contents;
 }
+.request-count {
+  text-align: right;
+}
 .request-origin > span,
 .request-list .activity-row > time {
   color: var(--muted);
@@ -1422,8 +1425,8 @@ details[open] > summary > .collection-chevron {
     display: none;
   }
   .activity-row {
-    grid-template-columns: minmax(0, 1fr) auto 16px;
-    grid-template-areas: "name status arrow" "origin time arrow";
+    grid-template-columns: minmax(0, 1fr) 3rem auto 16px;
+    grid-template-areas: "name count status arrow" "origin origin time arrow";
     gap: 4px 8px;
     padding-block: 8px;
   }
@@ -1435,6 +1438,9 @@ details[open] > summary > .collection-chevron {
     display: flex;
     min-width: 0;
     gap: 6px;
+  }
+  .request-count {
+    grid-area: count;
   }
   .request-origin > span + span::before {
     content: "· ";
