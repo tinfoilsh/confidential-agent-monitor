@@ -14,31 +14,9 @@
       "url": "https://s3.amazonaws.com/spec.ccfc.min/firecracker-ci/v1.15/x86_64/vmlinux-6.1.155",
       "sha256": "e20e46d0c36c55c0d1014eb20576171b3f3d922260d9f792017aeff53af3d4f2"
     },
-    "base": {
-      "file": "base-3ac4002cbb5e92fb.tar.gz",
-      "sha256": "3ac4002cbb5e92fb32f3542f4f5e7f4297b95b1073567a7215629b35846a7fc8"
-    },
-    "agents": {
-      "claude": {
-        "file": "agent-claude-e1261a14c91caf8c.tar.gz",
-        "sha256": "e1261a14c91caf8c27d3171c15f5a74d10db3689a4e06697db2c481c48388245",
-        "path": "/nix/store/11ylyzap9r0fpmqncfmxz8kyw4sp1kjk-claude-code-2.1.295"
-      },
-      "codex": {
-        "file": "agent-codex-1a3d005a7879bfcc.tar.gz",
-        "sha256": "1a3d005a7879bfcc72c5dd407dfa90f312fe4b1ea1818647790e4cc8b7c1fbac",
-        "path": "/nix/store/b4q9xhpdkqkbdk9p5kss1mpih0hjkgrs-codex-0.162.1"
-      },
-      "opencode": {
-        "file": "agent-opencode-7318aa6abd170897.tar.gz",
-        "sha256": "7318aa6abd17089704c060db22ad8f8c0015ad39d6d7497c6a66d980ecc0ee6f",
-        "path": "/nix/store/gs2dij0smmxm5wfy2j8fwihvahb8z48s-opencode-1.18.35"
-      },
-      "pi": {
-        "file": "agent-pi-c887b334dff73759.tar.gz",
-        "sha256": "c887b334dff737591cd07719f74be36563f2b0936e3d8ca485876f50809e1448",
-        "path": "/nix/store/yyrq47f5z3rpzax1ka5znmn2fj5kfkha-pi-coding-agent-1.1.0"
-      }
+    "image": {
+      "file": "image-f665505d447dc363.tar.gz",
+      "sha256": "f665505d447dc363838a07fc8a31aecc85e2913a10aff62bd201ba274f56a333"
     }
   },
   "aarch64": {

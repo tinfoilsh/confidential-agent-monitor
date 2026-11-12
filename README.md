@@ -76,10 +76,12 @@ perimeter setup
 perimeter launch claude    # or codex, opencode, pi, shell
 ```
 
-Nothing is built locally. The first launch downloads a small base image, and each
-agent downloads the first time it is launched. An agent uses the one Anthropic or
-OpenAI service it supports, or the one named with `--service`; a new bunker is
-granted that service. Agents fetched earlier stay available in every bunker.
+Nothing is built locally. The first launch downloads one image holding the base
+system and every agent. All bunkers share it read-only and keep their own changes
+in a writable layer, so a new image reaches every bunker on its next launch;
+container bunkers keep `/workspace` and home in volumes and are recreated from it.
+An agent uses the one Anthropic or OpenAI service it supports, or the one named
+with `--service`; a new bunker is granted that service.
 
 `perimeter setup --backend` chooses the isolation. Each bunker's only network is
 its link to the Perimeter.
@@ -98,8 +100,8 @@ the passphrase you enter claims a fresh one. The [daemon](#run-a-perimeter-local
 runs setup for you.
 See `perimeter --help` for stopping, exporting, and deleting bunkers.
 
-`dev/vm-artifacts DIR [ARCH...]` builds the base and agents for x86_64 and
-aarch64 and pins them in
+`dev/vm-artifacts DIR [ARCH...]` builds the image for x86_64 and aarch64 and
+pins it in
 [client/vm/assets.json](client/vm/assets.json); `PERIMETER_ARTIFACTS=DIR` makes
 the CLI use that directory before the files are published.
 

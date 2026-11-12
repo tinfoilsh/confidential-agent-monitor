@@ -5,7 +5,6 @@ publish: a container's wildcard listener publisher. process: bubblewrap's init, 
 """
 import contextlib
 import ctypes
-import json
 import os
 from pathlib import Path
 import select
@@ -103,18 +102,6 @@ def setup(seed):
     copy(seed / 'perimeter', '/opt/monitor/perimeter', 0o755)
     for name in ('id', 'known_hosts', 'ssh_config'):
         copy(seed / name, '/home/agent/.config/perimeter/' + name, agent=True)
-    store = Path('/nix/store')
-    for path in Path('/nix/agents').glob('*/nix/store/*'):
-        if not os.path.lexists(store / path.name):
-            (store / path.name).symlink_to(path)
-    programs = Path('/usr/local/bin')
-    for program in programs.iterdir():
-        if program.is_symlink() and os.readlink(program).startswith('/nix/store/'):
-            program.unlink()
-    for path in json.loads((seed / 'agents.json').read_text()).values():
-        for program in Path(path, 'bin').iterdir():
-            if not os.path.lexists(programs / program.name):
-                (programs / program.name).symlink_to(program)
     marker = Path('/var/lib/monitor/workspace-ready')
     if not marker.exists():
         subprocess.run(['tar', '-xf', str(seed / 'workspace.tar'), '-C', '/workspace', '--no-same-owner'], check=True)
