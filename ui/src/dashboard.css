@@ -1725,10 +1725,12 @@ details[open] > summary > .collection-chevron {
 }
 .agent-inline .agent-maintenance {
   margin-top: 16px;
-  padding: 0 16px;
   border: 1px solid var(--line);
   border-radius: var(--card-radius);
   background: var(--card);
+}
+.agent-inline .agent-maintenance > :is(summary, div) {
+  padding-inline: 16px;
 }
 .agent-settings {
   min-width: 0;
