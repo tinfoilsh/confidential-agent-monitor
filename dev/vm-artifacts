@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds the bunker base and one closure per agent for each ARCH into DIR, then pins them in client/vm/assets.json.
+# Builds one bunker image per ARCH, the base system plus every agent, into DIR and pins it in client/vm/assets.json.
 # Publish DIR's files under base_url; until then, PERIMETER_ARTIFACTS=DIR makes the client use them.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -17,21 +17,24 @@ container=
 trap 'rm -rf "$work"; [[ -z $container ]] || podman rm -f "$container" > /dev/null' EXIT
 
 for arch in "${arches[@]}"; do
-  mkdir "$work/$arch"
+  mkdir -p "$work/$arch/usr/local/bin"
   podman build -q --platform "linux/${oci[$arch]}" -t "$tag-$arch" client/vm > /dev/null
-  container=$(podman create --platform "linux/${oci[$arch]}" "$tag-$arch" /bin/true)
-  podman export "$container" | gzip -n > "$work/$arch/base.tar.gz"
+  paths=()
+  while read -r package; do
+    paths+=("$(NIXPKGS_ALLOW_UNFREE=1 nix build --impure --no-link --print-out-paths "$nixpkgs#legacyPackages.$arch-linux.$package")")
+  done < <(python3 -c 'import json; [print(agent["package"]) for agent in json.load(open("client/vm/agents.json")).values()]')
+  for path in "${paths[@]}"; do
+    ln -sf "$path"/bin/* "$work/$arch/usr/local/bin/"
+  done
+  # Buildah's ADD follows hard links to symlinks, which nix's store optimisation makes.
+  { nix-store -qR "${paths[@]}" | sed 's|^/||'; printf '%s\n' "--directory=$work/$arch" usr/local/bin; } |
+    tar -C / --sort=name --mtime=@1 --owner=0 --group=0 --numeric-owner --hard-dereference -cf "$work/$arch/agents.tar" -T -
+  image=$(printf 'FROM %s\nADD agents.tar /\n' "$tag-$arch" | podman build -q --platform "linux/${oci[$arch]}" -f - "$work/$arch")
+  container=$(podman create --platform "linux/${oci[$arch]}" "$image" /bin/true)
+  podman export "$container" | gzip -n > "$work/$arch/image.tar.gz"
   podman rm -f "$container" > /dev/null
   container=
-
-  python3 -c 'import json; [print(name, agent["package"]) for name, agent in json.load(open("client/vm/agents.json")).items()]' |
-  while read -r name package; do
-    path=$(NIXPKGS_ALLOW_UNFREE=1 nix build --impure --no-link --print-out-paths "$nixpkgs#legacyPackages.$arch-linux.$package")
-    # mke2fs -d needs each parent directory as an entry, and nix gives every store path mtime 1.
-    { printf '%s\n' --no-recursion nix nix/store --recursion; nix-store -qR "$path" | sed 's|^/||'; } |
-      tar -C / --sort=name --mtime=@1 --owner=0 --group=0 --numeric-owner -cf - -T - | gzip -n > "$work/$arch/agent-$name.tar.gz"
-    printf '%s\n' "$path" > "$work/$arch/agent-$name.path"
-  done
+  podman rmi -f "$image" > /dev/null
 done
 
 python3 - "$work" "$out" <<'PY'
@@ -50,11 +53,6 @@ def pin(source):
     return {'file': file, 'sha256': sha}
 
 for directory in sorted(work.iterdir()):
-    pins = manifest.setdefault(directory.name, {})
-    pins['base'] = pin(directory / 'base.tar.gz')
-    pins['agents'] = {
-        path.name.removeprefix('agent-').removesuffix('.path'): {
-            **pin(path.with_suffix('.tar.gz')), 'path': path.read_text().strip()}
-        for path in sorted(directory.glob('agent-*.path'))}
+    manifest.setdefault(directory.name, {})['image'] = pin(directory / 'image.tar.gz')
 manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
 PY

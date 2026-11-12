@@ -24,7 +24,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: cachix/install-nix-action@3dc140bfc76c49fbd4dd958429132e3746bcb086 # v31.11.5
-      - name: Build the base and agents
+      - name: Build the image
         env:
           ARCH: ${{ matrix.arch }}
           OUT: ${{ runner.temp }}/out
@@ -77,10 +77,10 @@ jobs:
           node --input-type=module -e '
             import { attestProvenance } from "@actions/attest";
             import { readdirSync, readFileSync } from "node:fs";
-            const subjects = readdirSync("out").filter(name => name.startsWith("pins-")).flatMap(name => {
-              const pins = JSON.parse(readFileSync("out/" + name, "utf8"));
-              return [pins.base, ...Object.values(pins.agents)];
-            }).map(({ file, sha256 }) => ({ name: file, digest: { sha256 } }));
+            const subjects = readdirSync("out").filter(name => name.startsWith("pins-")).map(name => {
+              const { image } = JSON.parse(readFileSync("out/" + name, "utf8"));
+              return { name: image.file, digest: { sha256: image.sha256 } };
+            });
             await attestProvenance({ subjects, token: process.env.GH_TOKEN, sigstore: "public-good" });'
       - name: Upload to the vm-artifacts release
         env:
