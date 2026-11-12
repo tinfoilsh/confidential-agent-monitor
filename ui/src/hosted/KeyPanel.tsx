@@ -390,7 +390,7 @@ export function UnlockKeys(props: {
             </p>
             {error()}
             <button
-              class="primary"
+              class="primary unlock"
               disabled={action.busy()}
               aria-busy={action.busy()}
               onClick={() =>

@@ -2516,7 +2516,6 @@ td {
   background: var(--surface) var(--grid) repeat center;
   color: var(--text);
 }
-/* Tinfoil Chat's solid button. */
 .auth {
   display: flex;
   flex-direction: column;
@@ -2657,6 +2656,11 @@ td {
 }
 .auth-card > button.danger:hover:not(:disabled) {
   background: var(--destructive-hover);
+}
+.auth-card > button.unlock {
+  --primary: var(--tinfoil-accent-dark-darker);
+  --primary-hover: var(--tinfoil-accent-dark);
+  --on-primary: #fff;
 }
 .dialog-header > .icon {
   grid-row: span 2;
