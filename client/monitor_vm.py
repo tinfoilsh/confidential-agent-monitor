@@ -1,5 +1,6 @@
 """Linux bunkers in Firecracker, vfkit, Docker or bubblewrap. The Perimeter link is their only network."""
 import argparse
+import atexit
 import base64
 import contextlib
 from concurrent.futures import ThreadPoolExecutor
@@ -923,9 +924,9 @@ def owner_token(value):
 
 class OwnerClient:
     """Use the existing owner API. Owner credentials never enter the VM."""
-    def __init__(self, url, key, timeout=30):
+    def __init__(self, url, key=None, timeout=30, session=None):
         self.url = urlsplit(url)
-        self.key = owner_token(key)
+        self.headers = {"X-Tinfoil-Session": session} if session else {"Authorization": "Bearer " + owner_token(key)}
         self.timeout = timeout
         if self.url.username or self.url.password or self.url.query or self.url.fragment or not self.url.hostname:
             raise Error("owner URL must be an HTTP(S) URL without credentials, query or fragment")
@@ -943,7 +944,7 @@ class OwnerClient:
             # http.client neither follows redirects nor uses proxy environment variables.
             connection.request(method, self.url.path.rstrip("/") + path,
                                body=json.dumps(body).encode() if body is not None else None,
-                               headers={"Authorization": "Bearer " + self.key, "Content-Type": "application/json"})
+                               headers={**self.headers, "Content-Type": "application/json"})
             response = connection.getresponse()
             data = response.read(16 * 1024 * 1024 + 1)
             if response.status != 200:
@@ -996,17 +997,19 @@ def setup_launch(args):
         root.mkdir(parents=True, exist_ok=True, mode=0o700)
         if not 1 <= args.cpus <= 32 or not 512 <= args.memory <= 65536 or not 2 <= args.disk_size <= 128:
             raise Error("choose 1–32 CPUs, 512–65536 MiB of memory and a 2–128 GiB disk")
-        owner_url = setup_value(args.owner_url, "Perimeter owner URL", "http://127.0.0.1:8080")
-        endpoint = setup_value(args.endpoint, "Perimeter SSH endpoint as reached by this host", "127.0.0.1:2223")
-        endpoint_address(endpoint)
-        if args.owner_key_file:
-            key = private_read(Path(args.owner_key_file).expanduser())
-        elif sys.stdin.isatty():
-            key = getpass.getpass("Perimeter owner key or passphrase (saved only on this host): ")
+        if args.tinfoil:
+            source, key = {"tinfoil": args.tinfoil}, None
         else:
-            raise Error("pass --owner-key-file pointing to an owner-only file")
-        owner = OwnerClient(owner_url, key)
-        view = unlock(owner, root)
+            source = {"owner_url": setup_value(args.owner_url, "Perimeter owner URL", "http://127.0.0.1:8080"),
+                      "endpoint": setup_value(args.endpoint, "Perimeter SSH endpoint as reached by this host", "127.0.0.1:2223")}
+            endpoint_address(source["endpoint"])
+            if args.owner_key_file:
+                key = private_read(Path(args.owner_key_file).expanduser())
+            elif sys.stdin.isatty():
+                key = getpass.getpass("Perimeter owner key or passphrase (saved only on this host): ")
+            else:
+                raise Error("pass --owner-key-file pointing to an owner-only file")
+        owner, view, _, _ = open_owner(source, root, key)
         connections = view["config"].get("connections") or {}
         access_spec = args.access or [item.strip() for item in setup_value(
             None, "Service access, comma-separated name=read|ask|allow", "").split(",") if item.strip()]
@@ -1016,17 +1019,14 @@ def setup_launch(args):
             if not sep or name not in connections or level not in ("read", "ask", "allow"):
                 raise Error(f"invalid service access {item!r}; use an existing service and read, ask or allow")
             access[name] = {"level": level}
-        host_key = view["host_key"].strip()
-        if "\n" in host_key or not host_key.startswith(("ssh-", "ecdsa-")):
-            raise Error("owner API returned an invalid SSH host key")
-        private(root / "owner.key", key.encode())
-        private(root / "host_key", host_key.encode() + b"\n")
-        profile = {"version": 3, "id": uuid.uuid4().hex, "owner_url": owner_url, "endpoint": endpoint,
+        if key:
+            private(root / "owner.key", key.encode())
+        profile = {"version": 3, "id": uuid.uuid4().hex, **source,
                    "root": str(root), "backend": args.backend, "cpus": args.cpus, "memory": args.memory,
                    "disk": args.disk_size, "access": access, "mcp": args.mcp}
         config.setdefault("launch_profiles", {})[name] = profile
         private(config_path, json.dumps(config, indent=2).encode() + b"\n")
-        print(f"Saved launch profile {name!r}. Owner key stays in {root / 'owner.key'}.")
+        print(f"Saved launch profile {name!r}." + (f" Owner key stays in {root / 'owner.key'}." if key else ""))
         prefix = "perimeter" + (" --profile " + name if name != "default" else "")
         print(f"From a project directory, run: {prefix} launch AGENT, where AGENT is shell or one of "
               + ", ".join(json.loads(asset("agents.json"))))
@@ -1046,6 +1046,33 @@ def agent_service(view, recipe, chosen):
             return names[0], preset
     raise Error("add " + " or ".join(recipe["via"]) + " service in the Perimeter"
                 + (f", or choose another than {chosen!r}" if chosen else ""))
+
+
+def open_owner(profile, root, key=None):
+    """The profile's owner API, view and SSH endpoint, pinning the view's host key. A hosted Perimeter's
+    come from tinfoil perimeter open, which runs until the returned close is called or this process exits."""
+    if "tinfoil" in profile:
+        try:
+            tunnel = subprocess.Popen(["tinfoil", "perimeter", "open", profile["tinfoil"], "--output", "json"],
+                                      stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, text=True)
+        except FileNotFoundError as error:
+            raise Error("a hosted Perimeter needs the tinfoil CLI on PATH") from error
+        atexit.register(tunnel.terminate)
+        try:
+            opened = json.loads(tunnel.stdout.readline())
+            owner = OwnerClient(opened["panel"] + "/api", session=opened["session"])
+            endpoint, close = opened["ssh"], tunnel.terminate
+        except (ValueError, KeyError, TypeError) as error:
+            raise Error("tinfoil perimeter open reported no panel; see its output above, or update tinfoil") from error
+        view = owner.request()
+    else:
+        owner = OwnerClient(profile["owner_url"], key or private_read(root / "owner.key"))
+        view, endpoint, close = unlock(owner, root), profile["endpoint"], lambda: None
+    host_key = view["host_key"].strip()
+    if "\n" in host_key or not host_key.startswith(("ssh-", "ecdsa-")):
+        raise Error("owner API returned an invalid SSH host key")
+    private(root / "host_key", host_key.encode() + b"\n")
+    return owner, view, endpoint, close
 
 
 def unlock(owner, root):
@@ -1124,8 +1151,7 @@ def launch_vm(args, cli):
             private(state_path, json.dumps(state).encode() + b"\n")
         public_key = keypair(directory / "id").decode() + "\n"
         if args.command in ("launch", "destroy"):
-            owner = OwnerClient(profile["owner_url"], private_read(root / "owner.key"))
-            view = unlock(owner, root)
+            owner, view, perimeter, close = open_owner(profile, root)
         if args.command == "destroy":
             ensure_stopped(directory).close()
             revoke_identity(owner, identity, public_key)
@@ -1145,11 +1171,12 @@ def launch_vm(args, cli):
             profile["access"].setdefault(service, {"level": "allow"})
         if args.command == "launch":
             enroll_identity(owner, state, state_path, public_key, profile["access"])
+            close()
         elif not (directory / "initialized").exists():
             raise Error("this bunker has no initialized workspace to export")
         endpoint = None
         if args.command == "launch":
-            address = urlsplit("ssh://" + endpoint_address(profile["endpoint"]))
+            address = urlsplit("ssh://" + endpoint_address(perimeter))
             endpoint = (address.hostname, address.port)
         with BUNKERS[backend](profile, directory, workspace, cli.__file__, endpoint) as bunker:
             if args.command == "export":
@@ -1236,6 +1263,7 @@ def add_commands(commands, policy_commands):
         command = policy_commands.add_parser(action, help={"diff": "validate and preview a replacement policy", "apply": "apply a replacement policy"}[action])
         command.add_argument("file", help="TOML file, or - for stdin")
     setup = commands.add_parser("setup", help="configure one-command Linux bunker launch")
+    setup.add_argument("--tinfoil", metavar="NAME", help="a Tinfoil-hosted Perimeter, reached with tinfoil perimeter open; replaces the owner and endpoint options")
     setup.add_argument("--owner-url", help="unlocked Perimeter owner API URL")
     setup.add_argument("--owner-key-file", help="owner-only file containing a key or passphrase; otherwise prompt privately")
     setup.add_argument("--endpoint", help="Perimeter SSH HOST:PORT as reached by this host")
