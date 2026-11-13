@@ -2,7 +2,7 @@
   "title": "Other bunkers",
   "catalog": {
     "group": "generic",
-    "warning": "This connector only sees which bunker and port is connected, not what it sends. For fine-grained policy, prefer a specific connector with NAME.sandbox as its host; that bunker then receives the traffic, including any credential the connector sends.",
+    "warning": "This connector enforces policy on host and port, not on the data being sent. For finer control, prefer a more specific connector pointed at NAME.sandbox.",
     "actions": {
       "connect": {
         "title": "Connect and exchange data",
