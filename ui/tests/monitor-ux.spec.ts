@@ -96,6 +96,8 @@ describe("SSH connection ports", () => {
     [undefined, 22],
     ["  ", 22],
     ["22022", 22022],
+    ["1", 1],
+    ["65535", 65535],
   ])("creates and edits a connection with port input %p", (input, expected) => {
     const v = view();
     const ssh = preset("ssh");
@@ -119,6 +121,18 @@ describe("SSH connection ports", () => {
     });
     owner.applyChanges(v.config, changes);
     expect(v.config.connections!.server.ssh).toMatchObject({ port: 2222 });
+  });
+
+  test.each([
+    ["0", "Port must be at least 1."],
+    ["65536", "Port must be at most 65535."],
+    ["22.5", 'Port takes whole numbers, not "22.5".'],
+  ])("rejects invalid port input %p before saving", (input, message) => {
+    const v = view();
+    const ssh = preset("ssh");
+    v.presets.ssh = { title: ssh.title, ...ssh.catalog };
+    const port = owner.setupFields(v, "ssh").find((f) => f.key === "port")!;
+    expect(() => owner.readField(port, input)).toThrow(message);
   });
 
   test("an existing connection without a port keeps the default when saved", () => {
