@@ -264,7 +264,7 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 	}
 	u := req.URL
 	origin := u.Scheme + "://" + u.Host
-	var metadata [][2]string // URL and the resource it must name; metadata at the origin names the origin.
+	var metadata []string
 	resp, err := s.client.Do(req)
 	if err != nil {
 		return err
@@ -273,28 +273,38 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 	challenges, _ := oauthex.ParseWWWAuthenticate(resp.Header.Values("WWW-Authenticate"))
 	for _, c := range challenges {
 		if m := c.Params["resource_metadata"]; m != "" {
-			metadata = append(metadata, [2]string{m, s.grant.Resource})
+			metadata = append(metadata, m)
 		}
 	}
-	metadata = append(metadata, [2]string{origin + "/.well-known/oauth-protected-resource" + u.Path, s.grant.Resource}, [2]string{origin + "/.well-known/oauth-protected-resource", origin})
+	metadata = append(metadata, origin+"/.well-known/oauth-protected-resource"+u.Path, origin+"/.well-known/oauth-protected-resource")
 	// Without resource metadata the origin is the authorization server, as in MCP 2025-03-26.
 	server, scopes := origin, []string(nil)
 	for _, m := range metadata {
-		if secure(m[0]) != nil {
+		var prm oauthex.ProtectedResourceMetadata
+		if secure(m) != nil || !s.getJSON(ctx, m, &prm) {
 			continue
 		}
-		if prm, err := oauthex.GetProtectedResourceMetadata(ctx, m[0], m[1], s.client); err == nil {
-			if len(prm.AuthorizationServers) == 0 {
-				return fmt.Errorf("%s names no authorization server", s.grant.Resource)
-			}
-			server, scopes = prm.AuthorizationServers[0], prm.ScopesSupported
-			break
+		// Metadata covers its resource and the paths beneath it on the same origin.
+		named, err := url.Parse(prm.Resource)
+		if err != nil || secure(prm.Resource) != nil || named.Host != u.Host || !strings.HasPrefix(strings.TrimSuffix(u.Path, "/")+"/", strings.TrimSuffix(named.Path, "/")+"/") {
+			continue
 		}
+		if len(prm.AuthorizationServers) == 0 {
+			return fmt.Errorf("%s names no authorization server", s.grant.Resource)
+		}
+		s.grant.Resource, server, scopes = prm.Resource, strings.TrimSuffix(prm.AuthorizationServers[0], "/"), prm.ScopesSupported
+		break
 	}
 	if err := secure(server); err != nil {
 		return err
 	}
 	asm, err := auth.GetAuthServerMetadata(ctx, server, s.client)
+	// Metadata naming another issuer leads to it, and that issuer's own metadata must name itself.
+	var other oauthex.AuthServerMeta
+	if a, _ := url.Parse(server); err != nil && s.getJSON(ctx, a.Scheme+"://"+a.Host+"/.well-known/oauth-authorization-server"+a.Path, &other) && other.Issuer != "" && secure(other.Issuer) == nil {
+		server = strings.TrimSuffix(other.Issuer, "/")
+		asm, err = auth.GetAuthServerMetadata(ctx, server, s.client)
+	}
 	if err != nil {
 		return err
 	}
@@ -344,6 +354,19 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 		s.grant.AuthStyle = "header"
 	}
 	return nil
+}
+
+func (s *SignIn) getJSON(ctx context.Context, u string, v any) bool {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
+	if err != nil {
+		return false
+	}
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+	return resp.StatusCode == http.StatusOK && json.NewDecoder(io.LimitReader(resp.Body, 1<<20)).Decode(v) == nil
 }
 
 // Exchange returns the replacement record for the authorized scope.
