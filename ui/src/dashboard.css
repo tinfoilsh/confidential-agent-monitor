@@ -2528,11 +2528,15 @@ button.access-toggle:hover:not(:disabled) {
 .form-actions {
   flex-wrap: wrap;
 }
-.credential-header {
+.credential-header,
+.credential > .setting-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 12px 24px;
+}
+.credential > .setting-row {
+  justify-content: space-between;
 }
 
 .secret-input button {
