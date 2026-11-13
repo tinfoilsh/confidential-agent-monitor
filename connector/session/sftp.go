@@ -33,7 +33,7 @@ func parseSFTP(source connector.Setup) (connector.Prepared, error) {
 	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Value: c, SecretNames: []string{"key"}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"key"}, Routes: []string{c.Host}}, nil
 }
 
 type SFTP struct{ connector.Slot[sftpSetup] }

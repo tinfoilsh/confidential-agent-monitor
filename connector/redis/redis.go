@@ -23,7 +23,7 @@ func parseRedis(source connector.Setup) (connector.Prepared, error) {
 	if err := c.validate(); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Value: c, SecretNames: []string{"password"}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Routes: []string{c.URL.Hostname()}}, nil
 }
 
 type Redis struct{ connector.Slot[redisSetup] }

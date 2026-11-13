@@ -27,7 +27,7 @@ func parseSMTP(source connector.Setup) (connector.Prepared, error) {
 	if err := c.Endpoint.Parse(); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Value: c, SecretNames: []string{"password"}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Routes: []string{c.URL.Hostname()}}, nil
 }
 
 type SMTP struct{ connector.Slot[smtpSetup] }

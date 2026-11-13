@@ -33,7 +33,7 @@ func parseNATS(source connector.Setup) (connector.Prepared, error) {
 	if err := c.validate(); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Value: c, SecretNames: []string{"password", "token"}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"password", "token"}, Routes: []string{c.URL.Hostname()}}, nil
 }
 
 type NATS struct{ connector.Slot[natsSetup] }

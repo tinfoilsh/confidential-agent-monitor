@@ -144,7 +144,7 @@ func (m *monitor) forwardConnection(key string, nc ssh.NewChannel, target frontd
 	m.mu.Lock()
 	var candidates []frontdoor.Candidate
 	for name, c := range m.connections {
-		if st.Reaches(p.Name, c.Name) && c.Status().State == statusReady {
+		if st.Reaches(p.Name, c.Name) && c.Status().State == statusReady && (!sandbox.ReservedRoute(target.Host) || sandbox.RouteAllowed(c.prepared.Routes, target.Host)) {
 			route := frontdoor.Candidate{Name: name}
 			route.Claim = c.prepared.Claim
 			candidates = append(candidates, route)

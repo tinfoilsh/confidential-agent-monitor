@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Builds one bunker image per ARCH, the base system plus every agent, into DIR and pins it in client/vm/assets.json.
-# Publish DIR's files under base_url. The image also goes into the client's cache, so this host launches it right away.
+# Builds one bunker image per ARCH, the base system plus every agent, and its kernel into DIR and pins them in client/vm/assets.json.
+# Publish DIR's files under base_url. Both also go into the client's cache, so this host launches it right away.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 out=${1:?usage: dev/vm-artifacts DIR [ARCH...]}
@@ -26,6 +26,7 @@ for arch in "${arches[@]}"; do
   docker export "$container" | gzip -n > "$work/$arch/image.tar.gz"
   docker rm -f "$container" > /dev/null
   container=
+  docker build -q --platform linux/amd64 --build-arg TARGET="$arch" -f client/vm/kernel.Dockerfile -o "$work/$arch" client/vm > /dev/null
 done
 
 python3 - "$work" "$out" <<'PY'
@@ -48,6 +49,7 @@ def pin(source):
     return {'file': file, 'sha256': sha}
 
 for directory in sorted(work.iterdir()):
-    manifest.setdefault(directory.name, {})['image'] = pin(directory / 'image.tar.gz')
+    entry = manifest.setdefault(directory.name, {})
+    entry['image'], entry['kernel'] = pin(directory / 'image.tar.gz'), pin(directory / 'kernel.bin')
 manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
 PY

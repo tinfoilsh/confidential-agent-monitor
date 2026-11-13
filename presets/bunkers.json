@@ -2,6 +2,7 @@
   "title": "Other bunkers",
   "catalog": {
     "group": "generic",
+    "warning": "This connector enforces policy on host and port, not on the data being sent. For finer control, prefer a more specific connector pointed at NAME.sandbox.",
     "actions": {
       "connect": {
         "title": "Connect and exchange data",

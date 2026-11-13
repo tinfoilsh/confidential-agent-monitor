@@ -412,9 +412,7 @@ func (m *monitor) commitSettings(ctx context.Context, plan *settingsPlan, saved 
 		if !m.kinds[c.Protocol].UsesHostKey {
 			c.env.HostKey = nil
 		}
-		if m.kinds[c.Protocol].Routes {
-			c.env.Dialer = sandbox.RouteDialer{Routes: m.forwards, Next: c.env.Dialer, Key: m.identityKey}
-		}
+		c.env.Dialer = sandbox.RouteDialer{Routes: m.forwards, Next: c.env.Dialer, Key: m.identityKey, Hosts: c.prepared.Routes}
 		install = append(install, c)
 	}
 	m.settings.Store(plan.next)
