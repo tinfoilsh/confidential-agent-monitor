@@ -1065,6 +1065,7 @@ function Connection(props: { name: string }) {
     return [...groups.values()];
   });
   const codex = () => owner.codexSetup(m.view()!, props.name);
+  const url = () => owner.serviceURL(m.view()!, props.name);
   const tinfoil = createMemo(() => owner.tinfoilSetup(m.view()!, props.name));
   const review = createMemo(() => {
     const review = owner.review(m.view()!, props.name);
@@ -1136,8 +1137,17 @@ function Connection(props: { name: string }) {
         <ConnectionForm
           name={props.name}
           setup={
-            <Show when={tinfoil() || setups().length || codex()}>
+            <Show when={tinfoil() || setups().length || codex() || url()}>
               <div class="connection-setup">
+                <Show when={url()}>
+                  {(url) => (
+                    <CopyField
+                      label="Bunker connection URL"
+                      value={url()}
+                      copyLabel={`Copy ${props.name} URL`}
+                    />
+                  )}
+                </Show>
                 <Show when={tinfoil()}>
                   {(setup) => (
                     <CopyField

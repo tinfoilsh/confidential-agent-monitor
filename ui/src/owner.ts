@@ -1481,6 +1481,17 @@ export function tinfoilSetup(view: View, name: string) {
   return { mcp, url: `https://${name}.perimeter/${mcp ? "mcp" : "v1"}` };
 }
 
+// Bunkers reach these services by name and send no password; the Perimeter adds it upstream.
+export function serviceURL(view: View, name: string) {
+  const url = setupOf(connections(view)[name])?.url;
+  if (typeof url !== "string" || !URL.canParse(url)) return;
+  const u = new URL(url);
+  if (u.protocol.startsWith("http")) return;
+  u.host = name + ".perimeter";
+  u.port = u.password = "";
+  return u.href;
+}
+
 const unusedName = (view: View, base: string, suffixes: string[] = [""]) => {
   let name = base;
   for (

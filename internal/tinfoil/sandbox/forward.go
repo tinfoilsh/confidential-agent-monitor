@@ -5,6 +5,8 @@ import (
 	"errors"
 	"net"
 	"net/http"
+	"path"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -170,12 +172,22 @@ func (f *Forwarder) DialKey(key ssh.PublicKey, port uint32) (net.Conn, error) {
 	return f.Dial(RouteName(key), port)
 }
 
+// RouteAllowed reports whether a route pattern among hosts matches host, so * never reaches a sandbox.
+func RouteAllowed(hosts []string, host string) bool {
+	host = strings.TrimSuffix(strings.ToLower(host), ".")
+	return slices.ContainsFunc(hosts, func(pattern string) bool {
+		ok, _ := path.Match(strings.ToLower(pattern), host)
+		return ok && ReservedRoute(pattern)
+	})
+}
+
 // RouteDialer dials sandbox routes through Routes and every other address through Next.
 type RouteDialer struct {
 	Routes *Forwarder
 	Next   connector.Dialer
 	// Key returns the key of the enrolled identity a route host names, as NAME.sandbox.
-	Key func(name string) (ssh.PublicKey, bool)
+	Key   func(name string) (ssh.PublicKey, bool)
+	Hosts []string
 }
 
 func (d RouteDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
@@ -185,7 +197,7 @@ func (d RouteDialer) DialContext(ctx context.Context, network, address string) (
 	}
 	name, named := strings.CutSuffix(strings.TrimSuffix(strings.ToLower(host), "."), bunkerSuffix)
 	key, enrolled := d.Key(name)
-	if !named || !enrolled {
+	if !RouteAllowed(d.Hosts, host) || !named || !enrolled {
 		return nil, errRouteUnavailable
 	}
 	// The SOCKS server is the sandbox's own ssh client, reached over an SSH channel, not a socket.

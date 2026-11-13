@@ -32,6 +32,8 @@ type Prepared struct {
 	Claim       func(string, uint32) int
 	Discovery   Discovery
 	SecretNames []string
+	// Routes lists the configured hosts; only sandbox route patterns among them can be dialed as routes.
+	Routes []string
 }
 
 type Controller interface{ Control() http.Handler }
@@ -43,8 +45,6 @@ type Kind struct {
 	// Opaque sessions keep the default: close when another operation changes the label.
 	PerMessage  bool
 	UsesHostKey bool
-	// Routes lets connections of this kind dial sandbox routes.
-	Routes bool
 	// Placeholders lists credential placeholders for agents to send in place of secrets.
 	Placeholders bool
 	// Host reaches host resources outside Env, so only local development registers it.
