@@ -1483,7 +1483,10 @@ export function tinfoilSetup(view: View, name: string) {
 
 // Bunkers reach these services by name and send no password; the Perimeter adds it upstream.
 export function serviceURL(view: View, name: string) {
-  const url = setupOf(connections(view)[name])?.url;
+  const c = connections(view)[name];
+  const kind = kindOf(c);
+  if (kind === "ssh" || kind === "sftp") return `${kind}://${name}.perimeter`;
+  const url = setupOf(c)?.url;
   if (typeof url !== "string" || !URL.canParse(url)) return;
   const u = new URL(url);
   if (u.protocol.startsWith("http")) return;
