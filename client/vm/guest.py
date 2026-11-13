@@ -19,6 +19,8 @@ import time
 # Mirrors monitor_vm.LINK_PORT, the loopback port that carries the Perimeter link.
 LINK_PORT = 2223
 AGENT = 1000
+# The TUN peer of `perimeter network`, where sing-box answers DNS.
+NETWORK_DNS = '100.127.255.2'
 ROOT = os.getuid() == 0
 
 
@@ -92,6 +94,15 @@ def publish():
         time.sleep(2)
 
 
+def network():
+    Path('/etc/hosts').write_text('127.0.0.1 localhost\n::1 localhost\n')
+    Path('/etc/resolv.conf').write_text(f'nameserver {NETWORK_DNS}\noptions timeout:1 attempts:2\n')
+    while True:
+        subprocess.run(['python3', '/opt/monitor/perimeter', '--ssh-config', '/home/agent/.config/perimeter/ssh_config', 'network'],
+                       stdin=subprocess.DEVNULL, check=False)
+        time.sleep(2)
+
+
 def setup(seed):
     for directory in ('/opt/monitor', '/workspace', '/var/lib/monitor'):
         Path(directory).mkdir(parents=True, exist_ok=True)
@@ -124,6 +135,8 @@ def run(command):
 
 
 def main():
+    # The kernel starts init without PATH.
+    os.environ.setdefault('PATH', '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin')
     kind = sys.argv[1]
     if kind == 'publish':
         publish()
@@ -142,6 +155,7 @@ def main():
     if kind == 'container':
         return
     threading.Thread(target=publish, daemon=True).start()
+    threading.Thread(target=network, daemon=True).start()
     sshd = subprocess.Popen(['/usr/sbin/sshd', '-D', '-e', '-f', '/etc/ssh/sshd_config.monitor'])
     listen(socket.AF_VSOCK, (socket.VMADDR_CID_ANY, 22), lambda: socket.create_connection(('127.0.0.1', 22), 10))
     stopping = threading.Event()

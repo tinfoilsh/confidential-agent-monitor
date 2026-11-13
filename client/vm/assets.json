@@ -11,12 +11,12 @@
   },
   "x86_64": {
     "kernel": {
-      "url": "https://s3.amazonaws.com/spec.ccfc.min/firecracker-ci/v1.15/x86_64/vmlinux-6.1.155",
-      "sha256": "e20e46d0c36c55c0d1014eb20576171b3f3d922260d9f792017aeff53af3d4f2"
+      "file": "kernel-6a260cc235e892a7.bin",
+      "sha256": "6a260cc235e892a71fd2537f02239baddee726f3abbdc477fb2f1130ab00a42f"
     },
     "image": {
-      "file": "image-48a844c19fb69e3c.tar.gz",
-      "sha256": "48a844c19fb69e3cf509dc02bb71e91568fe0e3ab2a22d7586fae8d6132ce71f"
+      "file": "image-78cab980c2eb6984.tar.gz",
+      "sha256": "78cab980c2eb69847b9a960bcbd56bfb571be62f185ffabfaa2c01c61e9e314f"
     }
   },
   "aarch64": {

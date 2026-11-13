@@ -5,6 +5,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     iproute2 util-linux procps tar xz-utils \
     && rm -rf /var/lib/apt/lists/* \
     && if id ubuntu >/dev/null 2>&1; then userdel -r ubuntu; fi
+ARG TARGETARCH
+ARG SING_BOX=1.14.3
+RUN cd /tmp && file=sing-box-$SING_BOX-linux-$TARGETARCH \
+    && curl -fsSLO "https://github.com/SagerNet/sing-box/releases/download/v$SING_BOX/$file.tar.gz" \
+    && printf '%s  %s\n' \
+       e2bdf179c15a3652955dc44867e33ca0965c9c9b91b34267dcc5a5d639a5feee "sing-box-$SING_BOX-linux-amd64.tar.gz" \
+       29dae24d76bea3bc62d07dd3e60cfc12003de7debbd6b768df9be9c68360174e "sing-box-$SING_BOX-linux-arm64.tar.gz" \
+       | sha256sum -c --ignore-missing --quiet \
+    && tar -xzf "$file.tar.gz" --strip-components=1 -C /usr/local/bin "$file/sing-box" \
+    && mkdir -p /usr/local/share/licenses/sing-box \
+    && tar -xOzf "$file.tar.gz" "$file/LICENSE" > /usr/local/share/licenses/sing-box/LICENSE \
+    && rm "$file.tar.gz"
 RUN useradd -m -u 1000 -s /bin/bash agent \
     && passwd -d agent \
     && printf 'agent ALL=(ALL) NOPASSWD: ALL\n' > /etc/sudoers.d/agent \
