@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"slices"
@@ -33,6 +34,8 @@ var (
 
 var errNoRegistration = errors.New("this service does not register clients automatically; enter the client ID and secret of an OAuth app registered with it")
 
+var errLoopback = errors.New("this service does not accept sign-ins from this page; open this Perimeter with tinfoil perimeter open to sign in on your computer")
+
 // A grant without an AuthURL is signed in at the authorization server its Resource names (RFC 9728).
 // A grant without a refresh token keeps its access token until Expiry, then needs a new sign-in.
 type oauth struct {
@@ -51,6 +54,7 @@ type oauth struct {
 	Prompt          string                `json:"prompt,omitempty"`
 	AuthStyle       string                `json:"auth_style,omitempty"`
 	TokenType       string                `json:"token_type,omitempty"`
+	Loopback        bool                  `json:"loopback,omitempty"`
 	AccessToken     string                `json:"access_token,omitempty"`
 	Expiry          time.Time             `json:"expiry,omitzero"`
 }
@@ -147,8 +151,11 @@ func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage,
 		s.config = &config
 		return s, s.startDevice(ctx)
 	}
+	if s.grant.Loopback && !loopback(redirect) {
+		return nil, errLoopback
+	}
 	if s.grant.AuthURL == "" {
-		if err := s.register(ctx, redirect); errors.Is(err, errNoRegistration) {
+		if err := s.register(ctx, redirect); errors.Is(err, errNoRegistration) || errors.Is(err, errLoopback) {
 			return nil, err
 		} else if err != nil {
 			return nil, scrub(ctx, "discovery", err)
@@ -343,6 +350,10 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 		registration.TokenEndpointAuthMethod = "none"
 	}
 	reg, err := oauthex.RegisterClient(ctx, asm.RegistrationEndpoint, registration, s.client)
+	var refused *oauthex.ClientRegistrationError
+	if errors.As(err, &refused) && refused.ErrorCode == "invalid_redirect_uri" && !loopback(redirect) {
+		return errLoopback
+	}
 	if err != nil {
 		return err
 	}
@@ -354,6 +365,11 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 		s.grant.AuthStyle = "header"
 	}
 	return nil
+}
+
+func loopback(redirect string) bool {
+	u, err := url.Parse(redirect)
+	return err == nil && (u.Hostname() == "localhost" || net.ParseIP(u.Hostname()).IsLoopback())
 }
 
 func (s *SignIn) getJSON(ctx context.Context, u string, v any) bool {

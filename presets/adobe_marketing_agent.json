@@ -9,7 +9,7 @@
     "connection": {"mcp": {"url": "https://aep-ai-ama.adobe.io/mcp"}},
     "defaults": {"contents": "team", "sends": "me", "strangers": true},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://aep-ai-ama.adobe.io/mcp"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://aep-ai-ama.adobe.io/mcp", "loopback": true}}
     ]
   }
 }
