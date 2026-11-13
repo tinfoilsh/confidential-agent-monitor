@@ -16,6 +16,7 @@
     "scope": {
       "query": {"at": "/query", "optional": true},
       "urls": {"at": "/urls", "type": "array", "optional": true}
-    }
+    },
+    "grant": []
   }
 }

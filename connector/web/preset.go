@@ -571,26 +571,11 @@ func (p *Preset) Match(r *Request, config *Setup, f facts.Facts) (facts.Facts, e
 	}
 	o := matched.operation
 	parameters, err := jsonsel.Select(matched.selectors, &selection{Request: r, captures: captures})
-	grant := project(parameters, o.Grant)
+	grant := jsonsel.Project(parameters, o.Grant)
 	f.Operation = &facts.Operation{ID: o.ID, Action: o.Action, Effects: o.Effects}
 	f.Title = fmt.Sprintf("%s: %s", config.Title, o.ID)
 	f.Parameters = parameters
 	f.Context.Sends = o.Sends
 	f.Scope = grant
 	return f, err
-}
-
-// project selects the parameter values bound to a saved approval. Nil means
-// all parameters; an explicitly empty selection stays empty.
-func project(parameters map[string]any, names []string) map[string]any {
-	if names == nil {
-		return nil
-	}
-	out := make(map[string]any, len(names))
-	for _, name := range names {
-		if value, ok := parameters[name]; ok {
-			out[name] = value
-		}
-	}
-	return out
 }
