@@ -1,6 +1,7 @@
 package credential
 
 import (
+	"cmp"
 	"context"
 	"crypto/rand"
 	"encoding/json"
@@ -30,6 +31,8 @@ var (
 	authStyles = map[string]oauth2.AuthStyle{"": oauth2.AuthStyleAutoDetect, "header": oauth2.AuthStyleInHeader, "params": oauth2.AuthStyleInParams}
 )
 
+var errNoRegistration = errors.New("this service does not register clients automatically; enter the client ID and secret of an OAuth app registered with it")
+
 // A grant without an AuthURL is signed in at the authorization server its Resource names (RFC 9728).
 // A grant without a refresh token keeps its access token until Expiry, then needs a new sign-in.
 type oauth struct {
@@ -47,6 +50,7 @@ type oauth struct {
 	Resource        string                `json:"resource"`
 	Prompt          string                `json:"prompt,omitempty"`
 	AuthStyle       string                `json:"auth_style,omitempty"`
+	TokenType       string                `json:"token_type,omitempty"`
 	AccessToken     string                `json:"access_token,omitempty"`
 	Expiry          time.Time             `json:"expiry,omitzero"`
 }
@@ -144,7 +148,9 @@ func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage,
 		return s, s.startDevice(ctx)
 	}
 	if s.grant.AuthURL == "" {
-		if err := s.register(ctx, redirect); err != nil {
+		if err := s.register(ctx, redirect); errors.Is(err, errNoRegistration) {
+			return nil, err
+		} else if err != nil {
 			return nil, scrub(ctx, "discovery", err)
 		}
 	}
@@ -250,14 +256,15 @@ func (s *SignIn) WaitDevice(ctx context.Context) (json.RawMessage, error) {
 	return encodeGrant(grant), nil
 }
 
-// register discovers the resource's authorization server (RFC 9728, RFC 8414) and registers with it (RFC 7591).
+// register discovers the resource's authorization server (RFC 9728, RFC 8414) and, unless the grant names a client, registers with it (RFC 7591).
 func (s *SignIn) register(ctx context.Context, redirect string) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.grant.Resource, nil)
 	if err != nil {
 		return err
 	}
 	u := req.URL
-	metadata := u.Scheme + "://" + u.Host + "/.well-known/oauth-protected-resource" + u.Path
+	origin := u.Scheme + "://" + u.Host
+	var metadata [][2]string // URL and the resource it must name; metadata at the origin names the origin.
 	resp, err := s.client.Do(req)
 	if err != nil {
 		return err
@@ -266,34 +273,52 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 	challenges, _ := oauthex.ParseWWWAuthenticate(resp.Header.Values("WWW-Authenticate"))
 	for _, c := range challenges {
 		if m := c.Params["resource_metadata"]; m != "" {
-			metadata = m
+			metadata = append(metadata, [2]string{m, s.grant.Resource})
 		}
 	}
-	if err := secure(metadata); err != nil {
+	metadata = append(metadata, [2]string{origin + "/.well-known/oauth-protected-resource" + u.Path, s.grant.Resource}, [2]string{origin + "/.well-known/oauth-protected-resource", origin})
+	// Without resource metadata the origin is the authorization server, as in MCP 2025-03-26.
+	server, scopes := origin, []string(nil)
+	for _, m := range metadata {
+		if secure(m[0]) != nil {
+			continue
+		}
+		if prm, err := oauthex.GetProtectedResourceMetadata(ctx, m[0], m[1], s.client); err == nil {
+			if len(prm.AuthorizationServers) == 0 {
+				return fmt.Errorf("%s names no authorization server", s.grant.Resource)
+			}
+			server, scopes = prm.AuthorizationServers[0], prm.ScopesSupported
+			break
+		}
+	}
+	if err := secure(server); err != nil {
 		return err
 	}
-	prm, err := oauthex.GetProtectedResourceMetadata(ctx, metadata, s.grant.Resource, s.client)
+	asm, err := auth.GetAuthServerMetadata(ctx, server, s.client)
 	if err != nil {
 		return err
 	}
-	if len(prm.AuthorizationServers) == 0 {
-		return fmt.Errorf("%s names no authorization server", s.grant.Resource)
-	}
-	if err := secure(prm.AuthorizationServers[0]); err != nil {
-		return err
-	}
-	asm, err := auth.GetAuthServerMetadata(ctx, prm.AuthorizationServers[0], s.client)
-	if err != nil {
-		return err
-	}
-	if asm == nil || asm.RegistrationEndpoint == "" {
-		return fmt.Errorf("%s does not register clients", prm.AuthorizationServers[0])
-	}
-	if asm.AuthorizationEndpoint == "" || asm.TokenEndpoint == "" {
-		return fmt.Errorf("%s names no authorization or token endpoint", prm.AuthorizationServers[0])
+	if asm == nil || asm.AuthorizationEndpoint == "" || asm.TokenEndpoint == "" {
+		return fmt.Errorf("%s names no authorization or token endpoint", server)
 	}
 	if err := secure(asm.AuthorizationEndpoint, asm.TokenEndpoint, asm.RegistrationEndpoint); err != nil {
 		return err
+	}
+	s.grant.AuthURL, s.grant.TokenURL = asm.AuthorizationEndpoint, asm.TokenEndpoint
+	if s.grant.Scope == "" {
+		if slices.Contains(asm.ScopesSupported, offlineAccess) && !slices.Contains(scopes, offlineAccess) {
+			scopes = append(scopes, offlineAccess)
+		}
+		s.grant.Scope = strings.Join(scopes, " ")
+	}
+	if s.grant.ClientID != "" {
+		if methods := asm.TokenEndpointAuthMethodsSupported; s.grant.AuthStyle == "" && len(methods) > 0 && !slices.Contains(methods, "client_secret_basic") {
+			s.grant.AuthStyle = "params"
+		}
+		return nil
+	}
+	if asm.RegistrationEndpoint == "" {
+		return errNoRegistration
 	}
 	registration := &oauthex.ClientRegistrationMetadata{
 		RedirectURIs: []string{redirect}, ClientName: "Perimeter", GrantTypes: []string{"authorization_code"},
@@ -311,19 +336,12 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 	if err != nil {
 		return err
 	}
-	s.grant.AuthURL, s.grant.TokenURL, s.grant.ClientID, s.grant.ClientSecret = asm.AuthorizationEndpoint, asm.TokenEndpoint, reg.ClientID, reg.ClientSecret
+	s.grant.ClientID, s.grant.ClientSecret = reg.ClientID, reg.ClientSecret
 	switch reg.TokenEndpointAuthMethod {
 	case "none", "client_secret_post":
 		s.grant.AuthStyle = "params"
 	case "client_secret_basic":
 		s.grant.AuthStyle = "header"
-	}
-	if s.grant.Scope == "" {
-		scopes := prm.ScopesSupported
-		if slices.Contains(asm.ScopesSupported, offlineAccess) && !slices.Contains(scopes, offlineAccess) {
-			scopes = append(scopes, offlineAccess)
-		}
-		s.grant.Scope = strings.Join(scopes, " ")
 	}
 	return nil
 }
@@ -360,7 +378,7 @@ func (s *SignIn) Exchange(ctx context.Context, code, clientID string) (json.RawM
 }
 
 func (o *oauth) acceptToken(t *oauth2.Token, refresh bool) error {
-	if t.AccessToken == "" || !strings.EqualFold(t.Type(), "Bearer") {
+	if t.AccessToken == "" || !strings.EqualFold(t.Type(), cmp.Or(o.TokenType, "Bearer")) {
 		return errors.New("oauth returned an invalid bearer token")
 	}
 	scope, _ := t.Extra("scope").(string)
