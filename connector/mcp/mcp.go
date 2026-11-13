@@ -244,6 +244,7 @@ func (r *Request) Describe(p *Preset) (facts.Facts, error) {
 	if p != nil {
 		scope, err := jsonsel.Select(p.scope, args)
 		maps.Copy(f.Parameters, scope)
+		f.Scope = jsonsel.Project(scope, p.Grant)
 		f.Context.Sends = p.Sends
 		if p.Observes != nil {
 			f.Context.Observes = *p.Observes
@@ -256,6 +257,7 @@ func (r *Request) Describe(p *Preset) (facts.Facts, error) {
 // Preset selects service resource identifiers from tool arguments.
 type Preset struct {
 	Scope    map[string]jsonsel.Selector `json:"scope,omitempty"`
+	Grant    []string                    `json:"grant,omitempty"`
 	Sends    string                      `json:"sends,omitempty"`
 	Observes *facts.Label                `json:"observes,omitempty"`
 	scope    []jsonsel.Compiled
@@ -269,6 +271,11 @@ func (p *Preset) UnmarshalJSON(raw []byte) error {
 	}
 	if err == nil {
 		p.scope, err = jsonsel.Compile(p.Scope)
+	}
+	for _, name := range p.Grant {
+		if _, ok := p.Scope[name]; err == nil && !ok {
+			err = errors.New("grant names missing scope " + name)
+		}
 	}
 	return err
 }

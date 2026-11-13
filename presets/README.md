@@ -19,6 +19,7 @@ Protocol definitions have their own sections:
 - `http.slots` requires requests to stay within the connection's configured API addresses.
 - `http.sensitive_query` lists high-entropy bearer query values to fingerprint before capture, including unknown or invalid requests. Extracted parameters see the same fingerprints, preserving approval distinctions without retaining the credentials. Literal query-value matchers cannot use these fields.
 - `mcp.scope` selects service resource identifiers from MCP tool arguments.
+- `grant` on an HTTP operation or `mcp` names the scope fields a saved approval binds. Omitted, it binds every parameter; `[]` binds none.
 - `public_scope` names the extracted parameters that identify public or private resources across protocols.
 
 For example:

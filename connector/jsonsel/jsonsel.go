@@ -80,6 +80,21 @@ func Select(selectors []Compiled, doc any) (map[string]any, error) {
 	return out, errors.Join(errs...)
 }
 
+// Project selects the parameter values bound to a saved approval. Nil means
+// all parameters; an explicitly empty selection stays empty.
+func Project(parameters map[string]any, names []string) map[string]any {
+	if names == nil {
+		return nil
+	}
+	out := make(map[string]any, len(names))
+	for _, name := range names {
+		if value, ok := parameters[name]; ok {
+			out[name] = value
+		}
+	}
+	return out
+}
+
 // validJSONPointer checks the supported pointer syntax, which excludes escapes.
 func validJSONPointer(at string) bool {
 	return at == "" || strings.HasPrefix(at, "/") && !strings.Contains(at, "~")
