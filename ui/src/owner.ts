@@ -73,6 +73,8 @@ export type PresetField = {
   json?: boolean;
   list?: boolean;
   number?: boolean;
+  min?: number;
+  max?: number;
   edit_only?: boolean;
   default?: Json;
   path?: string[];
@@ -1178,18 +1180,24 @@ export const fieldText = (f: PresetField, value?: Json): string =>
       : JSON.stringify(value, null, 2)
     : f.list
       ? ((value ?? []) as string[]).join(", ")
-      : ((value ?? "") as string);
+      : String(value ?? "");
 export const listDelimiter = /[\s,]+/;
 export const listItems = (text: string) =>
   text.split(listDelimiter).filter(Boolean);
-export const fieldError = (f: PresetField, s: string) =>
-  f.number && !/^\d+$/.test(s)
-    ? `${f.label} takes whole numbers, not "${s}".`
-    : undefined;
+export const fieldError = (f: PresetField, s: string) => {
+  if (!f.number) return;
+  if (!/^\d+$/.test(s))
+    return `${f.label} takes whole numbers, not "${s}".`;
+  if (f.min !== undefined && Number(s) < f.min)
+    return `${f.label} must be at least ${f.min}.`;
+  if (f.max !== undefined && Number(s) > f.max)
+    return `${f.label} must be at most ${f.max}.`;
+};
 export function readField(f: PresetField, raw: string): Json {
   const v = f.secret ? raw : raw.trim();
   if (f.json) return v ? JSON.parse(v) : {};
   const read = (s: string) => {
+    if (f.number && s === "") s = fieldText(f, f.default);
     const error = fieldError(f, s);
     if (error) throw new Error(error);
     return f.number ? Number(s) : s;
