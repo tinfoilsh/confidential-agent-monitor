@@ -189,7 +189,7 @@ A structured request body has `reason` and `changes`:
 
 A TOML request body uses `source`, optional path arrays in `delete`, and
 `reason`. Agent proposal responses contain only receipts, and resubmitting
-identical changes returns the pending one; owner-only source diffs and
+replaces the pending proposal with a new one; owner-only source diffs and
 configuration are not returned.
 
 On a paired host, use the `perimeter` CLI because it carries these requests through

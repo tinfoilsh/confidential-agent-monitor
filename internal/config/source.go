@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"reflect"
 	"slices"
 	"time"
 
@@ -152,35 +153,40 @@ func EditSource(source string, changes []Change) (string, error) {
 	return doc.String(), nil
 }
 
-// decisionKeys change how requests are decided, never a connector's setup.
-var decisionKeys = []string{"effects", "contents", "strangers", "sends", "lattices", "policies", "data", "allow_paid_inference", "identities", "default_access"}
-
-// Edit applies changes to source and reports, from their paths, which connections'
-// connector setup they change. Rules approved for such a connection are removed
-// in the same edit.
+// Edit applies changes to source and reports which connections' connector setup
+// then differs from c's. Rules approved for such a connection are removed in the
+// same edit. Changes that alter no setting leave source as it was.
 func (c *Config) Edit(source string, changes []Change) (string, func(connection string) bool, error) {
-	all, setups := false, map[string]bool{}
-	for _, change := range changes {
-		switch path := change.Path; {
-		case len(path) >= 2 && path[0] == "connections":
-			if len(path) == 2 || !slices.Contains(decisionKeys, path[2]) {
-				setups[path[1]] = true
-			}
-		case len(path) == 0 || !slices.Contains(decisionKeys, path[0]):
-			all = true
-		}
+	edited, err := EditSource(source, changes)
+	if err != nil {
+		return "", nil, err
 	}
-	changes = slices.Clip(changes)
-	for _, name := range slices.Sorted(maps.Keys(c.Identities)) {
-		rules := c.Identities[name].Rules
+	next, err := Load(edited)
+	if err != nil {
+		return "", nil, err
+	}
+	if reflect.DeepEqual(next, c) {
+		return source, func(string) bool { return false }, nil
+	}
+	networks := !slices.Equal(c.AllowNetworks, next.AllowNetworks)
+	setup := func(connection string) bool {
+		before, _ := c.Spec(connection)
+		after, _ := next.Spec(connection)
+		return !reflect.DeepEqual(before, after)
+	}
+	var stale []Change
+	for _, name := range slices.Sorted(maps.Keys(next.Identities)) {
+		rules := next.Identities[name].Rules
 		for _, id := range slices.Sorted(maps.Keys(rules)) {
-			if setups[rules[id].Connection] {
-				changes = append(changes, Change{Path: []string{"identities", name, "rules", id}, Delete: true})
+			if setup(rules[id].Connection) {
+				stale = append(stale, Change{Path: []string{"identities", name, "rules", id}, Delete: true})
 			}
 		}
 	}
-	source, err := EditSource(source, changes)
-	return source, func(connection string) bool { return all || setups[connection] }, err
+	if stale != nil {
+		edited, err = EditSource(edited, stale)
+	}
+	return edited, func(connection string) bool { return networks || setup(connection) }, err
 }
 
 // Fragment converts a TOML proposal into the same JSON-valued edits as owner calls.

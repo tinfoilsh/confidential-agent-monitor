@@ -158,4 +158,4 @@ curl -fsS -X POST http://agent.perimeter/policy/proposals \
 
 A structured proposal body has `reason` and a non-empty `changes` array.
 Responses contain `{id, state, connection}` receipts, not owner-only
-configuration or diffs. Resubmitting identical changes returns the pending receipt.
+configuration or diffs. Resubmitting replaces the pending proposal with a new receipt.

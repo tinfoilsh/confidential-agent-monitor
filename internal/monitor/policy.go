@@ -46,10 +46,11 @@ func (m *monitor) writeSettings(ctx context.Context, w settingsWrite) error {
 	if err != nil {
 		return err
 	}
-	rebuild := everyConnector
 	if w.source != nil {
 		source = *w.source
-	} else if source, rebuild, err = current.Edit(source, w.changes); err != nil {
+	}
+	source, rebuild, err := current.Edit(source, w.changes)
+	if err != nil {
 		return err
 	}
 	plan, err := m.prepareSettings(ctx, source, rebuild, w.credentials, current.Env)
@@ -92,6 +93,10 @@ func sourceDiff(a, b string) string {
 }
 
 func (m *monitor) previewPolicy(ctx context.Context, base store.Document, before *settings, source string) (*policyDiff, error) {
+	source, _, err := before.Edit(source, nil)
+	if err != nil {
+		return nil, err
+	}
 	plan, err := m.prepareSettings(ctx, source, everyConnector, nil, before.Env)
 	if err != nil {
 		return nil, err

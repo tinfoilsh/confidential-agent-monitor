@@ -181,7 +181,7 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 		answerInput
 		Revision uint64 `json:"revision"`
 	}) (any, error) {
-		return nil, m.answerRequest(r.Context(), r.PathValue("id"), req.answerInput, req.Revision)
+		return m.viewAfter(r, m.answerRequest(r.Context(), r.PathValue("id"), req.answerInput, req.Revision))
 	})))
 	mux.Handle("GET /policy", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) {
 		result := map[string]any{"source": m.store.Doc.Policy, "revision": m.store.Doc.Revision}

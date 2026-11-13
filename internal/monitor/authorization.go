@@ -151,7 +151,7 @@ func (m *monitor) authorizeOperation(ctx context.Context, stream *connector.Stre
 		}
 		m.settleRecord(r, err)
 	}
-	if err != nil || m.kinds[admitted.connection.Protocol].PerMessage {
+	if err != nil {
 		return err
 	}
 	admitted.grants = append(admitted.grants[:1], g)

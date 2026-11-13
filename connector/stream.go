@@ -92,8 +92,9 @@ type Stream struct {
 	// captured operation; subsequent operations must pass the gate again.
 	// Calls from either direction may run concurrently. Input must remain
 	// unchanged until Gate returns, and forwarding must use the admitted input.
-	// A settings change closes the stream unless its latest gated operation
-	// would still be allowed.
+	// A settings change closes the stream unless its principal still reaches the
+	// connection and its admission and latest gated operation would both still be
+	// allowed without approval.
 	Gate func(context.Context, facts.Event) error
 }
 

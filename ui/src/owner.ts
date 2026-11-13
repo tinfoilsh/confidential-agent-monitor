@@ -468,13 +468,13 @@ export function ownerApi(
   // Writes name the settings revision of the last view this client received.
   let revision = 0;
   const checked = (view: View) => {
-    if (view) revision = view.revision;
     if (minimum !== undefined && view) {
       if (!Number.isSafeInteger(view.generation) || view.generation < minimum)
         throw new OwnerError(ROLLBACK, 409);
       if (view.generation > minimum) advance?.(view.generation);
       minimum = view.generation;
     }
+    if (view) revision = view.revision;
     return view;
   };
   const get = <T>(path: string, signal?: AbortSignal) =>
@@ -554,11 +554,12 @@ export function ownerApi(
         signal,
       ),
     decide: (id, decision, signal) =>
-      post(
+      snapshot(
+        "POST",
         `/requests/${encodeURIComponent(id)}`,
         { decision, revision },
         signal,
-      ),
+      ).then(() => null),
     enroll: (identities, signal) =>
       snapshot("POST", "/enroll", identities, signal),
     signIn: (connection, name, redirect, credential, signal) =>
