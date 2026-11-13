@@ -9,7 +9,7 @@
     "connection": {"mcp": {"url": "https://mcp.canva.com/mcp"}},
     "defaults": {"contents": "team", "sends": "me", "strangers": true},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://mcp.canva.com/mcp"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://mcp.canva.com/mcp", "loopback": true}}
     ]
   }
 }

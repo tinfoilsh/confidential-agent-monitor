@@ -9,7 +9,9 @@
     "connection": {"mcp": {"url": "https://mcp.xero.com/mcp"}},
     "defaults": {"contents": "team", "sends": "me", "strangers": true},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://mcp.xero.com/mcp"}}
+      {"key": "client_id", "label": "OAuth client ID", "paths": []},
+      {"key": "client_secret", "label": "OAuth client secret", "paths": [], "secret": true},
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://mcp.xero.com/mcp", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
     ]
   }
 }
