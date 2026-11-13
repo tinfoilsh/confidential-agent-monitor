@@ -7,8 +7,6 @@ import * as keys from "./keys";
 import { MONITOR_REPO, type Container, type Scope } from "./session";
 import { TEMPLATES } from "./templates";
 import {
-  bucketOwnedBy,
-  measuredEnv,
   monitorDigest,
   registryTarget,
   verifyImage,
@@ -19,7 +17,6 @@ const SPKI = "https://tinfoil.sh/key/spki/v1";
 const PROTOCOL = "monitor-owner-v1";
 const ED25519_SPKI = /^302a300506032b6570032100([0-9a-f]{64})$/;
 const X25519_SPKI = /^302a300506032b656e032100([0-9a-f]{64})$/;
-const CREDENTIALS_PATH = "/api/deployments/storage-credentials";
 
 const hex = (text: string) =>
   Uint8Array.from(text.match(/../g)!, (byte) => parseInt(byte, 16));
@@ -96,15 +93,12 @@ async function resolve(scope: Scope, id: string) {
     throw new Error(
       "Your saved keys do not include this Perimeter's owner key.",
     );
-  const bucket = measuredEnv(detail.config).TINFOIL_STORAGE_BUCKET ?? "";
-  if (!bucketOwnedBy(bucket, scope.account, scope.user))
-    throw new Error("This Perimeter's storage belongs to another account.");
   const binding: MKBinding = {
     account: scope.account,
     container_id: id,
     instance_id: null,
     volume_id: null,
-    bucket,
+    bucket: null,
   };
   if (!resource.binding)
     await scope.update(keys.bindResource(resource.key_id, binding));
@@ -112,12 +106,12 @@ async function resolve(scope: Scope, id: string) {
     throw new Error(
       "This Perimeter does not match the resource its key was made for.",
     );
-  return { row: detail, resource, bucket };
+  return { row: detail, resource };
 }
 
 export type OpenedMonitor = Awaited<ReturnType<typeof openMonitor>>;
 
-// Verifies the complete Monitor configuration, owner, storage and image
+// Verifies the complete Monitor configuration, owner and image
 // provenance before its state key leaves this page, then opens saved state at
 // the recovered generation and persists any advance.
 export async function openMonitor({
@@ -132,16 +126,12 @@ export async function openMonitor({
   onCheckpoint: (error?: string) => void;
 }) {
   signal = AbortSignal.any([signal, scope.signal]);
-  const { row, resource, bucket } = await resolve(scope, id);
+  const { row, resource } = await resolve(scope, id);
   const owner = resource.owner_public_key;
   const seed = unb64u(resource.owner_seed, 32);
   // The attestation binds these checked bytes through the pinned config digest.
   const config = new TextEncoder().encode(row.config ?? "");
-  const digest = monitorDigest(TEMPLATES.monitor, config, {
-    owner,
-    bucket,
-    credentials: keys.TARGETS.api_origin + CREDENTIALS_PATH,
-  });
+  const digest = monitorDigest(TEMPLATES.monitor, config, { owner });
   // GitHub hides attestations of the internal monitor repo from anonymous requests.
   // await verifyImage("monitor", digest, { signal });
   const account = (await scope.api("/api/config-registry/v2/account")) as {

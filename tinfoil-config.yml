@@ -41,8 +41,8 @@ containers:
     networks: [upstream]
     env:
       - MONITOR_OWNER_PUBLIC_KEY: ""
-      - TINFOIL_STORAGE_BUCKET: ""
-      - AWS_CONTAINER_CREDENTIALS_FULL_URI: ""
+      - TINFOIL_STORAGE_BUCKET
+      - AWS_CONTAINER_CREDENTIALS_FULL_URI
     secrets:
       - AWS_CONTAINER_AUTHORIZATION_TOKEN
     command:

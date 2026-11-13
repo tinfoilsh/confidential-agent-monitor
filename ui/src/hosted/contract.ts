@@ -146,8 +146,9 @@ function binding(value: unknown, sandbox: boolean): MKBinding | null {
     ? uuid(b.instance_id) && uuid(b.volume_id) && b.bucket === null
     : b.instance_id === null &&
       b.volume_id === null &&
-      typeof b.bucket === "string" &&
-      /^[\x21-\x7e]{1,512}$/.test(b.bucket);
+      (b.bucket === null ||
+        (typeof b.bucket === "string" &&
+          /^[\x21-\x7e]{1,512}$/.test(b.bucket)));
   if (!ACCOUNT.test(String(b.account)) || !uuid(b.container_id) || !ok) fail();
   return b as MKBinding;
 }

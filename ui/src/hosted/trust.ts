@@ -12,12 +12,12 @@ import {
   type VerificationPolicy,
 } from "@freedomofpress/sigstore-browser";
 import { sha256 } from "@noble/hashes/sha2.js";
-import { bytesToHex, utf8ToBytes } from "@noble/hashes/utils.js";
+import { bytesToHex } from "@noble/hashes/utils.js";
 import { parseDocument } from "yaml";
 // Sigstore public-good trusted root, as compiled into tinfoil-js verifier c7f0a57.
 import SIGSTORE_ROOT from "./sigstore-root.json";
 import { parseReference } from "@tinfoilsh/verifier";
-import { PERSONAL, UUID } from "./contract";
+import { UUID } from "./contract";
 import type { Container } from "./session";
 
 export type Workload = "monitor" | "sandbox";
@@ -34,8 +34,6 @@ const SLSA_V1 = "https://slsa.dev/provenance/v1";
 const MAX_PROOF_BYTES = 4 << 20;
 const MAX_BUNDLES = 16;
 const OWNER_KEY = /^ed25519:[A-Za-z0-9+/]{43}=$/;
-const BUCKET =
-  /^s3:\/\/[a-z0-9.-]+\?prefix=containers%2F([0-9a-f]{64})%2F[A-Za-z0-9-]+%2F&region=[a-z0-9-]+$/;
 const PRIVATE_REGISTRY =
   /^https:\/\/registry\.tinfoil\.sh\/scopes\/[0-9a-f]{32}$/;
 const CONFIG_NAME = /^\/([^/]+\/[^/]+)\/([^/]+)$/;
@@ -185,12 +183,10 @@ function check(
 export const monitorDigest = (
   template: string,
   config: Uint8Array,
-  expect: { owner: string; bucket: string; credentials: string },
+  expect: { owner: string },
 ) =>
   check("monitor", template, config, {
     MONITOR_OWNER_PUBLIC_KEY: (v) => OWNER_KEY.test(v) && v === expect.owner,
-    TINFOIL_STORAGE_BUCKET: (v) => v === expect.bucket,
-    AWS_CONTAINER_CREDENTIALS_FULL_URI: (v) => v === expect.credentials,
   });
 
 export const sandboxDigest = (
@@ -214,12 +210,6 @@ export const sandboxDigest = (
 // writes it (services.FormatVolumeSize): whole decimal GB, otherwise bytes.
 export const volumeSize = (bytes: number) =>
   bytes % BYTES_PER_GB === 0 ? `${bytes / BYTES_PER_GB}GB` : `${bytes}B`;
-
-// A Monitor bucket names the storage owner it belongs to by hash.
-export function bucketOwnedBy(bucket: string, account: string, user: string) {
-  const owner = account === PERSONAL ? `user:${user}` : `org:${account}`;
-  return BUCKET.exec(bucket)?.[1] === bytesToHex(sha256(utf8ToBytes(owner)));
-}
 
 // Policy for the certificate itself; equal source and signer commits tie the
 // build to the main commit it ran from.
