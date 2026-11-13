@@ -23,6 +23,15 @@
         "path": ["ssh", "host"]
       },
       {
+        "key": "port",
+        "label": "Port",
+        "number": true,
+        "default": 22,
+        "hint": "22",
+        "help": "Leave empty to use port 22.",
+        "path": ["ssh", "port"]
+      },
+      {
         "key": "user",
         "label": "User",
         "path": ["ssh", "user"]

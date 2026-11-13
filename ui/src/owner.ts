@@ -1178,7 +1178,7 @@ export const fieldText = (f: PresetField, value?: Json): string =>
       : JSON.stringify(value, null, 2)
     : f.list
       ? ((value ?? []) as string[]).join(", ")
-      : ((value ?? "") as string);
+      : String(value ?? "");
 export const listDelimiter = /[\s,]+/;
 export const listItems = (text: string) =>
   text.split(listDelimiter).filter(Boolean);
@@ -1190,6 +1190,7 @@ export function readField(f: PresetField, raw: string): Json {
   const v = f.secret ? raw : raw.trim();
   if (f.json) return v ? JSON.parse(v) : {};
   const read = (s: string) => {
+    if (f.number && s === "") s = fieldText(f, f.default);
     const error = fieldError(f, s);
     if (error) throw new Error(error);
     return f.number ? Number(s) : s;

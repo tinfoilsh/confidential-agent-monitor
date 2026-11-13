@@ -91,6 +91,56 @@ describe("raw TCP setup and access", () => {
   });
 });
 
+describe("SSH connection ports", () => {
+  test.each([
+    [undefined, 22],
+    ["  ", 22],
+    ["22022", 22022],
+  ])("creates and edits a connection with port input %p", (input, expected) => {
+    const v = view();
+    const ssh = preset("ssh");
+    v.presets.ssh = { title: ssh.title, ...ssh.catalog };
+    const fields = owner.setupFields(v, "ssh");
+    const values = Object.fromEntries(fields.map((f) => [
+      f.key,
+      owner.readField(f, f.key === "port" && input !== undefined
+        ? input : owner.fieldText(f, f.default)),
+    ]));
+    owner.applyChanges(v.config, owner.edits.addConnection(v, "ssh", {
+      name: "server", values, answers: ssh.catalog.defaults,
+    }).changes);
+    expect(v.config.connections!.server.ssh).toMatchObject({ port: expected });
+
+    const port = owner.plainFields(v, "server").find((f) => f.key === "port")!;
+    expect(owner.fieldText(port, port.value)).toBe(String(expected));
+    const { changes } = owner.edits.saveConnection(v, "server", {
+      values: { port: owner.readField(port, "2222") },
+      credentials: {},
+    });
+    owner.applyChanges(v.config, changes);
+    expect(v.config.connections!.server.ssh).toMatchObject({ port: 2222 });
+  });
+
+  test("an existing connection without a port keeps the default when saved", () => {
+    const v = view();
+    const ssh = preset("ssh");
+    v.presets.ssh = { title: ssh.title, ...ssh.catalog };
+    v.config.connections!.server = {
+      preset: "ssh", ...ssh.catalog.defaults,
+      ssh: { host: "example.com", user: "admin", host_key: "host-key" },
+    };
+    const values = Object.fromEntries(owner.plainFields(v, "server").map((f) => [
+      f.key, owner.readField(f, owner.fieldText(f, f.value)),
+    ]));
+    owner.applyChanges(v.config, owner.edits.saveConnection(v, "server", {
+      values, credentials: {},
+    }).changes);
+    expect(v.config.connections!.server.ssh).toEqual({
+      host: "example.com", user: "admin", host_key: "host-key", port: 22,
+    });
+  });
+});
+
 describe("a service's action list", () => {
   const withService = (name: string, connection: owner.Connection) => {
     const v = view();
