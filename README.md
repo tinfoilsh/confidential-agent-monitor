@@ -100,6 +100,11 @@ the passphrase you enter claims a fresh one. The [daemon](#run-a-perimeter-local
 runs setup for you.
 See `perimeter --help` for stopping, exporting, and deleting bunkers.
 
+For a Perimeter hosted by Tinfoil, run `perimeter setup --tinfoil NAME` instead.
+Launching and destroying a bunker then run `tinfoil perimeter open NAME` for the
+owner steps, so they need the [Tinfoil CLI](https://github.com/tinfoilsh/tinfoil-cli/releases)
+signed in, and no owner key is saved with the profile.
+
 `dev/vm-artifacts DIR [ARCH...]` builds the image for x86_64 and aarch64 with
 Docker alone and pins it in
 [client/vm/assets.json](client/vm/assets.json). It also caches the image, so this
