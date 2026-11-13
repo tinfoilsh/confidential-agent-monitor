@@ -9,7 +9,9 @@ import {
   Icon,
   LazyDetails,
   RemoveRule,
+  RenameItem,
   ResourceDisclosure,
+  RowMenu,
   RuleText,
   Search,
   SectionHeading,
@@ -149,21 +151,23 @@ export function Agents(props: { expanded?: string }) {
                 </For>
                 <For each={members()}>
                   {(name) => (
-                    <ResourceDisclosure
-                      class="agent-item"
-                      open={props.expanded === name}
-                      summary={
-                        <>
-                          <Icon name={kind} />
-                          <strong class="collection-name" title={name}>
-                            {name}
-                          </strong>
-                          <span class="collection-description">
-                            {summaries().get(name)?.description}
-                          </span>
-                          <Show when={kind !== "devices"}>
+                    <div class="menu-row">
+                      <ResourceDisclosure
+                        class="agent-item"
+                        open={props.expanded === name}
+                        summary={
+                          <>
+                            <Icon name={kind} />
+                            <strong class="collection-name" title={name}>
+                              {name}
+                            </strong>
+                            <span class="collection-description">
+                              {summaries().get(name)?.description}
+                            </span>
                             <span class="resource-meta">
-                              <Show when={m.shellFor(name)}>
+                              <Show
+                                when={kind !== "devices" && m.shellFor(name)}
+                              >
                                 <button
                                   type="button"
                                   class="icon-button open-shell"
@@ -181,22 +185,23 @@ export function Agents(props: { expanded?: string }) {
                                 </button>
                               </Show>
                             </span>
-                          </Show>
-                          <span class="collection-chevron">
-                            <Icon name="arrow" />
-                          </span>
-                        </>
-                      }
-                    >
-                      {() => (
-                        <div class="agent-inline">
-                          <Show when={kind !== "devices"}>
-                            <AgentAccess name={name} />
-                          </Show>
-                          <AgentSettings name={name} />
-                        </div>
-                      )}
-                    </ResourceDisclosure>
+                            <span class="collection-chevron">
+                              <Icon name="arrow" />
+                            </span>
+                          </>
+                        }
+                      >
+                        {() => (
+                          <div class="agent-inline">
+                            <Show when={kind !== "devices"}>
+                              <AgentAccess name={name} />
+                            </Show>
+                            <AgentSettings name={name} />
+                          </div>
+                        )}
+                      </ResourceDisclosure>
+                      <AgentMenu name={name} />
+                    </div>
                   )}
                 </For>
               </div>
@@ -205,6 +210,43 @@ export function Agents(props: { expanded?: string }) {
         }}
       </For>
     </>
+  );
+}
+function AgentMenu(props: { name: string }) {
+  const m = useMonitor();
+  const kind = owner.isDevice(props.name) ? "device" : "bunker";
+  return (
+    <RowMenu name={props.name}>
+      <Show when={kind === "bunker"}>
+        <RenameItem
+          name={props.name}
+          description="Other bunkers reach this one by its name, so its address changes too. Its access and rules are kept."
+          changes={(to) => owner.edits.renameAgent(m.view()!, props.name, to)}
+          href={(to) => href("agents", to)}
+        />
+      </Show>
+      <button
+        class="danger"
+        disabled={m.busy()}
+        onClick={async () => {
+          if (
+            (await askConfirm({
+              title: `Remove ${props.name}?`,
+              description:
+                kind === "device"
+                  ? "This device can no longer reach your bunkers through the Perimeter."
+                  : "The Perimeter forgets this bunker, along with its access and rules.",
+              confirmLabel: `Remove ${kind}`,
+              destructive: true,
+            })) &&
+            (await m.edit(owner.edits.removeAgent(props.name)))
+          )
+            location.hash = "#agents";
+        }}
+      >
+        Remove {kind}
+      </button>
+    </RowMenu>
   );
 }
 function AddSandbox(props: { class: string }) {
@@ -712,7 +754,7 @@ function AgentSettings(props: { name: string }) {
           summary={
             <DisclosureHeading
               title="Advanced"
-              description="Perimeter keys, profile and removal"
+              description="Perimeter keys and profile"
               small
             />
           }
@@ -778,34 +820,6 @@ function AgentSettings(props: { name: string }) {
                   </span>
                 </div>
               </Show>
-              <div class="setting-row">
-                <span>
-                  Remove bunker
-                  <small>
-                    Forget this bunker from the Perimeter, along with its access
-                    and rules.
-                  </small>
-                </span>
-                <button
-                  class="danger"
-                  disabled={m.busy()}
-                  onClick={async () => {
-                    if (
-                      (await askConfirm({
-                        title: `Remove ${props.name}?`,
-                        description:
-                          "The Perimeter forgets this bunker, along with its access and rules.",
-                        confirmLabel: "Remove bunker",
-                        destructive: true,
-                      })) &&
-                      (await m.edit(owner.edits.removeAgent(props.name)))
-                    )
-                      location.hash = "#agents";
-                  }}
-                >
-                  Remove bunker
-                </button>
-              </div>
             </div>
           )}
         </ResourceDisclosure>

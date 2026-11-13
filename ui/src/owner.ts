@@ -168,7 +168,13 @@ export type RequestRecord = {
     details?: RequestDetails;
   };
 };
-export type Change = { path: string[]; value?: Json; delete?: boolean };
+export type Change = {
+  path: string[];
+  value?: Json;
+  delete?: boolean;
+  // Moves the value at another path here.
+  from?: string[];
+};
 export type Snapshot = { view: View; requests: RequestRecord[] };
 export type Request = (
   method: "GET" | "POST",
@@ -626,6 +632,19 @@ export function applyChanges<T extends object>(
   changes: Change[],
 ): T {
   for (const change of changes) {
+    let source: any,
+      moved: any = target;
+    for (const key of change.from ?? []) {
+      source = moved;
+      moved =
+        source && typeof source === "object" && Object.hasOwn(source, key)
+          ? source[key]
+          : undefined;
+    }
+    if (change.from) {
+      if (moved === undefined) continue;
+      delete source[change.from.at(-1)!];
+    }
     let parent: any = target;
     for (const key of change.path.slice(0, -1)) {
       if (
@@ -645,7 +664,7 @@ export function applyChanges<T extends object>(
     if (change.delete) delete parent[key];
     else
       Object.defineProperty(parent, key, {
-        value: clone(change.value),
+        value: clone(change.from ? moved : change.value),
         enumerable: true,
         configurable: true,
         writable: true,
@@ -1639,6 +1658,20 @@ export const networkingOpen = (view: View) =>
     p.includes("package sentinel\n\ndeny contains"),
   );
 
+const NAME = /^[a-zA-Z0-9][a-zA-Z0-9-]*$/;
+// Identities may not name a missing connection, so every agent's access is included.
+const connectionPaths = (view: View, name: string) => [
+  ["connections", name],
+  ["policies", name],
+  ["default_access", name],
+  [...TINFOIL_KEYS, name],
+  ...Object.keys(identities(view)).map((agent) => [
+    "identities",
+    agent,
+    "connections",
+    name,
+  ]),
+];
 // Each edit returns the source changes for POST /policy/edits.
 export const edits = {
   setNetworkingOpen: (view: View, open: boolean): Change[] => {
@@ -1665,6 +1698,38 @@ export const edits = {
   removeAgent: (name: string): Change[] => [
     { path: ["identities", name], delete: true },
   ],
+  renameAgent(view: View, from: string, to: string): Change[] {
+    if (!NAME.test(to) || to !== to.toLowerCase())
+      throw new Error(
+        "Name this bunker using lowercase letters, numbers, and hyphens.",
+      );
+    if (Object.hasOwn(identities(view), to))
+      throw new Error("This name is already in use.");
+    return [{ path: ["identities", to], from: ["identities", from] }];
+  },
+  // Saved credentials and rules follow the service to its new name.
+  renameConnection(view: View, from: string, to: string): Change[] {
+    if (!NAME.test(to))
+      throw new Error("Name this service using letters, numbers, and hyphens.");
+    if (Object.hasOwn(connections(view), to))
+      throw new Error(
+        "A service with that name already exists. Choose another name.",
+      );
+    return [
+      ...connectionPaths(view, from).map((path) => ({
+        path: [...path.slice(0, -1), to],
+        from: path,
+      })),
+      ...Object.entries(identities(view)).flatMap(([name, identity]) =>
+        Object.entries(identity.rules ?? {})
+          .filter(([, rule]) => rule.connection === from)
+          .map(([id]) => ({
+            path: ["identities", name, "rules", id, "connection"],
+            value: to,
+          })),
+      ),
+    ];
+  },
   setRoutes: (name: string, routes: boolean): Change[] => [
     { path: ["identities", name, "routes"], value: routes },
   ],
@@ -1729,20 +1794,8 @@ export const edits = {
     changes: [tinfoilKeyChange(connection, key)],
     credentials: { [connection]: { [field]: key } },
   }),
-  // Identities may not name a missing connection, so removing one also clears it from every agent.
-  removeConnection: (view: View, connection: string) =>
-    sourceChanges({
-      connections: { [connection]: null },
-      policies: { [connection]: null },
-      default_access: { [connection]: null },
-      data: { tinfoil_keys: { [connection]: null } },
-      identities: Object.fromEntries(
-        Object.keys(identities(view)).map((name) => [
-          name,
-          { connections: { [connection]: null } },
-        ]),
-      ),
-    }),
+  removeConnection: (view: View, connection: string): Change[] =>
+    connectionPaths(view, connection).map((path) => ({ path, delete: true })),
   addConnection(
     view: View,
     preset: string,
@@ -1817,7 +1870,7 @@ export const edits = {
     },
   ): { changes: Change[]; credentials: Credentials } {
     name = name.trim();
-    if (!/^[a-zA-Z0-9][a-zA-Z0-9-]*$/.test(name))
+    if (!NAME.test(name))
       throw new Error("Name this service using letters, numbers, and hyphens.");
     if (Object.hasOwn(connections(view), name))
       throw new Error(

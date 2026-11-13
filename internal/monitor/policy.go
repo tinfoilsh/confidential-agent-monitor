@@ -49,11 +49,11 @@ func (m *monitor) writeSettings(ctx context.Context, w settingsWrite) error {
 	if w.source != nil {
 		source = *w.source
 	}
-	source, rebuild, err := current.Edit(source, w.changes)
+	source, rebuild, renamed, err := current.Edit(source, w.changes)
 	if err != nil {
 		return err
 	}
-	plan, err := m.prepareSettings(ctx, source, rebuild, w.credentials, current.Env)
+	plan, err := m.prepareSettings(ctx, source, rebuild, renamed, w.credentials, current.Env)
 	if err != nil {
 		return err
 	}
@@ -93,11 +93,11 @@ func sourceDiff(a, b string) string {
 }
 
 func (m *monitor) previewPolicy(ctx context.Context, base store.Document, before *settings, source string) (*policyDiff, error) {
-	source, _, err := before.Edit(source, nil)
+	source, _, _, err := before.Edit(source, nil)
 	if err != nil {
 		return nil, err
 	}
-	plan, err := m.prepareSettings(ctx, source, everyConnector, nil, before.Env)
+	plan, err := m.prepareSettings(ctx, source, everyConnector, nil, nil, before.Env)
 	if err != nil {
 		return nil, err
 	}
@@ -143,7 +143,7 @@ func (st *settings) proposal(source string, p config.Principal, target, reason s
 	if _, err := st.ProposalChanges(p, changes); err != nil {
 		return "", nil, err
 	}
-	candidate, _, err := st.Edit(source, changes)
+	candidate, _, _, err := st.Edit(source, changes)
 	if err == nil && candidate == source {
 		err = errors.New("proposal does not change policy")
 	}
@@ -194,7 +194,7 @@ func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalI
 	for _, target := range slices.Sorted(maps.Keys(groups)) {
 		candidate, raw, err := before.proposal(base.Policy, p, target, reason, groups[target])
 		if err == nil {
-			_, err = m.prepareSettings(ctx, candidate, everyConnector, nil, before.Env)
+			_, err = m.prepareSettings(ctx, candidate, everyConnector, nil, nil, before.Env)
 		}
 		if err != nil {
 			return nil, fmt.Errorf("service %s: %w", target, err)

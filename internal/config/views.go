@@ -86,7 +86,7 @@ func (c *Config) ProposalChanges(p Principal, changes []Change) (map[string][]Ch
 	groups := map[string][]Change{}
 	for _, change := range changes {
 		target, ok := ProposalTarget(change.Path)
-		if !ok {
+		if !ok || change.From != nil {
 			return nil, errors.New("proposals may change only service setup and access")
 		}
 		if !c.Identities[p.Name].Operator && (change.Path[0] == "default_access" || change.Path[0] == "identities" && change.Path[1] != p.Name) {

@@ -115,6 +115,7 @@ type settingsPlan struct {
 	next        *settings
 	source      string
 	credentials store.Secrets
+	renamed     map[string]string
 	updates     []connectionPlan
 	remove      []string
 }
@@ -230,7 +231,7 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (bool,
 			return false, err
 		}
 	}
-	plan, err := m.prepareSettings(ctx, next.Doc.Policy, everyConnector, nil, env)
+	plan, err := m.prepareSettings(ctx, next.Doc.Policy, everyConnector, nil, nil, env)
 	if err != nil {
 		return false, err
 	}
@@ -256,7 +257,7 @@ func everyConnector(string) bool { return true }
 // under writes, without mu. It creates no runtime instances. Stored maps and
 // settings snapshots are immutable; credential refreshes can still commit while
 // validation runs.
-func (m *monitor) prepareSettings(ctx context.Context, source string, rebuild func(connection string) bool, credentials store.Secrets, env connector.Env) (*settingsPlan, error) {
+func (m *monitor) prepareSettings(ctx context.Context, source string, rebuild func(connection string) bool, renamed map[string]string, credentials store.Secrets, env connector.Env) (*settingsPlan, error) {
 	cfg, err := config.Load(source)
 	if err != nil {
 		return nil, err
@@ -275,7 +276,7 @@ func (m *monitor) prepareSettings(ctx context.Context, source string, rebuild fu
 	if next.Catalog, next.CatalogID, err = cfg.Catalog(); err != nil {
 		return nil, err
 	}
-	plan := &settingsPlan{next: next, source: source, credentials: credentials}
+	plan := &settingsPlan{next: next, source: source, credentials: credentials, renamed: renamed}
 	present := map[string]bool{}
 	for _, name := range slices.Sorted(maps.Keys(next.Connections)) {
 		spec, err := next.Spec(name)
@@ -336,6 +337,11 @@ func (m *monitor) commitSettings(ctx context.Context, plan *settingsPlan, saved 
 	next := m.store.Doc
 	next.Policy = plan.source
 	next.Credentials = next.Credentials.Clone()
+	for to, from := range plan.renamed {
+		if values, ok := m.store.Doc.Credentials[from]; ok {
+			next.Credentials[to] = maps.Clone(values)
+		}
+	}
 	for connection, values := range plan.credentials {
 		for name, raw := range values {
 			next.Credentials.Set(store.SecretID{Connection: connection, Name: name}, raw)

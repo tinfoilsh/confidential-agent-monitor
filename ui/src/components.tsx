@@ -292,16 +292,22 @@ type ConfirmRequest = {
   description: string;
   confirmLabel: string;
   destructive?: boolean;
+  // Asks for a line of text, starting from this one.
+  value?: string;
+  // Names what is wrong with the text, which then cannot be submitted.
+  validate?: (text: string) => string | undefined;
 };
 const [confirming, setConfirming] = createSignal<
-  ConfirmRequest & { resolve: (confirmed: boolean) => void }
+  ConfirmRequest & { resolve: (answer?: string) => void }
 >();
 
-// Asks in the app's own dialog, which ConfirmDialog shows; resolves true only on confirm.
-export function askConfirm(request: ConfirmRequest): Promise<boolean> {
-  confirming()?.resolve(false);
+// Asks in the app's own dialog, which ConfirmDialog shows; resolves the text only on confirm.
+export function askText(request: ConfirmRequest): Promise<string | undefined> {
+  confirming()?.resolve();
   return new Promise((resolve) => setConfirming({ ...request, resolve }));
 }
+export const askConfirm = (request: ConfirmRequest) =>
+  askText(request).then((answer) => answer !== undefined);
 
 export function ConfirmDialog() {
   // Keep the question while the dialog fades out.
@@ -311,8 +317,9 @@ export function ConfirmDialog() {
   const answer = (confirmed: boolean) => {
     const current = confirming();
     setConfirming(undefined);
-    current?.resolve(confirmed);
+    current?.resolve(confirmed ? (input?.value ?? "") : undefined);
   };
+  let input: HTMLInputElement | undefined;
   const titleId = createUniqueId(),
     descriptionId = createUniqueId();
   return (
@@ -333,6 +340,20 @@ export function ConfirmDialog() {
           >
             <h1 id={titleId}>{request().title}</h1>
             <p id={descriptionId}>{request().description}</p>
+            <Show when={request().value !== undefined}>
+              <input
+                ref={input}
+                aria-labelledby={titleId}
+                value={request().value}
+                required
+                autofocus
+                onInput={(event) =>
+                  event.currentTarget.setCustomValidity(
+                    request().validate?.(event.currentTarget.value) ?? "",
+                  )
+                }
+              />
+            </Show>
             <div class="confirm-actions">
               <button type="button" onClick={() => answer(false)}>
                 Cancel
@@ -773,6 +794,83 @@ export function RuleText(props: { rule: owner.Rule; children?: JSX.Element }) {
       </small>
       {props.children}
     </span>
+  );
+}
+// Row actions stay outside the disclosure so they are available when it is closed.
+const MENU_GAP = 4;
+export function RowMenu(props: { name: string; children: JSX.Element }) {
+  const id = createUniqueId();
+  let trigger!: HTMLButtonElement, menu!: HTMLDivElement;
+  // A menu placed in the viewport would drift from its button on scroll.
+  const close = () => menu.hidePopover();
+  onCleanup(() => removeEventListener("scroll", close, true));
+  return (
+    <div class="row-menu">
+      <button
+        ref={trigger}
+        type="button"
+        class="icon-button"
+        aria-label={`More actions for ${props.name}`}
+        title="More actions"
+        popovertarget={id}
+      >
+        <Icon name="more" />
+      </button>
+      <div
+        ref={menu}
+        id={id}
+        class="popover-menu"
+        popover
+        onClick={close}
+        onBeforeToggle={(event) => {
+          if (event.newState !== "open") return;
+          const anchor = trigger.getBoundingClientRect();
+          menu.style.top = `${anchor.bottom + MENU_GAP}px`;
+          menu.style.right = `${innerWidth - anchor.right}px`;
+        }}
+        onToggle={(event) => {
+          if (event.newState === "open")
+            addEventListener("scroll", close, true);
+          else removeEventListener("scroll", close, true);
+        }}
+      >
+        {props.children}
+      </div>
+    </div>
+  );
+}
+export function RenameItem(props: {
+  name: string;
+  description: string;
+  changes: (to: string) => owner.Change[];
+  href: (to: string) => string;
+}) {
+  const m = useMonitor();
+  return (
+    <button
+      disabled={m.busy()}
+      onClick={async () => {
+        const to = (
+          await askText({
+            title: `Rename ${props.name}`,
+            description: props.description,
+            confirmLabel: "Rename",
+            value: props.name,
+            validate: (to) => {
+              try {
+                if (to.trim() !== props.name) props.changes(to.trim());
+              } catch (cause) {
+                return (cause as Error).message;
+              }
+            },
+          })
+        )?.trim();
+        if (to && to !== props.name)
+          await m.edit(props.changes(to), props.href(to));
+      }}
+    >
+      Rename
+    </button>
   );
 }
 export function RemoveRule(props: { agent: string; id: string }) {

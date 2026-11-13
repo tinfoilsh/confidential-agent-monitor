@@ -22,7 +22,9 @@ import {
   Field,
   Icon,
   Modal,
+  RenameItem,
   ResourceDisclosure,
+  RowMenu,
   Search,
   createDialogMotion,
   href,
@@ -222,7 +224,7 @@ function MyConnections(props: { expanded?: string; proposal?: string }) {
               owner.connectionStatus(owner.review(m.view()!, name)),
             );
             return (
-              <div class="connection-row">
+              <div class="menu-row">
                 <ResourceDisclosure
                   class="connection-item"
                   open={props.expanded === name}
@@ -1260,67 +1262,39 @@ function Connection(props: { name: string }) {
     </div>
   );
 }
-// Row actions stay outside the disclosure so they are available when it is closed.
-const MENU_GAP = 4;
 function ServiceMenu(props: { name: string }) {
   const m = useMonitor();
-  const id = createUniqueId();
-  let trigger!: HTMLButtonElement, menu!: HTMLDivElement;
-  // A menu placed in the viewport would drift from its button on scroll.
-  const close = () => menu.hidePopover();
-  onCleanup(() => removeEventListener("scroll", close, true));
   return (
-    <div class="connection-menu">
+    <RowMenu name={props.name}>
+      <Show when={props.name !== owner.BUNKERS}>
+        <RenameItem
+          name={props.name}
+          description="Bunkers reach this service by its name, so point any that use the old name at the new one. Its credentials, access and rules are kept."
+          changes={(to) =>
+            owner.edits.renameConnection(m.view()!, props.name, to)
+          }
+          href={(to) => href("connections", to)}
+        />
+      </Show>
       <button
-        ref={trigger}
-        type="button"
-        class="icon-button"
-        aria-label={`More actions for ${props.name}`}
-        title="More actions"
-        popovertarget={id}
+        class="danger"
+        disabled={m.busy()}
+        onClick={async () => {
+          if (
+            (await askConfirm({
+              title: `Remove ${props.name}?`,
+              description:
+                "Bunkers lose access to this service, and its saved credentials are deleted.",
+              confirmLabel: "Remove service",
+              destructive: true,
+            })) &&
+            (await m.edit(owner.edits.removeConnection(m.view()!, props.name)))
+          )
+            location.hash = "#connections";
+        }}
       >
-        <Icon name="more" />
+        Remove service
       </button>
-      <div
-        ref={menu}
-        id={id}
-        class="popover-menu"
-        popover
-        onBeforeToggle={(event) => {
-          if (event.newState !== "open") return;
-          const anchor = trigger.getBoundingClientRect();
-          menu.style.top = `${anchor.bottom + MENU_GAP}px`;
-          menu.style.right = `${innerWidth - anchor.right}px`;
-        }}
-        onToggle={(event) => {
-          if (event.newState === "open")
-            addEventListener("scroll", close, true);
-          else removeEventListener("scroll", close, true);
-        }}
-      >
-        <button
-          class="danger"
-          disabled={m.busy()}
-          onClick={async () => {
-            close();
-            if (
-              (await askConfirm({
-                title: `Remove ${props.name}?`,
-                description:
-                  "Bunkers lose access to this service, and its saved credentials are deleted.",
-                confirmLabel: "Remove service",
-                destructive: true,
-              })) &&
-              (await m.edit(
-                owner.edits.removeConnection(m.view()!, props.name),
-              ))
-            )
-              location.hash = "#connections";
-          }}
-        >
-          Remove service
-        </button>
-      </div>
-    </div>
+    </RowMenu>
   );
 }
