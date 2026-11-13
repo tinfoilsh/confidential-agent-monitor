@@ -148,8 +148,16 @@ func (c *Config) Accesses(agent string) map[string]Access {
 }
 
 func (c *Config) Reaches(agent, connection string) bool {
-	level := c.Access(agent, connection).Level
-	return level != "" && level != "off"
+	a := c.Access(agent, connection)
+	if a.Level != "" && a.Level != "off" {
+		return true
+	}
+	for _, mode := range a.Actions {
+		if mode != "off" {
+			return true
+		}
+	}
+	return false
 }
 
 // Spec projects only this connection's setup; the returned definition remains opaque.

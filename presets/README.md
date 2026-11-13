@@ -163,7 +163,7 @@ still asks. An edit to a connection's setup or preset removes its saved approval
 Approval rules can inspect `data.perimeter.base_gaps`, the remaining built-in
 requirements after saved waivers. Denial rules can inspect `data.perimeter.gaps`,
 which also includes custom requirements. An approval rule that depends on the
-final gaps or reasons is recursive and is rejected when the policy is compiled.
+final gaps or requirements is recursive and is rejected when the policy is compiled.
 Custom requirements can pause operations and connection admission.
 
 Configuration publication requires compiled connections, presets, selectors, and

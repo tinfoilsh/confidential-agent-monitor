@@ -1,147 +1,131 @@
 package perimeter
 
+import input.authorization as auth
 import input.connection as conn
-import input.authorization as a
-import input.facts as f
+import input.facts
+import input.facts.context as hint
+import input.facts.context.label
 import input.facts.operation as op
 
-audiences := {name: rank | some rank, name in data.levels.audiences}
+# Each axis orders its levels from most to least restrictive.
+rank := {
+	"audience": {name: i | some i, name in data.levels.audiences},
+	"trust": {name: i | some i, name in data.levels.trusts},
+}
 
-ranks := {"audience": audiences, "trust": {name: rank | some rank, name in data.levels.trusts}}
-
-obligation(name) if {
+obligations contains name if {
 	some effect in op.effects
-	data.levels.effects[effect][name]
+	some name, true in data.levels.effects[effect]
 }
 
-mode := "off" if not a.access.level in {"read", "ask", "allow"}
+unknown if op == null
+admission if facts.kind == "admission"
+changes if "change" in obligations
+discloses if "discloses" in obligations
 
-else := "off" if {
-	op == null
-	a.access.level == "read"
+default request := "read"
+
+request := "unknown" if {
+	unknown
+} else := "change" if {
+	changes
 }
 
-else := "ask" if op == null
-
-else := m if m := [v | some name in op.lineage; v := a.access.actions[name]][0]
-
-else := "allow" if f.kind == "admission"
-
-else := "allow" if not obligation("change")
-
-else := "off" if a.access.level == "read"
-
-else := a.access.level
-
-# A request names a resource when every public scope parameter is a nonempty string.
-scope := [v | some key in conn.public_scope; v := f.parameters[key]; is_string(v); v != ""]
-
-scoped if {
-	some _ in conn.public_scope
-	count(scope) == count(conn.public_scope)
+grants := {
+	"read": {"unknown": "off", "read": "allow", "change": "off"},
+	"ask": {"unknown": "ask", "read": "allow", "change": "ask"},
+	"allow": {"unknown": "ask", "read": "allow", "change": "allow"},
 }
 
+# Lineage runs from the operation's own action up through its ancestors.
+overrides := [m | some action in op.lineage; m := auth.access.actions[action]]
+
+default mode := "off"
+
+mode := overrides[0] if {
+	overrides != []
+} else := "allow" if {
+	# A session opens to any service the bunker reaches.
+	admission
+	auth.reaches
+} else := grants[auth.access.level][request] if {
+	grants[auth.access.level]
+}
+
+effect_defaults := {effect: {true: "ask", false: "allow"}[o.ask] | some effect, o in data.levels.effects}
+
+# Paid model operations carry both generate and pay; an explicit pay setting at any scope still wins.
+paid := {"pay": "allow"} if {
+	auth.allow_paid_inference
+	"generate" in op.effects
+	"pay" in op.effects
+} else := {}
+
+# Scopes run from global settings to this bunker's access on this service; the most specific wins.
+effects := object.union_n(array.concat([effect_defaults, paid], auth.effects))
+
+# A preset's public scope lists the parameters that together name one resource, such as owner and repo.
+names := [v | some key in conn.public_scope; v := facts.parameters[key]; is_string(v); v != ""]
+
+resource := concat("/", names) if {
+	names != []
+	count(names) == count(conn.public_scope)
+}
+
+# The owner marks resources private with globs such as tinfoilsh/*; any other named resource is public.
 private if {
 	some pattern in conn.private
-	glob.match(pattern, ["/"], concat("/", scope))
+	glob.match(pattern, ["/"], resource)
 }
 
 public if {
-	scoped
+	resource
 	not private
 }
 
-observation := {"audience": conn.contents, "trust": "untrusted"} if conn.strangers
-else := {"audience": conn.contents, "trust": "trusted"}
+target := resource if changes
 
-hinted := object.union(observation, {k: v | some k in {"audience", "trust"}; v := f.context.observes[k]; v != ""})
-
-observes := {"audience": "me", "trust": "untrusted"} if op == null
-else := object.union(hinted, {"audience": "anyone"}) if public
-else := hinted
-
+# A change to a public resource reaches anyone, whatever the connector hints; so does an unplaced disclosure.
 sends := "anyone" if {
+	changes
 	public
-	obligation("change")
-} else := conn.sends if {
-	scoped
-	obligation("change")
-	f.context.sends == ""
 } else := "anyone" if {
-	f.context.sends == ""
-	obligation("discloses")
-} else := conn.sends if f.context.sends in {"", "connection"}
-else := f.context.sends
+	hint.sends == ""
+	discloses
+	not target
+} else := conn.sends if {
+	hint.sends in {"", "connection"}
+} else := hint.sends
+
+expected := object.union(
+	{"audience": conn.contents, "trust": {true: "untrusted", false: "trusted"}[conn.strangers]},
+	{axis: level | some axis, _ in rank; level := hint.observes[axis]; level != ""},
+)
+
+# An unrecognized request may return anything; a public resource holds nothing private.
+observes := {"audience": "me", "trust": "untrusted"} if {
+	unknown
+} else := object.union(expected, {"audience": "anyone"}) if {
+	public
+} else := expected
 
 # The label keeps each axis's provenance unless this request makes it more restrictive.
-lowered contains axis if {
-	some axis, rank in ranks
-	rank[observes[axis]] < rank[f.context.label[axis]]
+lowered[axis] := level if {
+	some axis, level in observes
+	rank[axis][level] < rank[axis][label[axis]]
 }
 
-level(axis) := observes[axis] if axis in lowered
-else := f.context.label[axis]
+because := object.get(label, "because", {})
 
 next := {
-	"audience": level("audience"),
-	"trust": level("trust"),
-	"because": object.union(because, {axis: f.connection | some axis in lowered}),
+	"audience": object.get(lowered, "audience", label.audience),
+	"trust": object.get(lowered, "trust", label.trust),
+	"because": object.union(because, {axis: facts.connection | some axis, _ in lowered}),
 }
 
 default owner_deny := []
 
 owner_deny := data.sentinel.deny
-
-# Element types are checked when the decision is decoded; a wrong container would deny nothing.
-deny contains "owner policy deny must be a set or array of strings" if {
-	not is_array(owner_deny)
-	not is_set(owner_deny)
-}
-
-deny contains msg if some msg in owner_deny
-
-deny contains "This bunker does not have permission for this action." if mode == "off"
-
-deny contains sprintf("The %s effect is set to Deny.", [effect]) if {
-	some effect in op.effects
-	a.effects[effect] == "off"
-}
-
-needs_trust if op == null
-needs_trust if obligation("trust")
-
-gap contains "ask" if mode != "allow"
-
-# A waiver of this gap covers only the audience it was approved for.
-audience_gap := concat(".", ["audience", sends])
-
-gap contains audience_gap if {
-	data.lattices.confidentiality
-	not audiences[sends] <= audiences[f.context.label.audience]
-}
-
-gap contains "trust" if {
-	data.lattices.integrity
-	f.context.label.trust == "untrusted"
-	needs_trust
-}
-
-waived contains id if some id in a.approved
-
-waived contains w if {
-	some r in a.rules
-	object.get(r, "enabled", true)
-	r.version == f.version
-	r.connection == f.connection
-	r.operation == op.id
-	r.scope == a.grant
-	some requirement in r.requirements
-	w := requirement.id
-}
-
-base_gaps := set() if f.kind == "admission"
-
-else := gap - waived
 
 default owner_approvals := []
 
@@ -156,39 +140,90 @@ valid_owner_approvals if {
 		regex.match(`^owner\.[a-zA-Z0-9][a-zA-Z0-9_.-]*$`, r.id)
 		trim_space(r.message) != ""
 	}
+
 	# Repeated identical entries are harmless; conflicting messages for one ID are not.
 	count({r.id | some r in owner_approvals}) == count({r | some r in owner_approvals})
 }
 
+deny contains "This bunker does not have permission for this action." if mode == "off"
+
+deny contains sprintf("The %s effect is set to Deny.", [effect]) if {
+	some effect in op.effects
+	effects[effect] == "off"
+}
+
+# Element types are checked when the decision is decoded; a wrong container would deny nothing.
+deny contains "owner policy deny must be a set or array of strings" if {
+	not is_array(owner_deny)
+	not is_set(owner_deny)
+}
+
+deny contains msg if some msg in owner_deny
+
 deny contains "owner policy approvals must be a set or array of {id, message} objects with unique owner.* IDs and nonempty messages" if not valid_owner_approvals
 
-ask_message := sprintf("This request has no recognized operation on %s.", [f.connection]) if op == null
-else := sprintf("This request needs your approval on %s.", [f.connection])
+# A waiver of this gap covers only the audience it was approved for.
+disclosure := concat(".", ["audience", sends])
 
-because := object.get(f.context.label, "because", {})
+needs_trust if unknown
+needs_trust if "trust" in obligations
+
+builtin contains "ask" if mode != "allow"
+
+# Confidentiality: what the agent has seen goes to no wider an audience than its label.
+builtin contains disclosure if {
+	data.lattices.confidentiality
+	not rank.audience[sends] <= rank.audience[label.audience]
+}
+
+# Integrity: an agent that has read untrusted content does nothing that requires trust.
+builtin contains "trust" if {
+	data.lattices.integrity
+	label.trust == "untrusted"
+	needs_trust
+}
+
+waived contains id if some id in auth.approved
+
+waived contains requirement.id if {
+	some r in auth.rules
+	not r.enabled == false
+	r.version == facts.version
+	r.connection == facts.connection
+	r.operation == op.id
+	r.scope == auth.grant
+	some requirement in r.requirements
+}
+
+base_gaps := builtin - waived if not admission
+base_gaps := set() if admission
+
+ask_message := sprintf("This request has no recognized operation on %s.", [facts.connection]) if unknown
+ask_message := sprintf("This request needs your approval on %s.", [facts.connection]) if not unknown
+
 recipients := {"me": "you", "team": "your team", "anyone": "anyone"}
 
-builtin_messages := {
+messages := {
 	"ask": ask_message,
-	audience_gap: sprintf("This agent has seen private data from %s; this request can disclose it to %s.", [object.get(because, "audience", "an earlier request"), object.get(recipients, sends, "an unknown audience")]),
+	disclosure: sprintf("This agent has seen private data from %s; this request can disclose it to %s.", [object.get(because, "audience", "an earlier request"), object.get(recipients, sends, "an unknown audience")]),
 	"trust": sprintf("This agent has read untrusted content from %s; this operation requires trust.", [object.get(because, "trust", "an earlier request")]),
 }
 
-reasons contains {"id": id, "message": builtin_messages[id]} if some id in base_gaps
+requirements contains {"id": id, "message": message} if some id, message in object.filter(messages, base_gaps)
 
-reasons contains {"id": id, "message": sprintf("The %s effect requires approval (Ask).", [effect])} if {
+requirements contains {"id": id, "message": sprintf("The %s effect requires approval (Ask).", [effect])} if {
 	some effect in op.effects
-	a.effects[effect] == "ask"
+	effects[effect] == "ask"
 	id := concat("", ["effect.", effect])
 	not id in waived
 }
 
-reasons contains r if {
+requirements contains r if {
 	valid_owner_approvals
 	some r in owner_approvals
 	not r.id in waived
 }
 
-gaps := {r.id | some r in reasons}
+gaps contains r.id if some r in requirements
 
-decision := {"deny": deny, "requirements": reasons, "sends": sends, "next": next}
+decision := {"deny": deny, "requirements": requirements, "sends": sends, "next": next}

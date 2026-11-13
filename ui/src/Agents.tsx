@@ -509,8 +509,7 @@ export function AgentConnectionAccess(props: {
       0,
     );
   const searchable = () => leaves(entry().actions) > ACTION_SEARCH_THRESHOLD;
-  const expandable = () =>
-    entry().level !== "off" && (!singleAction() || rules().length > 0);
+  const expandable = () => !singleAction() || rules().length > 0;
   const open = () => (props.alwaysOpen || expanded()) && expandable();
   const id = createUniqueId();
   const [query, setQuery] = createSignal("");
@@ -547,7 +546,7 @@ export function AgentConnectionAccess(props: {
           <Icon name="arrow" />
         </span>
       </Show>
-      <Show when={entry().level !== "off" && entry().overrides}>
+      <Show when={entry().overrides}>
         <small class="muted">
           {entry().overrides}{" "}
           {entry().overrides === 1 ? "action set" : "actions set"}
@@ -587,7 +586,6 @@ export function AgentConnectionAccess(props: {
           options={Object.fromEntries(entry().levels)}
           disabled={entry().preset === owner.BUNKERS ? ["allow"] : []}
           onChange={(value) => {
-            setExpanded(value !== "off");
             const own =
               m.view()!.config.identities?.[props.name]?.connections?.[
                 props.connection

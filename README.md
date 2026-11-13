@@ -153,7 +153,7 @@ In **Bunkers**, set each bunker's access to each service.
 
 | Access    | TOML/API | Default behavior                         |
 | --------- | -------- | ---------------------------------------- |
-| No access | `off`    | Deny access.                             |
+| No access | `off`    | Deny everything not overridden below.    |
 | Read only | `read`   | Allow recognized reads and deny changes. |
 | Ask       | `ask`    | Allow reads and ask before changes.      |
 | Allow     | `allow`  | Allow recognized operations.             |

@@ -949,7 +949,7 @@ export const effectsOf = (view: View, name: string, k: string) => {
   ];
 };
 
-// Mirrors config.EffectModes for a global setting, outside any agent, connection or operation.
+// Mirrors effects in internal/policy/lib.rego for a global setting, outside any agent, connection or operation.
 export const effectMode = (view: View, effect: string): Mode =>
   view.config.effects?.[effect] ??
   (view.vocabulary[effect]?.ask ? "ask" : "allow");
@@ -961,17 +961,18 @@ export function mode(
   effects: string[],
   k: string,
 ): Mode {
-  if (!access.level || access.level === "off") return "off";
   const lineage = k
     .split(".")
     .map((_, i, p) => p.slice(0, p.length - i).join("."));
   return (
     lineage.map((a) => access.actions?.[a]).find(Boolean) ??
-    (!effects.some((e) => vocabulary[e]?.change)
-      ? "allow"
-      : access.level === "read"
-        ? "off"
-        : access.level)
+    (!access.level || access.level === "off"
+      ? "off"
+      : !effects.some((e) => vocabulary[e]?.change)
+        ? "allow"
+        : access.level === "read"
+          ? "off"
+          : access.level)
   );
 }
 
@@ -1052,10 +1053,9 @@ export function agentAccess(view: View, name: string, only?: string) {
       levels: levelsOf(c),
       overrides: Object.values(access.actions ?? {}).filter(Boolean).length,
       get actions(): AccessNode[] {
-        return (actions ??=
-          access.level === "off"
-            ? []
-            : ungrouped(actionTree(view, connection).map(describe)));
+        return (actions ??= ungrouped(
+          actionTree(view, connection).map(describe),
+        ));
       },
     };
   });
