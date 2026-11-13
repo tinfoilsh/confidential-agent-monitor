@@ -153,38 +153,40 @@ func EditSource(source string, changes []Change) (string, error) {
 	return doc.String(), nil
 }
 
-// EditSourceNormalized applies changes in order while omitting semantic no-ops.
-// It preserves the current source text when the editor only changes formatting.
-func EditSourceNormalized(source string, changes []Change) (string, []Change, error) {
-	parse := func(source string) (map[string]any, error) {
-		value, err := ReadSource(source)
-		if err != nil {
-			return nil, err
-		}
-		return facts.JSON[map[string]any](value)
-	}
-	candidate := source
-	current, err := parse(candidate)
+// Edit applies changes to source and reports which connections' connector setup
+// then differs from c's. Rules approved for such a connection are removed in the
+// same edit. Changes that alter no setting leave source as it was.
+func (c *Config) Edit(source string, changes []Change) (string, func(connection string) bool, error) {
+	edited, err := EditSource(source, changes)
 	if err != nil {
 		return "", nil, err
 	}
-	normalized := make([]Change, 0, len(changes))
-	for _, change := range changes {
-		next, err := EditSource(candidate, []Change{change})
-		if err != nil {
-			return "", nil, err
-		}
-		parsed, err := parse(next)
-		if err != nil {
-			return "", nil, err
-		}
-		if reflect.DeepEqual(current, parsed) {
-			continue
-		}
-		normalized = append(normalized, change)
-		candidate, current = next, parsed
+	next, err := Load(edited)
+	if err != nil {
+		return "", nil, err
 	}
-	return candidate, normalized, nil
+	if reflect.DeepEqual(next, c) {
+		return source, func(string) bool { return false }, nil
+	}
+	networks := !slices.Equal(c.AllowNetworks, next.AllowNetworks)
+	setup := func(connection string) bool {
+		before, _ := c.Spec(connection)
+		after, _ := next.Spec(connection)
+		return !reflect.DeepEqual(before, after)
+	}
+	var stale []Change
+	for _, name := range slices.Sorted(maps.Keys(next.Identities)) {
+		rules := next.Identities[name].Rules
+		for _, id := range slices.Sorted(maps.Keys(rules)) {
+			if setup(rules[id].Connection) {
+				stale = append(stale, Change{Path: []string{"identities", name, "rules", id}, Delete: true})
+			}
+		}
+	}
+	if stale != nil {
+		edited, err = EditSource(edited, stale)
+	}
+	return edited, func(connection string) bool { return networks || setup(connection) }, err
 }
 
 // Fragment converts a TOML proposal into the same JSON-valued edits as owner calls.

@@ -2,7 +2,6 @@
 package monitor
 
 import (
-	"bytes"
 	"context"
 	"crypto/ed25519"
 	"crypto/tls"
@@ -12,7 +11,6 @@ import (
 	"io"
 	"maps"
 	"net/http"
-	"reflect"
 	"slices"
 	"sync"
 	"sync/atomic"
@@ -135,6 +133,7 @@ type admission struct {
 	connection  *connection
 	prepared    *connector.Prepared
 	route       bool
+	grants      []*grant // The admission, then the latest operation.
 }
 
 // monitor owns the mutable document, connections, streams and approvals under mu.
@@ -155,8 +154,9 @@ type monitor struct {
 	sshHostKey              ssh.Signer
 	embeddedFiles, ownerAPI http.Handler
 	forwards                *sandbox.Forwarder
-	streams                 map[*connector.Stream]admission
+	streams                 map[*connector.Stream]*admission
 	records                 []*record
+	cond                    sync.Cond
 	signIns                 sync.Map
 }
 
@@ -172,8 +172,9 @@ func New(o Options) *monitor {
 		embeddedFiles:  o.EmbeddedFiles,
 		forwards:       sandbox.NewForwarder(),
 		connections:    map[string]*connection{},
-		streams:        map[*connector.Stream]admission{},
+		streams:        map[*connector.Stream]*admission{},
 	}
+	m.cond.L = &m.mu
 	m.ownerAPI = m.newOwnerAPI()
 	return m
 }
@@ -229,7 +230,7 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (bool,
 			return false, err
 		}
 	}
-	plan, err := m.prepareSettings(ctx, next.Doc, next.Doc, nil, env)
+	plan, err := m.prepareSettings(ctx, next.Doc.Policy, everyConnector, nil, env)
 	if err != nil {
 		return false, err
 	}
@@ -249,39 +250,32 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (bool,
 	return created, nil
 }
 
-// prepareSettings validates settings and parses connector setups under writes, without
-// mu. It creates no runtime instances. Stored maps and settings snapshots are
-// immutable; credential refreshes can still commit while validation runs.
-func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Document, credentials store.Secrets, env connector.Env) (*settingsPlan, error) {
-	current := m.settings.Load()
-	next := current
-	if current == nil || proposed.Policy != base.Policy {
-		cfg, err := config.Load(proposed.Policy)
-		if err != nil {
+func everyConnector(string) bool { return true }
+
+// prepareSettings validates source and parses the connector setups to rebuild
+// under writes, without mu. It creates no runtime instances. Stored maps and
+// settings snapshots are immutable; credential refreshes can still commit while
+// validation runs.
+func (m *monitor) prepareSettings(ctx context.Context, source string, rebuild func(connection string) bool, credentials store.Secrets, env connector.Env) (*settingsPlan, error) {
+	cfg, err := config.Load(source)
+	if err != nil {
+		return nil, err
+	}
+	for _, id := range cfg.Identities {
+		if err := sandbox.ValidateMetadata(id.Sandbox); err != nil {
 			return nil, err
 		}
-		// Preserve state across formatting.
-		if current == nil || !reflect.DeepEqual(cfg, current.Config) {
-			for _, id := range cfg.Identities {
-				if err := sandbox.ValidateMetadata(id.Sandbox); err != nil {
-					return nil, err
-				}
-			}
-			var engine *policy.Engine
-			if current != nil && cfg.SameProgram(current.Config) {
-				engine = current.Engine
-			} else if engine, err = policy.Prepare(ctx, cfg.Data, cfg.Policies, cfg.Lattices.Confidentiality, cfg.Lattices.Integrity); err != nil {
-				return nil, err
-			}
-			next = &settings{Config: cfg, Engine: engine, Env: env}
-			next.Dialer = connector.NewDialer(cfg.AllowNetworks)
-			if next.Catalog, next.CatalogID, err = cfg.Catalog(); err != nil {
-				return nil, err
-			}
-		}
 	}
-	plan := &settingsPlan{next: next, source: proposed.Policy, credentials: credentials}
-	sameNetworks := current != nil && slices.Equal(current.AllowNetworks, next.AllowNetworks)
+	engine, err := policy.Prepare(ctx, cfg.Data, cfg.Policies, cfg.Lattices.Confidentiality, cfg.Lattices.Integrity)
+	if err != nil {
+		return nil, err
+	}
+	next := &settings{Config: cfg, Engine: engine, Env: env}
+	next.Dialer = connector.NewDialer(cfg.AllowNetworks)
+	if next.Catalog, next.CatalogID, err = cfg.Catalog(); err != nil {
+		return nil, err
+	}
+	plan := &settingsPlan{next: next, source: source, credentials: credentials}
 	present := map[string]bool{}
 	for _, name := range slices.Sorted(maps.Keys(next.Connections)) {
 		spec, err := next.Spec(name)
@@ -297,14 +291,7 @@ func (m *monitor) prepareSettings(ctx context.Context, base, proposed store.Docu
 		if c != nil && c.Protocol != spec.Protocol {
 			plan.remove = append(plan.remove, spec.Name)
 		}
-		sameConnection := c != nil && c.Protocol == spec.Protocol
-		reusable := sameConnection && sameNetworks
-		unchanged := reusable &&
-			bytes.Equal(c.Config, spec.Config) &&
-			bytes.Equal(c.Definition, spec.Definition) &&
-			bytes.Equal(c.Options, spec.Options) &&
-			len(credentials[spec.Name]) == 0
-		if unchanged {
+		if c != nil && c.Protocol == spec.Protocol && !rebuild(spec.Name) && len(credentials[spec.Name]) == 0 {
 			if c.Status().State != statusReady {
 				plan.updates = append(plan.updates, connectionPlan{spec, c.prepared, c.Credentials})
 			}
@@ -387,22 +374,19 @@ func (m *monitor) commitSettings(ctx context.Context, plan *settingsPlan, saved 
 		next.Enrolled[key] = true
 	}
 	maps.DeleteFunc(next.Labels, func(key string, _ facts.Label) bool { _, ok := plan.next.Principals[key]; return !ok })
+	next.Revision++
 	// Persist before publishing authority.
-	if !reflect.DeepEqual(next, m.store.Doc) || m.settings.Load() == nil {
-		if err := m.store.Commit(ctx, next); err != nil {
-			return nil, nil, err
-		}
+	if err := m.store.Commit(ctx, next); err != nil {
+		return nil, nil, err
 	}
 	if saved != nil {
 		saved.record.committed(saved.answer)
 	}
-	old, changed := m.settings.Load(), false
 	for _, name := range plan.remove {
 		c := m.connections[name]
 		c.cancelSetup()
 		retired = append(retired, c)
 		delete(m.connections, name)
-		changed = true
 	}
 	for _, update := range plan.updates {
 		c := m.connections[update.Name]
@@ -421,7 +405,6 @@ func (m *monitor) commitSettings(ctx context.Context, plan *settingsPlan, saved 
 				c.cancelSetup()
 			}
 			c.setupCtx, c.cancelSetup = context.WithCancel(context.Background())
-			changed = true
 		}
 		c.ConnectionSpec, c.prepared, c.Credentials = update.ConnectionSpec, update.prepared, update.credentials
 		// Admission requires successful delivery.
@@ -436,13 +419,23 @@ func (m *monitor) commitSettings(ctx context.Context, plan *settingsPlan, saved 
 	}
 	m.settings.Store(plan.next)
 	for stream, a := range m.streams {
-		if !m.stillAdmitted(old, a) {
+		if !m.recheck(a) {
 			stream.Close()
 		}
 	}
-	if old != plan.next || changed {
-		m.refusePending(errChanged)
+	for _, r := range m.records {
+		if r.State != statePending || r.Changes == nil {
+			continue
+		}
+		f := r.summary().Facts
+		if _, raw, err := plan.next.proposal(plan.source, f.Principal, f.Connection, r.Requirements[0].Message, r.Changes); err == nil {
+			r.Facts = raw
+		} else {
+			r.State = stateOutdated
+			m.settleRecord(r, nil)
+		}
 	}
+	m.cond.Broadcast()
 	return install, retired, nil
 }
 

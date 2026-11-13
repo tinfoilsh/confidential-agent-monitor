@@ -3,8 +3,6 @@ package monitor
 import (
 	"context"
 	"crypto/rand"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -71,13 +69,19 @@ type record struct {
 	Expires time.Time       `json:"expires,omitzero"`
 	Facts   json.RawMessage `json:"facts"`
 	policy.Decision
-	ApprovalKey string         `json:"definition"`
-	Grant       map[string]any `json:"grant"`
-	Reviews     []reviewAnswer `json:"reviews,omitempty"`
-	// Changes makes the record a policy proposal; scope is what it was reviewed against.
-	Changes  []config.Change `json:"changes,omitempty"`
-	answered chan struct{}
-	scope    string
+	Grant   map[string]any `json:"grant"`
+	Reviews []reviewAnswer `json:"reviews,omitempty"`
+	// Changes makes the record a policy proposal, reviewed against the current policy.
+	Changes []config.Change `json:"changes,omitempty"`
+}
+
+// A grant is an allowed event a settings write re-decides, with the label it was
+// decided under and the requirements the owner answered for it alone.
+type grant struct {
+	kind     facts.Kind
+	event    facts.Event
+	label    facts.Label
+	approved []string
 }
 
 // Activity never needs request bodies, policy parameters or saved-rule grants.
@@ -101,12 +105,11 @@ type recordSummary struct {
 }
 
 var (
-	errChanged      = errors.New("configuration changed; retry the request")
-	errLabelChanged = errors.New("the agent's security label changed while waiting for approval; retry the request")
-	errNoAgent      = errors.New("this agent's identity was removed")
+	errChanged = errors.New("configuration changed; retry the request")
+	errNoAgent = errors.New("this agent's identity was removed")
 )
 
-func (m *monitor) authorizeAdmission(ctx context.Context, admitted admission, target frontdoor.Target) error {
+func (m *monitor) authorizeAdmission(ctx context.Context, admitted *admission, target frontdoor.Target) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if admitted.connection == nil {
@@ -119,14 +122,17 @@ func (m *monitor) authorizeAdmission(ctx context.Context, admitted admission, ta
 		Details:    map[string]any{"tcp": map[string]any{"host": target.Host, "port": target.Port}},
 		Context:    facts.Context{Observes: cleanLabel},
 	}
-	r, err := m.authorizeLocked(ctx, admitted, facts.KindAdmission, facts.Capture(f, nil))
+	g := &grant{kind: facts.KindAdmission, event: facts.Capture(f, nil)}
+	r, err := m.authorizeLocked(ctx, admitted, g)
 	if r != nil {
 		m.settleRecord(r, err)
 	}
+	admitted.grants = []*grant{g}
 	return err
 }
 
-func (m *monitor) authorizeOperation(ctx context.Context, stream *connector.Stream, admitted admission, event facts.Event) error {
+// authorizeOperation keeps the latest allowed operation with its stream.
+func (m *monitor) authorizeOperation(ctx context.Context, stream *connector.Stream, admitted *admission, event facts.Event) error {
 	if stream == nil {
 		return errors.New("operation authorization requires a stream")
 	}
@@ -137,25 +143,24 @@ func (m *monitor) authorizeOperation(ctx context.Context, stream *connector.Stre
 	defer cancel()
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	r, err := m.authorizeLocked(ctx, admitted, facts.KindOperation, event)
+	g := &grant{kind: facts.KindOperation, event: event}
+	r, err := m.authorizeLocked(ctx, admitted, g)
 	if r != nil {
 		if err == nil {
 			err = m.relabel(ctx, admitted.fingerprint, r.Next, stream)
 		}
 		m.settleRecord(r, err)
 	}
-	return err
+	if err != nil {
+		return err
+	}
+	admitted.grants = append(admitted.grants[:1], g)
+	return nil
 }
 
-// authorizeLocked runs under mu, releasing it only around the approval wait.
-// Callers settle its record after any label persistence, before execution begins.
-func (m *monitor) authorizeLocked(ctx context.Context, admitted admission, kind facts.Kind, event facts.Event) (*record, error) {
-	if err := ctx.Err(); err != nil {
-		return nil, err
-	}
-	if m.audit.Backlogged() {
-		return nil, errAuditBacklog
-	}
+// decide evaluates g under current settings, without waiting or recording.
+// An invalid event yields its record with the error.
+func (m *monitor) decide(ctx context.Context, admitted *admission, g *grant) (*record, error) {
 	st := m.settings.Load()
 	p, ok := st.Principal(admitted.fingerprint)
 	if !ok {
@@ -165,39 +170,65 @@ func (m *monitor) authorizeLocked(ctx context.Context, admitted admission, kind 
 	if !m.usable(c, admitted.prepared) {
 		return nil, errChanged
 	}
-	f, describeErr := st.bindFacts(c, p, m.currentLabel(p.Key), kind, event)
+	f, describeErr := st.bindFacts(c, p, g.label, g.kind, g.event)
 	if describeErr != nil {
 		f.Operation = nil
 		raw, _, err := facts.Encode(f)
 		if err != nil {
 			return nil, err
 		}
-		return m.addRecord(&record{Facts: raw, Invalid: true}), describeErr
+		return &record{Facts: raw, Invalid: true}, describeErr
 	}
-	input, r, err := st.policyInput(c, p, f)
+	input, next, err := st.policyInput(c, p, f, g.approved)
 	if err != nil {
 		return nil, err
 	}
-	if r.Decision, err = st.Engine.Decide(ctx, input); err != nil {
-		return nil, err
-	}
-	m.addRecord(r)
-	if len(r.Deny) != 0 {
-		return r, errors.New(strings.Join(r.Deny, "; "))
-	}
-	if len(r.Requirements) != 0 {
+	next.Decision, err = st.Engine.Decide(ctx, input)
+	return next, err
+}
+
+// authorizeLocked runs under mu, releasing it only around approval waits.
+// Callers settle its record after any label persistence, before execution begins.
+func (m *monitor) authorizeLocked(ctx context.Context, admitted *admission, g *grant) (*record, error) {
+	var r *record
+	g.approved = []string{}
+	for {
+		if err := ctx.Err(); err != nil {
+			return r, err
+		}
+		if m.audit.Backlogged() {
+			return r, errAuditBacklog
+		}
+		g.label = m.currentLabel(admitted.fingerprint)
+		next, err := m.decide(ctx, admitted, g)
+		if next != nil && next.Invalid {
+			return m.addRecord(next), err
+		}
+		if err != nil {
+			return r, err
+		}
+		if r == nil {
+			r = m.addRecord(next)
+		}
+		r.Facts, r.Decision, r.Grant = next.Facts, next.Decision, next.Grant
+		if len(r.Deny) != 0 {
+			return r, errors.New(strings.Join(r.Deny, "; "))
+		}
+		if len(r.Requirements) == 0 {
+			if r.State == statePending {
+				r.State = stateAllowed
+			}
+			return r, ctx.Err()
+		}
 		if err := m.awaitAnswer(ctx, r); err != nil {
 			return r, err
 		}
-		if m.settings.Load() != st || !m.usable(c, admitted.prepared) {
-			return r, errChanged
-		}
-		label := m.currentLabel(p.Key)
-		if label.Audience != f.Context.Label.Audience || label.Trust != f.Context.Label.Trust {
-			return r, errLabelChanged
+		if r.State == stateApproved {
+			for _, requirement := range r.Requirements {
+				g.approved = append(g.approved, requirement.ID)
+			}
 		}
 	}
-	return r, ctx.Err()
 }
 
 func (st *settings) bindFacts(c *connection, p config.Principal, label facts.Label, kind facts.Kind, event facts.Event) (facts.Facts, error) {
@@ -215,12 +246,8 @@ func (st *settings) bindFacts(c *connection, p config.Principal, label facts.Lab
 }
 
 // policyInput builds the engine input and the record its decision will fill.
-func (st *settings) policyInput(c *connection, p config.Principal, f facts.Facts) (map[string]any, *record, error) {
-	modes := st.Config.EffectModes(p.Name, c.Name, f.Operation)
-	key, err := approvalKey(st, c, f, modes)
-	if err != nil {
-		return nil, nil, err
-	}
+// approved names the requirements the owner answered for this request alone.
+func (st *settings) policyInput(c *connection, p config.Principal, f facts.Facts, approved []string) (map[string]any, *record, error) {
 	grant := f.Scope
 	encoded, policyFacts, err := facts.Encode(f)
 	if err != nil {
@@ -231,11 +258,11 @@ func (st *settings) policyInput(c *connection, p config.Principal, f facts.Facts
 		return nil, nil, err
 	}
 	authorization := map[string]any{
-		"access":     access,
-		"effects":    modes,
-		"rules":      st.Identities[p.Name].Rules,
-		"definition": key,
-		"grant":      grant,
+		"access":   access,
+		"effects":  st.Config.EffectModes(p.Name, c.Name, f.Operation),
+		"rules":    slices.Collect(maps.Values(st.Identities[p.Name].Rules)),
+		"approved": approved,
+		"grant":    grant,
 	}
 	connection := st.Connections[c.Name]
 	connectionInput := map[string]any{
@@ -249,37 +276,7 @@ func (st *settings) policyInput(c *connection, p config.Principal, f facts.Facts
 		"facts":         policyFacts,
 		"authorization": authorization,
 		"connection":    connectionInput,
-	}, &record{Facts: encoded, Grant: grant, ApprovalKey: key}, nil
-}
-
-// approvalKey binds saved grants to semantics and configuration, excluding
-// display fields and current labels. The positional encoding is persisted in
-// existing grants: preserve its order and representation when refactoring.
-func approvalKey(st *settings, c *connection, f facts.Facts, modes map[string]string) (string, error) {
-	connection := st.Connections[c.Name]
-	raw, err := json.Marshal([]any{
-		st.Engine.Program,
-		st.Lattices,
-		modes,
-		f.Kind,
-		connection.Preset,
-		c.Name,
-		c.Config,
-		connection.PolicyOptions,
-		connection.Contents,
-		connection.Strangers,
-		connection.Sends,
-		c.PublicScope,
-		f.Definition,
-		f.Operation,
-		f.Context.Sends,
-		f.Context.Observes,
-	})
-	if err != nil {
-		return "", fmt.Errorf("encode approval definition: %w", err)
-	}
-	sum := sha256.Sum256(raw)
-	return hex.EncodeToString(sum[:]), nil
+	}, &record{Facts: encoded, Grant: grant}, nil
 }
 
 // ruleChange derives a saved rule only from frozen audit/grant data under mu.
@@ -292,8 +289,8 @@ func (m *monitor) ruleChange(r *record) (config.Change, error) {
 	if !exists || p.Name != f.Principal.Name {
 		return config.Change{}, errors.New("the requesting identity was revoked or replaced")
 	}
-	return config.Change{Path: []string{"identities", p.Name, "rules", r.ID}, Value: config.Rule{Connection: f.Connection, Action: f.Operation.Action, Operation: f.Operation.ID,
-		ApprovalKey: r.ApprovalKey, Scope: r.Grant, Requirements: slices.Clone(r.Requirements)}}, nil
+	return config.Change{Path: []string{"identities", p.Name, "rules", r.ID}, Value: config.Rule{Version: facts.Version, Connection: f.Connection, Action: f.Operation.Action, Operation: f.Operation.ID,
+		Scope: r.Grant, Requirements: slices.Clone(r.Requirements)}}, nil
 }
 
 var cleanLabel = facts.Label{Trust: "trusted", Audience: "anyone"}
@@ -375,49 +372,29 @@ func (m *monitor) findRecord(id string) *record {
 	return m.records[i]
 }
 
-// refusePending refuses every request still waiting for an answer and outdates
-// proposals whose scope changed; the caller holds mu.
-func (m *monitor) refusePending(err error) {
-	cfg := m.settings.Load().Config
-	for _, r := range m.records {
-		switch {
-		case r.State != statePending:
-		case r.Changes == nil:
-			r.State, r.Deny = stateRefused, []string{err.Error()}
-			close(r.answered)
-		case cfg.ProposalScope(r.summary().Facts.Principal.Name, r.Changes) != r.scope:
-			r.State = stateOutdated
-			close(r.answered)
-			m.settleRecord(r, nil)
-		}
-	}
-}
-
 // awaitAnswer publishes a pending record under mu and releases mu until it is
-// answered or expires, then examines the answer under mu.
+// answered, expires or anything changes; a record still pending is checked again.
 func (m *monitor) awaitAnswer(ctx context.Context, r *record) error {
-	r.State, r.Expires, r.answered = statePending, r.Time.Add(approvalWait), make(chan struct{})
-	wait, cancel := context.WithDeadline(ctx, r.Expires)
-	m.mu.Unlock()
-	select {
-	case <-r.answered:
-	case <-wait.Done():
+	if r.State != statePending {
+		r.State, r.Expires = statePending, time.Now().Add(approvalWait)
 	}
-	cancel()
-	m.mu.Lock()
+	wait, cancel := context.WithDeadline(ctx, r.Expires)
+	defer cancel()
+	// Taking mu keeps the wakeup from landing before Wait.
+	stop := context.AfterFunc(wait, func() { m.mu.Lock(); m.cond.Broadcast(); m.mu.Unlock() })
+	defer stop()
+	m.cond.Wait()
 	if err := ctx.Err(); err != nil {
 		return err
 	}
-	switch r.State {
-	case statePending, stateExpired:
-		r.State = stateExpired
-		return errors.New("waiting for approval in the Perimeter timed out")
-	case stateDenied:
+	if r.State == stateDenied {
 		return errors.New("this request was denied")
-	case stateRefused:
-		return errors.New(strings.Join(r.Deny, "; "))
 	}
-	return nil
+	if r.State == stateApproved || wait.Err() == nil {
+		return nil
+	}
+	r.State = stateExpired
+	return errors.New("waiting for approval in the Perimeter timed out")
 }
 
 // settleRecord marks a record refused when its request fails for a reason other than the owner's answer,
@@ -436,7 +413,10 @@ func (m *monitor) settleRecord(r *record, err error) {
 
 // answerable validates an answer under mu; callers recheck it after pure
 // preparation so a concurrent answer cannot be overwritten by a saved rule.
-func (m *monitor) answerable(id string, input answerInput) (*record, error) {
+func (m *monitor) answerable(id string, input answerInput, revision uint64) (*record, error) {
+	if revision != m.store.Doc.Revision {
+		return nil, errPolicyConflict
+	}
 	choices := []string{answerOnce, answerSave, answerDeny}
 	if !slices.Contains(choices, input.Choice) {
 		return nil, fmt.Errorf("decision must be one of %s", strings.Join(choices, ", "))
@@ -448,17 +428,13 @@ func (m *monitor) answerable(id string, input answerInput) (*record, error) {
 	if r == nil {
 		return nil, fmt.Errorf("no request %s", id)
 	}
-	if r.State == statePending && !r.Expires.IsZero() && !time.Now().Before(r.Expires) {
-		r.State = stateExpired
-		close(r.answered)
-	}
 	if r.State != statePending && !(r.State == stateExpired && input.Choice == answerSave) {
 		return nil, fmt.Errorf("request %s is %s", id, r.State)
 	}
 	return r, nil
 }
 
-func (m *monitor) answerRequest(ctx context.Context, id string, input answerInput) error {
+func (m *monitor) answerRequest(ctx context.Context, id string, input answerInput, revision uint64) error {
 	input.Reason = strings.TrimSpace(input.Reason)
 	m.mu.Lock()
 	r := m.findRecord(id)
@@ -468,7 +444,7 @@ func (m *monitor) answerRequest(ctx context.Context, id string, input answerInpu
 		m.writes.Lock()
 		defer m.writes.Unlock()
 		m.mu.Lock()
-		r, err := m.answerable(id, input)
+		r, err := m.answerable(id, input, revision)
 		var change config.Change
 		if err == nil && input.Choice == answerSave {
 			change, err = m.ruleChange(r)
@@ -482,7 +458,7 @@ func (m *monitor) answerRequest(ctx context.Context, id string, input answerInpu
 			changes = []config.Change{change}
 		}
 		err = m.writeSettings(ctx, settingsWrite{changes: changes, check: func() error {
-			current, err := m.answerable(id, input)
+			current, err := m.answerable(id, input, revision)
 			if err == nil && current != r {
 				return errRecordGone
 			}
@@ -500,7 +476,7 @@ func (m *monitor) answerRequest(ctx context.Context, id string, input answerInpu
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	r, err := m.answerable(id, input)
+	r, err := m.answerable(id, input, revision)
 	if err != nil {
 		return err
 	}
@@ -509,7 +485,7 @@ func (m *monitor) answerRequest(ctx context.Context, id string, input answerInpu
 	if input.Choice == answerDeny {
 		r.State = stateDenied
 	}
-	close(r.answered)
+	m.cond.Broadcast()
 	if r.Changes != nil {
 		m.settleRecord(r, nil)
 	}
@@ -518,11 +494,9 @@ func (m *monitor) answerRequest(ctx context.Context, id string, input answerInpu
 
 func (r *record) committed(answer reviewAnswer) {
 	if r.State == statePending {
-		close(r.answered)
-	}
-	r.State, r.Deny = stateRefused, []string{errRuleSaved.Error()}
-	if r.Changes != nil {
-		r.State, r.Deny = stateApproved, nil
+		r.State = stateApproved
+	} else {
+		r.State, r.Deny = stateRefused, []string{errRuleSaved.Error()}
 	}
 	answer.Time = time.Now()
 	r.Reviews = append(r.Reviews, answer)

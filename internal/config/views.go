@@ -97,33 +97,6 @@ func (c *Config) ProposalChanges(p Principal, changes []Change) (map[string][]Ch
 	return groups, nil
 }
 
-// ProposalScope digests the settings one connection's proposal was reviewed against.
-// The proposer and edited identities also bind their keys and route access, so a
-// pending proposal cannot outlive its authority or move to a replacement principal.
-func (c *Config) ProposalScope(proposer string, changes []Change) string {
-	connection, _ := ProposalTarget(changes[0].Path)
-	targeted := map[string]bool{proposer: true}
-	for _, change := range changes {
-		if change.Path[0] == "identities" {
-			targeted[change.Path[1]] = true
-		}
-	}
-	identities := map[string]any{}
-	for name, identity := range c.Identities {
-		if c.Access(name, connection).Level != "" || len(identity.rulesFor(connection)) != 0 || targeted[name] {
-			key := ""
-			if targeted[name] {
-				key = identity.Key
-			}
-			identities[name] = []any{key, identity.Operator, c.Authority(name, connection)}
-		}
-	}
-	settings, exists := c.Connections[connection]
-	fallback, fallbackExists := c.DefaultAccess[connection]
-	raw, _ := json.Marshal([]any{exists, settings.Setup, fallbackExists, fallback, identities, c.AllowNetworks, c.Policies, c.Data})
-	return fmt.Sprintf("%x", sha256.Sum256(raw))
-}
-
 // Catalog is a control presentation, never an authorization or runtime registry.
 func (c *Config) Catalog() (map[string]presets.Entry, string, error) {
 	shipped, err := presets.Shipped()
@@ -164,15 +137,4 @@ func (c *Config) EffectModes(agent, connection string, op *facts.Operation) map[
 		maps.Copy(modes, overrides)
 	}
 	return modes
-}
-
-// Authority encodes the settings an agent's requests on a connection are decided with,
-// apart from the request, the prepared policy program and the connector setup. Setup
-// equality already covers preset protocol data, action effects and public scope;
-// effect settings appear only as resolved modes.
-func (c *Config) Authority(agent, connection string) json.RawMessage {
-	settings, access := c.Connections[connection], c.Access(agent, connection)
-	settings.Effects, settings.Setup, access.Effects = nil, nil, nil
-	raw, _ := json.Marshal([]any{c.Lattices, c.AllowPaidInference, access, c.EffectModes(agent, connection, nil), c.Identities[agent].rulesFor(connection), settings})
-	return raw
 }

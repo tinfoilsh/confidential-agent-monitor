@@ -8,6 +8,7 @@ const preset = (name: string) => JSON.parse(
 const tcp = preset("tcp");
 const view = (): owner.View => ({
   generation: 1,
+  revision: 1,
   host_key: "",
   host_id: "",
   ca: "",

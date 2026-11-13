@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"maps"
-	"reflect"
 	"slices"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
@@ -151,11 +150,6 @@ func (c *Config) Accesses(agent string) map[string]Access {
 func (c *Config) Reaches(agent, connection string) bool {
 	level := c.Access(agent, connection).Level
 	return level != "" && level != "off"
-}
-
-// SameProgram compares preparation inputs, not the persisted approval program hash.
-func (c *Config) SameProgram(old *Config) bool {
-	return old != nil && c.Lattices == old.Lattices && reflect.DeepEqual(c.Data, old.Data) && reflect.DeepEqual(c.Policies, old.Policies)
 }
 
 // Spec projects only this connection's setup; the returned definition remains opaque.

@@ -15,7 +15,7 @@ defaults, and permission actions. Field paths are relative to the connection. A
 Protocol definitions have their own sections:
 
 - `http.operations` maps operation IDs to reviewed HTTP operations, including GraphQL matchers. IDs also determine candidate evaluation order; ambiguous matches are rejected.
-- An operation's optional `path_patterns` maps capture names to Go regular expressions. Each expression must match the entire captured value and is checked before ambiguity detection. Unknown capture names and invalid expressions fail compilation. For example, `"path_patterns": {"release_id": "[0-9]+"}` keeps GitHub release-by-ID requests distinct from `/releases/latest`. This is a matching constraint, not a scope type conversion; extracted IDs remain strings. Literal routes do not automatically outrank parameter routes. Constraints participate in the approval definition hash and require a Perimeter version supporting this field.
+- An operation's optional `path_patterns` maps capture names to Go regular expressions. Each expression must match the entire captured value and is checked before ambiguity detection. Unknown capture names and invalid expressions fail compilation. For example, `"path_patterns": {"release_id": "[0-9]+"}` keeps GitHub release-by-ID requests distinct from `/releases/latest`. This is a matching constraint, not a scope type conversion; extracted IDs remain strings. Literal routes do not automatically outrank parameter routes. Constraints require a Perimeter version supporting this field.
 - `http.slots` requires requests to stay within the connection's configured API addresses.
 - `http.sensitive_query` lists high-entropy bearer query values to fingerprint before capture, including unknown or invalid requests. Extracted parameters see the same fingerprints, preserving approval distinctions without retaining the credentials. Literal query-value matchers cannot use these fields.
 - `mcp.scope` selects service resource identifiers from MCP tool arguments.
@@ -60,7 +60,7 @@ The shared `facts` package defines the snapshot, owns label
 observation, and supplies label ordering and the effect vocabulary. The same
 effect vocabulary drives preset validation and the app's permission display.
 Go computes `operation.obligations` and `operation.lineage` for Rego to read.
-These facts are included in each operation's approval definition hash. `facts.Details` has typed fields for each protocol, such as
+`facts.Details` has typed fields for each protocol, such as
 `f.Details.HTTP.Method` and `f.Details.MCP.Arguments`. Protocol data types live in
 `facts`; parsing and description methods stay in their connectors. A new protocol
 adds its detail type to `facts`.
@@ -108,9 +108,9 @@ Owner policies remain in `config.policies`. They can deny requests or require
 approval using both common and protocol-specific facts. They do not supply
 operation descriptions.
 Unknown requests have a null operation and require approval; malformed or
-ambiguous matches are refused. Approval grants and definition hashes stay
+ambiguous matches are refused. Approval grants stay
 outside the facts snapshot. Decisions contain `facts`, `deny`, `requirements`, `next`,
-`grant`, and `definition`; the app reads operation, title, parameters, principal,
+and `grant`; the app reads operation, title, parameters, principal,
 connection, and the current label from `facts`. Audit records add lifecycle fields
 without duplicating those facts.
 
@@ -153,11 +153,11 @@ built-in checks and cannot override a denial.
 `requirements` contains the remaining `{id, message}` objects, including
 explanations for built-in requirements. Saved rules carry the same collection;
 only each requirement's ID grants authority. Messages are for display.
-Saved approvals waive IDs for the same operation, scope, and definition.
+Saved approvals waive IDs for the same facts version, connection, operation, and scope.
 Use a stable ID for each requirement. A new requirement that appears while a
 request waits cannot be covered by an approval of the earlier requirements.
-Policy and data edits invalidate saved approvals through the existing definition
-hash, including edits to literal messages in policy source.
+Saved approvals survive policy and data edits: a requirement they do not name
+still asks. An edit to a connection's setup or preset removes its saved approvals.
 
 Approval rules can inspect `data.perimeter.base_gaps`, the remaining built-in
 requirements after saved waivers. Denial rules can inspect `data.perimeter.gaps`,
@@ -191,16 +191,13 @@ Go computes `next` by joining the current label with the observation.
 Admission leaves the current label unchanged. Observations continue to
 record both label axes when their enforcement switches are off.
 
-Saved approvals bind the selected operation, effects, scope, disclosure, relevant
-preset definitions, connection settings, and policy program. Current labels and
-display titles do not change that binding. A changed operation or configuration
-cannot resume under an earlier approval. This schema replaces the old top-level
+Saved approvals name their connection, operation, scope, and the requirement IDs
+they waive; a disclosure requirement's ID names its audience. This schema replaces the old top-level
 `operations`, `http_slots`, and `mcp_scope` fields without compatibility aliases.
-Custom policies must use the facts paths above. Existing saved approvals do not
-apply to the new facts version.
+Custom policies must use the facts paths above.
 
-`facts.Version` versions the public snapshot schema and binds compiled Go
-behavior into every approval definition. Bump it when parsing, description,
+`facts.Version` versions the public snapshot schema and is recorded in every
+saved approval. Bump it when parsing, description,
 normalization, label, or approval semantics change, even if the facts schema and
 Rego sources stay the same. Display-only changes do not require a bump. A version
 change invalidates earlier saved approvals.
@@ -213,7 +210,7 @@ remain unknown.
 For an API without a preset, choose **Add connection → API → Custom API**. Its API
 address limits requests to the configured origin and path. Permissions cover all
 requests within that address, including changes and deletions. There is no
-read-only access option. Saved approvals bind the origin and connection settings.
+read-only access option.
 
 API catalogs use resource parents and capability leaves. The most specific
 permission override wins. The connection and agent views display the same hierarchy.

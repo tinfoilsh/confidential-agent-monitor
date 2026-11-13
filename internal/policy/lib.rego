@@ -112,7 +112,10 @@ needs_trust if obligation("trust")
 
 gap contains "ask" if mode != "allow"
 
-gap contains "audience" if {
+# A waiver of this gap covers only the audience it was approved for.
+audience_gap := concat(".", ["audience", sends])
+
+gap contains audience_gap if {
 	data.lattices.confidentiality
 	not audiences[sends] <= audiences[f.context.label.audience]
 }
@@ -123,11 +126,14 @@ gap contains "trust" if {
 	needs_trust
 }
 
+waived contains id if some id in a.approved
+
 waived contains w if {
 	some r in a.rules
 	object.get(r, "enabled", true)
+	r.version == f.version
 	r.connection == f.connection
-	r.definition == a.definition
+	r.operation == op.id
 	r.scope == a.grant
 	some requirement in r.requirements
 	w := requirement.id
@@ -164,7 +170,7 @@ recipients := {"me": "you", "team": "your team", "anyone": "anyone"}
 
 builtin_messages := {
 	"ask": ask_message,
-	"audience": sprintf("This agent has seen private data from %s; this request can disclose it to %s.", [object.get(because, "audience", "an earlier request"), object.get(recipients, sends, "an unknown audience")]),
+	audience_gap: sprintf("This agent has seen private data from %s; this request can disclose it to %s.", [object.get(because, "audience", "an earlier request"), object.get(recipients, sends, "an unknown audience")]),
 	"trust": sprintf("This agent has read untrusted content from %s; this operation requires trust.", [object.get(because, "trust", "an earlier request")]),
 }
 

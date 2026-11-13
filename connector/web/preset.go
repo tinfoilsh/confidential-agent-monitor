@@ -2,7 +2,6 @@ package web
 
 import (
 	"crypto/sha256"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"maps"
@@ -395,7 +394,6 @@ type compiledOperation struct {
 	params       map[string]bool
 	fields       map[string]func(any) (any, bool)
 	headers      []headerCondition
-	definition   json.RawMessage
 }
 
 type routeKey struct{ origin, method string }
@@ -444,11 +442,7 @@ func (p *Preset) compile() error {
 		if err != nil {
 			return err
 		}
-		definition, err := json.Marshal([]any{o, p.Slots, p.SensitiveQuery})
-		if err != nil {
-			return err
-		}
-		op := &compiledOperation{operation: o, path: parts, pathPatterns: pathPatterns, selectors: selectors, definition: definition,
+		op := &compiledOperation{operation: o, path: parts, pathPatterns: pathPatterns, selectors: selectors,
 			params: map[string]bool{}, fields: map[string]func(any) (any, bool){}}
 		for _, key := range o.Params {
 			op.params[key] = true
@@ -582,7 +576,7 @@ func (p *Preset) Match(r *Request, config *Setup, f facts.Facts) (facts.Facts, e
 	f.Title = fmt.Sprintf("%s: %s", config.Title, o.ID)
 	f.Parameters = parameters
 	f.Context.Sends = o.Sends
-	f.Scope, f.Definition = grant, matched.definition
+	f.Scope = grant
 	return f, err
 }
 

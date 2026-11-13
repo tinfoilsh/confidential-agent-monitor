@@ -2,10 +2,7 @@ package policy
 
 import (
 	"context"
-	"crypto/sha256"
 	_ "embed"
-	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"maps"
@@ -27,11 +24,9 @@ type Decision struct {
 	Next         facts.Label         `json:"next"`
 }
 
-// Engine is a prepared policy. Program hashes the facts version, library, policies and data;
-// lattices and facts levels are not in it, so callers that persist decisions add them.
+// Engine is a prepared policy.
 type Engine struct {
-	Program string
-	query   rego.PreparedEvalQuery
+	query rego.PreparedEvalQuery
 }
 
 func Prepare(ctx context.Context, data map[string]any, policies map[string]string, confidentiality, integrity bool) (*Engine, error) {
@@ -49,8 +44,6 @@ func Prepare(ctx context.Context, data map[string]any, policies map[string]strin
 	store["lattices"] = map[string]any{"confidentiality": confidentiality, "integrity": integrity}
 	opts := []func(*rego.Rego){rego.Query("data.perimeter.decision"), rego.Module("perimeter/lib.rego", library),
 		rego.Store(inmem.NewFromObjectWithOpts(store, inmem.OptReturnASTValuesOnRead(true))), rego.StrictBuiltinErrors(true)}
-	h := sha256.New()
-	fmt.Fprintf(h, "facts-v%d%q%q", facts.Version, "perimeter/lib.rego", library)
 	for _, name := range slices.Sorted(maps.Keys(policies)) {
 		filename := "policies/" + name
 		module, err := ast.ParseModule(filename, policies[name])
@@ -62,19 +55,13 @@ func Prepare(ctx context.Context, data map[string]any, policies map[string]strin
 				return nil, fmt.Errorf("policy %s: data.%s is reserved for the Perimeter", name, r)
 			}
 		}
-		fmt.Fprintf(h, "%q%q", filename, policies[name])
 		opts = append(opts, rego.ParsedModule(module))
 	}
-	raw, err := json.Marshal(data)
-	if err != nil {
-		return nil, err
-	}
-	h.Write(raw)
 	query, err := rego.New(opts...).PrepareForEval(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return &Engine{Program: hex.EncodeToString(h.Sum(nil)), query: query}, nil
+	return &Engine{query: query}, nil
 }
 
 func (e *Engine) Decide(ctx context.Context, input map[string]any) (Decision, error) {

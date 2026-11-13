@@ -33,6 +33,7 @@ var ErrOwner = errors.New("invalid owner secret")
 type Document struct {
 	Version     int                    `json:"version"`
 	Generation  uint64                 `json:"generation"`
+	Revision    uint64                 `json:"revision"` // Counts settings writes; owner writes name the one they reviewed.
 	Keys        Keys                   `json:"keys"`
 	Labels      map[string]facts.Label `json:"labels"`
 	Policy      string                 `json:"policy"`

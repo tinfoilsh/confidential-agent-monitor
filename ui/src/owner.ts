@@ -36,7 +36,6 @@ export type Rule = {
   connection: string;
   action: string;
   operation?: string;
-  definition?: string;
   scope?: Record<string, Json>;
   requirements?: Requirement[];
 };
@@ -105,6 +104,7 @@ export type ConnectionStatus = {
 };
 export type View = {
   generation: number;
+  revision: number;
   catalog_id?: string;
   host_key: string;
   host_id: string;
@@ -152,7 +152,6 @@ export type RequestRecord = {
   deny?: string[];
   requirements?: Requirement[];
   grant?: { [key: string]: Json };
-  definition?: string;
   savingDecision?: boolean;
   reviews?: ApprovalAnswer[];
   segment?: string;
@@ -466,6 +465,8 @@ export function ownerApi(
 ): OwnerApi {
   let minimum = generation;
   let catalog: { id: string; presets: Record<string, Preset> } | undefined;
+  // Writes name the settings revision of the last view this client received.
+  let revision = 0;
   const checked = (view: View) => {
     if (minimum !== undefined && view) {
       if (!Number.isSafeInteger(view.generation) || view.generation < minimum)
@@ -473,6 +474,7 @@ export function ownerApi(
       if (view.generation > minimum) advance?.(view.generation);
       minimum = view.generation;
     }
+    if (view) revision = view.revision;
     return view;
   };
   const get = <T>(path: string, signal?: AbortSignal) =>
@@ -539,15 +541,25 @@ export function ownerApi(
         {
           changes: [...changes, ...edits.setPaidInference(true)],
           credentials,
-          generation: view.generation,
+          revision: view.revision,
         },
         signal,
       );
     },
     edit: (changes, credentials, signal) =>
-      snapshot("POST", "/policy/edits", { changes, credentials }, signal),
+      snapshot(
+        "POST",
+        "/policy/edits",
+        { changes, credentials, revision },
+        signal,
+      ),
     decide: (id, decision, signal) =>
-      post(`/requests/${encodeURIComponent(id)}`, { decision }, signal),
+      snapshot(
+        "POST",
+        `/requests/${encodeURIComponent(id)}`,
+        { decision, revision },
+        signal,
+      ).then(() => null),
     enroll: (identities, signal) =>
       snapshot("POST", "/enroll", identities, signal),
     signIn: (connection, name, redirect, credential, signal) =>
@@ -747,14 +759,13 @@ export const requestTitle = (r: RequestRecord): string =>
 // Requirements worth showing. "ask" is what pending already means, and the
 // audience/trust label gates are a data-flow feature nobody set up on
 // purpose; what remains is effect overrides and unrecognised operations.
-const quietRequirements = new Set<string | undefined>([
-  "ask",
-  "audience",
-  "trust",
-]);
+const quietRequirements = ["ask", "audience", "trust"];
 export const reasons = (r: { requirements?: Requirement[] }) =>
   (r.requirements ?? [])
-    .filter((requirement) => !quietRequirements.has(requirement.id))
+    .filter(
+      (requirement) =>
+        !quietRequirements.includes(requirement.id?.split(".")[0] ?? ""),
+    )
     .map((requirement) => requirement.message);
 // A pending request past its deadline is expired, even before the next poll says so.
 export const stateAt = (r: RequestRecord, now: number): RequestState =>
@@ -815,8 +826,8 @@ export function grantText(
   );
 }
 export const saveText = (r: RequestRecord) =>
-  `${grantText(r.facts?.operation?.id, r.grant, r.facts?.parameters)} on future attempts. Retry this request after saving.`;
-// Saving a rule never resumes the original call; it also works after a timeout.
+  `${grantText(r.facts?.operation?.id, r.grant, r.facts?.parameters)} on ${stateAt(r, Date.now()) === "expired" ? "future attempts. Retry this request after saving." : "this and future attempts."}`;
+// Saving a rule also works after a timeout.
 export function decisions(
   r: RequestRecord,
   now?: number,

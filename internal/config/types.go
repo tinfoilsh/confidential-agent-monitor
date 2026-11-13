@@ -31,29 +31,20 @@ type Identity struct {
 	Rules       map[string]Rule   `json:"rules,omitempty"`
 }
 
-func (id Identity) rulesFor(connection string) map[string]Rule {
-	rules := map[string]Rule{}
-	for name, rule := range id.Rules {
-		if rule.Connection == connection {
-			rules[name] = rule
-		}
-	}
-	return rules
-}
-
 type Access struct {
 	Level   string            `json:"level"`
 	Actions map[string]string `json:"actions,omitempty"`
 	Effects map[string]string `json:"effects,omitempty"`
 }
 
-// A rule waives requirements for one operation under the definition the owner approved.
+// A rule waives the requirements it names for one operation and scope.
 type Rule struct {
 	Enabled      *bool               `json:"enabled,omitempty"`
+	Version      int                 `json:"version"` // facts.Version it was approved under.
 	Connection   string              `json:"connection"`
 	Action       string              `json:"action"`
 	Operation    string              `json:"operation,omitempty"`
-	ApprovalKey  string              `json:"definition,omitempty"`
+	Definition   string              `json:"definition,omitempty"` // Read from rules saved before Version; never matched.
 	Scope        map[string]any      `json:"scope"`
 	Requirements []facts.Requirement `json:"requirements"`
 }
