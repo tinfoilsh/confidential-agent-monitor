@@ -23,6 +23,7 @@ import (
 
 const (
 	offlineAccess     = "offline_access"
+	httpsPort         = "443"
 	maxDeviceExpiry   = 24 * time.Hour
 	maxDeviceInterval = 3600
 )
@@ -304,7 +305,7 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 		}
 		// Metadata covers its resource and the paths beneath it on the same origin.
 		named, err := url.Parse(prm.Resource)
-		if err != nil || secure(prm.Resource) != nil || named.Host != u.Host || !strings.HasPrefix(strings.TrimSuffix(u.Path, "/")+"/", strings.TrimSuffix(named.Path, "/")+"/") {
+		if err != nil || secure(prm.Resource) != nil || !strings.EqualFold(named.Hostname(), u.Hostname()) || cmp.Or(named.Port(), httpsPort) != cmp.Or(u.Port(), httpsPort) || !strings.HasPrefix(strings.TrimSuffix(u.Path, "/")+"/", strings.TrimSuffix(named.Path, "/")+"/") {
 			continue
 		}
 		if len(prm.AuthorizationServers) == 0 {
@@ -318,10 +319,15 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 	}
 	asm, err := auth.GetAuthServerMetadata(ctx, server, s.client)
 	// Metadata naming another issuer leads to it, and that issuer's own metadata must name itself.
-	var other oauthex.AuthServerMeta
-	if a, _ := url.Parse(server); err != nil && s.getJSON(ctx, a.Scheme+"://"+a.Host+"/.well-known/oauth-authorization-server"+a.Path, &other) && other.Issuer != "" && secure(other.Issuer) == nil {
-		server = strings.TrimSuffix(other.Issuer, "/")
-		asm, err = auth.GetAuthServerMetadata(ctx, server, s.client)
+	if a, _ := url.Parse(server); err != nil {
+		for _, m := range []string{"/.well-known/oauth-authorization-server" + a.Path, "/.well-known/openid-configuration" + a.Path, a.Path + "/.well-known/openid-configuration"} {
+			var other oauthex.AuthServerMeta
+			if s.getJSON(ctx, a.Scheme+"://"+a.Host+m, &other) && other.Issuer != "" && secure(other.Issuer) == nil {
+				server = strings.TrimSuffix(other.Issuer, "/")
+				asm, err = auth.GetAuthServerMetadata(ctx, server, s.client)
+				break
+			}
+		}
 	}
 	if err != nil {
 		return err
