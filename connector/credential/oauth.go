@@ -55,8 +55,16 @@ type oauth struct {
 	AuthStyle       string                `json:"auth_style,omitempty"`
 	TokenType       string                `json:"token_type,omitempty"`
 	Loopback        bool                  `json:"loopback,omitempty"`
+	DefaultClient   *defaultClient        `json:"default_client,omitempty"`
 	AccessToken     string                `json:"access_token,omitempty"`
 	Expiry          time.Time             `json:"expiry,omitzero"`
+}
+
+// A preset's own OAuth app signs in when the owner names no client.
+type defaultClient struct {
+	ClientID     string `json:"client_id"`
+	ClientSecret string `json:"client_secret,omitempty"`
+	Loopback     bool   `json:"loopback,omitempty"`
 }
 
 // These parameters apply until the authorization callback issues a client ID.
@@ -146,6 +154,9 @@ func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage,
 		return nil, errors.New("the secret is not an oauth grant")
 	}
 	s := &SignIn{State: rand.Text(), grant: *v.grant, client: client, verifier: oauth2.GenerateVerifier()}
+	if c := s.grant.DefaultClient; c != nil && s.grant.ClientID == "" {
+		s.grant.ClientID, s.grant.ClientSecret, s.grant.Loopback = c.ClientID, c.ClientSecret, s.grant.Loopback || c.Loopback
+	}
 	if s.grant.DeviceAuthURL != "" {
 		config := s.grant.config("")
 		s.config = &config

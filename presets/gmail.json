@@ -289,11 +289,13 @@
     },
     "fields": [
       {
+        "hint": "Leave empty to use Tinfoil's app",
         "key": "client_id",
         "label": "Google OAuth client ID",
         "paths": []
       },
       {
+        "hint": "Leave empty to use Tinfoil's app",
         "key": "client_secret",
         "label": "Google OAuth client secret",
         "paths": [],
@@ -306,6 +308,11 @@
           "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
           "client_id": "{client_id}",
           "client_secret": "{client_secret}",
+          "default_client": {
+            "client_id": "528125212435-0uabuav4ekdsg0hi94ansdcmqbbtfr1r.apps.googleusercontent.com",
+            "client_secret": "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",
+            "loopback": true
+          },
           "prompt": "consent",
           "scope": "https://www.googleapis.com/auth/gmail.modify",
           "token_url": "https://oauth2.googleapis.com/token"
