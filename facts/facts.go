@@ -31,9 +31,13 @@ const (
 )
 
 type Principal struct {
-	Key  string `json:"key"`
-	Name string `json:"name"`
+	Key    string   `json:"key"`
+	Name   string   `json:"name"`
+	Groups []string `json:"groups,omitempty"`
 }
+
+// Same reports whether p and q are one identity, whatever their groups.
+func (p Principal) Same(q Principal) bool { return p.Key == q.Key && p.Name == q.Name }
 
 type Label struct {
 	Audience string            `json:"audience"`

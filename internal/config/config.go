@@ -118,16 +118,12 @@ func Fingerprint(authorizedKey string) (string, error) {
 
 func (c *Config) Principal(key string) (Principal, bool) {
 	name, ok := c.Principals[key]
-	return Principal{Key: key, Name: name}, ok
+	return Principal{Key: key, Name: name, Groups: c.Identities[name].Groups}, ok
 }
 
 // An explicit level replaces defaults; an omitted level inherits and overlays them.
 func (c *Config) Access(agent, connection string) Access {
-	id, ok := c.Identities[agent]
-	if !ok {
-		return Access{}
-	}
-	a := id.Connections[connection]
+	a := c.Identities[agent].Connections[connection]
 	if a.Level == "" {
 		base := c.DefaultAccess[connection]
 		a.Level = base.Level

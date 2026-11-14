@@ -40,12 +40,16 @@ func (w settingsWrite) checked() error {
 
 // writeSettings is the single ordered settings path; writes is held, mu is not.
 func (m *monitor) writeSettings(ctx context.Context, w settingsWrite) error {
+	if m.policyFile != "" && (w.source != nil || len(w.changes) != 0) {
+		return errPolicyFile
+	}
 	m.mu.Lock()
 	source, current, err := m.store.Doc.Policy, m.settings.Load(), w.checked()
 	m.mu.Unlock()
 	if err != nil {
 		return err
 	}
+	before := source
 	if w.source != nil {
 		source = *w.source
 	}
@@ -62,6 +66,9 @@ func (m *monitor) writeSettings(ctx context.Context, w settingsWrite) error {
 	if err = w.checked(); err == nil {
 		install, retired, err = m.commitSettings(ctx, plan, w.saved)
 	}
+	if source != before || len(w.credentials) != 0 {
+		m.recordAdmin(ctx, "Change settings", map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(before, source)}, "credentials": slices.Sorted(maps.Keys(w.credentials))}, err)
+	}
 	m.mu.Unlock()
 	if err == nil {
 		m.installConnections(install, retired)
@@ -70,6 +77,8 @@ func (m *monitor) writeSettings(ctx context.Context, w settingsWrite) error {
 }
 
 var errPolicyConflict = errors.New("policy changed; reload it and review a new diff before applying")
+
+var errPolicyFile = refused("the policy is loaded from a file; change it there")
 
 // reviewed checks, under mu, that an owner write naming a revision was made against current settings.
 func (m *monitor) reviewed(revision *uint64) func() error {
@@ -137,7 +146,7 @@ func (r *record) receipt() proposalReceipt {
 // proposal renders p's changes to one connection against source for review. It
 // fails when they no longer apply, change nothing, or p may not propose them.
 func (st *settings) proposal(source string, p config.Principal, target, reason string, changes []config.Change) (string, json.RawMessage, error) {
-	if current, ok := st.Principal(p.Key); !ok || current != p {
+	if current, ok := st.Principal(p.Key); !ok || !current.Same(p) {
 		return "", nil, errNoAgent
 	}
 	if _, err := st.ProposalChanges(p, changes); err != nil {
@@ -179,6 +188,9 @@ func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalI
 	if len(changes) == 0 || len(changes) > maxProposalChanges {
 		return nil, fmt.Errorf("proposal must contain 1-%d changes", maxProposalChanges)
 	}
+	if m.policyFile != "" {
+		return nil, errPolicyFile
+	}
 	m.writes.Lock()
 	defer m.writes.Unlock()
 	base, before := m.snapshot()
@@ -213,7 +225,7 @@ func (m *monitor) proposePolicy(ctx context.Context, key string, input proposalI
 			continue
 		}
 		f := r.summary().Facts
-		if _, again := groups[f.Connection]; again && f.Principal == p {
+		if _, again := groups[f.Connection]; again && f.Principal.Same(p) {
 			replaced = append(replaced, r)
 		} else {
 			pending++
@@ -256,7 +268,7 @@ func (m *monitor) enrollmentChanges(input map[string]identityEnrollment) ([]conf
 		if err != nil {
 			return nil, err
 		}
-		if principal, ok := m.settings.Load().Principal(fingerprint); ok {
+		if principal, ok := m.settings.Load().Config.Principal(fingerprint); ok {
 			existing := m.settings.Load().Identities[principal.Name]
 			if id.Operator && !existing.Operator {
 				if !id.Restore {

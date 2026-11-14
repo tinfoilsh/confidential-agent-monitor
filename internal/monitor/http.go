@@ -18,15 +18,14 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/coder/websocket"
 	"github.com/klauspost/compress/gzhttp"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/facts"
 	"github.com/tinfoilsh/monitor/internal/config"
+	"github.com/tinfoilsh/monitor/internal/policy"
 	"github.com/tinfoilsh/monitor/internal/store"
-	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
 	"github.com/tinfoilsh/monitor/presets"
 	"golang.org/x/crypto/ssh"
@@ -34,6 +33,8 @@ import (
 
 const (
 	maxDocumentBytes = 16 << 20
+	// Base64 inflates the call by a third.
+	MaxCallBytes     = 2 * maxDocumentBytes
 	maxAgentBytes    = 96 << 10
 	sandboxRelayPath = "/sandboxes/relay"
 )
@@ -55,28 +56,11 @@ type editsInput struct {
 	Credentials store.Secrets   `json:"credentials,omitempty"`
 }
 
-// HTTPHandler serves the owner API on the local listener; nil devFiles uses embedded assets.
-func (m *monitor) HTTPHandler(devFiles http.Handler) http.Handler {
-	mux := http.NewServeMux()
-	if m.ownerPublicKey != nil {
-		mux.Handle("GET /healthz", m.ownerAPI)
-		// Base64 inflates the call by a third.
-		mux.Handle("GET /owner/ws", &ownerauth.Handler{Key: m.ownerPublicKey, SessionKey: m.sessionKey, MaxBytes: 2 * maxDocumentBytes, API: m.ownerAPI, Generation: m.generation,
-			Relay: func(ctx context.Context, instance string) (*websocket.Conn, error) {
-				return m.forwards.DialOwner(ctx, instance)
-			}})
-		return mux
-	}
-	m.registerOwnerRoutes(mux)
-	m.registerOwnerApp(mux, "bearer", devFiles)
-	return mux
-}
-
-// newOwnerAPI is shared by authenticated SSH and Noise session transports.
-func (m *monitor) newOwnerAPI() http.Handler {
+// AdminAPI serves the admin routes and the app; nil files uses embedded assets.
+func (m *monitor) AdminAPI(mode string, files http.Handler) http.Handler {
 	mux := http.NewServeMux()
 	m.registerOwnerRoutes(mux)
-	m.registerOwnerApp(mux, "ssh", nil)
+	m.registerOwnerApp(mux, mode, files)
 	return mux
 }
 
@@ -86,7 +70,7 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 			State string `json:"state,omitempty"`
 		}
 		// Only owners learn whether state exists; the probe reads storage.
-		if _, owner := ownerauth.FromContext(r.Context()); owner {
+		if _, owner := callerFrom(r.Context()); owner {
 			m.mu.Lock()
 			current := m.store
 			m.mu.Unlock()
@@ -99,24 +83,20 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 		return health, nil
 	}))
 	mux.Handle("POST /unlock", JSONHandler(maxDocumentBytes, func(r *http.Request, req unlockInput) (any, error) {
+		caller, err := m.caller(r)
 		key := req.StorageKey
-		if m.ownerPublicKey != nil {
-			session, ok := ownerauth.FromContext(r.Context())
-			if !ok {
-				return nil, store.ErrOwner
-			}
-			req.Generation = max(req.Generation, session.Minimum)
-		} else {
-			var err error
-			key, err = bearerKey(r)
-			if err != nil {
-				return nil, err
-			}
+		if err == nil && len(key) == 0 {
+			key, err = m.bearerKey(r)
 		}
+		if err != nil {
+			return nil, err
+		}
+		req.Generation = max(req.Generation, caller.Minimum)
 		defer clear(key)
-		initialized, err := m.unlock(r.Context(), key, req.Generation)
+		ctx := WithCaller(r.Context(), caller)
+		initialized, err := m.unlock(ctx, key, req.Generation)
 		if err == nil && req.DeviceKey != "" {
-			err = m.restoreDevice(r.Context(), req.DeviceKey)
+			err = m.restoreDevice(ctx, req.DeviceKey)
 		}
 		view, err := m.viewAfter(r, err)
 		view.Initialized = initialized
@@ -130,27 +110,40 @@ func (m *monitor) registerOwnerRoutes(mux *http.ServeMux) {
 		return m.forwards.Relay(r.Context(), in)
 	})))
 	mux.Handle("POST /labels/{identity}", ownerTx(m, func(r *http.Request, l facts.Label) (any, error) {
-		var fingerprint string
+		var fingerprints []string
 		for key, name := range m.settings.Load().Principals {
 			if name == r.PathValue("identity") {
-				fingerprint = key
+				fingerprints = append(fingerprints, key)
 			}
 		}
-		if fingerprint == "" {
+		// A certified name can be held by several keys, and each key has its own label.
+		for key, c := range m.settings.Load().certified {
+			if c.Name == r.PathValue("identity") {
+				fingerprints = append(fingerprints, key)
+			}
+		}
+		if fingerprints == nil {
 			return nil, fmt.Errorf("no identity %s", r.PathValue("identity"))
 		}
 		if !l.Valid() {
 			return nil, fmt.Errorf("a label needs trust in %v and audience in %v", facts.Trusts, facts.Audiences)
 		}
-		old := m.currentLabel(fingerprint)
-		l.Because = map[string]string{}
-		if l.Trust != cleanLabel.Trust {
-			l.Because["trust"] = cmp.Or(old.Because["trust"], "the owner")
+		var err error
+		for _, fingerprint := range fingerprints {
+			old := m.currentLabel(fingerprint)
+			l.Because = map[string]string{}
+			if l.Trust != cleanLabel.Trust {
+				l.Because["trust"] = cmp.Or(old.Because["trust"], "the owner")
+			}
+			if l.Audience != cleanLabel.Audience {
+				l.Because["audience"] = cmp.Or(old.Because["audience"], "the owner")
+			}
+			if err = m.relabel(r.Context(), fingerprint, l, nil); err != nil {
+				break
+			}
 		}
-		if l.Audience != cleanLabel.Audience {
-			l.Because["audience"] = cmp.Or(old.Because["audience"], "the owner")
-		}
-		if err := m.relabel(r.Context(), fingerprint, l, nil); err != nil {
+		m.recordAdmin(r.Context(), "Set the label of "+r.PathValue("identity"), l, err)
+		if err != nil {
 			return nil, err
 		}
 		return m.view(r)
@@ -275,7 +268,7 @@ func (m *monitor) agentHandler(key string) http.Handler {
 	}))
 	mux.HandleFunc("GET /policy/proposals/{id}", agentTx(m, key, func(r *http.Request, _ struct{}, p config.Principal) (any, error) {
 		record := m.findRecord(r.PathValue("id"))
-		if record == nil || record.Changes == nil || record.summary().Facts.Principal != p {
+		if record == nil || record.Changes == nil || !record.summary().Facts.Principal.Same(p) {
 			return nil, errRecordGone
 		}
 		return record.receipt(), nil
@@ -298,34 +291,86 @@ func ownerTx[T any](m *monitor, fn func(*http.Request, T) (any, error)) http.Han
 // ownerOnly serves the owner without the monitor's lock, for calls that wait on the network.
 func (m *monitor) ownerOnly(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		unlocked := m.settings.Load() != nil
-		var err error
-		if m.ownerPublicKey != nil {
-			if _, ok := ownerauth.FromContext(r.Context()); !ok {
-				err = store.ErrOwner
-			}
-		} else {
-			var key []byte
-			key, err = bearerKey(r)
-			if err == nil && unlocked && !m.store.IsOwner(key) {
-				err = store.ErrOwner
-			}
-		}
-		if err == nil && !unlocked {
+		st := m.settings.Load()
+		caller, err := m.caller(r)
+		if err == nil && st == nil {
 			err = errLocked
+		}
+		caller.route = r.Pattern
+		ctx := WithCaller(r.Context(), caller)
+		if err == nil {
+			err = m.admit(ctx, st.Engine, nil)
 		}
 		if err != nil {
 			responseError(w, err)
 			return
 		}
-		next(w, r)
+		next(w, r.WithContext(ctx))
 	}
 }
 
-// bearerKey reads the owner secret of a request without an owner public key.
-func bearerKey(r *http.Request) ([]byte, error) {
+const Owner = "owner"
+
+// Caller is an authenticated admin request, at the generation its client has saved.
+type Caller struct {
+	Name        string
+	Owner       bool           // Holds the owner key.
+	Claims      map[string]any // Verified by the caller's transport, for policy to read.
+	Minimum     uint64
+	Acknowledge func() error
+	ID          string
+	route       string
+}
+
+// refused is an admin call that policy, or a policy loaded from a file, does not allow.
+type refused string
+
+func (r refused) Error() string { return string(r) }
+func (refused) HTTPStatus() int { return http.StatusForbidden }
+
+// admit asks policy whether the caller in ctx may make its call; subject is the answer and record of an answer.
+func (m *monitor) admit(ctx context.Context, engine *policy.Engine, subject map[string]any) error {
+	c, _ := callerFrom(ctx)
+	call := map[string]any{"caller": map[string]any{"name": c.Name, "owner": c.Owner, "claims": c.Claims}, "route": c.route}
+	maps.Copy(call, subject)
+	input, err := facts.JSON[map[string]any](call)
+	if err != nil {
+		return err
+	}
+	deny, err := engine.AdminDeny(ctx, input)
+	if err == nil && len(deny) != 0 {
+		err = refused(strings.Join(deny, "; "))
+	}
+	return err
+}
+
+type callerKey struct{}
+
+func WithCaller(ctx context.Context, c Caller) context.Context {
+	return context.WithValue(ctx, callerKey{}, c)
+}
+
+func callerFrom(ctx context.Context) (Caller, bool) {
+	c, ok := ctx.Value(callerKey{}).(Caller)
+	return c, ok
+}
+
+func (m *monitor) caller(r *http.Request) (Caller, error) {
+	if c, ok := callerFrom(r.Context()); ok {
+		return c, nil
+	}
+	key, err := m.bearerKey(r)
+	// While locked any well-formed key passes; only unlock can check a key then.
+	if err == nil && m.settings.Load() != nil && !m.store.IsOwner(key) {
+		err = store.ErrOwner
+	}
+	return Caller{Name: Owner, Owner: true}, err
+}
+
+// bearerKey reads the owner secret of a request under StorageKeyAuth.
+func (m *monitor) bearerKey(r *http.Request) ([]byte, error) {
 	token, ok := strings.CutPrefix(r.Header.Get("Authorization"), "Bearer ")
-	if !ok || len(token) > base64.StdEncoding.EncodedLen(store.MaxOwnerKeyBytes) {
+	if !m.storageKeyAuth || !ok || len(token) > base64.StdEncoding.EncodedLen(store.MaxOwnerKeyBytes) {
 		return nil, store.ErrOwner
 	}
 	key, err := base64.StdEncoding.Strict().DecodeString(token)
@@ -374,7 +419,7 @@ func JSONHandler[T any](limit int64, fn func(*http.Request, T) (any, error)) htt
 			responseError(w, err)
 			return
 		}
-		if session, ok := ownerauth.FromContext(r.Context()); ok {
+		if session, ok := callerFrom(r.Context()); ok && session.Acknowledge != nil {
 			if err := session.Acknowledge(); err != nil {
 				responseError(w, err)
 				return

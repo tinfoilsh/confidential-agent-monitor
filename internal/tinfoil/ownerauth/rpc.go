@@ -1,4 +1,4 @@
-// Package ownerauth authenticates bearer, Noise session and SSH owner requests and carries their session context.
+// Package ownerauth authenticates Noise session and SSH owner requests.
 package ownerauth
 
 import (
@@ -16,6 +16,7 @@ import (
 	"filippo.io/edwards25519"
 	"github.com/coder/websocket"
 	"github.com/flynn/noise"
+	"github.com/tinfoilsh/monitor/internal/monitor"
 )
 
 const (
@@ -79,8 +80,8 @@ func (h *Handler) serve(ctx context.Context, call Call) Reply {
 	if call.Method == http.MethodPost {
 		ctx = context.WithoutCancel(ctx)
 	}
-	session := Session{Minimum: call.Generation, Acknowledge: func() error { return nil }, ID: ownerRPCSession}
-	inner := httptest.NewRequestWithContext(NewContext(ctx, session), call.Method, "/", bytes.NewReader(call.Body))
+	session := monitor.Caller{Name: monitor.Owner, Owner: true, Minimum: call.Generation, ID: ownerRPCSession}
+	inner := httptest.NewRequestWithContext(monitor.WithCaller(ctx, session), call.Method, "/", bytes.NewReader(call.Body))
 	inner.URL = target
 	if call.Method == http.MethodPost {
 		inner.Header.Set("Content-Type", "application/json")
@@ -158,22 +159,4 @@ type Generation func() (uint64, bool)
 func (g Generation) stale(minimum uint64) bool {
 	current, unlocked := g()
 	return unlocked && current < minimum
-}
-
-type sessionKey struct{}
-
-// Session is a request authenticated with the owner key, at the generation its owner has saved.
-type Session struct {
-	Minimum     uint64
-	Acknowledge func() error
-	ID          string
-}
-
-func NewContext(ctx context.Context, s Session) context.Context {
-	return context.WithValue(ctx, sessionKey{}, s)
-}
-
-func FromContext(ctx context.Context) (Session, bool) {
-	s, ok := ctx.Value(sessionKey{}).(Session)
-	return s, ok
 }

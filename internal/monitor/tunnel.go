@@ -1,8 +1,10 @@
 package monitor
 
 import (
+	"bytes"
+	"cmp"
 	"context"
-	"crypto/ed25519"
+	"errors"
 	"fmt"
 	"net"
 
@@ -10,7 +12,7 @@ import (
 	"github.com/tinfoilsh/monitor/facts"
 	"github.com/tinfoilsh/monitor/internal/config"
 	"github.com/tinfoilsh/monitor/internal/frontdoor"
-	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
+	"github.com/tinfoilsh/monitor/internal/store"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
 	"golang.org/x/crypto/ssh"
 )
@@ -19,20 +21,37 @@ const fingerprintExtension = "fingerprint"
 const agentHost = config.AgentConnection + connector.Domain
 const agentPort = 80
 
-func (m *monitor) ServeSSH(ln net.Listener) {
+type certifiedKey struct{}
+
+type SSHAdmin interface {
+	Authenticates(ssh.PublicKey) bool
+	ServeChannel(ssh.NewChannel)
+}
+
+func (m *monitor) ServeSSH(ln net.Listener, admin SSHAdmin) {
 	frontdoor.Serve(ln, func() *ssh.ServerConfig {
 		host := m.HostKey()
 		if host == nil {
 			return nil
 		}
 		c := &ssh.ServerConfig{MaxAuthTries: 3, PublicKeyCallback: func(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
-			if raw, ok := key.(ssh.CryptoPublicKey); ok && m.ownerPublicKey != nil {
-				if public, ok := raw.CryptoPublicKey().(ed25519.PublicKey); ok && m.ownerPublicKey.Equal(public) {
-					return &ssh.Permissions{Extensions: map[string]string{"owner": "true"}}, nil
-				}
+			if admin != nil && admin.Authenticates(key) {
+				return &ssh.Permissions{Extensions: map[string]string{"owner": "true"}}, nil
 			}
 			if m.settings.Load() == nil {
 				return nil, errLocked
+			}
+			if cert, ok := key.(*ssh.Certificate); ok && m.identityCA != nil {
+				if cert.CertType != ssh.UserCert || !bytes.Equal(cert.SignatureKey.Marshal(), m.identityCA.Marshal()) || cert.KeyId == "" || cert.ValidBefore == ssh.CertTimeInfinity {
+					return nil, errors.New("an identity certificate must be an expiring user certificate with a key ID from the identity CA")
+				}
+				// Principals carry groups, not logins, so any listed one stands in for the login.
+				if err := new(ssh.CertChecker).CheckCert(cmp.Or(cert.ValidPrincipals...), cert); err != nil {
+					return nil, err
+				}
+				// A certificate is public, so it is stored only once VerifiedPublicKeyCallback has seen its key sign.
+				return &ssh.Permissions{Extensions: map[string]string{fingerprintExtension: ssh.FingerprintSHA256(cert.Key)},
+					ExtraData: map[any]any{certifiedKey{}: store.Certified{Name: cert.KeyId, Groups: cert.ValidPrincipals, ValidBefore: cert.ValidBefore}}}, nil
 			}
 			extensions, err := sandbox.Authenticate(conn, key, m.keyAccess)
 			if err != nil {
@@ -40,6 +59,11 @@ func (m *monitor) ServeSSH(ln net.Listener) {
 			}
 			extensions[fingerprintExtension] = ssh.FingerprintSHA256(key)
 			return &ssh.Permissions{Extensions: extensions}, nil
+		}, VerifiedPublicKeyCallback: func(_ ssh.ConnMetadata, _ ssh.PublicKey, p *ssh.Permissions, _ string) (*ssh.Permissions, error) {
+			if identity, ok := p.ExtraData[certifiedKey{}].(store.Certified); ok {
+				return p, m.certify(context.Background(), p.Extensions[fingerprintExtension], identity)
+			}
+			return p, nil
 		}}
 		c.AddHostKey(host)
 		return c
@@ -47,7 +71,7 @@ func (m *monitor) ServeSSH(ln net.Listener) {
 		if conn.Permissions.Extensions["owner"] == "true" {
 			go ssh.DiscardRequests(reqs)
 			for nc := range chans {
-				go ownerauth.ServeChannel(nc, m.ownerAPI, m.generation)
+				go admin.ServeChannel(nc)
 			}
 			return
 		}

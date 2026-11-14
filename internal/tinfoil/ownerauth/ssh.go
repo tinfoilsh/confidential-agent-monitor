@@ -2,6 +2,7 @@ package ownerauth
 
 import (
 	"context"
+	"crypto/ed25519"
 	"crypto/subtle"
 	"encoding/base64"
 	"errors"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/internal/monitor"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -27,8 +29,23 @@ type channelOptions struct {
 	Generation uint64
 }
 
-// ServeChannel serves api to the owner CLI over one SSH channel.
-func ServeChannel(nc ssh.NewChannel, api http.Handler, generation Generation) {
+type SSH struct {
+	Key        ed25519.PublicKey
+	API        http.Handler
+	Generation Generation
+}
+
+func (o *SSH) Authenticates(key ssh.PublicKey) bool {
+	raw, ok := key.(ssh.CryptoPublicKey)
+	if !ok {
+		return false
+	}
+	public, ok := raw.CryptoPublicKey().(ed25519.PublicKey)
+	return ok && o.Key.Equal(public)
+}
+
+// ServeChannel serves API to the owner CLI over one SSH channel.
+func (o *SSH) ServeChannel(nc ssh.NewChannel) {
 	if nc.ChannelType() != ownerSSHChannel {
 		nc.Reject(ssh.Prohibited, "owner connections only serve the owner UI and API")
 		return
@@ -38,7 +55,7 @@ func ServeChannel(nc ssh.NewChannel, api http.Handler, generation Generation) {
 		nc.Reject(ssh.Prohibited, "invalid owner channel options")
 		return
 	}
-	if generation.stale(options.Generation) {
+	if o.Generation.stale(options.Generation) {
 		nc.Reject(ssh.Prohibited, ErrStaleGeneration.Error())
 		return
 	}
@@ -51,7 +68,7 @@ func ServeChannel(nc ssh.NewChannel, api http.Handler, generation Generation) {
 	defer s.Close()
 	go func() { <-conn.Closed(); s.Close() }()
 	acknowledge := func() error {
-		current, unlocked := generation()
+		current, unlocked := o.Generation()
 		if !unlocked {
 			return nil
 		}
@@ -65,7 +82,7 @@ func ServeChannel(nc ssh.NewChannel, api http.Handler, generation Generation) {
 		}
 		return nil
 	}
-	server := &http.Server{Handler: panel(api, options, acknowledge), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: time.Minute, IdleTimeout: time.Minute, MaxHeaderBytes: 8192}
+	server := &http.Server{Handler: panel(o.API, options, acknowledge), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: time.Minute, IdleTimeout: time.Minute, MaxHeaderBytes: 8192}
 	defer server.Close()
 	server.Serve(connector.Listen(s, s))
 }
@@ -114,7 +131,7 @@ func panel(api http.Handler, options channelOptions, acknowledge func() error) h
 			http.NotFound(w, r)
 			return
 		}
-		r = r.Clone(NewContext(r.Context(), Session{Minimum: options.Generation, Acknowledge: acknowledge, ID: options.Token}))
+		r = r.Clone(monitor.WithCaller(r.Context(), monitor.Caller{Name: monitor.Owner, Owner: true, Minimum: options.Generation, Acknowledge: acknowledge, ID: options.Token}))
 		r.URL.Path = path
 		r.URL.RawPath = ""
 		api.ServeHTTP(w, r)
