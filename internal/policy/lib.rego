@@ -123,26 +123,29 @@ next := {
 	"because": object.union(because, {axis: facts.connection | some axis, _ in lowered}),
 }
 
-default owner_deny := []
+# Owner policy is package sentinel. The base policy is package perimeter.base, which owner policy cannot change.
+denies["owner"] := data.sentinel.deny
 
-owner_deny := data.sentinel.deny
+denies["base"] := data.perimeter.base.deny
 
-default owner_approvals := []
+collection(x) if is_array(x)
 
-owner_approvals := data.sentinel.approvals
+collection(x) if is_set(x)
 
-approval_collection if is_array(owner_approvals)
-approval_collection if is_set(owner_approvals)
+approvals["owner"] := data.sentinel.approvals
 
-valid_owner_approvals if {
-	approval_collection
-	every r in owner_approvals {
-		regex.match(`^owner\.[a-zA-Z0-9][a-zA-Z0-9_.-]*$`, r.id)
+approvals["base"] := data.perimeter.base.approvals
+
+valid_approvals contains source if {
+	some source, a in approvals
+	collection(a)
+	every r in a {
+		regex.match(sprintf(`^%s\.[a-zA-Z0-9][a-zA-Z0-9_.-]*$`, [source]), r.id)
 		trim_space(r.message) != ""
 	}
 
 	# Repeated identical entries are harmless; conflicting messages for one ID are not.
-	count({r.id | some r in owner_approvals}) == count({r | some r in owner_approvals})
+	count({r.id | some r in a}) == count({r | some r in a})
 }
 
 deny contains "This bunker does not have permission for this action." if mode == "off"
@@ -153,14 +156,17 @@ deny contains sprintf("The %s effect is set to Deny.", [effect]) if {
 }
 
 # Element types are checked when the decision is decoded; a wrong container would deny nothing.
-deny contains "owner policy deny must be a set or array of strings" if {
-	not is_array(owner_deny)
-	not is_set(owner_deny)
+deny contains sprintf("%s policy deny must be a set or array of strings", [source]) if {
+	some source, hook in denies
+	not collection(hook)
 }
 
-deny contains msg if some msg in owner_deny
+deny contains msg if some msg in denies[_]
 
-deny contains "owner policy approvals must be a set or array of {id, message} objects with unique owner.* IDs and nonempty messages" if not valid_owner_approvals
+deny contains sprintf("%s policy approvals must be a set or array of {id, message} objects with unique %s.* IDs and nonempty messages", [source, source]) if {
+	some source, _ in approvals
+	not source in valid_approvals
+}
 
 # A waiver of this gap covers only the audience it was approved for.
 disclosure := concat(".", ["audience", sends])
@@ -219,11 +225,27 @@ requirements contains {"id": id, "message": sprintf("The %s effect requires appr
 }
 
 requirements contains r if {
-	valid_owner_approvals
-	some r in owner_approvals
+	some source in valid_approvals
+	some r in approvals[source]
 	not r.id in waived
 }
 
 gaps contains r.id if some r in requirements
 
 decision := {"deny": deny, "requirements": requirements, "sends": sends, "next": next}
+
+# input is an admin call: its caller and route, plus the answer and record of an answer.
+default admin_allow := false
+
+admin_allow if input.caller.owner
+
+admin_allow if data.perimeter.base.admin_allow == true
+
+admin_deny contains "The base policy does not allow this caller to make this call." if not admin_allow
+
+admin_deny contains "base policy admin_deny must be a set or array of strings" if {
+	hook := data.perimeter.base.admin_deny
+	not collection(hook)
+}
+
+admin_deny contains msg if some msg in data.perimeter.base.admin_deny

@@ -1,5 +1,5 @@
 Each shipped preset has a `<name>.json` record. Connections select it with
-`"preset": "<name>"`. Perimeter accepts only these shipped definitions.
+`"preset": "<name>"`. Perimeter accepts these shipped definitions and those in the `-presets` directory.
 
 For authoring, see [adding protocol presets](../dev/presets/README.md#adding-protocol-presets).
 Provider request definitions live in the JSON files; SDK scenarios and coverage

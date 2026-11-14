@@ -3,7 +3,6 @@ package monitor
 
 import (
 	"context"
-	"crypto/ed25519"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
@@ -11,12 +10,12 @@ import (
 	"io"
 	"maps"
 	"net/http"
+	"os"
 	"slices"
 	"sync"
 	"sync/atomic"
 	"time"
 
-	"github.com/flynn/noise"
 	"github.com/tinfoilsh/monitor/connector"
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/facts"
@@ -38,6 +37,62 @@ type settings struct {
 	Catalog   map[string]presets.Entry
 	CatalogID string
 	connector.Env
+	certified map[string]store.Certified
+}
+
+// A key keeps its label this long after its certificate expires, so a late renewal cannot shed it.
+const certifiedGrace = 24 * time.Hour
+
+// Principal is key's declared identity, or the certificate identity it last authenticated as.
+func (st *settings) Principal(key string) (config.Principal, bool) {
+	if p, ok := st.Config.Principal(key); ok {
+		return p, true
+	}
+	c, ok := st.certified[key]
+	_, declared := st.Identities[c.Name]
+	return config.Principal{Key: key, Name: c.Name, Groups: c.Groups}, ok && !declared && uint64(time.Now().Unix()) < c.ValidBefore
+}
+
+// retire runs under mu before a commit: it forgets certified keys certifiedGrace past expiry, and labels of keys then neither declared nor certified.
+func retire(doc *store.Document, declared map[string]string) {
+	doc.Certified, doc.Labels = maps.Clone(doc.Certified), maps.Clone(doc.Labels)
+	expired := uint64(time.Now().Add(-certifiedGrace).Unix())
+	maps.DeleteFunc(doc.Certified, func(_ string, c store.Certified) bool { return c.ValidBefore <= expired })
+	maps.DeleteFunc(doc.Labels, func(key string, _ facts.Label) bool {
+		_, known := declared[key]
+		_, certified := doc.Certified[key]
+		return !known && !certified
+	})
+}
+
+// certify stores the certificate identity that key authenticated as; mu is not held.
+func (m *monitor) certify(ctx context.Context, key string, identity store.Certified) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	st := m.settings.Load()
+	if st == nil {
+		return errLocked
+	}
+	known, ok := st.certified[key]
+	if _, declared := st.Principals[key]; declared || ok && known.Name == identity.Name && known.ValidBefore == identity.ValidBefore && slices.Equal(known.Groups, identity.Groups) {
+		return nil
+	}
+	if _, taken := st.Identities[identity.Name]; taken {
+		return errors.New("identity name belongs to a declared key")
+	}
+	next := m.store.Doc
+	retire(&next, st.Principals)
+	if next.Certified == nil {
+		next.Certified = map[string]store.Certified{}
+	}
+	next.Certified[key] = identity
+	if err := m.store.Commit(ctx, next); err != nil {
+		return err
+	}
+	published := *st
+	published.certified = next.Certified
+	m.settings.Store(&published)
+	return nil
 }
 
 type connection struct {
@@ -122,12 +177,14 @@ type settingsPlan struct {
 
 type Options struct {
 	Bucket         *blob.Bucket
-	OwnerPublicKey ed25519.PublicKey
-	SessionKey     noise.DHKey
 	HostKey        ssh.Signer
 	Connectors     map[string]connector.Kind
 	Workers        *worker.Local
 	EmbeddedFiles  http.Handler
+	StorageKeyAuth bool
+	Sandboxes      *sandbox.Forwarder
+	IdentityCA     ssh.PublicKey
+	PolicyFile     string
 }
 type admission struct {
 	fingerprint string
@@ -142,44 +199,45 @@ type admission struct {
 // When both are needed, take writes before mu. Connection-map membership changes
 // require both locks, so a reader may hold either; gate only needs mu.
 type monitor struct {
-	workers                 *worker.Local
-	kinds                   map[string]connector.Kind
-	settings                atomic.Pointer[settings]
-	mu                      sync.Mutex
-	writes                  sync.Mutex
-	store                   store.Store
-	connections             map[string]*connection
-	audit                   store.AuditLog[*record]
-	ownerPublicKey          ed25519.PublicKey
-	sessionKey              noise.DHKey
-	sshHostKey              ssh.Signer
-	embeddedFiles, ownerAPI http.Handler
-	forwards                *sandbox.Forwarder
-	streams                 map[*connector.Stream]*admission
-	records                 []*record
-	cond                    sync.Cond
-	signIns                 sync.Map
+	workers        *worker.Local
+	kinds          map[string]connector.Kind
+	settings       atomic.Pointer[settings]
+	mu             sync.Mutex
+	writes         sync.Mutex
+	store          store.Store
+	connections    map[string]*connection
+	audit          store.AuditLog[*record]
+	storageKeyAuth bool
+	sshHostKey     ssh.Signer
+	identityCA     ssh.PublicKey
+	policyFile     string
+	embeddedFiles  http.Handler
+	forwards       *sandbox.Forwarder
+	streams        map[*connector.Stream]*admission
+	records        []*record
+	cond           sync.Cond
+	signIns        sync.Map
 }
 
 func New(o Options) *monitor {
 	m := &monitor{
 		store:          store.Store{Bucket: o.Bucket},
 		audit:          store.AuditLog[*record]{Bucket: o.Bucket},
-		ownerPublicKey: o.OwnerPublicKey,
-		sessionKey:     o.SessionKey,
+		storageKeyAuth: o.StorageKeyAuth,
 		sshHostKey:     o.HostKey,
+		identityCA:     o.IdentityCA,
+		policyFile:     o.PolicyFile,
 		kinds:          o.Connectors,
 		workers:        o.Workers,
 		embeddedFiles:  o.EmbeddedFiles,
-		forwards:       sandbox.NewForwarder(),
+		forwards:       o.Sandboxes,
 		connections:    map[string]*connection{},
 		streams:        map[*connector.Stream]*admission{},
 	}
 	m.cond.L = &m.mu
-	m.ownerAPI = m.newOwnerAPI()
 	return m
 }
-func (m *monitor) generation() (uint64, bool) {
+func (m *monitor) Generation() (uint64, bool) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	return m.store.Doc.Generation, m.settings.Load() != nil
@@ -201,7 +259,7 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (bool,
 	m.writes.Lock()
 	defer m.writes.Unlock()
 	m.mu.Lock()
-	if m.ownerPublicKey != nil && len(key) != store.OwnerKeyBytes {
+	if !m.storageKeyAuth && len(key) != store.OwnerKeyBytes {
 		m.mu.Unlock()
 		return false, store.ErrOwner
 	}
@@ -231,7 +289,15 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (bool,
 			return false, err
 		}
 	}
-	plan, err := m.prepareSettings(ctx, next.Doc.Policy, everyConnector, nil, nil, env)
+	source := next.Doc.Policy
+	if m.policyFile != "" {
+		file, err := os.ReadFile(m.policyFile)
+		if err != nil {
+			return false, err
+		}
+		source = string(file)
+	}
+	plan, err := m.prepareSettings(ctx, source, everyConnector, nil, nil, env)
 	if err != nil {
 		return false, err
 	}
@@ -242,6 +308,7 @@ func (m *monitor) unlock(ctx context.Context, key []byte, minimum uint64) (bool,
 		m.store = base
 	} else {
 		m.audit.SealWith(next.Sealer)
+		m.recordAdmin(ctx, "Unlock", nil, nil)
 	}
 	m.mu.Unlock()
 	if err != nil {
@@ -372,14 +439,15 @@ func (m *monitor) commitSettings(ctx context.Context, plan *settingsPlan, saved 
 			update.credentials[name] = v
 		}
 	}
-	next.Enrolled, next.Labels = maps.Clone(next.Enrolled), maps.Clone(next.Labels)
+	next.Enrolled = maps.Clone(next.Enrolled)
 	if next.Enrolled == nil {
 		next.Enrolled = map[string]bool{}
 	}
 	for key := range plan.next.Principals {
 		next.Enrolled[key] = true
 	}
-	maps.DeleteFunc(next.Labels, func(key string, _ facts.Label) bool { _, ok := plan.next.Principals[key]; return !ok })
+	retire(&next, plan.next.Principals)
+	plan.next.certified = next.Certified
 	next.Revision++
 	// Persist before publishing authority.
 	if err := m.store.Commit(ctx, next); err != nil {

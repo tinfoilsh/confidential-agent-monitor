@@ -7,7 +7,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"log/slog"
 	"maps"
+	"os"
 	"slices"
 	"strings"
 	"time"
@@ -291,6 +293,9 @@ func (m *monitor) ruleChange(r *record) (config.Change, error) {
 	if !exists || p.Name != f.Principal.Name {
 		return config.Change{}, errors.New("the requesting identity was revoked or replaced")
 	}
+	if _, declared := m.settings.Load().Identities[p.Name]; !declared {
+		return config.Change{}, errors.New("an approval for a certified identity cannot be saved as a rule")
+	}
 	return config.Change{Path: []string{"identities", p.Name, "rules", r.ID}, Value: config.Rule{Version: facts.Version, Connection: f.Connection, Action: f.Operation.Action, Operation: f.Operation.ID,
 		Scope: r.Grant, Requirements: slices.Clone(r.Requirements)}}, nil
 }
@@ -411,6 +416,24 @@ func (m *monitor) settleRecord(r *record, err error) {
 	if err := m.audit.Append(r); err != nil {
 		log.Printf("audit record %s: %v", r.ID, err)
 	}
+	events.Info("record", "record", r.summary(), "generation", m.store.Doc.Generation)
+}
+
+// events is the stream a collector reads: one JSON line on stdout for each settled record.
+var events = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+const adminService = "admin"
+
+// recordAdmin audits an admin action and its outcome; the caller holds mu.
+func (m *monitor) recordAdmin(ctx context.Context, title string, details any, err error) {
+	caller, _ := callerFrom(ctx)
+	raw, _, encodeErr := facts.Encode(facts.Facts{Version: facts.Version, Principal: facts.Principal{Name: caller.Name}, Service: adminService,
+		Title: title, Parameters: map[string]any{}, Details: details})
+	if encodeErr != nil {
+		log.Printf("audit admin action %s: %v", title, encodeErr)
+		return
+	}
+	m.settleRecord(m.addRecord(&record{Facts: raw}), err)
 }
 
 // answerable validates an answer under mu; callers recheck it after pure
@@ -438,10 +461,18 @@ func (m *monitor) answerable(id string, input answerInput, revision uint64) (*re
 
 func (m *monitor) answerRequest(ctx context.Context, id string, input answerInput, revision uint64) error {
 	input.Reason = strings.TrimSpace(input.Reason)
+	caller, _ := callerFrom(ctx)
 	m.mu.Lock()
 	r := m.findRecord(id)
 	applies := input.Choice == answerSave || input.Choice == answerOnce && r != nil && r.Changes != nil
+	var refusal error
+	if r != nil {
+		refusal = m.admit(ctx, m.settings.Load().Engine, map[string]any{"answer": input, "record": r})
+	}
 	m.mu.Unlock()
+	if refusal != nil {
+		return refusal
+	}
 	if applies {
 		m.writes.Lock()
 		defer m.writes.Unlock()
@@ -467,7 +498,7 @@ func (m *monitor) answerRequest(ctx context.Context, id string, input answerInpu
 			return err
 		}, saved: &savedAnswer{
 			record: r,
-			answer: reviewAnswer{By: "owner", answerInput: input},
+			answer: reviewAnswer{By: caller.Name, answerInput: input},
 		}})
 		if err == nil && r.Changes != nil {
 			m.mu.Lock()
@@ -482,7 +513,7 @@ func (m *monitor) answerRequest(ctx context.Context, id string, input answerInpu
 	if err != nil {
 		return err
 	}
-	r.Reviews = append(r.Reviews, reviewAnswer{By: "owner", answerInput: input, Time: time.Now()})
+	r.Reviews = append(r.Reviews, reviewAnswer{By: caller.Name, answerInput: input, Time: time.Now()})
 	r.State = stateApproved
 	if input.Choice == answerDeny {
 		r.State = stateDenied

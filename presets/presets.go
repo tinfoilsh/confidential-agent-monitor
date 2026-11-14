@@ -63,17 +63,28 @@ func Lookup(name string) (*Preset, error) {
 	return nil, fmt.Errorf("unknown preset %s", name)
 }
 
+// Extra, when set before the first lookup, adds an organization's own definitions to the shipped ones.
+var Extra fs.FS
+
 var Shipped = sync.OnceValues(func() (map[string]*Preset, error) {
 	out := map[string]*Preset{}
-	files, _ := fs.Glob(Files, "*.json")
-	for _, file := range files {
-		name := strings.TrimSuffix(file, ".json")
-		src, err := fs.ReadFile(Files, file)
-		if err == nil {
-			out[name], err = Decode(src)
+	for _, source := range []fs.FS{Files, Extra} {
+		if source == nil {
+			continue
 		}
-		if err != nil {
-			return nil, fmt.Errorf("preset %s: %w", file, err)
+		files, _ := fs.Glob(source, "*.json")
+		for _, file := range files {
+			name := strings.TrimSuffix(file, ".json")
+			if out[name] != nil {
+				return nil, fmt.Errorf("preset %s is already shipped", file)
+			}
+			src, err := fs.ReadFile(source, file)
+			if err == nil {
+				out[name], err = Decode(src)
+			}
+			if err != nil {
+				return nil, fmt.Errorf("preset %s: %w", file, err)
+			}
 		}
 	}
 	return out, nil

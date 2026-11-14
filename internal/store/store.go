@@ -39,6 +39,14 @@ type Document struct {
 	Policy      string                 `json:"policy"`
 	Credentials Secrets                `json:"credentials,omitempty"`
 	Enrolled    map[string]bool        `json:"enrolled,omitempty"`
+	Certified   map[string]Certified   `json:"certified,omitempty"`
+}
+
+// Certified is the identity an identity CA certificate gave a key fingerprint, until ValidBefore in Unix seconds.
+type Certified struct {
+	Name        string   `json:"name"`
+	Groups      []string `json:"groups,omitempty"`
+	ValidBefore uint64   `json:"valid_before"`
 }
 
 // decodeState reads earlier versions through their migration before accepting a document.

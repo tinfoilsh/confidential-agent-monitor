@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/connector/email"
 	"github.com/tinfoilsh/monitor/connector/mcp"
 	"github.com/tinfoilsh/monitor/connector/mqtt"
@@ -34,8 +35,11 @@ import (
 	"github.com/tinfoilsh/monitor/connector/tinfoil"
 	"github.com/tinfoilsh/monitor/connector/web"
 	"github.com/tinfoilsh/monitor/internal/monitor"
+	"github.com/tinfoilsh/monitor/internal/policy"
 	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
+	"github.com/tinfoilsh/monitor/internal/tinfoil/sandbox"
 	"github.com/tinfoilsh/monitor/internal/worker"
+	"github.com/tinfoilsh/monitor/presets"
 	"github.com/tinfoilsh/monitor/ui"
 	"gocloud.dev/blob"
 	_ "gocloud.dev/blob/fileblob"
@@ -63,6 +67,11 @@ func main() {
 	isolateConnectors := flag.Bool("connector-workers", false, "run all connectors in isolated worker processes")
 	workerRoot := flag.String("worker-root", "/opt/monitor/worker", "prepared read-only filesystem for connector workers")
 	serveWorker := flag.Bool("serve-connector-worker", false, "serve one connector on inherited descriptors")
+	identityCA := flag.String("identity-ca", "", "file holding one SSH CA public key in authorized_keys format; its expiring user certificates name identities and their groups. A label follows the certified key, so the issuer must not certify a second key for a running workload")
+	basePolicy := flag.String("base-policy", "", "Rego file in package perimeter.base; its deny and approvals apply to every decision as owner policy's do, and its admin_allow and admin_deny to every admin call; owner policy cannot change it")
+	policyFile := flag.String("policy-file", "", "TOML policy loaded at each unlock in place of the stored one; the admin API then cannot change the policy")
+	presetDir := flag.String("presets", "", "directory of an organization's own preset definitions, added to the shipped ones")
+	secretDir := flag.String("secrets", "", "directory that file credentials are read from at each use")
 	flag.Parse()
 	if flag.NArg() != 0 {
 		log.Fatal("unexpected server arguments; use the separately installed perimeter client")
@@ -136,21 +145,51 @@ func main() {
 	defer bucket.Close()
 	ln := must(net.Listen("tcp", *listen))
 	defer ln.Close()
+	forwards := sandbox.NewForwarder()
 	options := monitor.Options{
 		Bucket:         bucket,
-		OwnerPublicKey: public,
 		HostKey:        hostSigner,
 		Connectors:     connectorKinds,
 		EmbeddedFiles:  embeddedFiles,
-	}
-	if public != nil {
-		options.SessionKey = must(ownerauth.LoadKey(*sessionKey))
+		StorageKeyAuth: public == nil,
+		Sandboxes:      forwards,
+		PolicyFile:     *policyFile,
 	}
 	if *isolateConnectors {
 		options.Workers = &worker.Local{Root: *workerRoot}
 	}
+	if *identityCA != "" {
+		key, _, _, _, err := ssh.ParseAuthorizedKey(must(os.ReadFile(*identityCA)))
+		if err != nil {
+			log.Fatal(err)
+		}
+		options.IdentityCA = key
+	}
+	if *basePolicy != "" {
+		policy.Base = string(must(os.ReadFile(*basePolicy)))
+		must(policy.Prepare(context.Background(), nil, nil, false, false))
+	}
+	if *presetDir != "" {
+		presets.Extra = os.DirFS(*presetDir)
+		must(fs.Stat(presets.Extra, "."))
+		must(presets.Shipped())
+	}
+	if *secretDir != "" {
+		credential.Files = must(os.OpenRoot(*secretDir))
+	}
 	m := monitor.New(options)
 	defer m.Close()
+	var handler http.Handler
+	var sshAdmin monitor.SSHAdmin
+	if public == nil {
+		handler = m.AdminAPI("bearer", devFiles)
+	} else {
+		admin := m.AdminAPI("ssh", nil)
+		mux := http.NewServeMux()
+		mux.Handle("GET /healthz", admin)
+		mux.Handle("GET /owner/ws", &ownerauth.Handler{Key: public, SessionKey: must(ownerauth.LoadKey(*sessionKey)), MaxBytes: monitor.MaxCallBytes, API: admin, Generation: m.Generation, Relay: forwards.DialOwner})
+		handler, sshAdmin = mux, &ownerauth.SSH{Key: public, API: admin, Generation: m.Generation}
+	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	if *ownerKeyFile != "" {
@@ -162,9 +201,9 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-	go m.ServeSSH(ln)
+	go m.ServeSSH(ln, sshAdmin)
 	go func() {
-		log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, m.HTTPHandler(devFiles)), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
+		log.Fatal((&http.Server{Addr: *api, Handler: allowOrigins(origins, handler), ReadHeaderTimeout: readHeaderTimeout}).ListenAndServe())
 	}()
 	m.RunAudit(ctx)
 }

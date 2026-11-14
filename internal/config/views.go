@@ -54,9 +54,6 @@ func (c *Config) Effective() (string, error) {
 // AgentView is the restricted configuration returned to an agent. Proposals may
 // request broader changes, but never reveal owner-only state.
 func (c *Config) AgentView(p Principal) (map[string]any, error) {
-	if name, ok := c.Principals[p.Key]; !ok || name != p.Name {
-		return nil, errors.New("agent identity changed")
-	}
 	identity := map[string]any{"connections": c.Accesses(p.Name)}
 	if rules := c.Identities[p.Name].Rules; len(rules) != 0 {
 		identity["rules"] = rules

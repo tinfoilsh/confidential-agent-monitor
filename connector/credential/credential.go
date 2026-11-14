@@ -8,6 +8,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -16,7 +18,10 @@ import (
 
 var errNotConfigured = errors.New("credential is not configured")
 
-// Value is a string or an OAuth grant. Disclosure is controlled by field metadata.
+// Files, when set at start, is the one directory that file credentials are read from.
+var Files *os.Root
+
+// Value is a string, an OAuth grant or a file. Disclosure is controlled by field metadata.
 // Client is the guarded client that refreshes the grant; without one, a grant cannot refresh.
 type Value struct {
 	raw     json.RawMessage
@@ -54,12 +59,21 @@ func (v *Value) UnmarshalJSON(raw []byte) error {
 	}
 	var cfg struct {
 		OAuth *oauth `json:"oauth"`
+		File  string `json:"file"`
 	}
 	if err := jsonv2.Unmarshal(raw, &cfg, jsonv2.RejectUnknownMembers(true)); err != nil {
 		return err
 	}
-	if cfg.OAuth == nil {
-		return errors.New("credential must be a string or an oauth grant")
+	if cfg.File != "" && cfg.OAuth == nil && Files != nil {
+		// Read at each use, so whatever rotates the file rotates the credential.
+		v.resolve = func(context.Context) (string, error) {
+			secret, err := Files.ReadFile(cfg.File)
+			return strings.TrimRight(string(secret), "\r\n"), err
+		}
+		return nil
+	}
+	if cfg.OAuth == nil || cfg.File != "" {
+		return errors.New("credential must be a string, an oauth grant or a file under -secrets")
 	}
 	if err := cfg.OAuth.validate(); err != nil {
 		return err

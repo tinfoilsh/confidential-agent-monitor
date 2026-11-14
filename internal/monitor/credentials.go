@@ -14,7 +14,6 @@ import (
 
 	"github.com/tinfoilsh/monitor/connector/credential"
 	"github.com/tinfoilsh/monitor/internal/store"
-	"github.com/tinfoilsh/monitor/internal/tinfoil/ownerauth"
 )
 
 // Derive references from the existing persisted private key so restarts and
@@ -98,7 +97,7 @@ func (m *monitor) startSignIn(r *http.Request, req signInInput) (any, error) {
 	}
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
 	defer cancel()
-	session, _ := ownerauth.FromContext(r.Context())
+	session, _ := callerFrom(r.Context())
 	pending := &pendingSignIn{session: session.ID, expires: time.Now().Add(10 * time.Minute)}
 	sign, err := credential.NewSignIn(ctx, m.settings.Load().Client(), record, req.Redirect)
 	if err != nil {
@@ -139,7 +138,7 @@ func (m *monitor) finishSignIn(r *http.Request, req finishSignInInput) (any, err
 		return nil, errors.New("sign-in expired or already completed; start again")
 	}
 	pending := value.(*pendingSignIn)
-	session, _ := ownerauth.FromContext(r.Context())
+	session, _ := callerFrom(r.Context())
 	if pending.session != session.ID {
 		return nil, errors.New("sign-in belongs to a different Perimeter session")
 	}

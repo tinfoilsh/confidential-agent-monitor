@@ -26,6 +26,7 @@ type Identity struct {
 	Operator    bool              `json:"routes,omitempty"`
 	Key         string            `json:"key"`
 	Sandbox     json.RawMessage   `json:"sandbox,omitzero"`
+	Groups      []string          `json:"groups,omitempty"`
 	Effects     map[string]string `json:"effects,omitempty"`
 	Connections map[string]Access `json:"connections"`
 	Rules       map[string]Rule   `json:"rules,omitempty"`
