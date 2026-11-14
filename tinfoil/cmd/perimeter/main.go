@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -23,9 +24,11 @@ import (
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/kinds"
-	"github.com/tinfoilsh/confidential-agent-monitor/owner"
+	"github.com/tinfoilsh/confidential-agent-monitor/monitor"
+	"github.com/tinfoilsh/confidential-agent-monitor/ownersession"
 	"github.com/tinfoilsh/confidential-agent-monitor/perimeter"
 	"github.com/tinfoilsh/confidential-agent-monitor/presets"
+	"github.com/tinfoilsh/confidential-agent-monitor/routes"
 	"github.com/tinfoilsh/confidential-agent-monitor/tinfoil"
 	"github.com/tinfoilsh/confidential-agent-monitor/ui"
 	"github.com/tinfoilsh/confidential-agent-monitor/worker"
@@ -45,6 +48,8 @@ const (
 	serveWorkerFlag    = "serve-connector-worker"
 	healthcheckTimeout = 5 * time.Second
 	localUI            = "ui/dist"
+	sandboxAttribute   = "sandbox"
+	sandboxRelayRoute  = "POST /sandboxes/relay"
 )
 
 var (
@@ -61,7 +66,7 @@ var (
 	connectorWorkers = flag.Bool("connector-workers", false, "run all connectors in isolated worker processes")
 	workerRoot       = flag.String("worker-root", defaultWorkerRoot, "prepared read-only filesystem for connector workers")
 	identityCA       = flag.String("identity-ca", "", "file holding one SSH CA public key in authorized_keys format; its expiring user certificates name identities and their groups. A label follows the certified key, so the issuer must not certify a second key for a running workload")
-	basePolicy       = flag.String("base-policy", "", "Rego file in package perimeter.base; its deny and approvals apply to every decision as owner policy's do, and its admin_allow and admin_deny to every admin call; owner policy cannot change it")
+	basePolicy       = flag.String("base-policy", "", "Rego file in package perimeter.base; its deny and approvals apply to every decision as owner policy's do, its admin_allow and admin_deny to every admin call, and its capable grants identities the routes, config and propose capabilities; owner policy cannot change it")
 	policyFile       = flag.String("policy-file", "", "TOML policy loaded at each unlock in place of the stored one; the admin API then cannot change the policy")
 	presetDir        = flag.String("presets", "", "directory of an organization's own preset definitions, added to the shipped ones")
 	secretDir        = flag.String("secrets", "", "directory that file credentials are read from at each use")
@@ -105,12 +110,18 @@ func main() {
 
 func run(ctx context.Context, connectors map[string]connector.Kind) error {
 	dev := !*production && strings.HasPrefix(*bucket, "file://")
-	c := perimeter.Config{
+	o := monitor.Options{
 		Connectors: connectors,
-		UI:         http.StripPrefix("/app/", http.FileServerFS(ui.Files)),
+		Routes:     new(routes.Forwarder),
+		Attributes: map[string]func(json.RawMessage) error{sandboxAttribute: tinfoil.ValidateBoot},
 		// Events is the stream a collector reads: one JSON line on stdout for each settled record.
 		Events: slog.New(slog.NewJSONHandler(os.Stdout, nil)),
 	}
+	c := perimeter.Config{UI: http.StripPrefix("/app/", http.FileServerFS(ui.Files)), Routes: o.Routes}
+	sandboxes := tinfoil.NewSandboxes(c.Routes)
+	o.Admin = map[string]http.Handler{sandboxRelayRoute: monitor.JSONHandler(tinfoil.MaxRelayBytes, func(r *http.Request, in tinfoil.RelayInput) (any, error) {
+		return sandboxes.Relay(r.Context(), in)
+	})}
 	var devFiles http.Handler
 	var err error
 	if *uiDevURL != "" {
@@ -125,8 +136,8 @@ func run(ctx context.Context, connectors map[string]connector.Kind) error {
 	// Production owners authenticate through SSH or Noise sessions and unlock the
 	// encrypted state. Only local development permits bearer authentication.
 	if *ownerPublicKey != "" || !dev {
-		c.Owner = new(perimeter.Owner)
-		if c.Owner.Key, err = owner.ParseOwnerKey(*ownerPublicKey); err != nil {
+		c.Owner = &perimeter.Owner{Relay: sandboxes.DialOwner}
+		if c.Owner.Key, err = ownersession.ParseOwnerKey(*ownerPublicKey); err != nil {
 			return err
 		}
 	} else if devFiles != nil {
@@ -142,22 +153,22 @@ func run(ctx context.Context, connectors map[string]connector.Kind) error {
 	if *sshHostKey != "" {
 		data, err := os.ReadFile(*sshHostKey)
 		if err == nil {
-			c.HostKey, err = ssh.ParsePrivateKey(data)
+			o.HostKey, err = ssh.ParsePrivateKey(data)
 		}
 		if err != nil {
 			return err
 		}
 	}
-	if (*production || c.Owner != nil) && c.HostKey == nil {
+	if (*production || c.Owner != nil) && o.HostKey == nil {
 		return errors.New("production and owner SSH require -ssh-host-key")
 	}
 	if !dev {
-		c.Connectors = maps.Clone(c.Connectors)
-		maps.DeleteFunc(c.Connectors, func(_ string, kind connector.Kind) bool { return kind.Host })
+		o.Connectors = maps.Clone(o.Connectors)
+		maps.DeleteFunc(o.Connectors, func(_ string, kind connector.Kind) bool { return kind.Host })
 	}
 	if *connectorWorkers {
 		launcher := &worker.Local{Root: cmp.Or(*workerRoot, defaultWorkerRoot), Args: []string{"--" + serveWorkerFlag}}
-		c.Connectors = launcher.Isolate(c.Connectors)
+		o.Connectors = launcher.Isolate(o.Connectors)
 	}
 	if *identityCA != "" {
 		data, err := os.ReadFile(*identityCA)
@@ -173,10 +184,10 @@ func run(ctx context.Context, connectors map[string]connector.Kind) error {
 		if err != nil {
 			return err
 		}
-		c.BasePolicy = string(base)
+		o.BasePolicy = string(base)
 	}
 	if *policyFile != "" {
-		c.Policy = func() (string, error) {
+		o.Policy = func() (string, error) {
 			file, err := os.ReadFile(*policyFile)
 			return string(file), err
 		}
@@ -188,35 +199,46 @@ func run(ctx context.Context, connectors map[string]connector.Kind) error {
 			return err
 		}
 	}
-	if c.Presets, err = presets.Load(presets.Files, tinfoil.Presets, dir); err != nil {
+	if o.Presets, err = presets.Load(presets.Files, tinfoil.Presets, dir); err != nil {
 		return err
 	}
 	if *secretDir != "" {
-		if c.Secrets, err = os.OpenRoot(*secretDir); err != nil {
+		if o.Secrets, err = os.OpenRoot(*secretDir); err != nil {
 			return err
 		}
 	}
 	if c.Owner != nil {
-		if c.Owner.SessionKey, err = owner.LoadKey(*ownerSessionKey); err != nil {
+		if c.Owner.SessionKey, err = ownersession.LoadKey(*ownerSessionKey); err != nil {
 			return err
 		}
 	}
+	var unlock []byte
 	if *ownerKeyFile != "" {
 		if c.Owner != nil {
 			return errors.New("-owner-key-file requires a development file:// bucket without -owner-public-key")
 		}
 		key, err := os.ReadFile(*ownerKeyFile)
 		if err == nil {
-			c.Unlock, err = base64.StdEncoding.Strict().DecodeString(strings.TrimSpace(string(key)))
+			unlock, err = base64.StdEncoding.Strict().DecodeString(strings.TrimSpace(string(key)))
 		}
 		if err != nil {
 			return err
 		}
 	}
-	if c.Bucket, err = blob.OpenBucket(ctx, *bucket); err != nil {
+	if o.Bucket, err = blob.OpenBucket(ctx, *bucket); err != nil {
 		return err
 	}
-	defer c.Bucket.Close()
+	defer o.Bucket.Close()
+	o.PassphraseKeys = c.Owner == nil
+	if c.Monitor, err = monitor.New(o); err != nil {
+		return err
+	}
+	defer c.Monitor.Close()
+	if unlock != nil {
+		if err := c.Monitor.Unlock(ctx, unlock); err != nil {
+			return err
+		}
+	}
 	if c.SSH, err = net.Listen("tcp", cmp.Or(*listen, defaultListen)); err != nil {
 		return err
 	}

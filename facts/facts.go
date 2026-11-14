@@ -36,9 +36,10 @@ const (
 )
 
 type Principal struct {
-	Key    string   `json:"key"`
-	Name   string   `json:"name"`
-	Groups []string `json:"groups,omitempty"`
+	Key        string                     `json:"key"`
+	Name       string                     `json:"name"`
+	Groups     []string                   `json:"groups,omitempty"`
+	Attributes map[string]json.RawMessage `json:"attributes,omitempty"`
 }
 
 // Same reports whether p and q are one identity, whatever their groups.

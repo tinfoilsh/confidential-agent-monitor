@@ -249,3 +249,10 @@ admin_deny contains "base policy admin_deny must be a set or array of strings" i
 }
 
 admin_deny contains msg if some msg in data.perimeter.base.admin_deny
+
+# input is an identity's capability: its principal, its stored routes flag and the capability's name.
+default capable := false
+
+capable if input.routes
+
+capable if data.perimeter.base.capable == true

@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"slices"
 	"strings"
+	"sync"
 	"time"
 	"unicode"
 
@@ -26,6 +27,8 @@ const (
 	httpsPort         = "443"
 	maxDeviceExpiry   = 24 * time.Hour
 	maxDeviceInterval = 3600
+	signInTimeout     = 30 * time.Second
+	signInLifetime    = 10 * time.Minute
 )
 
 var (
@@ -34,6 +37,8 @@ var (
 )
 
 var errNoRegistration = errors.New("this service does not register clients automatically; enter the client ID and secret of an OAuth app registered with it")
+
+var errSignInGone = errors.New("sign-in expired or already completed; start again")
 
 var errLoopback = errors.New("this service only accepts sign-ins from a loopback address; open this Perimeter on your own computer to sign in")
 
@@ -498,4 +503,91 @@ func (o *oauth) refresh(ctx context.Context, client *http.Client, token *oauth2.
 	}
 	config := o.config("")
 	return config.TokenSource(context.WithValue(ctx, oauth2.HTTPClient, client), token).Token()
+}
+
+// SignInResult is what the owner's client reports when the provider returns.
+type SignInResult struct {
+	Code     string  `json:"code"`
+	ClientID string  `json:"client_id,omitempty"`
+	Error    *string `json:"error,omitempty"`
+	Cancel   bool    `json:"cancel,omitempty"`
+}
+
+type pendingSignIn struct {
+	finish  func(context.Context, SignInResult) error
+	session string
+	expires time.Time
+	done    <-chan struct{}
+	cancel  context.CancelFunc
+}
+
+// SignIns holds started sign-ins until the session that started each finishes it.
+type SignIns struct{ pending sync.Map }
+
+// Start begins a sign-in for the grant in record; finishing it hands the replacement record to save.
+func (s *SignIns) Start(ctx context.Context, client *http.Client, record json.RawMessage, redirect, session string, save func(context.Context, json.RawMessage) error) (*SignIn, error) {
+	ctx, cancel := context.WithTimeout(ctx, signInTimeout)
+	defer cancel()
+	pending := &pendingSignIn{session: session, expires: time.Now().Add(signInLifetime)}
+	sign, err := NewSignIn(ctx, client, record, redirect)
+	if err != nil {
+		return nil, err
+	}
+	exchange := sign.Exchange
+	if sign.UserCode != "" {
+		poll, stop := context.WithDeadline(context.Background(), sign.Expires)
+		done := make(chan struct{})
+		var secret json.RawMessage
+		var failure error
+		go func() { defer close(done); defer stop(); secret, failure = sign.WaitDevice(poll) }()
+		pending.expires, pending.done, pending.cancel = sign.Expires, done, stop
+		exchange = func(context.Context, string, string) (json.RawMessage, error) { return secret, failure }
+	}
+	pending.finish = func(ctx context.Context, result SignInResult) error {
+		if result.Error != nil {
+			return errors.New("sign-in was not completed; try again")
+		}
+		secret, err := exchange(ctx, result.Code, result.ClientID)
+		if err != nil {
+			return err
+		}
+		return save(ctx, secret)
+	}
+	s.pending.Store(sign.State, pending)
+	time.AfterFunc(time.Until(pending.expires), func() { s.pending.CompareAndDelete(sign.State, pending) })
+	return sign, nil
+}
+
+// Finish completes or cancels the sign-in state names, and reports true while a device sign-in still awaits approval.
+func (s *SignIns) Finish(ctx context.Context, state, session string, result SignInResult) (bool, error) {
+	value, ok := s.pending.Load(state)
+	if !ok {
+		return false, errSignInGone
+	}
+	pending := value.(*pendingSignIn)
+	if pending.session != session {
+		return false, errors.New("sign-in belongs to a different Perimeter session")
+	}
+	if !result.Cancel && result.Error == nil && pending.done != nil && time.Now().Before(pending.expires) {
+		select {
+		case <-pending.done:
+		default:
+			return true, nil
+		}
+	}
+	if !s.pending.CompareAndDelete(state, pending) {
+		return false, errSignInGone
+	}
+	if pending.cancel != nil {
+		defer pending.cancel()
+	}
+	if !time.Now().Before(pending.expires) {
+		return false, errSignInGone
+	}
+	if result.Cancel {
+		return false, nil
+	}
+	ctx, cancel := context.WithTimeout(ctx, signInTimeout)
+	defer cancel()
+	return false, pending.finish(ctx, result)
 }

@@ -11,6 +11,7 @@ import (
 	"io"
 	"log/slog"
 	"maps"
+	"net/http"
 	"os"
 	"slices"
 	"sync"
@@ -20,11 +21,11 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
 	"github.com/tinfoilsh/confidential-agent-monitor/facts"
-	"github.com/tinfoilsh/confidential-agent-monitor/internal/bunker"
 	"github.com/tinfoilsh/confidential-agent-monitor/internal/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/internal/policy"
 	"github.com/tinfoilsh/confidential-agent-monitor/internal/store"
 	"github.com/tinfoilsh/confidential-agent-monitor/presets"
+	"github.com/tinfoilsh/confidential-agent-monitor/routes"
 	"gocloud.dev/blob"
 	"golang.org/x/crypto/ssh"
 )
@@ -65,8 +66,9 @@ func retire(doc *store.Document, declared map[string]string) {
 	})
 }
 
-// certify stores the certificate identity that key authenticated as; mu is not held.
-func (m *Monitor) certify(ctx context.Context, key string, identity store.Certified) error {
+// Certify stores the certificate identity that key authenticated as, valid before a Unix time; mu is not held.
+func (m *Monitor) Certify(ctx context.Context, key, name string, groups []string, validBefore uint64) error {
+	identity := store.Certified{Name: name, Groups: groups, ValidBefore: validBefore}
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	st := m.settings.Load()
@@ -182,19 +184,20 @@ type Options struct {
 	Bucket         *blob.Bucket
 	HostKey        ssh.Signer
 	Connectors     map[string]connector.Kind
-	StorageKeyAuth bool
-	IdentityCA     ssh.PublicKey
+	PassphraseKeys bool
 	Policy         func() (string, error)
 	Presets        presets.Set
 	BasePolicy     string
 	Secrets        *os.Root
 	Events         *slog.Logger
+	Routes         *routes.Forwarder
+	Admin          map[string]http.Handler
+	Attributes     map[string]func(json.RawMessage) error
 }
 type admission struct {
 	fingerprint string
 	connection  *connection
 	prepared    *connector.Prepared
-	route       bool
 	grants      []*grant // The admission, then the latest operation.
 }
 
@@ -210,19 +213,21 @@ type Monitor struct {
 	store          store.Store
 	connections    map[string]*connection
 	audit          store.AuditLog[*record]
-	storageKeyAuth bool
+	passphraseKeys bool
 	sshHostKey     ssh.Signer
-	identityCA     ssh.PublicKey
 	policy         func() (string, error)
 	presets        presets.Set
 	basePolicy     string
 	secrets        *os.Root
 	events         *slog.Logger
-	forwards       *bunker.Forwarder
+	forwards       *routes.Forwarder
+	admin          map[string]http.Handler
+	attributes     map[string]func(json.RawMessage) error
 	streams        map[*connector.Stream]*admission
+	holds          map[*hold]context.CancelFunc
 	records        []*record
 	cond           sync.Cond
-	signIns        sync.Map
+	signIns        credential.SignIns
 }
 
 func New(o Options) (*Monitor, error) {
@@ -234,18 +239,20 @@ func New(o Options) (*Monitor, error) {
 	m := &Monitor{
 		store:          store.Store{Bucket: o.Bucket, Presets: o.Presets},
 		audit:          store.AuditLog[*record]{Bucket: o.Bucket},
-		storageKeyAuth: o.StorageKeyAuth,
+		passphraseKeys: o.PassphraseKeys,
 		sshHostKey:     o.HostKey,
-		identityCA:     o.IdentityCA,
 		policy:         o.Policy,
 		presets:        o.Presets,
 		basePolicy:     o.BasePolicy,
 		secrets:        o.Secrets,
 		events:         cmp.Or(o.Events, slog.New(slog.DiscardHandler)),
 		kinds:          o.Connectors,
-		forwards:       bunker.NewForwarder(),
+		forwards:       o.Routes,
+		admin:          o.Admin,
+		attributes:     o.Attributes,
 		connections:    map[string]*connection{},
 		streams:        map[*connector.Stream]*admission{},
+		holds:          map[*hold]context.CancelFunc{},
 	}
 	m.cond.L = &m.mu
 	return m, nil
@@ -272,7 +279,7 @@ func (m *Monitor) unlock(ctx context.Context, key []byte, minimum uint64) (bool,
 	m.writes.Lock()
 	defer m.writes.Unlock()
 	m.mu.Lock()
-	if !m.storageKeyAuth && len(key) != store.OwnerKeyBytes {
+	if !m.passphraseKeys && len(key) != store.OwnerKeyBytes {
 		m.mu.Unlock()
 		return false, store.ErrOwner
 	}
@@ -340,9 +347,15 @@ func (m *Monitor) prepareSettings(ctx context.Context, source string, rebuild fu
 	if err != nil {
 		return nil, err
 	}
-	for _, id := range cfg.Identities {
-		if err := bunker.ValidateMetadata(id.Sandbox); err != nil {
-			return nil, err
+	for name, id := range cfg.Identities {
+		for key, value := range id.Attributes {
+			validate := m.attributes[key]
+			if validate == nil {
+				return nil, fmt.Errorf("identity %s has no field %s", name, key)
+			}
+			if err := validate(value); err != nil {
+				return nil, fmt.Errorf("identity %s %s: %w", name, key, err)
+			}
 		}
 	}
 	engine, err := policy.Prepare(ctx, m.basePolicy, cfg.Data, cfg.Policies, cfg.Lattices.Confidentiality, cfg.Lattices.Integrity)
@@ -491,13 +504,18 @@ func (m *Monitor) commitSettings(ctx context.Context, plan *settingsPlan, saved 
 		if !m.kinds[c.Protocol].UsesHostKey {
 			c.env.HostKey = nil
 		}
-		c.env.Dialer = bunker.RouteDialer{Routes: m.forwards, Next: c.env.Dialer, Key: m.identityKey, Hosts: c.prepared.Routes}
+		c.env.Dialer = routes.RouteDialer{Routes: m.forwards, Next: c.env.Dialer, Key: m.identityKey, Hosts: c.prepared.Routes}
 		install = append(install, c)
 	}
 	m.settings.Store(plan.next)
 	for stream, a := range m.streams {
 		if !m.recheck(a) {
 			stream.Close()
+		}
+	}
+	for h, cancel := range m.holds {
+		if p, known := plan.next.Principal(h.key); !known || !plan.next.capable(p, h.capability) {
+			cancel()
 		}
 	}
 	for _, r := range m.records {

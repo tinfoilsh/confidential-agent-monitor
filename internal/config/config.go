@@ -118,7 +118,7 @@ func Fingerprint(authorizedKey string) (string, error) {
 
 func (c *Config) Principal(key string) (Principal, bool) {
 	name, ok := c.Principals[key]
-	return Principal{Key: key, Name: name, Groups: c.Identities[name].Groups}, ok
+	return Principal{Key: key, Name: name, Groups: c.Identities[name].Groups, Attributes: c.Identities[name].Attributes}, ok
 }
 
 // An explicit level replaces defaults; an omitted level inherits and overlays them.

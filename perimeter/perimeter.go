@@ -5,19 +5,17 @@ import (
 	"context"
 	"crypto/ed25519"
 	"errors"
-	"log/slog"
 	"net"
 	"net/http"
-	"os"
 	"slices"
 	"time"
 
+	"github.com/coder/websocket"
 	"github.com/flynn/noise"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/frontdoor"
 	"github.com/tinfoilsh/confidential-agent-monitor/monitor"
 	"github.com/tinfoilsh/confidential-agent-monitor/owner"
-	"github.com/tinfoilsh/confidential-agent-monitor/presets"
-	"gocloud.dev/blob"
+	"github.com/tinfoilsh/confidential-agent-monitor/routes"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -30,52 +28,28 @@ const (
 
 type Config struct {
 	SSH, API   net.Listener
-	Bucket     *blob.Bucket
-	Connectors map[string]connector.Kind
-	Presets    presets.Set
+	Monitor    *monitor.Monitor
 	UI         http.Handler // serves GET /app/
-	HostKey    ssh.Signer
-	Owner      *Owner // nil: the storage key authenticates bearer calls, for local development
-	Unlock     []byte // development storage key to unlock with at start
+	Owner      *Owner       // nil: the storage key authenticates bearer calls, for local development
 	Origins    []string
 	IdentityCA ssh.PublicKey
-	BasePolicy string
-	Policy     func() (string, error) // read at each unlock in place of the stored policy
-	Secrets    *os.Root
-	Events     *slog.Logger
+	Routes     *routes.Forwarder // nil refuses publishers and dials no route
 }
 
 type Owner struct {
 	Key        ed25519.PublicKey
 	SessionKey noise.DHKey
+	Relay      func(ctx context.Context, instance string) (*websocket.Conn, error) // nil refuses relays
 }
 
 // Run serves on c.SSH and c.API and closes both before it returns.
 func Run(ctx context.Context, c Config) error {
 	defer c.SSH.Close()
 	defer c.API.Close()
-	if c.Owner != nil && c.HostKey == nil {
+	if c.Owner != nil && c.Monitor.HostKey() == nil {
 		return errors.New("an owner requires a host key")
 	}
-	if c.Owner != nil && c.Unlock != nil {
-		return errors.New("a development unlock key cannot be used with an owner")
-	}
-	m, err := monitor.New(monitor.Options{
-		Bucket:         c.Bucket,
-		HostKey:        c.HostKey,
-		Connectors:     c.Connectors,
-		StorageKeyAuth: c.Owner == nil,
-		IdentityCA:     c.IdentityCA,
-		Policy:         c.Policy,
-		Presets:        c.Presets,
-		BasePolicy:     c.BasePolicy,
-		Secrets:        c.Secrets,
-		Events:         c.Events,
-	})
-	if err != nil {
-		return err
-	}
-	defer m.Close()
+	m := c.Monitor
 	admin, mode := m.AdminAPI(), bearerMode
 	if c.Owner != nil {
 		mode = ownerMode
@@ -92,22 +66,17 @@ func Run(ctx context.Context, c Config) error {
 		})
 		admin = app
 	}
-	var handler http.Handler
-	var sshAdmin monitor.SSHAdmin
+	var sshAdmin *owner.SSH
+	handler := http.NewServeMux()
+	handler.Handle("GET /healthz", admin)
 	if c.Owner == nil {
-		handler = admin
+		handler.Handle("/", &owner.Bearer{API: admin, IsOwner: m.IsOwner})
 	} else {
-		mux := http.NewServeMux()
-		mux.Handle("GET /healthz", admin)
-		mux.Handle("GET /owner/ws", &owner.Handler{Key: c.Owner.Key, SessionKey: c.Owner.SessionKey, MaxBytes: monitor.MaxCallBytes, API: admin, Generation: m.Generation, Relay: m.DialBunkerOwner})
-		handler, sshAdmin = mux, &owner.SSH{Key: c.Owner.Key, API: admin, Generation: m.Generation}
+		handler.Handle("GET /owner/ws", &owner.Handler{Key: c.Owner.Key, SessionKey: c.Owner.SessionKey, MaxBytes: monitor.MaxCallBytes, API: admin, Generation: m.Generation, Relay: c.Owner.Relay})
+		sshAdmin = &owner.SSH{Key: c.Owner.Key, API: admin, Generation: m.Generation}
 	}
-	if c.Unlock != nil {
-		if err := m.Unlock(ctx, c.Unlock); err != nil {
-			return err
-		}
-	}
-	go m.ServeSSH(c.SSH, sshAdmin)
+	door := &frontdoor.Server{Monitor: m, Owner: sshAdmin, IdentityCA: c.IdentityCA, Routes: c.Routes}
+	go door.Serve(c.SSH)
 	server := &http.Server{Handler: allowOrigins(c.Origins, handler), ReadHeaderTimeout: readHeaderTimeout}
 	defer server.Close()
 	audit, failed := context.WithCancelCause(ctx)

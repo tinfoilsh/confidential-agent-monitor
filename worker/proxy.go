@@ -20,6 +20,7 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
 	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/netx"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -43,8 +44,7 @@ type proxy struct {
 	Protocol string
 	Kind     connector.Kind
 	Launcher *Local
-	mu       sync.Mutex
-	current  *process
+	connector.Resource[*process]
 }
 
 type process struct {
@@ -59,87 +59,73 @@ type process struct {
 }
 
 func (p *proxy) Update(ctx context.Context, prepared connector.Prepared, secrets map[string]*credential.Value, env *connector.Env) error {
-	p.Close()
-	if p.Launcher == nil || env.Dialer == nil {
-		return errors.New("connector worker is not configured")
-	}
-	settings, err := json.Marshal(p.Kind.Settings)
-	if err != nil {
-		return err
-	}
-	boot := bootstrap{Setup: prepared.Source, Protocol: p.Protocol, Settings: settings, Secrets: map[string]secretHandle{}}
-	for name, value := range secrets {
-		boot.Secrets[name] = secretHandle{value.Configured(), value.Placeholder}
-	}
-	if env.HostKey != nil {
-		boot.HostKey = env.HostKey.PublicKey().Marshal()
-	}
-	raw, err := json.Marshal(boot)
-	if err != nil {
-		return err
-	}
-	if len(raw) > maxMessage {
-		return errors.New("worker configuration exceeds size limit")
-	}
-	running := &process{env: env, secrets: maps.Clone(secrets), streams: map[string]*connector.Stream{}}
-	running.endpoint, err = p.Launcher.start(ctx, raw, running.broker())
-	if err != nil {
-		return err
-	}
-	running.transport = running.Dial.transport()
-	ready, cancel := context.WithTimeout(ctx, time.Minute)
-	defer cancel()
-	err = call(ready, running.transport, readyPath, nil, &running.details)
-	if err == nil {
-		err = ctx.Err()
-	}
-	if err != nil {
-		running.close()
-		return fmt.Errorf("connector worker startup: %w", err)
-	}
-	if string(running.details) == "null" {
-		running.details = nil
-	}
-	p.mu.Lock()
-	p.current = running
-	p.mu.Unlock()
-	return nil
+	return p.Replace(func() (*process, error) {
+		if p.Launcher == nil || env.Dialer == nil {
+			return nil, errors.New("connector worker is not configured")
+		}
+		settings, err := json.Marshal(p.Kind.Settings)
+		if err != nil {
+			return nil, err
+		}
+		boot := bootstrap{Setup: prepared.Source, Protocol: p.Protocol, Settings: settings, Secrets: map[string]secretHandle{}}
+		for name, value := range secrets {
+			boot.Secrets[name] = secretHandle{value.Configured(), value.Placeholder}
+		}
+		if env.HostKey != nil {
+			boot.HostKey = env.HostKey.PublicKey().Marshal()
+		}
+		raw, err := json.Marshal(boot)
+		if err != nil {
+			return nil, err
+		}
+		if len(raw) > maxMessage {
+			return nil, errors.New("worker configuration exceeds size limit")
+		}
+		running := &process{env: env, secrets: maps.Clone(secrets), streams: map[string]*connector.Stream{}}
+		running.endpoint, err = p.Launcher.start(ctx, raw, running.broker())
+		if err != nil {
+			return nil, err
+		}
+		running.transport = running.Dial.transport()
+		ready, cancel := context.WithTimeout(ctx, time.Minute)
+		defer cancel()
+		err = call(ready, running.transport, readyPath, nil, &running.details)
+		if err == nil {
+			err = ctx.Err()
+		}
+		if err != nil {
+			running.Close()
+			return nil, fmt.Errorf("connector worker startup: %w", err)
+		}
+		if string(running.details) == "null" {
+			running.details = nil
+		}
+		return running, nil
+	})
 }
 
-func (p *proxy) snapshot() *process { p.mu.Lock(); defer p.mu.Unlock(); return p.current }
-
 func (p *proxy) Ready() error {
-	running := p.snapshot()
+	running := p.Load()
 	if running == nil {
 		return errors.New("connector worker is unavailable")
 	}
 	return running.Context.Err()
 }
 
-func (p *proxy) Close() error {
-	p.mu.Lock()
-	running := p.current
-	p.current = nil
-	p.mu.Unlock()
-	if running != nil {
-		running.close()
-	}
-	return nil
-}
-
-func (p *process) close() {
+func (p *process) Close() error {
 	p.endpoint.Close()
 	<-p.Done
 	p.transport.CloseIdleConnections()
+	return nil
 }
 
 func (p *proxy) Serve(s *connector.Stream, _ *connector.Env) {
 	defer s.Close()
-	running := p.snapshot()
+	running := p.Load()
 	if running == nil {
 		return
 	}
-	ctx, cancel := connector.Bind(s.Context, running.Context)
+	ctx, cancel := netx.Bind(s.Context, running.Context)
 	defer cancel()
 	running.mu.Lock()
 	if ctx.Err() != nil || len(running.streams) >= maxStreams {
@@ -158,11 +144,11 @@ func (p *proxy) Serve(s *connector.Stream, _ *connector.Env) {
 	if err != nil {
 		return
 	}
-	connector.Relay(ctx, s.Conn, upstream)
+	netx.Relay(ctx, s.Conn, upstream)
 }
 
 func (p *proxy) Details() json.RawMessage {
-	if running := p.snapshot(); running != nil {
+	if running := p.Load(); running != nil {
 		return running.details
 	}
 	return nil
@@ -170,12 +156,12 @@ func (p *proxy) Details() json.RawMessage {
 
 func (p *proxy) Control() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		running := p.snapshot()
+		running := p.Load()
 		if running == nil {
 			http.Error(w, "connector worker is unavailable", 503)
 			return
 		}
-		ctx, cancel := connector.Bind(r.Context(), running.Context)
+		ctx, cancel := netx.Bind(r.Context(), running.Context)
 		defer cancel()
 		proxy := httputil.ReverseProxy{Transport: running.transport, Rewrite: func(r *httputil.ProxyRequest) {
 			r.Out.URL.Scheme, r.Out.URL.Host, r.Out.Host = "http", "connector", "connector"
@@ -316,18 +302,6 @@ func connectProxy(dialer connector.Dialer) http.Handler {
 			http.Error(w, "worker upstream unavailable", 502)
 			return
 		}
-		defer upstream.Close()
-		client, rw, err := w.(http.Hijacker).Hijack()
-		if err != nil {
-			return
-		}
-		defer client.Close()
-		if _, err = rw.WriteString("HTTP/1.1 200 Connection Established\r\n\r\n"); err != nil {
-			return
-		}
-		if err = rw.Flush(); err != nil {
-			return
-		}
-		connector.Relay(r.Context(), &bufferedConn{Conn: client, reader: rw.Reader}, upstream)
+		netx.Tunnel(w, r, upstream)
 	})
 }

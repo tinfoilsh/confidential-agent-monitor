@@ -146,10 +146,11 @@ func (r *record) receipt() proposalReceipt {
 // proposal renders p's changes to one connection against source for review. It
 // fails when they no longer apply, change nothing, or p may not propose them.
 func (st *settings) proposal(source string, p config.Principal, target, reason string, changes []config.Change) (string, json.RawMessage, error) {
-	if current, ok := st.Principal(p.Key); !ok || !current.Same(p) {
+	current, ok := st.Principal(p.Key)
+	if !ok || !current.Same(p) {
 		return "", nil, errNoAgent
 	}
-	if _, err := st.ProposalChanges(p, changes); err != nil {
+	if _, err := config.ProposalChanges(p, changes, st.capable(current, capabilityPropose)); err != nil {
 		return "", nil, err
 	}
 	candidate, _, _, err := st.Edit(source, changes)
@@ -198,7 +199,7 @@ func (m *Monitor) proposePolicy(ctx context.Context, key string, input proposalI
 	if !known {
 		return nil, errNoAgent
 	}
-	groups, err := before.ProposalChanges(p, changes)
+	groups, err := config.ProposalChanges(p, changes, before.capable(p, capabilityPropose))
 	if err != nil {
 		return nil, err
 	}
@@ -247,12 +248,29 @@ func (m *Monitor) proposePolicy(ctx context.Context, key string, input proposalI
 	return receipts, nil
 }
 
+// Capabilities that policy grants an identity; its stored routes flag grants each.
+const (
+	CapabilityRoutes  = "routes"
+	capabilityConfig  = "config"
+	capabilityPropose = "propose"
+)
+
+// capable reports whether policy grants p capability, refusing it when policy fails.
+func (st *settings) capable(p config.Principal, capability string) bool {
+	input, err := facts.JSON[map[string]any](map[string]any{"principal": p, "routes": st.Identities[p.Name].Operator, "capability": capability})
+	if err != nil {
+		return false
+	}
+	ok, err := st.Engine.Capable(context.Background(), input)
+	return ok && err == nil
+}
+
 type identityEnrollment struct {
 	Key      string `json:"key"`
 	Operator bool   `json:"routes"`
 	Restore  bool   `json:"restore"`
-	// Sandbox names the sandbox boot an identity belongs to.
-	Sandbox json.RawMessage `json:"sandbox,omitzero"`
+	// Attributes are the enrollment's other keys.
+	Attributes map[string]json.RawMessage `json:",embed"`
 }
 
 // enrollmentChanges adds new identities; a revoked key or route access returns only when restored.
@@ -264,10 +282,16 @@ func (m *Monitor) enrollmentChanges(input map[string]identityEnrollment) ([]conf
 		if err != nil {
 			return nil, err
 		}
-		metadata, err := facts.JSON[any](id.Sandbox)
-		if err != nil {
-			return nil, err
+		attributes := map[string]any{}
+		for key, raw := range id.Attributes {
+			if m.attributes[key] == nil {
+				return nil, fmt.Errorf("an enrollment has no field %s", key)
+			}
+			if attributes[key], err = facts.JSON[any](raw); err != nil {
+				return nil, err
+			}
 		}
+		maps.DeleteFunc(attributes, func(_ string, value any) bool { return value == nil })
 		if principal, ok := m.settings.Load().Config.Principal(fingerprint); ok {
 			existing := m.settings.Load().Identities[principal.Name]
 			if id.Operator && !existing.Operator {
@@ -276,9 +300,10 @@ func (m *Monitor) enrollmentChanges(input map[string]identityEnrollment) ([]conf
 				}
 				changes = append(changes, config.Change{Path: []string{"identities", principal.Name, "routes"}, Value: true})
 			}
-			before, _ := facts.JSON[any](existing.Sandbox)
-			if metadata != nil && !reflect.DeepEqual(metadata, before) {
-				changes = append(changes, config.Change{Path: []string{"identities", principal.Name, "sandbox"}, Value: metadata})
+			for key, value := range attributes {
+				if before, _ := facts.JSON[any](existing.Attributes[key]); !reflect.DeepEqual(value, before) {
+					changes = append(changes, config.Change{Path: []string{"identities", principal.Name, key}, Value: value})
+				}
 			}
 			continue
 		}
@@ -289,9 +314,7 @@ func (m *Monitor) enrollmentChanges(input map[string]identityEnrollment) ([]conf
 			return nil, errors.New("identity name belongs to another key")
 		}
 		value := map[string]any{"key": id.Key, "routes": id.Operator}
-		if metadata != nil {
-			value["sandbox"] = metadata
-		}
+		maps.Copy(value, attributes)
 		changes = append(changes, config.Change{Path: []string{"identities", name}, Value: value})
 	}
 	return changes, nil

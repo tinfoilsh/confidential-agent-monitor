@@ -78,15 +78,16 @@ func ProposalTarget(path []string) (string, bool) {
 	return "", false
 }
 
-func (c *Config) ProposalChanges(p Principal, changes []Change) (map[string][]Change, error) {
+// ProposalChanges groups p's changes by connection; only others lets them reach other identities and default access.
+func ProposalChanges(p Principal, changes []Change, others bool) (map[string][]Change, error) {
 	groups := map[string][]Change{}
 	for _, change := range changes {
 		target, ok := ProposalTarget(change.Path)
 		if !ok || change.From != nil {
 			return nil, errors.New("proposals may change only service setup and access")
 		}
-		if !c.Identities[p.Name].Operator && (change.Path[0] == "default_access" || change.Path[0] == "identities" && change.Path[1] != p.Name) {
-			return nil, errors.New("a bunker may propose only service setup and its own access")
+		if !others && (change.Path[0] == "default_access" || change.Path[0] == "identities" && change.Path[1] != p.Name) {
+			return nil, errors.New("this identity may propose only service setup and its own access")
 		}
 		groups[target] = append(groups[target], change)
 	}

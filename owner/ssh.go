@@ -13,21 +13,12 @@ import (
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/monitor"
+	"github.com/tinfoilsh/confidential-agent-monitor/netx"
+	"github.com/tinfoilsh/confidential-agent-monitor/ownersession"
 	"golang.org/x/crypto/ssh"
 )
 
-const (
-	ownerSSHChannel        = "tinfoil-owner-http-v1"
-	ownerGenerationRequest = "tinfoil-owner-generation-v1"
-	ownerHost              = "owner" + connector.Domain
-)
-
-// This metadata is supplied by the authenticated owner CLI, never the browser.
-type channelOptions struct {
-	Host       string
-	Token      string
-	Generation uint64
-}
+const ownerHost = "owner" + connector.Domain
 
 type SSH struct {
 	Key        ed25519.PublicKey
@@ -46,12 +37,12 @@ func (o *SSH) Authenticates(key ssh.PublicKey) bool {
 
 // ServeChannel serves API to the owner CLI over one SSH channel.
 func (o *SSH) ServeChannel(nc ssh.NewChannel) {
-	if nc.ChannelType() != ownerSSHChannel {
+	if nc.ChannelType() != ownersession.SSHChannel {
 		nc.Reject(ssh.Prohibited, "owner connections only serve the owner UI and API")
 		return
 	}
-	var options channelOptions
-	if err := ssh.Unmarshal(nc.ExtraData(), &options); err != nil || !options.valid() {
+	var options ownersession.SSHOptions
+	if err := ssh.Unmarshal(nc.ExtraData(), &options); err != nil || !validOptions(options) {
 		nc.Reject(ssh.Prohibited, "invalid owner channel options")
 		return
 	}
@@ -63,10 +54,10 @@ func (o *SSH) ServeChannel(nc ssh.NewChannel) {
 	if err != nil {
 		return
 	}
-	conn := connector.NewChannelConn(ch, reqs)
-	s := connector.NewStream(context.Background(), conn)
-	defer s.Close()
-	go func() { <-conn.Closed(); s.Close() }()
+	conn := netx.NewChannelConn(ch, reqs)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	go func() { <-conn.Closed(); cancel() }()
 	acknowledge := func() error {
 		current, unlocked := o.Generation()
 		if !unlocked {
@@ -74,20 +65,19 @@ func (o *SSH) ServeChannel(nc ssh.NewChannel) {
 		}
 		// Do not report success until the CLI has persisted the generation. Close
 		// a stalled channel so an owner client cannot leave this goroutine behind.
-		timer := time.AfterFunc(10*time.Second, func() { s.Close() })
+		timer := time.AfterFunc(10*time.Second, cancel)
 		defer timer.Stop()
-		ok, err := ch.SendRequest(ownerGenerationRequest, true, ssh.Marshal(struct{ Generation uint64 }{current}))
+		ok, err := ch.SendRequest(ownersession.SSHGenerationRequest, true, ssh.Marshal(ownersession.SSHGeneration{Generation: current}))
 		if err != nil || !ok {
 			return errors.New("owner CLI did not save the generation")
 		}
 		return nil
 	}
 	server := &http.Server{Handler: panel(o.API, options, acknowledge), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: time.Minute, IdleTimeout: time.Minute, MaxHeaderBytes: 8192}
-	defer server.Close()
-	server.Serve(connector.Listen(s, s))
+	netx.ServeConn(ctx, conn, server)
 }
 
-func (o channelOptions) valid() bool {
+func validOptions(o ownersession.SSHOptions) bool {
 	token, err := base64.RawURLEncoding.DecodeString(o.Token)
 	if err != nil || len(token) != 32 {
 		return false
@@ -100,7 +90,7 @@ func (o channelOptions) valid() bool {
 }
 
 // Browser protections live with the measured UI. The CLI only forwards bytes.
-func panel(api http.Handler, options channelOptions, acknowledge func() error) http.Handler {
+func panel(api http.Handler, options ownersession.SSHOptions, acknowledge func() error) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
 		w.Header().Set("Referrer-Policy", "no-referrer")
@@ -121,7 +111,7 @@ func panel(api http.Handler, options channelOptions, acknowledge func() error) h
 			http.NotFound(w, r)
 			return
 		}
-		if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-Tinfoil-Session")), []byte(options.Token)) != 1 {
+		if subtle.ConstantTimeCompare([]byte(r.Header.Get(ownersession.SessionHeader)), []byte(options.Token)) != 1 {
 			http.Error(w, "local panel session required", http.StatusUnauthorized)
 			return
 		}

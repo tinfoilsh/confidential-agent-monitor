@@ -1,18 +1,23 @@
-package owner
+// Package ownersession runs an owner's signed Noise session and RPC over a WebSocket, and names the wire of the owner CLI's HTTP channel over SSH.
+package ownersession
 
 import (
+	"bytes"
 	"context"
 	"crypto/ecdh"
 	"crypto/ed25519"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/json"
 	"encoding/pem"
 	"errors"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
+	"filippo.io/edwards25519"
 	"github.com/coder/websocket"
 	"github.com/flynn/noise"
 	"golang.org/x/crypto/chacha20poly1305"
@@ -31,7 +36,7 @@ const (
 
 var (
 	suite        = noise.NewCipherSuite(noise.DH25519, noise.CipherChaChaPoly, noise.HashBLAKE2s)
-	errMalformed = errors.New("malformed")
+	ErrMalformed = errors.New("malformed")
 	errSignature = errors.New("invalid_signature")
 )
 
@@ -75,6 +80,25 @@ func LoadKey(path string) (noise.DHKey, error) {
 	return noise.DHKey{Private: private.Bytes(), Public: private.PublicKey().Bytes()}, nil
 }
 
+// OwnerKey is the measured form of an owner public key.
+func OwnerKey(key ed25519.PublicKey) string {
+	return "ed25519:" + base64.StdEncoding.EncodeToString(key)
+}
+
+// ParseOwnerKey reads a measured owner key. A small-order point would verify forged
+// signatures for any message, so only canonical keys outside the torsion subgroup pass.
+func ParseOwnerKey(value string) (ed25519.PublicKey, error) {
+	encoded, ok := strings.CutPrefix(value, "ed25519:")
+	key, err := base64.StdEncoding.Strict().DecodeString(encoded)
+	if ok && err == nil && len(key) == ed25519.PublicKeySize && OwnerKey(key) == value {
+		point, err := new(edwards25519.Point).SetBytes(key)
+		if err == nil && bytes.Equal(point.Bytes(), key) && new(edwards25519.Point).MultByCofactor(point).Equal(edwards25519.NewIdentityPoint()) == 0 {
+			return key, nil
+		}
+	}
+	return nil, errors.New("owner public key must be ed25519: followed by the base64 of a valid Ed25519 public key")
+}
+
 // Accept upgrades r and runs an NK handshake bound to prologue. The owner's first message
 // signs the handshake hash with its measured key and is decoded into hello.
 func Accept(w http.ResponseWriter, r *http.Request, key noise.DHKey, prologue string, owner ed25519.PublicKey, hello any) (*Channel, error) {
@@ -107,7 +131,7 @@ func Accept(w http.ResponseWriter, r *http.Request, key noise.DHKey, prologue st
 		message, err = c.Read(ctx, frameBytes)
 	}
 	if err != nil || json.Unmarshal(message, &signed) != nil || json.Unmarshal(message, hello) != nil {
-		err = errMalformed
+		err = ErrMalformed
 	} else if !ed25519.Verify(owner, append([]byte(sessionContext), hs.ChannelBinding()...), signed.Signature) {
 		err = errSignature
 	}
@@ -127,7 +151,7 @@ func (c *Channel) Read(ctx context.Context, limit int) ([]byte, error) {
 			frame, err = c.recv.Decrypt(nil, nil, frame)
 		}
 		if err == nil && (len(frame) == 0 || frame[0] > frameLast || len(message)+len(frame)-1 > limit) {
-			err = errMalformed
+			err = ErrMalformed
 		}
 		if err != nil {
 			return nil, err
@@ -171,7 +195,7 @@ func (c *Channel) ServeRPC(ctx context.Context, limit int, serve func(context.Co
 			err = json.Unmarshal(message, &call)
 		}
 		if err != nil {
-			c.Conn.Close(websocket.StatusPolicyViolation, errMalformed.Error())
+			c.Conn.Close(websocket.StatusPolicyViolation, ErrMalformed.Error())
 			return
 		}
 		running <- struct{}{}

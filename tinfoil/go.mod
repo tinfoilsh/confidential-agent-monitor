@@ -3,6 +3,7 @@ module github.com/tinfoilsh/confidential-agent-monitor/tinfoil
 go 1.27.3
 
 require (
+	github.com/coder/websocket v1.8.15
 	github.com/tinfoilsh/confidential-agent-monitor v0.0.0
 	github.com/tinfoilsh/tinfoil-go v0.17.0-rc.3.0.20261022181158-836693177e53
 	gocloud.dev v0.46.0
@@ -36,7 +37,6 @@ require (
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/coder/websocket v1.8.15 // indirect
 	github.com/cyberphone/json-canonicalization v0.0.0-20241213102144-19d51d7fe467 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.1 // indirect
 	github.com/digitorus/pkcs7 v0.0.0-20250730155240-ffadbf3f398c // indirect

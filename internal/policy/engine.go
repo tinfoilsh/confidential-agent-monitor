@@ -28,7 +28,7 @@ type Decision struct {
 
 // Engine is a prepared policy.
 type Engine struct {
-	decision, admin rego.PreparedEvalQuery
+	decision, admin, capable rego.PreparedEvalQuery
 }
 
 func Prepare(ctx context.Context, base string, data map[string]any, policies map[string]string, confidentiality, integrity bool) (*Engine, error) {
@@ -70,7 +70,7 @@ func Prepare(ctx context.Context, base string, data map[string]any, policies map
 		opts = append(opts, rego.ParsedModule(module))
 	}
 	var e Engine
-	for query, prepared := range map[string]*rego.PreparedEvalQuery{"data.perimeter.decision": &e.decision, "data.perimeter.admin_deny": &e.admin} {
+	for query, prepared := range map[string]*rego.PreparedEvalQuery{"data.perimeter.decision": &e.decision, "data.perimeter.admin_deny": &e.admin, "data.perimeter.capable": &e.capable} {
 		var err error
 		if *prepared, err = rego.New(append(slices.Clip(opts), rego.Query(query))...).PrepareForEval(ctx); err != nil {
 			return nil, err
@@ -86,6 +86,11 @@ func (e *Engine) Decide(ctx context.Context, input map[string]any) (Decision, er
 // AdminDeny lists why policy refuses the admin call described by input; an empty list admits it.
 func (e *Engine) AdminDeny(ctx context.Context, input map[string]any) ([]string, error) {
 	return eval[[]string](ctx, e.admin, input)
+}
+
+// Capable reports whether policy grants the identity in input the capability it names.
+func (e *Engine) Capable(ctx context.Context, input map[string]any) (bool, error) {
+	return eval[bool](ctx, e.capable, input)
 }
 
 func eval[T any](ctx context.Context, query rego.PreparedEvalQuery, input map[string]any) (T, error) {

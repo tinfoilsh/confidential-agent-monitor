@@ -10,8 +10,6 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"sync"
-	"sync/atomic"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
@@ -64,10 +62,7 @@ func Parse(source connector.Setup) (connector.Prepared, error) {
 }
 
 // Server owns the SDK session; each request closes over its setup and exact pin.
-type Server struct {
-	mu      sync.Mutex
-	current atomic.Pointer[session]
-}
+type Server struct{ connector.Resource[*session] }
 
 func (s *Server) Update(ctx context.Context, prepared connector.Prepared, secrets map[string]*credential.Value, env *connector.Env) error {
 	setup := *prepared.Value.(*Setup)
@@ -78,37 +73,24 @@ func (s *Server) Update(ctx context.Context, prepared connector.Prepared, secret
 
 // UpdateWithClient owns cleanup after a failed install or after the SDK session closes.
 func (s *Server) UpdateWithClient(ctx context.Context, setup Setup, client *http.Client, cleanup func()) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	if old := s.current.Swap(nil); old != nil {
-		old.Close()
-	}
-	next := &session{Setup: setup, closeTransport: cleanup}
-	if err := next.connect(ctx, client); err != nil {
-		next.Close()
-		return err
-	}
-	s.current.Store(next)
-	return nil
-}
-
-func (s *Server) Close() error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	if old := s.current.Swap(nil); old != nil {
-		return old.Close()
-	}
-	return nil
+	return s.Replace(func() (*session, error) {
+		next := &session{Setup: setup, closeTransport: cleanup}
+		if err := next.connect(ctx, client); err != nil {
+			next.Close()
+			return nil, err
+		}
+		return next, nil
+	})
 }
 
 func (s *Server) Serve(stream *connector.Stream, env *connector.Env) {
-	if current := s.current.Load(); current != nil {
+	if current := s.Load(); current != nil {
 		current.serve(stream, env)
 	}
 }
 
 func (s *Server) Details() json.RawMessage {
-	if current := s.current.Load(); current != nil {
+	if current := s.Load(); current != nil {
 		return current.details()
 	}
 	return nil

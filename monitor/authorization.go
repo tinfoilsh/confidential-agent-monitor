@@ -15,8 +15,8 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/internal/config"
-	"github.com/tinfoilsh/confidential-agent-monitor/internal/frontdoor"
 	"github.com/tinfoilsh/confidential-agent-monitor/internal/policy"
+	"github.com/tinfoilsh/confidential-agent-monitor/netx"
 )
 
 const (
@@ -109,7 +109,7 @@ var (
 	errNoAgent = errors.New("this agent's identity was removed")
 )
 
-func (m *Monitor) authorizeAdmission(ctx context.Context, admitted *admission, target frontdoor.Target) error {
+func (m *Monitor) authorizeAdmission(ctx context.Context, admitted *admission, host string, port uint32) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	if admitted.connection == nil {
@@ -118,8 +118,8 @@ func (m *Monitor) authorizeAdmission(ctx context.Context, admitted *admission, t
 	f := facts.Facts{
 		Operation:  &facts.Operation{Action: "session.admit", Effects: []string{"session"}},
 		Title:      "Open " + admitted.connection.Name,
-		Parameters: map[string]any{"host": target.Host, "port": target.Port},
-		Details:    map[string]any{"tcp": map[string]any{"host": target.Host, "port": target.Port}},
+		Parameters: map[string]any{"host": host, "port": port},
+		Details:    map[string]any{"tcp": map[string]any{"host": host, "port": port}},
 		Context:    facts.Context{Observes: cleanLabel},
 	}
 	g := &grant{kind: facts.KindAdmission, event: facts.Capture(f, nil)}
@@ -139,7 +139,7 @@ func (m *Monitor) authorizeOperation(ctx context.Context, stream *connector.Stre
 	if err := stream.Context.Err(); err != nil {
 		return err
 	}
-	ctx, cancel := connector.Bind(ctx, stream.Context)
+	ctx, cancel := netx.Bind(ctx, stream.Context)
 	defer cancel()
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -326,13 +326,12 @@ func (m *Monitor) relabel(ctx context.Context, fingerprint string, l facts.Label
 		return nil
 	}
 	// An opaque source may finish the session it just admitted. Other opaque
-	// sessions cannot recheck their bytes, so revoke them. Sandbox routes carry
-	// end-to-end traffic under Operator alone.
+	// sessions cannot recheck their bytes, so revoke them.
 	for s, a := range m.streams {
-		if a.fingerprint == fingerprint && s != source && !a.route {
+		if a.fingerprint == fingerprint && s != source {
 			c := a.connection
 			// Close every connector stream so old deliveries cannot recontaminate a reset.
-			if source == nil || c == nil || !m.kinds[c.Protocol].PerMessage {
+			if source == nil || !m.kinds[c.Protocol].PerMessage {
 				s.Close()
 			}
 		}

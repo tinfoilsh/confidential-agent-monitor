@@ -1,4 +1,4 @@
-package bunker
+package tinfoil
 
 import (
 	"encoding/json"
@@ -34,9 +34,9 @@ func decodeBoot(raw json.RawMessage) (b Boot, err error) {
 	return
 }
 
-// ValidateMetadata checks the integration-owned portion of an identity before
+// ValidateBoot checks the integration-owned portion of an identity before
 // the host commits it. An absent boot is valid for ordinary agent identities.
-func ValidateMetadata(raw json.RawMessage) error {
+func ValidateBoot(raw json.RawMessage) error {
 	b, err := decodeBoot(raw)
 	if err == nil && b != (Boot{}) {
 		err = b.Validate()

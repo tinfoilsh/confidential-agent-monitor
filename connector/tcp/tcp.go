@@ -11,6 +11,7 @@ import (
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/netx"
 )
 
 var Kind = connector.Kind{Parse: Parse, New: func() connector.Server { return new(Server) }}
@@ -87,5 +88,5 @@ func (owner *Server) Serve(s *connector.Stream, e *connector.Env) {
 	if err != nil {
 		return
 	}
-	connector.Relay(s.Context, s.Conn, upstream)
+	netx.Relay(s.Context, s.Conn, upstream)
 }

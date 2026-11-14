@@ -13,6 +13,7 @@ import (
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/netx"
 )
 
 // dialFunc opens a private connection between the host and one worker process.
@@ -138,27 +139,6 @@ type signing struct {
 	Algorithm string
 }
 
-type bufferedConn struct {
-	net.Conn
-	reader *bufio.Reader
-}
-
-func (c *bufferedConn) Read(b []byte) (int, error) {
-	// Drain the handshake prefix, then leave net/http's connection reader behind.
-	// A later protocol read deadline must not cancel the hijacked request context.
-	if buffered := c.reader.Buffered(); buffered > 0 {
-		return c.reader.Read(b[:min(len(b), buffered)])
-	}
-	return c.Conn.Read(b)
-}
-
-func (c *bufferedConn) CloseWrite() error {
-	if writer, ok := c.Conn.(interface{ CloseWrite() error }); ok {
-		return writer.CloseWrite()
-	}
-	return errors.New("connection does not support half-close")
-}
-
 // connect bounds dialing and the HTTP handshake, then returns an untimed stream.
 func connect(ctx context.Context, dial dialFunc, r *http.Request, status int) (net.Conn, error) {
 	ctx, cancel := context.WithTimeout(ctx, connector.DialTimeout)
@@ -183,30 +163,18 @@ func connect(ctx context.Context, dial dialFunc, r *http.Request, status int) (n
 		conn.Close()
 		return nil, ctx.Err()
 	}
-	return &bufferedConn{Conn: conn, reader: reader}, nil
+	return netx.Buffered(conn, reader), nil
 }
 
 func accept(w http.ResponseWriter, r *http.Request) (net.Conn, error) {
 	if r.Header.Get("Upgrade") != upgradeProtocol {
 		return nil, errors.New("connector upgrade required")
 	}
-	c, rw, err := w.(http.Hijacker).Hijack()
-	if err != nil {
-		return nil, err
-	}
-	if _, err := rw.WriteString("HTTP/1.1 101 Switching Protocols\r\nConnection: Upgrade\r\nUpgrade: " + upgradeProtocol + "\r\n\r\n"); err != nil {
-		c.Close()
-		return nil, err
-	}
-	if err := rw.Flush(); err != nil {
-		c.Close()
-		return nil, err
-	}
-	return &bufferedConn{Conn: c, reader: rw.Reader}, nil
+	return netx.Hijack(w, "HTTP/1.1 101 Switching Protocols\r\nConnection: Upgrade\r\nUpgrade: "+upgradeProtocol+"\r\n\r\n")
 }
 
 // Worker RPC has stricter header and idle bounds than arbitrary protocol HTTP.
 func serveRPC(ctx context.Context, ln net.Listener, handler http.Handler) error {
-	return connector.ServeListener(ctx, ln, &http.Server{Handler: handler,
+	return netx.ServeListener(ctx, ln, &http.Server{Handler: handler,
 		ReadHeaderTimeout: rpcReadTimeout, IdleTimeout: time.Minute, MaxHeaderBytes: 16 << 10})
 }

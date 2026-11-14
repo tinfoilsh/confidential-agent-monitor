@@ -1,21 +1,20 @@
-// Package bunker provides sandbox routes and the owner's relay to sandbox attestation and owner sockets.
-package bunker
+package tinfoil
 
 import (
 	"context"
 	"encoding/base64"
 	"errors"
 	"io"
+	"net"
 	"net/http"
 	"regexp"
 	"time"
 
 	"github.com/coder/websocket"
+	"github.com/tinfoilsh/confidential-agent-monitor/routes"
 )
 
 const (
-	// BootstrapUser prefixes the SSH user a sandbox boot publishes its bootstrap route as.
-	BootstrapUser = "sandbox-v2:"
 	MaxRelayBytes = 1 << 20
 
 	maxRelayAttestationBytes = 32 << 20
@@ -24,6 +23,7 @@ const (
 	relayIdleConns           = 4
 	sandboxAttestationURL    = "http://sandbox/.well-known/tinfoil-attestation?nonce="
 	sandboxOwnerPath         = "/owner/ws"
+	bootstrapPort            = "443"
 )
 
 var (
@@ -31,6 +31,14 @@ var (
 	hex32Pattern    = regexp.MustCompile(`^[0-9a-fA-F]{64}$`)
 	errRelayInput   = errors.New("a relay needs a bunker instance_id and an attestation nonce")
 )
+
+type Sandboxes struct{ relays http.RoundTripper }
+
+// NewSandboxes keeps each sandbox's bootstrap connections open between relayed
+// requests, so a request does not wait for a new forwarded channel.
+func NewSandboxes(f *routes.Forwarder) *Sandboxes {
+	return &Sandboxes{&http.Transport{DisableCompression: true, MaxIdleConnsPerHost: relayIdleConns, IdleConnTimeout: relayIdleTimeout, DialContext: f.DialContext}}
+}
 
 // RelayInput selects a sandbox boot by its measured instance.
 type RelayInput struct {
@@ -45,7 +53,7 @@ type RelayReply struct {
 
 // Relay fetches one attestation over a sandbox's bootstrap route and returns the response
 // bytes unchanged. That route is unverified and grants no agent access.
-func (f *Forwarder) Relay(ctx context.Context, in RelayInput) (RelayReply, error) {
+func (s *Sandboxes) Relay(ctx context.Context, in RelayInput) (RelayReply, error) {
 	if !instancePattern.MatchString(in.InstanceID) || !hex32Pattern.MatchString(in.Nonce) {
 		return RelayReply{}, errRelayInput
 	}
@@ -56,10 +64,10 @@ func (f *Forwarder) Relay(ctx context.Context, in RelayInput) (RelayReply, error
 	// An empty User-Agent is omitted, so the sandbox receives no client headers.
 	request.Header = http.Header{"User-Agent": {""}}
 	// Connections are pooled per route; the sandbox still sees its own Host.
-	request.URL.Host = bootstrapRoute(BootstrapUser + in.InstanceID)
+	request.URL.Host = net.JoinHostPort(routes.BootstrapRoute(in.InstanceID), bootstrapPort)
 	ctx, cancel := context.WithTimeout(ctx, relayHopTimeout)
 	defer cancel()
-	response, err := f.relays.RoundTrip(request.WithContext(ctx))
+	response, err := s.relays.RoundTrip(request.WithContext(ctx))
 	if err != nil {
 		return RelayReply{}, responseError{"bunker relay: " + err.Error(), http.StatusBadGateway}
 	}
@@ -75,11 +83,11 @@ func (f *Forwarder) Relay(ctx context.Context, in RelayInput) (RelayReply, error
 }
 
 // DialOwner opens a sandbox boot's owner socket over its bootstrap route.
-func (f *Forwarder) DialOwner(ctx context.Context, instance string) (*websocket.Conn, error) {
+func (s *Sandboxes) DialOwner(ctx context.Context, instance string) (*websocket.Conn, error) {
 	if !instancePattern.MatchString(instance) {
 		return nil, errRelayInput
 	}
-	client := &http.Client{Transport: f.relays, Timeout: relayHopTimeout}
-	conn, _, err := websocket.Dial(ctx, "ws://"+bootstrapRoute(BootstrapUser+instance)+sandboxOwnerPath, &websocket.DialOptions{HTTPClient: client})
+	client := &http.Client{Transport: s.relays, Timeout: relayHopTimeout}
+	conn, _, err := websocket.Dial(ctx, "ws://"+net.JoinHostPort(routes.BootstrapRoute(instance), bootstrapPort)+sandboxOwnerPath, &websocket.DialOptions{HTTPClient: client})
 	return conn, err
 }

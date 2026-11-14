@@ -26,11 +26,12 @@ type Identity struct {
 	// Stored configs and enrollment clients name this "routes".
 	Operator    bool              `json:"routes,omitempty"`
 	Key         string            `json:"key"`
-	Sandbox     json.RawMessage   `json:"sandbox,omitzero"`
 	Groups      []string          `json:"groups,omitempty"`
 	Effects     map[string]string `json:"effects,omitempty"`
 	Connections map[string]Access `json:"connections"`
 	Rules       map[string]Rule   `json:"rules,omitempty"`
+	// Attributes are an identity's other keys, each checked by the validator registered under its name.
+	Attributes map[string]json.RawMessage `json:",embed"`
 }
 
 type Access struct {
@@ -90,15 +91,20 @@ func (c *Connection) UnmarshalJSON(raw []byte) error {
 }
 
 func (c Connection) MarshalJSON() ([]byte, error) {
-	raw, err := json.Marshal(connectionSettings(c))
-	if err != nil || len(c.Setup) == 0 {
+	return marshalWith(connectionSettings(c), c.Setup)
+}
+
+// marshalWith adds the keys of extra to the JSON object of value.
+func marshalWith(value any, extra map[string]json.RawMessage) ([]byte, error) {
+	raw, err := json.Marshal(value)
+	if err != nil || len(extra) == 0 {
 		return raw, err
 	}
 	var fields map[string]json.RawMessage
 	if err := json.Unmarshal(raw, &fields); err != nil {
 		return nil, err
 	}
-	maps.Copy(fields, c.Setup)
+	maps.Copy(fields, extra)
 	return json.Marshal(fields)
 }
 

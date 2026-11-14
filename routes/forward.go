@@ -1,17 +1,17 @@
-package bunker
+package routes
 
 import (
 	"context"
 	"errors"
 	"net"
-	"net/http"
 	"path"
 	"slices"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/netx"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/net/proxy"
 )
@@ -20,8 +20,9 @@ const (
 	maxUntrustedPublishers = 128
 	maxForwardAddresses    = 128
 	forwardOpenTimeout     = 10 * time.Second
-	// A sandbox publishes an OpenSSH SOCKS RemoteForward on this loopback port.
-	socksPort = 1080
+	// An identity publishes an OpenSSH SOCKS RemoteForward on this loopback port.
+	socksPort = "1080"
+	aliasPort = 443
 	// Listeners on 127.0.0.1 do not accept this loopback alias; wildcard listeners do.
 	wildcardHost = "127.0.0.2"
 )
@@ -49,24 +50,8 @@ type forwardPeer struct {
 // Forwarder serves virtual TCP forwards without binding sockets on the server.
 // Each authenticated name owns one connection; aliases must resolve uniquely.
 type Forwarder struct {
-	mu     sync.Mutex
-	peers  map[string]*forwardPeer
-	relays http.RoundTripper
-}
-
-// NewForwarder keeps each sandbox's bootstrap connections open between relayed
-// requests, so a request does not wait for a new forwarded channel.
-func NewForwarder() *Forwarder {
-	f := new(Forwarder)
-	f.relays = &http.Transport{DisableCompression: true, MaxIdleConnsPerHost: relayIdleConns, IdleConnTimeout: relayIdleTimeout,
-		DialContext: func(_ context.Context, _, address string) (net.Conn, error) {
-			host, _, err := net.SplitHostPort(address)
-			if err != nil {
-				return nil, err
-			}
-			return f.Dial(host, 443)
-		}}
-	return f
+	mu    sync.Mutex
+	peers map[string]*forwardPeer
 }
 
 // ServePublisher replaces a peer's previous connection immediately and owns its
@@ -129,18 +114,20 @@ func (f *Forwarder) ServePublisher(conn *ssh.ServerConn, channels <-chan ssh.New
 	}
 }
 
-// Dial opens a sandbox destination's virtual loopback forward for a peer name or
-// unambiguous alias. Addresses are scoped to the publisher, so peers can publish the
-// same ports. Bootstrap aliases expose only port 443; key-derived names may use any port.
-func (f *Forwarder) Dial(name string, port uint32) (net.Conn, error) {
-	name = strings.TrimSuffix(strings.ToLower(name), ".")
-	if port == 0 || port > 65535 || strings.HasPrefix(name, "bootstrap-") && port != 443 {
+// Dial opens a publisher's virtual loopback forward at address, a peer name or
+// unambiguous alias with a port. Addresses are scoped to the publisher, so peers can publish the
+// same ports. Aliases expose only port 443; key-derived names may use any port.
+func (f *Forwarder) Dial(_, address string) (net.Conn, error) {
+	host, service, err := net.SplitHostPort(address)
+	port, invalid := strconv.ParseUint(service, 10, 16)
+	if f == nil || err != nil || invalid != nil || port == 0 {
 		return nil, errRouteUnavailable
 	}
-	endpoint := forwardAddress{"127.0.0.1", port}
+	name := strings.TrimSuffix(strings.ToLower(host), ".")
+	endpoint := forwardAddress{"127.0.0.1", uint32(port)}
 	f.mu.Lock()
 	peer := f.peers[name]
-	if peer == nil && name != "" {
+	if peer == nil && name != "" && port == aliasPort {
 		for _, candidate := range f.peers {
 			if candidate.Alias == name && candidate.addresses[endpoint] {
 				if peer != nil {
@@ -164,19 +151,18 @@ func (f *Forwarder) Dial(name string, port uint32) (net.Conn, error) {
 		Port       uint32
 		Origin     string
 		OriginPort uint32
-	}{endpoint.Host, port, endpoint.Host, port}))
+	}{endpoint.Host, endpoint.Port, endpoint.Host, endpoint.Port}))
 	if err != nil {
 		return nil, errRouteUnavailable
 	}
-	return connector.NewChannelConn(channel, requests), nil
+	return netx.NewChannelConn(channel, requests), nil
 }
 
-// DialKey opens the forward that the peer authenticated with key published on port.
-func (f *Forwarder) DialKey(key ssh.PublicKey, port uint32) (net.Conn, error) {
-	return f.Dial(RouteName(key), port)
+func (f *Forwarder) DialContext(_ context.Context, network, address string) (net.Conn, error) {
+	return f.Dial(network, address)
 }
 
-// RouteAllowed reports whether a route pattern among hosts matches host, so * never reaches a sandbox.
+// RouteAllowed reports whether a route pattern among hosts matches host, so * never reaches a route.
 func RouteAllowed(hosts []string, host string) bool {
 	host = strings.TrimSuffix(strings.ToLower(host), ".")
 	return slices.ContainsFunc(hosts, func(pattern string) bool {
@@ -185,10 +171,10 @@ func RouteAllowed(hosts []string, host string) bool {
 	})
 }
 
-// RouteDialer dials sandbox routes through Routes and every other address through Next.
+// RouteDialer dials reserved route hosts through Routes, none if it is nil, and every other address through Next.
 type RouteDialer struct {
 	Routes *Forwarder
-	Next   connector.Dialer
+	Next   proxy.ContextDialer
 	// Key returns the key of the enrolled identity a route host names, as NAME.sandbox.
 	Key   func(name string) (ssh.PublicKey, bool)
 	Hosts []string
@@ -199,20 +185,27 @@ func (d RouteDialer) DialContext(ctx context.Context, network, address string) (
 	if err != nil || !ReservedRoute(host) {
 		return d.Next.DialContext(ctx, network, address)
 	}
-	name, named := strings.CutSuffix(strings.TrimSuffix(strings.ToLower(host), "."), bunkerSuffix)
+	name, named := strings.CutSuffix(strings.TrimSuffix(strings.ToLower(host), "."), identitySuffix)
 	key, enrolled := d.Key(name)
 	if !RouteAllowed(d.Hosts, host) || !named || !enrolled {
 		return nil, errRouteUnavailable
 	}
-	// The SOCKS server is the sandbox's own ssh client, reached over an SSH channel, not a socket.
-	server := channelDialer(func() (net.Conn, error) { return d.Routes.DialKey(key, socksPort) })
-	socks, err := proxy.SOCKS5(network, "", nil, server)
+	// The SOCKS server is the publisher's own ssh client, reached over an SSH channel, not a socket.
+	server := net.JoinHostPort(routeName(key), socksPort)
+	socks, err := proxy.SOCKS5(network, server, nil, nil)
 	if err != nil {
 		return nil, err
 	}
-	return socks.(proxy.ContextDialer).DialContext(ctx, network, net.JoinHostPort(wildcardHost, port))
+	conn, err := d.Routes.DialContext(ctx, network, server)
+	if err != nil {
+		return nil, err
+	}
+	// The handshake runs on the channel itself, so callers keep its half-close and closure.
+	if _, err := socks.(interface {
+		DialWithConn(context.Context, net.Conn, string, string) (net.Addr, error)
+	}).DialWithConn(ctx, conn, network, net.JoinHostPort(wildcardHost, port)); err != nil {
+		conn.Close()
+		return nil, err
+	}
+	return conn, nil
 }
-
-type channelDialer func() (net.Conn, error)
-
-func (c channelDialer) Dial(string, string) (net.Conn, error) { return c() }

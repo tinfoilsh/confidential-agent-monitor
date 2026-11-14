@@ -23,10 +23,10 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
 	"github.com/tinfoilsh/confidential-agent-monitor/facts"
-	"github.com/tinfoilsh/confidential-agent-monitor/internal/bunker"
 	"github.com/tinfoilsh/confidential-agent-monitor/internal/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/internal/policy"
 	"github.com/tinfoilsh/confidential-agent-monitor/internal/store"
+	"github.com/tinfoilsh/confidential-agent-monitor/netx"
 	"github.com/tinfoilsh/confidential-agent-monitor/presets"
 	"golang.org/x/crypto/ssh"
 )
@@ -34,9 +34,8 @@ import (
 const (
 	maxDocumentBytes = 16 << 20
 	// Base64 inflates the call by a third.
-	MaxCallBytes     = 2 * maxDocumentBytes
-	maxAgentBytes    = 96 << 10
-	sandboxRelayPath = "/sandboxes/relay"
+	MaxCallBytes  = 2 * maxDocumentBytes
+	maxAgentBytes = 96 << 10
 )
 
 type unlockInput struct {
@@ -85,7 +84,7 @@ func (m *Monitor) registerOwnerRoutes(mux *http.ServeMux) {
 		caller, err := m.caller(r)
 		key := req.StorageKey
 		if err == nil && len(key) == 0 {
-			key, err = m.bearerKey(r)
+			key = caller.Key
 		}
 		if err != nil {
 			return nil, err
@@ -105,9 +104,9 @@ func (m *Monitor) registerOwnerRoutes(mux *http.ServeMux) {
 	mux.Handle("POST /enroll", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input map[string]identityEnrollment) (any, error) {
 		return m.viewAfter(r, m.enroll(r.Context(), input))
 	})))
-	mux.Handle("POST "+sandboxRelayPath, m.ownerOnly(JSONHandler(bunker.MaxRelayBytes, func(r *http.Request, in bunker.RelayInput) (any, error) {
-		return m.forwards.Relay(r.Context(), in)
-	})))
+	for pattern, handler := range m.admin {
+		mux.Handle(pattern, m.ownerOnly(handler.ServeHTTP))
+	}
 	mux.Handle("POST /labels/{identity}", ownerTx(m, func(r *http.Request, l facts.Label) (any, error) {
 		var fingerprints []string
 		for key, name := range m.settings.Load().Principals {
@@ -226,7 +225,7 @@ func (m *Monitor) connectionControl(w http.ResponseWriter, r *http.Request) {
 	setupCtx, name, server := c.setupCtx, c.Name, c.Server
 	m.mu.Unlock()
 	defer release()
-	ctx, cancel := connector.Bind(r.Context(), setupCtx)
+	ctx, cancel := netx.Bind(r.Context(), setupCtx)
 	defer cancel()
 	r.Body = http.MaxBytesReader(w, r.Body, maxDocumentBytes)
 	http.StripPrefix("/connections/"+name, connector.Control(server)).ServeHTTP(w, r.WithContext(ctx))
@@ -303,6 +302,7 @@ type Caller struct {
 	Minimum     uint64
 	Acknowledge func() error
 	ID          string
+	Key         []byte // The storage key the transport authenticated with.
 	route       string
 }
 
@@ -343,25 +343,18 @@ func (m *Monitor) caller(r *http.Request) (Caller, error) {
 	if c, ok := callerFrom(r.Context()); ok {
 		return c, nil
 	}
-	key, err := m.bearerKey(r)
-	// While locked any well-formed key passes; only unlock can check a key then.
-	if err == nil && m.settings.Load() != nil && !m.store.IsOwner(key) {
-		err = store.ErrOwner
-	}
-	return Caller{Name: Owner, Owner: true}, err
+	return Caller{}, store.ErrOwner
 }
 
-// bearerKey reads the owner secret of a request under StorageKeyAuth.
-func (m *Monitor) bearerKey(r *http.Request) ([]byte, error) {
-	token, ok := strings.CutPrefix(r.Header.Get("Authorization"), "Bearer ")
-	if !m.storageKeyAuth || !ok || len(token) > base64.StdEncoding.EncodedLen(store.MaxOwnerKeyBytes) {
-		return nil, store.ErrOwner
+// IsOwner reports whether key is a well-formed storage key and, once unlocked, the owner's.
+// While locked any well-formed key passes; only unlock can check a key then.
+func (m *Monitor) IsOwner(key []byte) bool {
+	if len(key) < store.MinOwnerKeyBytes || len(key) > store.MaxOwnerKeyBytes {
+		return false
 	}
-	key, err := base64.StdEncoding.Strict().DecodeString(token)
-	if err != nil || len(key) < store.MinOwnerKeyBytes || len(key) > store.MaxOwnerKeyBytes {
-		return nil, store.ErrOwner
-	}
-	return key, nil
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.settings.Load() == nil || m.store.IsOwner(key)
 }
 
 func agentTx[T any](m *Monitor, key string, fn func(*http.Request, T, config.Principal) (any, error)) http.HandlerFunc {
@@ -576,7 +569,7 @@ func (m *Monitor) agentPolicy(p config.Principal) (any, error) {
 	st := m.settings.Load()
 	var visible map[string]any
 	var err error
-	if st.Identities[p.Name].Operator {
+	if st.capable(p, capabilityConfig) {
 		// Credential values live outside Config.
 		visible, err = st.Config.View()
 	} else {

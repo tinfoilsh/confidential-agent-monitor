@@ -1,213 +1,97 @@
 package monitor
 
 import (
-	"bytes"
-	"cmp"
 	"context"
 	"errors"
 	"fmt"
 	"net"
+	"net/http"
+	"strings"
 
-	"github.com/coder/websocket"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/facts"
-	"github.com/tinfoilsh/confidential-agent-monitor/internal/bunker"
 	"github.com/tinfoilsh/confidential-agent-monitor/internal/config"
-	"github.com/tinfoilsh/confidential-agent-monitor/internal/frontdoor"
-	"github.com/tinfoilsh/confidential-agent-monitor/internal/store"
+	"github.com/tinfoilsh/confidential-agent-monitor/netx"
+	"github.com/tinfoilsh/confidential-agent-monitor/routes"
 	"golang.org/x/crypto/ssh"
 )
 
-const fingerprintExtension = "fingerprint"
 const agentHost = config.AgentConnection + connector.Domain
 const agentPort = 80
 
-type certifiedKey struct{}
+var errNoAccess = errors.New("key has no agent access")
 
-type SSHAdmin interface {
-	Authenticates(ssh.PublicKey) bool
-	ServeChannel(ssh.NewChannel)
-}
-
-func (m *Monitor) DialBunkerOwner(ctx context.Context, instance string) (*websocket.Conn, error) {
-	return m.forwards.DialOwner(ctx, instance)
-}
-
-func (m *Monitor) ServeSSH(ln net.Listener, admin SSHAdmin) {
-	frontdoor.Serve(ln, func() *ssh.ServerConfig {
-		host := m.HostKey()
-		if host == nil {
-			return nil
-		}
-		c := &ssh.ServerConfig{MaxAuthTries: 3, PublicKeyCallback: func(conn ssh.ConnMetadata, key ssh.PublicKey) (*ssh.Permissions, error) {
-			if admin != nil && admin.Authenticates(key) {
-				return &ssh.Permissions{Extensions: map[string]string{"owner": "true"}}, nil
-			}
-			if m.settings.Load() == nil {
-				return nil, errLocked
-			}
-			if cert, ok := key.(*ssh.Certificate); ok && m.identityCA != nil {
-				if cert.CertType != ssh.UserCert || !bytes.Equal(cert.SignatureKey.Marshal(), m.identityCA.Marshal()) || cert.KeyId == "" || cert.ValidBefore == ssh.CertTimeInfinity {
-					return nil, errors.New("an identity certificate must be an expiring user certificate with a key ID from the identity CA")
-				}
-				// Principals carry groups, not logins, so any listed one stands in for the login.
-				if err := new(ssh.CertChecker).CheckCert(cmp.Or(cert.ValidPrincipals...), cert); err != nil {
-					return nil, err
-				}
-				// A certificate is public, so it is stored only once VerifiedPublicKeyCallback has seen its key sign.
-				return &ssh.Permissions{Extensions: map[string]string{fingerprintExtension: ssh.FingerprintSHA256(cert.Key)},
-					ExtraData: map[any]any{certifiedKey{}: store.Certified{Name: cert.KeyId, Groups: cert.ValidPrincipals, ValidBefore: cert.ValidBefore}}}, nil
-			}
-			extensions, err := bunker.Authenticate(conn, key, m.keyAccess)
-			if err != nil {
-				return nil, err
-			}
-			extensions[fingerprintExtension] = ssh.FingerprintSHA256(key)
-			return &ssh.Permissions{Extensions: extensions}, nil
-		}, VerifiedPublicKeyCallback: func(_ ssh.ConnMetadata, _ ssh.PublicKey, p *ssh.Permissions, _ string) (*ssh.Permissions, error) {
-			if identity, ok := p.ExtraData[certifiedKey{}].(store.Certified); ok {
-				return p, m.certify(context.Background(), p.Extensions[fingerprintExtension], identity)
-			}
-			return p, nil
-		}}
-		c.AddHostKey(host)
-		return c
-	}, func(conn *ssh.ServerConn, chans <-chan ssh.NewChannel, reqs <-chan *ssh.Request) {
-		if conn.Permissions.Extensions["owner"] == "true" {
-			go ssh.DiscardRequests(reqs)
-			for nc := range chans {
-				go admin.ServeChannel(nc)
-			}
-			return
-		}
-
-		fingerprint := conn.Permissions.Extensions[fingerprintExtension]
-		if conn.Permissions.Extensions[bunker.RouteExtension] != "" {
-			known, _ := m.keyAccess(fingerprint)
-			m.forwards.ServePublisher(conn, chans, reqs, bunker.Publisher{
-				Name:    conn.Permissions.Extensions[bunker.RouteExtension],
-				Alias:   conn.Permissions.Extensions[bunker.BootstrapExtension],
-				Trusted: known,
-			})
-			return
-		}
-
-		go func() {
-			for req := range reqs {
-				req.Reply(req.Type == "keepalive@openssh.com", nil)
-			}
-		}()
-		for nc := range chans {
-			target, err := frontdoor.Parse(nc)
-			if err != nil {
-				nc.Reject(ssh.Prohibited, err.Error())
-				continue
-			}
-			if bunker.ReservedRoute(target.Host) {
-				go m.forwardSandbox(fingerprint, nc, target)
-			} else if target.Host == agentHost {
-				go m.serveAgentAPI(fingerprint, nc, target)
-			} else {
-				go m.forwardConnection(fingerprint, nc, target)
-			}
-		}
-	})
-}
-
-func (m *Monitor) forwardSandbox(key string, nc ssh.NewChannel, target frontdoor.Target) {
-	known, operator := m.keyAccess(key)
-	if !known {
-		nc.Reject(ssh.Prohibited, "key has no agent access")
-		return
+// Open admits key's stream to host and port, calls accept, and serves the accepted stream
+// until it ends. An error returned before accept refuses the stream. ctx ends when the
+// stream's peer closes it.
+func (m *Monitor) Open(ctx context.Context, key, host string, port uint32, accept func() (net.Conn, error)) error {
+	if m.settings.Load() == nil {
+		return errLocked
 	}
-	if !operator {
-		m.forwardConnection(key, nc, target)
-		return
-	}
-	upstream, err := m.forwards.Dial(target.Host, target.Port)
-	if err != nil {
-		nc.Reject(ssh.ConnectionFailed, "route unavailable")
-		return
-	}
-	defer upstream.Close()
-	ch, reqs, err := nc.Accept()
-	if err != nil {
-		return
-	}
-	s := connector.NewStream(context.Background(), connector.NewChannelConn(ch, reqs))
-	s.Host, s.Port = target.Host, target.Port
-	defer s.Close()
-	if release, ok := m.admitStream(s, &admission{fingerprint: key, route: true}); ok {
-		defer release()
-		connector.Relay(s.Context, s.Conn, upstream)
+	switch {
+	case host == agentHost:
+		return m.serveAgentAPI(ctx, key, port, accept)
+	default:
+		return m.forwardConnection(ctx, key, host, port, accept)
 	}
 }
 
-func (m *Monitor) serveAgentAPI(key string, nc ssh.NewChannel, target frontdoor.Target) {
+func (m *Monitor) serveAgentAPI(ctx context.Context, key string, port uint32, accept func() (net.Conn, error)) error {
 	if _, known := m.settings.Load().Principal(key); !known {
-		nc.Reject(ssh.Prohibited, "key has no agent access")
-		return
+		return errNoAccess
 	}
-	if target.Port != agentPort {
-		nc.Reject(ssh.Prohibited, fmt.Sprintf("%s uses HTTP on port %d inside the SSH tunnel", agentHost, agentPort))
-		return
+	if port != agentPort {
+		return fmt.Errorf("%s uses HTTP on port %d inside the SSH tunnel", agentHost, agentPort)
 	}
-	ch, reqs, err := nc.Accept()
+	conn, err := accept()
 	if err != nil {
-		return
+		return err
 	}
-	conn := connector.NewChannelConn(ch, reqs)
-	s := connector.NewStream(context.Background(), conn)
-	defer s.Close()
-	go func() { <-conn.Closed(); s.Close() }()
-	connector.ServeHTTP(s, s, m.agentHandler(key))
+	netx.ServeConn(ctx, conn, &http.Server{Handler: m.agentHandler(key)})
+	return nil
 }
 
-func (m *Monitor) forwardConnection(key string, nc ssh.NewChannel, target frontdoor.Target) {
+func (m *Monitor) forwardConnection(ctx context.Context, key, target string, port uint32, accept func() (net.Conn, error)) error {
 	st := m.settings.Load()
 	p, known := st.Principal(key)
 	if !known {
-		nc.Reject(ssh.Prohibited, "key has no agent access")
-		return
+		return errNoAccess
 	}
 	m.mu.Lock()
-	var candidates []frontdoor.Candidate
+	var candidates []candidate
 	for name, c := range m.connections {
-		if st.Reaches(p.Name, c.Name) && c.Status().State == statusReady && (!bunker.ReservedRoute(target.Host) || bunker.RouteAllowed(c.prepared.Routes, target.Host)) {
-			route := frontdoor.Candidate{Name: name}
+		if st.Reaches(p.Name, c.Name) && c.Status().State == statusReady && (!routes.ReservedRoute(target) || routes.RouteAllowed(c.prepared.Routes, target)) {
+			route := candidate{Name: name}
 			route.Claim = c.prepared.Claim
 			candidates = append(candidates, route)
 		}
 	}
-	selected, explicit := frontdoor.Select(target.Host, target.Port, candidates)
+	selected, explicit := selectTarget(target, port, candidates)
 	c := m.connections[selected]
 	if c == nil {
 		m.mu.Unlock()
-		nc.Reject(ssh.Prohibited, "the Perimeter does not forward this target")
-		return
+		return errors.New("the Perimeter does not forward this target")
 	}
-	ctx, name, admitted, env := c.setupCtx, c.Name, &admission{fingerprint: key, connection: c, prepared: c.prepared}, c.env
+	setup, name, admitted, env := c.setupCtx, c.Name, &admission{fingerprint: key, connection: c, prepared: c.prepared}, c.env
 	m.mu.Unlock()
-	host := target.Host
+	host := target
 	if explicit {
 		host = ""
 	}
-	if err := m.authorizeAdmission(ctx, admitted, target); err != nil {
-		nc.Reject(ssh.Prohibited, err.Error())
-		return
+	if err := m.authorizeAdmission(setup, admitted, target, port); err != nil {
+		return err
 	}
-	ch, reqs, err := nc.Accept()
+	conn, err := accept()
 	if err != nil {
-		return
+		return err
 	}
-	conn := connector.NewChannelConn(ch, reqs)
-	s := connector.NewStream(ctx, conn)
-	s.Name, s.Host, s.Port = name, host, target.Port
+	s := connector.NewStream(setup, conn)
+	s.Name, s.Host, s.Port = name, host, port
 	defer s.Close()
-	go func() { <-conn.Closed(); s.Close() }()
+	context.AfterFunc(ctx, func() { s.Close() })
 	release, ok := m.admitStream(s, admitted)
 	if !ok {
-		return
+		return nil
 	}
 	defer release()
 	s.Gate = func(ctx context.Context, event facts.Event) error {
@@ -216,6 +100,7 @@ func (m *Monitor) forwardConnection(key string, nc ssh.NewChannel, target frontd
 	// A worker proxy relays the bytes into the concrete connector and sends its
 	// Gate calls back to this stream. Identity and policy remain owned by Monitor.
 	c.Server.Serve(s, &env)
+	return nil
 }
 
 // recheck runs under mu: the stream's identity, access and connector remain, and
@@ -225,9 +110,6 @@ func (m *Monitor) recheck(admitted *admission) bool {
 	p, ok := st.Principal(admitted.fingerprint)
 	if !ok {
 		return false
-	}
-	if admitted.route {
-		return st.Identities[p.Name].Operator
 	}
 	if !st.Reaches(p.Name, admitted.connection.Name) {
 		return false
@@ -247,24 +129,43 @@ func (m *Monitor) admitStream(s *connector.Stream, admitted *admission) (release
 	if !m.recheck(admitted) {
 		return nil, false
 	}
-	release = func() {}
-	if !admitted.route {
-		if release, _ = m.acquire(admitted.connection, admitted.prepared); release == nil {
-			return nil, false
-		}
+	if release, _ = m.acquire(admitted.connection, admitted.prepared); release == nil {
+		return nil, false
 	}
 	m.streams[s] = admitted
 	context.AfterFunc(s.Context, func() { m.mu.Lock(); delete(m.streams, s); m.mu.Unlock() })
 	return release, true
 }
 
-func (m *Monitor) keyAccess(key string) (known, operator bool) {
+// Capable reports whether key is an identity's, and whether that identity holds capability.
+func (m *Monitor) Capable(key, capability string) (known, capable bool) {
 	s := m.settings.Load()
 	if s == nil {
 		return false, false
 	}
 	p, known := s.Principal(key)
-	return known, s.Identities[p.Name].Operator
+	return known, known && s.capable(p, capability)
+}
+
+type hold struct{ key, capability string }
+
+// Hold leases capability while key's identity holds it. The context it returns ends
+// when a settings commit leaves that identity unknown or without the capability.
+func (m *Monitor) Hold(ctx context.Context, key, capability string) (context.Context, context.CancelFunc, bool) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	st := m.settings.Load()
+	if st == nil {
+		return nil, nil, false
+	}
+	if p, known := st.Principal(key); !known || !st.capable(p, capability) {
+		return nil, nil, false
+	}
+	ctx, cancel := context.WithCancel(ctx)
+	h := &hold{key, capability}
+	m.holds[h] = cancel
+	context.AfterFunc(ctx, func() { m.mu.Lock(); delete(m.holds, h); m.mu.Unlock() })
+	return ctx, cancel, true
 }
 
 func (m *Monitor) identityKey(name string) (ssh.PublicKey, bool) {
@@ -284,4 +185,40 @@ func (m *Monitor) HostKey() ssh.Signer {
 		return s.HostKey
 	}
 	return m.sshHostKey
+}
+
+type candidate struct {
+	Name  string
+	Claim func(string, uint32) int
+}
+
+// selectTarget resolves only supplied candidates, so inaccessible connections cannot tie.
+func selectTarget(host string, port uint32, candidates []candidate) (name string, explicit bool) {
+	if name, ok := strings.CutSuffix(host, connector.Domain); ok {
+		for _, c := range candidates {
+			if c.Name == name {
+				return name, true
+			}
+		}
+		return "", true
+	}
+	best, tied := -1, false
+	for _, c := range candidates {
+		if c.Claim == nil {
+			continue
+		}
+		score := c.Claim(host, port)
+		if score < 0 {
+			continue
+		}
+		if score > best {
+			name, best, tied = c.Name, score, false
+		} else if score == best {
+			tied = true
+		}
+	}
+	if tied {
+		return "", false
+	}
+	return name, false
 }

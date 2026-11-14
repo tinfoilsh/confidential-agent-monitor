@@ -1,11 +1,10 @@
-// Package owner authenticates Noise session and SSH owner requests.
+// Package owner authenticates Noise session, SSH and development bearer owner requests.
 package owner
 
 import (
 	"bytes"
 	"context"
 	"crypto/ed25519"
-	"encoding/base64"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -13,10 +12,10 @@ import (
 	"path"
 	"strings"
 
-	"filippo.io/edwards25519"
 	"github.com/coder/websocket"
 	"github.com/flynn/noise"
 	"github.com/tinfoilsh/confidential-agent-monitor/monitor"
+	"github.com/tinfoilsh/confidential-agent-monitor/ownersession"
 )
 
 const (
@@ -33,7 +32,7 @@ type Handler struct {
 	// API serves authenticated calls as the owner.
 	API        http.Handler
 	Generation Generation
-	// Relay opens a sandbox's owner socket, which the owner then runs its own session over.
+	// Relay opens an instance's owner socket, which the owner then runs its own session over; nil refuses relays.
 	Relay func(ctx context.Context, instance string) (*websocket.Conn, error)
 }
 
@@ -44,37 +43,37 @@ type hello struct {
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var open hello
-	c, err := Accept(w, r, h.SessionKey, Protocol, h.Key, &open)
+	c, err := ownersession.Accept(w, r, h.SessionKey, Protocol, h.Key, &open)
 	if err != nil {
 		return
 	}
-	switch open.Open {
-	case "rpc":
+	switch {
+	case open.Open == "rpc":
 		c.ServeRPC(r.Context(), h.MaxBytes, h.serve)
-	case "relay":
-		sandbox, err := h.Relay(r.Context(), open.InstanceID)
+	case open.Open == "relay" && h.Relay != nil:
+		upstream, err := h.Relay(r.Context(), open.InstanceID)
 		if err != nil {
 			// The innermost cause fits the close frame's 123-byte reason; dial wrappers add the URL.
 			for errors.Unwrap(err) != nil {
 				err = errors.Unwrap(err)
 			}
-			c.Conn.Close(websocket.StatusInternalError, "bunker unavailable: "+err.Error())
+			c.Conn.Close(websocket.StatusInternalError, "relay unavailable: "+err.Error())
 			return
 		}
-		sandbox.SetReadLimit(noise.MaxMsgLen)
-		relay(r.Context(), c.Conn, sandbox)
+		upstream.SetReadLimit(noise.MaxMsgLen)
+		relay(r.Context(), c.Conn, upstream)
 	default:
-		c.Conn.Close(websocket.StatusPolicyViolation, errMalformed.Error())
+		c.Conn.Close(websocket.StatusPolicyViolation, ownersession.ErrMalformed.Error())
 	}
 }
 
-func (h *Handler) serve(ctx context.Context, call Call) Reply {
+func (h *Handler) serve(ctx context.Context, call ownersession.Call) ownersession.Reply {
 	target, ok := ownerRPCTarget(call.Path)
 	if !ok || (call.Method != http.MethodGet && call.Method != http.MethodPost) || (call.Method == http.MethodGet && len(call.Body) != 0) {
-		return Reply{Status: http.StatusBadRequest, Body: []byte(errMalformed.Error())}
+		return ownersession.Reply{Status: http.StatusBadRequest, Body: []byte(ownersession.ErrMalformed.Error())}
 	}
 	if h.Generation.stale(call.Generation) {
-		return Reply{Status: http.StatusConflict, Body: []byte(ErrStaleGeneration.Error())}
+		return ownersession.Reply{Status: http.StatusConflict, Body: []byte(ErrStaleGeneration.Error())}
 	}
 	// An admitted effect finishes even if its socket closes.
 	if call.Method == http.MethodPost {
@@ -88,17 +87,17 @@ func (h *Handler) serve(ctx context.Context, call Call) Reply {
 	}
 	recorder := httptest.NewRecorder()
 	h.API.ServeHTTP(recorder, inner)
-	return Reply{Status: recorder.Code, Body: recorder.Body.Bytes()}
+	return ownersession.Reply{Status: recorder.Code, Body: recorder.Body.Bytes()}
 }
 
 // relay copies whole messages each way until either side ends, passing on its close.
-func relay(ctx context.Context, owner, sandbox *websocket.Conn) {
+func relay(ctx context.Context, owner, upstream *websocket.Conn) {
 	defer owner.CloseNow()
 	go func() {
-		copyMessages(ctx, sandbox, owner)
-		sandbox.CloseNow()
+		copyMessages(ctx, upstream, owner)
+		upstream.CloseNow()
 	}()
-	copyMessages(ctx, owner, sandbox)
+	copyMessages(ctx, owner, upstream)
 }
 
 func copyMessages(ctx context.Context, dst, src *websocket.Conn) {
@@ -129,25 +128,6 @@ func ownerRPCTarget(raw string) (*url.URL, bool) {
 		}
 	}
 	return u, true
-}
-
-// OwnerKey is the measured form of an owner public key.
-func OwnerKey(key ed25519.PublicKey) string {
-	return "ed25519:" + base64.StdEncoding.EncodeToString(key)
-}
-
-// ParseOwnerKey reads a measured owner key. A small-order point would verify forged
-// signatures for any message, so only canonical keys outside the torsion subgroup pass.
-func ParseOwnerKey(value string) (ed25519.PublicKey, error) {
-	encoded, ok := strings.CutPrefix(value, "ed25519:")
-	key, err := base64.StdEncoding.Strict().DecodeString(encoded)
-	if ok && err == nil && len(key) == ed25519.PublicKeySize && OwnerKey(key) == value {
-		point, err := new(edwards25519.Point).SetBytes(key)
-		if err == nil && bytes.Equal(point.Bytes(), key) && new(edwards25519.Point).MultByCofactor(point).Equal(edwards25519.NewIdentityPoint()) == 0 {
-			return key, nil
-		}
-	}
-	return nil, errors.New("owner public key must be ed25519: followed by the base64 of a valid Ed25519 public key")
 }
 
 var ErrStaleGeneration = errors.New("Perimeter state is older than the saved generation")

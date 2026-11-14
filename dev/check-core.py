@@ -16,7 +16,7 @@ PROTOCOLS = {
 MODULE = "github.com/tinfoilsh/confidential-agent-monitor/"
 TINFOIL = ("github.com/tinfoilsh/tinfoil-go", MODULE + "tinfoil")
 FROZEN = re.compile("|".join(map(re.escape, (MODULE, "tinfoil-owner-http-v1", "tinfoil-owner-generation-v1", "X-Tinfoil-Session", "tinfoil owner session v1",
-    "TINFOIL-MONITOR-STATE", "tinfoil-attestation", '"tinfoil": {"": "tinfoil", "websearch": "tinfoil_websearch"}'))))
+    "TINFOIL-MONITOR-STATE", '"tinfoil": {"": "tinfoil", "websearch": "tinfoil_websearch"}'))))
 SKIP = {".git", ".dev", "node_modules", "vendor", "dist", "dist-hosted", "dist-static"}
 
 
@@ -25,8 +25,8 @@ def category(path):
         return "tests"
     if path.parts[0] == "dev":
         return "tooling"
-    if path.parts[:2] == ("internal", "bunker"):
-        return "sandbox"
+    if path.parts[0] == "routes":
+        return "routes"
     if path.parts[0] == "tinfoil":
         return "protocols"
     if len(path.parts) > 2 and path.parts[0] == "connector" and path.parts[1] in PROTOCOLS:
@@ -51,6 +51,8 @@ def forbidden(path, dependency, main):
         return True
     if not dependency.startswith(MODULE):
         return False
+    if path.parts[0] in ("netx", "ownersession"):
+        return True
     dependency = dependency.removeprefix(MODULE)
     concrete = dependency.startswith("connector/") and dependency.split("/")[1] in PROTOCOLS
     if path.parts[0] == "facts":
@@ -60,8 +62,8 @@ def forbidden(path, dependency, main):
     if path.parts[0] == "connector":
         return dependency.startswith(("internal/", "monitor", "owner", "worker"))
     if path.parts[:2] == ("internal", "config"):
-        return concrete or dependency.startswith(("internal/policy", "monitor", "internal/bunker", "owner"))
-    if path.parts[0] in ("perimeter", "owner"):
+        return concrete or dependency.startswith(("internal/policy", "monitor", "routes", "owner"))
+    if path.parts[0] in ("perimeter", "owner", "frontdoor"):
         return concrete or dependency.startswith("internal/")
     if path.parts[0] == "monitor":
         return concrete
@@ -82,7 +84,7 @@ def main():
         paths = [Path(p) for p in tracked if p.endswith(".go") and (root / p).is_file()]
     else:
         paths = [p.relative_to(root) for p in root.rglob("*.go") if not SKIP.intersection(p.relative_to(root).parts)]
-    totals = dict.fromkeys(("core", "protocols", "sandbox", "tooling", "tests"), 0)
+    totals = dict.fromkeys(("core", "protocols", "routes", "tooling", "tests"), 0)
     files, graph, violations, generated = {}, {}, [], {}
     for path in sorted(paths):
         source = (root / path).read_text()
@@ -102,7 +104,7 @@ def main():
         for dependency in deps:
             if forbidden(path, dependency, main):
                 violations.append(f"{path}: forbidden import {dependency}")
-    totals["all_non_test_go"] = sum(totals[k] for k in ("core", "protocols", "sandbox", "tooling"))
+    totals["all_non_test_go"] = sum(totals[k] for k in ("core", "protocols", "routes", "tooling"))
     totals["production_runtime_go"] = totals["all_non_test_go"] - totals["tooling"]
     totals["generated_go"] = sum(generated.values())
     rego = {str(p.relative_to(root)): len(p.read_text().splitlines()) for p in root.rglob("*.rego") if not SKIP.intersection(p.relative_to(root).parts)}

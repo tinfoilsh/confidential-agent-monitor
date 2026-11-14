@@ -9,7 +9,6 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"strings"
-	"sync"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
@@ -60,48 +59,31 @@ type httpState struct {
 	closeTransport func()
 }
 
-// Server pins its attested pool for all stream and owner-control uses. Monitor
-// revokes their contexts before Update; the write lock joins those actual uses.
-type Server struct {
-	mu      sync.RWMutex
-	current *httpState
+func (s *httpState) Close() error {
+	s.closeTransport()
+	return nil
 }
+
+// Server owns its attested pool; Monitor revokes the pool's uses before Update closes it.
+type Server struct{ connector.Resource[*httpState] }
 
 func (s *Server) Update(ctx context.Context, prepared connector.Prepared, secrets map[string]*credential.Value, env *connector.Env) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.close()
-	setup := *prepared.Value.(*httpSetup)
-	setup.http.Bind(secrets)
-	base := env.Transport()
-	transport, err := newAttestedTransport(ctx, setup.http.Secrets[apiKeyName], setup.Enclave, setup.Repo, base)
-	if err != nil {
-		base.CloseIdleConnections()
-		return err
-	}
-	s.current = &httpState{httpSetup: setup, transport: transport,
-		closeTransport: func() { transport.CloseIdleConnections(); base.CloseIdleConnections() }}
-	return nil
-}
-
-func (s *Server) close() {
-	if s.current != nil {
-		s.current.closeTransport()
-		s.current = nil
-	}
-}
-
-func (s *Server) Close() error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.close()
-	return nil
+	return s.Replace(func() (*httpState, error) {
+		setup := *prepared.Value.(*httpSetup)
+		setup.http.Bind(secrets)
+		base := env.Transport()
+		transport, err := newAttestedTransport(ctx, setup.http.Secrets[apiKeyName], setup.Enclave, setup.Repo, base)
+		if err != nil {
+			base.CloseIdleConnections()
+			return nil, err
+		}
+		return &httpState{httpSetup: setup, transport: transport,
+			closeTransport: func() { transport.CloseIdleConnections(); base.CloseIdleConnections() }}, nil
+	})
 }
 
 func (s *Server) Serve(stream *connector.Stream, env *connector.Env) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-	if current := s.current; current != nil {
+	if current := s.Load(); current != nil {
 		current.serve(stream, env)
 	}
 }
@@ -136,13 +118,12 @@ func (s *httpState) serve(stream *connector.Stream, e *connector.Env) {
 
 func (s *Server) Control() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		s.mu.RLock()
-		defer s.mu.RUnlock()
-		if s.current == nil {
+		current := s.Load()
+		if current == nil {
 			http.Error(w, "connector unavailable", http.StatusServiceUnavailable)
 			return
 		}
-		s.current.control().ServeHTTP(w, r)
+		current.control().ServeHTTP(w, r)
 	})
 }
 

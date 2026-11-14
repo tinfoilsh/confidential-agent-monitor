@@ -32,7 +32,7 @@ type Prepared struct {
 	Claim       func(string, uint32) int
 	Discovery   Discovery
 	SecretNames []string
-	// Routes lists the configured hosts; only sandbox route patterns among them can be dialed as routes.
+	// Routes lists the configured hosts; only reserved route patterns among them can be dialed as routes.
 	Routes []string
 }
 
