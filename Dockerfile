@@ -25,10 +25,11 @@ FROM toolchain AS build
 ENV GOWORK=off CGO_ENABLED=0
 WORKDIR /src/monitor
 COPY go.mod go.sum ./
-RUN go mod download
+COPY tinfoil/go.mod tinfoil/go.sum ./tinfoil/
+RUN go -C tinfoil mod download
 COPY . .
 COPY --from=ui-build /src/ui/dist ./ui/dist
-RUN go build -mod=readonly -trimpath -buildvcs=false -ldflags='-s -w -buildid=' -o /monitor .
+RUN go -C tinfoil build -mod=readonly -trimpath -buildvcs=false -ldflags='-s -w -buildid=' -o /monitor ./cmd/perimeter
 # The worker gets one prepared filesystem, with no mounts derived from accounts.
 # Static connectors need only trust roots; custom images can install programs here.
 RUN mkdir -p /worker-root/etc/ssl/certs /worker-root/dev /worker-root/proc /worker-root/tmp \

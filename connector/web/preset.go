@@ -9,8 +9,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/tinfoilsh/monitor/connector/jsonsel"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/jsonsel"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 type Request struct {

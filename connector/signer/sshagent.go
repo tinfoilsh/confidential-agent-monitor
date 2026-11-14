@@ -4,7 +4,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 )

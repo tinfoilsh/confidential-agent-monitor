@@ -9,7 +9,7 @@ import (
 	"net"
 	"strings"
 
-	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 )
 
 var GPGAgentKind = connector.Kind{Host: true, Parse: parseGPGAgent, New: func() connector.Server { return new(GPGAgent) }}

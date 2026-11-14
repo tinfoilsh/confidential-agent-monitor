@@ -7,8 +7,8 @@ import (
 	"slices"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
-	"github.com/tinfoilsh/monitor/facts"
-	"github.com/tinfoilsh/monitor/presets"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/presets"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -19,7 +19,7 @@ var (
 
 func validateEffects(name string, effects map[string]string) error {
 	for effect, mode := range effects {
-		if _, ok := facts.Effects[effect]; !ok {
+		if _, ok := facts.Effects()[effect]; !ok {
 			return fmt.Errorf("%s: unknown effect %q", name, effect)
 		}
 		if !slices.Contains(modes, mode) {
@@ -38,12 +38,12 @@ func inheritModes(defaults, overrides map[string]string) map[string]string {
 
 // Load validates declared settings without retaining expanded connections or identities.
 // Protocol decoding and credential binding remain at the connector boundary.
-func Load(text string) (*Config, error) {
+func Load(text string, set presets.Set) (*Config, error) {
 	decoded, err := ReadSource(text)
 	if err != nil {
 		return nil, err
 	}
-	cfg := &Config{Lattices: Lattices{Confidentiality: true}}
+	cfg := &Config{Lattices: Lattices{Confidentiality: true}, presets: set}
 	raw, err := json.Marshal(decoded)
 	if err == nil {
 		err = facts.DecodeNumbers(raw, cfg)
@@ -58,8 +58,8 @@ func Load(text string) (*Config, error) {
 		if err := validateEffects("service "+name, c.Effects); err != nil {
 			return nil, err
 		}
-		if !slices.Contains(facts.Audiences, c.Contents) || !slices.Contains(facts.Audiences, c.Sends) {
-			return nil, fmt.Errorf("service %s: contents and sends must be one of %v", name, facts.Audiences)
+		if !slices.Contains(facts.Audiences(), c.Contents) || !slices.Contains(facts.Audiences(), c.Sends) {
+			return nil, fmt.Errorf("service %s: contents and sends must be one of %v", name, facts.Audiences())
 		}
 		if name == AgentConnection {
 			return nil, fmt.Errorf("service name %s is reserved", name)
@@ -159,7 +159,7 @@ func (c *Config) Reaches(agent, connection string) bool {
 // Spec projects only this connection's setup; the returned definition remains opaque.
 func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	connection := c.Connections[name]
-	preset, err := presets.Lookup(connection.Preset)
+	preset, err := c.presets.Lookup(connection.Preset)
 	if err != nil {
 		return ConnectionSpec{}, fmt.Errorf("service %s: %w", name, err)
 	}

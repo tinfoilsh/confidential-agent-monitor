@@ -1,3 +1,4 @@
+// Package credential holds connector credentials: strings, OAuth grants and files read at each use.
 package credential
 
 import (
@@ -18,8 +19,7 @@ import (
 
 var errNotConfigured = errors.New("credential is not configured")
 
-// Files, when set at start, is the one directory that file credentials are read from.
-var Files *os.Root
+var errShape = errors.New("credential must be a string, an oauth grant or a file under -secrets")
 
 // Value is a string, an OAuth grant or a file. Disclosure is controlled by field metadata.
 // Client is the guarded client that refreshes the grant; without one, a grant cannot refresh.
@@ -48,39 +48,56 @@ func Remote(configured bool, resolve func(context.Context) (string, error)) *Val
 	return v
 }
 
-func (v *Value) UnmarshalJSON(raw []byte) error {
+// Parse reads a stored credential; a file credential is read under files at each use.
+func Parse(raw json.RawMessage, files *os.Root) (*Value, error) {
+	v := new(Value)
+	file, err := v.decode(raw)
+	if err != nil {
+		return nil, err
+	}
+	if file == "" {
+		return v, nil
+	}
+	if files == nil {
+		return nil, errShape
+	}
+	// Read at each use, so whatever rotates the file rotates the credential.
+	v.resolve = func(context.Context) (string, error) {
+		secret, err := files.ReadFile(file)
+		return strings.TrimRight(string(secret), "\r\n"), err
+	}
+	return v, nil
+}
+
+// decode returns the name of a file credential without reading it.
+func (v *Value) decode(raw []byte) (file string, err error) {
 	*v = Value{raw: bytes.Clone(raw)}
 	if bytes.Equal(raw, []byte("null")) {
 		v.raw = nil
-		return nil
+		return "", nil
 	}
 	if json.Unmarshal(raw, &v.text) == nil {
-		return nil
+		return "", nil
 	}
 	var cfg struct {
 		OAuth *oauth `json:"oauth"`
 		File  string `json:"file"`
 	}
 	if err := jsonv2.Unmarshal(raw, &cfg, jsonv2.RejectUnknownMembers(true)); err != nil {
-		return err
+		return "", err
 	}
-	if cfg.File != "" && cfg.OAuth == nil && Files != nil {
-		// Read at each use, so whatever rotates the file rotates the credential.
-		v.resolve = func(context.Context) (string, error) {
-			secret, err := Files.ReadFile(cfg.File)
-			return strings.TrimRight(string(secret), "\r\n"), err
-		}
-		return nil
+	if cfg.File != "" && cfg.OAuth == nil {
+		return cfg.File, nil
 	}
 	if cfg.OAuth == nil || cfg.File != "" {
-		return errors.New("credential must be a string, an oauth grant or a file under -secrets")
+		return "", errShape
 	}
 	if err := cfg.OAuth.validate(); err != nil {
-		return err
+		return "", err
 	}
 	v.grant = cfg.OAuth
 	v.token = &oauth2.Token{AccessToken: v.grant.AccessToken, RefreshToken: v.grant.RefreshToken, Expiry: v.grant.Expiry}
-	return nil
+	return "", nil
 }
 
 func (v *Value) lock(ctx context.Context) error {
@@ -152,7 +169,7 @@ func (v *Value) Value(ctx context.Context) (string, error) {
 // OIDC account, without exposing tokens.
 func Describe(raw json.RawMessage) (kind, account string) {
 	var v Value
-	if json.Unmarshal(raw, &v) != nil || bytes.Equal(raw, []byte("null")) {
+	if _, err := v.decode(raw); err != nil || bytes.Equal(raw, []byte("null")) {
 		return "unset", ""
 	}
 	if v.grant == nil {

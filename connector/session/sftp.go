@@ -11,8 +11,8 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 	"golang.org/x/crypto/ssh"
 )
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync/atomic"
 
-	"github.com/tinfoilsh/monitor/connector/credential"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
 )
 
 type binder interface {

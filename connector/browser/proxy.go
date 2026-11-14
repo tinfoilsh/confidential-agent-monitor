@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 
-	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 )
 
 // proxy captures this Chrome session's network capability. CONNECT remains in

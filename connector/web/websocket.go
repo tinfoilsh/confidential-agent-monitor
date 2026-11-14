@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"github.com/coder/websocket"
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 // Only RFC 6455 upgrades are supported. The preset must separately recognize

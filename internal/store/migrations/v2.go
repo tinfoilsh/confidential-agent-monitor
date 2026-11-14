@@ -6,8 +6,8 @@ import (
 	"maps"
 	"slices"
 
-	"github.com/tinfoilsh/monitor/internal/config"
-	"github.com/tinfoilsh/monitor/presets"
+	"github.com/tinfoilsh/confidential-agent-monitor/internal/config"
+	"github.com/tinfoilsh/confidential-agent-monitor/presets"
 )
 
 // Version is the stored state format Upgrade produces.
@@ -29,7 +29,7 @@ var split = map[string]map[string]string{
 // and rules name their connection. A connection its preset did not declare is
 // dropped unless the preset declares none, since it would inherit the preset's.
 // Credential declarations are removed from connection setups.
-func Upgrade(plain []byte) ([]byte, error) {
+func Upgrade(plain []byte, shipped presets.Set) ([]byte, error) {
 	var v1 struct {
 		Version int                                              `json:"version"`
 		Policy  string                                           `json:"policy"`
@@ -42,10 +42,6 @@ func Upgrade(plain []byte) ([]byte, error) {
 		return plain, nil
 	}
 	source, err := config.ReadSource(v1.Policy)
-	if err != nil {
-		return nil, err
-	}
-	shipped, err := presets.Shipped()
 	if err != nil {
 		return nil, err
 	}

@@ -3,7 +3,7 @@ package connector
 import (
 	"context"
 	"errors"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 	"io"
 	"net"
 	"net/http"

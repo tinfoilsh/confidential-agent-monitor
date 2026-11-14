@@ -18,7 +18,7 @@ import (
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/kb"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 const (

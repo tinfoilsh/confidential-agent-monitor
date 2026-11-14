@@ -32,11 +32,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/connector/credential"
-	"github.com/tinfoilsh/monitor/connector/web"
-	"github.com/tinfoilsh/monitor/facts"
-	"github.com/tinfoilsh/monitor/presets"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/web"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/presets"
 )
 
 type input struct {
@@ -101,7 +101,7 @@ type liveConnection struct {
 }
 
 func prepare(name, credentialName, secret, placeholder, origin string) (*liveConnection, error) {
-	shipped, err := presets.Shipped()
+	shipped, err := presets.Load(presets.Files)
 	if err != nil {
 		return nil, err
 	}
@@ -151,8 +151,8 @@ func prepare(name, credentialName, secret, placeholder, origin string) (*liveCon
 			return nil, err
 		}
 		defer clear(raw)
-		v := new(credential.Value)
-		if err := json.Unmarshal(raw, v); err != nil {
+		v, err := credential.Parse(raw, nil)
+		if err != nil {
 			return nil, err
 		}
 		v.Placeholder = placeholder

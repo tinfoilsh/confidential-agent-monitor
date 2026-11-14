@@ -1,7 +1,7 @@
 package signer
 
 import (
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 // Signing requests remain unknown until the owner supplies operation semantics.

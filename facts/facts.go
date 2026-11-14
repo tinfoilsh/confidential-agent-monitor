@@ -7,6 +7,7 @@ import (
 	"encoding/json/jsontext"
 	jsonv2 "encoding/json/v2"
 	"errors"
+	"maps"
 	"slices"
 	"strings"
 )
@@ -19,9 +20,13 @@ const Version = 13
 // Label levels are ordered from most restrictive to least restrictive.
 // Policy derives its rank tables from these same lists.
 var (
-	Audiences = []string{"me", "team", "anyone"}
-	Trusts    = []string{"untrusted", "trusted"}
+	audiences = []string{"me", "team", "anyone"}
+	trusts    = []string{"untrusted", "trusted"}
 )
+
+func Audiences() []string { return slices.Clone(audiences) }
+
+func Trusts() []string { return slices.Clone(trusts) }
 
 type Kind string
 
@@ -46,14 +51,14 @@ type Label struct {
 }
 
 func (l Label) Valid() bool {
-	return slices.Contains(Audiences, l.Audience) && slices.Contains(Trusts, l.Trust)
+	return slices.Contains(audiences, l.Audience) && slices.Contains(trusts, l.Trust)
 }
 
 // SendsConnection resolves to the connection's configured audience; lib.rego matches the same value.
 const SendsConnection = "connection"
 
 func ValidSends(sends string) bool {
-	return sends == "" || sends == SendsConnection || slices.Contains(Audiences, sends)
+	return sends == "" || sends == SendsConnection || slices.Contains(audiences, sends)
 }
 
 type Operation struct {
@@ -127,8 +132,8 @@ type Obligations struct {
 	Discloses bool `json:"discloses"`
 }
 
-// Effects is shared by preset validation, request descriptions, policy, and UI.
-var Effects = map[string]Obligations{
+// obligations is shared by preset validation, request descriptions, policy, and UI.
+var obligations = map[string]Obligations{
 	"read":     {},
 	"session":  {},
 	"write":    {Change: true, Trust: true},
@@ -142,12 +147,14 @@ var Effects = map[string]Obligations{
 	"pay":      {Change: true, Trust: true, Ask: true},
 }
 
+func Effects() map[string]Obligations { return maps.Clone(obligations) }
+
 func ValidEffects(effects []string) bool {
 	if len(effects) == 0 {
 		return false
 	}
 	for _, effect := range effects {
-		if _, ok := Effects[effect]; !ok {
+		if _, ok := obligations[effect]; !ok {
 			return false
 		}
 	}

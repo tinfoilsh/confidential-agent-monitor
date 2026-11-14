@@ -13,8 +13,8 @@ import (
 
 	"github.com/emersion/go-sasl"
 	"github.com/emersion/go-smtp"
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 var SMTPKind = connector.Kind{Parse: parseSMTP, New: func() connector.Server { return new(SMTP) }}

@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/tinfoilsh/monitor/connector/credential"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -67,8 +67,10 @@ type Detailer interface {
 	Details() json.RawMessage
 }
 
+type Readier interface{ Ready() error }
+
 type Env struct {
-	TLS     *tls.Config
+	TLS     *tls.Config // Handshakes must run directly on the *Stream, which the certificate is issued for.
 	HostKey ssh.Signer
 	Dialer  Dialer
 }

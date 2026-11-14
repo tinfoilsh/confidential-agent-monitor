@@ -140,7 +140,7 @@ To run one in the foreground instead, use the Go version in [go.mod](go.mod).
 
 ```sh
 mkdir -p .dev/store
-go run . -bucket "file://$(pwd)/.dev/store?no_tmp_dir=true"
+go -C tinfoil run ./cmd/perimeter -bucket "file://$(pwd)/.dev/store?no_tmp_dir=true"
 ```
 
 Open [the UI](http://127.0.0.1:8080/app/) and initialize an owner key or passphrase.

@@ -25,9 +25,9 @@ import (
 	"github.com/chromedp/cdproto/runtime"
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/connector/web"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/web"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 const (

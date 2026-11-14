@@ -3,7 +3,7 @@ package web
 import (
 	"slices"
 
-	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 )
 
 // Parse owns configuration bytes and compiles all local matching before commit.

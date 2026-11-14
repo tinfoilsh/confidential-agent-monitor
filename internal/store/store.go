@@ -14,8 +14,9 @@ import (
 	"io"
 	"maps"
 
-	"github.com/tinfoilsh/monitor/facts"
-	"github.com/tinfoilsh/monitor/internal/store/migrations"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/internal/store/migrations"
+	"github.com/tinfoilsh/confidential-agent-monitor/presets"
 	"gocloud.dev/blob"
 	"gocloud.dev/gcerrors"
 	"golang.org/x/crypto/argon2"
@@ -50,8 +51,8 @@ type Certified struct {
 }
 
 // decodeState reads earlier versions through their migration before accepting a document.
-func decodeState(plain []byte) (Document, error) {
-	plain, err := migrations.Upgrade(plain)
+func decodeState(plain []byte, set presets.Set) (Document, error) {
+	plain, err := migrations.Upgrade(plain, set)
 	if err != nil {
 		return Document{}, fmt.Errorf("stored state: %w", err)
 	}
@@ -68,9 +69,10 @@ func decodeState(plain []byte) (Document, error) {
 // Store owns the last committed document and its encryption state.
 // The monitor's authorization lock serializes loads and commits with runtime changes.
 type Store struct {
-	Bucket *blob.Bucket
-	Doc    Document
-	owner  []byte
+	Bucket  *blob.Bucket
+	Presets presets.Set
+	Doc     Document
+	owner   []byte
 	Sealer
 	header []byte
 }
@@ -112,7 +114,7 @@ func (s Store) Load(ctx context.Context, key []byte, minimum uint64) (Store, boo
 		if err != nil {
 			return s, false, ErrOwner
 		}
-		sl, err = decodeState(plain)
+		sl, err = decodeState(plain, s.Presets)
 		if err != nil {
 			return s, false, err
 		}

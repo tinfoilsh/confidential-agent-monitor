@@ -11,8 +11,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 var IMAPKind = connector.Kind{Parse: parseIMAP, New: func() connector.Server { return new(IMAP) }}

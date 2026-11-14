@@ -6,8 +6,8 @@ import (
 	"slices"
 	"sync"
 
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/connector/credential"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
 )
 
 func Kind(extension string, sandboxed bool) connector.Kind {

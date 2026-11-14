@@ -1,0 +1,590 @@
+package monitor
+
+import (
+	"bytes"
+	"cmp"
+	"context"
+	"crypto"
+	"crypto/sha256"
+	"crypto/x509"
+	"encoding/base64"
+	"encoding/json"
+	"encoding/pem"
+	"errors"
+	"fmt"
+	"io"
+	"maps"
+	"net/http"
+	"slices"
+	"strings"
+
+	"github.com/klauspost/compress/gzhttp"
+	"github.com/lestrrat-go/jwx/v3/jwk"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/internal/bunker"
+	"github.com/tinfoilsh/confidential-agent-monitor/internal/config"
+	"github.com/tinfoilsh/confidential-agent-monitor/internal/policy"
+	"github.com/tinfoilsh/confidential-agent-monitor/internal/store"
+	"github.com/tinfoilsh/confidential-agent-monitor/presets"
+	"golang.org/x/crypto/ssh"
+)
+
+const (
+	maxDocumentBytes = 16 << 20
+	// Base64 inflates the call by a third.
+	MaxCallBytes     = 2 * maxDocumentBytes
+	maxAgentBytes    = 96 << 10
+	sandboxRelayPath = "/sandboxes/relay"
+)
+
+type unlockInput struct {
+	Generation uint64 `json:"generation"`
+	StorageKey []byte `json:"storage_key,omitempty"`
+	DeviceKey  string `json:"device_key,omitempty"`
+}
+
+type sourceInput struct {
+	Revision *uint64 `json:"revision,omitempty"`
+	Source   string  `json:"source"`
+}
+
+type editsInput struct {
+	Revision    *uint64         `json:"revision,omitempty"`
+	Changes     []config.Change `json:"changes"`
+	Credentials store.Secrets   `json:"credentials,omitempty"`
+}
+
+// AdminAPI serves the admin routes.
+func (m *Monitor) AdminAPI() http.Handler {
+	mux := http.NewServeMux()
+	m.registerOwnerRoutes(mux)
+	return mux
+}
+
+func (m *Monitor) registerOwnerRoutes(mux *http.ServeMux) {
+	mux.Handle("GET /healthz", JSONHandler(0, func(r *http.Request, _ struct{}) (any, error) {
+		var health struct {
+			State string `json:"state,omitempty"`
+		}
+		// Only owners learn whether state exists; the probe reads storage.
+		if _, owner := callerFrom(r.Context()); owner {
+			m.mu.Lock()
+			current := m.store
+			m.mu.Unlock()
+			present, err := current.Exists(r.Context())
+			if err != nil {
+				return nil, unavailable{err}
+			}
+			health.State = map[bool]string{false: "absent", true: "present"}[present]
+		}
+		return health, nil
+	}))
+	mux.Handle("POST /unlock", JSONHandler(maxDocumentBytes, func(r *http.Request, req unlockInput) (any, error) {
+		caller, err := m.caller(r)
+		key := req.StorageKey
+		if err == nil && len(key) == 0 {
+			key, err = m.bearerKey(r)
+		}
+		if err != nil {
+			return nil, err
+		}
+		req.Generation = max(req.Generation, caller.Minimum)
+		defer clear(key)
+		ctx := WithCaller(r.Context(), caller)
+		initialized, err := m.unlock(ctx, key, req.Generation)
+		if err == nil && req.DeviceKey != "" {
+			err = m.restoreDevice(ctx, req.DeviceKey)
+		}
+		view, err := m.viewAfter(r, err)
+		view.Initialized = initialized
+		return view, err
+	}))
+	mux.Handle("GET /{$}", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) { return m.view(r) }))
+	mux.Handle("POST /enroll", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input map[string]identityEnrollment) (any, error) {
+		return m.viewAfter(r, m.enroll(r.Context(), input))
+	})))
+	mux.Handle("POST "+sandboxRelayPath, m.ownerOnly(JSONHandler(bunker.MaxRelayBytes, func(r *http.Request, in bunker.RelayInput) (any, error) {
+		return m.forwards.Relay(r.Context(), in)
+	})))
+	mux.Handle("POST /labels/{identity}", ownerTx(m, func(r *http.Request, l facts.Label) (any, error) {
+		var fingerprints []string
+		for key, name := range m.settings.Load().Principals {
+			if name == r.PathValue("identity") {
+				fingerprints = append(fingerprints, key)
+			}
+		}
+		// A certified name can be held by several keys, and each key has its own label.
+		for key, c := range m.settings.Load().certified {
+			if c.Name == r.PathValue("identity") {
+				fingerprints = append(fingerprints, key)
+			}
+		}
+		if fingerprints == nil {
+			return nil, fmt.Errorf("no identity %s", r.PathValue("identity"))
+		}
+		if !l.Valid() {
+			return nil, fmt.Errorf("a label needs trust in %v and audience in %v", facts.Trusts(), facts.Audiences())
+		}
+		var err error
+		for _, fingerprint := range fingerprints {
+			old := m.currentLabel(fingerprint)
+			l.Because = map[string]string{}
+			if l.Trust != cleanLabel.Trust {
+				l.Because["trust"] = cmp.Or(old.Because["trust"], "the owner")
+			}
+			if l.Audience != cleanLabel.Audience {
+				l.Because["audience"] = cmp.Or(old.Because["audience"], "the owner")
+			}
+			if err = m.relabel(r.Context(), fingerprint, l, nil); err != nil {
+				break
+			}
+		}
+		m.recordAdmin(r.Context(), "Set the label of "+r.PathValue("identity"), l, err)
+		if err != nil {
+			return nil, err
+		}
+		return m.view(r)
+	}))
+	mux.Handle("POST /connections/{name}/sign-in", m.ownerOnly(JSONHandler(maxDocumentBytes, m.startSignIn)))
+	mux.Handle("POST /sign-in/{state}", m.ownerOnly(JSONHandler(maxDocumentBytes, m.finishSignIn)))
+	mux.Handle("/connections/{name}/{control...}", m.ownerOnly(m.connectionControl))
+	mux.Handle("GET /requests", ownerTx(m, func(*http.Request, struct{}) (any, error) {
+		newest := make([]recordSummary, 0, len(m.records))
+		for _, r := range slices.Backward(m.records) {
+			newest = append(newest, r.summary())
+		}
+		return newest, nil
+	}))
+	mux.Handle("GET /audit", m.ownerOnly(JSONHandler(0, func(r *http.Request, _ struct{}) (any, error) {
+		return m.readAuditPage(r.Context(), r.URL.Query().Get("before"))
+	})))
+	mux.Handle("GET /audit/{segment}/{id}", m.ownerOnly(JSONHandler(0, func(r *http.Request, _ struct{}) (any, error) {
+		return m.readAuditRecord(r.Context(), r.PathValue("segment"), r.PathValue("id"))
+	})))
+	mux.Handle("GET /requests/{id}", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) {
+		if record := m.findRecord(r.PathValue("id")); record != nil {
+			return *record, nil
+		}
+		return nil, errRecordGone
+	}))
+	mux.Handle("POST /requests/{id}", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, req struct {
+		answerInput
+		Revision uint64 `json:"revision"`
+	}) (any, error) {
+		return m.viewAfter(r, m.answerRequest(r.Context(), r.PathValue("id"), req.answerInput, req.Revision))
+	})))
+	mux.Handle("GET /policy", ownerTx(m, func(r *http.Request, _ struct{}) (any, error) {
+		result := map[string]any{"source": m.store.Doc.Policy, "revision": m.store.Doc.Revision}
+		var err error
+		if r.URL.Query().Has("effective") {
+			result["effective"], err = m.settings.Load().Config.Effective()
+		}
+		return result, err
+	}))
+	mux.Handle("POST /policy/preview", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input sourceInput) (any, error) {
+		m.writes.Lock()
+		defer m.writes.Unlock()
+		base, before := m.snapshot()
+		return m.previewPolicy(r.Context(), base, before, input.Source)
+	})))
+	mux.Handle("POST /policy", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input sourceInput) (any, error) {
+		m.writes.Lock()
+		defer m.writes.Unlock()
+		return m.viewAfter(r, m.writeSettings(r.Context(), settingsWrite{source: &input.Source, check: m.reviewed(input.Revision)}))
+	})))
+	mux.Handle("POST /policy/edits", m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input editsInput) (any, error) {
+		for _, values := range input.Credentials {
+			for name, raw := range values {
+				if bytes.Equal(raw, []byte("null")) {
+					values[name] = nil
+				}
+			}
+		}
+		m.writes.Lock()
+		defer m.writes.Unlock()
+		err := m.writeSettings(r.Context(), settingsWrite{changes: input.Changes, credentials: input.Credentials, check: m.reviewed(input.Revision)})
+		return m.viewAfter(r, err)
+	})))
+}
+
+func (m *Monitor) connectionControl(w http.ResponseWriter, r *http.Request) {
+	m.mu.Lock()
+	c := m.connections[r.PathValue("name")]
+	if c == nil {
+		m.mu.Unlock()
+		http.NotFound(w, r)
+		return
+	}
+	release, err := m.acquire(c, c.prepared)
+	if err != nil {
+		m.mu.Unlock()
+		http.Error(w, err.Error(), http.StatusConflict)
+		return
+	}
+	setupCtx, name, server := c.setupCtx, c.Name, c.Server
+	m.mu.Unlock()
+	defer release()
+	ctx, cancel := connector.Bind(r.Context(), setupCtx)
+	defer cancel()
+	r.Body = http.MaxBytesReader(w, r.Body, maxDocumentBytes)
+	http.StripPrefix("/connections/"+name, connector.Control(server)).ServeHTTP(w, r.WithContext(ctx))
+}
+
+type agentCatalogView struct {
+	CatalogID  string                       `json:"catalog_id"`
+	Presets    map[string]presets.Entry     `json:"presets"`
+	Vocabulary map[string]facts.Obligations `json:"vocabulary"`
+}
+
+func (m *Monitor) agentHandler(key string) http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /connections", agentTx(m, key, func(_ *http.Request, _ struct{}, p config.Principal) (any, error) {
+		return m.listing(p), nil
+	}))
+	mux.HandleFunc("GET /policy", agentTx(m, key, func(_ *http.Request, _ struct{}, p config.Principal) (any, error) {
+		return m.agentPolicy(p)
+	}))
+	mux.HandleFunc("GET /catalog", agentTx(m, key, func(*http.Request, struct{}, config.Principal) (any, error) {
+		settings := m.settings.Load()
+		return agentCatalogView{CatalogID: settings.CatalogID, Presets: settings.Catalog, Vocabulary: facts.Effects()}, nil
+	}))
+	mux.HandleFunc("GET /policy/proposals/{id}", agentTx(m, key, func(r *http.Request, _ struct{}, p config.Principal) (any, error) {
+		record := m.findRecord(r.PathValue("id"))
+		if record == nil || record.Changes == nil || !record.summary().Facts.Principal.Same(p) {
+			return nil, errRecordGone
+		}
+		return record.receipt(), nil
+	}))
+	mux.HandleFunc("POST /policy/proposals", JSONHandler(maxAgentBytes, func(r *http.Request, input proposalInput) (any, error) {
+		return m.proposePolicy(r.Context(), key, input)
+	}))
+	return mux
+}
+
+// ownerTx runs each owner request as one transaction; reading the body and writing the response stay outside it.
+func ownerTx[T any](m *Monitor, fn func(*http.Request, T) (any, error)) http.HandlerFunc {
+	return m.ownerOnly(JSONHandler(maxDocumentBytes, func(r *http.Request, input T) (any, error) {
+		m.mu.Lock()
+		defer m.mu.Unlock()
+		return fn(r, input)
+	}))
+}
+
+// ownerOnly serves the owner without the monitor's lock, for calls that wait on the network.
+func (m *Monitor) ownerOnly(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		st := m.settings.Load()
+		caller, err := m.caller(r)
+		if err == nil && st == nil {
+			err = errLocked
+		}
+		caller.route = r.Pattern
+		ctx := WithCaller(r.Context(), caller)
+		if err == nil {
+			err = m.admit(ctx, st.Engine, nil)
+		}
+		if err != nil {
+			responseError(w, err)
+			return
+		}
+		next(w, r.WithContext(ctx))
+	}
+}
+
+const Owner = "owner"
+
+// Caller is an authenticated admin request, at the generation its client has saved.
+type Caller struct {
+	Name        string
+	Owner       bool           // Holds the owner key.
+	Claims      map[string]any // Verified by the caller's transport, for policy to read.
+	Minimum     uint64
+	Acknowledge func() error
+	ID          string
+	route       string
+}
+
+// refused is an admin call that policy, or a policy loaded from a file, does not allow.
+type refused string
+
+func (r refused) Error() string { return string(r) }
+func (refused) HTTPStatus() int { return http.StatusForbidden }
+
+// admit asks policy whether the caller in ctx may make its call; subject is the answer and record of an answer.
+func (m *Monitor) admit(ctx context.Context, engine *policy.Engine, subject map[string]any) error {
+	c, _ := callerFrom(ctx)
+	call := map[string]any{"caller": map[string]any{"name": c.Name, "owner": c.Owner, "claims": c.Claims}, "route": c.route}
+	maps.Copy(call, subject)
+	input, err := facts.JSON[map[string]any](call)
+	if err != nil {
+		return err
+	}
+	deny, err := engine.AdminDeny(ctx, input)
+	if err == nil && len(deny) != 0 {
+		err = refused(strings.Join(deny, "; "))
+	}
+	return err
+}
+
+type callerKey struct{}
+
+func WithCaller(ctx context.Context, c Caller) context.Context {
+	return context.WithValue(ctx, callerKey{}, c)
+}
+
+func callerFrom(ctx context.Context) (Caller, bool) {
+	c, ok := ctx.Value(callerKey{}).(Caller)
+	return c, ok
+}
+
+func (m *Monitor) caller(r *http.Request) (Caller, error) {
+	if c, ok := callerFrom(r.Context()); ok {
+		return c, nil
+	}
+	key, err := m.bearerKey(r)
+	// While locked any well-formed key passes; only unlock can check a key then.
+	if err == nil && m.settings.Load() != nil && !m.store.IsOwner(key) {
+		err = store.ErrOwner
+	}
+	return Caller{Name: Owner, Owner: true}, err
+}
+
+// bearerKey reads the owner secret of a request under StorageKeyAuth.
+func (m *Monitor) bearerKey(r *http.Request) ([]byte, error) {
+	token, ok := strings.CutPrefix(r.Header.Get("Authorization"), "Bearer ")
+	if !m.storageKeyAuth || !ok || len(token) > base64.StdEncoding.EncodedLen(store.MaxOwnerKeyBytes) {
+		return nil, store.ErrOwner
+	}
+	key, err := base64.StdEncoding.Strict().DecodeString(token)
+	if err != nil || len(key) < store.MinOwnerKeyBytes || len(key) > store.MaxOwnerKeyBytes {
+		return nil, store.ErrOwner
+	}
+	return key, nil
+}
+
+func agentTx[T any](m *Monitor, key string, fn func(*http.Request, T, config.Principal) (any, error)) http.HandlerFunc {
+	return JSONHandler(maxAgentBytes, func(r *http.Request, input T) (any, error) {
+		m.mu.Lock()
+		defer m.mu.Unlock()
+		p, ok := m.settings.Load().Principal(key)
+		if !ok {
+			return nil, errNoAgent
+		}
+		return fn(r, input, p)
+	})
+}
+
+func JSONHandler[T any](limit int64, fn func(*http.Request, T) (any, error)) http.HandlerFunc {
+	return gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
+		var err error
+		var req T
+		r.Body = http.MaxBytesReader(w, r.Body, limit)
+		if r.Method == http.MethodPost {
+			var raw []byte
+			raw, err = io.ReadAll(r.Body)
+			if err == nil {
+				err = facts.DecodeNumbers(raw, &req)
+			}
+		}
+		if err != nil {
+			responseError(w, err)
+			return
+		}
+		value, err := fn(r, req)
+		if err != nil {
+			responseError(w, err)
+			return
+		}
+		response, err := json.Marshal(value)
+		if err != nil {
+			responseError(w, err)
+			return
+		}
+		if session, ok := callerFrom(r.Context()); ok && session.Acknowledge != nil {
+			if err := session.Acknowledge(); err != nil {
+				responseError(w, err)
+				return
+			}
+		}
+		// Validate only after authentication and the SSH generation acknowledgement.
+		// A weak validator covers both identity and compressed representations of this JSON.
+		if r.Method == http.MethodGet {
+			tag := fmt.Sprintf(`W/"%x"`, sha256.Sum256(response))
+			w.Header().Set("ETag", tag)
+			for _, known := range strings.Split(r.Header.Get("If-None-Match"), ",") {
+				known = strings.TrimSpace(known)
+				if known == "*" || strings.TrimPrefix(known, "W/") == strings.TrimPrefix(tag, "W/") {
+					w.WriteHeader(http.StatusNotModified)
+					return
+				}
+			}
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(response)
+	}))
+}
+
+func responseError(w http.ResponseWriter, err error) {
+	status := http.StatusBadRequest
+	var specific interface{ HTTPStatus() int }
+	if errors.As(err, &specific) {
+		status = specific.HTTPStatus()
+	}
+	switch {
+	case errors.Is(err, errNoAgent):
+		status = http.StatusForbidden
+	case errors.Is(err, store.ErrOwner):
+		status = http.StatusUnauthorized
+	case errors.Is(err, errLocked):
+		status = http.StatusLocked
+	case errors.Is(err, errPolicyConflict):
+		status = http.StatusConflict
+	case errors.Is(err, errRecordGone):
+		status = http.StatusNotFound
+	}
+	http.Error(w, err.Error(), status)
+}
+
+// unavailable is a dependency failure, never a client error.
+type unavailable struct{ error }
+
+func (unavailable) HTTPStatus() int { return http.StatusServiceUnavailable }
+
+type fieldMetadata struct {
+	Name        string `json:"name"`
+	Kind        string `json:"kind"`
+	Placeholder string `json:"placeholder,omitempty"`
+	Account     string `json:"account,omitempty"`
+}
+
+// ownerView exposes credential status without credential values.
+type ownerView struct {
+	Generation uint64                       `json:"generation"`
+	Revision   uint64                       `json:"revision"`
+	Config     map[string]any               `json:"config"`
+	HostKey    string                       `json:"host_key"`
+	HostID     string                       `json:"host_id"`
+	CA         string                       `json:"ca"`
+	Fields     map[string][]fieldMetadata   `json:"fields"`
+	Status     map[string]status            `json:"status"`
+	Labels     map[string]facts.Label       `json:"labels"`
+	CatalogID  string                       `json:"catalog_id"`
+	Presets    map[string]presets.Entry     `json:"presets,omitempty"`
+	Vocabulary map[string]facts.Obligations `json:"vocabulary"`
+	// Initialized is true only on the unlock that created this Monitor's state.
+	Initialized bool `json:"initialized"`
+}
+
+// view snapshots owner state while the caller holds mu. It never calls a connector.
+// Presets are omitted when the request names the catalog the owner already has.
+func (m *Monitor) view(r *http.Request) (ownerView, error) {
+	s := m.settings.Load()
+	// The persisted CA identifies the host across restarts and SSH key rotation.
+	block, _ := pem.Decode([]byte(m.store.Doc.Keys.CACert))
+	if block == nil {
+		return ownerView{}, errors.New("Perimeter has no host certificate")
+	}
+	certificate, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return ownerView{}, err
+	}
+	key, err := jwk.Import(certificate.PublicKey)
+	if err != nil {
+		return ownerView{}, err
+	}
+	thumbprint, err := key.Thumbprint(crypto.SHA256)
+	if err != nil {
+		return ownerView{}, err
+	}
+	v := ownerView{Generation: m.store.Doc.Generation, Revision: m.store.Doc.Revision, HostKey: string(ssh.MarshalAuthorizedKey(s.HostKey.PublicKey())), CA: m.store.Doc.Keys.CACert,
+		HostID: "urn:ietf:params:oauth:jwk-thumbprint:sha-256:" + base64.RawURLEncoding.EncodeToString(thumbprint),
+		Fields: map[string][]fieldMetadata{}, Status: map[string]status{}, Labels: map[string]facts.Label{},
+		CatalogID: s.CatalogID, Presets: s.Catalog, Vocabulary: facts.Effects()}
+	if r.URL.Query().Get("catalog") == s.CatalogID {
+		v.Presets = nil
+	}
+	if v.Config, err = s.Config.View(); err != nil {
+		return ownerView{}, err
+	}
+	for _, c := range m.connections {
+		v.Status[c.Name] = c.Status()
+		for name, value := range c.Credentials {
+			kind, account := credential.Describe(m.store.Doc.Credentials.Get(store.SecretID{Connection: c.Name, Name: name}))
+			v.Fields[c.Name] = append(v.Fields[c.Name], fieldMetadata{Name: name, Kind: kind, Placeholder: value.Placeholder, Account: account})
+		}
+	}
+	for _, fields := range v.Fields {
+		slices.SortFunc(fields, func(a, b fieldMetadata) int { return strings.Compare(a.Name, b.Name) })
+	}
+	for key, name := range s.Principals {
+		v.Labels[name] = m.currentLabel(key)
+	}
+	return v, nil
+}
+
+// Discovery describes reachable connections, not the owner's configuration or credentials.
+// HTTP connections add public routing and placeholder data, never credentials.
+type connectionListing struct {
+	Name         string            `json:"name"`
+	Protocol     string            `json:"kind"`
+	Host         string            `json:"host"`
+	State        string            `json:"state"`
+	Access       config.Access     `json:"access"`
+	Hosts        []string          `json:"hosts"`
+	Slots        any               `json:"slots"`
+	Placeholders map[string]string `json:"placeholders"`
+	Credentials  map[string]string `json:"credentials,omitempty"`
+}
+
+// listing snapshots the connections p reaches while the caller holds mu.
+func (m *Monitor) listing(p config.Principal) any {
+	result := struct {
+		Identity    string              `json:"identity"`
+		CA          string              `json:"ca"`
+		Connections []connectionListing `json:"connections"`
+	}{p.Name, m.store.Doc.Keys.CACert, []connectionListing{}}
+	for _, name := range slices.Sorted(maps.Keys(m.connections)) {
+		c := m.connections[name]
+		if !m.settings.Load().Reaches(p.Name, c.Name) {
+			continue
+		}
+		l := connectionListing{Name: name, Protocol: c.Protocol, Host: name + connector.Domain,
+			State: c.Status().State, Access: m.settings.Load().Access(p.Name, c.Name)}
+		l.Hosts, l.Slots = c.prepared.Discovery.Hosts, c.prepared.Discovery.Slots
+		if m.kinds[c.Protocol].Placeholders {
+			l.Placeholders = map[string]string{}
+			for name, value := range c.Credentials {
+				l.Placeholders[name] = value.Placeholder
+			}
+		}
+		if len(c.Credentials) != 0 {
+			l.Credentials = map[string]string{}
+			for name := range c.Credentials {
+				id := store.SecretID{Connection: c.Name, Name: name}
+				l.Credentials[name], _ = credential.Describe(m.store.Doc.Credentials.Get(id))
+			}
+		}
+		result.Connections = append(result.Connections, l)
+	}
+	return result
+}
+
+func (m *Monitor) agentPolicy(p config.Principal) (any, error) {
+	st := m.settings.Load()
+	var visible map[string]any
+	var err error
+	if st.Identities[p.Name].Operator {
+		// Credential values live outside Config.
+		visible, err = st.Config.View()
+	} else {
+		visible, err = st.Config.AgentView(p)
+	}
+	if err != nil {
+		return nil, err
+	}
+	source, err := config.RenderTOML(visible)
+	return map[string]any{"identity": p.Name, "source": source}, err
+}

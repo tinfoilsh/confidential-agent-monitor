@@ -2,7 +2,6 @@
 **
 !go.mod
 !go.sum
-!*.go
 !presets/*.go
 !connector/
 !connector/**
@@ -14,6 +13,16 @@
 !presets/*.json
 !internal/
 !internal/**
+!perimeter/
+!perimeter/**
+!monitor/
+!monitor/**
+!owner/
+!owner/**
+!worker/
+!worker/**
+!tinfoil/
+!tinfoil/**
 **/*_test.go
 **/testdata/**
 **/.git/**

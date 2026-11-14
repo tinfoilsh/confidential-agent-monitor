@@ -12,7 +12,7 @@ import (
 
 	toml "github.com/pelletier/go-toml/v2"
 	"github.com/pelletier/go-toml/v2/unstable/edit"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 const maxPolicyBytes = 2 << 20
@@ -173,7 +173,7 @@ func (c *Config) Edit(source string, changes []Change) (string, func(connection 
 	if err != nil {
 		return "", nil, nil, err
 	}
-	next, err := Load(edited)
+	next, err := Load(edited, c.presets)
 	if err != nil {
 		return "", nil, nil, err
 	}

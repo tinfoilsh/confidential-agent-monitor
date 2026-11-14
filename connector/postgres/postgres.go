@@ -13,8 +13,8 @@ import (
 
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgproto3"
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 var Kind = connector.Kind{Parse: parsePostgres, New: func() connector.Server { return new(Postgres) }}

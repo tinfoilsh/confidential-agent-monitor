@@ -14,8 +14,8 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/connector/credential"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
 )
 
 // Headers the transport owns; a credential there could change framing or routing.

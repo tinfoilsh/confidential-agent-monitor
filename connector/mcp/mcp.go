@@ -14,10 +14,10 @@ import (
 	"sync/atomic"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/connector/credential"
-	"github.com/tinfoilsh/monitor/connector/jsonsel"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/jsonsel"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 var Kind = connector.Kind{Parse: Parse, New: func() connector.Server { return new(Server) }}

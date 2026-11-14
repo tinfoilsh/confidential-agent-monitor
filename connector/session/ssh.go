@@ -12,8 +12,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 	"golang.org/x/crypto/ssh"
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/syntax"

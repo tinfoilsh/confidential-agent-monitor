@@ -11,14 +11,11 @@ import (
 	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/open-policy-agent/opa/v1/rego"
 	"github.com/open-policy-agent/opa/v1/storage/inmem"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 //go:embed lib.rego
 var library string
-
-// Base is an optional module in basePackage, set once at start, that every engine loads; lib.rego reads its hooks.
-var Base string
 
 const basePackage = "data.perimeter.base"
 
@@ -34,7 +31,7 @@ type Engine struct {
 	decision, admin rego.PreparedEvalQuery
 }
 
-func Prepare(ctx context.Context, data map[string]any, policies map[string]string, confidentiality, integrity bool) (*Engine, error) {
+func Prepare(ctx context.Context, base string, data map[string]any, policies map[string]string, confidentiality, integrity bool) (*Engine, error) {
 	reserved := []string{"perimeter", "lattices", "levels"}
 	for _, name := range reserved {
 		if _, ok := data[name]; ok {
@@ -45,12 +42,12 @@ func Prepare(ctx context.Context, data map[string]any, policies map[string]strin
 	if store == nil {
 		store = map[string]any{}
 	}
-	store["levels"] = map[string]any{"audiences": facts.Audiences, "trusts": facts.Trusts, "effects": facts.Effects}
+	store["levels"] = map[string]any{"audiences": facts.Audiences(), "trusts": facts.Trusts(), "effects": facts.Effects()}
 	store["lattices"] = map[string]any{"confidentiality": confidentiality, "integrity": integrity}
 	opts := []func(*rego.Rego){rego.Module("perimeter/lib.rego", library),
 		rego.Store(inmem.NewFromObjectWithOpts(store, inmem.OptReturnASTValuesOnRead(true))), rego.StrictBuiltinErrors(true)}
-	if Base != "" {
-		module, err := ast.ParseModule("perimeter/base.rego", Base)
+	if base != "" {
+		module, err := ast.ParseModule("perimeter/base.rego", base)
 		if err == nil && module.Package.Path.String() != basePackage {
 			err = fmt.Errorf("the base policy must be package %s, not %s", basePackage, module.Package.Path)
 		}

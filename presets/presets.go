@@ -7,9 +7,8 @@ import (
 	"fmt"
 	"io/fs"
 	"strings"
-	"sync"
 
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 //go:embed *.json
@@ -52,23 +51,18 @@ func Decode(raw []byte) (*Preset, error) {
 	return &p, nil
 }
 
-func Lookup(name string) (*Preset, error) {
-	shipped, err := Shipped()
-	if err != nil {
-		return nil, err
-	}
-	if preset := shipped[name]; preset != nil {
+type Set map[string]*Preset
+
+func (s Set) Lookup(name string) (*Preset, error) {
+	if preset := s[name]; preset != nil {
 		return preset, nil
 	}
 	return nil, fmt.Errorf("unknown preset %s", name)
 }
 
-// Extra, when set before the first lookup, adds an organization's own definitions to the shipped ones.
-var Extra fs.FS
-
-var Shipped = sync.OnceValues(func() (map[string]*Preset, error) {
-	out := map[string]*Preset{}
-	for _, source := range []fs.FS{Files, Extra} {
+func Load(sources ...fs.FS) (Set, error) {
+	out := Set{}
+	for _, source := range sources {
 		if source == nil {
 			continue
 		}
@@ -88,7 +82,7 @@ var Shipped = sync.OnceValues(func() (map[string]*Preset, error) {
 		}
 	}
 	return out, nil
-})
+}
 
 // Entry is the owner's catalog presentation. Operations are display metadata;
 // their protocol definitions remain opaque until a connector decodes them.

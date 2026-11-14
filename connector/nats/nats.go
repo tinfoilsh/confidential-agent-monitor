@@ -19,8 +19,8 @@ import (
 	"unicode/utf8"
 
 	nats "github.com/nats-io/nats.go"
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 var Kind = connector.Kind{PerMessage: true, Parse: parseNATS, New: func() connector.Server { return new(NATS) }}

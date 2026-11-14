@@ -11,9 +11,12 @@ import sys
 
 PROTOCOLS = {
     "browser", "email", "mcp", "mqtt", "nats", "postgres", "redis",
-    "session", "signer", "tcp", "tinfoil", "web",
+    "session", "signer", "tcp", "web",
 }
-MODULE = "github.com/tinfoilsh/monitor/"
+MODULE = "github.com/tinfoilsh/confidential-agent-monitor/"
+TINFOIL = ("github.com/tinfoilsh/tinfoil-go", MODULE + "tinfoil")
+FROZEN = re.compile("|".join(map(re.escape, (MODULE, "tinfoil-owner-http-v1", "tinfoil-owner-generation-v1", "X-Tinfoil-Session", "tinfoil owner session v1",
+    "TINFOIL-MONITOR-STATE", "tinfoil-attestation", '"tinfoil": {"": "tinfoil", "websearch": "tinfoil_websearch"}'))))
 SKIP = {".git", ".dev", "node_modules", "vendor", "dist", "dist-hosted", "dist-static"}
 
 
@@ -22,8 +25,10 @@ def category(path):
         return "tests"
     if path.parts[0] == "dev":
         return "tooling"
-    if path.parts[:3] == ("internal", "tinfoil", "sandbox"):
+    if path.parts[:2] == ("internal", "bunker"):
         return "sandbox"
+    if path.parts[0] == "tinfoil":
+        return "protocols"
     if len(path.parts) > 2 and path.parts[0] == "connector" and path.parts[1] in PROTOCOLS:
         return "protocols"
     return "core"
@@ -35,7 +40,15 @@ def imports(source):
         yield from re.findall(r'"([^"\n]+)"', declaration[0])
 
 
-def forbidden(path, dependency):
+def forbidden(path, dependency, main):
+    if dependency in ("flag", "os/signal"):
+        return not main and path.parts[0] != "dev"
+    if dependency == MODULE + "ui":
+        return not main
+    if path.parts[0] == "tinfoil":
+        return dependency.startswith(MODULE + "internal/")
+    if dependency.startswith(TINFOIL):
+        return True
     if not dependency.startswith(MODULE):
         return False
     dependency = dependency.removeprefix(MODULE)
@@ -45,13 +58,15 @@ def forbidden(path, dependency):
     if path.parts[:2] == ("internal", "policy"):
         return dependency != "facts"
     if path.parts[0] == "connector":
-        return dependency.startswith("internal/")
+        return dependency.startswith(("internal/", "monitor", "owner", "worker"))
     if path.parts[:2] == ("internal", "config"):
-        return concrete or dependency.startswith(("internal/policy", "internal/monitor", "internal/tinfoil"))
-    if path.parts[:2] == ("internal", "monitor"):
+        return concrete or dependency.startswith(("internal/policy", "monitor", "internal/bunker", "owner"))
+    if path.parts[0] in ("perimeter", "owner"):
+        return concrete or dependency.startswith("internal/")
+    if path.parts[0] == "monitor":
         return concrete
     if path.parts[:2] == ("internal", "store"):
-        return dependency.startswith(("internal/monitor", "internal/policy", "internal/worker")) or concrete
+        return dependency.startswith(("monitor", "internal/policy", "worker")) or concrete
     return False
 
 
@@ -79,10 +94,13 @@ def main():
             generated[str(path)] = lines
         if kind == "tests":
             continue
+        if path.parts[0] not in ("tinfoil", "dev") and "tinfoil" in FROZEN.sub("", source).lower():
+            violations.append(f"{path}: names tinfoil")
         deps = sorted(imports(source))
         graph[str(path)] = deps
+        main = re.search(r'^package main$', source, re.M)
         for dependency in deps:
-            if forbidden(path, dependency):
+            if forbidden(path, dependency, main):
                 violations.append(f"{path}: forbidden import {dependency}")
     totals["all_non_test_go"] = sum(totals[k] for k in ("core", "protocols", "sandbox", "tooling"))
     totals["production_runtime_go"] = totals["all_non_test_go"] - totals["tooling"]

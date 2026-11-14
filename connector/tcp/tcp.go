@@ -9,8 +9,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 var Kind = connector.Kind{Parse: Parse, New: func() connector.Server { return new(Server) }}

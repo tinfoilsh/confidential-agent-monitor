@@ -7,7 +7,8 @@ import (
 	"net/netip"
 	"slices"
 
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/presets"
 )
 
 const AgentConnection = "agent"
@@ -119,4 +120,5 @@ type Config struct {
 	Policies           map[string]string     `json:"policies"`
 	Data               map[string]any        `json:"data"`
 	Principals         map[string]string     `json:"-"`
+	presets            presets.Set
 }

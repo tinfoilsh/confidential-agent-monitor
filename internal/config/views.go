@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"maps"
 
-	"github.com/tinfoilsh/monitor/facts"
-	"github.com/tinfoilsh/monitor/presets"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/presets"
 )
 
 // View expands the existing owner wire representation only while rendering it.
@@ -39,7 +39,7 @@ func (c *Config) Effective() (string, error) {
 	}
 	ps := map[string]any{}
 	for _, connection := range c.Connections {
-		p, err := presets.Lookup(connection.Preset)
+		p, err := c.presets.Lookup(connection.Preset)
 		if err != nil {
 			return "", err
 		}
@@ -95,16 +95,13 @@ func (c *Config) ProposalChanges(p Principal, changes []Change) (map[string][]Ch
 
 // Catalog is a control presentation, never an authorization or runtime registry.
 func (c *Config) Catalog() (map[string]presets.Entry, string, error) {
-	shipped, err := presets.Shipped()
-	if err != nil {
-		return nil, "", err
-	}
+	var err error
 	used := map[string]bool{}
 	for _, connection := range c.Connections {
 		used[connection.Preset] = true
 	}
 	entries := map[string]presets.Entry{}
-	for name, p := range shipped {
+	for name, p := range c.presets {
 		if entries[name], err = p.Entry(used[name]); err != nil {
 			return nil, "", err
 		}

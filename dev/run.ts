@@ -63,7 +63,10 @@ try {
     );
   }
   const executable = join(directory, "monitor");
-  await run(["go", "build", "-o", executable, "."]);
+  await run(
+    ["go", "build", "-o", executable, "./cmd/perimeter"],
+    join(root, "tinfoil"),
+  );
 
   const vite = start(
     [

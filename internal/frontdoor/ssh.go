@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tinfoilsh/monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"golang.org/x/crypto/ssh"
 )
 

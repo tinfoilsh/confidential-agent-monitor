@@ -35,7 +35,7 @@ var (
 
 var errNoRegistration = errors.New("this service does not register clients automatically; enter the client ID and secret of an OAuth app registered with it")
 
-var errLoopback = errors.New("this service does not accept sign-ins from this page; open this Perimeter with tinfoil perimeter open to sign in on your computer")
+var errLoopback = errors.New("this service only accepts sign-ins from a loopback address; open this Perimeter on your own computer to sign in")
 
 // A grant without an AuthURL is signed in at the authorization server its Resource names (RFC 9728).
 // A grant without a refresh token keeps its access token until Expiry, then needs a new sign-in.
@@ -148,7 +148,7 @@ type SignIn struct {
 // NewSignIn starts the configured OAuth flow, registering a client first when the secret names only its resource.
 func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage, redirect string) (*SignIn, error) {
 	var v Value
-	if err := json.Unmarshal(secret, &v); err != nil {
+	if _, err := v.decode(secret); err != nil {
 		return nil, err
 	}
 	if v.grant == nil {

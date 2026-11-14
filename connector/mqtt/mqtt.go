@@ -15,8 +15,8 @@ import (
 	"unicode/utf8"
 
 	"github.com/eclipse/paho.mqtt.golang/packets"
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/facts"
 )
 
 var Kind = connector.Kind{PerMessage: true, Parse: parseMQTT, New: func() connector.Server { return new(MQTT) }}
