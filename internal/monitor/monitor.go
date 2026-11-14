@@ -40,7 +40,7 @@ type settings struct {
 	certified map[string]store.Certified
 }
 
-// A key keeps its label this long after its certificate expires, so a late renewal cannot shed it.
+// A key keeps its name and label this long after its certificate expires, so a late renewal cannot shed the label and open sessions cannot change identity.
 const certifiedGrace = 24 * time.Hour
 
 // Principal is key's declared identity, or the certificate identity it last authenticated as.
@@ -82,6 +82,9 @@ func (m *monitor) certify(ctx context.Context, key string, identity store.Certif
 	}
 	next := m.store.Doc
 	retire(&next, st.Principals)
+	if held, live := next.Certified[key]; live && held.Name != identity.Name {
+		return errors.New("key is certified as another identity")
+	}
 	if next.Certified == nil {
 		next.Certified = map[string]store.Certified{}
 	}
