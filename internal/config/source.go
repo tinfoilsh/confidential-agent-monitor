@@ -1,6 +1,7 @@
 package config
 
 import (
+	"cmp"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -43,6 +44,8 @@ type Change struct {
 	Path   []string `json:"path"`
 	Value  any      `json:"value,omitempty"`
 	Delete bool     `json:"delete,omitempty"`
+	// From moves the value written at another path here, removing it there.
+	From []string `json:"from,omitempty"`
 }
 
 // TOML has no null and cannot represent every JSON number exactly. A tagged JSON
@@ -119,19 +122,27 @@ func EditSource(source string, changes []Change) (string, error) {
 		return "", err
 	}
 	for _, change := range changes {
-		if len(change.Path) == 0 || change.Delete && change.Value != nil {
-			return "", errors.New("an edit requires a path and a deletion cannot have a value")
-		}
-		if change.Delete {
+		switch {
+		case len(change.Path) == 0 || change.Delete && change.Value != nil || change.From != nil && (change.Delete || change.Value != nil):
+			return "", errors.New("an edit requires a path and only one of a value, a deletion or a move")
+		case change.Delete:
 			doc.Delete(change.Path)
 			continue
-		}
-		change.Value, err = facts.JSON[any](change.Value)
-		if err == nil {
-			change.Value, err = sourceValue(change.Value, true)
-		}
-		if err != nil {
-			return "", err
+		case change.From != nil:
+			moved, ok := doc.Get(change.From)
+			if !ok {
+				continue
+			}
+			doc.Delete(change.From)
+			change.Value = moved
+		default:
+			change.Value, err = facts.JSON[any](change.Value)
+			if err == nil {
+				change.Value, err = sourceValue(change.Value, true)
+			}
+			if err != nil {
+				return "", err
+			}
 		}
 		edits := []Change{change}
 		if table, ok := change.Value.(map[string]any); ok && len(table) > 0 && table["$json"] == nil {
@@ -154,24 +165,36 @@ func EditSource(source string, changes []Change) (string, error) {
 }
 
 // Edit applies changes to source and reports which connections' connector setup
-// then differs from c's. Rules approved for such a connection are removed in the
-// same edit. Changes that alter no setting leave source as it was.
-func (c *Config) Edit(source string, changes []Change) (string, func(connection string) bool, error) {
+// then differs from c's, and which connections it moved from which name. Rules
+// approved for a connection whose setup differs are removed in the same edit.
+// Changes that alter no setting leave source as it was.
+func (c *Config) Edit(source string, changes []Change) (string, func(connection string) bool, map[string]string, error) {
 	edited, err := EditSource(source, changes)
 	if err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
 	next, err := Load(edited)
 	if err != nil {
-		return "", nil, err
+		return "", nil, nil, err
 	}
 	if reflect.DeepEqual(next, c) {
-		return source, func(string) bool { return false }, nil
+		return source, func(string) bool { return false }, nil, nil
 	}
 	networks := !slices.Equal(c.AllowNetworks, next.AllowNetworks)
+	renamed := map[string]string{}
+	for _, change := range changes {
+		if len(change.Path) != 2 || len(change.From) != 2 || change.Path[0] != "connections" || change.From[0] != "connections" {
+			continue
+		}
+		_, was := c.Connections[change.From[1]]
+		if _, still := next.Connections[change.From[1]]; was && !still {
+			renamed[change.Path[1]] = change.From[1]
+		}
+	}
 	setup := func(connection string) bool {
-		before, _ := c.Spec(connection)
+		before, _ := c.Spec(cmp.Or(renamed[connection], connection))
 		after, _ := next.Spec(connection)
+		before.Name = after.Name
 		return !reflect.DeepEqual(before, after)
 	}
 	var stale []Change
@@ -186,7 +209,7 @@ func (c *Config) Edit(source string, changes []Change) (string, func(connection 
 	if stale != nil {
 		edited, err = EditSource(edited, stale)
 	}
-	return edited, func(connection string) bool { return networks || setup(connection) }, err
+	return edited, func(connection string) bool { return networks || setup(connection) }, renamed, err
 }
 
 // Fragment converts a TOML proposal into the same JSON-valued edits as owner calls.

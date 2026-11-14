@@ -1242,18 +1242,18 @@ html [data-sonner-toaster] {
 .connection-item[open] .connection-inline {
   background: var(--card);
 }
-.connection-row {
+.menu-row {
   position: relative;
 }
-.connection-item > summary > .collection-chevron {
+.menu-row > details > summary > .collection-chevron {
   margin-left: 36px;
 }
-.connection-menu {
+.row-menu {
   position: absolute;
   top: 10px;
   right: calc(var(--card-inset) + 24px);
 }
-.connection-menu > .icon-button {
+.row-menu > .icon-button {
   width: 28px;
   height: 28px;
   border-color: transparent;
@@ -1261,7 +1261,7 @@ html [data-sonner-toaster] {
   box-shadow: none;
   color: var(--muted);
 }
-.connection-menu > .icon-button:hover:not(:disabled) {
+.row-menu > .icon-button:hover:not(:disabled) {
   background: var(--hover);
   color: var(--text);
 }
@@ -1289,7 +1289,7 @@ html [data-sonner-toaster] {
 }
 
 .agent-item + .agent-item,
-.connection-row + .connection-row {
+.menu-row + .menu-row {
   border-top: 1px solid var(--line);
 }
 :is(.agent-item, .connection-item, .request-item) > summary {
@@ -2458,7 +2458,7 @@ button.access-toggle:hover:not(:disabled) {
     grid-column: 3;
     grid-row: 1;
   }
-  .connection-menu {
+  .row-menu {
     top: 8px;
   }
 }
@@ -3061,6 +3061,10 @@ td {
   line-height: 1.6;
   text-align: center;
   text-wrap: pretty;
+}
+.confirm-dialog input {
+  width: calc(100% - 48px);
+  margin: 16px 24px 0;
 }
 .confirm-actions {
   display: grid;

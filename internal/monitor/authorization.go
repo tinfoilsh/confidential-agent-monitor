@@ -258,11 +258,13 @@ func (st *settings) policyInput(c *connection, p config.Principal, f facts.Facts
 		return nil, nil, err
 	}
 	authorization := map[string]any{
-		"access":   access,
-		"effects":  st.Config.EffectModes(p.Name, c.Name, f.Operation),
-		"rules":    slices.Collect(maps.Values(st.Identities[p.Name].Rules)),
-		"approved": approved,
-		"grant":    grant,
+		"access":               access,
+		"reaches":              st.Reaches(p.Name, c.Name),
+		"effects":              []any{st.Effects, st.Connections[c.Name].Effects, st.Identities[p.Name].Effects, st.Access(p.Name, c.Name).Effects},
+		"allow_paid_inference": st.AllowPaidInference,
+		"rules":                slices.Collect(maps.Values(st.Identities[p.Name].Rules)),
+		"approved":             approved,
+		"grant":                grant,
 	}
 	connection := st.Connections[c.Name]
 	connectionInput := map[string]any{

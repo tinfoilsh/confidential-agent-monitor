@@ -605,7 +605,12 @@ function createMonitor(options: MonitorOptions) {
     deviceSignIn,
     shell,
     setShell,
-    shellFor: (name: string) => options.shell?.(name),
+    // A renamed bunker keeps the key that names its sandbox.
+    shellFor: (name: string) => {
+      const key = view()?.config.identities?.[name]?.key;
+      const sandbox = options.candidates?.().find((c) => c.key === key);
+      return options.shell?.(sandbox?.name ?? name);
+    },
     sandboxesLoading: () => options.sandboxesLoading?.() ?? false,
     waiting,
     accepting,

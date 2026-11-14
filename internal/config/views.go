@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"maps"
-	"slices"
 
 	"github.com/tinfoilsh/monitor/facts"
 	"github.com/tinfoilsh/monitor/presets"
@@ -86,7 +85,7 @@ func (c *Config) ProposalChanges(p Principal, changes []Change) (map[string][]Ch
 	groups := map[string][]Change{}
 	for _, change := range changes {
 		target, ok := ProposalTarget(change.Path)
-		if !ok {
+		if !ok || change.From != nil {
 			return nil, errors.New("proposals may change only service setup and access")
 		}
 		if !c.Identities[p.Name].Operator && (change.Path[0] == "default_access" || change.Path[0] == "identities" && change.Path[1] != p.Name) {
@@ -115,26 +114,4 @@ func (c *Config) Catalog() (map[string]presets.Entry, string, error) {
 	}
 	raw, err := json.Marshal(entries)
 	return entries, fmt.Sprintf("%x", sha256.Sum256(raw)), err
-}
-
-// More specific effect settings override broader ones. Access levels and action
-// permissions remain independent restrictions on the request.
-func (c *Config) EffectModes(agent, connection string, op *facts.Operation) map[string]string {
-	modes := make(map[string]string, len(facts.Effects))
-	for effect, obligations := range facts.Effects {
-		modes[effect] = "allow"
-		if obligations.Ask {
-			modes[effect] = "ask"
-		}
-	}
-	// Paid model operations already carry both generate and pay. Change only the
-	// default; explicit payment restrictions at any scope still take precedence.
-	if c.AllowPaidInference && op != nil && slices.Contains(op.Effects, "generate") && slices.Contains(op.Effects, "pay") {
-		modes["pay"] = "allow"
-	}
-	id := c.Identities[agent]
-	for _, overrides := range []map[string]string{c.Effects, c.Connections[connection].Effects, id.Effects, c.Access(agent, connection).Effects} {
-		maps.Copy(modes, overrides)
-	}
-	return modes
 }
