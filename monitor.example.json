@@ -1,6 +1,7 @@
 {
   "lattices": { "confidentiality": true, "integrity": false },
   "allow_networks": ["100.64.0.0/10"],
+  "policies": { "network-default": "package sentinel\n\nallow if input.facts.operation != null\n" },
   "connections": {
     "github": {
       "preset": "github",

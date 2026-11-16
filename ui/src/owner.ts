@@ -1567,9 +1567,7 @@ function onboardingChanges(
   choices: OnboardingChoices,
 ): { changes: Change[]; credentials: { [connection: string]: Credentials } } {
   const network = unusedName(view, "network");
-  let policy = "network-default";
-  for (let i = 2; Object.hasOwn(view.config.policies ?? {}, policy); i++)
-    policy = `network-default-${i}`;
+  const policy = networkRuleName(view);
   const changes = sourceChanges({
     data: { onboarding: { completed: true } },
     // Label guardrails are recorded but never enforced in this release.
@@ -1669,13 +1667,24 @@ export function setupToolApprovals(view: View): Change[] {
 }
 
 const KNOWN_ONLY_RULE =
-  'package sentinel\n\ndeny contains "This request has no recognized policy operation." if input.facts.operation == null\n';
-const networkRuleName = (view: View) =>
-  Object.keys(view.config.policies ?? {}).find((k) =>
-    /deny contains "(Network access is disabled|This request has no recognized policy operation)/.test(
-      view.config.policies![k],
-    ),
-  ) ?? "network-default";
+  "package sentinel\n\nallow if input.facts.operation != null\n";
+const OPEN_RULE = "package sentinel\n\nallow := true\n";
+// Allow rules add up, so the network rule lives in one policy that each edit replaces.
+const networkRuleName = (view: View) => {
+  const policies = view.config.policies ?? {};
+  const managed = Object.keys(policies).find(
+    (k) =>
+      [KNOWN_ONLY_RULE, OPEN_RULE].includes(policies[k]) ||
+      /deny contains "(Network access is disabled|This request has no recognized policy operation)/.test(
+        policies[k],
+      ),
+  );
+  if (managed) return managed;
+  let name = "network-default";
+  for (let i = 2; Object.hasOwn(policies, name); i++)
+    name = `network-default-${i}`;
+  return name;
+};
 // Raw TCP: the Monitor only sees host and port, never what is sent.
 export const isRawNetwork = (view: View, name: string) =>
   connections(view)[name]?.preset === "tcp";
@@ -1691,9 +1700,7 @@ export const scopeText = (
       );
 export const networkingOpen = (view: View) =>
   (view.config.allow_networks ?? []).includes("0.0.0.0/0") &&
-  !Object.values(view.config.policies ?? {}).some((p) =>
-    p.includes("package sentinel\n\ndeny contains"),
-  );
+  Object.values(view.config.policies ?? {}).includes(OPEN_RULE);
 
 const NAME = /^[a-zA-Z0-9][a-zA-Z0-9-]*$/;
 // Identities may not name a missing connection, so every agent's access is included.
@@ -1717,9 +1724,10 @@ export const edits = {
       .map(([name]) => name);
     return [
       { path: ["allow_networks"], value: open ? ["0.0.0.0/0", "::/0"] : [] },
-      open
-        ? { path: ["policies", networkRuleName(view)], delete: true }
-        : { path: ["policies", networkRuleName(view)], value: KNOWN_ONLY_RULE },
+      {
+        path: ["policies", networkRuleName(view)],
+        value: open ? OPEN_RULE : KNOWN_ONLY_RULE,
+      },
       ...tcp.map((name) => ({
         path: ["default_access", name],
         value: { level: open ? "allow" : "off" },

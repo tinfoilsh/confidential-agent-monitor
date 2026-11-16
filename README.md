@@ -163,6 +163,10 @@ use `off`, `ask`, and `allow`; `off` means Deny. Other policy checks still apply
 and an approval cannot override an explicit denial. Pending requests appear at
 the top of **Permissions** and as notices on other pages.
 
+Nothing is allowed by default. Besides this access, a request needs an owner
+policy in package `sentinel` that allows it. Onboarding writes one; a Perimeter
+configured only through TOML needs its own under `[policies]`.
+
 Payments and publishing default to Ask. Onboarding enables **Allow paid AI
 inference**, which skips payment approval for model generation unless an explicit
 payment setting requires it.

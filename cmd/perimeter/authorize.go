@@ -25,6 +25,7 @@ var (
 	errAuditBacklog = errors.New("the Perimeter cannot write its audit log; requests are refused until storage recovers")
 	errRuleSaved    = errors.New("approval rule saved; retry the request")
 	errNoAccess     = errors.New("key has no agent access")
+	errNotAllowed   = errors.New("policy does not allow this request")
 )
 
 const (
@@ -246,14 +247,17 @@ func (s held) authorize(ctx context.Context, a *admitted, gr *grant) (*record, e
 			r = next
 		}
 		r.Facts, r.Decision, r.Scope = next.Facts, next.Decision, next.Scope
-		if len(r.Deny) != 0 {
-			return r, errors.New(strings.Join(r.Deny, "; "))
-		}
-		if len(r.Requirements) == 0 {
+		if r.Allow {
 			if r.State == statePending {
 				r.State = stateAllowed
 			}
 			return r, ctx.Err()
+		}
+		if len(r.Deny) != 0 {
+			return r, errors.New(strings.Join(r.Deny, "; "))
+		}
+		if len(r.Requirements) == 0 {
+			return r, errNotAllowed
 		}
 		if err := s.awaitAnswer(ctx, r); err != nil {
 			return r, err
@@ -351,7 +355,7 @@ func (s held) recheck(a *admitted) bool {
 		if gr == nil {
 			continue
 		}
-		if d, err := s.decideGrant(context.Background(), a, gr); err != nil || len(d.Deny) != 0 || len(d.Requirements) != 0 {
+		if d, err := s.decideGrant(context.Background(), a, gr); err != nil || !d.Allow {
 			return false
 		}
 	}

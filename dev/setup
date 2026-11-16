@@ -40,7 +40,8 @@ if jq -e '.generation == 1 and ((.config.connections // {}) | length == 0) and (
   if [[ -n ${MONITOR_CONFIG:-} ]]; then
     cp "$MONITOR_CONFIG" "$dev/seed.json"
   else
-    jq '{connections: {web: ({preset: "web"} + .presets.web.defaults)}}' \
+    jq '{connections: {web: ({preset: "web"} + .presets.web.defaults)},
+         policies: {"network-default": "package sentinel\n\nallow if input.facts.operation != null\n"}}' \
       "$dev/state.json" > "$dev/seed.json"
   fi
   jq '{changes: [to_entries[] | {path: [.key], value: .value}]}' "$dev/seed.json" | owner /policy/edits -d @- > "$dev/state.json"

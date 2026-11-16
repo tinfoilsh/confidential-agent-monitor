@@ -327,10 +327,10 @@ func (s *state) checkAdminCall(ctx context.Context, st *settings, call config.Ad
 	c, _ := callerFrom(ctx)
 	call.Caller = config.PolicyCaller{Name: c.Name, Owner: c.Owner, Claims: c.Claims}
 	call.Route, _ = ctx.Value(routeKey{}).(string)
-	var deny []string
-	err := st.policy.Eval(ctx, config.QueryAdmin, call, &deny)
-	if err == nil && len(deny) != 0 {
-		err = httpError{errors.New(strings.Join(deny, "; ")), http.StatusForbidden}
+	var allow bool
+	err := st.policy.Eval(ctx, config.QueryAdmin, call, &allow)
+	if err == nil && !allow {
+		err = httpError{errors.New("policy does not allow this caller to make this call"), http.StatusForbidden}
 	}
 	return err
 }

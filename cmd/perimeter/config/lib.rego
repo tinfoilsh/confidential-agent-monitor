@@ -124,9 +124,12 @@ next := {
 }
 
 # Owner policy is package sentinel. The base policy is package perimeter.base, which owner policy cannot change.
-denies["owner"] := data.sentinel.deny
+# A request needs the allow of the owner policy, and of the base policy when the Perimeter is started with one.
+needed := {true: {"owner", "base"}, false: {"owner"}}[data.base_policy]
 
-denies["base"] := data.perimeter.base.deny
+allows contains "owner" if data.sentinel.allow == true
+
+allows contains "base" if data.perimeter.base.allow == true
 
 collection(x) if is_array(x)
 
@@ -148,22 +151,19 @@ valid_approvals contains source if {
 	count({r.id | some r in a}) == count({r | some r in a})
 }
 
-deny contains "This bunker does not have permission for this action." if mode == "off"
+reasons contains "This bunker does not have permission for this action." if mode == "off"
 
-deny contains sprintf("The %s effect is set to Deny.", [effect]) if {
+reasons contains sprintf("The %s effect is set to Deny.", [effect]) if {
 	some effect in op.effects
 	effects[effect] == "off"
 }
 
-# Element types are checked when the decision is decoded; a wrong container would deny nothing.
-deny contains sprintf("%s policy deny must be a set or array of strings", [source]) if {
-	some source, hook in denies
-	not collection(hook)
+reasons contains sprintf("The %s policy does not allow this request.", [source]) if {
+	some source in needed
+	not source in allows
 }
 
-deny contains msg if some msg in denies[_]
-
-deny contains sprintf("%s policy approvals must be a set or array of {id, message} objects with unique %s.* IDs and nonempty messages", [source, source]) if {
+reasons contains sprintf("%s policy approvals must be a set or array of {id, message} objects with unique %s.* IDs and nonempty messages", [source, source]) if {
 	some source, _ in approvals
 	not source in valid_approvals
 }
@@ -174,20 +174,26 @@ disclosure := concat(".", ["audience", sends])
 needs_trust if unknown
 needs_trust if "trust" in obligations
 
-builtin contains "ask" if mode != "allow"
-
 # Confidentiality: what the agent has seen goes to no wider an audience than its label.
-builtin contains disclosure if {
-	data.lattices.confidentiality
-	not rank.audience[sends] <= rank.audience[label.audience]
-}
+confidentiality := "allow" if {
+	data.lattices.confidentiality == false
+} else := "allow" if {
+	rank.audience[sends] <= rank.audience[label.audience]
+} else := "ask"
 
 # Integrity: an agent that has read untrusted content does nothing that requires trust.
-builtin contains "trust" if {
-	data.lattices.integrity
-	label.trust == "untrusted"
-	needs_trust
-}
+integrity := "allow" if {
+	data.lattices.integrity == false
+} else := "allow" if {
+	label.trust == "trusted"
+} else := "allow" if {
+	not needs_trust
+} else := "ask"
+
+standing := {"ask": mode, disclosure: confidentiality, "trust": integrity}
+
+# Opening a session asks for nothing; its operations ask for themselves.
+checks := object.union(standing, {id: "allow" | admission; some id, "ask" in standing})
 
 waived contains id if some id in auth.approved
 
@@ -201,8 +207,12 @@ waived contains requirement.id if {
 	some requirement in r.requirements
 }
 
-base_gaps := builtin - waived if not admission
-base_gaps := set() if admission
+# A check set to allow passes; one set to ask passes with the owner's approval of its ID, once or as a saved rule.
+passes(_, "allow") := true
+
+passes(id, "ask") if id in waived
+
+base_gaps := {id | some id, "ask" in checks; not id in waived}
 
 ask_message := sprintf("This request has no recognized operation on %s.", [facts.connection]) if unknown
 ask_message := sprintf("This request needs your approval on %s.", [facts.connection]) if not unknown
@@ -232,7 +242,22 @@ requirements contains r if {
 
 gaps contains r.id if some r in requirements
 
-decision := {"deny": deny, "requirements": requirements, "sends": sends, "next": next}
+default allow := false
+
+# Nothing else lets a request through. The reasons and requirements only say what is missing.
+allow if {
+	every id, setting in checks { passes(id, setting) }
+
+	# An unrecognized request has no operation, and so no effects.
+	every effect in [e | some e in op.effects] { passes(concat("", ["effect.", effect]), effects[effect]) }
+	allows == needed
+	every source, asked in approvals {
+		source in valid_approvals
+		every r in asked { r.id in waived }
+	}
+}
+
+decision := {"allow": allow, "deny": reasons, "requirements": requirements, "sends": sends, "next": next}
 
 # input is an admin call: its caller and route, plus the answer and record of an answer.
 # An identity calling under the agent API's /admin/ is a non-owner caller whose claims are its key and groups.
@@ -240,20 +265,10 @@ default admin_allow := false
 
 admin_allow if input.caller.owner
 
-admin_allow if data.perimeter.base.admin_allow == true
-
-admin_deny contains "The base policy does not allow this caller to make this call." if not admin_allow
-
-admin_deny contains "base policy admin_deny must be a set or array of strings" if {
-	hook := data.perimeter.base.admin_deny
-	not collection(hook)
-}
-
-admin_deny contains msg if some msg in data.perimeter.base.admin_deny
-
-admin_deny contains "An identity cannot answer its own request." if {
-	not input.caller.owner
-	input.record.facts.principal.name == input.caller.name
+# An identity cannot answer its own request.
+admin_allow if {
+	data.perimeter.base.admin_allow == true
+	not input.record.facts.principal.name == input.caller.name
 }
 
 # input is an identity's capability: its principal, its stored routes flag and the capability's name.

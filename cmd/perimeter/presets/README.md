@@ -99,18 +99,17 @@ and the corresponding names for other connectors. For example:
 ```rego
 package sentinel
 
-deny contains "restricted host" if {
-    input.facts.connection == "web"
-    input.facts.details.http.host == "restricted.example"
-}
+allow if input.facts.connection != "web"
+
+allow if input.facts.details.http.host in {"api.example", "docs.example"}
 ```
 
-Owner policies remain in `config.policies`. They can deny requests or require
+Owner policies remain in `config.policies`. They allow requests and can require
 approval using both common and protocol-specific facts. They do not supply
 operation descriptions.
 Unknown requests have a null operation and require approval; malformed or
 ambiguous matches are refused. Approval grants stay
-outside the facts snapshot. Decisions contain `facts`, `deny`, `requirements`, `next`,
+outside the facts snapshot. Decisions contain `facts`, `allow`, `deny`, `requirements`, `next`,
 and `grant`; the app reads operation, title, parameters, principal,
 connection, and the current label from `facts`. Audit records add lifecycle fields
 without duplicating those facts.
@@ -121,10 +120,16 @@ saved approval waivers. Every request evaluates the same prepared query,
 `input.authorization`; they can also read `data.perimeter.gaps` to inspect remaining
 approval requirements. Lattice settings are available in `data.lattices`, and
 label levels in `data.levels`. Description errors are appended to denials in Go.
-`data.sentinel.deny` adds owner denial messages. Owner policies cannot define
+Owner policies cannot define
 rules or data under `perimeter`, `lattices`, or `levels`, which the Perimeter reserves.
-An undefined deny rule adds no restrictions. A defined rule must return a set or
-array of strings; malformed output and evaluation errors refuse the request.
+
+A request passes only when the decision's `allow` is true; `deny` and
+`requirements` only say what is missing. `allow` needs every built-in check to
+pass and `data.sentinel.allow` to be `true`, so a Perimeter with no policy in
+package `sentinel` refuses every request, as does an evaluation error. Onboarding
+writes that policy. `allow` rules add up across owner policies, so a second
+policy can only widen what the first allows. A Perimeter started with
+`-base-policy` also needs `data.perimeter.base.allow` to be `true`.
 
 `data.sentinel.approvals` adds approval requirements. For example:
 
@@ -149,7 +154,7 @@ with `owner.`, followed by an ASCII letter or digit and then letters, digits,
 underscores, dots, or hyphens. Messages must be nonempty strings. Repeated
 identical entries are accepted; conflicting messages for one ID, malformed
 entries, and evaluation errors refuse the request. Owner requirements add to
-built-in checks and cannot override a denial.
+built-in checks and never stand in for `allow`.
 
 `requirements` contains the remaining `{id, message}` objects, including
 explanations for built-in requirements. Saved rules carry the same collection;
@@ -161,7 +166,7 @@ Saved approvals survive policy and data edits: a requirement they do not name
 still asks. An edit to a connection's setup or preset removes its saved approvals.
 
 Approval rules can inspect `data.perimeter.base_gaps`, the remaining built-in
-requirements after saved waivers. Denial rules can inspect `data.perimeter.gaps`,
+requirements after saved waivers. Allow rules can inspect `data.perimeter.gaps`,
 which also includes custom requirements. An approval rule that depends on the
 final gaps or requirements is recursive and is rejected when the policy is compiled.
 Custom requirements can pause operations and connection admission.

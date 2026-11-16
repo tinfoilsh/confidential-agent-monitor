@@ -74,8 +74,8 @@ const (
 )
 
 var (
-	policyQueries = map[string]string{QueryDecision: "data.perimeter.decision", QueryAdmin: "data.perimeter.admin_deny", QueryCapable: "data.perimeter.capable"}
-	protectedData = []string{"perimeter", "lattices", "levels"}
+	policyQueries = map[string]string{QueryDecision: "data.perimeter.decision", QueryAdmin: "data.perimeter.admin_allow", QueryCapable: "data.perimeter.capable"}
+	protectedData = []string{"perimeter", "lattices", "levels", "base_policy"}
 	basePackage   = []string{"perimeter", "base"}
 )
 
@@ -94,6 +94,7 @@ func PreparePolicy(ctx context.Context, cfg *Config, base string) (*rego.Program
 	}
 	data["levels"] = map[string]any{"audiences": Audiences, "trusts": Trusts, "effects": Vocabulary}
 	data["lattices"] = cfg.Lattices
+	data["base_policy"] = base != ""
 	modules := map[string]string{standardModule: standardPolicy}
 	if base != "" {
 		path, err := rego.Package(baseModule, base)
@@ -144,6 +145,7 @@ type ConnectionInput struct {
 }
 
 type Decision struct {
+	Allow        bool          `json:"allow"`
 	Deny         []string      `json:"deny"`
 	Requirements []Requirement `json:"requirements"`
 	Sends        string        `json:"sends"`

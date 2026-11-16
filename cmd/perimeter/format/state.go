@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	StateVersion = 2
+	StateVersion = 3
 	MinKeyBytes  = 16
 	MaxKeyBytes  = 4096
 	KeyBytes     = 32
@@ -53,6 +53,9 @@ type Document struct {
 
 func DecodeDocument(plain []byte, v1Presets map[string]bool) (Document, error) {
 	plain, err := upgrade(plain, v1Presets)
+	if err == nil {
+		plain, err = upgradeV2(plain)
+	}
 	if err != nil {
 		return Document{}, fmt.Errorf("stored state: %w", err)
 	}

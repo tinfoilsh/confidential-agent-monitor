@@ -114,7 +114,7 @@ func init() {
 		}
 		return err
 	})
-	flag.Func("base-policy", "Rego file in package perimeter.base; its deny and approvals apply to every decision as owner policy's do, its admin_allow and admin_deny to every admin call, and its capable grants identities the routes, config and propose capabilities; owner policy cannot change it", func(path string) error {
+	flag.Func("base-policy", "Rego file in package perimeter.base; every decision needs its allow and its approvals as it does owner policy's, every admin call by another caller than the owner needs its admin_allow, and its capable grants identities the routes, config and propose capabilities; owner policy cannot change it", func(path string) error {
 		base, err := os.ReadFile(path)
 		basePolicy = string(base)
 		return err

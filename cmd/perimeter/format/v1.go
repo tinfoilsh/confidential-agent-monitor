@@ -6,6 +6,8 @@ import (
 	"slices"
 )
 
+const version2 = 2
+
 var namedKinds = []string{"cli", "ssh-agent"}
 
 var split = map[string]map[string]string{
@@ -23,7 +25,7 @@ func upgrade(plain []byte, presets map[string]bool) ([]byte, error) {
 	if err := json.Unmarshal(plain, &v1); err != nil {
 		return nil, err
 	}
-	if v1.Version >= StateVersion {
+	if v1.Version >= version2 {
 		return plain, nil
 	}
 	source, err := ReadTOML(v1.Policy)
@@ -122,7 +124,7 @@ func upgrade(plain []byte, presets map[string]bool) ([]byte, error) {
 		return nil, err
 	}
 	delete(doc, "secrets")
-	doc["version"], _ = json.Marshal(StateVersion)
+	doc["version"], _ = json.Marshal(version2)
 	doc["policy"], _ = json.Marshal(v1.Policy)
 	doc["credentials"], _ = json.Marshal(credentials)
 	return json.Marshal(doc)
