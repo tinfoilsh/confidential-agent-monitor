@@ -19,12 +19,12 @@ type connectionDefaults struct {
 }
 
 var (
-	privateDefaults    = connectionDefaults{Contents: "me", Sends: "me", Strangers: true}
-	personalDefaults   = connectionDefaults{Contents: "me", Sends: "anyone", Strangers: true}
-	teamDefaults       = connectionDefaults{Contents: "team", Sends: "team", Strangers: true}
-	teamPrivate        = connectionDefaults{Contents: "team", Sends: "me", Strangers: true}
-	teamPublicDefaults = connectionDefaults{Contents: "team", Sends: "anyone", Strangers: true}
-	publicDefaults     = connectionDefaults{Contents: "anyone", Sends: "anyone", Strangers: true}
+	privateDefaults     = connectionDefaults{Contents: AudienceMe, Sends: AudienceMe, Strangers: true}
+	personalDefaults    = connectionDefaults{Contents: AudienceMe, Sends: AudienceAnyone, Strangers: true}
+	teamDefaults        = connectionDefaults{Contents: AudienceTeam, Sends: AudienceTeam, Strangers: true}
+	teamPrivateDefaults = connectionDefaults{Contents: AudienceTeam, Sends: AudienceMe, Strangers: true}
+	teamPublicDefaults  = connectionDefaults{Contents: AudienceTeam, Sends: AudienceAnyone, Strangers: true}
+	publicDefaults      = connectionDefaults{Contents: AudienceAnyone, Sends: AudienceAnyone, Strangers: true}
 )
 
 func shippedDefaults(name string, p *catalog.Preset) connectionDefaults {
@@ -37,13 +37,13 @@ func shippedDefaults(name string, p *catalog.Preset) connectionDefaults {
 	case "google_tasks", "microsoft_todo":
 		return privateDefaults
 	case "github":
-		return teamPrivate
+		return teamPrivateDefaults
 	case "slack_socket_mode":
 		return teamDefaults
 	}
 	switch {
 	case p.Catalog.Connection["mcp"] != nil:
-		return teamPrivate
+		return teamPrivateDefaults
 	case p.Catalog.Connection["http"] != nil:
 		return teamPublicDefaults
 	}

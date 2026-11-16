@@ -37,11 +37,13 @@ import (
 const (
 	readHeaderTimeout = 30 * time.Second
 	preflightMaxAge   = "600"
-	bearerMode        = "bearer"
-	ownerMode         = "ssh"
 	ownerHost         = "owner" + connections.Domain
-	rpcMode           = "rpc"
-	relayMode         = "relay"
+
+	bearerMode = "bearer"
+	sshMode    = "ssh"
+
+	rpcMode   = "rpc"
+	relayMode = "relay"
 
 	sshChannel           = "tinfoil-owner-http-v1"
 	sshGenerationRequest = "tinfoil-owner-generation-v1"
@@ -64,7 +66,7 @@ var (
 )
 
 type owner struct {
-	key        ed25519.PublicKey
+	publicKey  ed25519.PublicKey
 	sessionKey noise.DHKey
 	relay      func(ctx context.Context, instance string) (*websocket.Conn, error)
 }
@@ -79,7 +81,7 @@ func (s *state) serve(ctx context.Context, sshListener, apiListener net.Listener
 
 	api, mode := s.adminAPI(), bearerMode
 	if o != nil {
-		mode = ownerMode
+		mode = sshMode
 	}
 	if ui != nil {
 		app := http.NewServeMux()
@@ -96,62 +98,66 @@ func (s *state) serve(ctx context.Context, sshListener, apiListener net.Listener
 
 	handler := http.NewServeMux()
 	handler.Handle("GET /healthz", api)
-	var ownerSSH sshtransport.Session
 	if o == nil {
 		handler.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			token, ok := strings.CutPrefix(r.Header.Get("Authorization"), "Bearer ")
-			if key, err := base64.StdEncoding.Strict().DecodeString(token); ok && err == nil && s.isOwner(key) {
-				r = r.WithContext(withCaller(r.Context(), caller{Name: ownerName, Owner: true, Key: key}))
+			if key, err := base64.StdEncoding.Strict().DecodeString(token); ok && err == nil && s.acceptsStorageKey(key) {
+				r = r.WithContext(withCaller(r.Context(), caller{Name: ownerName, Owner: true, StorageKey: key}))
 			}
 			api.ServeHTTP(w, r)
 		})
 	} else {
-		modes := map[string]func(context.Context, *noisetransport.Session, json.RawMessage){rpcMode: func(ctx context.Context, c *noisetransport.Session, _ json.RawMessage) {
-			serveRPC(ctx, c, maxCallBytes, s.ownerRPC(api))
-		}}
-		if o.relay != nil {
-			modes[relayMode] = func(ctx context.Context, c *noisetransport.Session, hello json.RawMessage) {
-				relayOwner(ctx, c, hello, o.relay)
-			}
-		}
 		handler.HandleFunc("GET /owner/ws", func(w http.ResponseWriter, r *http.Request) {
 			c, hello, err := noisetransport.Accept(w, r, noisetransport.Config{Key: o.sessionKey, Prologue: ownerProtocol, Timeout: sessionTimeout,
-				Accept: &websocket.AcceptOptions{InsecureSkipVerify: true}}, func(binding, first []byte) error {
-				var signed struct {
-					Signature []byte `json:"signature"`
-				}
-				if json.Unmarshal(first, &signed) != nil {
-					return errMalformed
-				}
-				if !ed25519.Verify(o.key, append([]byte(sessionContext), binding...), signed.Signature) {
-					return errSignature
-				}
-				return nil
-			})
+				Accept: &websocket.AcceptOptions{InsecureSkipVerify: true}}, o.verify)
 			if err != nil {
 				return
 			}
 			var open struct {
 				Open string `json:"open"`
 			}
-			if json.Unmarshal(hello, &open) != nil || modes[open.Open] == nil {
+			err = json.Unmarshal(hello, &open)
+			switch {
+			case err == nil && open.Open == rpcMode:
+				serveRPC(r.Context(), c, maxCallBytes, s.ownerRPC(api))
+			case err == nil && open.Open == relayMode && o.relay != nil:
+				relayOwner(r.Context(), c, hello, o.relay)
+			default:
 				c.Conn.Close(websocket.StatusPolicyViolation, errMalformed.Error())
-				return
 			}
-			modes[open.Open](r.Context(), c, hello)
 		})
-		ownerSSH = func(_ *ssh.ServerConn, chans <-chan ssh.NewChannel, reqs <-chan *ssh.Request) {
-			go ssh.DiscardRequests(reqs)
-			for nc := range chans {
-				go s.serveOwnerChannel(nc, api)
-			}
+	}
+
+	ownerSSH := func(_ *ssh.ServerConn, chans <-chan ssh.NewChannel, reqs <-chan *ssh.Request) {
+		go ssh.DiscardRequests(reqs)
+		for nc := range chans {
+			go s.serveOwnerChannel(nc, api)
 		}
 	}
 
-	authenticate := func(conn ssh.ConnMetadata, key ssh.PublicKey) (sshtransport.Session, func() error, error) {
-		if ownerSSH != nil {
+	server := &http.Server{Handler: allowOrigins(ownerOrigins, handler), ReadHeaderTimeout: readHeaderTimeout}
+	defer server.Close()
+
+	serving, stop := context.WithCancelCause(ctx)
+	go func() {
+		stop(server.Serve(apiListener))
+	}()
+	context.AfterFunc(serving, func() {
+		sshListener.Close()
+	})
+	sshtransport.Serve(sshListener, s.hostKey, sshLimits, s.authenticate(o, ownerSSH), func(err error) { log.Printf("ssh: %v", err) })
+	stop(errors.New("the SSH listener closed"))
+	if ctx.Err() != nil {
+		return nil
+	}
+	return context.Cause(serving)
+}
+
+func (s *state) authenticate(o *owner, ownerSSH sshtransport.Session) sshtransport.Authenticate {
+	return func(conn ssh.ConnMetadata, key ssh.PublicKey) (sshtransport.Session, func() error, error) {
+		if o != nil {
 			if raw, ok := key.(ssh.CryptoPublicKey); ok {
-				if public, ok := raw.CryptoPublicKey().(ed25519.PublicKey); ok && o.key.Equal(public) {
+				if public, ok := raw.CryptoPublicKey().(ed25519.PublicKey); ok && o.publicKey.Equal(public) {
 					return ownerSSH, nil, nil
 				}
 			}
@@ -188,43 +194,39 @@ func (s *state) serve(ctx context.Context, sshListener, apiListener net.Listener
 		}
 		return s.agentSession(fingerprint), nil, nil
 	}
+}
 
-	server := &http.Server{Handler: allowOrigins(ownerOrigins, handler), ReadHeaderTimeout: readHeaderTimeout}
-	defer server.Close()
-
-	serving, stop := context.WithCancelCause(ctx)
-	go func() {
-		stop(server.Serve(apiListener))
-	}()
-	context.AfterFunc(serving, func() {
-		sshListener.Close()
-	})
-	sshtransport.Serve(sshListener, s.hostKey, sshLimits, authenticate, func(err error) { log.Printf("ssh: %v", err) })
-	stop(errors.New("the SSH listener closed"))
-	if ctx.Err() != nil {
-		return nil
+func (o *owner) verify(binding, first []byte) error {
+	var signed struct {
+		Signature []byte `json:"signature"`
 	}
-	return context.Cause(serving)
+	if json.Unmarshal(first, &signed) != nil {
+		return errMalformed
+	}
+	if !ed25519.Verify(o.publicKey, append([]byte(sessionContext), binding...), signed.Signature) {
+		return errSignature
+	}
+	return nil
 }
 
 func (s *state) agentSession(fingerprint string) sshtransport.Session {
 	return func(_ *ssh.ServerConn, chans <-chan ssh.NewChannel, reqs <-chan *ssh.Request) {
 		sshtransport.ServeDirect(chans, reqs, func(ctx context.Context, host string, port uint32, accept func() (net.Conn, error)) error {
-			held, cancel, ok := s.identities.Hold(ctx, fingerprint)
+			ctx, cancel, ok := s.identities.Hold(ctx, fingerprint)
 			if !ok {
 				return errNoAccess
 			}
 			defer cancel()
-			return s.open(held, fingerprint, host, port, accept)
+			return s.open(ctx, fingerprint, host, port, accept)
 		})
 	}
 }
 
-func (s *state) open(ctx context.Context, key, host string, port uint32, accept func() (net.Conn, error)) error {
+func (s *state) open(ctx context.Context, fingerprint, host string, port uint32, accept func() (net.Conn, error)) error {
 	if sandbox.ReservedRoute(host) {
-		if held, release, ok := s.hold(context.WithoutCancel(ctx), key, capabilityRoutes); ok {
+		if routed, release, ok := s.hold(context.WithoutCancel(ctx), fingerprint, capabilityRoutes); ok {
 			defer release()
-			if err := netx.Dial(s.routes.DialContext, connections.RelayDrain)(held, host, port, accept); err != nil {
+			if err := netx.Dial(s.routes.DialContext, connections.RelayDrain)(routed, host, port, accept); err != nil {
 				return sandbox.ErrDirectUnavailable
 			}
 			return nil
@@ -233,7 +235,7 @@ func (s *state) open(ctx context.Context, key, host string, port uint32, accept 
 	if s.settings.Load() == nil {
 		return errLocked
 	}
-	p, known := s.identities.Lookup(key)
+	p, known := s.identities.Lookup(fingerprint)
 	if !known {
 		return errNoAccess
 	}
@@ -247,13 +249,13 @@ func (s *state) open(ctx context.Context, key, host string, port uint32, accept 
 	if err != nil {
 		return err
 	}
-	netx.ServeConn(ctx, conn, &http.Server{Handler: s.agentAPI(key)})
+	netx.ServeConn(ctx, conn, &http.Server{Handler: s.agentAPI(fingerprint)})
 	return nil
 }
 
-func selectTarget(host string, port uint32, candidates []core.Candidate) (string, bool, bool) {
-	if name, named := strings.CutSuffix(host, connections.Domain); named {
-		return name, true, slices.ContainsFunc(candidates, func(c core.Candidate) bool { return c.Name == name })
+func selectTarget(host string, port uint32, candidates []core.Candidate) (name string, explicit, ok bool) {
+	if named, found := strings.CutSuffix(host, connections.Domain); found {
+		return named, true, slices.ContainsFunc(candidates, func(c core.Candidate) bool { return c.Name == named })
 	}
 	best, tied, selected := -1, false, ""
 	for _, c := range candidates {
@@ -391,13 +393,13 @@ func panel(api http.Handler, options sshOptions, acknowledge func() error) http.
 			http.Error(w, "local panel session required", http.StatusUnauthorized)
 			return
 		}
-		path := strings.TrimPrefix(r.URL.Path, "/api")
-		if (path == "/unlock" && options.Host != ownerHost) || !ownerPath(path) {
+		apiPath := strings.TrimPrefix(r.URL.Path, "/api")
+		if (apiPath == "/unlock" && options.Host != ownerHost) || !ownerPath(apiPath) {
 			http.NotFound(w, r)
 			return
 		}
-		r = r.Clone(withCaller(r.Context(), caller{Name: ownerName, Owner: true, Minimum: options.Generation, Acknowledge: acknowledge, ID: options.Token}))
-		r.URL.Path = path
+		r = r.Clone(withCaller(r.Context(), caller{Name: ownerName, Owner: true, MinGeneration: options.Generation, Acknowledge: acknowledge, Session: options.Token}))
+		r.URL.Path = apiPath
 		r.URL.RawPath = ""
 		api.ServeHTTP(w, r)
 	})
@@ -428,7 +430,7 @@ func (s *state) ownerRPC(api http.Handler) func(context.Context, ownerCall) owne
 		if call.Method == http.MethodPost {
 			ctx = context.WithoutCancel(ctx)
 		}
-		ctx = withCaller(ctx, caller{Name: ownerName, Owner: true, Minimum: call.Generation, ID: ownerRPCSession})
+		ctx = withCaller(ctx, caller{Name: ownerName, Owner: true, MinGeneration: call.Generation, Session: ownerRPCSession})
 		r, err := http.NewRequestWithContext(ctx, call.Method, call.Path, bytes.NewReader(call.Body))
 		if err != nil {
 			return ownerReply{Status: http.StatusBadRequest, Body: []byte(errMalformed.Error())}

@@ -4,10 +4,14 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"net"
 	"net/http"
 	"net/netip"
 	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"code.dny.dev/ssrf"
@@ -24,6 +28,9 @@ const (
 	maxWorkers           = 32
 	workerBroker         = "/broker.sock"
 	workerListenerFD     = 3
+	workerTmpBytes       = "67108864"
+	workerMemoryLimit    = "256MiB"
+	workerMaxProcs       = "2"
 )
 
 var workerLimits = worker.Limits{Streams: 128, Upstreams: 32, Handshake: connections.DialTimeout, Credential: credentialTimeout, Sign: 10 * time.Second,
@@ -52,8 +59,8 @@ func (s *state) opener(st *settings, c *installed) core.Open {
 	if c.HostKey {
 		hostKey = st.hostKey
 	}
-	return func(ctx context.Context) (core.Connector, error) {
-		if workers == nil {
+	if workers == nil {
+		return func(ctx context.Context) (core.Connector, error) {
 			instance, err := c.Open(ctx, worker.Host{Dial: dial, HostKey: hostKey, TLS: st.streamTLS,
 				Secret:      func(ctx context.Context, name string) (string, error) { return c.secrets[name].Value(ctx) },
 				Configured:  func(name string) bool { return c.secrets[name].Configured() },
@@ -61,6 +68,8 @@ func (s *state) opener(st *settings, c *installed) core.Open {
 			})
 			return core.Connector{Serve: instance.Serve, Close: instance.Close, Details: instance.Details, Control: instance.Control}, err
 		}
+	}
+	return func(ctx context.Context) (core.Connector, error) {
 		data, err := json.Marshal(c.ConnectionSpec)
 		if err != nil {
 			return core.Connector{}, err
@@ -81,9 +90,9 @@ func (s *state) opener(st *settings, c *installed) core.Open {
 }
 
 func (st *settings) streamTLS(_ context.Context, host string) *tls.Config {
-	config := st.tls.Clone()
-	issue := config.GetCertificate
-	config.GetCertificate = func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
+	cfg := st.tls.Clone()
+	issue := cfg.GetCertificate
+	cfg.GetCertificate = func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
 		if hello.ServerName == "" {
 			named := *hello
 			named.ServerName = host
@@ -91,9 +100,48 @@ func (st *settings) streamTLS(_ context.Context, host string) *tls.Config {
 		}
 		return issue(hello)
 	}
-	return config
+	return cfg
 }
 
+func bubblewrap(rootDir string) *worker.Local {
+	return &worker.Local{Limit: maxWorkers, Limits: workerLimits, Command: func(broker string) (*exec.Cmd, error) {
+		root, err := filepath.Abs(rootDir)
+		if err != nil || rootDir == "" || root == "/" {
+			return nil, errors.New("worker root must be a prepared filesystem directory")
+		}
+		root, err = filepath.EvalSymlinks(root)
+		if err != nil || root == "/" {
+			return nil, errors.New("worker root must be a prepared filesystem directory")
+		}
+		if info, err := os.Stat(root); err != nil || !info.IsDir() {
+			return nil, errors.New("worker root directory does not exist")
+		}
+		executable, err := os.Executable()
+		if err == nil {
+			executable, err = filepath.Abs(executable)
+		}
+		if err != nil {
+			return nil, err
+		}
+		launcher, err := exec.LookPath("bwrap")
+		if err != nil {
+			return nil, errors.New("bubblewrap is required for connector workers")
+		}
+		userns := "--disable-userns"
+		if value, err := os.ReadFile("/proc/sys/kernel/unprivileged_userns_clone"); err == nil && strings.TrimSpace(string(value)) == "0" {
+			userns = "--assert-userns-disabled"
+		}
+		cmd := exec.Command(launcher, "--unshare-all", "--unshare-user", "--die-with-parent", "--new-session", userns, "--cap-drop", "ALL", "--clearenv",
+			"--ro-bind", root, "/", "--ro-bind", executable, "/worker",
+			"--ro-bind", broker, workerBroker, "--proc", "/proc", "--dev", "/dev",
+			"--size", workerTmpBytes, "--tmpfs", "/tmp", "--chdir", "/tmp",
+			"--remount-ro", "/dev", "--remount-ro", "/",
+			"--setenv", "HOME", "/tmp", "--setenv", "TMPDIR", "/tmp", "--setenv", "PATH", "/usr/local/bin:/usr/bin:/bin",
+			"--setenv", "GOMEMLIMIT", workerMemoryLimit, "--setenv", "GOMAXPROCS", workerMaxProcs, "--", "/worker", "--"+serveWorkerFlag)
+		cmd.Env = []string{}
+		return cmd, nil
+	}}
+}
 func serveWorkerChild() error {
 	file := os.NewFile(workerListenerFD, "connector-listener")
 	ln, err := net.FileListener(file)

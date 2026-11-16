@@ -35,6 +35,10 @@ const (
 	attestationTimeout     = 30 * time.Second
 	maxAttestationBytes    = 32 << 20
 	tinfoilAPIPath         = "/v1"
+	chatCompletionsPath    = "/v1/chat/completions"
+	messagesPath           = "/v1/messages"
+	countTokensPath        = "/v1/messages/count_tokens"
+	responsesPath          = "/v1/responses"
 	countTokensUnsupported = "Tinfoil does not expose token counting"
 )
 
@@ -57,39 +61,46 @@ func tinfoilKeySlot(enclave string) slots.Slot {
 	return slots.Slot{Value: tinfoilKey, Origin: "https://" + enclave, Path: tinfoilAPIPath, Header: "Authorization", Prefix: "Bearer "}
 }
 
-func parseTinfoil(spec config.ConnectionSpec) (*tinfoilSetup, *web.Setup, slots.Set, error) {
+func parseTinfoil(spec config.ConnectionSpec, p *Setup) error {
 	t := new(tinfoilSetup)
 	if err := facts.DecodeNumbers(spec.Config, t); err != nil {
-		return nil, nil, slots.Set{}, err
+		return err
 	}
 	if err := validateEnclave(t.Enclave, t.Repo); err != nil {
-		return nil, nil, slots.Set{}, err
+		return err
 	}
 	set, err := slots.New([]slots.Slot{tinfoilKeySlot(t.Enclave)}, httpSlots)
 	if err != nil {
-		return nil, nil, slots.Set{}, err
+		return err
 	}
 	setup, err := web.New(spec.Definition, spec.Options, nil, web.Slots{Claim: set.Claim, Covers: set.Covers, Bind: set.Bind})
-	return t, setup, set, err
+	if err != nil {
+		return err
+	}
+	p.Open = func(ctx context.Context, h worker.Host) (worker.Instance, error) { return t.open(ctx, setup, h) }
+	return httpSetup(p, setup, set)
 }
 
-func parseTinfoilMCP(spec config.ConnectionSpec) (*mcp.Setup, string, error) {
-	var config struct {
+func parseTinfoilMCP(spec config.ConnectionSpec, p *Setup) error {
+	var cfg struct {
 		mcp.Setup
 		Repo string `json:"repo"`
 	}
-	if err := mcp.Decode(spec.Config, spec.Definition, &config, &config.Setup); err != nil {
-		return nil, "", err
+	if err := mcp.Decode(spec.Config, spec.Definition, &cfg, &cfg.Setup); err != nil {
+		return err
 	}
-	u, _ := url.Parse(config.URL)
+	u, _ := url.Parse(cfg.URL)
 	if u.Scheme != "https" || u.User != nil {
-		return nil, "", errors.New("Tinfoil MCP requires an HTTPS URL without user information")
+		return errors.New("Tinfoil MCP requires an HTTPS URL without user information")
 	}
-	return &config.Setup, config.Repo, validateEnclave(u.Host, config.Repo)
+	if err := validateEnclave(u.Host, cfg.Repo); err != nil {
+		return err
+	}
+	return mcpSetup(p, &cfg.Setup, cfg.Repo)
 }
 
-func attest(ctx context.Context, h worker.Host, key, enclave, repo string, base *http.Transport) (*attestation.Transport, error) {
-	if !h.Configured(key) {
+func attest(ctx context.Context, h worker.Host, secret, enclave, repo string, base *http.Transport) (*attestation.Transport, error) {
+	if !h.Configured(secret) {
 		return nil, errors.New("Tinfoil API key is not configured")
 	}
 	verifier, err := verify.NewVerifier()
@@ -121,15 +132,12 @@ func (t *tinfoilSetup) open(ctx context.Context, setup *web.Setup, h worker.Host
 	control := http.NewServeMux()
 	control.Handle("POST /chat/completions", &httputil.ReverseProxy{Transport: transport, Rewrite: func(r *httputil.ProxyRequest) {
 		key, _ := h.Secret(r.In.Context(), tinfoilKey)
-		r.Out.URL, r.Out.Host = &url.URL{Scheme: "https", Host: t.Enclave, Path: "/v1/chat/completions"}, ""
+		r.Out.URL, r.Out.Host = &url.URL{Scheme: "https", Host: t.Enclave, Path: chatCompletionsPath}, ""
 		r.Out.Header = http.Header{"Authorization": {"Bearer " + key}, "Content-Type": {"application/json"}}
 	}})
 	serve := func(ctx context.Context, conn net.Conn, name, host string, port uint32, gate core.Gate) {
 		handler := web.Handler{Setup: setup, Transport: transport, CheckRedirect: RefuseRedirects, Accept: websocket.AcceptOptions{}, UpstreamReadLimit: websocketResponseLimit,
-			TLS: h.TLS, Placeholder: h.Placeholder, Secret: h.Secret, MaxBody: maxBodyBytes,
-			ServeHTTP: func(ctx context.Context, c net.Conn, server *http.Server) error {
-				return netx.ServeConn(ctx, c, server)
-			}}
+			TLS: h.TLS, ServeHTTP: netx.ServeConn, Placeholder: h.Placeholder, Secret: h.Secret, MaxBody: maxBodyBytes}
 		privateHost := ""
 		if host == "" {
 			privateHost = name + Domain
@@ -147,7 +155,8 @@ func (t *tinfoilSetup) open(ctx context.Context, setup *web.Setup, h worker.Host
 				if placeholder == "" {
 					return nil, errors.New("Tinfoil credential is unavailable")
 				}
-				r.URL.Scheme, r.URL.Host, r.Host = "https", t.Enclave, t.Enclave
+				r.URL.Scheme, r.URL.Host = "https", t.Enclave
+				r.Host = t.Enclave
 				r.Header.Del("X-Api-Key")
 				r.Header.Set(slot.Header, slot.Prefix+placeholder)
 			}
@@ -164,7 +173,7 @@ func (t *tinfoilSetup) open(ctx context.Context, setup *web.Setup, h worker.Host
 
 type apiTransport struct {
 	http.RoundTripper
-	messages    bool
+	translate   bool
 	streaming   bool
 	model       any
 	countTokens bool
@@ -175,7 +184,7 @@ func (t apiTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 		return messages.Error(r, http.StatusNotImplemented, "not_supported_error", countTokensUnsupported), nil
 	}
 	resp, err := t.RoundTripper.RoundTrip(r)
-	if err != nil || !t.messages {
+	if err != nil || !t.translate {
 		return resp, err
 	}
 	return messages.Response(r, resp, t.model, t.streaming, messageLimits)
@@ -185,8 +194,13 @@ func prepareAPIRequest(r *http.Request, original *web.HTTPFacts, transport http.
 	if r.Method != http.MethodPost {
 		return nil, nil
 	}
+	rt := apiTransport{RoundTripper: transport}
 	switch r.URL.Path {
-	case "/v1/messages", "/v1/messages/count_tokens", "/v1/responses":
+	case responsesPath:
+	case messagesPath:
+		rt.translate = true
+	case countTokensPath:
+		rt.translate, rt.countTokens = true, true
 	default:
 		return nil, nil
 	}
@@ -194,8 +208,7 @@ func prepareAPIRequest(r *http.Request, original *web.HTTPFacts, transport http.
 	if original.BodyKind != web.BodyJSON || !ok {
 		return nil, fmt.Errorf("inference requests require an unambiguous JSON object of at most %d MiB", maxBodyBytes>>20)
 	}
-	response := apiTransport{RoundTripper: transport}
-	if r.URL.Path == "/v1/responses" {
+	if !rt.translate {
 		input, _ := body["input"].([]any)
 		for _, item := range input {
 			if message, ok := item.(map[string]any); ok && message["role"] == "developer" {
@@ -203,18 +216,17 @@ func prepareAPIRequest(r *http.Request, original *web.HTTPFacts, transport http.
 			}
 		}
 	} else {
-		response.messages, response.model = true, body["model"]
-		response.streaming, _ = body["stream"].(bool)
+		rt.model = body["model"]
+		rt.streaming, _ = body["stream"].(bool)
 		var err error
 		body, err = messages.Request(body)
 		if err != nil {
 			return nil, err
 		}
-		if r.URL.Path == "/v1/messages/count_tokens" {
-			response.countTokens = true
-			return response, nil
+		if rt.countTokens {
+			return rt, nil
 		}
-		r.URL.Path, r.URL.RawPath, r.URL.RawQuery = "/v1/chat/completions", "", ""
+		r.URL.Path, r.URL.RawPath, r.URL.RawQuery = chatCompletionsPath, "", ""
 		r.Header.Del("Anthropic-Version")
 		r.Header.Del("Anthropic-Beta")
 		r.Header.Set("Accept-Encoding", "identity")
@@ -228,5 +240,5 @@ func prepareAPIRequest(r *http.Request, original *web.HTTPFacts, transport http.
 	r.ContentLength = int64(len(raw))
 	r.TransferEncoding = nil
 	r.Header.Del("Content-Length")
-	return response, nil
+	return rt, nil
 }

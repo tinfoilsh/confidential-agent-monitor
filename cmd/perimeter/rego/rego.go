@@ -73,16 +73,12 @@ func (p *Program) Eval(ctx context.Context, name string, input any, out any) err
 	if len(results) != 1 || len(results[0].Expressions) != 1 {
 		return errors.New("policy returned no decision")
 	}
-	if err := decodeRego(results[0].Expressions[0].Value, out); err != nil {
+	raw, err := json.Marshal(results[0].Expressions[0].Value)
+	if err == nil {
+		err = facts.DecodeNumbers(raw, out)
+	}
+	if err != nil {
 		return fmt.Errorf("policy returned an invalid decision: %w", err)
 	}
 	return nil
-}
-
-func decodeRego(value any, out any) error {
-	raw, err := json.Marshal(value)
-	if err != nil {
-		return err
-	}
-	return facts.DecodeNumbers(raw, out)
 }

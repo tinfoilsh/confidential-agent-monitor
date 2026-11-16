@@ -3,10 +3,13 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto"
 	"crypto/ed25519"
 	"crypto/rand"
 	"crypto/subtle"
 	"crypto/tls"
+	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"errors"
 	"fmt"
@@ -20,6 +23,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
@@ -35,17 +39,18 @@ import (
 )
 
 const (
-	stateObject  = "monitor.enc"
-	caName       = "perimeter dev CA"
-	caLifetime   = 10 * 365 * 24 * time.Hour
-	leafLifetime = 24 * time.Hour
-	leafBackdate = time.Hour
+	documentObject = "monitor.enc"
+	caName         = "perimeter dev CA"
+	caLifetime     = 10 * 365 * 24 * time.Hour
+	leafLifetime   = 24 * time.Hour
+	leafBackdate   = time.Hour
 )
 
 var auditLimits = sealedlog.Limits{FlushInterval: time.Minute, WriteTimeout: 30 * time.Second, SegmentBytes: 8 << 20, MaxBacklog: 64 << 20, PageRecords: 200}
 
 var errOwner error = httpError{format.ErrKey, http.StatusUnauthorized}
 
+// When both locks are needed, writes is taken before mu.
 type state struct {
 	bucket     *blob.Bucket
 	life       context.Context
@@ -53,7 +58,8 @@ type state struct {
 	mu         sync.Mutex
 	writes     sync.Mutex
 	doc        format.Document
-	owner      []byte
+	storageKey []byte
+	hostID     string
 	sealer     format.Sealer
 	audit      *sealedlog.Log
 	settings   atomic.Pointer[settings]
@@ -64,6 +70,8 @@ type state struct {
 	records    *approval.Records[*record]
 	signIns    *credential.SignIns
 }
+
+type held struct{ *state }
 
 func newState(life context.Context, bucket *blob.Bucket) *state {
 	s := &state{bucket: bucket, life: life, signIns: credential.NewSignIns(signInLimits)}
@@ -84,10 +92,10 @@ func (s *state) snapshot() (format.Document, *settings) {
 	return s.doc, s.settings.Load()
 }
 
-func (s *state) locked(fn func()) {
+func (s *state) locked(fn func(held)) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	fn()
+	fn(held{s})
 }
 
 func stable[T any](s *state, fn func(format.Document, *settings) (T, error)) (T, error) {
@@ -99,22 +107,25 @@ func stable[T any](s *state, fn func(format.Document, *settings) (T, error)) (T,
 func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	s.writes.Lock()
 	defer s.writes.Unlock()
+	h := held{s}
+
 	s.mu.Lock()
 	source, current := s.doc.Policy, s.settings.Load()
 	var err error
 	if w.derive != nil {
-		w.changes, err = w.derive()
+		w.changes, err = w.derive(h)
 	}
 	if err == nil && policyFile != "" && (w.source != nil || len(w.changes) != 0) {
 		err = errPolicyFile
 	}
 	if err == nil {
-		err = w.checked()
+		err = w.checked(h)
 	}
 	s.mu.Unlock()
 	if err != nil {
 		return err
 	}
+
 	before := source
 	if w.source != nil {
 		source = *w.source
@@ -123,16 +134,18 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	if err != nil {
 		return err
 	}
-	plan, err := s.prepareSettings(ctx, source, rebuild, renamed, w.credentials, current.tls, current.hostKey)
+	plan, err := s.prepareSettings(ctx, source, rebuild, w.credentials, current.tls, current.hostKey)
 	if err != nil {
 		return err
 	}
+	plan.renamed = renamed
+
 	s.mu.Lock()
-	if err = w.checked(); err == nil {
-		err = s.commitSettings(ctx, plan, w.saved)
+	if err = w.checked(h); err == nil {
+		err = h.commitSettings(ctx, plan, w.saved)
 	}
 	if source != before || len(w.credentials) != 0 {
-		s.recordAdmin(ctx, "Change settings", map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(before, source)}, "credentials": slices.Sorted(maps.Keys(w.credentials))}, err)
+		h.recordAdmin(ctx, "Change settings", map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(before, source)}, "credentials": slices.Sorted(maps.Keys(w.credentials))}, err)
 	}
 	s.mu.Unlock()
 	if err == nil {
@@ -141,13 +154,13 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	return err
 }
 
-func (s *state) commit(ctx context.Context, next format.Document) error {
+func (s held) commit(ctx context.Context, next format.Document) error {
 	next.Generation++
 	plain, err := format.EncodeDocument(next)
 	if err != nil {
 		return err
 	}
-	if err := s.bucket.WriteAll(ctx, stateObject, s.sealer.SealState(plain), nil); err != nil {
+	if err := s.bucket.WriteAll(ctx, documentObject, s.sealer.SealState(plain), nil); err != nil {
 		return err
 	}
 	s.doc = next
@@ -159,10 +172,10 @@ func (s *state) load(ctx context.Context, key []byte, minimum uint64) (format.Do
 	if len(key) < format.MinKeyBytes || len(key) > format.MaxKeyBytes {
 		return doc, format.Sealer{}, false, errOwner
 	}
-	raw, err := s.bucket.ReadAll(ctx, stateObject)
+	raw, err := s.bucket.ReadAll(ctx, documentObject)
 	missing := false
 	if err != nil {
-		if missing, err = stateMissing(ctx, s.bucket, err); err != nil {
+		if missing, err = documentMissing(ctx, s.bucket, err); err != nil {
 			return doc, format.Sealer{}, false, err
 		}
 	}
@@ -196,12 +209,12 @@ func v1Presets() map[string]bool {
 	return declared
 }
 
-func stateMissing(ctx context.Context, bucket *blob.Bucket, err error) (bool, error) {
+func documentMissing(ctx context.Context, bucket *blob.Bucket, err error) (bool, error) {
 	switch gcerrors.Code(err) {
 	case gcerrors.NotFound:
 		return true, nil
 	case gcerrors.PermissionDenied:
-		items := bucket.List(&blob.ListOptions{Prefix: stateObject})
+		items := bucket.List(&blob.ListOptions{Prefix: documentObject})
 		for {
 			item, listErr := items.Next(ctx)
 			if errors.Is(listErr, io.EOF) {
@@ -210,7 +223,7 @@ func stateMissing(ctx context.Context, bucket *blob.Bucket, err error) (bool, er
 			if listErr != nil {
 				return false, errors.Join(err, listErr)
 			}
-			if item.Key == stateObject {
+			if item.Key == documentObject {
 				return false, err
 			}
 		}
@@ -218,47 +231,55 @@ func stateMissing(ctx context.Context, bucket *blob.Bucket, err error) (bool, er
 	return false, err
 }
 
-func stateExists(ctx context.Context, bucket *blob.Bucket) (bool, error) {
-	_, err := bucket.Attributes(ctx, stateObject)
+func documentExists(ctx context.Context, bucket *blob.Bucket) (bool, error) {
+	_, err := bucket.Attributes(ctx, documentObject)
 	if err == nil {
 		return true, nil
 	}
-	missing, err := stateMissing(ctx, bucket, err)
+	missing, err := documentMissing(ctx, bucket, err)
 	return !missing, err
 }
 
-func (s *state) isOwnerKey(key []byte) bool { return subtle.ConstantTimeCompare(key, s.owner) == 1 }
+func (s held) matchesStorageKey(key []byte) bool {
+	return subtle.ConstantTimeCompare(key, s.storageKey) == 1
+}
 
 func (s *state) unlock(ctx context.Context, key []byte, minimum uint64) (bool, error) {
 	s.writes.Lock()
 	defer s.writes.Unlock()
-	s.mu.Lock()
 	if !passphraseKeys && len(key) != format.KeyBytes {
-		s.mu.Unlock()
 		return false, errOwner
 	}
-	if s.settings.Load() != nil {
-		defer s.mu.Unlock()
-		if !s.isOwnerKey(key) {
-			return false, errOwner
-		}
-		if generation := s.doc.Generation; generation < minimum {
-			return false, fmt.Errorf("live generation %d is older than %d", generation, minimum)
-		}
-		return false, nil
+	h := held{s}
+
+	s.mu.Lock()
+	unlocked := s.settings.Load() != nil
+	var err error
+	if unlocked && !h.matchesStorageKey(key) {
+		err = errOwner
+	} else if unlocked && s.doc.Generation < minimum {
+		err = fmt.Errorf("live generation %d is older than %d", s.doc.Generation, minimum)
 	}
 	s.mu.Unlock()
-	doc, sealer, created, err := s.load(ctx, key, minimum)
+	if unlocked || err != nil {
+		return false, err
+	}
+
+	doc, sealer, initialized, err := s.load(ctx, key, minimum)
 	if err != nil {
 		return false, err
 	}
-	tlsConfig, err := connectionTLS(&doc.Keys)
+	tlsConfig, err := ensureTLS(&doc.Keys)
+	if err != nil {
+		return false, err
+	}
+	hostID, err := caThumbprint(doc.Keys.CACert)
 	if err != nil {
 		return false, err
 	}
 	signer := sshHostKey
 	if signer == nil {
-		if signer, err = storedHostKey(&doc.Keys); err != nil {
+		if signer, err = ensureHostKey(&doc.Keys); err != nil {
 			return false, err
 		}
 	}
@@ -270,29 +291,30 @@ func (s *state) unlock(ctx context.Context, key []byte, minimum uint64) (bool, e
 		}
 		source = string(file)
 	}
-	plan, err := s.prepareSettings(ctx, source, everyConnection, nil, nil, tlsConfig, signer)
+	plan, err := s.prepareSettings(ctx, source, everyConnection, nil, tlsConfig, signer)
 	if err != nil {
 		return false, err
 	}
+
 	s.mu.Lock()
-	s.doc = doc
-	s.owner, s.sealer = bytes.Clone(key), sealer
+	s.doc, s.hostID = doc, hostID
+	s.storageKey, s.sealer = bytes.Clone(key), sealer
 	s.audit = sealedlog.New(sealedlog.Storage{Write: s.bucketWrite, Read: s.bucket.ReadAll, List: s.bucketList}, auditPrefix, auditLimits, sealer.Seal, sealer.Open,
 		func(err error) { log.Printf("audit: %v", err) })
-	err = s.commitSettings(ctx, plan, nil)
+	err = h.commitSettings(ctx, plan, nil)
 	if err != nil {
-		s.doc = format.Document{}
-		s.owner, s.sealer, s.audit = nil, format.Sealer{}, nil
+		s.doc, s.hostID = format.Document{}, ""
+		s.storageKey, s.sealer, s.audit = nil, format.Sealer{}, nil
 	} else {
 		s.flushing.Go(func() { s.audit.Run(s.life) })
-		s.recordAdmin(ctx, "Unlock", nil, nil)
+		h.recordAdmin(ctx, "Unlock", nil, nil)
 	}
 	s.mu.Unlock()
 	if err != nil {
 		return false, err
 	}
 	s.table.Start()
-	return created, nil
+	return initialized, nil
 }
 
 func (s *state) bucketWrite(ctx context.Context, key string, data []byte) error {
@@ -321,16 +343,16 @@ func (s *state) close() {
 	s.flushing.Wait()
 }
 
-func (s *state) isOwner(key []byte) bool {
+func (s *state) acceptsStorageKey(key []byte) bool {
 	if len(key) < format.MinKeyBytes || len(key) > format.MaxKeyBytes {
 		return false
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	return s.settings.Load() == nil || s.isOwnerKey(key)
+	return s.settings.Load() == nil || held{s}.matchesStorageKey(key)
 }
 
-func connectionTLS(keys *format.Keys) (*tls.Config, error) {
+func ensureTLS(keys *format.Keys) (*tls.Config, error) {
 	if keys.CACert == "" {
 		created, err := certificates.NewAuthority(caName, caLifetime)
 		if err != nil {
@@ -347,7 +369,27 @@ func connectionTLS(keys *format.Keys) (*tls.Config, error) {
 	}}, nil
 }
 
-func storedHostKey(keys *format.Keys) (ssh.Signer, error) {
+func caThumbprint(caCert string) (string, error) {
+	block, _ := pem.Decode([]byte(caCert))
+	if block == nil {
+		return "", errors.New("Perimeter has no host certificate")
+	}
+	certificate, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return "", err
+	}
+	key, err := jwk.Import(certificate.PublicKey)
+	if err != nil {
+		return "", err
+	}
+	thumbprint, err := key.Thumbprint(crypto.SHA256)
+	if err != nil {
+		return "", err
+	}
+	return "urn:ietf:params:oauth:jwk-thumbprint:sha-256:" + base64.RawURLEncoding.EncodeToString(thumbprint), nil
+}
+
+func ensureHostKey(keys *format.Keys) (ssh.Signer, error) {
 	if keys.HostKey == "" {
 		_, private, err := ed25519.GenerateKey(rand.Reader)
 		if err != nil {

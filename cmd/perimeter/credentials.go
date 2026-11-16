@@ -43,7 +43,8 @@ func beginOAuth(ctx context.Context, client *http.Client, raw json.RawMessage, r
 		return nil, err
 	}
 	if c := g.DefaultClient; c != nil && g.ClientID == "" {
-		g.ClientID, g.ClientSecret, g.Loopback = c.ClientID, c.ClientSecret, g.Loopback || c.Loopback
+		g.ClientID, g.ClientSecret = c.ClientID, c.ClientSecret
+		g.Loopback = g.Loopback || c.Loopback
 	}
 	if g.DeviceAuthURL != "" {
 		return credential.NewDeviceSignIn(ctx, client, *g, signInLimits)
@@ -75,11 +76,14 @@ func discoverOAuth(ctx context.Context, client *http.Client, g *credential.Grant
 		if len(prm.AuthorizationServers) == 0 {
 			return fmt.Errorf("%s names no authorization server", g.Resource)
 		}
-		g.Resource, server, scopes = prm.Resource, strings.TrimSuffix(prm.AuthorizationServers[0], "/"), slices.Clone(prm.ScopesSupported)
+		g.Resource = prm.Resource
+		server = strings.TrimSuffix(prm.AuthorizationServers[0], "/")
+		scopes = slices.Clone(prm.ScopesSupported)
 	}
 	if err := credential.CheckEndpoints(server); err != nil {
 		return err
 	}
+
 	asm, err := oauthauth.GetAuthServerMetadata(ctx, server, client)
 	if err != nil {
 		if issuer := credential.PublishedIssuer(ctx, client, server, signInLimits.MaxResponseBytes); issuer != "" {
@@ -103,6 +107,7 @@ func discoverOAuth(ctx context.Context, client *http.Client, g *credential.Grant
 		}
 		g.Scope = strings.Join(scopes, " ")
 	}
+
 	if g.ClientID != "" {
 		if methods := asm.TokenEndpointAuthMethodsSupported; g.AuthStyle == "" && len(methods) > 0 && !slices.Contains(methods, "client_secret_basic") {
 			g.AuthStyle = "params"
@@ -196,19 +201,19 @@ func placeholder(k format.Keys, id format.SecretID) string {
 	return "tfm_" + id.Connection + "_" + suffix
 }
 
-func (s *state) current(id format.SecretID, value *credential.Value, before json.RawMessage) bool {
+func (s held) unchanged(id format.SecretID, value *credential.Value, before json.RawMessage) bool {
 	c := s.settings.Load().connections[id.Connection]
 	return c != nil && c.secrets[id.Name] == value && bytes.Equal(s.doc.Credentials.Get(id), before)
 }
 
 func (s *state) replaceValue(ctx context.Context, id format.SecretID, value *credential.Value, before, after json.RawMessage) error {
 	err := errCredentialChanged
-	s.locked(func() {
-		if s.current(id, value, before) {
-			next := s.doc
+	s.locked(func(h held) {
+		if h.unchanged(id, value, before) {
+			next := h.doc
 			next.Credentials = next.Credentials.Clone()
 			next.Credentials.Set(id, bytes.Clone(after))
-			err = s.commit(ctx, next)
+			err = h.commit(ctx, next)
 		}
 	})
 	return err
@@ -218,18 +223,18 @@ func (s *state) signInCredential(connection, name string) (json.RawMessage, func
 	id := format.SecretID{Connection: connection, Name: name}
 	var value *credential.Value
 	var before json.RawMessage
-	s.locked(func() {
+	s.locked(func(h held) {
 		if c := s.settings.Load().connections[connection]; c != nil {
 			value = c.secrets[name]
 		}
-		before = bytes.Clone(s.doc.Credentials.Get(id))
+		before = bytes.Clone(h.doc.Credentials.Get(id))
 	})
 	if value == nil {
 		return nil, nil, errors.New("credential does not exist")
 	}
 	return before, func(ctx context.Context, raw json.RawMessage) error {
-		return s.writeSettings(ctx, settingsWrite{credentials: format.Secrets{connection: {name: raw}}, check: func() error {
-			if !s.current(id, value, before) {
+		return s.writeSettings(ctx, settingsWrite{credentials: format.Secrets{connection: {name: raw}}, check: func(h held) error {
+			if !h.unchanged(id, value, before) {
 				return errCredentialChanged
 			}
 			return nil
@@ -244,26 +249,25 @@ type signInInput struct {
 }
 
 func (s *state) startSignIn(r *http.Request, req signInInput) (any, error) {
-	previous, save, err := s.signInCredential(r.PathValue("name"), req.Name)
+	raw, save, err := s.signInCredential(r.PathValue("name"), req.Name)
 	if err != nil {
 		return nil, err
 	}
-	record := previous
 	if req.Credential != nil {
-		record = req.Credential
+		raw = req.Credential
 	}
-	c, err := format.DecodeCredential(record)
+	c, err := format.DecodeCredential(raw)
 	if err == nil && c.OAuth == nil {
 		err = errors.New("the secret is not an oauth grant")
 	}
 	if err != nil {
 		return nil, err
 	}
-	session, _ := callerFrom(r.Context())
+	from, _ := callerFrom(r.Context())
 	client := s.settings.Load().client()
 	sign, err := s.signIns.Start(r.Context(), func(ctx context.Context) (*credential.SignIn, error) {
 		return beginOAuth(ctx, client, c.OAuth, req.Redirect)
-	}, session.ID, func(ctx context.Context, grant json.RawMessage) error {
+	}, from.Session, func(ctx context.Context, grant json.RawMessage) error {
 		return save(ctx, format.OAuthCredential(grant))
 	})
 	if err != nil {
@@ -276,8 +280,8 @@ func (s *state) startSignIn(r *http.Request, req signInInput) (any, error) {
 }
 
 func (s *state) finishSignIn(r *http.Request, req credential.SignInResult) (any, error) {
-	session, _ := callerFrom(r.Context())
-	pending, err := s.signIns.Finish(r.Context(), r.PathValue("state"), session.ID, req)
+	from, _ := callerFrom(r.Context())
+	pending, err := s.signIns.Finish(r.Context(), r.PathValue("state"), from.Session, req)
 	if pending {
 		return map[string]bool{"pending": true}, nil
 	}

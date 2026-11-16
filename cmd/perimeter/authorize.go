@@ -55,13 +55,6 @@ type Review struct {
 	Time time.Time `json:"time"`
 }
 
-type Decision struct {
-	Deny         []string             `json:"deny"`
-	Requirements []config.Requirement `json:"requirements"`
-	Sends        string               `json:"sends"`
-	Next         format.Label         `json:"next"`
-}
-
 type record struct {
 	ID      string          `json:"id"`
 	State   string          `json:"state"`
@@ -69,27 +62,18 @@ type record struct {
 	Time    time.Time       `json:"time"`
 	Expires time.Time       `json:"expires,omitzero"`
 	Facts   json.RawMessage `json:"facts"`
-	Decision
-	Grant   map[string]any  `json:"grant"`
+	config.Decision
+	Scope   map[string]any  `json:"grant"`
 	Reviews []Review        `json:"reviews,omitempty"`
 	Changes []format.Change `json:"changes,omitempty"`
 }
 
-func (r *record) settle(err error) {
-	if err != nil && r.State != stateDenied && r.State != stateExpired {
-		r.State = stateRefused
-		if len(r.Deny) == 0 {
-			r.Deny = []string{err.Error()}
-		}
-	}
-}
-
 type admitted struct {
-	key, connection string
-	capability      string
-	perMessage      bool
-	valid           func() bool
-	grants          []*grant
+	fingerprint, connection string
+	capability              string
+	perMessage              bool
+	valid                   func() bool
+	admission, latest       *grant
 }
 
 type grant struct {
@@ -141,49 +125,6 @@ func resolveOperation(id, action string, effects []string, actions map[string]ca
 	return &op
 }
 
-type decisionInput struct {
-	Facts         json.RawMessage    `json:"facts"`
-	Authorization authorizationInput `json:"authorization"`
-	Connection    connectionInput    `json:"connection"`
-}
-
-type authorizationInput struct {
-	Access             config.Access       `json:"access"`
-	Reaches            bool                `json:"reaches"`
-	Effects            []map[string]string `json:"effects"`
-	AllowPaidInference bool                `json:"allow_paid_inference"`
-	Rules              []config.Rule       `json:"rules"`
-	Approved           []string            `json:"approved"`
-	Grant              map[string]any      `json:"grant"`
-}
-
-type connectionInput struct {
-	Contents    string   `json:"contents"`
-	Strangers   bool     `json:"strangers"`
-	Sends       string   `json:"sends"`
-	Private     []string `json:"private"`
-	PublicScope []string `json:"public_scope"`
-}
-
-type adminCall struct {
-	Caller policyCaller `json:"caller"`
-	Route  string       `json:"route"`
-	Answer any          `json:"answer,omitempty"`
-	Record any          `json:"record,omitempty"`
-}
-
-type policyCaller struct {
-	Name   string         `json:"name"`
-	Owner  bool           `json:"owner"`
-	Claims map[string]any `json:"claims"`
-}
-
-type capabilityInput struct {
-	Principal  facts.Principal `json:"principal"`
-	Routes     bool            `json:"routes"`
-	Capability string          `json:"capability"`
-}
-
 const (
 	capabilityConfig  = "config"
 	capabilityPropose = "propose"
@@ -192,7 +133,7 @@ const (
 
 func (st *settings) capable(p facts.Principal, capability string) bool {
 	var ok bool
-	err := st.policy.Eval(context.Background(), config.QueryCapable, capabilityInput{Principal: p, Routes: st.Identities[p.Name].Operator, Capability: capability}, &ok)
+	err := st.policy.Eval(context.Background(), config.QueryCapable, config.CapabilityInput{Principal: p, Routes: st.Identities[p.Name].Routes, Capability: capability}, &ok)
 	return ok && err == nil
 }
 
@@ -214,13 +155,13 @@ func (st *settings) observe(connection string, event facts.Event) (requestFacts,
 	return f, err
 }
 
-func (st *settings) describe(p facts.Principal, connection string, gr *grant) (requestFacts, error) {
+func (st *settings) decide(ctx context.Context, p facts.Principal, connection string, gr *grant) (*record, error) {
 	var f requestFacts
-	var err error
+	var invalid error
 	if gr.admit != nil {
 		f = *gr.admit
 	} else {
-		f, err = st.observe(connection, gr.event)
+		f, invalid = st.observe(connection, gr.event)
 	}
 	f.Version, f.Kind = config.FactsVersion, gr.kind
 	f.Service, f.Connection = st.Connections[connection].Preset, connection
@@ -231,51 +172,47 @@ func (st *settings) describe(p facts.Principal, connection string, gr *grant) (r
 	if f.Scope == nil {
 		f.Scope = f.Parameters
 	}
-	return f, err
-}
-
-func (st *settings) decide(ctx context.Context, p facts.Principal, connection string, gr *grant) (*record, error) {
-	f, describeErr := st.describe(p, connection, gr)
-	if describeErr != nil {
+	if invalid != nil {
 		f.Operation = nil
 		raw, err := json.Marshal(f)
 		if err != nil {
 			return nil, err
 		}
-		return &record{Facts: raw, Invalid: true}, describeErr
+		return &record{Facts: raw, Invalid: true}, invalid
 	}
+
 	encoded, err := json.Marshal(f)
 	if err != nil {
 		return nil, err
 	}
-	access, settings := st.Access(p.Name, connection), st.Connections[connection]
-	effects := []map[string]string{st.Effects, settings.Effects, st.Identities[p.Name].Effects, access.Effects}
+	access, conn := st.Access(p.Name, connection), st.Connections[connection]
+	effects := []map[string]string{st.Effects, conn.Effects, st.Identities[p.Name].Effects, access.Effects}
 	for i, scope := range effects {
 		if scope == nil {
 			effects[i] = map[string]string{}
 		}
 	}
-	input := decisionInput{
+	input := config.DecisionInput{
 		Facts: encoded,
-		Authorization: authorizationInput{Access: access, Reaches: st.Reaches(p.Name, connection), Effects: effects, AllowPaidInference: st.AllowPaidInference,
-			Rules: slices.Collect(maps.Values(st.Identities[p.Name].Rules)), Approved: gr.approved, Grant: f.Scope},
-		Connection: connectionInput{Contents: settings.Contents, Strangers: settings.Strangers, Sends: settings.Sends,
-			Private: append([]string{}, settings.PolicyOptions.Private...), PublicScope: append([]string{}, st.publicScope[connection]...)},
+		Authorization: config.AuthorizationInput{Access: access, Reaches: st.Reaches(p.Name, connection), Effects: effects, AllowPaidInference: st.AllowPaidInference,
+			Rules: slices.Collect(maps.Values(st.Identities[p.Name].Rules)), Approved: gr.approved, Scope: f.Scope},
+		Connection: config.ConnectionInput{Contents: conn.Contents, Strangers: conn.Strangers, Sends: conn.Sends,
+			Private: append([]string{}, conn.PolicyOptions.Private...), PublicScope: append([]string{}, st.publicScope[connection]...)},
 	}
-	next := &record{Facts: encoded, Grant: f.Scope}
+	next := &record{Facts: encoded, Scope: f.Scope}
 	err = st.policy.Eval(ctx, config.QueryDecision, input, &next.Decision)
 	return next, err
 }
 
-func (s *state) label(key string) format.Label {
-	if l, ok := s.doc.Labels[key]; ok {
+func (s held) label(fingerprint string) format.Label {
+	if l, ok := s.doc.Labels[fingerprint]; ok {
 		return l
 	}
 	return config.InitialLabel
 }
 
-func (s *state) decideGrant(ctx context.Context, a *admitted, gr *grant) (*record, error) {
-	p, ok := s.identities.Lookup(a.key)
+func (s held) decideGrant(ctx context.Context, a *admitted, gr *grant) (*record, error) {
+	p, ok := s.identities.Lookup(a.fingerprint)
 	if !ok {
 		return nil, errRemoved
 	}
@@ -285,7 +222,7 @@ func (s *state) decideGrant(ctx context.Context, a *admitted, gr *grant) (*recor
 	return s.settings.Load().decide(ctx, p, a.connection, gr)
 }
 
-func (s *state) authorize(ctx context.Context, a *admitted, gr *grant) (*record, error) {
+func (s held) authorize(ctx context.Context, a *admitted, gr *grant) (*record, error) {
 	var r *record
 	gr.approved = []string{}
 	for {
@@ -295,7 +232,7 @@ func (s *state) authorize(ctx context.Context, a *admitted, gr *grant) (*record,
 		if s.audit.Backlogged() {
 			return r, errAuditBacklog
 		}
-		gr.label = s.label(a.key)
+		gr.label = s.label(a.fingerprint)
 		next, err := s.decideGrant(ctx, a, gr)
 		if next != nil && next.Invalid {
 			s.addRecord(next)
@@ -308,7 +245,7 @@ func (s *state) authorize(ctx context.Context, a *admitted, gr *grant) (*record,
 			s.addRecord(next)
 			r = next
 		}
-		r.Facts, r.Decision, r.Grant = next.Facts, next.Decision, next.Grant
+		r.Facts, r.Decision, r.Scope = next.Facts, next.Decision, next.Scope
 		if len(r.Deny) != 0 {
 			return r, errors.New(strings.Join(r.Deny, "; "))
 		}
@@ -329,7 +266,7 @@ func (s *state) authorize(ctx context.Context, a *admitted, gr *grant) (*record,
 	}
 }
 
-func (s *state) awaitAnswer(ctx context.Context, r *record) error {
+func (s held) awaitAnswer(ctx context.Context, r *record) error {
 	if r.State != statePending {
 		r.State, r.Expires = statePending, time.Now().Add(approvalWait)
 		s.announce(r)
@@ -349,7 +286,7 @@ func (s *state) awaitAnswer(ctx context.Context, r *record) error {
 }
 
 func (s *state) admit(ctx context.Context, p facts.Principal, req core.Request) (core.Watch, error) {
-	a := &admitted{key: p.Key, connection: req.Connection, perMessage: req.PerMessage, valid: req.Valid}
+	a := &admitted{fingerprint: p.Key, connection: req.Connection, perMessage: req.PerMessage, valid: req.Valid}
 	gr := &grant{kind: config.KindAdmission, admit: &requestFacts{
 		Operation:  &operation{Action: "session.admit", Effects: []string{"session"}},
 		Title:      "Open " + req.Connection,
@@ -358,24 +295,24 @@ func (s *state) admit(ctx context.Context, p facts.Principal, req core.Request) 
 		Context:    connections.RequestContext{Observes: config.InitialLabel},
 	}}
 	var err error
-	s.locked(func() {
+	s.locked(func(h held) {
 		var r *record
-		r, err = s.authorize(ctx, a, gr)
+		r, err = h.authorize(ctx, a, gr)
 		if r != nil {
-			s.settleRecord(r, err)
+			h.settleRecord(r, err)
 		}
-		a.grants = []*grant{gr}
+		a.admission = gr
 	})
 	if err != nil {
 		return nil, err
 	}
 	return func(ctx context.Context, end func()) (gate core.Gate, ok bool) {
-		s.locked(func() {
-			if ok = s.recheck(a); !ok {
+		s.locked(func(h held) {
+			if ok = h.recheck(a); !ok {
 				return
 			}
-			remove := s.admissions.Add(a, end)
-			context.AfterFunc(ctx, func() { s.locked(remove) })
+			remove := h.admissions.Add(a, end)
+			context.AfterFunc(ctx, func() { s.locked(func(held) { remove() }) })
 			gate = func(op context.Context, event facts.Event) error { return s.operation(op, ctx, a, event) }
 		})
 		return gate, ok
@@ -389,28 +326,31 @@ func (s *state) operation(ctx, stream context.Context, a *admitted, event facts.
 	ctx, cancel := netx.Bind(ctx, stream)
 	defer cancel()
 	var err error
-	s.locked(func() {
+	s.locked(func(h held) {
 		gr := &grant{kind: config.KindOperation, event: event}
 		var r *record
-		r, err = s.authorize(ctx, a, gr)
+		r, err = h.authorize(ctx, a, gr)
 		if r != nil {
 			if err == nil {
-				err = s.relabel(ctx, a.key, r.Next, a)
+				err = h.relabel(ctx, a.fingerprint, r.Next, a)
 			}
-			s.settleRecord(r, err)
+			h.settleRecord(r, err)
 		}
 		if err == nil {
-			a.grants = append(a.grants[:1], gr)
+			a.latest = gr
 		}
 	})
 	return err
 }
 
-func (s *state) recheck(a *admitted) bool {
+func (s held) recheck(a *admitted) bool {
 	if a.capability != "" {
-		return s.capable(a.key, a.capability)
+		return s.capable(a.fingerprint, a.capability)
 	}
-	for _, gr := range a.grants {
+	for _, gr := range []*grant{a.admission, a.latest} {
+		if gr == nil {
+			continue
+		}
 		if d, err := s.decideGrant(context.Background(), a, gr); err != nil || len(d.Deny) != 0 || len(d.Requirements) != 0 {
 			return false
 		}
@@ -418,13 +358,13 @@ func (s *state) recheck(a *admitted) bool {
 	return true
 }
 
-func (s *state) relabel(ctx context.Context, key string, l format.Label, source *admitted) error {
-	if old := s.label(key); old.Trust == l.Trust && old.Audience == l.Audience {
+func (s held) relabel(ctx context.Context, fingerprint string, l format.Label, source *admitted) error {
+	if old := s.label(fingerprint); old.Trust == l.Trust && old.Audience == l.Audience {
 		return nil
 	}
 	next := s.doc
 	next.Labels = maps.Clone(next.Labels)
-	next.Labels[key] = l
+	next.Labels[fingerprint] = l
 	if err := s.commit(ctx, next); err != nil {
 		return err
 	}
@@ -432,31 +372,33 @@ func (s *state) relabel(ctx context.Context, key string, l format.Label, source 
 		return nil
 	}
 	s.admissions.Recheck(func(a *admitted) bool {
-		return a.key != key || a.capability != "" || a == source || source != nil && a.perMessage
+		unaffected := a.fingerprint != fingerprint || a.capability != ""
+		gated := source != nil && a.perMessage
+		return unaffected || a == source || gated
 	})
 	return nil
 }
 
-func (s *state) capable(key, capability string) bool {
-	p, known := s.identities.Lookup(key)
+func (s *state) capable(fingerprint, capability string) bool {
+	p, known := s.identities.Lookup(fingerprint)
 	st := s.settings.Load()
 	return known && st != nil && st.capable(p, capability)
 }
 
-func (s *state) hold(ctx context.Context, key, capability string) (context.Context, context.CancelFunc, bool) {
-	ctx, release, ok := s.identities.Hold(ctx, key)
+func (s *state) hold(ctx context.Context, fingerprint, capability string) (context.Context, context.CancelFunc, bool) {
+	ctx, release, ok := s.identities.Hold(ctx, fingerprint)
 	if !ok {
 		return nil, nil, false
 	}
 	var cancel context.CancelFunc
-	s.locked(func() {
-		if ok = s.capable(key, capability); !ok {
+	s.locked(func(h held) {
+		if ok = s.capable(fingerprint, capability); !ok {
 			release()
 			return
 		}
 		ctx, cancel = context.WithCancel(ctx)
-		remove := s.admissions.Add(&admitted{key: key, capability: capability}, cancel)
-		context.AfterFunc(ctx, func() { s.locked(remove) })
+		remove := h.admissions.Add(&admitted{fingerprint: fingerprint, capability: capability}, cancel)
+		context.AfterFunc(ctx, func() { s.locked(func(held) { remove() }) })
 	})
 	if !ok {
 		return nil, nil, false
@@ -464,7 +406,7 @@ func (s *state) hold(ctx context.Context, key, capability string) (context.Conte
 	return ctx, func() { cancel(); release() }, true
 }
 
-func (s *state) recheckAll() {
+func (s held) recheckAll() {
 	s.admissions.Recheck(s.recheck)
 	s.records.Notify()
 }

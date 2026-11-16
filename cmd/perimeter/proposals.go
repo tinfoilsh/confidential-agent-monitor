@@ -2,19 +2,16 @@ package main
 
 import (
 	"context"
-	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"maps"
-	"reflect"
 	"slices"
 	"strings"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
-	"golang.org/x/crypto/ssh"
 )
 
 const (
@@ -36,7 +33,7 @@ type proposalReceipt struct {
 }
 
 func receipt(r *record) proposalReceipt {
-	return proposalReceipt{ID: r.ID, State: r.State, Connection: summarize(r).Facts.Connection}
+	return proposalReceipt{ID: r.ID, State: r.State, Connection: r.subject().Connection}
 }
 
 func (s *state) proposal(st *settings, source string, p facts.Principal, target, reason string, changes []format.Change) (string, json.RawMessage, error) {
@@ -60,7 +57,7 @@ func (s *state) proposal(st *settings, source string, p facts.Principal, target,
 	return candidate, raw, err
 }
 
-func (s *state) proposePolicy(ctx context.Context, key string, input proposalInput) ([]proposalReceipt, error) {
+func (s *state) proposePolicy(ctx context.Context, fingerprint string, input proposalInput) ([]proposalReceipt, error) {
 	reason := strings.TrimSpace(input.Reason)
 	if reason == "" || len(reason) > maxReason {
 		return nil, fmt.Errorf("proposal needs a reason of 1-%d bytes", maxReason)
@@ -85,7 +82,7 @@ func (s *state) proposePolicy(ctx context.Context, key string, input proposalInp
 		return nil, errPolicyFile
 	}
 	return stable(s, func(base format.Document, before *settings) ([]proposalReceipt, error) {
-		p, known := s.identities.Lookup(key)
+		p, known := s.identities.Lookup(fingerprint)
 		if !known {
 			return nil, errNoAgent
 		}
@@ -97,24 +94,25 @@ func (s *state) proposePolicy(ctx context.Context, key string, input proposalInp
 		for _, target := range slices.Sorted(maps.Keys(groups)) {
 			candidate, raw, err := s.proposal(before, base.Policy, p, target, reason, groups[target])
 			if err == nil {
-				_, err = s.prepareSettings(ctx, candidate, everyConnection, nil, nil, before.tls, before.hostKey)
+				_, err = s.prepareSettings(ctx, candidate, everyConnection, nil, before.tls, before.hostKey)
 			}
 			if err != nil {
 				return nil, fmt.Errorf("service %s: %w", target, err)
 			}
 			proposals = append(proposals, &record{Changes: groups[target], Facts: raw,
-				Decision: Decision{Requirements: []config.Requirement{{ID: "policy", Message: reason}}}})
+				Decision: config.Decision{Requirements: []config.Requirement{{ID: "policy", Message: reason}}}})
 		}
 
 		var receipts []proposalReceipt
-		s.locked(func() {
+		var tooMany error
+		s.locked(func(h held) {
 			var replaced []*record
 			pending := len(proposals)
-			for r := range s.records.All() {
+			for r := range h.records.All() {
 				if r.State != statePending || r.Changes == nil {
 					continue
 				}
-				f := summarize(r).Facts
+				f := r.subject()
 				if _, again := groups[f.Connection]; again && f.Principal.Same(p) {
 					replaced = append(replaced, r)
 				} else {
@@ -122,86 +120,19 @@ func (s *state) proposePolicy(ctx context.Context, key string, input proposalInp
 				}
 			}
 			if pending > maxPolicyProposals {
-				err = errors.New("too many pending policy proposals")
+				tooMany = errors.New("too many pending policy proposals")
 				return
 			}
 			for _, r := range replaced {
-				s.outdateRecord(r)
+				h.outdateRecord(r)
 			}
 			receipts = make([]proposalReceipt, 0, len(proposals))
 			for _, proposal := range proposals {
-				s.addRecord(proposal).State = statePending
-				s.announce(proposal)
+				h.addRecord(proposal).State = statePending
+				h.announce(proposal)
 				receipts = append(receipts, receipt(proposal))
 			}
 		})
-		return receipts, err
+		return receipts, tooMany
 	})
-}
-
-type identityEnrollment struct {
-	Key        string                     `json:"key"`
-	Operator   bool                       `json:"routes"`
-	Restore    bool                       `json:"restore"`
-	Attributes map[string]json.RawMessage `json:",embed"`
-}
-
-func (s *state) enrollmentChanges(input map[string]identityEnrollment) ([]format.Change, error) {
-	var changes []format.Change
-	st := s.settings.Load()
-	for name, id := range input {
-		fingerprint, err := config.KeyFingerprint(id.Key)
-		if err != nil {
-			return nil, err
-		}
-		attributes := map[string]any{}
-		for key, raw := range id.Attributes {
-			if identityAttributes[key] == nil {
-				return nil, fmt.Errorf("an enrollment has no field %s", key)
-			}
-			if attributes[key], err = facts.JSON[any](raw); err != nil {
-				return nil, err
-			}
-		}
-		maps.DeleteFunc(attributes, func(_ string, value any) bool { return value == nil })
-		if principal, ok := st.Config.Principal(fingerprint); ok {
-			existing := st.Identities[principal.Name]
-			if id.Operator && !existing.Operator {
-				if !id.Restore {
-					return nil, errors.New("device route access was revoked")
-				}
-				changes = append(changes, format.Change{Path: []string{"identities", principal.Name, "routes"}, Value: true})
-			}
-			for key, value := range attributes {
-				if before, _ := facts.JSON[any](existing.Attributes[key]); !reflect.DeepEqual(value, before) {
-					changes = append(changes, format.Change{Path: []string{"identities", principal.Name, key}, Value: value})
-				}
-			}
-			continue
-		}
-		if s.doc.Enrolled[fingerprint] && !id.Restore {
-			return nil, errors.New("identity was revoked; restore access explicitly in the Perimeter")
-		}
-		if _, exists := st.Config.Identities[name]; exists {
-			return nil, errors.New("identity name belongs to another key")
-		}
-		value := map[string]any{"key": id.Key, "routes": id.Operator}
-		maps.Copy(value, attributes)
-		changes = append(changes, format.Change{Path: []string{"identities", name}, Value: value})
-	}
-	return changes, nil
-}
-
-func (s *state) restoreDevice(ctx context.Context, public string) error {
-	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(public))
-	if err != nil {
-		return fmt.Errorf("device public key: %w", err)
-	}
-	public = strings.TrimSpace(string(ssh.MarshalAuthorizedKey(key)))
-	digest := sha256.Sum256([]byte(public))
-	return s.enroll(ctx, map[string]identityEnrollment{fmt.Sprintf("device-%x", digest[:8]): {Key: public, Operator: true, Restore: true}})
-}
-
-func (s *state) enroll(ctx context.Context, identities map[string]identityEnrollment) error {
-	return s.writeSettings(ctx, settingsWrite{derive: func() ([]format.Change, error) { return s.enrollmentChanges(identities) }})
 }

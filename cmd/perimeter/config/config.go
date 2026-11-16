@@ -56,7 +56,7 @@ type Rule struct {
 }
 
 type Identity struct {
-	Operator    bool                       `json:"routes,omitempty"`
+	Routes      bool                       `json:"routes,omitempty"`
 	Key         string                     `json:"key"`
 	Groups      []string                   `json:"groups,omitempty"`
 	Effects     map[string]string          `json:"effects,omitempty"`
@@ -102,8 +102,11 @@ func (c *Connection) UnmarshalJSON(raw []byte) error {
 
 func (c Connection) MarshalJSON() ([]byte, error) {
 	raw, err := json.Marshal(connectionSettings(c))
-	if err != nil || len(c.Setup) == 0 {
-		return raw, err
+	if err != nil {
+		return nil, err
+	}
+	if len(c.Setup) == 0 {
+		return raw, nil
 	}
 	var fields map[string]json.RawMessage
 	if err := json.Unmarshal(raw, &fields); err != nil {
@@ -231,13 +234,13 @@ func KeyFingerprint(authorizedKey string) (string, error) {
 	return ssh.FingerprintSHA256(key), nil
 }
 
-func (c *Config) Principal(key string) (facts.Principal, bool) {
-	name, ok := c.Principals[key]
-	return facts.Principal{Key: key, Name: name, Groups: c.Identities[name].Groups, Attributes: c.Identities[name].Attributes}, ok
+func (c *Config) Principal(fingerprint string) (facts.Principal, bool) {
+	name, ok := c.Principals[fingerprint]
+	return facts.Principal{Key: fingerprint, Name: name, Groups: c.Identities[name].Groups, Attributes: c.Identities[name].Attributes}, ok
 }
 
-func (c *Config) Access(agent, connection string) Access {
-	a := c.Identities[agent].Connections[connection]
+func (c *Config) Access(identity, connection string) Access {
+	a := c.Identities[identity].Connections[connection]
 	if a.Level == "" {
 		base := c.DefaultAccess[connection]
 		a.Level = cmp.Or(base.Level, "off")
@@ -247,18 +250,18 @@ func (c *Config) Access(agent, connection string) Access {
 	return a
 }
 
-func (c *Config) Accesses(agent string) map[string]Access {
+func (c *Config) Accesses(identity string) map[string]Access {
 	connections := map[string]Access{}
 	maps.Copy(connections, c.DefaultAccess)
-	maps.Copy(connections, c.Identities[agent].Connections)
+	maps.Copy(connections, c.Identities[identity].Connections)
 	for connection := range connections {
-		connections[connection] = c.Access(agent, connection)
+		connections[connection] = c.Access(identity, connection)
 	}
 	return connections
 }
 
-func (c *Config) Reaches(agent, connection string) bool {
-	a := c.Access(agent, connection)
+func (c *Config) Reaches(identity, connection string) bool {
+	a := c.Access(identity, connection)
 	if a.Level != "" && a.Level != "off" {
 		return true
 	}
@@ -276,49 +279,52 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	if preset == nil {
 		return ConnectionSpec{}, fmt.Errorf("service %s: unknown preset %s", name, connection.Preset)
 	}
+	spec := ConnectionSpec{Name: name, PublicScope: preset.PublicScope}
+
 	var definition map[string]json.RawMessage
 	if err := json.Unmarshal(preset.Source, &definition); err != nil {
 		return ConnectionSpec{}, err
 	}
 	actions := map[string]map[string][]string{}
-	for name, action := range preset.Catalog.Actions {
+	for id, action := range preset.Catalog.Actions {
 		if action.Effects != nil {
-			actions[name] = map[string][]string{"effects": action.Effects}
+			actions[id] = map[string][]string{"effects": action.Effects}
 		}
 	}
 	definition["catalog"], _ = json.Marshal(map[string]any{"actions": actions})
-	semantic, _ := json.Marshal(definition)
-	raw, _ := json.Marshal(preset.Catalog.Connection)
+	spec.Definition, _ = json.Marshal(definition)
+
+	setup, _ := json.Marshal(preset.Catalog.Connection)
 	if preset.Catalog.Connection == nil {
-		raw = []byte(`{}`)
+		setup = []byte(`{}`)
 	}
 	if connection.Setup != nil {
 		patch, _ := json.Marshal(connection.Setup)
 		var err error
-		if raw, err = jsonpatch.MergePatch(raw, patch); err != nil {
+		if setup, err = jsonpatch.MergePatch(setup, patch); err != nil {
 			return ConnectionSpec{}, err
 		}
 	}
-	var kinds map[string]any
-	if err := facts.DecodeNumbers(raw, &kinds); err != nil {
+	var protocols map[string]any
+	if err := facts.DecodeNumbers(setup, &protocols); err != nil {
 		return ConnectionSpec{}, err
 	}
-	if len(kinds) != 1 {
+	if len(protocols) != 1 {
 		return ConnectionSpec{}, fmt.Errorf("service %s must have one kind", name)
 	}
-	local := connection.PolicyOptions
-	local.Private = nil
-	options, _ := json.Marshal(local)
-	spec := ConnectionSpec{Name: name, Definition: semantic, Options: options, PublicScope: preset.PublicScope}
-	for kind, value := range kinds {
-		spec.Protocol = kind
+	for protocol, value := range protocols {
+		spec.Protocol = protocol
 		spec.Config, _ = json.Marshal(value)
 	}
+
+	options := connection.PolicyOptions
+	options.Private = nil
+	spec.Options, _ = json.Marshal(options)
 	return spec, nil
 }
 
-func (c *Config) Edit(source string, changes []format.Change) (string, func(connection string) bool, map[string]string, error) {
-	edited, err := format.EditTOML(source, changes)
+func (c *Config) Edit(source string, changes []format.Change) (edited string, rebuild func(connection string) bool, renamed map[string]string, err error) {
+	edited, err = format.EditTOML(source, changes)
 	if err != nil {
 		return "", nil, nil, err
 	}
@@ -330,7 +336,7 @@ func (c *Config) Edit(source string, changes []format.Change) (string, func(conn
 		return source, func(string) bool { return false }, nil, nil
 	}
 	networks := !slices.Equal(c.AllowNetworks, next.AllowNetworks)
-	renamed := map[string]string{}
+	renamed = map[string]string{}
 	for _, change := range changes {
 		if len(change.Path) != 2 || len(change.From) != 2 || change.Path[0] != "connections" || change.From[0] != "connections" {
 			continue

@@ -18,6 +18,12 @@ const (
 	MinKeyBytes  = 16
 	MaxKeyBytes  = 4096
 	KeyBytes     = 32
+
+	saltBytes    = 32
+	sealOverhead = 12 + 16
+	argonTime    = 3
+	argonMemory  = 256 << 10
+	argonThreads = 4
 )
 
 var ErrKey = errors.New("invalid owner secret")
@@ -70,10 +76,27 @@ type Sealer struct {
 	header []byte
 }
 
-func NewSealer(secret []byte) (Sealer, error) { return sealer(secret, nil, true) }
+func NewSealer(secret []byte) (Sealer, error) {
+	if len(secret) == KeyBytes {
+		return sealer(secret, nil)
+	}
+	header := make([]byte, len(stateMagic)+saltBytes)
+	copy(header, stateMagic)
+	if _, err := rand.Read(header[len(stateMagic):]); err != nil {
+		return Sealer{}, err
+	}
+	return sealer(secret, header)
+}
 
 func OpenState(secret, raw []byte) (Sealer, []byte, error) {
-	s, err := sealer(secret, raw, false)
+	var header []byte
+	if bytes.HasPrefix(raw, stateMagic) {
+		if len(raw) < len(stateMagic)+saltBytes+sealOverhead {
+			return Sealer{}, nil, ErrKey
+		}
+		header = bytes.Clone(raw[:len(stateMagic)+saltBytes])
+	}
+	s, err := sealer(secret, header)
 	if err != nil {
 		return s, nil, err
 	}
@@ -84,13 +107,17 @@ func OpenState(secret, raw []byte) (Sealer, []byte, error) {
 	return s, plain, nil
 }
 
-func sealer(secret, raw []byte, create bool) (Sealer, error) {
+func sealer(secret, header []byte) (Sealer, error) {
 	if len(secret) < MinKeyBytes || len(secret) > MaxKeyBytes {
 		return Sealer{}, ErrKey
 	}
-	key, header, err := stateEncryptionKey(secret, raw, create)
-	if err != nil {
-		return Sealer{}, err
+	var key []byte
+	if header != nil {
+		key = argon2.IDKey(secret, header[len(stateMagic):], argonTime, argonMemory, argonThreads, KeyBytes)
+	} else if len(secret) == KeyBytes {
+		key = bytes.Clone(secret)
+	} else {
+		return Sealer{}, ErrKey
 	}
 	block, err := aes.NewCipher(key)
 	clear(key)
@@ -145,24 +172,3 @@ func (s Secrets) Clone() Secrets {
 }
 
 var stateMagic = []byte("TINFOIL-MONITOR-STATE\x00\x01")
-
-func stateEncryptionKey(secret, raw []byte, create bool) (key, header []byte, err error) {
-	if create && len(secret) != KeyBytes {
-		header = make([]byte, len(stateMagic)+32)
-		copy(header, stateMagic)
-		if _, err := rand.Read(header[len(stateMagic):]); err != nil {
-			return nil, nil, err
-		}
-	} else if !create && bytes.HasPrefix(raw, stateMagic) {
-		if len(raw) < len(stateMagic)+32+12+16 {
-			return nil, nil, ErrKey
-		}
-		header = bytes.Clone(raw[:len(stateMagic)+32])
-	} else {
-		if len(secret) != KeyBytes {
-			return nil, nil, ErrKey
-		}
-		return bytes.Clone(secret), nil, nil
-	}
-	return argon2.IDKey(secret, header[len(stateMagic):], 3, 256<<10, 4, 32), header, nil
-}

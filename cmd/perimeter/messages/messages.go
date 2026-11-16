@@ -118,81 +118,11 @@ func Request(in map[string]any) (map[string]any, error) {
 		return nil, errors.New("messages must be an array")
 	}
 	for _, item := range history {
-		msg, ok := item.(map[string]any)
-		if !ok {
-			return nil, errors.New("invalid message")
+		converted, err := chatMessages(item)
+		if err != nil {
+			return nil, err
 		}
-		switch msg["role"] {
-		case "assistant", "user", "system", "developer":
-		default:
-			return nil, errors.New("invalid message role")
-		}
-		current := object{"role": msg["role"]}
-		if text, ok := msg["content"].(string); ok {
-			current["content"] = text
-		} else {
-			blocks, ok := msg["content"].([]any)
-			if !ok {
-				return nil, errors.New("content must be text or an array")
-			}
-			ordinary, calls := []any{}, []object{}
-			reasoning := ""
-			for _, item := range blocks {
-				block, ok := item.(map[string]any)
-				if !ok {
-					return nil, errors.New("invalid content block")
-				}
-				switch block["type"] {
-				case "tool_use":
-					if msg["role"] != "assistant" {
-						return nil, errors.New("tool_use requires an assistant message")
-					}
-					args, err := json.Marshal(block["input"])
-					if err != nil {
-						return nil, err
-					}
-					calls = append(calls, object{"id": block["id"], "type": "function", "function": object{"name": block["name"], "arguments": string(args)}})
-				case "tool_result":
-					if msg["role"] != "user" {
-						return nil, errors.New("tool_result requires a user message")
-					}
-					content, err := chatContent(block["content"])
-					if err != nil {
-						return nil, err
-					}
-					if block["is_error"] == true {
-						switch value := content.(type) {
-						case string:
-							content = "Tool error: " + value
-						case []object:
-							content = append([]object{{"type": "text", "text": "Tool error:"}}, value...)
-						}
-					}
-					messages = append(messages, object{"role": "tool", "tool_call_id": block["tool_use_id"], "content": content})
-				case "thinking":
-					text, _ := block["thinking"].(string)
-					reasoning += text
-				default:
-					ordinary = append(ordinary, block)
-				}
-			}
-			if len(ordinary) > 0 {
-				content, err := chatContent(ordinary)
-				if err != nil {
-					return nil, err
-				}
-				current["content"] = content
-			}
-			if len(calls) > 0 {
-				current["tool_calls"] = calls
-			}
-			if reasoning != "" {
-				current["reasoning_content"] = reasoning
-			}
-		}
-		if len(current) > 1 {
-			messages = append(messages, current)
-		}
+		messages = append(messages, converted...)
 	}
 	out["messages"] = messages
 	if tools, ok := in["tools"].([]any); ok && len(tools) > 0 {
@@ -226,6 +156,86 @@ func Request(in map[string]any) (map[string]any, error) {
 		}
 	}
 	return out, nil
+}
+
+func chatMessages(item any) ([]object, error) {
+	msg, ok := item.(map[string]any)
+	if !ok {
+		return nil, errors.New("invalid message")
+	}
+	switch msg["role"] {
+	case "assistant", "user", "system", "developer":
+	default:
+		return nil, errors.New("invalid message role")
+	}
+	current := object{"role": msg["role"]}
+	if text, ok := msg["content"].(string); ok {
+		current["content"] = text
+		return []object{current}, nil
+	}
+	blocks, ok := msg["content"].([]any)
+	if !ok {
+		return nil, errors.New("content must be text or an array")
+	}
+	var messages []object
+	ordinary, calls := []any{}, []object{}
+	reasoning := ""
+	for _, item := range blocks {
+		block, ok := item.(map[string]any)
+		if !ok {
+			return nil, errors.New("invalid content block")
+		}
+		switch block["type"] {
+		case "tool_use":
+			if msg["role"] != "assistant" {
+				return nil, errors.New("tool_use requires an assistant message")
+			}
+			args, err := json.Marshal(block["input"])
+			if err != nil {
+				return nil, err
+			}
+			calls = append(calls, object{"id": block["id"], "type": "function", "function": object{"name": block["name"], "arguments": string(args)}})
+		case "tool_result":
+			if msg["role"] != "user" {
+				return nil, errors.New("tool_result requires a user message")
+			}
+			content, err := chatContent(block["content"])
+			if err != nil {
+				return nil, err
+			}
+			if block["is_error"] == true {
+				switch value := content.(type) {
+				case string:
+					content = "Tool error: " + value
+				case []object:
+					content = append([]object{{"type": "text", "text": "Tool error:"}}, value...)
+				}
+			}
+			messages = append(messages, object{"role": "tool", "tool_call_id": block["tool_use_id"], "content": content})
+		case "thinking":
+			text, _ := block["thinking"].(string)
+			reasoning += text
+		default:
+			ordinary = append(ordinary, block)
+		}
+	}
+	if len(ordinary) > 0 {
+		content, err := chatContent(ordinary)
+		if err != nil {
+			return nil, err
+		}
+		current["content"] = content
+	}
+	if len(calls) > 0 {
+		current["tool_calls"] = calls
+	}
+	if reasoning != "" {
+		current["reasoning_content"] = reasoning
+	}
+	if len(current) > 1 {
+		messages = append(messages, current)
+	}
+	return messages, nil
 }
 
 func chatContent(value any) (any, error) {
@@ -316,94 +326,125 @@ func stopReason(reason string) string {
 	}
 }
 
-func streamMessages(w io.Writer, r io.Reader, model any, maxEvent int) error {
-	emit := func(kind string, body object) error {
-		body["type"] = kind
-		raw, err := json.Marshal(body)
-		if err != nil {
-			return err
-		}
-		_, err = fmt.Fprintf(w, "event: %s\ndata: %s\n\n", kind, raw)
+type messageWriter struct {
+	w                        io.Writer
+	model                    any
+	started, finished        bool
+	next                     int
+	textIndex, thinkingIndex int
+	tools                    map[int]int
+	open                     []int
+	usage                    chatUsage
+	reason                   string
+}
+
+func (m *messageWriter) emit(kind string, body object) error {
+	body["type"] = kind
+	raw, err := json.Marshal(body)
+	if err != nil {
 		return err
 	}
-	started, finished := false, false
-	next, textIndex, thinkingIndex := 0, -1, -1
-	tools := map[int]int{}
-	open := []int{}
-	usage, reason := chatUsage{}, ""
-	start := func(body object) (int, error) {
-		index := next
-		next++
-		open = append(open, index)
-		return index, emit("content_block_start", object{"index": index, "content_block": body})
+	_, err = fmt.Fprintf(m.w, "event: %s\ndata: %s\n\n", kind, raw)
+	return err
+}
+
+func (m *messageWriter) start(body object) (int, error) {
+	index := m.next
+	m.next++
+	m.open = append(m.open, index)
+	return index, m.emit("content_block_start", object{"index": index, "content_block": body})
+}
+
+func (m *messageWriter) process(data string) error {
+	if data == "[DONE]" {
+		m.finished = true
+		return nil
 	}
-	process := func(data string) error {
-		if data == "[DONE]" {
-			finished = true
-			return nil
-		}
-		var chunk chatChunk
-		if err := json.Unmarshal([]byte(data), &chunk); err != nil {
+	var chunk chatChunk
+	if err := json.Unmarshal([]byte(data), &chunk); err != nil {
+		return err
+	}
+	if len(chunk.Error) > 0 {
+		return errors.New("upstream stream returned an error")
+	}
+	if !m.started {
+		if err := m.emit("message_start", object{"message": object{"id": chunk.ID, "type": "message", "role": "assistant", "model": m.model, "content": []any{}, "stop_reason": nil, "stop_sequence": nil, "usage": chunk.Usage.anthropic()}}); err != nil {
 			return err
 		}
-		if len(chunk.Error) > 0 {
-			return errors.New("upstream stream returned an error")
+		m.started = true
+	}
+	if chunk.Usage.Prompt > 0 || chunk.Usage.Completion > 0 {
+		m.usage = chunk.Usage
+	}
+	for _, choice := range chunk.Choices {
+		if choice.FinishReason != "" {
+			m.reason = choice.FinishReason
 		}
-		if !started {
-			if err := emit("message_start", object{"message": object{"id": chunk.ID, "type": "message", "role": "assistant", "model": model, "content": []any{}, "stop_reason": nil, "stop_sequence": nil, "usage": chunk.Usage.anthropic()}}); err != nil {
-				return err
+		for _, part := range []struct {
+			text, kind, key string
+			index           *int
+		}{
+			{choice.Delta.Reasoning, "thinking", "thinking", &m.thinkingIndex}, {choice.Delta.Content, "text", "text", &m.textIndex},
+		} {
+			if part.text == "" {
+				continue
 			}
-			started = true
-		}
-		if chunk.Usage.Prompt > 0 || chunk.Usage.Completion > 0 {
-			usage = chunk.Usage
-		}
-		for _, choice := range chunk.Choices {
-			if choice.FinishReason != "" {
-				reason = choice.FinishReason
-			}
-			for _, part := range []struct {
-				text, kind, key string
-				index           *int
-			}{
-				{choice.Delta.Reasoning, "thinking", "thinking", &thinkingIndex}, {choice.Delta.Content, "text", "text", &textIndex},
-			} {
-				if part.text == "" {
-					continue
-				}
-				if *part.index < 0 {
-					var err error
-					*part.index, err = start(object{"type": part.kind, part.key: ""})
-					if err != nil {
-						return err
-					}
-				}
-				if err := emit("content_block_delta", object{"index": *part.index, "delta": object{"type": part.kind + "_delta", part.key: part.text}}); err != nil {
+			if *part.index < 0 {
+				var err error
+				*part.index, err = m.start(object{"type": part.kind, part.key: ""})
+				if err != nil {
 					return err
 				}
 			}
-			for _, call := range choice.Delta.ToolCalls {
-				index, exists := tools[call.Index]
-				if !exists {
-					if call.ID == "" || call.Function.Name == "" {
-						return errors.New("upstream tool stream is missing its identity")
-					}
-					var err error
-					index, err = start(object{"type": "tool_use", "id": call.ID, "name": call.Function.Name, "input": object{}})
-					if err != nil {
-						return err
-					}
-					tools[call.Index] = index
+			if err := m.emit("content_block_delta", object{"index": *part.index, "delta": object{"type": part.kind + "_delta", part.key: part.text}}); err != nil {
+				return err
+			}
+		}
+		for _, call := range choice.Delta.ToolCalls {
+			index, exists := m.tools[call.Index]
+			if !exists {
+				if call.ID == "" || call.Function.Name == "" {
+					return errors.New("upstream tool stream is missing its identity")
 				}
-				if call.Function.Arguments != "" {
-					if err := emit("content_block_delta", object{"index": index, "delta": object{"type": "input_json_delta", "partial_json": call.Function.Arguments}}); err != nil {
-						return err
-					}
+				var err error
+				index, err = m.start(object{"type": "tool_use", "id": call.ID, "name": call.Function.Name, "input": object{}})
+				if err != nil {
+					return err
+				}
+				m.tools[call.Index] = index
+			}
+			if call.Function.Arguments != "" {
+				if err := m.emit("content_block_delta", object{"index": index, "delta": object{"type": "input_json_delta", "partial_json": call.Function.Arguments}}); err != nil {
+					return err
 				}
 			}
 		}
-		return nil
 	}
+	return nil
+}
+
+func (m *messageWriter) finish() error {
+	if !m.started || !m.finished || m.reason == "" {
+		return io.ErrUnexpectedEOF
+	}
+	if m.thinkingIndex >= 0 {
+		if err := m.emit("content_block_delta", object{"index": m.thinkingIndex, "delta": object{"type": "signature_delta", "signature": ""}}); err != nil {
+			return err
+		}
+	}
+	for _, index := range m.open {
+		if err := m.emit("content_block_stop", object{"index": index}); err != nil {
+			return err
+		}
+	}
+	if err := m.emit("message_delta", object{"delta": object{"stop_reason": stopReason(m.reason), "stop_sequence": nil}, "usage": m.usage.anthropic()}); err != nil {
+		return err
+	}
+	return m.emit("message_stop", object{})
+}
+
+func streamMessages(w io.Writer, r io.Reader, model any, maxEvent int) error {
+	m := &messageWriter{w: w, model: model, textIndex: -1, thinkingIndex: -1, tools: map[int]int{}}
 	scanner := bufio.NewScanner(r)
 	scanner.Buffer(make([]byte, 4096), maxEvent)
 	var data []string
@@ -412,13 +453,13 @@ func streamMessages(w io.Writer, r io.Reader, model any, maxEvent int) error {
 		line := scanner.Text()
 		if line == "" {
 			if len(data) > 0 {
-				if err := process(strings.Join(data, "\n")); err != nil {
+				if err := m.process(strings.Join(data, "\n")); err != nil {
 					return err
 				}
 				data = nil
 				eventBytes = 0
 			}
-			if finished {
+			if m.finished {
 				break
 			}
 		} else if value, ok := strings.CutPrefix(line, "data:"); ok {
@@ -433,25 +474,9 @@ func streamMessages(w io.Writer, r io.Reader, model any, maxEvent int) error {
 		return err
 	}
 	if len(data) > 0 {
-		if err := process(strings.Join(data, "\n")); err != nil {
+		if err := m.process(strings.Join(data, "\n")); err != nil {
 			return err
 		}
 	}
-	if !started || !finished || reason == "" {
-		return io.ErrUnexpectedEOF
-	}
-	if thinkingIndex >= 0 {
-		if err := emit("content_block_delta", object{"index": thinkingIndex, "delta": object{"type": "signature_delta", "signature": ""}}); err != nil {
-			return err
-		}
-	}
-	for _, index := range open {
-		if err := emit("content_block_stop", object{"index": index}); err != nil {
-			return err
-		}
-	}
-	if err := emit("message_delta", object{"delta": object{"stop_reason": stopReason(reason), "stop_sequence": nil}, "usage": usage.anthropic()}); err != nil {
-		return err
-	}
-	return emit("message_stop", object{})
+	return m.finish()
 }

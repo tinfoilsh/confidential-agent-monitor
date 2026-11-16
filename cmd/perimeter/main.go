@@ -17,9 +17,7 @@ import (
 	"net/http/httputil"
 	"net/url"
 	"os"
-	"os/exec"
 	"os/signal"
-	"path/filepath"
 	"strings"
 	"syscall"
 
@@ -147,8 +145,9 @@ func main() {
 		}
 		return
 	}
-	shipped, err := fs.Sub(shippedPresets, "presets")
+
 	development = !*production && strings.HasPrefix(*bucketURL, "file://")
+	shipped, err := fs.Sub(shippedPresets, "presets")
 	if err == nil {
 		presets, presetDefaults, err = config.LoadPresets(shipped, extraPresets)
 	}
@@ -163,6 +162,7 @@ func main() {
 	if *connectorWorkers {
 		workers = bubblewrap(*workerRoot)
 	}
+
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	bucket, err := blob.OpenBucket(ctx, *bucketURL)
@@ -185,6 +185,7 @@ func main() {
 			log.Fatal(err)
 		}
 	}
+
 	var o *owner
 	if *ownerPublicKey != "" || !development {
 		if unlockKey != nil {
@@ -193,7 +194,7 @@ func main() {
 		o = &owner{relay: func(ctx context.Context, instance string) (*websocket.Conn, error) {
 			return sandbox.DialOwner(ctx, relays, instance)
 		}}
-		if o.key, err = parseOwnerKey(*ownerPublicKey); err != nil {
+		if o.publicKey, err = parseOwnerKey(*ownerPublicKey); err != nil {
 			log.Fatal(err)
 		}
 		if o.sessionKey, err = noisetransport.LoadKey(*ownerSessionKey); err != nil {
@@ -206,6 +207,7 @@ func main() {
 			log.Fatal(err)
 		}
 	}
+
 	sshListener, err := net.Listen("tcp", *listen)
 	if err != nil {
 		log.Fatal(err)
@@ -220,46 +222,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func bubblewrap(rootDir string) *worker.Local {
-	return &worker.Local{Limit: maxWorkers, Limits: workerLimits, Command: func(broker string) (*exec.Cmd, error) {
-		root, err := filepath.Abs(rootDir)
-		if err != nil || rootDir == "" || root == "/" {
-			return nil, errors.New("worker root must be a prepared filesystem directory")
-		}
-		root, err = filepath.EvalSymlinks(root)
-		if err != nil || root == "/" {
-			return nil, errors.New("worker root must be a prepared filesystem directory")
-		}
-		if info, err := os.Stat(root); err != nil || !info.IsDir() {
-			return nil, errors.New("worker root directory does not exist")
-		}
-		executable, err := os.Executable()
-		if err == nil {
-			executable, err = filepath.Abs(executable)
-		}
-		if err != nil {
-			return nil, err
-		}
-		launcher, err := exec.LookPath("bwrap")
-		if err != nil {
-			return nil, errors.New("bubblewrap is required for connector workers")
-		}
-		userns := "--disable-userns"
-		if value, err := os.ReadFile("/proc/sys/kernel/unprivileged_userns_clone"); err == nil && strings.TrimSpace(string(value)) == "0" {
-			userns = "--assert-userns-disabled"
-		}
-		cmd := exec.Command(launcher, "--unshare-all", "--unshare-user", "--die-with-parent", "--new-session", userns, "--cap-drop", "ALL", "--clearenv",
-			"--ro-bind", root, "/", "--ro-bind", executable, "/worker",
-			"--ro-bind", broker, workerBroker, "--proc", "/proc", "--dev", "/dev",
-			"--size", "67108864", "--tmpfs", "/tmp", "--chdir", "/tmp",
-			"--remount-ro", "/dev", "--remount-ro", "/",
-			"--setenv", "HOME", "/tmp", "--setenv", "TMPDIR", "/tmp", "--setenv", "PATH", "/usr/local/bin:/usr/bin:/bin",
-			"--setenv", "GOMEMLIMIT", "256MiB", "--setenv", "GOMAXPROCS", "2", "--", "/worker", "--"+serveWorkerFlag)
-		cmd.Env = []string{}
-		return cmd, nil
-	}}
 }
 
 func uiDevProxy(address string) (http.Handler, error) {

@@ -18,7 +18,7 @@ func ReadTOML(source string) (map[string]any, error) {
 	if err := toml.Unmarshal([]byte(source), &v); err != nil {
 		return nil, fmt.Errorf("policy TOML: %w", err)
 	}
-	decoded, err := sourceValue(v, false)
+	decoded, err := fromTOML(v)
 	if err != nil {
 		return nil, err
 	}
@@ -39,40 +39,20 @@ type Change struct {
 	From   []string `json:"from,omitempty"`
 }
 
-func sourceValue(v any, tomlValue bool) (any, error) {
-	literal := func(value any) (any, error) {
-		raw, err := json.Marshal(value)
-		return map[string]any{"$json": string(raw)}, err
-	}
+const jsonLiteral = "$json"
+
+func literal(value any) (any, error) {
+	raw, err := json.Marshal(value)
+	return map[string]any{jsonLiteral: string(raw)}, err
+}
+
+func mapValues(v any, convert func(any) (any, error)) (any, error) {
 	switch x := v.(type) {
-	case nil:
-		if tomlValue {
-			return literal(nil)
-		}
-	case json.Number:
-		if tomlValue {
-			if n, err := x.Int64(); err == nil {
-				return n, nil
-			}
-			return literal(x)
-		}
 	case map[string]any:
-		if encoded, reserved := x["$json"]; reserved {
-			if tomlValue {
-				return literal(x)
-			}
-			s, ok := encoded.(string)
-			if !ok || len(x) != 1 {
-				return nil, errors.New("$json must be the only field of a JSON literal")
-			}
-			var val any
-			err := facts.DecodeNumbers([]byte(s), &val)
-			return val, err
-		}
 		out := map[string]any{}
 		for k, val := range x {
 			var err error
-			if out[k], err = sourceValue(val, tomlValue); err != nil {
+			if out[k], err = convert(val); err != nil {
 				return nil, err
 			}
 		}
@@ -81,21 +61,52 @@ func sourceValue(v any, tomlValue bool) (any, error) {
 		out := make([]any, len(x))
 		for i, val := range x {
 			var err error
-			if out[i], err = sourceValue(val, tomlValue); err != nil {
+			if out[i], err = convert(val); err != nil {
 				return nil, err
 			}
 		}
 		return out, nil
-	case time.Time, toml.LocalDate, toml.LocalTime, toml.LocalDateTime:
-		if !tomlValue {
-			return nil, errors.New("policy dates and times must be quoted strings")
-		}
 	}
 	return v, nil
 }
 
+func fromTOML(v any) (any, error) {
+	switch x := v.(type) {
+	case map[string]any:
+		if encoded, reserved := x[jsonLiteral]; reserved {
+			s, ok := encoded.(string)
+			if !ok || len(x) != 1 {
+				return nil, errors.New("$json must be the only field of a JSON literal")
+			}
+			var val any
+			err := facts.DecodeNumbers([]byte(s), &val)
+			return val, err
+		}
+	case time.Time, toml.LocalDate, toml.LocalTime, toml.LocalDateTime:
+		return nil, errors.New("policy dates and times must be quoted strings")
+	}
+	return mapValues(v, fromTOML)
+}
+
+func toTOML(v any) (any, error) {
+	switch x := v.(type) {
+	case nil:
+		return literal(nil)
+	case json.Number:
+		if n, err := x.Int64(); err == nil {
+			return n, nil
+		}
+		return literal(x)
+	case map[string]any:
+		if _, reserved := x[jsonLiteral]; reserved {
+			return literal(x)
+		}
+	}
+	return mapValues(v, toTOML)
+}
+
 func RenderTOML(v map[string]any) (string, error) {
-	encoded, err := sourceValue(v, true)
+	encoded, err := toTOML(v)
 	if err != nil {
 		return "", err
 	}
@@ -125,14 +136,14 @@ func EditTOML(source string, changes []Change) (string, error) {
 		default:
 			change.Value, err = facts.JSON[any](change.Value)
 			if err == nil {
-				change.Value, err = sourceValue(change.Value, true)
+				change.Value, err = toTOML(change.Value)
 			}
 			if err != nil {
 				return "", err
 			}
 		}
 		edits := []Change{change}
-		if table, ok := change.Value.(map[string]any); ok && len(table) > 0 && table["$json"] == nil {
+		if table, ok := change.Value.(map[string]any); ok && len(table) > 0 && table[jsonLiteral] == nil {
 			doc.Delete(change.Path)
 			edits = fragmentChanges(table, change.Path)
 		}
@@ -160,7 +171,7 @@ func fragmentChanges(v map[string]any, path []string) (changes []Change) {
 	var tables []Change
 	for _, key := range slices.Sorted(maps.Keys(v)) {
 		at := append(slices.Clone(path), key)
-		if table, ok := v[key].(map[string]any); ok && len(table) > 0 && table["$json"] == nil {
+		if table, ok := v[key].(map[string]any); ok && len(table) > 0 && table[jsonLiteral] == nil {
 			tables = append(tables, fragmentChanges(table, at)...)
 		} else {
 			changes = append(changes, Change{Path: at, Value: v[key]})
