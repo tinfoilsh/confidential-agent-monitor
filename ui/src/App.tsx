@@ -126,10 +126,12 @@ function Shell() {
       : section === "agents"
         ? Object.keys(m.view()?.config.identities ?? {}).length
         : 0;
-  // The open shell is a sidebar tab; other pages keep its session running.
+  // Each open shell is a sidebar tab; other pages keep its session running.
   const shellShown = () => {
     const [kind, name, view] = parse(page());
-    return kind === "agents" && view === "terminal" && name === m.shell();
+    return kind === "agents" && view === "terminal" && m.shells().includes(name)
+      ? name
+      : undefined;
   };
   // The Permissions list shows the same approvals the notices would.
   const approvalsListed = () => {
@@ -140,10 +142,9 @@ function Shell() {
         (kind === "connections" && view !== "catalog" && view !== "rules"))
     );
   };
-  const closeShell = () => {
-    const shown = shellShown();
-    m.setShell();
-    if (shown) location.hash = "agents";
+  const closeShell = (name: string) => {
+    m.closeShell(name);
+    if (shellShown() === name) location.hash = "agents";
   };
   const NavItem = (props: { key: IconName }) => (
     <a
@@ -194,7 +195,7 @@ function Shell() {
   });
   createEffect(() => {
     const [kind, name, view] = parse(page());
-    if (kind === "agents" && view === "terminal") m.setShell(name);
+    if (kind === "agents" && view === "terminal") m.openShell(name);
   });
   const ready = () => m.view() && !m.locked() && owner.onboarded(m.view()!);
   createEffect(() => {
@@ -234,40 +235,44 @@ function Shell() {
                 <For each={["agents", "activity", "connections"] as const}>
                   {(key) => <NavItem key={key} />}
                 </For>
-                <Show when={m.shell()}>
-                  {(name) => (
-                    <div
-                      class="nav-group"
-                      role="group"
-                      aria-labelledby="open-bunkers"
-                    >
-                      <span id="open-bunkers" class="nav-section">
-                        Open bunkers
-                      </span>
-                      <div
-                        class="nav-item nav-shell"
-                        classList={{ on: shellShown() }}
-                      >
-                        <a
-                          href={href("agents", name(), "terminal")}
-                          aria-current={shellShown() ? "page" : undefined}
-                          title={name()}
+                <Show when={m.shells().length}>
+                  <div
+                    class="nav-group"
+                    role="group"
+                    aria-labelledby="open-bunkers"
+                  >
+                    <span id="open-bunkers" class="nav-section">
+                      Open bunkers
+                    </span>
+                    <For each={m.shells()}>
+                      {(name) => (
+                        <div
+                          class="nav-item nav-shell"
+                          classList={{ on: shellShown() === name }}
                         >
-                          <Icon name="terminal" />
-                          <span>{name()}</span>
-                        </a>
-                        <button
-                          type="button"
-                          class="icon-button nav-shell-close"
-                          aria-label={`Close shell in ${name()}`}
-                          title="Close shell"
-                          onClick={closeShell}
-                        >
-                          <Icon name="close" />
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                          <a
+                            href={href("agents", name, "terminal")}
+                            aria-current={
+                              shellShown() === name ? "page" : undefined
+                            }
+                            title={name}
+                          >
+                            <Icon name="terminal" />
+                            <span>{name}</span>
+                          </a>
+                          <button
+                            type="button"
+                            class="icon-button nav-shell-close"
+                            aria-label={`Close shell in ${name}`}
+                            title="Close shell"
+                            onClick={() => closeShell(name)}
+                          >
+                            <Icon name="close" />
+                          </button>
+                        </div>
+                      )}
+                    </For>
+                  </div>
                 </Show>
               </nav>
               <MonitorFooter theme={theme()} onThemeChange={setTheme} />
@@ -276,7 +281,7 @@ function Shell() {
               ref={workspace}
               id="workspace"
               tabIndex={-1}
-              classList={{ "shell-shown": shellShown() }}
+              classList={{ "shell-shown": !!shellShown() }}
               onScroll={(event) => setPinned(event.currentTarget.scrollTop > 0)}
             >
               <Show when={!shellShown()}>
@@ -317,9 +322,9 @@ function Shell() {
                   </div>
                 </div>
               </Show>
-              <Show when={m.shell()} keyed>
+              <For each={m.shells()}>
                 {(name) => (
-                  <section class="shell-view" hidden={!shellShown()}>
+                  <section class="shell-view" hidden={shellShown() !== name}>
                     <Show
                       when={untrack(() => m.shellFor(name))}
                       fallback={
@@ -332,13 +337,13 @@ function Shell() {
                         <SandboxTerminal
                           open={open()}
                           name={name}
-                          active={shellShown()}
+                          active={shellShown() === name}
                         />
                       )}
                     </Show>
                   </section>
                 )}
-              </Show>
+              </For>
             </main>
             <ApprovalToasts hidden={approvalsListed()} />
             <PairDialog

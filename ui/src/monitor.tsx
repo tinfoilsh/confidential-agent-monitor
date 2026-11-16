@@ -87,7 +87,7 @@ function createMonitor(options: MonitorOptions) {
     path === undefined || notice()?.path === path ? (notice()?.text ?? "") : "";
   const [now, setNow] = createSignal(Date.now());
   const [icons, setIcons] = createSignal<owner.IconManifest>({});
-  const [shell, setShell] = createSignal<string>();
+  const [shells, setShells] = createSignal<string[]>([]);
   const [accepting, setAccepting] = createSignal<string>();
   const [stalled, setStalled] = createSignal<string[]>([]);
   const [deviceSignIn, setDeviceSignIn] = createSignal<
@@ -605,8 +605,11 @@ function createMonitor(options: MonitorOptions) {
     decide,
     signIn,
     deviceSignIn,
-    shell,
-    setShell,
+    shells,
+    openShell: (name: string) =>
+      setShells((open) => (open.includes(name) ? open : [...open, name])),
+    closeShell: (name: string) =>
+      setShells((open) => open.filter((n) => n !== name)),
     // A renamed bunker keeps the key that names its sandbox.
     shellFor: (name: string) => {
       const key = view()?.config.identities?.[name]?.key;

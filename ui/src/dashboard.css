@@ -3201,6 +3201,9 @@ td {
 .dialog-close,
 .open-shell {
   flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin-block: -2px;
   border: 0;
   background: transparent;
   color: var(--muted);
