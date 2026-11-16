@@ -143,8 +143,8 @@ function Shell() {
     );
   };
   const closeShell = (name: string) => {
-    m.closeShell(name);
     if (shellShown() === name) location.hash = "agents";
+    m.closeShell(name);
   };
   const NavItem = (props: { key: IconName }) => (
     <a
