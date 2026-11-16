@@ -163,6 +163,7 @@ dialog.start-dialog {
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  corner-shape: round;
   background: currentColor;
 }
 .start-status-label {
@@ -290,6 +291,7 @@ dialog.start-dialog {
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  corner-shape: round;
 }
 .start-home .home-skeleton-key {
   flex: none;
