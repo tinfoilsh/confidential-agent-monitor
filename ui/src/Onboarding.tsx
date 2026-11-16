@@ -84,7 +84,7 @@ const NETWORK = [
   ["ask", "Ask", "Approve each new host when a bunker asks."],
   [
     "allow",
-    "Allow always",
+    "Always allow",
     "Bunkers reach any host. The Perimeter still records where they connect.",
   ],
   ["off", "Reject", "Bunkers reach only the services you added."],
