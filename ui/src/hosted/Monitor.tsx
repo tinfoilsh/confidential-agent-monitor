@@ -337,6 +337,7 @@ export default function Monitor(props: { session: Session }) {
             </Show>
             <App
               product={PRODUCT}
+              perimeter={row()?.name ?? id}
               backTo={back()}
               header={<Header session={props.session} />}
               client={opened.client}

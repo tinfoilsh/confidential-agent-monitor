@@ -9,7 +9,7 @@
     "connection": {"mcp": {"url": "https://connector.scholargateway.ai/mcp"}},
     "defaults": {"contents": "team", "sends": "me", "strangers": true},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://connector.scholargateway.ai/mcp"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://connector.scholargateway.ai/mcp"}}
     ]
   }
 }

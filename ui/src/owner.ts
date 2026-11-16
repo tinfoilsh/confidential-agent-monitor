@@ -1180,13 +1180,15 @@ export function connectionStatus(
 
 const paths = (f: PresetField) => f.paths ?? [f.path!];
 const fieldsOf = (c?: Pick<Preset, "fields">) => c?.fields ?? [];
-// A field with no paths, such as an OAuth client ID, only fills the connection's templates when it is created.
+// A field with no paths, such as an OAuth client ID, fills templates but is never stored on the connection.
 const plain = (c: Pick<Preset, "fields">) =>
   fieldsOf(c).filter((f) => !f.secret && paths(f).length);
 const fieldValue = (c: Connection | undefined, f: PresetField): Json =>
   atPath(c, f.path ?? paths(f)[0]) ?? (f.list ? [] : f.json ? {} : "");
 export const setupFields = (view: View, preset: string) =>
   fieldsOf(view.presets[preset]).filter((f) => !f.edit_only);
+export const clientFields = (view: View, name: string) =>
+  fieldsOf(presetOf(view, name)).filter((f) => !paths(f).length);
 export const plainFields = (view: View, name: string) =>
   plain(presetOf(view, name)).map((f) => ({
     ...f,
@@ -1224,24 +1226,44 @@ export function readField(f: PresetField, raw: string): Json {
   return f.list ? listItems(v).map(read) : read(v);
 }
 
-// A grant template fills from the connection's plain settings; one that needs a setup-only value, such as an OAuth client, cannot.
+// A grant template fills from the connection's plain settings and, when given, its client values; blank ones take their defaults.
 export function grantTemplate(
   view: View,
   name: string,
   f?: PresetField,
+  client?: Record<string, string>,
 ): Json | undefined {
   if (!f?.oauth) return;
   const values = Object.fromEntries(
     plainFields(view, name).map((p) => [p.key, p.value]),
   );
+  if (client)
+    for (const c of clientFields(view, name))
+      values[c.key] = client[c.key] || fieldText(c, c.default);
   const grant =
-    f?.oauth && filled(f.oauth, { ...values, monitor_host_id: view.host_id });
-  return grant && !/\{\w+\}/.test(JSON.stringify(grant)) ? grant : undefined;
+    f?.oauth &&
+    (filled(f.oauth, { ...values, monitor_host_id: view.host_id }) as {
+      [key: string]: Json;
+    });
+  // An authorization URL needs a client ID unless the preset supplies or registers one.
+  return grant &&
+    !/\{\w+\}/.test(JSON.stringify(grant)) &&
+    (grant.client_id ||
+      grant.default_client ||
+      grant.callback_registration ||
+      !grant.auth_url)
+    ? grant
+    : undefined;
 }
 
 // Kinds are connector/credential.Describe's: unset, static, oauth and oauth-required.
-// A stored grant keeps its client and endpoints for sign-in; unset or static values use the template.
-export function credentialFields(view: View, name: string): CredentialField[] {
+// A stored grant keeps its client and endpoints for sign-in unless client values are entered; unset or static values use the template.
+export function credentialFields(
+  view: View,
+  name: string,
+  client?: Record<string, string>,
+): CredentialField[] {
+  const entered = clientFields(view, name).some((c) => client?.[c.key]);
   const byName = new Map(
     fieldsOf(presetOf(view, name))
       .filter((f) => f.credential)
@@ -1261,7 +1283,10 @@ export function credentialFields(view: View, name: string): CredentialField[] {
       const oauth = meta.kind.startsWith("oauth"),
         stored = meta.kind !== "unset",
         ready = stored && meta.kind !== "oauth-required";
-      const grant = oauth ? undefined : grantTemplate(view, name, field);
+      const grant =
+        oauth && !entered
+          ? undefined
+          : grantTemplate(view, name, field, client);
       return {
         ...field,
         status: !stored
@@ -1282,6 +1307,18 @@ export const signInLabel = (view: View, preset: string) =>
   view.presets[preset]?.title
     ? "Sign in with " + view.presets[preset].title
     : "Sign in";
+
+export function loopbackSignIn(f: PresetField, values: Record<string, string>) {
+  if (!f.oauth) return false;
+  const grant = filled(f.oauth, values) as {
+    loopback?: boolean;
+    client_id?: string;
+    default_client?: { loopback?: boolean };
+  };
+  return (
+    !!grant.loopback || (!grant.client_id && !!grant.default_client?.loopback)
+  );
+}
 
 export function catalog(view: View) {
   const counts = new Map<string, number>();
