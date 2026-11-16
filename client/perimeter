@@ -789,8 +789,9 @@ def connect(args):
     load_profile(args)
     args.ssh_host = args.ssh_host or os.environ.get("MONITOR_SSH_HOST", "perimeter")
     args.ssh_config = args.ssh_config or os.environ.get("MONITOR_SSH_CONFIG")
-    if not args.ssh_config and args.ssh_host == "perimeter" and DAEMON_SSH_CONFIG.exists():
-        args.ssh_config = str(DAEMON_SSH_CONFIG)
+    if not args.ssh_config and args.ssh_host == "perimeter":
+        paired = Path(args.client_config).expanduser().parent / "launch/default/ssh_config"
+        args.ssh_config = next((str(path) for path in (paired, DAEMON_SSH_CONFIG) if path.exists()), None)
     if args.ssh_config:
         args.ssh_config = os.path.abspath(os.path.expanduser(args.ssh_config))
     return Client(args.ssh_host, args.ssh_config, args.timeout)
