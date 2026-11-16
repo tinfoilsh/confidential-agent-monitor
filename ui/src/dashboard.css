@@ -871,13 +871,27 @@ html [data-sonner-toaster] {
   line-height: 1.6;
 }
 .loading-spinner {
+  display: inline-flex;
   flex: none;
   width: 12px;
   height: 12px;
-  border: 1.5px solid currentColor;
-  border-right-color: transparent;
-  border-radius: 50%;
   animation: loading-spin 1s linear infinite;
+}
+.loading-spinner > svg {
+  width: 100%;
+  height: 100%;
+}
+.loading-stacked {
+  flex-direction: column;
+  gap: 16px;
+}
+.loading-stacked > .loading-spinner {
+  width: 40px;
+  height: 40px;
+}
+.loading-stacked > .loading-label {
+  text-align: center;
+  text-wrap: balance;
 }
 .loading-skeleton-row {
   display: flex;

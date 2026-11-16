@@ -15,22 +15,32 @@ import {
 } from "solid-js";
 import { normalizeProps, useMachine } from "@zag-js/solid";
 import * as tagsInput from "@zag-js/tags-input";
+import piSpinner from "@phosphor-icons/core/regular/spinner.svg?raw";
 import * as owner from "./owner.js";
 import { icons } from "./dashboard-icons.js";
 import { useMonitor } from "./monitor";
 export { TabBar, type TabOption } from "./TabBar";
 
-// The only HTML insertion is our checked-in SVG icon set, never server data.
+// SVG markup comes from our icon set and Phosphor, never server data.
 export type IconName = keyof typeof icons;
 
 export function Icon(props: { name: IconName }) {
   return <span class="icon" aria-hidden="true" innerHTML={icons[props.name]} />;
 }
-export function Loading(props: { label: string }) {
+export function PiSpinner() {
   return (
-    <p class="loading-status" role="status">
-      <span class="loading-spinner" aria-hidden="true" />
-      {props.label}
+    <span class="loading-spinner" aria-hidden="true" innerHTML={piSpinner} />
+  );
+}
+export function Loading(props: { label: string; stacked?: boolean }) {
+  return (
+    <p
+      class="loading-status"
+      classList={{ "loading-stacked": props.stacked }}
+      role="status"
+    >
+      <PiSpinner />
+      <span class="loading-label">{props.label}</span>
     </p>
   );
 }
