@@ -4,52 +4,92 @@ package mqtt
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"crypto/rand"
+	"crypto/tls"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"io"
 	"net"
+	"net/url"
 	"slices"
 	"strings"
 	"sync"
 	"unicode/utf8"
 
 	"github.com/eclipse/paho.mqtt.golang/packets"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-var Kind = connector.Kind{PerMessage: true, Parse: parseMQTT, Open: connector.Stateless((*mqttSetup).serve)}
-
-func parseMQTT(source connector.Setup) (connector.Prepared, error) {
-	c := new(mqttSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
-		return connector.Prepared{}, err
-	}
-	if err := c.validate(); err != nil {
-		return connector.Prepared{}, err
-	}
-	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Hosts: []string{c.URL.Hostname()}}, nil
+type MQTT struct {
+	RawURL string `json:"url"`
+	User   string `json:"user"`
+	url    *url.URL
 }
 
-const maxPacket = 1 << 20
-
-type mqttSetup struct{ connector.Endpoint }
-
-func (m *mqttSetup) validate() error {
-	if err := m.Endpoint.Parse(); err != nil {
-		return err
+// Parse validates an mqtt:// or mqtts:// destination whose password is the "password" credential.
+func Parse(config json.RawMessage) (*MQTT, error) {
+	m := new(MQTT)
+	if err := facts.DecodeNumbers(config, m); err != nil {
+		return nil, err
 	}
-	u := &m.URL
+	u, err := url.Parse(m.RawURL)
+	switch {
+	case err != nil:
+		return nil, err
+	case u.Scheme == "" || u.Host == "":
+		return nil, errors.New("destination requires a URL with a scheme and host")
+	}
+	if _, set := u.User.Password(); set || u.Query().Has("password") {
+		return nil, errors.New("put the password in the service's password credential, not the URL")
+	}
 	if (u.Scheme != "mqtt" && u.Scheme != "mqtts") || u.Path != "" && u.Path != "/" || u.RawQuery != "" || u.Fragment != "" {
-		return errors.New("MQTT requires an mqtt:// or mqtts:// host URL without a path, query or fragment")
+		return nil, errors.New("MQTT requires an mqtt:// or mqtts:// host URL without a path, query or fragment")
 	}
-	return nil
+	if m.User != "" {
+		u.User = url.User(m.User)
+	}
+	m.url = u
+	return m, nil
 }
 
-func (m *mqttSetup) serve(s *connector.Stream, e *connector.Env) {
+func (m *MQTT) Hosts() []string { return []string{m.url.Hostname()} }
+
+// dial reaches the broker, over TLS for mqtts.
+func (m *MQTT) dial(ctx context.Context, dial func(context.Context, string, string) (net.Conn, error)) (net.Conn, error) {
+	address, port := m.url.Host, "1883"
+	if m.url.Scheme == "mqtts" {
+		port = "8883"
+	}
+	if m.url.Port() == "" {
+		address = net.JoinHostPort(m.url.Hostname(), port)
+	}
+	c, err := dial(ctx, "tcp", address)
+	if err != nil || m.url.Scheme != "mqtts" {
+		return c, err
+	}
+	t := tls.Client(c, &tls.Config{ServerName: m.url.Hostname()})
+	if err := t.HandshakeContext(ctx); err != nil {
+		c.Close()
+		return nil, err
+	}
+	return t, nil
+}
+
+// Handler relays a clean session to the broker; every publish, subscription and delivery passes the gate.
+// maxPacket bounds each packet either side sends; maxPending bounds the QoS 2 publishes awaiting release.
+func (m *MQTT) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), maxPacket, maxPending int) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		m.serve(ctx, cancel, s, gate, dial, password, maxPacket, maxPending)
+	}
+}
+
+func (m *MQTT) serve(ctx context.Context, cancel func(), s net.Conn, gate func(context.Context, facts.Event) error, dial func(context.Context, string, string) (net.Conn, error), secret func(context.Context) (string, error), maxPacket, maxPending int) {
 	reader := bufio.NewReader(s)
-	packet, err := readPacket(reader)
+	packet, err := readPacket(reader, maxPacket)
 	if err != nil {
 		return
 	}
@@ -76,12 +116,12 @@ func (m *mqttSetup) serve(s *connector.Stream, e *connector.Env) {
 		refuse(5)
 		return
 	}
-	if err := s.Gate(s.Context, m.Capture((&MQTTFacts{Command: "connect"}).Describe())); err != nil {
+	if err := gate(ctx, facts.Capture((&MQTTFacts{Command: "connect"}).Describe(), nil)); err != nil {
 		refuse(5)
 		return
 	}
-	password, err := m.Secret(s.Context, "password")
-	if err != nil || len(password) > 65535 || len(m.URL.User.Username()) > 65535 {
+	password, err := secret(ctx)
+	if err != nil || len(password) > 65535 || len(m.url.User.Username()) > 65535 {
 		refuse(4)
 		return
 	}
@@ -91,20 +131,21 @@ func (m *mqttSetup) serve(s *connector.Stream, e *connector.Env) {
 		return
 	}
 	connect.ClientIdentifier = "mon" + hex.EncodeToString(id)
-	connect.Username, connect.Password = m.URL.User.Username(), []byte(password)
+	connect.Username, connect.Password = m.url.User.Username(), []byte(password)
 	connect.UsernameFlag = connect.Username != "" || password != ""
 	connect.PasswordFlag = password != ""
-	up, err := connector.DialURL(s.Context, e.Dialer, &m.URL, "mqtts", "1883", "8883")
+	up, err := m.dial(ctx, dial)
 	if err != nil {
 		refuse(3)
 		return
 	}
-	defer s.Interrupt(up)()
+	stop := context.AfterFunc(ctx, func() { up.Close() })
+	defer func() { stop(); up.Close() }()
 	if err := connect.Write(up); err != nil {
 		return
 	}
 	replies := bufio.NewReader(up)
-	packet, err = readPacket(replies)
+	packet, err = readPacket(replies, maxPacket)
 	if err != nil {
 		return
 	}
@@ -115,10 +156,12 @@ func (m *mqttSetup) serve(s *connector.Stream, e *connector.Env) {
 	if err := ack.Write(s); err != nil || ack.ReturnCode != 0 {
 		return
 	}
-	p := proxy{owner: m, s: s, up: up, pending: map[uint16]*packets.PublishPacket{}}
-	defer connector.PumpReplies(s, func() { p.replies(replies) })()
+	p := proxy{ctx: ctx, s: s, gate: gate, up: up, maxPacket: maxPacket, maxPending: maxPending, pending: map[uint16]*packets.PublishPacket{}}
+	pumped := make(chan struct{})
+	go func() { defer close(pumped); p.replies(replies); cancel(); s.Close() }()
+	defer func() { cancel(); s.Close(); <-pumped }()
 	for {
-		packet, err := readPacket(reader)
+		packet, err := readPacket(reader, maxPacket)
 		if err != nil {
 			return
 		}
@@ -135,15 +178,18 @@ func (m *mqttSetup) serve(s *connector.Stream, e *connector.Env) {
 }
 
 type proxy struct {
-	owner   *mqttSetup
-	s       *connector.Stream
-	up      net.Conn
-	mu      sync.Mutex
-	pending map[uint16]*packets.PublishPacket
+	ctx        context.Context
+	s          net.Conn
+	gate       func(context.Context, facts.Event) error
+	up         net.Conn
+	maxPacket  int
+	maxPending int
+	mu         sync.Mutex
+	pending    map[uint16]*packets.PublishPacket
 }
 
 func (p *proxy) publish(command string, v *packets.PublishPacket) error {
-	return p.s.Gate(p.s.Context, p.owner.Capture((&MQTTFacts{Command: command, Topic: v.TopicName, QoS: v.Qos, Retain: v.Retain, Payload: v.Payload}).Describe()))
+	return p.gate(p.ctx, facts.Capture((&MQTTFacts{Command: command, Topic: v.TopicName, QoS: v.Qos, Retain: v.Retain, Payload: v.Payload}).Describe(), nil))
 }
 
 func (p *proxy) request(packet packets.ControlPacket) error {
@@ -162,7 +208,7 @@ func (p *proxy) request(packet packets.ControlPacket) error {
 		if v.Qos == 2 {
 			p.mu.Lock()
 			defer p.mu.Unlock()
-			if len(p.pending) >= 16 && p.pending[v.MessageID] == nil {
+			if len(p.pending) >= p.maxPending && p.pending[v.MessageID] == nil {
 				return errors.New("too many pending MQTT publishes")
 			}
 			p.pending[v.MessageID] = v
@@ -178,7 +224,7 @@ func (p *proxy) request(packet packets.ControlPacket) error {
 		return p.publish("publish", publish)
 	case *packets.SubscribePacket:
 		for i, topic := range v.Topics {
-			if err := p.s.Gate(p.s.Context, p.owner.Capture((&MQTTFacts{Command: "subscribe", Topic: topic, QoS: v.Qoss[i]}).Describe())); err != nil {
+			if err := p.gate(p.ctx, facts.Capture((&MQTTFacts{Command: "subscribe", Topic: topic, QoS: v.Qoss[i]}).Describe(), nil)); err != nil {
 				return err
 			}
 		}
@@ -193,7 +239,7 @@ func (p *proxy) request(packet packets.ControlPacket) error {
 
 func (p *proxy) replies(r *bufio.Reader) {
 	for {
-		packet, err := readPacket(r)
+		packet, err := readPacket(r, p.maxPacket)
 		if err != nil {
 			return
 		}
@@ -219,7 +265,7 @@ func (p *proxy) replies(r *bufio.Reader) {
 
 // Bound allocations before handing a packet to the library. Re-encoding must
 // consume exactly the original packet, rejecting trailing or noncanonical data.
-func readPacket(r *bufio.Reader) (packets.ControlPacket, error) {
+func readPacket(r *bufio.Reader, maxPacket int) (packets.ControlPacket, error) {
 	first, err := r.ReadByte()
 	if err != nil {
 		return nil, err
@@ -364,7 +410,7 @@ func topicValid(s string, filter bool) bool {
 	return true
 }
 
-func (v *MQTTFacts) Describe() facts.Facts {
+func (v *MQTTFacts) Describe() facts.Observation {
 	details := Details{MQTT: v}
 	action := ""
 	if slices.Contains([]string{"connect", "subscribe", "receive", "publish"}, v.Command) {
@@ -375,5 +421,5 @@ func (v *MQTTFacts) Describe() facts.Facts {
 	}
 	op := &facts.Operation{ID: v.Command, Action: action}
 	parameters, _ := facts.JSON[map[string]any](v)
-	return facts.Facts{Operation: op, Title: "MQTT " + v.Command + " " + v.Topic, Parameters: parameters, Details: details, Context: facts.Context{Sends: facts.SendsConnection}}
+	return facts.Observation{Operation: op, Title: "MQTT " + v.Command + " " + v.Topic, Parameters: parameters, Details: details}
 }

@@ -1,0 +1,661 @@
+{
+  "catalog": {
+    "actions": {
+      "accept": {
+        "title": "Accept"
+      },
+      "accept.write": {
+        "title": "Create and edit"
+      },
+      "access_token": {
+        "title": "Access token"
+      },
+      "access_token.read": {
+        "title": "Read"
+      },
+      "activities": {
+        "title": "Activities"
+      },
+      "activities.read": {
+        "title": "Read"
+      },
+      "assets": {
+        "title": "Assets"
+      },
+      "assets.read": {
+        "title": "Read"
+      },
+      "assets.write": {
+        "title": "Create and edit"
+      },
+      "assigned_users": {
+        "title": "Assigned users"
+      },
+      "assigned_users.delete": {
+        "title": "Delete"
+      },
+      "assigned_users.read": {
+        "title": "Read"
+      },
+      "assigned_users.write": {
+        "title": "Create and edit"
+      },
+      "assigned_whatsapp_business_accounts": {
+        "title": "Assigned whatsapp business accounts"
+      },
+      "assigned_whatsapp_business_accounts.read": {
+        "title": "Read"
+      },
+      "business_compliance_info": {
+        "title": "Business compliance info"
+      },
+      "business_compliance_info.read": {
+        "title": "Read"
+      },
+      "business_compliance_info.write": {
+        "title": "Create and edit"
+      },
+      "business_portfolio": {
+        "title": "Business portfolio"
+      },
+      "business_portfolio.read": {
+        "title": "Read"
+      },
+      "call_permissions": {
+        "title": "Call permissions"
+      },
+      "call_permissions.read": {
+        "title": "Read"
+      },
+      "calls": {
+        "title": "Calls"
+      },
+      "calls.send": {
+        "title": "Send"
+      },
+      "client_whatsapp_business_accounts": {
+        "title": "Client whatsapp business accounts"
+      },
+      "client_whatsapp_business_accounts.read": {
+        "title": "Read"
+      },
+      "code": {
+        "title": "Code"
+      },
+      "code.read": {
+        "title": "Read"
+      },
+      "connected_client_businesses": {
+        "title": "Connected client businesses"
+      },
+      "connected_client_businesses.read": {
+        "title": "Read"
+      },
+      "conversational_automation": {
+        "title": "Conversational automation"
+      },
+      "conversational_automation.write": {
+        "title": "Create and edit"
+      },
+      "deactivation_request": {
+        "title": "Deactivation request"
+      },
+      "deactivation_request.send": {
+        "title": "Send"
+      },
+      "deactivation_request.write": {
+        "title": "Create and edit"
+      },
+      "deprecate": {
+        "title": "Deprecate"
+      },
+      "deprecate.write": {
+        "title": "Create and edit"
+      },
+      "deregister": {
+        "title": "Deregister"
+      },
+      "deregister.write": {
+        "title": "Create and edit"
+      },
+      "events": {
+        "title": "Events"
+      },
+      "events.read": {
+        "title": "Read"
+      },
+      "extendedcredits": {
+        "title": "Extendedcredits"
+      },
+      "extendedcredits.read": {
+        "title": "Read"
+      },
+      "flows": {
+        "title": "Flows"
+      },
+      "flows.delete": {
+        "title": "Delete"
+      },
+      "flows.read": {
+        "title": "Read"
+      },
+      "flows.write": {
+        "title": "Create and edit"
+      },
+      "general": {
+        "title": "General"
+      },
+      "general.delete": {
+        "title": "Delete"
+      },
+      "general.read": {
+        "title": "Read"
+      },
+      "general.write": {
+        "title": "Create and edit"
+      },
+      "groups": {
+        "title": "Groups"
+      },
+      "groups.admin": {
+        "title": "Manage"
+      },
+      "groups.read": {
+        "title": "Read"
+      },
+      "in_progress_onbehalf_request": {
+        "title": "In progress onbehalf request"
+      },
+      "in_progress_onbehalf_request.read": {
+        "title": "Read"
+      },
+      "link": {
+        "title": "Link"
+      },
+      "link.delete": {
+        "title": "Delete"
+      },
+      "link.share": {
+        "title": "Share"
+      },
+      "marketing_messages": {
+        "title": "Marketing messages"
+      },
+      "marketing_messages.send": {
+        "title": "Send"
+      },
+      "media": {
+        "title": "Media"
+      },
+      "media.delete": {
+        "title": "Delete"
+      },
+      "media.read": {
+        "title": "Read"
+      },
+      "media.write": {
+        "title": "Create and edit"
+      },
+      "message_history": {
+        "title": "Message history"
+      },
+      "message_history.read": {
+        "title": "Read"
+      },
+      "message_qrdls": {
+        "title": "Message qrdls"
+      },
+      "message_qrdls.delete": {
+        "title": "Delete"
+      },
+      "message_qrdls.read": {
+        "title": "Read"
+      },
+      "message_qrdls.write": {
+        "title": "Create and edit"
+      },
+      "message_templates": {
+        "title": "Message templates"
+      },
+      "message_templates.delete": {
+        "title": "Delete"
+      },
+      "message_templates.read": {
+        "title": "Read"
+      },
+      "message_templates.write": {
+        "title": "Create and edit"
+      },
+      "messages": {
+        "title": "Messages"
+      },
+      "messages.send": {
+        "title": "Send"
+      },
+      "messages_encrypted": {
+        "title": "Messages encrypted"
+      },
+      "messages_encrypted.send": {
+        "title": "Send"
+      },
+      "migrate_flows": {
+        "title": "Migrate flows"
+      },
+      "migrate_flows.write": {
+        "title": "Create and edit"
+      },
+      "migration_intent": {
+        "title": "Migration intent"
+      },
+      "migration_intent.read": {
+        "title": "Read"
+      },
+      "multi_partner_solutions": {
+        "title": "Multi partner solutions"
+      },
+      "multi_partner_solutions.read": {
+        "title": "Read"
+      },
+      "obo_mobility_intent": {
+        "title": "Obo mobility intent"
+      },
+      "obo_mobility_intent.read": {
+        "title": "Read"
+      },
+      "obo_mobility_intent.write": {
+        "title": "Create and edit"
+      },
+      "official_business_account": {
+        "title": "Official business account"
+      },
+      "official_business_account.read": {
+        "title": "Read"
+      },
+      "official_business_account.write": {
+        "title": "Create and edit"
+      },
+      "onboard_partners_to_mm_lite": {
+        "title": "Onboard partners to mm lite"
+      },
+      "onboard_partners_to_mm_lite.write": {
+        "title": "Create and edit"
+      },
+      "owned_whatsapp_business_accounts": {
+        "title": "Owned whatsapp business accounts"
+      },
+      "owned_whatsapp_business_accounts.read": {
+        "title": "Read"
+      },
+      "participants": {
+        "title": "Participants"
+      },
+      "participants.delete": {
+        "title": "Delete"
+      },
+      "participants.write": {
+        "title": "Create and edit"
+      },
+      "partners": {
+        "title": "Partners"
+      },
+      "partners.read": {
+        "title": "Read"
+      },
+      "phone_numbers": {
+        "title": "Phone numbers"
+      },
+      "phone_numbers.read": {
+        "title": "Read"
+      },
+      "phone_numbers.write": {
+        "title": "Create and edit"
+      },
+      "pre_verified_phone_numbers": {
+        "title": "Pre verified phone numbers"
+      },
+      "pre_verified_phone_numbers.delete": {
+        "title": "Delete"
+      },
+      "pre_verified_phone_numbers.read": {
+        "title": "Read"
+      },
+      "preverified_numbers": {
+        "title": "Preverified numbers"
+      },
+      "preverified_numbers.read": {
+        "title": "Read"
+      },
+      "preverified_numbers.share": {
+        "title": "Share"
+      },
+      "publish": {
+        "title": "Publish"
+      },
+      "publish.publish": {
+        "title": "Publish"
+      },
+      "register": {
+        "title": "Register"
+      },
+      "register.write": {
+        "title": "Create and edit"
+      },
+      "reject": {
+        "title": "Reject"
+      },
+      "reject.write": {
+        "title": "Create and edit"
+      },
+      "request_code": {
+        "title": "Request code"
+      },
+      "request_code.write": {
+        "title": "Create and edit"
+      },
+      "requests": {
+        "title": "Requests"
+      },
+      "requests.delete": {
+        "title": "Delete"
+      },
+      "requests.read": {
+        "title": "Read"
+      },
+      "requests.write": {
+        "title": "Create and edit"
+      },
+      "schedules": {
+        "title": "Schedules"
+      },
+      "schedules.read": {
+        "title": "Read"
+      },
+      "schedules.write": {
+        "title": "Create and edit"
+      },
+      "settings": {
+        "title": "Settings"
+      },
+      "settings.admin": {
+        "title": "Manage"
+      },
+      "settings.read": {
+        "title": "Read"
+      },
+      "solution_migration_intent": {
+        "title": "Solution migration intent"
+      },
+      "solution_migration_intent.write": {
+        "title": "Create and edit"
+      },
+      "solutions": {
+        "title": "Solutions"
+      },
+      "solutions.read": {
+        "title": "Read"
+      },
+      "subscribed_apps": {
+        "title": "Subscribed apps"
+      },
+      "subscribed_apps.delete": {
+        "title": "Delete"
+      },
+      "subscribed_apps.read": {
+        "title": "Read"
+      },
+      "subscribed_apps.write": {
+        "title": "Create and edit"
+      },
+      "templates": {
+        "title": "Templates"
+      },
+      "templates.read": {
+        "title": "Read"
+      },
+      "templates.write": {
+        "title": "Create and edit"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.delete": {
+        "title": "Delete"
+      },
+      "users.read": {
+        "title": "Read"
+      },
+      "users.write": {
+        "title": "Create and edit"
+      },
+      "whats_app_account_numbers": {
+        "title": "Whats app account numbers"
+      },
+      "whats_app_account_numbers.read": {
+        "title": "Read"
+      },
+      "whats_app_business_account": {
+        "title": "Whats app business account"
+      },
+      "whats_app_business_account.read": {
+        "title": "Read"
+      },
+      "whats_app_business_account.write": {
+        "title": "Create and edit"
+      },
+      "whats_app_business_bot": {
+        "title": "Whats app business bot"
+      },
+      "whats_app_business_bot.read": {
+        "title": "Read"
+      },
+      "whats_app_business_profiles": {
+        "title": "Whats app business profiles"
+      },
+      "whats_app_business_profiles.read": {
+        "title": "Read"
+      },
+      "whats_app_business_profiles.write": {
+        "title": "Create and edit"
+      },
+      "whatsapp": {
+        "title": "Whatsapp"
+      },
+      "whatsapp.webhooks": {
+        "title": "Webhooks"
+      },
+      "whatsapp.webhooks.admin": {
+        "title": "Manage"
+      },
+      "whatsapp_business_encryption": {
+        "title": "Whatsapp business encryption"
+      },
+      "whatsapp_business_encryption.read": {
+        "title": "Read"
+      },
+      "whatsapp_business_profile": {
+        "title": "Whatsapp business profile"
+      },
+      "whatsapp_business_profile.read": {
+        "title": "Read"
+      },
+      "whatsapp_business_profile.write": {
+        "title": "Create and edit"
+      },
+      "whatsapp_business_solution": {
+        "title": "Whatsapp business solution"
+      },
+      "whatsapp_business_solution.write": {
+        "title": "Create and edit"
+      },
+      "whatsapp_business_solutions": {
+        "title": "Whatsapp business solutions"
+      },
+      "whatsapp_business_solutions.read": {
+        "title": "Read"
+      },
+      "whatsapp_commerce_settings": {
+        "title": "Whatsapp commerce settings"
+      },
+      "whatsapp_commerce_settings.read": {
+        "title": "Read"
+      },
+      "whatsapp_commerce_settings.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://graph.facebook.com",
+            "path": "/v25.0",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "token",
+        "label": "Meta access token",
+        "credential": true,
+        "secret": true
+      }
+    ],
+    "group": "api"
+  },
+  "title": "WhatsApp Business Cloud",
+  "http": {
+    "operations": {
+      "GraphWhatsAppBusinessAccountToNumberCurrentStatusOfficialBusinessAccountPost": {"action":"official_business_account.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/official_business_account","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"business_website_url":{"at":"/business_website_url","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "POST /whatsapp/webhooks": {"action":"whatsapp.webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://graph.facebook.com","path":"/whatsapp/webhooks","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "acceptWhatsAppBusinessSolution": {"action":"accept.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Solution-ID}/accept","scope":{"Solution-ID":{"at":"Solution-ID","from":"path"},"Version":{"at":"Version","from":"path"},"log_session_id":{"at":"/log_session_id","from":"body","optional":true},"partner_app_id":{"at":"/partner_app_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "acceptWhatsAppBusinessSolutionDeactivationRequest": {"action":"deactivation_request.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{Solution-ID}/accept_deactivation_request","scope":{"Solution-ID":{"at":"Solution-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "acceptWhatsAppBusinessSolutionDeactivationRequest.json.044235fdce7a": {"action":"deactivation_request.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{Solution-ID}/accept_deactivation_request","scope":{"Solution-ID":{"at":"Solution-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addAssignedUser": {"action":"assigned_users.write","body":"form","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{WhatsApp-Business-Account-ID}/assigned_users","scope":{"Version":{"at":"Version","from":"path"},"WhatsApp-Business-Account-ID":{"at":"WhatsApp-Business-Account-ID","from":"path"},"request":{"at":"","from":"form","type":"object"},"user":{"at":"user","from":"form"}}},
+      "addGroupParticipants": {"action":"participants.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{group_id}/participants","scope":{"Version":{"at":"Version","from":"path"},"group_id":{"at":"group_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "addPhoneNumbers": {"action":"phone_numbers.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Business-ID}/add_phone_numbers","scope":{"Business-ID":{"at":"Business-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "approveJoinRequests": {"action":"requests.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{group_id}/join_requests","scope":{"Version":{"at":"Version","from":"path"},"group_id":{"at":"group_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "blockUserS": {"action":"users.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/block_users","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "blockUserS.json.31cad8ee2a0d": {"action":"users.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/block_users","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"block_users":{"at":"/block_users","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "checkCallPermissions": {"action":"call_permissions.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["user_wa_id"],"path":"/{Version}/{Phone-Number-ID}/call_permissions","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"},"user_wa_id":{"at":"user_wa_id","from":"query"}}},
+      "configureConversationalAutomation": {"action":"conversational_automation.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/conversational_automation","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createAuthenticationTemplateWOtpCopyCodeButton": {"action":"message_templates.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{WABA-ID}/message_templates","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"}}},
+      "createAuthenticationTemplateWOtpCopyCodeButton.json.af2b5c99249a": {"action":"message_templates.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{WABA-ID}/message_templates","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "createFlow": {"action":"flows.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{WABA-ID}/flows","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"}}},
+      "createGroup": {"action":"groups.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/groups","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createGroupInviteLink": {"action":"link.share","body":"json","effects":["share"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{group_id}/invite_link","scope":{"Version":{"at":"Version","from":"path"},"group_id":{"at":"group_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createOBOMobilityIntent": {"action":"obo_mobility_intent.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{WABA-ID}/obo_mobility_intent","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"request":{"at":"","from":"body","type":"object"},"solution_id":{"at":"/solution_id","from":"body"},"target_solution_id":{"at":"/target_solution_id","from":"body","optional":true}}},
+      "createOrUpdateQrCode": {"action":"message_qrdls.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/message_qrdls","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "createWhatsAppBusinessAccountPhoneNumber": {"action":"phone_numbers.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{WABA-ID}/phone_numbers","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"preverified_id":{"at":"/preverified_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"verified_name":{"at":"/verified_name","from":"body"}}},
+      "createWhatsAppBusinessAccountSchedule": {"action":"schedules.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{WABA-ID}/schedules","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"name":{"at":"/name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "createWhatsAppBusinessSolution": {"action":"whatsapp_business_solution.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Application-ID}/whatsapp_business_solution","scope":{"Application-ID":{"at":"Application-ID","from":"path"},"Version":{"at":"Version","from":"path"},"partner_app_id":{"at":"/partner_app_id","from":"body"},"request":{"at":"","from":"body","type":"object"},"solution_name":{"at":"/solution_name","from":"body"}}},
+      "deleteFlow": {"action":"flows.delete","effects":["delete"],"method":"DELETE","origin":"https://graph.facebook.com","path":"/{Version}/{Flow-ID}","scope":{"Flow-ID":{"at":"Flow-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "deleteGroup": {"action":"general.delete","effects":["delete"],"method":"DELETE","origin":"https://graph.facebook.com","path":"/{Version}/{group_id}","scope":{"Version":{"at":"Version","from":"path"},"group_id":{"at":"group_id","from":"path"}}},
+      "deleteGroupInviteLink": {"action":"link.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://graph.facebook.com","path":"/{Version}/{group_id}/invite_link","scope":{"Version":{"at":"Version","from":"path"},"group_id":{"at":"group_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "deleteIndividualQrCode": {"action":"message_qrdls.delete","effects":["delete"],"method":"DELETE","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/message_qrdls/{QR-Code-ID}","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"QR-Code-ID":{"at":"QR-Code-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "deleteMedia": {"action":"media.delete","effects":["delete"],"method":"DELETE","origin":"https://graph.facebook.com","params":["phone_number_id"],"path":"/{Version}/{Media-ID}","scope":{"Media-ID":{"at":"Media-ID","from":"path"},"Version":{"at":"Version","from":"path"},"phone_number_id":{"at":"phone_number_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "deletePreVerifiedPhoneNumber": {"action":"pre_verified_phone_numbers.delete","effects":["delete"],"method":"DELETE","origin":"https://graph.facebook.com","path":"/{Version}/{Pre-Verified-Phone-Number-ID}","scope":{"Pre-Verified-Phone-Number-ID":{"at":"Pre-Verified-Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "deleteTemplateByName": {"action":"message_templates.delete","effects":["delete"],"method":"DELETE","origin":"https://graph.facebook.com","params":["name","hsm_id"],"path":"/{Version}/{WABA-ID}/message_templates","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"hsm_id":{"at":"hsm_id","from":"query","optional":true},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "deprecateFlow": {"action":"deprecate.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Flow-ID}/deprecate","scope":{"Flow-ID":{"at":"Flow-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "deregisterPhoneNumber": {"action":"deregister.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/deregister","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "downloadMedia": {"action":"media.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","path":"/{Version}/{Media-URL}","scope":{"Media-URL":{"at":"Media-URL","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "editTemplate": {"action":"templates.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{TEMPLATE_ID}","scope":{"TEMPLATE_ID":{"at":"TEMPLATE_ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "editTemplate.json.4655f0af5dec": {"action":"templates.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{TEMPLATE_ID}","scope":{"TEMPLATE_ID":{"at":"TEMPLATE_ID","from":"path"},"Version":{"at":"Version","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "getActiveGroups": {"action":"groups.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["limit","after","before"],"path":"/{Version}/{Phone-Number-ID}/groups","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getAllSubscriptionsForAWaba": {"action":"subscribed_apps.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{WABA-ID}/subscribed_apps","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getApplicationWhatsAppBusinessSolutions": {"action":"whatsapp_business_solutions.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["role","fields","limit","after","before"],"path":"/{Version}/{Application-ID}/whatsapp_business_solutions","scope":{"Application-ID":{"at":"Application-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getAssignedUsers": {"action":"assigned_users.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["business","fields","limit","after","before"],"path":"/{Version}/{WhatsApp-Business-Account-ID}/assigned_users","scope":{"Version":{"at":"Version","from":"path"},"WhatsApp-Business-Account-ID":{"at":"WhatsApp-Business-Account-ID","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getAssignedWhatsAppBusinessAccounts": {"action":"assigned_whatsapp_business_accounts.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields","limit","after","before"],"path":"/{Version}/{User-ID}/assigned_whatsapp_business_accounts","scope":{"User-ID":{"at":"User-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getBlockedUsers": {"action":"users.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/block_users","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "getBusinessComplianceInfo": {"action":"business_compliance_info.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{Phone-Number-ID}/business_compliance_info","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getBusinessEncryptionPublicKey": {"action":"whatsapp_business_encryption.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{Phone-Number-ID}/whatsapp_business_encryption","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getBusinessPortfolioSpecificFields": {"action":"business_portfolio.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{Business-ID}","scope":{"Business-ID":{"at":"Business-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getClientWhatsAppBusinessAccounts": {"action":"client_whatsapp_business_accounts.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields","business_type","limit","after","before","find"],"path":"/{Version}/{Business-ID}/client_whatsapp_business_accounts","scope":{"Business-ID":{"at":"Business-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCommerceSettings": {"action":"whatsapp_commerce_settings.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/whatsapp_commerce_settings","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "getConnectedClientBusinesses": {"action":"connected_client_businesses.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields","limit","after","before"],"path":"/{Version}/{Application-ID}/connected_client_businesses","scope":{"Application-ID":{"at":"Application-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCreditLines": {"action":"extendedcredits.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","path":"/{Version}/{Business-ID}/extendedcredits","scope":{"Business-ID":{"at":"Business-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "getFlow": {"action":"flows.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields","date_format"],"path":"/{Version}/{Flow-ID}","scope":{"Flow-ID":{"at":"Flow-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getGroupInfo": {"action":"general.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{group_id}","scope":{"Version":{"at":"Version","from":"path"},"group_id":{"at":"group_id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getInProgressOnBehalfRequests": {"action":"in_progress_onbehalf_request.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields","limit","after","before"],"path":"/{Version}/{WABA-ID}/in_progress_onbehalf_request","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getIndividualQrCode": {"action":"message_qrdls.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{Phone-Number-ID}/message_qrdls/{QR-Code-ID}","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"QR-Code-ID":{"at":"QR-Code-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getJoinRequests": {"action":"requests.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","path":"/{Version}/{group_id}/join_requests","scope":{"Version":{"at":"Version","from":"path"},"group_id":{"at":"group_id","from":"path"}}},
+      "getMessageHistory": {"action":"message_history.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["message_id","fields","limit","after","before"],"path":"/{Version}/{Phone-Number-ID}/message_history","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"message_id":{"at":"message_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getMessageHistoryEvents": {"action":"events.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["status_filter","fields","limit","after","before"],"path":"/{Version}/{Message-History-ID}/events","scope":{"Message-History-ID":{"at":"Message-History-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getMigrationIntentDetails": {"action":"migration_intent.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{Migration-Intent-ID}","scope":{"Migration-Intent-ID":{"at":"Migration-Intent-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getOBOMobilityIntent": {"action":"obo_mobility_intent.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{OBO-Mobility-Intent-ID}","scope":{"OBO-Mobility-Intent-ID":{"at":"OBO-Mobility-Intent-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getOfficialBusinessAccountStatus": {"action":"official_business_account.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{Phone-Number-ID}/official_business_account","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getOwnedWhatsAppBusinessAccounts": {"action":"owned_whatsapp_business_accounts.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["business_type","after","first","before","last","find"],"path":"/{Version}/{Business-ID}/owned_whatsapp_business_accounts","scope":{"Business-ID":{"at":"Business-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getPhoneNumberById": {"action":"phone_numbers.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{Phone-Number-ID}","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getPhoneNumberSettings": {"action":"settings.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["include_sip_credentials"],"path":"/{Version}/{Phone-Number-ID}/settings","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getPreVerifiedPhoneNumberDetails": {"action":"pre_verified_phone_numbers.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{Pre-Verified-Phone-Number-ID}","scope":{"Pre-Verified-Phone-Number-ID":{"at":"Pre-Verified-Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getPreVerifiedPhoneNumberPartners": {"action":"partners.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields","limit","after","before"],"path":"/{Version}/{Pre-Verified-Phone-Number-ID}/partners","scope":{"Pre-Verified-Phone-Number-ID":{"at":"Pre-Verified-Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getPreVerifiedPhoneNumbers": {"action":"preverified_numbers.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields","limit","after","before","verification_status","availability_status","country_code"],"path":"/{Version}/{Business-ID}/preverified_numbers","scope":{"Business-ID":{"at":"Business-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getSolutionAccessToken": {"action":"access_token.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["business_id"],"path":"/{Version}/{Solution-ID}/access_token","scope":{"Solution-ID":{"at":"Solution-ID","from":"path"},"Version":{"at":"Version","from":"path"},"business_id":{"at":"business_id","from":"query"},"query":{"at":"","from":"query","type":"object"}}},
+      "getSolutionDetails": {"action":"multi_partner_solutions.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{Solution-ID}","scope":{"Solution-ID":{"at":"Solution-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTemplateByIdDefaultFields": {"action":"templates.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","path":"/{Version}/{TEMPLATE_ID}","scope":{"TEMPLATE_ID":{"at":"TEMPLATE_ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "getTemplateByNameDefaultFields": {"action":"message_templates.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["name"],"path":"/{Version}/{WABA-ID}/message_templates","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"name":{"at":"name","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getWhatsAppAccountNumberDetails": {"action":"whats_app_account_numbers.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{WhatsApp-Account-Number-ID}","scope":{"Version":{"at":"Version","from":"path"},"WhatsApp-Account-Number-ID":{"at":"WhatsApp-Account-Number-ID","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getWhatsAppBusinessAccountActivities": {"action":"activities.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields","limit","after","before","since","until","activity_type"],"path":"/{Version}/{WABA-ID}/activities","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getWhatsAppBusinessAccountDetails": {"action":"whats_app_business_account.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{WABA-ID}","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getWhatsAppBusinessAccountPhoneNumbers": {"action":"phone_numbers.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields","filtering","sort","limit","after","before"],"path":"/{Version}/{WABA-ID}/phone_numbers","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getWhatsAppBusinessAccountSchedules": {"action":"schedules.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields","filtering","sort","limit","after","before"],"path":"/{Version}/{WABA-ID}/schedules","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getWhatsAppBusinessBotDetails": {"action":"whats_app_business_bot.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{WABA-Bot-ID}","scope":{"Version":{"at":"Version","from":"path"},"WABA-Bot-ID":{"at":"WABA-Bot-ID","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getWhatsAppBusinessProfile": {"action":"whatsapp_business_profile.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{Phone-Number-ID}/whatsapp_business_profile","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getWhatsAppBusinessProfileDetails": {"action":"whats_app_business_profiles.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{WhatsApp-Business-Profile-ID}","scope":{"Version":{"at":"Version","from":"path"},"WhatsApp-Business-Profile-ID":{"at":"WhatsApp-Business-Profile-ID","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listAllQrCodes": {"action":"message_qrdls.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields","code","limit","after","before"],"path":"/{Version}/{Phone-Number-ID}/message_qrdls","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "listAssetsGetFlowJsonUrl": {"action":"assets.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","path":"/{Version}/{Flow-ID}/assets","scope":{"Flow-ID":{"at":"Flow-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "listFlows": {"action":"flows.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","path":"/{Version}/{WABA-ID}/flows","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"}}},
+      "listWabaSolutions": {"action":"solutions.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["fields","limit","after","before"],"path":"/{Version}/{WABA-ID}/solutions","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "manageCalls": {"action":"calls.send","effects":["send"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/calls","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "manageCalls.json.b233de4d57d1": {"action":"calls.send","body":"json","effects":["send"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/calls","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "media.get": {"action":"general.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","path":"/v25.0/{media}","scope":{"media":{"at":"media","from":"path"}}},
+      "messages.send": {"action":"messages.send","body":"json","effects":["send","pay"],"method":"POST","origin":"https://graph.facebook.com","path":"/v25.0/{phone}/messages","scope":{"message":{"at":"","from":"body","type":"object"},"phone":{"at":"phone","from":"path"}}},
+      "migrateFlows": {"action":"migrate_flows.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{WABA-ID}/migrate_flows","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"}}},
+      "onboardPartnersToMMLite": {"action":"onboard_partners_to_mm_lite.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","params":["solution_id"],"path":"/{Version}/{Business-ID}/onboard_partners_to_mm_lite","scope":{"Business-ID":{"at":"Business-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"},"solution_id":{"at":"solution_id","from":"query","optional":true}}},
+      "publishFlow": {"action":"publish.publish","effects":["publish"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Flow-ID}/publish","scope":{"Flow-ID":{"at":"Flow-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "registerWhatsAppBusinessPhoneNumber": {"action":"register.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/register","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "rejectJoinRequests": {"action":"requests.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://graph.facebook.com","path":"/{Version}/{group_id}/join_requests","scope":{"Version":{"at":"Version","from":"path"},"group_id":{"at":"group_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "rejectSolutionDeactivationRequest": {"action":"deactivation_request.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","params":["fields"],"path":"/{Version}/{Solution-ID}/reject_deactivation_request","scope":{"Solution-ID":{"at":"Solution-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "rejectSolutionRequest": {"action":"reject.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Solution-ID}/reject","scope":{"Solution-ID":{"at":"Solution-ID","from":"path"},"Version":{"at":"Version","from":"path"},"partner_app_id":{"at":"/partner_app_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "removeAssignedUser": {"action":"assigned_users.delete","body":"form","effects":["delete"],"method":"DELETE","origin":"https://graph.facebook.com","path":"/{Version}/{WhatsApp-Business-Account-ID}/assigned_users","scope":{"Version":{"at":"Version","from":"path"},"WhatsApp-Business-Account-ID":{"at":"WhatsApp-Business-Account-ID","from":"path"},"request":{"at":"","from":"form","type":"object"},"user":{"at":"user","from":"form"}}},
+      "removeGroupParticipants": {"action":"participants.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://graph.facebook.com","path":"/{Version}/{group_id}/participants","scope":{"Version":{"at":"Version","from":"path"},"group_id":{"at":"group_id","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "requestPreVerifiedPhoneNumberCode": {"action":"request_code.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Pre-Verified-Phone-Number-ID}/request_code","scope":{"Pre-Verified-Phone-Number-ID":{"at":"Pre-Verified-Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "requestVerificationCode": {"action":"request_code.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/request_code","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "retrieveMediaUrl": {"action":"media.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["phone_number_id"],"path":"/{Version}/{Media-ID}","scope":{"Media-ID":{"at":"Media-ID","from":"path"},"Version":{"at":"Version","from":"path"},"phone_number_id":{"at":"phone_number_id","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "sendEncryptedMessage": {"action":"messages_encrypted.send","body":"json","effects":["send"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/messages_encrypted","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "sendMarketingMessage": {"action":"marketing_messages.send","body":"json","effects":["send"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/marketing_messages","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "sendMessage": {"action":"messages.send","effects":["send"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/messages","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "sendMessage.json.5d3131942c87": {"action":"messages.send","body":"json","effects":["send"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/messages","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "sendSolutionDeactivationRequest": {"action":"deactivation_request.send","effects":["send"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Solution-ID}/send_deactivation_request","scope":{"Solution-ID":{"at":"Solution-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "sendSolutionDeactivationRequest.json.e388e8159596": {"action":"deactivation_request.send","body":"json","effects":["send"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Solution-ID}/send_deactivation_request","scope":{"Solution-ID":{"at":"Solution-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "setOBOMobilityIntent": {"action":"obo_mobility_intent.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{WABA-ID}/set_obo_mobility_intent","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"actor_id":{"at":"/actor_id","from":"body","optional":true},"app_id":{"at":"/app_id","from":"body","optional":true},"client_mutation_id":{"at":"/client_mutation_id","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"solution_id":{"at":"/solution_id","from":"body","optional":true},"waba_id":{"at":"/waba_id","from":"body"}}},
+      "setOrUpdateCommerceSettings": {"action":"whatsapp_commerce_settings.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","params":["is_cart_enabled","is_catalog_visible"],"path":"/{Version}/{Phone-Number-ID}/whatsapp_commerce_settings","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "setSolutionMigrationIntent": {"action":"solution_migration_intent.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{WABA-ID}/set_solution_migration_intent","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"request":{"at":"","from":"body","type":"object"},"solution_id":{"at":"/solution_id","from":"body"},"target_solution_id":{"at":"/target_solution_id","from":"body","optional":true}}},
+      "sharePreVerifiedPhoneNumber": {"action":"preverified_numbers.share","body":"json","effects":["share"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Business-ID}/share_preverified_numbers","scope":{"Business-ID":{"at":"Business-ID","from":"path"},"Version":{"at":"Version","from":"path"},"partner_business_id":{"at":"/partner_business_id","from":"body"},"preverified_id":{"at":"/preverified_id","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "subscribeToWabaWebhooks": {"action":"subscribed_apps.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{WABA-ID}/subscribed_apps","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"}}},
+      "subscribeToWabaWebhooks.json.10d5d17071d3": {"action":"subscribed_apps.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{WABA-ID}/subscribed_apps","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "templates.list": {"action":"message_templates.read","effects":["read"],"method":"GET","origin":"https://graph.facebook.com","params":["limit"],"path":"/v25.0/{waba}/message_templates","scope":{"waba":{"at":"waba","from":"path"}}},
+      "unblockUserS": {"action":"users.delete","effects":["delete"],"method":"DELETE","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/block_users","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "unblockUserS.json.215c3dd76bb4": {"action":"users.delete","body":"json","effects":["delete"],"method":"DELETE","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/block_users","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"block_users":{"at":"/block_users","from":"body","optional":true,"type":"array"},"request":{"at":"","from":"body","type":"object"}}},
+      "unsubscribeFromWabaWebhooks": {"action":"subscribed_apps.delete","effects":["delete"],"method":"DELETE","origin":"https://graph.facebook.com","path":"/{Version}/{WABA-ID}/subscribed_apps","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"}}},
+      "updateBusinessComplianceInfo": {"action":"business_compliance_info.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/business_compliance_info","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"entity_name":{"at":"/entity_name","from":"body"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateFlowJson": {"action":"assets.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Flow-ID}/assets","scope":{"Flow-ID":{"at":"Flow-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "updateFlowMetadata": {"action":"flows.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Flow-ID}","scope":{"Flow-ID":{"at":"Flow-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "updateGroupSettings": {"action":"general.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{group_id}","scope":{"Version":{"at":"Version","from":"path"},"group_id":{"at":"group_id","from":"path"},"profile_picture_file":{"at":"/profile_picture_file","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updatePhoneNumberSettings": {"action":"settings.admin","effects":["admin"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/settings","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "updatePhoneNumberSettings.json.c8c163cc00f1": {"action":"settings.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/settings","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updatePhoneNumberStatus": {"action":"phone_numbers.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "updatePhoneNumberStatus.json.e597467e2db8": {"action":"phone_numbers.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"new_display_name":{"at":"/new_display_name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"username":{"at":"/username","from":"body","optional":true},"webhook_url":{"at":"/webhook_url","from":"body","optional":true}}},
+      "updateWhatsAppBusinessAccount": {"action":"whats_app_business_account.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{WABA-ID}","scope":{"Version":{"at":"Version","from":"path"},"WABA-ID":{"at":"WABA-ID","from":"path"},"name":{"at":"/name","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"},"timezone_id":{"at":"/timezone_id","from":"body","optional":true}}},
+      "updateWhatsAppBusinessProfile": {"action":"whats_app_business_profiles.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{WhatsApp-Business-Profile-ID}","scope":{"Version":{"at":"Version","from":"path"},"WhatsApp-Business-Profile-ID":{"at":"WhatsApp-Business-Profile-ID","from":"path"},"email":{"at":"/email","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "updateWhatsAppBusinessProfileInformation": {"action":"whatsapp_business_profile.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/whatsapp_business_profile","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"email":{"at":"/email","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "uploadImage": {"action":"media.write","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/media","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"}}},
+      "uploadImage.json.7bf50af66588": {"action":"media.write","body":"json","effects":["write"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/media","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"file":{"at":"/file","from":"body","optional":true},"request":{"at":"","from":"body","type":"object"}}},
+      "verifyPhoneNumberCode": {"action":"code.read","body":"json","effects":["read"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Phone-Number-ID}/verify_code","scope":{"Phone-Number-ID":{"at":"Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "verifyPreVerifiedPhoneNumberCode": {"action":"code.read","body":"json","effects":["read"],"method":"POST","origin":"https://graph.facebook.com","path":"/{Version}/{Pre-Verified-Phone-Number-ID}/verify_code","scope":{"Pre-Verified-Phone-Number-ID":{"at":"Pre-Verified-Phone-Number-ID","from":"path"},"Version":{"at":"Version","from":"path"},"request":{"at":"","from":"body","type":"object"}}}
+    }
+  }
+}

@@ -2,6 +2,8 @@ package session
 
 import (
 	"cmp"
+	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -12,22 +14,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"golang.org/x/crypto/ssh"
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/syntax"
 )
-
-var SSHKind = connector.Kind{UsesHostKey: true, Parse: parseSSH, Open: connector.Stateless((*sshSetup).serveSSH)}
-
-func parseSSH(source connector.Setup) (connector.Prepared, error) {
-	c := new(sshSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
-		return connector.Prepared{}, err
-	}
-	return connector.Prepared{Value: c, SecretNames: []string{"key"}, Hosts: []string{c.Host}}, nil
-}
 
 const (
 	channelSession = "session"
@@ -37,20 +28,49 @@ const (
 
 var refusedRequests = []string{"auth-agent-req@openssh.com", "x11-req"}
 
-type sshSetup struct {
-	connector.SecretConfig
+// SSH relays an agent's sessions to one server, authenticated with the "key" credential and
+// pinned to its host key.
+type SSH struct {
 	Host    string `json:"host"`
 	Port    int    `json:"port"`
 	User    string `json:"user"`
 	HostKey string `json:"host_key"`
 }
 
-func (t *sshSetup) dial(s *connector.Stream, e *connector.Env) (*ssh.Client, error) {
+func ParseSSH(config json.RawMessage) (*SSH, error) {
+	t := new(SSH)
+	return t, facts.DecodeNumbers(config, t)
+}
+
+func (t *SSH) Hosts() []string { return []string{t.Host} }
+
+// stream is one agent connection, which the host key terminates.
+type stream struct {
+	ctx    context.Context
+	cancel context.CancelFunc
+	conn   net.Conn
+	gate   func(context.Context, facts.Event) error
+}
+
+func newStream(ctx context.Context, conn net.Conn, gate func(context.Context, facts.Event) error) *stream {
+	ctx, cancel := context.WithCancel(ctx)
+	return &stream{ctx, cancel, conn, gate}
+}
+
+func (s *stream) close() { s.cancel(); s.conn.Close() }
+
+// upstream dials the server with key through dial.
+type upstream struct {
+	dial func(context.Context, string, string) (net.Conn, error)
+	key  func(context.Context) (string, error)
+}
+
+func (t *SSH) dial(s *stream, u upstream) (*ssh.Client, error) {
 	hostKey, _, _, _, err := ssh.ParseAuthorizedKey([]byte(t.HostKey))
 	if err != nil {
 		return nil, fmt.Errorf("host_key: %w", err)
 	}
-	secret, err := t.Secret(s.Context, "key")
+	secret, err := u.key(s.ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -64,11 +84,11 @@ func (t *sshSetup) dial(s *connector.Stream, e *connector.Env) (*ssh.Client, err
 		hostKeyAlgorithms = []string{ssh.KeyAlgoRSASHA512, ssh.KeyAlgoRSASHA256, ssh.KeyAlgoRSA}
 	}
 	addr := net.JoinHostPort(t.Host, strconv.Itoa(cmp.Or(t.Port, sshPort)))
-	conn, err := e.Dialer.DialContext(s.Context, "tcp", addr)
+	conn, err := u.dial(s.ctx, "tcp", addr)
 	if err != nil {
 		return nil, err
 	}
-	s.Interrupt(conn)
+	context.AfterFunc(s.ctx, func() { conn.Close() })
 	c, chans, reqs, err := ssh.NewClientConn(conn, addr, &ssh.ClientConfig{
 		User:              t.User,
 		Auth:              []ssh.AuthMethod{ssh.PublicKeys(signer)},
@@ -81,34 +101,40 @@ func (t *sshSetup) dial(s *connector.Stream, e *connector.Env) (*ssh.Client, err
 	return ssh.NewClient(c, chans, reqs), nil
 }
 
-func (t *sshSetup) serveSSH(s *connector.Stream, e *connector.Env) {
-	t.serve(s, e, func(up *ssh.Client, nc ssh.NewChannel) {
-		relayChannel(up, nc, func(r *ssh.Request) error { return s.Gate(s.Context, t.Capture(eventForSSH(r).Describe(t.Host))) })
-	})
+// Handler serves agent sessions under host, the SSH host identity they reach, and relays
+// each admitted request to the server it dials with key.
+func (t *SSH) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), host ssh.Signer, key func(context.Context) (string, error)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+	return func(ctx context.Context, conn net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+		s := newStream(ctx, conn, gate)
+		t.serve(s, host, upstream{dial, key}, func(up *ssh.Client, nc ssh.NewChannel) {
+			relayChannel(up, nc, func(r *ssh.Request) error { return s.gate(s.ctx, facts.Capture(eventForSSH(r).Describe(t.Host), nil)) })
+		})
+	}
 }
 
-func (t *sshSetup) serve(s *connector.Stream, e *connector.Env, pump func(*ssh.Client, ssh.NewChannel)) {
-	serveSessions(s, e.HostKey, func(workers *sync.WaitGroup) func(ssh.NewChannel) {
-		up, err := t.dial(s, e)
+func (t *SSH) serve(s *stream, host ssh.Signer, u upstream, pump func(*ssh.Client, ssh.NewChannel)) {
+	serveSessions(s, host, func(workers *sync.WaitGroup) func(ssh.NewChannel) {
+		up, err := t.dial(s, u)
 		if err != nil {
 			log.Printf("%s: %v", t.Host, err)
 			return nil
 		}
 		workers.Go(func() {
 			up.Wait()
-			s.Close()
+			s.close()
 		})
 		return func(nc ssh.NewChannel) { pump(up, nc) }
 	})
 }
 
-func serveSessions(s *connector.Stream, hostKey ssh.Signer, start func(*sync.WaitGroup) func(ssh.NewChannel)) {
-	chans, err := innerSSH(s, hostKey)
+func serveSessions(s *stream, hostKey ssh.Signer, start func(*sync.WaitGroup) func(ssh.NewChannel)) {
+	defer s.cancel()
+	chans, err := innerSSH(s.conn, hostKey)
 	if err != nil {
 		return
 	}
 	var workers sync.WaitGroup
-	defer func() { s.Close(); workers.Wait() }()
+	defer func() { s.close(); workers.Wait() }()
 	serve := start(&workers)
 	if serve == nil {
 		return
@@ -242,7 +268,7 @@ func literal(parts []syntax.WordPart) bool {
 }
 
 // NoClientAuth is safe because the tunnel already checked the client's key.
-func innerSSH(s *connector.Stream, hostKey ssh.Signer) (<-chan ssh.NewChannel, error) {
+func innerSSH(s net.Conn, hostKey ssh.Signer) (<-chan ssh.NewChannel, error) {
 	if hostKey == nil {
 		return nil, errors.New("SSH host identity is unavailable")
 	}
@@ -258,7 +284,7 @@ func innerSSH(s *connector.Stream, hostKey ssh.Signer) (<-chan ssh.NewChannel, e
 
 type SSHRequest Details
 
-func (r *SSHRequest) Describe(host string) facts.Facts {
+func (r *SSHRequest) Describe(host string) facts.Observation {
 	v := r.SSH
 	action := map[string]string{"pty-req": "session", "env": "session", "window-change": "session", "signal": "session", "break": "session", "exec": "run", "shell": "shell"}[v.Request]
 	if v.Request == "subsystem" && v.Subsystem == "sftp" {
@@ -273,5 +299,5 @@ func (r *SSHRequest) Describe(host string) facts.Facts {
 		title = "SSH " + v.Request
 	}
 	op := &facts.Operation{Action: action}
-	return facts.Facts{Operation: op, Title: title, Parameters: scope, Details: Details(*r)}
+	return facts.Observation{Operation: op, Title: title, Parameters: scope, Details: Details(*r)}
 }

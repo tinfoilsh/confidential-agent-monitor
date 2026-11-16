@@ -1,0 +1,1278 @@
+{
+  "catalog": {
+    "actions": {
+      "access_requests": {
+        "title": "Access requests"
+      },
+      "access_requests.read": {
+        "title": "Read"
+      },
+      "access_requests.write": {
+        "title": "Create and edit"
+      },
+      "agents": {
+        "title": "Agents"
+      },
+      "agents.read": {
+        "title": "Read"
+      },
+      "allocations": {
+        "title": "Allocations"
+      },
+      "allocations.delete": {
+        "title": "Delete"
+      },
+      "allocations.read": {
+        "title": "Read"
+      },
+      "allocations.write": {
+        "title": "Create and edit"
+      },
+      "attachments": {
+        "title": "Attachments"
+      },
+      "attachments.delete": {
+        "title": "Delete"
+      },
+      "attachments.read": {
+        "title": "Read"
+      },
+      "attachments.write": {
+        "title": "Create and edit"
+      },
+      "batch": {
+        "title": "Batch"
+      },
+      "batch.write": {
+        "title": "Create and edit"
+      },
+      "budgets": {
+        "title": "Budgets"
+      },
+      "budgets.delete": {
+        "title": "Delete"
+      },
+      "budgets.read": {
+        "title": "Read"
+      },
+      "budgets.write": {
+        "title": "Create and edit"
+      },
+      "custom_fields": {
+        "title": "Custom fields"
+      },
+      "custom_fields.delete": {
+        "title": "Delete"
+      },
+      "custom_fields.enum_options": {
+        "title": "Enum options"
+      },
+      "custom_fields.enum_options.insert": {
+        "title": "Insert"
+      },
+      "custom_fields.enum_options.insert.write": {
+        "title": "Create and edit"
+      },
+      "custom_fields.enum_options.write": {
+        "title": "Create and edit"
+      },
+      "custom_fields.read": {
+        "title": "Read"
+      },
+      "custom_fields.write": {
+        "title": "Create and edit"
+      },
+      "custom_types": {
+        "title": "Custom types"
+      },
+      "custom_types.read": {
+        "title": "Read"
+      },
+      "enum_options": {
+        "title": "Enum options"
+      },
+      "enum_options.write": {
+        "title": "Create and edit"
+      },
+      "events": {
+        "title": "Events"
+      },
+      "events.read": {
+        "title": "Read"
+      },
+      "exports": {
+        "title": "Exports"
+      },
+      "exports.graph": {
+        "title": "Graph"
+      },
+      "exports.graph.write": {
+        "title": "Create and edit"
+      },
+      "exports.resource": {
+        "title": "Resource"
+      },
+      "exports.resource.write": {
+        "title": "Create and edit"
+      },
+      "goal_relationships": {
+        "title": "Goal relationships"
+      },
+      "goal_relationships.read": {
+        "title": "Read"
+      },
+      "goal_relationships.write": {
+        "title": "Create and edit"
+      },
+      "goals": {
+        "title": "Goals"
+      },
+      "goals.custom_field_setting": {
+        "title": "Custom field setting"
+      },
+      "goals.custom_field_setting.delete": {
+        "title": "Delete"
+      },
+      "goals.custom_field_setting.write": {
+        "title": "Create and edit"
+      },
+      "goals.custom_field_settings": {
+        "title": "Custom field settings"
+      },
+      "goals.custom_field_settings.read": {
+        "title": "Read"
+      },
+      "goals.delete": {
+        "title": "Delete"
+      },
+      "goals.followers": {
+        "title": "Followers"
+      },
+      "goals.followers.delete": {
+        "title": "Delete"
+      },
+      "goals.followers.write": {
+        "title": "Create and edit"
+      },
+      "goals.metric": {
+        "title": "Metric"
+      },
+      "goals.metric.write": {
+        "title": "Create and edit"
+      },
+      "goals.metric_current_value": {
+        "title": "Metric current value"
+      },
+      "goals.metric_current_value.write": {
+        "title": "Create and edit"
+      },
+      "goals.parent_goals": {
+        "title": "Parent goals"
+      },
+      "goals.parent_goals.read": {
+        "title": "Read"
+      },
+      "goals.read": {
+        "title": "Read"
+      },
+      "goals.stories": {
+        "title": "Stories"
+      },
+      "goals.stories.read": {
+        "title": "Read"
+      },
+      "goals.stories.write": {
+        "title": "Create and edit"
+      },
+      "goals.supporting_relationship": {
+        "title": "Supporting relationship"
+      },
+      "goals.supporting_relationship.delete": {
+        "title": "Delete"
+      },
+      "goals.supporting_relationship.write": {
+        "title": "Create and edit"
+      },
+      "goals.write": {
+        "title": "Create and edit"
+      },
+      "jobs": {
+        "title": "Jobs"
+      },
+      "jobs.read": {
+        "title": "Read"
+      },
+      "memberships": {
+        "title": "Memberships"
+      },
+      "memberships.admin": {
+        "title": "Manage"
+      },
+      "memberships.delete": {
+        "title": "Delete"
+      },
+      "memberships.read": {
+        "title": "Read"
+      },
+      "ooo_entries": {
+        "title": "Ooo entries"
+      },
+      "ooo_entries.delete": {
+        "title": "Delete"
+      },
+      "ooo_entries.read": {
+        "title": "Read"
+      },
+      "ooo_entries.write": {
+        "title": "Create and edit"
+      },
+      "organization_exports": {
+        "title": "Organization exports"
+      },
+      "organization_exports.read": {
+        "title": "Read"
+      },
+      "organization_exports.write": {
+        "title": "Create and edit"
+      },
+      "portfolio_memberships": {
+        "title": "Portfolio memberships"
+      },
+      "portfolio_memberships.read": {
+        "title": "Read"
+      },
+      "portfolios": {
+        "title": "Portfolios"
+      },
+      "portfolios.custom_field_setting": {
+        "title": "Custom field setting"
+      },
+      "portfolios.custom_field_setting.delete": {
+        "title": "Delete"
+      },
+      "portfolios.custom_field_setting.write": {
+        "title": "Create and edit"
+      },
+      "portfolios.custom_field_settings": {
+        "title": "Custom field settings"
+      },
+      "portfolios.custom_field_settings.read": {
+        "title": "Read"
+      },
+      "portfolios.delete": {
+        "title": "Delete"
+      },
+      "portfolios.item": {
+        "title": "Item"
+      },
+      "portfolios.item.delete": {
+        "title": "Delete"
+      },
+      "portfolios.item.write": {
+        "title": "Create and edit"
+      },
+      "portfolios.items": {
+        "title": "Items"
+      },
+      "portfolios.items.read": {
+        "title": "Read"
+      },
+      "portfolios.members": {
+        "title": "Members"
+      },
+      "portfolios.members.delete": {
+        "title": "Delete"
+      },
+      "portfolios.members.write": {
+        "title": "Create and edit"
+      },
+      "portfolios.portfolio_memberships": {
+        "title": "Portfolio memberships"
+      },
+      "portfolios.portfolio_memberships.read": {
+        "title": "Read"
+      },
+      "portfolios.project_portfolio_settings": {
+        "title": "Project portfolio settings"
+      },
+      "portfolios.project_portfolio_settings.read": {
+        "title": "Read"
+      },
+      "portfolios.read": {
+        "title": "Read"
+      },
+      "portfolios.write": {
+        "title": "Create and edit"
+      },
+      "project_briefs": {
+        "title": "Project briefs"
+      },
+      "project_briefs.delete": {
+        "title": "Delete"
+      },
+      "project_briefs.read": {
+        "title": "Read"
+      },
+      "project_briefs.write": {
+        "title": "Create and edit"
+      },
+      "project_memberships": {
+        "title": "Project memberships"
+      },
+      "project_memberships.read": {
+        "title": "Read"
+      },
+      "project_portfolio_settings": {
+        "title": "Project portfolio settings"
+      },
+      "project_portfolio_settings.read": {
+        "title": "Read"
+      },
+      "project_portfolio_settings.write": {
+        "title": "Create and edit"
+      },
+      "project_statuses": {
+        "title": "Project statuses"
+      },
+      "project_statuses.delete": {
+        "title": "Delete"
+      },
+      "project_statuses.read": {
+        "title": "Read"
+      },
+      "project_templates": {
+        "title": "Project templates"
+      },
+      "project_templates.delete": {
+        "title": "Delete"
+      },
+      "project_templates.instantiate_project": {
+        "title": "Instantiate project"
+      },
+      "project_templates.instantiate_project.write": {
+        "title": "Create and edit"
+      },
+      "project_templates.read": {
+        "title": "Read"
+      },
+      "projects": {
+        "title": "Projects"
+      },
+      "projects.custom_field_setting": {
+        "title": "Custom field setting"
+      },
+      "projects.custom_field_setting.delete": {
+        "title": "Delete"
+      },
+      "projects.custom_field_setting.write": {
+        "title": "Create and edit"
+      },
+      "projects.custom_field_settings": {
+        "title": "Custom field settings"
+      },
+      "projects.custom_field_settings.read": {
+        "title": "Read"
+      },
+      "projects.delete": {
+        "title": "Delete"
+      },
+      "projects.followers": {
+        "title": "Followers"
+      },
+      "projects.followers.delete": {
+        "title": "Delete"
+      },
+      "projects.followers.write": {
+        "title": "Create and edit"
+      },
+      "projects.members": {
+        "title": "Members"
+      },
+      "projects.members.delete": {
+        "title": "Delete"
+      },
+      "projects.members.write": {
+        "title": "Create and edit"
+      },
+      "projects.project_briefs": {
+        "title": "Project briefs"
+      },
+      "projects.project_briefs.write": {
+        "title": "Create and edit"
+      },
+      "projects.project_memberships": {
+        "title": "Project memberships"
+      },
+      "projects.project_memberships.read": {
+        "title": "Read"
+      },
+      "projects.project_portfolio_settings": {
+        "title": "Project portfolio settings"
+      },
+      "projects.project_portfolio_settings.read": {
+        "title": "Read"
+      },
+      "projects.project_statuses": {
+        "title": "Project statuses"
+      },
+      "projects.project_statuses.read": {
+        "title": "Read"
+      },
+      "projects.project_statuses.write": {
+        "title": "Create and edit"
+      },
+      "projects.read": {
+        "title": "Read"
+      },
+      "projects.rollup": {
+        "title": "Rollup"
+      },
+      "projects.rollup.write": {
+        "title": "Create and edit"
+      },
+      "projects.save_as_template": {
+        "title": "Save as template"
+      },
+      "projects.save_as_template.write": {
+        "title": "Create and edit"
+      },
+      "projects.sections": {
+        "title": "Sections"
+      },
+      "projects.sections.insert": {
+        "title": "Insert"
+      },
+      "projects.sections.insert.write": {
+        "title": "Create and edit"
+      },
+      "projects.sections.read": {
+        "title": "Read"
+      },
+      "projects.sections.write": {
+        "title": "Create and edit"
+      },
+      "projects.task_counts": {
+        "title": "Task counts"
+      },
+      "projects.task_counts.read": {
+        "title": "Read"
+      },
+      "projects.tasks": {
+        "title": "Tasks"
+      },
+      "projects.tasks.read": {
+        "title": "Read"
+      },
+      "projects.write": {
+        "title": "Create and edit"
+      },
+      "rates": {
+        "title": "Rates"
+      },
+      "rates.delete": {
+        "title": "Delete"
+      },
+      "rates.read": {
+        "title": "Read"
+      },
+      "rates.write": {
+        "title": "Create and edit"
+      },
+      "reactions": {
+        "title": "Reactions"
+      },
+      "reactions.read": {
+        "title": "Read"
+      },
+      "roles": {
+        "title": "Roles"
+      },
+      "roles.admin": {
+        "title": "Manage"
+      },
+      "roles.delete": {
+        "title": "Delete"
+      },
+      "roles.read": {
+        "title": "Read"
+      },
+      "rule_triggers": {
+        "title": "Rule triggers"
+      },
+      "rule_triggers.execute": {
+        "title": "Run"
+      },
+      "sections": {
+        "title": "Sections"
+      },
+      "sections.delete": {
+        "title": "Delete"
+      },
+      "sections.read": {
+        "title": "Read"
+      },
+      "sections.task": {
+        "title": "Task"
+      },
+      "sections.task.write": {
+        "title": "Create and edit"
+      },
+      "sections.tasks": {
+        "title": "Tasks"
+      },
+      "sections.tasks.read": {
+        "title": "Read"
+      },
+      "sections.write": {
+        "title": "Create and edit"
+      },
+      "status_updates": {
+        "title": "Status updates"
+      },
+      "status_updates.delete": {
+        "title": "Delete"
+      },
+      "status_updates.read": {
+        "title": "Read"
+      },
+      "status_updates.write": {
+        "title": "Create and edit"
+      },
+      "stories": {
+        "title": "Stories"
+      },
+      "stories.delete": {
+        "title": "Delete"
+      },
+      "stories.read": {
+        "title": "Read"
+      },
+      "stories.write": {
+        "title": "Create and edit"
+      },
+      "tags": {
+        "title": "Tags"
+      },
+      "tags.delete": {
+        "title": "Delete"
+      },
+      "tags.read": {
+        "title": "Read"
+      },
+      "tags.tasks": {
+        "title": "Tasks"
+      },
+      "tags.tasks.read": {
+        "title": "Read"
+      },
+      "tags.write": {
+        "title": "Create and edit"
+      },
+      "task_templates": {
+        "title": "Task templates"
+      },
+      "task_templates.delete": {
+        "title": "Delete"
+      },
+      "task_templates.instantiate_task": {
+        "title": "Instantiate task"
+      },
+      "task_templates.instantiate_task.write": {
+        "title": "Create and edit"
+      },
+      "task_templates.read": {
+        "title": "Read"
+      },
+      "tasks": {
+        "title": "Tasks"
+      },
+      "tasks.delete": {
+        "title": "Delete"
+      },
+      "tasks.dependencies": {
+        "title": "Dependencies"
+      },
+      "tasks.dependencies.delete": {
+        "title": "Delete"
+      },
+      "tasks.dependencies.read": {
+        "title": "Read"
+      },
+      "tasks.dependencies.write": {
+        "title": "Create and edit"
+      },
+      "tasks.dependents": {
+        "title": "Dependents"
+      },
+      "tasks.dependents.delete": {
+        "title": "Delete"
+      },
+      "tasks.dependents.read": {
+        "title": "Read"
+      },
+      "tasks.dependents.write": {
+        "title": "Create and edit"
+      },
+      "tasks.followers": {
+        "title": "Followers"
+      },
+      "tasks.followers.delete": {
+        "title": "Delete"
+      },
+      "tasks.followers.write": {
+        "title": "Create and edit"
+      },
+      "tasks.parent": {
+        "title": "Parent"
+      },
+      "tasks.parent.write": {
+        "title": "Create and edit"
+      },
+      "tasks.project": {
+        "title": "Project"
+      },
+      "tasks.project.delete": {
+        "title": "Delete"
+      },
+      "tasks.project.write": {
+        "title": "Create and edit"
+      },
+      "tasks.projects": {
+        "title": "Projects"
+      },
+      "tasks.projects.read": {
+        "title": "Read"
+      },
+      "tasks.read": {
+        "title": "Read"
+      },
+      "tasks.rollup": {
+        "title": "Rollup"
+      },
+      "tasks.rollup.write": {
+        "title": "Create and edit"
+      },
+      "tasks.stories": {
+        "title": "Stories"
+      },
+      "tasks.stories.read": {
+        "title": "Read"
+      },
+      "tasks.stories.send": {
+        "title": "Send"
+      },
+      "tasks.subtasks": {
+        "title": "Subtasks"
+      },
+      "tasks.subtasks.read": {
+        "title": "Read"
+      },
+      "tasks.subtasks.write": {
+        "title": "Create and edit"
+      },
+      "tasks.tag": {
+        "title": "Tag"
+      },
+      "tasks.tag.delete": {
+        "title": "Delete"
+      },
+      "tasks.tag.write": {
+        "title": "Create and edit"
+      },
+      "tasks.tags": {
+        "title": "Tags"
+      },
+      "tasks.tags.read": {
+        "title": "Read"
+      },
+      "tasks.time_tracking_entries": {
+        "title": "Time tracking entries"
+      },
+      "tasks.time_tracking_entries.read": {
+        "title": "Read"
+      },
+      "tasks.time_tracking_entries.write": {
+        "title": "Create and edit"
+      },
+      "tasks.write": {
+        "title": "Create and edit"
+      },
+      "team_memberships": {
+        "title": "Team memberships"
+      },
+      "team_memberships.read": {
+        "title": "Read"
+      },
+      "teams": {
+        "title": "Teams"
+      },
+      "teams.admin": {
+        "title": "Manage"
+      },
+      "teams.custom_field_settings": {
+        "title": "Custom field settings"
+      },
+      "teams.custom_field_settings.read": {
+        "title": "Read"
+      },
+      "teams.project_templates": {
+        "title": "Project templates"
+      },
+      "teams.project_templates.read": {
+        "title": "Read"
+      },
+      "teams.projects": {
+        "title": "Projects"
+      },
+      "teams.projects.read": {
+        "title": "Read"
+      },
+      "teams.projects.write": {
+        "title": "Create and edit"
+      },
+      "teams.read": {
+        "title": "Read"
+      },
+      "teams.team_memberships": {
+        "title": "Team memberships"
+      },
+      "teams.team_memberships.read": {
+        "title": "Read"
+      },
+      "teams.user": {
+        "title": "Account"
+      },
+      "teams.user.delete": {
+        "title": "Delete"
+      },
+      "teams.user.write": {
+        "title": "Create and edit"
+      },
+      "teams.users": {
+        "title": "Users"
+      },
+      "teams.users.read": {
+        "title": "Read"
+      },
+      "time_periods": {
+        "title": "Time periods"
+      },
+      "time_periods.read": {
+        "title": "Read"
+      },
+      "time_tracking_categories": {
+        "title": "Time tracking categories"
+      },
+      "time_tracking_categories.delete": {
+        "title": "Delete"
+      },
+      "time_tracking_categories.read": {
+        "title": "Read"
+      },
+      "time_tracking_categories.time_tracking_entries": {
+        "title": "Time tracking entries"
+      },
+      "time_tracking_categories.time_tracking_entries.read": {
+        "title": "Read"
+      },
+      "time_tracking_categories.write": {
+        "title": "Create and edit"
+      },
+      "time_tracking_entries": {
+        "title": "Time tracking entries"
+      },
+      "time_tracking_entries.delete": {
+        "title": "Delete"
+      },
+      "time_tracking_entries.read": {
+        "title": "Read"
+      },
+      "time_tracking_entries.write": {
+        "title": "Create and edit"
+      },
+      "timesheet_approval_statuses": {
+        "title": "Timesheet approval statuses"
+      },
+      "timesheet_approval_statuses.read": {
+        "title": "Read"
+      },
+      "timesheet_approval_statuses.write": {
+        "title": "Create and edit"
+      },
+      "user_task_lists": {
+        "title": "User task lists"
+      },
+      "user_task_lists.read": {
+        "title": "Read"
+      },
+      "user_task_lists.tasks": {
+        "title": "Tasks"
+      },
+      "user_task_lists.tasks.read": {
+        "title": "Read"
+      },
+      "users": {
+        "title": "Users"
+      },
+      "users.admin": {
+        "title": "Manage"
+      },
+      "users.favorites": {
+        "title": "Favorites"
+      },
+      "users.favorites.read": {
+        "title": "Read"
+      },
+      "users.read": {
+        "title": "Read"
+      },
+      "users.team_memberships": {
+        "title": "Team memberships"
+      },
+      "users.team_memberships.read": {
+        "title": "Read"
+      },
+      "users.teams": {
+        "title": "Teams"
+      },
+      "users.teams.read": {
+        "title": "Read"
+      },
+      "users.user_task": {
+        "title": "User task"
+      },
+      "users.user_task.read": {
+        "title": "Read"
+      },
+      "users.workspace_memberships": {
+        "title": "Workspace memberships"
+      },
+      "users.workspace_memberships.read": {
+        "title": "Read"
+      },
+      "webhooks": {
+        "title": "Webhooks"
+      },
+      "webhooks.admin": {
+        "title": "Manage"
+      },
+      "webhooks.delete": {
+        "title": "Delete"
+      },
+      "webhooks.read": {
+        "title": "Read"
+      },
+      "workspace_memberships": {
+        "title": "Workspace memberships"
+      },
+      "workspace_memberships.read": {
+        "title": "Read"
+      },
+      "workspaces": {
+        "title": "Workspaces"
+      },
+      "workspaces.admin": {
+        "title": "Manage"
+      },
+      "workspaces.agents": {
+        "title": "Agents"
+      },
+      "workspaces.agents.read": {
+        "title": "Read"
+      },
+      "workspaces.ai_studio": {
+        "title": "Ai studio"
+      },
+      "workspaces.ai_studio.runs": {
+        "title": "Runs"
+      },
+      "workspaces.ai_studio.runs.read": {
+        "title": "Read"
+      },
+      "workspaces.ai_studio.seats": {
+        "title": "Seats"
+      },
+      "workspaces.ai_studio.seats.read": {
+        "title": "Read"
+      },
+      "workspaces.audit_log_events": {
+        "title": "Audit log events"
+      },
+      "workspaces.audit_log_events.read": {
+        "title": "Read"
+      },
+      "workspaces.custom_fields": {
+        "title": "Custom fields"
+      },
+      "workspaces.custom_fields.read": {
+        "title": "Read"
+      },
+      "workspaces.events": {
+        "title": "Events"
+      },
+      "workspaces.events.read": {
+        "title": "Read"
+      },
+      "workspaces.projects": {
+        "title": "Projects"
+      },
+      "workspaces.projects.read": {
+        "title": "Read"
+      },
+      "workspaces.projects.write": {
+        "title": "Create and edit"
+      },
+      "workspaces.read": {
+        "title": "Read"
+      },
+      "workspaces.tags": {
+        "title": "Tags"
+      },
+      "workspaces.tags.read": {
+        "title": "Read"
+      },
+      "workspaces.tags.write": {
+        "title": "Create and edit"
+      },
+      "workspaces.tasks": {
+        "title": "Tasks"
+      },
+      "workspaces.tasks.custom_id": {
+        "title": "Custom id"
+      },
+      "workspaces.tasks.custom_id.read": {
+        "title": "Read"
+      },
+      "workspaces.tasks.read": {
+        "title": "Read"
+      },
+      "workspaces.teams": {
+        "title": "Teams"
+      },
+      "workspaces.teams.read": {
+        "title": "Read"
+      },
+      "workspaces.typeahead": {
+        "title": "Typeahead"
+      },
+      "workspaces.typeahead.read": {
+        "title": "Read"
+      },
+      "workspaces.user": {
+        "title": "Account"
+      },
+      "workspaces.user.delete": {
+        "title": "Delete"
+      },
+      "workspaces.user.write": {
+        "title": "Create and edit"
+      },
+      "workspaces.users": {
+        "title": "Users"
+      },
+      "workspaces.users.admin": {
+        "title": "Manage"
+      },
+      "workspaces.users.read": {
+        "title": "Read"
+      },
+      "workspaces.workspace_memberships": {
+        "title": "Workspace memberships"
+      },
+      "workspaces.workspace_memberships.read": {
+        "title": "Read"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://app.asana.com",
+            "path": "/api/1.0",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "token",
+        "label": "Personal access token",
+        "credential": true,
+        "secret": true
+      }
+    ],
+    "group": "api"
+  },
+  "title": "Asana",
+  "http": {
+    "operations": {
+      "addCustomFieldSettingForGoal": {"action":"goals.custom_field_setting.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/goals/{goal_gid}/addCustomFieldSetting","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addCustomFieldSettingForPortfolio": {"action":"portfolios.custom_field_setting.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/portfolios/{portfolio_gid}/addCustomFieldSetting","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addCustomFieldSettingForProject": {"action":"projects.custom_field_setting.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}/addCustomFieldSetting","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addDependenciesForTask": {"action":"tasks.dependencies.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/tasks/{task_gid}/addDependencies","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "addDependentsForTask": {"action":"tasks.dependents.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/tasks/{task_gid}/addDependents","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "addFollowers": {"action":"goals.followers.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/goals/{goal_gid}/addFollowers","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addFollowersForProject": {"action":"projects.followers.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}/addFollowers","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addFollowersForTask": {"action":"tasks.followers.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/tasks/{task_gid}/addFollowers","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "addItemForPortfolio": {"action":"portfolios.item.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/portfolios/{portfolio_gid}/addItem","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addMembersForPortfolio": {"action":"portfolios.members.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/portfolios/{portfolio_gid}/addMembers","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addMembersForProject": {"action":"projects.members.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}/addMembers","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addProjectForTask": {"action":"tasks.project.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/tasks/{task_gid}/addProject","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "addSupportingRelationship": {"action":"goals.supporting_relationship.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/goals/{goal_gid}/addSupportingRelationship","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "addTagForTask": {"action":"tasks.tag.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/tasks/{task_gid}/addTag","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "addTaskForSection": {"action":"sections.task.write","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/sections/{section_gid}/addTask","scope":{"query":{"at":"","from":"query","type":"object"},"section_gid":{"at":"section_gid","from":"path"}}},
+      "addTaskForSection.json.4c8117b4c3ca": {"action":"sections.task.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/sections/{section_gid}/addTask","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"section_gid":{"at":"section_gid","from":"path"}}},
+      "addUserForTeam": {"action":"teams.user.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/teams/{team_gid}/addUser","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"team_gid":{"at":"team_gid","from":"path"}}},
+      "addUserForWorkspace": {"action":"workspaces.user.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/addUser","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "approveAccessRequest": {"action":"access_requests.write","effects":["write"],"method":"POST","origin":"https://app.asana.com","path":"/api/1.0/access_requests/{access_request_gid}/approve","scope":{"access_request_gid":{"at":"access_request_gid","from":"path"}}},
+      "createAccessRequest": {"action":"access_requests.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","path":"/api/1.0/access_requests","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createAllocation": {"action":"allocations.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/allocations","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createAttachmentForObject": {"action":"attachments.write","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/attachments","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createBatchRequest": {"action":"batch.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/batch","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createBudget": {"action":"budgets.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/budgets","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createCustomField": {"action":"custom_fields.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/custom_fields","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createEnumOptionForCustomField": {"action":"custom_fields.enum_options.write","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/custom_fields/{custom_field_gid}/enum_options","scope":{"custom_field_gid":{"at":"custom_field_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "createEnumOptionForCustomField.json.056bfdfdac99": {"action":"custom_fields.enum_options.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/custom_fields/{custom_field_gid}/enum_options","scope":{"custom_field_gid":{"at":"custom_field_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createGoal": {"action":"goals.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/goals","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createGoalMetric": {"action":"goals.metric.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/goals/{goal_gid}/setMetric","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createGraphExport": {"action":"exports.graph.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","path":"/api/1.0/exports/graph","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createMembership": {"action":"memberships.admin","effects":["admin"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/memberships","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "createMembership.json.966550a96b45": {"action":"memberships.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/memberships","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createOooEntry": {"action":"ooo_entries.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/ooo_entries","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createOrganizationExport": {"action":"organization_exports.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/organization_exports","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createPortfolio": {"action":"portfolios.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/portfolios","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createProject": {"action":"projects.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createProjectBrief": {"action":"projects.project_briefs.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}/project_briefs","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createProjectForTeam": {"action":"teams.projects.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/teams/{team_gid}/projects","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"team_gid":{"at":"team_gid","from":"path"}}},
+      "createProjectForWorkspace": {"action":"workspaces.projects.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/projects","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "createProjectStatusForProject": {"action":"projects.project_statuses.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}/project_statuses","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createRate": {"action":"rates.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/rates","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createResourceExport": {"action":"exports.resource.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","path":"/api/1.0/exports/resource","scope":{"request":{"at":"","from":"body","type":"object"}}},
+      "createRole": {"action":"roles.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/roles","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createSectionForProject": {"action":"projects.sections.write","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}/sections","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "createSectionForProject.json.629eb95a4ced": {"action":"projects.sections.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}/sections","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createStatusForObject": {"action":"status_updates.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/status_updates","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createStoryForGoal": {"action":"goals.stories.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/goals/{goal_gid}/stories","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createSubtaskForTask": {"action":"tasks.subtasks.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/tasks/{task_gid}/subtasks","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "createTag": {"action":"tags.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/tags","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createTagForWorkspace": {"action":"workspaces.tags.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/tags","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "createTeam": {"action":"teams.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/teams","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createTimeTrackingCategory": {"action":"time_tracking_categories.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/time_tracking_categories","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createTimeTrackingEntry": {"action":"tasks.time_tracking_entries.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/tasks/{task_gid}/time_tracking_entries","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "createTimesheetApprovalStatus": {"action":"timesheet_approval_statuses.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/timesheet_approval_statuses","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "createWebhook": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/webhooks","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "deleteAllocation": {"action":"allocations.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/allocations/{allocation_gid}","scope":{"allocation_gid":{"at":"allocation_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteAttachment": {"action":"attachments.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/attachments/{attachment_gid}","scope":{"attachment_gid":{"at":"attachment_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteBudget": {"action":"budgets.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/budgets/{budget_gid}","scope":{"budget_gid":{"at":"budget_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteCustomField": {"action":"custom_fields.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/custom_fields/{custom_field_gid}","scope":{"custom_field_gid":{"at":"custom_field_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteGoal": {"action":"goals.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/goals/{goal_gid}","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteMembership": {"action":"memberships.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/memberships/{membership_gid}","scope":{"membership_gid":{"at":"membership_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteOooEntry": {"action":"ooo_entries.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/ooo_entries/{ooo_entry_gid}","scope":{"ooo_entry_gid":{"at":"ooo_entry_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deletePortfolio": {"action":"portfolios.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/portfolios/{portfolio_gid}","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteProject": {"action":"projects.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/projects/{project_gid}","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteProjectBrief": {"action":"project_briefs.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/project_briefs/{project_brief_gid}","scope":{"project_brief_gid":{"at":"project_brief_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteProjectStatus": {"action":"project_statuses.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/project_statuses/{project_status_gid}","scope":{"project_status_gid":{"at":"project_status_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteProjectTemplate": {"action":"project_templates.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/project_templates/{project_template_gid}","scope":{"project_template_gid":{"at":"project_template_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "deleteRate": {"action":"rates.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/rates/{rate_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"rate_gid":{"at":"rate_gid","from":"path"}}},
+      "deleteRole": {"action":"roles.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/roles/{role_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"role_gid":{"at":"role_gid","from":"path"}}},
+      "deleteSection": {"action":"sections.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/sections/{section_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"section_gid":{"at":"section_gid","from":"path"}}},
+      "deleteStatus": {"action":"status_updates.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/status_updates/{status_update_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"status_update_gid":{"at":"status_update_gid","from":"path"}}},
+      "deleteStory": {"action":"stories.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/stories/{story_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"story_gid":{"at":"story_gid","from":"path"}}},
+      "deleteTag": {"action":"tags.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/tags/{tag_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"tag_gid":{"at":"tag_gid","from":"path"}}},
+      "deleteTaskTemplate": {"action":"task_templates.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/task_templates/{task_template_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"task_template_gid":{"at":"task_template_gid","from":"path"}}},
+      "deleteTimeTrackingCategory": {"action":"time_tracking_categories.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/time_tracking_categories/{time_tracking_category_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"time_tracking_category_gid":{"at":"time_tracking_category_gid","from":"path"}}},
+      "deleteTimeTrackingEntry": {"action":"time_tracking_entries.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/time_tracking_entries/{time_tracking_entry_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"time_tracking_entry_gid":{"at":"time_tracking_entry_gid","from":"path"}}},
+      "deleteWebhook": {"action":"webhooks.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/webhooks/{webhook_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"webhook_gid":{"at":"webhook_gid","from":"path"}}},
+      "duplicatePortfolio": {"action":"portfolios.write","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/portfolios/{portfolio_gid}/duplicate","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "duplicatePortfolio.json.c228ac3cc977": {"action":"portfolios.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/portfolios/{portfolio_gid}/duplicate","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "duplicateProject": {"action":"projects.write","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}/duplicate","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "duplicateProject.json.5244f7f8ed73": {"action":"projects.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}/duplicate","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "duplicateTask": {"action":"tasks.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/tasks/{task_gid}/duplicate","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "getAccessRequests": {"action":"access_requests.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["target","user","opt_pretty","opt_fields"],"path":"/api/1.0/access_requests","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query","optional":true}}},
+      "getAgent": {"action":"agents.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/agents/{agent_gid}","scope":{"agent_gid":{"at":"agent_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getAgentsForWorkspace": {"action":"workspaces.agents.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/agents","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "getAiStudioRuns": {"action":"workspaces.ai_studio.runs.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["start_at","end_at","division_gid","limit","offset"],"path":"/api/1.0/workspaces/{workspace_gid}/ai_studio/runs","scope":{"division_gid":{"at":"division_gid","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "getAiStudioSeats": {"action":"workspaces.ai_studio.seats.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["state","division_gid","limit","offset"],"path":"/api/1.0/workspaces/{workspace_gid}/ai_studio/seats","scope":{"division_gid":{"at":"division_gid","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "getAllocation": {"action":"allocations.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/allocations/{allocation_gid}","scope":{"allocation_gid":{"at":"allocation_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getAllocations": {"action":"allocations.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","parent","assignee","workspace","limit","offset","opt_fields"],"path":"/api/1.0/allocations","scope":{"query":{"at":"","from":"query","type":"object"},"workspace":{"at":"workspace","from":"query","optional":true}}},
+      "getAttachment": {"action":"attachments.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/attachments/{attachment_gid}","scope":{"attachment_gid":{"at":"attachment_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getAttachmentsForObject": {"action":"attachments.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","parent","opt_fields"],"path":"/api/1.0/attachments","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getAuditLogEvents": {"action":"workspaces.audit_log_events.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["start_at","end_at","event_type","actor_type","actor_gid","resource_gid","limit","offset"],"path":"/api/1.0/workspaces/{workspace_gid}/audit_log_events","scope":{"actor_gid":{"at":"actor_gid","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"resource_gid":{"at":"resource_gid","from":"query","optional":true},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "getBudget": {"action":"budgets.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/budgets/{budget_gid}","scope":{"budget_gid":{"at":"budget_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getBudgets": {"action":"budgets.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","parent"],"path":"/api/1.0/budgets","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getCustomField": {"action":"custom_fields.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/custom_fields/{custom_field_gid}","scope":{"custom_field_gid":{"at":"custom_field_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCustomFieldSettingsForGoal": {"action":"goals.custom_field_settings.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/goals/{goal_gid}/custom_field_settings","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCustomFieldSettingsForPortfolio": {"action":"portfolios.custom_field_settings.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/portfolios/{portfolio_gid}/custom_field_settings","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCustomFieldSettingsForProject": {"action":"projects.custom_field_settings.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/projects/{project_gid}/custom_field_settings","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCustomFieldSettingsForTeam": {"action":"teams.custom_field_settings.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/teams/{team_gid}/custom_field_settings","scope":{"query":{"at":"","from":"query","type":"object"},"team_gid":{"at":"team_gid","from":"path"}}},
+      "getCustomFieldsForWorkspace": {"action":"workspaces.custom_fields.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/custom_fields","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "getCustomType": {"action":"custom_types.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/custom_types/{custom_type_gid}","scope":{"custom_type_gid":{"at":"custom_type_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getCustomTypes": {"action":"custom_types.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["project","workspace","opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/custom_types","scope":{"project":{"at":"project","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"workspace":{"at":"workspace","from":"query","optional":true}}},
+      "getDependenciesForTask": {"action":"tasks.dependencies.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/tasks/{task_gid}/dependencies","scope":{"query":{"at":"","from":"query","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "getDependentsForTask": {"action":"tasks.dependents.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/tasks/{task_gid}/dependents","scope":{"query":{"at":"","from":"query","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "getEvents": {"action":"events.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["resource","sync","opt_pretty","opt_fields"],"path":"/api/1.0/events","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getFavoritesForUser": {"action":"users.favorites.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","resource_type","workspace","opt_fields"],"path":"/api/1.0/users/{user_gid}/favorites","scope":{"query":{"at":"","from":"query","type":"object"},"user_gid":{"at":"user_gid","from":"path"},"workspace":{"at":"workspace","from":"query"}}},
+      "getGoal": {"action":"goals.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/goals/{goal_gid}","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getGoalRelationship": {"action":"goal_relationships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/goal_relationships/{goal_relationship_gid}","scope":{"goal_relationship_gid":{"at":"goal_relationship_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getGoalRelationships": {"action":"goal_relationships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","supported_goal","resource_subtype","opt_fields"],"path":"/api/1.0/goal_relationships","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getGoals": {"action":"goals.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","portfolio","project","task","is_workspace_level","team","workspace","time_periods","limit","offset","opt_fields"],"path":"/api/1.0/goals","scope":{"project":{"at":"project","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"team":{"at":"team","from":"query","optional":true},"workspace":{"at":"workspace","from":"query","optional":true}}},
+      "getItemsForPortfolio": {"action":"portfolios.items.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/portfolios/{portfolio_gid}/items","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getJob": {"action":"jobs.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/jobs/{job_gid}","scope":{"job_gid":{"at":"job_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getMembership": {"action":"memberships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/memberships/{membership_gid}","scope":{"membership_gid":{"at":"membership_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getMemberships": {"action":"memberships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","parent","member","resource_subtype","limit","offset","opt_fields"],"path":"/api/1.0/memberships","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getOooEntries": {"action":"ooo_entries.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","user","workspace","limit","offset","start_date","end_date","opt_fields"],"path":"/api/1.0/ooo_entries","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query"},"workspace":{"at":"workspace","from":"query"}}},
+      "getOooEntry": {"action":"ooo_entries.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/ooo_entries/{ooo_entry_gid}","scope":{"ooo_entry_gid":{"at":"ooo_entry_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getOrganizationExport": {"action":"organization_exports.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/organization_exports/{organization_export_gid}","scope":{"organization_export_gid":{"at":"organization_export_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getParentGoalsForGoal": {"action":"goals.parent_goals.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/goals/{goal_gid}/parentGoals","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getPortfolio": {"action":"portfolios.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/portfolios/{portfolio_gid}","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getPortfolioMembership": {"action":"portfolio_memberships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/portfolio_memberships/{portfolio_membership_gid}","scope":{"portfolio_membership_gid":{"at":"portfolio_membership_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getPortfolioMemberships": {"action":"portfolio_memberships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["portfolio","workspace","user","opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/portfolio_memberships","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query","optional":true},"workspace":{"at":"workspace","from":"query","optional":true}}},
+      "getPortfolioMembershipsForPortfolio": {"action":"portfolios.portfolio_memberships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["user","opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/portfolios/{portfolio_gid}/portfolio_memberships","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query","optional":true}}},
+      "getPortfolios": {"action":"portfolios.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","workspace","owner","custom_type","opt_fields"],"path":"/api/1.0/portfolios","scope":{"owner":{"at":"owner","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"workspace":{"at":"workspace","from":"query"}}},
+      "getProject": {"action":"projects.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getProjectBrief": {"action":"project_briefs.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/project_briefs/{project_brief_gid}","scope":{"project_brief_gid":{"at":"project_brief_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getProjectMembership": {"action":"project_memberships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/project_memberships/{project_membership_gid}","scope":{"project_membership_gid":{"at":"project_membership_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getProjectMembershipsForProject": {"action":"projects.project_memberships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["user","opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/projects/{project_gid}/project_memberships","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query","optional":true}}},
+      "getProjectPortfolioSetting": {"action":"project_portfolio_settings.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/project_portfolio_settings/{project_portfolio_setting_gid}","scope":{"project_portfolio_setting_gid":{"at":"project_portfolio_setting_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getProjectPortfolioSettingsForPortfolio": {"action":"portfolios.project_portfolio_settings.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/portfolios/{portfolio_gid}/project_portfolio_settings","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getProjectPortfolioSettingsForProject": {"action":"projects.project_portfolio_settings.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/projects/{project_gid}/project_portfolio_settings","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getProjectStatus": {"action":"project_statuses.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/project_statuses/{project_status_gid}","scope":{"project_status_gid":{"at":"project_status_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getProjectStatusesForProject": {"action":"projects.project_statuses.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/projects/{project_gid}/project_statuses","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getProjectTemplate": {"action":"project_templates.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/project_templates/{project_template_gid}","scope":{"project_template_gid":{"at":"project_template_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getProjectTemplates": {"action":"project_templates.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","workspace","team","limit","offset","opt_fields"],"path":"/api/1.0/project_templates","scope":{"query":{"at":"","from":"query","type":"object"},"team":{"at":"team","from":"query","optional":true},"workspace":{"at":"workspace","from":"query","optional":true}}},
+      "getProjectTemplatesForTeam": {"action":"teams.project_templates.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/teams/{team_gid}/project_templates","scope":{"query":{"at":"","from":"query","type":"object"},"team_gid":{"at":"team_gid","from":"path"}}},
+      "getProjects": {"action":"projects.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","workspace","team","archived","custom_type","opt_fields"],"path":"/api/1.0/projects","scope":{"query":{"at":"","from":"query","type":"object"},"team":{"at":"team","from":"query","optional":true},"workspace":{"at":"workspace","from":"query","optional":true}}},
+      "getProjectsForTask": {"action":"tasks.projects.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","include_inherited_projects","opt_fields"],"path":"/api/1.0/tasks/{task_gid}/projects","scope":{"include_inherited_projects":{"at":"include_inherited_projects","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "getProjectsForTeam": {"action":"teams.projects.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","archived","opt_fields"],"path":"/api/1.0/teams/{team_gid}/projects","scope":{"query":{"at":"","from":"query","type":"object"},"team_gid":{"at":"team_gid","from":"path"}}},
+      "getProjectsForWorkspace": {"action":"workspaces.projects.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","archived","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/projects","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "getRate": {"action":"rates.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/rates/{rate_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"rate_gid":{"at":"rate_gid","from":"path"}}},
+      "getRates": {"action":"rates.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","parent","resource","limit","offset","opt_fields"],"path":"/api/1.0/rates","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getReactionsOnObject": {"action":"reactions.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","target","emoji_base"],"path":"/api/1.0/reactions","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getRole": {"action":"roles.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/roles/{role_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"role_gid":{"at":"role_gid","from":"path"}}},
+      "getRoles": {"action":"roles.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","workspace","archived","opt_fields"],"path":"/api/1.0/roles","scope":{"query":{"at":"","from":"query","type":"object"},"workspace":{"at":"workspace","from":"query"}}},
+      "getSection": {"action":"sections.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/sections/{section_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"section_gid":{"at":"section_gid","from":"path"}}},
+      "getSectionsForProject": {"action":"projects.sections.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/projects/{project_gid}/sections","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getStatus": {"action":"status_updates.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/status_updates/{status_update_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"status_update_gid":{"at":"status_update_gid","from":"path"}}},
+      "getStatusesForObject": {"action":"status_updates.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","parent","created_since","opt_fields"],"path":"/api/1.0/status_updates","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "getStoriesForGoal": {"action":"goals.stories.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","created_after","resource_subtype","sort_ascending","opt_fields"],"path":"/api/1.0/goals/{goal_gid}/stories","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getStoriesForTask": {"action":"tasks.stories.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","created_after","resource_subtype","sort_ascending","opt_fields"],"path":"/api/1.0/tasks/{task_gid}/stories","scope":{"query":{"at":"","from":"query","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "getStory": {"action":"stories.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/stories/{story_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"story_gid":{"at":"story_gid","from":"path"}}},
+      "getSubtasksForTask": {"action":"tasks.subtasks.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/tasks/{task_gid}/subtasks","scope":{"query":{"at":"","from":"query","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "getTag": {"action":"tags.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/tags/{tag_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"tag_gid":{"at":"tag_gid","from":"path"}}},
+      "getTags": {"action":"tags.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","workspace","opt_fields"],"path":"/api/1.0/tags","scope":{"query":{"at":"","from":"query","type":"object"},"workspace":{"at":"workspace","from":"query","optional":true}}},
+      "getTagsForTask": {"action":"tasks.tags.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/tasks/{task_gid}/tags","scope":{"query":{"at":"","from":"query","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "getTagsForWorkspace": {"action":"workspaces.tags.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/tags","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "getTaskCountsForProject": {"action":"projects.task_counts.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}/task_counts","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTaskForCustomID": {"action":"workspaces.tasks.custom_id.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","path":"/api/1.0/workspaces/{workspace_gid}/tasks/custom_id/{custom_id}","scope":{"custom_id":{"at":"custom_id","from":"path"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "getTaskTemplate": {"action":"task_templates.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/task_templates/{task_template_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"task_template_gid":{"at":"task_template_gid","from":"path"}}},
+      "getTaskTemplates": {"action":"task_templates.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","project","opt_fields"],"path":"/api/1.0/task_templates","scope":{"project":{"at":"project","from":"query","optional":true},"query":{"at":"","from":"query","type":"object"}}},
+      "getTasksForProject": {"action":"projects.tasks.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["completed_since","opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/projects/{project_gid}/tasks","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "getTasksForSection": {"action":"sections.tasks.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","completed_since","opt_fields"],"path":"/api/1.0/sections/{section_gid}/tasks","scope":{"query":{"at":"","from":"query","type":"object"},"section_gid":{"at":"section_gid","from":"path"}}},
+      "getTasksForTag": {"action":"tags.tasks.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/tags/{tag_gid}/tasks","scope":{"query":{"at":"","from":"query","type":"object"},"tag_gid":{"at":"tag_gid","from":"path"}}},
+      "getTasksForUserTaskList": {"action":"user_task_lists.tasks.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["completed_since","opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/user_task_lists/{user_task_list_gid}/tasks","scope":{"query":{"at":"","from":"query","type":"object"},"user_task_list_gid":{"at":"user_task_list_gid","from":"path"}}},
+      "getTeam": {"action":"teams.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/teams/{team_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"team_gid":{"at":"team_gid","from":"path"}}},
+      "getTeamMembership": {"action":"team_memberships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/team_memberships/{team_membership_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"team_membership_gid":{"at":"team_membership_gid","from":"path"}}},
+      "getTeamMemberships": {"action":"team_memberships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","team","user","workspace","opt_fields"],"path":"/api/1.0/team_memberships","scope":{"query":{"at":"","from":"query","type":"object"},"team":{"at":"team","from":"query","optional":true},"user":{"at":"user","from":"query","optional":true},"workspace":{"at":"workspace","from":"query","optional":true}}},
+      "getTeamMembershipsForTeam": {"action":"teams.team_memberships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/teams/{team_gid}/team_memberships","scope":{"query":{"at":"","from":"query","type":"object"},"team_gid":{"at":"team_gid","from":"path"}}},
+      "getTeamMembershipsForUser": {"action":"users.team_memberships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","workspace","opt_fields"],"path":"/api/1.0/users/{user_gid}/team_memberships","scope":{"query":{"at":"","from":"query","type":"object"},"user_gid":{"at":"user_gid","from":"path"},"workspace":{"at":"workspace","from":"query"}}},
+      "getTeamsForUser": {"action":"users.teams.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","organization","opt_fields"],"path":"/api/1.0/users/{user_gid}/teams","scope":{"query":{"at":"","from":"query","type":"object"},"user_gid":{"at":"user_gid","from":"path"}}},
+      "getTeamsForWorkspace": {"action":"workspaces.teams.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/teams","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "getTimePeriod": {"action":"time_periods.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/time_periods/{time_period_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"time_period_gid":{"at":"time_period_gid","from":"path"}}},
+      "getTimePeriods": {"action":"time_periods.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","start_on","end_on","workspace","opt_fields"],"path":"/api/1.0/time_periods","scope":{"query":{"at":"","from":"query","type":"object"},"workspace":{"at":"workspace","from":"query"}}},
+      "getTimeTrackingCategories": {"action":"time_tracking_categories.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","workspace","is_archived","limit","offset","opt_fields"],"path":"/api/1.0/time_tracking_categories","scope":{"query":{"at":"","from":"query","type":"object"},"workspace":{"at":"workspace","from":"query"}}},
+      "getTimeTrackingCategory": {"action":"time_tracking_categories.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/time_tracking_categories/{time_tracking_category_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"time_tracking_category_gid":{"at":"time_tracking_category_gid","from":"path"}}},
+      "getTimeTrackingEntries": {"action":"time_tracking_entries.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","task","attributable_to","portfolio","user","workspace","entered_on_start_date","entered_on_end_date","timesheet_approval_status","limit","offset","opt_fields"],"path":"/api/1.0/time_tracking_entries","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query","optional":true},"workspace":{"at":"workspace","from":"query","optional":true}}},
+      "getTimeTrackingEntriesForTask": {"action":"tasks.time_tracking_entries.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/tasks/{task_gid}/time_tracking_entries","scope":{"query":{"at":"","from":"query","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "getTimeTrackingEntriesForTimeTrackingCategory": {"action":"time_tracking_categories.time_tracking_entries.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","start_date","end_date","limit","offset","opt_fields"],"path":"/api/1.0/time_tracking_categories/{time_tracking_category_gid}/time_tracking_entries","scope":{"query":{"at":"","from":"query","type":"object"},"time_tracking_category_gid":{"at":"time_tracking_category_gid","from":"path"}}},
+      "getTimeTrackingEntry": {"action":"time_tracking_entries.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/time_tracking_entries/{time_tracking_entry_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"time_tracking_entry_gid":{"at":"time_tracking_entry_gid","from":"path"}}},
+      "getTimesheetApprovalStatus": {"action":"timesheet_approval_statuses.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/timesheet_approval_statuses/{timesheet_approval_status_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"timesheet_approval_status_gid":{"at":"timesheet_approval_status_gid","from":"path"}}},
+      "getTimesheetApprovalStatuses": {"action":"timesheet_approval_statuses.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","workspace","user","from_date","to_date","approval_statuses","limit","offset","opt_fields"],"path":"/api/1.0/timesheet_approval_statuses","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query","optional":true},"workspace":{"at":"workspace","from":"query"}}},
+      "getUser": {"action":"users.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","workspace","opt_fields"],"path":"/api/1.0/users/{user_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"user_gid":{"at":"user_gid","from":"path"},"workspace":{"at":"workspace","from":"query","optional":true}}},
+      "getUserForWorkspace": {"action":"workspaces.users.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/users/{user_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"user_gid":{"at":"user_gid","from":"path"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "getUserTaskList": {"action":"user_task_lists.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/user_task_lists/{user_task_list_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"user_task_list_gid":{"at":"user_task_list_gid","from":"path"}}},
+      "getUserTaskListForUser": {"action":"users.user_task.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","workspace","opt_fields"],"path":"/api/1.0/users/{user_gid}/user_task_list","scope":{"query":{"at":"","from":"query","type":"object"},"user_gid":{"at":"user_gid","from":"path"},"workspace":{"at":"workspace","from":"query"}}},
+      "getUsers": {"action":"users.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["workspace","team","opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/users","scope":{"query":{"at":"","from":"query","type":"object"},"team":{"at":"team","from":"query","optional":true},"workspace":{"at":"workspace","from":"query","optional":true}}},
+      "getUsersForTeam": {"action":"teams.users.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","offset","opt_fields"],"path":"/api/1.0/teams/{team_gid}/users","scope":{"query":{"at":"","from":"query","type":"object"},"team_gid":{"at":"team_gid","from":"path"}}},
+      "getUsersForWorkspace": {"action":"workspaces.users.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","offset","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/users","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "getWebhook": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/webhooks/{webhook_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"webhook_gid":{"at":"webhook_gid","from":"path"}}},
+      "getWebhooks": {"action":"webhooks.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","workspace","resource","opt_fields"],"path":"/api/1.0/webhooks","scope":{"query":{"at":"","from":"query","type":"object"},"workspace":{"at":"workspace","from":"query"}}},
+      "getWorkspace": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "getWorkspaceEvents": {"action":"workspaces.events.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","sync"],"path":"/api/1.0/workspaces/{workspace_gid}/events","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "getWorkspaceMembership": {"action":"workspace_memberships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/workspace_memberships/{workspace_membership_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_membership_gid":{"at":"workspace_membership_gid","from":"path"}}},
+      "getWorkspaceMembershipsForUser": {"action":"users.workspace_memberships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/users/{user_gid}/workspace_memberships","scope":{"query":{"at":"","from":"query","type":"object"},"user_gid":{"at":"user_gid","from":"path"}}},
+      "getWorkspaceMembershipsForWorkspace": {"action":"workspaces.workspace_memberships.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["user","opt_pretty","limit","offset","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/workspace_memberships","scope":{"query":{"at":"","from":"query","type":"object"},"user":{"at":"user","from":"query","optional":true},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "insertEnumOptionForCustomField": {"action":"custom_fields.enum_options.insert.write","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/custom_fields/{custom_field_gid}/enum_options/insert","scope":{"custom_field_gid":{"at":"custom_field_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "insertEnumOptionForCustomField.json.e5ef334b9ce2": {"action":"custom_fields.enum_options.insert.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/custom_fields/{custom_field_gid}/enum_options/insert","scope":{"custom_field_gid":{"at":"custom_field_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "insertSectionForProject": {"action":"projects.sections.insert.write","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/projects/{project_gid}/sections/insert","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "insertSectionForProject.json.e1971c6105f7": {"action":"projects.sections.insert.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/projects/{project_gid}/sections/insert","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "instantiateProject": {"action":"project_templates.instantiate_project.write","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/project_templates/{project_template_gid}/instantiateProject","scope":{"project_template_gid":{"at":"project_template_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "instantiateProject.json.9a85c2730284": {"action":"project_templates.instantiate_project.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/project_templates/{project_template_gid}/instantiateProject","scope":{"project_template_gid":{"at":"project_template_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "instantiateTask": {"action":"task_templates.instantiate_task.write","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/task_templates/{task_template_gid}/instantiateTask","scope":{"query":{"at":"","from":"query","type":"object"},"task_template_gid":{"at":"task_template_gid","from":"path"}}},
+      "instantiateTask.json.37a7dc25f596": {"action":"task_templates.instantiate_task.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/task_templates/{task_template_gid}/instantiateTask","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_template_gid":{"at":"task_template_gid","from":"path"}}},
+      "projectSaveAsTemplate": {"action":"projects.save_as_template.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}/saveAsTemplate","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "rejectAccessRequest": {"action":"access_requests.write","effects":["write"],"method":"POST","origin":"https://app.asana.com","path":"/api/1.0/access_requests/{access_request_gid}/reject","scope":{"access_request_gid":{"at":"access_request_gid","from":"path"}}},
+      "removeCustomFieldSettingForGoal": {"action":"goals.custom_field_setting.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/goals/{goal_gid}/removeCustomFieldSetting","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "removeCustomFieldSettingForPortfolio": {"action":"portfolios.custom_field_setting.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/portfolios/{portfolio_gid}/removeCustomFieldSetting","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "removeCustomFieldSettingForProject": {"action":"projects.custom_field_setting.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/projects/{project_gid}/removeCustomFieldSetting","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "removeDependenciesForTask": {"action":"tasks.dependencies.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/tasks/{task_gid}/removeDependencies","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "removeDependentsForTask": {"action":"tasks.dependents.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/tasks/{task_gid}/removeDependents","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "removeFollowerForTask": {"action":"tasks.followers.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/tasks/{task_gid}/removeFollowers","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "removeFollowers": {"action":"goals.followers.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/goals/{goal_gid}/removeFollowers","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "removeFollowersForProject": {"action":"projects.followers.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}/removeFollowers","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "removeItemForPortfolio": {"action":"portfolios.item.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/portfolios/{portfolio_gid}/removeItem","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "removeMembersForPortfolio": {"action":"portfolios.members.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/portfolios/{portfolio_gid}/removeMembers","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "removeMembersForProject": {"action":"projects.members.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}/removeMembers","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "removeProjectForTask": {"action":"tasks.project.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/tasks/{task_gid}/removeProject","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "removeSupportingRelationship": {"action":"goals.supporting_relationship.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/goals/{goal_gid}/removeSupportingRelationship","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "removeTagForTask": {"action":"tasks.tag.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/tasks/{task_gid}/removeTag","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "removeUserForTeam": {"action":"teams.user.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/teams/{team_gid}/removeUser","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"team_gid":{"at":"team_gid","from":"path"}}},
+      "removeUserForWorkspace": {"action":"workspaces.user.delete","body":"json","effects":["delete"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/workspaces/{workspace_gid}/removeUser","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "rollupProject": {"action":"projects.rollup.write","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}/rollup","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "rollupTask": {"action":"tasks.rollup.write","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/tasks/{task_gid}/rollup","scope":{"query":{"at":"","from":"query","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "searchProjectsForWorkspace": {"action":"workspaces.projects.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","text","sort_by","sort_ascending","completed","teams.any","owner.any","members.any","members.not","portfolios.any","completed_on","completed_on.before","completed_on.after","completed_at.before","completed_at.after","created_on","created_on.before","created_on.after","created_at.before","created_at.after","due_on","due_on.before","due_on.after","due_at.before","due_at.after","start_on","start_on.before","start_on.after","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/projects/search","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "searchTasksForWorkspace": {"action":"workspaces.tasks.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_pretty","text","resource_subtype","assignee.any","assignee.not","portfolios.any","projects.any","projects.not","projects.all","sections.any","sections.not","sections.all","tags.any","tags.not","tags.all","teams.any","followers.any","followers.not","created_by.any","created_by.not","assigned_by.any","assigned_by.not","liked_by.not","commented_on_by.not","due_on.before","due_on.after","due_on","due_at.before","due_at.after","start_on.before","start_on.after","start_on","created_on.before","created_on.after","created_on","created_at.before","created_at.after","completed_on.before","completed_on.after","completed_on","completed_at.before","completed_at.after","modified_on.before","modified_on.after","modified_on","modified_at.before","modified_at.after","is_blocking","is_blocked","has_attachment","completed","is_subtask","sort_by","sort_ascending","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/tasks/search","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "setParentForTask": {"action":"tasks.parent.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/tasks/{task_gid}/setParent","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"task_gid":{"at":"task_gid","from":"path"}}},
+      "stories.create": {"action":"tasks.stories.send","body":"json","effects":["send"],"method":"POST","origin":"https://app.asana.com","path":"/api/1.0/tasks/{task}/stories","scope":{"story":{"at":"","from":"body","type":"object"},"task":{"at":"task","from":"path"}}},
+      "tasks.create": {"action":"tasks.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","path":"/api/1.0/tasks","scope":{"task":{"at":"","from":"body","type":"object"}}},
+      "tasks.delete": {"action":"tasks.delete","effects":["delete"],"method":"DELETE","origin":"https://app.asana.com","path":"/api/1.0/tasks/{task}","scope":{"task":{"at":"task","from":"path"}}},
+      "tasks.get": {"action":"tasks.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_fields"],"path":"/api/1.0/tasks/{task}","scope":{"task":{"at":"task","from":"path"}}},
+      "tasks.list": {"action":"tasks.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["project","assignee","workspace","completed_since","opt_fields"],"path":"/api/1.0/tasks","scope":{}},
+      "tasks.update": {"action":"tasks.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","path":"/api/1.0/tasks/{task}","scope":{"changes":{"at":"","from":"body","type":"object"},"task":{"at":"task","from":"path"}}},
+      "triggerRule": {"action":"rule_triggers.execute","body":"json","effects":["execute"],"method":"POST","origin":"https://app.asana.com","path":"/api/1.0/rule_triggers/{rule_trigger_gid}/run","scope":{"request":{"at":"","from":"body","type":"object"},"rule_trigger_gid":{"at":"rule_trigger_gid","from":"path"}}},
+      "typeaheadForWorkspace": {"action":"workspaces.typeahead.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["resource_type","type","query","count","opt_pretty","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/typeahead","scope":{"query":{"at":"","from":"query","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "updateAllocation": {"action":"allocations.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/allocations/{allocation_gid}","scope":{"allocation_gid":{"at":"allocation_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateBudget": {"action":"budgets.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/budgets/{budget_gid}","scope":{"budget_gid":{"at":"budget_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateCustomField": {"action":"custom_fields.write","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/custom_fields/{custom_field_gid}","scope":{"custom_field_gid":{"at":"custom_field_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateCustomField.json.73e0fdcfa9eb": {"action":"custom_fields.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/custom_fields/{custom_field_gid}","scope":{"custom_field_gid":{"at":"custom_field_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateEnumOption": {"action":"enum_options.write","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/enum_options/{enum_option_gid}","scope":{"enum_option_gid":{"at":"enum_option_gid","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "updateEnumOption.json.3dd39ed38f6c": {"action":"enum_options.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/enum_options/{enum_option_gid}","scope":{"enum_option_gid":{"at":"enum_option_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateGoal": {"action":"goals.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/goals/{goal_gid}","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateGoalMetric": {"action":"goals.metric_current_value.write","body":"json","effects":["write"],"method":"POST","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/goals/{goal_gid}/setMetricCurrentValue","scope":{"goal_gid":{"at":"goal_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateGoalRelationship": {"action":"goal_relationships.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/goal_relationships/{goal_relationship_gid}","scope":{"goal_relationship_gid":{"at":"goal_relationship_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateMembership": {"action":"memberships.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty"],"path":"/api/1.0/memberships/{membership_gid}","scope":{"membership_gid":{"at":"membership_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateOooEntry": {"action":"ooo_entries.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/ooo_entries/{ooo_entry_gid}","scope":{"ooo_entry_gid":{"at":"ooo_entry_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updatePortfolio": {"action":"portfolios.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/portfolios/{portfolio_gid}","scope":{"portfolio_gid":{"at":"portfolio_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateProject": {"action":"projects.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/projects/{project_gid}","scope":{"project_gid":{"at":"project_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateProjectBrief": {"action":"project_briefs.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/project_briefs/{project_brief_gid}","scope":{"project_brief_gid":{"at":"project_brief_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateProjectPortfolioSetting": {"action":"project_portfolio_settings.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/project_portfolio_settings/{project_portfolio_setting_gid}","scope":{"project_portfolio_setting_gid":{"at":"project_portfolio_setting_gid","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateRate": {"action":"rates.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/rates/{rate_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"rate_gid":{"at":"rate_gid","from":"path"},"request":{"at":"","from":"body","type":"object"}}},
+      "updateRole": {"action":"roles.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/roles/{role_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"role_gid":{"at":"role_gid","from":"path"}}},
+      "updateSection": {"action":"sections.write","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/sections/{section_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"section_gid":{"at":"section_gid","from":"path"}}},
+      "updateSection.json.4ae021a74766": {"action":"sections.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/sections/{section_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"section_gid":{"at":"section_gid","from":"path"}}},
+      "updateStory": {"action":"stories.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/stories/{story_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"story_gid":{"at":"story_gid","from":"path"}}},
+      "updateTag": {"action":"tags.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/tags/{tag_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tag_gid":{"at":"tag_gid","from":"path"}}},
+      "updateTeam": {"action":"teams.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/teams/{team_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"team_gid":{"at":"team_gid","from":"path"}}},
+      "updateTimeTrackingCategory": {"action":"time_tracking_categories.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/time_tracking_categories/{time_tracking_category_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"time_tracking_category_gid":{"at":"time_tracking_category_gid","from":"path"}}},
+      "updateTimeTrackingEntry": {"action":"time_tracking_entries.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/time_tracking_entries/{time_tracking_entry_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"time_tracking_entry_gid":{"at":"time_tracking_entry_gid","from":"path"}}},
+      "updateTimesheetApprovalStatus": {"action":"timesheet_approval_statuses.write","body":"json","effects":["write"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/timesheet_approval_statuses/{timesheet_approval_status_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"timesheet_approval_status_gid":{"at":"timesheet_approval_status_gid","from":"path"}}},
+      "updateUser": {"action":"users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","workspace","opt_fields"],"path":"/api/1.0/users/{user_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"user_gid":{"at":"user_gid","from":"path"},"workspace":{"at":"workspace","from":"query","optional":true}}},
+      "updateUserForWorkspace": {"action":"workspaces.users.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}/users/{user_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"user_gid":{"at":"user_gid","from":"path"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "updateWebhook": {"action":"webhooks.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/webhooks/{webhook_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"webhook_gid":{"at":"webhook_gid","from":"path"}}},
+      "updateWorkspace": {"action":"workspaces.admin","body":"json","effects":["admin"],"method":"PUT","origin":"https://app.asana.com","params":["opt_pretty","opt_fields"],"path":"/api/1.0/workspaces/{workspace_gid}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"workspace_gid":{"at":"workspace_gid","from":"path"}}},
+      "workspaces.list": {"action":"workspaces.read","effects":["read"],"method":"GET","origin":"https://app.asana.com","params":["opt_fields"],"path":"/api/1.0/workspaces","scope":{}}
+    }
+  }
+}

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Count physical Go lines by responsibility and check Monitor's package boundaries."""
+"""Count physical Go lines and enforce the composition-root dependency graph."""
 
 import argparse
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -14,9 +15,17 @@ PROTOCOLS = {
     "session", "signer", "tcp", "web",
 }
 MODULE = "github.com/tinfoilsh/confidential-agent-monitor/"
-TINFOIL = ("github.com/tinfoilsh/tinfoil-go", MODULE + "cmd/")
-FROZEN = re.compile("|".join(map(re.escape, (MODULE, "tinfoil-owner-http-v1", "tinfoil-owner-generation-v1", "X-Tinfoil-Session", "tinfoil owner session v1",
-    "TINFOIL-MONITOR-STATE", '"tinfoil": {"": "tinfoil", "websearch": "tinfoil_websearch"}'))))
+CEDAR_PACKAGES = {"core", "core/facts", "connector/tcp", "sshtransport", "netx"}
+LEAF_PACKAGES = {
+    "core", "identity", "admission", "approval", "taint", "document",
+    "perimeterformat", "sealedlog", "policy/opa", "credential", "catalog",
+    "slots", "netx", "sshtransport", "noisetransport", "httpjson",
+    "certificates", "worker", "attestation", "messages", "ui", "core/facts",
+} | {"connector/" + name for name in PROTOCOLS}
+FACT_CONSUMERS = {
+    "core", "identity", "perimeterformat", "policy/opa", "catalog", "slots",
+    "sshtransport", "httpjson", "worker",
+} | {"connector/" + name for name in PROTOCOLS}
 SKIP = {".git", ".dev", "node_modules", "vendor", "dist", "dist-hosted", "dist-static"}
 
 
@@ -26,7 +35,7 @@ def category(path):
     if path.parts[0] == "dev":
         return "tooling"
     if path.parts[0] == "cmd":
-        return "protocols"
+        return "application"
     if len(path.parts) > 2 and path.parts[0] == "connector" and path.parts[1] in PROTOCOLS:
         return "protocols"
     return "core"
@@ -39,44 +48,43 @@ def imports(source):
 
 
 def forbidden(path, dependency, main):
+    if path.parts[:2] == ("cmd", "other"):
+        if dependency.startswith("github.com/open-policy-agent/"):
+            return True
+        if dependency.startswith(MODULE) and dependency.removeprefix(MODULE) not in CEDAR_PACKAGES:
+            return True
+    if main:
+        return False
     if dependency in ("flag", "os/signal"):
-        return not main and path.parts[0] != "dev"
-    if dependency == MODULE + "ui":
-        return not main
-    if path.parts[0] == "cmd":
-        return dependency.startswith(MODULE + "perimeter/internal/")
-    if dependency.startswith(TINFOIL):
         return True
     if not dependency.startswith(MODULE):
         return False
     package = "/".join(path.parts[:-1])
-    if package in ("core/netx", "core/sshx", "core/facts", "perimeter/credential", "perimeter/internal/sealedlog"):
-        return True
-    dependency = dependency.removeprefix(MODULE)
-    concrete = dependency.startswith("connector/") and dependency.split("/")[1] in PROTOCOLS
-    if package == "core":
-        return dependency not in ("connector", "core/netx")
-    if package == "core/identity":
-        return dependency != "core/facts"
-    if package == "core/frontdoor":
-        return dependency not in ("core/facts", "core/identity", "core/netx", "core/sshx")
-    if path.parts[0] == "connector":
-        return dependency.startswith(("perimeter", "core/identity", "core/frontdoor", "connector/worker")) or dependency == "core"
-    if package in ("perimeter/internal/tomledit", "perimeter/policy", "perimeter/presets"):
-        return dependency != "core/facts"
-    if package == "perimeter/policy/standard":
-        return dependency not in ("core/facts", "perimeter/policy")
-    if package == "perimeter/internal/authz":
-        return dependency not in ("core/facts", "core/identity", "core/netx")
-    if package == "perimeter/internal/config":
-        return concrete or dependency in ("perimeter", "perimeter/monitor")
-    if package == "perimeter":
-        return concrete or dependency.startswith("perimeter/internal/")
-    if package == "perimeter/monitor":
-        return concrete or dependency.startswith("perimeter/policy/")
-    if package.startswith("perimeter/internal/store"):
-        return dependency.startswith(("perimeter/monitor", "perimeter/policy", "connector/worker")) or concrete
-    return False
+    return not (package in FACT_CONSUMERS and dependency == MODULE + "core/facts")
+
+
+def cedar_dependencies(root, violations):
+    command = root / "cmd" / "other"
+    if not (command / "go.mod").is_file():
+        return []
+    result = subprocess.run(
+        ["go", "list", "-mod=readonly", "-deps", "."], cwd=command,
+        env={**os.environ, "GOWORK": "off"}, capture_output=True, text=True,
+    )
+    if result.returncode:
+        violations.append("cmd/other: cannot verify compiled dependencies: " + result.stderr.strip())
+        return []
+    dependencies = []
+    for dependency in result.stdout.splitlines():
+        if dependency.startswith(MODULE):
+            package = dependency.removeprefix(MODULE)
+            if package != "cmd/other":
+                dependencies.append(package)
+                if package not in CEDAR_PACKAGES:
+                    violations.append(f"cmd/other: forbidden transitive dependency {dependency}")
+        elif dependency.startswith("github.com/open-policy-agent/"):
+            violations.append(f"cmd/other: forbidden transitive dependency {dependency}")
+    return sorted(dependencies)
 
 
 def main():
@@ -91,7 +99,7 @@ def main():
         paths = [Path(p) for p in tracked if p.endswith(".go") and (root / p).is_file()]
     else:
         paths = [p.relative_to(root) for p in root.rglob("*.go") if not SKIP.intersection(p.relative_to(root).parts)]
-    totals = dict.fromkeys(("core", "protocols", "tooling", "tests"), 0)
+    totals = dict.fromkeys(("core", "protocols", "application", "tooling", "tests"), 0)
     files, graph, violations, generated = {}, {}, [], {}
     for path in sorted(paths):
         source = (root / path).read_text()
@@ -103,19 +111,27 @@ def main():
             generated[str(path)] = lines
         if kind == "tests":
             continue
-        if path.parts[0] not in ("cmd", "dev") and "tinfoil" in FROZEN.sub("", source).lower():
-            violations.append(f"{path}: names tinfoil")
         deps = sorted(imports(source))
         graph[str(path)] = deps
         main = re.search(r'^package main$', source, re.M)
+        package = "/".join(path.parts[:-1])
+        if not main and package not in LEAF_PACKAGES:
+            violations.append(f"{path}: package is outside the approved dependency graph")
+        if main and path.parts[0] == "cmd" and path.name != "main.go":
+            violations.append(f"{path}: production composition must be in main.go")
+        if package == "core/facts" and re.search(
+            r'^type\s+(Label|Context|Vocabulary|Obligations)\b|^func\s+\([^)]*\)\s*Resolve\(', source, re.M
+        ):
+            violations.append(f"{path}: facts must not define the application's access model")
         for dependency in deps:
             if forbidden(path, dependency, main):
                 violations.append(f"{path}: forbidden import {dependency}")
-    totals["all_non_test_go"] = sum(totals[k] for k in ("core", "protocols", "tooling"))
+    totals["all_non_test_go"] = sum(totals[k] for k in ("core", "protocols", "application", "tooling"))
     totals["production_runtime_go"] = totals["all_non_test_go"] - totals["tooling"]
     totals["generated_go"] = sum(generated.values())
     rego = {str(p.relative_to(root)): len(p.read_text().splitlines()) for p in root.rglob("*.rego") if not SKIP.intersection(p.relative_to(root).parts)}
-    result = {"root": str(root), "scope": "tracked" if args.tracked else "filesystem including ignored source", "totals": totals, "non_go_policy": rego, "files": files, "generated": generated, "imports": graph, "boundary_violations": violations}
+    cedar = cedar_dependencies(root, violations)
+    result = {"root": str(root), "scope": "tracked" if args.tracked else "filesystem including ignored source", "totals": totals, "non_go_policy": rego, "files": files, "generated": generated, "imports": graph, "cedar_dependencies": cedar, "boundary_violations": violations}
     if args.json:
         print(json.dumps(result, indent=2))
     else:

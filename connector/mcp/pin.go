@@ -45,7 +45,8 @@ func (pin *Snapshot) pinned() (instructions string, tools map[string]string) {
 	return pin.Instructions, tools
 }
 
-func (pin *Snapshot) approved(cur *Snapshot) (ok []*sdk.Tool, blocked []string) {
+// Approved returns the tools cur lists exactly as pin does, under pin's instructions, and the names of the others.
+func (pin *Snapshot) Approved(cur *Snapshot) (ok []*sdk.Tool, blocked []string) {
 	instructions, tools := pin.pinned()
 	for _, t := range cur.Tools {
 		if instructions == cur.Instructions && tools[t.Name] == canonical(t) {

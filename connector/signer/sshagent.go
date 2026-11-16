@@ -1,45 +1,49 @@
 package signer
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
 	"log"
+	"net"
 
-	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 )
 
-var SSHAgentKind = connector.Kind{Parse: parseSSHAgent, Open: connector.Stateless((*sshAgentSetup).serve)}
-
-func parseSSHAgent(source connector.Setup) (connector.Prepared, error) {
-	c := new(sshAgentSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
-		return connector.Prepared{}, err
-	}
-	return connector.Prepared{Value: c, SecretNames: c.Credentials}, nil
+func ParseSSHAgent(config json.RawMessage) (*SSHAgent, error) {
+	c := new(SSHAgent)
+	return c, facts.DecodeNumbers(config, c)
 }
 
 const (
 	msgUserAuthRequest = 50
 )
 
-var errAgentSignsOnly = errors.New("the Perimeter's agent only signs")
+var errAgentSignsOnly = errors.New("this agent only signs")
 
-type sshAgentSetup struct {
-	connector.SecretConfig
+// SSHAgent signs with the private keys its credentials hold, each signature after the gate admits it.
+type SSHAgent struct {
 	Credentials []string `json:"credentials"`
 }
 
 type gatedAgent struct {
-	semantics *connector.Semantics
 	agent.ExtendedAgent
-	s *connector.Stream
+	ctx  context.Context
+	gate func(context.Context, facts.Event) error
 }
 
-func (keys *sshAgentSetup) serve(s *connector.Stream, _ *connector.Env) {
+func (keys *SSHAgent) Handler(secret func(ctx context.Context, name string) (string, error)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+		keys.serve(ctx, s, gate, secret)
+	}
+}
+
+func (keys *SSHAgent) serve(ctx context.Context, s net.Conn, gate func(context.Context, facts.Event) error, secret func(context.Context, string) (string, error)) {
 	keyring := agent.NewKeyring().(agent.ExtendedAgent)
-	for _, value := range keys.Secrets {
-		encoded, err := value.Value(s.Context)
+	for _, name := range keys.Credentials {
+		encoded, err := secret(ctx, name)
 		if err != nil {
 			log.Print(err)
 			return
@@ -51,11 +55,11 @@ func (keys *sshAgentSetup) serve(s *connector.Stream, _ *connector.Env) {
 		}
 		keyring.Add(agent.AddedKey{PrivateKey: key})
 	}
-	agent.ServeAgent(gatedAgent{&keys.Semantics, keyring, s}, s)
+	agent.ServeAgent(gatedAgent{keyring, ctx, gate}, s)
 }
 
 func (a gatedAgent) SignWithFlags(key ssh.PublicKey, data []byte, flags agent.SignatureFlags) (*ssh.Signature, error) {
-	if err := a.s.Gate(a.s.Context, a.semantics.Capture(signEvent(key, data).Describe())); err != nil {
+	if err := a.gate(a.ctx, facts.Capture(signEvent(key, data).Describe(), nil)); err != nil {
 		return nil, err
 	}
 	return a.ExtendedAgent.SignWithFlags(key, data, flags)

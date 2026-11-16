@@ -1,0 +1,15 @@
+{
+  "title": "Redis",
+  "catalog": {
+    "group": "protocol",
+    "actions": {
+      "read": {"title": "Read keys", "effects": ["read"]},
+      "write": {"title": "Change keys and the server", "effects": ["write"]}
+    },
+    "connection": {"redis": {"url": "{url}"}},
+    "fields": [
+      {"hint": "rediss://user@host:6379", "key": "url", "label": "Connection URL", "path": ["redis", "url"]},
+      {"default": "", "key": "password", "label": "Password", "credential": true, "secret": true}
+    ]
+  }
+}

@@ -3,7 +3,15 @@ module github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter
 go 1.27.3
 
 require (
+	code.dny.dev/ssrf v0.3.0
+	filippo.io/edwards25519 v1.2.0
 	github.com/coder/websocket v1.8.15
+	github.com/evanphx/json-patch/v5 v5.9.11
+	github.com/flynn/noise v1.1.0
+	github.com/klauspost/compress v1.20.0
+	github.com/lestrrat-go/jwx/v3 v3.2.0
+	github.com/modelcontextprotocol/go-sdk v1.8.0
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
 	github.com/tinfoilsh/confidential-agent-monitor v0.0.0
 	github.com/tinfoilsh/tinfoil-go v0.17.0-rc.3.0.20261022181158-836693177e53
 	gocloud.dev v0.46.0
@@ -12,8 +20,6 @@ require (
 )
 
 require (
-	code.dny.dev/ssrf v0.3.0 // indirect
-	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/agnivade/levenshtein v1.2.1 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.47.1 // indirect
@@ -45,8 +51,6 @@ require (
 	github.com/eclipse/paho.mqtt.golang v1.5.1 // indirect
 	github.com/emersion/go-sasl v0.0.0-20241020182733-b788ff22d5a6 // indirect
 	github.com/emersion/go-smtp v0.25.0 // indirect
-	github.com/evanphx/json-patch/v5 v5.9.11 // indirect
-	github.com/flynn/noise v1.1.0 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/analysis v0.25.5 // indirect
@@ -88,15 +92,12 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/pgx/v5 v5.8.0 // indirect
-	github.com/klauspost/compress v1.20.0 // indirect
 	github.com/lestrrat-go/blackmagic v1.0.4 // indirect
 	github.com/lestrrat-go/dsig v1.3.0 // indirect
 	github.com/lestrrat-go/dsig-secp256k1 v1.0.0 // indirect
 	github.com/lestrrat-go/httpcc v1.0.1 // indirect
 	github.com/lestrrat-go/httprc/v3 v3.0.6 // indirect
-	github.com/lestrrat-go/jwx/v3 v3.2.0 // indirect
 	github.com/lestrrat-go/option/v2 v2.0.0 // indirect
-	github.com/modelcontextprotocol/go-sdk v1.8.0 // indirect
 	github.com/nats-io/nats.go v1.54.0 // indirect
 	github.com/nats-io/nkeys v0.4.16 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
@@ -105,7 +106,6 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.4.4-0.20260718201843-686c980c4758 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20250401214520-65e299d6c5c9 // indirect
 	github.com/secure-systems-lab/go-securesystemslib v0.11.0 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect

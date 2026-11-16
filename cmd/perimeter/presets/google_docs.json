@@ -1,0 +1,64 @@
+{
+  "catalog": {
+    "actions": {
+      "documents": {
+        "title": "Documents"
+      },
+      "documents.read": {
+        "title": "Read"
+      },
+      "documents.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://docs.googleapis.com",
+            "path": "/v1/documents",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "client_id",
+        "label": "Google OAuth client ID",
+        "paths": []
+      },
+      {
+        "key": "client_secret",
+        "label": "Google OAuth client secret",
+        "paths": [],
+        "secret": true
+      },
+      {
+        "key": "token",
+        "label": "Google account",
+        "oauth": {
+          "auth_url": "https://accounts.google.com/o/oauth2/v2/auth",
+          "client_id": "{client_id}",
+          "client_secret": "{client_secret}",
+          "prompt": "consent",
+          "scope": "https://www.googleapis.com/auth/documents",
+          "token_url": "https://oauth2.googleapis.com/token"
+        },
+        "credential": true,
+        "secret": true
+      }
+    ],
+    "group": "api"
+  },
+  "title": "Google Docs",
+  "http": {
+    "operations": {
+      "documents.batchUpdate": {"action":"documents.write","body":"json","effects":["write","send"],"method":"POST","origin":"https://docs.googleapis.com","path":"/v1/documents/{document}:batchUpdate","scope":{"document":{"at":"document","from":"path"},"requests":{"at":"","from":"body","type":"object"}}},
+      "documents.create": {"action":"documents.write","body":"json","effects":["write"],"method":"POST","origin":"https://docs.googleapis.com","path":"/v1/documents","scope":{}},
+      "documents.get": {"action":"documents.read","effects":["read"],"method":"GET","origin":"https://docs.googleapis.com","params":["includeTabsContent","suggestionsViewMode"],"path":"/v1/documents/{document}","scope":{"document":{"at":"document","from":"path"}}}
+    }
+  }
+}

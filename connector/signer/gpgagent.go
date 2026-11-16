@@ -2,6 +2,7 @@ package signer
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,17 +10,13 @@ import (
 	"net"
 	"strings"
 
-	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-var GPGAgentKind = connector.Kind{Host: true, Parse: parseGPGAgent, Open: connector.Stateless((*gpgAgentSetup).serve)}
-
-func parseGPGAgent(source connector.Setup) (connector.Prepared, error) {
-	c := new(gpgAgentSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
-		return connector.Prepared{}, err
-	}
-	return connector.Prepared{Value: c}, nil
+// ParseGPGAgent reads the agent's socket path; config is a JSON string.
+func ParseGPGAgent(config json.RawMessage) (*GPGAgent, error) {
+	c := new(GPGAgent)
+	return c, facts.DecodeNumbers(config, &c.socket)
 }
 
 const (
@@ -34,21 +31,29 @@ var agentCommands = map[string]bool{
 	"SETHASH": true, "PKSIGN": true, "PKDECRYPT": true,
 }
 
-type gpgAgentSetup struct {
-	connector.Semantics
-	socket string
+// GPGAgent relays an Assuan session to a host gpg-agent socket, gating each signature and decryption.
+type GPGAgent struct{ socket string }
+
+// Handler reaches the socket through dial, a host resource outside any connection's network.
+func (socket *GPGAgent) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		socket.serve(ctx, cancel, s, gate, dial)
+	}
 }
 
-func (s *gpgAgentSetup) UnmarshalJSON(raw []byte) error { return json.Unmarshal(raw, &s.socket) }
-
-func (socket *gpgAgentSetup) serve(s *connector.Stream, _ *connector.Env) {
-	up, err := (&net.Dialer{Timeout: connector.DialTimeout}).DialContext(s.Context, "unix", socket.socket)
+func (socket *GPGAgent) serve(ctx context.Context, cancel func(), s net.Conn, gate func(context.Context, facts.Event) error, dial func(context.Context, string, string) (net.Conn, error)) {
+	up, err := dial(ctx, "unix", socket.socket)
 	if err != nil {
 		log.Printf("gpg-agent: %v", err)
 		return
 	}
-	defer s.Interrupt(up)()
-	defer connector.PumpReplies(s, func() { io.Copy(s, up) })()
+	stop := context.AfterFunc(ctx, func() { up.Close() })
+	defer func() { stop(); up.Close() }()
+	pumped := make(chan struct{})
+	go func() { defer close(pumped); io.Copy(s, up); cancel(); s.Close() }()
+	defer func() { cancel(); s.Close(); <-pumped }()
 	sign := SignFacts{Agent: agentGPG}
 	lines := bufio.NewScanner(s)
 	for lines.Scan() {
@@ -58,7 +63,7 @@ func (socket *gpgAgentSetup) serve(s *connector.Stream, _ *connector.Env) {
 		switch {
 		case command == "D" || command == "END" || command == "CAN" || strings.HasPrefix(line, "#"):
 		case !agentCommands[command]:
-			fmt.Fprintf(s, "ERR %d Not supported <Perimeter>\n", assuanNotSupported)
+			fmt.Fprintf(s, "ERR %d Not supported <proxy>\n", assuanNotSupported)
 			continue
 		case command == "RESET":
 			sign = SignFacts{Agent: agentGPG}
@@ -68,8 +73,8 @@ func (socket *gpgAgentSetup) serve(s *connector.Stream, _ *connector.Env) {
 			sign.Hash = rest
 		case command == "PKSIGN" || command == "PKDECRYPT":
 			sign.Op = strings.ToLower(command)
-			if err := s.Gate(s.Context, socket.Capture(sign.Describe())); err != nil {
-				fmt.Fprintf(s, "ERR %d %v <Perimeter>\n", assuanNotSupported, err)
+			if err := gate(ctx, facts.Capture(sign.Describe(), nil)); err != nil {
+				fmt.Fprintf(s, "ERR %d %v <proxy>\n", assuanNotSupported, err)
 				continue
 			}
 		}

@@ -1,0 +1,19 @@
+{
+  "title": "Wolfram|Alpha",
+  "catalog": {
+    "group": "api",
+    "fields": [
+      {"key": "app_id", "label": "App ID", "secret": true, "credential": true}
+    ],
+    "connection": {"http": {"slots": [{"value": "app_id", "origin": "https://www.wolframalpha.com", "path": "/api/v1", "query": "api_key"}]}},
+    "actions": {
+      "read": {"title": "Read everything the account can see"}
+    }
+  },
+  "http": {
+    "operations": {
+      "getWolframAlphaResults": {"action":"read","effects":["read"],"method":"GET","origin":"https://www.wolframalpha.com","path":"/api/v1/llm-api","params":["input"],"scope":{}},
+      "getWolframCloudResults": {"action":"read","effects":["read"],"method":"GET","origin":"https://www.wolframalpha.com","path":"/api/v1/cloud-plugin","params":["input"],"scope":{}}
+    }
+  }
+}

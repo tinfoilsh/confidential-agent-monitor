@@ -5,6 +5,6 @@ import (
 )
 
 // Signing requests remain unknown until the owner supplies operation semantics.
-func (r *SignFacts) Describe() facts.Facts {
-	return facts.Facts{Details: Details{Sign: r}}
+func (r *SignFacts) Describe() facts.Observation {
+	return facts.Observation{Details: Details{Sign: r}}
 }

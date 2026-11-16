@@ -10,72 +10,84 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"slices"
+	"time"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/internal/jsonsel"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-var Kind = connector.Kind{Parse: Parse, Open: Open}
+var errURL = errors.New("MCP requires an http:// or https:// server URL")
 
+// Setup is a connection's server and pin. Pin is data for the host's exposure choice.
 type Setup struct {
-	connector.SecretConfig
 	URL    string    `json:"url"`
 	Pin    *Snapshot `json:"pin"`
-	preset *Preset
+	Preset *Preset   `json:"-"`
 }
 
-type session struct {
-	Setup
-	env     *connector.Env
+// Client is what a session reaches its server and serves its agents with.
+type Client struct {
+	// HTTP reaches the server through its Transport, with the host's redirect policy.
+	HTTP *http.Client
+	// Token is nil unless the connection has a bearer token, which then needs https.
+	Token func(context.Context) (string, error)
+	// Expose selects the tools agents see, and the instructions they get, from what the server lists.
+	Expose    func(current *Snapshot) (tools []*sdk.Tool, instructions string)
+	Timeout   time.Duration
+	TLS       func(ctx context.Context, host string) *tls.Config
+	ServeHTTP func(ctx context.Context, conn net.Conn, server *http.Server) error
+}
+
+type Session struct {
+	setup   *Setup
+	client  Client
 	current *Snapshot
 	session *sdk.ClientSession
-	// tools match the pin exactly; blocked counts the others, which await review.
-	tools          []*sdk.Tool
-	blocked        int
-	instructions   string
-	closeTransport func()
+	// tools are the exposed ones; each request is screened by its stream's gate.
+	tools        []*sdk.Tool
+	instructions string
 }
 
-// ParseSetup lets an attested connector add its own source fields without a
-// second decoding path for MCP matching, pins or credential declarations.
-func ParseSetup(source connector.Setup, config any, setup *Setup) (connector.Prepared, error) {
-	preset := struct {
-		*connector.Semantics
-		MCP *Preset `json:"mcp"`
-	}{Semantics: &setup.Semantics}
-	if err := connector.ParseSetup(source, config, &preset); err != nil {
-		return connector.Prepared{}, err
-	}
-	u, err := connector.ParseURL(setup.URL)
-	if err != nil || u.Scheme != "http" && u.Scheme != "https" {
-		return connector.Prepared{}, errors.New("MCP requires an http:// or https:// server URL")
-	}
-	if p := preset.MCP; p != nil && (!source.Vocabulary.ValidSends(p.Sends) || p.Observes != nil && !source.Vocabulary.ValidLabel(*p.Observes)) {
-		return connector.Prepared{}, errors.New("invalid MCP data-flow settings")
-	}
-	setup.preset = preset.MCP
-	return connector.Prepared{Value: setup, SecretNames: []string{"token"}, Hosts: []string{u.Hostname()}}, nil
-}
-
-func Parse(source connector.Setup) (connector.Prepared, error) {
+func Parse(config, definition json.RawMessage) (*Setup, error) {
 	setup := new(Setup)
-	return ParseSetup(source, setup, setup)
+	return setup, Decode(config, definition, setup, setup)
 }
 
-// Open connects the SDK session; each request closes over its setup and exact pin.
-func Open(ctx context.Context, prepared connector.Prepared, secrets map[string]connector.Secret, env *connector.Env) (connector.Handler, error) {
-	setup := *prepared.Value.(*Setup)
-	setup.Bind(secrets)
-	client := env.Client()
-	return OpenWithClient(ctx, setup, env, client, client.Transport.(*http.Transport).CloseIdleConnections)
+// Decode lets an attested connector add its own config fields to into, which embeds setup, without
+// a second decoding path for MCP matching, pins or credential declarations.
+func Decode(config, definition json.RawMessage, into any, setup *Setup) error {
+	if err := facts.DecodeNumbers(config, into); err != nil {
+		return err
+	}
+	var preset struct {
+		MCP *Preset `json:"mcp"`
+	}
+	if len(definition) != 0 {
+		if err := json.Unmarshal(definition, &preset); err != nil {
+			return err
+		}
+	}
+	u, err := url.Parse(setup.URL)
+	if err != nil || u.Scheme != "http" && u.Scheme != "https" || u.Host == "" || u.Query().Has("password") {
+		return errURL
+	}
+	if _, password := u.User.Password(); password {
+		return errURL
+	}
+	setup.Preset = preset.MCP
+	return nil
 }
 
-// OpenWithClient owns cleanup after a failed install or after the SDK session closes.
-func OpenWithClient(ctx context.Context, setup Setup, env *connector.Env, client *http.Client, cleanup func()) (connector.Handler, error) {
-	next := &session{Setup: setup, env: env, closeTransport: cleanup}
-	if err := next.connect(ctx, client); err != nil {
+func (s *Setup) Hosts() []string {
+	u, _ := url.Parse(s.URL)
+	return []string{u.Hostname()}
+}
+
+// Open connects the SDK session; each request closes over its setup and exposed tools.
+func Open(ctx context.Context, setup *Setup, c Client) (*Session, error) {
+	next := &Session{setup: setup, client: c}
+	if err := next.connect(ctx); err != nil {
 		next.Close()
 		return nil, err
 	}
@@ -84,12 +96,12 @@ func OpenWithClient(ctx context.Context, setup Setup, env *connector.Env, client
 
 // bearer asks the credential on every request, so a refreshed token replaces an expired one.
 type bearer struct {
-	token connector.Secret
+	token func(context.Context) (string, error)
 	base  http.RoundTripper
 }
 
 func (b bearer) RoundTrip(r *http.Request) (*http.Response, error) {
-	token, err := b.token.Value(r.Context())
+	token, err := b.token(r.Context())
 	if err != nil {
 		return nil, err
 	}
@@ -106,49 +118,52 @@ func (b bearer) RoundTrip(r *http.Request) (*http.Response, error) {
 	return resp, nil
 }
 
-func (m *session) Close() error {
+func (m *Session) Close() error {
 	if m.session != nil {
 		m.session.Close()
-	}
-	if m.closeTransport != nil {
-		m.closeTransport()
 	}
 	return nil
 }
 
+// Snapshot is what the server listed when the session connected.
+func (m *Session) Snapshot() *Snapshot { return m.current }
+
 // Serve builds a server per request, so each call is screened by the stream's gate.
 // SSH admission authenticates these streams; worker transport addresses are internal.
-func (m *session) ServeStream(s *connector.Stream) {
-	var c net.Conn = s
-	if s.Port == 443 {
-		c = tls.Server(s, m.env.TLS)
+func (m *Session) Serve(ctx context.Context, conn net.Conn, _, host string, port uint32, gate func(context.Context, facts.Event) error) {
+	c := conn
+	if port == 443 {
+		c = tls.Server(conn, m.client.TLS(ctx, host))
 	}
-	connector.ServeHTTP(s, c, sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server {
+	m.client.ServeHTTP(ctx, c, &http.Server{Handler: sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server {
 		server := sdk.NewServer(&sdk.Implementation{Name: "perimeter", Version: version}, &sdk.ServerOptions{Instructions: m.instructions})
 		for _, t := range m.tools {
 			server.AddTool(t, func(ctx context.Context, req *sdk.CallToolRequest) (*sdk.CallToolResult, error) {
-				if err := s.Gate(ctx, m.CaptureResult((&Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}).Describe(m.preset))); err != nil {
-					log.Printf("%s: blocked %s: %v", m.URL, t.Name, err)
+				if err := gate(ctx, facts.Capture((&Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}).Describe(m.setup.Preset))); err != nil {
+					log.Printf("%s: blocked %s: %v", m.setup.URL, t.Name, err)
 					return &sdk.CallToolResult{IsError: true, Content: []sdk.Content{&sdk.TextContent{Text: "blocked by policy: " + err.Error()}}}, nil
 				}
 				return m.session.CallTool(ctx, &sdk.CallToolParams{Name: t.Name, Arguments: req.Params.Arguments})
 			})
 		}
 		return server
-	}, &sdk.StreamableHTTPOptions{Stateless: true, PropagateRequestCancellation: true, DisableLocalhostProtection: true}))
+	}, &sdk.StreamableHTTPOptions{Stateless: true, PropagateRequestCancellation: true, DisableLocalhostProtection: true})})
 }
 
-func (m *session) connect(ctx context.Context, client *http.Client) error {
-	ctx, cancel := context.WithTimeout(ctx, connector.DialTimeout)
+func (m *Session) connect(ctx context.Context) error {
+	ctx, cancel := context.WithTimeout(ctx, m.client.Timeout)
 	defer cancel()
-	if token := m.Secrets["token"]; token.Configured() {
-		if u, err := url.Parse(m.URL); err != nil || u.Scheme != "https" {
+	client := m.client.HTTP
+	if m.client.Token != nil {
+		if u, err := url.Parse(m.setup.URL); err != nil || u.Scheme != "https" {
 			return errors.New("an MCP token needs an https server URL")
 		}
-		client.Transport = bearer{token, client.Transport}
+		authorized := *client
+		authorized.Transport = bearer{m.client.Token, client.Transport}
+		client = &authorized
 	}
 	session, err := sdk.NewClient(&sdk.Implementation{Name: "perimeter", Version: version}, nil).
-		Connect(ctx, &sdk.StreamableClientTransport{Endpoint: m.URL, HTTPClient: client}, nil)
+		Connect(ctx, &sdk.StreamableClientTransport{Endpoint: m.setup.URL, HTTPClient: client}, nil)
 	if err != nil {
 		return err
 	}
@@ -157,13 +172,9 @@ func (m *session) connect(ctx context.Context, client *http.Client) error {
 		session.Close()
 		return err
 	}
-	var blocked []string
 	m.current, m.session = cur, session
-	m.tools, blocked = m.Pin.approved(cur)
-	m.blocked = len(blocked)
-	if len(m.tools) > 0 {
-		m.instructions = cur.Instructions
-	}
+	tools, instructions := m.client.Expose(cur)
+	m.tools, m.instructions = slices.Clone(tools), instructions
 	for i, original := range m.tools {
 		t := *original
 		m.tools[i] = &t
@@ -177,17 +188,8 @@ func (m *session) connect(ctx context.Context, client *http.Client) error {
 			t.InputSchema = schema
 		}
 	}
-	log.Printf("%s: exposing %d of %d tools", m.URL, len(m.tools), len(cur.Tools))
+	log.Printf("%s: exposing %d of %d tools", m.setup.URL, len(m.tools), len(cur.Tools))
 	return nil
-}
-
-func (m *session) Details() json.RawMessage {
-	status := map[string]any{"blocked": m.blocked}
-	if m.blocked > 0 {
-		status["changes"], status["pin"] = m.Pin.Diff(m.current), m.current
-	}
-	raw, _ := json.Marshal(status)
-	return raw
 }
 
 type Request struct {
@@ -196,8 +198,8 @@ type Request struct {
 	ReadOnly  bool            `json:"read_only"`
 }
 
-func (r *Request) Describe(p *Preset) (facts.Facts, error) {
-	f := facts.Facts{Details: Details{MCP: &MCPFacts{Tool: r.Tool, Arguments: r.Arguments, ReadOnly: r.ReadOnly}}, Title: "Use " + r.Tool}
+func (r *Request) Describe(p *Preset) (facts.Observation, error) {
+	f := facts.Observation{Details: Details{MCP: &MCPFacts{Tool: r.Tool, Arguments: r.Arguments, ReadOnly: r.ReadOnly}}, Title: "Use " + r.Tool}
 	action := "use." + r.Tool
 	if r.ReadOnly {
 		action = "read." + r.Tool
@@ -210,32 +212,29 @@ func (r *Request) Describe(p *Preset) (facts.Facts, error) {
 	f.Details.(Details).MCP.Arguments = args
 	f.Operation = &facts.Operation{Action: action}
 	if p != nil {
-		scope, err := jsonsel.Select(p.scope, args)
+		scope, err := facts.Select(p.scope, args)
 		maps.Copy(f.Parameters, scope)
-		f.Scope = jsonsel.Project(scope, p.Grant)
-		f.Context.Sends = p.Sends
-		if p.Observes != nil {
-			f.Context.Observes = *p.Observes
-		}
+		f.Scope = facts.Project(scope, p.Grant)
 		return f, err
 	}
 	return f, nil
 }
 
-// Preset selects service resource identifiers from tool arguments.
+// Preset selects service resource identifiers from tool arguments. Sends and Observes are
+// carried for the host, never read here.
 type Preset struct {
-	Scope    map[string]jsonsel.Selector `json:"scope,omitempty"`
-	Grant    []string                    `json:"grant,omitempty"`
-	Sends    string                      `json:"sends,omitempty"`
-	Observes *facts.Label                `json:"observes,omitempty"`
-	scope    []jsonsel.Compiled
+	Scope    map[string]facts.Selector `json:"scope,omitempty"`
+	Grant    []string                  `json:"grant,omitempty"`
+	Sends    json.RawMessage           `json:"sends,omitempty"`
+	Observes json.RawMessage           `json:"observes,omitempty"`
+	scope    []facts.Compiled
 }
 
 func (p *Preset) UnmarshalJSON(raw []byte) error {
 	type plain Preset
 	err := facts.DecodeNumbers(raw, (*plain)(p))
 	if err == nil {
-		p.scope, err = jsonsel.Compile(p.Scope)
+		p.scope, err = facts.Compile(p.Scope)
 	}
 	for _, name := range p.Grant {
 		if _, ok := p.Scope[name]; err == nil && !ok {

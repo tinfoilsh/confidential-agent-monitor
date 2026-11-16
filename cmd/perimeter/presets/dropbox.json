@@ -1,0 +1,89 @@
+{
+  "catalog": {
+    "actions": {
+      "files": {
+        "title": "Files"
+      },
+      "files.folder": {
+        "title": "Folder"
+      },
+      "files.folder.read": {
+        "title": "Read"
+      },
+      "files.folder_v2": {
+        "title": "Folder v2"
+      },
+      "files.folder_v2.write": {
+        "title": "Create and edit"
+      },
+      "files.metadata": {
+        "title": "Metadata"
+      },
+      "files.metadata.read": {
+        "title": "Read"
+      },
+      "files.read": {
+        "title": "Read"
+      },
+      "files.v2": {
+        "title": "V2"
+      },
+      "files.v2.delete": {
+        "title": "Delete"
+      },
+      "files.write": {
+        "title": "Create and edit"
+      },
+      "sharing": {
+        "title": "Sharing"
+      },
+      "sharing.shared_link_with_settings": {
+        "title": "Shared link with settings"
+      },
+      "sharing.shared_link_with_settings.share": {
+        "title": "Share"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "Authorization",
+            "origin": "https://api.dropboxapi.com",
+            "path": "/2",
+            "prefix": "Bearer ",
+            "value": "token"
+          },
+          {
+            "header": "Authorization",
+            "origin": "https://content.dropboxapi.com",
+            "path": "/2",
+            "prefix": "Bearer ",
+            "value": "token"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "token",
+        "label": "OAuth2 access token",
+        "credential": true,
+        "secret": true
+      }
+    ],
+    "group": "api"
+  },
+  "title": "Dropbox",
+  "http": {
+    "operations": {
+      "files.create_folder_v2": {"action":"files.folder_v2.write","body":"json","effects":["write"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/create_folder_v2","scope":{"folder":{"at":"","from":"body","type":"object"}}},
+      "files.delete_v2": {"action":"files.v2.delete","body":"json","effects":["delete"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/delete_v2","scope":{"path":{"at":"/path","from":"body"}}},
+      "files.download": {"action":"files.read","effects":["read"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/download","scope":{"path":{"at":"/path","from":"header_json","header":"Dropbox-Api-Arg"}}},
+      "files.get_metadata": {"action":"files.metadata.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/get_metadata","scope":{"path":{"at":"/path","from":"body"}}},
+      "files.list_folder": {"action":"files.folder.read","body":"json","effects":["read"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/files/list_folder","scope":{"path":{"at":"/path","from":"body"}}},
+      "files.upload": {"action":"files.write","body":"any","effects":["write"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://content.dropboxapi.com","path":"/2/files/upload","scope":{"arg":{"at":"","from":"header_json","header":"Dropbox-Api-Arg","type":"object"}}},
+      "sharing.create_shared_link_with_settings": {"action":"sharing.shared_link_with_settings.share","body":"json","effects":["share"],"headers":{"Dropbox-Api-Path-Root":null,"Dropbox-Api-Select-Admin":null,"Dropbox-Api-Select-User":null},"method":"POST","origin":"https://api.dropboxapi.com","path":"/2/sharing/create_shared_link_with_settings","scope":{"settings":{"at":"","from":"body","type":"object"}}}
+    }
+  }
+}

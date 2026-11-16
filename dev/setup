@@ -40,8 +40,8 @@ if jq -e '.generation == 1 and ((.config.connections // {}) | length == 0) and (
   if [[ -n ${MONITOR_CONFIG:-} ]]; then
     cp "$MONITOR_CONFIG" "$dev/seed.json"
   else
-    jq '{connections: {web: ({preset: "web"} + .catalog.defaults)}}' \
-      perimeter/presets/web.json > "$dev/seed.json"
+    jq '{connections: {web: ({preset: "web"} + .presets.web.defaults)}}' \
+      "$dev/state.json" > "$dev/seed.json"
   fi
   jq '{changes: [to_entries[] | {path: [.key], value: .value}]}' "$dev/seed.json" | owner /policy/edits -d @- > "$dev/state.json"
 fi

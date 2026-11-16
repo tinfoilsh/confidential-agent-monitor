@@ -1,0 +1,48 @@
+{
+  "title": "AWS Textract",
+  "catalog": {
+    "group": "api",
+    "fields": [
+      {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
+      {"key": "region", "label": "Region (e.g. us-east-1)", "path": ["http", "slots", 0, "sigv4", "region"]},
+      {"key": "access_key", "label": "Access key ID", "secret": true, "credential": true},
+      {"key": "secret_key", "label": "Secret access key", "secret": true, "credential": true},
+      {"key": "session_token", "label": "Session token (temporary credentials only)", "secret": true, "credential": true}
+    ],
+    "connection": {"http": {"slots": [{"value": "access_key", "origin": "https://example.com", "path": "/", "sigv4": {"service": "textract", "region": "us-east-1", "secret": "secret_key", "session": "session_token"}}]}},
+    "actions": {
+      "generate.textract": {"title": "Generate: textract"},
+      "read": {"title": "Read everything the account can see"},
+      "write.textract": {"title": "Write: textract"}
+    }
+  },
+  "http": {
+    "operations": {
+      "AnalyzeDocument": {"action":"generate.textract","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.AnalyzeDocument"},"body":"any","scope":{}},
+      "AnalyzeExpense": {"action":"generate.textract","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.AnalyzeExpense"},"body":"any","scope":{}},
+      "AnalyzeID": {"action":"generate.textract","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.AnalyzeID"},"body":"any","scope":{}},
+      "CreateAdapter": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.CreateAdapter"},"body":"any","scope":{}},
+      "CreateAdapterVersion": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.CreateAdapterVersion"},"body":"any","scope":{}},
+      "DeleteAdapter": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.DeleteAdapter"},"body":"any","scope":{}},
+      "DeleteAdapterVersion": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.DeleteAdapterVersion"},"body":"any","scope":{}},
+      "DetectDocumentText": {"action":"generate.textract","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.DetectDocumentText"},"body":"any","scope":{}},
+      "GetAdapter": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.GetAdapter"},"body":"any","scope":{}},
+      "GetAdapterVersion": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.GetAdapterVersion"},"body":"any","scope":{}},
+      "GetDocumentAnalysis": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.GetDocumentAnalysis"},"body":"any","scope":{}},
+      "GetDocumentTextDetection": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.GetDocumentTextDetection"},"body":"any","scope":{}},
+      "GetExpenseAnalysis": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.GetExpenseAnalysis"},"body":"any","scope":{}},
+      "GetLendingAnalysis": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.GetLendingAnalysis"},"body":"any","scope":{}},
+      "GetLendingAnalysisSummary": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.GetLendingAnalysisSummary"},"body":"any","scope":{}},
+      "ListAdapterVersions": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.ListAdapterVersions"},"body":"any","scope":{}},
+      "ListAdapters": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.ListAdapters"},"body":"any","scope":{}},
+      "ListTagsForResource": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.ListTagsForResource"},"body":"any","scope":{}},
+      "StartDocumentAnalysis": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.StartDocumentAnalysis"},"body":"any","scope":{}},
+      "StartDocumentTextDetection": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.StartDocumentTextDetection"},"body":"any","scope":{}},
+      "StartExpenseAnalysis": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.StartExpenseAnalysis"},"body":"any","scope":{}},
+      "StartLendingAnalysis": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.StartLendingAnalysis"},"body":"any","scope":{}},
+      "TagResource": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.TagResource"},"body":"any","scope":{}},
+      "UntagResource": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.UntagResource"},"body":"any","scope":{}},
+      "UpdateAdapter": {"action":"write.textract","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.UpdateAdapter"},"body":"any","scope":{}}
+    }
+  }
+}

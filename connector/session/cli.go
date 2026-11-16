@@ -3,48 +3,52 @@ package session
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"os/exec"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/tinfoilsh/confidential-agent-monitor/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"golang.org/x/crypto/ssh"
 )
 
-var CLIKind = connector.Kind{UsesHostKey: true, Host: true, Parse: parseCLI, Open: connector.Stateless((*cliSetup).serve)}
-
-func parseCLI(source connector.Setup) (connector.Prepared, error) {
-	c := new(cliSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
-		return connector.Prepared{}, err
-	}
-	return connector.Prepared{Value: c, SecretNames: c.Credentials}, nil
+func ParseCLI(config json.RawMessage) (*CLI, error) {
+	c := new(CLI)
+	return c, facts.DecodeNumbers(config, c)
 }
 
-const (
-	maxStdinBytes = 1 << 20
-	exitRefused   = 126
-)
+const exitRefused = 126
 
-type cliSetup struct {
-	connector.SecretConfig
+// CLI runs a host program for each admitted command, with its credentials as environment variables.
+type CLI struct {
 	Path        string   `json:"path"`
 	Stdin       string   `json:"stdin"`
 	Credentials []string `json:"credentials"`
 }
 
-func (t *cliSetup) serve(s *connector.Stream, e *connector.Env) {
-	serveSessions(s, e.HostKey, func(*sync.WaitGroup) func(ssh.NewChannel) {
-		return func(nc ssh.NewChannel) { t.session(s, nc) }
-	})
+// Limits bound one command: the git object it reads and how long its output may outlive it.
+type Limits struct {
+	Stdin     int64
+	WaitDelay time.Duration
 }
 
-func (t *cliSetup) session(s *connector.Stream, nc ssh.NewChannel) {
+// Handler serves agent sessions under host, the SSH host identity they reach.
+func (t *CLI) Handler(host ssh.Signer, secret func(ctx context.Context, name string) (string, error), limits Limits) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+	return func(ctx context.Context, conn net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+		s := newStream(ctx, conn, gate)
+		serveSessions(s, host, func(*sync.WaitGroup) func(ssh.NewChannel) {
+			return func(nc ssh.NewChannel) { t.session(s, nc, secret, limits) }
+		})
+	}
+}
+
+func (t *CLI) session(s *stream, nc ssh.NewChannel, secret func(context.Context, string) (string, error), limits Limits) {
 	ch, reqs, err := nc.Accept()
 	if err != nil {
 		return
@@ -59,26 +63,26 @@ func (t *cliSetup) session(s *connector.Stream, nc ssh.NewChannel) {
 		r.Reply(true, nil)
 		var stdin []byte
 		if t.Stdin == "git" {
-			stdin, _ = io.ReadAll(io.LimitReader(ch, maxStdinBytes))
+			stdin, _ = io.ReadAll(io.LimitReader(ch, limits.Stdin))
 			e.Payload = gitObject(stdin)
 		}
 		status := exitRefused
-		if err := s.Gate(s.Context, t.Capture(e.Describe(""))); err != nil {
+		if err := s.gate(s.ctx, facts.Capture(e.Describe(""), nil)); err != nil {
 			fmt.Fprintf(ch.Stderr(), "perimeter: %v\n", err)
 		} else {
-			status = t.execute(s.Context, e.Command.Argv, io.MultiReader(bytes.NewReader(stdin), ch), ch)
+			status = t.execute(s.ctx, secret, limits.WaitDelay, e.Command.Argv, io.MultiReader(bytes.NewReader(stdin), ch), ch)
 		}
 		ch.SendRequest("exit-status", false, ssh.Marshal(struct{ Status uint32 }{uint32(status)}))
 		return
 	}
 }
 
-func (t *cliSetup) execute(ctx context.Context, args []string, stdin io.Reader, ch ssh.Channel) int {
+func (t *CLI) execute(ctx context.Context, secret func(context.Context, string) (string, error), waitDelay time.Duration, args []string, stdin io.Reader, ch ssh.Channel) int {
 	cmd := exec.CommandContext(ctx, t.Path, args[1:]...)
-	cmd.WaitDelay = time.Second
+	cmd.WaitDelay = waitDelay
 	cmd.Env = []string{}
-	for name, v := range t.Secrets {
-		value, err := v.Value(ctx)
+	for _, name := range t.Credentials {
+		value, err := secret(ctx, name)
 		if err != nil {
 			log.Printf("cli credential: %v", err)
 			return exitRefused

@@ -2,6 +2,7 @@ package web
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"encoding/json/jsontext"
@@ -14,23 +15,18 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"path"
 	"slices"
 	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-var Kind = connector.Kind{PerMessage: true, Placeholders: true, Parse: Parse, Open: connector.Stateless((*Setup).serve)}
-
 const (
-	httpsPort    = 443
-	httpPort     = 80
-	MaxBodyBytes = 8 << 20
+	httpsPort = 443
+	httpPort  = 80
 
 	bodyNone    = "none"
 	bodyOpaque  = "opaque"
@@ -39,9 +35,7 @@ const (
 	bodyAny     = "any"
 	bodyGraphQL = "graphql"
 
-	placeholderPrefix = "tfm_"
-	authorization     = "Authorization"
-	HostChars         = "abcdefghijklmnopqrstuvwxyz0123456789.-:"
+	HostChars = "abcdefghijklmnopqrstuvwxyz0123456789.-:"
 )
 
 var (
@@ -52,9 +46,29 @@ var (
 
 // HTTP forwards unauthenticated requests for Hosts on ports 80 and 443, and authenticated ones for slot origins.
 type Setup struct {
-	Preset *Preset `json:"-"`
-	Credentials
-	Hosts []string `json:"hosts"`
+	Hosts         []string
+	Preset        *Preset
+	title, origin string
+	slots         Slots
+}
+
+// Handler serves a setup's streams with the host's capabilities.
+type Handler struct {
+	*Setup
+	// Transport sends admitted requests, after credential placement, exactly as they were captured.
+	Transport http.RoundTripper
+	// TLS terminates a stream's TLS with a certificate for host, the stream's host.
+	TLS       func(ctx context.Context, host string) *tls.Config
+	ServeHTTP func(ctx context.Context, conn net.Conn, server *http.Server) error
+	// Placeholder is the public reference agents send in place of a credential; "" if it has none.
+	Placeholder func(name string) string
+	Secret      func(ctx context.Context, name string) (string, error)
+	Prepare     PrepareRequest
+	// CheckRedirect decides a WebSocket handshake's redirects, as http.Client's does. A followed redirect is a
+	// request the gate never admitted, with credentials placed again, so it must not be followed unless admitted.
+	CheckRedirect func(req *http.Request, via []*http.Request) error
+	// MaxBody bounds the bodies and WebSocket messages it decodes; larger bodies are opaque.
+	MaxBody int64
 }
 
 // PrepareRequest may normalize validated input before its final capture. It must
@@ -62,19 +76,19 @@ type Setup struct {
 // adapt the response, but must send the prepared request without rewriting it.
 type PrepareRequest func(*http.Request, *HTTPFacts) (http.RoundTripper, error)
 
-// ServeWithTransport validates client input, prepares and captures the upstream
-// request, gates it, then substitutes credentials and sends those admitted bytes.
-func (h *Setup) ServeWithTransport(s *connector.Stream, e *connector.Env, transport http.RoundTripper, prepare PrepareRequest) {
-	var c net.Conn = s
-	if s.Port != httpPort {
-		c = tls.Server(s, e.TLS)
+// Serve validates client input, prepares and captures the upstream request,
+// gates it, then places credentials and sends those admitted bytes.
+func (h Handler) Serve(ctx context.Context, conn net.Conn, _, host string, port uint32, gate func(context.Context, facts.Event) error) {
+	c := conn
+	if port != httpPort {
+		c = tls.Server(conn, h.TLS(ctx, host))
 	}
-	connector.ServeHTTP(s, c, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		request := h.parseRequest(r, s)
-		upstreamTransport := transport
-		if prepare != nil && request.Invalid == "" {
+	h.ServeHTTP(ctx, c, &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		request := h.parseRequest(r, host, port)
+		upstreamTransport := h.Transport
+		if h.Prepare != nil && request.Invalid == "" {
 			prepared := r.Clone(r.Context())
-			responseTransport, err := prepare(prepared, request.HTTP)
+			responseTransport, err := h.Prepare(prepared, request.HTTP)
 			if err != nil {
 				request.Invalid = strings.ToValidUTF8(err.Error(), "�")
 			} else {
@@ -82,7 +96,7 @@ func (h *Setup) ServeWithTransport(s *connector.Stream, e *connector.Env, transp
 				// Capture the actual prepared request, including its credential slots.
 				// This also checks that normalization kept the target in this setup.
 				request = newRequest(r)
-				if err := request.capture(h, r); err != nil {
+				if err := request.capture(&h, r); err != nil {
 					request.Invalid = strings.ToValidUTF8(err.Error(), "�")
 				}
 				if responseTransport != nil {
@@ -90,21 +104,38 @@ func (h *Setup) ServeWithTransport(s *connector.Stream, e *connector.Env, transp
 				}
 			}
 		}
-		if err := s.Gate(r.Context(), h.CaptureResult(request.Describe(h))); err != nil {
+		if err := gate(r.Context(), facts.Capture(request.Describe(h.Setup))); err != nil {
 			log.Printf("refused %s %s%s: %v", r.Method, r.Host, r.URL.Path, err)
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
 		}
-		upstream := substitution{upstreamTransport, h.Secrets, request.slots}
+		upstream := placing{upstreamTransport, request.place, h.Secret}
 		if request.HTTP.WebSocket {
-			h.serveWebSocket(w, r, request, s, upstream)
+			h.serveWebSocket(ctx, conn, w, r, request, gate, upstream)
 			return
 		}
 		proxy(upstream).ServeHTTP(w, r)
-	}))
+	})})
 }
 
-// The parsed request already names its upstream; substitution is the last change before it is sent.
+// placing writes the admitted request's credentials into it as the last change before it is sent.
+type placing struct {
+	base   http.RoundTripper
+	place  func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error)
+	secret func(context.Context, string) (string, error)
+}
+
+func (t placing) RoundTrip(r *http.Request) (*http.Response, error) {
+	if t.place != nil {
+		var err error
+		if r, err = t.place(r, t.secret); err != nil {
+			return nil, err
+		}
+	}
+	return t.base.RoundTrip(r)
+}
+
+// The parsed request already names its upstream; placement is the last change before it is sent.
 func proxy(transport http.RoundTripper) *httputil.ReverseProxy {
 	return &httputil.ReverseProxy{
 		Transport: transport,
@@ -119,9 +150,9 @@ func proxy(transport http.RoundTripper) *httputil.ReverseProxy {
 
 // Parsing retains errors as part of the connector request so the monitor records
 // them through Describe. Unvalidated input is never interpreted as an operation.
-func (h *Setup) parseRequest(r *http.Request, s *connector.Stream) *Request {
+func (h *Handler) parseRequest(r *http.Request, host string, port uint32) *Request {
 	request := newRequest(r)
-	if err := request.parse(h, r, s); err != nil {
+	if err := request.parse(h, r, host, port); err != nil {
 		request.Invalid = strings.ToValidUTF8(err.Error(), "�")
 	}
 	return request
@@ -136,13 +167,13 @@ func newRequest(r *http.Request) *Request {
 
 // parse checks the original request against its authenticated channel before any
 // normalization. A selected connection has no channel host to match.
-func (request *Request) parse(h *Setup, r *http.Request, s *connector.Stream) error {
+func (request *Request) parse(h *Handler, r *http.Request, channel string, channelPort uint32) error {
 	scheme, host, port, err := authority(r)
 	if err != nil {
 		return err
 	}
-	if s.Host != "" && (host != strings.ToLower(s.Host) || port != s.Port) {
-		return fmt.Errorf("a channel to %s:%d cannot carry a request for %s:%d", s.Host, s.Port, host, port)
+	if channel != "" && (host != strings.ToLower(channel) || port != channelPort) {
+		return fmt.Errorf("a channel to %s:%d cannot carry a request for %s:%d", channel, channelPort, host, port)
 	}
 	r.URL.Scheme, r.URL.Host = scheme, strings.TrimPrefix(origin(scheme, host, port), scheme+"://")
 	r.Host = r.URL.Host
@@ -151,7 +182,7 @@ func (request *Request) parse(h *Setup, r *http.Request, s *connector.Stream) er
 
 // capture validates and describes an upstream request without changing its
 // meaning. Both the original and any prepared request use the same checks.
-func (request *Request) capture(h *Setup, r *http.Request) error {
+func (request *Request) capture(h *Handler, r *http.Request) error {
 	if r.URL.Opaque != "" || r.URL.User != nil || r.URL.Fragment != "" || r.Host != r.URL.Host {
 		return errors.New("invalid upstream request target")
 	}
@@ -195,22 +226,16 @@ func (request *Request) capture(h *Setup, r *http.Request) error {
 	r.Host = r.URL.Host
 	layer := &HTTPFacts{WebSocket: upgrade, Method: r.Method, Origin: origin, Host: host, Path: r.URL.Path, Query: query, Headers: r.Header.Clone()}
 	request.HTTP = layer
-	if err := inspect(r, layer); err != nil {
+	if err := inspect(r, layer, h.MaxBody); err != nil {
 		return err
 	}
 	if upgrade && layer.BodyKind != bodyNone {
 		return errors.New("WebSocket handshakes cannot carry a body")
 	}
 	// Binding uses the stream's immutable settings. Replacing them cancels the stream.
-	request.slots, err = h.bind(r, origin)
+	layer.Secrets, request.place, err = h.slots.Bind(r, origin, h.Placeholder)
 	if err != nil {
 		return err
-	}
-	for _, slot := range request.slots {
-		if upgrade && strings.HasPrefix(strings.ToLower(slot.Header), "sec-websocket-") {
-			return errors.New("WebSocket negotiation headers cannot carry credentials")
-		}
-		layer.Secrets = append(layer.Secrets, slot.Value)
 	}
 	for name, values := range r.Header {
 		if len(values) == 1 && strings.HasPrefix(values[0], "{") {
@@ -315,14 +340,14 @@ func encodeQuery(q url.Values) string {
 	return strings.ReplaceAll(q.Encode(), "+", "%20")
 }
 
-// inspect decodes a complete body of at most MaxBodyBytes without repeated names; anything else is opaque and still forwarded.
-func inspect(r *http.Request, layer *HTTPFacts) error {
-	body, err := io.ReadAll(io.LimitReader(r.Body, MaxBodyBytes+1))
+// inspect decodes a complete body of at most limit bytes without repeated names; anything else is opaque and still forwarded.
+func inspect(r *http.Request, layer *HTTPFacts, limit int64) error {
+	body, err := io.ReadAll(io.LimitReader(r.Body, limit+1))
 	if err != nil {
 		return err
 	}
 	r.Body = io.NopCloser(io.MultiReader(bytes.NewReader(body), r.Body))
-	if len(body) <= MaxBodyBytes {
+	if int64(len(body)) <= limit {
 		r.GetBody = func() (io.ReadCloser, error) { return io.NopCloser(bytes.NewReader(body)), nil }
 	}
 	layer.BodyKind = bodyOpaque
@@ -331,7 +356,7 @@ func inspect(r *http.Request, layer *HTTPFacts) error {
 	case len(body) == 0:
 		layer.BodyKind = bodyNone
 		return nil
-	case len(body) > MaxBodyBytes || len(r.Header.Values("Content-Encoding")) > 0 || len(types) != 1 || !utf8.Valid(body):
+	case int64(len(body)) > limit || len(r.Header.Values("Content-Encoding")) > 0 || len(types) != 1 || !utf8.Valid(body):
 		return nil
 	}
 	mediaType, params, err := mime.ParseMediaType(types[0])
@@ -405,24 +430,4 @@ func unique(dec *json.Decoder) bool {
 	}
 	_, err = dec.Token()
 	return err == nil
-}
-
-// Claim ranks exact slot origins by their length and host patterns, which serve only default ports, by theirs.
-func (h *Setup) Claim(host string, port uint32) int {
-	host = strings.ToLower(host)
-	score := -1
-	for _, s := range h.Slots {
-		if s.host == host && s.port == port {
-			score = len(host)
-		}
-	}
-	if port != httpPort && port != httpsPort {
-		return score
-	}
-	for _, pattern := range h.Hosts {
-		if ok, _ := path.Match(pattern, host); ok {
-			score = max(score, len(pattern))
-		}
-	}
-	return score
 }
