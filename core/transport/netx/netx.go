@@ -98,10 +98,14 @@ func ServeConn(ctx context.Context, c net.Conn, server *http.Server) error {
 }
 
 // Listen yields c once and then waits for ctx to end, for servers that only accept listeners. Closing it closes c.
-func Listen(ctx context.Context, c net.Conn) net.Listener { return &listener{ctx, c, c} }
+func Listen(ctx context.Context, c net.Conn) net.Listener {
+	ctx, cancel := context.WithCancel(ctx)
+	return &listener{ctx, cancel, c, c}
+}
 
 type listener struct {
 	ctx        context.Context
+	cancel     context.CancelFunc
 	conn, next net.Conn
 }
 
@@ -114,7 +118,7 @@ func (l *listener) Accept() (net.Conn, error) {
 	return nil, net.ErrClosed
 }
 
-func (l *listener) Close() error { return l.conn.Close() }
+func (l *listener) Close() error { l.cancel(); return l.conn.Close() }
 
 func (*listener) Addr() net.Addr { return &net.TCPAddr{} }
 
@@ -178,7 +182,11 @@ func Relay(ctx context.Context, a, b net.Conn, drain time.Duration) {
 const established = "HTTP/1.1 200 Connection Established\r\n\r\n"
 
 func Hijack(w http.ResponseWriter, head string) (net.Conn, error) {
-	c, rw, err := w.(http.Hijacker).Hijack()
+	hijacker, ok := w.(http.Hijacker)
+	if !ok {
+		return nil, errors.New("response writer does not support hijacking")
+	}
+	c, rw, err := hijacker.Hijack()
 	if err != nil {
 		return nil, err
 	}

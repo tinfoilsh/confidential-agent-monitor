@@ -499,7 +499,8 @@ export function AgentConnectionAccess(props: {
     () => owner.agentAccess(m.view()!, props.name, props.connection)[0],
   );
   const [expanded, setExpanded] = createSignal(
-    !!props.defaultOpen && entry().level !== "off",
+    !!props.defaultOpen &&
+      (entry().level !== "off" || entry().overrides > 0),
   );
   const singleAction = () => {
     const nodes = entry().actions;

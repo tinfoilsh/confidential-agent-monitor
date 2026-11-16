@@ -1,6 +1,7 @@
 package config
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
@@ -74,7 +75,7 @@ func LoadPresets(shipped, extra fs.FS) (map[string]*catalog.Preset, map[string]j
 				p, err = catalog.Decode(raw)
 			}
 			if err == nil && source == extra {
-				if defaults[name] = p.Catalog.Defaults; defaults[name] == nil {
+				if defaults[name] = p.Catalog.Defaults; !bytes.HasPrefix(defaults[name], []byte("{")) {
 					err = errors.New("catalog must be an object with defaults")
 				}
 			} else if err == nil {

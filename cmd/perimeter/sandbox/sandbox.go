@@ -23,6 +23,7 @@ import (
 	"github.com/coder/websocket"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/sshtransport"
+	"github.com/tinfoilsh/tinfoil-go/verify"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/net/proxy"
 )
@@ -53,7 +54,6 @@ const (
 var (
 	errRouteUnavailable  = errors.New("not connected to the Perimeter")
 	ErrDirectUnavailable = fmt.Errorf("route %w", sshtransport.ErrUnavailable)
-	pinnedSource         = regexp.MustCompile(`@sha256:[0-9a-f]{64}$`)
 )
 
 // routeName names a key's route by its fingerprint; a malformed fingerprint names no publisher.
@@ -269,7 +269,7 @@ func ValidateBoot(raw json.RawMessage) error {
 	if err := facts.DecodeNumbers(raw, &b); err != nil || b == (Boot{}) {
 		return err
 	}
-	if !pinnedSource.MatchString(b.Source) {
+	if _, _, digest, err := verify.ParseReference(b.Source); err != nil || digest == "" {
 		return errors.New("source must be a digest-pinned release reference")
 	}
 	if b.InstanceID == "" {

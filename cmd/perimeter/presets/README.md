@@ -115,7 +115,7 @@ and `grant`; the app reads operation, title, parameters, principal,
 connection, and the current label from `facts`. Audit records add lifecycle fields
 without duplicating those facts.
 
-The Rego rules in `../policy/` compute access restrictions, label-flow checks, and
+The Rego rules in `../config/policy.go` compute access restrictions, label-flow checks, and
 saved approval waivers. Every request evaluates the same prepared query,
 `data.perimeter.decision`. Owner policies receive `input.facts` and
 `input.authorization`; they can also read `data.perimeter.gaps` to inspect remaining
@@ -217,7 +217,7 @@ API catalogs use resource parents and capability leaves. The most specific
 permission override wins. The connection and agent views display the same hierarchy.
 The [preset generator](../../../dev/presets/README.md) reads these files as its baseline
 and writes proposals under `dev/presets/`. Edit accepted definitions here.
-Authorization rules live in `../policy/`; owner Rego policies live in
+Authorization rules live in `../config/policy.go`; owner Rego policies live in
 `config.policies`.
 
 The SFTP, MQTT, and NATS presets include setup forms and operation permissions.
