@@ -94,8 +94,8 @@ its link to the Perimeter.
 | `bwrap`                          | unprivileged namespaces         | Linux, bubblewrap with overlay support, unprivileged user namespaces, `script`        |
 
 All need OpenSSH and GNU tar (`gtar` on macOS). Containers share their engine's
-kernel, and bwrap the host's. Setup asks for your Perimeter endpoint, owner
-credentials, and service permissions; its defaults reach a local Perimeter, and
+kernel, and bwrap the host's. Setup asks for your Perimeter endpoint and owner
+credentials; its defaults reach a local Perimeter, and
 the passphrase you enter claims a fresh one. The [daemon](#run-a-perimeter-locally)
 runs setup for you.
 See `perimeter --help` for stopping, exporting, and deleting bunkers.

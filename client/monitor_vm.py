@@ -1011,10 +1011,8 @@ def setup_launch(args):
                 raise Error("pass --owner-key-file pointing to an owner-only file")
         owner, view, endpoint, _ = open_owner(source, root, key)
         connections = view["config"].get("connections") or {}
-        access_spec = args.access or [item.strip() for item in setup_value(
-            None, "Service access, comma-separated name=read|ask|allow", "").split(",") if item.strip()]
         access = {}
-        for item in access_spec:
+        for item in args.access or []:
             service, sep, level = item.partition("=")
             if not sep or service not in connections or level not in ("read", "ask", "allow"):
                 raise Error(f"invalid service access {item!r}; use an existing service and read, ask or allow")
