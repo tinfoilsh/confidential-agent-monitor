@@ -152,7 +152,6 @@ esac
 
 python3 - "$source_dir/client" "$state" "$api" "$listen" "$destination" <<'PY'
 from pathlib import Path
-import hashlib
 import importlib.util
 import json
 import subprocess
@@ -175,25 +174,7 @@ while True:
         if time.monotonic() > deadline:
             sys.exit(f"install: the Perimeter did not start at {owner_url}; check its service log")
         time.sleep(POLL_SECONDS)
-# Named as the web app names a trusted device.
-public = " ".join(vm.keypair(state / "id").decode().split()[:2])
-device = "device-" + hashlib.sha256(public.encode()).hexdigest()[:16]
-if device not in (view["config"].get("identities") or {}):
-    owner.edit([{"path": ["identities", device], "value": {"key": public, "routes": True, "connections": {}}}])
-host, port = listen.rsplit(":", 1)
-vm.private(state / "known_hosts", f"perimeter,*.perimeter,[{host}]:{port} {view['host_key'].strip()}\n".encode())
-vm.private(state / "ssh_config", f"""Host perimeter
-  HostName {host}
-  Port {port}
-Host *.perimeter
-  ProxyJump perimeter
-Host *
-  User monitor
-  IdentityFile {state / "id"}
-  IdentitiesOnly yes
-  UserKnownHostsFile {state / "known_hosts"}
-  GlobalKnownHostsFile /dev/null
-""".encode())
+vm.pair_device(owner, view, listen, state)
 config = Path.home() / ".config/perimeter/client.json"
 profiles = json.loads(config.read_text()).get("launch_profiles", {}) if config.exists() else {}
 if "default" not in profiles:

@@ -1083,6 +1083,29 @@ def unlock(owner, root):
     return view
 
 
+def pair_device(owner, view, endpoint, directory):
+    """Trust directory/id as this computer and write directory/ssh_config to reach the Perimeter with it."""
+    # Named as the web app names a trusted device.
+    public = " ".join(keypair(directory / "id").decode().split()[:2])
+    device = "device-" + hashlib.sha256(public.encode()).hexdigest()[:16]
+    if device not in (view["config"].get("identities") or {}):
+        owner.edit([{"path": ["identities", device], "value": {"key": public, "routes": True, "connections": {}}}])
+    host, port = endpoint.rsplit(":", 1)
+    private(directory / "known_hosts", f"perimeter,*.perimeter,[{host}]:{port} {view['host_key'].strip()}\n".encode())
+    private(directory / "ssh_config", f"""Host perimeter
+  HostName {host}
+  Port {port}
+Host *.perimeter
+  ProxyJump perimeter
+Host *
+  User monitor
+  IdentityFile {directory / "id"}
+  IdentitiesOnly yes
+  UserKnownHostsFile {directory / "known_hosts"}
+  GlobalKnownHostsFile /dev/null
+""".encode())
+
+
 def enroll_identity(owner, state, state_path, public_key, access):
     view = owner.request()
     existing = (view["config"].get("identities") or {}).get(state["name"])
