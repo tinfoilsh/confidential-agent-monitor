@@ -157,6 +157,17 @@
 * {
   box-sizing: border-box;
 }
+*,
+::before,
+::after {
+  corner-shape: squircle;
+}
+:where(input[type="radio"], .cl-avatarBox, .cl-avatarImage, .cl-spinner) {
+  corner-shape: round;
+}
+[data-sonner-toast] [data-close-button] {
+  corner-shape: round;
+}
 [hidden] {
   display: none !important;
 }
@@ -286,6 +297,7 @@ input[type="checkbox"][role="switch"] {
   margin: 0;
   border: 1px solid var(--line);
   border-radius: 999px;
+  corner-shape: round;
   background: color-mix(in srgb, var(--muted) 40%, transparent);
   cursor: pointer;
   vertical-align: -5px;
@@ -298,6 +310,7 @@ input[type="checkbox"][role="switch"]::before {
   width: 16px;
   height: 16px;
   border-radius: 50%;
+  corner-shape: round;
   background: color-mix(in srgb, var(--muted) 70%, transparent);
   box-shadow: var(--shadow);
 }
@@ -604,6 +617,7 @@ summary + * {
   font-size: var(--font-detail);
   line-height: 16px;
   border-radius: 999px;
+  corner-shape: round;
   background: #f59e0b;
   color: #1c1917;
   font-weight: 600;
@@ -1347,6 +1361,7 @@ details[open] > summary > .collection-chevron {
   width: 6px;
   height: 6px;
   border-radius: 50%;
+  corner-shape: round;
   background: currentColor;
 }
 .service-status[data-state="review"] {
@@ -2044,6 +2059,7 @@ details[open] > summary > .collection-chevron {
   width: 6px;
   height: 6px;
   border-radius: 50%;
+  corner-shape: round;
   background: var(--dim);
 }
 .request-state:is([data-state="approved"], [data-state="allowed"])::before {
