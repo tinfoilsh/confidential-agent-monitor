@@ -140,7 +140,7 @@ To run one in the foreground instead, use the Go version in [go.mod](go.mod).
 
 ```sh
 mkdir -p .dev/store
-go run . -bucket "file://$(pwd)/.dev/store?no_tmp_dir=true"
+go -C cmd/perimeter run . -bucket "file://$(pwd)/.dev/store?no_tmp_dir=true"
 ```
 
 Open [the UI](http://127.0.0.1:8080/app/) and initialize an owner key or passphrase.
@@ -162,6 +162,10 @@ Expand a service to override individual actions. Action and effect overrides
 use `off`, `ask`, and `allow`; `off` means Deny. Other policy checks still apply,
 and an approval cannot override an explicit denial. Pending requests appear at
 the top of **Permissions** and as notices on other pages.
+
+Nothing is allowed by default. Besides this access, a request needs an owner
+policy in package `sentinel` that allows it. Onboarding writes one; a Perimeter
+configured only through TOML needs its own under `[policies]`.
 
 Payments and publishing default to Ask. Onboarding enables **Allow paid AI
 inference**, which skips payment approval for model generation unless an explicit

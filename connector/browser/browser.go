@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -25,27 +26,19 @@ import (
 	"github.com/chromedp/cdproto/runtime"
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/connector/web"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
 const (
 	loopback     = "127.0.0.1:0"
-	extensionURL = "chrome-extension://"
-	workerType   = "service_worker"
-	startPage    = "about:blank"
 	refPrefix    = "e"
 	genSeparator = "."
 	inputNode    = "INPUT"
 	pageType     = "page"
 	detachedPage = "Not attached to an active page"
-	// A slow page or a busy renderer fails the command rather than holding the browser from the owner.
-	commandTimeout = 30 * time.Second
 )
 
 var (
-	// inputs act on a ref, which must come from a snapshot of the document still showing.
 	inputs    = []string{"click", "type", "fill"}
 	refLine   = regexp.MustCompile(`(?m)^(` + refPrefix + `\d+) `)
 	errHeld   = errors.New("the owner paused the agent and is using this browser; try again later")
@@ -55,32 +48,39 @@ var (
 	errDialog = errors.New("the page is showing a dialog; accept or dismiss it")
 )
 
-// Browser drives one Chromium, a tab at a time, with the english-only extension loaded, so the agent sees only censored pages.
-// The agent fills a form slot's placeholder; the monitor types the value into a field on the slot's origin.
-// The owner may pause the agent and use the browser themselves, then return it with the same session and tabs.
-type setup struct {
-	web.Credentials
-	Extension string `json:"-"`
-	NoSandbox bool   `json:"-"`
+type Browser struct {
+	Allocate          func(ctx context.Context, proxy string) (allocator context.Context, cancel context.CancelFunc)
+	StartURL          string
+	Worker            func(*target.Info) bool
+	Proxy             http.Handler
+	ServeListener     func(ctx context.Context, ln net.Listener, server *http.Server) error
+	ServeHTTP         func(ctx context.Context, conn net.Conn, server *http.Server) error
+	Form              func(origin, text string) (name, field string, inputTypes []string, err error)
+	Secret            func(ctx context.Context, name string) (string, error)
+	Logins            bool
+	CommandTimeout    time.Duration
+	CaptureTimeout    time.Duration
+	MaxBody           int64
+	ScreenshotQuality int
 }
 
-type session struct {
-	setup
+type Session struct {
+	Browser
+	life    sync.RWMutex
 	cancel  context.CancelFunc
 	workers sync.WaitGroup
-	root    context.Context // The first tab, which owns the browser.
+	root    context.Context
 	worker  context.Context
-	// op serializes commands on the browser. mu guards the fields below and is never held across a browser call.
 	op      sync.Mutex
 	mu      sync.Mutex
 	tabs    map[target.ID]*tabState
-	order   []target.ID // From least to most recently used; the last is the active tab.
+	order   []target.ID
 	held    bool
-	epoch   int                // Changes whenever control passes.
-	stop    context.CancelFunc // Ends the agent's command in progress.
+	epoch   int
+	stop    context.CancelFunc
 	cleanup []func()
-	running *running // The command in progress on a tab, which a dialog the tab opens ends.
-	seen    document // The document of the latest snapshot, whose refs carry gen.
+	running *running
+	seen    document
 	gen     int
 }
 
@@ -102,37 +102,25 @@ type document struct {
 }
 
 type request struct {
-	URL  string `json:"url"`
-	Ref  string `json:"ref"`
-	Text string `json:"text"`
-	// slot is the form slot a fill's placeholder names.
+	URL        string `json:"url"`
+	Ref        string `json:"ref"`
+	Text       string `json:"text"`
 	node       cdp.BackendNodeID
 	generation int
-	slot       *web.Slot
+	slot       string
 }
 
-func (b *session) start(ctx context.Context, e *connector.Env) error {
-	proxy, err := b.proxy(ctx, e)
+func (b *Session) start(ctx context.Context) error {
+	proxy, err := b.proxy(ctx)
 	if err != nil {
 		return err
 	}
 	b.cleanup = append(b.cleanup, func() { proxy.Close() })
-	options := append([]chromedp.ExecAllocatorOption{}, chromedp.DefaultExecAllocatorOptions[:]...)
-	if b.NoSandbox {
-		options = append(options, chromedp.NoSandbox)
-	}
-	alloc, cancel := chromedp.NewExecAllocator(ctx, append(options,
-		chromedp.ProxyServer("http://"+proxy.Addr().String()),
-		chromedp.Flag("proxy-bypass-list", "<-loopback>"),
-		chromedp.Flag("force-webrtc-ip-handling-policy", "disable_non_proxied_udp"),
-		chromedp.Flag("disable-extensions", false),
-		chromedp.Flag("load-extension", b.Extension),
-		chromedp.Flag("disable-extensions-except", b.Extension),
-	)...)
+	alloc, cancel := b.Allocate(ctx, proxy.Addr().String())
 	b.cleanup = append(b.cleanup, cancel)
 	tab, cancel := chromedp.NewContext(alloc)
 	b.cleanup = append(b.cleanup, cancel)
-	if _, err := chromedp.Run(tab, chromedp.Navigate(startPage)); err != nil {
+	if _, err := chromedp.Run(tab, chromedp.Navigate(b.StartURL)); err != nil {
 		return err
 	}
 	targets, err := chromedp.Targets(tab)
@@ -140,15 +128,14 @@ func (b *session) start(ctx context.Context, e *connector.Env) error {
 		return err
 	}
 	for _, t := range targets {
-		if t.Type == workerType && strings.HasPrefix(t.URL, extensionURL) {
+		if b.Worker(t) {
 			b.worker, cancel = chromedp.NewContext(tab, chromedp.WithTargetID(t.TargetID))
 			b.cleanup = append(b.cleanup, cancel)
 		}
 	}
 	if b.worker == nil {
-		return errors.New("the english-only extension did not start")
+		return errors.New("the browser extension did not start")
 	}
-	// An attached session keeps the service worker from idling out and taking its target with it.
 	if _, err := chromedp.Run(b.worker, chromedp.Evaluate[bool]("true")); err != nil {
 		return err
 	}
@@ -157,7 +144,6 @@ func (b *session) start(ctx context.Context, e *connector.Env) error {
 	tabCtx, closeTab := context.WithCancelCause(tab)
 	b.tabs[id] = &tabState{context: tabCtx, close: closeTab}
 	b.watch(tabCtx, id)
-	// Chrome does not answer input to a tab that the input closes, so a closed tab ends its commands.
 	b.workers.Go(func() {
 		for e, err := range chromedp.BrowserEvents(tab, target.TargetDestroyed) {
 			if err != nil {
@@ -175,7 +161,7 @@ func (b *session) start(ctx context.Context, e *connector.Env) error {
 	return nil
 }
 
-func (b *session) close() error {
+func (b *Session) close() error {
 	b.cancel()
 	for i := len(b.cleanup) - 1; i >= 0; i-- {
 		b.cleanup[i]()
@@ -185,21 +171,19 @@ func (b *session) close() error {
 	return nil
 }
 
-func (b *session) serve(s *connector.Stream, _ *connector.Env) {
+func (b *Session) serve(ctx context.Context, conn net.Conn, gate func(context.Context, facts.Event) error) {
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /navigate", b.handle(s, "navigate", b.navigate))
-	mux.HandleFunc("GET /snapshot", b.handle(s, "snapshot", b.snapshot))
-	mux.HandleFunc("GET /text", b.handle(s, "text", b.text))
-	mux.HandleFunc("GET /screenshot", b.handle(s, "screenshot", b.screenshot))
-	mux.HandleFunc("POST /click", b.handle(s, "click", b.click))
-	mux.HandleFunc("POST /type", b.handle(s, "type", b.typeText))
-	mux.HandleFunc("POST /fill", b.handle(s, "fill", b.fill))
-	connector.ServeHTTP(s, s, mux)
+	mux.HandleFunc("POST /navigate", b.handle(gate, "navigate", b.navigate))
+	mux.HandleFunc("GET /snapshot", b.handle(gate, "snapshot", b.snapshot))
+	mux.HandleFunc("GET /text", b.handle(gate, "text", b.text))
+	mux.HandleFunc("GET /screenshot", b.handle(gate, "screenshot", b.screenshot))
+	mux.HandleFunc("POST /click", b.handle(gate, "click", b.click))
+	mux.HandleFunc("POST /type", b.handle(gate, "type", b.typeText))
+	mux.HandleFunc("POST /fill", b.handle(gate, "fill", b.fill))
+	b.ServeHTTP(ctx, conn, &http.Server{Handler: mux})
 }
 
-// handle gates each command on the page it acts on; one tab serves every request in turn.
-// The browser is free while the policy decides, so the command runs only if control did not pass and the page did not move meanwhile.
-func (b *session) handle(stream *connector.Stream, command string, do func(context.Context, request) ([]byte, string, error)) http.HandlerFunc {
+func (b *Session) handle(gate func(context.Context, facts.Event) error, command string, do func(context.Context, request) ([]byte, string, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		b.mu.Lock()
 		epoch := b.epoch
@@ -207,7 +191,7 @@ func (b *session) handle(stream *connector.Stream, command string, do func(conte
 		var err error
 		var req request
 		if r.Method == http.MethodPost {
-			raw, err := io.ReadAll(http.MaxBytesReader(w, r.Body, 1<<20))
+			raw, err := io.ReadAll(http.MaxBytesReader(w, r.Body, b.MaxBody))
 			if err == nil {
 				err = facts.DecodeNumbers(raw, &req)
 			}
@@ -242,11 +226,11 @@ func (b *session) handle(stream *connector.Stream, command string, do func(conte
 			return
 		}
 		u, _ := url.Parse(page)
-		layer := &BrowserFacts{Command: command, URL: u.String(), Host: strings.ToLower(u.Hostname()), Text: req.Text}
-		if req.slot != nil {
-			layer.Secrets = []string{req.slot.Value}
+		layer := &BrowserFacts{Command: command, URL: u.String(), Host: strings.ToLower(u.Hostname()), Text: req.Text, Logins: b.Logins}
+		if req.slot != "" {
+			layer.Secrets = []string{req.slot}
 		}
-		if err := stream.Gate(r.Context(), b.Capture(layer.Describe(len(b.Slots) != 0))); err != nil {
+		if err := gate(r.Context(), facts.Capture(layer.Describe(), nil)); err != nil {
 			http.Error(w, err.Error(), http.StatusForbidden)
 			return
 		}
@@ -275,10 +259,7 @@ func (b *session) handle(stream *connector.Stream, command string, do func(conte
 	}
 }
 
-// within runs fn on the active tab for an agent command, with the page it acts on: the destination of navigate,
-// otherwise the tab's document. Input must name a ref from a snapshot of that document since control last passed.
-// A pause ends fn through its context.
-func (b *session) within(r *http.Request, epoch int, command string, req request, fn func(context.Context, string, document) error) error {
+func (b *Session) within(r *http.Request, epoch int, command string, req request, fn func(context.Context, string, document) error) error {
 	b.op.Lock()
 	defer b.op.Unlock()
 	guard, cancel := context.WithCancel(r.Context())
@@ -328,17 +309,13 @@ func (b *session) within(r *http.Request, epoch int, command string, req request
 	return nil
 }
 
-// delivered tells whether input that failed reached the page anyway: it started a navigation, which detached the page it went to,
-// it closed the tab, or it opened a dialog.
 func delivered(ctx context.Context, err error) bool {
 	var e *cdproto.Error
 	cause := context.Cause(ctx)
 	return errors.As(err, &e) && e.Message == detachedPage || errors.Is(cause, errClosed) || errors.Is(cause, errDialog)
 }
 
-// watch notes the dialogs a tab opens and closes, until the tab closes. Chrome answers no input to a page showing a dialog,
-// so a dialog ends the command in progress on its tab; the dialog stays for the owner to close.
-func (b *session) watch(tab context.Context, id target.ID) {
+func (b *Session) watch(tab context.Context, id target.ID) {
 	b.workers.Go(func() {
 		for _, err := range chromedp.Events(tab, page.JavascriptDialogOpening) {
 			if err != nil {
@@ -370,8 +347,7 @@ func (b *session) watch(tab context.Context, id target.ID) {
 
 func (d document) token() string { return fmt.Sprintf("%s.%s.%d", d.tab, d.loader, d.epoch) }
 
-// document identifies the tab's current document; a reload or new page gets a new loader even at the same URL.
-func (b *session) document(ctx context.Context, epoch int) (string, document, error) {
+func (b *Session) document(ctx context.Context, epoch int) (string, document, error) {
 	frames, err := chromedp.Call(ctx, page.GetFrameTree, cdp.Empty{})
 	if err != nil {
 		return "", document{}, err
@@ -380,8 +356,7 @@ func (b *session) document(ctx context.Context, epoch int) (string, document, er
 	return f.URL + f.URLFragment, document{chromedp.FromContext(ctx).Target.TargetID, f.LoaderID, epoch}, nil
 }
 
-// observe numbers a snapshot's refs with its document's generation, so a ref acts on no other document and not after control passes.
-func (b *session) observe(doc document, lines []byte) []byte {
+func (b *Session) observe(doc document, lines []byte) []byte {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	if doc != b.seen {
@@ -390,11 +365,8 @@ func (b *session) observe(doc document, lines []byte) []byte {
 	return refLine.ReplaceAll(lines, fmt.Appendf(nil, "${1}%s%d ", genSeparator, b.gen))
 }
 
-// follow takes in the tabs the browser opened, under op, so a look at the browser never changes
-// which tab a command acts on. For the agent the newest tab becomes active, so a popup takes over from its opener;
-// for the owner the active tab stays until they pick another. Closing the active tab returns to the one used before it.
-func (b *session) follow(guard context.Context, newest bool) error {
-	ctx, cancel := context.WithTimeout(b.root, commandTimeout)
+func (b *Session) follow(guard context.Context, newest bool) error {
+	ctx, cancel := context.WithTimeout(b.root, b.CommandTimeout)
 	defer cancel()
 	defer context.AfterFunc(guard, cancel)()
 	pages, err := b.pages(ctx)
@@ -416,7 +388,6 @@ func (b *session) follow(guard context.Context, newest bool) error {
 		tabCtx, closeTab := context.WithCancelCause(tab)
 		b.tabs[t.TargetID] = &tabState{context: tabCtx, close: closeTab}
 		b.watch(tabCtx, t.TargetID)
-		// The owner has not used a tab the page opened; it waits until they pick it.
 		if newest {
 			b.order = append(b.order, t.TargetID)
 		} else {
@@ -430,29 +401,23 @@ func (b *session) follow(guard context.Context, newest bool) error {
 	if err != nil {
 		return err
 	}
-	// A real browser brings the tab it switches to forward; the page sees itself as visible.
 	_, err = chromedp.CallBrowser(ctx, target.ActivateTarget, target.ActivateTargetParams{TargetID: id})
 	return err
 }
 
-// use makes a tab the most recently used, which choose picks; it requires mu.
-func (b *session) use(id target.ID) {
+func (b *Session) use(id target.ID) {
 	if i := slices.Index(b.order, id); i >= 0 {
 		b.order = append(slices.Delete(b.order, i, i+1), id)
 	}
 }
 
-// choose is the active tab: the most recently used open one. It requires mu.
-func (b *session) choose() (target.ID, error) {
+func (b *Session) choose() (target.ID, error) {
 	if len(b.order) == 0 {
 		return "", errors.New("the browser has no open tab")
 	}
 	return b.order[len(b.order)-1], nil
 }
 
-// attach opens a context for a tab. The first command on a tab runs its event loop for as long as that command's context
-// lives, so it runs on a context that stays with the tab, which ends only if attaching fails or ctx ends first.
-// Tabs hang off the first, which lives as long as the browser; a closed tab's context ends with it.
 func attach(ctx, root context.Context, id target.ID) (context.Context, error) {
 	tab, _ := chromedp.NewContext(root, chromedp.WithTargetID(id))
 	loop, abort := context.WithCancel(tab)
@@ -465,17 +430,16 @@ func attach(ctx, root context.Context, id target.ID) (context.Context, error) {
 	return tab, nil
 }
 
-func (b *session) pages(ctx context.Context) ([]*target.Info, error) {
+func (b *Session) pages(ctx context.Context) ([]*target.Info, error) {
 	targets, err := chromedp.Targets(ctx)
 	return slices.DeleteFunc(targets, func(t *target.Info) bool { return t.Type != pageType || t.Subtype != "" }), err
 }
 
-// command bounds one command on the active tab and ends it with guard, or when the tab opens a dialog.
-func (b *session) command(guard context.Context) (context.Context, context.CancelFunc) {
+func (b *Session) command(guard context.Context) (context.Context, context.CancelFunc) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	id, _ := b.choose()
-	timed, cancel := context.WithTimeout(b.tabs[id].context, commandTimeout)
+	timed, cancel := context.WithTimeout(b.tabs[id].context, b.CommandTimeout)
 	ctx, interrupt := context.WithCancelCause(timed)
 	r := &running{id, interrupt}
 	b.running = r
@@ -491,10 +455,8 @@ func (b *session) command(guard context.Context) (context.Context, context.Cance
 	}
 }
 
-// forbidden is a refusal of the command itself, as the policy's are.
 type forbidden struct{ error }
 
-// fail reports the owner's control and a moved page as conflicts, so the agent knows to wait or read again.
 func fail(w http.ResponseWriter, err error) {
 	status := http.StatusBadGateway
 	switch {
@@ -506,29 +468,27 @@ func fail(w http.ResponseWriter, err error) {
 	http.Error(w, err.Error(), status)
 }
 
-// secret finds the form slot a fill's placeholder names. The field's own frame must hold the slot's origin and its input type must suit the value;
-// a placeholder anywhere else is refused.
-func (b *session) secret(ctx context.Context, command string, req request) (*web.Slot, error) {
+func (b *Session) secret(ctx context.Context, command string, req request) (string, error) {
 	if command != "fill" {
 		for _, text := range []string{req.URL, req.Text} {
-			if _, err := b.Form("", text); err != nil {
-				return nil, err
+			if _, _, _, err := b.Form("", text); err != nil {
+				return "", err
 			}
 		}
-		return nil, nil
+		return "", nil
 	}
 	id := req.node
 	origin, err := b.frameOrigin(ctx, id)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	slot, err := b.Form(origin, req.Text)
-	if slot == nil || err != nil {
-		return nil, err
+	name, field, types, err := b.Form(origin, req.Text)
+	if name == "" || err != nil {
+		return "", err
 	}
 	node, err := chromedp.Call(ctx, dom.DescribeNode, dom.DescribeNodeParams{BackendNodeID: id})
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	kind := ""
 	for i := 0; i+1 < len(node.Node.Attributes); i += 2 {
@@ -536,14 +496,13 @@ func (b *session) secret(ctx context.Context, command string, req request) (*web
 			kind = strings.ToLower(node.Node.Attributes[i+1])
 		}
 	}
-	if node.Node.NodeName != inputNode || !slices.Contains(web.FormTypes[slot.Form], kind) {
-		return nil, fmt.Errorf("%s is not a %s field", req.Ref, slot.Form)
+	if node.Node.NodeName != inputNode || !slices.Contains(types, kind) {
+		return "", fmt.Errorf("%s is not a %s field", req.Ref, field)
 	}
-	return slot, nil
+	return name, nil
 }
 
-// frameOrigin reads the node's document from its accessibility ancestors, which the page cannot alter.
-func (b *session) frameOrigin(ctx context.Context, id cdp.BackendNodeID) (string, error) {
+func (b *Session) frameOrigin(ctx context.Context, id cdp.BackendNodeID) (string, error) {
 	tree, err := chromedp.Call(ctx, accessibility.GetPartialAXTree, accessibility.GetPartialAXTreeParams{BackendNodeID: id})
 	if err != nil {
 		return "", err
@@ -572,7 +531,6 @@ func (b *session) frameOrigin(ctx context.Context, id cdp.BackendNodeID) (string
 	return "", fmt.Errorf("the frame of e%d is unknown", id)
 }
 
-// backend reads a snapshot ref such as e42.3: node 42 of the document of generation 3.
 func backend(ref string) (cdp.BackendNodeID, int, error) {
 	node, gen, _ := strings.Cut(strings.TrimPrefix(ref, refPrefix), genSeparator)
 	id, err := strconv.ParseInt(node, 10, 64)
@@ -583,13 +541,12 @@ func backend(ref string) (cdp.BackendNodeID, int, error) {
 	return cdp.BackendNodeID(id), g, nil
 }
 
-func (b *session) navigate(ctx context.Context, req request) ([]byte, string, error) {
+func (b *Session) navigate(ctx context.Context, req request) ([]byte, string, error) {
 	_, err := chromedp.Run(ctx, chromedp.Navigate(req.URL))
 	return nil, "", err
 }
 
-// click presses the mouse at the centre of the node's first box, as a person would.
-func (b *session) click(ctx context.Context, req request) ([]byte, string, error) {
+func (b *Session) click(ctx context.Context, req request) ([]byte, string, error) {
 	id := req.node
 	if _, err := chromedp.Call(ctx, dom.ScrollIntoViewIfNeeded, dom.ScrollIntoViewIfNeededParams{BackendNodeID: id}); err != nil {
 		return nil, "", err
@@ -603,18 +560,16 @@ func (b *session) click(ctx context.Context, req request) ([]byte, string, error
 	return nil, "", err
 }
 
-// fill replaces the field's text, with the slot's value in place of its placeholder.
-func (b *session) fill(ctx context.Context, req request) ([]byte, string, error) {
+func (b *Session) fill(ctx context.Context, req request) ([]byte, string, error) {
 	id := req.node
 	text := req.Text
-	if req.slot != nil {
-		// The page may have changed while the owner decided.
+	if req.slot != "" {
 		if slot, err := b.secret(ctx, "fill", req); slot != req.slot {
 			return nil, "", cmp.Or(err, errors.New("the field no longer takes this credential"))
 		}
 		var err error
-		if text, err = b.Secrets[req.slot.Value].Value(ctx); err != nil {
-			return nil, "", fmt.Errorf("credential %s is unavailable", req.slot.Value)
+		if text, err = b.Secret(ctx, req.slot); err != nil {
+			return nil, "", fmt.Errorf("credential %s is unavailable", req.slot)
 		}
 	}
 	if _, err := chromedp.Call(ctx, dom.Focus, dom.FocusParams{BackendNodeID: id}); err != nil {
@@ -633,7 +588,7 @@ func (b *session) fill(ctx context.Context, req request) ([]byte, string, error)
 	return nil, "", err
 }
 
-func (b *session) typeText(ctx context.Context, req request) ([]byte, string, error) {
+func (b *Session) typeText(ctx context.Context, req request) ([]byte, string, error) {
 	id := req.node
 	if _, err := chromedp.Call(ctx, dom.Focus, dom.FocusParams{BackendNodeID: id}); err != nil {
 		return nil, "", err
@@ -642,17 +597,17 @@ func (b *session) typeText(ctx context.Context, req request) ([]byte, string, er
 	return nil, "", err
 }
 
-func (b *session) snapshot(ctx context.Context, _ request) ([]byte, string, error) {
+func (b *Session) snapshot(ctx context.Context, _ request) ([]byte, string, error) {
 	lines, err := b.call(ctx, "snapshot")
 	return []byte(lines), "text/plain; charset=utf-8", err
 }
 
-func (b *session) text(ctx context.Context, _ request) ([]byte, string, error) {
+func (b *Session) text(ctx context.Context, _ request) ([]byte, string, error) {
 	md, err := b.call(ctx, "text")
 	return []byte(md), "text/markdown; charset=utf-8", err
 }
 
-func (b *session) screenshot(ctx context.Context, _ request) ([]byte, string, error) {
+func (b *Session) screenshot(ctx context.Context, _ request) ([]byte, string, error) {
 	png, err := b.call(ctx, "screenshot")
 	if err != nil {
 		return nil, "", err
@@ -661,8 +616,7 @@ func (b *session) screenshot(ctx context.Context, _ request) ([]byte, string, er
 	return raw, "image/png", err
 }
 
-// call runs one of the extension's API functions on the command's tab, within the command's bounds.
-func (b *session) call(ctx context.Context, function string) (string, error) {
+func (b *Session) call(ctx context.Context, function string) (string, error) {
 	id := chromedp.FromContext(ctx).Target.TargetID
 	worker, cancel := context.WithCancel(b.worker)
 	defer cancel()
@@ -670,18 +624,11 @@ func (b *session) call(ctx context.Context, function string) (string, error) {
 	return chromedp.Run(worker, chromedp.Evaluate[string](fmt.Sprintf("%s(%q)", function, id), chromedp.EvalAwaitPromise))
 }
 
-func (v *BrowserFacts) Describe(hasLogins bool) facts.Facts {
-	details := Details{Browser: v}
-	action := map[string]string{"navigate": "browse", "snapshot": "browse", "text": "browse", "screenshot": "browse", "click": "submit", "type": "submit", "fill": "submit"}[v.Command]
+func (v *BrowserFacts) Describe() facts.Observation {
 	scope := map[string]any{"host": v.Host}
 	if len(v.Secrets) > 0 {
-		action, scope["secrets"] = "login", v.Secrets
+		scope["secrets"] = v.Secrets
 	}
-	// Without saved logins the browser sees only the public web.
-	var observes facts.Label
-	if !hasLogins {
-		observes.Audience = "anyone"
-	}
-	op := &facts.Operation{Action: action}
-	return facts.Facts{Operation: op, Title: v.Command + " " + v.URL, Parameters: scope, Details: details, Context: facts.Context{Observes: observes}}
+	op := &facts.Operation{Action: v.Command}
+	return facts.Observation{Operation: op, Title: v.Command + " " + v.URL, Parameters: scope, Details: Details{Browser: v}}
 }

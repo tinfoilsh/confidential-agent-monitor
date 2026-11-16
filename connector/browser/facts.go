@@ -6,6 +6,7 @@ type BrowserFacts struct {
 	Host    string   `json:"host"`
 	Text    string   `json:"text,omitempty"`
 	Secrets []string `json:"secrets,omitempty"`
+	Logins  bool     `json:"logins"`
 }
 
 type Details struct {

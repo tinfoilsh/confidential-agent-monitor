@@ -1,62 +1,90 @@
-// Package mqtt mediates MQTT 3.1.1 clean sessions over the monitor tunnel.
 package mqtt
 
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"crypto/rand"
+	"crypto/tls"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"io"
 	"net"
+	"net/url"
 	"slices"
 	"strings"
 	"sync"
 	"unicode/utf8"
 
 	"github.com/eclipse/paho.mqtt.golang/packets"
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-var Kind = connector.Kind{PerMessage: true, Parse: parseMQTT, New: func() connector.Server { return new(MQTT) }}
-
-func parseMQTT(source connector.Setup) (connector.Prepared, error) {
-	c := new(mqttSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
-		return connector.Prepared{}, err
-	}
-	if err := c.validate(); err != nil {
-		return connector.Prepared{}, err
-	}
-	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Routes: []string{c.URL.Hostname()}}, nil
+type MQTT struct {
+	RawURL string `json:"url"`
+	User   string `json:"user"`
+	url    *url.URL
 }
 
-type MQTT struct{ connector.Slot[mqttSetup] }
-
-const maxPacket = 1 << 20
-
-type mqttSetup struct{ connector.Endpoint }
-
-func (m *mqttSetup) validate() error {
-	if err := m.Endpoint.Parse(); err != nil {
-		return err
+func Parse(config json.RawMessage) (*MQTT, error) {
+	m := new(MQTT)
+	if err := facts.DecodeNumbers(config, m); err != nil {
+		return nil, err
 	}
-	u := &m.URL
+	u, err := url.Parse(m.RawURL)
+	switch {
+	case err != nil:
+		return nil, err
+	case u.Scheme == "" || u.Host == "":
+		return nil, errors.New("destination requires a URL with a scheme and host")
+	}
+	if _, set := u.User.Password(); set || u.Query().Has("password") {
+		return nil, errors.New("put the password in the service's password credential, not the URL")
+	}
 	if (u.Scheme != "mqtt" && u.Scheme != "mqtts") || u.Path != "" && u.Path != "/" || u.RawQuery != "" || u.Fragment != "" {
-		return errors.New("MQTT requires an mqtt:// or mqtts:// host URL without a path, query or fragment")
+		return nil, errors.New("MQTT requires an mqtt:// or mqtts:// host URL without a path, query or fragment")
 	}
-	return nil
+	if m.User != "" {
+		u.User = url.User(m.User)
+	}
+	m.url = u
+	return m, nil
 }
 
-func (owner *MQTT) Serve(s *connector.Stream, e *connector.Env) {
-	m, ok := owner.Load()
-	if !ok {
-		return
-	}
+func (m *MQTT) Hosts() []string { return []string{m.url.Hostname()} }
 
+func (m *MQTT) dial(ctx context.Context, dial func(context.Context, string, string) (net.Conn, error)) (net.Conn, error) {
+	address, port := m.url.Host, "1883"
+	if m.url.Scheme == "mqtts" {
+		port = "8883"
+	}
+	if m.url.Port() == "" {
+		address = net.JoinHostPort(m.url.Hostname(), port)
+	}
+	c, err := dial(ctx, "tcp", address)
+	if err != nil || m.url.Scheme != "mqtts" {
+		return c, err
+	}
+	t := tls.Client(c, &tls.Config{ServerName: m.url.Hostname()})
+	if err := t.HandshakeContext(ctx); err != nil {
+		c.Close()
+		return nil, err
+	}
+	return t, nil
+}
+
+func (m *MQTT) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), maxPacket, maxPending int) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		m.serve(ctx, cancel, s, gate, dial, password, maxPacket, maxPending)
+	}
+}
+
+func (m *MQTT) serve(ctx context.Context, cancel func(), s net.Conn, gate func(context.Context, facts.Event) error, dial func(context.Context, string, string) (net.Conn, error), secret func(context.Context) (string, error), maxPacket, maxPending int) {
 	reader := bufio.NewReader(s)
-	packet, err := readPacket(reader)
+	packet, err := readPacket(reader, maxPacket)
 	if err != nil {
 		return
 	}
@@ -77,41 +105,39 @@ func (owner *MQTT) Serve(s *connector.Stream, e *connector.Env) {
 		refuse(2)
 		return
 	}
-	// Persistent sessions can resume subscriptions without SUBSCRIBE. Wills can
-	// publish after revocation or a monitor crash, when no gate can run.
 	if !connect.CleanSession || connect.WillFlag {
 		refuse(5)
 		return
 	}
-	if err := s.Gate(s.Context, m.Capture((&MQTTFacts{Command: "connect"}).Describe())); err != nil {
+	if err := gate(ctx, facts.Capture((&MQTTFacts{Command: "connect"}).Describe(), nil)); err != nil {
 		refuse(5)
 		return
 	}
-	password, err := m.Secret(s.Context, "password")
-	if err != nil || len(password) > 65535 || len(m.URL.User.Username()) > 65535 {
+	password, err := secret(ctx)
+	if err != nil || len(password) > 65535 || len(m.url.User.Username()) > 65535 {
 		refuse(4)
 		return
 	}
-	// Never let an agent pick an upstream session ID or evict another client.
 	id := make([]byte, 10)
 	if _, err := rand.Read(id); err != nil {
 		return
 	}
 	connect.ClientIdentifier = "mon" + hex.EncodeToString(id)
-	connect.Username, connect.Password = m.URL.User.Username(), []byte(password)
+	connect.Username, connect.Password = m.url.User.Username(), []byte(password)
 	connect.UsernameFlag = connect.Username != "" || password != ""
 	connect.PasswordFlag = password != ""
-	up, err := connector.DialURL(s.Context, e.Dialer, &m.URL, "mqtts", "1883", "8883")
+	up, err := m.dial(ctx, dial)
 	if err != nil {
 		refuse(3)
 		return
 	}
-	defer s.Interrupt(up)()
+	stop := context.AfterFunc(ctx, func() { up.Close() })
+	defer func() { stop(); up.Close() }()
 	if err := connect.Write(up); err != nil {
 		return
 	}
 	replies := bufio.NewReader(up)
-	packet, err = readPacket(replies)
+	packet, err = readPacket(replies, maxPacket)
 	if err != nil {
 		return
 	}
@@ -122,10 +148,12 @@ func (owner *MQTT) Serve(s *connector.Stream, e *connector.Env) {
 	if err := ack.Write(s); err != nil || ack.ReturnCode != 0 {
 		return
 	}
-	p := proxy{owner: &m, s: s, up: up, pending: map[uint16]*packets.PublishPacket{}}
-	defer connector.PumpReplies(s, func() { p.replies(replies) })()
+	p := proxy{ctx: ctx, s: s, gate: gate, up: up, maxPacket: maxPacket, maxPending: maxPending, pending: map[uint16]*packets.PublishPacket{}}
+	pumped := make(chan struct{})
+	go func() { defer close(pumped); p.replies(replies); cancel(); s.Close() }()
+	defer func() { cancel(); s.Close(); <-pumped }()
 	for {
-		packet, err := readPacket(reader)
+		packet, err := readPacket(reader, maxPacket)
 		if err != nil {
 			return
 		}
@@ -142,15 +170,18 @@ func (owner *MQTT) Serve(s *connector.Stream, e *connector.Env) {
 }
 
 type proxy struct {
-	owner   *mqttSetup
-	s       *connector.Stream
-	up      net.Conn
-	mu      sync.Mutex
-	pending map[uint16]*packets.PublishPacket
+	ctx        context.Context
+	s          net.Conn
+	gate       func(context.Context, facts.Event) error
+	up         net.Conn
+	maxPacket  int
+	maxPending int
+	mu         sync.Mutex
+	pending    map[uint16]*packets.PublishPacket
 }
 
 func (p *proxy) publish(command string, v *packets.PublishPacket) error {
-	return p.s.Gate(p.s.Context, p.owner.Capture((&MQTTFacts{Command: command, Topic: v.TopicName, QoS: v.Qos, Retain: v.Retain, Payload: v.Payload}).Describe()))
+	return p.gate(p.ctx, facts.Capture((&MQTTFacts{Command: command, Topic: v.TopicName, QoS: v.Qos, Retain: v.Retain, Payload: v.Payload}).Describe(), nil))
 }
 
 func (p *proxy) request(packet packets.ControlPacket) error {
@@ -169,7 +200,7 @@ func (p *proxy) request(packet packets.ControlPacket) error {
 		if v.Qos == 2 {
 			p.mu.Lock()
 			defer p.mu.Unlock()
-			if len(p.pending) >= 16 && p.pending[v.MessageID] == nil {
+			if len(p.pending) >= p.maxPending && p.pending[v.MessageID] == nil {
 				return errors.New("too many pending MQTT publishes")
 			}
 			p.pending[v.MessageID] = v
@@ -181,16 +212,14 @@ func (p *proxy) request(packet packets.ControlPacket) error {
 		if publish == nil {
 			return errors.New("unknown MQTT publish")
 		}
-		// QoS 2 takes effect on PUBREL, potentially after a policy change.
 		return p.publish("publish", publish)
 	case *packets.SubscribePacket:
 		for i, topic := range v.Topics {
-			if err := p.s.Gate(p.s.Context, p.owner.Capture((&MQTTFacts{Command: "subscribe", Topic: topic, QoS: v.Qoss[i]}).Describe())); err != nil {
+			if err := p.gate(p.ctx, facts.Capture((&MQTTFacts{Command: "subscribe", Topic: topic, QoS: v.Qoss[i]}).Describe(), nil)); err != nil {
 				return err
 			}
 		}
 	case *packets.UnsubscribePacket:
-		// Removing a subscription only reduces access.
 	case *packets.PubackPacket, *packets.PubrecPacket, *packets.PubcompPacket, *packets.PingreqPacket, *packets.DisconnectPacket:
 	default:
 		return errors.New("unexpected MQTT client packet")
@@ -200,13 +229,12 @@ func (p *proxy) request(packet packets.ControlPacket) error {
 
 func (p *proxy) replies(r *bufio.Reader) {
 	for {
-		packet, err := readPacket(r)
+		packet, err := readPacket(r, p.maxPacket)
 		if err != nil {
 			return
 		}
 		switch v := packet.(type) {
 		case *packets.PublishPacket:
-			// Check the concrete topic, even for wildcard or retained deliveries.
 			if err := p.publish("receive", v); err != nil {
 				return
 			}
@@ -224,9 +252,7 @@ func (p *proxy) replies(r *bufio.Reader) {
 	}
 }
 
-// Bound allocations before handing a packet to the library. Re-encoding must
-// consume exactly the original packet, rejecting trailing or noncanonical data.
-func readPacket(r *bufio.Reader) (packets.ControlPacket, error) {
+func readPacket(r *bufio.Reader, maxPacket int) (packets.ControlPacket, error) {
 	first, err := r.ReadByte()
 	if err != nil {
 		return nil, err
@@ -355,7 +381,6 @@ func topicValid(s string, filter bool) bool {
 	if !filter {
 		return !strings.ContainsAny(s, "+#")
 	}
-	// Shared subscriptions change delivery semantics and are outside MQTT 3.1.1.
 	if strings.HasPrefix(s, "$share/") {
 		return false
 	}
@@ -371,7 +396,7 @@ func topicValid(s string, filter bool) bool {
 	return true
 }
 
-func (v *MQTTFacts) Describe() facts.Facts {
+func (v *MQTTFacts) Describe() facts.Observation {
 	details := Details{MQTT: v}
 	action := ""
 	if slices.Contains([]string{"connect", "subscribe", "receive", "publish"}, v.Command) {
@@ -382,5 +407,5 @@ func (v *MQTTFacts) Describe() facts.Facts {
 	}
 	op := &facts.Operation{ID: v.Command, Action: action}
 	parameters, _ := facts.JSON[map[string]any](v)
-	return facts.Facts{Operation: op, Title: "MQTT " + v.Command + " " + v.Topic, Parameters: parameters, Details: details, Context: facts.Context{Sends: facts.SendsConnection}}
+	return facts.Observation{Operation: op, Title: "MQTT " + v.Command + " " + v.Topic, Parameters: parameters, Details: details}
 }

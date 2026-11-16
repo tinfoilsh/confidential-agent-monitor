@@ -4,71 +4,56 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"io"
 	"mime"
 	"mime/multipart"
+	"net"
 	"net/mail"
 	"slices"
 	"strings"
 
 	"github.com/emersion/go-sasl"
 	"github.com/emersion/go-smtp"
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
-
-var SMTPKind = connector.Kind{Parse: parseSMTP, New: func() connector.Server { return new(SMTP) }}
-
-func parseSMTP(source connector.Setup) (connector.Prepared, error) {
-	c := new(smtpSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
-		return connector.Prepared{}, err
-	}
-	if err := c.Endpoint.Parse(); err != nil {
-		return connector.Prepared{}, err
-	}
-	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Routes: []string{c.URL.Hostname()}}, nil
-}
-
-type SMTP struct{ connector.Slot[smtpSetup] }
 
 const (
 	smtpTLSScheme = "smtps"
-
-	maxMessageBytes = 25 << 20
-	smtpRefused     = 550
+	smtpRefused   = 550
 )
 
-type smtpSetup struct{ connector.Endpoint }
+type SMTP struct{ *Endpoint }
 
-func (owner *SMTP) Serve(s *connector.Stream, e *connector.Env) {
-	r, ok := owner.Load()
-	if !ok {
-		return
+func ParseSMTP(config json.RawMessage) (*SMTP, error) {
+	e, err := parse(config)
+	return &SMTP{e}, err
+}
+
+func (r *SMTP) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), auth sasl.PlainAuthenticator, server func(ctx context.Context, host string, backend smtp.Backend) *smtp.Server, listen func(context.Context, net.Conn) net.Listener) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+	return func(ctx context.Context, s net.Conn, _, host string, _ uint32, gate func(context.Context, facts.Event) error) {
+		server := server(ctx, host, smtp.BackendFunc(func(*smtp.Conn) (smtp.Session, error) {
+			return &smtpSession{ctx: ctx, gate: gate, relay: r, dial: dial, password: password, auth: auth}, nil
+		}))
+		defer server.Shutdown(context.Background())
+		server.Serve(listen(ctx, s))
 	}
-
-	server := smtp.NewServer(smtp.BackendFunc(func(*smtp.Conn) (smtp.Session, error) {
-		return &smtpSession{stream: s, relay: &r, env: e}, nil
-	}))
-	server.Domain = "perimeter"
-	server.MaxMessageBytes = maxMessageBytes
-	server.AllowInsecureAuth = true
-	server.TLSConfig = e.TLS
-	defer server.Shutdown(context.Background())
-	server.Serve(connector.Listen(s, s))
 }
 
 type smtpSession struct {
-	env    *connector.Env
-	stream *connector.Stream
-	relay  *smtpSetup
-	from   string
-	to     []string
+	ctx      context.Context
+	gate     func(context.Context, facts.Event) error
+	relay    *SMTP
+	dial     func(context.Context, string, string) (net.Conn, error)
+	password func(context.Context) (string, error)
+	auth     sasl.PlainAuthenticator
+	from     string
+	to       []string
 }
 
 func (s *smtpSession) AuthMechanisms() []string { return []string{sasl.Plain} }
 func (s *smtpSession) Auth(string) (sasl.Server, error) {
-	return sasl.NewPlainServer(func(_, _, _ string) error { return nil }), nil
+	return sasl.NewPlainServer(s.auth), nil
 }
 func (s *smtpSession) Mail(from string, _ *smtp.MailOptions) error { s.from = from; return nil }
 func (s *smtpSession) Rcpt(to string, _ *smtp.RcptOptions) error   { s.to = append(s.to, to); return nil }
@@ -80,23 +65,24 @@ func (s *smtpSession) Data(r io.Reader) error {
 	if err != nil {
 		return err
 	}
-	if err := s.stream.Gate(s.stream.Context, s.relay.Capture((&SMTPRequest{SMTP: &SMTPFacts{From: s.from, To: s.to}, Mail: mailHeaders(message)}).Describe(s.relay.Semantics.Address))); err != nil {
+	if err := s.gate(s.ctx, facts.Capture((&SMTPRequest{SMTP: &SMTPFacts{From: s.from, To: s.to}, Mail: mailHeaders(message)}).Describe(), nil)); err != nil {
 		return &smtp.SMTPError{Code: smtpRefused, EnhancedCode: smtp.EnhancedCode{5, 7, 1}, Message: err.Error()}
 	}
-	return s.relay.submit(s.stream, s.env, s.from, s.to, message)
+	return s.submit(message)
 }
 
-func (r *smtpSetup) submit(s *connector.Stream, e *connector.Env, from string, to []string, message []byte) error {
-	u := &r.URL
-	pass, err := r.Secret(s.Context, "password")
+func (s *smtpSession) submit(message []byte) error {
+	u := s.relay.url
+	pass, err := s.password(s.ctx)
 	if err != nil {
 		return err
 	}
-	conn, err := connector.DialURL(s.Context, e.Dialer, u, smtpTLSScheme, "587", "465")
+	conn, err := s.relay.dial(s.ctx, s.dial, smtpTLSScheme, "587", "465")
 	if err != nil {
 		return err
 	}
-	defer s.Interrupt(conn)()
+	stop := context.AfterFunc(s.ctx, func() { conn.Close() })
+	defer func() { stop(); conn.Close() }()
 	c := smtp.NewClient(conn)
 	if u.Scheme != smtpTLSScheme {
 		if c, err = smtp.NewClientStartTLS(conn, &tls.Config{ServerName: u.Hostname()}); err != nil {
@@ -106,7 +92,7 @@ func (r *smtpSetup) submit(s *connector.Stream, e *connector.Env, from string, t
 	if err := c.Auth(sasl.NewPlainClient("", u.User.Username(), pass)); err != nil {
 		return err
 	}
-	if err := c.SendMail(from, to, bytes.NewReader(message)); err != nil {
+	if err := c.SendMail(s.from, s.to, bytes.NewReader(message)); err != nil {
 		return err
 	}
 	return c.Quit()
@@ -114,7 +100,6 @@ func (r *smtpSetup) submit(s *connector.Stream, e *connector.Env, from string, t
 
 const multipartPrefix = "multipart/"
 
-// Only top-level attachments are named.
 func mailHeaders(message []byte) *MailFacts {
 	msg, err := mail.ReadMessage(bytes.NewReader(message))
 	if err != nil {
@@ -164,15 +149,9 @@ func attachments(msg *mail.Message) []string {
 
 type SMTPRequest Details
 
-func (r *SMTPRequest) Describe(address string) facts.Facts {
+func (r *SMTPRequest) Describe() facts.Observation {
 	v := r.SMTP
 	to := slices.Clone(v.To)
 	slices.Sort(to)
-	sends := facts.SendsConnection
-	for _, to := range v.To {
-		if !strings.EqualFold(to, address) {
-			sends = "anyone"
-		}
-	}
-	return facts.Facts{Operation: &facts.Operation{Action: "send"}, Title: "Send mail to " + strings.Join(v.To, ", "), Parameters: map[string]any{"to": to}, Details: Details(*r), Context: facts.Context{Sends: sends}}
+	return facts.Observation{Operation: &facts.Operation{Action: "send"}, Title: "Send mail to " + strings.Join(v.To, ", "), Parameters: map[string]any{"to": to}, Details: Details(*r)}
 }

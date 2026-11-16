@@ -1,4 +1,3 @@
-// Command presets drafts monitor presets from public API specs.
 package main
 
 import (
@@ -16,7 +15,7 @@ const (
 	sourcesPath = "sources.json"
 	lockPath    = "sources.lock.json"
 	cacheDir    = ".cache"
-	shippedDir  = "../../presets"
+	shippedDir  = "../../cmd/perimeter/presets"
 )
 
 var camel = regexp.MustCompile(`([a-z0-9])([A-Z])`)

@@ -1,14 +1,14 @@
 package credential
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	jsonv2 "encoding/json/v2"
 	"errors"
 	"fmt"
 	"net/http"
-	"sync"
+	"os"
+	"strings"
 	"time"
 
 	"golang.org/x/oauth2"
@@ -16,95 +16,73 @@ import (
 
 var errNotConfigured = errors.New("credential is not configured")
 
-// Value is a string or an OAuth grant. Disclosure is controlled by field metadata.
-// Client is the guarded client that refreshes the grant; without one, a grant cannot refresh.
 type Value struct {
-	raw     json.RawMessage
-	text    string
-	grant   *oauth
-	token   *oauth2.Token
-	refresh sync.Once
-	gate    chan struct{}
-	Save    func(context.Context, json.RawMessage, json.RawMessage) error
+	configured bool
+	text       string
+	resolve    func() (string, error)
+	grant      *Grant
+	token      *oauth2.Token
+	gate       chan struct{}
+	save       func(context.Context, json.RawMessage) error
+	client     *http.Client
+	timeout    time.Duration
+}
+
+func Static(text string) *Value { return &Value{configured: true, text: text} }
+
+func File(root *os.Root, name string) *Value {
+	return &Value{configured: true, resolve: func() (string, error) {
+		secret, err := root.ReadFile(name)
+		return strings.TrimRight(string(secret), "\r\n"), err
+	}}
+}
+
+type OAuthOptions struct {
 	Client  *http.Client
-	resolve func(context.Context) (string, error)
-
-	// Placeholder is a stable reference supplied by Monitor, never the credential itself.
-	Placeholder string `json:"-"`
+	Save    func(context.Context, json.RawMessage) error
+	Timeout time.Duration
 }
 
-// Remote resolves a connection-scoped handle without moving its stored OAuth
-// grant or refresh token into the connector's process.
-func Remote(configured bool, resolve func(context.Context) (string, error)) *Value {
-	v := &Value{resolve: resolve}
-	if configured {
-		v.raw = json.RawMessage(`""`)
+func OAuth(grant json.RawMessage, o OAuthOptions) (*Value, error) {
+	g, err := DecodeGrant(grant)
+	if err != nil {
+		return nil, err
 	}
-	return v
+	return &Value{configured: true, grant: g, gate: make(chan struct{}, 1), save: o.Save, client: o.Client, timeout: o.Timeout,
+		token: &oauth2.Token{AccessToken: g.AccessToken, RefreshToken: g.RefreshToken, Expiry: g.Expiry}}, nil
 }
 
-func (v *Value) UnmarshalJSON(raw []byte) error {
-	*v = Value{raw: bytes.Clone(raw)}
-	if bytes.Equal(raw, []byte("null")) {
-		v.raw = nil
-		return nil
+func DecodeGrant(raw json.RawMessage) (*Grant, error) {
+	var g Grant
+	if err := jsonv2.Unmarshal(raw, &g, jsonv2.RejectUnknownMembers(true)); err != nil {
+		return nil, err
 	}
-	if json.Unmarshal(raw, &v.text) == nil {
-		return nil
+	if err := g.validate(); err != nil {
+		return nil, err
 	}
-	var cfg struct {
-		OAuth *oauth `json:"oauth"`
-	}
-	if err := jsonv2.Unmarshal(raw, &cfg, jsonv2.RejectUnknownMembers(true)); err != nil {
-		return err
-	}
-	if cfg.OAuth == nil {
-		return errors.New("credential must be a string or an oauth grant")
-	}
-	if err := cfg.OAuth.validate(); err != nil {
-		return err
-	}
-	v.grant = cfg.OAuth
-	v.token = &oauth2.Token{AccessToken: v.grant.AccessToken, RefreshToken: v.grant.RefreshToken, Expiry: v.grant.Expiry}
-	return nil
+	return &g, nil
 }
 
-func (v *Value) lock(ctx context.Context) error {
-	v.refresh.Do(func() { v.gate = make(chan struct{}, 1) })
-	select {
-	case v.gate <- struct{}{}:
-		return nil
-	case <-ctx.Done():
-		return ctx.Err()
-	}
-}
-
-// Configured waits for a refresh in progress, which may rotate the record.
-func (v *Value) Configured() bool {
-	if v == nil {
-		return false
-	}
-	v.lock(context.Background())
-	defer func() { <-v.gate }()
-	return len(v.raw) > 0
-}
+func (v *Value) Configured() bool { return v != nil && v.configured }
 
 func (v *Value) Value(ctx context.Context) (string, error) {
 	if v == nil {
 		return "", errNotConfigured
 	}
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
-	defer cancel()
 	if v.resolve != nil {
-		return v.resolve(ctx)
+		return v.resolve()
 	}
-	if err := v.lock(ctx); err != nil {
-		return "", err
-	}
-	defer func() { <-v.gate }()
 	if v.grant == nil {
 		return v.text, nil
 	}
+	ctx, cancel := context.WithTimeout(ctx, v.timeout)
+	defer cancel()
+	select {
+	case v.gate <- struct{}{}:
+	case <-ctx.Done():
+		return "", ctx.Err()
+	}
+	defer func() { <-v.gate }()
 	grant := *v.grant
 	t := v.token
 	if !t.Valid() {
@@ -112,9 +90,9 @@ func (v *Value) Value(ctx context.Context) (string, error) {
 			return "", errNotConfigured
 		}
 		var err error
-		t, err = grant.refresh(ctx, v.Client, t)
+		t, err = grant.refresh(ctx, v.client, t)
 		if err != nil {
-			return "", scrub(ctx, "refresh", err)
+			return "", Scrub(ctx, "refresh", err)
 		}
 		if err := grant.acceptToken(t, true); err != nil {
 			return "", err
@@ -125,36 +103,27 @@ func (v *Value) Value(ctx context.Context) (string, error) {
 		if err := grant.acceptToken(t, true); err != nil {
 			return "", err
 		}
-		raw := encodeGrant(grant)
-		if err := v.Save(ctx, v.raw, raw); err != nil {
+		if err := v.save(ctx, encodeGrant(grant)); err != nil {
 			return "", err
 		}
-		*v.grant, v.raw = grant, raw
+		*v.grant = grant
 	}
 	return t.AccessToken, nil
 }
 
-// Describe returns only the status needed by the owner editor and the verified
-// OIDC account, without exposing tokens.
-func Describe(raw json.RawMessage) (kind, account string) {
-	var v Value
-	if json.Unmarshal(raw, &v) != nil || bytes.Equal(raw, []byte("null")) {
-		return "unset", ""
+func DescribeOAuth(grant json.RawMessage) (ready bool, account string, err error) {
+	g, err := DecodeGrant(grant)
+	if err != nil {
+		return false, "", err
 	}
-	if v.grant == nil {
-		return "static", ""
+	if g.OIDC != nil {
+		account = g.OIDC.Email
 	}
-	if v.grant.OIDC != nil {
-		account = v.grant.OIDC.Email
-	}
-	if v.grant.RefreshToken != "" || v.token.Valid() {
-		return "oauth", account
-	}
-	return "oauth-required", account
+	token := oauth2.Token{AccessToken: g.AccessToken, RefreshToken: g.RefreshToken, Expiry: g.Expiry}
+	return g.RefreshToken != "" || token.Valid(), account, nil
 }
 
-// scrub keeps provider responses and request URLs out of errors, since either may hold a secret.
-func scrub(ctx context.Context, step string, err error) error {
+func Scrub(ctx context.Context, step string, err error) error {
 	if ctx.Err() != nil {
 		return ctx.Err()
 	}

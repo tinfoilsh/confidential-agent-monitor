@@ -6,7 +6,6 @@ import (
 	"strings"
 )
 
-// A source is a service's entry in sources.json: where its specs are, or the native connector it maps to.
 type source struct {
 	Title      string            `json:"title,omitempty"`
 	Preset     string            `json:"preset,omitempty"`
@@ -16,10 +15,9 @@ type source struct {
 	Note       string            `json:"note,omitempty"`
 	Families   []string          `json:"families,omitempty"`
 	Exclusions map[string]string `json:"exclusions,omitempty"`
-	Groups     map[string]string `json:"groups,omitempty"` // source operation ID -> resource hierarchy
+	Groups     map[string]string `json:"groups,omitempty"`
 }
 
-// A specRef is where a spec lives: a file at a GitHub ref, which update pins to a commit, or a plain URL, pinned only by hash.
 type specRef struct {
 	Format  string `json:"format"`
 	GitHub  string `json:"github,omitempty"`
@@ -39,7 +37,6 @@ func (r specRef) source() string {
 	return r.URL
 }
 
-// The severity order for drafting: the first effect whose words an operation uses wins.
 var effectOrder = []string{"pay", "publish", "share", "send", "delete", "admin", "execute", "generate", "write", "read"}
 
 var (
@@ -56,9 +53,7 @@ var (
 		"execute":  regexp.MustCompile(`^(run|rerun|execute|trigger|invoke|dispatch|deploy|build|exec|eval)$`),
 		"generate": regexp.MustCompile(`^(generate|complete|completion|embed|transcribe|translate|predict|infer|rerank|synthesize|summarize|classify|detect|analyze|moderate|extract)$`),
 	}
-	// Lifecycle verbs execute only on a run, job or build; elsewhere they change state.
-	lifecycle = regexp.MustCompile(`^(start|restart|stop|cancel|retry|reboot|resume|pause|abort)$`)
-	// A trailing path segment that names an action acts on the collection before it.
+	lifecycle     = regexp.MustCompile(`^(start|restart|stop|cancel|retry|reboot|resume|pause|abort)$`)
 	actionSegment = regexp.MustCompile(`^(cancel|confirm|decline|reassign|disconnect|connect|mark|refresh|reschedule|approve|reject|archive|unarchive|close|reopen|merge|lock|unlock|move|copy|rename|restore|assign|unassign|enable|disable|activate|deactivate|send|publish|unpublish|start|stop|restart|retry|resume|pause|abort|run|rerun|execute|trigger|invoke|dispatch|deploy|test|verify|validate|check|import|export|upload|download|accept|transfer|duplicate|clone|sync|subscribe|unsubscribe|follow|unfollow|star|unstar|pin|unpin|mute|unmute|block|unblock|join|leave|invite|share|unshare|revoke|grant|reset|regenerate|rotate|force|save)`)
 	nouns         = map[string]*regexp.Regexp{
 		"pay":      regexp.MustCompile(`^(payments?|charges?|refunds?|payouts?|transfers?|payment_intents?|captures?|purchases?)$`),
@@ -78,7 +73,6 @@ func tokens(s string) []string {
 	return out
 }
 
-// resource is the last literal path segment, else the last tag, as a snake_case action suffix.
 func resource(o specOp) string {
 	if o.GraphQL != nil {
 		return snake(o.GraphQL[1])
@@ -107,9 +101,7 @@ func resource(o specOp) string {
 	return ""
 }
 
-// draftEffect picks one effect from the method, the operation's verbs and the resource it acts on.
 func draftEffect(o specOp, ai bool) string {
-	// Operation ids often name the HTTP method, and RPC paths name the verb in their last segment.
 	idWords := slices.DeleteFunc(tokens(o.ID), func(w string) bool { return httpMethods.MatchString(w) })
 	if segs := strings.Split(o.Path, "/"); len(segs) > 0 && !strings.Contains(segs[len(segs)-1], "{") {
 		idWords = append(idWords, tokens(segs[len(segs)-1])...)
@@ -142,7 +134,6 @@ func draftEffect(o specOp, ai bool) string {
 	}
 	for _, e := range effectOrder {
 		if n := nouns[e]; n != nil && n.MatchString(res) {
-			// A message, payment or run is the effect only when one is created.
 			if (e == "send" || e == "pay" || e == "execute" || e == "generate") && o.Method != "POST" {
 				continue
 			}

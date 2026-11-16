@@ -1,12 +1,14 @@
-// Package ui embeds the built Monitor UI.
 package ui
 
-import "embed"
+import (
+	"embed"
+	"io/fs"
+)
 
 //go:generate bun install --frozen-lockfile
 //go:generate bun run build
 
-// Files holds only the built UI, which also serves the attested SSH panel.
-//
 //go:embed dist
-var Files embed.FS
+var dist embed.FS
+
+var Files, _ = fs.Sub(dist, "dist")

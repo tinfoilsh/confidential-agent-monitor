@@ -23,8 +23,6 @@ type documentationBundle struct {
 	Operations []specOp        `json:"operations"`
 }
 
-// Airtable embeds its public specification alongside page state. Persist only
-// the specification, never browser identifiers or other surrounding page data.
 func airtableDocument(src []byte) ([]byte, error) {
 	const marker = "window.initData = "
 	_, raw, ok := strings.Cut(string(src), marker)
@@ -121,8 +119,6 @@ func parseSlackMethod(src []byte, location string) ([]specOp, error) {
 	return out, nil
 }
 
-// Bundle every method in the official sitemap. Any failed method aborts the
-// refresh, leaving the previous lock intact instead of shrinking the inventory.
 func slackDocument(index []byte) ([]byte, error) {
 	urls := map[string]bool{}
 	for _, match := range slackMethodURL.FindAllStringSubmatch(string(index), -1) {

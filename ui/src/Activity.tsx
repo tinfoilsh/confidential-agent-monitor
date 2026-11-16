@@ -111,7 +111,10 @@ function Requests(props: { expanded?: string }) {
     );
   onMount(() => {
     const workspace = document.getElementById("workspace")!;
-    const scrolled = () => workspace.scrollTop > HOLD_SCROLL_PX && hold();
+    const scrolled = () => {
+      if (workspace.scrollTop > HOLD_SCROLL_PX) hold();
+      else if (!workspace.scrollTop && !current()) m.setActivity("anchor", 0);
+    };
     workspace.addEventListener("scroll", scrolled, { passive: true });
     onCleanup(() => workspace.removeEventListener("scroll", scrolled));
   });

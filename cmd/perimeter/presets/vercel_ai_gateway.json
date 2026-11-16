@@ -1,0 +1,50 @@
+{
+  "title": "Vercel AI Gateway Chat Model",
+  "catalog": {
+    "group": "api",
+    "fields": [
+      {"key": "api_key", "label": "API Key or OIDC Token", "secret": true, "credential": true}
+    ],
+    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://ai-gateway.vercel.sh", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}},
+    "actions": {
+      "delete.completions": {"title": "Delete: completions"},
+      "delete.models": {"title": "Delete: models"},
+      "delete.responses": {"title": "Delete: responses"},
+      "generate.compact": {"title": "Generate: compact"},
+      "generate.compact?beta=true": {"title": "Generate: compact?beta=true"},
+      "generate.completions": {"title": "Generate: completions"},
+      "generate.embeddings": {"title": "Generate: embeddings"},
+      "generate.input_tokens?beta=true": {"title": "Generate: input tokens?beta=true"},
+      "generate.responses": {"title": "Generate: responses"},
+      "generate.responses?beta=true": {"title": "Generate: responses?beta=true"},
+      "read": {"title": "Read everything the account can see"}
+    }
+  },
+  "http": {
+    "operations": {
+      "Compactconversation": {"action":"generate.compact","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/compact","body":"any","scope":{}},
+      "Getinputtokencounts": {"action":"read","effects":["read"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/input_tokens","body":"any","scope":{}},
+      "beta_Compactconversation": {"action":"generate.compact?beta=true","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/compact?beta=true","body":"any","scope":{}},
+      "beta_Getinputtokencounts": {"action":"generate.input_tokens?beta=true","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/input_tokens?beta=true","body":"any","scope":{}},
+      "beta_cancelResponse": {"action":"generate.responses","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/{response_id}/cancel?beta=true","scope":{"response_id":{"from":"path","at":"response_id"}}},
+      "beta_createResponse": {"action":"generate.responses?beta=true","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses?beta=true","body":"json","scope":{}},
+      "beta_listInputItems": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/{response_id}/input_items?beta=true","params":["limit","order","after","include"],"scope":{"response_id":{"from":"path","at":"response_id"}}},
+      "cancelResponse": {"action":"generate.responses","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/{response_id}/cancel","scope":{"response_id":{"from":"path","at":"response_id"}}},
+      "createChatCompletion": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/chat/completions","body":"json","scope":{}},
+      "createCompletion": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/completions","body":"json","scope":{}},
+      "createEmbedding": {"action":"generate.embeddings","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/embeddings","body":"json","scope":{}},
+      "createResponse": {"action":"generate.responses","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses","body":"json","scope":{}},
+      "deleteChatCompletion": {"action":"delete.completions","effects":["delete"],"method":"DELETE","origin":"https://ai-gateway.vercel.sh","path":"/v1/chat/completions/{completion_id}","scope":{"completion_id":{"from":"path","at":"completion_id"}}},
+      "deleteModel": {"action":"delete.models","effects":["delete"],"method":"DELETE","origin":"https://ai-gateway.vercel.sh","path":"/v1/models/{model}","scope":{"model":{"from":"path","at":"model"}}},
+      "deleteResponse": {"action":"delete.responses","effects":["delete"],"method":"DELETE","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/{response_id}","scope":{"response_id":{"from":"path","at":"response_id"}}},
+      "getChatCompletion": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/chat/completions/{completion_id}","scope":{"completion_id":{"from":"path","at":"completion_id"}}},
+      "getChatCompletionMessages": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/chat/completions/{completion_id}/messages","params":["after","limit","order"],"scope":{"completion_id":{"from":"path","at":"completion_id"}}},
+      "getResponse": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/{response_id}","params":["include","stream","starting_after","include_obfuscation"],"scope":{"response_id":{"from":"path","at":"response_id"}}},
+      "listChatCompletions": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/chat/completions","params":["model","metadata","after","limit","order"],"scope":{}},
+      "listInputItems": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/responses/{response_id}/input_items","params":["limit","order","after","include"],"scope":{"response_id":{"from":"path","at":"response_id"}}},
+      "listModels": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/models","scope":{}},
+      "retrieveModel": {"action":"read","effects":["read"],"method":"GET","origin":"https://ai-gateway.vercel.sh","path":"/v1/models/{model}","scope":{"model":{"from":"path","at":"model"}}},
+      "updateChatCompletion": {"action":"generate.completions","effects":["generate"],"method":"POST","origin":"https://ai-gateway.vercel.sh","path":"/v1/chat/completions/{completion_id}","body":"json","scope":{"completion_id":{"from":"path","at":"completion_id"}}}
+    }
+  }
+}

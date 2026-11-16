@@ -60,9 +60,3 @@ containers:
     tmpfs:
       /tmp: rw,noexec,nosuid,nodev,size=64m
     restart: always
-    healthcheck:
-      test: ["CMD", "/monitor", "-healthcheck"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 10s

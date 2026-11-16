@@ -10,8 +10,6 @@ import (
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-const version = "0.1.0"
-
 type Snapshot struct {
 	Instructions string      `json:"instructions,omitempty"`
 	Tools        []*sdk.Tool `json:"tools"`
@@ -45,7 +43,7 @@ func (pin *Snapshot) pinned() (instructions string, tools map[string]string) {
 	return pin.Instructions, tools
 }
 
-func (pin *Snapshot) approved(cur *Snapshot) (ok []*sdk.Tool, blocked []string) {
+func (pin *Snapshot) Approved(cur *Snapshot) (ok []*sdk.Tool, blocked []string) {
 	instructions, tools := pin.pinned()
 	for _, t := range cur.Tools {
 		if instructions == cur.Instructions && tools[t.Name] == canonical(t) {

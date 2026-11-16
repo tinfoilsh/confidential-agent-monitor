@@ -2,31 +2,20 @@ package redis
 
 import (
 	"bufio"
+	"context"
+	"crypto/tls"
+	"encoding/json"
 	"errors"
 	"io"
 	"log"
+	"net"
+	"net/url"
 	"slices"
 	"strings"
 
 	"github.com/tidwall/redcon"
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
-
-var Kind = connector.Kind{Parse: parseRedis, New: func() connector.Server { return new(Redis) }}
-
-func parseRedis(source connector.Setup) (connector.Prepared, error) {
-	c := new(redisSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
-		return connector.Prepared{}, err
-	}
-	if err := c.validate(); err != nil {
-		return connector.Prepared{}, err
-	}
-	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Routes: []string{c.URL.Hostname()}}, nil
-}
-
-type Redis struct{ connector.Slot[redisSetup] }
 
 const (
 	redisPort = "6379"
@@ -37,73 +26,105 @@ var containerCommands = []string{
 	"MODULE", "OBJECT", "PUBSUB", "SCRIPT", "SLOWLOG", "XGROUP", "XINFO",
 }
 
-type redisSetup struct{ connector.Endpoint }
-
-func (r *redisSetup) validate() error {
-	if err := r.Endpoint.Parse(); err != nil {
-		return err
-	}
-	if r.URL.Scheme != "rediss" {
-		return errors.New("Redis requires a rediss:// URL to protect credentials with TLS")
-	}
-	return nil
+type Redis struct {
+	RawURL string `json:"url"`
+	User   string `json:"user"`
+	url    *url.URL
 }
 
-func (owner *Redis) Serve(s *connector.Stream, e *connector.Env) {
-	r, ok := owner.Load()
-	if !ok {
-		return
+func Parse(config json.RawMessage) (*Redis, error) {
+	r := new(Redis)
+	if err := facts.DecodeNumbers(config, r); err != nil {
+		return nil, err
 	}
+	u, err := url.Parse(r.RawURL)
+	switch {
+	case err != nil:
+		return nil, err
+	case u.Scheme == "" || u.Host == "":
+		return nil, errors.New("destination requires a URL with a scheme and host")
+	}
+	if _, set := u.User.Password(); set || u.Query().Has("password") {
+		return nil, errors.New("put the password in the service's password credential, not the URL")
+	}
+	if u.Scheme != "rediss" {
+		return nil, errors.New("Redis requires a rediss:// URL to protect credentials with TLS")
+	}
+	if r.User != "" {
+		u.User = url.User(r.User)
+	}
+	r.url = u
+	return r, nil
+}
 
-	u := &r.URL
-	up, err := connector.DialURL(s.Context, e.Dialer, u, "rediss", redisPort, redisPort)
-	if err != nil {
-		log.Printf("redis: %v", err)
-		return
-	}
-	defer s.Interrupt(up)()
-	user := u.User.Username()
-	pass, err := r.Secret(s.Context, "password")
-	if err != nil {
-		log.Printf("credential: %v", err)
-		return
-	}
-	replies := bufio.NewReader(up)
-	if pass != "" {
-		if _, err := up.Write(encode(authArgs(user, pass))); err != nil {
-			return
+func (r *Redis) Hosts() []string { return []string{r.url.Hostname()} }
+
+func (r *Redis) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		u := r.url
+		address := u.Host
+		if u.Port() == "" {
+			address = net.JoinHostPort(u.Hostname(), redisPort)
 		}
-		line, err := replies.ReadString('\n')
-		if err != nil || !strings.HasPrefix(line, "+") {
-			log.Printf("redis upstream refused the stored credential: %q %v", line, err)
-			return
-		}
-	}
-	defer connector.PumpReplies(s, func() { io.Copy(s, replies) })()
-	commands := redcon.NewReader(s)
-	for {
-		cmd, err := commands.ReadCommand()
+		raw, err := dial(ctx, "tcp", address)
 		if err != nil {
+			log.Printf("redis: %v", err)
 			return
 		}
-		args := make([]string, len(cmd.Args))
-		for i, arg := range cmd.Args {
-			args[i] = string(arg)
+		up := tls.Client(raw, &tls.Config{ServerName: u.Hostname()})
+		stop := context.AfterFunc(ctx, func() { up.Close() })
+		defer func() { stop(); up.Close() }()
+		if err := up.HandshakeContext(ctx); err != nil {
+			log.Printf("redis: %v", err)
+			return
 		}
-		if err := s.Gate(s.Context, r.Capture((&RedisFacts{Command: commandName(args), Argv: args}).Describe())); err != nil {
-			if _, err := s.Write(redcon.AppendError(nil, "ERR "+err.Error())); err != nil {
+		user := u.User.Username()
+		pass, err := password(ctx)
+		if err != nil {
+			log.Printf("credential: %v", err)
+			return
+		}
+		replies := bufio.NewReader(up)
+		if pass != "" {
+			if _, err := up.Write(encode(authArgs(user, pass))); err != nil {
 				return
 			}
-			continue
-		}
-		out := cmd.Raw
-		if pass != "" {
-			if args, ok := reauthorize(cmd.Args, user, pass); ok {
-				out = encode(args)
+			line, err := replies.ReadString('\n')
+			if err != nil || !strings.HasPrefix(line, "+") {
+				log.Printf("redis upstream refused the stored credential: %q %v", line, err)
+				return
 			}
 		}
-		if _, err := up.Write(out); err != nil {
-			return
+		pumped := make(chan struct{})
+		go func() { defer close(pumped); io.Copy(s, replies); cancel(); s.Close() }()
+		defer func() { cancel(); s.Close(); <-pumped }()
+		commands := redcon.NewReader(s)
+		for {
+			cmd, err := commands.ReadCommand()
+			if err != nil {
+				return
+			}
+			args := make([]string, len(cmd.Args))
+			for i, arg := range cmd.Args {
+				args[i] = string(arg)
+			}
+			if err := gate(ctx, facts.Capture((&RedisFacts{Command: commandName(args), Argv: args}).Describe(), nil)); err != nil {
+				if _, err := s.Write(redcon.AppendError(nil, "ERR "+err.Error())); err != nil {
+					return
+				}
+				continue
+			}
+			out := cmd.Raw
+			if pass != "" {
+				if args, ok := reauthorize(cmd.Args, user, pass); ok {
+					out = encode(args)
+				}
+			}
+			if _, err := up.Write(out); err != nil {
+				return
+			}
 		}
 	}
 }
@@ -149,13 +170,13 @@ func encode(args [][]byte) []byte {
 	return out
 }
 
-func (v *RedisFacts) Describe() facts.Facts {
+func (v *RedisFacts) Describe() facts.Observation {
 	details := Details{Redis: v}
 	action := "write"
 	if slices.Contains(redisReads, v.Command) {
 		action = "read"
 	}
-	return facts.Facts{Operation: &facts.Operation{Action: action}, Title: strings.Join(v.Argv[:min(2, len(v.Argv))], " "), Parameters: map[string]any{"command": v.Command, "argv": v.Argv}, Details: details}
+	return facts.Observation{Operation: &facts.Operation{Action: action}, Title: strings.Join(v.Argv[:min(2, len(v.Argv))], " "), Parameters: map[string]any{"command": v.Command, "argv": v.Argv}, Details: details}
 }
 
 var redisReads = strings.Fields(`

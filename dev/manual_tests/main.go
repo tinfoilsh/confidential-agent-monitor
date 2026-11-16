@@ -1,42 +1,36 @@
-// Local manual connector tests. Service credentials arrive only through stdin.
-// This runs the shipped presets and real connector, not Monitor's policy engine.
 package main
 
 import (
-	"bufio"
 	"context"
-	"crypto/ed25519"
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/subtle"
 	"crypto/tls"
-	"crypto/x509"
-	"crypto/x509/pkix"
 	"encoding/base64"
 	"encoding/json"
-	"encoding/pem"
 	"errors"
 	"fmt"
 	"io"
 	"log"
-	"math/big"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"syscall"
 	"time"
 
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/connector/credential"
-	"github.com/tinfoilsh/monitor/connector/web"
-	"github.com/tinfoilsh/monitor/facts"
-	"github.com/tinfoilsh/monitor/presets"
+	"code.dny.dev/ssrf"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/slots"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/web"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/certificates"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
 
 type input struct {
@@ -49,120 +43,78 @@ type input struct {
 	GrafanaToken string `json:"grafana_token"`
 }
 
-type bufferedConn struct {
-	net.Conn
-	reader *bufio.Reader
-}
-
-func (c bufferedConn) Read(p []byte) (int, error) { return c.reader.Read(p) }
-
-type authority struct {
-	certificate *x509.Certificate
-	private     ed25519.PrivateKey
-	pem         []byte
-}
-
-func newAuthority() (*authority, error) {
-	public, private, err := ed25519.GenerateKey(rand.Reader)
-	if err != nil {
-		return nil, err
-	}
-	now := time.Now()
-	root := &x509.Certificate{SerialNumber: big.NewInt(now.UnixNano()), Subject: pkix.Name{CommonName: "Monitor local manual test only"}, NotBefore: now.Add(-time.Minute), NotAfter: now.Add(2 * time.Hour), IsCA: true, BasicConstraintsValid: true, KeyUsage: x509.KeyUsageCertSign | x509.KeyUsageDigitalSignature}
-	der, err := x509.CreateCertificate(rand.Reader, root, root, public, private)
-	if err != nil {
-		return nil, err
-	}
-	cert, err := x509.ParseCertificate(der)
-	if err != nil {
-		return nil, err
-	}
-	return &authority{cert, private, pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der})}, nil
-}
-func (a *authority) leaf(host string) (tls.Certificate, error) {
-	public, private, err := ed25519.GenerateKey(rand.Reader)
-	if err != nil {
-		return tls.Certificate{}, err
-	}
-	now := time.Now()
-	leaf := &x509.Certificate{SerialNumber: big.NewInt(now.UnixNano()), DNSNames: []string{host}, NotBefore: now.Add(-time.Minute), NotAfter: now.Add(time.Hour), KeyUsage: x509.KeyUsageDigitalSignature, ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth}}
-	der, err := x509.CreateCertificate(rand.Reader, leaf, a.certificate, public, a.private)
-	if err != nil {
-		return tls.Certificate{}, err
-	}
-	return tls.Certificate{Certificate: [][]byte{der}, PrivateKey: private}, nil
-}
-
 type liveConnection struct {
-	preset string
-	server *web.Server
-	setup  *web.Setup
-	hash   string
+	preset  string
+	handler web.Handler
+	hash    string
 }
 
-func prepare(name, credentialName, secret, placeholder, origin string) (*liveConnection, error) {
-	shipped, err := presets.Shipped()
+func prepare(tlsConfig func(context.Context, string) *tls.Config, transport http.RoundTripper, name, credentialName, secret, placeholder, origin string) (*liveConnection, error) {
+	raw, err := os.ReadFile(filepath.Join("cmd", "perimeter", "presets", name+".json"))
 	if err != nil {
 		return nil, err
 	}
-	p := shipped[name]
-	if p == nil {
-		return nil, errors.New("missing shipped preset")
+	p, err := catalog.Decode(raw)
+	if err != nil {
+		return nil, err
 	}
-	source := connector.Setup{Config: p.Catalog.Connection["http"], Definition: p.Source}
+	config := p.Catalog.Connection["http"]
+	var options json.RawMessage
 	if origin != "" {
-		if !web.ValidOrigin(origin) {
+		if !slots.ValidOrigin(origin) {
 			return nil, errors.New("test destination must be an HTTPS origin")
 		}
-		// Apply the same origin setup as the catalog form; keep definitions intact.
-		var config map[string]json.RawMessage
-		if err := json.Unmarshal(source.Config, &config); err != nil {
+		var fields map[string]json.RawMessage
+		if err := json.Unmarshal(config, &fields); err != nil {
 			return nil, err
 		}
-		var slots []web.Slot
-		if err := json.Unmarshal(config["slots"], &slots); err != nil {
+		var placements []slots.Slot
+		if err := json.Unmarshal(fields["slots"], &placements); err != nil {
 			return nil, err
 		}
-		if len(slots) != 1 || slots[0].Value != credentialName {
+		if len(placements) != 1 || placements[0].Value != credentialName {
 			return nil, errors.New("unexpected origin setup")
 		}
-		slots[0].Origin = origin
-		config["slots"], err = json.Marshal(slots)
+		placements[0].Origin = origin
+		fields["slots"], err = json.Marshal(placements)
 		if err != nil {
 			return nil, err
 		}
-		source.Config, err = json.Marshal(config)
+		config, err = json.Marshal(fields)
 		if err != nil {
 			return nil, err
 		}
-		source.Options, err = json.Marshal(map[string]string{"Origin": origin})
+		options, err = json.Marshal(map[string]string{"origin": origin})
 		if err != nil {
 			return nil, err
 		}
 	}
-	prepared, err := web.Parse(source)
+	setup, err := web.Parse(config, p.Source, options, func(raw json.RawMessage) (web.Slots, error) {
+		set, err := slots.Parse(raw, slots.Options{Prefix: "tfm_", MaxSignedBody: 16 << 20})
+		return web.Slots{Claim: set.Claim, Covers: set.Covers, Bind: set.Bind}, err
+	})
 	if err != nil {
 		return nil, err
 	}
-	values := map[string]*credential.Value{}
+	value := new(credential.Value)
 	if secret != "" {
-		raw, err := json.Marshal(secret)
-		if err != nil {
-			return nil, err
-		}
-		defer clear(raw)
-		v := new(credential.Value)
-		if err := json.Unmarshal(raw, v); err != nil {
-			return nil, err
-		}
-		v.Placeholder = placeholder
-		values[credentialName] = v
+		value = credential.Static(secret)
 	}
-	server := new(web.Server)
-	if err := server.Update(context.Background(), prepared, values, nil); err != nil {
-		return nil, err
+	handler := web.Handler{Setup: setup, Transport: transport, CheckRedirect: func(*http.Request, []*http.Request) error { return errors.New("redirects are refused") }, UpstreamReadLimit: -1, MaxBody: 8 << 20, TLS: tlsConfig, ServeHTTP: netx.ServeConn,
+		Placeholder: func(name string) string {
+			if name == credentialName && value.Configured() {
+				return placeholder
+			}
+			return ""
+		},
+		Secret: func(ctx context.Context, name string) (string, error) {
+			if name != credentialName {
+				return "", errors.New("credential is not declared")
+			}
+			return value.Value(ctx)
+		},
 	}
-	return &liveConnection{name, server, prepared.Value.(*web.Setup), fmt.Sprintf("%x", sha256.Sum256(p.Source))}, nil
+	return &liveConnection{preset: name, handler: handler, hash: fmt.Sprintf("%x", sha256.Sum256(p.Source))}, nil
 }
 
 func proxyAuthenticated(r *http.Request, expected string) bool {
@@ -175,7 +127,6 @@ func testAuthOperation(id string) bool {
 }
 
 func main() {
-	// Connector and HTTP errors can contain user input. Emit only our own fixed status.
 	log.SetOutput(io.Discard)
 	if err := run(); err != nil {
 		fmt.Fprintln(os.Stderr, "FAIL: local connector harness stopped; no credential details printed")
@@ -189,23 +140,41 @@ func run() error {
 	if err := decoder.Decode(&in); err != nil {
 		return err
 	}
+	authority, err := certificates.NewAuthority("Monitor local manual test only", 2*time.Hour)
+	if err != nil {
+		return err
+	}
+	tlsConfig := func(_ context.Context, host string) *tls.Config {
+		return &tls.Config{GetCertificate: func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
+			name := hello.ServerName
+			if name == "" {
+				name = host
+			}
+			return authority.Issue(name, 24*time.Hour, time.Hour)
+		}}
+	}
+	guard := ssrf.New(ssrf.WithAnyPort())
+	dialer := &net.Dialer{Timeout: 30 * time.Second, Control: guard.Safe}
+	transport := http.DefaultTransport.(*http.Transport).Clone()
+	transport.Proxy = nil
+	transport.DialContext = dialer.DialContext
+	defer transport.CloseIdleConnections()
 	var bot, socket, grafana *liveConnection
-	var err error
 	switch in.Service {
 	case "", "slack":
 		if !strings.HasPrefix(in.BotToken, "xoxb-") || !strings.HasPrefix(in.AppToken, "xapp-") {
 			return errors.New("wrong token types")
 		}
-		bot, err = prepare("slack", "token", in.BotToken, "tfm_live_slack_bot", "")
+		bot, err = prepare(tlsConfig, transport, "slack", "token", in.BotToken, "tfm_live_slack_bot", "")
 		if err != nil {
 			return err
 		}
-		socket, err = prepare("slack_socket_mode", "token", in.AppToken, "tfm_live_slack_socket", "")
+		socket, err = prepare(tlsConfig, transport, "slack_socket_mode", "token", in.AppToken, "tfm_live_slack_socket", "")
 	case "grafana":
-		if !web.ValidOrigin(in.GrafanaURL) {
+		if !slots.ValidOrigin(in.GrafanaURL) {
 			return errors.New("Grafana requires an HTTPS origin")
 		}
-		grafana, err = prepare("grafana", "api_key", in.GrafanaToken, "tfm_manual_grafana", in.GrafanaURL)
+		grafana, err = prepare(tlsConfig, transport, "grafana", "api_key", in.GrafanaToken, "tfm_manual_grafana", in.GrafanaURL)
 	default:
 		return errors.New("unknown manual test service")
 	}
@@ -214,17 +183,14 @@ func run() error {
 	}
 	grafanaConfigured := in.GrafanaToken != ""
 	in.BotToken, in.AppToken, in.GrafanaToken = "", "", ""
-	ca, err := newAuthority()
-	if err != nil {
-		return err
-	}
+	caPEM, _ := authority.PEM()
 	dir, err := os.MkdirTemp("", "monitor-manual-test-")
 	if err != nil {
 		return err
 	}
 	defer os.RemoveAll(dir)
 	certFile := filepath.Join(dir, "public-ca.pem")
-	if err := os.WriteFile(certFile, ca.pem, 0600); err != nil {
+	if err := os.WriteFile(certFile, []byte(caPEM), 0600); err != nil {
 		return err
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -244,68 +210,58 @@ func run() error {
 		if err != nil {
 			return "", err
 		}
+		gate := func(_ context.Context, event facts.Event) error {
+			f, err := event.Decode()
+			if err != nil || f.Operation == nil {
+				status("BLOCKED: request did not match the reviewed preset")
+				return errors.New("unrecognized request")
+			}
+			allowed := false
+			if connection.preset == "slack_socket_mode" {
+				allowed = f.Operation.Action == "connect" || f.Operation.Action == "receive" || f.Operation.Action == "respond"
+			} else if connection.preset == "grafana" {
+				allowed = f.Operation.ID == "getHealth" || f.Operation.ID == "search"
+			} else {
+				allowed = testAuthOperation(f.Operation.ID)
+				if in.PostTest && f.Operation.ID == "chat.postMessage" && f.Parameters["channel"] == in.Channel {
+					allowed = posted.CompareAndSwap(false, true)
+				}
+			}
+			if !allowed {
+				status("BLOCKED: operation outside this test's allowlist")
+				return errors.New("operation not in test allowlist")
+			}
+			status("ADMITTED " + connection.preset + " " + f.Operation.ID)
+			return nil
+		}
+		connect := netx.Connect(func(ctx context.Context, host string, port uint32, accept func() (net.Conn, error)) error {
+			if connection.handler.Setup.Claim(host, port) < 0 {
+				return errors.New("this service does not serve the target")
+			}
+			conn, err := accept()
+			if err == nil {
+				connection.handler.Serve(ctx, conn, connection.preset, host, port, gate)
+			}
+			return err
+		})
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if !proxyAuthenticated(r, expected) {
 				w.Header().Set("Proxy-Authenticate", `Basic realm="monitor-slack-test"`)
 				http.Error(w, "proxy authentication required", http.StatusProxyAuthRequired)
 				return
 			}
-			host, port, err := net.SplitHostPort(r.Host)
-			number, portErr := strconv.ParseUint(port, 10, 16)
-			if r.Method != "CONNECT" || err != nil || portErr != nil || number == 0 || number == 80 || strconv.FormatUint(number, 10) != port || connection.setup.Claim(host, uint32(number)) < 0 {
+			if _, port, _ := net.SplitHostPort(r.Host); port == "80" {
 				http.Error(w, "destination refused", http.StatusForbidden)
 				status("BLOCKED: unrecognized CONNECT destination")
 				return
 			}
-			cert, err := ca.leaf(host)
-			if err != nil {
-				http.Error(w, "local TLS setup failed", 500)
-				return
-			}
-			raw, rw, err := w.(http.Hijacker).Hijack()
-			if err != nil {
-				return
-			}
 			active.Add(1)
 			defer active.Done()
-			stream := connector.NewStream(ctx, bufferedConn{raw, rw.Reader})
-			defer stream.Close()
-			if _, err := io.WriteString(raw, "HTTP/1.1 200 Connection Established\r\n\r\n"); err != nil {
-				return
-			}
-			stream.Host, stream.Port = host, uint32(number)
-			stream.Gate = func(_ context.Context, event facts.Event) error {
-				f, err := event.Facts()
-				if err != nil || f.Operation == nil {
-					status("BLOCKED: request did not match the reviewed preset")
-					return errors.New("unrecognized request")
-				}
-				allowed := false
-				if connection.preset == "slack_socket_mode" {
-					allowed = f.Operation.Action == "connect" || f.Operation.Action == "receive" || f.Operation.Action == "respond"
-				} else if connection.preset == "grafana" {
-					allowed = f.Operation.ID == "getHealth" || f.Operation.ID == "search"
-				} else {
-					allowed = testAuthOperation(f.Operation.ID)
-					if in.PostTest && f.Operation.ID == "chat.postMessage" && f.Parameters["channel"] == in.Channel {
-						allowed = posted.CompareAndSwap(false, true)
-					}
-				}
-				if !allowed {
-					status("BLOCKED: operation outside this test's allowlist")
-					return errors.New("operation not in test allowlist")
-				}
-				// IDs come from shipped definitions, never from payloads or query strings.
-				status("ADMITTED " + connection.preset + " " + f.Operation.ID)
-				return nil
-			}
-			env := &connector.Env{TLS: &tls.Config{Certificates: []tls.Certificate{cert}, MinVersion: tls.VersionTLS12}, Dialer: connector.NewDialer(nil)}
-			connection.server.Serve(stream, env)
+			connect.ServeHTTP(w, r)
 		})
-		server := &http.Server{Handler: handler, ReadHeaderTimeout: 5 * time.Second, IdleTimeout: time.Minute, ErrorLog: log.New(io.Discard, "", 0)}
+		server := &http.Server{Handler: handler, BaseContext: func(net.Listener) context.Context { return ctx }, ReadHeaderTimeout: 5 * time.Second, IdleTimeout: time.Minute, ErrorLog: log.New(io.Discard, "", 0)}
 		go func() { <-ctx.Done(); server.Close() }()
 		go server.Serve(listener)
-		// Delivered only over the supervisor's private pipe, never printed in status.
 		return "http://monitor:" + password + "@" + listener.Addr().String(), nil
 	}
 	ready := map[string]any{"service": in.Service, "ca_file": certFile}

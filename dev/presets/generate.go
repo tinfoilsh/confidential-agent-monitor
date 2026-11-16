@@ -89,7 +89,6 @@ func writeJSON(path string, value any) error {
 	if err != nil {
 		return err
 	}
-	// Keep generated operation records on individual lines, like shipped presets.
 	if filepath.Dir(path) == candidatesDir || filepath.Dir(path) == shippedDir {
 		if record, ok := value.(map[string]any); ok && record["http"] != nil {
 			header := maps.Clone(record)
@@ -173,7 +172,6 @@ func sameRoute(a, b specOp) bool {
 	return routeShape(a.Method, a.Path) == routeShape(b.Method, b.Path)
 }
 
-// Conditions conflict only if both records constrain a key differently.
 func conditionsOverlap(a, b map[string]any) bool {
 	for key, value := range a {
 		if other, ok := b[key]; ok && !reflect.DeepEqual(value, other) {
@@ -198,7 +196,6 @@ func recordOverlap(a, b map[string]any) bool {
 			return false
 		}
 	}
-	// Literal query conditions must also be accepted by the other record.
 	for _, pair := range [][2]map[string]any{{a, b}, {b, a}} {
 		q, _ := pair[0]["query"].(map[string]any)
 		allowed := map[string]bool{}
@@ -235,12 +232,10 @@ func normalizeProvider(name string, o specOp) specOp {
 		}
 	}
 	if name == "superlinked" {
-		// The gateway routes {*model}, so model ids keep their slashes, as in /v1/encode/BAAI/bge-m3.
 		o.Path = strings.Replace(o.Path, "{model}", "{model*}", 1)
 		if slices.Contains(o.Tags, "inference") {
 			o.Effects = []string{"generate", "pay", "send"}
 		}
-		// The gateway requires its admin token for these mutations.
 		if o.Method != "GET" && (strings.HasPrefix(o.Path, "/v1/config") || strings.HasPrefix(o.Path, "/v1/pools")) {
 			o.Effects = []string{"admin"}
 			if o.Method == "DELETE" {
@@ -249,14 +244,10 @@ func normalizeProvider(name string, o specOp) specOp {
 		}
 	}
 	if name == "open_router" {
-		// The model catalog and job status routes are both reads. Use one
-		// descriptor for their union, binding the requested segment in scope,
-		// so /videos/models cannot also match /videos/{jobId}.
 		if o.ID == "listVideosModels" {
 			o.ID, o.Path = "getVideos", "/api/v1/videos/{jobId}"
 		}
 		if o.Method != "GET" {
-			// These resources control credentials, access, routing or budgets.
 			for _, prefix := range []string{"auth/", "oauth/", "keys", "byok", "guardrails", "observability/", "organization/", "private-endpoints", "scim/", "vault/", "workspaces"} {
 				if strings.HasPrefix(o.Path, "/api/v1/"+prefix) {
 					o.Effects = []string{"admin"}
@@ -273,7 +264,6 @@ func normalizeProvider(name string, o specOp) specOp {
 			"createSystemone", "createApiAlphaDecisions":
 			o.Effects = []string{"generate", "pay", "send"}
 		case "createPresetsChatCompletions", "createPresetsMessages", "createPresetsResponses":
-			// These save inference configuration; they do not run inference.
 			o.Effects = []string{"write"}
 		case "createInternChatCompletion", "invokeIntern":
 			o.Effects = []string{"execute", "generate", "pay", "send"}
@@ -290,7 +280,6 @@ func normalizeProvider(name string, o specOp) specOp {
 		case "storeVaultSecret", "storeInternVaultSecret", "createBYOKKey", "updateBYOKKey":
 			o.Effects = []string{"admin", "send", "share"}
 		case "validatePrivateEndpoint":
-			// Validation sends a live inference request using the workspace key.
 			o.Effects = []string{"admin", "generate", "pay", "send"}
 		}
 	}
@@ -439,8 +428,6 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 			}
 		}
 	}
-	// A current index can identify methods whose only available request schema
-	// is archived. Keep that distinction visible even when a candidate exists.
 	for i := range r.Operations {
 		entry := &r.Operations[i]
 		if entry.Status != "unsupported" || entry.Method != "" {

@@ -20,7 +20,6 @@ import (
 	"time"
 )
 
-// Some docs sites rate-limit clients that do not look like a browser.
 const (
 	userAgent     = "Mozilla/5.0 (X11; Linux x86_64) presets-importer"
 	updateWorkers = 16
@@ -31,7 +30,6 @@ var (
 	commitSHA = regexp.MustCompile(`^[0-9a-f]{40}$`)
 )
 
-// A lockEntry is what update resolved a spec to: an immutable URL where the source has one, and the content's hash.
 type lockEntry struct {
 	Source    string `json:"source"`
 	URL       string `json:"url"`
@@ -53,7 +51,6 @@ func (l lockFile) entry(service string, ref specRef) (lockEntry, error) {
 	return lockEntry{}, fmt.Errorf("%s has no lock entry; run update %s", ref.source(), service)
 }
 
-// cached holds specs by content hash, so a lock entry always names the bytes it was resolved to.
 func cached(sum string) string { return filepath.Join(cacheDir, sum) }
 
 func download(url string) ([]byte, error) {
@@ -79,7 +76,6 @@ func store(src []byte) (string, error) {
 	return sum, os.WriteFile(cached(sum), src, 0o644)
 }
 
-// remoteRefs lists a GitHub repository's branches and tags once per run.
 var remoteRefs sync.Map
 
 func refs(repo string) (map[string]string, error) {
@@ -96,7 +92,6 @@ func refs(repo string) (map[string]string, error) {
 	return f.(func() (map[string]string, error))()
 }
 
-// resolve pins a GitHub spec to the commit its ref names now, reusing the locked bytes when that commit is unchanged.
 func resolve(ref specRef, old lockEntry) (lockEntry, []byte, error) {
 	e := lockEntry{Source: ref.source(), URL: ref.URL}
 	if ref.GitHub != "" {
@@ -106,7 +101,6 @@ func resolve(ref specRef, old lockEntry) (lockEntry, []byte, error) {
 			if err != nil {
 				return e, nil, err
 			}
-			// A branch wins over a tag, and a tag's commit is its peeled ^{} line.
 			for _, name := range []string{"refs/heads/" + ref.Ref, "refs/tags/" + ref.Ref + "^{}", "refs/tags/" + ref.Ref} {
 				if e.Commit = all[name]; e.Commit != "" {
 					break
@@ -136,8 +130,6 @@ func resolve(ref specRef, old lockEntry) (lockEntry, []byte, error) {
 	e.SHA256, err = store(src)
 	e.Bytes = len(src)
 	e.CheckedAt = time.Now().UTC().Format(time.RFC3339)
-	// Documentation sources are mutable and assembled from multiple pages.
-	// Ship their exact normalized bytes so a fresh checkout can reproduce them.
 	if err == nil && (ref.Format == "slack" || ref.Format == "airtable") {
 		err = os.MkdirAll("snapshots", 0o755)
 		if err == nil {
@@ -147,7 +139,6 @@ func resolve(ref specRef, old lockEntry) (lockEntry, []byte, error) {
 	return e, src, err
 }
 
-// fetch downloads every locked spec missing from the cache, refusing content that is not what the lock names.
 func fetch(sources map[string]source, lock lockFile) error {
 	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
 		return err
@@ -191,7 +182,6 @@ func fetch(sources map[string]source, lock lockFile) error {
 	return nil
 }
 
-// dirty says whether a service's specs differ from what the lock resolved.
 func (l lockFile) dirty(name string, src source) bool {
 	for _, ref := range src.Specs {
 		if _, err := l.entry(name, ref); err != nil {
@@ -201,8 +191,6 @@ func (l lockFile) dirty(name string, src source) bool {
 	return len(l[name]) != len(src.Specs)
 }
 
-// update resolves the named services' specs, or else only the dirty ones, in parallel,
-// and prints the routes each change adds and removes.
 func update(sources map[string]source, lock lockFile, only []string) error {
 	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
 		return err
@@ -344,7 +332,6 @@ func sortedKeys[V any](m map[string]V) []string {
 
 var parsedCache = map[string]parsed{}
 
-// read parses a locked spec from the cache, refusing bytes that do not match the lock.
 func read(ref specRef, e lockEntry) (parsed, error) {
 	key := strings.Join([]string{e.SHA256, ref.Format, ref.Origin, ref.Path, e.URL}, "\x00")
 	if p, ok := parsedCache[key]; ok {
@@ -367,7 +354,6 @@ func read(ref specRef, e lockEntry) (parsed, error) {
 	return p, err
 }
 
-// location is where src was fetched, so relative $refs resolve against the same pinned commit.
 func parseSpec(ref specRef, src []byte, location string) (parsed, error) {
 	if bytes.HasPrefix(src, gzipMagic) {
 		r, err := gzip.NewReader(bytes.NewReader(src))
@@ -397,7 +383,6 @@ func parseSpec(ref specRef, src []byte, location string) (parsed, error) {
 	return parsed{}, fmt.Errorf("unknown format %s", ref.Format)
 }
 
-// specOps reads a service's specs, keeping the paths each one's include selects and applying its origin.
 func specOps(name string, src source, lock lockFile) (parsed, error) {
 	var out parsed
 	usedGroups := map[string]bool{}
@@ -458,7 +443,6 @@ type drafted struct {
 	scope   map[string]any
 }
 
-// segmentsOverlap says whether some request path could match both patterns.
 func segmentsOverlap(a, b string) bool {
 	as, bs := strings.Split(a, "/"), strings.Split(b, "/")
 	star := func(s []string) bool { return strings.HasSuffix(s[len(s)-1], "*}") }
@@ -503,8 +487,6 @@ func bodiesOverlap(a, b string) bool {
 	return a == b || a == "any" || b == "any"
 }
 
-// draftOps preserves every source operation. Collisions belong in the coverage
-// report; deleting an operation here would lose its effects and resource scope.
 func draftOps(p parsed, ai bool) []drafted {
 	var out []drafted
 	for _, o := range p.Ops {
@@ -553,8 +535,6 @@ func draftOps(p parsed, ai bool) []drafted {
 			}
 			d.scope[name] = spec
 		}
-		// Generated approvals bind the whole request, including optional selectors.
-		// Broader reusable grants must come from reviewed provider overrides.
 		bind := func(name string, spec map[string]any) {
 			for d.scope[name] != nil {
 				name = "request." + name

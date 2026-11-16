@@ -22,14 +22,13 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-// A specOp is one documented request, in the preset's path syntax, before effects are drafted.
 type specOp struct {
 	ID, Summary, Method, Origin, Path string
 	Tags                              []string
-	Resource                          string // schema resource for field-based APIs
+	Resource                          string
 	Params                            []string
-	Query                             map[string]any // literal query conditions; nil requires absence
-	Required                          []param        // resource selectors; Optional distinguishes required members
+	Query                             map[string]any
+	Required                          []param
 	Body                              string
 	Headers, Fields                   map[string]string
 	GraphQL                           []string
@@ -44,8 +43,6 @@ type param struct {
 	Optional         bool
 }
 
-// A specAuth is where a spec says its credential goes.
-// User puts the secret in the Basic username, as BambooHR does.
 type specAuth struct {
 	Header string `json:"header,omitempty"`
 	Prefix string `json:"prefix,omitempty"`
@@ -61,7 +58,6 @@ type parsed struct {
 	Warnings []string
 }
 
-// Google's global parameters that carry credentials; every other documented parameter is allowed.
 var credentialParams = []string{"key", "access_token", "oauth_token"}
 
 var (
@@ -70,7 +66,6 @@ var (
 	resourceKey = regexp.MustCompile(`(?i)(^|_)(id|ids|keys?|names?|slug|arn|url|owners?|repos?|channels?|users?|emails?|boards?|projects?|teams?|orgs?|folders?|files?|sheets?|calendars?|databases?|tables?|buckets?|lists?|spaces?|workspaces?|sites?|drives?|pages?|accounts?|chats?|threads?|queues?|topics?|groups?|records?|recipients?)$|[a-z](Id|Ids|Key|Name|Arn|Url)$`)
 )
 
-// patternPath turns a spec path into the preset syntax: one {name} per segment, a greedy last segment as {name*}.
 func patternPath(p string) string {
 	p = strings.NewReplacer("{+", "{", "+}", "*}").Replace(p)
 	segs := strings.Split(p, "/")
@@ -91,7 +86,6 @@ func patternPath(p string) string {
 }
 
 func splitServer(raw string) (origin, base string) {
-	// A templated hostname still has a concrete API base path.
 	if _, rest, ok := strings.Cut(raw, "://"); ok {
 		host, path, _ := strings.Cut(rest, "/")
 		if strings.Contains(host, "{") {
@@ -109,8 +103,6 @@ func splitServer(raw string) (origin, base string) {
 }
 
 func parseOpenAPI(src []byte, swagger bool, location string) (parsed, error) {
-	// Response schemas are not part of request description. Some vendor specs
-	// contain invalid response-only schemas; do not let those hide valid routes.
 	var err error
 	if src, err = requestDocument(src, swagger); err != nil {
 		return parsed{}, err
@@ -134,8 +126,6 @@ func parseOpenAPI(src []byte, swagger bool, location string) (parsed, error) {
 		if err != nil {
 			return parsed{}, err
 		}
-		// Source bytes are locked. External request refs must be bundled before
-		// import so generation cannot silently depend on mutable network content.
 		loader.IsExternalRefsAllowed = false
 		if doc, err = loader.LoadFromDataWithPath(src, base); err != nil {
 			return parsed{}, err
@@ -253,7 +243,6 @@ func parseOpenAPI(src []byte, swagger bool, location string) (parsed, error) {
 	return out, nil
 }
 
-// members lists scalar and array resource selectors, preserving optionality.
 func members(ref *openapi3.SchemaRef, from string) []param {
 	if ref == nil || ref.Value == nil {
 		return nil
@@ -334,10 +323,8 @@ func parseDiscovery(src []byte) (parsed, error) {
 				o.Tags = []string{parts[len(parts)-2]}
 			}
 			out.Ops = append(out.Ops, o)
-			// Media uploads go to /upload with the same method; their body is the file.
 			if m.MediaUpload != nil && m.MediaUpload.Protocols != nil && m.MediaUpload.Protocols.Simple != nil {
 				u := o
-				// An absolute upload path is complete; a relative one is under the service path.
 				u.ID, u.Body, u.Path = o.ID+".upload", "any", patternPath(m.MediaUpload.Protocols.Simple.Path)
 				if !strings.HasPrefix(m.MediaUpload.Protocols.Simple.Path, "/") {
 					u.Path = patternPath(base + "/" + m.MediaUpload.Protocols.Simple.Path)
@@ -354,11 +341,9 @@ func parseDiscovery(src []byte) (parsed, error) {
 	return out, nil
 }
 
-// parseGraphQL drafts one operation per root query and mutation field of an SDL schema.
 func parseGraphQL(src []byte, origin, path string) (parsed, error) {
 	source := &ast.Source{Name: "schema.graphql", Input: string(src)}
 	schema, err := gqlparser.LoadSchema(source)
-	// Some published SDL declares the built-in scalars, which the prelude declares too.
 	if err != nil && strings.Contains(err.Error(), "Cannot redeclare type") {
 		schema, err = validator.LoadSchema(source)
 	}
@@ -416,7 +401,6 @@ func parseGraphQL(src []byte, origin, path string) (parsed, error) {
 	return out, nil
 }
 
-// botocore models are plain JSON with no Go parser; this reads only the members drafting needs.
 type botocoreModel struct {
 	Metadata struct {
 		Protocol, TargetPrefix, EndpointPrefix, ServiceFullName, SigningName string

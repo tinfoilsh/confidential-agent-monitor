@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import * as owner from "../src/owner";
 
 const preset = (name: string) => JSON.parse(
-  readFileSync(new URL(`../../presets/${name}.json`, import.meta.url), "utf8"),
+  readFileSync(new URL(`../../cmd/perimeter/presets/${name}.json`, import.meta.url), "utf8"),
 );
 const tcp = preset("tcp");
 const view = (): owner.View => ({

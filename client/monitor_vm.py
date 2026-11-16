@@ -42,7 +42,7 @@ MAX_ASSET_BYTES = 4 << 30
 DISK_GIB = 8
 # The guest's 127.0.0.1 port that carries its Perimeter link.
 LINK_PORT = 2223
-# These mirror sandbox.BootstrapUser and the Perimeter's wildcard route forward.
+# These mirror routes.bootstrapUser and the Perimeter's wildcard route forward.
 ROUTE_USER, WILDCARD_FORWARD, WILDCARD_OPEN = "sandbox-v2:", "127.0.0.1:1080", "127.0.0.2:*"
 GUEST_CLI = ['python3', '/opt/monitor/perimeter', '--ssh-config', '/home/agent/.config/perimeter/ssh_config']
 GUEST_PATH = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'

@@ -89,7 +89,7 @@ def main():
             print("Grafana test is read-only: health, plus search only if an API key is supplied.", flush=True)
         settings.clear()
         print("Credentials pass only over stdin to the connector process; no additional credential files are created.", flush=True)
-        helper = subprocess.Popen([binary], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+        helper = subprocess.Popen([binary], stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, cwd=ROOT)
         child = None
         try:
             helper.stdin.write(json.dumps(supplied) + "\n")

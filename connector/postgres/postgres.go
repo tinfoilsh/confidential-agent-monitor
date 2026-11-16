@@ -3,75 +3,91 @@ package postgres
 import (
 	"context"
 	"crypto/tls"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net"
+	"net/url"
 	"regexp"
 	"slices"
 	"strings"
 	"sync/atomic"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgproto3"
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
-
-var Kind = connector.Kind{Parse: parsePostgres, New: func() connector.Server { return new(Postgres) }}
-
-func parsePostgres(source connector.Setup) (connector.Prepared, error) {
-	c := new(postgresSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
-		return connector.Prepared{}, err
-	}
-	if err := c.Endpoint.Parse(); err != nil {
-		return connector.Prepared{}, err
-	}
-	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Routes: []string{c.URL.Hostname()}}, nil
-}
-
-type Postgres struct{ connector.Slot[postgresSetup] }
 
 const (
 	sslAccepted = 'S'
 	gssRefused  = 'N'
 )
 
-type postgresSetup struct{ connector.Endpoint }
-
-func (owner *Postgres) Serve(s *connector.Stream, e *connector.Env) {
-	r, ok := owner.Load()
-	if !ok {
-		return
-	}
-
-	backend, startup, err := startup(s, e.TLS)
-	if err != nil {
-		log.Printf("postgres startup: %v", err)
-		return
-	}
-	up, err := r.connect(s, e, startup)
-	if err != nil {
-		log.Printf("postgres: %v", err)
-		backend.Send(&pgproto3.ErrorResponse{Severity: "FATAL", Code: "08006", Message: err.Error()})
-		backend.Flush()
-		return
-	}
-	defer s.Interrupt(up.Conn)()
-	backend.Send(&pgproto3.AuthenticationOk{})
-	for name, value := range up.ParameterStatuses {
-		backend.Send(&pgproto3.ParameterStatus{Name: name, Value: value})
-	}
-	backend.Send(&pgproto3.BackendKeyData{ProcessID: up.PID, SecretKey: up.SecretKey})
-	backend.Send(&pgproto3.ReadyForQuery{TxStatus: up.TxStatus})
-	if err := backend.Flush(); err != nil {
-		return
-	}
-	r.relayQueries(s, backend, up)
+type Postgres struct {
+	RawURL string `json:"url"`
+	User   string `json:"user"`
+	url    *url.URL
 }
 
-func startup(s *connector.Stream, config *tls.Config) (*pgproto3.Backend, *pgproto3.StartupMessage, error) {
-	conn := net.Conn(s)
+func Parse(config json.RawMessage) (*Postgres, error) {
+	r := new(Postgres)
+	if err := facts.DecodeNumbers(config, r); err != nil {
+		return nil, err
+	}
+	u, err := url.Parse(r.RawURL)
+	switch {
+	case err != nil:
+		return nil, err
+	case u.Scheme == "" || u.Host == "":
+		return nil, errors.New("destination requires a URL with a scheme and host")
+	}
+	if _, set := u.User.Password(); set || u.Query().Has("password") {
+		return nil, errors.New("put the password in the service's password credential, not the URL")
+	}
+	if r.User != "" {
+		u.User = url.User(r.User)
+	}
+	r.url = u
+	return r, nil
+}
+
+func (r *Postgres) Hosts() []string { return []string{r.url.Hostname()} }
+
+func (r *Postgres) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), serverTLS func(ctx context.Context, host string) *tls.Config, timeout time.Duration) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+	return func(ctx context.Context, s net.Conn, _, host string, _ uint32, gate func(context.Context, facts.Event) error) {
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		backend, startup, err := startup(s, serverTLS(ctx, host))
+		if err != nil {
+			log.Printf("postgres startup: %v", err)
+			return
+		}
+		up, err := r.connect(ctx, dial, password, timeout, startup)
+		if err != nil {
+			log.Printf("postgres: %v", err)
+			backend.Send(&pgproto3.ErrorResponse{Severity: "FATAL", Code: "08006", Message: err.Error()})
+			backend.Flush()
+			return
+		}
+		stop := context.AfterFunc(ctx, func() { up.Conn.Close() })
+		defer func() { stop(); up.Conn.Close() }()
+		backend.Send(&pgproto3.AuthenticationOk{})
+		for name, value := range up.ParameterStatuses {
+			backend.Send(&pgproto3.ParameterStatus{Name: name, Value: value})
+		}
+		backend.Send(&pgproto3.BackendKeyData{ProcessID: up.PID, SecretKey: up.SecretKey})
+		backend.Send(&pgproto3.ReadyForQuery{TxStatus: up.TxStatus})
+		if err := backend.Flush(); err != nil {
+			return
+		}
+		relayQueries(ctx, func() { cancel(); s.Close() }, gate, backend, up)
+	}
+}
+
+func startup(s net.Conn, config *tls.Config) (*pgproto3.Backend, *pgproto3.StartupMessage, error) {
+	conn := s
 	for {
 		backend := pgproto3.NewBackend(conn, conn)
 		msg, err := backend.ReceiveStartupMessage()
@@ -96,24 +112,23 @@ func startup(s *connector.Stream, config *tls.Config) (*pgproto3.Backend, *pgpro
 	}
 }
 
-func (r *postgresSetup) connect(s *connector.Stream, e *connector.Env, startup *pgproto3.StartupMessage) (*pgconn.HijackedConn, error) {
-	config, err := pgconn.ParseConfig(r.URL.String())
+func (r *Postgres) connect(ctx context.Context, dial func(context.Context, string, string) (net.Conn, error), password func(context.Context) (string, error), timeout time.Duration, startup *pgproto3.StartupMessage) (*pgconn.HijackedConn, error) {
+	config, err := pgconn.ParseConfig(r.url.String())
 	if err != nil {
 		return nil, err
 	}
-	config.Password, err = r.Secret(s.Context, "password")
+	config.Password, err = password(ctx)
 	if err != nil {
 		return nil, err
 	}
-	config.DialFunc = e.Dialer.DialContext
-	// The dialer resolves hostnames so workers do not need direct DNS access.
+	config.DialFunc = dial
 	config.LookupFunc = func(_ context.Context, host string) ([]string, error) { return []string{host}, nil }
 	for name, value := range startup.Parameters {
 		if name != "user" && name != "database" {
 			config.RuntimeParams[name] = value
 		}
 	}
-	ctx, cancel := context.WithTimeout(s.Context, connector.DialTimeout)
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	pg, err := pgconn.ConnectConfig(ctx, config)
 	if err != nil {
@@ -122,11 +137,14 @@ func (r *postgresSetup) connect(s *connector.Stream, e *connector.Env, startup *
 	return pg.Hijack()
 }
 
-// A refused statement is answered with an error in the client's place, so the session stays usable.
-func (r *postgresSetup) relayQueries(s *connector.Stream, backend *pgproto3.Backend, up *pgconn.HijackedConn) {
+func relayQueries(ctx context.Context, end func(), gate func(context.Context, facts.Event) error, backend *pgproto3.Backend, up *pgconn.HijackedConn) {
 	var status atomic.Uint32
 	status.Store(uint32(up.TxStatus))
-	defer connector.PumpReplies(s, func() {
+	pumped := make(chan struct{})
+	defer func() { end(); <-pumped }()
+	go func() {
+		defer close(pumped)
+		defer end()
 		for {
 			msg, err := up.Frontend.Receive()
 			if err != nil {
@@ -140,7 +158,7 @@ func (r *postgresSetup) relayQueries(s *connector.Stream, backend *pgproto3.Back
 				return
 			}
 		}
-	})()
+	}()
 	for {
 		msg, err := backend.Receive()
 		if err != nil {
@@ -154,7 +172,7 @@ func (r *postgresSetup) relayQueries(s *connector.Stream, backend *pgproto3.Back
 			sql = msg.Query
 		}
 		if sql != "" {
-			if err := s.Gate(s.Context, r.Capture((&PostgresFacts{SQL: sql}).Describe())); err != nil {
+			if err := gate(ctx, facts.Capture((&PostgresFacts{SQL: sql}).Describe(), nil)); err != nil {
 				backend.Send(&pgproto3.ErrorResponse{Severity: "ERROR", Code: "42501", Message: err.Error()})
 				if _, simple := msg.(*pgproto3.Query); simple {
 					backend.Send(&pgproto3.ReadyForQuery{TxStatus: byte(status.Load())})
@@ -172,13 +190,13 @@ func (r *postgresSetup) relayQueries(s *connector.Stream, backend *pgproto3.Back
 	}
 }
 
-func (v *PostgresFacts) Describe() facts.Facts {
+func (v *PostgresFacts) Describe() facts.Observation {
 	details := Details{Postgres: v}
 	action := "write"
 	if plainRead(v.SQL) {
 		action = "read"
 	}
-	return facts.Facts{Operation: &facts.Operation{Action: action}, Title: "Run " + v.SQL, Parameters: map[string]any{"sql": v.SQL}, Details: details}
+	return facts.Observation{Operation: &facts.Operation{Action: action}, Title: "Run " + v.SQL, Parameters: map[string]any{"sql": v.SQL}, Details: details}
 }
 
 var sqlFirst = regexp.MustCompile(`^\w+`)

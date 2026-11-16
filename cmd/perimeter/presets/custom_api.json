@@ -1,0 +1,39 @@
+{
+  "title": "Custom API",
+  "http": {
+    "slots": true,
+    "operations": {
+      "request": {
+        "action": "request",
+        "effects": ["execute", "send"],
+        "method": "*",
+        "origin": "*",
+        "path": "*",
+        "open_params": true,
+        "body": "any",
+        "sends": "connection",
+        "scope": {
+          "origin": { "from": "http", "at": "/origin" },
+          "method": { "from": "http", "at": "/method" },
+          "path": { "from": "http", "at": "/path" }
+        },
+        "grant": ["origin"]
+      }
+    }
+  },
+  "catalog": {
+    "group": "generic",
+    "warning": "Allows requests to the HTTPS API address you configure. Adds a broad action and cannot infer endpoint-specific effects.",
+    "actions": {
+      "request": { "title": "Use API", "effects": ["execute", "send"] }
+    },
+    "fields": [
+      {
+        "key": "token",
+        "label": "API key",
+        "secret": true,
+        "credential": true
+      }
+    ]
+  }
+}

@@ -39,7 +39,7 @@ IDs with received envelopes. In Monitor policy, acknowledgements count as sends
 because they can contain interactive responses; read-only access cannot acknowledge.
 These tests do not verify the full event schema or deployed policy. Supported hosts,
 paths, encodings and approval selectors are defined in
-[`slack_socket_mode.json`](../../presets/slack_socket_mode.json), not enumerated here.
+[`slack_socket_mode.json`](../../cmd/perimeter/presets/slack_socket_mode.json), not enumerated here.
 
 `slack.py` and `grafana.py` contain the service scenarios. `test.py` owns the
 shared CLI and process lifecycle; `common.py` handles private settings and safe

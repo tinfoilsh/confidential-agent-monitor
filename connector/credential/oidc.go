@@ -11,8 +11,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// OIDC identity stays with its OAuth client registration in encrypted storage.
-type oidc struct {
+type OIDC struct {
 	Issuer  string `json:"issuer"`
 	JWKSURL string `json:"jwks_url"`
 	Subject string `json:"subject,omitempty"`
@@ -20,20 +19,20 @@ type oidc struct {
 	IDToken string `json:"id_token,omitempty"`
 }
 
-func (o *oidc) verify(ctx context.Context, client *http.Client, token *oauth2.Token, audience, nonce string) error {
+func (o *OIDC) verify(ctx context.Context, client *http.Client, token *oauth2.Token, audience, nonce string, maxBytes int64) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, o.JWKSURL, nil)
 	if err != nil {
-		return scrub(ctx, "identity verification", err)
+		return Scrub(ctx, "identity verification", err)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return scrub(ctx, "identity verification", err)
+		return Scrub(ctx, "identity verification", err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return errors.New("OIDC signing keys are unavailable")
 	}
-	keys, err := jwk.ParseReader(io.LimitReader(resp.Body, 1<<20))
+	keys, err := jwk.ParseReader(io.LimitReader(resp.Body, maxBytes))
 	if err != nil {
 		return errors.New("OIDC signing keys are invalid")
 	}

@@ -10,8 +10,6 @@ import (
 	"github.com/oasdiff/yaml"
 )
 
-// requestDocument retains only schemas reachable from requests. A broken
-// response example must not prevent us from inventorying a provider's requests.
 func requestDocument(src []byte, swagger bool) ([]byte, error) {
 	var doc map[string]any
 	if err := json.Unmarshal(src, &doc); err != nil {
@@ -34,7 +32,6 @@ func requestDocument(src []byte, swagger bool) ([]byte, error) {
 			}
 		}
 	}
-	// Start from paths, following local references before pruning components.
 	used := map[string]bool{}
 	missing := map[string]bool{}
 	external := map[string]bool{}

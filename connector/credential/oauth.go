@@ -13,36 +13,27 @@ import (
 	"net/url"
 	"slices"
 	"strings"
+	"sync"
 	"time"
 	"unicode"
 
-	"github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/oauthex"
 	"golang.org/x/oauth2"
 )
 
-const (
-	offlineAccess     = "offline_access"
-	httpsPort         = "443"
-	maxDeviceExpiry   = 24 * time.Hour
-	maxDeviceInterval = 3600
-)
+const httpsPort = "443"
 
 var (
 	prompts    = []string{"", "none", "login", "consent", "select_account"}
 	authStyles = map[string]oauth2.AuthStyle{"": oauth2.AuthStyleAutoDetect, "header": oauth2.AuthStyleInHeader, "params": oauth2.AuthStyleInParams}
 )
 
-var errNoRegistration = errors.New("this service does not register clients automatically; enter the client ID and secret of an OAuth app registered with it")
+var errSignInGone = errors.New("sign-in expired or already completed; start again")
 
-var errLoopback = errors.New("this service does not accept sign-ins from this page; open this Perimeter with tinfoil perimeter open to sign in on your computer")
-
-// A grant without an AuthURL is signed in at the authorization server its Resource names (RFC 9728).
-// A grant without a refresh token keeps its access token until Expiry, then needs a new sign-in.
-type oauth struct {
+type Grant struct {
 	AuthorizeParams map[string]string     `json:"authorize_params,omitempty"`
-	Registration    *callbackRegistration `json:"callback_registration,omitempty"`
-	OIDC            *oidc                 `json:"oidc,omitempty"`
+	Registration    *CallbackRegistration `json:"callback_registration,omitempty"`
+	OIDC            *OIDC                 `json:"oidc,omitempty"`
 	RequiredScopes  []string              `json:"required_scopes,omitempty"`
 	AuthURL         string                `json:"auth_url"`
 	DeviceAuthURL   string                `json:"device_auth_url,omitempty"`
@@ -56,26 +47,23 @@ type oauth struct {
 	AuthStyle       string                `json:"auth_style,omitempty"`
 	TokenType       string                `json:"token_type,omitempty"`
 	Loopback        bool                  `json:"loopback,omitempty"`
-	DefaultClient   *defaultClient        `json:"default_client,omitempty"`
+	DefaultClient   *DefaultClient        `json:"default_client,omitempty"`
 	AccessToken     string                `json:"access_token,omitempty"`
 	Expiry          time.Time             `json:"expiry,omitzero"`
 }
 
-// A preset's own OAuth app signs in when the owner names no client.
-type defaultClient struct {
+type DefaultClient struct {
 	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret,omitempty"`
 	Loopback     bool   `json:"loopback,omitempty"`
 }
 
-// These parameters apply until the authorization callback issues a client ID.
-// OIDC verification binds the issued ID to its authenticated account.
-type callbackRegistration struct {
+type CallbackRegistration struct {
 	ClientID        string            `json:"client_id"`
 	AuthorizeParams map[string]string `json:"authorize_params,omitempty"`
 }
 
-func (o *oauth) validate() error {
+func (o *Grant) validate() error {
 	if o.DeviceAuthURL != "" && (o.ClientID == "" || o.TokenURL == "" || o.OIDC != nil || o.Registration != nil) {
 		return errors.New("device sign-in requires a client ID and token URL, without OIDC or callback registration")
 	}
@@ -97,18 +85,17 @@ func (o *oauth) validate() error {
 		if o.OIDC.Issuer == "" || o.OIDC.JWKSURL == "" || !slices.Contains(strings.Fields(o.Scope), "openid") {
 			return errors.New("OIDC requires issuer, jwks_url, and the openid scope")
 		}
-		if err := secure(o.OIDC.Issuer, o.OIDC.JWKSURL); err != nil {
+		if err := CheckEndpoints(o.OIDC.Issuer, o.OIDC.JWKSURL); err != nil {
 			return err
 		}
 	}
 	if _, ok := authStyles[o.AuthStyle]; !ok || !slices.Contains(prompts, o.Prompt) {
 		return errors.New("oauth prompt or auth_style is not supported")
 	}
-	return secure(o.AuthURL, o.DeviceAuthURL, o.TokenURL, o.Resource)
+	return CheckEndpoints(o.AuthURL, o.DeviceAuthURL, o.TokenURL, o.Resource)
 }
 
-// secure requires https without user information or fragments, and never quotes an endpoint that may hold a password.
-func secure(endpoints ...string) error {
+func CheckEndpoints(endpoints ...string) error {
 	for _, endpoint := range endpoints {
 		u, err := url.Parse(endpoint)
 		if endpoint != "" && (err != nil || u.Scheme != "https" || u.Host == "" || u.User != nil || u.Fragment != "" || strings.Contains(endpoint, "#")) {
@@ -118,61 +105,63 @@ func secure(endpoints ...string) error {
 	return nil
 }
 
-func (o *oauth) config(redirect string) oauth2.Config {
+func (o *Grant) config(redirect string) oauth2.Config {
 	return oauth2.Config{
 		ClientID: o.ClientID, ClientSecret: o.ClientSecret, RedirectURL: redirect, Scopes: strings.Fields(o.Scope),
 		Endpoint: oauth2.Endpoint{AuthURL: o.AuthURL, DeviceAuthURL: o.DeviceAuthURL, TokenURL: o.TokenURL, AuthStyle: authStyles[o.AuthStyle]},
 	}
 }
 
-func encodeGrant(grant oauth) json.RawMessage {
-	raw, _ := json.Marshal(map[string]oauth{"oauth": grant})
+func encodeGrant(grant Grant) json.RawMessage {
+	raw, _ := json.Marshal(grant)
 	return raw
 }
 
-// A SignIn waits for an authorization callback or device approval. The device
-// code stays private; only URL, State, UserCode and Expires go to the owner UI.
+func snapshot(grant Grant) (*Grant, error) {
+	raw, err := json.Marshal(grant)
+	if err != nil {
+		return nil, err
+	}
+	return DecodeGrant(raw)
+}
+
 type SignIn struct {
 	URL, State string
 	UserCode   string
 	Expires    time.Time
 	device     *oauth2.DeviceAuthResponse
-	grant      oauth
+	grant      Grant
 	config     *oauth2.Config
 	client     *http.Client
 	verifier   string
 	opts       []oauth2.AuthCodeOption
 	nonce      string
+	limits     SignInLimits
 }
 
-// NewSignIn starts the configured OAuth flow, registering a client first when the secret names only its resource.
-func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage, redirect string) (*SignIn, error) {
-	var v Value
-	if err := json.Unmarshal(secret, &v); err != nil {
+func NewDeviceSignIn(ctx context.Context, client *http.Client, grant Grant, limits SignInLimits) (*SignIn, error) {
+	g, err := snapshot(grant)
+	if err != nil {
 		return nil, err
 	}
-	if v.grant == nil {
-		return nil, errors.New("the secret is not an oauth grant")
+	if g.DeviceAuthURL == "" {
+		return nil, errors.New("device sign-in requires a device authorization URL")
 	}
-	s := &SignIn{State: rand.Text(), grant: *v.grant, client: client, verifier: oauth2.GenerateVerifier()}
-	if c := s.grant.DefaultClient; c != nil && s.grant.ClientID == "" {
-		s.grant.ClientID, s.grant.ClientSecret, s.grant.Loopback = c.ClientID, c.ClientSecret, s.grant.Loopback || c.Loopback
+	s := &SignIn{State: rand.Text(), grant: *g, client: client, limits: limits}
+	config := s.grant.config("")
+	s.config = &config
+	return s, s.startDevice(ctx)
+}
+
+func NewAuthCodeSignIn(client *http.Client, grant Grant, redirect string, limits SignInLimits, opts ...oauth2.AuthCodeOption) (*SignIn, error) {
+	g, err := snapshot(grant)
+	if err != nil {
+		return nil, err
 	}
-	if s.grant.DeviceAuthURL != "" {
-		config := s.grant.config("")
-		s.config = &config
-		return s, s.startDevice(ctx)
+	if g.AuthURL == "" {
+		return nil, errors.New("authorization code sign-in requires an authorization URL")
 	}
-	if s.grant.Loopback && !loopback(redirect) {
-		return nil, errLoopback
-	}
-	if s.grant.AuthURL == "" {
-		if err := s.register(ctx, redirect); errors.Is(err, errNoRegistration) || errors.Is(err, errLoopback) {
-			return nil, err
-		} else if err != nil {
-			return nil, scrub(ctx, "discovery", err)
-		}
-	}
+	s := &SignIn{State: rand.Text(), grant: *g, client: client, verifier: oauth2.GenerateVerifier(), limits: limits}
 	if s.grant.Resource != "" {
 		s.opts = append(s.opts, oauth2.SetAuthURLParam("resource", s.grant.Resource))
 	}
@@ -182,7 +171,7 @@ func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage,
 		config.ClientID = s.grant.Registration.ClientID
 	}
 	s.config = &config
-	opts := append(slices.Clone(s.opts), oauth2.S256ChallengeOption(s.verifier), oauth2.AccessTypeOffline)
+	opts = append(slices.Concat(opts, s.opts), oauth2.S256ChallengeOption(s.verifier), oauth2.SetAuthURLParam("state", s.State))
 	if s.grant.Prompt != "" {
 		opts = append(opts, oauth2.SetAuthURLParam("prompt", s.grant.Prompt))
 	}
@@ -195,7 +184,7 @@ func NewSignIn(ctx context.Context, client *http.Client, secret json.RawMessage,
 	}
 	u, err := url.Parse(s.config.AuthCodeURL(s.State, opts...))
 	if err != nil {
-		return nil, scrub(ctx, "authorization", err)
+		return nil, errors.New("oauth authorization failed")
 	}
 	query := u.Query()
 	params := []map[string]string{s.grant.AuthorizeParams}
@@ -220,34 +209,33 @@ func (s *SignIn) startDevice(ctx context.Context) error {
 	form := url.Values{"client_id": {s.grant.ClientID}, "scope": {s.grant.Scope}}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, s.grant.DeviceAuthURL, strings.NewReader(form.Encode()))
 	if err != nil {
-		return scrub(ctx, "device authorization", err)
+		return Scrub(ctx, "device authorization", err)
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Accept", "application/json")
 	resp, err := s.client.Do(req)
 	if err != nil {
-		return scrub(ctx, "device authorization", err)
+		return Scrub(ctx, "device authorization", err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("oauth device authorization failed with status %d", resp.StatusCode)
 	}
 	var device oauth2.DeviceAuthResponse
-	if err := json.NewDecoder(io.LimitReader(resp.Body, 1<<20)).Decode(&device); err != nil {
+	if err := json.NewDecoder(io.LimitReader(resp.Body, s.limits.MaxResponseBytes)).Decode(&device); err != nil {
 		return errors.New("oauth returned an invalid device authorization")
 	}
 	if device.DeviceCode == "" || device.UserCode == "" || device.VerificationURI == "" ||
-		!device.Expiry.After(time.Now()) || time.Until(device.Expiry) > maxDeviceExpiry || device.Interval < 0 || device.Interval > maxDeviceInterval {
+		!device.Expiry.After(time.Now()) || time.Until(device.Expiry) > s.limits.MaxDeviceExpiry || device.Interval < 0 || device.Interval > int64(s.limits.MaxDeviceInterval) {
 		return errors.New("oauth returned an invalid device authorization")
 	}
-	if err := secure(device.VerificationURI); err != nil {
+	if err := CheckEndpoints(device.VerificationURI); err != nil {
 		return err
 	}
 	s.device, s.URL, s.UserCode, s.Expires = &device, device.VerificationURI, device.UserCode, device.Expiry
 	return nil
 }
 
-// WaitDevice respects the provider's polling interval and slow_down responses.
 func (s *SignIn) WaitDevice(ctx context.Context) (json.RawMessage, error) {
 	t, err := s.config.DeviceAccessToken(context.WithValue(ctx, oauth2.HTTPClient, s.client), s.device)
 	if err != nil {
@@ -266,7 +254,7 @@ func (s *SignIn) WaitDevice(ctx context.Context) (json.RawMessage, error) {
 				return nil, errors.New("sign-in code expired; start again")
 			}
 		}
-		return nil, scrub(ctx, "device sign-in", err)
+		return nil, Scrub(ctx, "device sign-in", err)
 	}
 	grant := s.grant
 	if err := grant.acceptToken(t, false); err != nil {
@@ -275,18 +263,17 @@ func (s *SignIn) WaitDevice(ctx context.Context) (json.RawMessage, error) {
 	return encodeGrant(grant), nil
 }
 
-// register discovers the resource's authorization server (RFC 9728, RFC 8414) and, unless the grant names a client, registers with it (RFC 7591).
-func (s *SignIn) register(ctx context.Context, redirect string) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, s.grant.Resource, nil)
+func ProtectedResource(ctx context.Context, client *http.Client, resource string, maxBytes int64) (*oauthex.ProtectedResourceMetadata, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, resource, nil)
 	if err != nil {
-		return err
+		return nil, Scrub(ctx, "discovery", err)
 	}
 	u := req.URL
 	origin := u.Scheme + "://" + u.Host
 	var metadata []string
-	resp, err := s.client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return nil, Scrub(ctx, "discovery", err)
 	}
 	resp.Body.Close()
 	challenges, _ := oauthex.ParseWWWAuthenticate(resp.Header.Values("WWW-Authenticate"))
@@ -296,120 +283,59 @@ func (s *SignIn) register(ctx context.Context, redirect string) error {
 		}
 	}
 	metadata = append(metadata, origin+"/.well-known/oauth-protected-resource"+u.Path, origin+"/.well-known/oauth-protected-resource")
-	// Without resource metadata the origin is the authorization server, as in MCP 2025-03-26.
-	server, scopes := origin, []string(nil)
 	for _, m := range metadata {
 		var prm oauthex.ProtectedResourceMetadata
-		if secure(m) != nil || !s.getJSON(ctx, m, &prm) {
+		if CheckEndpoints(m) != nil || !getJSON(ctx, client, m, maxBytes, &prm) {
 			continue
 		}
-		// Metadata covers its resource and the paths beneath it on the same origin.
 		named, err := url.Parse(prm.Resource)
-		if err != nil || secure(prm.Resource) != nil || !strings.EqualFold(named.Hostname(), u.Hostname()) || cmp.Or(named.Port(), httpsPort) != cmp.Or(u.Port(), httpsPort) || !strings.HasPrefix(strings.TrimSuffix(u.Path, "/")+"/", strings.TrimSuffix(named.Path, "/")+"/") {
+		if err != nil || CheckEndpoints(prm.Resource) != nil || !strings.EqualFold(named.Hostname(), u.Hostname()) || cmp.Or(named.Port(), httpsPort) != cmp.Or(u.Port(), httpsPort) || !strings.HasPrefix(strings.TrimSuffix(u.Path, "/")+"/", strings.TrimSuffix(named.Path, "/")+"/") {
 			continue
 		}
-		if len(prm.AuthorizationServers) == 0 {
-			return fmt.Errorf("%s names no authorization server", s.grant.Resource)
-		}
-		s.grant.Resource, server, scopes = prm.Resource, strings.TrimSuffix(prm.AuthorizationServers[0], "/"), prm.ScopesSupported
-		break
+		return &prm, nil
 	}
-	if err := secure(server); err != nil {
-		return err
-	}
-	asm, err := auth.GetAuthServerMetadata(ctx, server, s.client)
-	// Metadata naming another issuer leads to it, and that issuer's own metadata must name itself.
-	if a, _ := url.Parse(server); err != nil {
-		for _, m := range []string{"/.well-known/oauth-authorization-server" + a.Path, "/.well-known/openid-configuration" + a.Path, a.Path + "/.well-known/openid-configuration"} {
-			var other oauthex.AuthServerMeta
-			if s.getJSON(ctx, a.Scheme+"://"+a.Host+m, &other) && other.Issuer != "" && secure(other.Issuer) == nil {
-				server = strings.TrimSuffix(other.Issuer, "/")
-				asm, err = auth.GetAuthServerMetadata(ctx, server, s.client)
-				break
-			}
-		}
-	}
-	if err != nil {
-		return err
-	}
-	if asm == nil || asm.AuthorizationEndpoint == "" || asm.TokenEndpoint == "" {
-		return fmt.Errorf("%s names no authorization or token endpoint", server)
-	}
-	if err := secure(asm.AuthorizationEndpoint, asm.TokenEndpoint, asm.RegistrationEndpoint); err != nil {
-		return err
-	}
-	s.grant.AuthURL, s.grant.TokenURL = asm.AuthorizationEndpoint, asm.TokenEndpoint
-	if s.grant.Scope == "" {
-		if slices.Contains(asm.ScopesSupported, offlineAccess) && !slices.Contains(scopes, offlineAccess) {
-			scopes = append(scopes, offlineAccess)
-		}
-		s.grant.Scope = strings.Join(scopes, " ")
-	}
-	if s.grant.ClientID != "" {
-		if methods := asm.TokenEndpointAuthMethodsSupported; s.grant.AuthStyle == "" && len(methods) > 0 && !slices.Contains(methods, "client_secret_basic") {
-			s.grant.AuthStyle = "params"
-		}
-		return nil
-	}
-	if asm.RegistrationEndpoint == "" {
-		return errNoRegistration
-	}
-	registration := &oauthex.ClientRegistrationMetadata{
-		RedirectURIs: []string{redirect}, ClientName: "Perimeter", GrantTypes: []string{"authorization_code"},
-		ResponseTypes: []string{"code"},
-	}
-	if slices.Contains(asm.GrantTypesSupported, "refresh_token") {
-		registration.GrantTypes = append(registration.GrantTypes, "refresh_token")
-	}
-	// Monitor is a public PKCE client. Some MCP providers support only "none";
-	// omitting it would request the RFC 7591 default, client_secret_basic.
-	if slices.Contains(asm.TokenEndpointAuthMethodsSupported, "none") {
-		registration.TokenEndpointAuthMethod = "none"
-	}
-	reg, err := oauthex.RegisterClient(ctx, asm.RegistrationEndpoint, registration, s.client)
-	var refused *oauthex.ClientRegistrationError
-	if errors.As(err, &refused) && refused.ErrorCode == "invalid_redirect_uri" && !loopback(redirect) {
-		return errLoopback
-	}
-	if err != nil {
-		return err
-	}
-	s.grant.ClientID, s.grant.ClientSecret = reg.ClientID, reg.ClientSecret
-	switch reg.TokenEndpointAuthMethod {
-	case "none", "client_secret_post":
-		s.grant.AuthStyle = "params"
-	case "client_secret_basic":
-		s.grant.AuthStyle = "header"
-	}
-	return nil
+	return nil, nil
 }
 
-func loopback(redirect string) bool {
+func PublishedIssuer(ctx context.Context, client *http.Client, server string, maxBytes int64) string {
+	a, _ := url.Parse(server)
+	if CheckEndpoints(server) != nil {
+		return ""
+	}
+	for _, m := range []string{"/.well-known/oauth-authorization-server" + a.Path, "/.well-known/openid-configuration" + a.Path, a.Path + "/.well-known/openid-configuration"} {
+		var other oauthex.AuthServerMeta
+		if getJSON(ctx, client, a.Scheme+"://"+a.Host+m, maxBytes, &other) && other.Issuer != "" && CheckEndpoints(other.Issuer) == nil {
+			return other.Issuer
+		}
+	}
+	return ""
+}
+
+func IsLoopback(redirect string) bool {
 	u, err := url.Parse(redirect)
 	return err == nil && (u.Hostname() == "localhost" || net.ParseIP(u.Hostname()).IsLoopback())
 }
 
-func (s *SignIn) getJSON(ctx context.Context, u string, v any) bool {
+func getJSON(ctx context.Context, client *http.Client, u string, maxBytes int64, v any) bool {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
 		return false
 	}
-	resp, err := s.client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return false
 	}
 	defer resp.Body.Close()
-	return resp.StatusCode == http.StatusOK && json.NewDecoder(io.LimitReader(resp.Body, 1<<20)).Decode(v) == nil
+	return resp.StatusCode == http.StatusOK && json.NewDecoder(io.LimitReader(resp.Body, maxBytes)).Decode(v) == nil
 }
 
-// Exchange returns the replacement record for the authorized scope.
 func (s *SignIn) Exchange(ctx context.Context, code, clientID string) (json.RawMessage, error) {
 	if code == "" {
 		return nil, errors.New("the sign-in callback has no authorization code")
 	}
 	grant, config := s.grant, *s.config
 	if grant.Registration != nil && grant.ClientID == "" {
-		if clientID == "" || clientID == grant.Registration.ClientID || len(clientID) > 512 || strings.ContainsAny(clientID, " \r\n\t") {
+		if clientID == "" || clientID == grant.Registration.ClientID || len(clientID) > s.limits.MaxClientIDBytes || strings.ContainsAny(clientID, " \r\n\t") {
 			return nil, errors.New("authorization did not return an issued client ID; start sign-in again")
 		}
 		grant.ClientID, config.ClientID = clientID, clientID
@@ -418,14 +344,14 @@ func (s *SignIn) Exchange(ctx context.Context, code, clientID string) (json.RawM
 	}
 	t, err := config.Exchange(context.WithValue(ctx, oauth2.HTTPClient, s.client), code, append(slices.Clone(s.opts), oauth2.VerifierOption(s.verifier))...)
 	if err != nil {
-		return nil, scrub(ctx, "exchange", err)
+		return nil, Scrub(ctx, "exchange", err)
 	}
 	if err := grant.acceptToken(t, false); err != nil {
 		return nil, err
 	}
 	if grant.OIDC != nil {
 		identity := *grant.OIDC
-		if err := identity.verify(ctx, s.client, t, grant.ClientID, s.nonce); err != nil {
+		if err := identity.verify(ctx, s.client, t, grant.ClientID, s.nonce, s.limits.MaxResponseBytes); err != nil {
 			return nil, err
 		}
 		grant.OIDC = &identity
@@ -433,12 +359,11 @@ func (s *SignIn) Exchange(ctx context.Context, code, clientID string) (json.RawM
 	return encodeGrant(grant), nil
 }
 
-func (o *oauth) acceptToken(t *oauth2.Token, refresh bool) error {
+func (o *Grant) acceptToken(t *oauth2.Token, refresh bool) error {
 	if t.AccessToken == "" || !strings.EqualFold(t.Type(), cmp.Or(o.TokenType, "Bearer")) {
 		return errors.New("oauth returned an invalid bearer token")
 	}
 	scope, _ := t.Extra("scope").(string)
-	// GitHub returns comma-separated scopes; other providers use spaces.
 	scope = strings.Join(strings.FieldsFunc(scope, func(r rune) bool { return r == ',' || unicode.IsSpace(r) }), " ")
 	if scope == "" && refresh {
 		scope = o.Scope
@@ -455,8 +380,6 @@ func (o *oauth) acceptToken(t *oauth2.Token, refresh bool) error {
 	return nil
 }
 
-// oauth2.TokenSource handles token formats, client authentication, and rotation,
-// but does not send RFC 8707 resource indicators on refresh requests.
 type resourceTransport struct {
 	http.RoundTripper
 	endpoint, resource string
@@ -483,7 +406,7 @@ func (t resourceTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	return t.RoundTripper.RoundTrip(r)
 }
 
-func (o *oauth) refresh(ctx context.Context, client *http.Client, token *oauth2.Token) (*oauth2.Token, error) {
+func (o *Grant) refresh(ctx context.Context, client *http.Client, token *oauth2.Token) (*oauth2.Token, error) {
 	if client == nil {
 		return nil, errors.New("no client can refresh this grant")
 	}
@@ -498,4 +421,102 @@ func (o *oauth) refresh(ctx context.Context, client *http.Client, token *oauth2.
 	}
 	config := o.config("")
 	return config.TokenSource(context.WithValue(ctx, oauth2.HTTPClient, client), token).Token()
+}
+
+type SignInResult struct {
+	Code     string  `json:"code"`
+	ClientID string  `json:"client_id,omitempty"`
+	Error    *string `json:"error,omitempty"`
+	Cancel   bool    `json:"cancel,omitempty"`
+}
+
+type pendingSignIn struct {
+	finish  func(context.Context, SignInResult) error
+	session string
+	expires time.Time
+	done    <-chan struct{}
+	cancel  context.CancelFunc
+}
+
+type SignIns struct {
+	pending sync.Map
+	limits  SignInLimits
+}
+
+type SignInLimits struct {
+	Timeout, Lifetime time.Duration
+	MaxDeviceExpiry   time.Duration
+	MaxDeviceInterval int
+	MaxResponseBytes  int64
+	MaxClientIDBytes  int
+}
+
+func NewSignIns(limits SignInLimits) *SignIns {
+	return &SignIns{limits: limits}
+}
+
+func (s *SignIns) Start(ctx context.Context, begin func(context.Context) (*SignIn, error), session string, save func(context.Context, json.RawMessage) error) (*SignIn, error) {
+	ctx, cancel := context.WithTimeout(ctx, s.limits.Timeout)
+	defer cancel()
+	pending := &pendingSignIn{session: session, expires: time.Now().Add(s.limits.Lifetime)}
+	sign, err := begin(ctx)
+	if err != nil {
+		return nil, err
+	}
+	exchange := sign.Exchange
+	if sign.UserCode != "" {
+		poll, stop := context.WithDeadline(context.Background(), sign.Expires)
+		done := make(chan struct{})
+		var secret json.RawMessage
+		var failure error
+		go func() { defer close(done); defer stop(); secret, failure = sign.WaitDevice(poll) }()
+		pending.expires, pending.done, pending.cancel = sign.Expires, done, stop
+		exchange = func(context.Context, string, string) (json.RawMessage, error) { return secret, failure }
+	}
+	pending.finish = func(ctx context.Context, result SignInResult) error {
+		if result.Error != nil {
+			return errors.New("sign-in was not completed; try again")
+		}
+		secret, err := exchange(ctx, result.Code, result.ClientID)
+		if err != nil {
+			return err
+		}
+		return save(ctx, secret)
+	}
+	s.pending.Store(sign.State, pending)
+	time.AfterFunc(time.Until(pending.expires), func() { s.pending.CompareAndDelete(sign.State, pending) })
+	return sign, nil
+}
+
+func (s *SignIns) Finish(ctx context.Context, state, session string, result SignInResult) (bool, error) {
+	value, ok := s.pending.Load(state)
+	if !ok {
+		return false, errSignInGone
+	}
+	pending := value.(*pendingSignIn)
+	if pending.session != session {
+		return false, errors.New("sign-in belongs to a different session")
+	}
+	if !result.Cancel && result.Error == nil && pending.done != nil && time.Now().Before(pending.expires) {
+		select {
+		case <-pending.done:
+		default:
+			return true, nil
+		}
+	}
+	if !s.pending.CompareAndDelete(state, pending) {
+		return false, errSignInGone
+	}
+	if pending.cancel != nil {
+		defer pending.cancel()
+	}
+	if !time.Now().Before(pending.expires) {
+		return false, errSignInGone
+	}
+	if result.Cancel {
+		return false, nil
+	}
+	ctx, cancel := context.WithTimeout(ctx, s.limits.Timeout)
+	defer cancel()
+	return false, pending.finish(ctx, result)
 }

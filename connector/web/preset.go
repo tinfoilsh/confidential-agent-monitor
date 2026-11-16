@@ -1,28 +1,29 @@
 package web
 
 import (
+	"context"
 	"crypto/sha256"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"maps"
+	"net/http"
 	"regexp"
 	"slices"
 	"strings"
 
-	"github.com/tinfoilsh/monitor/connector/jsonsel"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
 type Request struct {
 	HTTP    *HTTPFacts    `json:"http"`
 	GraphQL *GraphQLFacts `json:"graphql,omitempty"`
 	Invalid string        `json:"invalid,omitempty"`
-	slots   []*Slot       // Bound by parsing; only the serving connector uses these.
+	place   func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error)
 }
 
-func (r *Request) Describe(config *Setup) (facts.Facts, error) {
+func (r *Request) Describe(config *Setup) (facts.Observation, error) {
 	if r.HTTP != nil && config.Preset != nil && len(config.Preset.SensitiveQuery) != 0 {
-		// Describe a private copy; the admitted upstream request keeps its real values.
 		described, layer := *r, *r.HTTP
 		layer.Query = maps.Clone(r.HTTP.Query)
 		for _, key := range config.Preset.SensitiveQuery {
@@ -40,25 +41,21 @@ func (r *Request) Describe(config *Setup) (facts.Facts, error) {
 	return r.describe(config)
 }
 
-func (r *Request) describe(config *Setup) (facts.Facts, error) {
+func (r *Request) describe(config *Setup) (facts.Observation, error) {
 	if r.HTTP == nil {
-		return facts.Facts{}, errors.New("missing HTTP request")
+		return facts.Observation{}, errors.New("missing HTTP request")
 	}
-	f := facts.Facts{Details: Details{HTTP: r.HTTP, GraphQL: r.GraphQL}}
+	f := facts.Observation{Details: Details{HTTP: r.HTTP, GraphQL: r.GraphQL}}
 	h := r.HTTP
 	f.Title = h.Method + " " + h.Host + h.Path
 	if r.Invalid != "" {
 		return f, errors.New(r.Invalid)
 	}
 	if p := config.Preset; p != nil {
-		matched, err := p.Match(r, config, f)
-		if err == nil && h.WebSocket && matched.Operation == nil {
-			err = errors.New("WebSocket requests require a reviewed operation")
-		}
-		return matched, err
+		return p.Match(r, config, f)
 	}
 	if h.WebSocket {
-		return f, errors.New("WebSocket requests require a reviewed operation")
+		return f, nil
 	}
 	action := "browse"
 	if !slices.Contains([]string{"GET", "HEAD", "OPTIONS"}, h.Method) {
@@ -69,7 +66,6 @@ func (r *Request) describe(config *Setup) (facts.Facts, error) {
 	return f, nil
 }
 
-// Preset contains reviewed HTTP operations, including GraphQL requests.
 type Preset struct {
 	Operations     map[string]Operation `json:"operations"`
 	Slots          bool                 `json:"slots,omitempty"`
@@ -77,7 +73,6 @@ type Preset struct {
 	routes         map[routeKey]*routeNode
 }
 
-// UnmarshalJSON compiles the operations, so only a validated preset can match requests.
 func (p *Preset) UnmarshalJSON(raw []byte) error {
 	type plain Preset
 	if err := facts.DecodeNumbers(raw, (*plain)(p)); err != nil {
@@ -93,7 +88,7 @@ func (p *Preset) validate() error {
 		}
 	}
 	for id, o := range p.Operations {
-		if id == "" || o.Action == "" || !facts.ValidEffects(o.Effects) {
+		if id == "" || o.Action == "" {
 			return fmt.Errorf("invalid operation %q", id)
 		}
 		if o.Method == "" || o.Origin == "" || o.Path == "" || o.Scope == nil {
@@ -112,8 +107,8 @@ func (p *Preset) validate() error {
 				return fmt.Errorf("grant names missing scope %s", name)
 			}
 		}
-		if !facts.ValidSends(o.Sends) || !slices.Contains([]string{"", bodyNone, BodyJSON, bodyForm, bodyAny, bodyGraphQL}, o.Body) {
-			return fmt.Errorf("invalid audience or body kind for %s", id)
+		if !slices.Contains([]string{"", bodyNone, BodyJSON, bodyForm, bodyAny, bodyGraphQL}, o.Body) {
+			return fmt.Errorf("invalid body kind for %s", id)
 		}
 		if g := o.GraphQL; g != nil {
 			if o.Body != bodyGraphQL || (g.Field == "") == (len(g.Fields) == 0) || !slices.Contains([]string{"query", "mutation", "subscription"}, g.Operation) {
@@ -145,7 +140,7 @@ type Operation struct {
 	GraphQL      *GraphQLMatch       `json:"graphql,omitempty"`
 	Scope        map[string]Selector `json:"scope"`
 	Grant        []string            `json:"grant,omitempty"`
-	Sends        string              `json:"sends,omitempty"`
+	Sends        json.RawMessage     `json:"sends,omitempty"`
 }
 
 type GraphQLMatch struct {
@@ -158,7 +153,7 @@ type Selector struct {
 	From       string `json:"from,omitempty"`
 	Header     string `json:"header,omitempty"`
 	TrimSuffix string `json:"trim_suffix,omitempty"`
-	jsonsel.Selector
+	facts.Selector
 }
 
 var selectorSources = map[string]struct{ json, optional bool }{
@@ -216,7 +211,7 @@ func (compiled *compiledOperation) matches(r *Request, headers map[string][]stri
 				if present {
 					return false, nil
 				}
-			} else if !present || !jsonsel.Equal(got, v) {
+			} else if !present || !facts.Equal(got, v) {
 				return false, nil
 			}
 		default:
@@ -251,7 +246,7 @@ func condition(values map[string][]string, key string, want any) bool {
 	return ok && len(got) == 1 && got[0] == s
 }
 
-func (spec Selector) Compile() (jsonsel.Selector, func(any) (any, bool), error) {
+func (spec Selector) Compile() (facts.Selector, func(any) (any, bool), error) {
 	source, ok := selectorSources[spec.From]
 	if !ok || !spec.Valid() {
 		return spec.Selector, nil, fmt.Errorf("invalid selector source %q or type %q", spec.From, spec.Type)
@@ -259,7 +254,7 @@ func (spec Selector) Compile() (jsonsel.Selector, func(any) (any, bool), error) 
 	var pointer func(any) (any, bool)
 	if source.json {
 		var err error
-		if pointer, err = jsonsel.CompilePointer(spec.At); err != nil {
+		if pointer, err = facts.CompilePointer(spec.At); err != nil {
 			return spec.Selector, nil, err
 		}
 	}
@@ -309,7 +304,6 @@ func (spec Selector) value(r *selection, pointer func(any) (any, bool)) (any, bo
 	}
 }
 
-// An invalid selection is present but can never satisfy a declared JSON type.
 type invalidSelection struct{}
 
 type pathPart struct {
@@ -390,7 +384,7 @@ type compiledOperation struct {
 	operation    *Operation
 	path         []pathPart
 	pathPatterns map[string]*regexp.Regexp
-	selectors    []jsonsel.Compiled
+	selectors    []facts.Compiled
 	params       map[string]bool
 	fields       map[string]func(any) (any, bool)
 	headers      []headerCondition
@@ -427,8 +421,6 @@ func (p *Preset) compile() error {
 			if name == "" || count != 1 {
 				return fmt.Errorf("operation %s needs exactly one path capture named %q", id, name)
 			}
-			// Validate the expression on its own so unbalanced groups cannot
-			// escape the wrapper, then anchor independently of embedded flags.
 			compiled, err := regexp.Compile(pattern)
 			if err == nil {
 				compiled, err = regexp.Compile(`\A(?:` + pattern + `)\z`)
@@ -438,7 +430,7 @@ func (p *Preset) compile() error {
 			}
 			pathPatterns[name] = compiled
 		}
-		selectors, err := jsonsel.Compile(o.Scope)
+		selectors, err := facts.Compile(o.Scope)
 		if err != nil {
 			return err
 		}
@@ -452,7 +444,7 @@ func (p *Preset) compile() error {
 		}
 		if o.Body == BodyJSON {
 			for at := range o.Fields {
-				op.fields[at], err = jsonsel.CompilePointer(at)
+				op.fields[at], err = facts.CompilePointer(at)
 				if err != nil {
 					return err
 				}
@@ -513,19 +505,15 @@ func (node *routeNode) candidates(path []string, out []*compiledOperation) []*co
 	return out
 }
 
-// Match selects exactly one reviewed operation. Unknown requests keep their
-// protocol details, but receive no operation or inferred effects.
-func (p *Preset) Match(r *Request, config *Setup, f facts.Facts) (facts.Facts, error) {
+func (p *Preset) Match(r *Request, config *Setup, f facts.Observation) (facts.Observation, error) {
 	h := r.HTTP
-	f.Title = fmt.Sprintf("%s: %s %s", config.Title, h.Method, h.Path)
-	if p.Slots && !slices.ContainsFunc(config.Slots, func(slot Slot) bool {
-		return h.Origin == slot.Origin && under(h.Path, slot.Path)
-	}) {
+	f.Title = fmt.Sprintf("%s: %s %s", config.title, h.Method, h.Path)
+	if p.Slots && !config.slots.Covers(h.Origin, h.Path) {
 		return f, errors.New("the request is outside this API's address")
 	}
 	parts := strings.Split(h.Path, "/")
 	origins, methods := []string{h.Origin, "*"}, []string{h.Method, "*"}
-	if config.Origin == h.Origin || config.Origin == "*" {
+	if config.origin == h.Origin || config.origin == "*" {
 		origins = append(origins, "{origin}")
 	}
 	var candidates []*compiledOperation
@@ -570,12 +558,11 @@ func (p *Preset) Match(r *Request, config *Setup, f facts.Facts) (facts.Facts, e
 		return f, nil
 	}
 	o := matched.operation
-	parameters, err := jsonsel.Select(matched.selectors, &selection{Request: r, captures: captures})
-	grant := jsonsel.Project(parameters, o.Grant)
+	parameters, err := facts.Select(matched.selectors, &selection{Request: r, captures: captures})
+	grant := facts.Project(parameters, o.Grant)
 	f.Operation = &facts.Operation{ID: o.ID, Action: o.Action, Effects: o.Effects}
-	f.Title = fmt.Sprintf("%s: %s", config.Title, o.ID)
+	f.Title = fmt.Sprintf("%s: %s", config.title, o.ID)
 	f.Parameters = parameters
-	f.Context.Sends = o.Sends
 	f.Scope = grant
 	return f, err
 }

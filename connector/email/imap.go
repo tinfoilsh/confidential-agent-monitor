@@ -2,129 +2,171 @@ package email
 
 import (
 	"bufio"
+	"context"
+	"crypto/tls"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"log"
+	"net"
+	"net/url"
 	"regexp"
 	"slices"
 	"strconv"
 	"strings"
 
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
-
-var IMAPKind = connector.Kind{Parse: parseIMAP, New: func() connector.Server { return new(IMAP) }}
-
-func parseIMAP(source connector.Setup) (connector.Prepared, error) {
-	c := new(imapSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
-		return connector.Prepared{}, err
-	}
-	if err := c.validate(); err != nil {
-		return connector.Prepared{}, err
-	}
-	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Routes: []string{c.URL.Hostname()}}, nil
-}
-
-type IMAP struct{ connector.Slot[imapSetup] }
 
 const (
 	loginTag = "m0"
+	imapPort = "993"
 )
 
 var imapLiteral = regexp.MustCompile(`\{(\d+)(\+?)\}$`)
 
-type imapSetup struct{ connector.Endpoint }
-
-func (r *imapSetup) validate() error {
-	if err := r.Endpoint.Parse(); err != nil {
-		return err
-	}
-	if r.URL.Scheme != "imaps" {
-		return errors.New("IMAP requires an imaps:// URL to protect credentials with TLS")
-	}
-	return nil
+type Endpoint struct {
+	RawURL string `json:"url"`
+	User   string `json:"user"`
+	url    *url.URL
 }
 
-func (owner *IMAP) Serve(s *connector.Stream, e *connector.Env) {
-	r, ok := owner.Load()
-	if !ok {
-		return
+func parse(config json.RawMessage) (*Endpoint, error) {
+	e := new(Endpoint)
+	if err := facts.DecodeNumbers(config, e); err != nil {
+		return nil, err
 	}
+	u, err := url.Parse(e.RawURL)
+	switch {
+	case err != nil:
+		return nil, err
+	case u.Scheme == "" || u.Host == "":
+		return nil, errors.New("destination requires a URL with a scheme and host")
+	}
+	if _, set := u.User.Password(); set || u.Query().Has("password") {
+		return nil, errors.New("put the password in the service's password credential, not the URL")
+	}
+	if e.User != "" {
+		u.User = url.User(e.User)
+	}
+	e.url = u
+	return e, nil
+}
 
-	u := &r.URL
-	up, err := connector.DialURL(s.Context, e.Dialer, u, "imaps", "143", "993")
+func (e *Endpoint) Hosts() []string { return []string{e.url.Hostname()} }
+
+func (e *Endpoint) dial(ctx context.Context, dial func(context.Context, string, string) (net.Conn, error), secure, port, securePort string) (net.Conn, error) {
+	u := e.url
+	address := u.Host
+	if u.Port() == "" {
+		if u.Scheme == secure {
+			port = securePort
+		}
+		address = net.JoinHostPort(u.Hostname(), port)
+	}
+	c, err := dial(ctx, "tcp", address)
+	if err != nil || u.Scheme != secure {
+		return c, err
+	}
+	t := tls.Client(c, &tls.Config{ServerName: u.Hostname()})
+	if err := t.HandshakeContext(ctx); err != nil {
+		c.Close()
+		return nil, err
+	}
+	return t, nil
+}
+
+type IMAP struct{ *Endpoint }
+
+func ParseIMAP(config json.RawMessage) (*IMAP, error) {
+	e, err := parse(config)
 	if err != nil {
-		log.Printf("imap: %v", err)
-		return
+		return nil, err
 	}
-	defer s.Interrupt(up)()
-	replies := bufio.NewReader(up)
-	if _, err := replies.ReadString('\n'); err != nil {
-		return
+	if e.url.Scheme != "imaps" {
+		return nil, errors.New("IMAP requires an imaps:// URL to protect credentials with TLS")
 	}
-	pass, err := r.Secret(s.Context, "password")
-	if err != nil {
-		log.Printf("credential: %v", err)
-		return
-	}
-	quote := strings.NewReplacer(`\`, `\\`, `"`, `\"`)
-	fmt.Fprintf(up, "%s LOGIN \"%s\" \"%s\"\r\n", loginTag, quote.Replace(u.User.Username()), quote.Replace(pass))
-	for {
-		line, err := replies.ReadString('\n')
+	return &IMAP{e}, nil
+}
+
+func (r *IMAP) Preauthenticated(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), greeting string) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+		up, err := r.dial(ctx, dial, "imaps", imapPort, imapPort)
 		if err != nil {
+			log.Printf("imap: %v", err)
 			return
 		}
-		if strings.HasPrefix(line, loginTag+" ") {
-			if !strings.HasPrefix(line, loginTag+" OK") {
-				log.Printf("imap upstream refused the stored credential: %s", strings.TrimSpace(line))
+		stop := context.AfterFunc(ctx, func() { up.Close() })
+		defer func() { stop(); up.Close() }()
+		replies := bufio.NewReader(up)
+		if _, err := replies.ReadString('\n'); err != nil {
+			return
+		}
+		pass, err := password(ctx)
+		if err != nil {
+			log.Printf("credential: %v", err)
+			return
+		}
+		quote := strings.NewReplacer(`\`, `\\`, `"`, `\"`)
+		fmt.Fprintf(up, "%s LOGIN \"%s\" \"%s\"\r\n", loginTag, quote.Replace(r.url.User.Username()), quote.Replace(pass))
+		for {
+			line, err := replies.ReadString('\n')
+			if err != nil {
 				return
 			}
-			break
+			if strings.HasPrefix(line, loginTag+" ") {
+				if !strings.HasPrefix(line, loginTag+" OK") {
+					log.Printf("imap upstream refused the stored credential: %s", strings.TrimSpace(line))
+					return
+				}
+				break
+			}
 		}
-	}
-	fmt.Fprintf(s, "* PREAUTH perimeter\r\n")
-	defer connector.PumpReplies(s, func() { io.Copy(s, replies) })()
-	commands := bufio.NewReader(s)
-	mailbox := ""
-	for {
-		line, err := commands.ReadString('\n')
-		if err != nil {
-			return
-		}
-		tag, rest, _ := strings.Cut(strings.TrimRight(line, "\r\n"), " ")
-		if rest == "" {
-			if _, err := io.WriteString(up, line); err != nil {
+		fmt.Fprintf(s, "* PREAUTH %s\r\n", greeting)
+		pumped := make(chan struct{})
+		go func() { defer close(pumped); io.Copy(s, replies); cancel(); s.Close() }()
+		defer func() { cancel(); s.Close(); <-pumped }()
+		commands := bufio.NewReader(s)
+		mailbox := ""
+		for {
+			line, err := commands.ReadString('\n')
+			if err != nil {
 				return
 			}
-			continue
-		}
-		command, args, _ := strings.Cut(rest, " ")
-		if strings.EqualFold(command, "UID") {
-			command, args, _ = strings.Cut(args, " ")
-		}
-		command = strings.ToUpper(command)
-		switch command {
-		case "LOGIN", "AUTHENTICATE":
-			fmt.Fprintf(s, "%s OK already authenticated\r\n", tag)
-			continue
-		case "SELECT", "EXAMINE":
-			mailbox = strings.Trim(args, `"`)
-		}
-		dst := io.Writer(up)
-		if err := s.Gate(s.Context, r.Capture((&IMAPFacts{Command: command, Args: args, Mailbox: mailbox}).Describe())); err != nil {
-			fmt.Fprintf(s, "%s NO %v\r\n", tag, err)
-			dst = io.Discard
-		}
-		if err := forwardIMAP(dst, commands, line); err != nil {
-			return
+			tag, rest, _ := strings.Cut(strings.TrimRight(line, "\r\n"), " ")
+			if rest == "" {
+				if _, err := io.WriteString(up, line); err != nil {
+					return
+				}
+				continue
+			}
+			command, args, _ := strings.Cut(rest, " ")
+			if strings.EqualFold(command, "UID") {
+				command, args, _ = strings.Cut(args, " ")
+			}
+			command = strings.ToUpper(command)
+			switch command {
+			case "LOGIN", "AUTHENTICATE":
+				fmt.Fprintf(s, "%s OK already authenticated\r\n", tag)
+				continue
+			case "SELECT", "EXAMINE":
+				mailbox = strings.Trim(args, `"`)
+			}
+			dst := io.Writer(up)
+			if err := gate(ctx, facts.Capture((&IMAPFacts{Command: command, Args: args, Mailbox: mailbox}).Describe(), nil)); err != nil {
+				fmt.Fprintf(s, "%s NO %v\r\n", tag, err)
+				dst = io.Discard
+			}
+			if err := forwardIMAP(dst, commands, line); err != nil {
+				return
+			}
 		}
 	}
 }
 
-// A refused command's synchronizing literal never comes, since the client is still waiting for a continuation.
 func forwardIMAP(dst io.Writer, src *bufio.Reader, line string) error {
 	for {
 		if _, err := io.WriteString(dst, line); err != nil {
@@ -145,7 +187,7 @@ func forwardIMAP(dst io.Writer, src *bufio.Reader, line string) error {
 	}
 }
 
-func (v *IMAPFacts) Describe() facts.Facts {
+func (v *IMAPFacts) Describe() facts.Observation {
 	details := Details{IMAP: v}
 	action := ""
 	if slices.Contains(strings.Fields("CAPABILITY CHECK ENABLE EXAMINE FETCH ID IDLE LIST LOGOUT LSUB NAMESPACE NOOP SEARCH SELECT STATUS UNSELECT"), v.Command) {
@@ -155,5 +197,5 @@ func (v *IMAPFacts) Describe() facts.Facts {
 		action = "organize"
 	}
 	op := &facts.Operation{Action: action}
-	return facts.Facts{Operation: op, Title: v.Command + " " + v.Mailbox, Parameters: map[string]any{"mailbox": v.Mailbox, "args": v.Args}, Details: details}
+	return facts.Observation{Operation: op, Title: v.Command + " " + v.Mailbox, Parameters: map[string]any{"mailbox": v.Mailbox, "args": v.Args}, Details: details}
 }

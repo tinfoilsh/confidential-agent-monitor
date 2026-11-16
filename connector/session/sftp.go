@@ -3,42 +3,31 @@ package session
 import (
 	"bytes"
 	"cmp"
+	"context"
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"path"
 	"strings"
 	"unicode/utf8"
 
-	"github.com/tinfoilsh/monitor/connector"
-	"github.com/tinfoilsh/monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"golang.org/x/crypto/ssh"
 )
 
-var SFTPKind = connector.Kind{UsesHostKey: true, Parse: parseSFTP, New: func() connector.Server { return new(SFTP) }}
-
-// SFTP terminates the SSH subsystem and mediates SFTP v3 requests. Root is
-// presented as / to clients. Use a server-side chroot when other writers can
-// replace upstream directories concurrently with path resolution.
-type sftpSetup struct {
-	sshSetup
+type SFTP struct {
+	SSH
 	Root string `json:"root"`
 }
 
-const maxSFTPPacket = 1 << 20
-
-func parseSFTP(source connector.Setup) (connector.Prepared, error) {
-	c := new(sftpSetup)
-	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
-		return connector.Prepared{}, err
-	}
-	return connector.Prepared{Value: c, SecretNames: []string{"key"}, Routes: []string{c.Host}}, nil
+func ParseSFTP(config json.RawMessage) (*SFTP, error) {
+	t := new(SFTP)
+	return t, facts.DecodeNumbers(config, t)
 }
 
-type SFTP struct{ connector.Slot[sftpSetup] }
-
-// SFTP v3 packet types and status codes, from draft-ietf-secsh-filexfer-02.
 const (
 	sftpVersion = 3
 
@@ -74,13 +63,16 @@ const (
 	fxOpUnsupported    = 8
 )
 
-func (owner *SFTP) Serve(s *connector.Stream, e *connector.Env) {
-	t, ok := owner.Load()
-	if !ok {
-		return
-	}
+type SFTPLimits struct{ Packet, Handles int }
 
-	t.serve(s, e, func(up *ssh.Client, nc ssh.NewChannel) {
+func (t *SFTP) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), config *ssh.ServerConfig, key func(context.Context) (string, error), limits SFTPLimits) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+	return func(ctx context.Context, conn net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+		t.serveSFTP(newStream(ctx, conn, gate), config, upstream{dial, key}, limits)
+	}
+}
+
+func (t *SFTP) serveSFTP(s *stream, config *ssh.ServerConfig, u upstream, limits SFTPLimits) {
+	t.serve(s, config, u, func(up *ssh.Client, nc ssh.NewChannel) {
 		ch, requests, err := nc.Accept()
 		if err != nil {
 			return
@@ -118,7 +110,7 @@ func (owner *SFTP) Serve(s *connector.Stream, e *connector.Env) {
 				r.Reply(true, nil)
 			}
 			go ssh.DiscardRequests(requests)
-			p := sftpProxy{up: reader, out: writer, check: func(r *SFTPFacts) error { return s.Gate(s.Context, t.Capture(r.Describe())) }, handles: map[string]*sftpHandle{}}
+			p := sftpProxy{up: reader, out: writer, limits: limits, check: func(r *SFTPFacts) error { return s.gate(s.ctx, facts.Capture(r.Describe(), nil)) }, handles: map[string]*sftpHandle{}}
 			p.serve(ch, cmp.Or(t.Root, "/"))
 			return
 		}
@@ -132,6 +124,7 @@ type sftpHandle struct {
 }
 
 type sftpProxy struct {
+	limits  SFTPLimits
 	up      io.Reader
 	out     io.Writer
 	check   func(*SFTPFacts) error
@@ -141,13 +134,13 @@ type sftpProxy struct {
 	broken  bool
 }
 
-func sftpRead(r io.Reader) ([]byte, error) {
+func sftpRead(r io.Reader, limit int) ([]byte, error) {
 	var head [4]byte
 	if _, err := io.ReadFull(r, head[:]); err != nil {
 		return nil, err
 	}
 	n := binary.BigEndian.Uint32(head[:])
-	if n == 0 || n > maxSFTPPacket {
+	if n == 0 || n > uint32(limit) {
 		return nil, errors.New("invalid SFTP packet length")
 	}
 	b := make([]byte, n)
@@ -229,7 +222,7 @@ func (p *sftpProxy) rpc(b []byte) ([]byte, error) {
 		p.broken = true
 		return nil, err
 	}
-	r, err := sftpRead(p.up)
+	r, err := sftpRead(p.up, p.limits.Packet)
 	if err != nil {
 		p.broken = true
 		return nil, err
@@ -261,7 +254,7 @@ func (p *sftpProxy) realpath(name string) (string, error) {
 }
 
 func (p *sftpProxy) serve(client io.ReadWriter, root string) error {
-	init, err := sftpRead(client)
+	init, err := sftpRead(client, p.limits.Packet)
 	if err != nil {
 		return err
 	}
@@ -271,7 +264,7 @@ func (p *sftpProxy) serve(client io.ReadWriter, root string) error {
 	if err := sftpWrite(p.out, []byte{fxpInit, 0, 0, 0, sftpVersion}); err != nil {
 		return err
 	}
-	version, err := sftpRead(p.up)
+	version, err := sftpRead(p.up, p.limits.Packet)
 	if err != nil {
 		return err
 	}
@@ -286,12 +279,11 @@ func (p *sftpProxy) serve(client io.ReadWriter, root string) error {
 	if err != nil {
 		return err
 	}
-	// Do not advertise upstream extensions that bypass the request checks.
 	if err := sftpWrite(client, []byte{fxpVersion, 0, 0, 0, sftpVersion}); err != nil {
 		return err
 	}
 	for {
-		b, err := sftpRead(client)
+		b, err := sftpRead(client, p.limits.Packet)
 		if err != nil {
 			return err
 		}
@@ -312,8 +304,6 @@ func (p *sftpProxy) serve(client io.ReadWriter, root string) error {
 	}
 }
 
-// Resolve existing objects, or their parent for entry operations such as remove
-// and rename. A symlink cannot move a checked path outside the account root.
 func (p *sftpProxy) resolve(name string, entry, create bool) (string, error) {
 	if !utf8.ValidString(name) || strings.ContainsRune(name, 0) {
 		return "", errors.New("invalid path")
@@ -329,8 +319,6 @@ func (p *sftpProxy) resolve(name string, entry, create bool) (string, error) {
 	return resolved, nil
 }
 
-// Some SFTP servers only clean REALPATH lexically. Resolve each component with
-// LSTAT and READLINK rather than treating that response as proof of containment.
 func (p *sftpProxy) canonical(name string, entry, create bool) (string, error) {
 	for links := 0; links <= 40; links++ {
 		parts := strings.Split(strings.TrimPrefix(path.Clean(name), "/"), "/")
@@ -443,7 +431,7 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 		switch b[0] {
 		case fxpRead:
 			e.Offset, e.Size = d.u64(), d.u32()
-			if !h.read || h.directory || e.Size > maxSFTPPacket-9 {
+			if !h.read || h.directory || e.Size > uint32(p.limits.Packet-9) {
 				d.err = true
 			}
 		case fxpWrite:
@@ -466,13 +454,12 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 	if d.err || len(d.b) != 0 {
 		return sftpStatus(id, fxBadMessage, "malformed SFTP request"), nil
 	}
-	if (b[0] == fxpOpen || b[0] == fxpOpendir) && len(p.handles) >= 1024 {
+	if (b[0] == fxpOpen || b[0] == fxpOpendir) && len(p.handles) >= p.limits.Handles {
 		return sftpStatus(id, fxFailure, "too many open handles"), nil
 	}
 	if h != nil {
 		name = h.path
 	} else {
-		// Check the requested name before resolving it, then the canonical name.
 		e.Path = path.Clean("/" + name)
 		if target != "" {
 			e.Target = path.Clean("/" + target)
@@ -548,7 +535,7 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 	return r, nil
 }
 
-func (v *SFTPFacts) Describe() facts.Facts {
+func (v *SFTPFacts) Describe() facts.Observation {
 	details := Details{SFTP: v}
 	action := map[string]string{
 		"read": "read", "stat": "read", "lstat": "read", "fstat": "read", "opendir": "read", "readdir": "read", "realpath": "read",
@@ -569,5 +556,5 @@ func (v *SFTPFacts) Describe() facts.Facts {
 	delete(scope, "offset")
 	delete(scope, "size")
 	op := &facts.Operation{ID: v.Command, Action: action}
-	return facts.Facts{Operation: op, Title: "SFTP " + v.Command + " " + v.Path, Parameters: scope, Details: details}
+	return facts.Observation{Operation: op, Title: "SFTP " + v.Command + " " + v.Path, Parameters: scope, Details: details}
 }

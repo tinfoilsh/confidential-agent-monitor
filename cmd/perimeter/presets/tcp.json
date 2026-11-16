@@ -1,0 +1,34 @@
+{
+  "title": "General network access",
+  "catalog": {
+    "group": "generic",
+    "warning": "The Perimeter can see where a bunker connects (host and port) but not what it sends.",
+    "actions": {
+      "connect": {
+        "title": "Connect and exchange data",
+        "effects": ["read", "send"]
+      }
+    },
+    "connection": { "tcp": { "hosts": ["*"] } },
+    "fields": [
+      {
+        "key": "hosts",
+        "label": "Hosts",
+        "list": true,
+        "default": ["*"],
+        "hint": "example.com, *.example.com, or * for all hosts",
+        "help": "Hostnames or wildcard patterns.",
+        "path": ["tcp", "hosts"]
+      },
+      {
+        "key": "ports",
+        "label": "Ports",
+        "list": true,
+        "number": true,
+        "hint": "22, 8080",
+        "help": "Leave empty to allow all ports.",
+        "path": ["tcp", "ports"]
+      }
+    ]
+  }
+}

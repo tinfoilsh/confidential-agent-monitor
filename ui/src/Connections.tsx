@@ -1161,7 +1161,7 @@ function Connection(props: { name: string }) {
                   name={name}
                   connection={props.name}
                   title={name}
-                  alwaysOpen
+                  defaultOpen
                 />
               )}
             </For>

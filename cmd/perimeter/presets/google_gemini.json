@@ -1,0 +1,310 @@
+{
+  "catalog": {
+    "actions": {
+      "auth_tokens": {
+        "title": "Auth tokens"
+      },
+      "auth_tokens.generate": {
+        "title": "Generate"
+      },
+      "batches": {
+        "title": "Batches"
+      },
+      "batches.delete": {
+        "title": "Delete"
+      },
+      "batches.generate": {
+        "title": "Generate"
+      },
+      "batches.read": {
+        "title": "Read"
+      },
+      "cached_contents": {
+        "title": "Cached contents"
+      },
+      "cached_contents.delete": {
+        "title": "Delete"
+      },
+      "cached_contents.generate": {
+        "title": "Generate"
+      },
+      "cached_contents.read": {
+        "title": "Read"
+      },
+      "cached_contents.write": {
+        "title": "Create and edit"
+      },
+      "corpora": {
+        "title": "Corpora"
+      },
+      "corpora.delete": {
+        "title": "Delete"
+      },
+      "corpora.generate": {
+        "title": "Generate"
+      },
+      "corpora.operations": {
+        "title": "Operations"
+      },
+      "corpora.operations.read": {
+        "title": "Read"
+      },
+      "corpora.permissions": {
+        "title": "Permissions"
+      },
+      "corpora.permissions.delete": {
+        "title": "Delete"
+      },
+      "corpora.permissions.read": {
+        "title": "Read"
+      },
+      "corpora.permissions.share": {
+        "title": "Share"
+      },
+      "corpora.read": {
+        "title": "Read"
+      },
+      "dynamic": {
+        "title": "Dynamic"
+      },
+      "dynamic.generate": {
+        "title": "Generate"
+      },
+      "environments": {
+        "title": "Environments"
+      },
+      "environments.delete": {
+        "title": "Delete"
+      },
+      "environments.files": {
+        "title": "Files"
+      },
+      "environments.files.read": {
+        "title": "Read"
+      },
+      "environments.files.write": {
+        "title": "Create and edit"
+      },
+      "environments.generate": {
+        "title": "Generate"
+      },
+      "environments.read": {
+        "title": "Read"
+      },
+      "file_search_stores": {
+        "title": "File search stores"
+      },
+      "file_search_stores.delete": {
+        "title": "Delete"
+      },
+      "file_search_stores.documents": {
+        "title": "Documents"
+      },
+      "file_search_stores.documents.delete": {
+        "title": "Delete"
+      },
+      "file_search_stores.documents.read": {
+        "title": "Read"
+      },
+      "file_search_stores.generate": {
+        "title": "Generate"
+      },
+      "file_search_stores.operations": {
+        "title": "Operations"
+      },
+      "file_search_stores.operations.read": {
+        "title": "Read"
+      },
+      "file_search_stores.read": {
+        "title": "Read"
+      },
+      "files": {
+        "title": "Files"
+      },
+      "files.delete": {
+        "title": "Delete"
+      },
+      "files.generate": {
+        "title": "Generate"
+      },
+      "files.read": {
+        "title": "Read"
+      },
+      "generated_files": {
+        "title": "Generated files"
+      },
+      "generated_files.operations": {
+        "title": "Operations"
+      },
+      "generated_files.operations.read": {
+        "title": "Read"
+      },
+      "generated_files.read": {
+        "title": "Read"
+      },
+      "models": {
+        "title": "Models"
+      },
+      "models.generate": {
+        "title": "Generate"
+      },
+      "models.operations": {
+        "title": "Operations"
+      },
+      "models.operations.read": {
+        "title": "Read"
+      },
+      "models.read": {
+        "title": "Read"
+      },
+      "tuned_models": {
+        "title": "Tuned models"
+      },
+      "tuned_models.delete": {
+        "title": "Delete"
+      },
+      "tuned_models.generate": {
+        "title": "Generate"
+      },
+      "tuned_models.operations": {
+        "title": "Operations"
+      },
+      "tuned_models.operations.read": {
+        "title": "Read"
+      },
+      "tuned_models.pay": {
+        "title": "Make payments"
+      },
+      "tuned_models.permissions": {
+        "title": "Permissions"
+      },
+      "tuned_models.permissions.delete": {
+        "title": "Delete"
+      },
+      "tuned_models.permissions.read": {
+        "title": "Read"
+      },
+      "tuned_models.permissions.share": {
+        "title": "Share"
+      },
+      "tuned_models.read": {
+        "title": "Read"
+      },
+      "tuned_models.write": {
+        "title": "Create and edit"
+      }
+    },
+    "connection": {
+      "http": {
+        "slots": [
+          {
+            "header": "X-Goog-Api-Key",
+            "origin": "https://generativelanguage.googleapis.com",
+            "path": "/v1beta",
+            "value": "api_key"
+          }
+        ]
+      }
+    },
+    "fields": [
+      {
+        "key": "api_key",
+        "label": "Gemini API key (Google AI Studio)",
+        "credential": true,
+        "secret": true
+      }
+    ],
+    "group": "api"
+  },
+  "title": "Google Gemini",
+  "http": {
+    "operations": {
+      "auth_tokens.create": {"action":"auth_tokens.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/auth_tokens","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "batches.cancel": {"action":"batches.generate","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/batches/{batchesId}:cancel","scope":{"batchesId":{"at":"batchesId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "batches.delete": {"action":"batches.delete","effects":["delete"],"method":"DELETE","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/batches/{batchesId}","scope":{"batchesId":{"at":"batchesId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "batches.get": {"action":"batches.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/batches/{batchesId}","scope":{"batchesId":{"at":"batchesId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "batches.list": {"action":"batches.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken","returnPartialSuccess"],"path":"/v1beta/batches","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "batches.updateEmbedContentBatch": {"action":"batches.generate","body":"json","effects":["generate","pay","send"],"method":"PATCH","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/batches/{batchesId}:updateEmbedContentBatch","scope":{"batchesId":{"at":"batchesId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "batches.updateGenerateContentBatch": {"action":"batches.generate","body":"json","effects":["generate","pay","send"],"method":"PATCH","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/batches/{batchesId}:updateGenerateContentBatch","scope":{"batchesId":{"at":"batchesId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "cachedContents.create": {"action":"cached_contents.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/cachedContents","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "cachedContents.delete": {"action":"cached_contents.delete","effects":["delete"],"method":"DELETE","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/cachedContents/{cachedContentsId}","scope":{"cachedContentsId":{"at":"cachedContentsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "cachedContents.get": {"action":"cached_contents.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/cachedContents/{cachedContentsId}","scope":{"cachedContentsId":{"at":"cachedContentsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "cachedContents.list": {"action":"cached_contents.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/cachedContents","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "cachedContents.patch": {"action":"cached_contents.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/cachedContents/{cachedContentsId}","scope":{"cachedContentsId":{"at":"cachedContentsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "corpora.create": {"action":"corpora.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/corpora","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "corpora.delete": {"action":"corpora.delete","effects":["delete"],"method":"DELETE","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","force"],"path":"/v1beta/corpora/{corporaId}","scope":{"corporaId":{"at":"corporaId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "corpora.get": {"action":"corpora.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/corpora/{corporaId}","scope":{"corporaId":{"at":"corporaId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "corpora.list": {"action":"corpora.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/corpora","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "corpora.operations.get": {"action":"corpora.operations.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/corpora/{corporaId}/operations/{operationsId}","scope":{"corporaId":{"at":"corporaId","from":"path"},"operationsId":{"at":"operationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "corpora.permissions.create": {"action":"corpora.permissions.share","body":"json","effects":["share"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/corpora/{corporaId}/permissions","scope":{"corporaId":{"at":"corporaId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "corpora.permissions.delete": {"action":"corpora.permissions.delete","effects":["delete"],"method":"DELETE","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/corpora/{corporaId}/permissions/{permissionsId}","scope":{"corporaId":{"at":"corporaId","from":"path"},"permissionsId":{"at":"permissionsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "corpora.permissions.get": {"action":"corpora.permissions.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/corpora/{corporaId}/permissions/{permissionsId}","scope":{"corporaId":{"at":"corporaId","from":"path"},"permissionsId":{"at":"permissionsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "corpora.permissions.list": {"action":"corpora.permissions.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/corpora/{corporaId}/permissions","scope":{"corporaId":{"at":"corporaId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "corpora.permissions.patch": {"action":"corpora.permissions.share","body":"json","effects":["share"],"method":"PATCH","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/corpora/{corporaId}/permissions/{permissionsId}","scope":{"corporaId":{"at":"corporaId","from":"path"},"permissionsId":{"at":"permissionsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "dynamic.generateContent": {"action":"dynamic.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/dynamic/{dynamicId}:generateContent","scope":{"dynamicId":{"at":"dynamicId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "dynamic.streamGenerateContent": {"action":"dynamic.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/dynamic/{dynamicId}:streamGenerateContent","scope":{"dynamicId":{"at":"dynamicId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "environments.create": {"action":"environments.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/environments:create","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "environments.delete": {"action":"environments.delete","effects":["delete"],"method":"DELETE","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/environments/{id}:delete","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "environments.files.media.download": {"action":"environments.files.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","page_size","page_token","path","recursive"],"path":"/v1beta/environments/{environmentsId}/files","scope":{"environmentsId":{"at":"environmentsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "environments.files.media.upload": {"action":"environments.files.write","body":"json","effects":["write"],"method":"PUT","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/environments/{environmentsId}/files/{filesId}","scope":{"environmentsId":{"at":"environmentsId","from":"path"},"filesId":{"at":"filesId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "environments.get": {"action":"environments.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/environments/{id}:get","scope":{"id":{"at":"id","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "environments.list": {"action":"environments.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/environments:list","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "fileSearchStores.create": {"action":"file_search_stores.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/fileSearchStores","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "fileSearchStores.delete": {"action":"file_search_stores.delete","effects":["delete"],"method":"DELETE","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","force"],"path":"/v1beta/fileSearchStores/{fileSearchStoresId}","scope":{"fileSearchStoresId":{"at":"fileSearchStoresId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "fileSearchStores.documents.delete": {"action":"file_search_stores.documents.delete","effects":["delete"],"method":"DELETE","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","force"],"path":"/v1beta/fileSearchStores/{fileSearchStoresId}/documents/{documentsId}","scope":{"documentsId":{"at":"documentsId","from":"path"},"fileSearchStoresId":{"at":"fileSearchStoresId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "fileSearchStores.documents.get": {"action":"file_search_stores.documents.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/fileSearchStores/{fileSearchStoresId}/documents/{documentsId}","scope":{"documentsId":{"at":"documentsId","from":"path"},"fileSearchStoresId":{"at":"fileSearchStoresId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "fileSearchStores.documents.list": {"action":"file_search_stores.documents.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/fileSearchStores/{fileSearchStoresId}/documents","scope":{"fileSearchStoresId":{"at":"fileSearchStoresId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "fileSearchStores.get": {"action":"file_search_stores.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/fileSearchStores/{fileSearchStoresId}","scope":{"fileSearchStoresId":{"at":"fileSearchStoresId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "fileSearchStores.importFile": {"action":"file_search_stores.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/fileSearchStores/{fileSearchStoresId}:importFile","scope":{"fileSearchStoresId":{"at":"fileSearchStoresId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "fileSearchStores.list": {"action":"file_search_stores.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/fileSearchStores","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "fileSearchStores.operations.get": {"action":"file_search_stores.operations.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/fileSearchStores/{fileSearchStoresId}/operations/{operationsId}","scope":{"fileSearchStoresId":{"at":"fileSearchStoresId","from":"path"},"operationsId":{"at":"operationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "fileSearchStores.upload.operations.get": {"action":"file_search_stores.operations.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/fileSearchStores/{fileSearchStoresId}/upload/operations/{operationsId}","scope":{"fileSearchStoresId":{"at":"fileSearchStoresId","from":"path"},"operationsId":{"at":"operationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "files.delete": {"action":"files.delete","effects":["delete"],"method":"DELETE","origin":"https://generativelanguage.googleapis.com","path":"/v1beta/files/{file}","query":{"key":null},"scope":{"file":{"at":"file","from":"path"}}},
+      "files.get": {"action":"files.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","path":"/v1beta/files/{file}","query":{"key":null},"scope":{"file":{"at":"file","from":"path"}}},
+      "files.list": {"action":"files.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["pageSize","pageToken"],"path":"/v1beta/files","query":{"key":null},"scope":{}},
+      "files.register": {"action":"files.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/files:register","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "generatedFiles.list": {"action":"generated_files.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/generatedFiles","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "generatedFiles.operations.get": {"action":"generated_files.operations.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/generatedFiles/{generatedFilesId}/operations/{operationsId}","scope":{"generatedFilesId":{"at":"generatedFilesId","from":"path"},"operationsId":{"at":"operationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "media.upload": {"action":"files.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/files","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "media.uploadToFileSearchStore": {"action":"file_search_stores.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/fileSearchStores/{fileSearchStoresId}:uploadToFileSearchStore","scope":{"fileSearchStoresId":{"at":"fileSearchStoresId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "models.asyncBatchEmbedContent": {"action":"models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/models/{modelsId}:asyncBatchEmbedContent","scope":{"modelsId":{"at":"modelsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "models.batchEmbedContents": {"action":"models.generate","body":"json","effects":["generate","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","path":"/v1beta/models/{model}:batchEmbedContents","query":{"key":null},"scope":{"model":{"at":"model","from":"path"}}},
+      "models.batchEmbedText": {"action":"models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/models/{modelsId}:batchEmbedText","scope":{"modelsId":{"at":"modelsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "models.batchGenerateContent": {"action":"models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/models/{modelsId}:batchGenerateContent","scope":{"modelsId":{"at":"modelsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "models.countMessageTokens": {"action":"models.read","body":"json","effects":["read"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/models/{modelsId}:countMessageTokens","scope":{"modelsId":{"at":"modelsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "models.countTextTokens": {"action":"models.read","body":"json","effects":["read"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/models/{modelsId}:countTextTokens","scope":{"modelsId":{"at":"modelsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "models.countTokens": {"action":"models.generate","body":"json","effects":["send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","path":"/v1beta/models/{model}:countTokens","query":{"key":null},"scope":{"model":{"at":"model","from":"path"}}},
+      "models.embedContent": {"action":"models.generate","body":"json","effects":["generate","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","path":"/v1beta/models/{model}:embedContent","query":{"key":null},"scope":{"model":{"at":"model","from":"path"}}},
+      "models.embedText": {"action":"models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/models/{modelsId}:embedText","scope":{"modelsId":{"at":"modelsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "models.generateAnswer": {"action":"models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/models/{modelsId}:generateAnswer","scope":{"modelsId":{"at":"modelsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "models.generateContent": {"action":"models.generate","body":"json","effects":["generate","send"],"fields":{"/cachedContent":null,"/toolConfig":null,"/tools":null},"method":"POST","origin":"https://generativelanguage.googleapis.com","path":"/v1beta/models/{model}:generateContent","query":{"key":null},"scope":{"model":{"at":"model","from":"path"}}},
+      "models.generateMessage": {"action":"models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/models/{modelsId}:generateMessage","scope":{"modelsId":{"at":"modelsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "models.generateText": {"action":"models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/models/{modelsId}:generateText","scope":{"modelsId":{"at":"modelsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "models.get": {"action":"models.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","path":"/v1beta/models/{model}","query":{"key":null},"scope":{"model":{"at":"model","from":"path"}}},
+      "models.list": {"action":"models.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["pageSize","pageToken"],"path":"/v1beta/models","query":{"key":null},"scope":{}},
+      "models.operations.get": {"action":"models.operations.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/models/{modelsId}/operations/{operationsId}","scope":{"modelsId":{"at":"modelsId","from":"path"},"operationsId":{"at":"operationsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "models.operations.list": {"action":"models.operations.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken","returnPartialSuccess"],"path":"/v1beta/models/{modelsId}/operations","scope":{"modelsId":{"at":"modelsId","from":"path"},"query":{"at":"","from":"query","type":"object"}}},
+      "models.predict": {"action":"models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/models/{modelsId}:predict","scope":{"modelsId":{"at":"modelsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "models.predictLongRunning": {"action":"models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/models/{modelsId}:predictLongRunning","scope":{"modelsId":{"at":"modelsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "models.streamGenerateContent": {"action":"models.generate","body":"json","effects":["generate","send"],"fields":{"/cachedContent":null,"/toolConfig":null,"/tools":null},"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["alt"],"path":"/v1beta/models/{model}:streamGenerateContent","query":{"key":null},"scope":{"model":{"at":"model","from":"path"}}},
+      "tunedModels.asyncBatchEmbedContent": {"action":"tuned_models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/tunedModels/{tunedModelsId}:asyncBatchEmbedContent","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.batchGenerateContent": {"action":"tuned_models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/tunedModels/{tunedModelsId}:batchGenerateContent","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.create": {"action":"tuned_models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","tunedModelId"],"path":"/v1beta/tunedModels","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"}}},
+      "tunedModels.delete": {"action":"tuned_models.delete","effects":["delete"],"method":"DELETE","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/tunedModels/{tunedModelsId}","scope":{"query":{"at":"","from":"query","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.generateContent": {"action":"tuned_models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/tunedModels/{tunedModelsId}:generateContent","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.generateText": {"action":"tuned_models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/tunedModels/{tunedModelsId}:generateText","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.get": {"action":"tuned_models.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/tunedModels/{tunedModelsId}","scope":{"query":{"at":"","from":"query","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.list": {"action":"tuned_models.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken"],"path":"/v1beta/tunedModels","scope":{"query":{"at":"","from":"query","type":"object"}}},
+      "tunedModels.operations.get": {"action":"tuned_models.operations.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/tunedModels/{tunedModelsId}/operations/{operationsId}","scope":{"operationsId":{"at":"operationsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.operations.list": {"action":"tuned_models.operations.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","filter","pageSize","pageToken","returnPartialSuccess"],"path":"/v1beta/tunedModels/{tunedModelsId}/operations","scope":{"query":{"at":"","from":"query","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.patch": {"action":"tuned_models.write","body":"json","effects":["write"],"method":"PATCH","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/tunedModels/{tunedModelsId}","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.permissions.create": {"action":"tuned_models.permissions.share","body":"json","effects":["share"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/tunedModels/{tunedModelsId}/permissions","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.permissions.delete": {"action":"tuned_models.permissions.delete","effects":["delete"],"method":"DELETE","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/tunedModels/{tunedModelsId}/permissions/{permissionsId}","scope":{"permissionsId":{"at":"permissionsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.permissions.get": {"action":"tuned_models.permissions.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/tunedModels/{tunedModelsId}/permissions/{permissionsId}","scope":{"permissionsId":{"at":"permissionsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.permissions.list": {"action":"tuned_models.permissions.read","effects":["read"],"method":"GET","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","pageSize","pageToken"],"path":"/v1beta/tunedModels/{tunedModelsId}/permissions","scope":{"query":{"at":"","from":"query","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.permissions.patch": {"action":"tuned_models.permissions.share","body":"json","effects":["share"],"method":"PATCH","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol","updateMask"],"path":"/v1beta/tunedModels/{tunedModelsId}/permissions/{permissionsId}","scope":{"permissionsId":{"at":"permissionsId","from":"path"},"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.streamGenerateContent": {"action":"tuned_models.generate","body":"json","effects":["generate","pay","send"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/tunedModels/{tunedModelsId}:streamGenerateContent","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}},
+      "tunedModels.transferOwnership": {"action":"tuned_models.pay","body":"json","effects":["pay"],"method":"POST","origin":"https://generativelanguage.googleapis.com","params":["$.xgafv","alt","callback","fields","prettyPrint","quotaUser","uploadType","upload_protocol"],"path":"/v1beta/tunedModels/{tunedModelsId}:transferOwnership","scope":{"query":{"at":"","from":"query","type":"object"},"request":{"at":"","from":"body","type":"object"},"tunedModelsId":{"at":"tunedModelsId","from":"path"}}}
+    }
+  }
+}

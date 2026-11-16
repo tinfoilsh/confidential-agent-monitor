@@ -1,4 +1,4 @@
-module github.com/tinfoilsh/monitor/dev/presets
+module github.com/tinfoilsh/confidential-agent-monitor/dev/presets
 
 go 1.27.1
 

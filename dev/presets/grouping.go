@@ -13,8 +13,6 @@ var groupWord = regexp.MustCompile(`[^a-z0-9_]+`)
 var groupPath = regexp.MustCompile(`^[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*$`)
 var groupVersion = regexp.MustCompile(`^(v?[0-9]+([.][0-9]+)*[a-z]*|[0-9]{4}-[0-9]{2}-[0-9]{2})$`)
 
-// These are exact words, not prefixes: settings, subscriptions and releases
-// are resources even though their names start with verbs.
 var groupVerbs = strings.Fields("get list read search query find create add update edit set put patch post delete remove cancel confirm approve reject archive unarchive close reopen merge lock unlock move copy rename restore enable disable send publish unpublish start stop restart retry resume pause abort run rerun execute trigger invoke dispatch deploy test verify validate check import export upload download accept transfer duplicate clone sync subscribe unsubscribe follow unfollow star unstar pin unpin mute unmute block unblock join leave invite share revoke grant reset regenerate rotate attach detach batch")
 
 func groupName(s string) string {
@@ -32,9 +30,6 @@ func resourceWords(s string) string {
 	return strings.Join(parts, "_")
 }
 
-// actionResource keeps the enclosing resources, so repo/org hooks and
-// deployment/commit statuses cannot acquire the same permission by accident.
-// RPC fields and source categories cover APIs without a resource-shaped URL.
 func actionResource(o specOp) string {
 	if o.Resource != "" {
 		return o.Resource
@@ -79,9 +74,6 @@ func groupedAction(o specOp, verb string) string {
 	return actionResource(o) + "." + verb
 }
 
-// Several APIs use the same parameterized route for unrelated resource types.
-// Prefer the source operation's identity, then the first matching route. Use
-// the same selection for shipped grouping and candidate generation.
 func groupHints(ops []map[string]any, p parsed, provider string) map[string]specOp {
 	hints := map[string]specOp{}
 	for _, op := range ops {
@@ -124,8 +116,6 @@ func addActionParents(actions map[string]any, action string) {
 	}
 }
 
-// groupRecord changes only action names and their catalog. Effects, request
-// constraints and approval scopes remain on the individual operations.
 func groupRecord(record map[string]any, hints map[string]specOp) int {
 	catalog := record["catalog"].(map[string]any)
 	oldActions, _ := catalog["actions"].(map[string]any)
@@ -133,8 +123,6 @@ func groupRecord(record map[string]any, hints map[string]specOp) int {
 	if len(ops) == 0 {
 		return 0
 	}
-	// Actions described by a connector have effects in the catalog. Keep those
-	// roots and their descendants, including GitHub's Git/GraphQL/MCP controls.
 	actions := map[string]any{}
 	for name, meta := range oldActions {
 		for parent, value := range oldActions {
@@ -160,8 +148,6 @@ func groupRecord(record map[string]any, hints map[string]specOp) int {
 		case []string:
 			verb = effects[0]
 		}
-		// Reviewed GitHub actions distinguish pushing/merging/commenting even
-		// though each has a write effect. Retain those meaningful verbs.
 		parts := strings.Split(old, ".")
 		verbs := append(slices.Clone(effectOrder), "session", "open", "comment", "merge", "push", "use")
 		if strings.HasPrefix(old, actionResource(o)+".") && slices.Contains(verbs, parts[len(parts)-1]) {
@@ -184,9 +170,6 @@ func groupRecord(record map[string]any, hints map[string]specOp) int {
 	return changed
 }
 
-// groupShipped regroups only existing operations. It never promotes source
-// additions or depends on a network refresh. Unavailable specs use the shipped
-// route and field names; native/MCP presets retain their small action catalogs.
 func groupShipped(only []string) error {
 	sources, err := load[map[string]source](sourcesPath)
 	if err != nil {
