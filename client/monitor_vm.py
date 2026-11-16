@@ -1015,10 +1015,10 @@ def setup_launch(args):
             None, "Service access, comma-separated name=read|ask|allow", "").split(",") if item.strip()]
         access = {}
         for item in access_spec:
-            name, sep, level = item.partition("=")
-            if not sep or name not in connections or level not in ("read", "ask", "allow"):
+            service, sep, level = item.partition("=")
+            if not sep or service not in connections or level not in ("read", "ask", "allow"):
                 raise Error(f"invalid service access {item!r}; use an existing service and read, ask or allow")
-            access[name] = {"level": level}
+            access[service] = {"level": level}
         if args.tinfoil:
             pair_computer(owner, view, endpoint, root)
         if key:
