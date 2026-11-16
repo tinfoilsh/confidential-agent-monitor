@@ -1241,8 +1241,19 @@ export function grantTemplate(
     for (const c of clientFields(view, name))
       values[c.key] = client[c.key] || fieldText(c, c.default);
   const grant =
-    f?.oauth && filled(f.oauth, { ...values, monitor_host_id: view.host_id });
-  return grant && !/\{\w+\}/.test(JSON.stringify(grant)) ? grant : undefined;
+    f?.oauth &&
+    (filled(f.oauth, { ...values, monitor_host_id: view.host_id }) as {
+      [key: string]: Json;
+    });
+  // An authorization URL needs a client ID unless the preset supplies or registers one.
+  return grant &&
+    !/\{\w+\}/.test(JSON.stringify(grant)) &&
+    (grant.client_id ||
+      grant.default_client ||
+      grant.callback_registration ||
+      !grant.auth_url)
+    ? grant
+    : undefined;
 }
 
 // Kinds are connector/credential.Describe's: unset, static, oauth and oauth-required.
