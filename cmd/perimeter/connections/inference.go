@@ -30,8 +30,6 @@ import (
 	tinfoildoc "github.com/tinfoilsh/tinfoil-go/verify/document"
 )
 
-// Tinfoil inference: HTTP and MCP connectors to an attested enclave.
-
 const (
 	tinfoilKey             = "TINFOIL_API_KEY"
 	attestationTimeout     = 30 * time.Second
@@ -40,7 +38,6 @@ const (
 	countTokensUnsupported = "Tinfoil does not expose token counting"
 )
 
-// messageLimits bound the inference responses converted for Messages clients.
 var messageLimits = messages.Limits{ErrorBytes: 1 << 20, ResultBytes: 16 << 20, EventBytes: 8 << 20}
 
 type tinfoilSetup struct {
@@ -60,7 +57,6 @@ func tinfoilKeySlot(enclave string) slots.Slot {
 	return slots.Slot{Value: tinfoilKey, Origin: "https://" + enclave, Path: tinfoilAPIPath, Header: "Authorization", Prefix: "Bearer "}
 }
 
-// parseTinfoil reads an inference setup: the enclave's HTTP API, with its key in one fixed slot.
 func parseTinfoil(spec config.ConnectionSpec) (*tinfoilSetup, *web.Setup, slots.Set, error) {
 	t := new(tinfoilSetup)
 	if err := facts.DecodeNumbers(spec.Config, t); err != nil {
@@ -77,7 +73,6 @@ func parseTinfoil(spec config.ConnectionSpec) (*tinfoilSetup, *web.Setup, slots.
 	return t, setup, set, err
 }
 
-// parseTinfoilMCP reads an MCP setup whose HTTPS server is an attested enclave, and its repository.
 func parseTinfoilMCP(spec config.ConnectionSpec) (*mcp.Setup, string, error) {
 	var config struct {
 		mcp.Setup
@@ -93,8 +88,6 @@ func parseTinfoilMCP(spec config.ConnectionSpec) (*mcp.Setup, string, error) {
 	return &config.Setup, config.Repo, validateEnclave(u.Host, config.Repo)
 }
 
-// attest verifies the enclave before callers can send credentials or MCP discovery.
-// Inference and MCP share the same attestation, renewal and TLS key binding.
 func attest(ctx context.Context, h worker.Host, key, enclave, repo string, base *http.Transport) (*attestation.Transport, error) {
 	if !h.Configured(key) {
 		return nil, errors.New("Tinfoil API key is not configured")
@@ -118,7 +111,6 @@ func attest(ctx context.Context, h worker.Host, key, enclave, repo string, base 
 		}})
 }
 
-// open attests the enclave once per setup; its pool serves every stream and owner chat.
 func (t *tinfoilSetup) open(ctx context.Context, setup *web.Setup, h worker.Host) (worker.Instance, error) {
 	base := UpstreamTransport(h.Dial)
 	transport, err := attest(ctx, h, tinfoilKey, t.Enclave, t.Repo, base)
@@ -151,8 +143,6 @@ func (t *tinfoilSetup) open(ctx context.Context, setup *web.Setup, h worker.Host
 				if r.URL.Path != slot.Path && !strings.HasPrefix(r.URL.Path, slot.Path+"/") {
 					return nil, errors.New("Tinfoil API requests must use a " + slot.Path + " path")
 				}
-				// Put a public placeholder in the normal slot. The shared HTTP path
-				// captures the enclave target and resolves the key only after the gate.
 				placeholder := h.Placeholder(tinfoilKey)
 				if placeholder == "" {
 					return nil, errors.New("Tinfoil credential is unavailable")
@@ -172,8 +162,6 @@ func (t *tinfoilSetup) open(ctx context.Context, setup *web.Setup, h worker.Host
 	}}, nil
 }
 
-// apiTransport only adapts responses. Request normalization is complete before
-// the gate, and every upstream request uses the original attested transport.
 type apiTransport struct {
 	http.RoundTripper
 	messages    bool
@@ -183,8 +171,6 @@ type apiTransport struct {
 }
 
 func (t apiTransport) RoundTrip(r *http.Request) (*http.Response, error) {
-	// The deployed router has no token-count endpoint. Let Claude use its local
-	// estimate instead of making a billed completion disguised as token counting.
 	if t.countTokens {
 		return messages.Error(r, http.StatusNotImplemented, "not_supported_error", countTokensUnsupported), nil
 	}
@@ -195,8 +181,6 @@ func (t apiTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	return messages.Response(r, resp, t.model, t.streaming, messageLimits)
 }
 
-// prepareAPIRequest consumes the web parser's unambiguous JSON, normalizes the
-// deployed coding clients and leaves response conversion for after execution.
 func prepareAPIRequest(r *http.Request, original *web.HTTPFacts, transport http.RoundTripper) (http.RoundTripper, error) {
 	if r.Method != http.MethodPost {
 		return nil, nil
@@ -212,8 +196,6 @@ func prepareAPIRequest(r *http.Request, original *web.HTTPFacts, transport http.
 	}
 	response := apiTransport{RoundTripper: transport}
 	if r.URL.Path == "/v1/responses" {
-		// Codex 0.153.4 emits developer messages. Tinfoil's Responses backend
-		// accepts these instructions under the system role instead.
 		input, _ := body["input"].([]any)
 		for _, item := range input {
 			if message, ok := item.(map[string]any); ok && message["role"] == "developer" {
@@ -235,7 +217,6 @@ func prepareAPIRequest(r *http.Request, original *web.HTTPFacts, transport http.
 		r.URL.Path, r.URL.RawPath, r.URL.RawQuery = "/v1/chat/completions", "", ""
 		r.Header.Del("Anthropic-Version")
 		r.Header.Del("Anthropic-Beta")
-		// Response conversion reads uncompressed bytes, including streamed events.
 		r.Header.Set("Accept-Encoding", "identity")
 	}
 	raw, err := json.Marshal(body)

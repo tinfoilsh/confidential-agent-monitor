@@ -7,7 +7,6 @@ import (
 	"strings"
 )
 
-// The index summarizes saved reports; check validates that they are current.
 func writeCoverageIndex(sources map[string]source) error {
 	var out strings.Builder
 	out.WriteString("# Generated preset coverage\n\n")

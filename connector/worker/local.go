@@ -12,9 +12,6 @@ import (
 	"sync"
 )
 
-// Local starts worker processes on this machine, at most Limit at once. Command builds a process that
-// serves Serve on the listener it inherits as descriptor 3 with its configuration on standard input, and
-// reaches the host's broker at the given socket path; the command chooses the process's isolation.
 type Local struct {
 	Limit   int
 	Command func(broker string) (*exec.Cmd, error)
@@ -39,8 +36,6 @@ func unixDial(socket string) dialFunc {
 	}
 }
 
-// Start runs one process. It never decodes config. Its context covers installation
-// only; the returned Endpoint owns the process lifetime.
 func (m *Local) Start(ctx context.Context, config []byte, broker http.Handler) (Endpoint, error) {
 	if err := ctx.Err(); err != nil {
 		return Endpoint{}, err
@@ -85,7 +80,6 @@ func (m *Local) Start(ctx context.Context, config []byte, broker http.Handler) (
 		bl.Close()
 		return Endpoint{}, err
 	}
-	// Workers outlive setup requests.
 	childCtx, cancel := context.WithCancel(context.WithoutCancel(ctx))
 	brokerDone := make(chan struct{})
 	go func() { defer close(brokerDone); serveRPC(childCtx, bl, broker, m.Limits) }()
@@ -100,7 +94,6 @@ func (m *Local) Start(ctx context.Context, config []byte, broker http.Handler) (
 	done := make(chan struct{})
 	c := Endpoint{Context: childCtx, Dial: unixDial(apiPath), Done: done, Close: sync.OnceFunc(func() {
 		cancel()
-		// Killing the launcher also kills a sandbox's PID namespace.
 		cmd.Process.Kill()
 		bl.Close()
 	})}

@@ -34,31 +34,21 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// State: the encrypted document, its settings, records and admissions.
-
 const (
-	stateObject = "monitor.enc"
-	caName      = "perimeter dev CA"
-	caLifetime  = 10 * 365 * 24 * time.Hour
-	// Connection leaves are minted per handshake.
+	stateObject  = "monitor.enc"
+	caName       = "perimeter dev CA"
+	caLifetime   = 10 * 365 * 24 * time.Hour
 	leafLifetime = 24 * time.Hour
 	leafBackdate = time.Hour
 )
 
-// Settled records are batched into immutable segments named by upload time, so
-// storage credentials never need delete or overwrite access to the log.
 var auditLimits = sealedlog.Limits{FlushInterval: time.Minute, WriteTimeout: 30 * time.Second, SegmentBytes: 8 << 20, MaxBacklog: 64 << 20, PageRecords: 200}
 
 var errOwner error = httpError{format.ErrKey, http.StatusUnauthorized}
 
-// state is the running Perimeter. mu guards the document, records and admissions, and
-// approval waits release it; writes serializes settings preparation, commit, delivery and
-// final teardown. When both are needed, take writes before mu. The table's lock is taken
-// inside either. Everything unlock creates is nil while locked. Only this file takes mu or
-// writes; the others go through locked, stable and writeSettings.
 type state struct {
 	bucket     *blob.Bucket
-	life       context.Context // ends the audit log's flushing
+	life       context.Context
 	flushing   sync.WaitGroup
 	mu         sync.Mutex
 	writes     sync.Mutex
@@ -94,22 +84,18 @@ func (s *state) snapshot() (format.Document, *settings) {
 	return s.doc, s.settings.Load()
 }
 
-// locked runs fn under s.mu.
 func (s *state) locked(fn func()) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	fn()
 }
 
-// stable runs fn with the document and settings no settings write replaces before it returns.
 func stable[T any](s *state, fn func(format.Document, *settings) (T, error)) (T, error) {
 	s.writes.Lock()
 	defer s.writes.Unlock()
 	return fn(s.snapshot())
 }
 
-// writeSettings is the single ordered settings path. It holds s.writes throughout, and s.mu
-// around its checks and its commit.
 func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	s.writes.Lock()
 	defer s.writes.Unlock()
@@ -155,7 +141,6 @@ func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
 	return err
 }
 
-// commit changes the document only after the encrypted write succeeds.
 func (s *state) commit(ctx context.Context, next format.Document) error {
 	next.Generation++
 	plain, err := format.EncodeDocument(next)
@@ -169,8 +154,6 @@ func (s *state) commit(ctx context.Context, next format.Document) error {
 	return nil
 }
 
-// load reads the stored document with key, or starts one if storage confirms there is none and
-// no generation was saved. It changes nothing and rejects rollback below minimum.
 func (s *state) load(ctx context.Context, key []byte, minimum uint64) (format.Document, format.Sealer, bool, error) {
 	var doc format.Document
 	if len(key) < format.MinKeyBytes || len(key) > format.MaxKeyBytes {
@@ -205,7 +188,6 @@ func (s *state) load(ctx context.Context, key []byte, minimum uint64) (format.Do
 	return doc, sealer, missing, err
 }
 
-// v1Presets tells the version 1 upgrade which presets declare a connection.
 func v1Presets() map[string]bool {
 	declared := map[string]bool{}
 	for name, p := range presets {
@@ -214,10 +196,6 @@ func v1Presets() map[string]bool {
 	return declared
 }
 
-// stateMissing confirms that a failed read means no state exists. S3 hides missing
-// objects behind AccessDenied when ListBucket is scoped by prefix, so absence is
-// confirmed with an authorized prefix listing. A denied listing or an existing
-// unreadable object must never reset the state.
 func stateMissing(ctx context.Context, bucket *blob.Bucket, err error) (bool, error) {
 	switch gcerrors.Code(err) {
 	case gcerrors.NotFound:
@@ -240,7 +218,6 @@ func stateMissing(ctx context.Context, bucket *blob.Bucket, err error) (bool, er
 	return false, err
 }
 
-// stateExists reports whether state is stored; a failed probe is never absence.
 func stateExists(ctx context.Context, bucket *blob.Bucket) (bool, error) {
 	_, err := bucket.Attributes(ctx, stateObject)
 	if err == nil {
@@ -252,7 +229,6 @@ func stateExists(ctx context.Context, bucket *blob.Bucket) (bool, error) {
 
 func (s *state) isOwnerKey(key []byte) bool { return subtle.ConstantTimeCompare(key, s.owner) == 1 }
 
-// unlock reports whether it created the Perimeter's state.
 func (s *state) unlock(ctx context.Context, key []byte, minimum uint64) (bool, error) {
 	s.writes.Lock()
 	defer s.writes.Unlock()
@@ -338,7 +314,6 @@ func (s *state) bucketList(ctx context.Context, prefix, delimiter string) ([]str
 	}
 }
 
-// close stops connectors and waits for the audit log's final flush once life has ended.
 func (s *state) close() {
 	s.writes.Lock()
 	defer s.writes.Unlock()
@@ -346,8 +321,6 @@ func (s *state) close() {
 	s.flushing.Wait()
 }
 
-// isOwner reports whether key is a well-formed storage key and, once unlocked, the owner's.
-// While locked any well-formed key passes; only unlock can check a key then.
 func (s *state) isOwner(key []byte) bool {
 	if len(key) < format.MinKeyBytes || len(key) > format.MaxKeyBytes {
 		return false
@@ -357,7 +330,6 @@ func (s *state) isOwner(key []byte) bool {
 	return s.settings.Load() == nil || s.isOwnerKey(key)
 }
 
-// connectionTLS mints connection leaves from the stored CA, creating it if keys have none.
 func connectionTLS(keys *format.Keys) (*tls.Config, error) {
 	if keys.CACert == "" {
 		created, err := certificates.NewAuthority(caName, caLifetime)
@@ -375,7 +347,6 @@ func connectionTLS(keys *format.Keys) (*tls.Config, error) {
 	}}, nil
 }
 
-// storedHostKey is the stored SSH host key, created if keys have none.
 func storedHostKey(keys *format.Keys) (ssh.Signer, error) {
 	if keys.HostKey == "" {
 		_, private, err := ed25519.GenerateKey(rand.Reader)

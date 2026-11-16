@@ -1,4 +1,3 @@
-// Package rego compiles Rego modules and evaluates their named queries.
 package rego
 
 import (
@@ -15,12 +14,10 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-// Program compiles Rego modules and evaluates named queries, failing closed.
 type Program struct {
 	queries map[string]rego.PreparedEvalQuery
 }
 
-// Prepare compiles modules, named by filename, over data and prepares each named query.
 func Prepare(ctx context.Context, modules map[string]string, data map[string]any, queries map[string]string) (*Program, error) {
 	if data == nil {
 		data = map[string]any{}
@@ -44,7 +41,6 @@ func Prepare(ctx context.Context, modules map[string]string, data map[string]any
 	return p, nil
 }
 
-// Package returns the path of a module's package after data, such as ["a", "b"] for package a.b.
 func Package(filename, source string) ([]string, error) {
 	module, err := ast.ParseModule(filename, source)
 	if err != nil {
@@ -61,7 +57,6 @@ func Package(filename, source string) ([]string, error) {
 	return path, nil
 }
 
-// Eval decodes one named query's result into out. Missing and malformed decisions fail closed.
 func (p *Program) Eval(ctx context.Context, name string, input any, out any) error {
 	query, ok := p.queries[name]
 	if !ok {
@@ -71,7 +66,6 @@ func (p *Program) Eval(ctx context.Context, name string, input any, out any) err
 	if err != nil {
 		return err
 	}
-	// Each evaluation owns its lazy objects: OPA caches fields as it reads them.
 	results, err := query.Eval(ctx, rego.EvalParsedInput(ast.LazyObject(in)))
 	if err != nil {
 		return fmt.Errorf("policy: %w", err)

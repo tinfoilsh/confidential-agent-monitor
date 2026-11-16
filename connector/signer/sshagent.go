@@ -23,7 +23,6 @@ const (
 
 var errAgentSignsOnly = errors.New("this agent only signs")
 
-// SSHAgent signs with the private keys its credentials hold, each signature after the gate admits it.
 type SSHAgent struct {
 	Credentials []string `json:"credentials"`
 }

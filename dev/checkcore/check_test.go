@@ -98,8 +98,6 @@ func TestHardFencesSurviveAllowlistEdits(t *testing.T) {
 	if !hasViolation(validateRules(cycle), "cycle") {
 		t.Fatal("cycle was accepted")
 	}
-	// Each direct edge is permitted; together they would make protocols depend
-	// on each other through a shared helper, including on inactive platforms.
 	rules := maps.Clone(packages)
 	rules["connector/web"] = rule{protocol, []string{"connector/slots"}}
 	rules["connector/slots"] = rule{library, []string{"connector/email"}}
@@ -159,13 +157,11 @@ func TestCompiledChecksAllModulesOutsideWorkspace(t *testing.T) {
 		}
 		writeFixture(t, root, dir+"/main.go", code)
 	}
-	// A developer's workspace must not mask a missing or different module dependency.
 	t.Setenv("GOWORK", filepath.Join(root, "does-not-exist.work"))
 	got, violations := checkCompiled(root, modules, packages)
 	if len(violations) != 0 || len(got) != len(modules) {
 		t.Fatalf("compiled modules: %v; violations: %v", got, violations)
 	}
-	// A new module must not disappear from the root module's ./... scan.
 	writeFixture(t, root, "core/hidden/go.mod", "module example.test/hidden\n\ngo 1.23\n")
 	files, err := readSources(root, false, "")
 	if err != nil {
@@ -176,7 +172,6 @@ func TestCompiledChecksAllModulesOutsideWorkspace(t *testing.T) {
 	if !hasViolation(violations, "unlisted Go module core/hidden") {
 		t.Fatal(violations)
 	}
-	// A renamed nested module must not masquerade as an external dependency.
 	writeFixture(t, root, "cmd/other/go.mod", "module example.test/disguised\n\ngo 1.23\nrequire "+module+" v0.0.0\nreplace "+module+" => ../..\n")
 	_, violations = checkCompiled(root, modules, packages)
 	if !hasViolation(violations, "unexpected import path example.test/disguised") {

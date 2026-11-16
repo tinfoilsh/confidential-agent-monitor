@@ -11,29 +11,21 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/rego"
 )
 
-// Standard policy and its vocabulary.
-
-// FactsVersion identifies the request facts schema and approval semantics. Bump it when
-// parsing, description, normalization, label, or approval semantics change.
-// This invalidates saved approvals; display-only edits do not need a bump.
 const FactsVersion = 13
 
 const (
-	KindOperation = "operation"
-	KindAdmission = "admission"
-	// SendsConnection resolves to the connection's configured audience; the standard policy matches the same value.
+	KindOperation   = "operation"
+	KindAdmission   = "admission"
 	SendsConnection = "connection"
 )
 
-// Obligations describes the requirements carried by an effect.
 type Obligations struct {
 	Change    bool `json:"change"`
 	Trust     bool `json:"trust"`
-	Ask       bool `json:"ask"` // Default effect setting; owners may override it.
+	Ask       bool `json:"ask"`
 	Discloses bool `json:"discloses"`
 }
 
-// Vocabulary is shared by preset validation, request descriptions, policy, and UI.
 var Vocabulary = map[string]Obligations{
 	"read":     {},
 	"session":  {},
@@ -62,8 +54,6 @@ func ValidEffects(effects []string) bool {
 	return len(effects) != 0 && !slices.ContainsFunc(effects, func(effect string) bool { _, ok := Vocabulary[effect]; return !ok })
 }
 
-// Policy modules and queries. Owner policy may not use the protected data names or packages;
-// the base policy is exactly basePackage.
 const (
 	standardModule = "perimeter/lib.rego"
 	baseModule     = "perimeter/base.rego"
@@ -78,7 +68,6 @@ var (
 	basePackage   = []string{"perimeter", "base"}
 )
 
-// PreparePolicy compiles the standard policy, the base policy and owner policy over owner data.
 func PreparePolicy(ctx context.Context, cfg *Config, base string) (*rego.Program, error) {
 	for _, name := range protectedData {
 		if _, ok := cfg.Data[name]; ok {

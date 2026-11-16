@@ -1,5 +1,3 @@
-// Package config validates the owner's policy source against the presets and holds the
-// standard policy and its vocabulary. It performs no I/O.
 package config
 
 import (
@@ -19,8 +17,6 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Settings: the owner's TOML policy source, validated and projected.
-
 const (
 	AgentConnection = "agent"
 	maxPolicyBytes  = 2 << 20
@@ -31,7 +27,6 @@ var (
 	effectModes  = []string{"off", "ask", "allow"}
 )
 
-// ConnectionSpec supplies one connector's setup and opaque semantic definition.
 type ConnectionSpec struct {
 	Name, Protocol              string
 	Config, Definition, Options json.RawMessage
@@ -44,44 +39,38 @@ type Access struct {
 	Effects map[string]string `json:"effects,omitempty"`
 }
 
-// Requirement IDs bind approval waivers; messages explain them without granting authority.
 type Requirement struct {
 	ID      string `json:"id"`
 	Message string `json:"message"`
 }
 
-// A rule waives the requirements it names for one operation and scope.
 type Rule struct {
 	Enabled      *bool          `json:"enabled,omitempty"`
-	Version      int            `json:"version"` // FactsVersion it was approved under.
+	Version      int            `json:"version"`
 	Connection   string         `json:"connection"`
 	Action       string         `json:"action"`
 	Operation    string         `json:"operation,omitempty"`
-	Definition   string         `json:"definition,omitempty"` // Read from rules saved before Version; never matched.
+	Definition   string         `json:"definition,omitempty"`
 	Scope        map[string]any `json:"scope"`
 	Requirements []Requirement  `json:"requirements"`
 }
 
 type Identity struct {
-	// Stored configs and enrollment clients name this "routes".
-	Operator    bool              `json:"routes,omitempty"`
-	Key         string            `json:"key"`
-	Groups      []string          `json:"groups,omitempty"`
-	Effects     map[string]string `json:"effects,omitempty"`
-	Connections map[string]Access `json:"connections"`
-	Rules       map[string]Rule   `json:"rules,omitempty"`
-	// Attributes are an identity's other keys, each checked by the validator registered under its name.
-	Attributes map[string]json.RawMessage `json:",embed"`
+	Operator    bool                       `json:"routes,omitempty"`
+	Key         string                     `json:"key"`
+	Groups      []string                   `json:"groups,omitempty"`
+	Effects     map[string]string          `json:"effects,omitempty"`
+	Connections map[string]Access          `json:"connections"`
+	Rules       map[string]Rule            `json:"rules,omitempty"`
+	Attributes  map[string]json.RawMessage `json:",embed"`
 }
 
-// PolicyOptions retains the source format. Origin/address also bind local connector semantics.
 type PolicyOptions struct {
 	Private []string `json:"private,omitempty"`
 	Address string   `json:"address,omitempty"`
 	Origin  string   `json:"origin,omitempty"`
 }
 
-// Connection holds one connector's settings, and its setup under the connector's kind.
 type Connection struct {
 	Preset        string                     `json:"preset"`
 	Effects       map[string]string          `json:"effects,omitempty"`
@@ -94,7 +83,6 @@ type Connection struct {
 
 type connectionSettings Connection
 
-// settingKeys name a connection's settings; its other key is its connector's kind.
 var settingKeys = []string{"preset", "effects", "policy_options", "contents", "strangers", "sends"}
 
 func (c *Connection) UnmarshalJSON(raw []byte) error {
@@ -130,8 +118,6 @@ type Lattices struct {
 	Integrity       bool `json:"integrity"`
 }
 
-// Config is immutable declared settings. Inheritance and setup defaults are
-// projected for their consumers, never written back into these declarations.
 type Config struct {
 	AllowPaidInference bool                  `json:"allow_paid_inference,omitempty"`
 	Effects            map[string]string     `json:"effects,omitempty"`
@@ -165,8 +151,6 @@ func inheritModes(defaults, overrides map[string]string) map[string]string {
 	return merged
 }
 
-// Load validates declared settings without retaining expanded connections or identities.
-// Protocol decoding and credential binding remain at the connector boundary.
 func Load(text string, presets map[string]*catalog.Preset) (*Config, error) {
 	if len(text) > maxPolicyBytes {
 		return nil, errors.New("policy source is too large")
@@ -239,7 +223,6 @@ func Load(text string, presets map[string]*catalog.Preset) (*Config, error) {
 	return cfg, nil
 }
 
-// KeyFingerprint names the principal an identity's authorized key authenticates.
 func KeyFingerprint(authorizedKey string) (string, error) {
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(authorizedKey))
 	if err != nil {
@@ -253,7 +236,6 @@ func (c *Config) Principal(key string) (facts.Principal, bool) {
 	return facts.Principal{Key: key, Name: name, Groups: c.Identities[name].Groups, Attributes: c.Identities[name].Attributes}, ok
 }
 
-// An explicit level replaces defaults; an omitted level inherits and overlays them.
 func (c *Config) Access(agent, connection string) Access {
 	a := c.Identities[agent].Connections[connection]
 	if a.Level == "" {
@@ -288,16 +270,12 @@ func (c *Config) Reaches(agent, connection string) bool {
 	return false
 }
 
-// Spec projects only this connection's setup; the returned definition remains opaque.
 func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	connection := c.Connections[name]
 	preset := c.presets[connection.Preset]
 	if preset == nil {
 		return ConnectionSpec{}, fmt.Errorf("service %s: unknown preset %s", name, connection.Preset)
 	}
-	// Parsers consume title, action effects and their opaque protocol roots.
-	// Keep those roots as RawMessages so grant encodings retain their inner order;
-	// catalog labels/defaults are control data, while title remains facts input.
 	var definition map[string]json.RawMessage
 	if err := json.Unmarshal(preset.Source, &definition); err != nil {
 		return ConnectionSpec{}, err
@@ -329,20 +307,16 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 		return ConnectionSpec{}, fmt.Errorf("service %s must have one kind", name)
 	}
 	local := connection.PolicyOptions
-	local.Private = nil // Private patterns affect Gate, not connector interpretation.
+	local.Private = nil
 	options, _ := json.Marshal(local)
 	spec := ConnectionSpec{Name: name, Definition: semantic, Options: options, PublicScope: preset.PublicScope}
 	for kind, value := range kinds {
 		spec.Protocol = kind
-		spec.Config, _ = json.Marshal(value) // Setup bytes retain the deployed canonical grant encoding.
+		spec.Config, _ = json.Marshal(value)
 	}
 	return spec, nil
 }
 
-// Edit applies changes to source and reports which connections' connector setup
-// then differs from c's, and which connections it moved from which name. Rules
-// approved for a connection whose setup differs are removed in the same edit.
-// Changes that alter no setting leave source as it was.
 func (c *Config) Edit(source string, changes []format.Change) (string, func(connection string) bool, map[string]string, error) {
 	edited, err := format.EditTOML(source, changes)
 	if err != nil {
@@ -387,8 +361,6 @@ func (c *Config) Edit(source string, changes []format.Change) (string, func(conn
 	return edited, func(connection string) bool { return networks || setup(connection) }, renamed, err
 }
 
-// View expands the existing owner wire representation only while rendering it.
-// No caller uses this presentation as settings or connector authority.
 func (c *Config) View() (map[string]any, error) {
 	v := *c
 	v.Identities, v.Connections = maps.Clone(c.Identities), maps.Clone(c.Connections)
@@ -407,7 +379,6 @@ func (c *Config) View() (map[string]any, error) {
 	return facts.JSON[map[string]any](v)
 }
 
-// Effective preserves the expanded TOML control view, never compiling policy.
 func (c *Config) Effective() (string, error) {
 	v, err := c.View()
 	if err != nil {
@@ -423,8 +394,6 @@ func (c *Config) Effective() (string, error) {
 	return format.RenderTOML(v)
 }
 
-// AgentView is the restricted configuration returned to an agent. Proposals may
-// request broader changes, but never reveal owner-only state.
 func (c *Config) AgentView(p facts.Principal) (map[string]any, error) {
 	identity := map[string]any{"connections": c.Accesses(p.Name)}
 	if rules := c.Identities[p.Name].Rules; len(rules) != 0 {
@@ -439,7 +408,6 @@ func (c *Config) AgentView(p facts.Principal) (map[string]any, error) {
 	return facts.JSON[map[string]any](map[string]any{"lattices": c.Lattices, "identities": map[string]any{p.Name: identity}, "connections": connections})
 }
 
-// proposalTarget names the connection whose setup or access path changes.
 func proposalTarget(path []string) (string, bool) {
 	switch {
 	case len(path) >= 2 && (path[0] == "connections" || path[0] == "default_access") && path[1] != "":
@@ -450,7 +418,6 @@ func proposalTarget(path []string) (string, bool) {
 	return "", false
 }
 
-// ProposalChanges groups p's changes by connection; only others lets them reach other identities and default access.
 func ProposalChanges(p facts.Principal, changes []format.Change, others bool) (map[string][]format.Change, error) {
 	groups := map[string][]format.Change{}
 	for _, change := range changes {

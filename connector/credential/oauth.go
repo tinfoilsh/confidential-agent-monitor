@@ -30,7 +30,6 @@ var (
 
 var errSignInGone = errors.New("sign-in expired or already completed; start again")
 
-// A Grant without a refresh token keeps its access token until Expiry, then needs a new sign-in.
 type Grant struct {
 	AuthorizeParams map[string]string     `json:"authorize_params,omitempty"`
 	Registration    *CallbackRegistration `json:"callback_registration,omitempty"`
@@ -53,15 +52,12 @@ type Grant struct {
 	Expiry          time.Time             `json:"expiry,omitzero"`
 }
 
-// A preset's own OAuth app signs in when the owner names no client.
 type DefaultClient struct {
 	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret,omitempty"`
 	Loopback     bool   `json:"loopback,omitempty"`
 }
 
-// These parameters apply until the authorization callback issues a client ID.
-// OIDC verification binds the issued ID to its authenticated account.
 type CallbackRegistration struct {
 	ClientID        string            `json:"client_id"`
 	AuthorizeParams map[string]string `json:"authorize_params,omitempty"`
@@ -99,7 +95,6 @@ func (o *Grant) validate() error {
 	return CheckEndpoints(o.AuthURL, o.DeviceAuthURL, o.TokenURL, o.Resource)
 }
 
-// CheckEndpoints requires https without user information or fragments, and never quotes an endpoint that may hold a password.
 func CheckEndpoints(endpoints ...string) error {
 	for _, endpoint := range endpoints {
 		u, err := url.Parse(endpoint)
@@ -122,7 +117,6 @@ func encodeGrant(grant Grant) json.RawMessage {
 	return raw
 }
 
-// snapshot validates grant as stored and keeps a sign-in's copy apart from its caller's maps and pointers.
 func snapshot(grant Grant) (*Grant, error) {
 	raw, err := json.Marshal(grant)
 	if err != nil {
@@ -131,8 +125,6 @@ func snapshot(grant Grant) (*Grant, error) {
 	return DecodeGrant(raw)
 }
 
-// A SignIn waits for an authorization callback or device approval. The device
-// code stays private; only URL, State, UserCode and Expires go to the owner UI.
 type SignIn struct {
 	URL, State string
 	UserCode   string
@@ -147,7 +139,6 @@ type SignIn struct {
 	limits     SignInLimits
 }
 
-// NewDeviceSignIn requests a device code (RFC 8628) for grant.
 func NewDeviceSignIn(ctx context.Context, client *http.Client, grant Grant, limits SignInLimits) (*SignIn, error) {
 	g, err := snapshot(grant)
 	if err != nil {
@@ -162,8 +153,6 @@ func NewDeviceSignIn(ctx context.Context, client *http.Client, grant Grant, limi
 	return s, s.startDevice(ctx)
 }
 
-// NewAuthCodeSignIn starts an authorization code sign-in with PKCE at grant's AuthURL, adding opts to its
-// authorization request without letting them replace its state, PKCE challenge or nonce.
 func NewAuthCodeSignIn(client *http.Client, grant Grant, redirect string, limits SignInLimits, opts ...oauth2.AuthCodeOption) (*SignIn, error) {
 	g, err := snapshot(grant)
 	if err != nil {
@@ -247,7 +236,6 @@ func (s *SignIn) startDevice(ctx context.Context) error {
 	return nil
 }
 
-// WaitDevice respects the provider's polling interval and slow_down responses.
 func (s *SignIn) WaitDevice(ctx context.Context) (json.RawMessage, error) {
 	t, err := s.config.DeviceAccessToken(context.WithValue(ctx, oauth2.HTTPClient, s.client), s.device)
 	if err != nil {
@@ -275,8 +263,6 @@ func (s *SignIn) WaitDevice(ctx context.Context) (json.RawMessage, error) {
 	return encodeGrant(grant), nil
 }
 
-// ProtectedResource returns the first metadata covering resource (RFC 9728) that its WWW-Authenticate
-// challenge or a well-known location publishes, or nil when none does.
 func ProtectedResource(ctx context.Context, client *http.Client, resource string, maxBytes int64) (*oauthex.ProtectedResourceMetadata, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, resource, nil)
 	if err != nil {
@@ -302,7 +288,6 @@ func ProtectedResource(ctx context.Context, client *http.Client, resource string
 		if CheckEndpoints(m) != nil || !getJSON(ctx, client, m, maxBytes, &prm) {
 			continue
 		}
-		// Metadata covers its resource and the paths beneath it on the same origin.
 		named, err := url.Parse(prm.Resource)
 		if err != nil || CheckEndpoints(prm.Resource) != nil || !strings.EqualFold(named.Hostname(), u.Hostname()) || cmp.Or(named.Port(), httpsPort) != cmp.Or(u.Port(), httpsPort) || !strings.HasPrefix(strings.TrimSuffix(u.Path, "/")+"/", strings.TrimSuffix(named.Path, "/")+"/") {
 			continue
@@ -312,8 +297,6 @@ func ProtectedResource(ctx context.Context, client *http.Client, resource string
 	return nil, nil
 }
 
-// PublishedIssuer returns the https issuer that metadata at server's well-known locations (RFC 8414, OpenID
-// Connect Discovery) names, which may differ from server, or "" when none names one.
 func PublishedIssuer(ctx context.Context, client *http.Client, server string, maxBytes int64) string {
 	a, _ := url.Parse(server)
 	if CheckEndpoints(server) != nil {
@@ -346,7 +329,6 @@ func getJSON(ctx context.Context, client *http.Client, u string, maxBytes int64,
 	return resp.StatusCode == http.StatusOK && json.NewDecoder(io.LimitReader(resp.Body, maxBytes)).Decode(v) == nil
 }
 
-// Exchange returns the replacement grant for the authorized scope.
 func (s *SignIn) Exchange(ctx context.Context, code, clientID string) (json.RawMessage, error) {
 	if code == "" {
 		return nil, errors.New("the sign-in callback has no authorization code")
@@ -382,7 +364,6 @@ func (o *Grant) acceptToken(t *oauth2.Token, refresh bool) error {
 		return errors.New("oauth returned an invalid bearer token")
 	}
 	scope, _ := t.Extra("scope").(string)
-	// GitHub returns comma-separated scopes; other providers use spaces.
 	scope = strings.Join(strings.FieldsFunc(scope, func(r rune) bool { return r == ',' || unicode.IsSpace(r) }), " ")
 	if scope == "" && refresh {
 		scope = o.Scope
@@ -399,8 +380,6 @@ func (o *Grant) acceptToken(t *oauth2.Token, refresh bool) error {
 	return nil
 }
 
-// oauth2.TokenSource handles token formats, client authentication, and rotation,
-// but does not send RFC 8707 resource indicators on refresh requests.
 type resourceTransport struct {
 	http.RoundTripper
 	endpoint, resource string
@@ -444,7 +423,6 @@ func (o *Grant) refresh(ctx context.Context, client *http.Client, token *oauth2.
 	return config.TokenSource(context.WithValue(ctx, oauth2.HTTPClient, client), token).Token()
 }
 
-// SignInResult is what the owner's client reports when the provider returns.
 type SignInResult struct {
 	Code     string  `json:"code"`
 	ClientID string  `json:"client_id,omitempty"`
@@ -460,30 +438,23 @@ type pendingSignIn struct {
 	cancel  context.CancelFunc
 }
 
-// SignIns holds started sign-ins until the session that started each finishes it.
 type SignIns struct {
 	pending sync.Map
 	limits  SignInLimits
 }
 
-// SignInLimits bound what a sign-in waits for and accepts from a provider.
 type SignInLimits struct {
-	// Timeout bounds each provider exchange; Lifetime is how long a started sign-in can be finished.
 	Timeout, Lifetime time.Duration
-	// MaxDeviceExpiry and MaxDeviceInterval, in seconds, bound a provider's device authorization.
 	MaxDeviceExpiry   time.Duration
 	MaxDeviceInterval int
-	// MaxResponseBytes bounds each device authorization, metadata and signing key response.
-	MaxResponseBytes int64
-	// MaxClientIDBytes bounds a client ID issued by the authorization callback.
-	MaxClientIDBytes int
+	MaxResponseBytes  int64
+	MaxClientIDBytes  int
 }
 
 func NewSignIns(limits SignInLimits) *SignIns {
 	return &SignIns{limits: limits}
 }
 
-// Start holds the sign-in begin starts; finishing it hands the replacement grant to save.
 func (s *SignIns) Start(ctx context.Context, begin func(context.Context) (*SignIn, error), session string, save func(context.Context, json.RawMessage) error) (*SignIn, error) {
 	ctx, cancel := context.WithTimeout(ctx, s.limits.Timeout)
 	defer cancel()
@@ -517,7 +488,6 @@ func (s *SignIns) Start(ctx context.Context, begin func(context.Context) (*SignI
 	return sign, nil
 }
 
-// Finish completes or cancels the sign-in state names, and reports true while a device sign-in still awaits approval.
 func (s *SignIns) Finish(ctx context.Context, state, session string, result SignInResult) (bool, error) {
 	value, ok := s.pending.Load(state)
 	if !ok {

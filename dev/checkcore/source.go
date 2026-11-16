@@ -59,8 +59,6 @@ func unique(values []string) []string {
 	return slices.Compact(values)
 }
 
-// inspect parses every source file, regardless of build constraints. Generated
-// code obeys the same boundaries; tests have their own metrics and may cross them.
 func inspect(files map[string][]byte, rules map[string]rule) inventory {
 	out := inventory{Totals: map[string]int{}, Packages: map[string]*packageInfo{}}
 	for _, metric := range []string{"core", "protocols", "application", "tooling", "tests", "generated_go", "policy", "production_runtime_go"} {
@@ -192,7 +190,7 @@ func inspect(files map[string][]byte, rules map[string]rule) inventory {
 					return true
 				}
 				id, ok := selector.X.(*ast.Ident)
-				if !ok || id.Obj != nil { // A local variable may shadow an import.
+				if !ok || id.Obj != nil {
 					return true
 				}
 				dependency, member := aliases[id.Name], selector.Sel.Name

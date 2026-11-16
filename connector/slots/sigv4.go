@@ -18,7 +18,6 @@ import (
 
 const sigV4Credential = "AWS4-HMAC-SHA256 Credential="
 
-// SigV4 signs for Service with the slot's value as access key ID; Secret and Session name the other values.
 type SigV4 struct {
 	Service string `json:"service"`
 	Region  string `json:"region"`
@@ -28,7 +27,6 @@ type SigV4 struct {
 
 var sigV4Signer = v4.NewSigner()
 
-// streaming refuses aws-chunked uploads, whose framing a whole-body hash cannot describe.
 func streaming(header http.Header) error {
 	if strings.Contains(strings.ToLower(strings.Join(header.Values("Content-Encoding"), ",")), "aws-chunked") ||
 		strings.HasPrefix(header.Get("X-Amz-Content-Sha256"), "STREAMING-") || header.Get("X-Amz-Decoded-Content-Length") != "" || header.Get("X-Amz-Trailer") != "" {
@@ -37,7 +35,6 @@ func streaming(header http.Header) error {
 	return nil
 }
 
-// presigned reports SigV4 or SigV2 query authentication, which would bypass the monitor's signature.
 func presigned(query url.Values) bool {
 	for key := range query {
 		key = strings.ToLower(key)
@@ -48,7 +45,6 @@ func presigned(query url.Values) bool {
 	return false
 }
 
-// sign signs the request exactly as it will be sent, hashing a body of at most limit bytes.
 func sign(r *http.Request, keys aws.Credentials, s *SigV4, now time.Time, limit int64) error {
 	var body []byte
 	if r.Body != nil {

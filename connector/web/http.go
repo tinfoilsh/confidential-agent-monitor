@@ -40,12 +40,10 @@ const (
 )
 
 var (
-	methods = []string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions}
-	// Some servers let these replace the method the policy saw.
+	methods         = []string{http.MethodGet, http.MethodHead, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions}
 	methodOverrides = []string{"X-Http-Method-Override", "X-Http-Method", "X-Method-Override"}
 )
 
-// HTTP forwards unauthenticated requests for Hosts on ports 80 and 443, and authenticated ones for slot origins.
 type Setup struct {
 	Hosts         []string
 	Preset        *Preset
@@ -53,38 +51,23 @@ type Setup struct {
 	slots         Slots
 }
 
-// Handler serves a setup's streams with the host's capabilities.
 type Handler struct {
 	*Setup
-	// Transport sends admitted requests, after credential placement, exactly as they were captured.
-	Transport http.RoundTripper
-	// TLS terminates a stream's TLS with a certificate for host, the stream's host.
-	TLS       func(ctx context.Context, host string) *tls.Config
-	ServeHTTP func(ctx context.Context, conn net.Conn, server *http.Server) error
-	// Placeholder is the public reference agents send in place of a credential; "" if it has none.
-	Placeholder func(name string) string
-	Secret      func(ctx context.Context, name string) (string, error)
-	Prepare     PrepareRequest
-	// CheckRedirect decides a WebSocket handshake's redirects, as http.Client's does. A followed redirect is a
-	// request the gate never admitted, with credentials placed again, so it must not be followed unless admitted.
+	Transport     http.RoundTripper
+	TLS           func(ctx context.Context, host string) *tls.Config
+	ServeHTTP     func(ctx context.Context, conn net.Conn, server *http.Server) error
+	Placeholder   func(name string) string
+	Secret        func(ctx context.Context, name string) (string, error)
+	Prepare       PrepareRequest
 	CheckRedirect func(req *http.Request, via []*http.Request) error
-	// MaxBody bounds the bodies and WebSocket messages it decodes; larger bodies are opaque.
-	MaxBody int64
+	MaxBody       int64
 
-	// Accept accepts agent WebSockets; its Subprotocols are replaced by the one the upstream agreed.
-	Accept websocket.AcceptOptions
-	// UpstreamReadLimit bounds each upstream WebSocket message as websocket.Conn.SetReadLimit does;
-	// replies stream to the agent unbuffered.
+	Accept            websocket.AcceptOptions
 	UpstreamReadLimit int64
 }
 
-// PrepareRequest may normalize validated input before its final capture. It must
-// perform no I/O or credential resolution. An optional returned transport may
-// adapt the response, but must send the prepared request without rewriting it.
 type PrepareRequest func(*http.Request, *HTTPFacts) (http.RoundTripper, error)
 
-// Serve validates client input, prepares and captures the upstream request,
-// gates it, then places credentials and sends those admitted bytes.
 func (h Handler) Serve(ctx context.Context, conn net.Conn, _, host string, port uint32, gate func(context.Context, facts.Event) error) {
 	c := conn
 	if port != httpPort {
@@ -100,8 +83,6 @@ func (h Handler) Serve(ctx context.Context, conn net.Conn, _, host string, port 
 				request.Invalid = strings.ToValidUTF8(err.Error(), "�")
 			} else {
 				r = prepared
-				// Capture the actual prepared request, including its credential slots.
-				// This also checks that normalization kept the target in this setup.
 				request = newRequest(r)
 				if err := request.capture(&h, r); err != nil {
 					request.Invalid = strings.ToValidUTF8(err.Error(), "�")
@@ -125,7 +106,6 @@ func (h Handler) Serve(ctx context.Context, conn net.Conn, _, host string, port 
 	})})
 }
 
-// placing writes the admitted request's credentials into it as the last change before it is sent.
 type placing struct {
 	base   http.RoundTripper
 	place  func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error)
@@ -142,12 +122,10 @@ func (t placing) RoundTrip(r *http.Request) (*http.Response, error) {
 	return t.base.RoundTrip(r)
 }
 
-// The parsed request already names its upstream; placement is the last change before it is sent.
 func proxy(transport http.RoundTripper) *httputil.ReverseProxy {
 	return &httputil.ReverseProxy{
 		Transport: transport,
 		Rewrite:   func(*httputil.ProxyRequest) {},
-		// The error may quote the request with its credentials in place.
 		ErrorHandler: func(w http.ResponseWriter, r *http.Request, _ error) {
 			log.Printf("upstream %s %s failed", r.Method, r.Host)
 			http.Error(w, "the upstream request failed", http.StatusBadGateway)
@@ -155,8 +133,6 @@ func proxy(transport http.RoundTripper) *httputil.ReverseProxy {
 	}
 }
 
-// Parsing retains errors as part of the connector request so the monitor records
-// them through Describe. Unvalidated input is never interpreted as an operation.
 func (h *Handler) parseRequest(r *http.Request, host string, port uint32) *Request {
 	request := newRequest(r)
 	if err := request.parse(h, r, host, port); err != nil {
@@ -172,8 +148,6 @@ func newRequest(r *http.Request) *Request {
 	}}
 }
 
-// parse checks the original request against its authenticated channel before any
-// normalization. A selected connection has no channel host to match.
 func (request *Request) parse(h *Handler, r *http.Request, channel string, channelPort uint32) error {
 	scheme, host, port, err := authority(r)
 	if err != nil {
@@ -187,8 +161,6 @@ func (request *Request) parse(h *Handler, r *http.Request, channel string, chann
 	return request.capture(h, r)
 }
 
-// capture validates and describes an upstream request without changing its
-// meaning. Both the original and any prepared request use the same checks.
 func (request *Request) capture(h *Handler, r *http.Request) error {
 	if r.URL.Opaque != "" || r.URL.User != nil || r.URL.Fragment != "" || r.Host != r.URL.Host {
 		return errors.New("invalid upstream request target")
@@ -210,7 +182,6 @@ func (request *Request) capture(h *Handler, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	// The proxy drops headers that Connection names, after the gate would have seen them.
 	for _, token := range strings.FieldsFunc(strings.Join(r.Header.Values("Connection"), ","), func(c rune) bool { return c == ',' || c == ' ' }) {
 		if !strings.EqualFold(token, "keep-alive") && !strings.EqualFold(token, "close") && !(upgrade && strings.EqualFold(token, "upgrade")) {
 			return fmt.Errorf("Connection: %s is refused", token)
@@ -239,7 +210,6 @@ func (request *Request) capture(h *Handler, r *http.Request) error {
 	if upgrade && layer.BodyKind != bodyNone {
 		return errors.New("WebSocket handshakes cannot carry a body")
 	}
-	// Binding uses the stream's immutable settings. Replacing them cancels the stream.
 	layer.Secrets, request.place, err = h.slots.Bind(r, origin, h.Placeholder)
 	if err != nil {
 		return err
@@ -258,7 +228,6 @@ func (request *Request) capture(h *Handler, r *http.Request) error {
 	return nil
 }
 
-// authority returns the request's scheme, host and effective port, refusing any other spelling of them.
 func authority(r *http.Request) (scheme, host string, port uint32, err error) {
 	if r.URL.Host != "" || r.URL.Opaque != "" {
 		return "", "", 0, errors.New("only origin-form request targets are accepted")
@@ -313,7 +282,6 @@ func origin(scheme, host string, port uint32) string {
 	return scheme + "://" + host
 }
 
-// canonicalPath refuses paths whose segments an upstream could split, unescape again or resolve differently.
 func canonicalPath(u *url.URL) error {
 	if !strings.HasPrefix(u.Path, "/") || !utf8.ValidString(u.Path) || strings.ContainsAny(u.Path, "\\%\x00") {
 		return errors.New("the path is not canonical")
@@ -327,7 +295,6 @@ func canonicalPath(u *url.URL) error {
 	return nil
 }
 
-// validText refuses names and values that JSON would alter, so policy compares what is sent.
 func validText(values map[string][]string) bool {
 	for key, entries := range values {
 		if !utf8.ValidString(key) {
@@ -342,12 +309,10 @@ func validText(values map[string][]string) bool {
 	return true
 }
 
-// Spaces become %20, since not every upstream reads + as a space.
 func encodeQuery(q url.Values) string {
 	return strings.ReplaceAll(q.Encode(), "+", "%20")
 }
 
-// inspect decodes a complete body of at most limit bytes without repeated names; anything else is opaque and still forwarded.
 func inspect(r *http.Request, layer *HTTPFacts, limit int64) error {
 	body, err := io.ReadAll(io.LimitReader(r.Body, limit+1))
 	if err != nil {
@@ -394,7 +359,6 @@ func inspect(r *http.Request, layer *HTTPFacts, limit int64) error {
 
 var errAmbiguousJSON = errors.New("ambiguous JSON")
 
-// decodeJSON accepts one valid value whose names are unique under case folding, refusing unpaired surrogate escapes.
 func decodeJSON(body []byte) (any, error) {
 	if !jsontext.Value(body).IsValid() || !unique(json.NewDecoder(bytes.NewReader(body))) {
 		return nil, errAmbiguousJSON
@@ -403,7 +367,6 @@ func decodeJSON(body []byte) (any, error) {
 	return v, facts.DecodeNumbers(body, &v)
 }
 
-// fold maps a rune to the least rune that strings.EqualFold, and so Go's JSON decoder, treats as equal.
 func fold(r rune) rune {
 	least := r
 	for f := unicode.SimpleFold(r); f != r; f = unicode.SimpleFold(f) {
@@ -412,7 +375,6 @@ func fold(r rune) rune {
 	return least
 }
 
-// unique walks one value already known to be valid JSON.
 func unique(dec *json.Decoder) bool {
 	t, err := dec.Token()
 	if err != nil {

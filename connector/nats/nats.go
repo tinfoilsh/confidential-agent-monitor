@@ -1,4 +1,3 @@
-// Package nats provides a Core NATS endpoint on streams the caller authenticated.
 package nats
 
 import (
@@ -29,7 +28,6 @@ type NATS struct {
 	url    *url.URL
 }
 
-// Parse validates a nats:// or tls:// destination authenticated by the "password" or "token" credential.
 func Parse(config json.RawMessage) (*NATS, error) {
 	n := new(NATS)
 	if err := facts.DecodeNumbers(config, n); err != nil {
@@ -51,7 +49,7 @@ func Parse(config json.RawMessage) (*NATS, error) {
 	if n.User == "" {
 		n.User = u.User.Username()
 	}
-	u.User = nil // Authentication is always supplied separately to the client.
+	u.User = nil
 	u.Path = ""
 	n.url = u
 	return n, nil
@@ -88,16 +86,11 @@ type client struct {
 	subs    map[string]*nats.Subscription
 }
 
-// Limits bound one agent connection. PendingMessages and PendingBytes bound the deliveries each subscription buffers.
 type Limits struct {
 	Payload, Line, Subscriptions, PendingMessages, PendingBytes int
-	// Timeout bounds connecting upstream and each flush.
-	Timeout time.Duration
+	Timeout                                                     time.Duration
 }
 
-// Preauthenticated serves Core NATS to the agent and relays each admitted operation through one upstream
-// connection. The caller authenticated each stream, so INFO requires no authentication and CONNECT
-// credentials are ignored. name is the server_id and server_name agents see, and the client name upstream.
 func (n *NATS) Preauthenticated(dial func(ctx context.Context, network, address string) (net.Conn, error), secret func(ctx context.Context, name string) (string, error), limits Limits, name string) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
 		ctx, cancel := context.WithCancel(ctx)
@@ -108,8 +101,6 @@ func (n *NATS) Preauthenticated(dial func(ctx context.Context, network, address 
 
 func (n *NATS) serve(c *client, dial func(context.Context, string, string) (net.Conn, error), secret func(context.Context, string) (string, error), name string) {
 	s := c.conn
-	// Cluster addresses, upstream names and authentication details never leave
-	// the connector. Clients reconnect through the monitor's own address.
 	id, _ := json.Marshal(name)
 	if err := c.write([]byte(`INFO {"server_id":` + string(id) + `,"server_name":` + string(id) + `,"version":"2.10.0","proto":1,"headers":true,"max_payload":` + strconv.Itoa(c.limits.Payload) + `,"auth_required":false,"tls_required":false}` + "\r\n")); err != nil {
 		return
@@ -147,7 +138,6 @@ func (n *NATS) serve(c *client, dial func(context.Context, string, string) (net.
 		nats.SetCustomDialer(dialer{c.ctx, dial}), nats.NoReconnect(), nats.Timeout(c.limits.Timeout),
 		nats.SkipHostLookup(),
 		nats.Name(name), nats.ClosedHandler(func(*nats.Conn) { c.close() }),
-		// Error text can contain provider details or subjects; expose a fixed error.
 		nats.ErrorHandler(func(*nats.Conn, *nats.Subscription, error) { c.close() }),
 	}
 	if token != "" {
@@ -293,7 +283,6 @@ func (c *client) command(line string, r *bufio.Reader) error {
 		if len(args) != 1 {
 			return errors.New("invalid ping")
 		}
-		// PONG is also a barrier for preceding publishes and subscriptions.
 		if err := c.up.FlushTimeout(c.limits.Timeout); err != nil {
 			return err
 		}
@@ -419,7 +408,6 @@ func message(args []string, r *bufio.Reader, limit int) (*nats.Msg, error) {
 	}
 	if hasHeaders {
 		header := b[:h]
-		// Client publishes carry ordinary headers, not server status lines.
 		if !bytes.HasPrefix(header, []byte("NATS/1.0\r\n")) || !bytes.HasSuffix(header, []byte("\r\n\r\n")) {
 			return nil, errors.New("invalid NATS headers")
 		}
@@ -431,7 +419,6 @@ func message(args []string, r *bufio.Reader, limit int) (*nats.Msg, error) {
 				if !found || !tokenValid(name) || strings.ContainsAny(value, "\r\n") {
 					return nil, errors.New("invalid NATS header")
 				}
-				// NATS header names are case-sensitive.
 				m.Header.Add(name, strings.TrimLeft(value, " \t"))
 			}
 		}

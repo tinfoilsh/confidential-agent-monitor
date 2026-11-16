@@ -20,11 +20,6 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Settings snapshots: prepared outside s.mu, committed under it, and delivered to connectors
-// after it. Stored maps and snapshots are immutable once published.
-
-// settings is an immutable snapshot of the saved settings, published as a whole.
-// Mutable connector availability and stream authority belong to the table and admissions.
 type settings struct {
 	*config.Config
 	policy      *rego.Program
@@ -36,8 +31,6 @@ type settings struct {
 	connections map[string]*installed
 }
 
-// installed is a connection's parsed setup with the credentials bound to it at commit, and the
-// public placeholders agents send in their place.
 type installed struct {
 	*connections.Setup
 	secrets      map[string]*credential.Value
@@ -49,7 +42,6 @@ type connectionPlan struct {
 	*installed
 }
 
-// settingsPlan contains parsed settings, never candidate runtime instances.
 type settingsPlan struct {
 	next        *settings
 	source      string
@@ -59,10 +51,6 @@ type settingsPlan struct {
 	remove      []string
 }
 
-// settingsWrite replaces the policy source, or edits it with changes, and stages
-// credentials, nil clearing one. check runs under s.mu before validation and again
-// before persistence. A saved approval is answered atomically with the durable change.
-// derive supplies changes under s.writes and s.mu, before the first check.
 type settingsWrite struct {
 	source      *string
 	changes     []format.Change
@@ -86,9 +74,6 @@ var (
 
 func everyConnection(string) bool { return true }
 
-// prepareSettings validates source and parses the connector setups to rebuild
-// under s.writes, without s.mu. It creates no runtime instances. Credential refreshes
-// can still commit while validation runs.
 func (s *state) prepareSettings(ctx context.Context, source string, rebuild func(connection string) bool, renamed map[string]string, credentials format.Secrets, tlsConfig *tls.Config, hostKey ssh.Signer) (*settingsPlan, error) {
 	cfg, err := config.Load(source, presets)
 	if err != nil {
@@ -172,10 +157,6 @@ func (s *state) prepareSettings(ctx context.Context, source string, rebuild func
 	return plan, nil
 }
 
-// commitSettings runs under s.writes and s.mu: rebase the planned changes, persist them,
-// publish the settings and revoke lost authority. Changed connectors remain
-// unavailable until installation. A saved approval is answered after persistence
-// and before general settings invalidation.
 func (s *state) commitSettings(ctx context.Context, plan *settingsPlan, saved *savedAnswer) (err error) {
 	current := s.doc
 	next := current
@@ -195,8 +176,6 @@ func (s *state) commitSettings(ctx context.Context, plan *settingsPlan, saved *s
 		_, ok := plan.next.Connections[connection]
 		return !ok
 	})
-	// Bind new handles to the latest durable record exactly once, before commit.
-	// This is pure credential validation; it takes no Value lock or network call.
 	client := plan.next.client()
 	for _, update := range plan.updates {
 		for name, value := range update.secrets {
@@ -221,7 +200,6 @@ func (s *state) commitSettings(ctx context.Context, plan *settingsPlan, saved *s
 		next.Enrolled[key] = true
 	}
 	next.Revision++
-	// Persist before publishing authority.
 	if err := s.commit(ctx, next); err != nil {
 		return err
 	}
@@ -261,7 +239,6 @@ func (s *state) commitSettings(ctx context.Context, plan *settingsPlan, saved *s
 	return nil
 }
 
-// reviewed checks, under s.mu, that an owner write naming a revision was made against current settings.
 func (s *state) reviewed(revision *uint64) func() error {
 	return func() error {
 		if revision != nil && *revision != s.doc.Revision {
@@ -271,7 +248,6 @@ func (s *state) reviewed(revision *uint64) func() error {
 	}
 }
 
-// policyDiff compares the owner source and its expanded settings.
 type policyDiff struct {
 	SourceDiff    string `json:"source_diff"`
 	EffectiveDiff string `json:"effective_diff"`

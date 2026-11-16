@@ -1,4 +1,3 @@
-// Package noisetransport runs Noise NK sessions over WebSockets, as whole messages split into frames.
 package noisetransport
 
 import (
@@ -18,7 +17,6 @@ import (
 )
 
 const (
-	// FrameBytes is the most data one frame carries: a flag byte, then data filling the rest of one Noise message.
 	FrameBytes = noise.MaxMsgLen - 1 - chacha20poly1305.Overhead
 	frameMore  = 0
 	frameLast  = 1
@@ -29,15 +27,12 @@ var (
 	errMalformed = errors.New("malformed")
 )
 
-// Session is one accepted Noise session over a WebSocket.
 type Session struct {
 	Conn       *websocket.Conn
 	send, recv *noise.CipherState
 	mu         sync.Mutex
 }
 
-// Config is the responder's static key, the prologue both sides bind, the time allowed
-// for the handshake and the first message, and how the WebSocket upgrade is accepted.
 type Config struct {
 	Key      noise.DHKey
 	Prologue string
@@ -45,7 +40,6 @@ type Config struct {
 	Accept   *websocket.AcceptOptions
 }
 
-// LoadKey reads an X25519 key, PKCS#8 encoded in PEM.
 func LoadKey(path string) (noise.DHKey, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -63,8 +57,6 @@ func LoadKey(path string) (noise.DHKey, error) {
 	return noise.DHKey{Private: private.Bytes(), Public: private.PublicKey().Bytes()}, nil
 }
 
-// Accept upgrades r and runs an NK handshake. verify authenticates the initiator's first
-// message, of at most one frame, against the handshake's channel binding; its error closes the socket.
 func Accept(w http.ResponseWriter, r *http.Request, c Config, verify func(channelBinding, first []byte) error) (*Session, []byte, error) {
 	conn, err := websocket.Accept(w, r, c.Accept)
 	if err != nil {
@@ -103,7 +95,6 @@ func Accept(w http.ResponseWriter, r *http.Request, c Config, verify func(channe
 	return s, message, nil
 }
 
-// Read returns the next whole message, refusing one longer than limit.
 func (s *Session) Read(ctx context.Context, limit int) ([]byte, error) {
 	var message []byte
 	for {
@@ -124,7 +115,6 @@ func (s *Session) Read(ctx context.Context, limit int) ([]byte, error) {
 	}
 }
 
-// Write sends message as frames no other message interleaves with.
 func (s *Session) Write(ctx context.Context, message []byte) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

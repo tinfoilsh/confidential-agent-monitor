@@ -1,4 +1,3 @@
-// Package mqtt mediates MQTT 3.1.1 clean sessions over the monitor tunnel.
 package mqtt
 
 import (
@@ -28,7 +27,6 @@ type MQTT struct {
 	url    *url.URL
 }
 
-// Parse validates an mqtt:// or mqtts:// destination whose password is the "password" credential.
 func Parse(config json.RawMessage) (*MQTT, error) {
 	m := new(MQTT)
 	if err := facts.DecodeNumbers(config, m); err != nil {
@@ -56,7 +54,6 @@ func Parse(config json.RawMessage) (*MQTT, error) {
 
 func (m *MQTT) Hosts() []string { return []string{m.url.Hostname()} }
 
-// dial reaches the broker, over TLS for mqtts.
 func (m *MQTT) dial(ctx context.Context, dial func(context.Context, string, string) (net.Conn, error)) (net.Conn, error) {
 	address, port := m.url.Host, "1883"
 	if m.url.Scheme == "mqtts" {
@@ -77,8 +74,6 @@ func (m *MQTT) dial(ctx context.Context, dial func(context.Context, string, stri
 	return t, nil
 }
 
-// Handler relays a clean session to the broker; every publish, subscription and delivery passes the gate.
-// maxPacket bounds each packet either side sends; maxPending bounds the QoS 2 publishes awaiting release.
 func (m *MQTT) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), maxPacket, maxPending int) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
 		ctx, cancel := context.WithCancel(ctx)
@@ -110,8 +105,6 @@ func (m *MQTT) serve(ctx context.Context, cancel func(), s net.Conn, gate func(c
 		refuse(2)
 		return
 	}
-	// Persistent sessions can resume subscriptions without SUBSCRIBE. Wills can
-	// publish after revocation or a monitor crash, when no gate can run.
 	if !connect.CleanSession || connect.WillFlag {
 		refuse(5)
 		return
@@ -125,7 +118,6 @@ func (m *MQTT) serve(ctx context.Context, cancel func(), s net.Conn, gate func(c
 		refuse(4)
 		return
 	}
-	// Never let an agent pick an upstream session ID or evict another client.
 	id := make([]byte, 10)
 	if _, err := rand.Read(id); err != nil {
 		return
@@ -220,7 +212,6 @@ func (p *proxy) request(packet packets.ControlPacket) error {
 		if publish == nil {
 			return errors.New("unknown MQTT publish")
 		}
-		// QoS 2 takes effect on PUBREL, potentially after a policy change.
 		return p.publish("publish", publish)
 	case *packets.SubscribePacket:
 		for i, topic := range v.Topics {
@@ -229,7 +220,6 @@ func (p *proxy) request(packet packets.ControlPacket) error {
 			}
 		}
 	case *packets.UnsubscribePacket:
-		// Removing a subscription only reduces access.
 	case *packets.PubackPacket, *packets.PubrecPacket, *packets.PubcompPacket, *packets.PingreqPacket, *packets.DisconnectPacket:
 	default:
 		return errors.New("unexpected MQTT client packet")
@@ -245,7 +235,6 @@ func (p *proxy) replies(r *bufio.Reader) {
 		}
 		switch v := packet.(type) {
 		case *packets.PublishPacket:
-			// Check the concrete topic, even for wildcard or retained deliveries.
 			if err := p.publish("receive", v); err != nil {
 				return
 			}
@@ -263,8 +252,6 @@ func (p *proxy) replies(r *bufio.Reader) {
 	}
 }
 
-// Bound allocations before handing a packet to the library. Re-encoding must
-// consume exactly the original packet, rejecting trailing or noncanonical data.
 func readPacket(r *bufio.Reader, maxPacket int) (packets.ControlPacket, error) {
 	first, err := r.ReadByte()
 	if err != nil {
@@ -394,7 +381,6 @@ func topicValid(s string, filter bool) bool {
 	if !filter {
 		return !strings.ContainsAny(s, "+#")
 	}
-	// Shared subscriptions change delivery semantics and are outside MQTT 3.1.1.
 	if strings.HasPrefix(s, "$share/") {
 		return false
 	}

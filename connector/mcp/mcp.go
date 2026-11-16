@@ -19,37 +19,29 @@ import (
 
 var errURL = errors.New("MCP requires an http:// or https:// server URL")
 
-// Setup is a connection's server and pin. Pin is data for the host's exposure choice.
 type Setup struct {
 	URL    string    `json:"url"`
 	Pin    *Snapshot `json:"pin"`
 	Preset *Preset   `json:"-"`
 }
 
-// Client is what a session reaches its server and serves its agents with.
 type Client struct {
-	// HTTP reaches the server through its Transport, with the host's redirect policy.
-	HTTP *http.Client
-	// Token is nil unless the connection has a bearer token, which then needs https.
-	Token func(context.Context) (string, error)
-	// Expose selects the tools agents see, and the instructions they get, from what the server lists.
+	HTTP      *http.Client
+	Token     func(context.Context) (string, error)
 	Expose    func(current *Snapshot) (tools []*sdk.Tool, instructions string)
 	Timeout   time.Duration
 	TLS       func(ctx context.Context, host string) *tls.Config
 	ServeHTTP func(ctx context.Context, conn net.Conn, server *http.Server) error
 
-	// ClientInfo is announced to the server; ServerInfo is what agents' sessions see.
 	ClientInfo, ServerInfo *sdk.Implementation
-	// Streamable configures the handler that serves each stream's agent requests.
-	Streamable *sdk.StreamableHTTPOptions
+	Streamable             *sdk.StreamableHTTPOptions
 }
 
 type Session struct {
-	setup   *Setup
-	client  Client
-	current *Snapshot
-	session *sdk.ClientSession
-	// tools are the exposed ones; each request is screened by its stream's gate.
+	setup        *Setup
+	client       Client
+	current      *Snapshot
+	session      *sdk.ClientSession
 	tools        []*sdk.Tool
 	instructions string
 }
@@ -59,8 +51,6 @@ func Parse(config, definition json.RawMessage) (*Setup, error) {
 	return setup, Decode(config, definition, setup, setup)
 }
 
-// Decode lets an attested connector add its own config fields to into, which embeds setup, without
-// a second decoding path for MCP matching, pins or credential declarations.
 func Decode(config, definition json.RawMessage, into any, setup *Setup) error {
 	if err := facts.DecodeNumbers(config, into); err != nil {
 		return err
@@ -89,7 +79,6 @@ func (s *Setup) Hosts() []string {
 	return []string{u.Hostname()}
 }
 
-// Open connects the SDK session; each request closes over its setup and exposed tools.
 func Open(ctx context.Context, setup *Setup, c Client) (*Session, error) {
 	next := &Session{setup: setup, client: c}
 	if err := next.connect(ctx); err != nil {
@@ -99,7 +88,6 @@ func Open(ctx context.Context, setup *Setup, c Client) (*Session, error) {
 	return next, nil
 }
 
-// bearer asks the credential on every request, so a refreshed token replaces an expired one.
 type bearer struct {
 	token func(context.Context) (string, error)
 	base  http.RoundTripper
@@ -114,7 +102,6 @@ func (b bearer) RoundTrip(r *http.Request) (*http.Response, error) {
 	r.Header.Set("Authorization", "Bearer "+token)
 	resp, err := b.base.RoundTrip(r)
 	if err != nil {
-		// The error may quote the authenticated request.
 		if ctxErr := r.Context().Err(); ctxErr != nil {
 			return nil, ctxErr
 		}
@@ -130,10 +117,8 @@ func (m *Session) Close() error {
 	return nil
 }
 
-// Snapshot is what the server listed when the session connected.
 func (m *Session) Snapshot() *Snapshot { return m.current }
 
-// Serve builds a server per request, so each call is screened by the stream's gate.
 func (m *Session) Serve(ctx context.Context, conn net.Conn, _, host string, port uint32, gate func(context.Context, facts.Event) error) {
 	c := conn
 	if port == 443 {
@@ -224,8 +209,6 @@ func (r *Request) Describe(p *Preset) (facts.Observation, error) {
 	return f, nil
 }
 
-// Preset selects service resource identifiers from tool arguments. Sends and Observes are
-// carried for the host, never read here.
 type Preset struct {
 	Scope    map[string]facts.Selector `json:"scope,omitempty"`
 	Grant    []string                  `json:"grant,omitempty"`

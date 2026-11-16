@@ -1,4 +1,3 @@
-// Package identity maps key IDs to the principals they authenticate as while registered.
 package identity
 
 import (
@@ -16,8 +15,6 @@ var (
 	errKeyTaken  = errors.New("key is registered as another identity")
 )
 
-// Registry holds runtime registrations. An exclusive one owns its name; shared ones
-// may hold a name together but never take an exclusive one's.
 type Registry struct {
 	mu   sync.Mutex
 	keys map[string]*registration
@@ -31,9 +28,6 @@ type registration struct {
 	end       context.CancelFunc
 }
 
-// Register binds id to p until Unregister, or until the end it returns unless a later Register
-// of id renewed it first. An exclusive registration replaces a shared one and ends the holds
-// of any other principal it replaces; a shared one leaves an exclusive one in place.
 func (r *Registry) Register(id string, p facts.Principal, exclusive bool) (end func(), err error) {
 	p.Key = id
 	r.mu.Lock()
@@ -84,7 +78,6 @@ func (r *Registry) Register(id string, p facts.Principal, exclusive bool) (end f
 	}, nil
 }
 
-// Unregister ends id's registration and its holds.
 func (r *Registry) Unregister(id string) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -94,7 +87,6 @@ func (r *Registry) Unregister(id string) {
 	}
 }
 
-// Lookup returns the principal id is registered as.
 func (r *Registry) Lookup(id string) (facts.Principal, bool) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -104,7 +96,6 @@ func (r *Registry) Lookup(id string) (facts.Principal, bool) {
 	return facts.Principal{}, false
 }
 
-// Keys lists the keys registered as name.
 func (r *Registry) Keys(name string) []string {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -118,7 +109,6 @@ func (r *Registry) Keys(name string) []string {
 	return keys
 }
 
-// Hold derives a context that ends when id's registration does.
 func (r *Registry) Hold(ctx context.Context, id string) (context.Context, context.CancelFunc, bool) {
 	r.mu.Lock()
 	defer r.mu.Unlock()

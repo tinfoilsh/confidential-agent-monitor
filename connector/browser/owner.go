@@ -26,7 +26,6 @@ var (
 	errStale    = errors.New("the page changed since the view this action was aimed at; look again")
 )
 
-// control is one owner action, aimed at the frame it names; x and y are viewport pixels of that frame's screenshot.
 type control struct {
 	Action string  `json:"action"`
 	Frame  string  `json:"frame"`
@@ -40,7 +39,6 @@ type control struct {
 	Accept bool    `json:"accept"`
 }
 
-// wheel is Input.dispatchMouseEvent for a mouseWheel, which Chrome rejects without both deltas; cdproto omits a zero delta.
 type wheel struct {
 	Type   input.DispatchMouseEventType `json:"type"`
 	X      float64                      `json:"x"`
@@ -51,7 +49,6 @@ type wheel struct {
 
 var dispatchWheel = cdp.Command[wheel, cdp.Empty]{Method: input.CommandDispatchMouseEvent}
 
-// frame is what the owner sees. Owner is always accurate; the capture of the active tab may fail, and Error then says why.
 type frame struct {
 	Owner      bool   `json:"owner"`
 	Tabs       []tab  `json:"tabs"`
@@ -68,8 +65,6 @@ type tab struct {
 	Active bool      `json:"active"`
 }
 
-// serveOwner serves the owner's live view and controls; the agent's listener does not route here.
-// The monitor serves it behind the owner's secret.
 func (b *Session) serveOwner(w http.ResponseWriter, r *http.Request) {
 	b.mu.Lock()
 	epoch := b.epoch
@@ -118,8 +113,6 @@ func (b *Session) control() http.Handler {
 	return mux
 }
 
-// pause takes control at once: it ends the agent's command in progress and returns when that command has let go of the browser.
-// A page load the agent started stops with it.
 func (b *Session) pause(r *http.Request) {
 	b.mu.Lock()
 	running := b.stop != nil
@@ -139,7 +132,6 @@ func (b *Session) pause(r *http.Request) {
 	}
 }
 
-// act runs one input while the owner holds the browser, in the turn it arrived in and on the frame it was aimed at.
 func (b *Session) act(r *http.Request, epoch int, c control) error {
 	b.op.Lock()
 	defer b.op.Unlock()
@@ -157,7 +149,6 @@ func (b *Session) act(r *http.Request, epoch int, c control) error {
 	}
 	ctx, done := b.command(r.Context())
 	defer done()
-	// Picking a tab names it, and a dialog blocks the page, so neither waits to look at the page.
 	switch c.Action {
 	case "dialog":
 		_, err := chromedp.Call(ctx, page.HandleJavaScriptDialog, page.HandleJavaScriptDialogParams{Accept: c.Accept})
@@ -209,8 +200,6 @@ func (b *Session) act(r *http.Request, epoch int, c control) error {
 	return err
 }
 
-// view looks at the active tab without waiting for a command or changing which tab is active. Owner is read last,
-// so it is accurate even when the capture fails.
 func (b *Session) view(r *http.Request) frame {
 	f, err := b.capture(r)
 	if err != nil {
@@ -222,7 +211,6 @@ func (b *Session) view(r *http.Request) frame {
 	return f
 }
 
-// capture takes the screenshot, URL and frame token of one document, in one epoch: if either changes meanwhile, it fails.
 func (b *Session) capture(r *http.Request) (frame, error) {
 	var f frame
 	ctx, cancel := context.WithTimeout(b.root, b.CaptureTimeout)
@@ -232,7 +220,6 @@ func (b *Session) capture(r *http.Request) (frame, error) {
 	if err != nil {
 		return f, err
 	}
-	// The tab follow would keep: the most recently used one still open.
 	b.mu.Lock()
 	var active target.ID
 	for _, id := range slices.Backward(b.order) {

@@ -1,5 +1,3 @@
-// Package worker runs one connector in another process and carries its private protocol: the host keeps
-// the gate, the network, the credentials and the TLS and SSH identities, and the worker asks for each use.
 package worker
 
 import (
@@ -17,24 +15,16 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
 
-// Limits bound a worker's use of the host. The private protocol's message and header sizes are fixed.
 type Limits struct {
-	// Streams one process serves at once, and upstream connections it holds open at once.
 	Streams, Upstreams int
-	// Handshake bounds dialing a stream into the worker or an upstream through the host.
-	Handshake time.Duration
-	// Credential and Sign bound the worker's wait for a credential value or a host signature.
-	Credential, Sign time.Duration
-	// Connections and Idle bound the RPC connections either side keeps to the other; PoolIdle closes an unused one.
-	Connections, Idle int
-	PoolIdle          time.Duration
-	// Read bounds receiving an RPC request head or callback payload; ServeIdle closes an RPC connection left idle.
-	Read, ServeIdle time.Duration
-	// Drain bounds how long a relayed stream's closed peer keeps draining.
-	Drain time.Duration
+	Handshake          time.Duration
+	Credential, Sign   time.Duration
+	Connections, Idle  int
+	PoolIdle           time.Duration
+	Read, ServeIdle    time.Duration
+	Drain              time.Duration
 }
 
-// dialFunc opens a private connection between the host and one worker process.
 type dialFunc func(context.Context) (net.Conn, error)
 
 func (dial dialFunc) transport(l Limits) *http.Transport {
@@ -43,7 +33,6 @@ func (dial dialFunc) transport(l Limits) *http.Transport {
 	}, MaxConnsPerHost: l.Connections, MaxIdleConnsPerHost: l.Idle, IdleConnTimeout: l.PoolIdle}
 }
 
-// The private protocol's encoding bounds: one JSON message and one request head.
 const (
 	maxMessage = 4 << 20
 	maxHeader  = 16 << 10
@@ -51,7 +40,6 @@ const (
 
 const readyPath = "/_monitor/ready"
 
-// bootstrap carries the host's prepared protocol data and the handles of its grants, never their values.
 type bootstrap struct {
 	Data    json.RawMessage         `json:"data"`
 	Secrets map[string]secretHandle `json:"secrets,omitempty"`
@@ -94,8 +82,6 @@ func readJSON(r io.Reader, value any) error {
 	return facts.DecodeNumbers(raw, value)
 }
 
-// Bound receipt of a callback's payload, then clear the deadline before Gate or
-// a credential provider waits. A completed request may require owner approval.
 func readRequest(w http.ResponseWriter, r *http.Request, timeout time.Duration) ([]byte, error) {
 	control := http.NewResponseController(w)
 	if err := control.SetReadDeadline(time.Now().Add(timeout)); err != nil {
@@ -154,7 +140,6 @@ type signing struct {
 	Algorithm string
 }
 
-// connect bounds dialing and the HTTP handshake, then returns an untimed stream.
 func connect(ctx context.Context, dial dialFunc, r *http.Request, status int, timeout time.Duration) (net.Conn, error) {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
@@ -188,7 +173,6 @@ func accept(w http.ResponseWriter, r *http.Request) (net.Conn, error) {
 	return netx.Hijack(w, "HTTP/1.1 101 Switching Protocols\r\nConnection: Upgrade\r\nUpgrade: "+upgradeProtocol+"\r\n\r\n")
 }
 
-// Worker RPC has stricter header and idle bounds than arbitrary protocol HTTP.
 func serveRPC(ctx context.Context, ln net.Listener, handler http.Handler, l Limits) error {
 	return netx.ServeListener(ctx, ln, &http.Server{Handler: handler, ReadHeaderTimeout: l.Read, IdleTimeout: l.ServeIdle, MaxHeaderBytes: maxHeader})
 }

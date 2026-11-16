@@ -11,7 +11,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// OIDC identity stays with its OAuth client registration in encrypted storage.
 type OIDC struct {
 	Issuer  string `json:"issuer"`
 	JWKSURL string `json:"jwks_url"`

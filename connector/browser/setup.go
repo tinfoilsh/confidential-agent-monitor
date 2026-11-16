@@ -8,8 +8,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-// Open starts one Chrome session. Its command/control synchronization remains
-// inside that session; closing it retires its network proxy and callbacks too.
 func Open(ctx context.Context, browser Browser) (*Session, error) {
 	life, cancel := context.WithCancel(context.Background())
 	next := &Session{Browser: browser, cancel: cancel}
@@ -26,7 +24,6 @@ func Open(ctx context.Context, browser Browser) (*Session, error) {
 	return next, nil
 }
 
-// Close waits for streams and controls to leave, since commands start workers that close joins.
 func (b *Session) Close() error {
 	b.life.Lock()
 	defer b.life.Unlock()

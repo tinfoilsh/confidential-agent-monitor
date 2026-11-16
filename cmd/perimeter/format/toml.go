@@ -13,7 +13,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-// ReadTOML reads policy source as JSON values. Callers bound the source's size.
 func ReadTOML(source string) (map[string]any, error) {
 	var v map[string]any
 	if err := toml.Unmarshal([]byte(source), &v); err != nil {
@@ -33,17 +32,13 @@ func ReadTOML(source string) (map[string]any, error) {
 	return v, nil
 }
 
-// Change replaces or deletes one source value without reconstructing unrelated text.
 type Change struct {
 	Path   []string `json:"path"`
 	Value  any      `json:"value,omitempty"`
 	Delete bool     `json:"delete,omitempty"`
-	// From moves the value written at another path here, removing it there.
-	From []string `json:"from,omitempty"`
+	From   []string `json:"from,omitempty"`
 }
 
-// TOML has no null and cannot represent every JSON number exactly. A tagged JSON
-// literal preserves those values. Objects using the tag are themselves escaped.
 func sourceValue(v any, tomlValue bool) (any, error) {
 	literal := func(value any) (any, error) {
 		raw, err := json.Marshal(value)
@@ -108,8 +103,6 @@ func RenderTOML(v map[string]any) (string, error) {
 	return string(text), err
 }
 
-// EditTOML accepts JSON values and preserves unrelated source text. Table
-// replacements use headers instead of one inline line; literals stay indivisible.
 func EditTOML(source string, changes []Change) (string, error) {
 	doc, err := edit.Parse([]byte(source))
 	if err != nil {
@@ -155,7 +148,6 @@ func EditTOML(source string, changes []Change) (string, error) {
 	return doc.String(), nil
 }
 
-// FragmentTOML converts a TOML proposal into the same JSON-valued edits as owner calls.
 func FragmentTOML(source string) ([]Change, error) {
 	v, err := ReadTOML(source)
 	if err != nil {
@@ -164,7 +156,6 @@ func FragmentTOML(source string) ([]Change, error) {
 	return fragmentChanges(v, nil), nil
 }
 
-// fragmentChanges sets each leaf of a fragment, merging it into the source.
 func fragmentChanges(v map[string]any, path []string) (changes []Change) {
 	var tables []Change
 	for _, key := range slices.Sorted(maps.Keys(v)) {
@@ -175,6 +166,5 @@ func fragmentChanges(v map[string]any, path []string) (changes []Change) {
 			changes = append(changes, Change{Path: at, Value: v[key]})
 		}
 	}
-	// A table's own keys come first so its header precedes its subtables'.
 	return append(changes, tables...)
 }

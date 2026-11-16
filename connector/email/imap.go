@@ -26,7 +26,6 @@ const (
 
 var imapLiteral = regexp.MustCompile(`\{(\d+)(\+?)\}$`)
 
-// Endpoint is a destination whose password is the "password" credential.
 type Endpoint struct {
 	RawURL string `json:"url"`
 	User   string `json:"user"`
@@ -57,7 +56,6 @@ func parse(config json.RawMessage) (*Endpoint, error) {
 
 func (e *Endpoint) Hosts() []string { return []string{e.url.Hostname()} }
 
-// dial reaches the destination, over TLS when it uses the secure scheme.
 func (e *Endpoint) dial(ctx context.Context, dial func(context.Context, string, string) (net.Conn, error), secure, port, securePort string) (net.Conn, error) {
 	u := e.url
 	address := u.Host
@@ -92,9 +90,6 @@ func ParseIMAP(config json.RawMessage) (*IMAP, error) {
 	return &IMAP{e}, nil
 }
 
-// Preauthenticated logs in with the stored password and relays commands, each after the gate admits it.
-// The caller authenticated each stream, so the agent is greeted "* PREAUTH greeting" and its LOGIN or
-// AUTHENTICATE is acknowledged unchecked.
 func (r *IMAP) Preauthenticated(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), greeting string) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
 		ctx, cancel := context.WithCancel(ctx)
@@ -172,7 +167,6 @@ func (r *IMAP) Preauthenticated(dial func(ctx context.Context, network, address 
 	}
 }
 
-// A refused command's synchronizing literal never comes, since the client is still waiting for a continuation.
 func forwardIMAP(dst io.Writer, src *bufio.Reader, line string) error {
 	for {
 		if _, err := io.WriteString(dst, line); err != nil {

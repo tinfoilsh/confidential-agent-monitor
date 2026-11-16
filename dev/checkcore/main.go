@@ -1,4 +1,3 @@
-// Command checkcore enforces the approved package graph and reports growth by package.
 package main
 
 import (
@@ -185,7 +184,7 @@ func run(root string, tracked bool, base string) (report, error) {
 		if err != nil {
 			return report{}, err
 		}
-		previous := inspect(files, nil) // Measure old layouts without approving or running their checker.
+		previous := inspect(files, nil)
 		if len(previous.Violations) != 0 {
 			return report{}, fmt.Errorf("cannot measure base %s: %s", r.Base, strings.Join(previous.Violations, "; "))
 		}
@@ -233,7 +232,6 @@ func main() {
 	tracked := flag.Bool("tracked", false, "inspect tracked source only")
 	jsonOutput := flag.Bool("json", false, "emit the complete report as JSON")
 	base := flag.String("base", "", "compare package growth against this explicit Git revision")
-	// Keep the existing check-core.py [root] --flags invocation working.
 	args := os.Args[1:]
 	if len(args) != 0 && !strings.HasPrefix(args[0], "-") {
 		args = append(slices.Clone(args[1:]), args[0])

@@ -1,4 +1,3 @@
-// A standalone composition: static SSH identities, native Cedar decisions and TCP.
 package main
 
 import (
@@ -171,8 +170,6 @@ permit(principal == User::"alice", action == Action::"connect", resource == Serv
 	return serveErr
 }
 
-// evaluateCedar intentionally refuses diagnostics even if another policy allowed
-// the request. Each command owns its request mapping and decision interpretation.
 func evaluateCedar(ctx context.Context, policies *cedar.PolicySet, principal facts.Principal, connection string) error {
 	if err := ctx.Err(); err != nil {
 		return err

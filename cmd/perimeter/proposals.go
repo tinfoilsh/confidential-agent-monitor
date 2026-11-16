@@ -17,8 +17,6 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Policy proposals and enrollment.
-
 const (
 	maxProposalChanges = 256
 	maxPolicyProposals = 32
@@ -41,8 +39,6 @@ func receipt(r *record) proposalReceipt {
 	return proposalReceipt{ID: r.ID, State: r.State, Connection: summarize(r).Facts.Connection}
 }
 
-// proposal renders p's changes to one connection against source for review under st. It
-// fails when they no longer apply, change nothing, or p may not propose them.
 func (s *state) proposal(st *settings, source string, p facts.Principal, target, reason string, changes []format.Change) (string, json.RawMessage, error) {
 	current, ok := s.identities.Lookup(p.Key)
 	if !ok || !current.Same(p) {
@@ -64,8 +60,6 @@ func (s *state) proposal(st *settings, source string, p facts.Principal, target,
 	return candidate, raw, err
 }
 
-// proposePolicy publishes one pending record per connection, or none if any fails.
-// The owner answers it like a request; approval writes its changes.
 func (s *state) proposePolicy(ctx context.Context, key string, input proposalInput) ([]proposalReceipt, error) {
 	reason := strings.TrimSpace(input.Reason)
 	if reason == "" || len(reason) > maxReason {
@@ -114,7 +108,6 @@ func (s *state) proposePolicy(ctx context.Context, key string, input proposalInp
 
 		var receipts []proposalReceipt
 		s.locked(func() {
-			// A principal has one pending proposal per connection; a new one replaces it.
 			var replaced []*record
 			pending := len(proposals)
 			for r := range s.records.All() {
@@ -147,15 +140,12 @@ func (s *state) proposePolicy(ctx context.Context, key string, input proposalInp
 }
 
 type identityEnrollment struct {
-	Key      string `json:"key"`
-	Operator bool   `json:"routes"`
-	Restore  bool   `json:"restore"`
-	// Attributes are the enrollment's other keys.
+	Key        string                     `json:"key"`
+	Operator   bool                       `json:"routes"`
+	Restore    bool                       `json:"restore"`
 	Attributes map[string]json.RawMessage `json:",embed"`
 }
 
-// enrollmentChanges adds new identities; a revoked key or route access returns only when restored.
-// The caller holds s.mu.
 func (s *state) enrollmentChanges(input map[string]identityEnrollment) ([]format.Change, error) {
 	var changes []format.Change
 	st := s.settings.Load()
@@ -202,8 +192,6 @@ func (s *state) enrollmentChanges(input map[string]identityEnrollment) ([]format
 	return changes, nil
 }
 
-// restoreDevice lets owner unlock restore its device; ordinary enrollment still honors revocation.
-// Authentication and unlocking precede this independent settings write.
 func (s *state) restoreDevice(ctx context.Context, public string) error {
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(public))
 	if err != nil {

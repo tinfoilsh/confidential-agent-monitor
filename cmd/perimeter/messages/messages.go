@@ -1,4 +1,3 @@
-// Package messages converts between the Anthropic Messages API and OpenAI chat completions.
 package messages
 
 import (
@@ -14,13 +13,11 @@ import (
 
 type object = map[string]any
 
-// Limits bound what a conversion reads: an error body, a whole result, and one streamed line or event.
 type Limits struct {
 	ErrorBytes, ResultBytes int64
 	EventBytes              int
 }
 
-// Response converts a chat completions response to the Messages response for model.
 func Response(r *http.Request, resp *http.Response, model any, streaming bool, limits Limits) (*http.Response, error) {
 	if resp.StatusCode >= 400 {
 		defer resp.Body.Close()
@@ -91,12 +88,10 @@ func messageJSON(r *http.Request, status int, body object) *http.Response {
 	return &http.Response{StatusCode: status, Status: http.StatusText(status), Header: http.Header{"Content-Type": {"application/json"}}, Body: io.NopCloser(bytes.NewReader(raw)), ContentLength: int64(len(raw)), Request: r}
 }
 
-// Error is a Messages error response.
 func Error(r *http.Request, status int, kind, message string) *http.Response {
 	return messageJSON(r, status, object{"type": "error", "error": object{"type": kind, "message": message}})
 }
 
-// Request converts a Messages request body to a chat completions request body.
 func Request(in map[string]any) (map[string]any, error) {
 	out := object{"model": in["model"]}
 	for _, key := range []string{"max_tokens", "temperature", "top_p", "top_k", "stream"} {
@@ -127,7 +122,6 @@ func Request(in map[string]any) (map[string]any, error) {
 		if !ok {
 			return nil, errors.New("invalid message")
 		}
-		// Claude Code 2.1.260 also sends system messages in the history array.
 		switch msg["role"] {
 		case "assistant", "user", "system", "developer":
 		default:

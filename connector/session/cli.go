@@ -25,21 +25,17 @@ func ParseCLI(config json.RawMessage) (*CLI, error) {
 
 const exitRefused = 126
 
-// CLI runs a host program for each admitted command, with its credentials as environment variables.
 type CLI struct {
 	Path        string   `json:"path"`
 	Stdin       string   `json:"stdin"`
 	Credentials []string `json:"credentials"`
 }
 
-// Limits bound one command: the git object it reads and how long its output may outlive it.
 type Limits struct {
 	Stdin     int64
 	WaitDelay time.Duration
 }
 
-// Handler serves agent sessions under config, the SSH server configuration they reach. name prefixes
-// the refusals agents read on stderr.
 func (t *CLI) Handler(config *ssh.ServerConfig, secret func(ctx context.Context, name string) (string, error), limits Limits, name string) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, conn net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
 		s := newStream(ctx, conn, gate)

@@ -19,10 +19,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
 
-// Authorization. Admissions and operations are decided under the current settings' policy;
-// the owner answers what policy requires, and a later policy or label revokes what it no longer
-// allows. All of it runs under s.mu, which only approval waits release.
-
 var (
 	errRemoved      = errors.New("this agent's identity was removed")
 	errChanged      = errors.New("configuration changed; retry the request")
@@ -66,8 +62,6 @@ type Decision struct {
 	Next         format.Label         `json:"next"`
 }
 
-// A record is one decision or policy proposal; requests are the pending and expired ones.
-// Its JSON is the deployed activity and audit representation.
 type record struct {
 	ID      string          `json:"id"`
 	State   string          `json:"state"`
@@ -81,7 +75,6 @@ type record struct {
 	Changes []format.Change `json:"changes,omitempty"`
 }
 
-// settle marks a failed execution without replacing an owner's answer or expiration.
 func (r *record) settle(err error) {
 	if err != nil && r.State != stateDenied && r.State != stateExpired {
 		r.State = stateRefused
@@ -91,30 +84,22 @@ func (r *record) settle(err error) {
 	}
 }
 
-// An admitted is one key's stream to one connection, or its lease of a capability.
 type admitted struct {
 	key, connection string
-	// capability makes the admission a lease of it, which a label change never revokes.
-	capability string
-	// perMessage streams gate every operation, so they outlive a change to their key's label.
-	perMessage bool
-	// valid reports, under s.mu, that the connection still serves this admission.
-	valid func() bool
-	// The admission, then the latest operation.
-	grants []*grant
+	capability      string
+	perMessage      bool
+	valid           func() bool
+	grants          []*grant
 }
 
-// A grant is an allowed request a settings write re-decides, with the label it was
-// decided under and the requirements the owner answered for it alone.
 type grant struct {
 	kind     string
-	event    facts.Event   // an operation's captured bytes
-	admit    *requestFacts // an admission's description
+	event    facts.Event
+	admit    *requestFacts
 	label    format.Label
 	approved []string
 }
 
-// requestFacts is the snapshot shared by authorization and audit, in its deployed JSON form.
 type requestFacts struct {
 	Scope      map[string]any             `json:"-"`
 	Version    int                        `json:"version"`
@@ -136,7 +121,6 @@ type operation struct {
 	Lineage []string `json:"lineage"`
 }
 
-// resolveOperation binds an observed action to its nearest preset action effects.
 func resolveOperation(id, action string, effects []string, actions map[string]catalog.Action) *operation {
 	op := operation{ID: id, Action: action}
 	for a := action; a != ""; {
@@ -158,7 +142,7 @@ func resolveOperation(id, action string, effects []string, actions map[string]ca
 }
 
 type decisionInput struct {
-	Facts         json.RawMessage    `json:"facts"` // the bytes the audit record stores
+	Facts         json.RawMessage    `json:"facts"`
 	Authorization authorizationInput `json:"authorization"`
 	Connection    connectionInput    `json:"connection"`
 }
@@ -166,7 +150,7 @@ type decisionInput struct {
 type authorizationInput struct {
 	Access             config.Access       `json:"access"`
 	Reaches            bool                `json:"reaches"`
-	Effects            []map[string]string `json:"effects"` // global, connection, identity, access
+	Effects            []map[string]string `json:"effects"`
 	AllowPaidInference bool                `json:"allow_paid_inference"`
 	Rules              []config.Rule       `json:"rules"`
 	Approved           []string            `json:"approved"`
@@ -200,14 +184,12 @@ type capabilityInput struct {
 	Capability string          `json:"capability"`
 }
 
-// Capabilities that policy grants an identity; its stored routes flag grants each.
 const (
 	capabilityConfig  = "config"
 	capabilityPropose = "propose"
 	capabilityRoutes  = "routes"
 )
 
-// capable reports whether policy grants p capability, refusing it when policy fails.
 func (st *settings) capable(p facts.Principal, capability string) bool {
 	var ok bool
 	err := st.policy.Eval(context.Background(), config.QueryCapable, capabilityInput{Principal: p, Routes: st.Identities[p.Name].Operator, Capability: capability}, &ok)
@@ -216,8 +198,6 @@ func (st *settings) capable(p facts.Principal, capability string) bool {
 
 func (st *settings) enforced() bool { return st.Lattices.Confidentiality || st.Lattices.Integrity }
 
-// observe binds a connection's captured event to the facts policy and audit read: its
-// protocol's hints, and its operation's lineage and effects from the preset's actions.
 func (st *settings) observe(connection string, event facts.Event) (requestFacts, error) {
 	o, err := event.Decode()
 	f := requestFacts{Parameters: o.Parameters, Scope: o.Scope, Title: o.Title, Details: o.Details}
@@ -234,7 +214,6 @@ func (st *settings) observe(connection string, event facts.Event) (requestFacts,
 	return f, err
 }
 
-// describe binds a grant's request to the principal, connection and label it is decided for.
 func (st *settings) describe(p facts.Principal, connection string, gr *grant) (requestFacts, error) {
 	var f requestFacts
 	var err error
@@ -255,7 +234,6 @@ func (st *settings) describe(p facts.Principal, connection string, gr *grant) (r
 	return f, err
 }
 
-// decide fills a record with a request's facts and grant and, unless they are invalid, policy's decision.
 func (st *settings) decide(ctx context.Context, p facts.Principal, connection string, gr *grant) (*record, error) {
 	f, describeErr := st.describe(p, connection, gr)
 	if describeErr != nil {
@@ -271,7 +249,6 @@ func (st *settings) decide(ctx context.Context, p facts.Principal, connection st
 		return nil, err
 	}
 	access, settings := st.Access(p.Name, connection), st.Connections[connection]
-	// Policy reads unset scopes as {} and unset lists as [], never null.
 	effects := []map[string]string{st.Effects, settings.Effects, st.Identities[p.Name].Effects, access.Effects}
 	for i, scope := range effects {
 		if scope == nil {
@@ -297,8 +274,6 @@ func (s *state) label(key string) format.Label {
 	return config.InitialLabel
 }
 
-// decideGrant evaluates gr under current settings, without waiting or recording.
-// An invalid request yields its record with the error.
 func (s *state) decideGrant(ctx context.Context, a *admitted, gr *grant) (*record, error) {
 	p, ok := s.identities.Lookup(a.key)
 	if !ok {
@@ -310,8 +285,6 @@ func (s *state) decideGrant(ctx context.Context, a *admitted, gr *grant) (*recor
 	return s.settings.Load().decide(ctx, p, a.connection, gr)
 }
 
-// authorize releases s.mu only around approval waits.
-// Callers settle its record after any label persistence, before execution begins.
 func (s *state) authorize(ctx context.Context, a *admitted, gr *grant) (*record, error) {
 	var r *record
 	gr.approved = []string{}
@@ -356,8 +329,6 @@ func (s *state) authorize(ctx context.Context, a *admitted, gr *grant) (*record,
 	}
 }
 
-// awaitAnswer publishes a pending record and releases s.mu until it is answered,
-// expires or anything changes; a record still pending is checked again.
 func (s *state) awaitAnswer(ctx context.Context, r *record) error {
 	if r.State != statePending {
 		r.State, r.Expires = statePending, time.Now().Add(approvalWait)
@@ -377,7 +348,6 @@ func (s *state) awaitAnswer(ctx context.Context, r *record) error {
 	return errors.New("waiting for approval in the Perimeter timed out")
 }
 
-// admit decides a stream's admission, waiting for any approval it requires.
 func (s *state) admit(ctx context.Context, p facts.Principal, req core.Request) (core.Watch, error) {
 	a := &admitted{key: p.Key, connection: req.Connection, perMessage: req.PerMessage, valid: req.Valid}
 	gr := &grant{kind: config.KindAdmission, admit: &requestFacts{
@@ -412,7 +382,6 @@ func (s *state) admit(ctx context.Context, p facts.Principal, req core.Request) 
 	}, nil
 }
 
-// operation keeps the latest allowed operation with its stream.
 func (s *state) operation(ctx, stream context.Context, a *admitted, event facts.Event) error {
 	if err := stream.Err(); err != nil {
 		return err
@@ -437,8 +406,6 @@ func (s *state) operation(ctx, stream context.Context, a *admitted, event facts.
 	return err
 }
 
-// recheck reports that a's key, access and connection remain, and that its admission
-// and latest operation would be allowed outright under current settings.
 func (s *state) recheck(a *admitted) bool {
 	if a.capability != "" {
 		return s.capable(a.key, a.capability)
@@ -451,8 +418,6 @@ func (s *state) recheck(a *admitted) bool {
 	return true
 }
 
-// relabel persists key's label; a failed write never publishes an observation.
-// source is the admission whose operation produced l, or nil for an owner reset.
 func (s *state) relabel(ctx context.Context, key string, l format.Label, source *admitted) error {
 	if old := s.label(key); old.Trust == l.Trust && old.Audience == l.Audience {
 		return nil
@@ -463,14 +428,9 @@ func (s *state) relabel(ctx context.Context, key string, l format.Label, source 
 	if err := s.commit(ctx, next); err != nil {
 		return err
 	}
-	// With both lattices off a label is recorded but never enforced, so a
-	// change in it is no reason to cut anything.
 	if source != nil && !s.settings.Load().enforced() {
 		return nil
 	}
-	// An opaque source may finish the session it just admitted. Other opaque
-	// sessions cannot recheck their bytes, so revoke them.
-	// Close every connector stream so old deliveries cannot recontaminate a reset.
 	s.admissions.Recheck(func(a *admitted) bool {
 		return a.key != key || a.capability != "" || a == source || source != nil && a.perMessage
 	})
@@ -483,8 +443,6 @@ func (s *state) capable(key, capability string) bool {
 	return known && st != nil && st.capable(p, capability)
 }
 
-// hold leases capability while key holds it. The context it returns ends when that identity
-// is unregistered or a settings change takes the capability away.
 func (s *state) hold(ctx context.Context, key, capability string) (context.Context, context.CancelFunc, bool) {
 	ctx, release, ok := s.identities.Hold(ctx, key)
 	if !ok {
@@ -506,7 +464,6 @@ func (s *state) hold(ctx context.Context, key, capability string) (context.Conte
 	return ctx, func() { cancel(); release() }, true
 }
 
-// recheckAll revokes the admissions current settings no longer allow and wakes waiting requests.
 func (s *state) recheckAll() {
 	s.admissions.Recheck(s.recheck)
 	s.records.Notify()

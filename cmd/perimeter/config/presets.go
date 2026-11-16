@@ -12,9 +12,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 )
 
-// Presets: the shipped protocol descriptions, an organization's own, and the owner catalog.
-
-// connectionDefaults are the settings the owner UI proposes for a new connection of a preset.
 type connectionDefaults struct {
 	Contents  string `json:"contents"`
 	Sends     string `json:"sends"`
@@ -30,8 +27,6 @@ var (
 	publicDefaults     = connectionDefaults{Contents: "anyone", Sends: "anyone", Strangers: true}
 )
 
-// shippedDefaults selects a shipped preset's defaults: by service, then by its connection's kind.
-// MCP servers and the GitHub API return team data only to the agent; other APIs can publish it.
 func shippedDefaults(name string, p *catalog.Preset) connectionDefaults {
 	switch name {
 	case "tcp", "web":
@@ -55,8 +50,6 @@ func shippedDefaults(name string, p *catalog.Preset) connectionDefaults {
 	return privateDefaults
 }
 
-// LoadPresets decodes the shipped presets and an organization's own; an organization's
-// preset keeps the defaults its catalog declares.
 func LoadPresets(shipped, extra fs.FS) (map[string]*catalog.Preset, map[string]json.RawMessage, error) {
 	out, defaults := map[string]*catalog.Preset{}, map[string]json.RawMessage{}
 	for _, source := range []fs.FS{shipped, extra} {
@@ -97,21 +90,17 @@ func LoadPresets(shipped, extra fs.FS) (map[string]*catalog.Preset, map[string]j
 	return out, defaults, nil
 }
 
-// OperationSummary is protocol-neutral catalog metadata, never an authorization input.
 type OperationSummary struct {
 	Action  string   `json:"action"`
 	Effects []string `json:"effects,omitempty"`
 }
 
-// CatalogEntry is the owner's catalog presentation. Operations are display metadata;
-// their protocol definitions remain opaque until a connector decodes them.
 type CatalogEntry struct {
 	*catalog.Catalog
 	Title      string                       `json:"title"`
 	Operations *map[string]OperationSummary `json:"operations,omitempty"`
 }
 
-// CatalogEntries is a control presentation, never an authorization or runtime registry.
 func CatalogEntries(cfg *Config, defaults map[string]json.RawMessage, operations map[string]map[string]OperationSummary) (map[string]CatalogEntry, string, error) {
 	used := map[string]bool{}
 	for _, connection := range cfg.Connections {

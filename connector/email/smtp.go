@@ -30,10 +30,6 @@ func ParseSMTP(config json.RawMessage) (*SMTP, error) {
 	return &SMTP{e}, err
 }
 
-// Handler accepts mail from the agent and submits each admitted message with the stored password.
-// server builds the stream's server for its host around backend; Data buffers each message, so its
-// MaxMessageBytes bounds memory. auth decides the identities AUTH PLAIN accepts, while mail needs no
-// AUTH, since the caller admitted the stream. listen yields the stream once as a listener.
 func (r *SMTP) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), auth sasl.PlainAuthenticator, server func(ctx context.Context, host string, backend smtp.Backend) *smtp.Server, listen func(context.Context, net.Conn) net.Listener) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, s net.Conn, _, host string, _ uint32, gate func(context.Context, facts.Event) error) {
 		server := server(ctx, host, smtp.BackendFunc(func(*smtp.Conn) (smtp.Session, error) {
@@ -104,7 +100,6 @@ func (s *smtpSession) submit(message []byte) error {
 
 const multipartPrefix = "multipart/"
 
-// Only top-level attachments are named.
 func mailHeaders(message []byte) *MailFacts {
 	msg, err := mail.ReadMessage(bytes.NewReader(message))
 	if err != nil {
@@ -154,7 +149,6 @@ func attachments(msg *mail.Message) []string {
 
 type SMTPRequest Details
 
-// Describe keeps the envelope recipients as sent; the host compares them with the connection's own address.
 func (r *SMTPRequest) Describe() facts.Observation {
 	v := r.SMTP
 	to := slices.Clone(v.To)

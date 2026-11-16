@@ -49,8 +49,6 @@ func compiledViolations(p compiledPackage, rules map[string]rule) []string {
 	return violations
 }
 
-// go list follows replacements and the actual dependency versions of each module.
-// The source pass separately covers files excluded by this platform's build tags.
 func checkCompiled(root string, foundModules []string, rules map[string]rule) (map[string][]string, []string) {
 	compiled := map[string][]string{}
 	var violations []string

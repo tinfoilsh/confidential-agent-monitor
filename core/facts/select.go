@@ -12,7 +12,6 @@ import (
 	"strings"
 )
 
-// Selector selects a typed value from a JSON document.
 type Selector struct {
 	At       string `json:"at"`
 	Type     string `json:"type,omitempty"`
@@ -23,7 +22,6 @@ func (s Selector) Valid() bool {
 	return slices.Contains([]string{"", "string", "number", "boolean", "object", "array", "null"}, s.Type)
 }
 
-// Check validates an extracted value. Optional permits absence, never a wrong type.
 func (s Selector) Check(name string, value any, present bool) error {
 	typ := s.Type
 	if typ == "" {
@@ -79,8 +77,6 @@ func Select(selectors []Compiled, doc any) (map[string]any, error) {
 	return out, errors.Join(errs...)
 }
 
-// Project selects the named parameters. Nil names select nothing and return nil;
-// an explicitly empty selection returns an empty map.
 func Project(parameters map[string]any, names []string) map[string]any {
 	if names == nil {
 		return nil
@@ -94,7 +90,6 @@ func Project(parameters map[string]any, names []string) map[string]any {
 	return out
 }
 
-// validJSONPointer checks the supported pointer syntax, which excludes escapes.
 func validJSONPointer(at string) bool {
 	return at == "" || strings.HasPrefix(at, "/") && !strings.Contains(at, "~")
 }
@@ -150,8 +145,6 @@ func jsonType(v any) string {
 	return ""
 }
 
-// Equal compares values decoded with DecodeNumbers, including exact decimal
-// equality across different spellings such as 1, 1.0 and 1e0.
 func Equal(a, b any) bool {
 	switch x := a.(type) {
 	case json.Number:
@@ -182,8 +175,6 @@ func Equal(a, b any) bool {
 	}
 }
 
-// decimalParts normalizes a decoded JSON number without expanding its exponent.
-// Even very large exponents use space proportional to their written length.
 func decimalParts(n json.Number) (string, *big.Int) {
 	mantissa, exponent, _ := strings.Cut(strings.ToLower(string(n)), "e")
 	mantissa, negative := strings.CutPrefix(mantissa, "-")

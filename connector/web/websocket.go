@@ -14,8 +14,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-// Only RFC 6455 upgrades are supported. The preset must separately recognize
-// the handshake and every JSON message; HTTP approvals never authorize them.
 func websocketUpgrade(r *http.Request) (bool, error) {
 	if r.Header["Upgrade"] == nil {
 		return false, nil
@@ -37,7 +35,6 @@ func websocketUpgrade(r *http.Request) (bool, error) {
 	return false, errors.New("WebSocket handshake requires Connection: Upgrade")
 }
 
-// serveWebSocket ends the stream, conn, when either side closes.
 func (h Handler) serveWebSocket(ctx context.Context, conn net.Conn, w http.ResponseWriter, r *http.Request, handshake *Request, gate func(context.Context, facts.Event) error, transport http.RoundTripper) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -53,14 +50,11 @@ func (h Handler) serveWebSocket(ctx context.Context, conn net.Conn, w http.Respo
 		HTTPHeader: websocketHeaders(r.Header), Subprotocols: protocols,
 	})
 	if response != nil {
-		// Preserve provider metadata (including Codex turn state), while each
-		// side negotiates its own framing, key, and optional subprotocol.
 		for name, values := range websocketHeaders(response.Header) {
 			w.Header()[name] = values
 		}
 	}
 	if err != nil {
-		// Dial errors can contain the credential-bearing upstream URL.
 		status := http.StatusBadGateway
 		if response != nil && response.StatusCode >= 400 && response.StatusCode <= 599 {
 			status = response.StatusCode
@@ -78,7 +72,6 @@ func (h Handler) serveWebSocket(ctx context.Context, conn net.Conn, w http.Respo
 	if err != nil {
 		return
 	}
-	// A hijacked HTTP connection no longer triggers http.Server's closed state.
 	defer end()
 	defer client.CloseNow()
 	client.SetReadLimit(h.MaxBody)
@@ -93,9 +86,6 @@ func (h Handler) serveWebSocket(ctx context.Context, conn net.Conn, w http.Respo
 			if err != nil {
 				return
 			}
-			// Classify the whole delivery using the connection's contents and trust.
-			// Its payload is opaque to policy and can stream after admission,
-			// including large images, without an unbounded allocation.
 			if err := gate(ctx, facts.Capture((&WebSocketReceive{Origin: handshake.HTTP.Origin, Host: handshake.HTTP.Host, Path: handshake.HTTP.Path}).Describe(), nil)); err != nil {
 				client.Close(websocket.StatusPolicyViolation, "delivery refused")
 				return
@@ -128,9 +118,6 @@ func (h Handler) serveWebSocket(ctx context.Context, conn net.Conn, w http.Respo
 	}
 }
 
-// WebSocketReceive admits one upstream message. Receiving does not repeat the
-// request's effects (such as paying for inference) or send data to the upstream.
-// Its details carry no method, which no request has.
 type WebSocketReceive struct {
 	Origin string `json:"origin"`
 	Host   string `json:"host"`

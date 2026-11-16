@@ -13,8 +13,6 @@ import (
 	"time"
 )
 
-// check verifies inventory accounting and reproducibility. --reviewed also
-// requires all operations to have shipped definitions and no recorded gaps.
 func check(only []string, reviewed bool, maxAge time.Duration) error {
 	sources, err := load[map[string]source](sourcesPath)
 	if err != nil {

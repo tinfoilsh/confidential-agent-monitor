@@ -8,7 +8,6 @@ import (
 	"github.com/vektah/gqlparser/v2/parser"
 )
 
-// graphql returns nil for batches, persisted queries, URL envelopes, fragment spreads, directives and unset variables.
 func graphql(body any, query url.Values) *GraphQLFacts {
 	envelope, _ := body.(map[string]any)
 	text, ok := envelope["query"].(string)
@@ -69,7 +68,6 @@ func graphql(body any, query url.Values) *GraphQLFacts {
 	return &GraphQLFacts{Kind: string(op.Operation), Fields: fields}
 }
 
-// An operation name selects exactly one operation; without one, the document must hold only one.
 func selectOperation(ops ast.OperationList, name any) *ast.OperationDefinition {
 	if name == nil || name == "" {
 		if len(ops) == 1 {
@@ -89,7 +87,6 @@ func selectOperation(ops ast.OperationList, name any) *ast.OperationDefinition {
 	return selected
 }
 
-// selections returns the fields of one level and checks every level beneath it the same way.
 func selections(set ast.SelectionSet, vars map[string]any) ([]GraphQLFieldFacts, bool) {
 	fields := []GraphQLFieldFacts{}
 	for _, s := range set {
@@ -129,7 +126,6 @@ func selections(set ast.SelectionSet, vars map[string]any) ([]GraphQLFieldFacts,
 	return fields, true
 }
 
-// value refuses unset variables, which the server may replace with unknown defaults, and repeated object fields.
 func value(v *ast.Value, vars map[string]any) (any, bool) {
 	switch v.Kind {
 	case ast.Variable:

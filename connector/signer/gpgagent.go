@@ -13,7 +13,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-// ParseGPGAgent reads the agent's socket path; config is a JSON string.
 func ParseGPGAgent(config json.RawMessage) (*GPGAgent, error) {
 	c := new(GPGAgent)
 	return c, facts.DecodeNumbers(config, &c.socket)
@@ -24,17 +23,14 @@ const (
 	assuanNotSupported = 536870981
 )
 
-// agentCommands use a key without moving it.
 var agentCommands = map[string]bool{
 	"OPTION": true, "RESET": true, "BYE": true, "NOP": true, "GETINFO": true, "HAVEKEY": true,
 	"KEYINFO": true, "READKEY": true, "SIGKEY": true, "SETKEY": true, "SETKEYDESC": true,
 	"SETHASH": true, "PKSIGN": true, "PKDECRYPT": true,
 }
 
-// GPGAgent relays an Assuan session to a host gpg-agent socket, gating each signature and decryption.
 type GPGAgent struct{ socket string }
 
-// Handler reaches the socket through dial, a host resource outside any connection's network.
 func (socket *GPGAgent) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
 		ctx, cancel := context.WithCancel(ctx)

@@ -39,7 +39,6 @@ const (
 )
 
 var (
-	// inputs act on a ref, which must come from a snapshot of the document still showing.
 	inputs    = []string{"click", "type", "fill"}
 	refLine   = regexp.MustCompile(`(?m)^(` + refPrefix + `\d+) `)
 	errHeld   = errors.New("the owner paused the agent and is using this browser; try again later")
@@ -49,34 +48,19 @@ var (
 	errDialog = errors.New("the page is showing a dialog; accept or dismiss it")
 )
 
-// Browser drives one Chromium, a tab at a time, whose extension worker renders the pages the agent reads.
-// The agent fills a form slot's placeholder; the monitor types the value into a field on the slot's origin.
-// The owner may pause the agent and use the browser themselves, then return it with the same session and tabs.
 type Browser struct {
-	// Allocate starts the browser process with proxy, the address of Proxy, as its only network path;
-	// cancel stops it. The caller chooses the executable, its options and its extension.
-	Allocate func(ctx context.Context, proxy string) (allocator context.Context, cancel context.CancelFunc)
-	// StartURL is the first tab's page, which loads before the extension worker is found.
-	StartURL string
-	// Worker selects the extension's service worker, whose functions snapshot, read and capture tabs.
-	Worker func(*target.Info) bool
-	// Proxy is Chrome's only network path, as the host forwards requests and CONNECT tunnels.
-	Proxy         http.Handler
-	ServeListener func(ctx context.Context, ln net.Listener, server *http.Server) error
-	ServeHTTP     func(ctx context.Context, conn net.Conn, server *http.Server) error
-	// Form names the credential whose placeholder is the whole text for a field on origin, the kind of field it
-	// fills and the input types that may take it; an empty name means the text has no placeholder.
-	Form   func(origin, text string) (name, field string, inputTypes []string, err error)
-	Secret func(ctx context.Context, name string) (string, error)
-	// Logins reports that the session holds saved logins; every event records it.
-	Logins bool
-	// A slow page or a busy renderer fails the command rather than holding the browser from the owner.
-	CommandTimeout time.Duration
-	// A page with a dialog open draws nothing; the owner then sees the failure and can close the dialog.
-	CaptureTimeout time.Duration
-	// MaxBody bounds an agent command's request body.
-	MaxBody int64
-	// ScreenshotQuality is the JPEG quality of the owner's live view.
+	Allocate          func(ctx context.Context, proxy string) (allocator context.Context, cancel context.CancelFunc)
+	StartURL          string
+	Worker            func(*target.Info) bool
+	Proxy             http.Handler
+	ServeListener     func(ctx context.Context, ln net.Listener, server *http.Server) error
+	ServeHTTP         func(ctx context.Context, conn net.Conn, server *http.Server) error
+	Form              func(origin, text string) (name, field string, inputTypes []string, err error)
+	Secret            func(ctx context.Context, name string) (string, error)
+	Logins            bool
+	CommandTimeout    time.Duration
+	CaptureTimeout    time.Duration
+	MaxBody           int64
 	ScreenshotQuality int
 }
 
@@ -85,19 +69,18 @@ type Session struct {
 	life    sync.RWMutex
 	cancel  context.CancelFunc
 	workers sync.WaitGroup
-	root    context.Context // The first tab, which owns the browser.
+	root    context.Context
 	worker  context.Context
-	// op serializes commands on the browser. mu guards the fields below and is never held across a browser call.
 	op      sync.Mutex
 	mu      sync.Mutex
 	tabs    map[target.ID]*tabState
-	order   []target.ID // From least to most recently used; the last is the active tab.
+	order   []target.ID
 	held    bool
-	epoch   int                // Changes whenever control passes.
-	stop    context.CancelFunc // Ends the agent's command in progress.
+	epoch   int
+	stop    context.CancelFunc
 	cleanup []func()
-	running *running // The command in progress on a tab, which a dialog the tab opens ends.
-	seen    document // The document of the latest snapshot, whose refs carry gen.
+	running *running
+	seen    document
 	gen     int
 }
 
@@ -119,10 +102,9 @@ type document struct {
 }
 
 type request struct {
-	URL  string `json:"url"`
-	Ref  string `json:"ref"`
-	Text string `json:"text"`
-	// slot is the credential a fill's placeholder names.
+	URL        string `json:"url"`
+	Ref        string `json:"ref"`
+	Text       string `json:"text"`
 	node       cdp.BackendNodeID
 	generation int
 	slot       string
@@ -154,7 +136,6 @@ func (b *Session) start(ctx context.Context) error {
 	if b.worker == nil {
 		return errors.New("the browser extension did not start")
 	}
-	// An attached session keeps the service worker from idling out and taking its target with it.
 	if _, err := chromedp.Run(b.worker, chromedp.Evaluate[bool]("true")); err != nil {
 		return err
 	}
@@ -163,7 +144,6 @@ func (b *Session) start(ctx context.Context) error {
 	tabCtx, closeTab := context.WithCancelCause(tab)
 	b.tabs[id] = &tabState{context: tabCtx, close: closeTab}
 	b.watch(tabCtx, id)
-	// Chrome does not answer input to a tab that the input closes, so a closed tab ends its commands.
 	b.workers.Go(func() {
 		for e, err := range chromedp.BrowserEvents(tab, target.TargetDestroyed) {
 			if err != nil {
@@ -203,8 +183,6 @@ func (b *Session) serve(ctx context.Context, conn net.Conn, gate func(context.Co
 	b.ServeHTTP(ctx, conn, &http.Server{Handler: mux})
 }
 
-// handle gates each command on the page it acts on; one tab serves every request in turn.
-// The browser is free while the policy decides, so the command runs only if control did not pass and the page did not move meanwhile.
 func (b *Session) handle(gate func(context.Context, facts.Event) error, command string, do func(context.Context, request) ([]byte, string, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		b.mu.Lock()
@@ -281,9 +259,6 @@ func (b *Session) handle(gate func(context.Context, facts.Event) error, command 
 	}
 }
 
-// within runs fn on the active tab for an agent command, with the page it acts on: the destination of navigate,
-// otherwise the tab's document. Input must name a ref from a snapshot of that document since control last passed.
-// A pause ends fn through its context.
 func (b *Session) within(r *http.Request, epoch int, command string, req request, fn func(context.Context, string, document) error) error {
 	b.op.Lock()
 	defer b.op.Unlock()
@@ -334,16 +309,12 @@ func (b *Session) within(r *http.Request, epoch int, command string, req request
 	return nil
 }
 
-// delivered tells whether input that failed reached the page anyway: it started a navigation, which detached the page it went to,
-// it closed the tab, or it opened a dialog.
 func delivered(ctx context.Context, err error) bool {
 	var e *cdproto.Error
 	cause := context.Cause(ctx)
 	return errors.As(err, &e) && e.Message == detachedPage || errors.Is(cause, errClosed) || errors.Is(cause, errDialog)
 }
 
-// watch notes the dialogs a tab opens and closes, until the tab closes. Chrome answers no input to a page showing a dialog,
-// so a dialog ends the command in progress on its tab; the dialog stays for the owner to close.
 func (b *Session) watch(tab context.Context, id target.ID) {
 	b.workers.Go(func() {
 		for _, err := range chromedp.Events(tab, page.JavascriptDialogOpening) {
@@ -376,7 +347,6 @@ func (b *Session) watch(tab context.Context, id target.ID) {
 
 func (d document) token() string { return fmt.Sprintf("%s.%s.%d", d.tab, d.loader, d.epoch) }
 
-// document identifies the tab's current document; a reload or new page gets a new loader even at the same URL.
 func (b *Session) document(ctx context.Context, epoch int) (string, document, error) {
 	frames, err := chromedp.Call(ctx, page.GetFrameTree, cdp.Empty{})
 	if err != nil {
@@ -386,7 +356,6 @@ func (b *Session) document(ctx context.Context, epoch int) (string, document, er
 	return f.URL + f.URLFragment, document{chromedp.FromContext(ctx).Target.TargetID, f.LoaderID, epoch}, nil
 }
 
-// observe numbers a snapshot's refs with its document's generation, so a ref acts on no other document and not after control passes.
 func (b *Session) observe(doc document, lines []byte) []byte {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -396,9 +365,6 @@ func (b *Session) observe(doc document, lines []byte) []byte {
 	return refLine.ReplaceAll(lines, fmt.Appendf(nil, "${1}%s%d ", genSeparator, b.gen))
 }
 
-// follow takes in the tabs the browser opened, under op, so a look at the browser never changes
-// which tab a command acts on. For the agent the newest tab becomes active, so a popup takes over from its opener;
-// for the owner the active tab stays until they pick another. Closing the active tab returns to the one used before it.
 func (b *Session) follow(guard context.Context, newest bool) error {
 	ctx, cancel := context.WithTimeout(b.root, b.CommandTimeout)
 	defer cancel()
@@ -422,7 +388,6 @@ func (b *Session) follow(guard context.Context, newest bool) error {
 		tabCtx, closeTab := context.WithCancelCause(tab)
 		b.tabs[t.TargetID] = &tabState{context: tabCtx, close: closeTab}
 		b.watch(tabCtx, t.TargetID)
-		// The owner has not used a tab the page opened; it waits until they pick it.
 		if newest {
 			b.order = append(b.order, t.TargetID)
 		} else {
@@ -436,19 +401,16 @@ func (b *Session) follow(guard context.Context, newest bool) error {
 	if err != nil {
 		return err
 	}
-	// A real browser brings the tab it switches to forward; the page sees itself as visible.
 	_, err = chromedp.CallBrowser(ctx, target.ActivateTarget, target.ActivateTargetParams{TargetID: id})
 	return err
 }
 
-// use makes a tab the most recently used, which choose picks; it requires mu.
 func (b *Session) use(id target.ID) {
 	if i := slices.Index(b.order, id); i >= 0 {
 		b.order = append(slices.Delete(b.order, i, i+1), id)
 	}
 }
 
-// choose is the active tab: the most recently used open one. It requires mu.
 func (b *Session) choose() (target.ID, error) {
 	if len(b.order) == 0 {
 		return "", errors.New("the browser has no open tab")
@@ -456,9 +418,6 @@ func (b *Session) choose() (target.ID, error) {
 	return b.order[len(b.order)-1], nil
 }
 
-// attach opens a context for a tab. The first command on a tab runs its event loop for as long as that command's context
-// lives, so it runs on a context that stays with the tab, which ends only if attaching fails or ctx ends first.
-// Tabs hang off the first, which lives as long as the browser; a closed tab's context ends with it.
 func attach(ctx, root context.Context, id target.ID) (context.Context, error) {
 	tab, _ := chromedp.NewContext(root, chromedp.WithTargetID(id))
 	loop, abort := context.WithCancel(tab)
@@ -476,7 +435,6 @@ func (b *Session) pages(ctx context.Context) ([]*target.Info, error) {
 	return slices.DeleteFunc(targets, func(t *target.Info) bool { return t.Type != pageType || t.Subtype != "" }), err
 }
 
-// command bounds one command on the active tab and ends it with guard, or when the tab opens a dialog.
 func (b *Session) command(guard context.Context) (context.Context, context.CancelFunc) {
 	b.mu.Lock()
 	defer b.mu.Unlock()
@@ -497,10 +455,8 @@ func (b *Session) command(guard context.Context) (context.Context, context.Cance
 	}
 }
 
-// forbidden is a refusal of the command itself, as the policy's are.
 type forbidden struct{ error }
 
-// fail reports the owner's control and a moved page as conflicts, so the agent knows to wait or read again.
 func fail(w http.ResponseWriter, err error) {
 	status := http.StatusBadGateway
 	switch {
@@ -512,8 +468,6 @@ func fail(w http.ResponseWriter, err error) {
 	http.Error(w, err.Error(), status)
 }
 
-// secret finds the credential a fill's placeholder names. The field's own frame must hold the slot's origin and its input type must suit the value;
-// a placeholder anywhere else is refused.
 func (b *Session) secret(ctx context.Context, command string, req request) (string, error) {
 	if command != "fill" {
 		for _, text := range []string{req.URL, req.Text} {
@@ -548,7 +502,6 @@ func (b *Session) secret(ctx context.Context, command string, req request) (stri
 	return name, nil
 }
 
-// frameOrigin reads the node's document from its accessibility ancestors, which the page cannot alter.
 func (b *Session) frameOrigin(ctx context.Context, id cdp.BackendNodeID) (string, error) {
 	tree, err := chromedp.Call(ctx, accessibility.GetPartialAXTree, accessibility.GetPartialAXTreeParams{BackendNodeID: id})
 	if err != nil {
@@ -578,7 +531,6 @@ func (b *Session) frameOrigin(ctx context.Context, id cdp.BackendNodeID) (string
 	return "", fmt.Errorf("the frame of e%d is unknown", id)
 }
 
-// backend reads a snapshot ref such as e42.3: node 42 of the document of generation 3.
 func backend(ref string) (cdp.BackendNodeID, int, error) {
 	node, gen, _ := strings.Cut(strings.TrimPrefix(ref, refPrefix), genSeparator)
 	id, err := strconv.ParseInt(node, 10, 64)
@@ -594,7 +546,6 @@ func (b *Session) navigate(ctx context.Context, req request) ([]byte, string, er
 	return nil, "", err
 }
 
-// click presses the mouse at the centre of the node's first box, as a person would.
 func (b *Session) click(ctx context.Context, req request) ([]byte, string, error) {
 	id := req.node
 	if _, err := chromedp.Call(ctx, dom.ScrollIntoViewIfNeeded, dom.ScrollIntoViewIfNeededParams{BackendNodeID: id}); err != nil {
@@ -609,12 +560,10 @@ func (b *Session) click(ctx context.Context, req request) ([]byte, string, error
 	return nil, "", err
 }
 
-// fill replaces the field's text, with the slot's value in place of its placeholder.
 func (b *Session) fill(ctx context.Context, req request) ([]byte, string, error) {
 	id := req.node
 	text := req.Text
 	if req.slot != "" {
-		// The page may have changed while the owner decided.
 		if slot, err := b.secret(ctx, "fill", req); slot != req.slot {
 			return nil, "", cmp.Or(err, errors.New("the field no longer takes this credential"))
 		}
@@ -667,7 +616,6 @@ func (b *Session) screenshot(ctx context.Context, _ request) ([]byte, string, er
 	return raw, "image/png", err
 }
 
-// call runs one of the extension's API functions on the command's tab, within the command's bounds.
 func (b *Session) call(ctx context.Context, function string) (string, error) {
 	id := chromedp.FromContext(ctx).Target.TargetID
 	worker, cancel := context.WithCancel(b.worker)
@@ -676,7 +624,6 @@ func (b *Session) call(ctx context.Context, function string) (string, error) {
 	return chromedp.Run(worker, chromedp.Evaluate[string](fmt.Sprintf("%s(%q)", function, id), chromedp.EvalAwaitPromise))
 }
 
-// Describe records the command as the action; secrets names the credentials a fill places.
 func (v *BrowserFacts) Describe() facts.Observation {
 	scope := map[string]any{"host": v.Host}
 	if len(v.Secrets) > 0 {

@@ -1,4 +1,3 @@
-// Package credential holds connector credentials: strings, files read at each use and OAuth grants.
 package credential
 
 import (
@@ -17,8 +16,6 @@ import (
 
 var errNotConfigured = errors.New("credential is not configured")
 
-// Value is a string, a file or an OAuth grant; the zero Value is an unset credential.
-// Disclosure is controlled by field metadata.
 type Value struct {
 	configured bool
 	text       string
@@ -33,7 +30,6 @@ type Value struct {
 
 func Static(text string) *Value { return &Value{configured: true, text: text} }
 
-// File reads name under root at each use, so whatever rotates the file rotates the credential.
 func File(root *os.Root, name string) *Value {
 	return &Value{configured: true, resolve: func() (string, error) {
 		secret, err := root.ReadFile(name)
@@ -42,11 +38,8 @@ func File(root *os.Root, name string) *Value {
 }
 
 type OAuthOptions struct {
-	// Client refreshes the grant; without one, a grant cannot refresh.
-	Client *http.Client
-	// Save persists a rotated grant before Value returns its token.
-	Save func(context.Context, json.RawMessage) error
-	// Timeout bounds one Value call, including its refresh.
+	Client  *http.Client
+	Save    func(context.Context, json.RawMessage) error
 	Timeout time.Duration
 }
 
@@ -118,8 +111,6 @@ func (v *Value) Value(ctx context.Context) (string, error) {
 	return t.AccessToken, nil
 }
 
-// DescribeOAuth reports, without exposing tokens, whether a grant can supply a token
-// without a new sign-in, and its verified OIDC account.
 func DescribeOAuth(grant json.RawMessage) (ready bool, account string, err error) {
 	g, err := DecodeGrant(grant)
 	if err != nil {
@@ -132,7 +123,6 @@ func DescribeOAuth(grant json.RawMessage) (ready bool, account string, err error
 	return g.RefreshToken != "" || token.Valid(), account, nil
 }
 
-// Scrub keeps provider responses and request URLs out of errors, since either may hold a secret.
 func Scrub(ctx context.Context, step string, err error) error {
 	if ctx.Err() != nil {
 		return ctx.Err()

@@ -19,9 +19,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-// Records: one retained collection for gated requests and policy proposals, settled into
-// the sealed audit log.
-
 const (
 	maxReason       = 4096
 	maxSummaryTitle = 512
@@ -34,14 +31,11 @@ var (
 	errNoAgent    = httpError{errRemoved, http.StatusForbidden}
 )
 
-// savedAnswer carries the answer to publish with its durable settings change.
 type savedAnswer struct {
 	record *record
 	answer Review
 }
 
-// Activity never needs request bodies, policy parameters or saved-rule grants.
-// Keep those in the existing audit record and load one through /requests/{id}.
 type recordSummary struct {
 	ID      string    `json:"id"`
 	State   string    `json:"state"`
@@ -67,14 +61,12 @@ func summarize(r *record) recordSummary {
 		v.Reviews = append(v.Reviews, review)
 	}
 	_ = json.Unmarshal(r.Facts, &v.Facts)
-	// SQL and other protocol titles can contain the entire request.
 	if len(v.Facts.Title) > maxSummaryTitle {
 		v.Facts.Title = strings.ToValidUTF8(v.Facts.Title[:maxSummaryTitle], "") + "…"
 	}
 	return v
 }
 
-// addRecord retains r before it can wait or settle; pending records are never evicted. Under s.mu.
 func (s *state) addRecord(r *record) *record {
 	r.ID, r.Time, r.State = rand.Text(), time.Now(), stateAllowed
 	s.records.Add(r)
@@ -90,7 +82,6 @@ func (s *state) announce(r *record) {
 	events.Info("record", "record", summarize(r), "generation", s.doc.Generation)
 }
 
-// settleRecord writes the record's outcome to the audit log even if retention has evicted it.
 func (s *state) settleRecord(r *record, err error) {
 	r.settle(err)
 	if line, err := json.Marshal(r); err != nil {
@@ -106,7 +97,6 @@ func (s *state) outdateRecord(r *record) {
 	s.settleRecord(r, nil)
 }
 
-// recordAdmin audits an admin action and its outcome; the caller holds s.mu.
 func (s *state) recordAdmin(ctx context.Context, title string, details any, err error) {
 	c, _ := callerFrom(ctx)
 	raw, encodeErr := json.Marshal(requestFacts{Version: config.FactsVersion, Principal: facts.Principal{Name: c.Name}, Service: adminService,
@@ -118,7 +108,6 @@ func (s *state) recordAdmin(ctx context.Context, title string, details any, err 
 	s.settleRecord(s.addRecord(&record{Facts: raw}), err)
 }
 
-// ruleChange derives a saved rule only from frozen audit/grant data under s.mu.
 func (s *state) ruleChange(r *record) (format.Change, error) {
 	f := summarize(r).Facts
 	if f.Operation == nil || f.Operation.ID == "" {
@@ -135,8 +124,6 @@ func (s *state) ruleChange(r *record) (format.Change, error) {
 		Scope: r.Grant, Requirements: slices.Clone(r.Requirements)}}, nil
 }
 
-// answerable validates an answer under s.mu; callers recheck it after pure
-// preparation so a concurrent answer cannot be overwritten by a saved rule.
 func (s *state) answerable(id string, input Answer, revision uint64) (*record, error) {
 	if revision != s.doc.Revision {
 		return nil, errPolicyConflict
@@ -158,7 +145,6 @@ func (s *state) answerable(id string, input Answer, revision uint64) (*record, e
 	return r, nil
 }
 
-// answer records review and wakes the request waiting on r.
 func (s *state) answer(r *record, review Review) {
 	review.Time = time.Now()
 	r.Reviews = append(r.Reviews, review)
@@ -169,7 +155,6 @@ func (s *state) answer(r *record, review Review) {
 	s.records.Notify()
 }
 
-// saved records review once its rule is durable: a pending request is approved, and an expired one must be retried.
 func (s *state) saved(r *record, review Review) {
 	if r.State == statePending {
 		r.State = stateApproved
@@ -235,14 +220,11 @@ func (s *state) answerRequest(ctx context.Context, id string, input Answer, revi
 	return err
 }
 
-// auditPage is one page of settled records, newest first.
 type auditPage struct {
 	Records []recordSummary `json:"records"`
 	Next    string          `json:"next,omitempty"`
 }
 
-// readAuditPage returns settled records older than the segment named by before, newest first.
-// Records still in the live log are skipped, so the page continues where the live log ends.
 func (s *state) readAuditPage(ctx context.Context, before string) (auditPage, error) {
 	live := map[string]bool{}
 	s.locked(func() {

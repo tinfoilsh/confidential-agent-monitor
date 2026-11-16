@@ -1,5 +1,3 @@
-// Local manual connector tests. Service credentials arrive only through stdin.
-// This runs the shipped presets and real connector with a test-controlled gate.
 package main
 
 import (
@@ -129,7 +127,6 @@ func testAuthOperation(id string) bool {
 }
 
 func main() {
-	// Connector and HTTP errors can contain user input. Emit only our own fixed status.
 	log.SetOutput(io.Discard)
 	if err := run(); err != nil {
 		fmt.Fprintln(os.Stderr, "FAIL: local connector harness stopped; no credential details printed")
@@ -234,7 +231,6 @@ func run() error {
 				status("BLOCKED: operation outside this test's allowlist")
 				return errors.New("operation not in test allowlist")
 			}
-			// IDs come from shipped definitions, never from payloads or query strings.
 			status("ADMITTED " + connection.preset + " " + f.Operation.ID)
 			return nil
 		}
@@ -266,7 +262,6 @@ func run() error {
 		server := &http.Server{Handler: handler, BaseContext: func(net.Listener) context.Context { return ctx }, ReadHeaderTimeout: 5 * time.Second, IdleTimeout: time.Minute, ErrorLog: log.New(io.Discard, "", 0)}
 		go func() { <-ctx.Done(); server.Close() }()
 		go server.Serve(listener)
-		// Delivered only over the supervisor's private pipe, never printed in status.
 		return "http://monitor:" + password + "@" + listener.Addr().String(), nil
 	}
 	ready := map[string]any{"service": in.Service, "ca_file": certFile}

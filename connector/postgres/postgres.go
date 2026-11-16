@@ -31,7 +31,6 @@ type Postgres struct {
 	url    *url.URL
 }
 
-// Parse validates a destination whose password is the "password" credential.
 func Parse(config json.RawMessage) (*Postgres, error) {
 	r := new(Postgres)
 	if err := facts.DecodeNumbers(config, r); err != nil {
@@ -56,8 +55,6 @@ func Parse(config json.RawMessage) (*Postgres, error) {
 
 func (r *Postgres) Hosts() []string { return []string{r.url.Hostname()} }
 
-// Handler authenticates upstream with the stored password and relays each admitted statement.
-// serverTLS answers a client's SSLRequest for the stream's host; timeout bounds the upstream connection.
 func (r *Postgres) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), serverTLS func(ctx context.Context, host string) *tls.Config, timeout time.Duration) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, s net.Conn, _, host string, _ uint32, gate func(context.Context, facts.Event) error) {
 		ctx, cancel := context.WithCancel(ctx)
@@ -125,7 +122,6 @@ func (r *Postgres) connect(ctx context.Context, dial func(context.Context, strin
 		return nil, err
 	}
 	config.DialFunc = dial
-	// The dialer resolves hostnames so workers do not need direct DNS access.
 	config.LookupFunc = func(_ context.Context, host string) ([]string, error) { return []string{host}, nil }
 	for name, value := range startup.Parameters {
 		if name != "user" && name != "database" {
@@ -141,7 +137,6 @@ func (r *Postgres) connect(ctx context.Context, dial func(context.Context, strin
 	return pg.Hijack()
 }
 
-// A refused statement is answered with an error in the client's place, so the session stays usable.
 func relayQueries(ctx context.Context, end func(), gate func(context.Context, facts.Event) error, backend *pgproto3.Backend, up *pgconn.HijackedConn) {
 	var status atomic.Uint32
 	status.Store(uint32(up.TxStatus))

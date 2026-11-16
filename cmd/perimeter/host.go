@@ -19,8 +19,6 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Hosts: what the Perimeter grants a connector it opens, in this process or an isolated worker.
-
 const (
 	connectorOpenTimeout = time.Minute
 	maxWorkers           = 32
@@ -31,7 +29,6 @@ const (
 var workerLimits = worker.Limits{Streams: 128, Upstreams: 32, Handshake: connections.DialTimeout, Credential: credentialTimeout, Sign: 10 * time.Second,
 	Connections: 32, Idle: 8, PoolIdle: 30 * time.Second, Read: 10 * time.Second, ServeIdle: time.Minute, Drain: connections.RelayDrain}
 
-// guardedDialer checks the resolved address, so DNS cannot steer an upstream into a refused range.
 func guardedDialer(allowed []netip.Prefix) *net.Dialer {
 	var v4, v6 []netip.Prefix
 	for _, p := range allowed {
@@ -45,13 +42,10 @@ func guardedDialer(allowed []netip.Prefix) *net.Dialer {
 	return &net.Dialer{Timeout: connections.DialTimeout, Control: guard.Safe}
 }
 
-// client is for requests the Perimeter makes itself, such as OAuth.
 func (st *settings) client() *http.Client {
 	return &http.Client{Transport: connections.UpstreamTransport(guardedDialer(st.AllowNetworks).DialContext), CheckRedirect: connections.RefuseRedirects}
 }
 
-// opener opens c's connector with st's capabilities, in this process or an isolated worker.
-// Its dial reaches reserved route hosts only as its setup names them.
 func (s *state) opener(st *settings, c *installed) core.Open {
 	dial := s.routes.RouteDial(c.Hosts, s.identities.Keys, guardedDialer(st.AllowNetworks).DialContext)
 	var hostKey ssh.Signer
@@ -86,7 +80,6 @@ func (s *state) opener(st *settings, c *installed) core.Open {
 	}
 }
 
-// streamTLS is the server configuration for one stream; a client without SNI is issued the stream's host.
 func (st *settings) streamTLS(_ context.Context, host string) *tls.Config {
 	config := st.tls.Clone()
 	issue := config.GetCertificate
@@ -101,7 +94,6 @@ func (st *settings) streamTLS(_ context.Context, host string) *tls.Config {
 	return config
 }
 
-// serveWorkerChild serves the one connection a Perimeter host launched this process for.
 func serveWorkerChild() error {
 	file := os.NewFile(workerListenerFD, "connector-listener")
 	ln, err := net.FileListener(file)

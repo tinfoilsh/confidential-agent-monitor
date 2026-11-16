@@ -10,18 +10,12 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-// Slots places a setup's credentials, as the host declares them.
 type Slots struct {
-	// Claim ranks a credential origin's exact host and port, or returns -1.
 	Claim  func(host string, port uint32) int
 	Covers func(origin, path string) bool
-	// Bind returns the names of the credentials r carries in slots for origin, refusing a placeholder
-	// anywhere else, and place, which resolves them and writes them into the admitted request.
-	Bind func(r *http.Request, origin string, placeholder func(string) string) (names []string, place func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error), err error)
+	Bind   func(r *http.Request, origin string, placeholder func(string) string) (names []string, place func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error), err error)
 }
 
-// Parse decodes the connection's hosts and slots, its preset's HTTP operations and its origin option once each,
-// without opening resources or reading secrets. slots parses the configured credential slots.
 func Parse(config, definition, options json.RawMessage, slots func(json.RawMessage) (Slots, error)) (*Setup, error) {
 	var c struct {
 		Hosts []string        `json:"hosts"`
@@ -37,7 +31,6 @@ func Parse(config, definition, options json.RawMessage, slots func(json.RawMessa
 	return New(definition, options, c.Hosts, s)
 }
 
-// New builds a setup whose hosts and slots its caller chose.
 func New(definition, options json.RawMessage, hosts []string, slots Slots) (*Setup, error) {
 	var preset struct {
 		Title string  `json:"title"`
@@ -57,7 +50,6 @@ func New(definition, options json.RawMessage, hosts []string, slots Slots) (*Set
 	return &Setup{Hosts: hosts, Preset: preset.HTTP, title: preset.Title, origin: option.Origin, slots: slots}, nil
 }
 
-// Claim ranks exact slot origins by their length and host patterns, which serve only default ports, by theirs.
 func (h *Setup) Claim(host string, port uint32) int {
 	host = strings.ToLower(host)
 	score := h.slots.Claim(host, port)

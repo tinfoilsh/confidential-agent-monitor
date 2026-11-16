@@ -32,7 +32,6 @@ type Redis struct {
 	url    *url.URL
 }
 
-// Parse validates a rediss:// destination whose password is the "password" credential.
 func Parse(config json.RawMessage) (*Redis, error) {
 	r := new(Redis)
 	if err := facts.DecodeNumbers(config, r); err != nil {
@@ -60,7 +59,6 @@ func Parse(config json.RawMessage) (*Redis, error) {
 
 func (r *Redis) Hosts() []string { return []string{r.url.Hostname()} }
 
-// Handler relays commands to the destination through dial, each after the gate admits it.
 func (r *Redis) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
 		ctx, cancel := context.WithCancel(ctx)

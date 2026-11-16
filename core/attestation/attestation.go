@@ -1,5 +1,3 @@
-// Package attestation sends requests to one host only over TLS connections whose key matches
-// the host's current attestation.
 package attestation
 
 import (
@@ -16,20 +14,15 @@ import (
 
 var errKey = errors.New("TLS key differs from its attestation")
 
-// Verify checks attestation evidence for nonce. It returns the hex SHA-256 of the attested
-// TLS public key and when the evidence stops being fresh.
 type Verify = func(evidence, nonce []byte) (pin string, fresh time.Time, err error)
 
 type Config struct {
-	// Host serves its evidence over HTTPS at Path, given a hex nonce query parameter.
 	Host, Path string
 	Verify     Verify
 	Nonce      func() ([]byte, error)
-	// Base dials and fetches; it never follows redirects.
-	Base *http.Transport
-	// Timeout bounds each attestation; MaxBytes bounds its evidence.
-	Timeout  time.Duration
-	MaxBytes int64
+	Base       *http.Transport
+	Timeout    time.Duration
+	MaxBytes   int64
 }
 
 type Transport struct {
@@ -39,8 +32,6 @@ type Transport struct {
 	expires time.Time
 }
 
-// New attests the host before any request can send it credentials. It renews the attestation
-// when it expires.
 func New(ctx context.Context, c Config) (*Transport, error) {
 	t := &Transport{c: c, gate: make(chan struct{}, 1)}
 	if _, err := t.current(ctx, nil); err != nil {
@@ -76,7 +67,6 @@ func (t *Transport) current(ctx context.Context, rejected *http.Transport) (*htt
 	if err != nil {
 		return nil, err
 	}
-	// RoundTrip never follows redirects and this request carries no credential.
 	resp, err := t.c.Base.RoundTrip(req)
 	if err != nil {
 		return nil, fmt.Errorf("fetch attestation: %w", err)
@@ -148,8 +138,6 @@ func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	if !errors.Is(err, errKey) {
 		return resp, err
 	}
-	// A pin rejection occurs in the handshake, before any HTTP bytes are sent.
-	// Re-attest once. Never replay a timeout, server error or interrupted stream.
 	bound, refreshErr := t.current(r.Context(), bound)
 	if refreshErr != nil {
 		return nil, refreshErr

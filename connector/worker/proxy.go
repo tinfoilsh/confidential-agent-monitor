@@ -22,8 +22,6 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Endpoint owns one actual process. Context ends when it stops; Done closes
-// after process and broker callbacks have joined. Close is safe to repeat.
 type Endpoint struct {
 	Context context.Context
 	Dial    func(context.Context) (net.Conn, error)
@@ -31,24 +29,19 @@ type Endpoint struct {
 	Close   func()
 }
 
-// Secret is a credential handle the host grants; only its value leaves the host, and only when asked.
 type Secret struct {
 	Configured  bool
 	Placeholder string
 	Value       func(context.Context) (string, error)
 }
 
-// Grants are the host capabilities a worker may ask for. Nil fields grant nothing.
 type Grants struct {
-	// Connect serves the worker's CONNECT requests through the host's dialer.
-	Connect http.Handler
-	Secrets map[string]Secret
-	// Certificate issues the TLS leaf for name, which the host has checked against the admitted stream.
+	Connect     http.Handler
+	Secrets     map[string]Secret
 	Certificate func(name string) (*tls.Certificate, error)
 	HostKey     ssh.Signer
 }
 
-// Process is one setup served by one worker; calls already handed off retain its capabilities.
 type Process struct {
 	Endpoint
 	grants    Grants
@@ -60,14 +53,12 @@ type Process struct {
 	streams   map[string]*stream
 }
 
-// stream is an admitted stream the worker may call back for.
 type stream struct {
 	ctx  context.Context
 	host string
 	gate func(context.Context, facts.Event) error
 }
 
-// Launch starts a worker with start, hands it the host's prepared protocol data and waits under ctx until it serves.
 func Launch(ctx context.Context, start func(ctx context.Context, config []byte, broker http.Handler) (Endpoint, error), data json.RawMessage, grants Grants, limits Limits) (*Process, error) {
 	boot := bootstrap{Data: data, Secrets: map[string]secretHandle{}}
 	for name, value := range grants.Secrets {
@@ -113,7 +104,6 @@ func (p *Process) Close() error {
 	return nil
 }
 
-// Serve relays one admitted stream into the worker and answers its gate calls with gate.
 func (p *Process) Serve(ctx context.Context, conn net.Conn, name, host string, port uint32, gate func(context.Context, facts.Event) error) {
 	defer conn.Close()
 	ctx, cancel := context.WithCancel(ctx)
@@ -150,7 +140,6 @@ func (p *Process) Control() http.Handler {
 			r.Out.URL.Scheme, r.Out.URL.Host, r.Out.Host = "http", "connector", "connector"
 			r.Out.URL.Path = "/control" + r.Out.URL.Path
 			r.Out.URL.RawPath = ""
-			// Monitor authenticates controls; they carry no stream authority.
 			for _, name := range []string{"Authorization", "Proxy-Authorization", "Cookie", streamHeader} {
 				r.Out.Header.Del(name)
 			}
@@ -161,14 +150,12 @@ func (p *Process) Control() http.Handler {
 
 func (p *Process) broker() http.Handler {
 	mux := http.NewServeMux()
-	// These capabilities belong to the connection, including setup and owner controls.
 	mux.Handle("POST /credential/{name}", p.callback(func(ctx context.Context, r *http.Request, _ []byte) (any, error) {
 		return p.credential(ctx, r.PathValue("name"))
 	}))
 	mux.Handle("POST /host-sign", p.callback(func(_ context.Context, _ *http.Request, raw []byte) (any, error) {
 		return p.signHost(raw)
 	}))
-	// These operations additionally require a live stream admitted by the host.
 	mux.Handle("POST /gate/{stream}", p.streamCallback(func(ctx context.Context, stream *stream, raw []byte) (any, error) {
 		return nil, stream.gate(ctx, facts.Event(raw))
 	}))
@@ -266,7 +253,6 @@ func (p *Process) certificate(_ context.Context, stream *stream, raw []byte) (an
 	return certificate{cert.Certificate, key}, err
 }
 
-// connectProxy bounds the worker's upstream connections, which connect opens through the host's dialer.
 func connectProxy(connect http.Handler, limit int) http.Handler {
 	slots := make(chan struct{}, limit)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

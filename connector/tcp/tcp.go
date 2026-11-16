@@ -68,7 +68,6 @@ func (r *TCPFacts) Describe() facts.Observation {
 		Parameters: map[string]any{"host": r.Host, "port": r.Port}, Details: Details{TCP: r}}
 }
 
-// Handler relays each admitted stream to the target it claims, through dial.
 func (c *TCP) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), relay func(ctx context.Context, a, b net.Conn)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, conn net.Conn, _, host string, port uint32, gate func(context.Context, facts.Event) error) {
 		if c.Claim(host, port) < 0 || gate(ctx, facts.Capture((&TCPFacts{Host: host, Port: port}).Describe(), nil)) != nil {

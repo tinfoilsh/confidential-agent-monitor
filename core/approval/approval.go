@@ -1,4 +1,3 @@
-// Package approval keeps reviewable records and lets requests wait, under their host's lock, for an answer.
 package approval
 
 import (
@@ -9,7 +8,6 @@ import (
 	"time"
 )
 
-// Records is one bounded collection of caller-owned records. Every call needs the lock it was made with.
 type Records[T any] struct {
 	cond    sync.Cond
 	items   []T
@@ -17,7 +15,6 @@ type Records[T any] struct {
 	pending func(T) bool
 }
 
-// NewRecords keeps at most max records, evicting the oldest that pending does not protect.
 func NewRecords[T any](l sync.Locker, max int, pending func(T) bool) *Records[T] {
 	r := &Records[T]{max: max, pending: pending}
 	r.cond.L = l
@@ -44,20 +41,15 @@ func (r *Records[T]) Find(match func(T) bool) (T, bool) {
 	return r.items[i], true
 }
 
-// All yields the records oldest first.
 func (r *Records[T]) All() iter.Seq[T] { return slices.Values(r.items) }
 
-// Wait releases the lock until Notify, the end of ctx or deadline, then retakes it.
-// It reports whether deadline has passed.
 func (r *Records[T]) Wait(ctx context.Context, deadline time.Time) (expired bool) {
 	wait, cancel := context.WithDeadline(ctx, deadline)
 	defer cancel()
-	// Taking the lock keeps the wakeup from landing before Wait.
 	stop := context.AfterFunc(wait, func() { r.cond.L.Lock(); r.cond.Broadcast(); r.cond.L.Unlock() })
 	defer stop()
 	r.cond.Wait()
 	return !time.Now().Before(deadline)
 }
 
-// Notify wakes every waiting request to check its record again.
 func (r *Records[T]) Notify() { r.cond.Broadcast() }

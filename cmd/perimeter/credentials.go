@@ -22,8 +22,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// Credentials.
-
 const (
 	credentialTimeout = 30 * time.Second
 	signInClient      = "Perimeter"
@@ -39,7 +37,6 @@ var (
 	errOAuthRegistration = errors.New("this service does not register clients automatically; enter the client ID and secret of an OAuth app registered with it")
 )
 
-// beginOAuth selects the product's sign-in flow and defaults before constructing its protocol exchange.
 func beginOAuth(ctx context.Context, client *http.Client, raw json.RawMessage, redirect string) (*credential.SignIn, error) {
 	g, err := credential.DecodeGrant(raw)
 	if err != nil {
@@ -64,7 +61,6 @@ func beginOAuth(ctx context.Context, client *http.Client, raw json.RawMessage, r
 	return credential.NewAuthCodeSignIn(client, *g, redirect, signInLimits, oauth2.AccessTypeOffline)
 }
 
-// discoverOAuth keeps the existing resource, issuer, scope and public-client registration choices.
 func discoverOAuth(ctx context.Context, client *http.Client, g *credential.Grant, redirect string) error {
 	prm, err := credential.ProtectedResource(ctx, client, g.Resource, signInLimits.MaxResponseBytes)
 	if err != nil {
@@ -74,7 +70,6 @@ func discoverOAuth(ctx context.Context, client *http.Client, g *credential.Grant
 	if err != nil {
 		return err
 	}
-	// Older MCP services without resource metadata use the resource's origin as their issuer.
 	server, scopes := u.Scheme+"://"+u.Host, []string(nil)
 	if prm != nil {
 		if len(prm.AuthorizationServers) == 0 {
@@ -87,7 +82,6 @@ func discoverOAuth(ctx context.Context, client *http.Client, g *credential.Grant
 	}
 	asm, err := oauthauth.GetAuthServerMetadata(ctx, server, client)
 	if err != nil {
-		// Some deployed services publish another issuer; verify that issuer's own metadata before using it.
 		if issuer := credential.PublishedIssuer(ctx, client, server, signInLimits.MaxResponseBytes); issuer != "" {
 			server = strings.TrimSuffix(issuer, "/")
 			asm, err = oauthauth.GetAuthServerMetadata(ctx, server, client)
@@ -145,8 +139,6 @@ func discoverOAuth(ctx context.Context, client *http.Client, g *credential.Grant
 	return nil
 }
 
-// bindCredential decodes a stored record into the credential a connection uses. save
-// replaces the record an OAuth refresh rotates, compared against the bytes it replaces.
 func bindCredential(raw json.RawMessage, client *http.Client, save func(ctx context.Context, before, after json.RawMessage) error) (*credential.Value, error) {
 	if raw == nil {
 		return new(credential.Value), nil
@@ -167,7 +159,6 @@ func bindCredential(raw json.RawMessage, client *http.Client, save func(ctx cont
 				return nil
 			}})
 	case c.File != "":
-		// Read at each use, so whatever rotates the file rotates the credential.
 		if secretFiles == nil {
 			return nil, format.ErrCredentialShape
 		}
@@ -178,8 +169,6 @@ func bindCredential(raw json.RawMessage, client *http.Client, save func(ctx cont
 	return new(credential.Value), nil
 }
 
-// describeCredential returns only the status the owner editor needs and the verified
-// OIDC account, without exposing tokens.
 func describeCredential(raw json.RawMessage) (kind, account string) {
 	c, err := format.DecodeCredential(raw)
 	if err != nil || c.Text == nil && c.File == "" && c.OAuth == nil {
@@ -198,9 +187,6 @@ func describeCredential(raw json.RawMessage) (kind, account string) {
 	return "oauth-required", account
 }
 
-// placeholder derives a credential's public reference from the persisted CA key, so restarts and
-// credential refreshes keep it stable without storing another set of tokens.
-// The empty element keeps the references derived from version 1 state.
 func placeholder(k format.Keys, id format.SecretID) string {
 	mac := hmac.New(sha256.New, []byte(k.CAKey))
 	mac.Write([]byte("monitor credential placeholder v1\x00"))
@@ -210,13 +196,11 @@ func placeholder(k format.Keys, id format.SecretID) string {
 	return "tfm_" + id.Connection + "_" + suffix
 }
 
-// current reports, under s.mu, that value is still the installed credential id names and before its record.
 func (s *state) current(id format.SecretID, value *credential.Value, before json.RawMessage) bool {
 	c := s.settings.Load().connections[id.Connection]
 	return c != nil && c.secrets[id.Name] == value && bytes.Equal(s.doc.Credentials.Get(id), before)
 }
 
-// replaceValue persists a provider's rotated record; the connector keeps running.
 func (s *state) replaceValue(ctx context.Context, id format.SecretID, value *credential.Value, before, after json.RawMessage) error {
 	err := errCredentialChanged
 	s.locked(func() {
@@ -230,8 +214,6 @@ func (s *state) replaceValue(ctx context.Context, id format.SecretID, value *cre
 	return err
 }
 
-// signInCredential captures the record a sign-in replaces, so completing it cannot
-// overwrite a newer edit.
 func (s *state) signInCredential(connection, name string) (json.RawMessage, func(context.Context, json.RawMessage) error, error) {
 	id := format.SecretID{Connection: connection, Name: name}
 	var value *credential.Value

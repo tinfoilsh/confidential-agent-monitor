@@ -34,9 +34,6 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Transports: SSH for agents, routes and the owner CLI; HTTP for the owner API, as bearer
-// calls in local development or Noise sessions over a WebSocket in production.
-
 const (
 	readHeaderTimeout = 30 * time.Second
 	preflightMaxAge   = "600"
@@ -48,17 +45,14 @@ const (
 
 	sshChannel           = "tinfoil-owner-http-v1"
 	sshGenerationRequest = "tinfoil-owner-generation-v1"
-	// sessionHeader carries sshOptions.Token on each API request over the channel.
-	sessionHeader = "X-Tinfoil-Session"
-	// generationAckTimeout closes a stalled owner channel so an owner client cannot leave its goroutine behind.
+	sessionHeader        = "X-Tinfoil-Session"
 	generationAckTimeout = 10 * time.Second
 
 	ownerProtocol   = "monitor-owner-v1"
 	ownerRPCSession = "owner-rpc"
 	sessionContext  = "tinfoil owner session v1\x00"
-	// sessionTimeout bounds the handshake and hello, so unauthenticated sockets do not linger.
-	sessionTimeout = 10 * time.Second
-	maxCalls       = 4
+	sessionTimeout  = 10 * time.Second
+	maxCalls        = 4
 )
 
 var (
@@ -69,15 +63,12 @@ var (
 	errCertificate     = errors.New("an identity certificate must be an expiring user certificate with a key ID from the identity CA")
 )
 
-// owner authenticates the owner's sessions; nil lets the storage key authenticate bearer calls, for local development.
 type owner struct {
 	key        ed25519.PublicKey
 	sessionKey noise.DHKey
-	// relay opens an instance's owner socket, which the owner then runs its own session over; nil refuses relays.
-	relay func(ctx context.Context, instance string) (*websocket.Conn, error)
+	relay      func(ctx context.Context, instance string) (*websocket.Conn, error)
 }
 
-// serve runs the SSH and API listeners until ctx ends or either fails, and closes both before it returns.
 func (s *state) serve(ctx context.Context, sshListener, apiListener net.Listener, o *owner, ui http.Handler) error {
 	defer sshListener.Close()
 	defer apiListener.Close()
@@ -125,7 +116,6 @@ func (s *state) serve(ctx context.Context, sshListener, apiListener net.Listener
 		}
 		handler.HandleFunc("GET /owner/ws", func(w http.ResponseWriter, r *http.Request) {
 			c, hello, err := noisetransport.Accept(w, r, noisetransport.Config{Key: o.sessionKey, Prologue: ownerProtocol, Timeout: sessionTimeout,
-				// The signed Noise channel authenticates the owner, not the browser origin.
 				Accept: &websocket.AcceptOptions{InsecureSkipVerify: true}}, func(binding, first []byte) error {
 				var signed struct {
 					Signature []byte `json:"signature"`
@@ -158,7 +148,6 @@ func (s *state) serve(ctx context.Context, sshListener, apiListener net.Listener
 		}
 	}
 
-	// Extensions take whole connections before identities: the owner CLI, then route publishers.
 	authenticate := func(conn ssh.ConnMetadata, key ssh.PublicKey) (sshtransport.Session, func() error, error) {
 		if ownerSSH != nil {
 			if raw, ok := key.(ssh.CryptoPublicKey); ok {
@@ -177,7 +166,6 @@ func (s *state) serve(ctx context.Context, sshListener, apiListener net.Listener
 			return session, nil, err
 		}
 		if cert, ok := key.(*ssh.Certificate); ok && identityCA != nil {
-			// Principals carry groups, not logins, so any listed one stands in for the login.
 			claims, err := certificates.VerifySSHUser(identityCA, cert, cmp.Or(cert.ValidPrincipals...))
 			if err == nil && (claims.KeyID == "" || claims.ValidBefore == ssh.CertTimeInfinity) {
 				err = errCertificate
@@ -185,7 +173,6 @@ func (s *state) serve(ctx context.Context, sshListener, apiListener net.Listener
 			if err != nil {
 				return nil, nil, err
 			}
-			// A certificate is public, so it is registered only once its key has signed.
 			fingerprint := ssh.FingerprintSHA256(cert.Key)
 			return s.agentSession(fingerprint), func() error {
 				end, err := s.identities.Register(fingerprint, facts.Principal{Name: claims.KeyID, Groups: claims.Principals}, false)
@@ -220,7 +207,6 @@ func (s *state) serve(ctx context.Context, sshListener, apiListener net.Listener
 	return context.Cause(serving)
 }
 
-// agentSession serves an identity's direct-tcpip streams while its key stays registered.
 func (s *state) agentSession(fingerprint string) sshtransport.Session {
 	return func(_ *ssh.ServerConn, chans <-chan ssh.NewChannel, reqs <-chan *ssh.Request) {
 		sshtransport.ServeDirect(chans, reqs, func(ctx context.Context, host string, port uint32, accept func() (net.Conn, error)) error {
@@ -234,11 +220,8 @@ func (s *state) agentSession(fingerprint string) sshtransport.Session {
 	}
 }
 
-// open serves one agent stream. An identity that holds the routes capability reaches a reserved
-// route host directly; every other stream goes to the agent API or a connection.
 func (s *state) open(ctx context.Context, key, host string, port uint32, accept func() (net.Conn, error)) error {
 	if sandbox.ReservedRoute(host) {
-		// Relay under the hold, not ctx, which ends when the stream's channel closes and would cut its drain.
 		if held, release, ok := s.hold(context.WithoutCancel(ctx), key, capabilityRoutes); ok {
 			defer release()
 			if err := netx.Dial(s.routes.DialContext, connections.RelayDrain)(held, host, port, accept); err != nil {
@@ -268,8 +251,6 @@ func (s *state) open(ctx context.Context, key, host string, port uint32, accept 
 	return nil
 }
 
-// selectTarget picks the connection a stream addresses: by name under connectionDomain, or else
-// the single best claim among the candidates the identity reaches.
 func selectTarget(host string, port uint32, candidates []core.Candidate) (string, bool, bool) {
 	if name, named := strings.CutSuffix(host, connections.Domain); named {
 		return name, true, slices.ContainsFunc(candidates, func(c core.Candidate) bool { return c.Name == name })
@@ -297,8 +278,6 @@ func (s *state) reaches(_ context.Context, p facts.Principal, connection string)
 	return known && s.settings.Load().Reaches(current.Name, connection)
 }
 
-// allowOrigins lets the listed origins call the owner API from a browser, such as a dashboard
-// holding the owner key in memory. Only the bearer key authenticates; credentials are never allowed.
 func allowOrigins(origins []string, next http.Handler) http.Handler {
 	if len(origins) == 0 {
 		return next
@@ -323,23 +302,19 @@ func allowOrigins(origins []string, next http.Handler) http.Handler {
 	})
 }
 
-// stale reports a live state older than a generation the owner has saved.
 func (s *state) stale(minimum uint64) bool {
 	current, unlocked := s.generation()
 	return unlocked && current < minimum
 }
 
-// sshOptions is the extra data of an sshChannel, in SSH wire encoding. The authenticated owner CLI supplies it, never the browser.
 type sshOptions struct {
 	Host       string
 	Token      string
 	Generation uint64
 }
 
-// sshGeneration is the payload of an sshGenerationRequest, in SSH wire encoding.
 type sshGeneration struct{ Generation uint64 }
 
-// serveOwnerChannel serves the API to the owner CLI over one SSH channel.
 func (s *state) serveOwnerChannel(nc ssh.NewChannel, api http.Handler) {
 	if nc.ChannelType() != sshChannel {
 		nc.Reject(ssh.Prohibited, "owner connections only serve the owner UI and API")
@@ -367,7 +342,6 @@ func (s *state) serveOwnerChannel(nc ssh.NewChannel, api http.Handler) {
 		if !unlocked {
 			return nil
 		}
-		// Do not report success until the CLI has persisted the generation.
 		timer := time.AfterFunc(generationAckTimeout, cancel)
 		defer timer.Stop()
 		ok, err := ch.SendRequest(sshGenerationRequest, true, ssh.Marshal(sshGeneration{Generation: current}))
@@ -392,7 +366,6 @@ func validOptions(o sshOptions) bool {
 	return err == nil && host == "127.0.0.1" && port != "" && !strings.ContainsAny(port, "/?#@ ")
 }
 
-// panel keeps browser protections with the measured UI. The CLI only forwards bytes.
 func panel(api http.Handler, options sshOptions, acknowledge func() error) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
@@ -418,7 +391,6 @@ func panel(api http.Handler, options sshOptions, acknowledge func() error) http.
 			http.Error(w, "local panel session required", http.StatusUnauthorized)
 			return
 		}
-		// Only the CLI channel can send the storage key; the browser cannot unlock.
 		path := strings.TrimPrefix(r.URL.Path, "/api")
 		if (path == "/unlock" && options.Host != ownerHost) || !ownerPath(path) {
 			http.NotFound(w, r)
@@ -431,7 +403,6 @@ func panel(api http.Handler, options sshOptions, acknowledge func() error) http.
 	})
 }
 
-// ownerCall is one owner RPC request; its ownerReply carries the same ID.
 type ownerCall struct {
 	ID         uint64 `json:"id"`
 	Method     string `json:"method"`
@@ -446,7 +417,6 @@ type ownerReply struct {
 	Body   []byte `json:"body"`
 }
 
-// ownerRPC answers each call with api, as a request carrying the call's method, path and body.
 func (s *state) ownerRPC(api http.Handler) func(context.Context, ownerCall) ownerReply {
 	return func(ctx context.Context, call ownerCall) ownerReply {
 		if !validRPCPath(call.Path) || (call.Method != http.MethodGet && call.Method != http.MethodPost) || (call.Method == http.MethodGet && len(call.Body) != 0) {
@@ -455,7 +425,6 @@ func (s *state) ownerRPC(api http.Handler) func(context.Context, ownerCall) owne
 		if s.stale(call.Generation) {
 			return ownerReply{Status: http.StatusConflict, Body: []byte(errStaleGeneration.Error())}
 		}
-		// An admitted effect finishes even if its socket closes.
 		if call.Method == http.MethodPost {
 			ctx = context.WithoutCancel(ctx)
 		}
@@ -473,7 +442,6 @@ func (s *state) ownerRPC(api http.Handler) func(context.Context, ownerCall) owne
 	}
 }
 
-// validRPCPath accepts an origin-relative owner API path; it checks ownerPath after percent-decoding.
 func validRPCPath(raw string) bool {
 	u, err := url.Parse(raw)
 	return err == nil && strings.HasPrefix(raw, "/") && !strings.HasPrefix(raw, "//") && !strings.Contains(raw, "\\") &&
@@ -481,14 +449,12 @@ func validRPCPath(raw string) bool {
 		path.Clean(u.Path) == u.Path && ownerPath(u.Path)
 }
 
-// ownerPath refuses the app, a nested owner session, and paths an upstream could resolve differently.
 func ownerPath(p string) bool {
 	return !strings.Contains(p, "..") && !strings.Contains(p, "\\") && !slices.ContainsFunc([]string{"/app", "/owner"}, func(reserved string) bool {
 		return p == reserved || strings.HasPrefix(p, reserved+"/")
 	})
 }
 
-// serveRPC answers calls of at most limit bytes, a few at once and in any order, until the socket ends.
 func serveRPC(ctx context.Context, c *noisetransport.Session, limit int, serve func(context.Context, ownerCall) ownerReply) {
 	running := make(chan struct{}, maxCalls)
 	for {
@@ -512,7 +478,6 @@ func serveRPC(ctx context.Context, c *noisetransport.Session, limit int, serve f
 	}
 }
 
-// relayOwner opens the owner socket of the hello's instance, which the owner then runs its own session over.
 func relayOwner(ctx context.Context, c *noisetransport.Session, hello json.RawMessage, dial func(ctx context.Context, instance string) (*websocket.Conn, error)) {
 	var open struct {
 		InstanceID string `json:"instance_id"`
@@ -523,7 +488,6 @@ func relayOwner(ctx context.Context, c *noisetransport.Session, hello json.RawMe
 	}
 	upstream, err := dial(ctx, open.InstanceID)
 	if err != nil {
-		// The innermost cause fits the close frame's 123-byte reason; dial wrappers add the URL.
 		for errors.Unwrap(err) != nil {
 			err = errors.Unwrap(err)
 		}
@@ -539,7 +503,6 @@ func relayOwner(ctx context.Context, c *noisetransport.Session, hello json.RawMe
 	copyMessages(ctx, c.Conn, upstream)
 }
 
-// copyMessages copies whole messages until either side ends, passing on its close.
 func copyMessages(ctx context.Context, dst, src *websocket.Conn) {
 	for {
 		kind, message, err := src.Read(ctx)
@@ -553,8 +516,6 @@ func copyMessages(ctx context.Context, dst, src *websocket.Conn) {
 	}
 }
 
-// parseOwnerKey reads a measured owner key. A small-order point would verify forged
-// signatures for any message, so only canonical keys outside the torsion subgroup pass.
 func parseOwnerKey(value string) (ed25519.PublicKey, error) {
 	encoded, ok := strings.CutPrefix(value, "ed25519:")
 	key, err := base64.StdEncoding.Strict().DecodeString(encoded)

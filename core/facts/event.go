@@ -5,8 +5,6 @@ import (
 	"errors"
 )
 
-// Event owns one captured protocol operation. Worker transport carries these
-// exact bytes; trusted identity and current policy state are added only at Gate.
 type Event string
 
 type event struct {
@@ -26,7 +24,6 @@ func Capture(o Observation, invalid error) Event {
 	return Event(raw)
 }
 
-// Decode returns the observation; an invalid capture also returns its reason.
 func (e Event) Decode() (Observation, error) {
 	var in event
 	if err := DecodeNumbers([]byte(e), &in); err != nil {

@@ -18,9 +18,6 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// SFTP terminates the SSH subsystem and mediates SFTP v3 requests. Root is
-// presented as / to clients. Use a server-side chroot when other writers can
-// replace upstream directories concurrently with path resolution.
 type SFTP struct {
 	SSH
 	Root string `json:"root"`
@@ -31,7 +28,6 @@ func ParseSFTP(config json.RawMessage) (*SFTP, error) {
 	return t, facts.DecodeNumbers(config, t)
 }
 
-// SFTP v3 packet types and status codes, from draft-ietf-secsh-filexfer-02.
 const (
 	sftpVersion = 3
 
@@ -67,10 +63,8 @@ const (
 	fxOpUnsupported    = 8
 )
 
-// SFTPLimits bound one subsystem: each packet either side sends and the handles open at once.
 type SFTPLimits struct{ Packet, Handles int }
 
-// Handler serves the sftp subsystem under config and relays each admitted request to the server it dials with key.
 func (t *SFTP) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), config *ssh.ServerConfig, key func(context.Context) (string, error), limits SFTPLimits) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, conn net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
 		t.serveSFTP(newStream(ctx, conn, gate), config, upstream{dial, key}, limits)
@@ -285,7 +279,6 @@ func (p *sftpProxy) serve(client io.ReadWriter, root string) error {
 	if err != nil {
 		return err
 	}
-	// Do not advertise upstream extensions that bypass the request checks.
 	if err := sftpWrite(client, []byte{fxpVersion, 0, 0, 0, sftpVersion}); err != nil {
 		return err
 	}
@@ -311,8 +304,6 @@ func (p *sftpProxy) serve(client io.ReadWriter, root string) error {
 	}
 }
 
-// Resolve existing objects, or their parent for entry operations such as remove
-// and rename. A symlink cannot move a checked path outside the account root.
 func (p *sftpProxy) resolve(name string, entry, create bool) (string, error) {
 	if !utf8.ValidString(name) || strings.ContainsRune(name, 0) {
 		return "", errors.New("invalid path")
@@ -328,8 +319,6 @@ func (p *sftpProxy) resolve(name string, entry, create bool) (string, error) {
 	return resolved, nil
 }
 
-// Some SFTP servers only clean REALPATH lexically. Resolve each component with
-// LSTAT and READLINK rather than treating that response as proof of containment.
 func (p *sftpProxy) canonical(name string, entry, create bool) (string, error) {
 	for links := 0; links <= 40; links++ {
 		parts := strings.Split(strings.TrimPrefix(path.Clean(name), "/"), "/")
@@ -471,7 +460,6 @@ func (p *sftpProxy) request(b []byte) ([]byte, error) {
 	if h != nil {
 		name = h.path
 	} else {
-		// Check the requested name before resolving it, then the canonical name.
 		e.Path = path.Clean("/" + name)
 		if target != "" {
 			e.Target = path.Clean("/" + target)

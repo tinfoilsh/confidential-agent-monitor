@@ -1,4 +1,3 @@
-// Package ui embeds the built Monitor UI.
 package ui
 
 import (
@@ -12,5 +11,4 @@ import (
 //go:embed dist
 var dist embed.FS
 
-// Files holds only the built UI, which also serves the attested SSH panel.
 var Files, _ = fs.Sub(dist, "dist")

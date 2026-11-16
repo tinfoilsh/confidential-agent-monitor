@@ -6,23 +6,14 @@ import (
 	"slices"
 )
 
-// namedKinds take their credential names from setup, which version 1 declared as secrets.
 var namedKinds = []string{"cli", "ssh-agent"}
 
-// split gives the preset each connection of a version 1 multi-connection preset now has.
 var split = map[string]map[string]string{
 	"email":   {"imap": "email", "smtp": "email_send"},
 	"github":  {"": "github", "mcp": "github_mcp"},
 	"tinfoil": {"": "tinfoil", "websearch": "tinfoil_websearch"},
 }
 
-// upgrade rewrites documents older than StateVersion; those written before versioning
-// have the version 1 layout. Each version 1 account connection becomes a top-level
-// connection named after it, with its account's settings, access and credentials,
-// and rules name their connection. A connection its preset did not declare is
-// dropped unless the preset declares none, since it would inherit the preset's.
-// Credential declarations are removed from connection setups.
-// presets says whether each known preset declares a connection.
 func upgrade(plain []byte, presets map[string]bool) ([]byte, error) {
 	var v1 struct {
 		Version int                                              `json:"version"`

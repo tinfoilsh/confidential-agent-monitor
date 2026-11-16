@@ -1,4 +1,3 @@
-// Package certificates mints TLS server certificates and verifies SSH user certificates.
 package certificates
 
 import (
@@ -17,7 +16,6 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Authority mints short-lived TLS server certificates by server name.
 type Authority struct{ tls.Certificate }
 
 func NewAuthority(name string, lifetime time.Duration) (*Authority, error) {
@@ -54,7 +52,6 @@ func (a *Authority) PEM() (cert, key string) {
 	return string(pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: a.Certificate.Certificate[0]})), string(pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: private}))
 }
 
-// Issue mints a certificate for name, valid from backdate ago until lifetime from now.
 func (a *Authority) Issue(name string, lifetime, backdate time.Duration) (*tls.Certificate, error) {
 	if name == "" {
 		return nil, errors.New("a selected connection needs TLS server name indication")
@@ -83,14 +80,12 @@ func (a *Authority) Issue(name string, lifetime, backdate time.Duration) (*tls.C
 	return &tls.Certificate{Certificate: [][]byte{der}, PrivateKey: key}, nil
 }
 
-// SSHClaims are what a verified SSH user certificate states about its key.
 type SSHClaims struct {
 	KeyID       string
 	Principals  []string
 	ValidBefore uint64
 }
 
-// VerifySSHUser checks that cert is a user certificate that authority signed for principal and that is valid now.
 func VerifySSHUser(authority ssh.PublicKey, cert *ssh.Certificate, principal string) (SSHClaims, error) {
 	if cert.CertType != ssh.UserCert || !bytes.Equal(cert.SignatureKey.Marshal(), authority.Marshal()) {
 		return SSHClaims{}, errors.New("certificate is not a user certificate from the authority")

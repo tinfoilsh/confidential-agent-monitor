@@ -1,4 +1,3 @@
-// Package netx relays bytes, serves HTTP and terminates TLS over connections of any transport.
 package netx
 
 import (
@@ -13,12 +12,8 @@ import (
 	"time"
 )
 
-// Open serves one stream to host:port. It calls accept once the stream is admitted and
-// returns when the stream ends; an error before accept refuses it.
 type Open = func(ctx context.Context, host string, port uint32, accept func() (net.Conn, error)) error
 
-// Dial relays each stream to the address dial reaches, refusing it if the dial fails.
-// A closed peer's data drains for at most drain.
 func Dial(dial func(ctx context.Context, network, address string) (net.Conn, error), drain time.Duration) Open {
 	return func(ctx context.Context, host string, port uint32, accept func() (net.Conn, error)) error {
 		upstream, err := dial(ctx, "tcp", net.JoinHostPort(host, strconv.FormatUint(uint64(port), 10)))
@@ -35,7 +30,6 @@ func Dial(dial func(ctx context.Context, network, address string) (net.Conn, err
 	}
 }
 
-// Connect serves CONNECT requests through open, answering 200 only once it accepts the stream.
 func Connect(open Open) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		host, port, err := net.SplitHostPort(r.Host)
@@ -55,8 +49,6 @@ func Connect(open Open) http.Handler {
 	})
 }
 
-// ServeListener cancels and joins active handlers, including handlers that keep
-// upgraded streams inside their call. Such streams must observe request context.
 func ServeListener(ctx context.Context, ln net.Listener, server *http.Server) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -85,7 +77,6 @@ func ServeListener(ctx context.Context, ln net.Listener, server *http.Server) er
 	return err
 }
 
-// ServeConn serves server on c as ServeListener does, until ctx ends or c closes, then closes c.
 func ServeConn(ctx context.Context, c net.Conn, server *http.Server) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -97,7 +88,6 @@ func ServeConn(ctx context.Context, c net.Conn, server *http.Server) error {
 	return ServeListener(ctx, Listen(ctx, c), server)
 }
 
-// Listen yields c once and then waits for ctx to end, for servers that only accept listeners. Closing it closes c.
 func Listen(ctx context.Context, c net.Conn) net.Listener {
 	ctx, cancel := context.WithCancel(ctx)
 	return &listener{ctx, cancel, c, c}
@@ -122,17 +112,12 @@ func (l *listener) Close() error { l.cancel(); return l.conn.Close() }
 
 func (*listener) Addr() net.Addr { return &net.TCPAddr{} }
 
-// Bind derives a context from ctx that also ends when other does.
 func Bind(ctx, other context.Context) (context.Context, context.CancelFunc) {
 	ctx, cancel := context.WithCancel(ctx)
 	stop := context.AfterFunc(other, cancel)
 	return ctx, func() { stop(); cancel() }
 }
 
-// Relay preserves half-close so a caller can finish sending while still
-// receiving a reply. A fully closed SSH peer's buffered data drains for at most
-// drain before both sides close. Cancellation and I/O errors close both
-// directions immediately.
 func Relay(ctx context.Context, a, b net.Conn, drain time.Duration) {
 	closeBoth := func() { a.Close(); b.Close() }
 	stop := context.AfterFunc(ctx, closeBoth)
@@ -208,8 +193,6 @@ type bufferedConn struct {
 }
 
 func (c *bufferedConn) Read(b []byte) (int, error) {
-	// Drain the handshake prefix, then leave net/http's connection reader behind.
-	// A later protocol read deadline must not cancel the hijacked request context.
 	if buffered := c.reader.Buffered(); buffered > 0 {
 		return c.reader.Read(b[:min(len(b), buffered)])
 	}

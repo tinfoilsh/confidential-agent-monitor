@@ -1,6 +1,3 @@
-// Command perimeter serves the Perimeter: agents reach their connections through SSH under the
-// owner's policy, and the owner manages it over the owner API. This package is the Perimeter's only
-// composition root; every product decision lives here or in the packages beneath it.
 package main
 
 import (
@@ -65,26 +62,23 @@ var (
 //go:embed presets/*.json
 var shippedPresets embed.FS
 
-// The product configuration flags select, fixed before serving.
 var (
-	sshHostKey     ssh.Signer // nil: the stored host key
-	unlockKey      []byte
-	extraPresets   fs.FS
-	identityCA     ssh.PublicKey // signs expiring SSH certificates that name an identity and its groups; nil: only registered keys connect
-	basePolicy     string
-	policyFile     string // loaded at each unlock in place of the stored policy
-	secretFiles    *os.Root
-	ownerOrigins   []string
-	development    bool
-	passphraseKeys bool          // only bearer development accepts storage passphrases
-	workers        *worker.Local // nil: connectors run in this process
-	presets        map[string]*catalog.Preset
-	presetDefaults map[string]json.RawMessage
-	adminRoutes    map[string]http.Handler // owner-only admin routes by ServeMux pattern
-	// identityAttributes validate an identity's other keys, each by its name.
+	sshHostKey         ssh.Signer
+	unlockKey          []byte
+	extraPresets       fs.FS
+	identityCA         ssh.PublicKey
+	basePolicy         string
+	policyFile         string
+	secretFiles        *os.Root
+	ownerOrigins       []string
+	development        bool
+	passphraseKeys     bool
+	workers            *worker.Local
+	presets            map[string]*catalog.Preset
+	presetDefaults     map[string]json.RawMessage
+	adminRoutes        map[string]http.Handler
 	identityAttributes = map[string]func(json.RawMessage) error{sandbox.Attribute: sandbox.ValidateBoot}
-	// events is the stream a collector reads: one JSON line on stdout for each settled record.
-	events = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	events             = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 )
 
 func init() {
@@ -147,8 +141,6 @@ func main() {
 	if flag.NArg() != 0 {
 		log.Fatal("unexpected server arguments; use the separately installed perimeter client")
 	}
-	// A worker runs one connector over inherited descriptors. Its host owns configuration,
-	// authenticated streams, policy decisions and credentials.
 	if *serveWorker {
 		if err := serveWorkerChild(); err != nil {
 			log.Fatal(err)
@@ -193,8 +185,6 @@ func main() {
 			log.Fatal(err)
 		}
 	}
-	// Production owners authenticate through SSH or Noise sessions and unlock the
-	// encrypted state. Only local development permits bearer authentication.
 	var o *owner
 	if *ownerPublicKey != "" || !development {
 		if unlockKey != nil {
@@ -232,7 +222,6 @@ func main() {
 	}
 }
 
-// bubblewrap launches each connector worker from this executable in the prepared read-only root.
 func bubblewrap(rootDir string) *worker.Local {
 	return &worker.Local{Limit: maxWorkers, Limits: workerLimits, Command: func(broker string) (*exec.Cmd, error) {
 		root, err := filepath.Abs(rootDir)
@@ -259,8 +248,6 @@ func bubblewrap(rootDir string) *worker.Local {
 		}
 		userns := "--disable-userns"
 		if value, err := os.ReadFile("/proc/sys/kernel/unprivileged_userns_clone"); err == nil && strings.TrimSpace(string(value)) == "0" {
-			// The CVM already forbids nested user namespaces. Verify that restriction;
-			// --disable-userns would try to create a forbidden second namespace.
 			userns = "--assert-userns-disabled"
 		}
 		cmd := exec.Command(launcher, "--unshare-all", "--unshare-user", "--die-with-parent", "--new-session", userns, "--cap-drop", "ALL", "--clearenv",

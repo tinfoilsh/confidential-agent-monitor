@@ -20,20 +20,15 @@ import (
 
 type streamKey struct{}
 
-// Host is what a worker's connector may use; every call goes to the host, which checks it against its grants.
 type Host struct {
-	// Dial opens TCP through the host's dialer. TLS, including certificate pinning, runs in the worker.
-	Dial func(ctx context.Context, network, address string) (net.Conn, error)
-	// Secret asks the host for a granted value; stored grants and refresh tokens never leave the host.
+	Dial        func(ctx context.Context, network, address string) (net.Conn, error)
 	Secret      func(ctx context.Context, name string) (string, error)
 	Configured  func(name string) bool
 	Placeholder func(name string) string
-	// TLS terminates the TLS of the admitted stream ctx carries with the host's leaf for it.
-	TLS     func(ctx context.Context, host string) *tls.Config
-	HostKey ssh.Signer
+	TLS         func(ctx context.Context, host string) *tls.Config
+	HostKey     ssh.Signer
 }
 
-// Instance is the connector a worker serves. Only Serve is required.
 type Instance struct {
 	Serve   func(ctx context.Context, conn net.Conn, name, host string, port uint32, gate func(context.Context, facts.Event) error)
 	Close   func() error
@@ -41,9 +36,6 @@ type Instance struct {
 	Control http.Handler
 }
 
-// Serve runs a worker using a supplied listener and connection to host services. factory opens the one
-// connector the host prepared data for. The launcher establishes isolation and authenticates both directions
-// before calling Serve. Serve closes ln and stops the connector when ctx ends.
 func Serve(ctx context.Context, factory func(ctx context.Context, data json.RawMessage, host Host) (Instance, error), config io.Reader, ln net.Listener, broker func(context.Context) (net.Conn, error), limits Limits) error {
 	defer ln.Close()
 	var boot bootstrap
@@ -128,7 +120,6 @@ func Serve(ctx context.Context, factory func(ctx context.Context, data json.RawM
 		if err != nil {
 			return
 		}
-		// Keep upgraded work in this handler so shutdown, which ends its context, joins its actual return.
 		ctx := context.WithValue(r.Context(), streamKey{}, info.ID)
 		stop := context.AfterFunc(ctx, func() { conn.Close() })
 		defer func() { stop(); conn.Close() }()
@@ -157,8 +148,6 @@ func (s *remoteSigner) SignWithAlgorithm(_ io.Reader, data []byte, algorithm str
 	return &signature, err
 }
 
-// brokerDialer carries TCP over a connection to the host. TLS, including
-// certificate pinning, runs in the worker on the resulting byte stream.
 type brokerDialer struct {
 	dial    dialFunc
 	timeout time.Duration

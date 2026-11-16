@@ -27,8 +27,6 @@ const (
 
 var refusedRequests = []string{"auth-agent-req@openssh.com", "x11-req"}
 
-// SSH relays an agent's sessions to one server, authenticated with the "key" credential and
-// pinned to its host key.
 type SSH struct {
 	Host    string `json:"host"`
 	Port    int    `json:"port"`
@@ -43,7 +41,6 @@ func ParseSSH(config json.RawMessage) (*SSH, error) {
 
 func (t *SSH) Hosts() []string { return []string{t.Host} }
 
-// stream is one agent connection, which the host key terminates.
 type stream struct {
 	ctx    context.Context
 	cancel context.CancelFunc
@@ -58,7 +55,6 @@ func newStream(ctx context.Context, conn net.Conn, gate func(context.Context, fa
 
 func (s *stream) close() { s.cancel(); s.conn.Close() }
 
-// upstream dials the server with key through dial.
 type upstream struct {
 	dial func(context.Context, string, string) (net.Conn, error)
 	key  func(context.Context) (string, error)
@@ -79,7 +75,6 @@ func (t *SSH) dial(s *stream, u upstream) (*ssh.Client, error) {
 	}
 	hostKeyAlgorithms := []string{hostKey.Type()}
 	if hostKey.Type() == ssh.KeyAlgoRSA {
-		// An RSA key can sign with SHA-2 even though its key format is ssh-rsa.
 		hostKeyAlgorithms = []string{ssh.KeyAlgoRSASHA512, ssh.KeyAlgoRSASHA256, ssh.KeyAlgoRSA}
 	}
 	addr := net.JoinHostPort(t.Host, strconv.Itoa(cmp.Or(t.Port, sshPort)))
@@ -100,8 +95,6 @@ func (t *SSH) dial(s *stream, u upstream) (*ssh.Client, error) {
 	return ssh.NewClient(c, chans, reqs), nil
 }
 
-// Handler serves agent sessions under config, the SSH server configuration they reach, and relays
-// each admitted request to the server it dials with key.
 func (t *SSH) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), config *ssh.ServerConfig, key func(context.Context) (string, error)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, conn net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
 		s := newStream(ctx, conn, gate)
@@ -176,7 +169,6 @@ func relayChannel(up *ssh.Client, nc ssh.NewChannel, check func(*ssh.Request) er
 	replies.Go(func() { forwardRequests(ch, upReqs, nil) })
 	output.Go(func() { io.Copy(ch, upCh) })
 	io.Copy(ch.Stderr(), upCh.Stderr())
-	// EOF ends extended data too, so it waits for stderr as well as stdout.
 	output.Wait()
 	ch.CloseWrite()
 	replies.Wait()
@@ -228,7 +220,6 @@ func eventForSSH(r *ssh.Request) *SSHRequest {
 	return e
 }
 
-// argv is nil for anything but one plain command.
 func argv(command string) []string {
 	file, err := syntax.NewParser().Parse(strings.NewReader(command), "")
 	if err != nil || len(file.Stmts) != 1 {

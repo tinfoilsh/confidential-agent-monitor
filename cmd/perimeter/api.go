@@ -29,30 +29,26 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Owner and agent APIs.
-
 const (
 	ownerName        = "owner"
 	maxDocumentBytes = 16 << 20
-	// Base64 inflates an owner RPC call by a third.
-	maxCallBytes  = 2 * maxDocumentBytes
-	maxAgentBytes = 96 << 10
-	adminPrefix   = "/admin"
-	agentHost     = config.AgentConnection + connections.Domain
-	agentPort     = 80
+	maxCallBytes     = 2 * maxDocumentBytes
+	maxAgentBytes    = 96 << 10
+	adminPrefix      = "/admin"
+	agentHost        = config.AgentConnection + connections.Domain
+	agentPort        = 80
 )
 
 var errLocked = httpError{errors.New("the Perimeter is locked"), http.StatusLocked}
 
-// caller is an authenticated admin request, at the generation its client has saved.
 type caller struct {
 	Name        string
-	Owner       bool           // Holds the owner key.
-	Claims      map[string]any // Verified by the caller's transport, for policy to read.
+	Owner       bool
+	Claims      map[string]any
 	Minimum     uint64
 	Acknowledge func() error
 	ID          string
-	Key         []byte // The storage key the transport authenticated with.
+	Key         []byte
 }
 
 type callerKey struct{}
@@ -68,7 +64,6 @@ func callerFrom(ctx context.Context) (caller, bool) {
 	return c, ok
 }
 
-// jsonHandler decodes a POST body into T and answers fn's value as JSON.
 func jsonHandler[T any](limit int64, fn func(*http.Request, T) (any, error)) http.HandlerFunc {
 	return gzhttp.GzipHandler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Cache-Control", "no-store")
@@ -95,8 +90,6 @@ func jsonHandler[T any](limit int64, fn func(*http.Request, T) (any, error)) htt
 			fail(w, err)
 			return
 		}
-		// Validate only after authentication and the SSH generation acknowledgement.
-		// A weak validator covers both identity and compressed representations of this JSON.
 		if r.Method == http.MethodGet {
 			tag := fmt.Sprintf(`W/"%x"`, sha256.Sum256(response))
 			w.Header().Set("ETag", tag)
@@ -113,7 +106,6 @@ func jsonHandler[T any](limit int64, fn func(*http.Request, T) (any, error)) htt
 	}))
 }
 
-// fail answers err with the status its HTTPStatus() picks, or 400.
 func fail(w http.ResponseWriter, err error) {
 	status := http.StatusBadRequest
 	var specific interface{ HTTPStatus() int }
@@ -123,13 +115,11 @@ func fail(w http.ResponseWriter, err error) {
 	http.Error(w, err.Error(), status)
 }
 
-// refused is an admin call that policy, or a policy loaded from a file, does not allow.
 type refused string
 
 func (r refused) Error() string { return string(r) }
 func (refused) HTTPStatus() int { return http.StatusForbidden }
 
-// unavailable is a dependency failure, never a client error.
 type unavailable struct{ error }
 
 func (unavailable) HTTPStatus() int { return http.StatusServiceUnavailable }
@@ -158,14 +148,12 @@ type editsInput struct {
 	Credentials format.Secrets  `json:"credentials,omitempty"`
 }
 
-// adminAPI serves the admin routes, adminRoutes among them.
 func (s *state) adminAPI() http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("GET /healthz", jsonHandler(0, func(r *http.Request, _ struct{}) (any, error) {
 		var health struct {
 			State string `json:"state,omitempty"`
 		}
-		// Only owners learn whether state exists; the probe reads storage.
 		if c, _ := callerFrom(r.Context()); c.Owner {
 			present, err := stateExists(r.Context(), s.bucket)
 			if err != nil {
@@ -203,7 +191,6 @@ func (s *state) adminAPI() http.Handler {
 		mux.Handle(pattern, s.ownerOnly(handler.ServeHTTP))
 	}
 	mux.Handle("POST /labels/{identity}", ownerTx(s, func(r *http.Request, l format.Label) (any, error) {
-		// A certified name can be held by several keys, and each key has its own label.
 		fingerprints := s.identities.Keys(r.PathValue("identity"))
 		if fingerprints == nil {
 			return nil, fmt.Errorf("no identity %s", r.PathValue("identity"))
@@ -308,7 +295,6 @@ func (s *state) connectionControl(w http.ResponseWriter, r *http.Request) {
 	http.StripPrefix("/connections/"+name, handler).ServeHTTP(w, r.WithContext(ctx))
 }
 
-// viewAfter renders the owner view once an action that ran without s.mu succeeds.
 func (s *state) viewAfter(r *http.Request, err error) (v ownerView, _ error) {
 	if err != nil {
 		return ownerView{}, err
@@ -317,7 +303,6 @@ func (s *state) viewAfter(r *http.Request, err error) (v ownerView, _ error) {
 	return v, err
 }
 
-// ownerTx runs each owner request as one transaction; reading the body and writing the response stay outside it.
 func ownerTx[T any](s *state, fn func(*http.Request, T) (any, error)) http.HandlerFunc {
 	return s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input T) (value any, err error) {
 		s.locked(func() { value, err = fn(r, input) })
@@ -325,7 +310,6 @@ func ownerTx[T any](s *state, fn func(*http.Request, T) (any, error)) http.Handl
 	}))
 }
 
-// ownerOnly serves an admitted admin caller without s.mu, for calls that wait on the network.
 func (s *state) ownerOnly(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		st := s.settings.Load()
@@ -345,7 +329,6 @@ func (s *state) ownerOnly(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-// admitCall asks policy whether the caller in ctx may make its call; call carries the answer and record of an answer.
 func (s *state) admitCall(ctx context.Context, st *settings, call adminCall) error {
 	c, _ := callerFrom(ctx)
 	call.Caller = policyCaller{Name: c.Name, Owner: c.Owner, Claims: c.Claims}
@@ -371,7 +354,6 @@ type agentCatalogView struct {
 	Vocabulary map[string]config.Obligations  `json:"vocabulary"`
 }
 
-// agentAPI serves an identity's own API inside its SSH tunnel.
 func (s *state) agentAPI(key string) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /connections", agentTx(s, key, func(_ *http.Request, _ struct{}, p facts.Principal) (any, error) {
@@ -402,7 +384,6 @@ func (s *state) agentAPI(key string) http.Handler {
 			fail(w, errNoAgent)
 		case p.Name == ownerName:
 			fail(w, refused("an identity named owner cannot make admin calls"))
-		// A browser pointed at a forwarded port sends its own Host; unlock reads the storage key.
 		case r.Host != agentHost || r.URL.Path == "/unlock":
 			http.NotFound(w, r)
 		default:
@@ -433,29 +414,24 @@ type fieldMetadata struct {
 	Account     string `json:"account,omitempty"`
 }
 
-// ownerView exposes credential status without credential values.
 type ownerView struct {
-	Generation uint64                         `json:"generation"`
-	Revision   uint64                         `json:"revision"`
-	Config     map[string]any                 `json:"config"`
-	HostKey    string                         `json:"host_key"`
-	HostID     string                         `json:"host_id"`
-	CA         string                         `json:"ca"`
-	Fields     map[string][]fieldMetadata     `json:"fields"`
-	Status     map[string]core.Status         `json:"status"`
-	Labels     map[string]format.Label        `json:"labels"`
-	CatalogID  string                         `json:"catalog_id"`
-	Presets    map[string]config.CatalogEntry `json:"presets,omitempty"`
-	Vocabulary map[string]config.Obligations  `json:"vocabulary"`
-	// Initialized is true only on the unlock that created this Perimeter's state.
-	Initialized bool `json:"initialized"`
+	Generation  uint64                         `json:"generation"`
+	Revision    uint64                         `json:"revision"`
+	Config      map[string]any                 `json:"config"`
+	HostKey     string                         `json:"host_key"`
+	HostID      string                         `json:"host_id"`
+	CA          string                         `json:"ca"`
+	Fields      map[string][]fieldMetadata     `json:"fields"`
+	Status      map[string]core.Status         `json:"status"`
+	Labels      map[string]format.Label        `json:"labels"`
+	CatalogID   string                         `json:"catalog_id"`
+	Presets     map[string]config.CatalogEntry `json:"presets,omitempty"`
+	Vocabulary  map[string]config.Obligations  `json:"vocabulary"`
+	Initialized bool                           `json:"initialized"`
 }
 
-// view snapshots owner state while the caller holds s.mu. It never calls a connector.
-// Presets are omitted when the request names the catalog the owner already has.
 func (s *state) view(r *http.Request) (ownerView, error) {
 	st, doc := s.settings.Load(), s.doc
-	// The persisted CA identifies the host across restarts and SSH key rotation.
 	block, _ := pem.Decode([]byte(doc.Keys.CACert))
 	if block == nil {
 		return ownerView{}, errors.New("Perimeter has no host certificate")
@@ -498,8 +474,6 @@ func (s *state) view(r *http.Request) (ownerView, error) {
 	return v, nil
 }
 
-// Discovery describes reachable connections, not the owner's configuration or credentials.
-// HTTP connections add public routing and placeholder data, never credentials.
 type connectionListing struct {
 	Name         string            `json:"name"`
 	Protocol     string            `json:"kind"`
@@ -512,7 +486,6 @@ type connectionListing struct {
 	Credentials  map[string]string `json:"credentials,omitempty"`
 }
 
-// listing snapshots the connections p reaches while the caller holds s.mu.
 func (s *state) listing(p facts.Principal) any {
 	st, doc := s.settings.Load(), s.doc
 	result := struct {
@@ -547,7 +520,6 @@ func (s *state) agentPolicy(p facts.Principal) (any, error) {
 	var visible map[string]any
 	var err error
 	if st.capable(p, capabilityConfig) {
-		// Credential values live outside Config.
 		visible, err = st.Config.View()
 	} else {
 		visible, err = st.Config.AgentView(p)

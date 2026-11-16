@@ -19,13 +19,11 @@ type Request struct {
 	HTTP    *HTTPFacts    `json:"http"`
 	GraphQL *GraphQLFacts `json:"graphql,omitempty"`
 	Invalid string        `json:"invalid,omitempty"`
-	// place writes the credentials parsing bound; only the serving connector uses it.
-	place func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error)
+	place   func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error)
 }
 
 func (r *Request) Describe(config *Setup) (facts.Observation, error) {
 	if r.HTTP != nil && config.Preset != nil && len(config.Preset.SensitiveQuery) != 0 {
-		// Describe a private copy; the admitted upstream request keeps its real values.
 		described, layer := *r, *r.HTTP
 		layer.Query = maps.Clone(r.HTTP.Query)
 		for _, key := range config.Preset.SensitiveQuery {
@@ -57,7 +55,6 @@ func (r *Request) describe(config *Setup) (facts.Observation, error) {
 		return p.Match(r, config, f)
 	}
 	if h.WebSocket {
-		// Only a protocol description recognizes WebSocket operations.
 		return f, nil
 	}
 	action := "browse"
@@ -69,8 +66,6 @@ func (r *Request) describe(config *Setup) (facts.Observation, error) {
 	return f, nil
 }
 
-// Preset contains reviewed HTTP operations, including GraphQL requests. Each operation's action,
-// effects and recipients are the preset's own words; the host validates and interprets them.
 type Preset struct {
 	Operations     map[string]Operation `json:"operations"`
 	Slots          bool                 `json:"slots,omitempty"`
@@ -78,7 +73,6 @@ type Preset struct {
 	routes         map[routeKey]*routeNode
 }
 
-// UnmarshalJSON compiles the operations, so only a validated preset can match requests.
 func (p *Preset) UnmarshalJSON(raw []byte) error {
 	type plain Preset
 	if err := facts.DecodeNumbers(raw, (*plain)(p)); err != nil {
@@ -146,8 +140,7 @@ type Operation struct {
 	GraphQL      *GraphQLMatch       `json:"graphql,omitempty"`
 	Scope        map[string]Selector `json:"scope"`
 	Grant        []string            `json:"grant,omitempty"`
-	// Sends is carried for the host, never read here.
-	Sends json.RawMessage `json:"sends,omitempty"`
+	Sends        json.RawMessage     `json:"sends,omitempty"`
 }
 
 type GraphQLMatch struct {
@@ -311,7 +304,6 @@ func (spec Selector) value(r *selection, pointer func(any) (any, bool)) (any, bo
 	}
 }
 
-// An invalid selection is present but can never satisfy a declared JSON type.
 type invalidSelection struct{}
 
 type pathPart struct {
@@ -429,8 +421,6 @@ func (p *Preset) compile() error {
 			if name == "" || count != 1 {
 				return fmt.Errorf("operation %s needs exactly one path capture named %q", id, name)
 			}
-			// Validate the expression on its own so unbalanced groups cannot
-			// escape the wrapper, then anchor independently of embedded flags.
 			compiled, err := regexp.Compile(pattern)
 			if err == nil {
 				compiled, err = regexp.Compile(`\A(?:` + pattern + `)\z`)
@@ -515,8 +505,6 @@ func (node *routeNode) candidates(path []string, out []*compiledOperation) []*co
 	return out
 }
 
-// Match selects exactly one reviewed operation. Unknown requests keep their
-// protocol details, but receive no operation or inferred effects.
 func (p *Preset) Match(r *Request, config *Setup, f facts.Observation) (facts.Observation, error) {
 	h := r.HTTP
 	f.Title = fmt.Sprintf("%s: %s %s", config.title, h.Method, h.Path)

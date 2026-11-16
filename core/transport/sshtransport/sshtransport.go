@@ -1,4 +1,3 @@
-// Package sshtransport serves SSH connections and the TCP/IP forwarding of RFC 4254 over them.
 package sshtransport
 
 import (
@@ -21,14 +20,10 @@ const (
 	forwardedChannel = "forwarded-tcpip"
 )
 
-// ErrUnavailable marks a refusal because the target cannot be reached rather than because it is forbidden.
 var ErrUnavailable = errors.New("unavailable")
 
 type Session = func(*ssh.ServerConn, <-chan ssh.NewChannel, <-chan *ssh.Request)
 
-// Authenticate returns the session that serves a connection authenticating with key; a nil session
-// and error refuse the key. Probes for a key run it too, so proved, if any, carries the effects that
-// must wait until the client has signed with the key; its error refuses the connection.
 type Authenticate = func(conn ssh.ConnMetadata, key ssh.PublicKey) (session Session, proved func() error, err error)
 
 type Limits struct {
@@ -43,8 +38,6 @@ type authenticated struct {
 	proved  func() error
 }
 
-// Serve accepts connections on ln, bounding concurrent and stalled handshakes. A nil host key refuses
-// connections; failed reports a listener error other than its closing.
 func Serve(ln net.Listener, hostKey func() ssh.Signer, limits Limits, authenticate Authenticate, failed func(error)) {
 	handshakes := make(chan struct{}, limits.MaxHandshakes)
 	for {
@@ -101,9 +94,6 @@ func Serve(ln net.Listener, hostKey func() ssh.Signer, limits Limits, authentica
 	}
 }
 
-// ServeDirect answers keepalives and serves each direct-tcpip channel with open until chans closes.
-// open's context ends when the accepted channel fully closes. An error before accept rejects the
-// channel, as a connection failure if it is ErrUnavailable.
 func ServeDirect(chans <-chan ssh.NewChannel, reqs <-chan *ssh.Request, open func(ctx context.Context, host string, port uint32, accept func() (net.Conn, error)) error) {
 	go AnswerKeepalives(reqs)
 	for nc := range chans {
@@ -145,14 +135,12 @@ func ServeDirect(chans <-chan ssh.NewChannel, reqs <-chan *ssh.Request, open fun
 	}
 }
 
-// AnswerKeepalives answers keepalives and refuses every other request until requests closes.
 func AnswerKeepalives(requests <-chan *ssh.Request) {
 	for req := range requests {
 		req.Reply(req.Type == keepalive, nil)
 	}
 }
 
-// TCPIP is the payload of direct-tcpip and forwarded-tcpip channels.
 type TCPIP struct {
 	Host       string
 	Port       uint32
@@ -166,10 +154,6 @@ type Conn struct {
 	closed <-chan struct{}
 }
 
-// HTTP hijacking interrupts a pending read using a deadline. SSH channels have
-// no deadlines, so give stream consumers an interruptible, bounded read pipe.
-// Writes and half-close continue to use the SSH channel directly. Channel
-// requests are rejected; their closure distinguishes full closure from EOF.
 func NewConn(ch ssh.Channel, requests <-chan *ssh.Request) Conn {
 	r, w := net.Pipe()
 	go func() { defer w.Close(); io.Copy(w, ch) }()
@@ -178,7 +162,6 @@ func NewConn(ch ssh.Channel, requests <-chan *ssh.Request) Conn {
 	return Conn{Channel: ch, reader: r, closed: closed}
 }
 
-// Closed reports full SSH channel closure; a peer's CloseWrite leaves it open.
 func (c Conn) Closed() <-chan struct{} { return c.closed }
 
 func (c Conn) Read(p []byte) (int, error) {
@@ -206,8 +189,6 @@ func (c Conn) SetReadDeadline(t time.Time) error {
 }
 func (Conn) SetWriteDeadline(time.Time) error { return nil }
 
-// Forwards are the remote forwards one connection asked for. Nothing is bound
-// locally; Dial opens a forwarded-tcpip channel back to the client.
 type Forwards struct {
 	conn        *ssh.ServerConn
 	limit       int
@@ -221,12 +202,10 @@ type address struct {
 	Port uint32
 }
 
-// NewForwards accepts up to limit forwards; a client that stalls opening one for openTimeout is closed.
 func NewForwards(conn *ssh.ServerConn, limit int, openTimeout time.Duration) *Forwards {
 	return &Forwards{conn: conn, limit: limit, openTimeout: openTimeout, addresses: map[address]bool{}}
 }
 
-// Serve answers keepalives and forward requests until requests closes.
 func (f *Forwards) Serve(requests <-chan *ssh.Request) {
 	for req := range requests {
 		ok := req.Type == keepalive
@@ -255,7 +234,6 @@ func (f *Forwards) Dial(host string, port uint32) (net.Conn, error) {
 	if !f.Has(host, port) {
 		return nil, errors.New("address is not forwarded")
 	}
-	// OpenChannel cannot be canceled, so a peer that stalls it is closed.
 	stalled := time.AfterFunc(f.openTimeout, func() { f.conn.Close() })
 	defer stalled.Stop()
 	channel, requests, err := f.conn.OpenChannel(forwardedChannel, ssh.Marshal(TCPIP{host, port, host, port}))

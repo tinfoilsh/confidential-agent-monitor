@@ -1,4 +1,3 @@
-// Command presets drafts monitor presets from public API specs.
 package main
 
 import (

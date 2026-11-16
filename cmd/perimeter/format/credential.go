@@ -9,7 +9,6 @@ import (
 
 var ErrCredentialShape = errors.New("credential must be a string, an oauth grant or a file under -secrets")
 
-// Credential is one stored record: null, a string, a file name or an OAuth grant.
 type Credential struct {
 	Text  *string
 	File  string

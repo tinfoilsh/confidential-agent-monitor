@@ -24,10 +24,6 @@ type rule struct {
 	Deps []string
 }
 
-// This is an intentional allowlist, never a snapshot regenerated from imports.
-// A new edge must remove mechanical wiring without adding a lifecycle owner.
-// Product state owns settings and decisions; core.Table owns installed setups;
-// connector/worker owns child processes. Helpers do not mirror those owners.
 var packages = map[string]rule{
 	"core":                          {library, []string{"core/facts"}},
 	"core/admission":                {library, nil},
@@ -54,15 +50,13 @@ var packages = map[string]rule{
 	"connector/catalog":             {library, nil},
 	"connector/credential":          {library, nil},
 	"connector/slots":               {library, []string{"core/facts"}},
-	// Worker shares byte transport only; its gate, grants and launcher stay supplied by the host.
-	"connector/worker":       {library, []string{"core/facts", "core/transport/netx"}},
-	"ui":                     {product, nil},
-	"cmd/perimeter/format":   {product, []string{"core/facts"}},
-	"cmd/perimeter/messages": {product, nil},
-	"cmd/perimeter/rego":     {product, []string{"core/facts"}},
-	"cmd/perimeter/config":   {product, []string{"cmd/perimeter/format", "cmd/perimeter/rego", "core/facts", "connector/catalog"}},
-	"cmd/perimeter/sandbox":  {product, []string{"core/facts", "core/transport/sshtransport"}},
-	// Only connections composes the protocols; it holds no settings, credentials or state.
+	"connector/worker":              {library, []string{"core/facts", "core/transport/netx"}},
+	"ui":                            {product, nil},
+	"cmd/perimeter/format":          {product, []string{"core/facts"}},
+	"cmd/perimeter/messages":        {product, nil},
+	"cmd/perimeter/rego":            {product, []string{"core/facts"}},
+	"cmd/perimeter/config":          {product, []string{"cmd/perimeter/format", "cmd/perimeter/rego", "core/facts", "connector/catalog"}},
+	"cmd/perimeter/sandbox":         {product, []string{"core/facts", "core/transport/sshtransport"}},
 	"cmd/perimeter/connections": {product, []string{
 		"cmd/perimeter/config", "cmd/perimeter/format", "cmd/perimeter/messages", "cmd/perimeter/sandbox",
 		"core", "core/attestation", "core/facts", "core/transport/netx",
@@ -97,8 +91,6 @@ var modules = []string{
 	"dev/manual_tests", "dev/presets",
 }
 
-// Independent of the direct-edge allowlist: extending a shared helper must not
-// silently expand this alternative composition's dependency closure.
 var cedarPackages = []string{
 	"cmd/other", "core", "core/facts", "connector/tcp", "core/transport/netx", "core/transport/sshtransport",
 }
@@ -126,7 +118,6 @@ func (r rule) packageName(name string) string {
 	return path.Base(name)
 }
 
-// These fences also apply to transitive dependencies and cannot be overridden by an edge entry.
 func fence(name, dependency string, rules map[string]rule) string {
 	r := rules[name]
 	if target, local := localPackage(dependency); local {
@@ -173,8 +164,6 @@ func checkImport(name, dependency string, rules map[string]rule) string {
 
 func validateRules(rules map[string]rule) []string {
 	var violations []string
-	// Validate the entire permitted closure, even when an edge is used only in
-	// a build-tagged file that go list cannot select on this machine.
 	for name, r := range rules {
 		seen := map[string]bool{}
 		var visit func(string)

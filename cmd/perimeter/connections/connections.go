@@ -1,5 +1,3 @@
-// Package connections parses each connection's setup by its protocol and opens its connector.
-// It holds no settings, credentials or state.
 package connections
 
 import (
@@ -37,40 +35,30 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// Protocols: each connection's kind selects its parser, its host capabilities and its policy hints.
-// The same selection opens a connector in process and in an isolated worker.
-
 const (
-	Domain            = ".perimeter"
-	placeholderPrefix = "tfm_"
-	// HTTP bodies and WebSocket messages larger than this are opaque to policy.
-	maxBodyBytes = 8 << 20
-	// SigV4 signs bodies of at most this size.
+	Domain             = ".perimeter"
+	placeholderPrefix  = "tfm_"
+	maxBodyBytes       = 8 << 20
 	maxSignedBodyBytes = 16 << 20
 	DialTimeout        = 30 * time.Second
 	RelayDrain         = 10 * time.Second
 	upstreamTimeout    = 30 * time.Second
 	maxMailBytes       = 25 << 20
 	maxMQTTPacket      = 1 << 20
-	// maxMQTTPending bounds the QoS 2 publishes awaiting release.
-	maxMQTTPending = 16
+	maxMQTTPending     = 16
 )
 
-// Deployed protocol limits.
 var (
 	sftpLimits = session.SFTPLimits{Packet: 1 << 20, Handles: 1024}
 	cliLimits  = session.Limits{Stdin: 1 << 20, WaitDelay: time.Second}
 	natsLimits = nats.Limits{Payload: 1 << 20, Line: 8192, Subscriptions: 1024, PendingMessages: 128, PendingBytes: 4 << 20, Timeout: upstreamTimeout}
 )
 
-// protocols are the connection kinds, which policies also see as protocols. hostProtocols reach
-// host resources outside their grants, so only local development registers them.
 var (
 	protocols     = []string{"tcp", "http", "mcp", "ssh", "sftp", "cli", "mqtt", "nats", "imap", "smtp", "redis", "postgres", "ssh-agent", "gpg-agent", "tinfoil", "tinfoil-mcp"}
 	hostProtocols = []string{"cli", "gpg-agent"}
 )
 
-// Registered reports whether protocol is a connection kind this deployment serves.
 func Registered(protocol string, development bool) bool {
 	return slices.Contains(protocols, protocol) && (development || !slices.Contains(hostProtocols, protocol))
 }
@@ -80,10 +68,9 @@ type dialFunc = func(ctx context.Context, network, address string) (net.Conn, er
 const (
 	protocolIdentity       = "perimeter"
 	mcpVersion             = "0.1.0"
-	websocketResponseLimit = -1 // Stream responses, including images, without buffering a whole message.
+	websocketResponseLimit = -1
 )
 
-// connectorSSH accepts streams whose agent the outer transport already authenticated.
 func connectorSSH(host ssh.Signer) *ssh.ServerConfig {
 	server := &ssh.ServerConfig{NoClientAuth: true}
 	if host != nil {
@@ -92,33 +79,27 @@ func connectorSSH(host ssh.Signer) *ssh.ServerConfig {
 	return server
 }
 
-// Sends and Observes are protocol hints; policy resolves them with connection settings.
 type RequestContext struct {
 	Label    format.Label `json:"label"`
 	Sends    string       `json:"sends"`
 	Observes format.Label `json:"observes"`
 }
 
-// Setup is one connection's setup as its protocol parsed it: what the table stages, what
-// discovery and the catalog show, how policy reads its observations and how it opens.
 type Setup struct {
 	config.ConnectionSpec
 	Claim             func(string, uint32) int
-	Hosts             []string // upstream hosts and host patterns the setup names
+	Hosts             []string
 	Discovery         []string
 	Slots             any
-	Operations        map[string]config.OperationSummary // nil: no operation listing
+	Operations        map[string]config.OperationSummary
 	SecretNames       []string
-	PerMessage        bool // each operation is gated against captured input, so streams outlive label changes
-	ListsPlaceholders bool // agents send credential placeholders in place of secrets
-	HostKey           bool // the connector authenticates as the Perimeter's SSH host
-	// Hint fills the sends and observes hints policy resolves for an observation and any effects
-	// its protocol implies, or refuses an observation the product does not admit.
-	Hint func(o *facts.Observation, c *RequestContext) error
-	Open func(ctx context.Context, h worker.Host) (worker.Instance, error)
+	PerMessage        bool
+	ListsPlaceholders bool
+	HostKey           bool
+	Hint              func(o *facts.Observation, c *RequestContext) error
+	Open              func(ctx context.Context, h worker.Host) (worker.Instance, error)
 }
 
-// Parse selects spec's protocol. It validates and compiles the setup without I/O.
 func Parse(spec config.ConnectionSpec) (*Setup, error) {
 	p := &Setup{ConnectionSpec: spec, Hint: func(*facts.Observation, *RequestContext) error { return nil }}
 	serveHTTP := func(ctx context.Context, c net.Conn, server *http.Server) error {
@@ -165,7 +146,6 @@ func Parse(spec config.ConnectionSpec) (*Setup, error) {
 		if setup.Preset != nil {
 			p.Operations = map[string]config.OperationSummary{}
 			for id, op := range setup.Preset.Operations {
-				// The product requires every reviewed operation to declare its effects.
 				if len(op.Effects) == 0 {
 					return nil, fmt.Errorf("invalid operation %q", id)
 				}
@@ -187,8 +167,6 @@ func Parse(spec config.ConnectionSpec) (*Setup, error) {
 			json.Unmarshal(raw, &details)
 			switch {
 			case details.HTTP.WebSocket && details.HTTP.Method == "":
-				// A received WebSocket message neither repeats the request's effects nor sends upstream;
-				// the connection labels its entire opaque payload.
 				c.Sends = "me"
 				if o.Operation != nil {
 					o.Operation.Effects = []string{"read"}
@@ -223,7 +201,6 @@ func Parse(spec config.ConnectionSpec) (*Setup, error) {
 		if err != nil {
 			return nil, err
 		}
-		// A preset's data flow applies to every tool call.
 		var sends string
 		var observes *format.Label
 		if pr := setup.Preset; pr != nil {
@@ -256,7 +233,6 @@ func Parse(spec config.ConnectionSpec) (*Setup, error) {
 			client := mcp.Client{HTTP: &http.Client{Transport: base, CheckRedirect: RefuseRedirects}, Timeout: upstreamTimeout, TLS: h.TLS, ServeHTTP: serveHTTP,
 				ClientInfo: info, ServerInfo: info,
 				Streamable: &mcpsdk.StreamableHTTPOptions{Stateless: true, PropagateRequestCancellation: true, DisableLocalhostProtection: true},
-				// Only tools and instructions the owner pinned are exposed.
 				Expose: func(current *mcp.Snapshot) ([]*mcpsdk.Tool, string) {
 					ok, _ := setup.Pin.Approved(current)
 					if len(ok) > 0 {
@@ -332,7 +308,6 @@ func Parse(spec config.ConnectionSpec) (*Setup, error) {
 			return nil, err
 		}
 		p.Open = func(context.Context, worker.Host) (worker.Instance, error) {
-			// The agent socket is a host resource, dialed directly.
 			return worker.Instance{Serve: c.Handler((&net.Dialer{Timeout: DialTimeout}).DialContext)}, nil
 		}
 	case "imap", "smtp", "redis", "mqtt", "nats", "postgres":
@@ -344,7 +319,6 @@ func Parse(spec config.ConnectionSpec) (*Setup, error) {
 	return p, nil
 }
 
-// parseEndpoint selects the protocols that dial one upstream URL with a password.
 func parseEndpoint(p *Setup, spec config.ConnectionSpec) (*Setup, error) {
 	var hosts []string
 	var handler func(h worker.Host) core.Serve
@@ -366,7 +340,7 @@ func parseEndpoint(p *Setup, spec config.ConnectionSpec) (*Setup, error) {
 			hosts = c.Hosts()
 			handler = func(h worker.Host) core.Serve {
 				return c.Handler(h.Dial, password(h),
-					func(string, string, string) error { return nil }, // The outer transport authenticated the stream.
+					func(string, string, string) error { return nil },
 					func(ctx context.Context, host string, backend gosmtp.Backend) *gosmtp.Server {
 						server := gosmtp.NewServer(backend)
 						server.Domain, server.AllowInsecureAuth = protocolIdentity, true
@@ -385,7 +359,6 @@ func parseEndpoint(p *Setup, spec config.ConnectionSpec) (*Setup, error) {
 			}
 			raw, _ := json.Marshal(o.Details)
 			json.Unmarshal(raw, &details)
-			// Mail to the connection's own address stays within its audience.
 			c.Sends = config.SendsConnection
 			for _, to := range details.SMTP.To {
 				if !strings.EqualFold(to, options.Address) {
@@ -436,7 +409,6 @@ func parseEndpoint(p *Setup, spec config.ConnectionSpec) (*Setup, error) {
 	return p, nil
 }
 
-// connectionAudience sends a pub/sub message to the connection's configured audience.
 func connectionAudience(_ *facts.Observation, c *RequestContext) error {
 	c.Sends = config.SendsConnection
 	return nil
@@ -446,7 +418,6 @@ func validSends(sends string) bool {
 	return sends == "" || sends == config.SendsConnection || slices.Contains(config.Audiences, sends)
 }
 
-// UpstreamTransport sends a connector's requests through dial.
 func UpstreamTransport(dial dialFunc) *http.Transport {
 	transport := http.DefaultTransport.(*http.Transport).Clone()
 	transport.Proxy = nil
@@ -454,10 +425,8 @@ func UpstreamTransport(dial dialFunc) *http.Transport {
 	return transport
 }
 
-// RefuseRedirects fails a redirect, which could carry a credential elsewhere.
 func RefuseRedirects(*http.Request, []*http.Request) error {
 	return errors.New("redirects are refused")
 }
 
-// httpSlots place credentials in HTTP requests, never in form fields.
 var httpSlots = slots.Options{Prefix: placeholderPrefix, MaxSignedBody: maxSignedBodyBytes}

@@ -1,4 +1,3 @@
-// Package slots declares where a connection's credentials may appear and places them there.
 package slots
 
 import (
@@ -25,16 +24,13 @@ const (
 	authorization = "Authorization"
 )
 
-// Headers the transport owns; a credential there could change framing or routing.
 var reservedHeaders = []string{
 	"Host", "Content-Length", "Content-Type", "Content-Encoding", "Transfer-Encoding", "Connection", "Keep-Alive",
 	"Te", "Trailer", "Upgrade", "Expect", "Proxy-Authorization", "Proxy-Connection",
 }
 
-// formTypes are the input types a browser may fill with each kind of form value.
 var formTypes = map[string][]string{"username": {"", "text", "email", "tel"}, "password": {"password"}, "otp": {"", "text", "tel", "number"}}
 
-// A Slot is the one header, query key, Basic field, path segment, SigV4 signature or form field where a value's placeholder may appear.
 type Slot struct {
 	Value   string `json:"value"`
 	Origin  string `json:"origin"`
@@ -50,22 +46,17 @@ type Slot struct {
 	port    uint32
 }
 
-// Set is a connection's validated slots.
 type Set struct {
 	slots []Slot
 	Options
 }
 
 type Options struct {
-	// Form sets place values only in form fields, as a browser does; others never do.
-	Form bool
-	// Prefix starts every placeholder, so text that lacks it needs no binding.
-	Prefix string
-	// MaxSignedBody bounds a body a SigV4 signature hashes.
+	Form          bool
+	Prefix        string
 	MaxSignedBody int64
 }
 
-// Parse validates a JSON list of slots.
 func Parse(raw json.RawMessage, o Options) (Set, error) {
 	var slots []Slot
 	if len(raw) != 0 {
@@ -93,7 +84,6 @@ func (s Set) MarshalJSON() ([]byte, error) { return json.Marshal(s.slots) }
 
 func (s Set) Len() int { return len(s.slots) }
 
-// Names lists the credentials the slots place, including SigV4 secrets and session tokens.
 func (s Set) Names() []string {
 	names := []string{}
 	for _, slot := range s.slots {
@@ -109,7 +99,6 @@ func (s Set) Names() []string {
 	return slices.Compact(names)
 }
 
-// Claim ranks a slot origin's exact host and port by the host's length.
 func (s Set) Claim(host string, port uint32) int {
 	host = strings.ToLower(host)
 	score := -1
@@ -121,13 +110,10 @@ func (s Set) Claim(host string, port uint32) int {
 	return score
 }
 
-// Covers reports whether a slot's origin and path cover a request.
 func (s Set) Covers(origin, path string) bool {
 	return slices.ContainsFunc(s.slots, func(slot Slot) bool { return origin == slot.Origin && under(path, slot.Path) })
 }
 
-// Form returns the name of the form value whose placeholder is the whole text, for a field on origin, the kind of
-// field it fills and the input types that may take it; text without a placeholder needs none.
 func (s Set) Form(origin, text string, placeholder func(string) string) (name, field string, inputTypes []string, err error) {
 	if !strings.Contains(text, s.Prefix) {
 		return "", "", nil, nil
@@ -189,8 +175,6 @@ func ValidOrigin(origin string) bool {
 		u.Host == strings.ToLower(u.Host) && u.Port() != "443" && !strings.HasSuffix(origin, ":")
 }
 
-// Bind returns the names of the values r places in slots for origin and refuses a placeholder anywhere else.
-// place resolves those values only when it is called, for the admitted request, and writes them into a copy of it.
 func (s Set) Bind(r *http.Request, origin string, placeholder func(string) string) ([]string, func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error), error) {
 	header := r.Header.Clone()
 	query := r.URL.Query()
@@ -237,8 +221,6 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 	if signed && (header.Get(authorization) != "" || presigned(query)) {
 		return nil, nil, errors.New("this SigV4 origin accepts only the signature its slot places")
 	}
-	// Diagnose only values left after every allowed placement has been tried.
-	// In particular, an alternate prefix for the same header may have matched.
 	for _, slot := range s.slots {
 		if slot.Origin != origin || !under(r.URL.Path, slot.Path) {
 			continue
@@ -265,7 +247,6 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 			if strings.Contains(v, value) {
 				return nil, nil, fmt.Errorf("%s has an incorrectly formatted or repeated credential placeholder. Send exactly one value: %q", location, slot.Prefix+value)
 			}
-			// Placeholder is a public reference. Never quote the supplied value or resolve the secret here.
 			return nil, nil, fmt.Errorf("%s contains an unrecognized credential placeholder. Expected %q. Update the client's %s credential placeholder to %q, then restart the client", location, slot.Prefix+value, slot.Value, value)
 		}
 	}
@@ -292,7 +273,6 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 	}
 	var names []string
 	for _, slot := range used {
-		// The WebSocket handshake owns its negotiation headers.
 		if r.Header["Upgrade"] != nil && strings.HasPrefix(slot.Header, "Sec-Websocket-") {
 			return nil, nil, errors.New("WebSocket negotiation headers cannot carry credentials")
 		}
@@ -303,12 +283,10 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 	}, nil
 }
 
-// under matches whole segments, so /api does not cover /api-other.
 func under(path, prefix string) bool {
 	return path == prefix || strings.HasPrefix(path, strings.TrimSuffix(prefix, "/")+"/")
 }
 
-// place resolves credentials for an approved request and writes them only into its bound slots.
 func place(r *http.Request, slots []*Slot, value func(context.Context, string) (string, error), maxSigned int64) (*http.Request, error) {
 	if len(slots) == 0 {
 		return r, nil
