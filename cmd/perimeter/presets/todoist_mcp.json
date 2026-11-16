@@ -8,7 +8,7 @@
     },
     "connection": {"mcp": {"url": "https://ai.todoist.net/mcp"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://ai.todoist.net/mcp"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://ai.todoist.net/mcp"}}
     ]
   }
 }

@@ -8,7 +8,7 @@
     },
     "connection": {"mcp": {"url": "https://mcp.attio.com/mcp"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://mcp.attio.com/mcp"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.attio.com/mcp"}}
     ]
   }
 }

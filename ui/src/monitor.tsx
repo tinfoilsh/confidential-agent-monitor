@@ -44,6 +44,8 @@ export type MonitorOptions = {
   accept?: (name: string, restore: boolean) => Promise<void>;
   // Hosted builds list the signed-in account's Tinfoil API keys.
   tinfoilApiKeys?: () => Promise<TinfoilApiKey[]>;
+  // Hosted builds name the Perimeter in the command that opens it locally.
+  perimeter?: string;
 };
 export type TinfoilApiKey = { name: string; key: string };
 

@@ -8,7 +8,7 @@
     },
     "connection": {"mcp": {"url": "https://api-ssl.bitly.com/v4/mcp"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://api-ssl.bitly.com/v4/mcp"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://api-ssl.bitly.com/v4/mcp"}}
     ]
   }
 }

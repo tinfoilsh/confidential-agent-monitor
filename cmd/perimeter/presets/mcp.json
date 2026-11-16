@@ -15,7 +15,6 @@
         "path": ["mcp", "url"]
       },
       {
-        "hint": "Leave empty to sign in",
         "key": "token",
         "label": "Token",
         "oauth": { "resource": "{url}" },

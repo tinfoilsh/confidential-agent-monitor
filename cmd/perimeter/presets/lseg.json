@@ -8,7 +8,7 @@
     },
     "connection": {"mcp": {"url": "https://api.analytics.lseg.com/lfa/mcp"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://api.analytics.lseg.com/lfa/mcp"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://api.analytics.lseg.com/lfa/mcp"}}
     ]
   }
 }

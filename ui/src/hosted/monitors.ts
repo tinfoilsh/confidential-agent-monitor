@@ -132,8 +132,7 @@ export async function openMonitor({
   // The attestation binds these checked bytes through the pinned config digest.
   const config = new TextEncoder().encode(row.config ?? "");
   const digest = monitorDigest(TEMPLATES.monitor, config, { owner });
-  // GitHub hides attestations of the internal monitor repo from anonymous requests.
-  // await verifyImage("monitor", digest, { signal });
+  await verifyImage("monitor", digest, { signal });
   const account = (await scope.api("/api/config-registry/v2/account")) as {
     scope: string;
   };

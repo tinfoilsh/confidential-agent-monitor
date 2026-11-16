@@ -8,7 +8,7 @@
     },
     "connection": {"mcp": {"url": "https://estuary.mcp.kapa.ai"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://estuary.mcp.kapa.ai"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://estuary.mcp.kapa.ai"}}
     ]
   }
 }

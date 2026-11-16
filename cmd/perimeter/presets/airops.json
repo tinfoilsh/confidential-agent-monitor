@@ -8,7 +8,7 @@
     },
     "connection": {"mcp": {"url": "https://app.airops.com/mcp"}},
     "fields": [
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://app.airops.com/mcp"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://app.airops.com/mcp"}}
     ]
   }
 }
