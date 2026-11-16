@@ -13,10 +13,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tinfoilsh/confidential-agent-monitor/catalog"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
-	"github.com/tinfoilsh/confidential-agent-monitor/perimeterformat"
 	"gocloud.dev/blob"
 	"gocloud.dev/blob/memblob"
 	"golang.org/x/crypto/ssh"
@@ -47,7 +47,7 @@ func testState(t *testing.T) (*state, string, []byte) {
 	presets, presetDefaults = map[string]*catalog.Preset{"fixture": p}, map[string]json.RawMessage{"fixture": json.RawMessage(`{}`)}
 	bucket := memblob.OpenBucket(nil)
 	t.Cleanup(func() { bucket.Close() })
-	key := make([]byte, perimeterformat.KeyBytes)
+	key := make([]byte, format.KeyBytes)
 	rand.Read(key)
 	s, _ := start(t, bucket, key)
 	public, _, err := ed25519.GenerateKey(rand.Reader)
@@ -89,7 +89,7 @@ func TestStandardDecisionsAndCatalogSurviveSettingsUpdate(t *testing.T) {
 	}
 	before := st.catalogID
 	s.writes.Lock()
-	err := s.writeSettings(t.Context(), settingsWrite{changes: []perimeterformat.Change{{Path: []string{"identities", "agent", "connections", "service", "level"}, Value: "allow"}}})
+	err := s.writeSettings(t.Context(), settingsWrite{changes: []format.Change{{Path: []string{"identities", "agent", "connections", "service", "level"}, Value: "allow"}}})
 	s.writes.Unlock()
 	if err != nil {
 		t.Fatal(err)
@@ -179,7 +179,7 @@ func TestApprovalAndRevocationUseOneRecord(t *testing.T) {
 		}
 	}
 	owner := withCaller(t.Context(), caller{Name: ownerName, Owner: true})
-	if err := s.answerRequest(owner, pending.ID, Answer{Choice: answerOnce}, s.doc.Get().Revision); err != nil {
+	if err := s.answerRequest(owner, pending.ID, Answer{Choice: answerOnce}, s.doc.Revision); err != nil {
 		t.Fatal(err)
 	}
 	select {
@@ -197,7 +197,7 @@ func TestApprovalAndRevocationUseOneRecord(t *testing.T) {
 		t.Fatal("approval record was replaced")
 	}
 	s.writes.Lock()
-	err = s.writeSettings(owner, settingsWrite{changes: []perimeterformat.Change{{Path: []string{"identities", "agent", "connections", "service", "level"}, Value: "off"}}})
+	err = s.writeSettings(owner, settingsWrite{changes: []format.Change{{Path: []string{"identities", "agent", "connections", "service", "level"}, Value: "off"}}})
 	s.writes.Unlock()
 	if err != nil {
 		t.Fatal(err)
@@ -211,7 +211,7 @@ func TestApprovalAndRevocationUseOneRecord(t *testing.T) {
 
 func TestProposalCommitAndAuditKeepChanges(t *testing.T) {
 	s, key, _ := testState(t)
-	changes := []perimeterformat.Change{{Path: []string{"identities", "agent", "connections", "service", "level"}, Value: "allow"}}
+	changes := []format.Change{{Path: []string{"identities", "agent", "connections", "service", "level"}, Value: "allow"}}
 	receipts, err := s.proposePolicy(t.Context(), key, proposalInput{Changes: changes, Reason: "Allow operations"})
 	if err != nil {
 		t.Fatal(err)
@@ -221,7 +221,7 @@ func TestProposalCommitAndAuditKeepChanges(t *testing.T) {
 	}
 	r := s.findRecord(receipts[0].ID)
 	owner := withCaller(t.Context(), caller{Name: ownerName, Owner: true})
-	if err := s.answerRequest(owner, r.ID, Answer{Choice: answerOnce}, s.doc.Get().Revision); err != nil {
+	if err := s.answerRequest(owner, r.ID, Answer{Choice: answerOnce}, s.doc.Revision); err != nil {
 		t.Fatal(err)
 	}
 	if s.settings.Load().Access("agent", "service").Level != "allow" || r.State != stateApproved {
@@ -278,7 +278,7 @@ func TestSavedApprovalSurvivesEncryptedReload(t *testing.T) {
 	r.State = stateExpired
 	s.mu.Unlock()
 	owner := withCaller(t.Context(), caller{Name: ownerName, Owner: true})
-	if err := s.answerRequest(owner, r.ID, Answer{Choice: answerSave}, s.doc.Get().Revision); err != nil {
+	if err := s.answerRequest(owner, r.ID, Answer{Choice: answerSave}, s.doc.Revision); err != nil {
 		t.Fatal(err)
 	}
 	if r.State != stateRefused || len(r.Deny) != 1 {
@@ -388,11 +388,11 @@ func TestObservationsBindProtocolHints(t *testing.T) {
 		name, connection string
 		observation      facts.Observation
 		sends            string
-		observes         perimeterformat.Label
+		observes         format.Label
 		effects          []string
 		invalid          bool
 	}{
-		{name: "tcp", connection: "db", observation: facts.Observation{Operation: &facts.Operation{Action: "connect"}}, sends: "anyone", observes: perimeterformat.Label{Audience: "me", Trust: "untrusted"}},
+		{name: "tcp", connection: "db", observation: facts.Observation{Operation: &facts.Operation{Action: "connect"}}, sends: "anyone", observes: format.Label{Audience: "me", Trust: "untrusted"}},
 		{name: "websocket receive", connection: "web", sends: "me", effects: []string{"read"}, observation: facts.Observation{
 			Operation: &facts.Operation{ID: "websocket.receive", Action: "receive"}, Details: map[string]any{"http": map[string]any{"websocket": true, "method": ""}}}},
 		{name: "unreviewed websocket", connection: "web", invalid: true, observation: facts.Observation{Details: map[string]any{"http": map[string]any{"websocket": true, "method": "GET"}}}},
@@ -418,7 +418,7 @@ func event(id string, effects ...string) facts.Event {
 	return facts.Capture(facts.Observation{Operation: &facts.Operation{ID: id, Action: id, Effects: effects}}, nil)
 }
 
-func edit(t *testing.T, s *state, changes ...perimeterformat.Change) {
+func edit(t *testing.T, s *state, changes ...format.Change) {
 	t.Helper()
 	s.writes.Lock()
 	defer s.writes.Unlock()
@@ -427,8 +427,8 @@ func edit(t *testing.T, s *state, changes ...perimeterformat.Change) {
 	}
 }
 
-func set(value any, path ...string) perimeterformat.Change {
-	return perimeterformat.Change{Path: path, Value: value}
+func set(value any, path ...string) format.Change {
+	return format.Change{Path: path, Value: value}
 }
 
 // admitStream admits one stream of key to the fixture service; ended receives each revocation.
@@ -465,7 +465,7 @@ func TestFailedLabelWriteRefusesOperation(t *testing.T) {
 	s, key, _ := testState(t)
 	privateService(t, s)
 	gate, _ := admitStream(t, s, key, true)
-	generation := s.doc.Get().Generation
+	generation := s.doc.Generation
 	s.bucket.Close()
 	if err := gate(t.Context(), event("read", "read")); err == nil {
 		t.Fatal("an operation ran without its label persisted")
@@ -473,7 +473,7 @@ func TestFailedLabelWriteRefusesOperation(t *testing.T) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	r, _ := s.records.Find(func(r *record) bool { op := summarize(r).Facts.Operation; return op != nil && op.ID == "read" })
-	if r == nil || r.State != stateRefused || s.label(key).Audience != initialLabel.Audience || s.doc.Get().Generation != generation {
+	if r == nil || r.State != stateRefused || s.label(key).Audience != initialLabel.Audience || s.doc.Generation != generation {
 		t.Fatalf("a failed write published state: %+v label %+v", r, s.label(key))
 	}
 }
@@ -555,28 +555,28 @@ func TestCredentialChangeRefusesStaleRefresh(t *testing.T) {
 	s, _, _ := testState(t)
 	edit(t, s, set([]any{map[string]any{"value": "TOKEN", "origin": "https://fixture.example", "header": "Authorization", "prefix": "Bearer "}},
 		"connections", "service", "http", "slots"))
-	id := perimeterformat.SecretID{Connection: "service", Name: "TOKEN"}
+	id := format.SecretID{Connection: "service", Name: "TOKEN"}
 	write := func(raw string) {
 		s.writes.Lock()
 		defer s.writes.Unlock()
-		if err := s.writeSettings(t.Context(), settingsWrite{credentials: perimeterformat.Secrets{"service": {"TOKEN": json.RawMessage(raw)}}}); err != nil {
+		if err := s.writeSettings(t.Context(), settingsWrite{credentials: format.Secrets{"service": {"TOKEN": json.RawMessage(raw)}}}); err != nil {
 			t.Fatal(err)
 		}
 	}
 	write(`"one"`)
-	stale, before := s.settings.Load().connections["service"].secrets["TOKEN"], s.doc.Get().Credentials.Get(id)
+	stale, before := s.settings.Load().connections["service"].secrets["TOKEN"], s.doc.Credentials.Get(id)
 	write(`"two"`)
 	if err := s.replaceValue(t.Context(), id, stale, before, json.RawMessage(`"three"`)); err != errCredentialChanged {
 		t.Fatalf("a stale refresh was saved: %v", err)
 	}
-	if got := string(s.doc.Get().Credentials.Get(id)); got != `"two"` {
+	if got := string(s.doc.Credentials.Get(id)); got != `"two"` {
 		t.Fatalf("stored credential %s", got)
 	}
 }
 
 func TestRollbackAndEnrollmentRestoration(t *testing.T) {
 	s, _, ownerKey := testState(t)
-	generation := s.doc.Get().Generation
+	generation := s.doc.Generation
 	if !s.stale(generation+1) || s.stale(generation) {
 		t.Fatal("stale generation check")
 	}
@@ -590,7 +590,7 @@ func TestRollbackAndEnrollmentRestoration(t *testing.T) {
 	if err := s.enroll(t.Context(), device); err != nil {
 		t.Fatal(err)
 	}
-	edit(t, s, perimeterformat.Change{Path: []string{"identities", "device"}, Delete: true})
+	edit(t, s, format.Change{Path: []string{"identities", "device"}, Delete: true})
 	if err := s.enroll(t.Context(), device); err == nil {
 		t.Fatal("a removed identity returned without restore")
 	}

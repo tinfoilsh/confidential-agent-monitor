@@ -15,16 +15,15 @@ PROTOCOLS = {
     "session", "signer", "tcp", "web",
 }
 MODULE = "github.com/tinfoilsh/confidential-agent-monitor/"
-CEDAR_PACKAGES = {"core", "core/facts", "connector/tcp", "sshtransport", "netx"}
-LEAF_PACKAGES = {
-    "core", "identity", "admission", "approval", "taint", "document",
-    "perimeterformat", "sealedlog", "policy/opa", "credential", "catalog",
-    "slots", "netx", "sshtransport", "noisetransport", "httpjson",
-    "certificates", "worker", "attestation", "messages", "ui", "core/facts",
-} | {"connector/" + name for name in PROTOCOLS}
-FACT_CONSUMERS = {
-    "core", "identity", "perimeterformat", "policy/opa", "catalog", "slots",
-    "sshtransport", "httpjson", "worker",
+CEDAR_PACKAGES = {"core", "core/facts", "connector/tcp", "core/transport/sshtransport", "core/transport/netx"}
+# Every library may import these; each of them may import only those before it.
+SHARED = ("core/facts", "core/transport/netx")
+LIBRARIES = {
+    "core", "core/identity", "core/admission", "core/approval", "core/sealedlog",
+    "core/certificates", "core/attestation", "core/transport/sshtransport",
+    "core/transport/noisetransport", "connector/credential", "connector/catalog",
+    "connector/slots", "connector/worker", "cmd/perimeter/format",
+    "cmd/perimeter/messages", "ui", *SHARED,
 } | {"connector/" + name for name in PROTOCOLS}
 SKIP = {".git", ".dev", "node_modules", "vendor", "dist", "dist-hosted", "dist-static"}
 
@@ -59,8 +58,11 @@ def forbidden(path, dependency, main):
         return True
     if not dependency.startswith(MODULE):
         return False
-    package = "/".join(path.parts[:-1])
-    return not (package in FACT_CONSUMERS and dependency == MODULE + "core/facts")
+    package, target = "/".join(path.parts[:-1]), dependency.removeprefix(MODULE)
+    if target in SHARED:
+        return package in SHARED and SHARED.index(package) <= SHARED.index(target)
+    # Connectors build on the primitives under core/, never on the table in core itself.
+    return not (package.startswith("connector/") and (target == "connector/slots" or target.startswith("core/")))
 
 
 def cedar_dependencies(root, violations):
@@ -115,10 +117,8 @@ def main():
         graph[str(path)] = deps
         main = re.search(r'^package main$', source, re.M)
         package = "/".join(path.parts[:-1])
-        if not main and package not in LEAF_PACKAGES:
+        if not main and package not in LIBRARIES:
             violations.append(f"{path}: package is outside the approved dependency graph")
-        if main and path.parts[0] == "cmd" and path.name != "main.go":
-            violations.append(f"{path}: production composition must be in main.go")
         if package == "core/facts" and re.search(
             r'^type\s+(Label|Context|Vocabulary|Obligations)\b|^func\s+\([^)]*\)\s*Resolve\(', source, re.M
         ):

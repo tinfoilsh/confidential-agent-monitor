@@ -38,17 +38,18 @@ type Limits struct {
 	WaitDelay time.Duration
 }
 
-// Handler serves agent sessions under host, the SSH host identity they reach.
-func (t *CLI) Handler(host ssh.Signer, secret func(ctx context.Context, name string) (string, error), limits Limits) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+// Handler serves agent sessions under config, the SSH server configuration they reach. name prefixes
+// the refusals agents read on stderr.
+func (t *CLI) Handler(config *ssh.ServerConfig, secret func(ctx context.Context, name string) (string, error), limits Limits, name string) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, conn net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
 		s := newStream(ctx, conn, gate)
-		serveSessions(s, host, func(*sync.WaitGroup) func(ssh.NewChannel) {
-			return func(nc ssh.NewChannel) { t.session(s, nc, secret, limits) }
+		serveSessions(s, config, func(*sync.WaitGroup) func(ssh.NewChannel) {
+			return func(nc ssh.NewChannel) { t.session(s, nc, secret, limits, name) }
 		})
 	}
 }
 
-func (t *CLI) session(s *stream, nc ssh.NewChannel, secret func(context.Context, string) (string, error), limits Limits) {
+func (t *CLI) session(s *stream, nc ssh.NewChannel, secret func(context.Context, string) (string, error), limits Limits, name string) {
 	ch, reqs, err := nc.Accept()
 	if err != nil {
 		return
@@ -68,7 +69,7 @@ func (t *CLI) session(s *stream, nc ssh.NewChannel, secret func(context.Context,
 		}
 		status := exitRefused
 		if err := s.gate(s.ctx, facts.Capture(e.Describe(""), nil)); err != nil {
-			fmt.Fprintf(ch.Stderr(), "perimeter: %v\n", err)
+			fmt.Fprintf(ch.Stderr(), "%s: %v\n", name, err)
 		} else {
 			status = t.execute(s.ctx, secret, limits.WaitDelay, e.Command.Argv, io.MultiReader(bytes.NewReader(stdin), ch), ch)
 		}

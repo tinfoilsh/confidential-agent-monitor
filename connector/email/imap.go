@@ -92,8 +92,10 @@ func ParseIMAP(config json.RawMessage) (*IMAP, error) {
 	return &IMAP{e}, nil
 }
 
-// Handler logs in with the stored password and relays commands, each after the gate admits it.
-func (r *IMAP) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+// Preauthenticated logs in with the stored password and relays commands, each after the gate admits it.
+// The caller authenticated each stream, so the agent is greeted "* PREAUTH greeting" and its LOGIN or
+// AUTHENTICATE is acknowledged unchecked.
+func (r *IMAP) Preauthenticated(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), greeting string) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
@@ -128,7 +130,7 @@ func (r *IMAP) Handler(dial func(ctx context.Context, network, address string) (
 				break
 			}
 		}
-		fmt.Fprintf(s, "* PREAUTH perimeter\r\n")
+		fmt.Fprintf(s, "* PREAUTH %s\r\n", greeting)
 		pumped := make(chan struct{})
 		go func() { defer close(pumped); io.Copy(s, replies); cancel(); s.Close() }()
 		defer func() { cancel(); s.Close(); <-pumped }()

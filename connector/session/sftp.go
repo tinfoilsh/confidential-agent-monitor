@@ -70,15 +70,15 @@ const (
 // SFTPLimits bound one subsystem: each packet either side sends and the handles open at once.
 type SFTPLimits struct{ Packet, Handles int }
 
-// Handler serves the sftp subsystem under host and relays each admitted request to the server it dials with key.
-func (t *SFTP) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), host ssh.Signer, key func(context.Context) (string, error), limits SFTPLimits) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+// Handler serves the sftp subsystem under config and relays each admitted request to the server it dials with key.
+func (t *SFTP) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), config *ssh.ServerConfig, key func(context.Context) (string, error), limits SFTPLimits) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, conn net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
-		t.serveSFTP(newStream(ctx, conn, gate), host, upstream{dial, key}, limits)
+		t.serveSFTP(newStream(ctx, conn, gate), config, upstream{dial, key}, limits)
 	}
 }
 
-func (t *SFTP) serveSFTP(s *stream, host ssh.Signer, u upstream, limits SFTPLimits) {
-	t.serve(s, host, u, func(up *ssh.Client, nc ssh.NewChannel) {
+func (t *SFTP) serveSFTP(s *stream, config *ssh.ServerConfig, u upstream, limits SFTPLimits) {
+	t.serve(s, config, u, func(up *ssh.Client, nc ssh.NewChannel) {
 		ch, requests, err := nc.Accept()
 		if err != nil {
 			return

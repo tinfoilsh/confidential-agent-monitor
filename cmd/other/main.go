@@ -18,8 +18,8 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/tcp"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
-	"github.com/tinfoilsh/confidential-agent-monitor/netx"
-	"github.com/tinfoilsh/confidential-agent-monitor/sshtransport"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/sshtransport"
 	"golang.org/x/crypto/ssh"
 )
 

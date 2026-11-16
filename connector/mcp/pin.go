@@ -10,8 +10,6 @@ import (
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-const version = "0.1.0"
-
 type Snapshot struct {
 	Instructions string      `json:"instructions,omitempty"`
 	Tools        []*sdk.Tool `json:"tools"`

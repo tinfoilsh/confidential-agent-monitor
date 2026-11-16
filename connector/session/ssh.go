@@ -4,7 +4,6 @@ import (
 	"cmp"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -101,19 +100,19 @@ func (t *SSH) dial(s *stream, u upstream) (*ssh.Client, error) {
 	return ssh.NewClient(c, chans, reqs), nil
 }
 
-// Handler serves agent sessions under host, the SSH host identity they reach, and relays
+// Handler serves agent sessions under config, the SSH server configuration they reach, and relays
 // each admitted request to the server it dials with key.
-func (t *SSH) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), host ssh.Signer, key func(context.Context) (string, error)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+func (t *SSH) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), config *ssh.ServerConfig, key func(context.Context) (string, error)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, conn net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
 		s := newStream(ctx, conn, gate)
-		t.serve(s, host, upstream{dial, key}, func(up *ssh.Client, nc ssh.NewChannel) {
+		t.serve(s, config, upstream{dial, key}, func(up *ssh.Client, nc ssh.NewChannel) {
 			relayChannel(up, nc, func(r *ssh.Request) error { return s.gate(s.ctx, facts.Capture(eventForSSH(r).Describe(t.Host), nil)) })
 		})
 	}
 }
 
-func (t *SSH) serve(s *stream, host ssh.Signer, u upstream, pump func(*ssh.Client, ssh.NewChannel)) {
-	serveSessions(s, host, func(workers *sync.WaitGroup) func(ssh.NewChannel) {
+func (t *SSH) serve(s *stream, config *ssh.ServerConfig, u upstream, pump func(*ssh.Client, ssh.NewChannel)) {
+	serveSessions(s, config, func(workers *sync.WaitGroup) func(ssh.NewChannel) {
 		up, err := t.dial(s, u)
 		if err != nil {
 			log.Printf("%s: %v", t.Host, err)
@@ -127,9 +126,9 @@ func (t *SSH) serve(s *stream, host ssh.Signer, u upstream, pump func(*ssh.Clien
 	})
 }
 
-func serveSessions(s *stream, hostKey ssh.Signer, start func(*sync.WaitGroup) func(ssh.NewChannel)) {
+func serveSessions(s *stream, config *ssh.ServerConfig, start func(*sync.WaitGroup) func(ssh.NewChannel)) {
 	defer s.cancel()
-	chans, err := innerSSH(s.conn, hostKey)
+	chans, err := innerSSH(s.conn, config)
 	if err != nil {
 		return
 	}
@@ -267,14 +266,8 @@ func literal(parts []syntax.WordPart) bool {
 	return true
 }
 
-// NoClientAuth is safe because the tunnel already checked the client's key.
-func innerSSH(s net.Conn, hostKey ssh.Signer) (<-chan ssh.NewChannel, error) {
-	if hostKey == nil {
-		return nil, errors.New("SSH host identity is unavailable")
-	}
-	cfg := &ssh.ServerConfig{NoClientAuth: true}
-	cfg.AddHostKey(hostKey)
-	_, chans, reqs, err := ssh.NewServerConn(s, cfg)
+func innerSSH(s net.Conn, config *ssh.ServerConfig) (<-chan ssh.NewChannel, error) {
+	_, chans, reqs, err := ssh.NewServerConn(s, config)
 	if err != nil {
 		return nil, err
 	}

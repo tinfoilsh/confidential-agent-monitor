@@ -1,4 +1,4 @@
-// Package nats provides a Core NATS endpoint inside the authenticated tunnel.
+// Package nats provides a Core NATS endpoint on streams the caller authenticated.
 package nats
 
 import (
@@ -95,20 +95,23 @@ type Limits struct {
 	Timeout time.Duration
 }
 
-// Handler serves Core NATS to the agent and relays each admitted operation through one upstream connection.
-func (n *NATS) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), secret func(ctx context.Context, name string) (string, error), limits Limits) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+// Preauthenticated serves Core NATS to the agent and relays each admitted operation through one upstream
+// connection. The caller authenticated each stream, so INFO requires no authentication and CONNECT
+// credentials are ignored. name is the server_id and server_name agents see, and the client name upstream.
+func (n *NATS) Preauthenticated(dial func(ctx context.Context, network, address string) (net.Conn, error), secret func(ctx context.Context, name string) (string, error), limits Limits, name string) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
-		n.serve(&client{ctx: ctx, close: func() { cancel(); s.Close() }, conn: s, gate: gate, limits: limits, subs: map[string]*nats.Subscription{}}, dial, secret)
+		n.serve(&client{ctx: ctx, close: func() { cancel(); s.Close() }, conn: s, gate: gate, limits: limits, subs: map[string]*nats.Subscription{}}, dial, secret, name)
 	}
 }
 
-func (n *NATS) serve(c *client, dial func(context.Context, string, string) (net.Conn, error), secret func(context.Context, string) (string, error)) {
+func (n *NATS) serve(c *client, dial func(context.Context, string, string) (net.Conn, error), secret func(context.Context, string) (string, error), name string) {
 	s := c.conn
 	// Cluster addresses, upstream names and authentication details never leave
 	// the connector. Clients reconnect through the monitor's own address.
-	if err := c.write([]byte(`INFO {"server_id":"perimeter","server_name":"perimeter","version":"2.10.0","proto":1,"headers":true,"max_payload":` + strconv.Itoa(c.limits.Payload) + `,"auth_required":false,"tls_required":false}` + "\r\n")); err != nil {
+	id, _ := json.Marshal(name)
+	if err := c.write([]byte(`INFO {"server_id":` + string(id) + `,"server_name":` + string(id) + `,"version":"2.10.0","proto":1,"headers":true,"max_payload":` + strconv.Itoa(c.limits.Payload) + `,"auth_required":false,"tls_required":false}` + "\r\n")); err != nil {
 		return
 	}
 	r := bufio.NewReaderSize(s, c.limits.Line)
@@ -143,7 +146,7 @@ func (n *NATS) serve(c *client, dial func(context.Context, string, string) (net.
 	opts := []nats.Option{
 		nats.SetCustomDialer(dialer{c.ctx, dial}), nats.NoReconnect(), nats.Timeout(c.limits.Timeout),
 		nats.SkipHostLookup(),
-		nats.Name("perimeter"), nats.ClosedHandler(func(*nats.Conn) { c.close() }),
+		nats.Name(name), nats.ClosedHandler(func(*nats.Conn) { c.close() }),
 		// Error text can contain provider details or subjects; expose a fixed error.
 		nats.ErrorHandler(func(*nats.Conn, *nats.Subscription, error) { c.close() }),
 	}

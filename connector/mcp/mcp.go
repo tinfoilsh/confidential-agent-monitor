@@ -37,6 +37,11 @@ type Client struct {
 	Timeout   time.Duration
 	TLS       func(ctx context.Context, host string) *tls.Config
 	ServeHTTP func(ctx context.Context, conn net.Conn, server *http.Server) error
+
+	// ClientInfo is announced to the server; ServerInfo is what agents' sessions see.
+	ClientInfo, ServerInfo *sdk.Implementation
+	// Streamable configures the handler that serves each stream's agent requests.
+	Streamable *sdk.StreamableHTTPOptions
 }
 
 type Session struct {
@@ -129,14 +134,13 @@ func (m *Session) Close() error {
 func (m *Session) Snapshot() *Snapshot { return m.current }
 
 // Serve builds a server per request, so each call is screened by the stream's gate.
-// SSH admission authenticates these streams; worker transport addresses are internal.
 func (m *Session) Serve(ctx context.Context, conn net.Conn, _, host string, port uint32, gate func(context.Context, facts.Event) error) {
 	c := conn
 	if port == 443 {
 		c = tls.Server(conn, m.client.TLS(ctx, host))
 	}
 	m.client.ServeHTTP(ctx, c, &http.Server{Handler: sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server {
-		server := sdk.NewServer(&sdk.Implementation{Name: "perimeter", Version: version}, &sdk.ServerOptions{Instructions: m.instructions})
+		server := sdk.NewServer(m.client.ServerInfo, &sdk.ServerOptions{Instructions: m.instructions})
 		for _, t := range m.tools {
 			server.AddTool(t, func(ctx context.Context, req *sdk.CallToolRequest) (*sdk.CallToolResult, error) {
 				if err := gate(ctx, facts.Capture((&Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}).Describe(m.setup.Preset))); err != nil {
@@ -147,7 +151,7 @@ func (m *Session) Serve(ctx context.Context, conn net.Conn, _, host string, port
 			})
 		}
 		return server
-	}, &sdk.StreamableHTTPOptions{Stateless: true, PropagateRequestCancellation: true, DisableLocalhostProtection: true})})
+	}, m.client.Streamable)})
 }
 
 func (m *Session) connect(ctx context.Context) error {
@@ -162,7 +166,7 @@ func (m *Session) connect(ctx context.Context) error {
 		authorized.Transport = bearer{m.client.Token, client.Transport}
 		client = &authorized
 	}
-	session, err := sdk.NewClient(&sdk.Implementation{Name: "perimeter", Version: version}, nil).
+	session, err := sdk.NewClient(m.client.ClientInfo, nil).
 		Connect(ctx, &sdk.StreamableClientTransport{Endpoint: m.setup.URL, HTTPClient: client}, nil)
 	if err != nil {
 		return err

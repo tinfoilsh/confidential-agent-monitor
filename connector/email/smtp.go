@@ -31,16 +31,14 @@ func ParseSMTP(config json.RawMessage) (*SMTP, error) {
 }
 
 // Handler accepts mail from the agent and submits each admitted message with the stored password.
-// serverTLS terminates STARTTLS for the stream's host; listen yields the stream once as a listener.
-func (r *SMTP) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), serverTLS func(ctx context.Context, host string) *tls.Config, listen func(context.Context, net.Conn) net.Listener, maxMessage int64) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
+// server builds the stream's server for its host around backend; Data buffers each message, so its
+// MaxMessageBytes bounds memory. auth decides the identities AUTH PLAIN accepts, while mail needs no
+// AUTH, since the caller admitted the stream. listen yields the stream once as a listener.
+func (r *SMTP) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), auth sasl.PlainAuthenticator, server func(ctx context.Context, host string, backend smtp.Backend) *smtp.Server, listen func(context.Context, net.Conn) net.Listener) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
 	return func(ctx context.Context, s net.Conn, _, host string, _ uint32, gate func(context.Context, facts.Event) error) {
-		server := smtp.NewServer(smtp.BackendFunc(func(*smtp.Conn) (smtp.Session, error) {
-			return &smtpSession{ctx: ctx, gate: gate, relay: r, dial: dial, password: password}, nil
+		server := server(ctx, host, smtp.BackendFunc(func(*smtp.Conn) (smtp.Session, error) {
+			return &smtpSession{ctx: ctx, gate: gate, relay: r, dial: dial, password: password, auth: auth}, nil
 		}))
-		server.Domain = "perimeter"
-		server.MaxMessageBytes = maxMessage
-		server.AllowInsecureAuth = true
-		server.TLSConfig = serverTLS(ctx, host)
 		defer server.Shutdown(context.Background())
 		server.Serve(listen(ctx, s))
 	}
@@ -52,13 +50,14 @@ type smtpSession struct {
 	relay    *SMTP
 	dial     func(context.Context, string, string) (net.Conn, error)
 	password func(context.Context) (string, error)
+	auth     sasl.PlainAuthenticator
 	from     string
 	to       []string
 }
 
 func (s *smtpSession) AuthMechanisms() []string { return []string{sasl.Plain} }
 func (s *smtpSession) Auth(string) (sasl.Server, error) {
-	return sasl.NewPlainServer(func(_, _, _ string) error { return nil }), nil
+	return sasl.NewPlainServer(s.auth), nil
 }
 func (s *smtpSession) Mail(from string, _ *smtp.MailOptions) error { s.from = from; return nil }
 func (s *smtpSession) Rcpt(to string, _ *smtp.RcptOptions) error   { s.to = append(s.to, to); return nil }

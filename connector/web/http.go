@@ -21,6 +21,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"github.com/coder/websocket"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
@@ -69,6 +70,12 @@ type Handler struct {
 	CheckRedirect func(req *http.Request, via []*http.Request) error
 	// MaxBody bounds the bodies and WebSocket messages it decodes; larger bodies are opaque.
 	MaxBody int64
+
+	// Accept accepts agent WebSockets; its Subprotocols are replaced by the one the upstream agreed.
+	Accept websocket.AcceptOptions
+	// UpstreamReadLimit bounds each upstream WebSocket message as websocket.Conn.SetReadLimit does;
+	// replies stream to the agent unbuffered.
+	UpstreamReadLimit int64
 }
 
 // PrepareRequest may normalize validated input before its final capture. It must

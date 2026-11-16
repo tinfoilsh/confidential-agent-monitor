@@ -69,11 +69,12 @@ func (h Handler) serveWebSocket(ctx context.Context, conn net.Conn, w http.Respo
 		return
 	}
 	defer upstream.CloseNow()
-	options := &websocket.AcceptOptions{}
+	options := h.Accept
+	options.Subprotocols = nil
 	if protocol := upstream.Subprotocol(); protocol != "" {
 		options.Subprotocols = []string{protocol}
 	}
-	client, err := websocket.Accept(w, r, options)
+	client, err := websocket.Accept(w, r, &options)
 	if err != nil {
 		return
 	}
@@ -81,8 +82,7 @@ func (h Handler) serveWebSocket(ctx context.Context, conn net.Conn, w http.Respo
 	defer end()
 	defer client.CloseNow()
 	client.SetReadLimit(h.MaxBody)
-	// Responses may include large images; copy replies without buffering them.
-	upstream.SetReadLimit(-1)
+	upstream.SetReadLimit(h.UpstreamReadLimit)
 	replies := make(chan struct{})
 	defer func() { end(); <-replies }()
 	go func() {

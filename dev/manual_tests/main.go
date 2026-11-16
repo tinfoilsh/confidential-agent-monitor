@@ -26,13 +26,13 @@ import (
 	"time"
 
 	"code.dny.dev/ssrf"
-	"github.com/tinfoilsh/confidential-agent-monitor/catalog"
-	"github.com/tinfoilsh/confidential-agent-monitor/certificates"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/slots"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/web"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/certificates"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
-	"github.com/tinfoilsh/confidential-agent-monitor/credential"
-	"github.com/tinfoilsh/confidential-agent-monitor/netx"
-	"github.com/tinfoilsh/confidential-agent-monitor/slots"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
 
 type input struct {
@@ -102,7 +102,7 @@ func prepare(tlsConfig func(context.Context, string) *tls.Config, transport http
 	if secret != "" {
 		value = credential.Static(secret)
 	}
-	handler := web.Handler{Setup: setup, Transport: transport, CheckRedirect: func(*http.Request, []*http.Request) error { return errors.New("redirects are refused") }, MaxBody: 8 << 20, TLS: tlsConfig, ServeHTTP: netx.ServeConn,
+	handler := web.Handler{Setup: setup, Transport: transport, CheckRedirect: func(*http.Request, []*http.Request) error { return errors.New("redirects are refused") }, UpstreamReadLimit: -1, MaxBody: 8 << 20, TLS: tlsConfig, ServeHTTP: netx.ServeConn,
 		Placeholder: func(name string) string {
 			if name == credentialName && value.Configured() {
 				return placeholder
