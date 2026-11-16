@@ -11,7 +11,7 @@
     "fields": [
       {"key": "client_id", "label": "OAuth client ID", "paths": []},
       {"key": "client_secret", "label": "OAuth client secret", "paths": [], "secret": true},
-      {"key": "token", "label": "Token", "credential": true, "secret": true, "hint": "Leave empty to sign in", "oauth": {"resource": "https://mcp.hubspot.com", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
+      {"key": "token", "label": "Token", "credential": true, "secret": true, "oauth": {"resource": "https://mcp.hubspot.com", "client_id": "{client_id}", "client_secret": "{client_secret}"}}
     ]
   }
 }

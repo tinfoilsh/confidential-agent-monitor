@@ -627,7 +627,10 @@ export function AddConnection(props: { preset: string }) {
     ),
   );
   const [tokens, setTokens] = createStore<Record<string, boolean>>({});
-  const signIns = () => fields.filter((f) => f.oauth && !tokens[f.key]);
+  const local = (f: owner.PresetField) =>
+    !!m.options.product && owner.loopbackSignIn(f, values);
+  const signIns = () =>
+    fields.filter((f) => f.oauth && !tokens[f.key] && !local(f));
   const [api, setApi] = createSignal(owner.apiSettings(m.view()!)),
     [token, setToken] = createSignal("");
   const names = () => owner.sandboxNames(m.view()!);
@@ -684,6 +687,15 @@ export function AddConnection(props: { preset: string }) {
         }}
       >
         <ConnectionWarning warning={preset?.warning} />
+        <Show when={fields.some((f) => f.oauth && !tokens[f.key] && local(f))}>
+          <div class="connection-warning" role="note">
+            <CopyField
+              label={`Sign-in unavailable on ${m.options.product?.name}. Open locally to sign in.`}
+              value={`tinfoil perimeter open ${m.options.perimeter}`}
+              copyLabel="Copy command"
+            />
+          </div>
+        </Show>
         <label>
           Name
           <input
@@ -813,11 +825,13 @@ function ConnectionForm(props: { name: string; setup?: JSX.Element }) {
   const [drafts, setDrafts] = createStore<Record<string, string | undefined>>(
     {},
   );
+  const clientFields = owner.clientFields(m.view()!, props.name);
+  const [clients, setClients] = createStore<Record<string, string>>({});
   const credentials = createMemo(
     () =>
       new Map(
         owner
-          .credentialFields(m.view()!, props.name)
+          .credentialFields(m.view()!, props.name, clients)
           .map((field) => [field.key, field]),
       ),
   );
@@ -920,6 +934,23 @@ function ConnectionForm(props: { name: string; setup?: JSX.Element }) {
                   );
                   const entry = () => (
                     <div class="credential">
+                      <Show when={field().oauth}>
+                        <For each={clientFields}>
+                          {(c) => (
+                            <Field
+                              field={{
+                                ...c,
+                                hint:
+                                  field().signIn && !field().grant
+                                    ? "Leave blank to keep the current client"
+                                    : owner.fieldText(c, c.default) || c.hint,
+                              }}
+                              value={clients[c.key] ?? ""}
+                              onInput={(text) => setClients(c.key, text)}
+                            />
+                          )}
+                        </For>
+                      </Show>
                       <Show
                         when={!collapsed()}
                         fallback={
