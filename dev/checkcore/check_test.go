@@ -24,7 +24,7 @@ func TestSourceBoundaries(t *testing.T) {
 		{"peer protocol", "connector/web/web.go", `package web; import "` + module + `/connector/email"`, "another protocol"},
 		{"product format", "connector/worker/worker.go", `package worker; import "` + module + `/cmd/perimeter/format"`, "product or composition"},
 		{"UI", "core/core.go", `package core; import "` + module + `/ui"`, "product or composition"},
-		{"product SDK", "core/attestation/attestation.go", `package attestation; import "github.com/tinfoilsh/tinfoil-go/verify"`, "product SDK"},
+		{"product SDK", "core/certificates/certificates.go", `package certificates; import "github.com/tinfoilsh/tinfoil-go/verify"`, "product SDK"},
 		{"policy SDK", "core/core.go", `package core; import _ "github.com/open-policy-agent/opa/v1/rego"`, "product SDK"},
 		{"raw import", "connector/tcp/tcp.go", "package tcp; import `" + module + "/core/approval`", "unapproved dependency"},
 		{"escaped import", "connector/tcp/tcp.go", `package tcp; import "\u0067ithub.com/tinfoilsh/confidential-agent-monitor/core/approval"`, "unapproved dependency"},

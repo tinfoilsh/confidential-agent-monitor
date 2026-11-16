@@ -1,4 +1,4 @@
-package attestation
+package connections
 
 import (
 	"context"
@@ -10,30 +10,33 @@ import (
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/worker"
+	"github.com/tinfoilsh/tinfoil-go/verify"
+	tinfoildoc "github.com/tinfoilsh/tinfoil-go/verify/document"
 )
 
 var errKey = errors.New("TLS key differs from its attestation")
 
-type Verify = func(evidence, nonce []byte) (pin string, fresh time.Time, err error)
-
-type Config struct {
-	Host, Path string
-	Verify     Verify
-	Nonce      func() ([]byte, error)
-	Base       *http.Transport
-	Timeout    time.Duration
-	MaxBytes   int64
+type attestedTransport struct {
+	enclave, repo string
+	verifier      *verify.Verifier
+	base          *http.Transport
+	gate          chan struct{}
+	bound         *http.Transport
+	expires       time.Time
 }
 
-type Transport struct {
-	c       Config
-	gate    chan struct{}
-	bound   *http.Transport
-	expires time.Time
-}
-
-func New(ctx context.Context, c Config) (*Transport, error) {
-	t := &Transport{c: c, gate: make(chan struct{}, 1)}
+func attest(ctx context.Context, h worker.Host, secret, enclave, repo string, base *http.Transport) (*attestedTransport, error) {
+	if !h.Configured(secret) {
+		return nil, errors.New("Tinfoil API key is not configured")
+	}
+	verifier, err := verify.NewVerifier()
+	if err != nil {
+		return nil, err
+	}
+	t := &attestedTransport{enclave: enclave, repo: repo, verifier: verifier, base: base, gate: make(chan struct{}, 1)}
 	if _, err := t.current(ctx, nil); err != nil {
 		t.CloseIdleConnections()
 		return nil, err
@@ -41,7 +44,7 @@ func New(ctx context.Context, c Config) (*Transport, error) {
 	return t, nil
 }
 
-func (t *Transport) current(ctx context.Context, rejected *http.Transport) (*http.Transport, error) {
+func (t *attestedTransport) current(ctx context.Context, rejected *http.Transport) (*http.Transport, error) {
 	select {
 	case t.gate <- struct{}{}:
 	case <-ctx.Done():
@@ -56,18 +59,18 @@ func (t *Transport) current(ctx context.Context, rejected *http.Transport) (*htt
 		t.bound = nil
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, t.c.Timeout)
+	ctx, cancel := context.WithTimeout(ctx, attestationTimeout)
 	defer cancel()
-	nonce, err := t.c.Nonce()
+	nonce, err := tinfoildoc.RandomNonce()
 	if err != nil {
 		return nil, err
 	}
-	u := "https://" + t.c.Host + t.c.Path + "?nonce=" + hex.EncodeToString(nonce)
+	u := "https://" + t.enclave + sandbox.AttestationPath + "?nonce=" + hex.EncodeToString(nonce)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
 		return nil, err
 	}
-	resp, err := t.c.Base.RoundTrip(req)
+	resp, err := t.base.RoundTrip(req)
 	if err != nil {
 		return nil, fmt.Errorf("fetch attestation: %w", err)
 	}
@@ -75,25 +78,27 @@ func (t *Transport) current(ctx context.Context, rejected *http.Transport) (*htt
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("attestation returned HTTP %d", resp.StatusCode)
 	}
-	raw, err := io.ReadAll(io.LimitReader(resp.Body, t.c.MaxBytes+1))
+	raw, err := io.ReadAll(io.LimitReader(resp.Body, maxAttestationBytes+1))
 	if err != nil {
 		return nil, err
 	}
-	if int64(len(raw)) > t.c.MaxBytes {
+	if len(raw) > maxAttestationBytes {
 		return nil, errors.New("attestation is too large")
 	}
-	pin, fresh, err := t.c.Verify(raw, nonce)
+	verified, err := t.verifier.VerifyV3(raw, nonce, t.repo)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("verify Tinfoil attestation: %w", err)
 	}
+	pin, ok := verified.TLSPublicKeyFP()
 	decoded, err := hex.DecodeString(pin)
-	if err != nil || len(decoded) != sha256.Size {
-		return nil, errors.New("invalid attested TLS key")
+	if !ok || err != nil || len(decoded) != sha256.Size {
+		return nil, errors.New("invalid attested Tinfoil TLS key")
 	}
+	fresh := verified.FreshnessExpiresAt
 	if !time.Now().Before(fresh) {
 		return nil, errors.New("attestation has expired")
 	}
-	bound := t.c.Base.Clone()
+	bound := t.base.Clone()
 	if bound.TLSClientConfig == nil {
 		bound.TLSClientConfig = new(tls.Config)
 	}
@@ -120,8 +125,8 @@ func (t *Transport) current(ctx context.Context, rejected *http.Transport) (*htt
 	return bound, nil
 }
 
-func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
-	if r.URL.Scheme != "https" || r.URL.Host != t.c.Host {
+func (t *attestedTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	if r.URL.Scheme != "https" || r.URL.Host != t.enclave {
 		if r.Body != nil {
 			r.Body.Close()
 		}
@@ -154,7 +159,7 @@ func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	return bound.RoundTrip(retry)
 }
 
-func (t *Transport) CloseIdleConnections() {
+func (t *attestedTransport) CloseIdleConnections() {
 	t.gate <- struct{}{}
 	defer func() { <-t.gate }()
 	if t.bound != nil {

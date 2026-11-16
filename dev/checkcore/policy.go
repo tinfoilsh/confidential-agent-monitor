@@ -28,7 +28,6 @@ var packages = map[string]rule{
 	"core":                          {library, []string{"core/facts"}},
 	"core/admission":                {library, nil},
 	"core/approval":                 {library, nil},
-	"core/attestation":              {library, nil},
 	"core/certificates":             {library, nil},
 	"core/facts":                    {library, nil},
 	"core/identity":                 {library, []string{"core/facts"}},
@@ -59,7 +58,7 @@ var packages = map[string]rule{
 	"cmd/perimeter/sandbox":         {product, []string{"core/facts", "core/transport/sshtransport"}},
 	"cmd/perimeter/connections": {product, []string{
 		"cmd/perimeter/config", "cmd/perimeter/format", "cmd/perimeter/messages", "cmd/perimeter/sandbox",
-		"core", "core/attestation", "core/facts", "core/transport/netx",
+		"core", "core/facts", "core/transport/netx",
 		"connector/email", "connector/mcp", "connector/mqtt", "connector/nats", "connector/postgres",
 		"connector/redis", "connector/session", "connector/signer", "connector/slots", "connector/tcp",
 		"connector/web", "connector/worker",
