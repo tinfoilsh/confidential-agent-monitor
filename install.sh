@@ -6,8 +6,10 @@ usage() {
     cat <<'EOF'
 Usage: ./install.sh [--bin-dir DIR] [--daemon]
 
-Install or update the Perimeter CLI from this checkout.
-The default destination is ~/.local/bin/perimeter.
+Install or update the Perimeter CLI and its agent skill from this checkout.
+The default destination is ~/.local/bin/perimeter. From a terminal, it offers
+to install the skill to ~/.claude/skills and ~/.agents/skills for the agents
+already set up there, such as Claude Code and Codex.
 Requires Python 3.11 or newer and OpenSSH on Linux or macOS.
 Run this command again after pulling changes to update the installed client.
 
@@ -92,6 +94,24 @@ if [ "$active" != "$destination" ]; then
     if [ -n "$active" ]; then
         printf 'Your current PATH selects: %s\n' "$active"
     fi
+fi
+skills=
+if [ -d "$HOME/.claude" ]; then skills=.claude/skills; fi
+# Codex reads ~/.agents/skills but keeps its own settings in ~/.codex.
+if [ -d "$HOME/.agents" ] || [ -d "$HOME/.codex" ]; then skills="$skills .agents/skills"; fi
+if [ -n "$skills" ] && [ -t 0 ]; then
+    printf 'Install the Perimeter skill for your coding agents? [Y/n] '
+    read -r answer || answer=n
+    case $answer in
+        [Nn]*) ;;
+        *)
+            for dir in $skills; do
+                mkdir -p -- "$HOME/$dir/perimeter"
+                cp -- "$source_dir/client/skills/perimeter/SKILL.md" "$HOME/$dir/perimeter/SKILL.md"
+                printf 'Installed the Perimeter skill to ~/%s\n' "$dir"
+            done
+            ;;
+    esac
 fi
 
 [ -n "$daemon" ] || exit 0

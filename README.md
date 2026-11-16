@@ -41,7 +41,7 @@ Repeat attestation after either VM reboots.
 
 ### Local commands
 
-Install the CLI from this checkout. It requires Python 3.11+ and OpenSSH on Linux
+Install the CLI, and optionally its agent skill, from this checkout. It requires Python 3.11+ and OpenSSH on Linux
 or macOS.
 
 ```sh
