@@ -17,17 +17,14 @@ import (
 	"github.com/coder/websocket"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/messages"
-	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/mcp"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/slots"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/web"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/worker"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
-	"github.com/tinfoilsh/confidential-agent-monitor/core/attestation"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 	"github.com/tinfoilsh/tinfoil-go/verify"
-	tinfoildoc "github.com/tinfoilsh/tinfoil-go/verify/document"
 )
 
 const (
@@ -97,29 +94,6 @@ func parseTinfoilMCP(spec config.ConnectionSpec, p *Setup) error {
 		return err
 	}
 	return mcpSetup(p, &cfg.Setup, cfg.Repo)
-}
-
-func attest(ctx context.Context, h worker.Host, secret, enclave, repo string, base *http.Transport) (*attestation.Transport, error) {
-	if !h.Configured(secret) {
-		return nil, errors.New("Tinfoil API key is not configured")
-	}
-	verifier, err := verify.NewVerifier()
-	if err != nil {
-		return nil, err
-	}
-	return attestation.New(ctx, attestation.Config{Host: enclave, Path: sandbox.AttestationPath, Nonce: tinfoildoc.RandomNonce, Base: base,
-		Timeout: attestationTimeout, MaxBytes: maxAttestationBytes,
-		Verify: func(evidence, nonce []byte) (string, time.Time, error) {
-			verified, err := verifier.VerifyV3(evidence, nonce, repo)
-			if err != nil {
-				return "", time.Time{}, fmt.Errorf("verify Tinfoil attestation: %w", err)
-			}
-			pin, ok := verified.TLSPublicKeyFP()
-			if !ok {
-				return "", time.Time{}, errors.New("invalid attested Tinfoil TLS key")
-			}
-			return pin, verified.FreshnessExpiresAt, nil
-		}})
 }
 
 func (t *tinfoilSetup) open(ctx context.Context, setup *web.Setup, h worker.Host) (worker.Instance, error) {

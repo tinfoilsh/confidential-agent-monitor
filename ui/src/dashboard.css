@@ -3206,6 +3206,11 @@ td {
   color: var(--muted);
   box-shadow: none;
 }
+.icon-button.open-shell {
+  width: 28px;
+  height: 28px;
+  margin-block: -2px;
+}
 .dialog-close:hover:not(:disabled) {
   background: transparent;
   color: var(--text);
