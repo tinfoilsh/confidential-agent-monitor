@@ -1017,7 +1017,7 @@ def setup_launch(args):
             if not sep or service not in connections or level not in ("read", "ask", "allow"):
                 raise Error(f"invalid service access {item!r}; use an existing service and read, ask or allow")
             access[service] = {"level": level}
-        if args.tinfoil:
+        if args.tinfoil and name == "default":
             pair_computer(owner, view, endpoint, root)
         if key:
             private(root / "owner.key", key.encode())
