@@ -10,7 +10,7 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
 // Only RFC 6455 upgrades are supported. The preset must separately recognize

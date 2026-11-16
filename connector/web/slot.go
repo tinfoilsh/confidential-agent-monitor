@@ -15,7 +15,6 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
 )
 
 // Headers the transport owns; a credential there could change framing or routing.
@@ -37,7 +36,7 @@ func (c *Credentials) Names() iter.Seq[string] { return maps.Keys(c.Secrets) }
 
 func (c *Credentials) Placeholder(value string) string {
 	if secret := c.Secrets[value]; secret != nil {
-		return secret.Placeholder
+		return secret.Placeholder()
 	}
 	return ""
 }
@@ -244,7 +243,7 @@ func under(path, prefix string) bool {
 // substitution resolves credentials for an approved request and writes them only into its bound slots.
 type substitution struct {
 	base   http.RoundTripper
-	values map[string]*credential.Value
+	values map[string]connector.Secret
 	slots  []*Slot
 }
 

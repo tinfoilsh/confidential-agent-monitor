@@ -14,10 +14,10 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgproto3"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-var Kind = connector.Kind{Parse: parsePostgres, New: func() connector.Server { return new(Postgres) }}
+var Kind = connector.Kind{Parse: parsePostgres, Open: connector.Stateless((*postgresSetup).serve)}
 
 func parsePostgres(source connector.Setup) (connector.Prepared, error) {
 	c := new(postgresSetup)
@@ -27,10 +27,8 @@ func parsePostgres(source connector.Setup) (connector.Prepared, error) {
 	if err := c.Endpoint.Parse(); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Routes: []string{c.URL.Hostname()}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Hosts: []string{c.URL.Hostname()}}, nil
 }
-
-type Postgres struct{ connector.Slot[postgresSetup] }
 
 const (
 	sslAccepted = 'S'
@@ -39,12 +37,7 @@ const (
 
 type postgresSetup struct{ connector.Endpoint }
 
-func (owner *Postgres) Serve(s *connector.Stream, e *connector.Env) {
-	r, ok := owner.Load()
-	if !ok {
-		return
-	}
-
+func (r *postgresSetup) serve(s *connector.Stream, e *connector.Env) {
 	backend, startup, err := startup(s, e.TLS)
 	if err != nil {
 		log.Printf("postgres startup: %v", err)

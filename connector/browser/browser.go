@@ -27,7 +27,7 @@ import (
 	"github.com/chromedp/chromedp"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/web"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
 const (
@@ -66,6 +66,7 @@ type setup struct {
 
 type session struct {
 	setup
+	life    sync.RWMutex
 	cancel  context.CancelFunc
 	workers sync.WaitGroup
 	root    context.Context // The first tab, which owns the browser.
@@ -185,7 +186,7 @@ func (b *session) close() error {
 	return nil
 }
 
-func (b *session) serve(s *connector.Stream, _ *connector.Env) {
+func (b *session) serve(s *connector.Stream) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /navigate", b.handle(s, "navigate", b.navigate))
 	mux.HandleFunc("GET /snapshot", b.handle(s, "snapshot", b.snapshot))

@@ -10,11 +10,11 @@ import (
 	"strings"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
-	"github.com/tinfoilsh/confidential-agent-monitor/netx"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/netx"
 )
 
-var Kind = connector.Kind{Parse: Parse, New: func() connector.Server { return new(Server) }}
+var Kind = connector.Kind{Parse: Parse, Open: connector.Stateless((*TCP).serve)}
 
 const maxPort = 65535
 
@@ -42,10 +42,8 @@ func Parse(source connector.Setup) (connector.Prepared, error) {
 			return connector.Prepared{}, fmt.Errorf("invalid TCP port %d; use 1 to %d", port, maxPort)
 		}
 	}
-	return connector.Prepared{Value: c, Claim: c.Claim, Routes: c.Hosts}, nil
+	return connector.Prepared{Value: c, Claim: c.Claim, Hosts: c.Hosts}, nil
 }
-
-type Server struct{ connector.Slot[TCP] }
 
 func (c *TCP) Claim(host string, port uint32) int {
 	if port == 0 || port > maxPort || host == "" {
@@ -74,12 +72,7 @@ func (r *TCPFacts) Describe() facts.Facts {
 		Context: facts.Context{Sends: "anyone", Observes: facts.Label{Audience: "me", Trust: "untrusted"}}}
 }
 
-func (owner *Server) Serve(s *connector.Stream, e *connector.Env) {
-	c, ok := owner.Load()
-	if !ok {
-		return
-	}
-
+func (c *TCP) serve(s *connector.Stream, e *connector.Env) {
 	host, port := s.Host, s.Port
 	if c.Claim(host, port) < 0 || s.Gate(s.Context, c.Capture((&TCPFacts{Host: host, Port: port}).Describe())) != nil {
 		return

@@ -14,10 +14,10 @@ import (
 	"github.com/emersion/go-sasl"
 	"github.com/emersion/go-smtp"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-var SMTPKind = connector.Kind{Parse: parseSMTP, New: func() connector.Server { return new(SMTP) }}
+var SMTPKind = connector.Kind{Parse: parseSMTP, Open: connector.Stateless((*smtpSetup).serve)}
 
 func parseSMTP(source connector.Setup) (connector.Prepared, error) {
 	c := new(smtpSetup)
@@ -27,10 +27,8 @@ func parseSMTP(source connector.Setup) (connector.Prepared, error) {
 	if err := c.Endpoint.Parse(); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Routes: []string{c.URL.Hostname()}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Hosts: []string{c.URL.Hostname()}}, nil
 }
-
-type SMTP struct{ connector.Slot[smtpSetup] }
 
 const (
 	smtpTLSScheme = "smtps"
@@ -41,14 +39,9 @@ const (
 
 type smtpSetup struct{ connector.Endpoint }
 
-func (owner *SMTP) Serve(s *connector.Stream, e *connector.Env) {
-	r, ok := owner.Load()
-	if !ok {
-		return
-	}
-
+func (r *smtpSetup) serve(s *connector.Stream, e *connector.Env) {
 	server := smtp.NewServer(smtp.BackendFunc(func(*smtp.Conn) (smtp.Session, error) {
-		return &smtpSession{stream: s, relay: &r, env: e}, nil
+		return &smtpSession{stream: s, relay: r, env: e}, nil
 	}))
 	server.Domain = "perimeter"
 	server.MaxMessageBytes = maxMessageBytes

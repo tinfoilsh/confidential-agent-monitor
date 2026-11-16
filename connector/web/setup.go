@@ -19,6 +19,10 @@ func Parse(source connector.Setup) (connector.Prepared, error) {
 	if err := h.Validate(false); err != nil {
 		return connector.Prepared{}, err
 	}
+	operations, err := preset.HTTP.Catalog(source.Vocabulary)
+	if err != nil {
+		return connector.Prepared{}, err
+	}
 	names := []string{}
 	for _, slot := range h.Slots {
 		names = append(names, slot.Value)
@@ -31,16 +35,12 @@ func Parse(source connector.Setup) (connector.Prepared, error) {
 	}
 	slices.Sort(names)
 	h.Preset = preset.HTTP
-	return connector.Prepared{Value: h, Claim: h.Claim, SecretNames: slices.Compact(names), Routes: h.Hosts,
+	return connector.Prepared{Value: h, Operations: operations, Claim: h.Claim, SecretNames: slices.Compact(names), Hosts: h.Hosts,
 		Discovery: connector.Discovery{Hosts: h.Hosts, Slots: h.Slots}}, nil
 }
 
-type Server struct{ connector.Slot[Setup] }
-
-func (s *Server) Serve(stream *connector.Stream, env *connector.Env) {
+func (h *Setup) serve(stream *connector.Stream, env *connector.Env) {
 	transport := env.Transport()
 	defer transport.CloseIdleConnections()
-	if h, ok := s.Load(); ok {
-		h.ServeWithTransport(stream, env, transport, nil)
-	}
+	h.ServeWithTransport(stream, env, transport, nil)
 }

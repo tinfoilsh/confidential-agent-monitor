@@ -4,14 +4,12 @@ import (
 	"context"
 	"net/http"
 	"slices"
-	"sync"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
 )
 
 func Kind(extension string, sandboxed bool) connector.Kind {
-	return connector.Kind{Settings: &extension, New: func() connector.Server { return new(Browser) }, Parse: func(source connector.Setup) (connector.Prepared, error) {
+	return connector.Kind{Settings: &extension, Open: open, Parse: func(source connector.Setup) (connector.Prepared, error) {
 		c := &setup{Extension: extension, NoSandbox: sandboxed}
 		if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 			return connector.Prepared{}, err
@@ -28,17 +26,9 @@ func Kind(extension string, sandboxed bool) connector.Kind {
 	}}
 }
 
-// Browser owns one Chrome session. Its command/control synchronization remains
-// inside that session; setup changes retire its network proxy and callbacks too.
-type Browser struct {
-	mu      sync.RWMutex
-	current *session
-}
-
-func (b *Browser) Update(ctx context.Context, prepared connector.Prepared, secrets map[string]*credential.Value, env *connector.Env) error {
-	b.mu.Lock()
-	defer b.mu.Unlock()
-	b.close()
+// open starts one Chrome session. Its command/control synchronization remains
+// inside that session; closing it retires its network proxy and callbacks too.
+func open(ctx context.Context, prepared connector.Prepared, secrets map[string]connector.Secret, env *connector.Env) (connector.Handler, error) {
 	c := *prepared.Value.(*setup)
 	c.Bind(secrets)
 	life, cancel := context.WithCancel(context.Background())
@@ -51,42 +41,28 @@ func (b *Browser) Update(ctx context.Context, prepared connector.Prepared, secre
 	}
 	if err != nil {
 		next.close()
-		return err
+		return nil, err
 	}
-	b.current = next
-	return nil
+	return next, nil
 }
 
-func (b *Browser) close() {
-	if b.current != nil {
-		b.current.close()
-		b.current = nil
-	}
+// Close waits for streams and controls to leave, since commands start workers that close joins.
+func (b *session) Close() error {
+	b.life.Lock()
+	defer b.life.Unlock()
+	return b.close()
 }
 
-func (b *Browser) Close() error {
-	b.mu.Lock()
-	defer b.mu.Unlock()
-	b.close()
-	return nil
+func (b *session) ServeStream(stream *connector.Stream) {
+	b.life.RLock()
+	defer b.life.RUnlock()
+	b.serve(stream)
 }
 
-func (b *Browser) Serve(stream *connector.Stream, env *connector.Env) {
-	b.mu.RLock()
-	defer b.mu.RUnlock()
-	if current := b.current; current != nil {
-		current.serve(stream, env)
-	}
-}
-
-func (b *Browser) Control() http.Handler {
+func (b *session) Control() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		b.mu.RLock()
-		defer b.mu.RUnlock()
-		if b.current == nil {
-			http.Error(w, "browser unavailable", http.StatusServiceUnavailable)
-			return
-		}
-		b.current.control().ServeHTTP(w, r)
+		b.life.RLock()
+		defer b.life.RUnlock()
+		b.control().ServeHTTP(w, r)
 	})
 }

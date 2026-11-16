@@ -14,7 +14,7 @@ PROTOCOLS = {
     "session", "signer", "tcp", "web",
 }
 MODULE = "github.com/tinfoilsh/confidential-agent-monitor/"
-TINFOIL = ("github.com/tinfoilsh/tinfoil-go", MODULE + "tinfoil")
+TINFOIL = ("github.com/tinfoilsh/tinfoil-go", MODULE + "cmd/")
 FROZEN = re.compile("|".join(map(re.escape, (MODULE, "tinfoil-owner-http-v1", "tinfoil-owner-generation-v1", "X-Tinfoil-Session", "tinfoil owner session v1",
     "TINFOIL-MONITOR-STATE", '"tinfoil": {"": "tinfoil", "websearch": "tinfoil_websearch"}'))))
 SKIP = {".git", ".dev", "node_modules", "vendor", "dist", "dist-hosted", "dist-static"}
@@ -25,9 +25,7 @@ def category(path):
         return "tests"
     if path.parts[0] == "dev":
         return "tooling"
-    if path.parts[0] == "routes":
-        return "routes"
-    if path.parts[0] == "tinfoil":
+    if path.parts[0] == "cmd":
         return "protocols"
     if len(path.parts) > 2 and path.parts[0] == "connector" and path.parts[1] in PROTOCOLS:
         return "protocols"
@@ -45,30 +43,39 @@ def forbidden(path, dependency, main):
         return not main and path.parts[0] != "dev"
     if dependency == MODULE + "ui":
         return not main
-    if path.parts[0] == "tinfoil":
-        return dependency.startswith(MODULE + "internal/")
+    if path.parts[0] == "cmd":
+        return dependency.startswith(MODULE + "perimeter/internal/")
     if dependency.startswith(TINFOIL):
         return True
     if not dependency.startswith(MODULE):
         return False
-    if path.parts[0] in ("netx", "ownersession"):
+    package = "/".join(path.parts[:-1])
+    if package in ("core/netx", "core/sshx", "core/facts", "perimeter/credential", "perimeter/internal/sealedlog"):
         return True
     dependency = dependency.removeprefix(MODULE)
     concrete = dependency.startswith("connector/") and dependency.split("/")[1] in PROTOCOLS
-    if path.parts[0] == "facts":
-        return dependency.startswith(("internal/", "connector", "presets"))
-    if path.parts[:2] == ("internal", "policy"):
-        return dependency != "facts"
+    if package == "core":
+        return dependency not in ("connector", "core/netx")
+    if package == "core/identity":
+        return dependency != "core/facts"
+    if package == "core/frontdoor":
+        return dependency not in ("core/facts", "core/identity", "core/netx", "core/sshx")
     if path.parts[0] == "connector":
-        return dependency.startswith(("internal/", "monitor", "owner", "worker"))
-    if path.parts[:2] == ("internal", "config"):
-        return concrete or dependency.startswith(("internal/policy", "monitor", "routes", "owner"))
-    if path.parts[0] in ("perimeter", "owner", "frontdoor"):
-        return concrete or dependency.startswith("internal/")
-    if path.parts[0] == "monitor":
-        return concrete
-    if path.parts[:2] == ("internal", "store"):
-        return dependency.startswith(("monitor", "internal/policy", "worker")) or concrete
+        return dependency.startswith(("perimeter", "core/identity", "core/frontdoor", "connector/worker")) or dependency == "core"
+    if package in ("perimeter/internal/tomledit", "perimeter/policy", "perimeter/presets"):
+        return dependency != "core/facts"
+    if package == "perimeter/policy/standard":
+        return dependency not in ("core/facts", "perimeter/policy")
+    if package == "perimeter/internal/authz":
+        return dependency not in ("core/facts", "core/identity", "core/netx")
+    if package == "perimeter/internal/config":
+        return concrete or dependency in ("perimeter", "perimeter/monitor")
+    if package == "perimeter":
+        return concrete or dependency.startswith("perimeter/internal/")
+    if package == "perimeter/monitor":
+        return concrete or dependency.startswith("perimeter/policy/")
+    if package.startswith("perimeter/internal/store"):
+        return dependency.startswith(("perimeter/monitor", "perimeter/policy", "connector/worker")) or concrete
     return False
 
 
@@ -84,7 +91,7 @@ def main():
         paths = [Path(p) for p in tracked if p.endswith(".go") and (root / p).is_file()]
     else:
         paths = [p.relative_to(root) for p in root.rglob("*.go") if not SKIP.intersection(p.relative_to(root).parts)]
-    totals = dict.fromkeys(("core", "protocols", "routes", "tooling", "tests"), 0)
+    totals = dict.fromkeys(("core", "protocols", "tooling", "tests"), 0)
     files, graph, violations, generated = {}, {}, [], {}
     for path in sorted(paths):
         source = (root / path).read_text()
@@ -96,7 +103,7 @@ def main():
             generated[str(path)] = lines
         if kind == "tests":
             continue
-        if path.parts[0] not in ("tinfoil", "dev") and "tinfoil" in FROZEN.sub("", source).lower():
+        if path.parts[0] not in ("cmd", "dev") and "tinfoil" in FROZEN.sub("", source).lower():
             violations.append(f"{path}: names tinfoil")
         deps = sorted(imports(source))
         graph[str(path)] = deps
@@ -104,7 +111,7 @@ def main():
         for dependency in deps:
             if forbidden(path, dependency, main):
                 violations.append(f"{path}: forbidden import {dependency}")
-    totals["all_non_test_go"] = sum(totals[k] for k in ("core", "protocols", "routes", "tooling"))
+    totals["all_non_test_go"] = sum(totals[k] for k in ("core", "protocols", "tooling"))
     totals["production_runtime_go"] = totals["all_non_test_go"] - totals["tooling"]
     totals["generated_go"] = sum(generated.values())
     rego = {str(p.relative_to(root)): len(p.read_text().splitlines()) for p in root.rglob("*.rego") if not SKIP.intersection(p.relative_to(root).parts)}

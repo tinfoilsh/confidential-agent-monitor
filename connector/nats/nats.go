@@ -20,10 +20,10 @@ import (
 
 	nats "github.com/nats-io/nats.go"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-var Kind = connector.Kind{PerMessage: true, Parse: parseNATS, New: func() connector.Server { return new(NATS) }}
+var Kind = connector.Kind{PerMessage: true, Parse: parseNATS, Open: connector.Stateless((*natsSetup).serve)}
 
 func parseNATS(source connector.Setup) (connector.Prepared, error) {
 	c := new(natsSetup)
@@ -33,10 +33,8 @@ func parseNATS(source connector.Setup) (connector.Prepared, error) {
 	if err := c.validate(); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Value: c, SecretNames: []string{"password", "token"}, Routes: []string{c.URL.Hostname()}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"password", "token"}, Hosts: []string{c.URL.Hostname()}}, nil
 }
-
-type NATS struct{ connector.Slot[natsSetup] }
 
 const (
 	maxPayload      = 1 << 20
@@ -86,13 +84,8 @@ type client struct {
 	subs    map[string]*nats.Subscription
 }
 
-func (owner *NATS) Serve(s *connector.Stream, e *connector.Env) {
-	n, ok := owner.Load()
-	if !ok {
-		return
-	}
-
-	c := &client{owner: &n, s: s, subs: map[string]*nats.Subscription{}}
+func (n *natsSetup) serve(s *connector.Stream, e *connector.Env) {
+	c := &client{owner: n, s: s, subs: map[string]*nats.Subscription{}}
 	// Cluster addresses, upstream names and authentication details never leave
 	// the connector. Clients reconnect through the monitor's own address.
 	if err := c.write([]byte(`INFO {"server_id":"perimeter","server_name":"perimeter","version":"2.10.0","proto":1,"headers":true,"max_payload":` + strconv.Itoa(maxPayload) + `,"auth_required":false,"tls_required":false}` + "\r\n")); err != nil {

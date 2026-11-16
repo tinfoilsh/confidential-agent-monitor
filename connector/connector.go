@@ -5,23 +5,37 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
+	"io"
 	"maps"
 	"net"
 	"net/http"
 	"net/url"
 
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"golang.org/x/crypto/ssh"
 )
 
-// Server owns resources across setup changes. Update installs parsed data and
-// scoped handles; its context bounds installation, not the installed lifetime.
-// The host serializes Update and final Close. Update may overlap admitted uses;
-// final Close follows their cancellation and return.
-type Server interface {
-	Serve(*Stream, *Env)
-	Update(context.Context, Prepared, map[string]*credential.Value, *Env) error
+// Handler serves the streams of one installed setup, which never changes under it. The host
+// opens a handler for each new setup and closes the previous one, if it is an io.Closer,
+// after canceling its streams; Close may overlap their return.
+type Handler interface {
+	ServeStream(*Stream)
+}
+
+type HandlerFunc func(*Stream)
+
+func (f HandlerFunc) ServeStream(s *Stream) { f(s) }
+
+// Open installs a setup's parsed data and secret handles; its context bounds installation, not the handler's lifetime.
+type Open func(context.Context, Prepared, map[string]Secret, *Env) (Handler, error)
+
+// A Secret is a credential a connection was granted; the host passes one for every name
+// in Prepared.SecretNames. Placeholder is the public reference agents send in its place.
+type Secret interface {
+	Configured() bool
+	Value(context.Context) (string, error)
+	Placeholder() string
 }
 
 // Prepared is a pure parser result. The host records Source for isolated
@@ -31,9 +45,10 @@ type Prepared struct {
 	Value       any
 	Claim       func(string, uint32) int
 	Discovery   Discovery
+	Operations  map[string]facts.OperationSummary // Optional, pure catalog projection; nil means no operation listing.
 	SecretNames []string
-	// Routes lists the configured hosts; only reserved route patterns among them can be dialed as routes.
-	Routes []string
+	// Hosts lists the upstream hosts and host patterns the setup names.
+	Hosts []string
 }
 
 type Controller interface{ Control() http.Handler }
@@ -50,13 +65,65 @@ type Kind struct {
 	// Host reaches host resources outside Env, so only local development registers it.
 	Host     bool
 	Parse    func(Setup) (Prepared, error)
-	New      func() Server
+	Open     Open
 	Settings any // Optional pointer to deployment settings, filled before Parse in a worker.
 }
 
+// Instance is one kind's handler run outside a Monitor, as a worker or a test host runs it.
+type Instance struct {
+	Handler
+	Prepared Prepared
+	// Gate admits the operations of streams that Open serves.
+	Gate Gate
+}
+
+// Start parses setup and opens a handler of kind for it.
+func Start(ctx context.Context, kind Kind, setup Setup, secrets map[string]Secret, env *Env) (*Instance, error) {
+	prepared, err := kind.Parse(setup)
+	if err != nil {
+		return nil, err
+	}
+	prepared.Source = setup
+	h, err := kind.Open(ctx, prepared, secrets, env)
+	if err != nil {
+		return nil, err
+	}
+	return &Instance{Handler: h, Prepared: prepared}, nil
+}
+
+// Serve runs conn as a stream to host:port until it ends; host is empty for a stream addressed by name.
+func (i *Instance) Serve(ctx context.Context, conn net.Conn, name, host string, port uint32, gate Gate) {
+	s := NewStream(ctx, conn)
+	defer s.Close()
+	s.Name, s.Host, s.Port, s.Gate = name, host, port, gate
+	i.ServeStream(s)
+}
+
+// Open serves a stream to a target the setup claims under i.Gate, as a Monitor does after admission.
+func (i *Instance) Open(ctx context.Context, host string, port uint32, accept func() (net.Conn, error)) error {
+	if i.Prepared.Claim == nil || i.Prepared.Claim(host, port) < 0 {
+		return errors.New("this service does not serve the target")
+	}
+	conn, err := accept()
+	if err == nil {
+		i.Serve(ctx, conn, "", host, port, i.Gate)
+	}
+	return err
+}
+
+func (i *Instance) Close() error { return Close(i.Handler) }
+
+// Close closes h if it owns resources.
+func Close(h Handler) error {
+	if closer, ok := h.(io.Closer); ok {
+		return closer.Close()
+	}
+	return nil
+}
+
 // Control handles private host HTTP after owner authentication.
-func Control(s Server) http.Handler {
-	if c, ok := s.(Controller); ok {
+func Control(h Handler) http.Handler {
+	if c, ok := h.(Controller); ok {
 		return c.Control()
 	}
 	return http.NotFoundHandler()
@@ -81,6 +148,7 @@ type Dialer interface {
 
 type Setup struct {
 	Config, Definition, Options json.RawMessage
+	Vocabulary                  facts.Vocabulary
 }
 
 type Discovery struct {
@@ -110,7 +178,7 @@ func (e *Endpoint) Parse() error {
 // SecretConfig owns the credential handles shared with the connection runtime.
 type SecretConfig struct {
 	Semantics `json:"-"`
-	Secrets   map[string]*credential.Value `json:"-"`
+	Secrets   map[string]Secret `json:"-"`
 }
 
 // Semantics is the connector's immutable, connection-scoped preset projection.
@@ -161,4 +229,4 @@ func (c *SecretConfig) Secret(ctx context.Context, name string) (string, error) 
 	return c.Secrets[name].Value(ctx)
 }
 
-func (c *SecretConfig) Bind(secrets map[string]*credential.Value) { c.Secrets = maps.Clone(secrets) }
+func (c *SecretConfig) Bind(secrets map[string]Secret) { c.Secrets = maps.Clone(secrets) }

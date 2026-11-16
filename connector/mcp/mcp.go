@@ -13,12 +13,11 @@ import (
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/jsonsel"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/internal/jsonsel"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-var Kind = connector.Kind{Parse: Parse, New: func() connector.Server { return new(Server) }}
+var Kind = connector.Kind{Parse: Parse, Open: Open}
 
 type Setup struct {
 	connector.SecretConfig
@@ -29,6 +28,7 @@ type Setup struct {
 
 type session struct {
 	Setup
+	env     *connector.Env
 	current *Snapshot
 	session *sdk.ClientSession
 	// tools match the pin exactly; blocked counts the others, which await review.
@@ -52,8 +52,11 @@ func ParseSetup(source connector.Setup, config any, setup *Setup) (connector.Pre
 	if err != nil || u.Scheme != "http" && u.Scheme != "https" {
 		return connector.Prepared{}, errors.New("MCP requires an http:// or https:// server URL")
 	}
+	if p := preset.MCP; p != nil && (!source.Vocabulary.ValidSends(p.Sends) || p.Observes != nil && !source.Vocabulary.ValidLabel(*p.Observes)) {
+		return connector.Prepared{}, errors.New("invalid MCP data-flow settings")
+	}
 	setup.preset = preset.MCP
-	return connector.Prepared{Value: setup, SecretNames: []string{"token"}, Routes: []string{u.Hostname()}}, nil
+	return connector.Prepared{Value: setup, SecretNames: []string{"token"}, Hosts: []string{u.Hostname()}}, nil
 }
 
 func Parse(source connector.Setup) (connector.Prepared, error) {
@@ -61,44 +64,27 @@ func Parse(source connector.Setup) (connector.Prepared, error) {
 	return ParseSetup(source, setup, setup)
 }
 
-// Server owns the SDK session; each request closes over its setup and exact pin.
-type Server struct{ connector.Resource[*session] }
-
-func (s *Server) Update(ctx context.Context, prepared connector.Prepared, secrets map[string]*credential.Value, env *connector.Env) error {
+// Open connects the SDK session; each request closes over its setup and exact pin.
+func Open(ctx context.Context, prepared connector.Prepared, secrets map[string]connector.Secret, env *connector.Env) (connector.Handler, error) {
 	setup := *prepared.Value.(*Setup)
 	setup.Bind(secrets)
 	client := env.Client()
-	return s.UpdateWithClient(ctx, setup, client, client.Transport.(*http.Transport).CloseIdleConnections)
+	return OpenWithClient(ctx, setup, env, client, client.Transport.(*http.Transport).CloseIdleConnections)
 }
 
-// UpdateWithClient owns cleanup after a failed install or after the SDK session closes.
-func (s *Server) UpdateWithClient(ctx context.Context, setup Setup, client *http.Client, cleanup func()) error {
-	return s.Replace(func() (*session, error) {
-		next := &session{Setup: setup, closeTransport: cleanup}
-		if err := next.connect(ctx, client); err != nil {
-			next.Close()
-			return nil, err
-		}
-		return next, nil
-	})
-}
-
-func (s *Server) Serve(stream *connector.Stream, env *connector.Env) {
-	if current := s.Load(); current != nil {
-		current.serve(stream, env)
+// OpenWithClient owns cleanup after a failed install or after the SDK session closes.
+func OpenWithClient(ctx context.Context, setup Setup, env *connector.Env, client *http.Client, cleanup func()) (connector.Handler, error) {
+	next := &session{Setup: setup, env: env, closeTransport: cleanup}
+	if err := next.connect(ctx, client); err != nil {
+		next.Close()
+		return nil, err
 	}
-}
-
-func (s *Server) Details() json.RawMessage {
-	if current := s.Load(); current != nil {
-		return current.details()
-	}
-	return nil
+	return next, nil
 }
 
 // bearer asks the credential on every request, so a refreshed token replaces an expired one.
 type bearer struct {
-	token *credential.Value
+	token connector.Secret
 	base  http.RoundTripper
 }
 
@@ -132,10 +118,10 @@ func (m *session) Close() error {
 
 // Serve builds a server per request, so each call is screened by the stream's gate.
 // SSH admission authenticates these streams; worker transport addresses are internal.
-func (m *session) serve(s *connector.Stream, e *connector.Env) {
+func (m *session) ServeStream(s *connector.Stream) {
 	var c net.Conn = s
 	if s.Port == 443 {
-		c = tls.Server(s, e.TLS)
+		c = tls.Server(s, m.env.TLS)
 	}
 	connector.ServeHTTP(s, c, sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server {
 		server := sdk.NewServer(&sdk.Implementation{Name: "perimeter", Version: version}, &sdk.ServerOptions{Instructions: m.instructions})
@@ -195,7 +181,7 @@ func (m *session) connect(ctx context.Context, client *http.Client) error {
 	return nil
 }
 
-func (m *session) details() json.RawMessage {
+func (m *session) Details() json.RawMessage {
 	status := map[string]any{"blocked": m.blocked}
 	if m.blocked > 0 {
 		status["changes"], status["pin"] = m.Pin.Diff(m.current), m.current
@@ -248,9 +234,6 @@ type Preset struct {
 func (p *Preset) UnmarshalJSON(raw []byte) error {
 	type plain Preset
 	err := facts.DecodeNumbers(raw, (*plain)(p))
-	if err == nil && (!facts.ValidSends(p.Sends) || p.Observes != nil && !p.Observes.Valid()) {
-		return errors.New("invalid MCP data-flow settings")
-	}
 	if err == nil {
 		p.scope, err = jsonsel.Compile(p.Scope)
 	}

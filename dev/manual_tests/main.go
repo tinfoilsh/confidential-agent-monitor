@@ -3,29 +3,21 @@
 package main
 
 import (
-	"bufio"
 	"context"
-	"crypto/ed25519"
 	"crypto/rand"
 	"crypto/sha256"
 	"crypto/subtle"
-	"crypto/tls"
-	"crypto/x509"
-	"crypto/x509/pkix"
 	"encoding/base64"
 	"encoding/json"
-	"encoding/pem"
 	"errors"
 	"fmt"
 	"io"
 	"log"
-	"math/big"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -33,10 +25,12 @@ import (
 	"time"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/web"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
-	"github.com/tinfoilsh/confidential-agent-monitor/presets"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/netx"
+	"github.com/tinfoilsh/confidential-agent-monitor/perimeter/credential"
+	"github.com/tinfoilsh/confidential-agent-monitor/perimeter/policy/standard"
+	"github.com/tinfoilsh/confidential-agent-monitor/perimeter/presets"
 )
 
 type input struct {
@@ -49,59 +43,15 @@ type input struct {
 	GrafanaToken string `json:"grafana_token"`
 }
 
-type bufferedConn struct {
-	net.Conn
-	reader *bufio.Reader
-}
-
-func (c bufferedConn) Read(p []byte) (int, error) { return c.reader.Read(p) }
-
-type authority struct {
-	certificate *x509.Certificate
-	private     ed25519.PrivateKey
-	pem         []byte
-}
-
-func newAuthority() (*authority, error) {
-	public, private, err := ed25519.GenerateKey(rand.Reader)
-	if err != nil {
-		return nil, err
-	}
-	now := time.Now()
-	root := &x509.Certificate{SerialNumber: big.NewInt(now.UnixNano()), Subject: pkix.Name{CommonName: "Monitor local manual test only"}, NotBefore: now.Add(-time.Minute), NotAfter: now.Add(2 * time.Hour), IsCA: true, BasicConstraintsValid: true, KeyUsage: x509.KeyUsageCertSign | x509.KeyUsageDigitalSignature}
-	der, err := x509.CreateCertificate(rand.Reader, root, root, public, private)
-	if err != nil {
-		return nil, err
-	}
-	cert, err := x509.ParseCertificate(der)
-	if err != nil {
-		return nil, err
-	}
-	return &authority{cert, private, pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der})}, nil
-}
-func (a *authority) leaf(host string) (tls.Certificate, error) {
-	public, private, err := ed25519.GenerateKey(rand.Reader)
-	if err != nil {
-		return tls.Certificate{}, err
-	}
-	now := time.Now()
-	leaf := &x509.Certificate{SerialNumber: big.NewInt(now.UnixNano()), DNSNames: []string{host}, NotBefore: now.Add(-time.Minute), NotAfter: now.Add(time.Hour), KeyUsage: x509.KeyUsageDigitalSignature, ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth}}
-	der, err := x509.CreateCertificate(rand.Reader, leaf, a.certificate, public, a.private)
-	if err != nil {
-		return tls.Certificate{}, err
-	}
-	return tls.Certificate{Certificate: [][]byte{der}, PrivateKey: private}, nil
-}
-
 type liveConnection struct {
-	preset string
-	server *web.Server
-	setup  *web.Setup
-	hash   string
+	preset   string
+	instance *connector.Instance
+	hash     string
 }
 
-func prepare(name, credentialName, secret, placeholder, origin string) (*liveConnection, error) {
-	shipped, err := presets.Load(presets.Files)
+func prepare(env *connector.Env, name, credentialName, secret, placeholder, origin string) (*liveConnection, error) {
+	vocabulary := standard.Vocabulary()
+	shipped, err := presets.Load(vocabulary, presets.Files)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +59,7 @@ func prepare(name, credentialName, secret, placeholder, origin string) (*liveCon
 	if p == nil {
 		return nil, errors.New("missing shipped preset")
 	}
-	source := connector.Setup{Config: p.Catalog.Connection["http"], Definition: p.Source}
+	source := connector.Setup{Vocabulary: vocabulary, Config: p.Catalog.Connection["http"], Definition: p.Source}
 	if origin != "" {
 		if !web.ValidOrigin(origin) {
 			return nil, errors.New("test destination must be an HTTPS origin")
@@ -140,11 +90,7 @@ func prepare(name, credentialName, secret, placeholder, origin string) (*liveCon
 			return nil, err
 		}
 	}
-	prepared, err := web.Parse(source)
-	if err != nil {
-		return nil, err
-	}
-	values := map[string]*credential.Value{}
+	values := map[string]connector.Secret{}
 	if secret != "" {
 		raw, err := json.Marshal(secret)
 		if err != nil {
@@ -155,14 +101,14 @@ func prepare(name, credentialName, secret, placeholder, origin string) (*liveCon
 		if err != nil {
 			return nil, err
 		}
-		v.Placeholder = placeholder
+		v.SetPlaceholder(placeholder)
 		values[credentialName] = v
 	}
-	server := new(web.Server)
-	if err := server.Update(context.Background(), prepared, values, nil); err != nil {
+	instance, err := connector.Start(context.Background(), web.Kind, source, values, env)
+	if err != nil {
 		return nil, err
 	}
-	return &liveConnection{name, server, prepared.Value.(*web.Setup), fmt.Sprintf("%x", sha256.Sum256(p.Source))}, nil
+	return &liveConnection{name, instance, fmt.Sprintf("%x", sha256.Sum256(p.Source))}, nil
 }
 
 func proxyAuthenticated(r *http.Request, expected string) bool {
@@ -189,23 +135,27 @@ func run() error {
 	if err := decoder.Decode(&in); err != nil {
 		return err
 	}
+	authority, err := netx.NewAuthority("Monitor local manual test only", 2*time.Hour)
+	if err != nil {
+		return err
+	}
+	env := &connector.Env{TLS: authority.TLS(), Dialer: connector.NewDialer(nil)}
 	var bot, socket, grafana *liveConnection
-	var err error
 	switch in.Service {
 	case "", "slack":
 		if !strings.HasPrefix(in.BotToken, "xoxb-") || !strings.HasPrefix(in.AppToken, "xapp-") {
 			return errors.New("wrong token types")
 		}
-		bot, err = prepare("slack", "token", in.BotToken, "tfm_live_slack_bot", "")
+		bot, err = prepare(env, "slack", "token", in.BotToken, "tfm_live_slack_bot", "")
 		if err != nil {
 			return err
 		}
-		socket, err = prepare("slack_socket_mode", "token", in.AppToken, "tfm_live_slack_socket", "")
+		socket, err = prepare(env, "slack_socket_mode", "token", in.AppToken, "tfm_live_slack_socket", "")
 	case "grafana":
 		if !web.ValidOrigin(in.GrafanaURL) {
 			return errors.New("Grafana requires an HTTPS origin")
 		}
-		grafana, err = prepare("grafana", "api_key", in.GrafanaToken, "tfm_manual_grafana", in.GrafanaURL)
+		grafana, err = prepare(env, "grafana", "api_key", in.GrafanaToken, "tfm_manual_grafana", in.GrafanaURL)
 	default:
 		return errors.New("unknown manual test service")
 	}
@@ -214,17 +164,14 @@ func run() error {
 	}
 	grafanaConfigured := in.GrafanaToken != ""
 	in.BotToken, in.AppToken, in.GrafanaToken = "", "", ""
-	ca, err := newAuthority()
-	if err != nil {
-		return err
-	}
+	caPEM, _ := authority.PEM()
 	dir, err := os.MkdirTemp("", "monitor-manual-test-")
 	if err != nil {
 		return err
 	}
 	defer os.RemoveAll(dir)
 	certFile := filepath.Join(dir, "public-ca.pem")
-	if err := os.WriteFile(certFile, ca.pem, 0600); err != nil {
+	if err := os.WriteFile(certFile, []byte(caPEM), 0600); err != nil {
 		return err
 	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -244,65 +191,48 @@ func run() error {
 		if err != nil {
 			return "", err
 		}
+		connection.instance.Gate = func(_ context.Context, event facts.Event) error {
+			f, err := event.Facts()
+			if err != nil || f.Operation == nil {
+				status("BLOCKED: request did not match the reviewed preset")
+				return errors.New("unrecognized request")
+			}
+			allowed := false
+			if connection.preset == "slack_socket_mode" {
+				allowed = f.Operation.Action == "connect" || f.Operation.Action == "receive" || f.Operation.Action == "respond"
+			} else if connection.preset == "grafana" {
+				allowed = f.Operation.ID == "getHealth" || f.Operation.ID == "search"
+			} else {
+				allowed = testAuthOperation(f.Operation.ID)
+				if in.PostTest && f.Operation.ID == "chat.postMessage" && f.Parameters["channel"] == in.Channel {
+					allowed = posted.CompareAndSwap(false, true)
+				}
+			}
+			if !allowed {
+				status("BLOCKED: operation outside this test's allowlist")
+				return errors.New("operation not in test allowlist")
+			}
+			// IDs come from shipped definitions, never from payloads or query strings.
+			status("ADMITTED " + connection.preset + " " + f.Operation.ID)
+			return nil
+		}
+		connect := netx.Connect(connection.instance)
 		handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if !proxyAuthenticated(r, expected) {
 				w.Header().Set("Proxy-Authenticate", `Basic realm="monitor-slack-test"`)
 				http.Error(w, "proxy authentication required", http.StatusProxyAuthRequired)
 				return
 			}
-			host, port, err := net.SplitHostPort(r.Host)
-			number, portErr := strconv.ParseUint(port, 10, 16)
-			if r.Method != "CONNECT" || err != nil || portErr != nil || number == 0 || number == 80 || strconv.FormatUint(number, 10) != port || connection.setup.Claim(host, uint32(number)) < 0 {
+			if _, port, _ := net.SplitHostPort(r.Host); port == "80" {
 				http.Error(w, "destination refused", http.StatusForbidden)
 				status("BLOCKED: unrecognized CONNECT destination")
 				return
 			}
-			cert, err := ca.leaf(host)
-			if err != nil {
-				http.Error(w, "local TLS setup failed", 500)
-				return
-			}
-			raw, rw, err := w.(http.Hijacker).Hijack()
-			if err != nil {
-				return
-			}
 			active.Add(1)
 			defer active.Done()
-			stream := connector.NewStream(ctx, bufferedConn{raw, rw.Reader})
-			defer stream.Close()
-			if _, err := io.WriteString(raw, "HTTP/1.1 200 Connection Established\r\n\r\n"); err != nil {
-				return
-			}
-			stream.Host, stream.Port = host, uint32(number)
-			stream.Gate = func(_ context.Context, event facts.Event) error {
-				f, err := event.Facts()
-				if err != nil || f.Operation == nil {
-					status("BLOCKED: request did not match the reviewed preset")
-					return errors.New("unrecognized request")
-				}
-				allowed := false
-				if connection.preset == "slack_socket_mode" {
-					allowed = f.Operation.Action == "connect" || f.Operation.Action == "receive" || f.Operation.Action == "respond"
-				} else if connection.preset == "grafana" {
-					allowed = f.Operation.ID == "getHealth" || f.Operation.ID == "search"
-				} else {
-					allowed = testAuthOperation(f.Operation.ID)
-					if in.PostTest && f.Operation.ID == "chat.postMessage" && f.Parameters["channel"] == in.Channel {
-						allowed = posted.CompareAndSwap(false, true)
-					}
-				}
-				if !allowed {
-					status("BLOCKED: operation outside this test's allowlist")
-					return errors.New("operation not in test allowlist")
-				}
-				// IDs come from shipped definitions, never from payloads or query strings.
-				status("ADMITTED " + connection.preset + " " + f.Operation.ID)
-				return nil
-			}
-			env := &connector.Env{TLS: &tls.Config{Certificates: []tls.Certificate{cert}, MinVersion: tls.VersionTLS12}, Dialer: connector.NewDialer(nil)}
-			connection.server.Serve(stream, env)
+			connect.ServeHTTP(w, r)
 		})
-		server := &http.Server{Handler: handler, ReadHeaderTimeout: 5 * time.Second, IdleTimeout: time.Minute, ErrorLog: log.New(io.Discard, "", 0)}
+		server := &http.Server{Handler: handler, BaseContext: func(net.Listener) context.Context { return ctx }, ReadHeaderTimeout: 5 * time.Second, IdleTimeout: time.Minute, ErrorLog: log.New(io.Discard, "", 0)}
 		go func() { <-ctx.Done(); server.Close() }()
 		go server.Serve(listener)
 		// Delivered only over the supervisor's private pipe, never printed in status.

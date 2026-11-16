@@ -12,7 +12,7 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
 )
 
-var GPGAgentKind = connector.Kind{Host: true, Parse: parseGPGAgent, New: func() connector.Server { return new(GPGAgent) }}
+var GPGAgentKind = connector.Kind{Host: true, Parse: parseGPGAgent, Open: connector.Stateless((*gpgAgentSetup).serve)}
 
 func parseGPGAgent(source connector.Setup) (connector.Prepared, error) {
 	c := new(gpgAgentSetup)
@@ -21,8 +21,6 @@ func parseGPGAgent(source connector.Setup) (connector.Prepared, error) {
 	}
 	return connector.Prepared{Value: c}, nil
 }
-
-type GPGAgent struct{ connector.Slot[gpgAgentSetup] }
 
 const (
 	agentGPG           = "gpg"
@@ -43,12 +41,7 @@ type gpgAgentSetup struct {
 
 func (s *gpgAgentSetup) UnmarshalJSON(raw []byte) error { return json.Unmarshal(raw, &s.socket) }
 
-func (owner *GPGAgent) Serve(s *connector.Stream, _ *connector.Env) {
-	socket, ok := owner.Load()
-	if !ok {
-		return
-	}
-
+func (socket *gpgAgentSetup) serve(s *connector.Stream, _ *connector.Env) {
 	up, err := (&net.Dialer{Timeout: connector.DialTimeout}).DialContext(s.Context, "unix", socket.socket)
 	if err != nil {
 		log.Printf("gpg-agent: %v", err)

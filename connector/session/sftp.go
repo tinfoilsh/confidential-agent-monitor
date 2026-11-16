@@ -12,11 +12,11 @@ import (
 	"unicode/utf8"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"golang.org/x/crypto/ssh"
 )
 
-var SFTPKind = connector.Kind{UsesHostKey: true, Parse: parseSFTP, New: func() connector.Server { return new(SFTP) }}
+var SFTPKind = connector.Kind{UsesHostKey: true, Parse: parseSFTP, Open: connector.Stateless((*sftpSetup).serveSFTP)}
 
 // SFTP terminates the SSH subsystem and mediates SFTP v3 requests. Root is
 // presented as / to clients. Use a server-side chroot when other writers can
@@ -33,10 +33,8 @@ func parseSFTP(source connector.Setup) (connector.Prepared, error) {
 	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Value: c, SecretNames: []string{"key"}, Routes: []string{c.Host}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"key"}, Hosts: []string{c.Host}}, nil
 }
-
-type SFTP struct{ connector.Slot[sftpSetup] }
 
 // SFTP v3 packet types and status codes, from draft-ietf-secsh-filexfer-02.
 const (
@@ -74,12 +72,7 @@ const (
 	fxOpUnsupported    = 8
 )
 
-func (owner *SFTP) Serve(s *connector.Stream, e *connector.Env) {
-	t, ok := owner.Load()
-	if !ok {
-		return
-	}
-
+func (t *sftpSetup) serveSFTP(s *connector.Stream, e *connector.Env) {
 	t.serve(s, e, func(up *ssh.Client, nc ssh.NewChannel) {
 		ch, requests, err := nc.Accept()
 		if err != nil {

@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/ssh/agent"
 )
 
-var SSHAgentKind = connector.Kind{Parse: parseSSHAgent, New: func() connector.Server { return new(SSHAgent) }}
+var SSHAgentKind = connector.Kind{Parse: parseSSHAgent, Open: connector.Stateless((*sshAgentSetup).serve)}
 
 func parseSSHAgent(source connector.Setup) (connector.Prepared, error) {
 	c := new(sshAgentSetup)
@@ -18,8 +18,6 @@ func parseSSHAgent(source connector.Setup) (connector.Prepared, error) {
 	}
 	return connector.Prepared{Value: c, SecretNames: c.Credentials}, nil
 }
-
-type SSHAgent struct{ connector.Slot[sshAgentSetup] }
 
 const (
 	msgUserAuthRequest = 50
@@ -38,12 +36,7 @@ type gatedAgent struct {
 	s *connector.Stream
 }
 
-func (owner *SSHAgent) Serve(s *connector.Stream, _ *connector.Env) {
-	keys, ok := owner.Load()
-	if !ok {
-		return
-	}
-
+func (keys *sshAgentSetup) serve(s *connector.Stream, _ *connector.Env) {
 	keyring := agent.NewKeyring().(agent.ExtendedAgent)
 	for _, value := range keys.Secrets {
 		encoded, err := value.Value(s.Context)

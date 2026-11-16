@@ -20,3 +20,10 @@ __pycache__/
 
 # Local test workflow
 /.github/workflows/routes.yml
+
+# Boundary regression tests
+!perimeter/policy/engine_test.go
+!connector/web/catalog_test.go
+!connector/worker/boundaries_test.go
+!perimeter/monitor/boundaries_test.go
+!cmd/perimeter/tinfoil/catalog_test.go

@@ -25,11 +25,11 @@ FROM toolchain AS build
 ENV GOWORK=off CGO_ENABLED=0
 WORKDIR /src/monitor
 COPY go.mod go.sum ./
-COPY tinfoil/go.mod tinfoil/go.sum ./tinfoil/
-RUN go -C tinfoil mod download
+COPY cmd/perimeter/go.mod cmd/perimeter/go.sum ./cmd/perimeter/
+RUN go -C cmd/perimeter mod download
 COPY . .
 COPY --from=ui-build /src/ui/dist ./ui/dist
-RUN go -C tinfoil build -mod=readonly -trimpath -buildvcs=false -ldflags='-s -w -buildid=' -o /monitor ./cmd/perimeter
+RUN go -C cmd/perimeter build -mod=readonly -trimpath -buildvcs=false -ldflags='-s -w -buildid=' -o /monitor .
 # The worker gets one prepared filesystem, with no mounts derived from accounts.
 # Static connectors need only trust roots; custom images can install programs here.
 RUN mkdir -p /worker-root/etc/ssl/certs /worker-root/dev /worker-root/proc /worker-root/tmp \
@@ -45,5 +45,4 @@ COPY --from=sandbox-build /src/out/bwrap /usr/bin/bwrap
 COPY --from=sandbox-build /src/bubblewrap-0.13.0/LICENSE /src/bubblewrap-0.13.0/COPYING /src/bubblewrap-0.13.0/COPYING.LIB /usr/share/licenses/bubblewrap/
 USER 65532:65532
 EXPOSE 8080 2223
-HEALTHCHECK --interval=10s --timeout=5s CMD ["/monitor", "-healthcheck"]
 ENTRYPOINT ["/monitor"]

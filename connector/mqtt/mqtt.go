@@ -16,10 +16,10 @@ import (
 
 	"github.com/eclipse/paho.mqtt.golang/packets"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-var Kind = connector.Kind{PerMessage: true, Parse: parseMQTT, New: func() connector.Server { return new(MQTT) }}
+var Kind = connector.Kind{PerMessage: true, Parse: parseMQTT, Open: connector.Stateless((*mqttSetup).serve)}
 
 func parseMQTT(source connector.Setup) (connector.Prepared, error) {
 	c := new(mqttSetup)
@@ -29,10 +29,8 @@ func parseMQTT(source connector.Setup) (connector.Prepared, error) {
 	if err := c.validate(); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Routes: []string{c.URL.Hostname()}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Hosts: []string{c.URL.Hostname()}}, nil
 }
-
-type MQTT struct{ connector.Slot[mqttSetup] }
 
 const maxPacket = 1 << 20
 
@@ -49,12 +47,7 @@ func (m *mqttSetup) validate() error {
 	return nil
 }
 
-func (owner *MQTT) Serve(s *connector.Stream, e *connector.Env) {
-	m, ok := owner.Load()
-	if !ok {
-		return
-	}
-
+func (m *mqttSetup) serve(s *connector.Stream, e *connector.Env) {
 	reader := bufio.NewReader(s)
 	packet, err := readPacket(reader)
 	if err != nil {
@@ -122,7 +115,7 @@ func (owner *MQTT) Serve(s *connector.Stream, e *connector.Env) {
 	if err := ack.Write(s); err != nil || ack.ReturnCode != 0 {
 		return
 	}
-	p := proxy{owner: &m, s: s, up: up, pending: map[uint16]*packets.PublishPacket{}}
+	p := proxy{owner: m, s: s, up: up, pending: map[uint16]*packets.PublishPacket{}}
 	defer connector.PumpReplies(s, func() { p.replies(replies) })()
 	for {
 		packet, err := readPacket(reader)

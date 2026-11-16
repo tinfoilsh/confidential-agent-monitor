@@ -3,12 +3,12 @@ package connector
 import (
 	"context"
 	"errors"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"io"
 	"net"
 	"net/http"
 
-	"github.com/tinfoilsh/confidential-agent-monitor/netx"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/netx"
 )
 
 // ServeHTTP serves the requests on c, the stream itself or TLS over it, until the stream ends.
@@ -40,8 +40,11 @@ type Stream struct {
 	// A settings change closes the stream unless its principal still reaches the
 	// connection and its admission and latest gated operation would both still be
 	// allowed without approval.
-	Gate func(context.Context, facts.Event) error
+	Gate Gate
 }
+
+// Gate admits exactly the captured operation, after any approval, or refuses it.
+type Gate func(context.Context, facts.Event) error
 
 // NewStream carries c until ctx ends or the stream closes.
 func NewStream(ctx context.Context, c net.Conn) *Stream {

@@ -22,10 +22,10 @@ import (
 	"unicode/utf8"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-var Kind = connector.Kind{PerMessage: true, Placeholders: true, Parse: Parse, New: func() connector.Server { return new(Server) }}
+var Kind = connector.Kind{PerMessage: true, Placeholders: true, Parse: Parse, Open: connector.Stateless((*Setup).serve)}
 
 const (
 	httpsPort    = 443

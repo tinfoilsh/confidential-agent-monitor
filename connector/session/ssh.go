@@ -13,23 +13,21 @@ import (
 	"sync"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"golang.org/x/crypto/ssh"
 	"mvdan.cc/sh/v3/expand"
 	"mvdan.cc/sh/v3/syntax"
 )
 
-var SSHKind = connector.Kind{UsesHostKey: true, Parse: parseSSH, New: func() connector.Server { return new(SSH) }}
+var SSHKind = connector.Kind{UsesHostKey: true, Parse: parseSSH, Open: connector.Stateless((*sshSetup).serveSSH)}
 
 func parseSSH(source connector.Setup) (connector.Prepared, error) {
 	c := new(sshSetup)
 	if err := connector.ParseSetup(source, c, &c.Semantics); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Value: c, SecretNames: []string{"key"}, Routes: []string{c.Host}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"key"}, Hosts: []string{c.Host}}, nil
 }
-
-type SSH struct{ connector.Slot[sshSetup] }
 
 const (
 	channelSession = "session"
@@ -83,12 +81,7 @@ func (t *sshSetup) dial(s *connector.Stream, e *connector.Env) (*ssh.Client, err
 	return ssh.NewClient(c, chans, reqs), nil
 }
 
-func (owner *SSH) Serve(s *connector.Stream, e *connector.Env) {
-	t, ok := owner.Load()
-	if !ok {
-		return
-	}
-
+func (t *sshSetup) serveSSH(s *connector.Stream, e *connector.Env) {
 	t.serve(s, e, func(up *ssh.Client, nc ssh.NewChannel) {
 		relayChannel(up, nc, func(r *ssh.Request) error { return s.Gate(s.Context, t.Capture(eventForSSH(r).Describe(t.Host))) })
 	})

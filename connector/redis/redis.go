@@ -10,10 +10,10 @@ import (
 
 	"github.com/tidwall/redcon"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-var Kind = connector.Kind{Parse: parseRedis, New: func() connector.Server { return new(Redis) }}
+var Kind = connector.Kind{Parse: parseRedis, Open: connector.Stateless((*redisSetup).serve)}
 
 func parseRedis(source connector.Setup) (connector.Prepared, error) {
 	c := new(redisSetup)
@@ -23,10 +23,8 @@ func parseRedis(source connector.Setup) (connector.Prepared, error) {
 	if err := c.validate(); err != nil {
 		return connector.Prepared{}, err
 	}
-	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Routes: []string{c.URL.Hostname()}}, nil
+	return connector.Prepared{Value: c, SecretNames: []string{"password"}, Hosts: []string{c.URL.Hostname()}}, nil
 }
-
-type Redis struct{ connector.Slot[redisSetup] }
 
 const (
 	redisPort = "6379"
@@ -49,12 +47,7 @@ func (r *redisSetup) validate() error {
 	return nil
 }
 
-func (owner *Redis) Serve(s *connector.Stream, e *connector.Env) {
-	r, ok := owner.Load()
-	if !ok {
-		return
-	}
-
+func (r *redisSetup) serve(s *connector.Stream, e *connector.Env) {
 	u := &r.URL
 	up, err := connector.DialURL(s.Context, e.Dialer, u, "rediss", redisPort, redisPort)
 	if err != nil {

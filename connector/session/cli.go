@@ -16,7 +16,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-var CLIKind = connector.Kind{UsesHostKey: true, Host: true, Parse: parseCLI, New: func() connector.Server { return new(CLI) }}
+var CLIKind = connector.Kind{UsesHostKey: true, Host: true, Parse: parseCLI, Open: connector.Stateless((*cliSetup).serve)}
 
 func parseCLI(source connector.Setup) (connector.Prepared, error) {
 	c := new(cliSetup)
@@ -25,8 +25,6 @@ func parseCLI(source connector.Setup) (connector.Prepared, error) {
 	}
 	return connector.Prepared{Value: c, SecretNames: c.Credentials}, nil
 }
-
-type CLI struct{ connector.Slot[cliSetup] }
 
 const (
 	maxStdinBytes = 1 << 20
@@ -40,12 +38,7 @@ type cliSetup struct {
 	Credentials []string `json:"credentials"`
 }
 
-func (owner *CLI) Serve(s *connector.Stream, e *connector.Env) {
-	t, ok := owner.Load()
-	if !ok {
-		return
-	}
-
+func (t *cliSetup) serve(s *connector.Stream, e *connector.Env) {
 	serveSessions(s, e.HostKey, func(*sync.WaitGroup) func(ssh.NewChannel) {
 		return func(nc ssh.NewChannel) { t.session(s, nc) }
 	})

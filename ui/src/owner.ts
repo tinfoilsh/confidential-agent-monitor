@@ -1239,7 +1239,7 @@ export function grantTemplate(
   return grant && !/\{\w+\}/.test(JSON.stringify(grant)) ? grant : undefined;
 }
 
-// Kinds are connector/credential.Describe's: unset, static, oauth and oauth-required.
+// Kinds are credential.Describe's: unset, static, oauth and oauth-required.
 // A stored grant keeps its client and endpoints for sign-in; unset or static values use the template.
 export function credentialFields(view: View, name: string): CredentialField[] {
   const byName = new Map(

@@ -9,8 +9,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/jsonsel"
-	"github.com/tinfoilsh/confidential-agent-monitor/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/internal/jsonsel"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
 type Request struct {
@@ -93,7 +93,7 @@ func (p *Preset) validate() error {
 		}
 	}
 	for id, o := range p.Operations {
-		if id == "" || o.Action == "" || !facts.ValidEffects(o.Effects) {
+		if id == "" || o.Action == "" || len(o.Effects) == 0 {
 			return fmt.Errorf("invalid operation %q", id)
 		}
 		if o.Method == "" || o.Origin == "" || o.Path == "" || o.Scope == nil {
@@ -112,8 +112,8 @@ func (p *Preset) validate() error {
 				return fmt.Errorf("grant names missing scope %s", name)
 			}
 		}
-		if !facts.ValidSends(o.Sends) || !slices.Contains([]string{"", bodyNone, BodyJSON, bodyForm, bodyAny, bodyGraphQL}, o.Body) {
-			return fmt.Errorf("invalid audience or body kind for %s", id)
+		if !slices.Contains([]string{"", bodyNone, BodyJSON, bodyForm, bodyAny, bodyGraphQL}, o.Body) {
+			return fmt.Errorf("invalid body kind for %s", id)
 		}
 		if g := o.GraphQL; g != nil {
 			if o.Body != bodyGraphQL || (g.Field == "") == (len(g.Fields) == 0) || !slices.Contains([]string{"query", "mutation", "subscription"}, g.Operation) {
