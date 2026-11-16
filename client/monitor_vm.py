@@ -1009,7 +1009,7 @@ def setup_launch(args):
                 key = getpass.getpass("Perimeter owner key or passphrase (saved only on this host): ")
             else:
                 raise Error("pass --owner-key-file pointing to an owner-only file")
-        owner, view, _, _ = open_owner(source, root, key)
+        owner, view, endpoint, _ = open_owner(source, root, key)
         connections = view["config"].get("connections") or {}
         access_spec = args.access or [item.strip() for item in setup_value(
             None, "Service access, comma-separated name=read|ask|allow", "").split(",") if item.strip()]
@@ -1019,6 +1019,8 @@ def setup_launch(args):
             if not sep or name not in connections or level not in ("read", "ask", "allow"):
                 raise Error(f"invalid service access {item!r}; use an existing service and read, ask or allow")
             access[name] = {"level": level}
+        if args.tinfoil:
+            pair_device(owner, view, endpoint, root)
         if key:
             private(root / "owner.key", key.encode())
         profile = {"version": 3, "id": uuid.uuid4().hex, **source,
