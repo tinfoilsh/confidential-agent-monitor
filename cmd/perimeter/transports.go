@@ -23,6 +23,8 @@ import (
 	"filippo.io/edwards25519"
 	"github.com/coder/websocket"
 	"github.com/flynn/noise"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/connections"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/certificates"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
@@ -40,7 +42,7 @@ const (
 	preflightMaxAge   = "600"
 	bearerMode        = "bearer"
 	ownerMode         = "ssh"
-	ownerHost         = "owner" + connectionDomain
+	ownerHost         = "owner" + connections.Domain
 	rpcMode           = "rpc"
 	relayMode         = "relay"
 
@@ -57,8 +59,6 @@ const (
 	// sessionTimeout bounds the handshake and hello, so unauthenticated sockets do not linger.
 	sessionTimeout = 10 * time.Second
 	maxCalls       = 4
-
-	relayDrain = 10 * time.Second
 )
 
 var (
@@ -167,7 +167,13 @@ func (s *state) serve(ctx context.Context, sshListener, apiListener net.Listener
 				}
 			}
 		}
-		if session, err := s.publisher(conn.User(), key); session != nil || err != nil {
+		if session, err := s.routes.Publisher(conn.User(), key, func(fingerprint string) (bool, error) {
+			if _, unlocked := s.generation(); !unlocked {
+				return false, errLocked
+			}
+			_, trusted := s.identities.Lookup(fingerprint)
+			return trusted, nil
+		}); session != nil || err != nil {
 			return session, nil, err
 		}
 		if cert, ok := key.(*ssh.Certificate); ok && identityCA != nil {
@@ -231,12 +237,12 @@ func (s *state) agentSession(fingerprint string) sshtransport.Session {
 // open serves one agent stream. An identity that holds the routes capability reaches a reserved
 // route host directly; every other stream goes to the agent API or a connection.
 func (s *state) open(ctx context.Context, key, host string, port uint32, accept func() (net.Conn, error)) error {
-	if reservedRoute(host) {
+	if sandbox.ReservedRoute(host) {
 		// Relay under the hold, not ctx, which ends when the stream's channel closes and would cut its drain.
 		if held, release, ok := s.hold(context.WithoutCancel(ctx), key, capabilityRoutes); ok {
 			defer release()
-			if err := netx.Dial(s.routes.DialContext, relayDrain)(held, host, port, accept); err != nil {
-				return errDirectUnavailable
+			if err := netx.Dial(s.routes.DialContext, connections.RelayDrain)(held, host, port, accept); err != nil {
+				return sandbox.ErrDirectUnavailable
 			}
 			return nil
 		}
@@ -265,7 +271,7 @@ func (s *state) open(ctx context.Context, key, host string, port uint32, accept 
 // selectTarget picks the connection a stream addresses: by name under connectionDomain, or else
 // the single best claim among the candidates the identity reaches.
 func selectTarget(host string, port uint32, candidates []core.Candidate) (string, bool, bool) {
-	if name, named := strings.CutSuffix(host, connectionDomain); named {
+	if name, named := strings.CutSuffix(host, connections.Domain); named {
 		return name, true, slices.ContainsFunc(candidates, func(c core.Candidate) bool { return c.Name == name })
 	}
 	best, tied, selected := -1, false, ""

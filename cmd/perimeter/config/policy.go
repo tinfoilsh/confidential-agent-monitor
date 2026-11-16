@@ -1,35 +1,40 @@
-package main
+package config
 
 import (
+	"context"
+	"fmt"
+	"maps"
 	"slices"
+	"strings"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/rego"
 )
 
 // Standard policy and its vocabulary.
 
-// factsVersion identifies the request facts schema and approval semantics. Bump it when
+// FactsVersion identifies the request facts schema and approval semantics. Bump it when
 // parsing, description, normalization, label, or approval semantics change.
 // This invalidates saved approvals; display-only edits do not need a bump.
-const factsVersion = 13
+const FactsVersion = 13
 
 const (
-	kindOperation = "operation"
-	kindAdmission = "admission"
-	// sendsConnection resolves to the connection's configured audience; the standard policy matches the same value.
-	sendsConnection = "connection"
+	KindOperation = "operation"
+	KindAdmission = "admission"
+	// SendsConnection resolves to the connection's configured audience; the standard policy matches the same value.
+	SendsConnection = "connection"
 )
 
-// obligations describes the requirements carried by an effect.
-type obligations struct {
+// Obligations describes the requirements carried by an effect.
+type Obligations struct {
 	Change    bool `json:"change"`
 	Trust     bool `json:"trust"`
 	Ask       bool `json:"ask"` // Default effect setting; owners may override it.
 	Discloses bool `json:"discloses"`
 }
 
-// vocabulary is shared by preset validation, request descriptions, policy, and UI.
-var vocabulary = map[string]obligations{
+// Vocabulary is shared by preset validation, request descriptions, policy, and UI.
+var Vocabulary = map[string]Obligations{
 	"read":     {},
 	"session":  {},
 	"write":    {Change: true, Trust: true},
@@ -44,17 +49,17 @@ var vocabulary = map[string]obligations{
 }
 
 var (
-	audiences    = []string{"me", "team", "anyone"}
-	trusts       = []string{"untrusted", "trusted"}
-	initialLabel = format.Label{Trust: "trusted", Audience: "anyone"}
+	Audiences    = []string{"me", "team", "anyone"}
+	Trusts       = []string{"untrusted", "trusted"}
+	InitialLabel = format.Label{Trust: "trusted", Audience: "anyone"}
 )
 
-func validLabel(l format.Label) bool {
-	return slices.Contains(audiences, l.Audience) && slices.Contains(trusts, l.Trust)
+func ValidLabel(l format.Label) bool {
+	return slices.Contains(Audiences, l.Audience) && slices.Contains(Trusts, l.Trust)
 }
 
-func validEffects(effects []string) bool {
-	return len(effects) != 0 && !slices.ContainsFunc(effects, func(effect string) bool { _, ok := vocabulary[effect]; return !ok })
+func ValidEffects(effects []string) bool {
+	return len(effects) != 0 && !slices.ContainsFunc(effects, func(effect string) bool { _, ok := Vocabulary[effect]; return !ok })
 }
 
 // Policy modules and queries. Owner policy may not use the protected data names or packages;
@@ -62,16 +67,54 @@ func validEffects(effects []string) bool {
 const (
 	standardModule = "perimeter/lib.rego"
 	baseModule     = "perimeter/base.rego"
-	queryDecision  = "decision"
-	queryAdmin     = "admin"
-	queryCapable   = "capable"
+	QueryDecision  = "decision"
+	QueryAdmin     = "admin"
+	QueryCapable   = "capable"
 )
 
 var (
-	policyQueries = map[string]string{queryDecision: "data.perimeter.decision", queryAdmin: "data.perimeter.admin_deny", queryCapable: "data.perimeter.capable"}
+	policyQueries = map[string]string{QueryDecision: "data.perimeter.decision", QueryAdmin: "data.perimeter.admin_deny", QueryCapable: "data.perimeter.capable"}
 	protectedData = []string{"perimeter", "lattices", "levels"}
 	basePackage   = []string{"perimeter", "base"}
 )
+
+// PreparePolicy compiles the standard policy, the base policy and owner policy over owner data.
+func PreparePolicy(ctx context.Context, cfg *Config, base string) (*rego.Program, error) {
+	for _, name := range protectedData {
+		if _, ok := cfg.Data[name]; ok {
+			return nil, fmt.Errorf("data.%s is reserved for the Perimeter", name)
+		}
+	}
+	data := maps.Clone(cfg.Data)
+	if data == nil {
+		data = map[string]any{}
+	}
+	data["levels"] = map[string]any{"audiences": Audiences, "trusts": Trusts, "effects": Vocabulary}
+	data["lattices"] = cfg.Lattices
+	modules := map[string]string{standardModule: standardPolicy}
+	if base != "" {
+		path, err := rego.Package(baseModule, base)
+		if err == nil && !slices.Equal(path, basePackage) {
+			err = fmt.Errorf("the base policy must be package data.%s, not data.%s", strings.Join(basePackage, "."), strings.Join(path, "."))
+		}
+		if err != nil {
+			return nil, err
+		}
+		modules[baseModule] = base
+	}
+	for _, name := range slices.Sorted(maps.Keys(cfg.Policies)) {
+		filename := "policies/" + name
+		path, err := rego.Package(filename, cfg.Policies[name])
+		if err != nil {
+			return nil, err
+		}
+		if slices.Contains(protectedData, path[0]) {
+			return nil, fmt.Errorf("policy %s: data.%s is reserved for the Perimeter", name, path[0])
+		}
+		modules[filename] = cfg.Policies[name]
+	}
+	return rego.Prepare(ctx, modules, data, policyQueries)
+}
 
 const standardPolicy = `package perimeter
 

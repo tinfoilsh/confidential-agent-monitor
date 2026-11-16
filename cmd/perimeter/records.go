@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
@@ -108,7 +109,7 @@ func (s *state) outdateRecord(r *record) {
 // recordAdmin audits an admin action and its outcome; the caller holds s.mu.
 func (s *state) recordAdmin(ctx context.Context, title string, details any, err error) {
 	c, _ := callerFrom(ctx)
-	raw, encodeErr := json.Marshal(requestFacts{Version: factsVersion, Principal: facts.Principal{Name: c.Name}, Service: adminService,
+	raw, encodeErr := json.Marshal(requestFacts{Version: config.FactsVersion, Principal: facts.Principal{Name: c.Name}, Service: adminService,
 		Title: title, Parameters: map[string]any{}, Details: details})
 	if encodeErr != nil {
 		log.Printf("audit admin action %s: %v", title, encodeErr)
@@ -130,7 +131,7 @@ func (s *state) ruleChange(r *record) (format.Change, error) {
 	if _, declared := s.settings.Load().Identities[p.Name]; !declared {
 		return format.Change{}, errors.New("an approval for a certified identity cannot be saved as a rule")
 	}
-	return format.Change{Path: []string{"identities", p.Name, "rules", r.ID}, Value: Rule{Version: factsVersion, Connection: f.Connection, Action: f.Operation.Action, Operation: f.Operation.ID,
+	return format.Change{Path: []string{"identities", p.Name, "rules", r.ID}, Value: config.Rule{Version: config.FactsVersion, Connection: f.Connection, Action: f.Operation.Action, Operation: f.Operation.ID,
 		Scope: r.Grant, Requirements: slices.Clone(r.Requirements)}}, nil
 }
 
@@ -182,60 +183,56 @@ func (s *state) saved(r *record, review Review) {
 func (s *state) answerRequest(ctx context.Context, id string, input Answer, revision uint64) error {
 	input.Reason = strings.TrimSpace(input.Reason)
 	c, _ := callerFrom(ctx)
-	s.mu.Lock()
-	r := s.findRecord(id)
-	applies := input.Choice == answerSave || input.Choice == answerOnce && r != nil && r.Changes != nil
+	var applies bool
 	var refusal error
-	if r != nil {
-		refusal = s.admitCall(ctx, s.settings.Load(), adminCall{Answer: input, Record: r})
-	}
-	s.mu.Unlock()
+	s.locked(func() {
+		r := s.findRecord(id)
+		applies = input.Choice == answerSave || input.Choice == answerOnce && r != nil && r.Changes != nil
+		if r != nil {
+			refusal = s.admitCall(ctx, s.settings.Load(), adminCall{Answer: input, Record: r})
+		}
+	})
 	if refusal != nil {
 		return refusal
 	}
 	review := Review{By: c.Name, Answer: input}
 	if applies {
-		s.writes.Lock()
-		defer s.writes.Unlock()
-		s.mu.Lock()
-		r, err := s.answerable(id, input, revision)
-		var change format.Change
-		if err == nil && input.Choice == answerSave {
-			change, err = s.ruleChange(r)
-		}
-		s.mu.Unlock()
-		if err != nil {
-			return err
-		}
-		changes := r.Changes
-		if input.Choice == answerSave {
-			changes = []format.Change{change}
-		}
-		err = s.writeSettings(ctx, settingsWrite{changes: changes, check: func() error {
+		saved := &savedAnswer{answer: review}
+		err := s.writeSettings(ctx, settingsWrite{derive: func() ([]format.Change, error) {
+			r, err := s.answerable(id, input, revision)
+			if err != nil {
+				return nil, err
+			}
+			saved.record = r
+			if input.Choice != answerSave {
+				return r.Changes, nil
+			}
+			change, err := s.ruleChange(r)
+			return []format.Change{change}, err
+		}, check: func() error {
 			current, err := s.answerable(id, input, revision)
-			if err == nil && current != r {
+			if err == nil && current != saved.record {
 				return errRecordGone
 			}
 			return err
-		}, saved: &savedAnswer{record: r, answer: review}})
-		if err == nil && r.Changes != nil {
-			s.mu.Lock()
-			s.settleRecord(r, nil)
-			s.mu.Unlock()
+		}, saved: saved})
+		if err == nil && saved.record.Changes != nil {
+			s.locked(func() { s.settleRecord(saved.record, nil) })
 		}
 		return err
 	}
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	r, err := s.answerable(id, input, revision)
-	if err != nil {
-		return err
-	}
-	s.answer(r, review)
-	if r.Changes != nil {
-		s.settleRecord(r, nil)
-	}
-	return nil
+	var err error
+	s.locked(func() {
+		var r *record
+		if r, err = s.answerable(id, input, revision); err != nil {
+			return
+		}
+		s.answer(r, review)
+		if r.Changes != nil {
+			s.settleRecord(r, nil)
+		}
+	})
+	return err
 }
 
 // auditPage is one page of settled records, newest first.
@@ -247,12 +244,12 @@ type auditPage struct {
 // readAuditPage returns settled records older than the segment named by before, newest first.
 // Records still in the live log are skipped, so the page continues where the live log ends.
 func (s *state) readAuditPage(ctx context.Context, before string) (auditPage, error) {
-	s.mu.Lock()
 	live := map[string]bool{}
-	for r := range s.records.All() {
-		live[r.ID] = true
-	}
-	s.mu.Unlock()
+	s.locked(func() {
+		for r := range s.records.All() {
+			live[r.ID] = true
+		}
+	})
 	page := auditPage{Records: []recordSummary{}}
 	var err, malformed error
 	page.Next, err = s.audit.Page(ctx, before, func(segment string, line []byte) bool {

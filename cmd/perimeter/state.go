@@ -12,13 +12,16 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"maps"
 	"net/http"
 	"os"
+	"slices"
 	"sync"
 	"sync/atomic"
 	"time"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/admission"
@@ -51,7 +54,8 @@ var errOwner error = httpError{format.ErrKey, http.StatusUnauthorized}
 // state is the running Perimeter. mu guards the document, records and admissions, and
 // approval waits release it; writes serializes settings preparation, commit, delivery and
 // final teardown. When both are needed, take writes before mu. The table's lock is taken
-// inside either. Everything unlock creates is nil while locked.
+// inside either. Everything unlock creates is nil while locked. Only this file takes mu or
+// writes; the others go through locked, stable and writeSettings.
 type state struct {
 	bucket     *blob.Bucket
 	life       context.Context // ends the audit log's flushing
@@ -64,7 +68,7 @@ type state struct {
 	audit      *sealedlog.Log
 	settings   atomic.Pointer[settings]
 	table      *core.Table
-	routes     forwarder
+	routes     sandbox.Forwarder
 	identities identity.Registry
 	admissions admission.Set[*admitted]
 	records    *approval.Records[*record]
@@ -88,6 +92,67 @@ func (s *state) snapshot() (format.Document, *settings) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.doc, s.settings.Load()
+}
+
+// locked runs fn under s.mu.
+func (s *state) locked(fn func()) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	fn()
+}
+
+// stable runs fn with the document and settings no settings write replaces before it returns.
+func stable[T any](s *state, fn func(format.Document, *settings) (T, error)) (T, error) {
+	s.writes.Lock()
+	defer s.writes.Unlock()
+	return fn(s.snapshot())
+}
+
+// writeSettings is the single ordered settings path. It holds s.writes throughout, and s.mu
+// around its checks and its commit.
+func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
+	s.writes.Lock()
+	defer s.writes.Unlock()
+	s.mu.Lock()
+	source, current := s.doc.Policy, s.settings.Load()
+	var err error
+	if w.derive != nil {
+		w.changes, err = w.derive()
+	}
+	if err == nil && policyFile != "" && (w.source != nil || len(w.changes) != 0) {
+		err = errPolicyFile
+	}
+	if err == nil {
+		err = w.checked()
+	}
+	s.mu.Unlock()
+	if err != nil {
+		return err
+	}
+	before := source
+	if w.source != nil {
+		source = *w.source
+	}
+	source, rebuild, renamed, err := current.Edit(source, w.changes)
+	if err != nil {
+		return err
+	}
+	plan, err := s.prepareSettings(ctx, source, rebuild, renamed, w.credentials, current.tls, current.hostKey)
+	if err != nil {
+		return err
+	}
+	s.mu.Lock()
+	if err = w.checked(); err == nil {
+		err = s.commitSettings(ctx, plan, w.saved)
+	}
+	if source != before || len(w.credentials) != 0 {
+		s.recordAdmin(ctx, "Change settings", map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(before, source)}, "credentials": slices.Sorted(maps.Keys(w.credentials))}, err)
+	}
+	s.mu.Unlock()
+	if err == nil {
+		s.table.Start()
+	}
+	return err
 }
 
 // commit changes the document only after the encrypted write succeeds.

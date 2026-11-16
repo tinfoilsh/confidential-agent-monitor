@@ -491,14 +491,16 @@ export function AgentConnectionAccess(props: {
   name: string;
   connection: string;
   title?: string;
-  // Lists this row's actions without a toggle, for short lists of rows.
-  alwaysOpen?: boolean;
+  // Starts with actions listed unless the bunker has no access, for short lists of rows.
+  defaultOpen?: boolean;
 }) {
   const m = useMonitor();
   const entry = createMemo(
     () => owner.agentAccess(m.view()!, props.name, props.connection)[0],
   );
-  const [expanded, setExpanded] = createSignal(false);
+  const [expanded, setExpanded] = createSignal(
+    !!props.defaultOpen && entry().level !== "off",
+  );
   const singleAction = () => {
     const nodes = entry().actions;
     return nodes.length === 1 && !nodes[0].children.length;
@@ -510,7 +512,7 @@ export function AgentConnectionAccess(props: {
     );
   const searchable = () => leaves(entry().actions) > ACTION_SEARCH_THRESHOLD;
   const expandable = () => !singleAction() || rules().length > 0;
-  const open = () => (props.alwaysOpen || expanded()) && expandable();
+  const open = () => expanded() && expandable();
   const id = createUniqueId();
   const [query, setQuery] = createSignal("");
   const matches = (node: owner.AccessNode, q: string): boolean =>
@@ -537,15 +539,13 @@ export function AgentConnectionAccess(props: {
       <b title={props.title ?? props.connection}>
         {props.title ?? props.connection}
       </b>
-      <Show when={!props.alwaysOpen}>
-        <span
-          class="access-caret"
-          aria-hidden="true"
-          classList={{ hidden: !expandable(), expanded: open() }}
-        >
-          <Icon name="arrow" />
-        </span>
-      </Show>
+      <span
+        class="access-caret"
+        aria-hidden="true"
+        classList={{ hidden: !expandable(), expanded: open() }}
+      >
+        <Icon name="arrow" />
+      </span>
       <Show when={entry().overrides}>
         <small class="muted">
           {entry().overrides}{" "}
@@ -562,23 +562,18 @@ export function AgentConnectionAccess(props: {
   return (
     <div class="acct">
       <div class="row">
-        <Show
-          when={!props.alwaysOpen}
-          fallback={<span class="access-toggle">{title()}</span>}
+        <button
+          class="access-toggle"
+          classList={{ off: entry().level === "off" }}
+          type="button"
+          aria-label={`Actions for ${props.title ?? props.connection}`}
+          aria-expanded={open()}
+          aria-controls={id}
+          disabled={!expandable()}
+          onClick={() => setExpanded(!expanded())}
         >
-          <button
-            class="access-toggle"
-            classList={{ off: entry().level === "off" }}
-            type="button"
-            aria-label={`Actions for ${props.title ?? props.connection}`}
-            aria-expanded={open()}
-            aria-controls={id}
-            disabled={!expandable()}
-            onClick={() => setExpanded(!expanded())}
-          >
-            {title()}
-          </button>
-        </Show>
+          {title()}
+        </button>
         <AccessSelect
           kind="level"
           label={`Access for ${props.title ?? props.connection}`}

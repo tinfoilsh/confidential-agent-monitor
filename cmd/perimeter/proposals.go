@@ -11,6 +11,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"golang.org/x/crypto/ssh"
@@ -47,7 +48,7 @@ func (s *state) proposal(st *settings, source string, p facts.Principal, target,
 	if !ok || !current.Same(p) {
 		return "", nil, errNoAgent
 	}
-	if _, err := proposalChanges(p, changes, st.capable(current, capabilityPropose)); err != nil {
+	if _, err := config.ProposalChanges(p, changes, st.capable(current, capabilityPropose)); err != nil {
 		return "", nil, err
 	}
 	candidate, _, _, err := st.Edit(source, changes)
@@ -57,7 +58,7 @@ func (s *state) proposal(st *settings, source string, p facts.Principal, target,
 	if err != nil {
 		return "", nil, err
 	}
-	raw, err := json.Marshal(requestFacts{Version: factsVersion, Principal: p, Connection: target,
+	raw, err := json.Marshal(requestFacts{Version: config.FactsVersion, Principal: p, Connection: target,
 		Service: "policy-proposal", Title: reason, Parameters: map[string]any{},
 		Details: map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(source, candidate)}}})
 	return candidate, raw, err
@@ -89,59 +90,60 @@ func (s *state) proposePolicy(ctx context.Context, key string, input proposalInp
 	if policyFile != "" {
 		return nil, errPolicyFile
 	}
-	s.writes.Lock()
-	defer s.writes.Unlock()
-	base, before := s.snapshot()
-	p, known := s.identities.Lookup(key)
-	if !known {
-		return nil, errNoAgent
-	}
-	groups, err := proposalChanges(p, changes, before.capable(p, capabilityPropose))
-	if err != nil {
-		return nil, err
-	}
-	var proposals []*record
-	for _, target := range slices.Sorted(maps.Keys(groups)) {
-		candidate, raw, err := s.proposal(before, base.Policy, p, target, reason, groups[target])
-		if err == nil {
-			_, err = s.prepareSettings(ctx, candidate, everyConnection, nil, nil, before.tls, before.hostKey)
+	return stable(s, func(base format.Document, before *settings) ([]proposalReceipt, error) {
+		p, known := s.identities.Lookup(key)
+		if !known {
+			return nil, errNoAgent
 		}
+		groups, err := config.ProposalChanges(p, changes, before.capable(p, capabilityPropose))
 		if err != nil {
-			return nil, fmt.Errorf("service %s: %w", target, err)
+			return nil, err
 		}
-		proposals = append(proposals, &record{Changes: groups[target], Facts: raw,
-			Decision: Decision{Requirements: []Requirement{{ID: "policy", Message: reason}}}})
-	}
+		var proposals []*record
+		for _, target := range slices.Sorted(maps.Keys(groups)) {
+			candidate, raw, err := s.proposal(before, base.Policy, p, target, reason, groups[target])
+			if err == nil {
+				_, err = s.prepareSettings(ctx, candidate, everyConnection, nil, nil, before.tls, before.hostKey)
+			}
+			if err != nil {
+				return nil, fmt.Errorf("service %s: %w", target, err)
+			}
+			proposals = append(proposals, &record{Changes: groups[target], Facts: raw,
+				Decision: Decision{Requirements: []config.Requirement{{ID: "policy", Message: reason}}}})
+		}
 
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	// A principal has one pending proposal per connection; a new one replaces it.
-	var replaced []*record
-	pending := len(proposals)
-	for r := range s.records.All() {
-		if r.State != statePending || r.Changes == nil {
-			continue
-		}
-		f := summarize(r).Facts
-		if _, again := groups[f.Connection]; again && f.Principal.Same(p) {
-			replaced = append(replaced, r)
-		} else {
-			pending++
-		}
-	}
-	if pending > maxPolicyProposals {
-		return nil, errors.New("too many pending policy proposals")
-	}
-	for _, r := range replaced {
-		s.outdateRecord(r)
-	}
-	receipts := make([]proposalReceipt, 0, len(proposals))
-	for _, proposal := range proposals {
-		s.addRecord(proposal).State = statePending
-		s.announce(proposal)
-		receipts = append(receipts, receipt(proposal))
-	}
-	return receipts, nil
+		var receipts []proposalReceipt
+		s.locked(func() {
+			// A principal has one pending proposal per connection; a new one replaces it.
+			var replaced []*record
+			pending := len(proposals)
+			for r := range s.records.All() {
+				if r.State != statePending || r.Changes == nil {
+					continue
+				}
+				f := summarize(r).Facts
+				if _, again := groups[f.Connection]; again && f.Principal.Same(p) {
+					replaced = append(replaced, r)
+				} else {
+					pending++
+				}
+			}
+			if pending > maxPolicyProposals {
+				err = errors.New("too many pending policy proposals")
+				return
+			}
+			for _, r := range replaced {
+				s.outdateRecord(r)
+			}
+			receipts = make([]proposalReceipt, 0, len(proposals))
+			for _, proposal := range proposals {
+				s.addRecord(proposal).State = statePending
+				s.announce(proposal)
+				receipts = append(receipts, receipt(proposal))
+			}
+		})
+		return receipts, err
+	})
 }
 
 type identityEnrollment struct {
@@ -158,7 +160,7 @@ func (s *state) enrollmentChanges(input map[string]identityEnrollment) ([]format
 	var changes []format.Change
 	st := s.settings.Load()
 	for name, id := range input {
-		fingerprint, err := keyFingerprint(id.Key)
+		fingerprint, err := config.KeyFingerprint(id.Key)
 		if err != nil {
 			return nil, err
 		}
@@ -213,13 +215,5 @@ func (s *state) restoreDevice(ctx context.Context, public string) error {
 }
 
 func (s *state) enroll(ctx context.Context, identities map[string]identityEnrollment) error {
-	s.writes.Lock()
-	defer s.writes.Unlock()
-	s.mu.Lock()
-	changes, err := s.enrollmentChanges(identities)
-	s.mu.Unlock()
-	if err != nil {
-		return err
-	}
-	return s.writeSettings(ctx, settingsWrite{changes: changes})
+	return s.writeSettings(ctx, settingsWrite{derive: func() ([]format.Change, error) { return s.enrollmentChanges(identities) }})
 }

@@ -26,6 +26,7 @@ ENV GOWORK=off CGO_ENABLED=0
 WORKDIR /src/monitor
 COPY go.mod go.sum ./
 COPY cmd/perimeter/go.mod cmd/perimeter/go.sum ./cmd/perimeter/
+COPY --parents connector/*/go.mod connector/*/go.sum ./
 RUN go -C cmd/perimeter mod download
 COPY . .
 COPY --from=ui-build /src/ui/dist ./ui/dist

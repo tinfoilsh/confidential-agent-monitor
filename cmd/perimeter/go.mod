@@ -16,6 +16,16 @@ require (
 	github.com/pelletier/go-toml/v2 v2.4.4-0.20260718201843-686c980c4758
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
 	github.com/tinfoilsh/confidential-agent-monitor v0.0.0
+	github.com/tinfoilsh/confidential-agent-monitor/connector/credential v0.0.0
+	github.com/tinfoilsh/confidential-agent-monitor/connector/email v0.0.0
+	github.com/tinfoilsh/confidential-agent-monitor/connector/mcp v0.0.0
+	github.com/tinfoilsh/confidential-agent-monitor/connector/mqtt v0.0.0
+	github.com/tinfoilsh/confidential-agent-monitor/connector/nats v0.0.0
+	github.com/tinfoilsh/confidential-agent-monitor/connector/postgres v0.0.0
+	github.com/tinfoilsh/confidential-agent-monitor/connector/redis v0.0.0
+	github.com/tinfoilsh/confidential-agent-monitor/connector/session v0.0.0
+	github.com/tinfoilsh/confidential-agent-monitor/connector/slots v0.0.0
+	github.com/tinfoilsh/confidential-agent-monitor/connector/web v0.0.0
 	github.com/tinfoilsh/tinfoil-go v0.17.0-rc.3.0.20261022181158-836693177e53
 	gocloud.dev v0.46.0
 	golang.org/x/crypto v0.57.0
@@ -161,4 +171,16 @@ require (
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
 
-replace github.com/tinfoilsh/confidential-agent-monitor => ../../
+replace (
+	github.com/tinfoilsh/confidential-agent-monitor => ../../
+	github.com/tinfoilsh/confidential-agent-monitor/connector/credential => ../../connector/credential
+	github.com/tinfoilsh/confidential-agent-monitor/connector/email => ../../connector/email
+	github.com/tinfoilsh/confidential-agent-monitor/connector/mcp => ../../connector/mcp
+	github.com/tinfoilsh/confidential-agent-monitor/connector/mqtt => ../../connector/mqtt
+	github.com/tinfoilsh/confidential-agent-monitor/connector/nats => ../../connector/nats
+	github.com/tinfoilsh/confidential-agent-monitor/connector/postgres => ../../connector/postgres
+	github.com/tinfoilsh/confidential-agent-monitor/connector/redis => ../../connector/redis
+	github.com/tinfoilsh/confidential-agent-monitor/connector/session => ../../connector/session
+	github.com/tinfoilsh/confidential-agent-monitor/connector/slots => ../../connector/slots
+	github.com/tinfoilsh/confidential-agent-monitor/connector/web => ../../connector/web
+)

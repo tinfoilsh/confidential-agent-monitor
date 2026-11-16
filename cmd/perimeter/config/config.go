@@ -1,4 +1,6 @@
-package main
+// Package config validates the owner's policy source against the presets and holds the
+// standard policy and its vocabulary. It performs no I/O.
+package config
 
 import (
 	"cmp"
@@ -12,6 +14,7 @@ import (
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"golang.org/x/crypto/ssh"
 )
@@ -19,7 +22,7 @@ import (
 // Settings: the owner's TOML policy source, validated and projected.
 
 const (
-	agentConnection = "agent"
+	AgentConnection = "agent"
 	maxPolicyBytes  = 2 << 20
 )
 
@@ -50,7 +53,7 @@ type Requirement struct {
 // A rule waives the requirements it names for one operation and scope.
 type Rule struct {
 	Enabled      *bool          `json:"enabled,omitempty"`
-	Version      int            `json:"version"` // factsVersion it was approved under.
+	Version      int            `json:"version"` // FactsVersion it was approved under.
 	Connection   string         `json:"connection"`
 	Action       string         `json:"action"`
 	Operation    string         `json:"operation,omitempty"`
@@ -140,11 +143,12 @@ type Config struct {
 	Policies           map[string]string     `json:"policies"`
 	Data               map[string]any        `json:"data"`
 	Principals         map[string]string     `json:"-"`
+	presets            map[string]*catalog.Preset
 }
 
 func validateEffects(name string, effects map[string]string) error {
 	for effect, mode := range effects {
-		if _, ok := vocabulary[effect]; !ok {
+		if _, ok := Vocabulary[effect]; !ok {
 			return fmt.Errorf("%s: unknown effect %q", name, effect)
 		}
 		if !slices.Contains(effectModes, mode) {
@@ -161,9 +165,9 @@ func inheritModes(defaults, overrides map[string]string) map[string]string {
 	return merged
 }
 
-// loadConfig validates declared settings without retaining expanded connections or identities.
+// Load validates declared settings without retaining expanded connections or identities.
 // Protocol decoding and credential binding remain at the connector boundary.
-func loadConfig(text string) (*Config, error) {
+func Load(text string, presets map[string]*catalog.Preset) (*Config, error) {
 	if len(text) > maxPolicyBytes {
 		return nil, errors.New("policy source is too large")
 	}
@@ -171,7 +175,7 @@ func loadConfig(text string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	cfg := &Config{Lattices: Lattices{Confidentiality: true}}
+	cfg := &Config{Lattices: Lattices{Confidentiality: true}, presets: presets}
 	raw, err := json.Marshal(decoded)
 	if err == nil {
 		err = facts.DecodeNumbers(raw, cfg)
@@ -186,10 +190,10 @@ func loadConfig(text string) (*Config, error) {
 		if err := validateEffects("service "+name, c.Effects); err != nil {
 			return nil, err
 		}
-		if !slices.Contains(audiences, c.Contents) || !slices.Contains(audiences, c.Sends) {
-			return nil, fmt.Errorf("service %s: contents and sends must be one of %v", name, audiences)
+		if !slices.Contains(Audiences, c.Contents) || !slices.Contains(Audiences, c.Sends) {
+			return nil, fmt.Errorf("service %s: contents and sends must be one of %v", name, Audiences)
 		}
-		if name == agentConnection {
+		if name == AgentConnection {
 			return nil, fmt.Errorf("service name %s is reserved", name)
 		}
 		if _, err := cfg.Spec(name); err != nil {
@@ -223,7 +227,7 @@ func loadConfig(text string) (*Config, error) {
 		if err := validateAccess("identity "+name, cfg.Accesses(name)); err != nil {
 			return nil, err
 		}
-		fingerprint, err := keyFingerprint(id.Key)
+		fingerprint, err := KeyFingerprint(id.Key)
 		if err != nil {
 			return nil, fmt.Errorf("identity %s: %w", name, err)
 		}
@@ -235,8 +239,8 @@ func loadConfig(text string) (*Config, error) {
 	return cfg, nil
 }
 
-// keyFingerprint names the principal an identity's authorized key authenticates.
-func keyFingerprint(authorizedKey string) (string, error) {
+// KeyFingerprint names the principal an identity's authorized key authenticates.
+func KeyFingerprint(authorizedKey string) (string, error) {
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(authorizedKey))
 	if err != nil {
 		return "", err
@@ -254,7 +258,7 @@ func (c *Config) Access(agent, connection string) Access {
 	a := c.Identities[agent].Connections[connection]
 	if a.Level == "" {
 		base := c.DefaultAccess[connection]
-		a.Level = base.Level
+		a.Level = cmp.Or(base.Level, "off")
 		a.Actions = inheritModes(base.Actions, a.Actions)
 		a.Effects = inheritModes(base.Effects, a.Effects)
 	}
@@ -287,7 +291,7 @@ func (c *Config) Reaches(agent, connection string) bool {
 // Spec projects only this connection's setup; the returned definition remains opaque.
 func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	connection := c.Connections[name]
-	preset := presets[connection.Preset]
+	preset := c.presets[connection.Preset]
 	if preset == nil {
 		return ConnectionSpec{}, fmt.Errorf("service %s: unknown preset %s", name, connection.Preset)
 	}
@@ -344,7 +348,7 @@ func (c *Config) Edit(source string, changes []format.Change) (string, func(conn
 	if err != nil {
 		return "", nil, nil, err
 	}
-	next, err := loadConfig(edited)
+	next, err := Load(edited, c.presets)
 	if err != nil {
 		return "", nil, nil, err
 	}
@@ -411,7 +415,7 @@ func (c *Config) Effective() (string, error) {
 	}
 	ps := map[string]any{}
 	for _, connection := range c.Connections {
-		if ps[connection.Preset], err = facts.JSON[map[string]any](presets[connection.Preset]); err != nil {
+		if ps[connection.Preset], err = facts.JSON[map[string]any](c.presets[connection.Preset]); err != nil {
 			return "", err
 		}
 	}
@@ -446,8 +450,8 @@ func proposalTarget(path []string) (string, bool) {
 	return "", false
 }
 
-// proposalChanges groups p's changes by connection; only others lets them reach other identities and default access.
-func proposalChanges(p facts.Principal, changes []format.Change, others bool) (map[string][]format.Change, error) {
+// ProposalChanges groups p's changes by connection; only others lets them reach other identities and default access.
+func ProposalChanges(p facts.Principal, changes []format.Change, others bool) (map[string][]format.Change, error) {
 	groups := map[string][]format.Change{}
 	for _, change := range changes {
 		target, ok := proposalTarget(change.Path)

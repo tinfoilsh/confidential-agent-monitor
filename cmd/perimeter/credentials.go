@@ -218,34 +218,34 @@ func (s *state) current(id format.SecretID, value *credential.Value, before json
 
 // replaceValue persists a provider's rotated record; the connector keeps running.
 func (s *state) replaceValue(ctx context.Context, id format.SecretID, value *credential.Value, before, after json.RawMessage) error {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	if !s.current(id, value, before) {
-		return errCredentialChanged
-	}
-	next := s.doc
-	next.Credentials = next.Credentials.Clone()
-	next.Credentials.Set(id, bytes.Clone(after))
-	return s.commit(ctx, next)
+	err := errCredentialChanged
+	s.locked(func() {
+		if s.current(id, value, before) {
+			next := s.doc
+			next.Credentials = next.Credentials.Clone()
+			next.Credentials.Set(id, bytes.Clone(after))
+			err = s.commit(ctx, next)
+		}
+	})
+	return err
 }
 
 // signInCredential captures the record a sign-in replaces, so completing it cannot
 // overwrite a newer edit.
 func (s *state) signInCredential(connection, name string) (json.RawMessage, func(context.Context, json.RawMessage) error, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	id := format.SecretID{Connection: connection, Name: name}
 	var value *credential.Value
-	if c := s.settings.Load().connections[connection]; c != nil {
-		value = c.secrets[name]
-	}
+	var before json.RawMessage
+	s.locked(func() {
+		if c := s.settings.Load().connections[connection]; c != nil {
+			value = c.secrets[name]
+		}
+		before = bytes.Clone(s.doc.Credentials.Get(id))
+	})
 	if value == nil {
 		return nil, nil, errors.New("credential does not exist")
 	}
-	id := format.SecretID{Connection: connection, Name: name}
-	before := bytes.Clone(s.doc.Credentials.Get(id))
 	return before, func(ctx context.Context, raw json.RawMessage) error {
-		s.writes.Lock()
-		defer s.writes.Unlock()
 		return s.writeSettings(ctx, settingsWrite{credentials: format.Secrets{connection: {name: raw}}, check: func() error {
 			if !s.current(id, value, before) {
 				return errCredentialChanged

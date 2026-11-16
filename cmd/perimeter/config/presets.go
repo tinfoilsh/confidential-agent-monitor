@@ -1,8 +1,7 @@
-package main
+package config
 
 import (
 	"crypto/sha256"
-	"embed"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -13,9 +12,6 @@ import (
 )
 
 // Presets: the shipped protocol descriptions, an organization's own, and the owner catalog.
-
-//go:embed presets/*.json
-var shippedPresets embed.FS
 
 // connectionDefaults are the settings the owner UI proposes for a new connection of a preset.
 type connectionDefaults struct {
@@ -58,13 +54,9 @@ func shippedDefaults(name string, p *catalog.Preset) connectionDefaults {
 	return privateDefaults
 }
 
-// loadPresets decodes the shipped presets and an organization's own; an organization's
+// LoadPresets decodes the shipped presets and an organization's own; an organization's
 // preset keeps the defaults its catalog declares.
-func loadPresets(extra fs.FS) (map[string]*catalog.Preset, map[string]json.RawMessage, error) {
-	shipped, err := fs.Sub(shippedPresets, "presets")
-	if err != nil {
-		return nil, nil, err
-	}
+func LoadPresets(shipped, extra fs.FS) (map[string]*catalog.Preset, map[string]json.RawMessage, error) {
 	out, defaults := map[string]*catalog.Preset{}, map[string]json.RawMessage{}
 	for _, source := range []fs.FS{shipped, extra} {
 		if source == nil {
@@ -90,7 +82,7 @@ func loadPresets(extra fs.FS) (map[string]*catalog.Preset, map[string]json.RawMe
 			}
 			if err == nil {
 				for action, a := range p.Catalog.Actions {
-					if a.Effects != nil && !validEffects(a.Effects) {
+					if a.Effects != nil && !ValidEffects(a.Effects) {
 						err = fmt.Errorf("invalid effects for action %s", action)
 					}
 				}
@@ -104,25 +96,31 @@ func loadPresets(extra fs.FS) (map[string]*catalog.Preset, map[string]json.RawMe
 	return out, defaults, nil
 }
 
-// catalogEntry is the owner's catalog presentation. Operations are display metadata;
-// their protocol definitions remain opaque until a connector decodes them.
-type catalogEntry struct {
-	*catalog.Catalog
-	Title      string                       `json:"title"`
-	Operations *map[string]operationSummary `json:"operations,omitempty"`
+// OperationSummary is protocol-neutral catalog metadata, never an authorization input.
+type OperationSummary struct {
+	Action  string   `json:"action"`
+	Effects []string `json:"effects,omitempty"`
 }
 
-// catalogEntries is a control presentation, never an authorization or runtime registry.
-func catalogEntries(cfg *Config, operations map[string]map[string]operationSummary) (map[string]catalogEntry, string, error) {
+// CatalogEntry is the owner's catalog presentation. Operations are display metadata;
+// their protocol definitions remain opaque until a connector decodes them.
+type CatalogEntry struct {
+	*catalog.Catalog
+	Title      string                       `json:"title"`
+	Operations *map[string]OperationSummary `json:"operations,omitempty"`
+}
+
+// CatalogEntries is a control presentation, never an authorization or runtime registry.
+func CatalogEntries(cfg *Config, defaults map[string]json.RawMessage, operations map[string]map[string]OperationSummary) (map[string]CatalogEntry, string, error) {
 	used := map[string]bool{}
 	for _, connection := range cfg.Connections {
 		used[connection.Preset] = true
 	}
-	entries := map[string]catalogEntry{}
-	for name, p := range presets {
+	entries := map[string]CatalogEntry{}
+	for name, p := range cfg.presets {
 		metadata := *p.Catalog
-		metadata.Defaults = presetDefaults[name]
-		entry := catalogEntry{Catalog: &metadata, Title: p.Title}
+		metadata.Defaults = defaults[name]
+		entry := CatalogEntry{Catalog: &metadata, Title: p.Title}
 		if !used[name] {
 			metadata.Actions = nil
 		} else if ops := operations[name]; ops != nil {

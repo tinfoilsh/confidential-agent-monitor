@@ -1,4 +1,5 @@
-package main
+// Package rego compiles Rego modules and evaluates their named queries.
+package rego
 
 import (
 	"context"
@@ -14,13 +15,13 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-// regoProgram compiles Rego modules and evaluates named queries, failing closed.
-type regoProgram struct {
+// Program compiles Rego modules and evaluates named queries, failing closed.
+type Program struct {
 	queries map[string]rego.PreparedEvalQuery
 }
 
-// prepareRego compiles modules, named by filename, over data and prepares each named query.
-func prepareRego(ctx context.Context, modules map[string]string, data map[string]any, queries map[string]string) (*regoProgram, error) {
+// Prepare compiles modules, named by filename, over data and prepares each named query.
+func Prepare(ctx context.Context, modules map[string]string, data map[string]any, queries map[string]string) (*Program, error) {
 	if data == nil {
 		data = map[string]any{}
 	}
@@ -32,7 +33,7 @@ func prepareRego(ctx context.Context, modules map[string]string, data map[string
 		}
 		opts = append(opts, rego.ParsedModule(module))
 	}
-	p := &regoProgram{queries: map[string]rego.PreparedEvalQuery{}}
+	p := &Program{queries: map[string]rego.PreparedEvalQuery{}}
 	for _, name := range slices.Sorted(maps.Keys(queries)) {
 		prepared, err := rego.New(append(slices.Clip(opts), rego.Query(queries[name]))...).PrepareForEval(ctx)
 		if err != nil {
@@ -43,8 +44,8 @@ func prepareRego(ctx context.Context, modules map[string]string, data map[string
 	return p, nil
 }
 
-// regoPackage returns the path of a module's package after data, such as ["a", "b"] for package a.b.
-func regoPackage(filename, source string) ([]string, error) {
+// Package returns the path of a module's package after data, such as ["a", "b"] for package a.b.
+func Package(filename, source string) ([]string, error) {
 	module, err := ast.ParseModule(filename, source)
 	if err != nil {
 		return nil, err
@@ -61,7 +62,7 @@ func regoPackage(filename, source string) ([]string, error) {
 }
 
 // Eval decodes one named query's result into out. Missing and malformed decisions fail closed.
-func (p *regoProgram) Eval(ctx context.Context, name string, input any, out any) error {
+func (p *Program) Eval(ctx context.Context, name string, input any, out any) error {
 	query, ok := p.queries[name]
 	if !ok {
 		return fmt.Errorf("policy query %s is not configured", name)

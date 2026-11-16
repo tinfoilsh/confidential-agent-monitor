@@ -9,6 +9,7 @@
 /ui/dist-static/
 /ui/.env*.local
 /docs/
+cmd/perimeter/perimeter
 
 *.test.*
 __pycache__/

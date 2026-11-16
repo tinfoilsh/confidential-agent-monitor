@@ -1,4 +1,4 @@
-package main
+package connections
 
 import (
 	"bytes"
@@ -15,7 +15,9 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/messages"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/mcp"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/slots"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/web"
@@ -59,7 +61,7 @@ func tinfoilKeySlot(enclave string) slots.Slot {
 }
 
 // parseTinfoil reads an inference setup: the enclave's HTTP API, with its key in one fixed slot.
-func parseTinfoil(spec ConnectionSpec) (*tinfoilSetup, *web.Setup, slots.Set, error) {
+func parseTinfoil(spec config.ConnectionSpec) (*tinfoilSetup, *web.Setup, slots.Set, error) {
 	t := new(tinfoilSetup)
 	if err := facts.DecodeNumbers(spec.Config, t); err != nil {
 		return nil, nil, slots.Set{}, err
@@ -76,7 +78,7 @@ func parseTinfoil(spec ConnectionSpec) (*tinfoilSetup, *web.Setup, slots.Set, er
 }
 
 // parseTinfoilMCP reads an MCP setup whose HTTPS server is an attested enclave, and its repository.
-func parseTinfoilMCP(spec ConnectionSpec) (*mcp.Setup, string, error) {
+func parseTinfoilMCP(spec config.ConnectionSpec) (*mcp.Setup, string, error) {
 	var config struct {
 		mcp.Setup
 		Repo string `json:"repo"`
@@ -101,7 +103,7 @@ func attest(ctx context.Context, h worker.Host, key, enclave, repo string, base 
 	if err != nil {
 		return nil, err
 	}
-	return attestation.New(ctx, attestation.Config{Host: enclave, Path: attestationPath, Nonce: tinfoildoc.RandomNonce, Base: base,
+	return attestation.New(ctx, attestation.Config{Host: enclave, Path: sandbox.AttestationPath, Nonce: tinfoildoc.RandomNonce, Base: base,
 		Timeout: attestationTimeout, MaxBytes: maxAttestationBytes,
 		Verify: func(evidence, nonce []byte) (string, time.Time, error) {
 			verified, err := verifier.VerifyV3(evidence, nonce, repo)
@@ -118,7 +120,7 @@ func attest(ctx context.Context, h worker.Host, key, enclave, repo string, base 
 
 // open attests the enclave once per setup; its pool serves every stream and owner chat.
 func (t *tinfoilSetup) open(ctx context.Context, setup *web.Setup, h worker.Host) (worker.Instance, error) {
-	base := upstreamTransport(h.Dial)
+	base := UpstreamTransport(h.Dial)
 	transport, err := attest(ctx, h, tinfoilKey, t.Enclave, t.Repo, base)
 	if err != nil {
 		base.CloseIdleConnections()
@@ -131,14 +133,14 @@ func (t *tinfoilSetup) open(ctx context.Context, setup *web.Setup, h worker.Host
 		r.Out.Header = http.Header{"Authorization": {"Bearer " + key}, "Content-Type": {"application/json"}}
 	}})
 	serve := func(ctx context.Context, conn net.Conn, name, host string, port uint32, gate core.Gate) {
-		handler := web.Handler{Setup: setup, Transport: transport, CheckRedirect: refuseRedirects, Accept: websocket.AcceptOptions{}, UpstreamReadLimit: websocketResponseLimit,
+		handler := web.Handler{Setup: setup, Transport: transport, CheckRedirect: RefuseRedirects, Accept: websocket.AcceptOptions{}, UpstreamReadLimit: websocketResponseLimit,
 			TLS: h.TLS, Placeholder: h.Placeholder, Secret: h.Secret, MaxBody: maxBodyBytes,
 			ServeHTTP: func(ctx context.Context, c net.Conn, server *http.Server) error {
 				return netx.ServeConn(ctx, c, server)
 			}}
 		privateHost := ""
 		if host == "" {
-			privateHost = name + connectionDomain
+			privateHost = name + Domain
 			named := *setup
 			named.Hosts = []string{privateHost}
 			handler.Setup = &named

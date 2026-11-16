@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/connections"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
@@ -58,10 +60,10 @@ type Review struct {
 }
 
 type Decision struct {
-	Deny         []string      `json:"deny"`
-	Requirements []Requirement `json:"requirements"`
-	Sends        string        `json:"sends"`
-	Next         format.Label  `json:"next"`
+	Deny         []string             `json:"deny"`
+	Requirements []config.Requirement `json:"requirements"`
+	Sends        string               `json:"sends"`
+	Next         format.Label         `json:"next"`
 }
 
 // A record is one decision or policy proposal; requests are the pending and expired ones.
@@ -114,17 +116,17 @@ type grant struct {
 
 // requestFacts is the snapshot shared by authorization and audit, in its deployed JSON form.
 type requestFacts struct {
-	Scope      map[string]any  `json:"-"`
-	Version    int             `json:"version"`
-	Kind       string          `json:"kind"`
-	Principal  facts.Principal `json:"principal"`
-	Service    string          `json:"service"`
-	Connection string          `json:"connection"`
-	Operation  *operation      `json:"operation"`
-	Parameters map[string]any  `json:"parameters"`
-	Context    requestContext  `json:"context"`
-	Title      string          `json:"title"`
-	Details    any             `json:"details"`
+	Scope      map[string]any             `json:"-"`
+	Version    int                        `json:"version"`
+	Kind       string                     `json:"kind"`
+	Principal  facts.Principal            `json:"principal"`
+	Service    string                     `json:"service"`
+	Connection string                     `json:"connection"`
+	Operation  *operation                 `json:"operation"`
+	Parameters map[string]any             `json:"parameters"`
+	Context    connections.RequestContext `json:"context"`
+	Title      string                     `json:"title"`
+	Details    any                        `json:"details"`
 }
 
 type operation struct {
@@ -132,13 +134,6 @@ type operation struct {
 	Action  string   `json:"action"`
 	Effects []string `json:"effects"`
 	Lineage []string `json:"lineage"`
-}
-
-// Sends and Observes are protocol hints; policy resolves them with connection settings.
-type requestContext struct {
-	Label    format.Label `json:"label"`
-	Sends    string       `json:"sends"`
-	Observes format.Label `json:"observes"`
 }
 
 // resolveOperation binds an observed action to its nearest preset action effects.
@@ -169,11 +164,11 @@ type decisionInput struct {
 }
 
 type authorizationInput struct {
-	Access             Access              `json:"access"`
+	Access             config.Access       `json:"access"`
 	Reaches            bool                `json:"reaches"`
 	Effects            []map[string]string `json:"effects"` // global, connection, identity, access
 	AllowPaidInference bool                `json:"allow_paid_inference"`
-	Rules              []Rule              `json:"rules"`
+	Rules              []config.Rule       `json:"rules"`
 	Approved           []string            `json:"approved"`
 	Grant              map[string]any      `json:"grant"`
 }
@@ -215,11 +210,29 @@ const (
 // capable reports whether policy grants p capability, refusing it when policy fails.
 func (st *settings) capable(p facts.Principal, capability string) bool {
 	var ok bool
-	err := st.policy.Eval(context.Background(), queryCapable, capabilityInput{Principal: p, Routes: st.Identities[p.Name].Operator, Capability: capability}, &ok)
+	err := st.policy.Eval(context.Background(), config.QueryCapable, capabilityInput{Principal: p, Routes: st.Identities[p.Name].Operator, Capability: capability}, &ok)
 	return ok && err == nil
 }
 
 func (st *settings) enforced() bool { return st.Lattices.Confidentiality || st.Lattices.Integrity }
+
+// observe binds a connection's captured event to the facts policy and audit read: its
+// protocol's hints, and its operation's lineage and effects from the preset's actions.
+func (st *settings) observe(connection string, event facts.Event) (requestFacts, error) {
+	o, err := event.Decode()
+	f := requestFacts{Parameters: o.Parameters, Scope: o.Scope, Title: o.Title, Details: o.Details}
+	c := st.connections[connection]
+	if c == nil {
+		return f, errChanged
+	}
+	if refused := c.Hint(&o, &f.Context); err == nil {
+		err = refused
+	}
+	if o.Operation != nil {
+		f.Operation = resolveOperation(o.Operation.ID, o.Operation.Action, o.Operation.Effects, presets[st.Connections[connection].Preset].Catalog.Actions)
+	}
+	return f, err
+}
 
 // describe binds a grant's request to the principal, connection and label it is decided for.
 func (st *settings) describe(p facts.Principal, connection string, gr *grant) (requestFacts, error) {
@@ -230,7 +243,7 @@ func (st *settings) describe(p facts.Principal, connection string, gr *grant) (r
 	} else {
 		f, err = st.observe(connection, gr.event)
 	}
-	f.Version, f.Kind = factsVersion, gr.kind
+	f.Version, f.Kind = config.FactsVersion, gr.kind
 	f.Service, f.Connection = st.Connections[connection].Preset, connection
 	f.Principal, f.Context.Label = p, gr.label
 	if f.Parameters == nil {
@@ -273,7 +286,7 @@ func (st *settings) decide(ctx context.Context, p facts.Principal, connection st
 			Private: append([]string{}, settings.PolicyOptions.Private...), PublicScope: append([]string{}, st.publicScope[connection]...)},
 	}
 	next := &record{Facts: encoded, Grant: f.Scope}
-	err = st.policy.Eval(ctx, queryDecision, input, &next.Decision)
+	err = st.policy.Eval(ctx, config.QueryDecision, input, &next.Decision)
 	return next, err
 }
 
@@ -281,7 +294,7 @@ func (s *state) label(key string) format.Label {
 	if l, ok := s.doc.Labels[key]; ok {
 		return l
 	}
-	return initialLabel
+	return config.InitialLabel
 }
 
 // decideGrant evaluates gr under current settings, without waiting or recording.
@@ -367,32 +380,35 @@ func (s *state) awaitAnswer(ctx context.Context, r *record) error {
 // admit decides a stream's admission, waiting for any approval it requires.
 func (s *state) admit(ctx context.Context, p facts.Principal, req core.Request) (core.Watch, error) {
 	a := &admitted{key: p.Key, connection: req.Connection, perMessage: req.PerMessage, valid: req.Valid}
-	gr := &grant{kind: kindAdmission, admit: &requestFacts{
+	gr := &grant{kind: config.KindAdmission, admit: &requestFacts{
 		Operation:  &operation{Action: "session.admit", Effects: []string{"session"}},
 		Title:      "Open " + req.Connection,
 		Parameters: map[string]any{"host": req.Host, "port": req.Port},
 		Details:    map[string]any{"tcp": map[string]any{"host": req.Host, "port": req.Port}},
-		Context:    requestContext{Observes: initialLabel},
+		Context:    connections.RequestContext{Observes: config.InitialLabel},
 	}}
-	s.mu.Lock()
-	r, err := s.authorize(ctx, a, gr)
-	if r != nil {
-		s.settleRecord(r, err)
-	}
-	a.grants = []*grant{gr}
-	s.mu.Unlock()
+	var err error
+	s.locked(func() {
+		var r *record
+		r, err = s.authorize(ctx, a, gr)
+		if r != nil {
+			s.settleRecord(r, err)
+		}
+		a.grants = []*grant{gr}
+	})
 	if err != nil {
 		return nil, err
 	}
-	return func(ctx context.Context, end func()) (core.Gate, bool) {
-		s.mu.Lock()
-		defer s.mu.Unlock()
-		if !s.recheck(a) {
-			return nil, false
-		}
-		remove := s.admissions.Add(a, end)
-		context.AfterFunc(ctx, func() { s.mu.Lock(); remove(); s.mu.Unlock() })
-		return func(op context.Context, event facts.Event) error { return s.operation(op, ctx, a, event) }, true
+	return func(ctx context.Context, end func()) (gate core.Gate, ok bool) {
+		s.locked(func() {
+			if ok = s.recheck(a); !ok {
+				return
+			}
+			remove := s.admissions.Add(a, end)
+			context.AfterFunc(ctx, func() { s.locked(remove) })
+			gate = func(op context.Context, event facts.Event) error { return s.operation(op, ctx, a, event) }
+		})
+		return gate, ok
 	}, nil
 }
 
@@ -403,21 +419,22 @@ func (s *state) operation(ctx, stream context.Context, a *admitted, event facts.
 	}
 	ctx, cancel := netx.Bind(ctx, stream)
 	defer cancel()
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	gr := &grant{kind: kindOperation, event: event}
-	r, err := s.authorize(ctx, a, gr)
-	if r != nil {
-		if err == nil {
-			err = s.relabel(ctx, a.key, r.Next, a)
+	var err error
+	s.locked(func() {
+		gr := &grant{kind: config.KindOperation, event: event}
+		var r *record
+		r, err = s.authorize(ctx, a, gr)
+		if r != nil {
+			if err == nil {
+				err = s.relabel(ctx, a.key, r.Next, a)
+			}
+			s.settleRecord(r, err)
 		}
-		s.settleRecord(r, err)
-	}
-	if err != nil {
-		return err
-	}
-	a.grants = append(a.grants[:1], gr)
-	return nil
+		if err == nil {
+			a.grants = append(a.grants[:1], gr)
+		}
+	})
+	return err
 }
 
 // recheck reports that a's key, access and connection remain, and that its admission
@@ -473,15 +490,19 @@ func (s *state) hold(ctx context.Context, key, capability string) (context.Conte
 	if !ok {
 		return nil, nil, false
 	}
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	if !s.capable(key, capability) {
-		release()
+	var cancel context.CancelFunc
+	s.locked(func() {
+		if ok = s.capable(key, capability); !ok {
+			release()
+			return
+		}
+		ctx, cancel = context.WithCancel(ctx)
+		remove := s.admissions.Add(&admitted{key: key, capability: capability}, cancel)
+		context.AfterFunc(ctx, func() { s.locked(remove) })
+	})
+	if !ok {
 		return nil, nil, false
 	}
-	ctx, cancel := context.WithCancel(ctx)
-	remove := s.admissions.Add(&admitted{key: key, capability: capability}, cancel)
-	context.AfterFunc(ctx, func() { s.mu.Lock(); remove(); s.mu.Unlock() })
 	return ctx, func() { cancel(); release() }, true
 }
 

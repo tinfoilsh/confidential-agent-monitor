@@ -1,11 +1,12 @@
 // Command perimeter serves the Perimeter: agents reach their connections through SSH under the
 // owner's policy, and the owner manages it over the owner API. This package is the Perimeter's only
-// composition root; every product decision lives here.
+// composition root; every product decision lives here or in the packages beneath it.
 package main
 
 import (
 	"cmp"
 	"context"
+	"embed"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -26,6 +27,8 @@ import (
 	"syscall"
 
 	"github.com/coder/websocket"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/worker"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/noisetransport"
@@ -59,6 +62,9 @@ var (
 	serveWorker      = flag.Bool(serveWorkerFlag, false, "serve one connector on inherited descriptors")
 )
 
+//go:embed presets/*.json
+var shippedPresets embed.FS
+
 // The product configuration flags select, fixed before serving.
 var (
 	sshHostKey     ssh.Signer // nil: the stored host key
@@ -76,7 +82,7 @@ var (
 	presetDefaults map[string]json.RawMessage
 	adminRoutes    map[string]http.Handler // owner-only admin routes by ServeMux pattern
 	// identityAttributes validate an identity's other keys, each by its name.
-	identityAttributes = map[string]func(json.RawMessage) error{sandboxAttribute: validateBoot}
+	identityAttributes = map[string]func(json.RawMessage) error{sandbox.Attribute: sandbox.ValidateBoot}
 	// events is the stream a collector reads: one JSON line on stdout for each settled record.
 	events = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 )
@@ -149,13 +155,16 @@ func main() {
 		}
 		return
 	}
-	var err error
+	shipped, err := fs.Sub(shippedPresets, "presets")
 	development = !*production && strings.HasPrefix(*bucketURL, "file://")
-	if presets, presetDefaults, err = loadPresets(extraPresets); err != nil {
+	if err == nil {
+		presets, presetDefaults, err = config.LoadPresets(shipped, extraPresets)
+	}
+	if err != nil {
 		log.Fatal(err)
 	}
 	if basePolicy != "" {
-		if _, err := preparePolicy(context.Background(), new(Config)); err != nil {
+		if _, err := config.PreparePolicy(context.Background(), new(config.Config), basePolicy); err != nil {
 			log.Fatal(err)
 		}
 	}
@@ -171,11 +180,9 @@ func main() {
 	defer bucket.Close()
 	s := newState(ctx, bucket)
 
-	// Each bunker's bootstrap connections stay open between relayed requests, so a request
-	// does not wait for a new forwarded channel.
-	relays := &http.Transport{DisableCompression: true, MaxIdleConnsPerHost: relayIdleConns, IdleConnTimeout: relayIdleTimeout, DialContext: s.routes.DialContext}
-	adminRoutes = map[string]http.Handler{sandboxRelayRoute: jsonHandler(maxRelayBytes, func(r *http.Request, in relayInput) (any, error) {
-		return relaySandbox(r.Context(), relays, in)
+	relays := s.routes.Transport()
+	adminRoutes = map[string]http.Handler{sandbox.RelayRoute: jsonHandler(sandbox.MaxRelayBytes, func(r *http.Request, in sandbox.RelayInput) (any, error) {
+		return sandbox.Relay(r.Context(), relays, in)
 	})}
 	app := http.StripPrefix("/app/", http.FileServerFS(ui.Files))
 	if *uiDevURL != "" {
@@ -194,7 +201,7 @@ func main() {
 			log.Fatal("-owner-key-file requires a development file:// bucket without -owner-public-key")
 		}
 		o = &owner{relay: func(ctx context.Context, instance string) (*websocket.Conn, error) {
-			return dialSandboxOwner(ctx, relays, instance)
+			return sandbox.DialOwner(ctx, relays, instance)
 		}}
 		if o.key, err = parseOwnerKey(*ownerPublicKey); err != nil {
 			log.Fatal(err)

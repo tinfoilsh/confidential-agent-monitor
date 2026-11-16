@@ -1,4 +1,5 @@
-package main
+// Package sandbox serves Tinfoil sandboxes: route publishers, reserved route hosts and the bootstrap relay.
+package sandbox
 
 import (
 	"context"
@@ -26,8 +27,6 @@ import (
 	"golang.org/x/net/proxy"
 )
 
-// Tinfoil sandboxes: route publishers, reserved route hosts and the bootstrap relay.
-
 const (
 	maxUntrustedPublishers = 128
 	maxForwardAddresses    = 128
@@ -48,12 +47,12 @@ const (
 	bootstrapUser = "sandbox-v2:"
 	// fingerprintPrefix starts the SHA-256 key fingerprints that are the identity registry's key IDs.
 	fingerprintPrefix = "SHA256:"
-	sandboxAttribute  = "sandbox"
+	Attribute         = "sandbox"
 )
 
 var (
 	errRouteUnavailable  = errors.New("not connected to the Perimeter")
-	errDirectUnavailable = fmt.Errorf("route %w", sshtransport.ErrUnavailable)
+	ErrDirectUnavailable = fmt.Errorf("route %w", sshtransport.ErrUnavailable)
 	pinnedSource         = regexp.MustCompile(`@sha256:[0-9a-f]{64}$`)
 )
 
@@ -70,7 +69,7 @@ func bootstrapRoute(instance string) string {
 	return "bootstrap-" + strings.ToLower(base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(digest[:])) + routeSuffix
 }
 
-func reservedRoute(host string) bool {
+func ReservedRoute(host string) bool {
 	host = "." + strings.TrimSuffix(strings.ToLower(host), ".")
 	return strings.HasSuffix(host, identitySuffix) || strings.HasSuffix(host, routeSuffix)
 }
@@ -80,7 +79,7 @@ func routeAllowed(hosts []string, host string) bool {
 	host = strings.TrimSuffix(strings.ToLower(host), ".")
 	return slices.ContainsFunc(hosts, func(pattern string) bool {
 		ok, _ := path.Match(strings.ToLower(pattern), host)
-		return ok && reservedRoute(pattern)
+		return ok && ReservedRoute(pattern)
 	})
 }
 
@@ -97,9 +96,9 @@ type forwardPeer struct {
 	forwards *sshtransport.Forwards
 }
 
-// forwarder serves virtual TCP forwards without binding sockets on the server.
+// Forwarder serves virtual TCP forwards without binding sockets on the server.
 // Each authenticated name owns one connection; aliases must resolve uniquely.
-type forwarder struct {
+type Forwarder struct {
 	mu    sync.Mutex
 	peers map[string]*forwardPeer
 }
@@ -107,7 +106,7 @@ type forwarder struct {
 // servePublisher replaces a peer's previous connection immediately and owns its
 // registrations until disconnect. Callers supply names from authentication.
 // Only explicit ports (1-65535) are accepted; no local sockets are bound.
-func (f *forwarder) servePublisher(conn *ssh.ServerConn, channels <-chan ssh.NewChannel, requests <-chan *ssh.Request, identity publisher) {
+func (f *Forwarder) servePublisher(conn *ssh.ServerConn, channels <-chan ssh.NewChannel, requests <-chan *ssh.Request, identity publisher) {
 	defer conn.Close()
 	if identity.Name == "" {
 		return
@@ -151,7 +150,7 @@ func (f *forwarder) servePublisher(conn *ssh.ServerConn, channels <-chan ssh.New
 // DialContext opens a publisher's virtual loopback forward at address, a peer name or
 // unambiguous alias with a port. Addresses are scoped to the publisher, so peers can publish the
 // same ports. Aliases expose only port 443; key-derived names may use any port.
-func (f *forwarder) DialContext(_ context.Context, _, address string) (net.Conn, error) {
+func (f *Forwarder) DialContext(_ context.Context, _, address string) (net.Conn, error) {
 	host, service, err := net.SplitHostPort(address)
 	port, invalid := strconv.ParseUint(service, 10, 16)
 	if err != nil || invalid != nil || port == 0 {
@@ -182,15 +181,18 @@ func (f *forwarder) DialContext(_ context.Context, _, address string) (net.Conn,
 	return conn, nil
 }
 
-// routeDial dials reserved route hosts that hosts name through the route forwarder, and every other address through next.
-func (s *state) routeDial(hosts []string, next dialFunc) dialFunc {
+type dialFunc = func(ctx context.Context, network, address string) (net.Conn, error)
+
+// RouteDial dials reserved route hosts that hosts name through f, and every other address
+// through next. keysOf lists the key fingerprints an identity's name holds.
+func (f *Forwarder) RouteDial(hosts []string, keysOf func(name string) []string, next dialFunc) dialFunc {
 	return func(ctx context.Context, network, address string) (net.Conn, error) {
 		host, port, err := net.SplitHostPort(address)
-		if err != nil || !reservedRoute(host) {
+		if err != nil || !ReservedRoute(host) {
 			return next(ctx, network, address)
 		}
 		name, named := strings.CutSuffix(strings.TrimSuffix(strings.ToLower(host), "."), identitySuffix)
-		keys := s.identities.Keys(name)
+		keys := keysOf(name)
 		if !routeAllowed(hosts, host) || !named || len(keys) != 1 {
 			return nil, errRouteUnavailable
 		}
@@ -200,7 +202,7 @@ func (s *state) routeDial(hosts []string, next dialFunc) dialFunc {
 		if err != nil {
 			return nil, err
 		}
-		conn, err := s.routes.DialContext(ctx, network, server)
+		conn, err := f.DialContext(ctx, network, server)
 		if err != nil {
 			return nil, err
 		}
@@ -215,22 +217,23 @@ func (s *state) routeDial(hosts []string, next dialFunc) dialFunc {
 	}
 }
 
-// routeClaim keeps a connection from being chosen for a reserved route host its hosts do not name.
-func routeClaim(hosts []string, claim func(string, uint32) int) func(string, uint32) int {
+// RouteClaim keeps a connection from being chosen for a reserved route host its hosts do not name.
+func RouteClaim(hosts []string, claim func(string, uint32) int) func(string, uint32) int {
 	if claim == nil {
 		return nil
 	}
 	return func(host string, port uint32) int {
-		if reservedRoute(host) && !routeAllowed(hosts, host) {
+		if ReservedRoute(host) && !routeAllowed(hosts, host) {
 			return unclaimed
 		}
 		return claim(host, port)
 	}
 }
 
-// publisher returns the reverse-tunnel publisher session that user announces with key, or nil
-// for any other user. Key probes never enroll or restore an identity.
-func (s *state) publisher(user string, key ssh.PublicKey) (sshtransport.Session, error) {
+// Publisher returns the reverse-tunnel publisher session that user announces with key, or nil
+// for any other user. Key probes never enroll or restore an identity. trusted reports whether
+// a fingerprint is an identity's, or refuses the publisher.
+func (f *Forwarder) Publisher(user string, key ssh.PublicKey, trusted func(fingerprint string) (bool, error)) (sshtransport.Session, error) {
 	instance, announced := strings.CutPrefix(user, bootstrapUser)
 	if !announced {
 		return nil, nil
@@ -238,14 +241,14 @@ func (s *state) publisher(user string, key ssh.PublicKey) (sshtransport.Session,
 	if instance == "" {
 		return nil, errors.New("a publisher instance is required")
 	}
-	if _, unlocked := s.generation(); !unlocked {
-		return nil, errLocked
-	}
 	fingerprint := ssh.FingerprintSHA256(key)
 	p := publisher{Name: routeName(fingerprint), Alias: bootstrapRoute(instance)}
-	_, p.Trusted = s.identities.Lookup(fingerprint)
+	var err error
+	if p.Trusted, err = trusted(fingerprint); err != nil {
+		return nil, err
+	}
 	return func(conn *ssh.ServerConn, chans <-chan ssh.NewChannel, reqs <-chan *ssh.Request) {
-		s.routes.servePublisher(conn, chans, reqs, p)
+		f.servePublisher(conn, chans, reqs, p)
 	}, nil
 }
 
@@ -256,9 +259,9 @@ type Boot struct {
 	InstanceID string `json:"instance_id"`
 }
 
-// validateBoot checks the integration-owned portion of an identity before
+// ValidateBoot checks the integration-owned portion of an identity before
 // the host commits it. An absent boot is valid for ordinary agent identities.
-func validateBoot(raw json.RawMessage) error {
+func ValidateBoot(raw json.RawMessage) error {
 	var b Boot
 	if len(raw) == 0 {
 		return nil
@@ -276,16 +279,16 @@ func validateBoot(raw json.RawMessage) error {
 }
 
 const (
-	sandboxRelayRoute = "POST /sandboxes/relay"
-	maxRelayBytes     = 1 << 20
+	RelayRoute    = "POST /sandboxes/relay"
+	MaxRelayBytes = 1 << 20
 
 	maxRelayAttestationBytes = 32 << 20
 	relayHopTimeout          = 30 * time.Second
 	relayIdleTimeout         = time.Minute
 	relayIdleConns           = 4
-	// attestationPath serves attestation evidence for a ?nonce=, on enclaves and bunkers alike.
-	attestationPath       = "/.well-known/tinfoil-attestation"
-	sandboxAttestationURL = "http://sandbox" + attestationPath + "?nonce="
+	// AttestationPath serves attestation evidence for a ?nonce=, on enclaves and bunkers alike.
+	AttestationPath       = "/.well-known/tinfoil-attestation"
+	sandboxAttestationURL = "http://sandbox" + AttestationPath + "?nonce="
 	sandboxOwnerPath      = "/owner/ws"
 	bootstrapPort         = "443"
 )
@@ -296,8 +299,18 @@ var (
 	errRelayInput   = errors.New("a relay needs a bunker instance_id and an attestation nonce")
 )
 
-// relayInput selects a bunker boot by its measured instance.
-type relayInput struct {
+type badGateway struct{ error }
+
+func (badGateway) HTTPStatus() int { return http.StatusBadGateway }
+
+// Transport keeps each bunker's bootstrap connections open between relayed requests, so a
+// request does not wait for a new forwarded channel.
+func (f *Forwarder) Transport() *http.Transport {
+	return &http.Transport{DisableCompression: true, MaxIdleConnsPerHost: relayIdleConns, IdleConnTimeout: relayIdleTimeout, DialContext: f.DialContext}
+}
+
+// RelayInput selects a bunker boot by its measured instance.
+type RelayInput struct {
 	InstanceID string `json:"instance_id"`
 	Nonce      string `json:"nonce"`
 }
@@ -307,9 +320,9 @@ type relayReply struct {
 	Body   string `json:"body"`
 }
 
-// relaySandbox fetches one attestation over a bunker's bootstrap route and returns the response
+// Relay fetches one attestation over a bunker's bootstrap route and returns the response
 // bytes unchanged. That route is unverified and grants no agent access.
-func relaySandbox(ctx context.Context, relays http.RoundTripper, in relayInput) (relayReply, error) {
+func Relay(ctx context.Context, relays http.RoundTripper, in RelayInput) (relayReply, error) {
 	if !instancePattern.MatchString(in.InstanceID) || !hex32Pattern.MatchString(in.Nonce) {
 		return relayReply{}, errRelayInput
 	}
@@ -325,7 +338,7 @@ func relaySandbox(ctx context.Context, relays http.RoundTripper, in relayInput) 
 	defer cancel()
 	response, err := relays.RoundTrip(request.WithContext(ctx))
 	if err != nil {
-		return relayReply{}, httpError{errors.New("bunker relay: " + err.Error()), http.StatusBadGateway}
+		return relayReply{}, badGateway{errors.New("bunker relay: " + err.Error())}
 	}
 	defer response.Body.Close()
 	body, err := io.ReadAll(io.LimitReader(response.Body, maxRelayAttestationBytes+1))
@@ -333,13 +346,13 @@ func relaySandbox(ctx context.Context, relays http.RoundTripper, in relayInput) 
 		err = errors.New("the response is too large")
 	}
 	if err != nil {
-		return relayReply{}, httpError{errors.New("bunker relay: " + err.Error()), http.StatusBadGateway}
+		return relayReply{}, badGateway{errors.New("bunker relay: " + err.Error())}
 	}
 	return relayReply{Status: response.StatusCode, Body: base64.RawURLEncoding.EncodeToString(body)}, nil
 }
 
-// dialSandboxOwner opens a bunker boot's owner socket over its bootstrap route.
-func dialSandboxOwner(ctx context.Context, relays http.RoundTripper, instance string) (*websocket.Conn, error) {
+// DialOwner opens a bunker boot's owner socket over its bootstrap route.
+func DialOwner(ctx context.Context, relays http.RoundTripper, instance string) (*websocket.Conn, error) {
 	if !instancePattern.MatchString(instance) {
 		return nil, errRelayInput
 	}

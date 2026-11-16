@@ -9,10 +9,12 @@ import (
 	"maps"
 	"net/http"
 	"slices"
-	"strings"
 
 	"github.com/pmezard/go-difflib/difflib"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/connections"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/rego"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
 	"golang.org/x/crypto/ssh"
@@ -24,9 +26,9 @@ import (
 // settings is an immutable snapshot of the saved settings, published as a whole.
 // Mutable connector availability and stream authority belong to the table and admissions.
 type settings struct {
-	*Config
-	policy      *regoProgram
-	catalog     map[string]catalogEntry
+	*config.Config
+	policy      *rego.Program
+	catalog     map[string]config.CatalogEntry
 	catalogID   string
 	tls         *tls.Config
 	hostKey     ssh.Signer
@@ -37,13 +39,13 @@ type settings struct {
 // installed is a connection's parsed setup with the credentials bound to it at commit, and the
 // public placeholders agents send in their place.
 type installed struct {
-	*parsed
+	*connections.Setup
 	secrets      map[string]*credential.Value
 	placeholders map[string]string
 }
 
 type connectionPlan struct {
-	ConnectionSpec
+	config.ConnectionSpec
 	*installed
 }
 
@@ -60,9 +62,11 @@ type settingsPlan struct {
 // settingsWrite replaces the policy source, or edits it with changes, and stages
 // credentials, nil clearing one. check runs under s.mu before validation and again
 // before persistence. A saved approval is answered atomically with the durable change.
+// derive supplies changes under s.writes and s.mu, before the first check.
 type settingsWrite struct {
 	source      *string
 	changes     []format.Change
+	derive      func() ([]format.Change, error)
 	credentials format.Secrets
 	check       func() error
 	saved       *savedAnswer
@@ -82,49 +86,11 @@ var (
 
 func everyConnection(string) bool { return true }
 
-// preparePolicy compiles the standard policy, the base policy and owner policy over owner data.
-func preparePolicy(ctx context.Context, cfg *Config) (*regoProgram, error) {
-	for _, name := range protectedData {
-		if _, ok := cfg.Data[name]; ok {
-			return nil, fmt.Errorf("data.%s is reserved for the Perimeter", name)
-		}
-	}
-	data := maps.Clone(cfg.Data)
-	if data == nil {
-		data = map[string]any{}
-	}
-	data["levels"] = map[string]any{"audiences": audiences, "trusts": trusts, "effects": vocabulary}
-	data["lattices"] = cfg.Lattices
-	modules := map[string]string{standardModule: standardPolicy}
-	if basePolicy != "" {
-		path, err := regoPackage(baseModule, basePolicy)
-		if err == nil && !slices.Equal(path, basePackage) {
-			err = fmt.Errorf("the base policy must be package data.%s, not data.%s", strings.Join(basePackage, "."), strings.Join(path, "."))
-		}
-		if err != nil {
-			return nil, err
-		}
-		modules[baseModule] = basePolicy
-	}
-	for _, name := range slices.Sorted(maps.Keys(cfg.Policies)) {
-		filename := "policies/" + name
-		path, err := regoPackage(filename, cfg.Policies[name])
-		if err != nil {
-			return nil, err
-		}
-		if slices.Contains(protectedData, path[0]) {
-			return nil, fmt.Errorf("policy %s: data.%s is reserved for the Perimeter", name, path[0])
-		}
-		modules[filename] = cfg.Policies[name]
-	}
-	return prepareRego(ctx, modules, data, policyQueries)
-}
-
 // prepareSettings validates source and parses the connector setups to rebuild
 // under s.writes, without s.mu. It creates no runtime instances. Credential refreshes
 // can still commit while validation runs.
 func (s *state) prepareSettings(ctx context.Context, source string, rebuild func(connection string) bool, renamed map[string]string, credentials format.Secrets, tlsConfig *tls.Config, hostKey ssh.Signer) (*settingsPlan, error) {
-	cfg, err := loadConfig(source)
+	cfg, err := config.Load(source, presets)
 	if err != nil {
 		return nil, err
 	}
@@ -139,12 +105,12 @@ func (s *state) prepareSettings(ctx context.Context, source string, rebuild func
 			}
 		}
 	}
-	program, err := preparePolicy(ctx, cfg)
+	program, err := config.PreparePolicy(ctx, cfg, basePolicy)
 	if err != nil {
 		return nil, err
 	}
 	next := &settings{Config: cfg, policy: program, tls: tlsConfig, hostKey: hostKey, publicScope: map[string][]string{}, connections: map[string]*installed{}}
-	operations := map[string]map[string]operationSummary{}
+	operations := map[string]map[string]config.OperationSummary{}
 	plan := &settingsPlan{next: next, source: source, credentials: credentials, renamed: renamed}
 	var current map[string]*installed
 	if st := s.settings.Load(); st != nil {
@@ -157,7 +123,7 @@ func (s *state) prepareSettings(ctx context.Context, source string, rebuild func
 			return nil, err
 		}
 		next.publicScope[spec.Name] = spec.PublicScope
-		if !slices.Contains(protocols, spec.Protocol) || !development && slices.Contains(hostProtocols, spec.Protocol) {
+		if !connections.Registered(spec.Protocol, development) {
 			return nil, fmt.Errorf("service %s has unknown kind %s", spec.Name, spec.Protocol)
 		}
 		c, exists := current[spec.Name]
@@ -166,19 +132,19 @@ func (s *state) prepareSettings(ctx context.Context, source string, rebuild func
 		}
 		if exists && c.Protocol == spec.Protocol && !rebuild(spec.Name) && len(credentials[spec.Name]) == 0 {
 			next.connections[spec.Name] = c
-			operations[next.Connections[spec.Name].Preset] = c.operations
+			operations[next.Connections[spec.Name].Preset] = c.Operations
 			if status[spec.Name].State != core.Ready {
 				plan.updates = append(plan.updates, connectionPlan{spec, c})
 			}
 			continue
 		}
-		p, err := parseConnection(spec)
+		p, err := connections.Parse(spec)
 		if err != nil {
 			return nil, fmt.Errorf("service %s: %w", spec.Name, err)
 		}
-		operations[next.Connections[spec.Name].Preset] = p.operations
+		operations[next.Connections[spec.Name].Preset] = p.Operations
 		handles := map[string]*credential.Value{}
-		for _, name := range p.secretNames {
+		for _, name := range p.SecretNames {
 			handles[name] = nil
 		}
 		for name, raw := range credentials[spec.Name] {
@@ -186,11 +152,11 @@ func (s *state) prepareSettings(ctx context.Context, source string, rebuild func
 				return nil, fmt.Errorf("service %s does not use credential %s", spec.Name, name)
 			}
 		}
-		c = &installed{parsed: p, secrets: handles, placeholders: map[string]string{}}
+		c = &installed{Setup: p, secrets: handles, placeholders: map[string]string{}}
 		next.connections[spec.Name] = c
 		plan.updates = append(plan.updates, connectionPlan{spec, c})
 	}
-	if next.catalog, next.catalogID, err = catalogEntries(cfg, operations); err != nil {
+	if next.catalog, next.catalogID, err = config.CatalogEntries(cfg, presetDefaults, operations); err != nil {
 		return nil, err
 	}
 	for name := range credentials {
@@ -266,7 +232,7 @@ func (s *state) commitSettings(ctx context.Context, plan *settingsPlan, saved *s
 		s.table.Remove(name)
 	}
 	for _, update := range plan.updates {
-		s.table.Stage(update.Name, update.claim, update.perMessage, s.opener(plan.next, update.installed))
+		s.table.Stage(update.Name, update.Claim, update.PerMessage, s.opener(plan.next, update.installed))
 	}
 	previous := s.settings.Swap(plan.next)
 	if previous != nil {
@@ -293,43 +259,6 @@ func (s *state) commitSettings(ctx context.Context, plan *settingsPlan, saved *s
 	}
 	s.recheckAll()
 	return nil
-}
-
-// writeSettings is the single ordered settings path; s.writes is held, s.mu is not.
-func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
-	if policyFile != "" && (w.source != nil || len(w.changes) != 0) {
-		return errPolicyFile
-	}
-	s.mu.Lock()
-	source, current, err := s.doc.Policy, s.settings.Load(), w.checked()
-	s.mu.Unlock()
-	if err != nil {
-		return err
-	}
-	before := source
-	if w.source != nil {
-		source = *w.source
-	}
-	source, rebuild, renamed, err := current.Edit(source, w.changes)
-	if err != nil {
-		return err
-	}
-	plan, err := s.prepareSettings(ctx, source, rebuild, renamed, w.credentials, current.tls, current.hostKey)
-	if err != nil {
-		return err
-	}
-	s.mu.Lock()
-	if err = w.checked(); err == nil {
-		err = s.commitSettings(ctx, plan, w.saved)
-	}
-	if source != before || len(w.credentials) != 0 {
-		s.recordAdmin(ctx, "Change settings", map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(before, source)}, "credentials": slices.Sorted(maps.Keys(w.credentials))}, err)
-	}
-	s.mu.Unlock()
-	if err == nil {
-		s.table.Start()
-	}
-	return err
 }
 
 // reviewed checks, under s.mu, that an owner write naming a revision was made against current settings.
