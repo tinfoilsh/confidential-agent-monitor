@@ -8,6 +8,7 @@ import {
   DisclosureHeading,
   Icon,
   LazyDetails,
+  PiSpinner,
   RemoveRule,
   RenameItem,
   ResourceDisclosure,
@@ -128,9 +129,7 @@ export function Agents(props: { expanded?: string }) {
                         </strong>
                         <Show
                           when={manual()}
-                          fallback={
-                            <span class="loading-spinner" aria-hidden="true" />
-                          }
+                          fallback={<PiSpinner />}
                         >
                           <span class="collection-description">
                             Accepting adds it to this Perimeter and unlocks its

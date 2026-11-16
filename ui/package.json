@@ -20,6 +20,7 @@
     "@noble/curves": "2.4.0",
     "@noble/hashes": "2.4.0",
     "@panva/hpke-noble": "1.1.7",
+    "@phosphor-icons/core": "2.1.1",
     "@solidjs/router": "1.0.1",
     "@tinfoilsh/noise": "https://github.com/tinfoilsh/noise/releases/download/v0.1.0-rc.1/tinfoilsh-noise-0.1.0-rc.1.tgz",
     "@tinfoilsh/passkey-kit": "0.2.4",

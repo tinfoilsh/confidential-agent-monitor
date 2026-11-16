@@ -235,13 +235,13 @@ export default function Monitor(props: { session: Session }) {
                 purpose={`connect to ${bunker ?? "your bunkers"}`}
               >
                 <AuthScreen title={title()}>
-                  <AuthCard icon={<Icon name="rules" />}>
+                  <AuthCard>
                     <Show when={error()}>
                       <p role="alert">{error()}</p>
                     </Show>
                     <Switch>
                       <Match when={inventory().loading && !inventory().value}>
-                        <Loading label="Loading your Perimeter…" />
+                        <Loading stacked label="Loading your Perimeter…" />
                       </Match>
                       <Match when={inventory().error}>
                         <p role="alert">
@@ -265,7 +265,10 @@ export default function Monitor(props: { session: Session }) {
                         </p>
                       </Match>
                       <Match when={booting()}>
-                        <Loading label="Your Perimeter will open automatically when it is ready." />
+                        <Loading
+                          stacked
+                          label="Your Perimeter will open automatically when it is ready."
+                        />
                       </Match>
                       <Match when={row() && row()!.status !== "running"}>
                         <p>
@@ -284,7 +287,10 @@ export default function Monitor(props: { session: Session }) {
                             row()?.status === "running")
                         }
                       >
-                        <Loading label="Verifying and connecting to your bunker…" />
+                        <Loading
+                          stacked
+                          label="Verifying and connecting to your bunker…"
+                        />
                         <Show when={busy()}>
                           <button
                             class="link"

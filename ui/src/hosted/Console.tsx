@@ -8,7 +8,13 @@ import {
   createSignal,
   on,
 } from "solid-js";
-import { AuthCard, AuthCardSkeleton, AuthScreen, Icon } from "../components";
+import {
+  AuthCard,
+  AuthCardSkeleton,
+  AuthScreen,
+  Icon,
+  PiSpinner,
+} from "../components";
 import {
   SSH_ED25519,
   fromBase64,
@@ -395,7 +401,9 @@ function Inventory(props: { session: Session }) {
               }
             >
               <span class="start-status" aria-hidden="true">
-                <span class={busy() ? "loading-spinner" : "start-status-dot"} />
+                <Show when={busy()} fallback={<span class="start-status-dot" />}>
+                  <PiSpinner />
+                </Show>
               </span>
               <div>
                 <h2>{monitor.name}</h2>
