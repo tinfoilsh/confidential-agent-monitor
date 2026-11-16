@@ -192,9 +192,7 @@ export function Agents(props: { expanded?: string }) {
                       >
                         {() => (
                           <div class="agent-inline">
-                            <Show when={kind !== "devices"}>
-                              <AgentAccess name={name} />
-                            </Show>
+                            <AgentAccess name={name} />
                             <AgentSettings name={name} />
                           </div>
                         )}
