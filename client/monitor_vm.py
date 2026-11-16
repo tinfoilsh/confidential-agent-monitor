@@ -1020,7 +1020,7 @@ def setup_launch(args):
                 raise Error(f"invalid service access {item!r}; use an existing service and read, ask or allow")
             access[name] = {"level": level}
         if args.tinfoil:
-            pair_device(owner, view, endpoint, root)
+            pair_computer(owner, view, endpoint, root)
         if key:
             private(root / "owner.key", key.encode())
         profile = {"version": 3, "id": uuid.uuid4().hex, **source,
@@ -1085,13 +1085,14 @@ def unlock(owner, root):
     return view
 
 
-def pair_device(owner, view, endpoint, directory):
-    """Trust directory/id as this computer and write directory/ssh_config to reach the Perimeter with it."""
-    # Named as the web app names a trusted device.
+def pair_computer(owner, view, endpoint, directory):
+    """Add directory/id as a bunker for this computer and write directory/ssh_config to reach the Perimeter with it."""
     public = " ".join(keypair(directory / "id").decode().split()[:2])
-    device = "device-" + hashlib.sha256(public.encode()).hexdigest()[:16]
-    if device not in (view["config"].get("identities") or {}):
-        owner.edit([{"path": ["identities", device], "value": {"key": public, "routes": True, "connections": {}}}])
+    known = {" ".join(identity["key"].split()[:2]) for identity in (view["config"].get("identities") or {}).values()}
+    if public not in known:
+        label = re.sub(r"[^a-z0-9]+", "-", socket.gethostname().split(".")[0].lower())[:40].strip("-") or "local"
+        name = f"{label}-{hashlib.sha256(public.encode()).hexdigest()[:8]}"
+        owner.edit([{"path": ["identities", name], "value": {"key": public, "connections": {}}}])
     host, port = endpoint.rsplit(":", 1)
     private(directory / "known_hosts", f"perimeter,*.perimeter,[{host}]:{port} {view['host_key'].strip()}\n".encode())
     private(directory / "ssh_config", f"""Host perimeter

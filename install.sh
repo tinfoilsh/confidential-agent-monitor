@@ -194,7 +194,7 @@ while True:
         if time.monotonic() > deadline:
             sys.exit(f"install: the Perimeter did not start at {owner_url}; check its service log")
         time.sleep(POLL_SECONDS)
-vm.pair_device(owner, view, listen, state)
+vm.pair_computer(owner, view, listen, state)
 config = Path.home() / ".config/perimeter/client.json"
 profiles = json.loads(config.read_text()).get("launch_profiles", {}) if config.exists() else {}
 if "default" not in profiles:

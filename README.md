@@ -103,8 +103,8 @@ See `perimeter --help` for stopping, exporting, and deleting bunkers.
 For a Perimeter hosted by Tinfoil, run `perimeter setup --tinfoil NAME` instead.
 Launching and destroying a bunker then run `tinfoil perimeter open NAME` for the
 owner steps, so they need the [Tinfoil CLI](https://github.com/tinfoilsh/tinfoil-cli/releases)
-signed in, and no owner key is saved with the profile. Setup also pairs this computer
-as a trusted device; for the default profile, commands such as `perimeter policy show`
+signed in, and no owner key is saved with the profile. Setup also adds this computer
+as a bunker; for the default profile, commands such as `perimeter policy show`
 then reach that Perimeter instead of the [daemon](#run-a-perimeter-locally).
 
 `dev/vm-artifacts DIR [ARCH...]` builds the image for x86_64 and aarch64 with
@@ -132,7 +132,7 @@ perimeter launch shell --name a           # then: curl http://b.sandbox:8080
 
 This builds the checkout with Go and Bun and runs it as a user service on
 `127.0.0.1:8081`, with its state and owner key in `~/.local/share/perimeter/server`.
-It also installs the CLI, pairs this computer as a trusted device and sets up
+It also installs the CLI, adds this computer as a bunker and sets up
 bunker launch. Sign in to [the UI](http://127.0.0.1:8081/app/) with the owner
 key. Run it from another checkout to switch the daemon to that code; the previous
 store is kept in `store.prev`. Logs are in `journalctl --user -u perimeter` on
