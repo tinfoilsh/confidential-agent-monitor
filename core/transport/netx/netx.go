@@ -220,6 +220,9 @@ func (c datagrams) Read(p []byte) (int, error) {
 	}
 	n := int(binary.BigEndian.Uint16(length[:]))
 	if n > len(p) {
+		if _, err := io.CopyN(io.Discard, c.Conn, int64(n)); err != nil {
+			return 0, err
+		}
 		return 0, io.ErrShortBuffer
 	}
 	return io.ReadFull(c.Conn, p[:n])
@@ -245,10 +248,10 @@ func copyDatagrams(dst io.Writer, src io.Reader) (int64, error) {
 	datagram := make([]byte, maxFrame)
 	for {
 		n, err := src.Read(datagram)
-		if errors.Is(err, io.EOF) {
+		if n == 0 && errors.Is(err, io.EOF) {
 			return copied, nil
 		}
-		if err == nil {
+		if err == nil || errors.Is(err, io.EOF) {
 			_, err = dst.Write(datagram[:n])
 		}
 		if err != nil {
