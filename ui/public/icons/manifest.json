@@ -93,6 +93,9 @@
   "aws_iam": {
     "src": "aws.svg"
   },
+  "aws": {
+    "src": "aws.svg"
+  },
   "aws_lambda": {
     "src": "aws.svg"
   },
@@ -397,6 +400,9 @@
     "src": "google.svg"
   },
   "google_cloud_natural_language": {
+    "src": "google.svg"
+  },
+  "google_cloud": {
     "src": "google.svg"
   },
   "google_cloud_storage": {

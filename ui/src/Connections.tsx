@@ -36,8 +36,10 @@ import { NeedsApproval, SavedRules, ToolReview } from "./Approvals";
 
 const inCatalog =
   (search: string, group: { title: string }) =>
-  (p: { name: string; title: string }) =>
-    `${p.name} ${p.title} ${group.title}`.toLowerCase().includes(search);
+  (p: { name: string; title: string; aliases: string }) =>
+    `${p.name} ${p.title} ${group.title} ${p.aliases}`
+      .toLowerCase()
+      .includes(search);
 
 export function DeviceSignInDialog(props: {
   attempt: (owner.DeviceSignIn & { title: string; preset: string }) | undefined;
@@ -708,7 +710,7 @@ export function AddConnection(props: { preset: string }) {
         <Show
           when={props.preset === "custom_api"}
           fallback={
-            <For each={fields}>
+            <For each={fields.filter((f) => !f.compose)}>
               {(field) => {
                 const id = createUniqueId();
                 return (
@@ -727,7 +729,7 @@ export function AddConnection(props: { preset: string }) {
                         value={values[field.key]}
                         onInput={(value) => setValues(field.key, value)}
                         help={
-                          field.secret
+                          field.secret && !field.optional
                             ? "Leave blank to configure later."
                             : undefined
                         }
@@ -850,6 +852,7 @@ function ConnectionForm(props: { name: string; setup?: JSX.Element }) {
           values: Object.fromEntries(
             fields.map((f) => [f.key, owner.readField(f, values[f.key])]),
           ),
+          client: entered,
           credentials: Object.fromEntries(
             [...credentials().values()].map((field) => [
               field.key,
@@ -889,7 +892,14 @@ function ConnectionForm(props: { name: string; setup?: JSX.Element }) {
                 void save();
               }}
               onFocusOut={(event) => {
+                // A credential's inputs save together once focus leaves them.
+                const credential = (event.target as Element).closest(
+                  ".credential",
+                );
+                if (credential?.contains(event.relatedTarget as Node | null))
+                  return;
                 if (
+                  credential ||
                   event.target instanceof HTMLInputElement ||
                   event.target instanceof HTMLTextAreaElement ||
                   event.target instanceof HTMLSelectElement
@@ -933,7 +943,13 @@ function ConnectionForm(props: { name: string; setup?: JSX.Element }) {
                     </Show>
                   );
                   const entry = () => (
-                    <div class="credential">
+                    <div
+                      class="credential"
+                      onFocusOut={(event) => {
+                        if (field().compose && !document.hasFocus())
+                          event.stopPropagation();
+                      }}
+                    >
                       <Show when={field().oauth}>
                         <For each={clientFields}>
                           {(c) => (
@@ -971,16 +987,31 @@ function ConnectionForm(props: { name: string; setup?: JSX.Element }) {
                           </div>
                         }
                       >
-                        <Field
-                          field={{
-                            ...field(),
-                            hint: field().stored
-                              ? "Leave blank to keep the current credential"
-                              : field().hint,
-                          }}
-                          value={drafts[key] ?? ""}
-                          onInput={(text) => setDrafts(key, text)}
-                        />
+                        <Show
+                          when={field().compose}
+                          fallback={
+                            <Field
+                              field={{
+                                ...field(),
+                                hint: field().stored
+                                  ? "Leave blank to keep the current credential"
+                                  : field().hint,
+                              }}
+                              value={drafts[key] ?? ""}
+                              onInput={(text) => setDrafts(key, text)}
+                            />
+                          }
+                        >
+                          <For each={clientFields}>
+                            {(c) => (
+                              <Field
+                                field={c}
+                                value={drafts[c.key] ?? ""}
+                                onInput={(text) => setDrafts(c.key, text)}
+                              />
+                            )}
+                          </For>
+                        </Show>
                         <div class="credential-header">
                           <p class="muted field-help">{status()}</p>
                           <div class="form-actions">{signIn()}</div>

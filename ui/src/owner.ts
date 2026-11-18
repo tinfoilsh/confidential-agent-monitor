@@ -81,6 +81,8 @@ export type PresetField = {
   paths?: string[][];
   credential?: boolean;
   oauth?: Json;
+  compose?: Json;
+  optional?: boolean;
 };
 export type PresetAction = { title: string; effects?: string[] };
 export type Preset = {
@@ -1225,6 +1227,20 @@ export function readField(f: PresetField, raw: string): Json {
   };
   return f.list ? listItems(v).map(read) : read(v);
 }
+// A composed credential is entered whole: any input enters it, and then every input not marked optional is required.
+const composed = (
+  template: Json,
+  inputs: PresetField[],
+  values: { [key: string]: Json | undefined },
+) => {
+  if (!inputs.some((c) => values[c.key])) return null;
+  const blank = inputs.find((c) => !c.optional && !values[c.key]);
+  if (blank) throw new Error(`Enter a value for ${blank.label}.`);
+  return filled(
+    template,
+    Object.fromEntries(inputs.map((c) => [c.key, values[c.key] ?? ""])),
+  );
+};
 
 // A grant template fills from the connection's plain settings and, when given, its client values; blank ones take their defaults.
 export function grantTemplate(
@@ -1328,6 +1344,14 @@ export function catalog(view: View) {
       replacement && view.presets[replacement] ? replacement : c.preset;
     counts.set(preset, (counts.get(preset) ?? 0) + 1);
   }
+  // A retired preset's name and title still find its replacement.
+  const aliases = new Map<string, string>();
+  for (const [name, preset] of Object.entries(view.presets))
+    if (preset.replaced_by)
+      aliases.set(
+        preset.replaced_by,
+        `${aliases.get(preset.replaced_by) ?? ""} ${name} ${preset.title}`,
+      );
   const groups = new Map(
     Object.keys(CATALOG_GROUPS).map((g) => [g, [] as CatalogEntry[]]),
   );
@@ -1338,9 +1362,12 @@ export function catalog(view: View) {
     if (preset.replaced_by && view.presets[preset.replaced_by]) continue;
     const group = preset.group ?? "api";
     if (!groups.has(group)) groups.set(group, []);
-    groups
-      .get(group)!
-      .push({ name, title: preset.title, connections: counts.get(name) ?? 0 });
+    groups.get(group)!.push({
+      name,
+      title: preset.title,
+      connections: counts.get(name) ?? 0,
+      aliases: aliases.get(name) ?? "",
+    });
   }
   const common: CatalogEntry[] = [];
   for (const entries of groups.values())
@@ -1372,7 +1399,12 @@ export function catalog(view: View) {
   ];
 }
 
-type CatalogEntry = { name: string; title: string; connections: number };
+type CatalogEntry = {
+  name: string;
+  title: string;
+  connections: number;
+  aliases: string;
+};
 type Slot = { value: string } & { [key: string]: string | undefined };
 
 export function apiSettings(view: View, name?: string): ApiSettings {
@@ -1885,9 +1917,15 @@ export const edits = {
                 monitor_host_id: view.host_id,
               }),
             }
-          : f.secret && values[f.key] === ""
-            ? null
-            : values[f.key];
+          : f.compose
+            ? composed(
+                f.compose,
+                fields.filter((c) => !paths(c).length),
+                values,
+              )
+            : f.secret && values[f.key] === ""
+              ? null
+              : values[f.key];
       if (!f.credential)
         for (const path of paths(f)) putPath(connection, path, value, setup);
       else if (value !== null) credentials[f.key] = value;
@@ -1941,10 +1979,12 @@ export const edits = {
     {
       api,
       values = {},
+      client = {},
       credentials = {},
     }: {
       api?: Partial<ApiSettings>;
       values?: { [key: string]: Json };
+      client?: { [key: string]: Json | undefined };
       credentials?: {
         [key: string]: { mode: "keep" | "replace"; value?: Json };
       };
@@ -1972,7 +2012,10 @@ export const edits = {
         for (const path of paths(f)) set(path, values[f.key]);
     for (const f of credentialFields(view, name)) {
       const { mode, value } = credentials[f.key] ?? {};
-      if (mode === "replace") {
+      const whole =
+        f.compose && composed(f.compose, clientFields(view, name), client);
+      if (whole) stored[f.key] = whole;
+      else if (mode === "replace") {
         if (value === "")
           throw new Error(
             `Enter a value for ${f.label}, or cancel the replacement.`,
