@@ -1,32 +1,21 @@
 package format
 
 import (
-	"bytes"
-	"crypto/aes"
-	"crypto/cipher"
-	"crypto/rand"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"maps"
 
-	"golang.org/x/crypto/argon2"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/sealedlog"
+	"gocloud.dev/blob"
+	"gocloud.dev/gcerrors"
 )
 
-const (
-	StateVersion = 3
-	MinKeyBytes  = 16
-	MaxKeyBytes  = 4096
-	KeyBytes     = 32
+const StateVersion = 4
 
-	saltBytes    = 32
-	sealOverhead = 12 + 16
-	argonTime    = 3
-	argonMemory  = 256 << 10
-	argonThreads = 4
-)
-
-var ErrKey = errors.New("invalid owner secret")
+const documentObject = "monitor.enc"
 
 type Keys struct {
 	HostKey string `json:"host_key"`
@@ -41,20 +30,24 @@ type Label struct {
 }
 
 type Document struct {
-	Version     int              `json:"version"`
-	Generation  uint64           `json:"generation"`
-	Revision    uint64           `json:"revision"`
-	Keys        Keys             `json:"keys"`
-	Labels      map[string]Label `json:"labels"`
-	Policy      string           `json:"policy"`
-	Credentials Secrets          `json:"credentials,omitempty"`
-	Enrolled    map[string]bool  `json:"enrolled,omitempty"`
+	Version     int                        `json:"version"`
+	Generation  uint64                     `json:"generation"`
+	Revision    uint64                     `json:"revision"`
+	Keys        Keys                       `json:"keys"`
+	Labels      map[string]Label           `json:"labels"`
+	Policy      string                     `json:"policy"`
+	Credentials Secrets                    `json:"credentials,omitempty"`
+	Enrolled    map[string]bool            `json:"enrolled,omitempty"`
+	Pending     map[string]json.RawMessage `json:"pending,omitempty"`
 }
 
 func DecodeDocument(plain []byte, v1Presets map[string]bool) (Document, error) {
 	plain, err := upgrade(plain, v1Presets)
 	if err == nil {
 		plain, err = upgradeV2(plain)
+	}
+	if err == nil {
+		plain, err = upgradeV3(plain)
 	}
 	if err != nil {
 		return Document{}, fmt.Errorf("stored state: %w", err)
@@ -69,81 +62,94 @@ func DecodeDocument(plain []byte, v1Presets map[string]bool) (Document, error) {
 	return d, nil
 }
 
-func EncodeDocument(d Document) ([]byte, error) {
-	d.Version = StateVersion
-	return json.Marshal(d)
-}
-
-type Sealer struct {
-	aead   cipher.AEAD
-	header []byte
-}
-
-func NewSealer(secret []byte) (Sealer, error) {
-	if len(secret) == KeyBytes {
-		return sealer(secret, nil)
+func Load(ctx context.Context, bucket *blob.Bucket, key []byte, minimum uint64, v1Presets map[string]bool) (Document, sealedlog.Sealer, bool, error) {
+	var doc Document
+	if len(key) < sealedlog.MinKeyBytes || len(key) > sealedlog.MaxKeyBytes {
+		return doc, sealedlog.Sealer{}, false, sealedlog.ErrKey
 	}
-	header := make([]byte, len(stateMagic)+saltBytes)
-	copy(header, stateMagic)
-	if _, err := rand.Read(header[len(stateMagic):]); err != nil {
-		return Sealer{}, err
-	}
-	return sealer(secret, header)
-}
-
-func OpenState(secret, raw []byte) (Sealer, []byte, error) {
-	var header []byte
-	if bytes.HasPrefix(raw, stateMagic) {
-		if len(raw) < len(stateMagic)+saltBytes+sealOverhead {
-			return Sealer{}, nil, ErrKey
+	raw, err := bucket.ReadAll(ctx, documentObject)
+	missing := false
+	if err != nil {
+		if missing, err = documentMissing(ctx, bucket, err); err != nil {
+			return doc, sealedlog.Sealer{}, false, err
 		}
-		header = bytes.Clone(raw[:len(stateMagic)+saltBytes])
 	}
-	s, err := sealer(secret, header)
-	if err != nil {
-		return s, nil, err
+	if missing && minimum != 0 {
+		return doc, sealedlog.Sealer{}, false, fmt.Errorf("the Perimeter has no saved state, but generation %d was saved", minimum)
 	}
-	plain, err := s.aead.Open(nil, nil, raw[len(s.header):], s.header)
-	if err != nil {
-		return Sealer{}, nil, ErrKey
-	}
-	return s, plain, nil
-}
-
-func sealer(secret, header []byte) (Sealer, error) {
-	if len(secret) < MinKeyBytes || len(secret) > MaxKeyBytes {
-		return Sealer{}, ErrKey
-	}
-	var key []byte
-	if header != nil {
-		key = argon2.IDKey(secret, header[len(stateMagic):], argonTime, argonMemory, argonThreads, KeyBytes)
-	} else if len(secret) == KeyBytes {
-		key = bytes.Clone(secret)
+	var sealer sealedlog.Sealer
+	if missing {
+		sealer, err = sealedlog.NewSealer(key)
+		doc = Document{Version: StateVersion, Labels: map[string]Label{}}
 	} else {
-		return Sealer{}, ErrKey
+		var plain []byte
+		if sealer, plain, err = sealedlog.OpenState(key, raw); err == nil {
+			doc, err = DecodeDocument(plain, v1Presets)
+		}
 	}
-	block, err := aes.NewCipher(key)
-	clear(key)
+	if err == nil && doc.Generation < minimum {
+		err = fmt.Errorf("stored generation %d is older than %d", doc.Generation, minimum)
+	}
+	return doc, sealer, missing, err
+}
+
+func Save(ctx context.Context, bucket *blob.Bucket, sealer sealedlog.Sealer, d Document) error {
+	d.Version = StateVersion
+	plain, err := json.Marshal(d)
 	if err != nil {
-		return Sealer{}, err
+		return err
 	}
-	aead, err := cipher.NewGCMWithRandomNonce(block)
-	if err != nil {
-		return Sealer{}, err
+	return bucket.WriteAll(ctx, documentObject, sealer.SealState(plain), nil)
+}
+
+func documentMissing(ctx context.Context, bucket *blob.Bucket, err error) (bool, error) {
+	switch gcerrors.Code(err) {
+	case gcerrors.NotFound:
+		return true, nil
+	case gcerrors.PermissionDenied:
+		items := bucket.List(&blob.ListOptions{Prefix: documentObject})
+		for {
+			item, listErr := items.Next(ctx)
+			if errors.Is(listErr, io.EOF) {
+				return true, nil
+			}
+			if listErr != nil {
+				return false, errors.Join(err, listErr)
+			}
+			if item.Key == documentObject {
+				return false, err
+			}
+		}
 	}
-	return Sealer{aead, header}, nil
+	return false, err
 }
 
-func (s Sealer) SealState(plain []byte) []byte {
-	return s.aead.Seal(bytes.Clone(s.header), nil, plain, s.header)
+func Exists(ctx context.Context, bucket *blob.Bucket) (bool, error) {
+	_, err := bucket.Attributes(ctx, documentObject)
+	if err == nil {
+		return true, nil
+	}
+	missing, err := documentMissing(ctx, bucket, err)
+	return !missing, err
 }
 
-func (s Sealer) Seal(name string, plain []byte) []byte {
-	return s.aead.Seal(nil, nil, plain, []byte(name))
-}
-
-func (s Sealer) Open(name string, sealed []byte) ([]byte, error) {
-	return s.aead.Open(nil, nil, sealed, []byte(name))
+func Storage(bucket *blob.Bucket) sealedlog.Storage {
+	return sealedlog.Storage{Read: bucket.ReadAll,
+		Write: func(ctx context.Context, key string, data []byte) error { return bucket.WriteAll(ctx, key, data, nil) },
+		List: func(ctx context.Context, prefix, delimiter string) ([]string, error) {
+			keys := []string{}
+			items := bucket.List(&blob.ListOptions{Prefix: prefix, Delimiter: delimiter})
+			for {
+				item, err := items.Next(ctx)
+				if errors.Is(err, io.EOF) {
+					return keys, nil
+				}
+				if err != nil {
+					return nil, err
+				}
+				keys = append(keys, item.Key)
+			}
+		}}
 }
 
 type SecretID struct{ Connection, Name string }
@@ -173,5 +179,3 @@ func (s Secrets) Clone() Secrets {
 	}
 	return out
 }
-
-var stateMagic = []byte("TINFOIL-MONITOR-STATE\x00\x01")

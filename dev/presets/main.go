@@ -15,7 +15,7 @@ const (
 	sourcesPath = "sources.json"
 	lockPath    = "sources.lock.json"
 	cacheDir    = ".cache"
-	shippedDir  = "../../cmd/perimeter/presets"
+	shippedDir  = "../../connector/catalog/presets"
 )
 
 var camel = regexp.MustCompile(`([a-z0-9])([A-Z])`)
@@ -35,7 +35,7 @@ func load[T any](path string) (T, error) {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Fprintln(os.Stderr, "usage: presets update|fetch|group|generate|check [service...]; group regroups shipped operations; update --all refreshes every source; check --reviewed requires complete review")
+		fmt.Fprintln(os.Stderr, "usage: presets update|fetch|group|generate|check|accept [service...]; group regroups shipped operations; accept writes a checked candidate over its shipped preset; update --all refreshes every source; check --reviewed requires complete review")
 		os.Exit(2)
 	}
 	var err error
@@ -82,6 +82,12 @@ func main() {
 		err = generate(os.Args[2:])
 	case "group":
 		err = groupShipped(os.Args[2:])
+	case "accept":
+		if len(os.Args) < 3 {
+			err = fmt.Errorf("accept needs at least one source")
+			break
+		}
+		err = accept(os.Args[2:])
 	case "check":
 		var names []string
 		var reviewed bool

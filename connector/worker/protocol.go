@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
@@ -56,11 +57,12 @@ const (
 	upgradeProtocol = "monitor-connector"
 )
 
+var brokerNetworks = []string{"tcp", "tcp4", "tcp6", "udp", "udp4", "udp6"}
+
 type streamInfo struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	Host string `json:"host"`
-	Port uint32 `json:"port"`
+	ID     string           `json:"id"`
+	Name   string           `json:"name"`
+	Target connector.Target `json:"target"`
 }
 
 func readBody(r io.Reader) ([]byte, error) {

@@ -21,8 +21,9 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/coder/websocket"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
 
 const (
@@ -37,6 +38,8 @@ const (
 	bodyGraphQL = "graphql"
 
 	HostChars = "abcdefghijklmnopqrstuvwxyz0123456789.-:"
+
+	SignInAction = "session.sign-in"
 )
 
 var (
@@ -53,28 +56,23 @@ type Setup struct {
 
 type Handler struct {
 	*Setup
-	Transport     http.RoundTripper
-	TLS           func(ctx context.Context, host string) *tls.Config
-	ServeHTTP     func(ctx context.Context, conn net.Conn, server *http.Server) error
-	Placeholder   func(name string) string
-	Secret        func(ctx context.Context, name string) (string, error)
-	Prepare       PrepareRequest
-	CheckRedirect func(req *http.Request, via []*http.Request) error
-	MaxBody       int64
-
-	Accept            websocket.AcceptOptions
-	UpstreamReadLimit int64
+	Transport   http.RoundTripper
+	TLS         func(ctx context.Context, host string) *tls.Config
+	Placeholder func(name string) string
+	Secret      func(ctx context.Context, name string) (string, error)
+	Prepare     PrepareRequest
+	MaxBody     int64
 }
 
 type PrepareRequest func(*http.Request, *HTTPFacts) (http.RoundTripper, error)
 
-func (h Handler) Serve(ctx context.Context, conn net.Conn, _, host string, port uint32, gate func(context.Context, facts.Event) error) {
+func (h Handler) Serve(ctx context.Context, conn net.Conn, _ string, target connector.Target, gate connector.Gate) {
 	c := conn
-	if port != httpPort {
-		c = tls.Server(conn, h.TLS(ctx, host))
+	if target.Port != httpPort {
+		c = tls.Server(conn, h.TLS(ctx, target.Host))
 	}
-	h.ServeHTTP(ctx, c, &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		request := h.parseRequest(r, host, port)
+	netx.ServeConn(ctx, c, &http.Server{Handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		request := h.parseRequest(r, target.Host, target.Port)
 		upstreamTransport := h.Transport
 		if h.Prepare != nil && request.Invalid == "" {
 			prepared := r.Clone(r.Context())
@@ -95,6 +93,10 @@ func (h Handler) Serve(ctx context.Context, conn net.Conn, _, host string, port 
 		if err := gate(r.Context(), facts.Capture(request.Describe(h.Setup))); err != nil {
 			log.Printf("refused %s %s%s: %v", r.Method, r.Host, r.URL.Path, err)
 			http.Error(w, err.Error(), http.StatusForbidden)
+			return
+		}
+		if request.answer != nil {
+			request.answer(w, r)
 			return
 		}
 		upstream := placing{upstreamTransport, request.place, h.Secret}
@@ -171,7 +173,7 @@ func (request *Request) capture(h *Handler, r *http.Request) error {
 		return err
 	}
 	switch {
-	case h.Claim(host, port) < 0:
+	case h.Claim(connector.Target{Host: host, Port: port}) < 0:
 		return fmt.Errorf("this service does not serve %s:%d", host, port)
 	case !slices.Contains(methods, r.Method):
 		return fmt.Errorf("method %s is refused", r.Method)
@@ -214,6 +216,7 @@ func (request *Request) capture(h *Handler, r *http.Request) error {
 	if err != nil {
 		return err
 	}
+	request.answer = h.slots.Answer(r, origin, layer.Form, h.Placeholder)
 	for name, values := range r.Header {
 		if len(values) == 1 && strings.HasPrefix(values[0], "{") {
 			if v, err := decodeJSON([]byte(values[0])); err == nil {
@@ -224,7 +227,7 @@ func (request *Request) capture(h *Handler, r *http.Request) error {
 			}
 		}
 	}
-	request.GraphQL = graphql(layer.Body, query)
+	request.GraphQL, request.gqlErr = graphql(layer.Body, query)
 	return nil
 }
 

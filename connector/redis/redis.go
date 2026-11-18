@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/tidwall/redcon"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
@@ -59,8 +60,8 @@ func Parse(config json.RawMessage) (*Redis, error) {
 
 func (r *Redis) Hosts() []string { return []string{r.url.Hostname()} }
 
-func (r *Redis) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
-	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+func (r *Redis) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error)) connector.Serve {
+	return func(ctx context.Context, s net.Conn, _ string, _ connector.Target, gate connector.Gate) {
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 		u := r.url

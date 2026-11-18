@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"maps"
 	"slices"
+
+	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
 )
 
 const version2 = 2
@@ -28,7 +30,7 @@ func upgrade(plain []byte, presets map[string]bool) ([]byte, error) {
 	if v1.Version >= version2 {
 		return plain, nil
 	}
-	source, err := ReadTOML(v1.Policy)
+	source, err := tomledit.Read(v1.Policy)
 	if err != nil {
 		return nil, err
 	}
@@ -80,42 +82,42 @@ func upgrade(plain []byte, presets map[string]bool) ([]byte, error) {
 			}
 		}
 	}
-	var changes []Change
+	var changes []tomledit.Change
 	if accounts != nil {
-		changes = append(changes, Change{Path: []string{"accounts"}, Delete: true})
+		changes = append(changes, tomledit.Change{Path: []string{"accounts"}, Delete: true})
 	}
 	for _, name := range slices.Sorted(maps.Keys(connections)) {
-		changes = append(changes, Change{Path: []string{"connections", name}, Value: connections[name]})
+		changes = append(changes, tomledit.Change{Path: []string{"connections", name}, Value: connections[name]})
 	}
 	regrant := func(path []string, granted map[string]any) {
 		for _, account := range slices.Sorted(maps.Keys(granted)) {
 			for _, target := range targets[account] {
-				changes = append(changes, Change{Path: append(slices.Clone(path), target), Value: granted[account]})
+				changes = append(changes, tomledit.Change{Path: append(slices.Clone(path), target), Value: granted[account]})
 			}
 		}
 	}
 	if defaults, ok := source["default_access"].(map[string]any); ok {
-		changes = append(changes, Change{Path: []string{"default_access"}, Delete: true})
+		changes = append(changes, tomledit.Change{Path: []string{"default_access"}, Delete: true})
 		regrant([]string{"default_access"}, defaults)
 	}
 	identities, _ := source["identities"].(map[string]any)
 	for _, identity := range slices.Sorted(maps.Keys(identities)) {
 		id, _ := identities[identity].(map[string]any)
 		if granted, ok := id["accounts"].(map[string]any); ok {
-			changes = append(changes, Change{Path: []string{"identities", identity, "accounts"}, Delete: true})
+			changes = append(changes, tomledit.Change{Path: []string{"identities", identity, "accounts"}, Delete: true})
 			regrant([]string{"identities", identity, "connections"}, granted)
 		}
 		rules, _ := id["rules"].(map[string]any)
 		for _, rule := range slices.Sorted(maps.Keys(rules)) {
 			if r, _ := rules[rule].(map[string]any); r["account"] != nil {
 				path := []string{"identities", identity, "rules", rule}
-				changes = append(changes, Change{Path: append(path, "account"), Delete: true},
-					Change{Path: append(slices.Clone(path), "connection"), Value: r["account"]})
+				changes = append(changes, tomledit.Change{Path: append(path, "account"), Delete: true},
+					tomledit.Change{Path: append(slices.Clone(path), "connection"), Value: r["account"]})
 			}
 		}
 	}
 	if len(changes) != 0 {
-		if v1.Policy, err = EditTOML(v1.Policy, changes); err != nil {
+		if v1.Policy, err = tomledit.Edit(v1.Policy, changes); err != nil {
 			return nil, err
 		}
 	}

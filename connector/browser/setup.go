@@ -5,7 +5,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 )
 
 func Open(ctx context.Context, browser Browser) (*Session, error) {
@@ -30,7 +30,7 @@ func (b *Session) Close() error {
 	return b.close()
 }
 
-func (b *Session) Serve(ctx context.Context, conn net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+func (b *Session) Serve(ctx context.Context, conn net.Conn, _ string, _ connector.Target, gate connector.Gate) {
 	b.life.RLock()
 	defer b.life.RUnlock()
 	b.serve(ctx, conn, gate)

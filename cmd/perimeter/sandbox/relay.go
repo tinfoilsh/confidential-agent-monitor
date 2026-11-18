@@ -12,6 +12,8 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
+	"github.com/flynn/noise"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/tinfoil"
 )
 
 const (
@@ -22,8 +24,7 @@ const (
 	relayHopTimeout          = 30 * time.Second
 	relayIdleTimeout         = time.Minute
 	relayIdleConns           = 4
-	AttestationPath          = "/.well-known/tinfoil-attestation"
-	sandboxAttestationURL    = "http://sandbox" + AttestationPath + "?nonce="
+	sandboxAttestationURL    = "http://sandbox" + tinfoil.AttestationPath + "?nonce="
 	sandboxOwnerPath         = "/owner/ws"
 )
 
@@ -78,11 +79,42 @@ func Relay(ctx context.Context, relays http.RoundTripper, in RelayInput) (relayR
 	return relayReply{Status: response.StatusCode, Body: base64.RawURLEncoding.EncodeToString(body)}, nil
 }
 
-func DialOwner(ctx context.Context, relays http.RoundTripper, instance string) (*websocket.Conn, error) {
+func dialOwner(ctx context.Context, relays http.RoundTripper, instance string) (*websocket.Conn, error) {
 	if !instancePattern.MatchString(instance) {
 		return nil, errRelayInput
 	}
 	client := &http.Client{Transport: relays, Timeout: relayHopTimeout}
 	conn, _, err := websocket.Dial(ctx, "ws://"+net.JoinHostPort(bootstrapRoute(instance), strconv.Itoa(aliasPort))+sandboxOwnerPath, &websocket.DialOptions{HTTPClient: client})
 	return conn, err
+}
+
+func RelayOwner(ctx context.Context, relays http.RoundTripper, owner *websocket.Conn, instance string) {
+	upstream, err := dialOwner(ctx, relays, instance)
+	if err != nil {
+		for errors.Unwrap(err) != nil {
+			err = errors.Unwrap(err)
+		}
+		owner.Close(websocket.StatusInternalError, "relay unavailable: "+err.Error())
+		return
+	}
+	upstream.SetReadLimit(noise.MaxMsgLen)
+	defer owner.CloseNow()
+	go func() {
+		copyMessages(ctx, upstream, owner)
+		upstream.CloseNow()
+	}()
+	copyMessages(ctx, owner, upstream)
+}
+
+func copyMessages(ctx context.Context, dst, src *websocket.Conn) {
+	for {
+		kind, message, err := src.Read(ctx)
+		var closed websocket.CloseError
+		if errors.As(err, &closed) {
+			dst.Close(closed.Code, closed.Reason)
+		}
+		if err != nil || dst.Write(ctx, kind, message) != nil {
+			return
+		}
+	}
 }

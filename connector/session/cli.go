@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"golang.org/x/crypto/ssh"
 )
@@ -36,10 +37,10 @@ type Limits struct {
 	WaitDelay time.Duration
 }
 
-func (t *CLI) Handler(config *ssh.ServerConfig, secret func(ctx context.Context, name string) (string, error), limits Limits, name string) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
-	return func(ctx context.Context, conn net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+func (t *CLI) Handler(host ssh.Signer, secret func(ctx context.Context, name string) (string, error), limits Limits, name string) connector.Serve {
+	return func(ctx context.Context, conn net.Conn, _ string, _ connector.Target, gate connector.Gate) {
 		s := newStream(ctx, conn, gate)
-		serveSessions(s, config, func(*sync.WaitGroup) func(ssh.NewChannel) {
+		serveSessions(s, host, func(*sync.WaitGroup) func(ssh.NewChannel) {
 			return func(nc ssh.NewChannel) { t.session(s, nc, secret, limits, name) }
 		})
 	}

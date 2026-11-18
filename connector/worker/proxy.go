@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"cmp"
 	"context"
 	"crypto/rand"
 	"crypto/tls"
@@ -14,9 +15,11 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"slices"
 	"strings"
 	"sync"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 	"golang.org/x/crypto/ssh"
@@ -36,10 +39,35 @@ type Secret struct {
 }
 
 type Grants struct {
-	Connect     http.Handler
+	Dial        func(ctx context.Context, network, address string) (net.Conn, error)
 	Secrets     map[string]Secret
 	Certificate func(name string) (*tls.Certificate, error)
 	HostKey     ssh.Signer
+}
+
+func (g Grants) Host() Host {
+	return Host{Dial: g.Dial, HostKey: g.HostKey, Secret: g.secret,
+		Configured:  func(name string) bool { return g.Secrets[name].Configured },
+		Placeholder: func(name string) string { return g.Secrets[name].Placeholder },
+		TLS: func(_ context.Context, host string) *tls.Config {
+			return &tls.Config{GetCertificate: func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
+				return g.certificate(cmp.Or(hello.ServerName, host))
+			}}
+		}}
+}
+
+func (g Grants) secret(ctx context.Context, name string) (string, error) {
+	if value, granted := g.Secrets[name]; granted {
+		return value.Value(ctx)
+	}
+	return "", errors.New("credential is not granted")
+}
+
+func (g Grants) certificate(name string) (*tls.Certificate, error) {
+	if g.Certificate == nil {
+		return nil, errors.New("TLS identity unavailable")
+	}
+	return g.Certificate(name)
 }
 
 type Process struct {
@@ -56,7 +84,7 @@ type Process struct {
 type stream struct {
 	ctx  context.Context
 	host string
-	gate func(context.Context, facts.Event) error
+	gate connector.Gate
 }
 
 func Launch(ctx context.Context, start func(ctx context.Context, config []byte, broker http.Handler) (Endpoint, error), data json.RawMessage, grants Grants, limits Limits) (*Process, error) {
@@ -104,7 +132,7 @@ func (p *Process) Close() error {
 	return nil
 }
 
-func (p *Process) Serve(ctx context.Context, conn net.Conn, name, host string, port uint32, gate func(context.Context, facts.Event) error) {
+func (p *Process) Serve(ctx context.Context, conn net.Conn, name string, target connector.Target, gate connector.Gate) {
 	defer conn.Close()
 	ctx, cancel := context.WithCancel(ctx)
 	stop := context.AfterFunc(p.Context, cancel)
@@ -116,10 +144,10 @@ func (p *Process) Serve(ctx context.Context, conn net.Conn, name, host string, p
 	}
 	p.next++
 	id := fmt.Sprint(p.next)
-	p.streams[id] = &stream{ctx, host, gate}
+	p.streams[id] = &stream{ctx, target.Host, gate}
 	p.mu.Unlock()
 	defer func() { p.mu.Lock(); delete(p.streams, id); p.mu.Unlock() }()
-	raw, _ := json.Marshal(streamInfo{id, name, host, port})
+	raw, _ := json.Marshal(streamInfo{id, name, target})
 	header := http.Header{streamHeader: {base64.RawStdEncoding.EncodeToString(raw)}, "Connection": {"Upgrade"}, "Upgrade": {upgradeProtocol}}
 	request := &http.Request{Method: "GET", URL: &url.URL{Path: "/stream"}, Host: "worker", Header: header}
 	upstream, err := connect(ctx, p.Dial, request, http.StatusSwitchingProtocols, p.limits.Handshake)
@@ -129,7 +157,9 @@ func (p *Process) Serve(ctx context.Context, conn net.Conn, name, host string, p
 	netx.Relay(ctx, conn, upstream, p.limits.Drain)
 }
 
-func (p *Process) Details() json.RawMessage { return p.details }
+func (p *Process) Instance() connector.Instance {
+	return connector.Instance{Serve: p.Serve, Close: p.Close, Ready: p.Ready, Details: p.details, Control: p.Control()}
+}
 
 func (p *Process) Control() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -151,7 +181,7 @@ func (p *Process) Control() http.Handler {
 func (p *Process) broker() http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("POST /credential/{name}", p.callback(func(ctx context.Context, r *http.Request, _ []byte) (any, error) {
-		return p.credential(ctx, r.PathValue("name"))
+		return p.grants.secret(ctx, r.PathValue("name"))
 	}))
 	mux.Handle("POST /host-sign", p.callback(func(_ context.Context, _ *http.Request, raw []byte) (any, error) {
 		return p.signHost(raw)
@@ -160,7 +190,7 @@ func (p *Process) broker() http.Handler {
 		return nil, stream.gate(ctx, facts.Event(raw))
 	}))
 	mux.Handle("POST /certificate/{stream}", p.streamCallback(p.certificate))
-	network := connectProxy(p.grants.Connect, p.limits.Upstreams)
+	network := connectProxy(p.grants.Dial, p.limits)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodConnect {
 			network.ServeHTTP(w, r)
@@ -196,13 +226,6 @@ func (p *Process) streamCallback(fn func(context.Context, *stream, []byte) (any,
 	})
 }
 
-func (p *Process) credential(ctx context.Context, name string) (string, error) {
-	if value, granted := p.grants.Secrets[name]; granted {
-		return value.Value(ctx)
-	}
-	return "", errors.New("credential is not granted")
-}
-
 func (p *Process) signHost(raw []byte) (*ssh.Signature, error) {
 	if p.grants.HostKey == nil {
 		return nil, errors.New("host identity is not granted")
@@ -232,13 +255,10 @@ func (p *Process) certificate(_ context.Context, stream *stream, raw []byte) (an
 	if len(name) > 253 || stream.host != "" && name != "" && !strings.EqualFold(name, stream.host) {
 		return nil, errors.New("TLS name differs from admitted stream")
 	}
-	if p.grants.Certificate == nil {
-		return nil, errors.New("TLS identity unavailable")
-	}
 	if name == "" {
 		name = stream.host
 	}
-	cert, err := p.grants.Certificate(name)
+	cert, err := p.grants.certificate(name)
 	if err != nil {
 		return nil, err
 	}
@@ -253,10 +273,11 @@ func (p *Process) certificate(_ context.Context, stream *stream, raw []byte) (an
 	return certificate{cert.Certificate, key}, err
 }
 
-func connectProxy(connect http.Handler, limit int) http.Handler {
-	slots := make(chan struct{}, limit)
+func connectProxy(dial func(context.Context, string, string) (net.Conn, error), l Limits) http.Handler {
+	slots := make(chan struct{}, l.Upstreams)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodConnect || r.URL.Host != r.Host || len(r.Host) > 8192 {
+		network := r.Header.Get(netx.NetworkHeader)
+		if r.Method != http.MethodConnect || r.URL.Host != r.Host || len(r.Host) > 8192 || !slices.Contains(brokerNetworks, network) {
 			http.Error(w, "worker upstream was refused", 403)
 			return
 		}
@@ -267,6 +288,6 @@ func connectProxy(connect http.Handler, limit int) http.Handler {
 			http.Error(w, "worker connection limit", 503)
 			return
 		}
-		connect.ServeHTTP(w, r)
+		netx.Connect(netx.Dial(dial, l.Drain)).ServeHTTP(w, r)
 	})
 }

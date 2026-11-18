@@ -16,6 +16,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
@@ -90,8 +91,8 @@ func ParseIMAP(config json.RawMessage) (*IMAP, error) {
 	return &IMAP{e}, nil
 }
 
-func (r *IMAP) Preauthenticated(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), greeting string) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
-	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+func (r *IMAP) Preauthenticated(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), greeting string) connector.Serve {
+	return func(ctx context.Context, s net.Conn, _ string, _ connector.Target, gate connector.Gate) {
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 		up, err := r.dial(ctx, dial, "imaps", imapPort, imapPort)

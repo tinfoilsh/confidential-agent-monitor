@@ -2,6 +2,8 @@ package credential
 
 import (
 	"context"
+	"crypto"
+	"encoding/base64"
 	"errors"
 	"io"
 	"net/http"
@@ -49,4 +51,18 @@ func (o *OIDC) verify(ctx context.Context, client *http.Client, token *oauth2.To
 	o.Subject, o.IDToken, o.Email = subject, idToken, ""
 	_ = identity.Get("email", &o.Email)
 	return nil
+}
+
+const thumbprintURN = "urn:ietf:params:oauth:jwk-thumbprint:sha-256:"
+
+func Thumbprint(public crypto.PublicKey) (string, error) {
+	key, err := jwk.Import(public)
+	if err != nil {
+		return "", err
+	}
+	thumbprint, err := key.Thumbprint(crypto.SHA256)
+	if err != nil {
+		return "", err
+	}
+	return thumbprintURN + base64.RawURLEncoding.EncodeToString(thumbprint), nil
 }

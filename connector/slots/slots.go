@@ -1,11 +1,13 @@
 package slots
 
 import (
+	"cmp"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"maps"
+	"net"
 	"net/http"
 	"net/textproto"
 	"net/url"
@@ -15,6 +17,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
@@ -22,6 +25,10 @@ const (
 	httpsPort     = 443
 	httpPort      = 80
 	authorization = "Authorization"
+
+	OAuthAuthorize = "authorize"
+	OAuthToken     = "token"
+	oauthLifetime  = time.Hour
 )
 
 var reservedHeaders = []string{
@@ -42,6 +49,7 @@ type Slot struct {
 	Segment int    `json:"segment,omitempty"`
 	SigV4   *SigV4 `json:"sigv4,omitempty"`
 	Form    string `json:"form,omitempty"`
+	OAuth   string `json:"oauth,omitempty"`
 	host    string
 	port    uint32
 }
@@ -99,11 +107,11 @@ func (s Set) Names() []string {
 	return slices.Compact(names)
 }
 
-func (s Set) Claim(host string, port uint32) int {
-	host = strings.ToLower(host)
+func (s Set) Claim(target connector.Target) int {
+	host := strings.ToLower(target.Host)
 	score := -1
 	for _, slot := range s.slots {
-		if slot.host == host && slot.port == port {
+		if slot.host == host && slot.port == target.Port {
 			score = len(host)
 		}
 	}
@@ -111,7 +119,7 @@ func (s Set) Claim(host string, port uint32) int {
 }
 
 func (s Set) Covers(origin, path string) bool {
-	return slices.ContainsFunc(s.slots, func(slot Slot) bool { return origin == slot.Origin && under(path, slot.Path) })
+	return slices.ContainsFunc(s.slots, func(slot Slot) bool { return slot.OAuth == "" && origin == slot.Origin && under(path, slot.Path) })
 }
 
 func (s Set) Form(origin, text string, placeholder func(string) string) (name, field string, inputTypes []string, err error) {
@@ -146,13 +154,14 @@ func (s *Slot) validate() error {
 		return errors.New("a slot needs a value and an absolute path")
 	}
 	places := 0
-	for _, set := range []bool{s.Header != "", s.Query != "", s.Basic != "", s.Segment > 0, s.SigV4 != nil, s.Form != ""} {
+	for _, set := range []bool{s.Header != "", s.Query != "", s.Basic != "", s.Segment > 0, s.SigV4 != nil, s.Form != "", s.OAuth != ""} {
 		if set {
 			places++
 		}
 	}
-	if places != 1 || (s.Basic != "" && s.Basic != "user" && s.Basic != "password") || (s.Prefix != "" && s.Header == "" && s.Segment == 0) {
-		return fmt.Errorf("slot for %s must place it in one header, query key, basic field, path segment, SigV4 signature or form field", s.Value)
+	if places != 1 || (s.Basic != "" && s.Basic != "user" && s.Basic != "password") || (s.Prefix != "" && s.Header == "" && s.Segment == 0) ||
+		!slices.Contains([]string{"", OAuthAuthorize, OAuthToken}, s.OAuth) {
+		return fmt.Errorf("slot for %s must place it in one header, query key, basic field, path segment, SigV4 signature, form field or OAuth endpoint", s.Value)
 	}
 	if _, ok := formTypes[s.Form]; s.Form != "" && (!ok || s.Path != "/") {
 		return fmt.Errorf("form slot for %s must fill a username, password or otp field and match the whole origin", s.Value)
@@ -281,6 +290,35 @@ func (s Set) Bind(r *http.Request, origin string, placeholder func(string) strin
 	return names, func(r *http.Request, value func(context.Context, string) (string, error)) (*http.Request, error) {
 		return place(r, used, value, s.MaxSignedBody)
 	}, nil
+}
+
+// Answer serves a client that signs in to the credential's provider itself, and gives it the placeholder as its tokens.
+func (s Set) Answer(r *http.Request, origin string, form url.Values, placeholder func(string) string) http.HandlerFunc {
+	query := r.URL.Query()
+	for _, slot := range s.slots {
+		value := placeholder(slot.Value)
+		if slot.OAuth == "" || slot.Origin != origin || !under(r.URL.Path, slot.Path) || value == "" {
+			continue
+		}
+		redirect, err := url.Parse(query.Get("redirect_uri"))
+		switch {
+		case slot.OAuth == OAuthAuthorize && r.Method == http.MethodGet && query.Get("response_type") == "code" && err == nil &&
+			(redirect.Hostname() == "localhost" || net.ParseIP(redirect.Hostname()).IsLoopback()):
+			return func(w http.ResponseWriter, r *http.Request) {
+				answer := redirect.Query()
+				answer.Set("code", value)
+				answer.Set("state", query.Get("state"))
+				redirect.RawQuery = answer.Encode()
+				http.Redirect(w, r, redirect.String(), http.StatusFound)
+			}
+		case slot.OAuth == OAuthToken && r.Method == http.MethodPost && cmp.Or(form.Get("code"), form.Get("refresh_token")) == value:
+			return func(w http.ResponseWriter, _ *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				json.NewEncoder(w).Encode(map[string]any{"access_token": value, "refresh_token": value, "token_type": "Bearer", "expires_in": int(oauthLifetime.Seconds())})
+			}
+		}
+	}
+	return nil
 }
 
 func under(path, prefix string) bool {

@@ -3,6 +3,7 @@ package worker
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"net"
 	"net/http"
@@ -10,7 +11,12 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sync"
+
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 )
+
+// Start hands the child its listener as its first extra file.
+const listenerFD = 3
 
 type Local struct {
 	Limit   int
@@ -107,4 +113,14 @@ func (m *Local) Start(ctx context.Context, config []byte, broker http.Handler) (
 	}()
 	ok = true
 	return c, nil
+}
+
+func ServeLocal(ctx context.Context, factory func(ctx context.Context, data json.RawMessage, host Host) (connector.Instance, error), broker string, limits Limits) error {
+	file := os.NewFile(listenerFD, "connector-listener")
+	ln, err := net.FileListener(file)
+	file.Close()
+	if err != nil {
+		return err
+	}
+	return Serve(ctx, factory, os.Stdin, ln, unixDial(broker), limits)
 }

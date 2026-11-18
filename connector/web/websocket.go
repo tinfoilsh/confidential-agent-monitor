@@ -11,8 +11,12 @@ import (
 	"strings"
 
 	"github.com/coder/websocket"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
+
+const unlimitedRead = -1
 
 func websocketUpgrade(r *http.Request) (bool, error) {
 	if r.Header["Upgrade"] == nil {
@@ -35,7 +39,7 @@ func websocketUpgrade(r *http.Request) (bool, error) {
 	return false, errors.New("WebSocket handshake requires Connection: Upgrade")
 }
 
-func (h Handler) serveWebSocket(ctx context.Context, conn net.Conn, w http.ResponseWriter, r *http.Request, handshake *Request, gate func(context.Context, facts.Event) error, transport http.RoundTripper) {
+func (h Handler) serveWebSocket(ctx context.Context, conn net.Conn, w http.ResponseWriter, r *http.Request, handshake *Request, gate connector.Gate, transport http.RoundTripper) {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 	end := func() { cancel(); conn.Close() }
@@ -46,7 +50,7 @@ func (h Handler) serveWebSocket(ctx context.Context, conn net.Conn, w http.Respo
 		}
 	}
 	upstream, response, err := websocket.Dial(ctx, r.URL.String(), &websocket.DialOptions{
-		HTTPClient: &http.Client{Transport: transport, CheckRedirect: h.CheckRedirect},
+		HTTPClient: &http.Client{Transport: transport, CheckRedirect: netx.RefuseRedirects},
 		HTTPHeader: websocketHeaders(r.Header), Subprotocols: protocols,
 	})
 	if response != nil {
@@ -63,8 +67,7 @@ func (h Handler) serveWebSocket(ctx context.Context, conn net.Conn, w http.Respo
 		return
 	}
 	defer upstream.CloseNow()
-	options := h.Accept
-	options.Subprotocols = nil
+	var options websocket.AcceptOptions
 	if protocol := upstream.Subprotocol(); protocol != "" {
 		options.Subprotocols = []string{protocol}
 	}
@@ -75,7 +78,7 @@ func (h Handler) serveWebSocket(ctx context.Context, conn net.Conn, w http.Respo
 	defer end()
 	defer client.CloseNow()
 	client.SetReadLimit(h.MaxBody)
-	upstream.SetReadLimit(h.UpstreamReadLimit)
+	upstream.SetReadLimit(unlimitedRead)
 	replies := make(chan struct{})
 	defer func() { end(); <-replies }()
 	go func() {

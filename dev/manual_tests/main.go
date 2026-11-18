@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"log"
 	"net"
 	"net/http"
@@ -29,6 +30,7 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/slots"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/web"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/certificates"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
@@ -50,7 +52,7 @@ type liveConnection struct {
 }
 
 func prepare(tlsConfig func(context.Context, string) *tls.Config, transport http.RoundTripper, name, credentialName, secret, placeholder, origin string) (*liveConnection, error) {
-	raw, err := os.ReadFile(filepath.Join("cmd", "perimeter", "presets", name+".json"))
+	raw, err := fs.ReadFile(catalog.Shipped, name+".json")
 	if err != nil {
 		return nil, err
 	}
@@ -90,8 +92,7 @@ func prepare(tlsConfig func(context.Context, string) *tls.Config, transport http
 		}
 	}
 	setup, err := web.Parse(config, p.Source, options, func(raw json.RawMessage) (web.Slots, error) {
-		set, err := slots.Parse(raw, slots.Options{Prefix: "tfm_", MaxSignedBody: 16 << 20})
-		return web.Slots{Claim: set.Claim, Covers: set.Covers, Bind: set.Bind}, err
+		return slots.Parse(raw, slots.Options{Prefix: "tfm_", MaxSignedBody: 16 << 20})
 	})
 	if err != nil {
 		return nil, err
@@ -100,7 +101,7 @@ func prepare(tlsConfig func(context.Context, string) *tls.Config, transport http
 	if secret != "" {
 		value = credential.Static(secret)
 	}
-	handler := web.Handler{Setup: setup, Transport: transport, CheckRedirect: func(*http.Request, []*http.Request) error { return errors.New("redirects are refused") }, UpstreamReadLimit: -1, MaxBody: 8 << 20, TLS: tlsConfig, ServeHTTP: netx.ServeConn,
+	handler := web.Handler{Setup: setup, Transport: transport, MaxBody: 8 << 20, TLS: tlsConfig,
 		Placeholder: func(name string) string {
 			if name == credentialName && value.Configured() {
 				return placeholder
@@ -144,20 +145,10 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	tlsConfig := func(_ context.Context, host string) *tls.Config {
-		return &tls.Config{GetCertificate: func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
-			name := hello.ServerName
-			if name == "" {
-				name = host
-			}
-			return authority.Issue(name, 24*time.Hour, time.Hour)
-		}}
-	}
+	tlsConfig := func(_ context.Context, host string) *tls.Config { return authority.TLS(host, 24*time.Hour, time.Hour) }
 	guard := ssrf.New(ssrf.WithAnyPort())
 	dialer := &net.Dialer{Timeout: 30 * time.Second, Control: guard.Safe}
-	transport := http.DefaultTransport.(*http.Transport).Clone()
-	transport.Proxy = nil
-	transport.DialContext = dialer.DialContext
+	transport := netx.Transport(dialer.DialContext)
 	defer transport.CloseIdleConnections()
 	var bot, socket, grafana *liveConnection
 	switch in.Service {
@@ -234,13 +225,14 @@ func run() error {
 			status("ADMITTED " + connection.preset + " " + f.Operation.ID)
 			return nil
 		}
-		connect := netx.Connect(func(ctx context.Context, host string, port uint32, accept func() (net.Conn, error)) error {
-			if connection.handler.Setup.Claim(host, port) < 0 {
+		connect := netx.Connect(func(ctx context.Context, _, host string, port uint32, accept func() (net.Conn, error)) error {
+			target := connector.Target{Host: host, Port: port}
+			if connection.handler.Setup.Claim(target) < 0 {
 				return errors.New("this service does not serve the target")
 			}
 			conn, err := accept()
 			if err == nil {
-				connection.handler.Serve(ctx, conn, connection.preset, host, port, gate)
+				connection.handler.Serve(ctx, conn, connection.preset, target, gate)
 			}
 			return err
 		})

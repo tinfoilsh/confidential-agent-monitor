@@ -17,6 +17,7 @@ import (
 	"time"
 	"unicode"
 
+	oauthauth "github.com/modelcontextprotocol/go-sdk/auth"
 	"github.com/modelcontextprotocol/go-sdk/oauthex"
 	"golang.org/x/oauth2"
 )
@@ -28,7 +29,11 @@ var (
 	authStyles = map[string]oauth2.AuthStyle{"": oauth2.AuthStyleAutoDetect, "header": oauth2.AuthStyleInHeader, "params": oauth2.AuthStyleInParams}
 )
 
-var errSignInGone = errors.New("sign-in expired or already completed; start again")
+var (
+	ErrLoopback     = errors.New("this service only accepts sign-ins from a loopback address")
+	errRegistration = errors.New("this service does not register clients automatically; enter the client ID and secret of an OAuth app registered with it")
+	errSignInGone   = errors.New("sign-in expired or already completed; start again")
+)
 
 type Grant struct {
 	AuthorizeParams map[string]string     `json:"authorize_params,omitempty"`
@@ -43,6 +48,7 @@ type Grant struct {
 	RefreshToken    string                `json:"refresh_token"`
 	Scope           string                `json:"scope"`
 	Resource        string                `json:"resource"`
+	Issuer          string                `json:"issuer,omitempty"`
 	Prompt          string                `json:"prompt,omitempty"`
 	AuthStyle       string                `json:"auth_style,omitempty"`
 	TokenType       string                `json:"token_type,omitempty"`
@@ -92,7 +98,7 @@ func (o *Grant) validate() error {
 	if _, ok := authStyles[o.AuthStyle]; !ok || !slices.Contains(prompts, o.Prompt) {
 		return errors.New("oauth prompt or auth_style is not supported")
 	}
-	return CheckEndpoints(o.AuthURL, o.DeviceAuthURL, o.TokenURL, o.Resource)
+	return CheckEndpoints(o.AuthURL, o.DeviceAuthURL, o.TokenURL, o.Resource, o.Issuer)
 }
 
 func CheckEndpoints(endpoints ...string) error {
@@ -139,7 +145,7 @@ type SignIn struct {
 	limits     SignInLimits
 }
 
-func NewDeviceSignIn(ctx context.Context, client *http.Client, grant Grant, limits SignInLimits) (*SignIn, error) {
+func newDeviceSignIn(ctx context.Context, client *http.Client, grant Grant, limits SignInLimits) (*SignIn, error) {
 	g, err := snapshot(grant)
 	if err != nil {
 		return nil, err
@@ -153,7 +159,7 @@ func NewDeviceSignIn(ctx context.Context, client *http.Client, grant Grant, limi
 	return s, s.startDevice(ctx)
 }
 
-func NewAuthCodeSignIn(client *http.Client, grant Grant, redirect string, limits SignInLimits, opts ...oauth2.AuthCodeOption) (*SignIn, error) {
+func newAuthCodeSignIn(client *http.Client, grant Grant, redirect string, limits SignInLimits, opts ...oauth2.AuthCodeOption) (*SignIn, error) {
 	g, err := snapshot(grant)
 	if err != nil {
 		return nil, err
@@ -263,7 +269,7 @@ func (s *SignIn) WaitDevice(ctx context.Context) (json.RawMessage, error) {
 	return encodeGrant(grant), nil
 }
 
-func ProtectedResource(ctx context.Context, client *http.Client, resource string, maxBytes int64) (*oauthex.ProtectedResourceMetadata, error) {
+func protectedResource(ctx context.Context, client *http.Client, resource string, maxBytes int64) (*oauthex.ProtectedResourceMetadata, error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, resource, nil)
 	if err != nil {
 		return nil, Scrub(ctx, "discovery", err)
@@ -297,7 +303,7 @@ func ProtectedResource(ctx context.Context, client *http.Client, resource string
 	return nil, nil
 }
 
-func PublishedIssuer(ctx context.Context, client *http.Client, server string, maxBytes int64) string {
+func publishedIssuer(ctx context.Context, client *http.Client, server string, maxBytes int64) string {
 	a, _ := url.Parse(server)
 	if CheckEndpoints(server) != nil {
 		return ""
@@ -311,7 +317,7 @@ func PublishedIssuer(ctx context.Context, client *http.Client, server string, ma
 	return ""
 }
 
-func IsLoopback(redirect string) bool {
+func isLoopback(redirect string) bool {
 	u, err := url.Parse(redirect)
 	return err == nil && (u.Hostname() == "localhost" || net.ParseIP(u.Hostname()).IsLoopback())
 }
@@ -439,8 +445,9 @@ type pendingSignIn struct {
 }
 
 type SignIns struct {
-	pending sync.Map
-	limits  SignInLimits
+	pending    sync.Map
+	limits     SignInLimits
+	clientName string
 }
 
 type SignInLimits struct {
@@ -451,15 +458,132 @@ type SignInLimits struct {
 	MaxClientIDBytes  int
 }
 
-func NewSignIns(limits SignInLimits) *SignIns {
-	return &SignIns{limits: limits}
+func NewSignIns(limits SignInLimits, clientName string) *SignIns {
+	return &SignIns{limits: limits, clientName: clientName}
 }
 
-func (s *SignIns) Start(ctx context.Context, begin func(context.Context) (*SignIn, error), session string, save func(context.Context, json.RawMessage) error) (*SignIn, error) {
+func (s *SignIns) begin(ctx context.Context, client *http.Client, raw json.RawMessage, redirect string) (*SignIn, error) {
+	g, err := DecodeGrant(raw)
+	if err != nil {
+		return nil, err
+	}
+	if c := g.DefaultClient; c != nil && g.ClientID == "" {
+		g.ClientID, g.ClientSecret = c.ClientID, c.ClientSecret
+		g.Loopback = g.Loopback || c.Loopback
+	}
+	if g.DeviceAuthURL != "" {
+		return newDeviceSignIn(ctx, client, *g, s.limits)
+	}
+	if g.Loopback && !isLoopback(redirect) {
+		return nil, ErrLoopback
+	}
+	if g.AuthURL == "" {
+		if err := s.discover(ctx, client, g, redirect); errors.Is(err, errRegistration) || errors.Is(err, ErrLoopback) {
+			return nil, err
+		} else if err != nil {
+			return nil, Scrub(ctx, "discovery", err)
+		}
+	}
+	return newAuthCodeSignIn(client, *g, redirect, s.limits, oauth2.AccessTypeOffline)
+}
+
+func (s *SignIns) discover(ctx context.Context, client *http.Client, g *Grant, redirect string) error {
+	server, scopes := g.Issuer, []string(nil)
+	if server == "" {
+		prm, err := protectedResource(ctx, client, g.Resource, s.limits.MaxResponseBytes)
+		if err != nil {
+			return err
+		}
+		u, err := url.Parse(g.Resource)
+		if err != nil {
+			return err
+		}
+		server = u.Scheme + "://" + u.Host
+		if prm != nil {
+			if len(prm.AuthorizationServers) == 0 {
+				return fmt.Errorf("%s names no authorization server", g.Resource)
+			}
+			g.Resource = prm.Resource
+			server = strings.TrimSuffix(prm.AuthorizationServers[0], "/")
+			scopes = slices.Clone(prm.ScopesSupported)
+		}
+	}
+	if err := CheckEndpoints(server); err != nil {
+		return err
+	}
+
+	asm, err := oauthauth.GetAuthServerMetadata(ctx, server, client)
+	if err != nil {
+		if issuer := publishedIssuer(ctx, client, server, s.limits.MaxResponseBytes); issuer != "" {
+			server = strings.TrimSuffix(issuer, "/")
+			asm, err = oauthauth.GetAuthServerMetadata(ctx, server, client)
+		}
+	}
+	if err != nil {
+		return err
+	}
+	if asm == nil || asm.AuthorizationEndpoint == "" || asm.TokenEndpoint == "" {
+		return fmt.Errorf("%s names no authorization or token endpoint", server)
+	}
+	if err := CheckEndpoints(asm.AuthorizationEndpoint, asm.TokenEndpoint, asm.RegistrationEndpoint); err != nil {
+		return err
+	}
+	g.AuthURL, g.TokenURL = asm.AuthorizationEndpoint, asm.TokenEndpoint
+	if g.Scope == "" {
+		if slices.Contains(asm.ScopesSupported, "offline_access") && !slices.Contains(scopes, "offline_access") {
+			scopes = append(scopes, "offline_access")
+		}
+		g.Scope = strings.Join(scopes, " ")
+	}
+
+	if g.ClientID != "" {
+		if methods := asm.TokenEndpointAuthMethodsSupported; g.AuthStyle == "" && len(methods) > 0 && !slices.Contains(methods, "client_secret_basic") {
+			g.AuthStyle = "params"
+		}
+		return nil
+	}
+	if asm.RegistrationEndpoint == "" {
+		return errRegistration
+	}
+	registration := &oauthex.ClientRegistrationMetadata{
+		RedirectURIs: []string{redirect}, ClientName: s.clientName, GrantTypes: []string{"authorization_code"}, ResponseTypes: []string{"code"},
+	}
+	if slices.Contains(asm.GrantTypesSupported, "refresh_token") {
+		registration.GrantTypes = append(registration.GrantTypes, "refresh_token")
+	}
+	if slices.Contains(asm.TokenEndpointAuthMethodsSupported, "none") {
+		registration.TokenEndpointAuthMethod = "none"
+	}
+	reg, err := oauthex.RegisterClient(ctx, asm.RegistrationEndpoint, registration, client)
+	var refused *oauthex.ClientRegistrationError
+	if errors.As(err, &refused) && refused.ErrorCode == "invalid_redirect_uri" && !isLoopback(redirect) {
+		return ErrLoopback
+	}
+	if err != nil {
+		return err
+	}
+	g.ClientID, g.ClientSecret = reg.ClientID, reg.ClientSecret
+	switch reg.TokenEndpointAuthMethod {
+	case "none", "client_secret_post":
+		g.AuthStyle = "params"
+	case "client_secret_basic":
+		g.AuthStyle = "header"
+	}
+	return nil
+}
+
+func (s *SignIns) Start(ctx context.Context, client *http.Client, credential json.RawMessage, redirect, session string, save func(context.Context, json.RawMessage) error) (*SignIn, error) {
+	c, err := decode(credential)
+	if err == nil && c.oauth == nil {
+		err = errors.New("the secret is not an oauth grant")
+	}
+	if err != nil {
+		return nil, err
+	}
 	ctx, cancel := context.WithTimeout(ctx, s.limits.Timeout)
 	defer cancel()
 	pending := &pendingSignIn{session: session, expires: time.Now().Add(s.limits.Lifetime)}
-	sign, err := begin(ctx)
+	sign, err := s.begin(ctx, client, c.oauth, redirect)
 	if err != nil {
 		return nil, err
 	}
@@ -477,11 +601,11 @@ func (s *SignIns) Start(ctx context.Context, begin func(context.Context) (*SignI
 		if result.Error != nil {
 			return errors.New("sign-in was not completed; try again")
 		}
-		secret, err := exchange(ctx, result.Code, result.ClientID)
+		grant, err := exchange(ctx, result.Code, result.ClientID)
 		if err != nil {
 			return err
 		}
-		return save(ctx, secret)
+		return save(ctx, encodeOAuth(grant))
 	}
 	s.pending.Store(sign.State, pending)
 	time.AfterFunc(time.Until(pending.expires), func() { s.pending.CompareAndDelete(sign.State, pending) })

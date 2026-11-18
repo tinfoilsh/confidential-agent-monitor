@@ -7,7 +7,7 @@ This tool inventories API requests and proposes monitor actions, effect sets, re
 Not every shipped preset comes from this generator. Protocols described in prose
 can use a reviewed, handwritten definition with SDK fixtures. For example,
 `generate slack` covers Web API requests, not the separate
-[Slack Socket Mode definition](../../cmd/perimeter/presets/slack_socket_mode.json).
+[Slack Socket Mode definition](../../connector/catalog/presets/slack_socket_mode.json).
 
 1. Identify the workflow and vendor references, credential types, destinations,
    and SDK version. State which capabilities the sources actually cover.
@@ -66,7 +66,7 @@ The files have different roles:
 | `sources.lock.json` | Resolved source URLs, commits, content hashes, and successful refresh timestamps |
 | `.cache/` | Downloaded source bytes, verified against the lock before parsing |
 | `snapshots/` | Exact normalized bytes for mutable Airtable and Slack documentation sources |
-| `../../cmd/perimeter/presets/*.json` | Authoritative shipped definitions, used directly as the generation baseline |
+| `../../connector/catalog/presets/*.json` | Authoritative shipped definitions, used directly as the generation baseline |
 | `candidates/` | Expanded preset proposals, never loaded by the monitor automatically |
 | `coverage/` | Source-to-descriptor mappings, provenance, gaps, overlaps, and artifact hashes |
 
@@ -89,7 +89,14 @@ return types when available, falling back to field names. Source categories
 provide a fallback for paths without literal resources. A source can override
 an ambiguous group in `sources.json` with `"groups": {"operationId": "resource.subresource"}`.
 These keys name source operation IDs; unknown keys and malformed group paths
-are errors. `generate` uses these rules.
+are errors. A specification can nest all of its operations under one parent
+with `"group": "graphql"`. `generate` uses these rules.
+
+Reviewed effects live in `sources.json` as `"effects": {"admin,delete": ["operationId"]}`,
+keyed by the comma-separated effect list. They replace the inferred effects, and
+`generate` rebuilds the descriptor of the same name from them even when it is
+already shipped, so changing a review means editing that table and regenerating.
+Unknown operations, unknown effects, and operations listed twice are errors.
 
 `group [preset-or-source...]` writes the grouping into shipped presets, using
 only their existing operations. With no arguments it processes all shipped API
@@ -99,7 +106,7 @@ use the same tree UI. Repeated grouping produces the same result. This is a
 breaking action-name change: update agent overrides and custom policies to use
 the new names. No aliases or permission migration are generated.
 
-Accept additions in the corresponding `../../cmd/perimeter/presets/<name>.json`, preserving its connection setup and existing operations. Source names can differ from preset names; use the `preset` mapping in `sources.json`. The Confluence source group includes Jira, so divide its operations between the Confluence and Jira presets instead of copying the combined candidate into either one. Regenerate after accepting changes so the next proposal uses the updated shipped definitions.
+`accept <source>` runs `check` and then writes the candidate over the shipped preset of a source that maps to exactly one preset. Otherwise accept additions in the corresponding `../../connector/catalog/presets/<name>.json` by hand, preserving its connection setup and existing operations. Source names can differ from preset names; use the `preset` mapping in `sources.json`. The Confluence source group includes Jira, so divide its operations between the Confluence and Jira presets instead of copying the combined candidate into either one. Regenerate after accepting changes so the next proposal uses the updated shipped definitions.
 
 Each source variant receives a status:
 
