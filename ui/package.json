@@ -24,7 +24,7 @@
     "@solidjs/router": "1.0.1",
     "@tinfoilsh/noise": "https://github.com/tinfoilsh/noise/releases/download/v0.1.0-rc.1/tinfoilsh-noise-0.1.0-rc.1.tgz",
     "@tinfoilsh/passkey-kit": "0.2.4",
-    "@tinfoilsh/verifier": "2.0.0-rc.3",
+    "@tinfoilsh/verifier": "2.0.0-rc.4",
     "@xterm/addon-fit": "0.11.0",
     "@xterm/addon-webgl": "0.19.0",
     "@xterm/xterm": "6.0.0",
@@ -33,7 +33,7 @@
     "hpke": "1.1.7",
     "solid-js": "1.9.17",
     "solid-sonner": "0.3.3",
-    "tinfoil": "2.0.0-rc.3",
+    "tinfoil": "2.0.0-rc.4",
     "yaml": "2.9.1"
   },
   "devDependencies": {
@@ -46,6 +46,6 @@
     "vite-plugin-sri-gen": "1.7.5"
   },
   "patchedDependencies": {
-    "tinfoil@2.0.0-rc.3": "patches/tinfoil@2.0.0-rc.3.patch"
+    "tinfoil@2.0.0-rc.4": "patches/tinfoil@2.0.0-rc.4.patch"
   }
 }

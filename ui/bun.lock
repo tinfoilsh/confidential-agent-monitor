@@ -14,7 +14,7 @@
         "@solidjs/router": "1.0.1",
         "@tinfoilsh/noise": "https://github.com/tinfoilsh/noise/releases/download/v0.1.0-rc.1/tinfoilsh-noise-0.1.0-rc.1.tgz",
         "@tinfoilsh/passkey-kit": "0.2.4",
-        "@tinfoilsh/verifier": "2.0.0-rc.3",
+        "@tinfoilsh/verifier": "2.0.0-rc.4",
         "@xterm/addon-fit": "0.11.0",
         "@xterm/addon-webgl": "0.19.0",
         "@xterm/xterm": "6.0.0",
@@ -23,7 +23,7 @@
         "hpke": "1.1.7",
         "solid-js": "1.9.17",
         "solid-sonner": "0.3.3",
-        "tinfoil": "2.0.0-rc.3",
+        "tinfoil": "2.0.0-rc.4",
         "yaml": "2.9.1",
       },
       "devDependencies": {
@@ -38,7 +38,7 @@
     },
   },
   "patchedDependencies": {
-    "tinfoil@2.0.0-rc.3": "patches/tinfoil@2.0.0-rc.3.patch",
+    "tinfoil@2.0.0-rc.4": "patches/tinfoil@2.0.0-rc.4.patch",
   },
   "packages": {
     "@adraffy/ens-normalize": ["@adraffy/ens-normalize@1.11.1", "", {}, "sha512-nhCBV3quEgesuf7c7KYfperqSS14T8bYuvJ8PcLJp6znkZpFc0AuW4qBtr8eKVyPPe/8RSr7sglCWPU5eaxwKQ=="],
@@ -171,7 +171,7 @@
 
     "@tinfoilsh/passkey-kit": ["@tinfoilsh/passkey-kit@0.2.4", "", {}, "sha512-tAhf4q7pKJPftOFoFsh7Qmk35Q3TvhZKM5wdcynqEpO8NQaYF3jtVmwTc+lOkKCzVFV8GRMFK31dkK0C13fS9g=="],
 
-    "@tinfoilsh/verifier": ["@tinfoilsh/verifier@2.0.0-rc.3", "", { "dependencies": { "@freedomofpress/crypto-browser": "^0.3.0", "@freedomofpress/sigstore-browser": "^0.3.0", "@freedomofpress/tuf-browser": "^0.3.0", "yaml": "^2.9.1" } }, "sha512-azrcXhhqYgbehD972P1m4iH4vR61KNIzYrhogQ4MqKFdsK7ICZ6AHABaI6QanzsNGgLzg6EQdkxf7zCXCl+VUg=="],
+    "@tinfoilsh/verifier": ["@tinfoilsh/verifier@2.0.0-rc.4", "", { "dependencies": { "@freedomofpress/crypto-browser": "^0.3.0", "@freedomofpress/sigstore-browser": "^0.3.0", "@freedomofpress/tuf-browser": "^0.3.0", "yaml": "^2.9.1" } }, "sha512-SuPOT/8DQz9R3+kIr2sKeWoPSeVcUJfVYUKmv3kCT9a75PBQNc6QxvKDDaSYCPJkyJDtidAaivpicMaGMo4Txg=="],
 
     "@types/babel__core": ["@types/babel__core@7.20.5", "", { "dependencies": { "@babel/parser": "^7.20.7", "@babel/types": "^7.20.7", "@types/babel__generator": "*", "@types/babel__template": "*", "@types/babel__traverse": "*" } }, "sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA=="],
 
@@ -421,7 +421,7 @@
 
     "source-map-js": ["source-map-js@1.2.2", "", {}, "sha512-KGj/8Y43x35aZVDtt+J4mK1hoLGHULMYfSkODJNQjNDC3oW1PqPoxMwo0pLUsWM/UEGzON/NxeHywEfNXNP3Vw=="],
 
-    "tinfoil": ["tinfoil@2.0.0-rc.3", "", { "dependencies": { "@tinfoilsh/verifier": "2.0.0-rc.3", "@types/ws": "^8.18.1", "ehbp": "^0.6.0", "openai": "^7.35.0", "ws": "^8.21.0" }, "peerDependencies": { "@ai-sdk/openai-compatible": "^3.0.7", "ai": "^6.0.168 || ^7.0.0" }, "optionalPeers": ["@ai-sdk/openai-compatible", "ai"] }, "sha512-MvcOtJGESB8pe9pSluti8r4l2USPXQbfO+6ptF6klgsZkl0PteBjf8Cx2tzCrAVLmql0bQdV+6JKYoNCVFiavA=="],
+    "tinfoil": ["tinfoil@2.0.0-rc.4", "", { "dependencies": { "@tinfoilsh/verifier": "2.0.0-rc.4", "@types/ws": "^8.18.1", "ehbp": "^0.6.0", "openai": "^7.35.0", "ws": "^8.21.0" }, "peerDependencies": { "@ai-sdk/openai-compatible": "^3.0.7", "ai": "^6.0.168 || ^7.0.0" }, "optionalPeers": ["@ai-sdk/openai-compatible", "ai"] }, "sha512-WbBerrlwFEkvjHa230YWMtwsDfqVTtOEQbLIabvkgM4cFT2fytbtzzdg9NR4yYErIny9p7JIBoUnIFG7vW1iUw=="],
 
     "tinyglobby": ["tinyglobby@0.2.17", "", { "dependencies": { "fdir": "^6.5.0", "picomatch": "^4.0.4" } }, "sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g=="],
 
