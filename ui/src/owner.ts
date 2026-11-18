@@ -344,7 +344,58 @@ export const COMMON_PRESETS = [
   "gmail",
   "email",
 ];
-export const GENERIC_PRESETS = ["web", "ssh", "tcp", "custom_api", "mcp"];
+// Most important first within each group; presets not listed follow alphabetically.
+export const PRESET_ORDER = [
+  "web",
+  "ssh",
+  "tcp",
+  "custom_api",
+  "mcp",
+  "aws",
+  "google_cloud",
+  "google_drive",
+  "google_calendar",
+  "google_docs",
+  "google_sheets",
+  "slack",
+  "notion",
+  "linear",
+  "jira",
+  "confluence",
+  "gitlab",
+  "outlook",
+  "microsoft_teams",
+  "microsoft_onedrive",
+  "discord",
+  "telegram",
+  "stripe",
+  "hubspot",
+  "salesforce",
+  "airtable",
+  "asana",
+  "dropbox",
+  "zoom_api",
+  "zendesk",
+  "shopify",
+  "twilio",
+  "cloudflare_api",
+  "google_gemini",
+  "tinfoil_websearch",
+  "github_mcp",
+  "slack_mcp",
+  "notion_mcp",
+  "linear_mcp",
+  "atlassian",
+  "asana_mcp",
+  "sentry",
+  "stripe_mcp",
+  "supabase_mcp",
+  "cloudflare",
+  "vercel",
+  "figma",
+  "canva",
+  "context7",
+];
 const LOOPBACK = ["localhost", "127.0.0.1", "[::1]"];
 
 // Human input preserves UTF-8 bytes, including whitespace. Old canonical
@@ -1378,13 +1429,14 @@ export function catalog(view: View) {
   common.sort(
     (a, b) => COMMON_PRESETS.indexOf(a.name) - COMMON_PRESETS.indexOf(b.name),
   );
-  groups.get("generic")?.sort((a, b) => {
-    const rank = (name: string) => {
-      const index = GENERIC_PRESETS.indexOf(name);
-      return index < 0 ? GENERIC_PRESETS.length : index;
-    };
-    return rank(a.name) - rank(b.name) || a.title.localeCompare(b.title);
-  });
+  const rank = (name: string) => {
+    const index = PRESET_ORDER.indexOf(name);
+    return index < 0 ? PRESET_ORDER.length : index;
+  };
+  for (const entries of groups.values())
+    entries.sort(
+      (a, b) => rank(a.name) - rank(b.name) || a.title.localeCompare(b.title),
+    );
   return [
     ...(common.length
       ? [{ group: "common", title: "Popular", presets: common }]
