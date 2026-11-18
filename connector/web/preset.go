@@ -75,9 +75,11 @@ func (r *Request) describe(config *Setup) (facts.Observation, error) {
 
 type Preset struct {
 	Operations     map[string]Operation `json:"operations"`
+	Origins        map[string][]string  `json:"origins,omitempty"`
 	Slots          bool                 `json:"slots,omitempty"`
 	SensitiveQuery []string             `json:"sensitive_query,omitempty"`
 	routes         map[routeKey]*routeNode
+	hosts          map[string][][]pathPart
 }
 
 func (p *Preset) UnmarshalJSON(raw []byte) error {
@@ -100,6 +102,9 @@ func (p *Preset) validate() error {
 		}
 		if o.Method == "" || o.Origin == "" || o.Path == "" || o.Scope == nil {
 			return fmt.Errorf("operation %s needs method, origin, path and scope", id)
+		}
+		if set, named := strings.CutPrefix(o.Origin, "{"); named && set != "origin}" && p.Origins[strings.TrimSuffix(set, "}")] == nil {
+			return fmt.Errorf("operation %s uses an undefined origin set", id)
 		}
 		for _, key := range p.SensitiveQuery {
 			if o.Query[key] != nil {
@@ -165,13 +170,13 @@ type Selector struct {
 
 var selectorSources = map[string]struct{ json, optional bool }{
 	"path": {}, "query": {optional: true}, "form": {optional: true}, "body": {json: true, optional: true},
-	"header_json": {json: true}, "argument": {json: true, optional: true}, "http": {json: true},
+	"header_json": {json: true}, "argument": {json: true, optional: true}, "http": {json: true}, "host": {},
 }
 
 type selection struct {
 	*Request
-	captures map[string]string
-	fields   map[string]any
+	captures, host map[string]string
+	fields         map[string]any
 }
 
 func (s *selection) httpFields() map[string]any {
@@ -250,7 +255,7 @@ func condition(values map[string][]string, key string, want any) bool {
 		return !present
 	}
 	s, ok := want.(string)
-	return ok && len(got) == 1 && got[0] == s
+	return len(got) == 1 && (want == true || ok && got[0] == s)
 }
 
 func (spec Selector) Compile() (facts.Selector, func(any) (any, bool), error) {
@@ -276,6 +281,9 @@ func (spec Selector) value(r *selection, pointer func(any) (any, bool)) (any, bo
 	case "path":
 		v, ok := r.captures[at]
 		return strings.TrimSuffix(v, spec.TrimSuffix), ok
+	case "host":
+		v, ok := r.host[at]
+		return v, ok
 	case "http":
 		return pointer(r.httpFields())
 	case "body":
@@ -409,6 +417,22 @@ func (p *Preset) compile() error {
 	if err := p.validate(); err != nil {
 		return err
 	}
+	p.hosts = map[string][][]pathPart{}
+	for name, templates := range p.Origins {
+		for _, template := range templates {
+			parts, err := compilePath(strings.ReplaceAll(template, ".", "/"))
+			if err != nil || strings.Count(template, "/") != 2 || !strings.HasPrefix(template, "https://") && !strings.HasPrefix(template, "http://") ||
+				slices.ContainsFunc(parts, func(part pathPart) bool { return part.rest }) {
+				return fmt.Errorf("invalid origin template %s", template)
+			}
+			for _, other := range p.hosts[name] {
+				if len(other) == len(parts) && !slices.EqualFunc(other, parts, func(a, b pathPart) bool { return a.name == b.name }) {
+					return fmt.Errorf("origin templates in %s with the same number of labels must capture the same names in the same labels", name)
+				}
+			}
+			p.hosts[name] = append(p.hosts[name], parts)
+		}
+	}
 	p.routes = map[routeKey]*routeNode{}
 	for id, operation := range p.Operations {
 		operation.ID = id
@@ -523,6 +547,19 @@ func (p *Preset) Match(r *Request, config *Setup, f facts.Observation) (facts.Ob
 	if config.origin == h.Origin || config.origin == "*" {
 		origins = append(origins, "{origin}")
 	}
+	hosts, labels := map[string]map[string]string{}, strings.Split(strings.ReplaceAll(h.Origin, ".", "/"), "/")
+	for name, templates := range p.hosts {
+		set := "{" + name + "}"
+		for _, template := range templates {
+			captures, matches := pathCaptures(template, labels)
+			for _, value := range captures {
+				matches = matches && !strings.Contains(value, ":")
+			}
+			if matches && !slices.Contains(origins, set) {
+				origins, hosts[set] = append(origins, set), captures
+			}
+		}
+	}
 	var candidates []*compiledOperation
 	for _, origin := range origins {
 		for _, method := range methods {
@@ -565,7 +602,12 @@ func (p *Preset) Match(r *Request, config *Setup, f facts.Observation) (facts.Ob
 		return f, nil
 	}
 	o := matched.operation
-	parameters, err := facts.Select(matched.selectors, &selection{Request: r, captures: captures})
+	parameters, err := facts.Select(matched.selectors, &selection{Request: r, captures: captures, host: hosts[o.Origin]})
+	for name, value := range hosts[o.Origin] {
+		if _, selected := o.Scope[name]; !selected {
+			parameters[name] = value
+		}
+	}
 	grant := facts.Project(parameters, o.Grant)
 	f.Operation = &facts.Operation{ID: o.ID, Action: o.Action, Effects: o.Effects}
 	f.Title = fmt.Sprintf("%s: %s", config.title, o.ID)
