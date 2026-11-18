@@ -560,6 +560,14 @@
       "commit": "836ce198db13a6fb194547e53eea99c6ddae495b",
       "sha256": "f3efa055b46b43f5f133ecf792a36a7f50cf8a4378cbd177390bc2bf8c6097cd",
       "bytes": 13014127
+    },
+    {
+      "source": "github:github/docs@main:src/graphql/data/fpt/schema.docs.graphql",
+      "url": "https://raw.githubusercontent.com/github/docs/841308525efb1a0f005369d83c54183068bb65d2/src/graphql/data/fpt/schema.docs.graphql",
+      "commit": "841308525efb1a0f005369d83c54183068bb65d2",
+      "sha256": "46c7f19cfed49694b9c05c6844bbda9f501726b56e63c3af8bfa0f4c96637ed1",
+      "bytes": 1596451,
+      "checked_at": "2026-11-18T08:45:13Z"
     }
   ],
   "gitlab": [

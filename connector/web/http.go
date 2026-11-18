@@ -38,6 +38,8 @@ const (
 	bodyGraphQL = "graphql"
 
 	HostChars = "abcdefghijklmnopqrstuvwxyz0123456789.-:"
+
+	SignInAction = "session.sign-in"
 )
 
 var (
@@ -91,6 +93,10 @@ func (h Handler) Serve(ctx context.Context, conn net.Conn, _ string, target conn
 		if err := gate(r.Context(), facts.Capture(request.Describe(h.Setup))); err != nil {
 			log.Printf("refused %s %s%s: %v", r.Method, r.Host, r.URL.Path, err)
 			http.Error(w, err.Error(), http.StatusForbidden)
+			return
+		}
+		if request.answer != nil {
+			request.answer(w, r)
 			return
 		}
 		upstream := placing{upstreamTransport, request.place, h.Secret}
@@ -210,6 +216,7 @@ func (request *Request) capture(h *Handler, r *http.Request) error {
 	if err != nil {
 		return err
 	}
+	request.answer = h.slots.Answer(r, origin, layer.Form, h.Placeholder)
 	for name, values := range r.Header {
 		if len(values) == 1 && strings.HasPrefix(values[0], "{") {
 			if v, err := decodeJSON([]byte(values[0])); err == nil {
@@ -220,7 +227,7 @@ func (request *Request) capture(h *Handler, r *http.Request) error {
 			}
 		}
 	}
-	request.GraphQL = graphql(layer.Body, query)
+	request.GraphQL, request.gqlErr = graphql(layer.Body, query)
 	return nil
 }
 

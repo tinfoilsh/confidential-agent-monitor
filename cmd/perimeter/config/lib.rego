@@ -163,6 +163,18 @@ reasons contains sprintf("The %s policy does not allow this request.", [source])
 	not source in allows
 }
 
+# A refused request that matched no operation says so, since that is usually why it was refused.
+reasons contains ask_message if {
+	unknown
+	mode == "off"
+}
+
+reasons contains ask_message if {
+	unknown
+	some source in needed
+	not source in allows
+}
+
 reasons contains sprintf("%s policy approvals must be a set or array of {id, message} objects with unique %s.* IDs and nonempty messages", [source, source]) if {
 	some source, _ in approvals
 	not source in valid_approvals

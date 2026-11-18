@@ -257,7 +257,7 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 			actions[id] = map[string][]string{"effects": action.Effects}
 		}
 	}
-	definition["catalog"], _ = json.Marshal(map[string]any{"actions": actions})
+	definition["catalog"], _ = json.Marshal(map[string]any{"actions": actions, "fields": preset.Catalog.Fields})
 	spec.Definition, _ = json.Marshal(definition)
 
 	setup, _ := json.Marshal(preset.Catalog.Connection)

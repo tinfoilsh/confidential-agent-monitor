@@ -8,7 +8,7 @@
     },
     "connection": {"mcp": {"url": "https://api.serpkite.com/v1/mcp"}},
     "fields": [
-      {"key": "token", "label": "API key", "credential": true, "secret": true}
+      {"key": "token", "label": "API key", "credential": true, "secret": true, "oauth": {"resource": "https://api.serpkite.com/v1/mcp"}}
     ]
   }
 }

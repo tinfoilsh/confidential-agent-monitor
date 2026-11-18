@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
 	"path/filepath"
 	"regexp"
 	"slices"
@@ -96,7 +97,7 @@ func groupHints(ops []map[string]any, p parsed, provider string) map[string]spec
 }
 
 func actionTitle(s string) string {
-	if title := map[string]string{"repos": "Repositories", "orgs": "Organizations", "user": "Account", "gpg_keys": "GPG keys", "ssh_signing_keys": "SSH signing keys", "read": "Read", "write": "Create and edit", "admin": "Manage", "execute": "Run", "pay": "Make payments", "open": "Open and edit", "push": "Push commits", "merge": "Merge", "use": "Use tools"}[s]; title != "" {
+	if title := map[string]string{"repos": "Repositories", "orgs": "Organizations", "user": "Account", "graphql": "GraphQL", "gpg_keys": "GPG keys", "ssh_signing_keys": "SSH signing keys", "read": "Read", "write": "Create and edit", "admin": "Manage", "execute": "Run", "pay": "Make payments", "open": "Open and edit", "push": "Push commits", "merge": "Merge", "use": "Use tools"}[s]; title != "" {
 		return title
 	}
 	s = strings.ReplaceAll(s, "_", " ")
@@ -133,6 +134,7 @@ func groupRecord(record map[string]any, hints map[string]specOp) int {
 			}
 		}
 	}
+	curated := maps.Clone(actions)
 	changed := 0
 	for id, value := range ops {
 		op := value.(map[string]any)
@@ -158,6 +160,9 @@ func groupRecord(record map[string]any, hints map[string]specOp) int {
 			verb = parts[len(parts)-1]
 		}
 		next := groupedAction(o, verb)
+		if _, ok := curated[old]; ok {
+			next = old
+		}
 		if next != old {
 			op["action"] = next
 			changed++

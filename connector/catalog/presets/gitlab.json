@@ -5295,9 +5295,10 @@
       "http": {
         "slots": [
           {
-            "header": "Private-Token",
+            "header": "Authorization",
             "origin": "https://gitlab.com",
             "path": "/api/v4",
+            "prefix": "Bearer ",
             "value": "token"
           }
         ]
@@ -5323,9 +5324,11 @@
       },
       {
         "key": "token",
-        "label": "Personal access token",
+        "label": "GitLab account",
+        "hint": "Signing in works on GitLab.com. For a self-managed instance, paste a personal access token.",
         "credential": true,
-        "secret": true
+        "secret": true,
+        "oauth": {"device_auth_url": "{origin}/oauth/authorize_device", "token_url": "{origin}/oauth/token", "client_id": "594a1b8d068b07ac40b0221a34715b34542f95181847fd3d22e3360c50553de3", "auth_style": "params", "scope": "api", "required_scopes": ["api"]}
       }
     ],
     "group": "api"

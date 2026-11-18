@@ -48,6 +48,7 @@ type Grant struct {
 	RefreshToken    string                `json:"refresh_token"`
 	Scope           string                `json:"scope"`
 	Resource        string                `json:"resource"`
+	Issuer          string                `json:"issuer,omitempty"`
 	Prompt          string                `json:"prompt,omitempty"`
 	AuthStyle       string                `json:"auth_style,omitempty"`
 	TokenType       string                `json:"token_type,omitempty"`
@@ -97,7 +98,7 @@ func (o *Grant) validate() error {
 	if _, ok := authStyles[o.AuthStyle]; !ok || !slices.Contains(prompts, o.Prompt) {
 		return errors.New("oauth prompt or auth_style is not supported")
 	}
-	return CheckEndpoints(o.AuthURL, o.DeviceAuthURL, o.TokenURL, o.Resource)
+	return CheckEndpoints(o.AuthURL, o.DeviceAuthURL, o.TokenURL, o.Resource, o.Issuer)
 }
 
 func CheckEndpoints(endpoints ...string) error {
@@ -487,22 +488,25 @@ func (s *SignIns) begin(ctx context.Context, client *http.Client, raw json.RawMe
 }
 
 func (s *SignIns) discover(ctx context.Context, client *http.Client, g *Grant, redirect string) error {
-	prm, err := protectedResource(ctx, client, g.Resource, s.limits.MaxResponseBytes)
-	if err != nil {
-		return err
-	}
-	u, err := url.Parse(g.Resource)
-	if err != nil {
-		return err
-	}
-	server, scopes := u.Scheme+"://"+u.Host, []string(nil)
-	if prm != nil {
-		if len(prm.AuthorizationServers) == 0 {
-			return fmt.Errorf("%s names no authorization server", g.Resource)
+	server, scopes := g.Issuer, []string(nil)
+	if server == "" {
+		prm, err := protectedResource(ctx, client, g.Resource, s.limits.MaxResponseBytes)
+		if err != nil {
+			return err
 		}
-		g.Resource = prm.Resource
-		server = strings.TrimSuffix(prm.AuthorizationServers[0], "/")
-		scopes = slices.Clone(prm.ScopesSupported)
+		u, err := url.Parse(g.Resource)
+		if err != nil {
+			return err
+		}
+		server = u.Scheme + "://" + u.Host
+		if prm != nil {
+			if len(prm.AuthorizationServers) == 0 {
+				return fmt.Errorf("%s names no authorization server", g.Resource)
+			}
+			g.Resource = prm.Resource
+			server = strings.TrimSuffix(prm.AuthorizationServers[0], "/")
+			scopes = slices.Clone(prm.ScopesSupported)
+		}
 	}
 	if err := CheckEndpoints(server); err != nil {
 		return err

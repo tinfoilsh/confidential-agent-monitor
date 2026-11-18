@@ -387,9 +387,10 @@
     "fields": [
       {
         "key": "token",
-        "label": "API token",
+        "label": "Todoist account",
         "credential": true,
-        "secret": true
+        "secret": true,
+        "oauth": {"issuer": "https://api.todoist.com", "scope": "data:read_write data:delete project:delete"}
       }
     ],
     "group": "api"

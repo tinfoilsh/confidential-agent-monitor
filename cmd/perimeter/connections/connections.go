@@ -178,8 +178,14 @@ func parseUDP(spec config.ConnectionSpec, p *Setup) error {
 func parseHTTP(spec config.ConnectionSpec, p *Setup) error {
 	var set slots.Set
 	setup, err := web.Parse(spec.Config, spec.Definition, spec.Options, func(raw json.RawMessage) (web.Slots, error) {
+		var list []slots.Slot
+		if len(raw) != 0 {
+			if err := facts.DecodeNumbers(raw, &list); err != nil {
+				return nil, err
+			}
+		}
 		var err error
-		set, err = slots.Parse(raw, httpSlots)
+		set, err = slots.New(append(list, signInSlots(spec.Definition)...), httpSlots)
 		return set, err
 	})
 	if err != nil {
@@ -194,6 +200,33 @@ func parseHTTP(spec config.ConnectionSpec, p *Setup) error {
 		}}, nil
 	}
 	return httpSetup(p, setup, set)
+}
+
+func signInSlots(definition json.RawMessage) []slots.Slot {
+	var preset struct {
+		Catalog struct {
+			Fields []struct {
+				Key   string `json:"key"`
+				OAuth *struct {
+					AuthURL  string `json:"auth_url"`
+					TokenURL string `json:"token_url"`
+				} `json:"oauth"`
+			} `json:"fields"`
+		} `json:"catalog"`
+	}
+	json.Unmarshal(definition, &preset)
+	var derived []slots.Slot
+	for _, f := range preset.Catalog.Fields {
+		if f.OAuth == nil {
+			continue
+		}
+		for _, endpoint := range [][2]string{{slots.OAuthAuthorize, f.OAuth.AuthURL}, {slots.OAuthToken, f.OAuth.TokenURL}} {
+			if u, err := url.Parse(endpoint[1]); err == nil && slots.ValidOrigin(u.Scheme+"://"+u.Host) {
+				derived = append(derived, slots.Slot{Value: f.Key, Origin: u.Scheme + "://" + u.Host, OAuth: endpoint[0]})
+			}
+		}
+	}
+	return derived
 }
 
 func httpSetup(p *Setup, setup *web.Setup, set slots.Set) error {
@@ -231,6 +264,8 @@ func httpSetup(p *Setup, setup *web.Setup, set slots.Set) error {
 			}
 		case details.HTTP.WebSocket && o.Operation == nil:
 			return errors.New("WebSocket requests require a reviewed operation")
+		case o.Operation != nil && o.Operation.Action == web.SignInAction:
+			c.Sends, c.Observes = config.AudienceMe, config.InitialLabel
 		case o.Operation != nil:
 			c.Sends = sends[o.Operation.ID]
 		}
