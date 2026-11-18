@@ -288,7 +288,6 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 		p, _ := plan.next.Config.Principal(fingerprint)
 		s.identities.Register(fingerprint, p, true)
 	}
-	s.setWireGuardPeers(plan.next.Config)
 	for r := range s.records.All() {
 		if r.State != statePending || r.Changes == nil {
 			continue

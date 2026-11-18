@@ -24,7 +24,6 @@ require (
 	github.com/tinfoilsh/confidential-agent-monitor/connector/tinfoil v0.0.0
 	github.com/tinfoilsh/confidential-agent-monitor/connector/web v0.0.0
 	github.com/tinfoilsh/confidential-agent-monitor/core/tomledit v0.0.0
-	github.com/tinfoilsh/confidential-agent-monitor/core/transport/wgtransport v0.0.0
 	github.com/tinfoilsh/tinfoil-go v0.17.0-rc.3.0.20261022181158-836693177e53
 	gocloud.dev v0.46.0
 	golang.org/x/crypto v0.57.0
@@ -92,7 +91,6 @@ require (
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/goccy/go-json v0.10.6 // indirect
-	github.com/google/btree v1.1.3 // indirect
 	github.com/google/certificate-transparency-go v1.3.3 // indirect
 	github.com/google/go-containerregistry v0.21.7 // indirect
 	github.com/google/go-tdx-guest v0.3.1 // indirect
@@ -165,15 +163,12 @@ require (
 	golang.org/x/text v0.42.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
-	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
-	golang.zx2c4.com/wireguard v0.0.0-20261024220952-b3bc704ef0ee // indirect
 	google.golang.org/api v0.283.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260819154853-08b0e4226688 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260819154853-08b0e4226688 // indirect
 	google.golang.org/grpc v1.83.2 // indirect
 	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gvisor.dev/gvisor v0.0.0-20250503011706-39ed1f5ac29c // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
 	mvdan.cc/sh/v3 v3.14.1 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
@@ -193,5 +188,4 @@ replace (
 	github.com/tinfoilsh/confidential-agent-monitor/connector/tinfoil => ../../connector/tinfoil
 	github.com/tinfoilsh/confidential-agent-monitor/connector/web => ../../connector/web
 	github.com/tinfoilsh/confidential-agent-monitor/core/tomledit => ../../core/tomledit
-	github.com/tinfoilsh/confidential-agent-monitor/core/transport/wgtransport => ../../core/transport/wgtransport
 )

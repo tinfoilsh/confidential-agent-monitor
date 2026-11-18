@@ -10,12 +10,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"maps"
-	"math"
 	"net"
 	"net/http"
 	"net/http/httptest"
-	"net/netip"
 	"net/url"
 	"path"
 	"slices"
@@ -25,16 +22,15 @@ import (
 	"github.com/coder/websocket"
 	"github.com/flynn/noise"
 	"github.com/rs/cors"
-	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/connections"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/certificates"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/noisetransport"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/sshtransport"
-	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/wgtransport"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -173,8 +169,8 @@ func (s *state) authenticate(o *owner, ownerSSH sshtransport.Session) sshtranspo
 		}); session != nil || err != nil {
 			return session, nil, err
 		}
-		if cert, ok := key.(*ssh.Certificate); ok && certify != nil {
-			p, err := certify(conn.User(), cert)
+		if cert, ok := key.(*ssh.Certificate); ok && identityCA != nil {
+			p, err := certificates.SSHUser(identityCA, cert)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -399,38 +395,5 @@ func validRPCPath(raw string) bool {
 func ownerPath(p string) bool {
 	return !strings.Contains(p, "..") && !strings.Contains(p, "\\") && !slices.ContainsFunc([]string{"/app", "/owner"}, func(reserved string) bool {
 		return p == reserved || strings.HasPrefix(p, reserved+"/")
-	})
-}
-
-func (s *state) listenWireGuard() error {
-	address, err := netip.ParseAddrPort(*wireGuardAddress)
-	if err != nil || *wireGuardPort > math.MaxUint16 {
-		return errors.New("-wireguard-key needs -wireguard-address as an address and port inside the tunnel, and a UDP -wireguard-port")
-	}
-	if s.wireguard, err = wgtransport.Listen(wireGuardKey, uint16(*wireGuardPort), address); err == nil {
-		go s.wireguard.Serve(s.serveWireGuard)
-	}
-	return err
-}
-
-func (s *state) setWireGuardPeers(cfg *config.Config) {
-	if s.wireguard == nil {
-		return
-	}
-	if err := s.wireguard.SetPeers(wgtransport.Peers(maps.Keys(cfg.Principals))); err != nil {
-		log.Printf("wireguard: %v", err)
-	}
-}
-
-func (s *state) serveWireGuard(peer [32]byte, source netip.AddrPort, conn net.Conn) {
-	key := wgtransport.Identity(peer, source.Addr())
-	held, release, ok := s.identities.Hold(context.Background(), key)
-	if !ok {
-		conn.Close()
-		return
-	}
-	defer release()
-	netx.ServeConnect(held, conn, &http.Server{ReadHeaderTimeout: readHeaderTimeout}, func(ctx context.Context, network, host string, port uint32, accept func() (net.Conn, error)) error {
-		return s.open(ctx, key, network, host, port, accept)
 	})
 }

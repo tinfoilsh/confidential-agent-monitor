@@ -14,7 +14,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
-	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/wgtransport"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -174,7 +173,6 @@ func Load(text string, presets map[string]*catalog.Preset) (*Config, error) {
 		return nil, err
 	}
 	cfg.Principals = map[string]string{}
-	addresses := map[netip.Addr]bool{}
 	for name, id := range cfg.Identities {
 		if err := validateEffects("agent "+name, id.Effects); err != nil {
 			return nil, err
@@ -190,20 +188,11 @@ func Load(text string, presets map[string]*catalog.Preset) (*Config, error) {
 			return nil, fmt.Errorf("identity %s shares another identity's public key", name)
 		}
 		cfg.Principals[fingerprint] = name
-		if _, address, ok := wgtransport.ParseIdentity(fingerprint); ok {
-			if addresses[address] {
-				return nil, fmt.Errorf("identity %s shares another identity's WireGuard address", name)
-			}
-			addresses[address] = true
-		}
 	}
 	return cfg, nil
 }
 
 func KeyFingerprint(authorizedKey string) (string, error) {
-	if peer, address, ok := wgtransport.ParseIdentity(authorizedKey); ok {
-		return wgtransport.Identity(peer, address), nil
-	}
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(authorizedKey))
 	if err != nil {
 		return "", err

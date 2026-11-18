@@ -25,7 +25,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/certificates"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/identity"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/sealedlog"
-	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/wgtransport"
 	"gocloud.dev/blob"
 	"golang.org/x/crypto/ssh"
 )
@@ -62,7 +61,6 @@ type state struct {
 	table      *core.Table
 	routes     sandbox.Forwarder
 	relays     *http.Transport
-	wireguard  *wgtransport.Server
 	identities identity.Registry
 	admissions admission.Set[*admitted]
 	records    *approval.Records[*record]

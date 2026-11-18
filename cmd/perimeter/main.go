@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"flag"
 	"fmt"
 	"io/fs"
@@ -25,9 +24,6 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/worker"
-	"github.com/tinfoilsh/confidential-agent-monitor/core/certificates"
-	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
-	"github.com/tinfoilsh/confidential-agent-monitor/core/teleport"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/noisetransport"
 	"github.com/tinfoilsh/confidential-agent-monitor/ui"
 	"gocloud.dev/blob"
@@ -47,15 +43,12 @@ const (
 )
 
 const (
-	maxWorkers           = 32
-	workerBroker         = "/broker.sock"
-	workerTmpBytes       = "67108864"
-	workerMemoryLimit    = "256MiB"
-	workerMaxProcs       = "2"
-	defaultWireGuardPort = 51820
+	maxWorkers        = 32
+	workerBroker      = "/broker.sock"
+	workerTmpBytes    = "67108864"
+	workerMemoryLimit = "256MiB"
+	workerMaxProcs    = "2"
 )
-
-var errIssuers = errors.New("set only one of -identity-ca and -teleport-ca")
 
 var (
 	listen           = flag.String("listen", defaultListen, "SSH address; it refuses agents until unlock")
@@ -68,15 +61,13 @@ var (
 	connectorWorkers = flag.Bool("connector-workers", false, "run all connectors in isolated worker processes")
 	workerRoot       = flag.String("worker-root", defaultWorkerRoot, "prepared read-only filesystem for connector workers")
 	serveWorker      = flag.Bool(serveWorkerFlag, false, "serve one connector on inherited descriptors")
-	wireGuardPort    = flag.Uint("wireguard-port", defaultWireGuardPort, "UDP port of the WireGuard ingress")
-	wireGuardAddress = flag.String("wireguard-address", "", "address and port inside the WireGuard tunnel where workloads open CONNECT streams")
 )
 
 var (
 	sshHostKey         ssh.Signer
 	unlockKey          []byte
 	extraPresets       fs.FS
-	certify            func(login string, cert *ssh.Certificate) (facts.Principal, error)
+	identityCA         ssh.PublicKey
 	basePolicy         string
 	policyFile         string
 	secretFiles        *os.Root
@@ -84,7 +75,6 @@ var (
 	development        bool
 	passphraseKeys     bool
 	workers            *worker.Local
-	wireGuardKey       []byte
 	presets            map[string]*catalog.Preset
 	presetDefaults     map[string]json.RawMessage
 	identityAttributes = map[string]func(json.RawMessage) error{sandbox.Attribute: sandbox.ValidateBoot}
@@ -123,29 +113,11 @@ func init() {
 		return nil
 	})
 	flag.Func("identity-ca", "file holding one SSH CA public key in authorized_keys format; its expiring user certificates name identities and their groups. Every key certified with one name shares that name's label", func(path string) error {
-		if certify != nil {
-			return errIssuers
-		}
 		data, err := os.ReadFile(path)
-		var ca ssh.PublicKey
 		if err == nil {
-			ca, _, _, _, err = ssh.ParseAuthorizedKey(data)
+			identityCA, _, _, _, err = ssh.ParseAuthorizedKey(data)
 		}
-		certify = func(_ string, cert *ssh.Certificate) (facts.Principal, error) { return certificates.SSHUser(ca, cert) }
 		return err
-	})
-	flag.Func("teleport-ca", "file holding Teleport user CA public keys, as tctl auth export --type=user writes them, read at each sign-in; a certificate signs its Teleport user in, with its roles as groups, for a login its roles permit", func(path string) error {
-		if certify != nil {
-			return errIssuers
-		}
-		certify = func(login string, cert *ssh.Certificate) (facts.Principal, error) {
-			trusted, err := os.ReadFile(path)
-			if err != nil {
-				return facts.Principal{}, err
-			}
-			return teleport.User(trusted, login, cert)
-		}
-		return nil
 	})
 	flag.Func("base-policy", "Rego file in package perimeter.base; every decision needs its allow and its approvals as it does owner policy's, every admin call by another caller than the owner needs its admin_allow, and its capable grants identities the routes, config and propose capabilities; owner policy cannot change it", func(path string) error {
 		base, err := os.ReadFile(path)
@@ -163,13 +135,6 @@ func init() {
 	})
 	flag.Func("secrets", "directory that file credentials are read from at each use", func(path string) (err error) {
 		secretFiles, err = os.OpenRoot(path)
-		return err
-	})
-	flag.Func("wireguard-key", "file holding the base64 private key of a WireGuard ingress for identities whose key is: wireguard PEER-PUBLIC-KEY INNER-ADDRESS", func(path string) error {
-		key, err := os.ReadFile(path)
-		if err == nil {
-			wireGuardKey, err = base64.StdEncoding.Strict().DecodeString(strings.TrimSpace(string(key)))
-		}
 		return err
 	})
 }
@@ -209,12 +174,6 @@ func main() {
 	}
 	defer bucket.Close()
 	s := newState(ctx, bucket)
-	if wireGuardKey != nil {
-		if err := s.listenWireGuard(); err != nil {
-			log.Fatal(err)
-		}
-		defer s.wireguard.Close()
-	}
 
 	app := http.StripPrefix("/app/", http.FileServerFS(ui.Files))
 	if *uiDevURL != "" {

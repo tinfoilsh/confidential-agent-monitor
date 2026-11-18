@@ -126,21 +126,6 @@ func ServeConn(ctx context.Context, c net.Conn, server *http.Server) error {
 	return ServeListener(ctx, Listen(ctx, c), server)
 }
 
-// A hijacked connection never reports closing, so the server ends with the stream it carried.
-func ServeConnect(ctx context.Context, c net.Conn, server *http.Server, open Open) error {
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
-	server.Handler = Connect(func(ctx context.Context, network, host string, port uint32, accept func() (net.Conn, error)) error {
-		accepted := false
-		err := open(ctx, network, host, port, func() (net.Conn, error) { accepted = true; return accept() })
-		if accepted {
-			cancel()
-		}
-		return err
-	})
-	return ServeConn(ctx, c, server)
-}
-
 func Listen(ctx context.Context, c net.Conn) net.Listener {
 	ctx, cancel := context.WithCancel(ctx)
 	return &listener{ctx, cancel, c, c}
