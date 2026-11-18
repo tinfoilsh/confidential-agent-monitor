@@ -1175,11 +1175,16 @@ function Connection(props: { name: string }) {
                 <Show when={url()}>
                   {(url) => (
                     <CopyField
-                      label="Bunker connection URL"
+                      label="Connection URL"
                       value={url()}
                       copyLabel={`Copy ${props.name} URL`}
                     />
                   )}
+                </Show>
+                <Show when={owner.kindOf(connection()) === "mcp"}>
+                  <p class="muted field-help">
+                    Use this URL to access the MCP.
+                  </p>
                 </Show>
                 <Show when={tinfoil()}>
                   {(setup) => (
