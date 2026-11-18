@@ -555,8 +555,11 @@ func (p *Preset) Match(r *Request, config *Setup, f facts.Observation) (facts.Ob
 			for _, value := range captures {
 				matches = matches && !strings.Contains(value, ":")
 			}
-			if matches && !slices.Contains(origins, set) {
-				origins, hosts[set] = append(origins, set), captures
+			if _, seen := hosts[set]; matches && !seen {
+				hosts[set] = captures
+				if !slices.Contains(origins, set) {
+					origins = append(origins, set)
+				}
 			}
 		}
 	}
