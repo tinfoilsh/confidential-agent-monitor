@@ -2,38 +2,82 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
 	"log"
+	"log/slog"
 	"net"
 	"os"
 	"os/signal"
-	"strconv"
+	"path/filepath"
+	"strings"
+	"sync"
+	"sync/atomic"
+	"syscall"
 	"time"
 
 	cedar "github.com/cedar-policy/cedar-go"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/postgres"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/tcp"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/admission"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/certificates"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
-	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/sshtransport"
 	"golang.org/x/crypto/ssh"
 )
 
+const (
+	connectAction  = "connect"
+	dialTimeout    = 10 * time.Second
+	relayDrain     = 10 * time.Second
+	connectTimeout = 30 * time.Second
+	openTimeout    = time.Minute
+)
+
+var (
+	errRefused     = errors.New("policy does not permit this request")
+	errCertificate = errors.New("sign in with an expiring user certificate from the identity CA that carries a key ID")
+	decisions      = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	sshLimits      = sshtransport.Limits{MaxAuthTries: 3, MaxHandshakes: 64, HandshakeTimeout: 10 * time.Second}
+)
+
+type service struct {
+	TCP        json.RawMessage `json:"tcp"`
+	Postgres   json.RawMessage `json:"postgres"`
+	Attributes cedar.Record    `json:"attributes"`
+}
+
+type admitted struct {
+	principal facts.Principal
+	request   core.Request
+}
+
+type perimeter struct {
+	policies atomic.Pointer[cedar.PolicySet]
+	services cedar.EntityMap
+	mu       sync.Mutex
+	live     admission.Set[admitted]
+}
+
 func main() {
 	keyPath := flag.String("host-key", "host.key", "SSH host private key file")
-	identityPath := flag.String("identity-key", "alice.pub", "public key for the static alice identity")
+	caPath := flag.String("identity-ca", "ca.pub", "SSH CA public key file; its expiring user certificates sign in the person their key ID names, with their principals as groups")
 	address := flag.String("listen", "127.0.0.1:2224", "SSH listener")
-	upstream := flag.String("upstream", "database.internal:5432", "TCP endpoint named database")
+	servicesPath := flag.String("services", "services.json", "JSON file of the services people reach at their own addresses, each with tcp or postgres settings and the attributes policy sees")
+	policyPath := flag.String("policy", "policy.cedar", "Cedar policy file, read again on SIGHUP")
+	secrets := flag.String("secrets", "secrets", "directory holding each Postgres service's password in a file named after the service")
 	flag.Parse()
-	if err := runCommand(*keyPath, *identityPath, *address, *upstream); err != nil {
+	if err := runCommand(*keyPath, *caPath, *address, *servicesPath, *policyPath, *secrets); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func runCommand(keyPath, identityPath, address, upstream string) error {
+func runCommand(keyPath, caPath, address, servicesPath, policyPath, secrets string) error {
 	private, err := os.ReadFile(keyPath)
 	if err != nil {
 		return err
@@ -43,12 +87,20 @@ func runCommand(keyPath, identityPath, address, upstream string) error {
 	if err != nil {
 		return err
 	}
-	public, err := os.ReadFile(identityPath)
+	public, err := os.ReadFile(caPath)
 	if err != nil {
 		return err
 	}
-	key, _, _, _, err := ssh.ParseAuthorizedKey(public)
+	ca, _, _, _, err := ssh.ParseAuthorizedKey(public)
 	if err != nil {
+		return err
+	}
+	raw, err := os.ReadFile(servicesPath)
+	if err != nil {
+		return err
+	}
+	var services map[string]service
+	if err := facts.DecodeNumbers(raw, &services); err != nil {
 		return err
 	}
 	listener, err := net.Listen("tcp", address)
@@ -56,132 +108,156 @@ func runCommand(keyPath, identityPath, address, upstream string) error {
 		return err
 	}
 	defer listener.Close()
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	return serveStatic(ctx, listener, host, key, upstream)
+	return serve(ctx, listener, host, ca, services, policyPath, secrets)
 }
 
-func serveStatic(ctx context.Context, listener net.Listener, host ssh.Signer, key ssh.PublicKey, upstream string) error {
-	hostname, portText, err := net.SplitHostPort(upstream)
-	if err != nil {
-		return err
-	}
-	port, err := strconv.ParseUint(portText, 10, 16)
-	if err != nil || port == 0 {
-		return errors.New("upstream needs a TCP port between 1 and 65535")
-	}
-	raw, err := json.Marshal(struct {
-		Hosts []string `json:"hosts"`
-		Ports []uint32 `json:"ports"`
-	}{[]string{hostname}, []uint32{uint32(port)}})
-	if err != nil {
-		return err
-	}
-	connection, err := tcp.Parse(raw)
-	if err != nil {
-		return err
-	}
-	policies, err := cedar.NewPolicySetFromBytes("inline.cedar", []byte(`
-permit(principal == User::"alice", action == Action::"connect", resource == Service::"database");
-`))
-	if err != nil {
-		return err
-	}
-	identities := map[string]facts.Principal{ssh.FingerprintSHA256(key): {Key: ssh.FingerprintSHA256(key), Name: "alice"}}
-	lookup := func(key string) (facts.Principal, bool) { p, ok := identities[key]; return p, ok }
-	hold := func(parent context.Context, key string) (context.Context, context.CancelFunc, bool) {
-		if _, ok := lookup(key); !ok {
-			return nil, nil, false
-		}
-		held, cancel := context.WithCancel(parent)
-		stop := context.AfterFunc(ctx, cancel)
-		return held, func() { stop(); cancel() }, true
-	}
-	check := func(ctx context.Context, p facts.Principal, name string) error {
-		current, ok := lookup(p.Key)
-		if !ok || !current.Same(p) {
-			return errors.New("unknown identity")
-		}
-		return evaluateCedar(ctx, policies, p, name)
-	}
-	table := core.New(
-		func(ctx context.Context, p facts.Principal, name string) bool { return check(ctx, p, name) == nil },
-		func(ctx context.Context, p facts.Principal, request core.Request) (core.Watch, error) {
-			if !request.Valid() {
-				return nil, errors.New("connection changed")
-			}
-			if err := check(ctx, p, request.Connection); err != nil {
-				return nil, err
-			}
-			return func(stream context.Context, _ func()) (core.Gate, bool) {
-				if !request.Valid() || check(stream, p, request.Connection) != nil {
-					return nil, false
-				}
-				return func(op context.Context, event facts.Event) error {
-					if _, err := event.Decode(); err != nil {
-						return err
-					}
-					if !request.Valid() {
-						return errors.New("connection changed")
-					}
-					return check(op, p, request.Connection)
-				}, true
-			}, nil
-		},
-		func(host string, port uint32, candidates []core.Candidate) (string, bool, bool) {
-			for _, candidate := range candidates {
-				if candidate.Claim != nil && candidate.Claim(host, port) >= 0 {
-					return candidate.Name, false, true
-				}
-			}
-			return "", false, false
-		}, time.Minute)
+func serve(ctx context.Context, listener net.Listener, host ssh.Signer, ca ssh.PublicKey, services map[string]service, policyPath, secrets string) error {
+	pm := &perimeter{services: cedar.EntityMap{}}
+	pm.live.L = &pm.mu
+	table := core.New(func(context.Context, facts.Principal, string) bool { return true }, pm.admit, core.BestClaim, openTimeout)
 	defer table.Close()
-	dialer := &net.Dialer{Timeout: 10 * time.Second}
-	table.Stage("database", connection.Claim, false, func(context.Context) (core.Connector, error) {
-		return core.Connector{Serve: connection.Handler(dialer.DialContext, func(ctx context.Context, a, b net.Conn) { netx.Relay(ctx, a, b, 10*time.Second) })}, nil
-	})
-	table.Start()
-	if state := table.Connections()["database"]; state.State != core.Ready {
-		return fmt.Errorf("database setup: %s", state.Error)
+	dialer := &net.Dialer{Timeout: dialTimeout}
+	// The SSH tunnel already protects the stream, so databases are served inside it without TLS.
+	plaintext := func(context.Context, string) *tls.Config { return nil }
+	for name, s := range services {
+		uid := cedar.NewEntityUID("Service", cedar.String(name))
+		pm.services[uid] = cedar.Entity{UID: uid, Attributes: s.Attributes}
+		var claim func(connector.Target) int
+		var handler connector.Serve
+		switch {
+		case s.Postgres != nil:
+			db, err := postgres.Parse(s.Postgres)
+			if err != nil {
+				return fmt.Errorf("service %s: %w", name, err)
+			}
+			claim = func(target connector.Target) int {
+				if strings.EqualFold(target.Host, db.Hosts()[0]) {
+					return len(target.Host)
+				}
+				return -1
+			}
+			handler = db.Handler(dialer.DialContext, func(context.Context) (string, error) {
+				password, err := os.ReadFile(filepath.Join(secrets, name))
+				return strings.TrimRight(string(password), "\r\n"), err
+			}, plaintext, connectTimeout)
+		case s.TCP != nil:
+			connection, err := tcp.Parse(s.TCP)
+			if err != nil {
+				return fmt.Errorf("service %s: %w", name, err)
+			}
+			claim = connection.Claim
+			handler = connection.Handler(dialer.DialContext, relayDrain)
+		default:
+			return fmt.Errorf("service %s needs tcp or postgres settings", name)
+		}
+		table.Stage(name, "tcp", claim, func(context.Context) (connector.Instance, error) {
+			return connector.Instance{Serve: handler}, nil
+		})
 	}
+	table.Start()
+	if err := pm.load(policyPath); err != nil {
+		return err
+	}
+	reload := make(chan os.Signal, 1)
+	signal.Notify(reload, syscall.SIGHUP)
+	go func() {
+		for range reload {
+			if err := pm.load(policyPath); err != nil {
+				log.Printf("policy not reloaded: %v", err)
+			}
+		}
+	}()
 	stop := context.AfterFunc(ctx, func() { listener.Close() })
 	defer stop()
 	var serveErr error
-	sshtransport.Serve(listener, func() ssh.Signer { return host }, sshtransport.Limits{MaxAuthTries: 3, MaxHandshakes: 64, HandshakeTimeout: 10 * time.Second},
+	sshtransport.Serve(listener, func() ssh.Signer { return host }, sshLimits,
 		func(_ ssh.ConnMetadata, public ssh.PublicKey) (sshtransport.Session, func() error, error) {
-			p, ok := lookup(ssh.FingerprintSHA256(public))
+			cert, ok := public.(*ssh.Certificate)
 			if !ok {
-				return nil, nil, errors.New("unknown identity")
+				return nil, nil, errCertificate
+			}
+			p, err := certificates.SSHUser(ca, cert)
+			if err != nil {
+				return nil, nil, err
 			}
 			return func(conn *ssh.ServerConn, channels <-chan ssh.NewChannel, requests <-chan *ssh.Request) {
 				stop := context.AfterFunc(ctx, func() { conn.Close() })
 				defer stop()
-				sshtransport.ServeDirect(channels, requests, func(stream context.Context, host string, port uint32, accept func() (net.Conn, error)) error {
-					held, cancel, ok := hold(stream, p.Key)
-					if !ok {
-						return errors.New("unknown identity")
-					}
-					defer cancel()
-					return table.Open(held, p, host, port, accept)
-				})
+				defer time.AfterFunc(time.Until(time.Unix(int64(cert.ValidBefore), 0)), func() { conn.Close() }).Stop()
+				sshtransport.ServeDirect(channels, requests, table.Open(p))
 			}, nil, nil
 		}, func(err error) { serveErr = err })
 	return serveErr
 }
 
-func evaluateCedar(ctx context.Context, policies *cedar.PolicySet, principal facts.Principal, connection string) error {
-	if err := ctx.Err(); err != nil {
+func (pm *perimeter) load(path string) error {
+	source, err := os.ReadFile(path)
+	if err != nil {
 		return err
 	}
-	decision, diagnostics := cedar.Authorize(policies, nil, cedar.Request{
-		Principal: cedar.NewEntityUID("User", cedar.String(principal.Name)),
-		Action:    cedar.NewEntityUID("Action", "connect"),
-		Resource:  cedar.NewEntityUID("Service", cedar.String(connection)),
-		Context:   cedar.NewRecord(cedar.RecordMap{}),
-	})
-	if decision != cedar.Allow || len(diagnostics.Errors) != 0 {
-		return errors.New("connection refused")
+	policies, err := cedar.NewPolicySetFromBytes(path, source)
+	if err != nil {
+		return err
+	}
+	pm.mu.Lock()
+	defer pm.mu.Unlock()
+	pm.policies.Store(policies)
+	pm.live.Recheck(func(a admitted) bool { return pm.connect(a) == nil })
+	return nil
+}
+
+func (pm *perimeter) connect(a admitted) error {
+	return pm.authorize(a.principal, connectAction, a.request.Connection, map[string]any{"host": a.request.Target.Host, "port": a.request.Target.Port})
+}
+
+func (pm *perimeter) admit(_ context.Context, p facts.Principal, request core.Request) (core.Watch, error) {
+	a := admitted{p, request}
+	seen := pm.policies.Load()
+	if err := pm.connect(a); err != nil {
+		return nil, err
+	}
+	return func(stream context.Context, end func()) (connector.Gate, bool) {
+		pm.mu.Lock()
+		pm.live.Hold(stream, a, end)
+		pm.mu.Unlock()
+		// A reload before the stream joined the live set did not recheck it.
+		if pm.policies.Load() != seen && pm.connect(a) != nil {
+			return nil, false
+		}
+		return func(_ context.Context, event facts.Event) error {
+			o, err := event.Decode()
+			if err != nil {
+				return err
+			}
+			if o.Operation == nil {
+				return errRefused
+			}
+			return pm.authorize(p, o.Operation.Action, request.Connection, o.Parameters)
+		}, true
+	}, nil
+}
+
+func (pm *perimeter) authorize(p facts.Principal, action, service string, parameters map[string]any) error {
+	record, err := facts.JSON[cedar.Record](parameters)
+	if err != nil {
+		return err
+	}
+	user := cedar.NewEntityUID("User", cedar.String(p.Name))
+	groups := make([]cedar.EntityUID, len(p.Groups))
+	for i, group := range p.Groups {
+		groups[i] = cedar.NewEntityUID("Group", cedar.String(group))
+	}
+	entities := pm.services.Clone()
+	entities[user] = cedar.Entity{UID: user, Parents: cedar.NewEntityUIDSet(groups...)}
+	decision, diagnostic := cedar.Authorize(pm.policies.Load(), entities, cedar.Request{Principal: user, Action: cedar.NewEntityUID("Action", cedar.String(action)),
+		Resource: cedar.NewEntityUID("Service", cedar.String(service)), Context: record})
+	// Cedar skips a policy that fails to evaluate, which could silence a forbid, so any error refuses.
+	allowed := decision == cedar.Allow && len(diagnostic.Errors) == 0
+	decisions.Info("decision", "user", p.Name, "groups", p.Groups, "action", action, "service", service, "context", parameters, "allowed", allowed, "policies", diagnostic)
+	if !allowed {
+		return errRefused
 	}
 	return nil
 }

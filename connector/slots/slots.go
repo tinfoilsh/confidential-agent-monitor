@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
@@ -99,11 +100,11 @@ func (s Set) Names() []string {
 	return slices.Compact(names)
 }
 
-func (s Set) Claim(host string, port uint32) int {
-	host = strings.ToLower(host)
+func (s Set) Claim(target connector.Target) int {
+	host := strings.ToLower(target.Host)
 	score := -1
 	for _, slot := range s.slots {
-		if slot.host == host && slot.port == port {
+		if slot.host == host && slot.port == target.Port {
 			score = len(host)
 		}
 	}

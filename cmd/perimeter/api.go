@@ -18,8 +18,11 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/connections"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 	"golang.org/x/crypto/ssh"
 )
@@ -35,6 +38,8 @@ const (
 )
 
 var errLocked = httpError{errors.New("the Perimeter is locked"), http.StatusLocked}
+
+var errOAuthLoopback = errors.New("this service only accepts sign-ins from a loopback address; open this Perimeter on your own computer to sign in")
 
 type caller struct {
 	Name          string
@@ -129,9 +134,9 @@ type sourceInput struct {
 }
 
 type editsInput struct {
-	Revision    *uint64         `json:"revision,omitempty"`
-	Changes     []format.Change `json:"changes"`
-	Credentials format.Secrets  `json:"credentials,omitempty"`
+	Revision    *uint64           `json:"revision,omitempty"`
+	Changes     []tomledit.Change `json:"changes"`
+	Credentials format.Secrets    `json:"credentials,omitempty"`
 }
 
 func (s *state) adminAPI() http.Handler {
@@ -141,7 +146,7 @@ func (s *state) adminAPI() http.Handler {
 			State string `json:"state,omitempty"`
 		}
 		if c, _ := callerFrom(r.Context()); c.Owner {
-			present, err := documentExists(r.Context(), s.bucket)
+			present, err := format.Exists(r.Context(), s.bucket)
 			if err != nil {
 				return nil, httpError{err, http.StatusServiceUnavailable}
 			}
@@ -200,7 +205,7 @@ func (s *state) adminAPI() http.Handler {
 		return s.viewAfter(r, err)
 	})))
 
-	mux.Handle("POST /enroll", s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input map[string]identityEnrollment) (any, error) {
+	mux.Handle("POST /enroll", s.ownerOnly(jsonHandler(maxDocumentBytes, func(r *http.Request, input map[string]config.Enrollment) (any, error) {
 		return s.viewAfter(r, s.enroll(r.Context(), input))
 	})))
 	mux.Handle("POST /labels/{identity}", ownerLocked(s, held.setLabel))
@@ -208,9 +213,9 @@ func (s *state) adminAPI() http.Handler {
 	mux.Handle("POST /connections/{name}/sign-in", s.ownerOnly(jsonHandler(maxDocumentBytes, s.startSignIn)))
 	mux.Handle("POST /sign-in/{state}", s.ownerOnly(jsonHandler(maxDocumentBytes, s.finishSignIn)))
 	mux.Handle("/connections/{name}/{control...}", s.ownerOnly(s.connectionControl))
-	for pattern, handler := range adminRoutes {
-		mux.Handle(pattern, s.ownerOnly(handler.ServeHTTP))
-	}
+	mux.Handle(sandbox.RelayRoute, s.ownerOnly(jsonHandler(sandbox.MaxRelayBytes, func(r *http.Request, in sandbox.RelayInput) (any, error) {
+		return sandbox.Relay(r.Context(), s.relays, in)
+	})))
 
 	mux.Handle("GET /requests", ownerLocked(s, func(h held, _ *http.Request, _ struct{}) (any, error) {
 		newest := []recordSummary{}
@@ -261,27 +266,21 @@ func (s *state) connectionControl(w http.ResponseWriter, r *http.Request) {
 
 func (s held) setLabel(r *http.Request, l format.Label) (any, error) {
 	identity := r.PathValue("identity")
-	fingerprints := s.identities.Keys(identity)
-	if fingerprints == nil {
+	if s.identities.Keys(identity) == nil {
 		return nil, fmt.Errorf("no identity %s", identity)
 	}
 	if !config.ValidLabel(l) {
 		return nil, fmt.Errorf("a label needs trust in %v and audience in %v", config.Trusts, config.Audiences)
 	}
-	var err error
-	for _, fingerprint := range fingerprints {
-		old := s.label(fingerprint)
-		l.Because = map[string]string{}
-		if l.Trust != config.InitialLabel.Trust {
-			l.Because["trust"] = cmp.Or(old.Because["trust"], "the owner")
-		}
-		if l.Audience != config.InitialLabel.Audience {
-			l.Because["audience"] = cmp.Or(old.Because["audience"], "the owner")
-		}
-		if err = s.relabel(r.Context(), fingerprint, l, nil); err != nil {
-			break
-		}
+	old := s.label(identity)
+	l.Because = map[string]string{}
+	if l.Trust != config.InitialLabel.Trust {
+		l.Because["trust"] = cmp.Or(old.Because["trust"], "the owner")
 	}
+	if l.Audience != config.InitialLabel.Audience {
+		l.Because["audience"] = cmp.Or(old.Because["audience"], "the owner")
+	}
+	err := s.relabel(r.Context(), identity, l, nil)
 	s.recordAdmin(r.Context(), "Set the label of "+identity, l, err)
 	if err != nil {
 		return nil, err
@@ -367,7 +366,7 @@ func (s *state) agentAPI(fingerprint string) http.Handler {
 		}
 		return receipt(record), nil
 	}))
-	mux.HandleFunc("POST /policy/proposals", jsonHandler(maxAgentBytes, func(r *http.Request, input proposalInput) (any, error) {
+	mux.HandleFunc("POST /policy/proposals", jsonHandler(maxAgentBytes, func(r *http.Request, input config.Proposal) (any, error) {
 		return s.proposePolicy(r.Context(), fingerprint, input)
 	}))
 	api := s.adminAPI()
@@ -439,15 +438,15 @@ func (s held) view(r *http.Request) (ownerView, error) {
 	for name, status := range s.table.Connections() {
 		v.Status[name] = status
 		for secret, placeholder := range st.connections[name].placeholders {
-			kind, account := describeCredential(doc.Credentials.Get(format.SecretID{Connection: name, Name: secret}))
+			kind, account := credential.Describe(doc.Credentials.Get(format.SecretID{Connection: name, Name: secret}))
 			v.Fields[name] = append(v.Fields[name], fieldMetadata{Name: secret, Kind: kind, Placeholder: placeholder, Account: account})
 		}
 	}
 	for _, fields := range v.Fields {
 		slices.SortFunc(fields, func(a, b fieldMetadata) int { return strings.Compare(a.Name, b.Name) })
 	}
-	for fingerprint, name := range st.Principals {
-		v.Labels[name] = s.label(fingerprint)
+	for _, name := range st.Principals {
+		v.Labels[name] = s.label(name)
 	}
 	return v, nil
 }
@@ -485,7 +484,7 @@ func (s held) listing(p facts.Principal) any {
 		if len(c.secrets) != 0 {
 			l.Credentials = map[string]string{}
 			for secret := range c.secrets {
-				l.Credentials[secret], _ = describeCredential(doc.Credentials.Get(format.SecretID{Connection: name, Name: secret}))
+				l.Credentials[secret], _ = credential.Describe(doc.Credentials.Get(format.SecretID{Connection: name, Name: secret}))
 			}
 		}
 		result.Connections = append(result.Connections, l)
@@ -505,6 +504,46 @@ func (s *state) agentPolicy(p facts.Principal) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	source, err := format.RenderTOML(visible)
+	source, err := tomledit.Render(visible)
 	return map[string]any{"identity": p.Name, "source": source}, err
+}
+
+type signInInput struct {
+	Redirect   string          `json:"redirect"`
+	Name       string          `json:"name"`
+	Credential json.RawMessage `json:"credential"`
+}
+
+func (s *state) startSignIn(r *http.Request, req signInInput) (any, error) {
+	raw, save, err := s.signInCredential(r.PathValue("name"), req.Name)
+	if err != nil {
+		return nil, err
+	}
+	if req.Credential != nil {
+		raw = req.Credential
+	}
+	from, _ := callerFrom(r.Context())
+	sign, err := s.signIns.Start(r.Context(), s.settings.Load().client(), raw, req.Redirect, from.Session, save)
+	if errors.Is(err, credential.ErrLoopback) {
+		err = errOAuthLoopback
+	}
+	if err != nil {
+		return nil, err
+	}
+	if sign.UserCode != "" {
+		return map[string]any{"url": sign.URL, "state": sign.State, "user_code": sign.UserCode, "expires": sign.Expires}, nil
+	}
+	return map[string]string{"url": sign.URL}, nil
+}
+
+func (s *state) finishSignIn(r *http.Request, req credential.SignInResult) (any, error) {
+	from, _ := callerFrom(r.Context())
+	pending, err := s.signIns.Finish(r.Context(), r.PathValue("state"), from.Session, req)
+	if pending {
+		return map[string]bool{"pending": true}, nil
+	}
+	if err == nil && req.Cancel {
+		return nil, nil
+	}
+	return s.viewAfter(r, err)
 }

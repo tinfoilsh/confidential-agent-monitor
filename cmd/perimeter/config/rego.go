@@ -1,4 +1,4 @@
-package rego
+package config
 
 import (
 	"context"
@@ -18,7 +18,7 @@ type Program struct {
 	queries map[string]rego.PreparedEvalQuery
 }
 
-func Prepare(ctx context.Context, modules map[string]string, data map[string]any, queries map[string]string) (*Program, error) {
+func prepareRego(ctx context.Context, modules map[string]string, data map[string]any, queries map[string]string) (*Program, error) {
 	if data == nil {
 		data = map[string]any{}
 	}
@@ -41,7 +41,7 @@ func Prepare(ctx context.Context, modules map[string]string, data map[string]any
 	return p, nil
 }
 
-func Package(filename, source string) ([]string, error) {
+func regoPackage(filename, source string) ([]string, error) {
 	module, err := ast.ParseModule(filename, source)
 	if err != nil {
 		return nil, err

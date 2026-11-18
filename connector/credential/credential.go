@@ -1,6 +1,7 @@
 package credential
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	jsonv2 "encoding/json/v2"
@@ -14,7 +15,10 @@ import (
 	"golang.org/x/oauth2"
 )
 
-var errNotConfigured = errors.New("credential is not configured")
+var (
+	errNotConfigured = errors.New("credential is not configured")
+	errShape         = errors.New("credential must be a string, an oauth grant or a file under -secrets")
+)
 
 type Value struct {
 	configured bool
@@ -50,6 +54,82 @@ func OAuth(grant json.RawMessage, o OAuthOptions) (*Value, error) {
 	}
 	return &Value{configured: true, grant: g, gate: make(chan struct{}, 1), save: o.Save, client: o.Client, timeout: o.Timeout,
 		token: &oauth2.Token{AccessToken: g.AccessToken, RefreshToken: g.RefreshToken, Expiry: g.Expiry}}, nil
+}
+
+type stored struct {
+	text  *string
+	file  string
+	oauth json.RawMessage
+}
+
+func decode(raw json.RawMessage) (stored, error) {
+	var c stored
+	if bytes.Equal(raw, []byte("null")) {
+		return c, nil
+	}
+	var text string
+	if json.Unmarshal(raw, &text) == nil {
+		c.text = &text
+		return c, nil
+	}
+	var record struct {
+		OAuth json.RawMessage `json:"oauth"`
+		File  string          `json:"file"`
+	}
+	if err := jsonv2.Unmarshal(raw, &record, jsonv2.RejectUnknownMembers(true)); err != nil {
+		return c, err
+	}
+	if bytes.Equal(record.OAuth, []byte("null")) {
+		record.OAuth = nil
+	}
+	if (record.OAuth == nil) == (record.File == "") {
+		return c, errShape
+	}
+	c.file, c.oauth = record.File, record.OAuth
+	return c, nil
+}
+
+func encodeOAuth(grant json.RawMessage) json.RawMessage {
+	raw, _ := json.Marshal(map[string]json.RawMessage{"oauth": grant})
+	return raw
+}
+
+type Options struct {
+	Files   *os.Root
+	Client  *http.Client
+	Timeout time.Duration
+	Save    func(ctx context.Context, before, after json.RawMessage) error
+}
+
+// Parse binds a stored credential: a string, a file under Files, or an OAuth grant whose refreshed form Save stores in place of the one before it.
+func Parse(raw json.RawMessage, o Options) (*Value, error) {
+	if raw == nil {
+		return new(Value), nil
+	}
+	c, err := decode(raw)
+	switch {
+	case err != nil:
+		return nil, err
+	case c.oauth != nil:
+		before := raw
+		return OAuth(c.oauth, OAuthOptions{Client: o.Client, Timeout: o.Timeout,
+			Save: func(ctx context.Context, grant json.RawMessage) error {
+				after := encodeOAuth(grant)
+				if err := o.Save(ctx, before, after); err != nil {
+					return err
+				}
+				before = after
+				return nil
+			}})
+	case c.file != "":
+		if o.Files == nil {
+			return nil, errShape
+		}
+		return File(o.Files, c.file), nil
+	case c.text != nil:
+		return Static(*c.text), nil
+	}
+	return new(Value), nil
 }
 
 func DecodeGrant(raw json.RawMessage) (*Grant, error) {
@@ -111,16 +191,26 @@ func (v *Value) Value(ctx context.Context) (string, error) {
 	return t.AccessToken, nil
 }
 
-func DescribeOAuth(grant json.RawMessage) (ready bool, account string, err error) {
-	g, err := DecodeGrant(grant)
+func Describe(raw json.RawMessage) (kind, account string) {
+	c, err := decode(raw)
+	if err != nil || c.text == nil && c.file == "" && c.oauth == nil {
+		return "unset", ""
+	}
+	if c.oauth == nil {
+		return "static", ""
+	}
+	g, err := DecodeGrant(c.oauth)
 	if err != nil {
-		return false, "", err
+		return "unset", ""
 	}
 	if g.OIDC != nil {
 		account = g.OIDC.Email
 	}
 	token := oauth2.Token{AccessToken: g.AccessToken, RefreshToken: g.RefreshToken, Expiry: g.Expiry}
-	return g.RefreshToken != "" || token.Valid(), account, nil
+	if g.RefreshToken != "" || token.Valid() {
+		return "oauth", account
+	}
+	return "oauth-required", account
 }
 
 func Scrub(ctx context.Context, step string, err error) error {

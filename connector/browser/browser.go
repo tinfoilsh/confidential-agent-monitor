@@ -26,6 +26,7 @@ import (
 	"github.com/chromedp/cdproto/runtime"
 	"github.com/chromedp/cdproto/target"
 	"github.com/chromedp/chromedp"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
@@ -171,7 +172,7 @@ func (b *Session) close() error {
 	return nil
 }
 
-func (b *Session) serve(ctx context.Context, conn net.Conn, gate func(context.Context, facts.Event) error) {
+func (b *Session) serve(ctx context.Context, conn net.Conn, gate connector.Gate) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /navigate", b.handle(gate, "navigate", b.navigate))
 	mux.HandleFunc("GET /snapshot", b.handle(gate, "snapshot", b.snapshot))
@@ -183,7 +184,7 @@ func (b *Session) serve(ctx context.Context, conn net.Conn, gate func(context.Co
 	b.ServeHTTP(ctx, conn, &http.Server{Handler: mux})
 }
 
-func (b *Session) handle(gate func(context.Context, facts.Event) error, command string, do func(context.Context, request) ([]byte, string, error)) http.HandlerFunc {
+func (b *Session) handle(gate connector.Gate, command string, do func(context.Context, request) ([]byte, string, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		b.mu.Lock()
 		epoch := b.epoch

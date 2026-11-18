@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
-	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/rego"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
@@ -82,7 +81,7 @@ var (
 //go:embed lib.rego
 var standardPolicy string
 
-func PreparePolicy(ctx context.Context, cfg *Config, base string) (*rego.Program, error) {
+func PreparePolicy(ctx context.Context, cfg *Config, base string) (*Program, error) {
 	for _, name := range protectedData {
 		if _, ok := cfg.Data[name]; ok {
 			return nil, fmt.Errorf("data.%s is reserved for the Perimeter", name)
@@ -97,7 +96,7 @@ func PreparePolicy(ctx context.Context, cfg *Config, base string) (*rego.Program
 	data["base_policy"] = base != ""
 	modules := map[string]string{standardModule: standardPolicy}
 	if base != "" {
-		path, err := rego.Package(baseModule, base)
+		path, err := regoPackage(baseModule, base)
 		if err == nil && !slices.Equal(path, basePackage) {
 			err = fmt.Errorf("the base policy must be package data.%s, not data.%s", strings.Join(basePackage, "."), strings.Join(path, "."))
 		}
@@ -108,7 +107,7 @@ func PreparePolicy(ctx context.Context, cfg *Config, base string) (*rego.Program
 	}
 	for _, name := range slices.Sorted(maps.Keys(cfg.Policies)) {
 		filename := "policies/" + name
-		path, err := rego.Package(filename, cfg.Policies[name])
+		path, err := regoPackage(filename, cfg.Policies[name])
 		if err != nil {
 			return nil, err
 		}
@@ -117,7 +116,7 @@ func PreparePolicy(ctx context.Context, cfg *Config, base string) (*rego.Program
 		}
 		modules[filename] = cfg.Policies[name]
 	}
-	return rego.Prepare(ctx, modules, data, policyQueries)
+	return prepareRego(ctx, modules, data, policyQueries)
 }
 
 type DecisionInput struct {

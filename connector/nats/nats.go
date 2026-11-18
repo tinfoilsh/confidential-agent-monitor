@@ -19,6 +19,7 @@ import (
 	"unicode/utf8"
 
 	nats "github.com/nats-io/nats.go"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
@@ -78,7 +79,7 @@ type client struct {
 	ctx     context.Context
 	close   func()
 	conn    net.Conn
-	gate    func(context.Context, facts.Event) error
+	gate    connector.Gate
 	up      *nats.Conn
 	options clientOptions
 	limits  Limits
@@ -91,8 +92,8 @@ type Limits struct {
 	Timeout                                                     time.Duration
 }
 
-func (n *NATS) Preauthenticated(dial func(ctx context.Context, network, address string) (net.Conn, error), secret func(ctx context.Context, name string) (string, error), limits Limits, name string) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
-	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+func (n *NATS) Preauthenticated(dial func(ctx context.Context, network, address string) (net.Conn, error), secret func(ctx context.Context, name string) (string, error), limits Limits, name string) connector.Serve {
+	return func(ctx context.Context, s net.Conn, _ string, _ connector.Target, gate connector.Gate) {
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 		n.serve(&client{ctx: ctx, close: func() { cancel(); s.Close() }, conn: s, gate: gate, limits: limits, subs: map[string]*nats.Subscription{}}, dial, secret, name)

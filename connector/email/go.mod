@@ -8,4 +8,6 @@ require (
 	github.com/tinfoilsh/confidential-agent-monitor v0.0.0
 )
 
+require code.dny.dev/ssrf v0.3.0 // indirect
+
 replace github.com/tinfoilsh/confidential-agent-monitor => ../..

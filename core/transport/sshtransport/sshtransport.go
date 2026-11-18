@@ -9,6 +9,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -94,7 +95,7 @@ func Serve(ln net.Listener, hostKey func() ssh.Signer, limits Limits, authentica
 	}
 }
 
-func ServeDirect(chans <-chan ssh.NewChannel, reqs <-chan *ssh.Request, open func(ctx context.Context, host string, port uint32, accept func() (net.Conn, error)) error) {
+func ServeDirect(chans <-chan ssh.NewChannel, reqs <-chan *ssh.Request, open netx.Open) {
 	go AnswerKeepalives(reqs)
 	for nc := range chans {
 		var t TCPIP
@@ -110,7 +111,7 @@ func ServeDirect(chans <-chan ssh.NewChannel, reqs <-chan *ssh.Request, open fun
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 			accepted := false
-			err := open(ctx, t.Host, t.Port, func() (net.Conn, error) {
+			err := open(ctx, "tcp", t.Host, t.Port, func() (net.Conn, error) {
 				accepted = true
 				ch, reqs, err := nc.Accept()
 				if err != nil {

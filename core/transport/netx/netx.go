@@ -2,21 +2,32 @@ package netx
 
 import (
 	"bufio"
+	"cmp"
 	"context"
+	"encoding/binary"
 	"errors"
 	"io"
+	"math"
 	"net"
 	"net/http"
+	"net/netip"
 	"strconv"
+	"strings"
 	"sync"
+	"syscall"
 	"time"
+
+	"code.dny.dev/ssrf"
 )
 
-type Open = func(ctx context.Context, host string, port uint32, accept func() (net.Conn, error)) error
+type Open = func(ctx context.Context, network, host string, port uint32, accept func() (net.Conn, error)) error
+
+// NetworkHeader names a CONNECT stream's network: tcp when absent, or udp for a stream that carries Datagrams.
+const NetworkHeader = "X-Monitor-Network"
 
 func Dial(dial func(ctx context.Context, network, address string) (net.Conn, error), drain time.Duration) Open {
-	return func(ctx context.Context, host string, port uint32, accept func() (net.Conn, error)) error {
-		upstream, err := dial(ctx, "tcp", net.JoinHostPort(host, strconv.FormatUint(uint64(port), 10)))
+	return func(ctx context.Context, network, host string, port uint32, accept func() (net.Conn, error)) error {
+		upstream, err := dial(ctx, network, net.JoinHostPort(host, strconv.FormatUint(uint64(port), 10)))
 		if err != nil {
 			return err
 		}
@@ -25,9 +36,36 @@ func Dial(dial func(ctx context.Context, network, address string) (net.Conn, err
 			upstream.Close()
 			return err
 		}
+		if strings.HasPrefix(network, "udp") {
+			conn = Datagrams(conn)
+		}
 		Relay(ctx, conn, upstream, drain)
 		return nil
 	}
+}
+
+// Guard is a net.Dialer Control that refuses private and reserved destinations unless a prefix in allowed holds them.
+func Guard(allowed []netip.Prefix, network string) func(network, address string, c syscall.RawConn) error {
+	var v4, v6 []netip.Prefix
+	for _, p := range allowed {
+		if p.Addr().Is4() {
+			v4 = append(v4, p)
+		} else {
+			v6 = append(v6, p)
+		}
+	}
+	return ssrf.New(ssrf.WithAnyPort(), ssrf.WithNetworks(network+"4", network+"6"), ssrf.WithAllowedV4Prefixes(v4...), ssrf.WithAllowedV6Prefixes(v6...)).Safe
+}
+
+func Transport(dial func(ctx context.Context, network, address string) (net.Conn, error)) *http.Transport {
+	transport := http.DefaultTransport.(*http.Transport).Clone()
+	transport.Proxy = nil
+	transport.DialContext = dial
+	return transport
+}
+
+func RefuseRedirects(*http.Request, []*http.Request) error {
+	return errors.New("redirects are refused")
 }
 
 func Connect(open Open) http.Handler {
@@ -39,7 +77,7 @@ func Connect(open Open) http.Handler {
 			return
 		}
 		accepted := false
-		err = open(r.Context(), host, uint32(number), func() (net.Conn, error) {
+		err = open(r.Context(), cmp.Or(r.Header.Get(NetworkHeader), "tcp"), host, uint32(number), func() (net.Conn, error) {
 			accepted = true
 			return Hijack(w, established)
 		})
@@ -86,6 +124,21 @@ func ServeConn(ctx context.Context, c net.Conn, server *http.Server) error {
 		}
 	}
 	return ServeListener(ctx, Listen(ctx, c), server)
+}
+
+// A hijacked connection never reports closing, so the server ends with the stream it carried.
+func ServeConnect(ctx context.Context, c net.Conn, server *http.Server, open Open) error {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	server.Handler = Connect(func(ctx context.Context, network, host string, port uint32, accept func() (net.Conn, error)) error {
+		accepted := false
+		err := open(ctx, network, host, port, func() (net.Conn, error) { accepted = true; return accept() })
+		if accepted {
+			cancel()
+		}
+		return err
+	})
+	return ServeConn(ctx, c, server)
 }
 
 func Listen(ctx context.Context, c net.Conn) net.Listener {
@@ -165,6 +218,60 @@ func Relay(ctx context.Context, a, b net.Conn, drain time.Duration) {
 }
 
 const established = "HTTP/1.1 200 Connection Established\r\n\r\n"
+
+const maxFrame = math.MaxUint16
+
+var errFrame = errors.New("datagram exceeds the frame limit")
+
+// Datagrams carries whole datagrams over a stream, each after its big-endian 16-bit length.
+func Datagrams(c net.Conn) net.Conn { return datagrams{c} }
+
+type datagrams struct{ net.Conn }
+
+func (c datagrams) Read(p []byte) (int, error) {
+	var length [2]byte
+	if _, err := io.ReadFull(c.Conn, length[:]); err != nil {
+		return 0, err
+	}
+	n := int(binary.BigEndian.Uint16(length[:]))
+	if n > len(p) {
+		return 0, io.ErrShortBuffer
+	}
+	return io.ReadFull(c.Conn, p[:n])
+}
+
+func (c datagrams) Write(p []byte) (int, error) {
+	if len(p) > maxFrame {
+		return 0, errFrame
+	}
+	if _, err := c.Conn.Write(append(binary.BigEndian.AppendUint16(make([]byte, 0, 2+len(p)), uint16(len(p))), p...)); err != nil {
+		return 0, err
+	}
+	return len(p), nil
+}
+
+// Without these io.Copy, and so Relay, drops empty datagrams and splits large ones.
+func (c datagrams) ReadFrom(r io.Reader) (int64, error) { return copyDatagrams(c, r) }
+
+func (c datagrams) WriteTo(w io.Writer) (int64, error) { return copyDatagrams(w, c) }
+
+func copyDatagrams(dst io.Writer, src io.Reader) (int64, error) {
+	var copied int64
+	datagram := make([]byte, maxFrame)
+	for {
+		n, err := src.Read(datagram)
+		if errors.Is(err, io.EOF) {
+			return copied, nil
+		}
+		if err == nil {
+			_, err = dst.Write(datagram[:n])
+		}
+		if err != nil {
+			return copied, err
+		}
+		copied += int64(n)
+	}
+}
 
 func Hijack(w http.ResponseWriter, head string) (net.Conn, error) {
 	hijacker, ok := w.(http.Hijacker)

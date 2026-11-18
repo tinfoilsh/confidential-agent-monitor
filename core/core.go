@@ -11,7 +11,9 @@ import (
 	"sync"
 	"time"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
 
 const (
@@ -25,33 +27,19 @@ var (
 	errNoServe  = errors.New("the connector serves no streams")
 )
 
-type Gate = func(context.Context, facts.Event) error
+type Watch = func(ctx context.Context, end func()) (connector.Gate, bool)
 
-type Serve = func(ctx context.Context, conn net.Conn, name, host string, port uint32, gate Gate)
-
-type Watch = func(ctx context.Context, end func()) (Gate, bool)
-
-type Connector struct {
-	Serve   Serve
-	Close   func() error
-	Ready   func() error
-	Details json.RawMessage
-	Control http.Handler
-}
-
-type Open = func(context.Context) (Connector, error)
+type Open = func(context.Context) (connector.Instance, error)
 
 type Request struct {
 	Connection string
-	Host       string
-	Port       uint32
-	PerMessage bool
+	Target     connector.Target
 	Valid      func() bool
 }
 
 type Candidate struct {
 	Name  string
-	Claim func(host string, port uint32) int
+	Claim func(connector.Target) int
 }
 
 type Status struct {
@@ -61,17 +49,17 @@ type Status struct {
 }
 
 type setup struct {
-	claim      func(string, uint32) int
-	perMessage bool
-	open       Open
-	ctx        context.Context
-	cancel     context.CancelFunc
+	network string
+	claim   func(connector.Target) int
+	open    Open
+	ctx     context.Context
+	cancel  context.CancelFunc
 }
 
 type connection struct {
 	name      string
 	setup     *setup
-	connector Connector
+	connector connector.Instance
 	active    sync.WaitGroup
 	ready     bool
 	err       error
@@ -80,7 +68,7 @@ type connection struct {
 type Table struct {
 	reaches      func(context.Context, facts.Principal, string) bool
 	admit        func(context.Context, facts.Principal, Request) (Watch, error)
-	selectTarget func(string, uint32, []Candidate) (string, bool, bool)
+	selectTarget func(connector.Target, []Candidate) (string, bool, bool)
 	openTimeout  time.Duration
 	mu           sync.Mutex
 	connections  map[string]*connection
@@ -90,7 +78,7 @@ type Table struct {
 
 func New(reaches func(ctx context.Context, p facts.Principal, connection string) bool,
 	admit func(ctx context.Context, p facts.Principal, r Request) (Watch, error),
-	selectTarget func(host string, port uint32, candidates []Candidate) (name string, explicit, ok bool),
+	selectTarget func(target connector.Target, candidates []Candidate) (name string, explicit, ok bool),
 	openTimeout time.Duration) *Table {
 	return &Table{reaches: reaches, admit: admit, selectTarget: selectTarget, openTimeout: openTimeout, connections: map[string]*connection{}}
 }
@@ -110,7 +98,7 @@ func (c *connection) status() Status {
 	return Status{State: Ready, Details: c.connector.Details}
 }
 
-func closeConnector(c Connector) {
+func closeConnector(c connector.Instance) {
 	if c.Close != nil {
 		c.Close()
 	}
@@ -130,7 +118,7 @@ func (t *Table) Connections() map[string]Status {
 	return out
 }
 
-func (t *Table) Stage(name string, claim func(string, uint32) int, perMessage bool, open Open) {
+func (t *Table) Stage(name, network string, claim func(connector.Target) int, open Open) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	c := t.connections[name]
@@ -141,7 +129,7 @@ func (t *Table) Stage(name string, claim func(string, uint32) int, perMessage bo
 	if c.setup != nil {
 		c.setup.cancel()
 	}
-	s := &setup{claim: claim, perMessage: perMessage, open: open}
+	s := &setup{network: network, claim: claim, open: open}
 	s.ctx, s.cancel = context.WithCancel(context.Background())
 	c.setup, c.ready, c.err = s, false, nil
 	t.staged = append(t.staged, c)
@@ -173,7 +161,7 @@ func (t *Table) Start() {
 		current := t.connections[c.name] == c && slices.Index(staged, c) == i
 		old, s := c.connector, c.setup
 		if current {
-			c.connector = Connector{}
+			c.connector = connector.Instance{}
 		}
 		t.mu.Unlock()
 		if !current {
@@ -183,7 +171,7 @@ func (t *Table) Start() {
 		opened, err := s.open(ctx)
 		if err == nil && opened.Serve == nil {
 			closeConnector(opened)
-			opened, err = Connector{}, errNoServe
+			opened, err = connector.Instance{}, errNoServe
 		}
 		t.mu.Lock()
 		c.connector, c.err, c.ready = opened, err, err == nil
@@ -226,11 +214,33 @@ type candidate struct {
 	s *setup
 }
 
-func (t *Table) Open(ctx context.Context, p facts.Principal, host string, port uint32, accept func() (net.Conn, error)) error {
+func BestClaim(target connector.Target, candidates []Candidate) (name string, explicit, ok bool) {
+	best, tied := -1, false
+	for _, c := range candidates {
+		if c.Claim == nil {
+			continue
+		}
+		switch score := c.Claim(target); {
+		case score > best:
+			name, best, tied = c.Name, score, false
+		case score == best:
+			tied = true
+		}
+	}
+	return name, false, best >= 0 && !tied
+}
+
+func (t *Table) Open(p facts.Principal) netx.Open {
+	return func(ctx context.Context, network, host string, port uint32, accept func() (net.Conn, error)) error {
+		return t.open(ctx, p, connector.Target{Network: network, Host: host, Port: port}, accept)
+	}
+}
+
+func (t *Table) open(ctx context.Context, p facts.Principal, target connector.Target, accept func() (net.Conn, error)) error {
 	t.mu.Lock()
 	var ready []candidate
 	for _, c := range t.connections {
-		if c.status().State == Ready {
+		if c.status().State == Ready && c.setup.network == target.Network {
 			ready = append(ready, candidate{c, c.setup})
 		}
 	}
@@ -240,7 +250,7 @@ func (t *Table) Open(ctx context.Context, p facts.Principal, host string, port u
 	for i, r := range ready {
 		offered[i] = Candidate{Name: r.c.name, Claim: r.s.claim}
 	}
-	name, explicit, ok := t.selectTarget(host, port, offered)
+	name, explicit, ok := t.selectTarget(target, offered)
 	i := slices.IndexFunc(ready, func(r candidate) bool { return r.c.name == name })
 	if !ok || i < 0 {
 		return errNoTarget
@@ -251,9 +261,9 @@ func (t *Table) Open(ctx context.Context, p facts.Principal, host string, port u
 		defer t.mu.Unlock()
 		return t.usable(c, s)
 	}
-	admitting, cancel := context.WithCancel(context.WithoutCancel(ctx))
+	admitting, cancel := context.WithCancel(ctx)
 	stop := context.AfterFunc(s.ctx, cancel)
-	watch, err := t.admit(admitting, p, Request{Connection: c.name, Host: host, Port: port, PerMessage: s.perMessage, Valid: usable})
+	watch, err := t.admit(admitting, p, Request{Connection: c.name, Target: target, Valid: usable})
 	stop()
 	cancel()
 	if err != nil {
@@ -283,8 +293,8 @@ func (t *Table) Open(ctx context.Context, p facts.Principal, host string, port u
 		return nil
 	}
 	if explicit {
-		host = ""
+		target.Host = ""
 	}
-	serve(stream, conn, c.name, host, port, gate)
+	serve(stream, conn, c.name, target, gate)
 	return nil
 }

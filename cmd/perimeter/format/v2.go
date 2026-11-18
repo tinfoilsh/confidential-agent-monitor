@@ -6,9 +6,12 @@ import (
 	"maps"
 	"slices"
 	"strings"
+
+	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
 )
 
 const (
+	version3        = 3
 	ownerPackage    = "sentinel"
 	ownerPolicy     = "network-default"
 	denyUnknown     = "package sentinel\n\ndeny contains \"This request has no recognized policy operation.\" if input.facts.operation == null\n"
@@ -26,22 +29,22 @@ func upgradeV2(plain []byte) ([]byte, error) {
 	if err := json.Unmarshal(plain, &v2); err != nil {
 		return nil, err
 	}
-	if v2.Version >= StateVersion {
+	if v2.Version >= version3 {
 		return plain, nil
 	}
-	source, err := ReadTOML(v2.Policy)
+	source, err := tomledit.Read(v2.Policy)
 	if err != nil {
 		return nil, err
 	}
 	policies, _ := source["policies"].(map[string]any)
 	data, _ := source["data"].(map[string]any)
 	owned := data[ownerPackage] != nil
-	var changes []Change
+	var changes []tomledit.Change
 	for _, name := range slices.Sorted(maps.Keys(policies)) {
 		text, _ := policies[name].(string)
 		owned = owned || strings.Contains(text, ownerPackage)
 		if text == denyUnknown {
-			changes = append(changes, Change{Path: []string{"policies", name}, Value: allowKnown})
+			changes = append(changes, tomledit.Change{Path: []string{"policies", name}, Value: allowKnown})
 		}
 	}
 	if !owned {
@@ -49,10 +52,10 @@ func upgradeV2(plain []byte) ([]byte, error) {
 		for i := 2; policies[name] != nil; i++ {
 			name = fmt.Sprintf("%s-%d", ownerPolicy, i)
 		}
-		changes = append(changes, Change{Path: []string{"policies", name}, Value: allowEverything})
+		changes = append(changes, tomledit.Change{Path: []string{"policies", name}, Value: allowEverything})
 	}
 	if len(changes) != 0 {
-		if v2.Policy, err = EditTOML(v2.Policy, changes); err != nil {
+		if v2.Policy, err = tomledit.Edit(v2.Policy, changes); err != nil {
 			return nil, err
 		}
 	}
@@ -60,7 +63,7 @@ func upgradeV2(plain []byte) ([]byte, error) {
 	if err := json.Unmarshal(plain, &doc); err != nil {
 		return nil, err
 	}
-	doc["version"], _ = json.Marshal(StateVersion)
+	doc["version"], _ = json.Marshal(version3)
 	doc["policy"], _ = json.Marshal(v2.Policy)
 	return json.Marshal(doc)
 }

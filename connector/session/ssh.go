@@ -13,6 +13,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"golang.org/x/crypto/ssh"
 	"mvdan.cc/sh/v3/expand"
@@ -45,10 +46,10 @@ type stream struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 	conn   net.Conn
-	gate   func(context.Context, facts.Event) error
+	gate   connector.Gate
 }
 
-func newStream(ctx context.Context, conn net.Conn, gate func(context.Context, facts.Event) error) *stream {
+func newStream(ctx context.Context, conn net.Conn, gate connector.Gate) *stream {
 	ctx, cancel := context.WithCancel(ctx)
 	return &stream{ctx, cancel, conn, gate}
 }
@@ -95,17 +96,17 @@ func (t *SSH) dial(s *stream, u upstream) (*ssh.Client, error) {
 	return ssh.NewClient(c, chans, reqs), nil
 }
 
-func (t *SSH) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), config *ssh.ServerConfig, key func(context.Context) (string, error)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
-	return func(ctx context.Context, conn net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+func (t *SSH) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), host ssh.Signer, key func(context.Context) (string, error)) connector.Serve {
+	return func(ctx context.Context, conn net.Conn, _ string, _ connector.Target, gate connector.Gate) {
 		s := newStream(ctx, conn, gate)
-		t.serve(s, config, upstream{dial, key}, func(up *ssh.Client, nc ssh.NewChannel) {
+		t.serve(s, host, upstream{dial, key}, func(up *ssh.Client, nc ssh.NewChannel) {
 			relayChannel(up, nc, func(r *ssh.Request) error { return s.gate(s.ctx, facts.Capture(eventForSSH(r).Describe(t.Host), nil)) })
 		})
 	}
 }
 
-func (t *SSH) serve(s *stream, config *ssh.ServerConfig, u upstream, pump func(*ssh.Client, ssh.NewChannel)) {
-	serveSessions(s, config, func(workers *sync.WaitGroup) func(ssh.NewChannel) {
+func (t *SSH) serve(s *stream, host ssh.Signer, u upstream, pump func(*ssh.Client, ssh.NewChannel)) {
+	serveSessions(s, host, func(workers *sync.WaitGroup) func(ssh.NewChannel) {
 		up, err := t.dial(s, u)
 		if err != nil {
 			log.Printf("%s: %v", t.Host, err)
@@ -119,9 +120,9 @@ func (t *SSH) serve(s *stream, config *ssh.ServerConfig, u upstream, pump func(*
 	})
 }
 
-func serveSessions(s *stream, config *ssh.ServerConfig, start func(*sync.WaitGroup) func(ssh.NewChannel)) {
+func serveSessions(s *stream, host ssh.Signer, start func(*sync.WaitGroup) func(ssh.NewChannel)) {
 	defer s.cancel()
-	chans, err := innerSSH(s.conn, config)
+	chans, err := innerSSH(s.conn, host)
 	if err != nil {
 		return
 	}
@@ -257,7 +258,11 @@ func literal(parts []syntax.WordPart) bool {
 	return true
 }
 
-func innerSSH(s net.Conn, config *ssh.ServerConfig) (<-chan ssh.NewChannel, error) {
+func innerSSH(s net.Conn, host ssh.Signer) (<-chan ssh.NewChannel, error) {
+	config := &ssh.ServerConfig{NoClientAuth: true}
+	if host != nil {
+		config.AddHostKey(host)
+	}
 	_, chans, reqs, err := ssh.NewServerConn(s, config)
 	if err != nil {
 		return nil, err

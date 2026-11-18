@@ -3,7 +3,6 @@ package main
 import (
 	"cmp"
 	"context"
-	"embed"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -14,18 +13,21 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"os/signal"
 	"strings"
 	"syscall"
+	"time"
 
-	"github.com/coder/websocket"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
+	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/connections"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/worker"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/certificates"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/teleport"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/noisetransport"
 	"github.com/tinfoilsh/confidential-agent-monitor/ui"
 	"gocloud.dev/blob"
@@ -44,6 +46,17 @@ const (
 	serveWorkerFlag   = "serve-connector-worker"
 )
 
+const (
+	maxWorkers           = 32
+	workerBroker         = "/broker.sock"
+	workerTmpBytes       = "67108864"
+	workerMemoryLimit    = "256MiB"
+	workerMaxProcs       = "2"
+	defaultWireGuardPort = 51820
+)
+
+var errIssuers = errors.New("set only one of -identity-ca and -teleport-ca")
+
 var (
 	listen           = flag.String("listen", defaultListen, "SSH address; it refuses agents until unlock")
 	api              = flag.String("api", defaultAPI, "owner API address")
@@ -55,16 +68,15 @@ var (
 	connectorWorkers = flag.Bool("connector-workers", false, "run all connectors in isolated worker processes")
 	workerRoot       = flag.String("worker-root", defaultWorkerRoot, "prepared read-only filesystem for connector workers")
 	serveWorker      = flag.Bool(serveWorkerFlag, false, "serve one connector on inherited descriptors")
+	wireGuardPort    = flag.Uint("wireguard-port", defaultWireGuardPort, "UDP port of the WireGuard ingress")
+	wireGuardAddress = flag.String("wireguard-address", "", "address and port inside the WireGuard tunnel where workloads open CONNECT streams")
 )
-
-//go:embed presets/*.json
-var shippedPresets embed.FS
 
 var (
 	sshHostKey         ssh.Signer
 	unlockKey          []byte
 	extraPresets       fs.FS
-	identityCA         ssh.PublicKey
+	certify            func(login string, cert *ssh.Certificate) (facts.Principal, error)
 	basePolicy         string
 	policyFile         string
 	secretFiles        *os.Root
@@ -72,12 +84,15 @@ var (
 	development        bool
 	passphraseKeys     bool
 	workers            *worker.Local
+	wireGuardKey       []byte
 	presets            map[string]*catalog.Preset
 	presetDefaults     map[string]json.RawMessage
-	adminRoutes        map[string]http.Handler
 	identityAttributes = map[string]func(json.RawMessage) error{sandbox.Attribute: sandbox.ValidateBoot}
 	events             = slog.New(slog.NewJSONHandler(os.Stdout, nil))
 )
+
+var workerLimits = worker.Limits{Streams: 128, Upstreams: 32, Handshake: connections.DialTimeout, Credential: credentialTimeout, Sign: 10 * time.Second,
+	Connections: 32, Idle: 8, PoolIdle: 30 * time.Second, Read: 10 * time.Second, ServeIdle: time.Minute, Drain: connections.RelayDrain}
 
 func init() {
 	flag.Func("ssh-host-key", "runtime attested SSH private key", func(path string) error {
@@ -107,12 +122,30 @@ func init() {
 		}
 		return nil
 	})
-	flag.Func("identity-ca", "file holding one SSH CA public key in authorized_keys format; its expiring user certificates name identities and their groups. A label follows the certified key, so the issuer must not certify a second key for a running workload", func(path string) error {
-		data, err := os.ReadFile(path)
-		if err == nil {
-			identityCA, _, _, _, err = ssh.ParseAuthorizedKey(data)
+	flag.Func("identity-ca", "file holding one SSH CA public key in authorized_keys format; its expiring user certificates name identities and their groups. Every key certified with one name shares that name's label", func(path string) error {
+		if certify != nil {
+			return errIssuers
 		}
+		data, err := os.ReadFile(path)
+		var ca ssh.PublicKey
+		if err == nil {
+			ca, _, _, _, err = ssh.ParseAuthorizedKey(data)
+		}
+		certify = func(_ string, cert *ssh.Certificate) (facts.Principal, error) { return certificates.SSHUser(ca, cert) }
 		return err
+	})
+	flag.Func("teleport-ca", "file holding Teleport user CA public keys, as tctl auth export --type=user writes them, read at each sign-in; a certificate signs its Teleport user in, with its roles as groups, for a login its roles permit", func(path string) error {
+		if certify != nil {
+			return errIssuers
+		}
+		certify = func(login string, cert *ssh.Certificate) (facts.Principal, error) {
+			trusted, err := os.ReadFile(path)
+			if err != nil {
+				return facts.Principal{}, err
+			}
+			return teleport.User(trusted, login, cert)
+		}
+		return nil
 	})
 	flag.Func("base-policy", "Rego file in package perimeter.base; every decision needs its allow and its approvals as it does owner policy's, every admin call by another caller than the owner needs its admin_allow, and its capable grants identities the routes, config and propose capabilities; owner policy cannot change it", func(path string) error {
 		base, err := os.ReadFile(path)
@@ -132,6 +165,13 @@ func init() {
 		secretFiles, err = os.OpenRoot(path)
 		return err
 	})
+	flag.Func("wireguard-key", "file holding the base64 private key of a WireGuard ingress for identities whose key is: wireguard PEER-PUBLIC-KEY INNER-ADDRESS", func(path string) error {
+		key, err := os.ReadFile(path)
+		if err == nil {
+			wireGuardKey, err = base64.StdEncoding.Strict().DecodeString(strings.TrimSpace(string(key)))
+		}
+		return err
+	})
 }
 
 func main() {
@@ -140,18 +180,15 @@ func main() {
 		log.Fatal("unexpected server arguments; use the separately installed perimeter client")
 	}
 	if *serveWorker {
-		if err := serveWorkerChild(); err != nil {
+		if err := worker.ServeLocal(context.Background(), connections.Open, workerBroker, workerLimits); err != nil {
 			log.Fatal(err)
 		}
 		return
 	}
 
 	development = !*production && strings.HasPrefix(*bucketURL, "file://")
-	shipped, err := fs.Sub(shippedPresets, "presets")
-	if err == nil {
-		presets, presetDefaults, err = config.LoadPresets(shipped, extraPresets)
-	}
-	if err != nil {
+	var err error
+	if presets, presetDefaults, err = config.LoadPresets(extraPresets); err != nil {
 		log.Fatal(err)
 	}
 	if basePolicy != "" {
@@ -160,7 +197,8 @@ func main() {
 		}
 	}
 	if *connectorWorkers {
-		workers = bubblewrap(*workerRoot)
+		workers = &worker.Local{Limit: maxWorkers, Limits: workerLimits, Command: worker.Bubblewrap{Root: *workerRoot, Broker: workerBroker, TmpBytes: workerTmpBytes,
+			MemoryLimit: workerMemoryLimit, MaxProcs: workerMaxProcs, Args: []string{"--" + serveWorkerFlag}}.Command}
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -171,17 +209,19 @@ func main() {
 	}
 	defer bucket.Close()
 	s := newState(ctx, bucket)
+	if wireGuardKey != nil {
+		if err := s.listenWireGuard(); err != nil {
+			log.Fatal(err)
+		}
+		defer s.wireguard.Close()
+	}
 
-	relays := s.routes.Transport()
-	adminRoutes = map[string]http.Handler{sandbox.RelayRoute: jsonHandler(sandbox.MaxRelayBytes, func(r *http.Request, in sandbox.RelayInput) (any, error) {
-		return sandbox.Relay(r.Context(), relays, in)
-	})}
 	app := http.StripPrefix("/app/", http.FileServerFS(ui.Files))
 	if *uiDevURL != "" {
 		if !development {
 			log.Fatal("-ui-dev-url requires a development file:// bucket without -production")
 		}
-		if app, err = uiDevProxy(*uiDevURL); err != nil {
+		if app, err = ui.DevProxy(*uiDevURL); err != nil {
 			log.Fatal(err)
 		}
 	}
@@ -191,11 +231,10 @@ func main() {
 		if unlockKey != nil {
 			log.Fatal("-owner-key-file requires a development file:// bucket without -owner-public-key")
 		}
-		o = &owner{relay: func(ctx context.Context, instance string) (*websocket.Conn, error) {
-			return sandbox.DialOwner(ctx, relays, instance)
-		}}
-		if o.publicKey, err = parseOwnerKey(*ownerPublicKey); err != nil {
-			log.Fatal(err)
+		o = new(owner)
+		var valid bool
+		if o.publicKey, valid = noisetransport.ParseSigner(*ownerPublicKey); !valid {
+			log.Fatal("owner public key must be ed25519: followed by the base64 of a valid Ed25519 public key")
 		}
 		if o.sessionKey, err = noisetransport.LoadKey(*ownerSessionKey); err != nil {
 			log.Fatal(err)
@@ -222,19 +261,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func uiDevProxy(address string) (http.Handler, error) {
-	target, err := url.Parse(address)
-	if err != nil || target.Scheme != "http" || target.Host == "" || target.User != nil ||
-		(target.Path != "" && target.Path != "/") || target.RawQuery != "" || target.Fragment != "" ||
-		(target.Hostname() != "localhost" && !net.ParseIP(target.Hostname()).IsLoopback()) {
-		return nil, errors.New("-ui-dev-url must be a loopback HTTP origin, such as http://127.0.0.1:5173")
-	}
-	target.Path = ""
-	proxy := httputil.NewSingleHostReverseProxy(target)
-	proxy.ErrorHandler = func(w http.ResponseWriter, _ *http.Request, _ error) {
-		http.Error(w, "UI development server unavailable; start it with bun dev/run.ts", http.StatusBadGateway)
-	}
-	return proxy, nil
 }

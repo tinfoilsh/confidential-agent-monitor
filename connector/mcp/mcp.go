@@ -14,7 +14,9 @@ import (
 	"time"
 
 	sdk "github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
 
 var errURL = errors.New("MCP requires an http:// or https:// server URL")
@@ -26,15 +28,17 @@ type Setup struct {
 }
 
 type Client struct {
-	HTTP      *http.Client
-	Token     func(context.Context) (string, error)
-	Expose    func(current *Snapshot) (tools []*sdk.Tool, instructions string)
-	Timeout   time.Duration
-	TLS       func(ctx context.Context, host string) *tls.Config
-	ServeHTTP func(ctx context.Context, conn net.Conn, server *http.Server) error
+	HTTP    *http.Client
+	Token   func(context.Context) (string, error)
+	Expose  func(current *Snapshot) (tools []*sdk.Tool, instructions string)
+	Timeout time.Duration
+	TLS     func(ctx context.Context, host string) *tls.Config
 
-	ClientInfo, ServerInfo *sdk.Implementation
-	Streamable             *sdk.StreamableHTTPOptions
+	Name, Version string
+}
+
+func (c Client) info() *sdk.Implementation {
+	return &sdk.Implementation{Name: c.Name, Version: c.Version}
 }
 
 type Session struct {
@@ -119,13 +123,13 @@ func (m *Session) Close() error {
 
 func (m *Session) Snapshot() *Snapshot { return m.current }
 
-func (m *Session) Serve(ctx context.Context, conn net.Conn, _, host string, port uint32, gate func(context.Context, facts.Event) error) {
+func (m *Session) Serve(ctx context.Context, conn net.Conn, _ string, target connector.Target, gate connector.Gate) {
 	c := conn
-	if port == 443 {
-		c = tls.Server(conn, m.client.TLS(ctx, host))
+	if target.Port == 443 {
+		c = tls.Server(conn, m.client.TLS(ctx, target.Host))
 	}
-	m.client.ServeHTTP(ctx, c, &http.Server{Handler: sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server {
-		server := sdk.NewServer(m.client.ServerInfo, &sdk.ServerOptions{Instructions: m.instructions})
+	netx.ServeConn(ctx, c, &http.Server{Handler: sdk.NewStreamableHTTPHandler(func(*http.Request) *sdk.Server {
+		server := sdk.NewServer(m.client.info(), &sdk.ServerOptions{Instructions: m.instructions})
 		for _, t := range m.tools {
 			server.AddTool(t, func(ctx context.Context, req *sdk.CallToolRequest) (*sdk.CallToolResult, error) {
 				if err := gate(ctx, facts.Capture((&Request{Tool: t.Name, Arguments: req.Params.Arguments, ReadOnly: t.Annotations != nil && t.Annotations.ReadOnlyHint}).Describe(m.setup.Preset))); err != nil {
@@ -136,7 +140,7 @@ func (m *Session) Serve(ctx context.Context, conn net.Conn, _, host string, port
 			})
 		}
 		return server
-	}, m.client.Streamable)})
+	}, &sdk.StreamableHTTPOptions{Stateless: true, PropagateRequestCancellation: true, DisableLocalhostProtection: true})})
 }
 
 func (m *Session) connect(ctx context.Context) error {
@@ -151,7 +155,7 @@ func (m *Session) connect(ctx context.Context) error {
 		authorized.Transport = bearer{m.client.Token, client.Transport}
 		client = &authorized
 	}
-	session, err := sdk.NewClient(m.client.ClientInfo, nil).
+	session, err := sdk.NewClient(m.client.info(), nil).
 		Connect(ctx, &sdk.StreamableClientTransport{Endpoint: m.setup.URL, HTTPClient: client}, nil)
 	if err != nil {
 		return err

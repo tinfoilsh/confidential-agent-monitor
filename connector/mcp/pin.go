@@ -75,3 +75,21 @@ func (pin *Snapshot) Diff(cur *Snapshot) (changes []string) {
 	}
 	return changes
 }
+
+func (pin *Snapshot) Expose(cur *Snapshot) ([]*sdk.Tool, string) {
+	ok, _ := pin.Approved(cur)
+	if len(ok) > 0 {
+		return ok, cur.Instructions
+	}
+	return ok, ""
+}
+
+func (pin *Snapshot) Status(cur *Snapshot) json.RawMessage {
+	ok, _ := pin.Approved(cur)
+	status := map[string]any{"blocked": len(cur.Tools) - len(ok)}
+	if len(ok) < len(cur.Tools) {
+		status["changes"], status["pin"] = pin.Diff(cur), cur
+	}
+	details, _ := json.Marshal(status)
+	return details
+}

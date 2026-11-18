@@ -17,12 +17,13 @@ import (
 
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgproto3"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
 const (
-	sslAccepted = 'S'
-	gssRefused  = 'N'
+	sslAccepted       = 'S'
+	encryptionRefused = 'N'
 )
 
 type Postgres struct {
@@ -55,11 +56,11 @@ func Parse(config json.RawMessage) (*Postgres, error) {
 
 func (r *Postgres) Hosts() []string { return []string{r.url.Hostname()} }
 
-func (r *Postgres) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), serverTLS func(ctx context.Context, host string) *tls.Config, timeout time.Duration) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
-	return func(ctx context.Context, s net.Conn, _, host string, _ uint32, gate func(context.Context, facts.Event) error) {
+func (r *Postgres) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), serverTLS func(ctx context.Context, host string) *tls.Config, timeout time.Duration) connector.Serve {
+	return func(ctx context.Context, s net.Conn, _ string, target connector.Target, gate connector.Gate) {
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
-		backend, startup, err := startup(s, serverTLS(ctx, host))
+		backend, startup, err := startup(s, serverTLS(ctx, target.Host))
 		if err != nil {
 			log.Printf("postgres startup: %v", err)
 			return
@@ -98,12 +99,16 @@ func startup(s net.Conn, config *tls.Config) (*pgproto3.Backend, *pgproto3.Start
 		case *pgproto3.StartupMessage:
 			return backend, msg, nil
 		case *pgproto3.SSLRequest:
-			if _, err := conn.Write([]byte{sslAccepted}); err != nil {
+			if config == nil {
+				_, err = conn.Write([]byte{encryptionRefused})
+			} else if _, err = conn.Write([]byte{sslAccepted}); err == nil {
+				conn = tls.Server(conn, config)
+			}
+			if err != nil {
 				return nil, nil, err
 			}
-			conn = tls.Server(conn, config)
 		case *pgproto3.GSSEncRequest:
-			if _, err := conn.Write([]byte{gssRefused}); err != nil {
+			if _, err := conn.Write([]byte{encryptionRefused}); err != nil {
 				return nil, nil, err
 			}
 		default:
@@ -137,7 +142,7 @@ func (r *Postgres) connect(ctx context.Context, dial func(context.Context, strin
 	return pg.Hijack()
 }
 
-func relayQueries(ctx context.Context, end func(), gate func(context.Context, facts.Event) error, backend *pgproto3.Backend, up *pgconn.HijackedConn) {
+func relayQueries(ctx context.Context, end func(), gate connector.Gate, backend *pgproto3.Backend, up *pgconn.HijackedConn) {
 	var status atomic.Uint32
 	status.Store(uint32(up.TxStatus))
 	pumped := make(chan struct{})

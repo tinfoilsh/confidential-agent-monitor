@@ -1,4 +1,4 @@
-package format
+package tomledit
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-func ReadTOML(source string) (map[string]any, error) {
+func Read(source string) (map[string]any, error) {
 	var v map[string]any
 	if err := toml.Unmarshal([]byte(source), &v); err != nil {
 		return nil, fmt.Errorf("policy TOML: %w", err)
@@ -105,7 +105,7 @@ func toTOML(v any) (any, error) {
 	return mapValues(v, toTOML)
 }
 
-func RenderTOML(v map[string]any) (string, error) {
+func Render(v map[string]any) (string, error) {
 	encoded, err := toTOML(v)
 	if err != nil {
 		return "", err
@@ -114,7 +114,7 @@ func RenderTOML(v map[string]any) (string, error) {
 	return string(text), err
 }
 
-func EditTOML(source string, changes []Change) (string, error) {
+func Edit(source string, changes []Change) (string, error) {
 	doc, err := edit.Parse([]byte(source))
 	if err != nil {
 		return "", err
@@ -159,8 +159,8 @@ func EditTOML(source string, changes []Change) (string, error) {
 	return doc.String(), nil
 }
 
-func FragmentTOML(source string) ([]Change, error) {
-	v, err := ReadTOML(source)
+func Fragment(source string) ([]Change, error) {
+	v, err := Read(source)
 	if err != nil {
 		return nil, err
 	}

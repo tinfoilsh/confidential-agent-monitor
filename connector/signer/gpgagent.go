@@ -10,6 +10,7 @@ import (
 	"net"
 	"strings"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
@@ -31,15 +32,15 @@ var agentCommands = map[string]bool{
 
 type GPGAgent struct{ socket string }
 
-func (socket *GPGAgent) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
-	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+func (socket *GPGAgent) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error)) connector.Serve {
+	return func(ctx context.Context, s net.Conn, _ string, _ connector.Target, gate connector.Gate) {
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 		socket.serve(ctx, cancel, s, gate, dial)
 	}
 }
 
-func (socket *GPGAgent) serve(ctx context.Context, cancel func(), s net.Conn, gate func(context.Context, facts.Event) error, dial func(context.Context, string, string) (net.Conn, error)) {
+func (socket *GPGAgent) serve(ctx context.Context, cancel func(), s net.Conn, gate connector.Gate, dial func(context.Context, string, string) (net.Conn, error)) {
 	up, err := dial(ctx, "unix", socket.socket)
 	if err != nil {
 		log.Printf("gpg-agent: %v", err)

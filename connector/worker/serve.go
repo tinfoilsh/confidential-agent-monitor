@@ -11,10 +11,13 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 	"time"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -29,14 +32,7 @@ type Host struct {
 	HostKey     ssh.Signer
 }
 
-type Instance struct {
-	Serve   func(ctx context.Context, conn net.Conn, name, host string, port uint32, gate func(context.Context, facts.Event) error)
-	Close   func() error
-	Details json.RawMessage
-	Control http.Handler
-}
-
-func Serve(ctx context.Context, factory func(ctx context.Context, data json.RawMessage, host Host) (Instance, error), config io.Reader, ln net.Listener, broker func(context.Context) (net.Conn, error), limits Limits) error {
+func Serve(ctx context.Context, factory func(ctx context.Context, data json.RawMessage, host Host) (connector.Instance, error), config io.Reader, ln net.Listener, broker func(context.Context) (net.Conn, error), limits Limits) error {
 	defer ln.Close()
 	var boot bootstrap
 	if err := readJSON(config, &boot); err != nil {
@@ -123,7 +119,7 @@ func Serve(ctx context.Context, factory func(ctx context.Context, data json.RawM
 		ctx := context.WithValue(r.Context(), streamKey{}, info.ID)
 		stop := context.AfterFunc(ctx, func() { conn.Close() })
 		defer func() { stop(); conn.Close() }()
-		instance.Serve(ctx, conn, info.Name, info.Host, info.Port, func(ctx context.Context, event facts.Event) error {
+		instance.Serve(ctx, conn, info.Name, info.Target, func(ctx context.Context, event facts.Event) error {
 			return call(ctx, callbacks, "/gate/"+info.ID, json.RawMessage(event), nil)
 		})
 	}), limits)
@@ -154,9 +150,13 @@ type brokerDialer struct {
 }
 
 func (d brokerDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
-	if network != "tcp" && network != "tcp4" && network != "tcp6" {
-		return nil, errors.New("worker broker supports TCP only")
+	if !slices.Contains(brokerNetworks, network) {
+		return nil, errors.New("worker broker supports TCP and UDP only")
 	}
-	r := &http.Request{Method: http.MethodConnect, URL: &url.URL{Host: address}, Host: address, Header: make(http.Header)}
-	return connect(ctx, d.dial, r, http.StatusOK, d.timeout)
+	r := &http.Request{Method: http.MethodConnect, URL: &url.URL{Host: address}, Host: address, Header: http.Header{netx.NetworkHeader: {network}}}
+	conn, err := connect(ctx, d.dial, r, http.StatusOK, d.timeout)
+	if err == nil && strings.HasPrefix(network, "udp") {
+		conn = netx.Datagrams(conn)
+	}
+	return conn, err
 }

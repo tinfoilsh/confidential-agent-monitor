@@ -8,4 +8,6 @@ require (
 	github.com/vektah/gqlparser/v2 v2.5.58
 )
 
+require code.dny.dev/ssrf v0.3.0 // indirect
+
 replace github.com/tinfoilsh/confidential-agent-monitor => ../..

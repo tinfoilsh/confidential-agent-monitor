@@ -1,31 +1,41 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"crypto/sha256"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"maps"
+	"net"
 	"net/http"
+	"net/netip"
 	"slices"
+	"strings"
+	"time"
 
 	"github.com/pmezard/go-difflib/difflib"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/connections"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
-	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/rego"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/credential"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/worker"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/certificates"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 	"golang.org/x/crypto/ssh"
 )
 
 type settings struct {
 	*config.Config
-	policy      *rego.Program
+	policy      *config.Program
 	catalog     map[string]config.CatalogEntry
 	catalogID   string
-	tls         *tls.Config
+	authority   *certificates.Authority
 	hostKey     ssh.Signer
 	publicScope map[string][]string
 	connections map[string]*installed
@@ -48,8 +58,8 @@ type settingsPlan struct {
 
 type settingsWrite struct {
 	source      *string
-	changes     []format.Change
-	derive      func(held) ([]format.Change, error)
+	changes     []tomledit.Change
+	derive      func(held) ([]tomledit.Change, error)
 	credentials format.Secrets
 	check       func(held) error
 	saved       *savedAnswer
@@ -67,9 +77,63 @@ var (
 	errPolicyFile     = httpError{errors.New("the policy is loaded from a file; change it there"), http.StatusForbidden}
 )
 
+var errCredentialChanged = errors.New("credential changed; start again")
+
+const credentialTimeout = 30 * time.Second
+
 func everyConnection(string) bool { return true }
 
-func (s *state) prepareSettings(ctx context.Context, source string, rebuild func(connection string) bool, credentials format.Secrets, tlsConfig *tls.Config, hostKey ssh.Signer) (*settingsPlan, error) {
+func (s *state) writeSettings(ctx context.Context, w settingsWrite) error {
+	s.writes.Lock()
+	defer s.writes.Unlock()
+	h := held{s}
+
+	s.mu.Lock()
+	source, current := s.doc.Policy, s.settings.Load()
+	var err error
+	if w.derive != nil {
+		w.changes, err = w.derive(h)
+	}
+	if err == nil && policyFile != "" && (w.source != nil || len(w.changes) != 0) {
+		err = errPolicyFile
+	}
+	if err == nil {
+		err = w.checked(h)
+	}
+	s.mu.Unlock()
+	if err != nil {
+		return err
+	}
+
+	before := source
+	if w.source != nil {
+		source = *w.source
+	}
+	source, rebuild, renamed, err := current.Edit(source, w.changes)
+	if err != nil {
+		return err
+	}
+	plan, err := s.prepareSettings(ctx, source, rebuild, w.credentials, current.authority, current.hostKey)
+	if err != nil {
+		return err
+	}
+	plan.renamed = renamed
+
+	s.mu.Lock()
+	if err = w.checked(h); err == nil {
+		err = h.commitSettings(ctx, plan, w.saved)
+	}
+	if source != before || len(w.credentials) != 0 {
+		h.recordAdmin(ctx, "Change settings", map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(before, source)}, "credentials": slices.Sorted(maps.Keys(w.credentials))}, err)
+	}
+	s.mu.Unlock()
+	if err == nil {
+		s.table.Start()
+	}
+	return err
+}
+
+func (s *state) prepareSettings(ctx context.Context, source string, rebuild func(connection string) bool, credentials format.Secrets, authority *certificates.Authority, hostKey ssh.Signer) (*settingsPlan, error) {
 	cfg, err := config.Load(source, presets)
 	if err != nil {
 		return nil, err
@@ -90,7 +154,7 @@ func (s *state) prepareSettings(ctx context.Context, source string, rebuild func
 		return nil, err
 	}
 
-	next := &settings{Config: cfg, policy: program, tls: tlsConfig, hostKey: hostKey, publicScope: map[string][]string{}, connections: map[string]*installed{}}
+	next := &settings{Config: cfg, policy: program, authority: authority, hostKey: hostKey, publicScope: map[string][]string{}, connections: map[string]*installed{}}
 	operations := map[string]map[string]config.OperationSummary{}
 	plan := &settingsPlan{next: next, source: source, credentials: credentials}
 	var current map[string]*installed
@@ -181,12 +245,12 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 			}
 			id := format.SecretID{Connection: connection, Name: name}
 			var v *credential.Value
-			if v, err = bindCredential(next.Credentials.Get(id), client, func(ctx context.Context, before, after json.RawMessage) error {
+			if v, err = credential.Parse(next.Credentials.Get(id), credential.Options{Files: secretFiles, Client: client, Timeout: credentialTimeout, Save: func(ctx context.Context, before, after json.RawMessage) error {
 				return s.replaceValue(ctx, id, v, before, after)
-			}); err != nil {
+			}}); err != nil {
 				return fmt.Errorf("credential %s/%s: %w", connection, name, err)
 			}
-			c.secrets[name], c.placeholders[name] = v, placeholder(next.Keys, id)
+			c.secrets[name], c.placeholders[name] = v, connections.Placeholder(next.Keys, id)
 		}
 	}
 	next.Enrolled = maps.Clone(next.Enrolled)
@@ -210,7 +274,7 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 	}
 	for _, name := range plan.updates {
 		c := plan.next.connections[name]
-		s.table.Stage(name, c.Claim, c.PerMessage, s.opener(plan.next, c))
+		s.table.Stage(name, c.Network, c.Claim, s.opener(plan.next, c))
 	}
 	previous := s.settings.Swap(plan.next)
 	if previous != nil {
@@ -224,6 +288,7 @@ func (s held) commitSettings(ctx context.Context, plan *settingsPlan, saved *sav
 		p, _ := plan.next.Config.Principal(fingerprint)
 		s.identities.Register(fingerprint, p, true)
 	}
+	s.setWireGuardPeers(plan.next.Config)
 	for r := range s.records.All() {
 		if r.State != statePending || r.Changes == nil {
 			continue
@@ -263,7 +328,7 @@ func (s *state) previewPolicy(ctx context.Context, base format.Document, before 
 	if err != nil {
 		return nil, err
 	}
-	plan, err := s.prepareSettings(ctx, source, everyConnection, nil, before.tls, before.hostKey)
+	plan, err := s.prepareSettings(ctx, source, everyConnection, nil, before.authority, before.hostKey)
 	if err != nil {
 		return nil, err
 	}
@@ -276,4 +341,96 @@ func (s *state) previewPolicy(ctx context.Context, base format.Document, before 
 		return nil, err
 	}
 	return &policyDiff{SourceDiff: sourceDiff(base.Policy, source), EffectiveDiff: sourceDiff(beforeText, afterText)}, nil
+}
+
+func guardedDialer(allowed []netip.Prefix, network string) *net.Dialer {
+	return &net.Dialer{Timeout: connections.DialTimeout, Control: netx.Guard(allowed, network)}
+}
+
+func (st *settings) client() *http.Client {
+	return &http.Client{Transport: netx.Transport(guardedDialer(st.AllowNetworks, "tcp").DialContext), CheckRedirect: netx.RefuseRedirects}
+}
+
+func (s *state) opener(st *settings, c *installed) core.Open {
+	grants := worker.Grants{Dial: s.routes.RouteDial(c.Hosts, s.identities.Keys, guardedDialer(st.AllowNetworks, c.Network).DialContext), Secrets: map[string]worker.Secret{},
+		Certificate: func(name string) (*tls.Certificate, error) {
+			return st.authority.Issue(name, leafLifetime, leafBackdate)
+		}}
+	if c.HostKey {
+		grants.HostKey = st.hostKey
+	}
+	for name, value := range c.secrets {
+		grants.Secrets[name] = worker.Secret{Configured: value.Configured(), Placeholder: c.placeholders[name], Value: value.Value}
+	}
+	if workers == nil {
+		return func(ctx context.Context) (connector.Instance, error) { return c.Open(ctx, grants.Host()) }
+	}
+	return func(ctx context.Context) (connector.Instance, error) {
+		data, err := json.Marshal(c.ConnectionSpec)
+		if err != nil {
+			return connector.Instance{}, err
+		}
+		p, err := worker.Launch(ctx, workers.Start, data, grants, workerLimits)
+		if err != nil {
+			return connector.Instance{}, err
+		}
+		return p.Instance(), nil
+	}
+}
+
+func (s held) unchanged(id format.SecretID, value *credential.Value, before json.RawMessage) bool {
+	c := s.settings.Load().connections[id.Connection]
+	return c != nil && c.secrets[id.Name] == value && bytes.Equal(s.doc.Credentials.Get(id), before)
+}
+
+func (s *state) replaceValue(ctx context.Context, id format.SecretID, value *credential.Value, before, after json.RawMessage) error {
+	err := errCredentialChanged
+	s.locked(func(h held) {
+		if h.unchanged(id, value, before) {
+			next := h.doc
+			next.Credentials = next.Credentials.Clone()
+			next.Credentials.Set(id, bytes.Clone(after))
+			err = h.commit(ctx, next)
+		}
+	})
+	return err
+}
+
+func (s *state) signInCredential(connection, name string) (json.RawMessage, func(context.Context, json.RawMessage) error, error) {
+	id := format.SecretID{Connection: connection, Name: name}
+	var value *credential.Value
+	var before json.RawMessage
+	s.locked(func(h held) {
+		if c := s.settings.Load().connections[connection]; c != nil {
+			value = c.secrets[name]
+		}
+		before = bytes.Clone(h.doc.Credentials.Get(id))
+	})
+	if value == nil {
+		return nil, nil, errors.New("credential does not exist")
+	}
+	return before, func(ctx context.Context, raw json.RawMessage) error {
+		return s.writeSettings(ctx, settingsWrite{credentials: format.Secrets{connection: {name: raw}}, check: func(h held) error {
+			if !h.unchanged(id, value, before) {
+				return errCredentialChanged
+			}
+			return nil
+		}})
+	}, nil
+}
+
+func (s *state) restoreDevice(ctx context.Context, public string) error {
+	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(public))
+	if err != nil {
+		return fmt.Errorf("device public key: %w", err)
+	}
+	public = strings.TrimSpace(string(ssh.MarshalAuthorizedKey(key)))
+	digest := sha256.Sum256([]byte(public))
+	return s.enroll(ctx, map[string]config.Enrollment{fmt.Sprintf("device-%x", digest[:8]): {Key: public, Routes: true, Restore: true}})
+}
+
+func (s *state) enroll(ctx context.Context, identities map[string]config.Enrollment) error {
+	return s.writeSettings(ctx, settingsWrite{derive: func(h held) ([]tomledit.Change, error) {
+		return h.settings.Load().Enroll(identities, h.doc.Enrolled, identityAttributes)
+	}})
 }

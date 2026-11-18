@@ -7,13 +7,14 @@ import (
 	"path"
 	"strings"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
-type Slots struct {
-	Claim  func(host string, port uint32) int
-	Covers func(origin, path string) bool
-	Bind   func(r *http.Request, origin string, placeholder func(string) string) (names []string, place func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error), err error)
+type Slots interface {
+	Claim(connector.Target) int
+	Covers(origin, path string) bool
+	Bind(r *http.Request, origin string, placeholder func(string) string) (names []string, place func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error), err error)
 }
 
 func Parse(config, definition, options json.RawMessage, slots func(json.RawMessage) (Slots, error)) (*Setup, error) {
@@ -50,14 +51,14 @@ func New(definition, options json.RawMessage, hosts []string, slots Slots) (*Set
 	return &Setup{Hosts: hosts, Preset: preset.HTTP, title: preset.Title, origin: option.Origin, slots: slots}, nil
 }
 
-func (h *Setup) Claim(host string, port uint32) int {
-	host = strings.ToLower(host)
-	score := h.slots.Claim(host, port)
-	if port != httpPort && port != httpsPort {
+func (h *Setup) Claim(target connector.Target) int {
+	target.Host = strings.ToLower(target.Host)
+	score := h.slots.Claim(target)
+	if target.Port != httpPort && target.Port != httpsPort {
 		return score
 	}
 	for _, pattern := range h.Hosts {
-		if ok, _ := path.Match(pattern, host); ok {
+		if ok, _ := path.Match(pattern, target.Host); ok {
 			score = max(score, len(pattern))
 		}
 	}

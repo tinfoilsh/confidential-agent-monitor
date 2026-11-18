@@ -2,18 +2,19 @@ package connections
 
 import (
 	"context"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base32"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"slices"
 	"strings"
 	"time"
 
-	"github.com/coder/websocket"
-	gosmtp "github.com/emersion/go-smtp"
-	mcpsdk "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
@@ -27,9 +28,11 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/signer"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/slots"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/tcp"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/tinfoil"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/udp"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/web"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/worker"
-	"github.com/tinfoilsh/confidential-agent-monitor/core"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 	"golang.org/x/crypto/ssh"
@@ -59,6 +62,7 @@ var hostProtocols = []string{"cli", "gpg-agent"}
 
 var parsers = map[string]func(config.ConnectionSpec, *Setup) error{
 	"tcp":         parseTCP,
+	"udp":         parseUDP,
 	"http":        parseHTTP,
 	"tinfoil":     parseTinfoil,
 	"mcp":         parseMCP,
@@ -83,18 +87,9 @@ func Registered(protocol string, development bool) bool {
 type dialFunc = func(ctx context.Context, network, address string) (net.Conn, error)
 
 const (
-	protocolIdentity       = "perimeter"
-	mcpVersion             = "0.1.0"
-	websocketResponseLimit = -1
+	protocolIdentity = "perimeter"
+	mcpVersion       = "0.1.0"
 )
-
-func connectorSSH(host ssh.Signer) *ssh.ServerConfig {
-	server := &ssh.ServerConfig{NoClientAuth: true}
-	if host != nil {
-		server.AddHostKey(host)
-	}
-	return server
-}
 
 type RequestContext struct {
 	Label    format.Label `json:"label"`
@@ -104,7 +99,8 @@ type RequestContext struct {
 
 type Setup struct {
 	config.ConnectionSpec
-	Claim             func(string, uint32) int
+	Network           string
+	Claim             func(connector.Target) int
 	Hosts             []string
 	Discovery         []string
 	Slots             any
@@ -114,7 +110,7 @@ type Setup struct {
 	ListsPlaceholders bool
 	HostKey           bool
 	Hint              func(o *facts.Observation, c *RequestContext) error
-	Open              func(ctx context.Context, h worker.Host) (worker.Instance, error)
+	Open              func(ctx context.Context, h worker.Host) (connector.Instance, error)
 }
 
 func Parse(spec config.ConnectionSpec) (*Setup, error) {
@@ -122,7 +118,7 @@ func Parse(spec config.ConnectionSpec) (*Setup, error) {
 	if parse == nil {
 		return nil, fmt.Errorf("unknown kind %s", spec.Protocol)
 	}
-	p := &Setup{ConnectionSpec: spec, Hint: func(*facts.Observation, *RequestContext) error { return nil }}
+	p := &Setup{ConnectionSpec: spec, Network: "tcp", Hint: func(*facts.Observation, *RequestContext) error { return nil }}
 	if err := parse(spec, p); err != nil {
 		return nil, err
 	}
@@ -130,19 +126,51 @@ func Parse(spec config.ConnectionSpec) (*Setup, error) {
 	return p, nil
 }
 
+func Open(ctx context.Context, data json.RawMessage, h worker.Host) (connector.Instance, error) {
+	var spec config.ConnectionSpec
+	if err := json.Unmarshal(data, &spec); err != nil {
+		return connector.Instance{}, err
+	}
+	p, err := Parse(spec)
+	if err != nil {
+		return connector.Instance{}, err
+	}
+	return p.Open(ctx, h)
+}
+
+func Placeholder(k format.Keys, id format.SecretID) string {
+	mac := hmac.New(sha256.New, []byte(k.CAKey))
+	mac.Write([]byte("monitor credential placeholder v1\x00"))
+	raw, _ := json.Marshal([]string{id.Connection, "", id.Name})
+	mac.Write(raw)
+	suffix := strings.ToLower(base32.StdEncoding.EncodeToString(mac.Sum(nil))[:9])
+	return placeholderPrefix + id.Connection + "_" + suffix
+}
+
 func parseTCP(spec config.ConnectionSpec, p *Setup) error {
 	t, err := tcp.Parse(spec.Config)
 	if err != nil {
 		return err
 	}
-	relay := func(ctx context.Context, a, b net.Conn) { netx.Relay(ctx, a, b, RelayDrain) }
 	p.Claim, p.Hosts = t.Claim, t.Hosts
 	p.Hint = func(_ *facts.Observation, c *RequestContext) error {
 		c.Sends, c.Observes = config.AudienceAnyone, format.Label{Audience: config.AudienceMe, Trust: config.TrustUntrusted}
 		return nil
 	}
-	p.Open = func(_ context.Context, h worker.Host) (worker.Instance, error) {
-		return worker.Instance{Serve: t.Handler(h.Dial, relay)}, nil
+	p.Open = func(_ context.Context, h worker.Host) (connector.Instance, error) {
+		return connector.Instance{Serve: t.Handler(h.Dial, RelayDrain)}, nil
+	}
+	return nil
+}
+
+func parseUDP(spec config.ConnectionSpec, p *Setup) error {
+	if err := parseTCP(spec, p); err != nil {
+		return err
+	}
+	claim := p.Claim
+	p.Network, p.PerMessage = "udp", true
+	p.Open = func(_ context.Context, h worker.Host) (connector.Instance, error) {
+		return connector.Instance{Serve: udp.Handler(claim, h.Dial)}, nil
 	}
 	return nil
 }
@@ -152,18 +180,17 @@ func parseHTTP(spec config.ConnectionSpec, p *Setup) error {
 	setup, err := web.Parse(spec.Config, spec.Definition, spec.Options, func(raw json.RawMessage) (web.Slots, error) {
 		var err error
 		set, err = slots.Parse(raw, httpSlots)
-		return web.Slots{Claim: set.Claim, Covers: set.Covers, Bind: set.Bind}, err
+		return set, err
 	})
 	if err != nil {
 		return err
 	}
 	p.Discovery = setup.Hosts
-	p.Open = func(_ context.Context, h worker.Host) (worker.Instance, error) {
-		return worker.Instance{Serve: func(ctx context.Context, conn net.Conn, name, host string, port uint32, gate core.Gate) {
-			transport := UpstreamTransport(h.Dial)
+	p.Open = func(_ context.Context, h worker.Host) (connector.Instance, error) {
+		return connector.Instance{Serve: func(ctx context.Context, conn net.Conn, name string, target connector.Target, gate connector.Gate) {
+			transport := netx.Transport(h.Dial)
 			defer transport.CloseIdleConnections()
-			web.Handler{Setup: setup, Transport: transport, CheckRedirect: RefuseRedirects, Accept: websocket.AcceptOptions{}, UpstreamReadLimit: websocketResponseLimit,
-				TLS: h.TLS, ServeHTTP: netx.ServeConn, Placeholder: h.Placeholder, Secret: h.Secret, MaxBody: maxBodyBytes}.Serve(ctx, conn, name, host, port, gate)
+			web.Handler{Setup: setup, Transport: transport, TLS: h.TLS, Placeholder: h.Placeholder, Secret: h.Secret, MaxBody: maxBodyBytes}.Serve(ctx, conn, name, target, gate)
 		}}, nil
 	}
 	return httpSetup(p, setup, set)
@@ -212,12 +239,49 @@ func httpSetup(p *Setup, setup *web.Setup, set slots.Set) error {
 	return nil
 }
 
+func parseTinfoil(spec config.ConnectionSpec, p *Setup) error {
+	t, err := tinfoil.Parse(spec.Config)
+	if err != nil {
+		return err
+	}
+	set, err := slots.New([]slots.Slot{t.Slot()}, httpSlots)
+	if err != nil {
+		return err
+	}
+	setup, err := web.New(spec.Definition, spec.Options, nil, set)
+	if err != nil {
+		return err
+	}
+	p.Open = func(ctx context.Context, h worker.Host) (connector.Instance, error) {
+		return t.Open(ctx, setup, h, Domain, maxBodyBytes)
+	}
+	return httpSetup(p, setup, set)
+}
+
 func parseMCP(spec config.ConnectionSpec, p *Setup) error {
 	setup, err := mcp.Parse(spec.Config, spec.Definition)
 	if err != nil {
 		return err
 	}
 	return mcpSetup(p, setup, "")
+}
+
+func parseTinfoilMCP(spec config.ConnectionSpec, p *Setup) error {
+	var cfg struct {
+		mcp.Setup
+		Repo string `json:"repo"`
+	}
+	if err := mcp.Decode(spec.Config, spec.Definition, &cfg, &cfg.Setup); err != nil {
+		return err
+	}
+	u, _ := url.Parse(cfg.URL)
+	if u.Scheme != "https" || u.User != nil {
+		return errors.New("Tinfoil MCP requires an HTTPS URL without user information")
+	}
+	if err := tinfoil.Validate(u.Host, cfg.Repo); err != nil {
+		return err
+	}
+	return mcpSetup(p, &cfg.Setup, cfg.Repo)
 }
 
 func mcpSetup(p *Setup, setup *mcp.Setup, repo string) error {
@@ -237,45 +301,29 @@ func mcpSetup(p *Setup, setup *mcp.Setup, repo string) error {
 		}
 		return nil
 	}
-	p.Open = func(ctx context.Context, h worker.Host) (worker.Instance, error) {
-		transport := UpstreamTransport(h.Dial)
+	p.Open = func(ctx context.Context, h worker.Host) (connector.Instance, error) {
+		transport := netx.Transport(h.Dial)
 		var base http.RoundTripper = transport
 		closeTransport := transport.CloseIdleConnections
 		if repo != "" {
-			attested, err := attest(ctx, h, "token", setup.Hosts()[0], repo, transport)
+			attested, err := tinfoil.Attest(ctx, h, "token", setup.Hosts()[0], repo, transport)
 			if err != nil {
 				transport.CloseIdleConnections()
-				return worker.Instance{}, err
+				return connector.Instance{}, err
 			}
 			base, closeTransport = attested, func() { attested.CloseIdleConnections(); transport.CloseIdleConnections() }
 		}
-		info := &mcpsdk.Implementation{Name: protocolIdentity, Version: mcpVersion}
-		client := mcp.Client{HTTP: &http.Client{Transport: base, CheckRedirect: RefuseRedirects}, Timeout: upstreamTimeout, TLS: h.TLS, ServeHTTP: netx.ServeConn,
-			ClientInfo: info, ServerInfo: info,
-			Streamable: &mcpsdk.StreamableHTTPOptions{Stateless: true, PropagateRequestCancellation: true, DisableLocalhostProtection: true},
-			Expose: func(current *mcp.Snapshot) ([]*mcpsdk.Tool, string) {
-				ok, _ := setup.Pin.Approved(current)
-				if len(ok) > 0 {
-					return ok, current.Instructions
-				}
-				return ok, ""
-			}}
+		client := mcp.Client{HTTP: &http.Client{Transport: base, CheckRedirect: netx.RefuseRedirects}, Timeout: upstreamTimeout, TLS: h.TLS,
+			Name: protocolIdentity, Version: mcpVersion, Expose: setup.Pin.Expose}
 		if h.Configured("token") {
 			client.Token = func(ctx context.Context) (string, error) { return h.Secret(ctx, "token") }
 		}
 		mcpSession, err := mcp.Open(ctx, setup, client)
 		if err != nil {
 			closeTransport()
-			return worker.Instance{}, err
+			return connector.Instance{}, err
 		}
-		current := mcpSession.Snapshot()
-		ok, _ := setup.Pin.Approved(current)
-		status := map[string]any{"blocked": len(current.Tools) - len(ok)}
-		if len(ok) < len(current.Tools) {
-			status["changes"], status["pin"] = setup.Pin.Diff(current), current
-		}
-		details, _ := json.Marshal(status)
-		return worker.Instance{Serve: mcpSession.Serve, Details: details, Close: func() error {
+		return connector.Instance{Serve: mcpSession.Serve, Details: setup.Pin.Status(mcpSession.Snapshot()), Close: func() error {
 			err := mcpSession.Close()
 			closeTransport()
 			return err
@@ -286,7 +334,7 @@ func mcpSetup(p *Setup, setup *mcp.Setup, repo string) error {
 
 func parseSSH(spec config.ConnectionSpec, p *Setup) error {
 	var hosts []string
-	var handler func(dialFunc, *ssh.ServerConfig, func(context.Context) (string, error)) core.Serve
+	var handler func(dialFunc, ssh.Signer, func(context.Context) (string, error)) connector.Serve
 	if spec.Protocol == "ssh" {
 		c, err := session.ParseSSH(spec.Config)
 		if err != nil {
@@ -299,14 +347,14 @@ func parseSSH(spec config.ConnectionSpec, p *Setup) error {
 			return err
 		}
 		hosts = c.Hosts()
-		handler = func(dial dialFunc, server *ssh.ServerConfig, key func(context.Context) (string, error)) core.Serve {
-			return c.Handler(dial, server, key, sftpLimits)
+		handler = func(dial dialFunc, host ssh.Signer, key func(context.Context) (string, error)) connector.Serve {
+			return c.Handler(dial, host, key, sftpLimits)
 		}
 	}
 	p.Hosts = hosts
 	p.SecretNames, p.HostKey = []string{"key"}, true
-	p.Open = func(_ context.Context, h worker.Host) (worker.Instance, error) {
-		return worker.Instance{Serve: handler(h.Dial, connectorSSH(h.HostKey), func(ctx context.Context) (string, error) { return h.Secret(ctx, "key") })}, nil
+	p.Open = func(_ context.Context, h worker.Host) (connector.Instance, error) {
+		return connector.Instance{Serve: handler(h.Dial, h.HostKey, func(ctx context.Context) (string, error) { return h.Secret(ctx, "key") })}, nil
 	}
 	return nil
 }
@@ -317,8 +365,8 @@ func parseCLI(spec config.ConnectionSpec, p *Setup) error {
 		return err
 	}
 	p.SecretNames, p.HostKey = c.Credentials, true
-	p.Open = func(_ context.Context, h worker.Host) (worker.Instance, error) {
-		return worker.Instance{Serve: c.Handler(connectorSSH(h.HostKey), h.Secret, cliLimits, protocolIdentity)}, nil
+	p.Open = func(_ context.Context, h worker.Host) (connector.Instance, error) {
+		return connector.Instance{Serve: c.Handler(h.HostKey, h.Secret, cliLimits, protocolIdentity)}, nil
 	}
 	return nil
 }
@@ -329,8 +377,8 @@ func parseSSHAgent(spec config.ConnectionSpec, p *Setup) error {
 		return err
 	}
 	p.SecretNames = c.Credentials
-	p.Open = func(_ context.Context, h worker.Host) (worker.Instance, error) {
-		return worker.Instance{Serve: c.Handler(h.Secret)}, nil
+	p.Open = func(_ context.Context, h worker.Host) (connector.Instance, error) {
+		return connector.Instance{Serve: c.Handler(h.Secret)}, nil
 	}
 	return nil
 }
@@ -340,15 +388,15 @@ func parseGPGAgent(spec config.ConnectionSpec, p *Setup) error {
 	if err != nil {
 		return err
 	}
-	p.Open = func(context.Context, worker.Host) (worker.Instance, error) {
-		return worker.Instance{Serve: c.Handler((&net.Dialer{Timeout: DialTimeout}).DialContext)}, nil
+	p.Open = func(context.Context, worker.Host) (connector.Instance, error) {
+		return connector.Instance{Serve: c.Handler((&net.Dialer{Timeout: DialTimeout}).DialContext)}, nil
 	}
 	return nil
 }
 
 func parseEndpoint(spec config.ConnectionSpec, p *Setup) error {
 	var hosts []string
-	var handler func(h worker.Host) core.Serve
+	var handler func(h worker.Host) connector.Serve
 	password := func(h worker.Host) func(context.Context) (string, error) {
 		return func(ctx context.Context) (string, error) { return h.Secret(ctx, "password") }
 	}
@@ -359,21 +407,14 @@ func parseEndpoint(spec config.ConnectionSpec, p *Setup) error {
 		var c *email.IMAP
 		if c, err = email.ParseIMAP(spec.Config); err == nil {
 			hosts = c.Hosts()
-			handler = func(h worker.Host) core.Serve { return c.Preauthenticated(h.Dial, password(h), protocolIdentity) }
+			handler = func(h worker.Host) connector.Serve { return c.Preauthenticated(h.Dial, password(h), protocolIdentity) }
 		}
 	case "smtp":
 		var c *email.SMTP
 		if c, err = email.ParseSMTP(spec.Config); err == nil {
 			hosts = c.Hosts()
-			handler = func(h worker.Host) core.Serve {
-				return c.Handler(h.Dial, password(h),
-					func(string, string, string) error { return nil },
-					func(ctx context.Context, host string, backend gosmtp.Backend) *gosmtp.Server {
-						server := gosmtp.NewServer(backend)
-						server.Domain, server.AllowInsecureAuth = protocolIdentity, true
-						server.MaxMessageBytes, server.TLSConfig = maxMailBytes, h.TLS(ctx, host)
-						return server
-					}, func(ctx context.Context, conn net.Conn) net.Listener { return netx.Listen(ctx, conn) })
+			handler = func(h worker.Host) connector.Serve {
+				return c.Handler(h.Dial, password(h), func(string, string, string) error { return nil }, protocolIdentity, maxMailBytes, h.TLS)
 			}
 		}
 		var options config.PolicyOptions
@@ -398,13 +439,15 @@ func parseEndpoint(spec config.ConnectionSpec, p *Setup) error {
 		var c *redis.Redis
 		if c, err = redis.Parse(spec.Config); err == nil {
 			hosts = c.Hosts()
-			handler = func(h worker.Host) core.Serve { return c.Handler(h.Dial, password(h)) }
+			handler = func(h worker.Host) connector.Serve { return c.Handler(h.Dial, password(h)) }
 		}
 	case "mqtt":
 		var c *mqtt.MQTT
 		if c, err = mqtt.Parse(spec.Config); err == nil {
 			hosts = c.Hosts()
-			handler = func(h worker.Host) core.Serve { return c.Handler(h.Dial, password(h), maxMQTTPacket, maxMQTTPending) }
+			handler = func(h worker.Host) connector.Serve {
+				return c.Handler(h.Dial, password(h), maxMQTTPacket, maxMQTTPending)
+			}
 		}
 		p.PerMessage = true
 		p.Hint = connectionAudience
@@ -412,7 +455,7 @@ func parseEndpoint(spec config.ConnectionSpec, p *Setup) error {
 		var c *nats.NATS
 		if c, err = nats.Parse(spec.Config); err == nil {
 			hosts = c.Hosts()
-			handler = func(h worker.Host) core.Serve {
+			handler = func(h worker.Host) connector.Serve {
 				return c.Preauthenticated(h.Dial, h.Secret, natsLimits, protocolIdentity)
 			}
 		}
@@ -422,15 +465,15 @@ func parseEndpoint(spec config.ConnectionSpec, p *Setup) error {
 		var c *postgres.Postgres
 		if c, err = postgres.Parse(spec.Config); err == nil {
 			hosts = c.Hosts()
-			handler = func(h worker.Host) core.Serve { return c.Handler(h.Dial, password(h), h.TLS, upstreamTimeout) }
+			handler = func(h worker.Host) connector.Serve { return c.Handler(h.Dial, password(h), h.TLS, upstreamTimeout) }
 		}
 	}
 	if err != nil {
 		return err
 	}
 	p.Hosts = hosts
-	p.Open = func(_ context.Context, h worker.Host) (worker.Instance, error) {
-		return worker.Instance{Serve: handler(h)}, nil
+	p.Open = func(_ context.Context, h worker.Host) (connector.Instance, error) {
+		return connector.Instance{Serve: handler(h)}, nil
 	}
 	return nil
 }
@@ -442,15 +485,4 @@ func connectionAudience(_ *facts.Observation, c *RequestContext) error {
 
 func validSends(sends string) bool {
 	return sends == "" || sends == config.SendsConnection || slices.Contains(config.Audiences, sends)
-}
-
-func UpstreamTransport(dial dialFunc) *http.Transport {
-	transport := http.DefaultTransport.(*http.Transport).Clone()
-	transport.Proxy = nil
-	transport.DialContext = dial
-	return transport
-}
-
-func RefuseRedirects(*http.Request, []*http.Request) error {
-	return errors.New("redirects are refused")
 }

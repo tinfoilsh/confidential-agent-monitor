@@ -2,6 +2,7 @@ package certificates
 
 import (
 	"bytes"
+	"cmp"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -13,6 +14,7 @@ import (
 	"net"
 	"time"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -80,18 +82,31 @@ func (a *Authority) Issue(name string, lifetime, backdate time.Duration) (*tls.C
 	return &tls.Certificate{Certificate: [][]byte{der}, PrivateKey: key}, nil
 }
 
+func (a *Authority) TLS(host string, lifetime, backdate time.Duration) *tls.Config {
+	return &tls.Config{GetCertificate: func(hello *tls.ClientHelloInfo) (*tls.Certificate, error) {
+		return a.Issue(cmp.Or(hello.ServerName, host), lifetime, backdate)
+	}}
+}
+
 type SSHClaims struct {
-	KeyID       string
-	Principals  []string
-	ValidBefore uint64
+	KeyID      string
+	Principals []string
 }
 
 func VerifySSHUser(authority ssh.PublicKey, cert *ssh.Certificate, principal string) (SSHClaims, error) {
 	if cert.CertType != ssh.UserCert || !bytes.Equal(cert.SignatureKey.Marshal(), authority.Marshal()) {
 		return SSHClaims{}, errors.New("certificate is not a user certificate from the authority")
 	}
+	if cert.KeyId == "" || cert.ValidBefore == ssh.CertTimeInfinity {
+		return SSHClaims{}, errors.New("an identity certificate must expire and carry a key ID")
+	}
 	if err := new(ssh.CertChecker).CheckCert(principal, cert); err != nil {
 		return SSHClaims{}, err
 	}
-	return SSHClaims{KeyID: cert.KeyId, Principals: cert.ValidPrincipals, ValidBefore: cert.ValidBefore}, nil
+	return SSHClaims{KeyID: cert.KeyId, Principals: cert.ValidPrincipals}, nil
+}
+
+func SSHUser(authority ssh.PublicKey, cert *ssh.Certificate) (facts.Principal, error) {
+	claims, err := VerifySSHUser(authority, cert, cmp.Or(cert.ValidPrincipals...))
+	return facts.Principal{Key: ssh.FingerprintSHA256(cert.Key), Name: claims.KeyID, Groups: claims.Principals}, err
 }

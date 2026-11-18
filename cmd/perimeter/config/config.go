@@ -11,15 +11,17 @@ import (
 	"slices"
 
 	jsonpatch "github.com/evanphx/json-patch/v5"
-	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/wgtransport"
 	"golang.org/x/crypto/ssh"
 )
 
 const (
-	AgentConnection = "agent"
-	maxPolicyBytes  = 2 << 20
+	AgentConnection    = "agent"
+	maxPolicyBytes     = 2 << 20
+	maxProposalChanges = 256
 )
 
 var (
@@ -78,42 +80,7 @@ type Connection struct {
 	Contents      string                     `json:"contents"`
 	Strangers     bool                       `json:"strangers"`
 	Sends         string                     `json:"sends"`
-	Setup         map[string]json.RawMessage `json:"-"`
-}
-
-type connectionSettings Connection
-
-var settingKeys = []string{"preset", "effects", "policy_options", "contents", "strangers", "sends"}
-
-func (c *Connection) UnmarshalJSON(raw []byte) error {
-	var setup map[string]json.RawMessage
-	if err := json.Unmarshal(raw, &setup); err != nil {
-		return err
-	}
-	var settings connectionSettings
-	if err := json.Unmarshal(raw, &settings); err != nil {
-		return err
-	}
-	maps.DeleteFunc(setup, func(key string, _ json.RawMessage) bool { return slices.Contains(settingKeys, key) })
-	*c = Connection(settings)
-	c.Setup = setup
-	return nil
-}
-
-func (c Connection) MarshalJSON() ([]byte, error) {
-	raw, err := json.Marshal(connectionSettings(c))
-	if err != nil {
-		return nil, err
-	}
-	if len(c.Setup) == 0 {
-		return raw, nil
-	}
-	var fields map[string]json.RawMessage
-	if err := json.Unmarshal(raw, &fields); err != nil {
-		return nil, err
-	}
-	maps.Copy(fields, c.Setup)
-	return json.Marshal(fields)
+	Setup         map[string]json.RawMessage `json:",embed"`
 }
 
 type Lattices struct {
@@ -158,7 +125,7 @@ func Load(text string, presets map[string]*catalog.Preset) (*Config, error) {
 	if len(text) > maxPolicyBytes {
 		return nil, errors.New("policy source is too large")
 	}
-	decoded, err := format.ReadTOML(text)
+	decoded, err := tomledit.Read(text)
 	if err != nil {
 		return nil, err
 	}
@@ -207,6 +174,7 @@ func Load(text string, presets map[string]*catalog.Preset) (*Config, error) {
 		return nil, err
 	}
 	cfg.Principals = map[string]string{}
+	addresses := map[netip.Addr]bool{}
 	for name, id := range cfg.Identities {
 		if err := validateEffects("agent "+name, id.Effects); err != nil {
 			return nil, err
@@ -222,11 +190,20 @@ func Load(text string, presets map[string]*catalog.Preset) (*Config, error) {
 			return nil, fmt.Errorf("identity %s shares another identity's public key", name)
 		}
 		cfg.Principals[fingerprint] = name
+		if _, address, ok := wgtransport.ParseIdentity(fingerprint); ok {
+			if addresses[address] {
+				return nil, fmt.Errorf("identity %s shares another identity's WireGuard address", name)
+			}
+			addresses[address] = true
+		}
 	}
 	return cfg, nil
 }
 
 func KeyFingerprint(authorizedKey string) (string, error) {
+	if peer, address, ok := wgtransport.ParseIdentity(authorizedKey); ok {
+		return wgtransport.Identity(peer, address), nil
+	}
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(authorizedKey))
 	if err != nil {
 		return "", err
@@ -323,8 +300,8 @@ func (c *Config) Spec(name string) (ConnectionSpec, error) {
 	return spec, nil
 }
 
-func (c *Config) Edit(source string, changes []format.Change) (edited string, rebuild func(connection string) bool, renamed map[string]string, err error) {
-	edited, err = format.EditTOML(source, changes)
+func (c *Config) Edit(source string, changes []tomledit.Change) (edited string, rebuild func(connection string) bool, renamed map[string]string, err error) {
+	edited, err = tomledit.Edit(source, changes)
 	if err != nil {
 		return "", nil, nil, err
 	}
@@ -352,17 +329,17 @@ func (c *Config) Edit(source string, changes []format.Change) (edited string, re
 		before.Name = after.Name
 		return !reflect.DeepEqual(before, after)
 	}
-	var stale []format.Change
+	var stale []tomledit.Change
 	for _, name := range slices.Sorted(maps.Keys(next.Identities)) {
 		rules := next.Identities[name].Rules
 		for _, id := range slices.Sorted(maps.Keys(rules)) {
 			if setup(rules[id].Connection) {
-				stale = append(stale, format.Change{Path: []string{"identities", name, "rules", id}, Delete: true})
+				stale = append(stale, tomledit.Change{Path: []string{"identities", name, "rules", id}, Delete: true})
 			}
 		}
 	}
 	if stale != nil {
-		edited, err = format.EditTOML(edited, stale)
+		edited, err = tomledit.Edit(edited, stale)
 	}
 	return edited, func(connection string) bool { return networks || setup(connection) }, renamed, err
 }
@@ -397,7 +374,7 @@ func (c *Config) Effective() (string, error) {
 		}
 	}
 	v["presets"] = ps
-	return format.RenderTOML(v)
+	return tomledit.Render(v)
 }
 
 func (c *Config) AgentView(p facts.Principal) (map[string]any, error) {
@@ -424,8 +401,8 @@ func proposalTarget(path []string) (string, bool) {
 	return "", false
 }
 
-func ProposalChanges(p facts.Principal, changes []format.Change, others bool) (map[string][]format.Change, error) {
-	groups := map[string][]format.Change{}
+func ProposalChanges(p facts.Principal, changes []tomledit.Change, others bool) (map[string][]tomledit.Change, error) {
+	groups := map[string][]tomledit.Change{}
 	for _, change := range changes {
 		target, ok := proposalTarget(change.Path)
 		if !ok || change.From != nil {
@@ -437,4 +414,83 @@ func ProposalChanges(p facts.Principal, changes []format.Change, others bool) (m
 		groups[target] = append(groups[target], change)
 	}
 	return groups, nil
+}
+
+type Proposal struct {
+	Source  string            `json:"source,omitempty"`
+	Changes []tomledit.Change `json:"changes,omitempty"`
+	Reason  string            `json:"reason"`
+	Delete  [][]string        `json:"delete,omitempty"`
+}
+
+func (p Proposal) Edits() ([]tomledit.Change, error) {
+	if (p.Source != "" || p.Delete != nil) == (p.Changes != nil) {
+		return nil, errors.New("proposal requires exactly one of a TOML fragment or structured changes")
+	}
+	changes := p.Changes
+	if changes == nil {
+		var err error
+		if changes, err = tomledit.Fragment(p.Source); err != nil {
+			return nil, err
+		}
+		for _, path := range p.Delete {
+			changes = append(changes, tomledit.Change{Path: path, Delete: true})
+		}
+	}
+	if len(changes) == 0 || len(changes) > maxProposalChanges {
+		return nil, fmt.Errorf("proposal must contain 1-%d changes", maxProposalChanges)
+	}
+	return changes, nil
+}
+
+type Enrollment struct {
+	Key        string                     `json:"key"`
+	Routes     bool                       `json:"routes"`
+	Restore    bool                       `json:"restore"`
+	Attributes map[string]json.RawMessage `json:",embed"`
+}
+
+func (c *Config) Enroll(input map[string]Enrollment, enrolled map[string]bool, fields map[string]func(json.RawMessage) error) ([]tomledit.Change, error) {
+	var changes []tomledit.Change
+	for name, id := range input {
+		fingerprint, err := KeyFingerprint(id.Key)
+		if err != nil {
+			return nil, err
+		}
+		attributes := map[string]any{}
+		for key, raw := range id.Attributes {
+			if fields[key] == nil {
+				return nil, fmt.Errorf("an enrollment has no field %s", key)
+			}
+			if attributes[key], err = facts.JSON[any](raw); err != nil {
+				return nil, err
+			}
+		}
+		maps.DeleteFunc(attributes, func(_ string, value any) bool { return value == nil })
+		if principal, ok := c.Principal(fingerprint); ok {
+			existing := c.Identities[principal.Name]
+			if id.Routes && !existing.Routes {
+				if !id.Restore {
+					return nil, errors.New("device route access was revoked")
+				}
+				changes = append(changes, tomledit.Change{Path: []string{"identities", principal.Name, "routes"}, Value: true})
+			}
+			for key, value := range attributes {
+				if before, _ := facts.JSON[any](existing.Attributes[key]); !reflect.DeepEqual(value, before) {
+					changes = append(changes, tomledit.Change{Path: []string{"identities", principal.Name, key}, Value: value})
+				}
+			}
+			continue
+		}
+		if enrolled[fingerprint] && !id.Restore {
+			return nil, errors.New("identity was revoked; restore access explicitly in the Perimeter")
+		}
+		if _, exists := c.Identities[name]; exists {
+			return nil, errors.New("identity name belongs to another key")
+		}
+		value := map[string]any{"key": id.Key, "routes": id.Routes}
+		maps.Copy(value, attributes)
+		changes = append(changes, tomledit.Change{Path: []string{"identities", name}, Value: value})
+	}
+	return changes, nil
 }
