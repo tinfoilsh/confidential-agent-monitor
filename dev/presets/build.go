@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"cmp"
 	"compress/gzip"
 	"crypto/sha256"
 	"encoding/hex"
@@ -408,6 +409,16 @@ func specOps(name string, src source, lock lockFile) (parsed, error) {
 		out.Warnings = append(out.Warnings, p.Warnings...)
 		if ref.Group != "" && !groupPath.MatchString(ref.Group) {
 			return out, fmt.Errorf("%s: invalid resource group %q for %s", name, ref.Group, ref.source())
+		}
+		if out.EndpointPrefix = cmp.Or(out.EndpointPrefix, p.EndpointPrefix); p.EndpointPrefix != "" {
+			if len(lock[awsEndpoints]) == 0 {
+				return out, fmt.Errorf("%s has no lock entry; run update %s", awsEndpoints, awsEndpoints)
+			}
+			endpoints, err := read(specRef{Format: ref.Format, URL: lock[awsEndpoints][0].Source}, lock[awsEndpoints][0])
+			if err != nil {
+				return out, err
+			}
+			out.Partition = endpoints.Partition
 		}
 		include := regexp.MustCompile(ref.Include)
 		for _, o := range p.Ops {

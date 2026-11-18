@@ -156,7 +156,8 @@
     "file": "botocore/data/bedrock-runtime/2023-09-30/service-2.json",
     "kind": "botocore"
    }
-  ]
+  ],
+  "preset": "aws_bedrock"
  },
  "aws_certificate_manager": {
   "specs": [
@@ -167,7 +168,8 @@
     "file": "botocore/data/acm/2015-12-08/service-2.json",
     "kind": "botocore"
    }
-  ]
+  ],
+  "preset": "aws_certificate_manager"
  },
  "aws_cognito": {
   "specs": [
@@ -178,7 +180,8 @@
     "file": "botocore/data/cognito-idp/2016-04-18/service-2.json",
     "kind": "botocore"
    }
-  ]
+  ],
+  "preset": "aws_cognito"
  },
  "aws_comprehend": {
   "specs": [
@@ -189,7 +192,8 @@
     "file": "botocore/data/comprehend/2017-11-27/service-2.json",
     "kind": "botocore"
    }
-  ]
+  ],
+  "preset": "aws_comprehend"
  },
  "aws_dynamo_db": {
   "specs": [
@@ -200,7 +204,8 @@
     "file": "botocore/data/dynamodb/2012-08-10/service-2.json",
     "kind": "botocore"
    }
-  ]
+  ],
+  "preset": "aws_dynamo_db"
  },
  "aws_elb": {
   "specs": [
@@ -211,7 +216,20 @@
     "file": "botocore/data/elbv2/2015-12-01/service-2.json",
     "kind": "botocore"
    }
-  ]
+  ],
+  "preset": "aws_elb"
+ },
+ "aws_endpoints": {
+  "specs": [
+   {
+    "format": "botocore",
+    "github": "boto/botocore",
+    "ref": "develop",
+    "file": "botocore/data/endpoints.json",
+    "kind": "botocore"
+   }
+  ],
+  "note": "AWS endpoint hosts, read by every botocore source for its origin sets"
  },
  "aws_iam": {
   "specs": [
@@ -222,7 +240,8 @@
     "file": "botocore/data/iam/2010-05-08/service-2.json",
     "kind": "botocore"
    }
-  ]
+  ],
+  "preset": "aws_iam"
  },
  "aws_lambda": {
   "specs": [
@@ -233,7 +252,8 @@
     "file": "botocore/data/lambda/2015-03-31/service-2.json",
     "kind": "botocore"
    }
-  ]
+  ],
+  "preset": "aws_lambda"
  },
  "aws_rekognition": {
   "specs": [
@@ -244,7 +264,8 @@
     "file": "botocore/data/rekognition/2016-06-27/service-2.json",
     "kind": "botocore"
    }
-  ]
+  ],
+  "preset": "aws_rekognition"
  },
  "aws_s3": {
   "specs": [
@@ -256,7 +277,34 @@
     "kind": "botocore"
    }
   ],
-  "preset": "aws_s3"
+  "preset": "aws_s3",
+  "effects": {
+   "delete": [
+    "AbortMultipartUpload",
+    "AbortMultipartUpload.virtual_hosted",
+    "DeleteObjects",
+    "DeleteObjects.virtual_hosted"
+   ],
+   "read": [
+    "ListBuckets",
+    "ListObjects",
+    "ListObjects.virtual_hosted",
+    "ListObjectsV2",
+    "ListParts",
+    "ListParts.virtual_hosted"
+   ],
+   "write": [
+    "CompleteMultipartUpload",
+    "CompleteMultipartUpload.virtual_hosted",
+    "CreateMultipartUpload",
+    "CreateMultipartUpload.virtual_hosted",
+    "PutObject",
+    "PutObjectTagging",
+    "PutObjectTagging.virtual_hosted",
+    "UploadPart",
+    "UploadPart.virtual_hosted"
+   ]
+  }
  },
  "aws_ses": {
   "specs": [
@@ -267,7 +315,8 @@
     "file": "botocore/data/ses/2010-12-01/service-2.json",
     "kind": "botocore"
    }
-  ]
+  ],
+  "preset": "aws_ses"
  },
  "aws_sns": {
   "specs": [
@@ -278,7 +327,8 @@
     "file": "botocore/data/sns/2010-03-31/service-2.json",
     "kind": "botocore"
    }
-  ]
+  ],
+  "preset": "aws_sns"
  },
  "aws_sqs": {
   "specs": [
@@ -289,7 +339,8 @@
     "file": "botocore/data/sqs/2012-11-05/service-2.json",
     "kind": "botocore"
    }
-  ]
+  ],
+  "preset": "aws_sqs"
  },
  "aws_textract": {
   "specs": [
@@ -300,7 +351,8 @@
     "file": "botocore/data/textract/2018-06-27/service-2.json",
     "kind": "botocore"
    }
-  ]
+  ],
+  "preset": "aws_textract"
  },
  "aws_transcribe": {
   "specs": [
@@ -311,7 +363,8 @@
     "file": "botocore/data/transcribe/2017-10-26/service-2.json",
     "kind": "botocore"
    }
-  ]
+  ],
+  "preset": "aws_transcribe"
  },
  "azure_aisearch": {
   "specs": [

@@ -5,6 +5,7 @@ import (
 	"cmp"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"net/url"
 	"regexp"
 	"slices"
@@ -54,9 +55,11 @@ type specAuth struct {
 }
 
 type parsed struct {
-	Ops      []specOp
-	Auth     *specAuth
-	Warnings []string
+	Ops            []specOp
+	Auth           *specAuth
+	Warnings       []string
+	EndpointPrefix string
+	Partition      *botocorePartition
 }
 
 var credentialParams = []string{"key", "access_token", "oauth_token"}
@@ -402,6 +405,14 @@ func parseGraphQL(src []byte, origin, path string) (parsed, error) {
 	return out, nil
 }
 
+const (
+	awsPartition     = "aws"
+	awsEndpoints     = "aws_endpoints"
+	s3EndpointPrefix = "s3"
+	s3PathStyle      = "path_style"
+	s3VirtualHosted  = "virtual_hosted"
+)
+
 type botocoreModel struct {
 	Metadata struct {
 		Protocol, TargetPrefix, EndpointPrefix, ServiceFullName, SigningName string
@@ -419,6 +430,74 @@ type botocoreModel struct {
 		}
 		Type string
 	}
+	Partitions []botocorePartition
+}
+
+type botocoreEndpoint struct {
+	Hostname, DNSSuffix string
+	CredentialScope     struct{ Region string }
+	Tags                []string
+	Variants            []botocoreEndpoint
+}
+
+type botocorePartition struct {
+	Partition, DNSSuffix string
+	Defaults             botocoreEndpoint
+	Regions              map[string]struct{}
+	Services             map[string]struct {
+		Defaults       botocoreEndpoint
+		Endpoints      map[string]botocoreEndpoint
+		IsRegionalized *bool
+	}
+}
+
+func (p *botocorePartition) origins(prefix string) map[string][]string {
+	service := p.Services[prefix]
+	endpoints := map[string]botocoreEndpoint{}
+	maps.Copy(endpoints, service.Endpoints)
+	variants := slices.Concat(service.Defaults.Variants, p.Defaults.Variants)
+	defaults := append([]botocoreEndpoint{service.Defaults, p.Defaults}, variants...)
+	if service.IsRegionalized == nil || *service.IsRegionalized {
+		var region botocoreEndpoint
+		for _, v := range variants {
+			region.Variants = append(region.Variants, botocoreEndpoint{Tags: v.Tags})
+		}
+		endpoints["{region}"] = region
+	}
+	var hosts []string
+	for key, e := range endpoints {
+		_, regional := p.Regions[key]
+		for _, v := range append([]botocoreEndpoint{e}, e.Variants...) {
+			if v.Hostname == "" && !regional && key != "{region}" {
+				continue
+			}
+			for _, d := range defaults {
+				if slices.Equal(v.Tags, d.Tags) {
+					v.Hostname, v.DNSSuffix = cmp.Or(v.Hostname, d.Hostname), cmp.Or(v.DNSSuffix, d.DNSSuffix)
+				}
+			}
+			host := strings.NewReplacer("{service}", prefix, "{region}", key, "{dnsSuffix}", cmp.Or(v.DNSSuffix, p.DNSSuffix)).Replace(v.Hostname)
+			labels := strings.Split(host, ".")
+			for i, label := range labels {
+				if label == cmp.Or(e.CredentialScope.Region, key) {
+					labels[i] = "{region}"
+				}
+			}
+			if strings.HasSuffix(host, "."+p.DNSSuffix) {
+				hosts = append(hosts, "https://"+strings.Join(labels, "."))
+			}
+		}
+	}
+	slices.Sort(hosts)
+	hosts = slices.Compact(hosts)
+	if prefix != s3EndpointPrefix {
+		return map[string][]string{"origin": hosts}
+	}
+	buckets := make([]string, len(hosts))
+	for i, host := range hosts {
+		buckets[i] = strings.Replace(host, "://", "://{Bucket}.", 1)
+	}
+	return map[string][]string{s3PathStyle: hosts, "origin": buckets}
 }
 
 func parseBotocore(src []byte) (parsed, error) {
@@ -426,7 +505,14 @@ func parseBotocore(src []byte) (parsed, error) {
 	if err := json.Unmarshal(src, &m); err != nil {
 		return parsed{}, err
 	}
-	out := parsed{Auth: &specAuth{SigV4: cmp.Or(m.Metadata.SigningName, m.Metadata.EndpointPrefix)}}
+	if m.Partitions != nil {
+		i := slices.IndexFunc(m.Partitions, func(p botocorePartition) bool { return p.Partition == awsPartition })
+		if i < 0 {
+			return parsed{}, fmt.Errorf("botocore endpoints have no %s partition", awsPartition)
+		}
+		return parsed{Partition: &m.Partitions[i]}, nil
+	}
+	out := parsed{Auth: &specAuth{SigV4: cmp.Or(m.Metadata.SigningName, m.Metadata.EndpointPrefix)}, EndpointPrefix: m.Metadata.EndpointPrefix}
 	for _, name := range slices.Sorted(func(yield func(string) bool) {
 		for k := range m.Operations {
 			if !yield(k) {
@@ -455,26 +541,34 @@ func parseBotocore(src []byte) (parsed, error) {
 			}
 		case "rest-json", "rest-xml":
 			uri, query, _ := strings.Cut(op.HTTP.RequestURI, "?")
-			o.Path, o.Body = patternPath(uri), "any"
+			o.Path, o.Body, o.Query = patternPath(uri), "any", map[string]any{}
 			if op.HTTP.Method == "GET" || op.HTTP.Method == "HEAD" || op.HTTP.Method == "DELETE" {
 				o.Body = "none"
 			}
 			if query != "" {
-				o.Query = map[string]any{}
 				for _, kv := range strings.Split(query, "&") {
 					k, v, _ := strings.Cut(kv, "=")
 					o.Query[k] = v
 				}
 			}
-			for _, member := range sortedValues(shape.Members) {
-				if member.Location == "querystring" {
+			for _, name := range sortedKeys(shape.Members) {
+				if member := shape.Members[name]; member.Location == "querystring" && slices.Contains(shape.Required, name) {
+					o.Query[member.LocationName] = true
+				} else if member.Location == "querystring" {
 					o.Params = append(o.Params, member.LocationName)
 				}
 			}
 		default:
 			return parsed{}, fmt.Errorf("botocore protocol %s is not supported", m.Metadata.Protocol)
 		}
+		if m.Metadata.EndpointPrefix == s3EndpointPrefix {
+			o.Origin = "{" + s3PathStyle + "}"
+		}
 		out.Ops = append(out.Ops, o)
+		if key, ok := strings.CutPrefix(o.Path, "/{Bucket}"); ok && m.Metadata.EndpointPrefix == s3EndpointPrefix {
+			o.ID, o.Origin, o.Path = name+"."+s3VirtualHosted, "{origin}", cmp.Or(key, "/")
+			out.Ops = append(out.Ops, o)
+		}
 	}
 	return out, nil
 }

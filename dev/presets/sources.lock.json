@@ -112,6 +112,15 @@
       "bytes": 239767
     }
   ],
+  "aws_endpoints": [
+    {
+      "source": "github:boto/botocore@develop:botocore/data/endpoints.json",
+      "url": "https://raw.githubusercontent.com/boto/botocore/6197e54b71a21a2e6dab2177ca051e64b51f4452/botocore/data/endpoints.json",
+      "commit": "6197e54b71a21a2e6dab2177ca051e64b51f4452",
+      "sha256": "a15ccb0bc9080690af472bb0a2a4a1910c941f41fc0e58a179c737b2fae5967b",
+      "bytes": 1253786
+    }
+  ],
   "aws_iam": [
     {
       "source": "github:boto/botocore@develop:botocore/data/iam/2010-05-08/service-2.json",

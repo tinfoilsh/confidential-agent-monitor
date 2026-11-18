@@ -485,6 +485,9 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 		named[op["id"].(string)] = definition
 	}
 	httpSection(candidate)["operations"] = named
+	if p.Partition != nil {
+		httpSection(candidate)["origins"] = p.Partition.origins(p.EndpointPrefix)
+	}
 	r.Counts["regrouped"] = groupRecord(candidate, groupHints(operations, p, name))
 	r.Counts["source_variants"] = len(r.Operations)
 	r.Counts["descriptors"] = len(operations)
