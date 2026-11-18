@@ -4,17 +4,19 @@
     "group": "api",
     "fields": [
       {
+        "hint": "Leave empty to use Tinfoil's app",
         "key": "client_id",
         "label": "Google OAuth client ID",
         "paths": []
       },
       {
+        "hint": "Leave empty to use Tinfoil's app",
         "key": "client_secret",
         "label": "Google OAuth client secret",
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "Google Contacts account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "scope": "https://www.googleapis.com/auth/contacts"}}
+      {"key": "token", "label": "Google Contacts account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "default_client": {"client_id": "355716529673-semtjk51liuh2uc8mo8cgd3v7v7lgi68.apps.googleusercontent.com", "client_secret": "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", "loopback": true}, "scope": "https://www.googleapis.com/auth/contacts"}}
     ],
     "connection": {"http": {"slots": [{"value": "token", "origin": "https://people.googleapis.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
