@@ -852,7 +852,12 @@ function ConnectionForm(props: { name: string; setup?: JSX.Element }) {
           values: Object.fromEntries(
             fields.map((f) => [f.key, owner.readField(f, values[f.key])]),
           ),
-          client: entered,
+          client: Object.fromEntries(
+            clientFields.map((c) => [
+              c.key,
+              owner.readField(c, entered[c.key] ?? ""),
+            ]),
+          ),
           credentials: Object.fromEntries(
             [...credentials().values()].map((field) => [
               field.key,
