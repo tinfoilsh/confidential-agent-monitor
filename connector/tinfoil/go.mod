@@ -1,18 +1,22 @@
 module github.com/tinfoilsh/confidential-agent-monitor/connector/tinfoil
 
-go 1.27.3
+go 1.27.4
 
 require (
 	github.com/tinfoilsh/confidential-agent-monitor v0.0.0
 	github.com/tinfoilsh/confidential-agent-monitor/connector/slots v0.0.0
 	github.com/tinfoilsh/confidential-agent-monitor/connector/web v0.0.0
-	github.com/tinfoilsh/tinfoil-go v0.17.0-rc.3.0.20261022181158-836693177e53
+	github.com/tinfoilsh/tinfoil-go v0.17.0-rc.12
 )
 
 require (
 	code.dny.dev/ssrf v0.3.0 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.23.2 // indirect
+	github.com/Azure/azure-sdk-for-go/sdk/azidentity v1.14.1 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.47.1 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.33.6 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.20.6 // indirect
 	github.com/aws/smithy-go v1.28.1 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
@@ -66,7 +70,7 @@ require (
 	github.com/sigstore/sigstore-go v1.2.2 // indirect
 	github.com/sigstore/timestamp-authority/v2 v2.1.3 // indirect
 	github.com/theupdateframework/go-tuf/v2 v2.4.2 // indirect
-	github.com/tinfoilsh/go-sev-guest v0.0.0-20260818055935-bec7bdb637fd // indirect
+	github.com/tinfoilsh/go-sev-guest v0.0.0-20261118213236-e9f4702918d3 // indirect
 	github.com/transparency-dev/formats v0.1.1 // indirect
 	github.com/transparency-dev/merkle v0.0.2 // indirect
 	github.com/vektah/gqlparser/v2 v2.5.58 // indirect
@@ -77,13 +81,13 @@ require (
 	go.opentelemetry.io/otel/trace v1.44.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.5 // indirect
-	golang.org/x/crypto v0.57.0 // indirect
-	golang.org/x/mod v0.41.0 // indirect
-	golang.org/x/net v0.60.0 // indirect
-	golang.org/x/sync v0.23.0 // indirect
-	golang.org/x/sys v0.48.0 // indirect
-	golang.org/x/term v0.46.0 // indirect
-	golang.org/x/text v0.42.0 // indirect
+	golang.org/x/crypto v0.59.0 // indirect
+	golang.org/x/mod v0.42.0 // indirect
+	golang.org/x/net v0.62.0 // indirect
+	golang.org/x/sync v0.25.0 // indirect
+	golang.org/x/sys v0.50.0 // indirect
+	golang.org/x/term v0.48.0 // indirect
+	golang.org/x/text v0.44.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260713224248-f5fc221cf8c4 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260713224248-f5fc221cf8c4 // indirect
 	google.golang.org/grpc v1.83.2 // indirect
