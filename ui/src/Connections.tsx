@@ -1183,10 +1183,7 @@ function Connection(props: { name: string }) {
                 </Show>
                 <Show when={owner.kindOf(connection()) === "mcp"}>
                   <p class="muted field-help">
-                    Add this URL as an HTTP MCP server in the agent running in
-                    your bunker; it needs no token. On your own computer, run{" "}
-                    <code>perimeter mcp serve</code> and use the address it
-                    prints.
+                    Use this URL to access the MCP.
                   </p>
                 </Show>
                 <Show when={tinfoil()}>
