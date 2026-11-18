@@ -122,7 +122,7 @@ state=$HOME/.local/share/perimeter/server
 label=sh.tinfoil.perimeter
 mkdir -p -m 700 -- "$state" "$state/store"
 [ -f "$state/owner.key" ] || (umask 077 && head -c 32 /dev/urandom | base64 > "$state/owner.key")
-(cd -- "$source_dir" && go generate ./ui && CGO_ENABLED=0 go -C cmd/perimeter build -o "$state/perimeter-server.new" .)
+(cd -- "$source_dir" && go generate ./ui && CGO_ENABLED=0 GOWORK=off go -C cmd/perimeter build -o "$state/perimeter-server.new" .)
 set -- "$state/perimeter-server" -api "$api" -listen "$listen" \
     -bucket "file://$state/store?no_tmp_dir=true" -owner-key-file "$state/owner.key"
 
