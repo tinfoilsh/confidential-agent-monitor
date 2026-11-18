@@ -16,7 +16,7 @@
         "paths": [],
         "secret": true
       },
-      {"key": "token", "label": "Google Slides account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "default_client": {"client_id": "355716529673-semtjk51liuh2uc8mo8cgd3v7v7lgi68.apps.googleusercontent.com", "client_secret": "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", "loopback": true}, "scope": "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/presentations"}}
+      {"key": "token", "label": "Google Slides account", "secret": true, "credential": true, "oauth": {"auth_url": "https://accounts.google.com/o/oauth2/v2/auth", "token_url": "https://oauth2.googleapis.com/token", "client_id": "{client_id}", "client_secret": "{client_secret}", "default_client": {"client_id": "355716529673-semtjk51liuh2uc8mo8cgd3v7v7lgi68.apps.googleusercontent.com", "client_secret": "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", "loopback": true}, "prompt": "consent", "scope": "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/presentations"}}
     ],
     "connection": {"http": {"slots": [{"value": "token", "origin": "https://slides.googleapis.com", "path": "/v1", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
