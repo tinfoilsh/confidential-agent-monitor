@@ -1143,9 +1143,10 @@
       "http": {
         "slots": [
           {
-            "header": "X-Api-Token",
+            "header": "Authorization",
             "origin": "https://api.pipedrive.com",
             "path": "/api/v2",
+            "prefix": "Bearer ",
             "value": "token"
           }
         ]
@@ -1154,9 +1155,10 @@
     "fields": [
       {
         "key": "token",
-        "label": "API token (Personal preferences \u003e API)",
+        "label": "Pipedrive account",
         "credential": true,
-        "secret": true
+        "secret": true,
+        "oauth": {"issuer": "https://oauth.pipedrive.com", "scope": "activities:full admin base contact-fields:full contacts:full deal-fields:full deals:full leads:full mail-sending:full mail:full product-fields:full products:full project-fields:full projects:full search:read users:read"}
       }
     ],
     "group": "api"

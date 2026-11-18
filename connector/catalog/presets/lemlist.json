@@ -3,9 +3,9 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
+      {"key": "api_key", "label": "lemlist account", "secret": true, "credential": true, "oauth": {"issuer": "https://api.lemlist.com", "scope": "full_access"}}
     ],
-    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.lemlist.com", "path": "/api", "basic": "password"}]}},
+    "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://api.lemlist.com", "path": "/api", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
       "admin.hooks": {"title": "Admin: hooks"},
       "admin.settings": {"title": "Admin: settings"},

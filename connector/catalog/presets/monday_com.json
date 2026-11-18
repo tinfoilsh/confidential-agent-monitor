@@ -3,7 +3,7 @@
   "catalog": {
     "group": "api",
     "fields": [
-      {"key": "api_token", "label": "Token V2", "secret": true, "credential": true}
+      {"key": "api_token", "label": "monday.com account", "secret": true, "credential": true, "oauth": {"issuer": "https://auth.monday.com", "scope": "me:read account:read users:read teams:read tags:read assets:read workspaces:read workspaces:write boards:read boards:write docs:read docs:write updates:read updates:write notifications:write webhooks:read webhooks:write"}}
     ],
     "connection": {"http": {"slots": [{"value": "api_token", "origin": "https://api.monday.com", "path": "/", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {

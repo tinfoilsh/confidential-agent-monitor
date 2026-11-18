@@ -4,7 +4,7 @@
     "group": "api",
     "fields": [
       {"key": "origin", "label": "Your PostHog origin (https://host)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
-      {"key": "api_key", "label": "API Key", "secret": true, "credential": true}
+      {"key": "api_key", "label": "PostHog account", "hint": "Signing in works on PostHog Cloud. For a self-hosted instance, paste a personal API key.", "secret": true, "credential": true, "oauth": {"issuer": "{origin}", "scope": "openid user:read organization:read project:read query:read session_recording:read insight:read insight:write dashboard:read dashboard:write feature_flag:read feature_flag:write experiment:read experiment:write cohort:read cohort:write person:read person:write survey:read survey:write annotation:read annotation:write error_tracking:read error_tracking:write event_definition:read event_definition:write property_definition:read property_definition:write notebook:read notebook:write action:read action:write"}}
     ],
     "connection": {"http": {"slots": [{"value": "api_key", "origin": "https://example.com", "path": "/api", "header": "Authorization", "prefix": "Bearer "}]}},
     "actions": {
