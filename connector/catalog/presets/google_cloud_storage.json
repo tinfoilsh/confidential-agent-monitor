@@ -1,6 +1,7 @@
 {
   "title": "Google Cloud Storage",
   "catalog": {
+    "replaced_by": "google_cloud",
     "group": "api",
     "fields": [
       {

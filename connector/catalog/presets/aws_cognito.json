@@ -1,6 +1,7 @@
 {
   "title": "AWS Cognito",
   "catalog": {
+    "replaced_by": "aws",
     "group": "api",
     "fields": [
       {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
@@ -20,6 +21,7 @@
     }
   },
   "http": {
+    "origins": {"origin":["https://cognito-idp-fips.{region}.amazonaws.com","https://cognito-idp.{region}.amazonaws.com"]},
     "operations": {
       "AddCustomAttributes": {"action":"write.cognito-idp","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AWSCognitoIdentityProviderService.AddCustomAttributes"},"body":"any","scope":{}},
       "AddUserPoolClientSecret": {"action":"write.cognito-idp","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AWSCognitoIdentityProviderService.AddUserPoolClientSecret"},"body":"any","scope":{}},

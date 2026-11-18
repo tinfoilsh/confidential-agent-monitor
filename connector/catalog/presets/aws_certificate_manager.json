@@ -1,6 +1,7 @@
 {
   "title": "AWS Certificate Manager",
   "catalog": {
+    "replaced_by": "aws",
     "group": "api",
     "fields": [
       {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
@@ -19,6 +20,7 @@
     }
   },
   "http": {
+    "origins": {"origin":["https://acm-fips.{region}.amazonaws.com","https://acm.{region}.amazonaws.com"]},
     "operations": {
       "AddTagsToCertificate": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.AddTagsToCertificate"},"body":"any","scope":{}},
       "CreateAcmeDomainValidation": {"action":"write.acm","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"CertificateManager.CreateAcmeDomainValidation"},"body":"any","scope":{}},

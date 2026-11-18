@@ -19,6 +19,7 @@
     }
   },
   "http": {
+    "origins": {"origin":["https://iam-fips.amazonaws.com","https://iam.amazonaws.com"]},
     "operations": {
       "AcceptDelegationRequest": {"action":"write.iam","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"AcceptDelegationRequest"},"body":"form","scope":{"DelegationRequestId":{"from":"form","at":"DelegationRequestId"}}},
       "AcquireRole": {"action":"write.iam","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"AcquireRole"},"body":"form","scope":{"TemplateArn":{"from":"form","at":"TemplateArn"}}},

@@ -1,6 +1,7 @@
 {
   "title": "AWS Rekognition",
   "catalog": {
+    "replaced_by": "aws",
     "group": "api",
     "fields": [
       {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
@@ -17,6 +18,7 @@
     }
   },
   "http": {
+    "origins": {"origin":["https://rekognition-fips.{region}.amazonaws.com","https://rekognition.{region}.amazonaws.com"]},
     "operations": {
       "AssociateFaces": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.AssociateFaces"},"body":"any","scope":{}},
       "CompareFaces": {"action":"write.rekognition","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"RekognitionService.CompareFaces"},"body":"any","scope":{}},

@@ -1,6 +1,7 @@
 {
   "title": "AWS Textract",
   "catalog": {
+    "replaced_by": "aws",
     "group": "api",
     "fields": [
       {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
@@ -17,6 +18,7 @@
     }
   },
   "http": {
+    "origins": {"origin":["https://textract-fips.{region}.amazonaws.com","https://textract.{region}.amazonaws.com"]},
     "operations": {
       "AnalyzeDocument": {"action":"generate.textract","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.AnalyzeDocument"},"body":"any","scope":{}},
       "AnalyzeExpense": {"action":"generate.textract","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Textract.AnalyzeExpense"},"body":"any","scope":{}},

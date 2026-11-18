@@ -1,6 +1,7 @@
 {
   "title": "AWS Lambda",
   "catalog": {
+    "replaced_by": "aws",
     "group": "api",
     "fields": [
       {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
@@ -54,6 +55,7 @@
     }
   },
   "http": {
+    "origins": {"origin":["https://lambda-fips.{region}.amazonaws.com","https://lambda.{region}.amazonaws.com"]},
     "operations": {
       "AddLayerVersionPermission": {"action":"admin.policy","effects":["admin"],"method":"POST","origin":"{origin}","path":"/2018-10-31/layers/{LayerName}/versions/{VersionNumber}/policy","params":["RevisionId"],"body":"any","scope":{"LayerName":{"from":"path","at":"LayerName"},"VersionNumber":{"from":"path","at":"VersionNumber"}}},
       "AddPermission": {"action":"admin.policy","effects":["admin"],"method":"POST","origin":"{origin}","path":"/2015-03-31/functions/{FunctionName}/policy","params":["Qualifier"],"body":"any","scope":{"FunctionName":{"from":"path","at":"FunctionName"}}},

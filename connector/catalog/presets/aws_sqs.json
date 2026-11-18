@@ -1,6 +1,7 @@
 {
   "title": "AWS SQS",
   "catalog": {
+    "replaced_by": "aws",
     "group": "api",
     "fields": [
       {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
@@ -18,6 +19,7 @@
     }
   },
   "http": {
+    "origins": {"origin":["https://sqs-fips.{region}.amazonaws.com","https://sqs.{region}.amazonaws.com"]},
     "operations": {
       "AddPermission": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.AddPermission"},"body":"any","scope":{}},
       "CancelMessageMoveTask": {"action":"write.sqs","effects":["write"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"AmazonSQS.CancelMessageMoveTask"},"body":"any","scope":{}},

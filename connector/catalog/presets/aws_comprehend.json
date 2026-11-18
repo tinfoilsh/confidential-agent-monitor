@@ -1,6 +1,7 @@
 {
   "title": "AWS Comprehend",
   "catalog": {
+    "replaced_by": "aws",
     "group": "api",
     "fields": [
       {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
@@ -17,6 +18,7 @@
     }
   },
   "http": {
+    "origins": {"origin":["https://comprehend-fips.{region}.amazonaws.com","https://comprehend.{region}.amazonaws.com"]},
     "operations": {
       "BatchDetectDominantLanguage": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.BatchDetectDominantLanguage"},"body":"any","scope":{}},
       "BatchDetectEntities": {"action":"generate.comprehend","effects":["generate"],"method":"POST","origin":"{origin}","path":"/","headers":{"X-Amz-Target":"Comprehend_20171127.BatchDetectEntities"},"body":"any","scope":{}},

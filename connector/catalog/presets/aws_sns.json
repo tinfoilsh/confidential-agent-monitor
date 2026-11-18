@@ -1,6 +1,7 @@
 {
   "title": "AWS SNS",
   "catalog": {
+    "replaced_by": "aws",
     "group": "api",
     "fields": [
       {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
@@ -18,6 +19,7 @@
     }
   },
   "http": {
+    "origins": {"origin":["https://sns-fips.{region}.amazonaws.com","https://sns.{region}.amazonaws.com"]},
     "operations": {
       "AddPermission": {"action":"write.sns","effects":["write"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"AddPermission"},"body":"form","scope":{"TopicArn":{"from":"form","at":"TopicArn"}}},
       "CheckIfPhoneNumberIsOptedOut": {"action":"read","effects":["read"],"method":"POST","origin":"{origin}","path":"/","fields":{"Action":"CheckIfPhoneNumberIsOptedOut"},"body":"form","scope":{}},

@@ -1,6 +1,7 @@
 {
   "title": "AWS Bedrock Chat Model",
   "catalog": {
+    "replaced_by": "aws",
     "group": "api",
     "fields": [
       {"key": "origin", "label": "Service endpoint (https://service.region.amazonaws.com)", "paths": [["policy_options", "origin"], ["http", "slots", 0, "origin"]]},
@@ -21,6 +22,7 @@
     }
   },
   "http": {
+    "origins": {"origin":["https://bedrock-runtime-fips.{region}.amazonaws.com","https://bedrock-runtime.{region}.amazonaws.com"]},
     "operations": {
       "ApplyGuardrail": {"action":"generate.apply","effects":["generate"],"method":"POST","origin":"{origin}","path":"/guardrail/{guardrailIdentifier}/version/{guardrailVersion}/apply","body":"any","scope":{"guardrailIdentifier":{"from":"path","at":"guardrailIdentifier"},"guardrailVersion":{"from":"path","at":"guardrailVersion"}}},
       "Converse": {"action":"generate.converse","effects":["generate"],"method":"POST","origin":"{origin}","path":"/model/{modelId}/converse","body":"any","scope":{"modelId":{"from":"path","at":"modelId"}}},
