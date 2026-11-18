@@ -36,7 +36,7 @@ type specOp struct {
 	SourceID, SourceURL, SourceHash   string
 	Unsupported                       string
 	Effects                           []string
-	Reviewed                          bool
+	Reviewed                          bool `json:"-"`
 }
 
 type param struct {

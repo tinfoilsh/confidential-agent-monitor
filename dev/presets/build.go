@@ -406,6 +406,9 @@ func specOps(name string, src source, lock lockFile) (parsed, error) {
 			return out, err
 		}
 		out.Warnings = append(out.Warnings, p.Warnings...)
+		if ref.Group != "" && !groupPath.MatchString(ref.Group) {
+			return out, fmt.Errorf("%s: invalid resource group %q for %s", name, ref.Group, ref.source())
+		}
 		include := regexp.MustCompile(ref.Include)
 		for _, o := range p.Ops {
 			if !include.MatchString(o.Path) {
