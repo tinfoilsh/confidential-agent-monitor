@@ -261,7 +261,7 @@ func (t *Table) open(ctx context.Context, p facts.Principal, target connector.Ta
 		defer t.mu.Unlock()
 		return t.usable(c, s)
 	}
-	admitting, cancel := context.WithCancel(ctx)
+	admitting, cancel := context.WithCancel(context.WithoutCancel(ctx))
 	stop := context.AfterFunc(s.ctx, cancel)
 	watch, err := t.admit(admitting, p, Request{Connection: c.name, Target: target, Valid: usable})
 	stop()
