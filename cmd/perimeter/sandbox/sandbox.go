@@ -16,6 +16,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/sshtransport"
 	"github.com/tinfoilsh/tinfoil-go/verify"
@@ -188,15 +189,15 @@ func (f *Forwarder) RouteDial(hosts []string, keysOf func(name string) []string,
 	}
 }
 
-func RouteClaim(hosts []string, claim func(string, uint32) int) func(string, uint32) int {
+func RouteClaim(hosts []string, claim func(connector.Target) int) func(connector.Target) int {
 	if claim == nil {
 		return nil
 	}
-	return func(host string, port uint32) int {
-		if ReservedRoute(host) && !routeAllowed(hosts, host) {
+	return func(target connector.Target) int {
+		if ReservedRoute(target.Host) && !routeAllowed(hosts, target.Host) {
 			return unclaimed
 		}
-		return claim(host, port)
+		return claim(target)
 	}
 }
 

@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"maps"
 	"net/http"
 	"slices"
 	"strings"
@@ -16,10 +17,25 @@ import (
 
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/tomledit"
 )
 
 const (
+	statePending  = "pending"
+	stateExpired  = "expired"
+	stateOutdated = "outdated"
+	stateAllowed  = "allowed"
+	stateRefused  = "refused"
+	stateApproved = "approved"
+	stateDenied   = "denied"
+
+	answerOnce = "once"
+	answerSave = "save"
+	answerDeny = "deny"
+
+	maxRecords      = 1000
 	maxReason       = 4096
 	maxSummaryTitle = 512
 	auditPrefix     = "audit/"
@@ -30,6 +46,30 @@ var (
 	errRecordGone = httpError{errors.New("this request is no longer in the activity log"), http.StatusNotFound}
 	errNoAgent    = httpError{errRemoved, http.StatusForbidden}
 )
+
+type Answer struct {
+	Choice string `json:"decision"`
+	Reason string `json:"reason,omitempty"`
+}
+
+type Review struct {
+	By string `json:"by"`
+	Answer
+	Time time.Time `json:"time"`
+}
+
+type record struct {
+	ID      string          `json:"id"`
+	State   string          `json:"state"`
+	Invalid bool            `json:"invalid,omitempty"`
+	Time    time.Time       `json:"time"`
+	Expires time.Time       `json:"expires,omitzero"`
+	Facts   json.RawMessage `json:"facts"`
+	config.Decision
+	Scope   map[string]any    `json:"grant"`
+	Reviews []Review          `json:"reviews,omitempty"`
+	Changes []tomledit.Change `json:"changes,omitempty"`
+}
 
 type savedAnswer struct {
 	record *record
@@ -49,11 +89,11 @@ type recordSummary struct {
 }
 
 type subject struct {
-	Principal  facts.Principal `json:"principal"`
-	Connection string          `json:"connection"`
-	Service    string          `json:"service"`
-	Operation  *operation      `json:"operation"`
-	Title      string          `json:"title"`
+	Principal  facts.Principal    `json:"principal"`
+	Connection string             `json:"connection"`
+	Service    string             `json:"service"`
+	Operation  *catalog.Operation `json:"operation"`
+	Title      string             `json:"title"`
 }
 
 func (r *record) subject() (f subject) {
@@ -119,19 +159,19 @@ func (s held) recordAdmin(ctx context.Context, title string, details any, err er
 	s.settleRecord(s.addRecord(&record{Facts: raw}), err)
 }
 
-func (s held) ruleChange(r *record) (format.Change, error) {
+func (s held) ruleChange(r *record) (tomledit.Change, error) {
 	f := r.subject()
 	if f.Operation == nil || f.Operation.ID == "" {
-		return format.Change{}, errors.New("a request without a known operation cannot be saved")
+		return tomledit.Change{}, errors.New("a request without a known operation cannot be saved")
 	}
 	p, exists := s.identities.Lookup(f.Principal.Key)
 	if !exists || p.Name != f.Principal.Name {
-		return format.Change{}, errors.New("the requesting identity was revoked or replaced")
+		return tomledit.Change{}, errors.New("the requesting identity was revoked or replaced")
 	}
 	if _, declared := s.settings.Load().Identities[p.Name]; !declared {
-		return format.Change{}, errors.New("an approval for a certified identity cannot be saved as a rule")
+		return tomledit.Change{}, errors.New("an approval for a certified identity cannot be saved as a rule")
 	}
-	return format.Change{Path: []string{"identities", p.Name, "rules", r.ID}, Value: config.Rule{Version: config.FactsVersion, Connection: f.Connection, Action: f.Operation.Action, Operation: f.Operation.ID,
+	return tomledit.Change{Path: []string{"identities", p.Name, "rules", r.ID}, Value: config.Rule{Version: config.FactsVersion, Connection: f.Connection, Action: f.Operation.Action, Operation: f.Operation.ID,
 		Scope: r.Scope, Requirements: slices.Clone(r.Requirements)}}, nil
 }
 
@@ -194,7 +234,7 @@ func (s *state) answerRequest(ctx context.Context, id string, input Answer, revi
 	review := Review{By: c.Name, Answer: input}
 	if applies {
 		saved := &savedAnswer{answer: review}
-		err := s.writeSettings(ctx, settingsWrite{derive: func(h held) ([]format.Change, error) {
+		err := s.writeSettings(ctx, settingsWrite{derive: func(h held) ([]tomledit.Change, error) {
 			r, err := h.answerable(id, input, revision)
 			if err != nil {
 				return nil, err
@@ -204,7 +244,7 @@ func (s *state) answerRequest(ctx context.Context, id string, input Answer, revi
 				return r.Changes, nil
 			}
 			change, err := h.ruleChange(r)
-			return []format.Change{change}, err
+			return []tomledit.Change{change}, err
 		}, check: func(h held) error {
 			current, err := h.answerable(id, input, revision)
 			if err == nil && current != saved.record {
@@ -281,4 +321,105 @@ func decodeRecord(line []byte) (*record, error) {
 	decoder.UseNumber()
 	r := new(record)
 	return r, decoder.Decode(r)
+}
+
+const maxPolicyProposals = 32
+
+type proposalReceipt struct {
+	ID         string `json:"id"`
+	State      string `json:"state"`
+	Connection string `json:"connection"`
+}
+
+func receipt(r *record) proposalReceipt {
+	return proposalReceipt{ID: r.ID, State: r.State, Connection: r.subject().Connection}
+}
+
+func (s *state) proposal(st *settings, source string, p facts.Principal, target, reason string, changes []tomledit.Change) (string, json.RawMessage, error) {
+	current, ok := s.identities.Lookup(p.Key)
+	if !ok || !current.Same(p) {
+		return "", nil, errNoAgent
+	}
+	if _, err := config.ProposalChanges(p, changes, st.capable(current, capabilityPropose)); err != nil {
+		return "", nil, err
+	}
+	candidate, _, _, err := st.Edit(source, changes)
+	if err == nil && candidate == source {
+		err = errors.New("proposal does not change policy")
+	}
+	if err != nil {
+		return "", nil, err
+	}
+	raw, err := json.Marshal(requestFacts{Version: config.FactsVersion, Principal: p, Connection: target,
+		Service: "policy-proposal", Title: reason, Parameters: map[string]any{},
+		Details: map[string]any{"policy": policyDiff{SourceDiff: sourceDiff(source, candidate)}}})
+	return candidate, raw, err
+}
+
+func (s *state) proposePolicy(ctx context.Context, fingerprint string, input config.Proposal) ([]proposalReceipt, error) {
+	reason := strings.TrimSpace(input.Reason)
+	if reason == "" || len(reason) > maxReason {
+		return nil, fmt.Errorf("proposal needs a reason of 1-%d bytes", maxReason)
+	}
+	changes, err := input.Edits()
+	if err != nil {
+		return nil, err
+	}
+	if policyFile != "" {
+		return nil, errPolicyFile
+	}
+	return stable(s, func(base format.Document, before *settings) ([]proposalReceipt, error) {
+		p, known := s.identities.Lookup(fingerprint)
+		if !known {
+			return nil, errNoAgent
+		}
+		groups, err := config.ProposalChanges(p, changes, before.capable(p, capabilityPropose))
+		if err != nil {
+			return nil, err
+		}
+		var proposals []*record
+		for _, target := range slices.Sorted(maps.Keys(groups)) {
+			candidate, raw, err := s.proposal(before, base.Policy, p, target, reason, groups[target])
+			if err == nil {
+				_, err = s.prepareSettings(ctx, candidate, everyConnection, nil, before.authority, before.hostKey)
+			}
+			if err != nil {
+				return nil, fmt.Errorf("service %s: %w", target, err)
+			}
+			proposals = append(proposals, &record{Changes: groups[target], Facts: raw,
+				Decision: config.Decision{Requirements: []config.Requirement{{ID: "policy", Message: reason}}}})
+		}
+
+		var receipts []proposalReceipt
+		var tooMany error
+		s.locked(func(h held) {
+			var replaced []*record
+			pending := len(proposals)
+			for r := range h.records.All() {
+				if r.State != statePending || r.Changes == nil {
+					continue
+				}
+				f := r.subject()
+				if _, again := groups[f.Connection]; again && f.Principal.Same(p) {
+					replaced = append(replaced, r)
+				} else {
+					pending++
+				}
+			}
+			if pending > maxPolicyProposals {
+				tooMany = errors.New("too many pending policy proposals")
+				return
+			}
+			for _, r := range replaced {
+				h.outdateRecord(r)
+			}
+			receipts = make([]proposalReceipt, 0, len(proposals))
+			for _, proposal := range proposals {
+				h.addRecord(proposal).State = statePending
+				h.announce(proposal)
+				receipts = append(receipts, receipt(proposal))
+			}
+		})
+		return receipts, tooMany
+	})
 }

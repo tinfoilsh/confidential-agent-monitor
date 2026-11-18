@@ -18,6 +18,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/eclipse/paho.mqtt.golang/packets"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 )
 
@@ -74,15 +75,15 @@ func (m *MQTT) dial(ctx context.Context, dial func(context.Context, string, stri
 	return t, nil
 }
 
-func (m *MQTT) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), maxPacket, maxPending int) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
-	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+func (m *MQTT) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), maxPacket, maxPending int) connector.Serve {
+	return func(ctx context.Context, s net.Conn, _ string, _ connector.Target, gate connector.Gate) {
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 		m.serve(ctx, cancel, s, gate, dial, password, maxPacket, maxPending)
 	}
 }
 
-func (m *MQTT) serve(ctx context.Context, cancel func(), s net.Conn, gate func(context.Context, facts.Event) error, dial func(context.Context, string, string) (net.Conn, error), secret func(context.Context) (string, error), maxPacket, maxPending int) {
+func (m *MQTT) serve(ctx context.Context, cancel func(), s net.Conn, gate connector.Gate, dial func(context.Context, string, string) (net.Conn, error), secret func(context.Context) (string, error), maxPacket, maxPending int) {
 	reader := bufio.NewReader(s)
 	packet, err := readPacket(reader, maxPacket)
 	if err != nil {
@@ -172,7 +173,7 @@ func (m *MQTT) serve(ctx context.Context, cancel func(), s net.Conn, gate func(c
 type proxy struct {
 	ctx        context.Context
 	s          net.Conn
-	gate       func(context.Context, facts.Event) error
+	gate       connector.Gate
 	up         net.Conn
 	maxPacket  int
 	maxPending int

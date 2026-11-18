@@ -1,0 +1,10 @@
+{
+  "orders": {
+    "postgres": {"url": "postgres://orders.prod.internal:5432/orders", "user": "perimeter"},
+    "attributes": {"environment": "production"}
+  },
+  "staging": {
+    "tcp": {"hosts": ["*.staging.internal"]},
+    "attributes": {"environment": "staging"}
+  }
+}

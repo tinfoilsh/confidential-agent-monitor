@@ -15,7 +15,9 @@ import (
 
 	"github.com/emersion/go-sasl"
 	"github.com/emersion/go-smtp"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
 
 const (
@@ -30,19 +32,21 @@ func ParseSMTP(config json.RawMessage) (*SMTP, error) {
 	return &SMTP{e}, err
 }
 
-func (r *SMTP) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), auth sasl.PlainAuthenticator, server func(ctx context.Context, host string, backend smtp.Backend) *smtp.Server, listen func(context.Context, net.Conn) net.Listener) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
-	return func(ctx context.Context, s net.Conn, _, host string, _ uint32, gate func(context.Context, facts.Event) error) {
-		server := server(ctx, host, smtp.BackendFunc(func(*smtp.Conn) (smtp.Session, error) {
+func (r *SMTP) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), password func(context.Context) (string, error), auth sasl.PlainAuthenticator, domain string, maxMessageBytes int64, tlsConfig func(ctx context.Context, host string) *tls.Config) connector.Serve {
+	return func(ctx context.Context, s net.Conn, _ string, target connector.Target, gate connector.Gate) {
+		server := smtp.NewServer(smtp.BackendFunc(func(*smtp.Conn) (smtp.Session, error) {
 			return &smtpSession{ctx: ctx, gate: gate, relay: r, dial: dial, password: password, auth: auth}, nil
 		}))
+		server.Domain, server.AllowInsecureAuth = domain, true
+		server.MaxMessageBytes, server.TLSConfig = maxMessageBytes, tlsConfig(ctx, target.Host)
 		defer server.Shutdown(context.Background())
-		server.Serve(listen(ctx, s))
+		server.Serve(netx.Listen(ctx, s))
 	}
 }
 
 type smtpSession struct {
 	ctx      context.Context
-	gate     func(context.Context, facts.Event) error
+	gate     connector.Gate
 	relay    *SMTP
 	dial     func(context.Context, string, string) (net.Conn, error)
 	password func(context.Context) (string, error)

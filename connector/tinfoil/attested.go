@@ -1,4 +1,4 @@
-package connections
+package tinfoil
 
 import (
 	"context"
@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/sandbox"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/worker"
 	"github.com/tinfoilsh/tinfoil-go/verify"
 	tinfoildoc "github.com/tinfoilsh/tinfoil-go/verify/document"
@@ -19,7 +18,7 @@ import (
 
 var errKey = errors.New("TLS key differs from its attestation")
 
-type attestedTransport struct {
+type Transport struct {
 	enclave, repo string
 	verifier      *verify.Verifier
 	base          *http.Transport
@@ -28,7 +27,7 @@ type attestedTransport struct {
 	expires       time.Time
 }
 
-func attest(ctx context.Context, h worker.Host, secret, enclave, repo string, base *http.Transport) (*attestedTransport, error) {
+func Attest(ctx context.Context, h worker.Host, secret, enclave, repo string, base *http.Transport) (*Transport, error) {
 	if !h.Configured(secret) {
 		return nil, errors.New("Tinfoil API key is not configured")
 	}
@@ -36,7 +35,7 @@ func attest(ctx context.Context, h worker.Host, secret, enclave, repo string, ba
 	if err != nil {
 		return nil, err
 	}
-	t := &attestedTransport{enclave: enclave, repo: repo, verifier: verifier, base: base, gate: make(chan struct{}, 1)}
+	t := &Transport{enclave: enclave, repo: repo, verifier: verifier, base: base, gate: make(chan struct{}, 1)}
 	if _, err := t.current(ctx, nil); err != nil {
 		t.CloseIdleConnections()
 		return nil, err
@@ -44,7 +43,7 @@ func attest(ctx context.Context, h worker.Host, secret, enclave, repo string, ba
 	return t, nil
 }
 
-func (t *attestedTransport) current(ctx context.Context, rejected *http.Transport) (*http.Transport, error) {
+func (t *Transport) current(ctx context.Context, rejected *http.Transport) (*http.Transport, error) {
 	select {
 	case t.gate <- struct{}{}:
 	case <-ctx.Done():
@@ -65,7 +64,7 @@ func (t *attestedTransport) current(ctx context.Context, rejected *http.Transpor
 	if err != nil {
 		return nil, err
 	}
-	u := "https://" + t.enclave + sandbox.AttestationPath + "?nonce=" + hex.EncodeToString(nonce)
+	u := "https://" + t.enclave + AttestationPath + "?nonce=" + hex.EncodeToString(nonce)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
 		return nil, err
@@ -125,7 +124,7 @@ func (t *attestedTransport) current(ctx context.Context, rejected *http.Transpor
 	return bound, nil
 }
 
-func (t *attestedTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+func (t *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 	if r.URL.Scheme != "https" || r.URL.Host != t.enclave {
 		if r.Body != nil {
 			r.Body.Close()
@@ -159,7 +158,7 @@ func (t *attestedTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	return bound.RoundTrip(retry)
 }
 
-func (t *attestedTransport) CloseIdleConnections() {
+func (t *Transport) CloseIdleConnections() {
 	t.gate <- struct{}{}
 	defer func() { <-t.gate }()
 	if t.bound != nil {

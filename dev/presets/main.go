@@ -15,7 +15,7 @@ const (
 	sourcesPath = "sources.json"
 	lockPath    = "sources.lock.json"
 	cacheDir    = ".cache"
-	shippedDir  = "../../cmd/perimeter/presets"
+	shippedDir  = "../../connector/catalog/presets"
 )
 
 var camel = regexp.MustCompile(`([a-z0-9])([A-Z])`)

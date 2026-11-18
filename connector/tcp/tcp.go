@@ -10,8 +10,11 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
 
 const maxPort = 65535
@@ -42,16 +45,16 @@ func Parse(config json.RawMessage) (*TCP, error) {
 	return c, nil
 }
 
-func (c *TCP) Claim(host string, port uint32) int {
-	if port == 0 || port > maxPort || host == "" {
+func (c *TCP) Claim(target connector.Target) int {
+	if target.Port == 0 || target.Port > maxPort || target.Host == "" {
 		return -1
 	}
-	if len(c.Ports) > 0 && !slices.Contains(c.Ports, port) {
+	if len(c.Ports) > 0 && !slices.Contains(c.Ports, target.Port) {
 		return -1
 	}
 	score := -1
 	for _, pattern := range c.Hosts {
-		if ok, _ := path.Match(strings.ToLower(pattern), strings.ToLower(host)); ok {
+		if ok, _ := path.Match(strings.ToLower(pattern), strings.ToLower(target.Host)); ok {
 			if pattern == "*" {
 				score = max(score, 0)
 			} else {
@@ -68,15 +71,15 @@ func (r *TCPFacts) Describe() facts.Observation {
 		Parameters: map[string]any{"host": r.Host, "port": r.Port}, Details: Details{TCP: r}}
 }
 
-func (c *TCP) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), relay func(ctx context.Context, a, b net.Conn)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
-	return func(ctx context.Context, conn net.Conn, _, host string, port uint32, gate func(context.Context, facts.Event) error) {
-		if c.Claim(host, port) < 0 || gate(ctx, facts.Capture((&TCPFacts{Host: host, Port: port}).Describe(), nil)) != nil {
+func (c *TCP) Handler(dial func(ctx context.Context, network, address string) (net.Conn, error), drain time.Duration) connector.Serve {
+	return func(ctx context.Context, conn net.Conn, _ string, target connector.Target, gate connector.Gate) {
+		if c.Claim(target) < 0 || gate(ctx, facts.Capture((&TCPFacts{Host: target.Host, Port: target.Port}).Describe(), nil)) != nil {
 			return
 		}
-		upstream, err := dial(ctx, "tcp", net.JoinHostPort(host, strconv.Itoa(int(port))))
+		upstream, err := dial(ctx, "tcp", net.JoinHostPort(target.Host, strconv.Itoa(int(target.Port))))
 		if err != nil {
 			return
 		}
-		relay(ctx, conn, upstream)
+		netx.Relay(ctx, conn, upstream, drain)
 	}
 }

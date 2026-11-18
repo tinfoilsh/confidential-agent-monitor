@@ -1,4 +1,4 @@
-package connections
+package tinfoil
 
 import (
 	"bytes"
@@ -14,20 +14,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/coder/websocket"
-	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/config"
-	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/messages"
-	"github.com/tinfoilsh/confidential-agent-monitor/connector/mcp"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/slots"
+	"github.com/tinfoilsh/confidential-agent-monitor/connector/tinfoil/messages"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/web"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/worker"
-	"github.com/tinfoilsh/confidential-agent-monitor/core"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 	"github.com/tinfoilsh/tinfoil-go/verify"
 )
 
 const (
+	AttestationPath        = "/.well-known/tinfoil-attestation"
 	tinfoilKey             = "TINFOIL_API_KEY"
 	attestationTimeout     = 30 * time.Second
 	maxAttestationBytes    = 32 << 20
@@ -41,12 +39,12 @@ const (
 
 var messageLimits = messages.Limits{ErrorBytes: 1 << 20, ResultBytes: 16 << 20, EventBytes: 8 << 20}
 
-type tinfoilSetup struct {
+type Setup struct {
 	Enclave string `json:"enclave"`
 	Repo    string `json:"repo"`
 }
 
-func validateEnclave(enclave, repo string) error {
+func Validate(enclave, repo string) error {
 	if !slots.ValidOrigin("https://"+enclave) || strings.Trim(enclave, web.HostChars) != "" || strings.Contains(enclave, ":") {
 		return errors.New("Tinfoil enclave must be a lowercase HTTPS hostname without a port")
 	}
@@ -54,54 +52,24 @@ func validateEnclave(enclave, repo string) error {
 	return err
 }
 
-func tinfoilKeySlot(enclave string) slots.Slot {
-	return slots.Slot{Value: tinfoilKey, Origin: "https://" + enclave, Path: tinfoilAPIPath, Header: "Authorization", Prefix: "Bearer "}
+func (t *Setup) Slot() slots.Slot {
+	return slots.Slot{Value: tinfoilKey, Origin: "https://" + t.Enclave, Path: tinfoilAPIPath, Header: "Authorization", Prefix: "Bearer "}
 }
 
-func parseTinfoil(spec config.ConnectionSpec, p *Setup) error {
-	t := new(tinfoilSetup)
-	if err := facts.DecodeNumbers(spec.Config, t); err != nil {
-		return err
+func Parse(config json.RawMessage) (*Setup, error) {
+	t := new(Setup)
+	if err := facts.DecodeNumbers(config, t); err != nil {
+		return nil, err
 	}
-	if err := validateEnclave(t.Enclave, t.Repo); err != nil {
-		return err
-	}
-	set, err := slots.New([]slots.Slot{tinfoilKeySlot(t.Enclave)}, httpSlots)
-	if err != nil {
-		return err
-	}
-	setup, err := web.New(spec.Definition, spec.Options, nil, web.Slots{Claim: set.Claim, Covers: set.Covers, Bind: set.Bind})
-	if err != nil {
-		return err
-	}
-	p.Open = func(ctx context.Context, h worker.Host) (worker.Instance, error) { return t.open(ctx, setup, h) }
-	return httpSetup(p, setup, set)
+	return t, Validate(t.Enclave, t.Repo)
 }
 
-func parseTinfoilMCP(spec config.ConnectionSpec, p *Setup) error {
-	var cfg struct {
-		mcp.Setup
-		Repo string `json:"repo"`
-	}
-	if err := mcp.Decode(spec.Config, spec.Definition, &cfg, &cfg.Setup); err != nil {
-		return err
-	}
-	u, _ := url.Parse(cfg.URL)
-	if u.Scheme != "https" || u.User != nil {
-		return errors.New("Tinfoil MCP requires an HTTPS URL without user information")
-	}
-	if err := validateEnclave(u.Host, cfg.Repo); err != nil {
-		return err
-	}
-	return mcpSetup(p, &cfg.Setup, cfg.Repo)
-}
-
-func (t *tinfoilSetup) open(ctx context.Context, setup *web.Setup, h worker.Host) (worker.Instance, error) {
-	base := UpstreamTransport(h.Dial)
-	transport, err := attest(ctx, h, tinfoilKey, t.Enclave, t.Repo, base)
+func (t *Setup) Open(ctx context.Context, setup *web.Setup, h worker.Host, domain string, maxBody int64) (connector.Instance, error) {
+	base := netx.Transport(h.Dial)
+	transport, err := Attest(ctx, h, tinfoilKey, t.Enclave, t.Repo, base)
 	if err != nil {
 		base.CloseIdleConnections()
-		return worker.Instance{}, err
+		return connector.Instance{}, err
 	}
 	control := http.NewServeMux()
 	control.Handle("POST /chat/completions", &httputil.ReverseProxy{Transport: transport, Rewrite: func(r *httputil.ProxyRequest) {
@@ -109,19 +77,18 @@ func (t *tinfoilSetup) open(ctx context.Context, setup *web.Setup, h worker.Host
 		r.Out.URL, r.Out.Host = &url.URL{Scheme: "https", Host: t.Enclave, Path: chatCompletionsPath}, ""
 		r.Out.Header = http.Header{"Authorization": {"Bearer " + key}, "Content-Type": {"application/json"}}
 	}})
-	serve := func(ctx context.Context, conn net.Conn, name, host string, port uint32, gate core.Gate) {
-		handler := web.Handler{Setup: setup, Transport: transport, CheckRedirect: RefuseRedirects, Accept: websocket.AcceptOptions{}, UpstreamReadLimit: websocketResponseLimit,
-			TLS: h.TLS, ServeHTTP: netx.ServeConn, Placeholder: h.Placeholder, Secret: h.Secret, MaxBody: maxBodyBytes}
+	serve := func(ctx context.Context, conn net.Conn, name string, target connector.Target, gate connector.Gate) {
+		handler := web.Handler{Setup: setup, Transport: transport, TLS: h.TLS, Placeholder: h.Placeholder, Secret: h.Secret, MaxBody: maxBody}
 		privateHost := ""
-		if host == "" {
-			privateHost = name + Domain
+		if target.Host == "" {
+			privateHost = name + domain
 			named := *setup
 			named.Hosts = []string{privateHost}
 			handler.Setup = &named
 		}
 		handler.Prepare = func(r *http.Request, original *web.HTTPFacts) (http.RoundTripper, error) {
 			if privateHost != "" && r.URL.Host == privateHost {
-				slot := tinfoilKeySlot(t.Enclave)
+				slot := t.Slot()
 				if r.URL.Path != slot.Path && !strings.HasPrefix(r.URL.Path, slot.Path+"/") {
 					return nil, errors.New("Tinfoil API requests must use a " + slot.Path + " path")
 				}
@@ -134,11 +101,11 @@ func (t *tinfoilSetup) open(ctx context.Context, setup *web.Setup, h worker.Host
 				r.Header.Del("X-Api-Key")
 				r.Header.Set(slot.Header, slot.Prefix+placeholder)
 			}
-			return prepareAPIRequest(r, original, transport)
+			return prepareAPIRequest(r, original, transport, maxBody)
 		}
-		handler.Serve(ctx, conn, name, host, port, gate)
+		handler.Serve(ctx, conn, name, target, gate)
 	}
-	return worker.Instance{Serve: serve, Control: control, Close: func() error {
+	return connector.Instance{Serve: serve, Control: control, Close: func() error {
 		transport.CloseIdleConnections()
 		base.CloseIdleConnections()
 		return nil
@@ -164,7 +131,7 @@ func (t apiTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	return messages.Response(r, resp, t.model, t.streaming, messageLimits)
 }
 
-func prepareAPIRequest(r *http.Request, original *web.HTTPFacts, transport http.RoundTripper) (http.RoundTripper, error) {
+func prepareAPIRequest(r *http.Request, original *web.HTTPFacts, transport http.RoundTripper, maxBody int64) (http.RoundTripper, error) {
 	if r.Method != http.MethodPost {
 		return nil, nil
 	}
@@ -180,7 +147,7 @@ func prepareAPIRequest(r *http.Request, original *web.HTTPFacts, transport http.
 	}
 	body, ok := original.Body.(map[string]any)
 	if original.BodyKind != web.BodyJSON || !ok {
-		return nil, fmt.Errorf("inference requests require an unambiguous JSON object of at most %d MiB", maxBodyBytes>>20)
+		return nil, fmt.Errorf("inference requests require an unambiguous JSON object of at most %d MiB", maxBody>>20)
 	}
 	if !rt.translate {
 		input, _ := body["input"].([]any)

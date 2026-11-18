@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"cmp"
 	"context"
 	"encoding/json"
@@ -15,6 +16,7 @@ import (
 	"github.com/tinfoilsh/confidential-agent-monitor/cmd/perimeter/format"
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 	"github.com/tinfoilsh/confidential-agent-monitor/core"
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/transport/netx"
 )
@@ -26,51 +28,14 @@ var (
 	errRuleSaved    = errors.New("approval rule saved; retry the request")
 	errNoAccess     = errors.New("key has no agent access")
 	errNotAllowed   = errors.New("policy does not allow this request")
+	errRestarted    = errors.New("the Perimeter restarted before this request was answered; retry it")
 )
 
-const (
-	statePending  = "pending"
-	stateExpired  = "expired"
-	stateOutdated = "outdated"
-	stateAllowed  = "allowed"
-	stateRefused  = "refused"
-	stateApproved = "approved"
-	stateDenied   = "denied"
-
-	answerOnce = "once"
-	answerSave = "save"
-	answerDeny = "deny"
-
-	approvalWait = 2 * time.Minute
-	maxRecords   = 1000
-)
-
-type Answer struct {
-	Choice string `json:"decision"`
-	Reason string `json:"reason,omitempty"`
-}
-
-type Review struct {
-	By string `json:"by"`
-	Answer
-	Time time.Time `json:"time"`
-}
-
-type record struct {
-	ID      string          `json:"id"`
-	State   string          `json:"state"`
-	Invalid bool            `json:"invalid,omitempty"`
-	Time    time.Time       `json:"time"`
-	Expires time.Time       `json:"expires,omitzero"`
-	Facts   json.RawMessage `json:"facts"`
-	config.Decision
-	Scope   map[string]any  `json:"grant"`
-	Reviews []Review        `json:"reviews,omitempty"`
-	Changes []format.Change `json:"changes,omitempty"`
-}
+const approvalWait = 2 * time.Minute
 
 type admitted struct {
 	fingerprint, connection string
+	name                    string
 	capability              string
 	perMessage              bool
 	valid                   func() bool
@@ -92,38 +57,11 @@ type requestFacts struct {
 	Principal  facts.Principal            `json:"principal"`
 	Service    string                     `json:"service"`
 	Connection string                     `json:"connection"`
-	Operation  *operation                 `json:"operation"`
+	Operation  *catalog.Operation         `json:"operation"`
 	Parameters map[string]any             `json:"parameters"`
 	Context    connections.RequestContext `json:"context"`
 	Title      string                     `json:"title"`
 	Details    any                        `json:"details"`
-}
-
-type operation struct {
-	ID      string   `json:"id"`
-	Action  string   `json:"action"`
-	Effects []string `json:"effects"`
-	Lineage []string `json:"lineage"`
-}
-
-func resolveOperation(id, action string, effects []string, actions map[string]catalog.Action) *operation {
-	op := operation{ID: id, Action: action}
-	for a := action; a != ""; {
-		op.Lineage = append(op.Lineage, a)
-		i := strings.LastIndexByte(a, '.')
-		if i < 0 {
-			break
-		}
-		a = a[:i]
-	}
-	for i := 0; effects == nil && i < len(op.Lineage); i++ {
-		effects = actions[op.Lineage[i]].Effects
-	}
-	if op.Action == "" || effects == nil {
-		return nil
-	}
-	op.Effects, op.ID = slices.Compact(slices.Sorted(slices.Values(effects))), cmp.Or(op.ID, op.Action)
-	return &op
 }
 
 const (
@@ -151,7 +89,7 @@ func (st *settings) observe(connection string, event facts.Event) (requestFacts,
 		err = refused
 	}
 	if o.Operation != nil {
-		f.Operation = resolveOperation(o.Operation.ID, o.Operation.Action, o.Operation.Effects, presets[st.Connections[connection].Preset].Catalog.Actions)
+		f.Operation = presets[st.Connections[connection].Preset].Catalog.Resolve(o.Operation.ID, o.Operation.Action, o.Operation.Effects)
 	}
 	return f, err
 }
@@ -205,8 +143,8 @@ func (st *settings) decide(ctx context.Context, p facts.Principal, connection st
 	return next, err
 }
 
-func (s held) label(fingerprint string) format.Label {
-	if l, ok := s.doc.Labels[fingerprint]; ok {
+func (s held) label(name string) format.Label {
+	if l, ok := s.doc.Labels[name]; ok {
 		return l
 	}
 	return config.InitialLabel
@@ -214,7 +152,7 @@ func (s held) label(fingerprint string) format.Label {
 
 func (s held) decideGrant(ctx context.Context, a *admitted, gr *grant) (*record, error) {
 	p, ok := s.identities.Lookup(a.fingerprint)
-	if !ok {
+	if !ok || p.Name != a.name {
 		return nil, errRemoved
 	}
 	if !a.valid() {
@@ -223,8 +161,12 @@ func (s held) decideGrant(ctx context.Context, a *admitted, gr *grant) (*record,
 	return s.settings.Load().decide(ctx, p, a.connection, gr)
 }
 
-func (s held) authorize(ctx context.Context, a *admitted, gr *grant) (*record, error) {
-	var r *record
+func (s held) authorize(ctx context.Context, a *admitted, gr *grant) (r *record, err error) {
+	defer func() {
+		if r != nil {
+			err = cmp.Or(err, s.queue(s.life, r, false))
+		}
+	}()
 	gr.approved = []string{}
 	for {
 		if err := ctx.Err(); err != nil {
@@ -233,7 +175,7 @@ func (s held) authorize(ctx context.Context, a *admitted, gr *grant) (*record, e
 		if s.audit.Backlogged() {
 			return r, errAuditBacklog
 		}
-		gr.label = s.label(a.fingerprint)
+		gr.label = s.label(a.name)
 		next, err := s.decideGrant(ctx, a, gr)
 		if next != nil && next.Invalid {
 			s.addRecord(next)
@@ -271,8 +213,14 @@ func (s held) authorize(ctx context.Context, a *admitted, gr *grant) (*record, e
 }
 
 func (s held) awaitAnswer(ctx context.Context, r *record) error {
-	if r.State != statePending {
+	fresh := r.State != statePending
+	if fresh {
 		r.State, r.Expires = statePending, time.Now().Add(approvalWait)
+	}
+	if err := s.queue(ctx, r, true); err != nil {
+		return err
+	}
+	if fresh {
 		s.announce(r)
 	}
 	expired := s.records.Wait(ctx, r.Expires)
@@ -289,17 +237,42 @@ func (s held) awaitAnswer(ctx context.Context, r *record) error {
 	return errors.New("waiting for approval in the Perimeter timed out")
 }
 
+// A record stays in the stored document while it awaits an answer, so the next unlock settles it.
+func (s held) queue(ctx context.Context, r *record, pending bool) error {
+	var raw json.RawMessage
+	if pending {
+		var err error
+		if raw, err = json.Marshal(r); err != nil {
+			return err
+		}
+	}
+	if stored, queued := s.doc.Pending[r.ID]; queued == pending && bytes.Equal(stored, raw) {
+		return nil
+	}
+	next := s.doc
+	next.Pending = map[string]json.RawMessage{}
+	maps.Copy(next.Pending, s.doc.Pending)
+	delete(next.Pending, r.ID)
+	if pending {
+		next.Pending[r.ID] = raw
+	}
+	return s.commit(ctx, next)
+}
+
 func (s *state) admit(ctx context.Context, p facts.Principal, req core.Request) (core.Watch, error) {
-	a := &admitted{fingerprint: p.Key, connection: req.Connection, perMessage: req.PerMessage, valid: req.Valid}
+	a := &admitted{fingerprint: p.Key, name: p.Name, connection: req.Connection, valid: req.Valid}
 	gr := &grant{kind: config.KindAdmission, admit: &requestFacts{
-		Operation:  &operation{Action: "session.admit", Effects: []string{"session"}},
+		Operation:  &catalog.Operation{Action: "session.admit", Effects: []string{"session"}},
 		Title:      "Open " + req.Connection,
-		Parameters: map[string]any{"host": req.Host, "port": req.Port},
-		Details:    map[string]any{"tcp": map[string]any{"host": req.Host, "port": req.Port}},
+		Parameters: map[string]any{"host": req.Target.Host, "port": req.Target.Port},
+		Details:    map[string]any{req.Target.Network: map[string]any{"host": req.Target.Host, "port": req.Target.Port}},
 		Context:    connections.RequestContext{Observes: config.InitialLabel},
 	}}
 	var err error
 	s.locked(func(h held) {
+		if c := h.settings.Load().connections[req.Connection]; c != nil {
+			a.perMessage = c.PerMessage
+		}
 		var r *record
 		r, err = h.authorize(ctx, a, gr)
 		if r != nil {
@@ -310,13 +283,12 @@ func (s *state) admit(ctx context.Context, p facts.Principal, req core.Request) 
 	if err != nil {
 		return nil, err
 	}
-	return func(ctx context.Context, end func()) (gate core.Gate, ok bool) {
+	return func(ctx context.Context, end func()) (gate connector.Gate, ok bool) {
 		s.locked(func(h held) {
 			if ok = h.recheck(a); !ok {
 				return
 			}
-			remove := h.admissions.Add(a, end)
-			context.AfterFunc(ctx, func() { s.locked(func(held) { remove() }) })
+			h.admissions.Hold(ctx, a, end)
 			gate = func(op context.Context, event facts.Event) error { return s.operation(op, ctx, a, event) }
 		})
 		return gate, ok
@@ -336,7 +308,7 @@ func (s *state) operation(ctx, stream context.Context, a *admitted, event facts.
 		r, err = h.authorize(ctx, a, gr)
 		if r != nil {
 			if err == nil {
-				err = h.relabel(ctx, a.fingerprint, r.Next, a)
+				err = h.relabel(ctx, a.name, r.Next, a)
 			}
 			h.settleRecord(r, err)
 		}
@@ -362,13 +334,13 @@ func (s held) recheck(a *admitted) bool {
 	return true
 }
 
-func (s held) relabel(ctx context.Context, fingerprint string, l format.Label, source *admitted) error {
-	if old := s.label(fingerprint); old.Trust == l.Trust && old.Audience == l.Audience {
+func (s held) relabel(ctx context.Context, name string, l format.Label, source *admitted) error {
+	if old := s.label(name); old.Trust == l.Trust && old.Audience == l.Audience {
 		return nil
 	}
 	next := s.doc
 	next.Labels = maps.Clone(next.Labels)
-	next.Labels[fingerprint] = l
+	next.Labels[name] = l
 	if err := s.commit(ctx, next); err != nil {
 		return err
 	}
@@ -376,7 +348,7 @@ func (s held) relabel(ctx context.Context, fingerprint string, l format.Label, s
 		return nil
 	}
 	s.admissions.Recheck(func(a *admitted) bool {
-		unaffected := a.fingerprint != fingerprint || a.capability != ""
+		unaffected := a.name != name || a.capability != ""
 		gated := source != nil && a.perMessage
 		return unaffected || a == source || gated
 	})
@@ -401,8 +373,7 @@ func (s *state) hold(ctx context.Context, fingerprint, capability string) (conte
 			return
 		}
 		ctx, cancel = context.WithCancel(ctx)
-		remove := h.admissions.Add(&admitted{fingerprint: fingerprint, capability: capability}, cancel)
-		context.AfterFunc(ctx, func() { s.locked(func(held) { remove() }) })
+		h.admissions.Hold(ctx, &admitted{fingerprint: fingerprint, capability: capability}, cancel)
 	})
 	if !ok {
 		return nil, nil, false

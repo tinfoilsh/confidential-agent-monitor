@@ -8,6 +8,7 @@ require (
 )
 
 require (
+	code.dny.dev/ssrf v0.3.0 // indirect
 	github.com/google/jsonschema-go v0.4.3 // indirect
 	github.com/segmentio/asm v1.2.1 // indirect
 	github.com/segmentio/encoding v0.5.4 // indirect

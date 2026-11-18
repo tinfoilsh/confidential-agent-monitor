@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/tinfoilsh/confidential-agent-monitor/core/connector"
 	"github.com/tinfoilsh/confidential-agent-monitor/core/facts"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
@@ -30,16 +31,16 @@ type SSHAgent struct {
 type gatedAgent struct {
 	agent.ExtendedAgent
 	ctx  context.Context
-	gate func(context.Context, facts.Event) error
+	gate connector.Gate
 }
 
-func (keys *SSHAgent) Handler(secret func(ctx context.Context, name string) (string, error)) func(context.Context, net.Conn, string, string, uint32, func(context.Context, facts.Event) error) {
-	return func(ctx context.Context, s net.Conn, _, _ string, _ uint32, gate func(context.Context, facts.Event) error) {
+func (keys *SSHAgent) Handler(secret func(ctx context.Context, name string) (string, error)) connector.Serve {
+	return func(ctx context.Context, s net.Conn, _ string, _ connector.Target, gate connector.Gate) {
 		keys.serve(ctx, s, gate, secret)
 	}
 }
 
-func (keys *SSHAgent) serve(ctx context.Context, s net.Conn, gate func(context.Context, facts.Event) error, secret func(context.Context, string) (string, error)) {
+func (keys *SSHAgent) serve(ctx context.Context, s net.Conn, gate connector.Gate, secret func(context.Context, string) (string, error)) {
 	keyring := agent.NewKeyring().(agent.ExtendedAgent)
 	for _, name := range keys.Credentials {
 		encoded, err := secret(ctx, name)

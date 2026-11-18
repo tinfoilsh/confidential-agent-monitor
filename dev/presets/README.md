@@ -7,7 +7,7 @@ This tool inventories API requests and proposes monitor actions, effect sets, re
 Not every shipped preset comes from this generator. Protocols described in prose
 can use a reviewed, handwritten definition with SDK fixtures. For example,
 `generate slack` covers Web API requests, not the separate
-[Slack Socket Mode definition](../../cmd/perimeter/presets/slack_socket_mode.json).
+[Slack Socket Mode definition](../../connector/catalog/presets/slack_socket_mode.json).
 
 1. Identify the workflow and vendor references, credential types, destinations,
    and SDK version. State which capabilities the sources actually cover.
@@ -66,7 +66,7 @@ The files have different roles:
 | `sources.lock.json` | Resolved source URLs, commits, content hashes, and successful refresh timestamps |
 | `.cache/` | Downloaded source bytes, verified against the lock before parsing |
 | `snapshots/` | Exact normalized bytes for mutable Airtable and Slack documentation sources |
-| `../../cmd/perimeter/presets/*.json` | Authoritative shipped definitions, used directly as the generation baseline |
+| `../../connector/catalog/presets/*.json` | Authoritative shipped definitions, used directly as the generation baseline |
 | `candidates/` | Expanded preset proposals, never loaded by the monitor automatically |
 | `coverage/` | Source-to-descriptor mappings, provenance, gaps, overlaps, and artifact hashes |
 
@@ -99,7 +99,7 @@ use the same tree UI. Repeated grouping produces the same result. This is a
 breaking action-name change: update agent overrides and custom policies to use
 the new names. No aliases or permission migration are generated.
 
-Accept additions in the corresponding `../../cmd/perimeter/presets/<name>.json`, preserving its connection setup and existing operations. Source names can differ from preset names; use the `preset` mapping in `sources.json`. The Confluence source group includes Jira, so divide its operations between the Confluence and Jira presets instead of copying the combined candidate into either one. Regenerate after accepting changes so the next proposal uses the updated shipped definitions.
+Accept additions in the corresponding `../../connector/catalog/presets/<name>.json`, preserving its connection setup and existing operations. Source names can differ from preset names; use the `preset` mapping in `sources.json`. The Confluence source group includes Jira, so divide its operations between the Confluence and Jira presets instead of copying the combined candidate into either one. Regenerate after accepting changes so the next proposal uses the updated shipped definitions.
 
 Each source variant receives a status:
 

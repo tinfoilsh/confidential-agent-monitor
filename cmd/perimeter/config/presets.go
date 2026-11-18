@@ -7,7 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"strings"
+	"maps"
+	"slices"
 
 	"github.com/tinfoilsh/confidential-agent-monitor/connector/catalog"
 )
@@ -50,28 +51,26 @@ func shippedDefaults(name string, p *catalog.Preset) connectionDefaults {
 	return privateDefaults
 }
 
-func LoadPresets(shipped, extra fs.FS) (map[string]*catalog.Preset, map[string]json.RawMessage, error) {
+func LoadPresets(extra fs.FS) (map[string]*catalog.Preset, map[string]json.RawMessage, error) {
 	out, defaults := map[string]*catalog.Preset{}, map[string]json.RawMessage{}
-	for _, source := range []fs.FS{shipped, extra} {
+	for _, source := range []fs.FS{catalog.Shipped, extra} {
 		if source == nil {
 			continue
 		}
-		files, _ := fs.Glob(source, "*.json")
-		for _, file := range files {
-			name := strings.TrimSuffix(file, ".json")
+		loaded, err := catalog.Load(source)
+		if err != nil {
+			return nil, nil, err
+		}
+		for _, name := range slices.Sorted(maps.Keys(loaded)) {
+			p := loaded[name]
 			if out[name] != nil {
-				return nil, nil, fmt.Errorf("preset %s is already shipped", file)
+				return nil, nil, fmt.Errorf("preset %s.json is already shipped", name)
 			}
-			raw, err := fs.ReadFile(source, file)
-			var p *catalog.Preset
-			if err == nil {
-				p, err = catalog.Decode(raw)
-			}
-			if err == nil && source == extra {
+			if source == extra {
 				if defaults[name] = p.Catalog.Defaults; !bytes.HasPrefix(defaults[name], []byte("{")) {
 					err = errors.New("catalog must be an object with defaults")
 				}
-			} else if err == nil {
+			} else {
 				defaults[name], err = json.Marshal(shippedDefaults(name, p))
 			}
 			if err == nil {
@@ -82,7 +81,7 @@ func LoadPresets(shipped, extra fs.FS) (map[string]*catalog.Preset, map[string]j
 				}
 			}
 			if err != nil {
-				return nil, nil, fmt.Errorf("preset %s: %w", file, err)
+				return nil, nil, fmt.Errorf("preset %s.json: %w", name, err)
 			}
 			out[name] = p
 		}
