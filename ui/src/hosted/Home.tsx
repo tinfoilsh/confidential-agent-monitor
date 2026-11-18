@@ -5,6 +5,7 @@ const PLACEHOLDER_PERIMETERS = 2;
 
 export function Home(props: {
   perimeters: JSX.Element;
+  bunkers?: JSX.Element;
   keys: JSX.Element;
   notice?: JSX.Element;
 }) {
@@ -15,6 +16,7 @@ export function Home(props: {
         <p class="start-eyebrow">Your Perimeters</p>
         {props.perimeters}
       </nav>
+      {props.bunkers}
       {props.notice}
       <section class="start-monitors" aria-label="Your keys">
         <p class="start-eyebrow">Your keys</p>
