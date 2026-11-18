@@ -85,7 +85,7 @@ func (t *attestedTransport) current(ctx context.Context, rejected *http.Transpor
 	if len(raw) > maxAttestationBytes {
 		return nil, errors.New("attestation is too large")
 	}
-	verified, err := t.verifier.VerifyV3(raw, nonce, t.repo)
+	verified, err := t.verifier.VerifyV3(raw, nonce, verify.Pin{Repo: t.repo})
 	if err != nil {
 		return nil, fmt.Errorf("verify Tinfoil attestation: %w", err)
 	}
@@ -94,7 +94,7 @@ func (t *attestedTransport) current(ctx context.Context, rejected *http.Transpor
 	if !ok || err != nil || len(decoded) != sha256.Size {
 		return nil, errors.New("invalid attested Tinfoil TLS key")
 	}
-	fresh := verified.FreshnessExpiresAt
+	fresh := verified.FreshnessExpiresAt()
 	if !time.Now().Before(fresh) {
 		return nil, errors.New("attestation has expired")
 	}
