@@ -385,7 +385,17 @@ func parseSpec(ref specRef, src []byte, location string) (parsed, error) {
 
 func specOps(name string, src source, lock lockFile) (parsed, error) {
 	var out parsed
-	usedGroups := map[string]bool{}
+	usedGroups, usedEffects := map[string]bool{}, map[string]bool{}
+	reviewed := map[string][]string{}
+	for list, ids := range src.Effects {
+		effects := strings.Split(list, ",")
+		for _, id := range ids {
+			if reviewed[id] != nil || slices.ContainsFunc(effects, func(e string) bool { return !slices.Contains(effectOrder, e) }) {
+				return out, fmt.Errorf("%s: effects %q for %s repeat the operation or name an unknown effect", name, list, id)
+			}
+			reviewed[id] = effects
+		}
+	}
 	for _, ref := range src.Specs {
 		e, err := lock.entry(name, ref)
 		if err != nil {
@@ -414,12 +424,19 @@ func specOps(name string, src source, lock lockFile) (parsed, error) {
 				o.SourceURL = e.URL
 				o.SourceHash = e.SHA256
 			}
+			if ref.Group != "" {
+				o.Resource = ref.Group + "." + actionResource(o)
+			}
 			if group, ok := src.Groups[o.SourceID]; ok {
 				if !groupPath.MatchString(group) {
 					return out, fmt.Errorf("%s: invalid resource group %q for %s", name, group, o.SourceID)
 				}
 				o.Resource = group
 				usedGroups[o.SourceID] = true
+			}
+			if effects, ok := reviewed[o.SourceID]; ok {
+				o.Effects, o.Reviewed = effects, true
+				usedEffects[o.SourceID] = true
 			}
 			out.Ops = append(out.Ops, o)
 		}
@@ -430,6 +447,11 @@ func specOps(name string, src source, lock lockFile) (parsed, error) {
 	for id := range src.Groups {
 		if !usedGroups[id] {
 			return out, fmt.Errorf("%s: resource group names unknown or excluded source operation %q", name, id)
+		}
+	}
+	for id := range reviewed {
+		if !usedEffects[id] {
+			return out, fmt.Errorf("%s: effects name unknown or excluded source operation %q", name, id)
 		}
 	}
 	return out, nil

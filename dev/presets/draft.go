@@ -7,15 +7,16 @@ import (
 )
 
 type source struct {
-	Title      string            `json:"title,omitempty"`
-	Preset     string            `json:"preset,omitempty"`
-	Native     string            `json:"native,omitempty"`
-	Specs      []specRef         `json:"specs"`
-	Auth       *specAuth         `json:"auth,omitempty"`
-	Note       string            `json:"note,omitempty"`
-	Families   []string          `json:"families,omitempty"`
-	Exclusions map[string]string `json:"exclusions,omitempty"`
-	Groups     map[string]string `json:"groups,omitempty"`
+	Title      string              `json:"title,omitempty"`
+	Preset     string              `json:"preset,omitempty"`
+	Native     string              `json:"native,omitempty"`
+	Specs      []specRef           `json:"specs"`
+	Auth       *specAuth           `json:"auth,omitempty"`
+	Note       string              `json:"note,omitempty"`
+	Families   []string            `json:"families,omitempty"`
+	Exclusions map[string]string   `json:"exclusions,omitempty"`
+	Groups     map[string]string   `json:"groups,omitempty"`
+	Effects    map[string][]string `json:"effects,omitempty"`
 }
 
 type specRef struct {
@@ -28,6 +29,7 @@ type specRef struct {
 	Origin  string `json:"origin,omitempty"`
 	Path    string `json:"path,omitempty"`
 	Include string `json:"include,omitempty"`
+	Group   string `json:"group,omitempty"`
 }
 
 func (r specRef) source() string {
@@ -102,7 +104,7 @@ func resource(o specOp) string {
 }
 
 func draftEffect(o specOp, ai bool) string {
-	idWords := slices.DeleteFunc(tokens(o.ID), func(w string) bool { return httpMethods.MatchString(w) })
+	idWords := slices.DeleteFunc(tokens(o.ID), func(w string) bool { return o.GraphQL == nil && httpMethods.MatchString(w) })
 	if segs := strings.Split(o.Path, "/"); len(segs) > 0 && !strings.Contains(segs[len(segs)-1], "{") {
 		idWords = append(idWords, tokens(segs[len(segs)-1])...)
 	}
@@ -120,7 +122,7 @@ func draftEffect(o specOp, ai bool) string {
 	if len(idWords) > 0 {
 		last = strings.Join(tokens(lastPart(o.ID)), "_")
 	}
-	if readVerbs.MatchString(last) && o.Method == "POST" {
+	if readVerbs.MatchString(last) && o.Method == "POST" && o.GraphQL == nil {
 		return "read"
 	}
 	for _, e := range effectOrder {

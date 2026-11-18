@@ -158,6 +158,13 @@ func operationSpec(op map[string]any) specOp {
 		kind, _ := g["operation"].(string)
 		field, _ := g["field"].(string)
 		o.GraphQL = []string{kind, field}
+		if fields, ok := g["fields"].([]any); ok {
+			o.GraphQL = []string{kind}
+			for _, f := range fields {
+				name, _ := f.(string)
+				o.GraphQL = append(o.GraphQL, name)
+			}
+		}
 	}
 	return o
 }
@@ -167,9 +174,17 @@ func sameRoute(a, b specOp) bool {
 		return false
 	}
 	if a.GraphQL != nil || b.GraphQL != nil {
-		return slices.Equal(a.GraphQL, b.GraphQL)
+		return graphqlOverlap(a.GraphQL, b.GraphQL)
 	}
 	return routeShape(a.Method, a.Path) == routeShape(b.Method, b.Path)
+}
+
+// Each matcher is an operation kind followed by the root fields it accepts; "*" accepts any.
+func graphqlOverlap(a, b []string) bool {
+	if len(a) < 2 || len(b) < 2 || a[0] != b[0] {
+		return false
+	}
+	return a[1] == "*" || b[1] == "*" || slices.ContainsFunc(a[1:], func(f string) bool { return slices.Contains(b[1:], f) })
 }
 
 func conditionsOverlap(a, b map[string]any) bool {
@@ -187,7 +202,7 @@ func recordOverlap(a, b map[string]any) bool {
 		return false
 	}
 	if x.GraphQL != nil || y.GraphQL != nil {
-		return slices.Equal(x.GraphQL, y.GraphQL)
+		return graphqlOverlap(x.GraphQL, y.GraphQL)
 	}
 	for _, key := range []string{"query", "headers", "fields"} {
 		am, _ := a[key].(map[string]any)
@@ -332,6 +347,7 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 		ids[o["id"].(string)] = true
 	}
 	generated := map[string]string{}
+	ai := name == "anthropic" || name == "open_ai" || name == "google_gemini"
 	for _, raw := range p.Ops {
 		o := normalizeProvider(name, raw)
 		entry := inventoryOperation{ID: o.SourceID, Source: documentStamp{o.SourceURL, o.SourceHash}, Method: o.Method, Origin: o.Origin, Path: o.Path, Body: o.Body, Query: o.Query, Descriptors: []string{}}
@@ -345,6 +361,10 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 			for _, override := range baseline {
 				if sameRoute(operationSpec(override), o) {
 					entry.Descriptors = append(entry.Descriptors, override["id"].(string))
+					// Reviewed effects are the source of truth for the descriptor generated from that operation.
+					if o.Reviewed && override["id"] == o.ID {
+						maps.Copy(override, operationObj(draftOps(parsed{Ops: []specOp{o}}, ai)[0], o.ID))
+					}
 				}
 			}
 			if len(entry.Descriptors) > 0 {
@@ -392,7 +412,7 @@ func generateService(name string, src source, lock lockFile) (generationReport, 
 					r.Operations = append(r.Operations, entry)
 					continue
 				}
-				d := draftOps(parsed{Ops: []specOp{o}}, name == "anthropic" || name == "open_ai" || name == "google_gemini")[0]
+				d := draftOps(parsed{Ops: []specOp{o}}, ai)[0]
 				definition := operationObj(d, "")
 				fingerprint, _ := json.Marshal(definition)
 				if id, ok := generated[string(fingerprint)]; ok {
@@ -538,6 +558,31 @@ func generate(only []string) error {
 		failed = append(failed, err)
 	}
 	return errors.Join(failed...)
+}
+
+func accept(only []string) error {
+	sources, err := load[map[string]source](sourcesPath)
+	if err != nil {
+		return err
+	}
+	for _, name := range only {
+		if preset := sources[name].Preset; preset == "" || strings.Contains(preset, ",") {
+			return fmt.Errorf("%s is not a source with exactly one shipped preset", name)
+		}
+	}
+	if err := check(only, false, 0); err != nil {
+		return err
+	}
+	for _, name := range only {
+		candidate, err := load[map[string]any](filepath.Join(candidatesDir, name+".json"))
+		if err == nil {
+			err = writeJSON(filepath.Join(shippedDir, sources[name].Preset+".json"), candidate)
+		}
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func httpSection(record map[string]any) map[string]any {
