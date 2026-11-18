@@ -5,20 +5,72 @@
   "acuity_scheduling": {
     "src": "acuity_scheduling.png"
   },
+  "adisinsight": {
+    "src": "adisinsight.png"
+  },
+  "adobe_experience_manager": {
+    "src": "adobe.png"
+  },
+  "adobe_for_creativity": {
+    "src": "adobe.png"
+  },
+  "adobe_journey_optimizer": {
+    "src": "adobe.png"
+  },
+  "adobe_marketing_agent": {
+    "src": "adobe.png"
+  },
   "affinity": {
     "src": "affinity.svg"
   },
+  "aiera": {
+    "src": "aiera.png"
+  },
+  "airops": {
+    "src": "airops.png"
+  },
   "airtable": {
+    "src": "airtable.svg"
+  },
+  "airtable_mcp": {
     "src": "airtable.svg"
   },
   "airtop": {
     "src": "airtop.svg"
   },
+  "airwallex": {
+    "src": "airwallex.png"
+  },
+  "alltrails": {
+    "src": "alltrails.svg"
+  },
+  "amplitude": {
+    "src": "amplitude.png"
+  },
   "anthropic": {
     "src": "anthropic.svg"
   },
+  "anvil_crm": {
+    "src": "anvil_crm.png"
+  },
   "asana": {
     "src": "asana.svg"
+  },
+  "asana_mcp": {
+    "src": "asana.svg"
+  },
+  "atlassian": {
+    "src": "atlassian.svg"
+  },
+  "attio": {
+    "src": "attio.png"
+  },
+  "audible": {
+    "src": "audible.svg"
+  },
+  "autodesk_product_help": {
+    "src": "autodesk_product_help.svg",
+    "dark": "autodesk_product_help.dark.svg"
   },
   "aws_bedrock": {
     "src": "aws.svg"
@@ -77,6 +129,12 @@
   "baserow": {
     "src": "baserow.svg"
   },
+  "bigdata_com": {
+    "src": "bigdata_com.png"
+  },
+  "biorender": {
+    "src": "biorender.png"
+  },
   "bitbucket": {
     "src": "bitbucket.svg"
   },
@@ -86,17 +144,29 @@
   "bitly_api": {
     "src": "bitly.svg"
   },
+  "blackbaud": {
+    "src": "blackbaud.png"
+  },
   "box": {
     "src": "box.png"
   },
   "brandfetch": {
     "src": "brandfetch.svg"
   },
+  "brandfetch_mcp": {
+    "src": "brandfetch.svg"
+  },
   "cal": {
+    "src": "cal.svg"
+  },
+  "cal_mcp": {
     "src": "cal.svg"
   },
   "calendly": {
     "src": "calendly.svg"
+  },
+  "canva": {
+    "src": "canva.png"
   },
   "chargebee": {
     "src": "chargebee.png"
@@ -110,7 +180,13 @@
   "cisco_webex": {
     "src": "cisco_webex.png"
   },
+  "clerk": {
+    "src": "clerk.svg"
+  },
   "clickup": {
+    "src": "clickup.svg"
+  },
+  "clickup_mcp": {
     "src": "clickup.svg"
   },
   "clockify": {
@@ -122,7 +198,13 @@
   "cloudflare_api": {
     "src": "cloudflare.svg"
   },
+  "cloudquell": {
+    "src": "cloudquell.svg"
+  },
   "coda": {
+    "src": "coda.svg"
+  },
+  "coda_mcp": {
     "src": "coda.svg"
   },
   "codex": {
@@ -135,8 +217,26 @@
   "confluence": {
     "src": "confluence.svg"
   },
+  "contentsquare": {
+    "src": "contentsquare.png"
+  },
+  "contentstudio": {
+    "src": "contentstudio.png"
+  },
+  "context7": {
+    "src": "context7.png"
+  },
+  "control_plane": {
+    "src": "control_plane.png"
+  },
   "convert_kit": {
     "src": "convert_kit.svg"
+  },
+  "cortellis_regulatory_intelligence": {
+    "src": "cortellis_regulatory_intelligence.png"
+  },
+  "craft": {
+    "src": "craft.png"
   },
   "currents": {
     "src": "currents.svg"
@@ -150,8 +250,23 @@
   "customer_io": {
     "src": "customer_io.svg"
   },
+  "customer_io_mcp": {
+    "src": "customer_io.svg"
+  },
+  "d_b_risk_analytics": {
+    "src": "d_b_risk_analytics.png"
+  },
+  "daloopa": {
+    "src": "daloopa.png"
+  },
   "deep_l": {
     "src": "deep_l.svg"
+  },
+  "deep_l_mcp": {
+    "src": "deep_l.svg"
+  },
+  "descrybe_legal_engine": {
+    "src": "descrybe_legal_engine.png"
   },
   "dhl": {
     "src": "dhl.svg"
@@ -162,8 +277,17 @@
   "discourse": {
     "src": "discourse.svg"
   },
+  "docuseal": {
+    "src": "docuseal.svg"
+  },
+  "docusign": {
+    "src": "docusign.png"
+  },
   "dropbox": {
     "src": "dropbox.svg"
+  },
+  "egnyte": {
+    "src": "egnyte.svg"
   },
   "egoi": {
     "src": "egoi.svg"
@@ -180,6 +304,15 @@
   "email_send": {
     "src": "email.svg"
   },
+  "estuary": {
+    "src": "estuary.png"
+  },
+  "everlaw": {
+    "src": "everlaw.svg"
+  },
+  "exa": {
+    "src": "exa.png"
+  },
   "figma": {
     "src": "figma.svg"
   },
@@ -195,6 +328,9 @@
   "g_suite_admin": {
     "src": "google.svg"
   },
+  "gamma": {
+    "src": "gamma.svg"
+  },
   "get_response": {
     "src": "get_response.png"
   },
@@ -209,16 +345,34 @@
   "gitlab": {
     "src": "gitlab.svg"
   },
+  "gitlab_mcp": {
+    "src": "gitlab.svg"
+  },
   "gmail": {
     "src": "gmail.svg"
   },
   "go_to_webinar": {
     "src": "go_to_webinar.svg"
   },
+  "gocardless": {
+    "src": "gocardless.svg"
+  },
+  "godaddy": {
+    "src": "godaddy.svg"
+  },
   "gong": {
     "src": "gong.svg"
   },
+  "gong_mcp": {
+    "src": "gong.svg"
+  },
+  "goodnotes": {
+    "src": "goodnotes.png"
+  },
   "google_ads": {
+    "src": "google.svg"
+  },
+  "google_ads_by_markifact": {
     "src": "google.svg"
   },
   "google_analytics": {
@@ -239,10 +393,16 @@
   "google_chat": {
     "src": "google.svg"
   },
+  "google_cloud_bigquery": {
+    "src": "google.svg"
+  },
   "google_cloud_natural_language": {
     "src": "google.svg"
   },
   "google_cloud_storage": {
+    "src": "google.svg"
+  },
+  "google_compute_engine": {
     "src": "google.svg"
   },
   "google_contacts": {
@@ -281,14 +441,47 @@
   "grafana": {
     "src": "grafana.svg"
   },
+  "grafana_mcp": {
+    "src": "grafana.svg"
+  },
+  "grain": {
+    "src": "grain.png"
+  },
+  "graphos_tools": {
+    "src": "graphos_tools.svg"
+  },
   "grist": {
     "src": "grist.svg"
+  },
+  "guidepoint": {
+    "src": "guidepoint.png"
+  },
+  "gusto": {
+    "src": "gusto.svg"
+  },
+  "harvey": {
+    "src": "harvey.png"
+  },
+  "hex": {
+    "src": "hex.svg"
   },
   "high_level": {
     "src": "high_level.svg"
   },
+  "high_level_mcp": {
+    "src": "high_level.svg"
+  },
+  "honeycomb": {
+    "src": "honeycomb.png"
+  },
   "hubspot": {
     "src": "hubspot.svg"
+  },
+  "hubspot_mcp": {
+    "src": "hubspot.svg"
+  },
+  "hugging_face": {
+    "src": "hugging_face_inference.svg"
   },
   "hugging_face_inference": {
     "src": "hugging_face_inference.svg"
@@ -299,11 +492,33 @@
   "hunter_api": {
     "src": "hunter.png"
   },
+  "ibisworld": {
+    "src": "ibisworld.png"
+  },
+  "ice_data_services": {
+    "src": "ice_data_services.png"
+  },
+  "ifttt": {
+    "src": "ifttt.svg",
+    "dark": "ifttt.dark.svg"
+  },
+  "indeed": {
+    "src": "indeed.svg"
+  },
+  "instacart": {
+    "src": "instacart.svg"
+  },
   "intercom": {
+    "src": "intercom.svg"
+  },
+  "intercom_mcp": {
     "src": "intercom.svg"
   },
   "invoice_ninja": {
     "src": "invoice_ninja.svg"
+  },
+  "ironclad_contracts": {
+    "src": "ironclad_contracts.png"
   },
   "iterable": {
     "src": "iterable.png"
@@ -314,8 +529,26 @@
   "jira": {
     "src": "jira.svg"
   },
+  "jotform": {
+    "src": "jotform.png"
+  },
   "keap": {
     "src": "keap.png"
+  },
+  "kiwi_travel": {
+    "src": "kiwi_travel.png"
+  },
+  "klaviyo": {
+    "src": "klaviyo.png"
+  },
+  "krisp": {
+    "src": "krisp.png"
+  },
+  "lastminute_com": {
+    "src": "lastminute_com.png"
+  },
+  "legalzoom": {
+    "src": "legalzoom.png"
   },
   "lemlist": {
     "src": "lemlist.svg"
@@ -325,6 +558,15 @@
   },
   "linear_mcp": {
     "src": "linear.svg"
+  },
+  "lseg": {
+    "src": "lseg.png"
+  },
+  "lucid": {
+    "src": "lucid.svg"
+  },
+  "lumin": {
+    "src": "lumin.svg"
   },
   "mailchimp": {
     "src": "mailchimp.svg"
@@ -338,11 +580,33 @@
   "mailjet": {
     "src": "mailjet.svg"
   },
+  "make": {
+    "src": "make.svg"
+  },
+  "malwarebytes": {
+    "src": "malwarebytes.svg"
+  },
   "matrix": {
     "src": "matrix.png"
   },
   "mcp": {
     "src": "mcp.svg"
+  },
+  "mdn": {
+    "src": "mdn.svg",
+    "dark": "mdn.dark.svg"
+  },
+  "medidata": {
+    "src": "medidata.png"
+  },
+  "mem": {
+    "src": "mem.png"
+  },
+  "mercury": {
+    "src": "mercury.svg"
+  },
+  "mermaid_chart": {
+    "src": "mermaid_chart.svg"
   },
   "message_bird": {
     "src": "message_bird.svg"
@@ -360,6 +624,9 @@
     "src": "microsoft.svg"
   },
   "microsoft_graph_security": {
+    "src": "microsoft.svg"
+  },
+  "microsoft_learn": {
     "src": "microsoft.svg"
   },
   "microsoft_onedrive": {
@@ -380,25 +647,60 @@
   "minimax": {
     "src": "minimax.svg"
   },
+  "mintlify": {
+    "src": "mintlify.svg"
+  },
+  "miro": {
+    "src": "miro.svg",
+    "dark": "miro.dark.svg"
+  },
   "misp": {
     "src": "misp.svg"
   },
   "mistral_ai": {
     "src": "mistral_ai.svg"
   },
+  "mixpanel": {
+    "src": "mixpanel.svg"
+  },
+  "mobbin": {
+    "src": "mobbin.svg"
+  },
   "monday_com": {
     "src": "monday_com.svg"
+  },
+  "moody_s": {
+    "src": "moody_s.png"
   },
   "moonshot": {
     "src": "moonshot.svg"
   },
+  "morningstar": {
+    "src": "morningstar.png"
+  },
+  "motherduck": {
+    "src": "motherduck.png"
+  },
   "nasa": {
     "src": "nasa.png"
+  },
+  "navan": {
+    "src": "navan.png"
+  },
+  "neon": {
+    "src": "neon.svg"
+  },
+  "netlify": {
+    "src": "netlify.svg"
   },
   "next_cloud": {
     "src": "next_cloud.svg"
   },
   "notion": {
+    "dark": "notion.dark.svg",
+    "src": "notion.svg"
+  },
+  "notion_mcp": {
     "dark": "notion.dark.svg",
     "src": "notion.svg"
   },
@@ -419,6 +721,9 @@
     "src": "open_router.svg",
     "dark": "open_router.dark.svg"
   },
+  "open_targets": {
+    "src": "open_targets.png"
+  },
   "openai": {
     "dark": "openai.dark.svg",
     "src": "openai.svg"
@@ -430,14 +735,29 @@
   "orbit": {
     "src": "orbit.svg"
   },
+  "otter_ai": {
+    "src": "otter_ai.png"
+  },
   "oura": {
     "src": "oura.svg"
   },
   "outlook": {
     "src": "outlook.svg"
   },
+  "pagerduty": {
+    "src": "pagerduty.svg"
+  },
+  "parallel_search": {
+    "src": "parallel_search.svg"
+  },
   "pay_pal": {
     "src": "pay_pal.svg"
+  },
+  "paypal": {
+    "src": "pay_pal.svg"
+  },
+  "pendo": {
+    "src": "pendo.svg"
   },
   "perplexity": {
     "src": "perplexity.svg"
@@ -460,14 +780,52 @@
   "postmark": {
     "src": "postmark.png"
   },
+  "privacy_com": {
+    "src": "privacy_com.png"
+  },
+  "process_street": {
+    "src": "process_street.png"
+  },
   "pushcut": {
     "src": "pushcut.png"
+  },
+  "pylon": {
+    "src": "pylon.png"
+  },
+  "qa_wolf": {
+    "src": "qa_wolf.svg"
   },
   "qdrant": {
     "src": "qdrant.svg"
   },
+  "railway": {
+    "src": "railway.svg",
+    "dark": "railway.dark.svg"
+  },
+  "ramp": {
+    "src": "ramp.png"
+  },
+  "ramp_data": {
+    "src": "ramp.png"
+  },
+  "razorpay": {
+    "src": "razorpay.svg"
+  },
+  "readwise": {
+    "src": "readwise.png"
+  },
   "redis": {
     "src": "redis.svg"
+  },
+  "resend_email": {
+    "src": "resend_email.svg",
+    "dark": "resend_email.dark.svg"
+  },
+  "resy": {
+    "src": "resy.png"
+  },
+  "rillet": {
+    "src": "rillet.png"
   },
   "rocketchat": {
     "src": "rocketchat.svg"
@@ -478,11 +836,27 @@
   "s3": {
     "src": "aws_s3.svg"
   },
+  "s_p_global": {
+    "src": "s_p_global.png"
+  },
   "salesforce": {
+    "src": "salesforce.svg"
+  },
+  "salesforce_mcp": {
     "src": "salesforce.svg"
   },
   "salesmate": {
     "src": "salesmate.png"
+  },
+  "sanity": {
+    "src": "sanity.svg",
+    "dark": "sanity.dark.svg"
+  },
+  "scholar_gateway": {
+    "src": "scholar_gateway.svg"
+  },
+  "scite": {
+    "src": "scite.png"
   },
   "sea_table": {
     "src": "sea_table.svg"
@@ -490,20 +864,44 @@
   "security_scorecard": {
     "src": "security_scorecard.svg"
   },
+  "semrush": {
+    "src": "semrush.svg"
+  },
+  "send": {
+    "src": "send.png"
+  },
   "send_in_blue": {
     "src": "send_in_blue.svg"
   },
   "sendgrid": {
     "src": "sendgrid.svg"
   },
+  "sentry": {
+    "src": "sentry_io.svg"
+  },
   "sentry_io": {
     "src": "sentry_io.svg"
+  },
+  "serpkite": {
+    "src": "serpkite.svg"
+  },
+  "shapes": {
+    "src": "shapes.png"
   },
   "shopify": {
     "src": "shopify.svg"
   },
+  "shopify_mcp": {
+    "src": "shopify.svg"
+  },
   "signl4": {
     "src": "signl4.png"
+  },
+  "signnow": {
+    "src": "signnow.png"
+  },
+  "similarweb": {
+    "src": "similarweb.svg"
   },
   "slack": {
     "src": "slack.svg"
@@ -517,8 +915,14 @@
   "sms77": {
     "src": "sms77.svg"
   },
+  "snov_io": {
+    "src": "snov_io.png"
+  },
   "snowflake": {
     "src": "snowflake.svg"
+  },
+  "solve_intelligence": {
+    "src": "solve_intelligence.png"
   },
   "ssh": {
     "src": "ssh.svg"
@@ -529,14 +933,29 @@
   "stripe": {
     "src": "stripe.svg"
   },
+  "stripe_mcp": {
+    "src": "stripe.svg"
+  },
   "supabase": {
+    "src": "supabase.svg"
+  },
+  "supabase_mcp": {
     "src": "supabase.svg"
   },
   "survey_monkey": {
     "src": "survey_monkey.svg"
   },
+  "survey_monkey_mcp": {
+    "src": "survey_monkey.svg"
+  },
   "syncro_msp": {
     "src": "syncro_msp.png"
+  },
+  "taskrabbit_booking_assistance": {
+    "src": "taskrabbit_booking_assistance.png"
+  },
+  "tavily": {
+    "src": "tavily.svg"
   },
   "tcp": {
     "src": "tcp.svg",
@@ -551,6 +970,19 @@
   "the_hive_project": {
     "src": "the_hive_project.svg"
   },
+  "third_bridge": {
+    "src": "third_bridge.png"
+  },
+  "three_js_3d_viewer": {
+    "src": "three_js_3d_viewer.svg",
+    "dark": "three_js_3d_viewer.dark.svg"
+  },
+  "thumbtack": {
+    "src": "thumbtack.svg"
+  },
+  "ticket_tailor": {
+    "src": "ticket_tailor.svg"
+  },
   "tinfoil": {
     "dark": "tinfoil.dark.svg",
     "src": "tinfoil.svg"
@@ -559,16 +991,38 @@
     "dark": "tinfoil.dark.svg",
     "src": "tinfoil.svg"
   },
+  "tldraw": {
+    "src": "tldraw.svg",
+    "dark": "tldraw.dark.svg"
+  },
   "todoist": {
+    "src": "todoist.svg"
+  },
+  "todoist_mcp": {
     "src": "todoist.svg"
   },
   "toggl": {
     "src": "toggl.png"
   },
+  "transcriptyt": {
+    "src": "transcriptyt.png"
+  },
   "trello": {
     "src": "trello.svg"
   },
+  "trimble_sketchup": {
+    "src": "trimble_sketchup.svg"
+  },
+  "tripadvisor": {
+    "src": "tripadvisor.svg"
+  },
+  "trivago": {
+    "src": "trivago.svg"
+  },
   "twilio": {
+    "src": "twilio.svg"
+  },
+  "twilio_docs": {
     "src": "twilio.svg"
   },
   "twitter": {
@@ -581,15 +1035,42 @@
   "typeform_api": {
     "src": "typeform.svg"
   },
+  "uber": {
+    "src": "uber.svg",
+    "dark": "uber.dark.svg"
+  },
+  "uber_eats": {
+    "src": "uber_eats.svg"
+  },
+  "udemy_business": {
+    "src": "udemy_business.svg"
+  },
+  "umami": {
+    "src": "umami.svg",
+    "dark": "umami.dark.svg"
+  },
+  "unthread": {
+    "src": "unthread.png"
+  },
   "uptime_robot": {
+    "src": "uptime_robot.svg"
+  },
+  "uptime_robot_mcp": {
     "src": "uptime_robot.svg"
   },
   "url_scan_io": {
     "src": "url_scan_io.svg"
   },
+  "vercel": {
+    "dark": "vercel_ai_gateway.dark.svg",
+    "src": "vercel_ai_gateway.svg"
+  },
   "vercel_ai_gateway": {
     "dark": "vercel_ai_gateway.dark.svg",
     "src": "vercel_ai_gateway.svg"
+  },
+  "viator": {
+    "src": "viator.png"
   },
   "vonage": {
     "src": "vonage.svg"
@@ -600,11 +1081,17 @@
   "web": {
     "src": "web.svg"
   },
+  "webflow": {
+    "src": "webflow.svg"
+  },
   "whatsapp": {
     "src": "whatsapp.svg"
   },
   "wise": {
     "src": "wise.svg"
+  },
+  "wix": {
+    "src": "wix.svg"
   },
   "wolfram_alpha": {
     "src": "wolfram_alpha.svg"
@@ -614,6 +1101,15 @@
   },
   "wordpress": {
     "src": "wordpress.svg"
+  },
+  "wordpress_com": {
+    "src": "wordpress.svg"
+  },
+  "wordpress_mcp": {
+    "src": "wordpress.svg"
+  },
+  "workable": {
+    "src": "workable.svg"
   },
   "xai_grok": {
     "dark": "xai_grok.dark.svg",
@@ -628,11 +1124,17 @@
   "you_tube": {
     "src": "you_tube.png"
   },
+  "zapier": {
+    "src": "zapier.svg"
+  },
   "zendesk": {
     "src": "zendesk.svg"
   },
   "zep": {
     "src": "zep.png"
+  },
+  "ziprecruiter": {
+    "src": "ziprecruiter.png"
   },
   "zoho_crm": {
     "src": "zoho_crm.svg"
@@ -643,7 +1145,13 @@
   "zoom_api": {
     "src": "zoom.svg"
   },
+  "zoominfo_plugin": {
+    "src": "zoominfo_plugin.png"
+  },
   "zulip": {
     "src": "zulip.svg"
+  },
+  "zyte": {
+    "src": "zyte.svg"
   }
 }
