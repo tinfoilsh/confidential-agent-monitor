@@ -62,6 +62,9 @@ func main() {
 						break
 					}
 					selected[name] = src
+					if slices.ContainsFunc(src.Specs, func(ref specRef) bool { return ref.Format == "botocore" }) {
+						selected[awsEndpoints] = sources[awsEndpoints]
+					}
 				}
 				if err != nil {
 					break
