@@ -1,8 +1,14 @@
 import { ed25519 } from "@noble/curves/ed25519.js";
 import { Verifier } from "@tinfoilsh/verifier";
-import { EnclaveHTTPClient } from "tinfoil";
+import { EnclaveHTTPClient, type Fetch } from "tinfoil";
 import type { ShellOpen, ShellOpener } from "../owner";
-import { openShell, rpcChannel } from "./channel";
+import {
+  openChannel,
+  openShell,
+  rpcChannel,
+  type OwnerChannel,
+  type Session,
+} from "./channel";
 import {
   UUID,
   ownerPublicKey,
@@ -13,18 +19,22 @@ import {
 } from "./contract";
 import * as keys from "./keys";
 import { attestedKey, checkHostKey, type OpenedMonitor } from "./monitors";
-import { SANDBOX_REPO, monitorOf, type Container } from "./session";
+import { SANDBOX_REPO, monitorOf, type Container, type Scope } from "./session";
 import { TEMPLATES } from "./templates";
 import {
+  NO_MONITOR,
+  OWNER_SOCKET,
   measuredEnv,
   registryTarget,
   sandboxDigest,
   verifyImage,
   volumeSize,
+  type SandboxMode,
 } from "./trust";
 
 const PROTOCOL = "sandbox-owner-v1";
 const ATTESTATION = "/.well-known/tinfoil-attestation";
+const REGISTRY_ACCOUNT = "/api/config-registry/v2/account";
 const VOLUMES = "/api/volumes";
 const HOST = /^[a-z0-9.-]+$/;
 
@@ -36,6 +46,13 @@ export type SandboxStatus = {
   monitor_host_key: string | null;
 };
 type RelayReply = { status: number; body: string };
+type Route = {
+  mode: SandboxMode;
+  registry: string;
+  attestationFetch?: Fetch;
+  open: (session: Session, signal?: AbortSignal) => Promise<OwnerChannel>;
+  refresh?: () => Promise<unknown>;
+};
 
 // Sandbox identity that is not on its Monitor; only an explicit restore re-adds it.
 export class RestoreRequired extends Error {}
@@ -49,11 +66,33 @@ const agentKey = (resource: MKResource) =>
     ed25519.getPublicKey(unb64u(resource.monitor_identity_seed, 32)),
   );
 
-// One sandbox reached through its Monitor's relay. Its sessions handshake with
-// the attested owner-session key and are signed by the sandbox owner key, so
-// Monitor carries only ciphertext.
+const viaPerimeter = (monitor: OpenedMonitor, instance_id: string): Route => ({
+  mode: "perimeter",
+  registry: monitor.registry,
+  attestationFetch: async (input, init) => {
+    const url = new URL(String(input));
+    const nonce = url.searchParams.get("nonce") ?? "";
+    if (url.pathname !== ATTESTATION || !/^[0-9a-f]{64}$/.test(nonce))
+      throw new Error("Refused bunker attestation request.");
+    const reply = (await monitor.client.call(
+      "POST",
+      "/sandboxes/relay",
+      { instance_id, nonce },
+      init?.signal ?? undefined,
+    )) as RelayReply;
+    return new Response(new Uint8Array(unb64u(reply.body)), {
+      status: reply.status,
+    });
+  },
+  open: (session, signal) => monitor.relay(instance_id, session, signal),
+  refresh: monitor.refresh,
+});
+
+// One sandbox reached through its Monitor's relay or directly. Its sessions
+// handshake with the attested owner-session key and are signed by the sandbox
+// owner key, so Monitor carries only ciphertext.
 export async function sandboxClient(
-  monitor: OpenedMonitor,
+  route: Route,
   row: Container,
   resource: MKResource,
   binding: MKBinding,
@@ -69,41 +108,24 @@ export async function sandboxClient(
     owner,
     instance_id,
     size,
+    mode: route.mode,
   });
-  const target = registryTarget(row, config, monitor.registry);
+  const target = registryTarget(row, config, route.registry);
   await verifyImage("sandbox", digest, { signal });
   signal.throwIfAborted();
   const secure = await EnclaveHTTPClient.create(row.domain, target.reference, {
     verifier: await Verifier.create({ configRegistryIDs: [target.registry] }),
-    attestationFetch: async (input, init) => {
-      const url = new URL(String(input));
-      const nonce = url.searchParams.get("nonce") ?? "";
-      if (url.pathname !== ATTESTATION || !/^[0-9a-f]{64}$/.test(nonce))
-        throw new Error("Refused bunker attestation request.");
-      const reply = (await monitor.client.call(
-        "POST",
-        "/sandboxes/relay",
-        { instance_id, nonce },
-        init?.signal ?? undefined,
-      )) as RelayReply;
-      return new Response(new Uint8Array(unb64u(reply.body)), {
-        status: reply.status,
-      });
-    },
+    attestationFetch: route.attestationFetch,
     signal,
   });
   const connect = async (hello: object, signal?: AbortSignal) => {
     await secure.ensureVerified({ signal });
     const serverKey = attestedKey(secure, "owner-session");
-    return monitor.relay(
-      instance_id,
-      { serverKey, prologue: PROTOCOL, seed, hello },
-      signal,
-    );
+    return route.open({ serverKey, prologue: PROTOCOL, seed, hello }, signal);
   };
   const call = rpcChannel(
     () => connect({ open: "rpc" }),
-    async () => (await monitor.refresh(), secure.reverify()),
+    async () => (await route.refresh?.(), secure.reverify()),
   );
 
   return {
@@ -136,31 +158,46 @@ export async function sandboxClient(
         0,
         signal,
       ) as Promise<SandboxStatus>,
+    unlock: (allow_initialize: boolean, signal?: AbortSignal) =>
+      call(
+        "POST",
+        "/unlock",
+        { disk_key: resource.storage_key, allow_initialize },
+        0,
+        signal,
+      ) as Promise<SandboxStatus>,
     shell: (size: ShellOpen, signal: AbortSignal) =>
       connect({ open: "shell", ...size }, signal),
   };
 }
 export type SandboxClient = Awaited<ReturnType<typeof sandboxClient>>;
 
-// A TMK sandbox routed through this Monitor, re-resolved from a fresh,
-// successful read of the operation's account. Its saved binding must name the
-// same instance and workspace volume before any sandbox secret is sent.
+// A TMK sandbox routed through this Monitor, or without one a perimeterless
+// sandbox, re-resolved from a fresh, successful read of the operation's
+// account. Its saved binding must name the same instance and workspace volume
+// before any sandbox secret is sent.
 async function resolve(
-  monitor: OpenedMonitor,
+  monitor: { scope: Scope; row?: Container },
   id: string,
   bind: boolean,
   readVolumes = () => monitor.scope.api(VOLUMES),
 ) {
   const { scope } = monitor;
   const detail = (await scope.api(`/api/containers/${id}`)) as Container;
+  const env = measuredEnv(detail.config);
   if (
     detail.id !== id ||
     detail.repo !== SANDBOX_REPO ||
     detail.clerk_user_id !== scope.user ||
-    monitorOf(detail) !== monitor.row.id
+    (monitor.row
+      ? monitorOf(detail) !== monitor.row.id
+      : detail.network_policy != null ||
+        env.NO_MONITOR !== NO_MONITOR.perimeterless)
   )
     throw new Error(
-      "This bunker changed or is not routed through this Perimeter.",
+      monitor.row
+        ? "This bunker changed or is not routed through this Perimeter."
+        : "This bunker changed or does not run without a Perimeter.",
     );
   if (detail.owner_key_mode !== "tmk")
     throw new Error(
@@ -174,7 +211,7 @@ async function resolve(
     );
   if (!resource)
     throw new Error("Your saved keys do not include this bunker's owner key.");
-  const instance_id = measuredEnv(detail.config).SANDBOX_INSTANCE_ID ?? "";
+  const instance_id = env.SANDBOX_INSTANCE_ID ?? "";
   const volume_id = detail.volumes?.workspace ?? "";
   const volumes = (await readVolumes()) as {
     volumes?: {
@@ -261,7 +298,7 @@ export async function connectSandbox({
     : monitor.scope.signal;
   const { row, resource, binding, size } = (await resolve(monitor, id, true))!;
   const sandbox = await sandboxClient(
-    monitor,
+    viaPerimeter(monitor, binding.instance_id!),
     row,
     resource,
     binding,
@@ -284,6 +321,43 @@ export async function connectSandbox({
     );
   // The volume worker formats only a blank workspace and otherwise unlocks it.
   if (steps.sandbox) await sandbox.enroll(hostKey, true, signal);
+  return sandbox;
+}
+
+// A perimeterless sandbox, reached directly, with its workspace unlocked or,
+// only when blank, formatted.
+export async function openBunker(
+  scope: Scope,
+  id: string,
+  signal: AbortSignal,
+) {
+  signal = AbortSignal.any([signal, scope.signal]);
+  const { row, resource, binding, size } = (await resolve(
+    { scope },
+    id,
+    true,
+  ))!;
+  const account = (await scope.api(REGISTRY_ACCOUNT)) as { scope: string };
+  const route: Route = {
+    mode: "perimeterless",
+    registry: account.scope,
+    open: (session, at) =>
+      openChannel(
+        `wss://${row.domain}${OWNER_SOCKET}`,
+        [session],
+        at ? AbortSignal.any([signal, at]) : signal,
+      ),
+  };
+  const sandbox = await sandboxClient(
+    route,
+    row,
+    resource,
+    binding,
+    size,
+    signal,
+  );
+  if ((await sandbox.status(signal)).volume !== "unlocked")
+    await sandbox.unlock(true, signal);
   return sandbox;
 }
 
@@ -310,7 +384,7 @@ export async function relinkSandboxes(monitor: OpenedMonitor) {
         const agent = agentKey(resource);
         if (!identities.some((identity) => identity.key === agent)) return;
         const sandbox = await sandboxClient(
-          monitor,
+          viaPerimeter(monitor, binding.instance_id!),
           resolved.row,
           resource,
           binding,

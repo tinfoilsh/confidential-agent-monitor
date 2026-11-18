@@ -8,8 +8,12 @@ type Page = {
   default: (props: { session: Session }) => JSX.Element;
   capture?: () => void;
 };
-const PAGES: Record<"monitor" | "cli" | "console", () => Promise<Page>> = {
+const PAGES: Record<
+  "monitor" | "bunker" | "cli" | "console",
+  () => Promise<Page>
+> = {
   monitor: () => import("./Monitor"),
+  bunker: () => import("./Bunker"),
   cli: () => import("./Cli"),
   console: () => import("./Console"),
 };
@@ -17,9 +21,11 @@ const routeOf = (pathname: string): keyof typeof PAGES => {
   const path = pathname.replace(/\/+$/, "");
   return path.startsWith("/perimeter/")
     ? "monitor"
-    : path === "/cli" || path.startsWith("/cli/")
-      ? "cli"
-      : "console";
+    : path.startsWith("/bunker/")
+      ? "bunker"
+      : path === "/cli" || path.startsWith("/cli/")
+        ? "cli"
+        : "console";
 };
 const route = routeOf(location.pathname);
 const root = document.getElementById("root")!;
@@ -55,6 +61,7 @@ async function start() {
     () => (
       <Router explicitLinks>
         <Route path="/perimeter/:id" component={view("monitor")} />
+        <Route path="/bunker/:id" component={view("bunker")} />
         <Route path="/cli/*" component={view("cli")} />
         <Route path="*" component={view("console")} />
       </Router>

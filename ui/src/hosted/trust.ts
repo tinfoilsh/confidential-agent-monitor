@@ -37,6 +37,16 @@ const OWNER_KEY = /^ed25519:[A-Za-z0-9+/]{43}=$/;
 const PRIVATE_REGISTRY =
   /^https:\/\/registry\.tinfoil\.sh\/scopes\/[0-9a-f]{32}$/;
 const CONFIG_NAME = /^\/([^/]+\/[^/]+)\/([^/]+)$/;
+// The measured settings the controlplane renders only into a perimeterless sandbox.
+const PERIMETERLESS_INBOUND_PORTS = [22];
+const PERIMETERLESS_TLS_MODE = "cert-proxy";
+export const OWNER_SOCKET = "/owner/ws";
+
+export type SandboxMode = "perimeter" | "perimeterless";
+export const NO_MONITOR: Record<SandboxMode, string> = {
+  perimeter: "",
+  perimeterless: "1",
+};
 
 export function registryTarget(
   row: Container,
@@ -135,20 +145,22 @@ const envAt = (path: string[], name: string) =>
 // Returns the image digest, whose build evidence must still be verified.
 function check(
   workload: Workload,
-  template: string,
+  template: unknown,
   config: Uint8Array,
   env: Record<string, (value: string) => boolean>,
   size?: string,
+  allow?: Substitution,
 ): string {
   const image = new RegExp(
     `^ghcr\\.io/tinfoilsh/${REPOS[workload]}@sha256:([0-9a-f]{64})$`,
   );
   let digest: string | undefined;
   match(
-    strictYAML(template),
+    template,
     strictYAML(new TextDecoder("utf-8", { fatal: true }).decode(config)),
     [],
     (path, value) => {
+      if (allow?.(path, value)) return true;
       if (
         path.length === 3 &&
         path[0] === "containers" &&
@@ -185,26 +197,45 @@ export const monitorDigest = (
   config: Uint8Array,
   expect: { owner: string },
 ) =>
-  check("monitor", template, config, {
+  check("monitor", strictYAML(template), config, {
     MONITOR_OWNER_PUBLIC_KEY: (v) => OWNER_KEY.test(v) && v === expect.owner,
   });
 
 export const sandboxDigest = (
   template: string,
   config: Uint8Array,
-  expect: { owner: string; instance_id: string; size: string },
-) =>
-  check(
+  expect: {
+    owner: string;
+    instance_id: string;
+    size: string;
+    mode: SandboxMode;
+  },
+) => {
+  const expected = strictYAML(template) as Record<string, any>;
+  if (expect.mode === "perimeterless") {
+    expected["cvm-network"] = { "inbound-ports": PERIMETERLESS_INBOUND_PORTS };
+    expected.shim["tls-mode"] = PERIMETERLESS_TLS_MODE;
+  }
+  // Sandbox releases without the owner socket are still running; their shim.paths lacks it.
+  const withoutSocket = JSON.stringify(
+    expected.shim.paths.filter((path: string) => path !== OWNER_SOCKET),
+  );
+  return check(
     "sandbox",
-    template,
+    expected,
     config,
     {
       SANDBOX_OWNER_PUBLIC_KEY: (v) => OWNER_KEY.test(v) && v === expect.owner,
       SANDBOX_INSTANCE_ID: (v) => UUID.test(v) && v === expect.instance_id,
-      NO_MONITOR: (v) => v === "",
+      NO_MONITOR: (v) => v === NO_MONITOR[expect.mode],
     },
     expect.size,
+    (path, value) =>
+      expect.mode === "perimeter" &&
+      path.join(".") === "shim.paths" &&
+      JSON.stringify(value) === withoutSocket,
   );
+};
 
 // The rendered size of the sandbox's own workspace volume, as provisioning
 // writes it (services.FormatVolumeSize): whole decimal GB, otherwise bytes.

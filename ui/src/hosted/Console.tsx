@@ -431,6 +431,49 @@ function Inventory(props: { session: Session }) {
   );
 }
 
+function Bunkers(props: { session: Session }) {
+  const bunkers = () =>
+    (props.session.inventory().value ?? []).filter(
+      (r) =>
+        r.repo === SANDBOX_REPO &&
+        r.clerk_user_id === props.session.user()?.id &&
+        r.owner_key_mode === "tmk" &&
+        !r.network_policy,
+    );
+  return (
+    <Show when={bunkers().length}>
+      <nav class="start-monitors" aria-label="Your bunkers">
+        <p class="start-eyebrow">Bunkers without a Perimeter</p>
+        <For each={bunkers()}>
+          {(bunker) => (
+            <a
+              class="start-key-choice"
+              data-status={
+                BUSY_STATUSES.includes(bunker.status) ? "busy" : bunker.status
+              }
+              link
+              href={`/bunker/${bunker.id}`}
+            >
+              <span class="start-status" aria-hidden="true">
+                <span class="start-status-dot" />
+              </span>
+              <div>
+                <h2>{bunker.name}</h2>
+                <p>
+                  <span class="start-status-label">
+                    {STATUS_LABELS[bunker.status] ?? "Status unavailable"}
+                  </span>
+                </p>
+              </div>
+              <Icon name="arrow" />
+            </a>
+          )}
+        </For>
+      </nav>
+    </Show>
+  );
+}
+
 // Removes saved keys only for resources confirmed deleted in their own account.
 function Cleanup(props: { session: Session }) {
   const [error, setError] = createSignal("");
@@ -495,6 +538,7 @@ export default function Console(props: { session: Session }) {
           >
             <Home
               perimeters={<Inventory session={props.session} />}
+              bunkers={<Bunkers session={props.session} />}
               notice={
                 <Show when={props.session.keyState().error}>
                   {(error) => (
