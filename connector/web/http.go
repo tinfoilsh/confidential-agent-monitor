@@ -220,7 +220,7 @@ func (request *Request) capture(h *Handler, r *http.Request) error {
 			}
 		}
 	}
-	request.GraphQL = graphql(layer.Body, query)
+	request.GraphQL, request.gqlErr = graphql(layer.Body, query)
 	return nil
 }
 

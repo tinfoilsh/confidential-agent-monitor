@@ -20,6 +20,7 @@ type Request struct {
 	GraphQL *GraphQLFacts `json:"graphql,omitempty"`
 	Invalid string        `json:"invalid,omitempty"`
 	place   func(*http.Request, func(context.Context, string) (string, error)) (*http.Request, error)
+	gqlErr  error
 }
 
 func (r *Request) Describe(config *Setup) (facts.Observation, error) {
@@ -224,7 +225,7 @@ func (compiled *compiledOperation) matches(r *Request, headers map[string][]stri
 	if body == bodyGraphQL {
 		g, spec := r.GraphQL, o.GraphQL
 		if g == nil {
-			return false, fmt.Errorf("the GraphQL document could not be decoded")
+			return false, fmt.Errorf("the GraphQL document could not be decoded: %w", r.gqlErr)
 		}
 		if h.BodyKind != BodyJSON || g.Kind != spec.Operation || len(g.Fields) == 0 {
 			return false, nil
